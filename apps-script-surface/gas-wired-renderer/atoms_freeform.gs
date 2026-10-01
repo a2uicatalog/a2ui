@@ -24,6 +24,12 @@
 // entity expansion is impossible here, and any `<!DOCTYPE`/`<!ENTITY` is
 // rejected outright rather than silently skipped.
 
+// Standalone fallback (2026-10-01): atom.gs defines _jsJson in the full bundle; tests and tools that load this file alone get the same helper.
+var _jsJson = (typeof _jsJson === 'function') ? _jsJson : function(v, r, s) {
+  var j = JSON.stringify(v, r, s);
+  return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
+};
+
 var _FREEFORM_MAX_DEPTH = 64; // defense-in-depth against pathological nesting DoS
 
 var _FREEFORM_COMMON_ATTRS = {
@@ -137,12 +143,12 @@ function _freeformCheckValueSafety(value) {
   // exempted here by its 'url(' prefix and checked separately below.
   var v = String(value).trim().toLowerCase();
   if (v.indexOf('javascript:') !== -1 || v.indexOf('data:') !== -1) {
-    throw new FreeformCanvasError('disallowed value scheme in ' + JSON.stringify(value));
+    throw new FreeformCanvasError('disallowed value scheme in ' + _jsJson(value));
   }
   if (v.indexOf(':') !== -1 && v.indexOf('url(') !== 0) {
     var scheme = v.split(':')[0];
     if (/^[a-z]{2,}$/.test(scheme)) {
-      throw new FreeformCanvasError('disallowed scheme-like value in ' + JSON.stringify(value));
+      throw new FreeformCanvasError('disallowed scheme-like value in ' + _jsJson(value));
     }
   }
 }
@@ -150,14 +156,14 @@ function _freeformCheckValueSafety(value) {
 function _freeformValidateUrlValue(value) {
   var v = String(value).trim();
   if (v.toLowerCase().indexOf('url(') !== -1 && !_FREEFORM_LOCAL_URL_RE.test(v)) {
-    throw new FreeformCanvasError('url() references must be a local #fragment, got ' + JSON.stringify(value));
+    throw new FreeformCanvasError('url() references must be a local #fragment, got ' + _jsJson(value));
   }
 }
 
 function _freeformValidateHrefValue(value) {
   var v = String(value).trim();
   if (v.indexOf('#') !== 0) {
-    throw new FreeformCanvasError('href/xlink:href must be a local #fragment reference, got ' + JSON.stringify(value));
+    throw new FreeformCanvasError('href/xlink:href must be a local #fragment reference, got ' + _jsJson(value));
   }
 }
 
@@ -171,11 +177,11 @@ function _freeformValidateElement(el, depth) {
   }
   var tag = el.tag;
   if (_FREEFORM_FORBIDDEN_TAGS[tag]) {
-    throw new FreeformCanvasError('forbidden tag: ' + JSON.stringify(tag));
+    throw new FreeformCanvasError('forbidden tag: ' + _jsJson(tag));
   }
   var allowedAttrs = _FREEFORM_TAG_ATTRS[tag];
   if (!allowedAttrs) {
-    throw new FreeformCanvasError('tag not in allowlist: ' + JSON.stringify(tag));
+    throw new FreeformCanvasError('tag not in allowlist: ' + _jsJson(tag));
   }
 
   var cleanAttrs = {};
@@ -191,16 +197,16 @@ function _freeformValidateElement(el, depth) {
     // equivalent gap (dict membership doesn't walk a prototype chain), so
     // this fix has no sibling to mirror on that side.
     if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
-      throw new FreeformCanvasError('attribute ' + JSON.stringify(k) + ' is never permitted');
+      throw new FreeformCanvasError('attribute ' + _jsJson(k) + ' is never permitted');
     }
     if (k === 'style') {
       throw new FreeformCanvasError('the style attribute is never permitted');
     }
     if (/^on/i.test(k)) {
-      throw new FreeformCanvasError('event-handler-like attribute rejected: ' + JSON.stringify(k));
+      throw new FreeformCanvasError('event-handler-like attribute rejected: ' + _jsJson(k));
     }
     if (!Object.prototype.hasOwnProperty.call(allowedAttrs, k)) {
-      throw new FreeformCanvasError('attribute ' + JSON.stringify(k) + ' not allowed on <' + tag + '>');
+      throw new FreeformCanvasError('attribute ' + _jsJson(k) + ' not allowed on <' + tag + '>');
     }
     var v = el[k];
     _freeformCheckValueSafety(v);
@@ -302,7 +308,7 @@ function _freeformParseXml(str) {
       // design principle is explicit allowlisting over incidental
       // behaviour holding up by accident.
       if (name === '__proto__' || name === 'constructor' || name === 'prototype') {
-        err('attribute ' + JSON.stringify(name) + ' is never permitted');
+        err('attribute ' + _jsJson(name) + ' is never permitted');
       }
       skipWs();
       if (str.charAt(i) !== '=') err('expected = after attribute name ' + name);
@@ -438,7 +444,7 @@ function _freeformParseSvg(svgString) {
 // producing the same ids on both surfaces, not just avoiding a bug pattern
 // this codebase has already paid to learn once.
 function _freeformUid(b) {
-  var s = JSON.stringify(b);
+  var s = _jsJson(b);
   var h = 5381;
   for (var i = 0; i < s.length; i++) {
     h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
@@ -519,12 +525,12 @@ _RENDERERS['freeform_canvas'] = function(b) {
   try {
     _freeformCheckValueSafety(viewbox);
     if (!/^[\d\s.\-]+$/.test(viewbox)) {
-      throw new FreeformCanvasError('invalid viewbox format: ' + JSON.stringify(viewbox));
+      throw new FreeformCanvasError('invalid viewbox format: ' + _jsJson(viewbox));
     }
     if (background) {
       _freeformCheckValueSafety(background);
       if (!/^(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)$/.test(background)) {
-        throw new FreeformCanvasError('invalid background format: ' + JSON.stringify(background));
+        throw new FreeformCanvasError('invalid background format: ' + _jsJson(background));
       }
     }
     var rawElements = hasElements ? b.elements : _freeformParseSvg(b.svg);

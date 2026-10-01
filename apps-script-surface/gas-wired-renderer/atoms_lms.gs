@@ -11,7 +11,7 @@ _RENDERERS['progress_store'] = function(b) {
   var courseId = b.course_id || 'default';
   var initial  = '{}';
   if (typeof SpreadsheetApp !== 'undefined') {
-    try { initial = JSON.stringify(a2uiProgressRead(courseId) || {}); } catch(e) {}
+    try { initial = _jsJson(a2uiProgressRead(courseId) || {}); } catch(e) {}
   }
   var cid = courseId.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
   return (
@@ -79,11 +79,11 @@ _RENDERERS['module_map'] = function(b) {
   //   url: "https://..."     → used as-is
   var base = _getWebAppUrl();
   var fromSlug = (typeof _CURRENT_NAV_SLUG !== 'undefined' && _CURRENT_NAV_SLUG) ? _CURRENT_NAV_SLUG : '';
-  var modsJson = JSON.stringify(modules.map(function(m, i) {
+  var modsJson = _jsJson(modules.map(function(m, i) {
     var url = '#';
     if (m.page && m.page.length) {
       try {
-        var pg = JSON.stringify({ title: m.title || ('Module ' + (i+1)), theme: 'dark', blocks: m.page });
+        var pg = _jsJson({ title: m.title || ('Module ' + (i+1)), theme: 'dark', blocks: m.page });
         var enc = Utilities.base64EncodeWebSafe(
           Utilities.gzip(Utilities.newBlob(pg, 'application/json')).getBytes()
         ).replace(/=+$/, '');
@@ -179,7 +179,7 @@ _RENDERERS['knowledge_check'] = function(b) {
     '<div id="' + uid + 'fb" style="display:none;margin-top:10px;padding:12px 14px;border-radius:9px;font-size:0.75rem;line-height:1.5;"></div>' +
     '<script>(function(){' +
       'var cor=' + correct + ',total=' + options.length + ',done=false;' +
-      'var ex="' + explain.replace(/"/g,'\\"').replace(/\n/g,' ') + '";' +
+      'var ex=' + _jsJson(String(explain)) + ';' +
       'window["' + uid + 'pick"]=function(i){' +
         'if(done)return;done=true;' +
         'for(var j=0;j<total;j++){' +
@@ -191,8 +191,8 @@ _RENDERERS['knowledge_check'] = function(b) {
         '}' +
         'var fb=document.getElementById("' + uid + 'fb");if(!fb)return;' +
         'fb.style.display="block";' +
-        'if(i===cor){fb.style.background="rgba(52,211,153,0.09)";fb.style.color="#34d399";fb.innerHTML="✓ Correct! "+ex;}' +
-        'else{fb.style.background="rgba(248,113,113,0.09)";fb.style.color="#f87171";fb.innerHTML="✗ Not quite — "+ex;}' +
+        'if(i===cor){fb.style.background="rgba(52,211,153,0.09)";fb.style.color="#34d399";fb.textContent="✓ Correct! "+ex;}' +
+        'else{fb.style.background="rgba(248,113,113,0.09)";fb.style.color="#f87171";fb.textContent="✗ Not quite — "+ex;}' +
       '};' +
     '})();<\/script>' +
     '</div>'
@@ -294,7 +294,7 @@ _RENDERERS['scenario_branch'] = function(b) {
       '</button>';
   }
 
-  var consJson = JSON.stringify(choices.map(function(c) {
+  var consJson = _jsJson(choices.map(function(c) {
     return { consequence: c.consequence || '', outcome: c.outcome || 'neutral', next_url: c.next_url || '' };
   }));
 
@@ -318,13 +318,14 @@ _RENDERERS['scenario_branch'] = function(b) {
         'var col=c.outcome==="good"?"#34d399":c.outcome==="bad"?"#f87171":"#f59e0b";' +
         'var icon=c.outcome==="good"?"✅":c.outcome==="bad"?"❌":"⚠️";' +
         'var bg=c.outcome==="good"?"rgba(52,211,153,0.07)":c.outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";' +
+        'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
         'var res=document.getElementById("' + uid + 'res");' +
         'if(res){' +
           'res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;' +
           'var hdr=\'<div style="font-size:0.68rem;font-weight:700;color:\'+col+\';margin-bottom:8px;">\'+icon+\' Outcome</div>\';' +
-          'var body=\'<div style="font-size:0.82rem;color:#cbd5e1;line-height:1.6;">\'+c.consequence+\'</div>\';' +
+          'var body=\'<div style="font-size:0.82rem;color:#cbd5e1;line-height:1.6;">\'+_E(c.consequence)+\'</div>\';' +
           'var nav=c.next_url' +
-            '?\'<a href="\'+c.next_url+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
+            '?\'<a href="\'+(/^(https?:|\\/|\\?|#)/i.test(String(c.next_url))?_E(c.next_url):"#")+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
             ':\'<button onclick="' + uid + 'rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:0.75rem;cursor:pointer;">↩ Try again</button>\';' +
           'res.innerHTML=hdr+body+nav;' +
         '}' +
@@ -355,7 +356,7 @@ _RENDERERS['completion_gate'] = function(b) {
     '<div style="font-size:0.72rem;color:#1e293b;">' + _esc(message) + '</div>' +
     '</div>' +
     '<script>(function(){' +
-      'var req="' + req.replace(/"/g,'\\"') + '";' +
+      'var req=' + _jsJson(String(req)) + ';' +
       'function check(s){if(req&&s&&s.isComplete(req)){var el=document.getElementById("' + uid + '");if(el)el.style.display="none";}}' +
       'document.addEventListener("a2ui:store",function(e){check(e.detail);});' +
       'check(window._A2UI_STORE||null);' +
@@ -407,7 +408,7 @@ _RENDERERS['certification_card'] = function(b) {
     '<div id="' + uid + 'cert" style="' + (req ? 'display:none;' : '') + '">' + cert + '</div>' +
     (req ? locked : '') +
     '<script>(function(){' +
-      'var req="' + req.replace(/"/g,'\\"') + '";' +
+      'var req=' + _jsJson(String(req)) + ';' +
       'function check(s){' +
         'if(!req||!s)return;' +
         'if(s.isComplete(req)){' +
@@ -574,7 +575,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
   }
 
   var lpsBase = _getWebAppUrl();
-  var pathsJson = JSON.stringify(paths.map(function(p) {
+  var pathsJson = _jsJson(paths.map(function(p) {
     var purl = p.url || '';
     if (purl && purl.charAt(0) === '?' && lpsBase) purl = lpsBase + purl;
     return { id: p.id || p.label, url: purl, accent: p.accent || '#6366f1' };

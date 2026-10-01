@@ -16,7 +16,7 @@
 //   height             — canvas height px (default 280)
 //   bg                 — background CSS colour (default #0a0f1d)
 _RENDERERS['canvas_plexus'] = function(b) {
-  var count  = b.count    || 80;
+  var count  = parseInt(b.count, 10) || 80;
   var colour = b.colour   || '#6366f1';
   var maxD   = b.max_dist || 110;
   var speed  = b.speed    !== undefined ? b.speed : 0.7;
@@ -156,8 +156,8 @@ _RENDERERS['spring_nodes'] = function(b) {
       'var W=c.width,H=c.height;' +
       'var COL="' + _esc(colour) + '";' +
       'var KS=' + KS + ',KR=' + KR + ',RL=' + RL + ',DMP=0.86;' +
-      'var nodeDefs=' + JSON.stringify(nodes) + ';' +
-      'var edgeDefs=' + JSON.stringify(edges) + ';' +
+      'var nodeDefs=' + _jsJson(nodes) + ';' +
+      'var edgeDefs=' + _jsJson(edges) + ';' +
       // Init nodes bunched at centre with small jitter
       'var ns=nodeDefs.map(function(d){return{' +
         'id:d.id,label:d.label||d.id,' +
@@ -281,7 +281,7 @@ _RENDERERS['isometric_mesh'] = function(b) {
       defaultMatrix.push(row);
     }
   }
-  var matData = JSON.stringify(matrix || defaultMatrix);
+  var matData = _jsJson(matrix || defaultMatrix);
 
   return '<canvas id="' + uid + '" height="' + h + '" ' +
     'style="width:100%;display:block;border-radius:14px;background:' + _esc(bg) + ';cursor:grab;">' +
@@ -406,8 +406,8 @@ _RENDERERS['geo_mercator_radar'] = function(b) {
   var title = b.title  || 'GEOGRAPHIC MONITOR';
   var color = b.color  || '#00f2ff';
   var h     = (b.height || 450) + 'px';
-  var nodes = JSON.stringify(b.nodes || []);
-  var links = JSON.stringify(b.links || []);
+  var nodes = _jsJson(b.nodes || []);
+  var links = _jsJson(b.links || []);
 
   return '<div style="position:relative;width:100%;height:' + h + ';background:#070a13;' +
     'border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;font-family:monospace;user-select:none;">' +
@@ -552,7 +552,7 @@ _RENDERERS['geo_contour_waves'] = function(b) {
 _RENDERERS['multi_surface'] = function(b) {
   var uid   = 'msx' + Math.random().toString(36).substr(2, 6);
   var title = b.title || 'MULTI-SURFACE ATOM ENGINE';
-  var nodes = JSON.stringify(b.nodes || []);
+  var nodes = _jsJson(b.nodes || []);
 
   return '<style>' +
     'html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;}' +
@@ -725,6 +725,7 @@ _RENDERERS['multi_surface'] = function(b) {
 
       // ── Mobile card engine (phone-frame UI)
       '(function(){' +
+        'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
         'var mob=document.getElementById(UID+"mob");' +
         'var cards="";' +
         'NODES.forEach(function(n){' +
@@ -733,11 +734,11 @@ _RENDERERS['multi_surface'] = function(b) {
           'cards+=`<div class="phc">' +
             '<div class="phc-ic" style="background:${c}22">${ICO[n.type]||"?"}</div>' +
             '<div class="phc-bd">' +
-              '<div class="phc-ct">${n.label}</div>' +
-              '<div class="phc-vl">${n.value}</div>' +
+              '<div class="phc-ct">${_E(n.label)}</div>' +
+              '<div class="phc-vl">${_E(n.value)}</div>' +
               '<div class="phc-br"><div class="phc-bf" style="width:${pct}%;background:${c}"></div></div>' +
             '</div>' +
-            '<div class="phc-tp">${n.temp}</div>' +
+            '<div class="phc-tp">${_E(n.temp)}</div>' +
           '</div>`;' +
         '});' +
         'mob.innerHTML=`<div class="ph">' +
@@ -825,7 +826,8 @@ _RENDERERS['multi_surface'] = function(b) {
             'var nc=COL[n.type]||"#475569";' +
             'var row=document.createElement("div");' +
             'row.className="wi";' +
-            'row.innerHTML=`<span style="color:${nc}">${n.label}</span><span>${n.temp}</span><span style="color:#1e3a5f">${n.value}</span>`;' +
+            // textContent, never innerHTML: node labels/values are payload text (2026-10-01)
+            'var s1=document.createElement("span");s1.style.color=nc;s1.textContent=n.label;var s2=document.createElement("span");s2.textContent=n.temp;var s3=document.createElement("span");s3.style.color="#1e3a5f";s3.textContent=n.value;row.appendChild(s1);row.appendChild(s2);row.appendChild(s3);' +
             'wlEl.appendChild(row);' +
           '});' +
           'wtch.appendChild(wlEl);' +
@@ -854,7 +856,7 @@ _RENDERERS['geo_europe_airspace'] = function(b) {
   var uid    = 'eur' + Math.random().toString(36).substr(2, 6);
   var title  = b.title || 'EUROPEAN AIRSPACE';
   var focus  = b.focus || b.country || '';
-  var simFlt = JSON.stringify(b.sim_flights || []);
+  var simFlt = _jsJson(b.sim_flights || []);
   var showAP = b.airports !== false;
 
   return '<style>' +
@@ -1192,7 +1194,7 @@ _RENDERERS['geo_iso_takeoff'] = function(b) {
   var wS = acType === 'A21N' ? 1.10 : 1.0;
 
   // Pre-generate radar URL server-side — bypasses client btoa issues
-  var radarPayload = JSON.stringify([{
+  var radarPayload = _jsJson([{
     type:'airspace_command_deck', height:'fullscreen',
     center_lat:43.629, center_lon:1.363, center_icao:'LFBO', country:'FR', zoom:35,
     chyron_title:'LFBO TMA — APPROACH CONTROL',
@@ -1621,7 +1623,7 @@ _RENDERERS['geo_iso_takeoff'] = function(b) {
       'frame();' +
       // Auto-advance to next playbook slide after auto_next_ms if _A2UI_GO is defined
       (b.auto_next && b.auto_next_ms
-        ? 'setTimeout(function(){if(typeof window._A2UI_GO==="function")window._A2UI_GO(' + JSON.stringify(String(b.auto_next)) + ');},' + Number(b.auto_next_ms) + ');'
+        ? 'setTimeout(function(){if(typeof window._A2UI_GO==="function")window._A2UI_GO(' + _jsJson(String(b.auto_next)) + ');},' + Number(b.auto_next_ms) + ');'
         : '') +
     '})();<\/script>';
 };
@@ -2674,10 +2676,10 @@ _RENDERERS['globe_3d'] = function(b) {
   var size  = b.size  || 300;
   var color = b.color || '#6366f1';
   var speed = b.speed !== undefined ? b.speed : 0.006;
-  var lines = b.lines || 10;
+  var lines = parseInt(b.lines, 10) || 10;
   var theme = b.theme || 'wire';
-  var dots  = JSON.stringify(b.dots || []);
-  var arcs  = JSON.stringify(b.arcs || []);
+  var dots  = _jsJson(b.dots || []);
+  var arcs  = _jsJson(b.arcs || []);
   var uid   = 'glb' + Math.random().toString(36).substr(2,6);
 
   return (
@@ -3025,7 +3027,7 @@ function _ffLines(text, dflt) {
   return out.length ? out : [dflt];
 }
 function _ffLinesJs(lines) {
-  return JSON.stringify(lines).replace(/</g, '\\u003c');
+  return _jsJson(lines);
 }
 var _FF_FONTS = {
   sans: 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif',

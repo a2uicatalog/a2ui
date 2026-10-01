@@ -422,7 +422,7 @@ _RENDERERS['data_table_sortable'] = function(b) {
     // onRowClick wire has always been declarable, documented and INERT — it
     // bound to a selector no atom satisfied. Emitting it here makes the wire
     // real for every surface that declares it, not just the one that found it.
-    html += '<tr data-row-json="' + _esc(JSON.stringify(row)) + '"' +
+    html += '<tr data-row-json="' + _esc(_jsJson(row)) + '"' +
       (rowId !== undefined ? ' data-row-id="' + _esc(String(rowId)) + '"' : '') +
       ' style="' + bg + '">';
     columns.forEach(function(col) {
@@ -430,8 +430,8 @@ _RENDERERS['data_table_sortable'] = function(b) {
         html += '<td style="padding:' + cellPad + ';text-align:center;border-bottom:1px solid #f1f5f9;">' +
           (rowId !== undefined
             ? '<input type="checkbox" class="a2ui-row-check" onclick="event.stopPropagation()" ' +
-              'onchange="event.stopPropagation();_a2uiTableToggleSelect(' + _esc(JSON.stringify(String(uid))) + ',' +
-              _esc(JSON.stringify(String(rowId))) + ',this.checked,this)">'
+              'onchange="event.stopPropagation();_a2uiTableToggleSelect(' + _esc(_jsJson(String(uid))) + ',' +
+              _esc(_jsJson(String(rowId))) + ',this.checked,this)">'
             : '') +
           '</td>';
         return;
@@ -440,8 +440,8 @@ _RENDERERS['data_table_sortable'] = function(b) {
         html += '<td style="padding:' + cellPad + ';text-align:center;border-bottom:1px solid #f1f5f9;">' +
           (rowId !== undefined
             ? '<button type="button" class="a2ui-row-del" title="Delete" ' +
-              'onclick="event.stopPropagation();_a2uiTableDeleteOne(' + _esc(JSON.stringify(String(uid))) + ',' +
-              _esc(JSON.stringify(String(rowId))) + ')">✕</button>'
+              'onclick="event.stopPropagation();_a2uiTableDeleteOne(' + _esc(_jsJson(String(uid))) + ',' +
+              _esc(_jsJson(String(rowId))) + ')">✕</button>'
             : '') +
           '</td>';
         return;
@@ -487,9 +487,9 @@ _RENDERERS['data_table_sortable'] = function(b) {
         'var act = actionId && eng.nodes[actionId]; if (act && act._run) act._run();' +
       '};' +
       '(function(){ var t = document.getElementById("tbl-' + uid + '"); if (!t) return;' +
-      (selectState ? 't.setAttribute("data-select-state", ' + JSON.stringify(String(selectState)) + ');' : '') +
-      (countState  ? 't.setAttribute("data-count-state", '  + JSON.stringify(String(countState))  + ');' : '') +
-      (deleteAction ? 't.setAttribute("data-delete-action", ' + JSON.stringify(String(deleteAction)) + ');' : '') +
+      (selectState ? 't.setAttribute("data-select-state", ' + _jsJson(String(selectState)) + ');' : '') +
+      (countState  ? 't.setAttribute("data-count-state", '  + _jsJson(String(countState))  + ');' : '') +
+      (deleteAction ? 't.setAttribute("data-delete-action", ' + _jsJson(String(deleteAction)) + ');' : '') +
       ' })();' +
       '</script>';
   }
@@ -2413,7 +2413,7 @@ _RENDERERS['word_flip'] = function(b) {
   var interval = parseInt(b.interval || 2200, 10);
   var color    = b.color || '#6366f1';
   var uid = Math.random().toString(36).substr(2, 6);
-  var wordsJson = JSON.stringify(words.map(function(w) { return String(w); }));
+  var wordsJson = _jsJson(words.map(function(w) { return String(w); }));
   return '<div style="margin:1rem 0;font-size:1.3rem;font-weight:700;color:#1f2937;line-height:1.5;">'
     + (prefix ? '<span>' + _esc(prefix) + ' </span>' : '')
     + '<span id="wf-' + uid + '" style="color:' + _esc(color) + ';transition:opacity 0.28s ease;">' + _esc(String(words[0] || '')) + '</span>'
@@ -2429,7 +2429,7 @@ _RENDERERS['word_flip'] = function(b) {
 _RENDERERS['word_scramble'] = function(b) {
   var words = b.words || b.items || ['HELLO','WORLD'];
   var uid = Math.random().toString(36).substr(2, 6);
-  var wordsJson = JSON.stringify(words.map(function(w) { return String(w).toUpperCase(); }));
+  var wordsJson = _jsJson(words.map(function(w) { return String(w).toUpperCase(); }));
   return '<div style="border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;margin:1rem 0;background:#0f172a;text-align:center;">'
     + '<div id="ws-' + uid + '" style="font-family:\'Courier New\',monospace;font-size:1.6rem;font-weight:800;color:#22d3ee;letter-spacing:0.12em;min-height:2rem;"></div>'
     + '<script>(function(){'
@@ -2669,7 +2669,7 @@ _RENDERERS['live_clock'] = function(b) {
     + '<div id="lc-' + uid + '" style="font-size:2.6rem;font-weight:800;font-family:monospace;color:#22d3ee;letter-spacing:0.07em;">--:--:--</div>'
     + (tz ? '<div style="font-size:0.7rem;color:#475569;margin-top:6px;">' + _esc(tz) + '</div>' : '')
     + '<script>(function(){'
-    + 'var el=document.getElementById("lc-' + uid + '");var f="' + format + '";'
+    + 'var el=document.getElementById("lc-' + uid + '");var f=' + _jsJson(String(format)) + ';'
     + 'function tick(){var now=new Date();var h=now.getHours(),m=now.getMinutes(),s=now.getSeconds(),suf="";'
     + 'if(f==="12h"){suf=h>=12?" PM":" AM";h=h%12||12;}'
     + 'el.textContent=[h,m,s].map(function(n){return n<10?"0"+n:n}).join(":")+suf;}'
@@ -3304,8 +3304,8 @@ _RENDERERS['word_cloud'] = function(b) {
   var ph          = b.placeholder || 'Type a word…';
   var accent      = b.accent || '#6366f1';
   var staticWords = b.words || [];
-  var paletteJson = JSON.stringify(palette);
-  var staticJson  = JSON.stringify(staticWords.map(function(w) {
+  var paletteJson = _jsJson(palette);
+  var staticJson  = _jsJson(staticWords.map(function(w) {
     return { text: String(w.text || w.word || w.label || ''), weight: Number(w.weight || w.count || w.size || 1) };
   }));
 
@@ -3339,8 +3339,8 @@ _RENDERERS['word_cloud'] = function(b) {
     + 'var btn=document.getElementById("wc-btn-' + uid + '");'
     + 'var palette=JSON.parse(el.getAttribute("data-palette"));'
     + 'var staticWords=JSON.parse(el.getAttribute("data-static"));'
-    + 'var sheetUrl=' + JSON.stringify(sheetUrl) + ';'
-    + 'var writeUrl=' + JSON.stringify(writeUrl) + ';'
+    + 'var sheetUrl=' + _jsJson(sheetUrl) + ';'
+    + 'var writeUrl=' + _jsJson(writeUrl) + ';'
     + 'var poll=' + poll + ';'
     + 'var localWords=[];'
 
@@ -3437,9 +3437,9 @@ _RENDERERS['quiz_set'] = function(b) {
   var accent    = b.accent || '#6366f1';
   var onPass    = b.on_pass || {};
   var onFail    = b.on_fail || {};
-  var qJson     = JSON.stringify(questions);
-  var onPassJ   = JSON.stringify(onPass);
-  var onFailJ   = JSON.stringify(onFail);
+  var qJson     = _jsJson(questions);
+  var onPassJ   = _jsJson(onPass);
+  var onFailJ   = _jsJson(onFail);
 
   return '<style>'
     + '#qs-wrap-' + uid + '{max-width:680px;margin:1.5rem auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 2px 24px rgba(0,0,0,0.07);}'
@@ -3473,7 +3473,7 @@ _RENDERERS['quiz_set'] = function(b) {
     + '<script>(function(){'
     + 'var questions=' + qJson + ';'
     + 'var passScore=' + passScore + ';'
-    + 'var accent=' + JSON.stringify(accent) + ';'
+    + 'var accent=' + _jsJson(accent) + ';'
     + 'var onPass=' + onPassJ + ';'
     + 'var onFail=' + onFailJ + ';'
     + 'var idx=0,score=0,answered=false;'
@@ -3525,19 +3525,20 @@ _RENDERERS['quiz_set'] = function(b) {
     + '  bar.style.width="100%";'
     + '  [numEl,qEl,optsEl,expEl,nextBtn].forEach(function(e){e.style.display="none";});'
     + '  resultEl.style.display="block";'
+    + '  var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};'
     + '  resultEl.innerHTML='
     + '    "<div class=\'qs-ring-' + uid + '\' style=\'background:"+col+"1a;color:"+col+";border:3px solid "+col+";\'>"+pct+"%</div>"'
-    + '    +"<div style=\'font-size:1.22rem;font-weight:800;color:#111827;margin-bottom:6px;\'>"+(cfg.title||(pass?"Well done!":"Keep going!"))+"</div>"'
+    + '    +"<div style=\'font-size:1.22rem;font-weight:800;color:#111827;margin-bottom:6px;\'>"+_E(cfg.title||(pass?"Well done!":"Keep going!"))+"</div>"'
     + '    +"<div style=\'font-size:0.88rem;color:#6b7280;margin-bottom:18px;\'>"+score+" of "+questions.length+" correct"+(pass?" · Pass ✓":" · "+passScore+"% needed")+"</div>"'
-    + '    +(cfg.message?"<div style=\'font-size:0.88rem;color:#374151;padding:12px 16px;background:#f9fafb;border-radius:8px;margin-bottom:16px;\'>"+cfg.message+"</div>":"")'
-    + '    +(pass&&cfg.badge?"<div style=\'display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:"+col+"1a;border:2px solid "+col+";border-radius:10px;font-weight:700;color:"+col+";font-size:0.95rem;margin-bottom:18px;\'>"+(cfg.icon||"🏆")+" "+cfg.badge+"</div><br>":"")'
+    + '    +(cfg.message?"<div style=\'font-size:0.88rem;color:#374151;padding:12px 16px;background:#f9fafb;border-radius:8px;margin-bottom:16px;\'>"+_E(cfg.message)+"</div>":"")'
+    + '    +(pass&&cfg.badge?"<div style=\'display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:"+col+"1a;border:2px solid "+col+";border-radius:10px;font-weight:700;color:"+col+";font-size:0.95rem;margin-bottom:18px;\'>"+_E(cfg.icon||"🏆")+" "+_E(cfg.badge)+"</div><br>":"")'
     // branch URL button (pass or fail) — if set, show a "Continue →" button that navigates to the next schema URL
-    + '    +(cfg.url?"<a href=\'"+cfg.url+"\' style=\'display:inline-block;padding:10px 28px;background:"+col+";color:#fff;border-radius:8px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:10px;\'>Continue →</a><br>":"")'
+    + '    +(cfg.url?"<a href=\'"+(/^(https?:|\\/|\\?|#)/i.test(String(cfg.url))?_E(cfg.url):"#")+"\' style=\'display:inline-block;padding:10px 28px;background:"+col+";color:#fff;border-radius:8px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:10px;\'>Continue →</a><br>":"")'
     + '    +"<button id=\'qs-retry-' + uid + '\' style=\'margin-top:8px;\'>Try again</button>";'
     + '  var rb=document.getElementById("qs-retry-' + uid + '");'
     + '  if(rb)rb.addEventListener("click",reset);'
     // also save pass/fail to localStorage keyed by title for lightweight progress
-    + '  try{var k="qs-"+btoa(unescape(encodeURIComponent(' + JSON.stringify(title) + ')));localStorage.setItem(k,JSON.stringify({pct:pct,pass:pass,ts:Date.now()}));}catch(e){}'
+    + '  try{var k="qs-"+btoa(unescape(encodeURIComponent(' + _jsJson(title) + ')));localStorage.setItem(k,JSON.stringify({pct:pct,pass:pass,ts:Date.now()}));}catch(e){}'
     + '}'
 
     + 'nextBtn.addEventListener("click",function(){'

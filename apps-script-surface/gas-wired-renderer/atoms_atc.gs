@@ -77,7 +77,7 @@ _RENDERERS['atc_vectoring'] = function (b) {
     }
   }
 
-  var FLEET_JSON = JSON.stringify(fleet.map(function (f) {
+  var FLEET_JSON = _jsJson(fleet.map(function (f) {
     return {
       c: String(f.callsign || '????'),
       t: String(f.type || 'A320'),
@@ -88,7 +88,7 @@ _RENDERERS['atc_vectoring'] = function (b) {
     };
   }));
 
-  var CFG = JSON.stringify({
+  var CFG = _jsJson({
     zoom: zoom, course: course, interceptAlt: interceptAlt,
     grace: grace, roundSec: roundSec, runway: runway
   });
@@ -163,6 +163,7 @@ _RENDERERS['atc_vectoring'] = function (b) {
     'var board=document.getElementById("' + uid + 'board");' +
     'var c=document.getElementById("' + uid + 'c"),ctx=c.getContext("2d");' +
     'var hud=document.getElementById("' + uid + 'hud");' +
+    'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
     'var scoreEl=document.getElementById("' + uid + 'score");' +
     'var cmd=document.getElementById("' + uid + 'cmd");' +
     'var subEl=document.getElementById("' + uid + 'sub");' +
@@ -295,7 +296,7 @@ _RENDERERS['atc_vectoring'] = function (b) {
         'var act=btns[i].getAttribute("data-a");' +
         'btns[i].disabled=over||!a||(act==="k"&&!onIls(a));}' +
       'if(!a){hud.innerHTML="<span style=\\"opacity:0.55;\\">NO AIRCRAFT SELECTED — TAP A TARGET</span>";}' +
-      'else{hud.innerHTML="<b style=\\"color:#00f2ff;\\">"+a.c+"</b> "+a.t+"<br>"+' +
+      'else{hud.innerHTML="<b style=\\"color:#00f2ff;\\">"+_E(a.c)+"</b> "+_E(a.t)+"<br>"+' +
         '"ALT "+Math.round(a.alt)+" \\u2192 "+a.talt+"<br>"+' +
         '"HDG "+Math.round(a.hdg)+"\\u00b0 \\u2192 "+Math.round(a.tgt)+"\\u00b0<br>"+' +
         '"SPD "+a.spd+"kt"+(onIls(a)?"<br><b style=\\"color:#00ff41;\\">ESTABLISHED — CLEAR TO LAND</b>":"");}' +

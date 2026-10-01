@@ -121,9 +121,9 @@ def test_hostile_text_never_leaves_the_string(core_js, atom):
         # exactly one script element, and it is the atom's own
         assert html.count("<script>") == 1 and html.count("</script>") == 1
         assert html.endswith("</script></div>")
-        assert "\\u003c/script>" in html and "<img" not in html and "&lt;img" in html
+        assert "\\u003c/script\\u003e" in html and "<img" not in html and "&lt;img" in html
         # $& did not expand into the surrounding markup, %% tokens were not re-substituted
-        assert '$& $1 %%UID%% %%CFG%%' in _cfg(html)
+        assert '$\\u0026 $1 %%UID%% %%CFG%%' in _cfg(html)  # & is written \\u0026 by the script-safe JSON; the point is it was not expanded
         # the visually-hidden copy is escaped
         assert "&lt;/script&gt;" in html.split("<script>")[0]
 

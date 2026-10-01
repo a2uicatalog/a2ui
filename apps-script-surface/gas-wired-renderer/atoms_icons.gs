@@ -236,7 +236,7 @@ _RENDERERS['workspace_logo_grid'] = function(b) {
   var uid    = 'wg' + Math.random().toString(36).substr(2, 5);
   var apps   = b.apps || Object.keys(_WORKSPACE_LOGOS);
   var size   = parseInt(b.size || 48, 10);
-  var cols   = b.cols || 5;
+  var cols   = parseInt(b.cols, 10) || 5;
   var grey   = b.greyscale || false;
 
   var css = '<style>.' + uid + '-c{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:10px;transition:background 0.2s;}'
@@ -272,7 +272,7 @@ _RENDERERS['workspace_logo_grid'] = function(b) {
 // Feature grid using Material Symbol icons.
 _RENDERERS['icon_feature_grid'] = function(b) {
   var items  = b.items  || [];
-  var cols   = b.cols   || 3;
+  var cols   = parseInt(b.cols, 10) || 3;
   var size   = parseInt(b.icon_size || 28, 10);
   var fill   = b.filled ? 1 : 0;
   var style  = b.style  || 'outlined';

@@ -16,13 +16,13 @@ _RENDERERS['globe_3d'] = function(b) {
 
   var speed = b.speed !== undefined ? b.speed : 0.006;
 
-  var lines = b.lines || 10;
+  var lines = parseInt(b.lines, 10) || 10;
 
   var theme = b.theme || 'wire';   // 'wire' | 'earth'
 
-  var dots  = JSON.stringify(b.dots || []);
+  var dots  = _jsJson(b.dots || []);
 
-  var arcs  = JSON.stringify(b.arcs || []);
+  var arcs  = _jsJson(b.arcs || []);
 
 
 

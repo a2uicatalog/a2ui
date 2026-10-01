@@ -87,7 +87,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
   // ── Simulated flights ─────────────────────────────────────────────────────
   // Each flight: {callsign, type, alt ft, spd kt, bearing° from LFBO, dist nm, status, colour}
   // Bearing 0° = north. Flights inside 35nm TMA moving toward the airport.
-  var FLIGHTS = JSON.stringify([
+  var FLIGHTS = _jsJson([
     {c:'AFR6129', t:'A320', alt:3200,  spd:210, brg:148, dist:12, status:'ILS 32L',  col:'#00f2ff'},
     {c:'EZY4218', t:'A319', alt:4500,  spd:240, brg:88,  dist:19, status:'APPROACH', col:'#00ff41'},
     {c:'RYR109B', t:'B738', alt:6000,  spd:280, brg:225, dist:24, status:'DESCENT',  col:'#ffffff'},
@@ -656,8 +656,8 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       'window._a2uiInboundFlights=function(data){if(Array.isArray(data))updateFlightsFromFeed(data);};' +
 
       // Template strings for client-side {{weather.*}} interpolation
-      'var _CSUB=' + JSON.stringify(chyronSub) + ';' +
-      'var _TKRT=' + JSON.stringify(tickerText) + ';' +
+      'var _CSUB=' + _jsJson(chyronSub) + ';' +
+      'var _TKRT=' + _jsJson(tickerText) + ';' +
       'var _wxLast=null;' +
 
       // Client-side template interpolation for chyron subtitle and ticker
@@ -712,6 +712,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       'function updateFlightList(){' +
         'var el=document.getElementById("' + uid + 'flist");' +
         'if(!el)return;' +
+        'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
         'var html="";' +
         'var isSuper=' + (panelType === 'supervisor' ? 'true' : 'false') + ';' +
         'FLIGHTS.forEach(function(f){' +
@@ -721,10 +722,10 @@ _RENDERERS['airspace_command_deck'] = function(b) {
           'if(isSuper){' +
             'html+="<div style=\'display:grid;grid-template-columns:1fr 52px 36px 56px;gap:0 4px;' +
               'padding:3px 0;border-bottom:1px solid rgba(0,242,255,0.06);color:"+col+"\'>"' +
-              '+"<span style=\'font-weight:"+(lk?"bold":"normal")+"\'>"+f.c+"</span>"' +
-              '+"<span style=\'color:rgba(255,255,255,0.45);font-size:0.5rem;\'>"+al.n+"</span>"' +
+              '+"<span style=\'font-weight:"+(lk?"bold":"normal")+"\'>"+_E(f.c)+"</span>"' +
+              '+"<span style=\'color:rgba(255,255,255,0.45);font-size:0.5rem;\'>"+_E(al.n)+"</span>"' +
               '+"<span>FL"+Math.round((f.alt||0)/100)+"</span>"' +
-              '+"<span style=\'color:rgba(255,255,255,0.55);font-size:0.5rem;\'>"+f.status+"</span>"' +
+              '+"<span style=\'color:rgba(255,255,255,0.55);font-size:0.5rem;\'>"+_E(f.status)+"</span>"' +
             '+"</div>";' +
           '} else {' +
             'if(LOCKED&&!lk)return;' +
@@ -736,15 +737,15 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'var _gsCol=Math.abs(_dev)<250?"#00ff41":_dev>0?"#f59e0b":"#ff3b30";' +
             'var _gsTxt=Math.abs(_dev)<250?"ON GLIDE":(_dev>0?"+":"")+Math.round(_dev)+"ft";' +
             'html+="<div style=\'color:"+col+";\'>"' +
-              '+"<div style=\'font-size:0.72rem;font-weight:bold;letter-spacing:0.06em;\'>"+f.c+"</div>"' +
-              '+"<div style=\'color:"+al.c+";font-size:0.6rem;margin-bottom:6px;\'>"+al.n+"</div>"' +
+              '+"<div style=\'font-size:0.72rem;font-weight:bold;letter-spacing:0.06em;\'>"+_E(f.c)+"</div>"' +
+              '+"<div style=\'color:"+_E(al.c)+";font-size:0.6rem;margin-bottom:6px;\'>"+_E(al.n)+"</div>"' +
               '+"<div style=\'display:grid;grid-template-columns:52px 1fr;gap:3px 0;font-size:0.55rem;\'>"' +
                 '+"<span style=\'color:rgba(0,242,255,0.6);\'>ALT</span><span style=\'color:#fff;\'>FL"+Math.round((f.alt||0)/100)+"</span>"' +
-                '+"<span style=\'color:rgba(0,242,255,0.6);\'>SPD</span><span style=\'color:#fff;\'>"+(f.spd||0)+"kt</span>"' +
+                '+"<span style=\'color:rgba(0,242,255,0.6);\'>SPD</span><span style=\'color:#fff;\'>"+_E(f.spd||0)+"kt</span>"' +
                 '+"<span style=\'color:rgba(0,242,255,0.6);\'>HDG</span><span style=\'color:#fff;\'>"+Math.round(f.hdg||0)+"°</span>"' +
                 '+"<span style=\'color:rgba(0,242,255,0.6);\'>SQK</span>"' +
-                '+"<span style=\'color:"+(f.squawk==="7700"?"#ff3b30":f.squawk==="7600"?"#ff9f0a":"#fff")+";\'>"+(f.squawk||"----")+"</span>"' +
-                '+"<span style=\'color:rgba(0,242,255,0.6);\'>STATUS</span><span style=\'color:#00ff41;\'>"+f.status+"</span>"' +
+                '+"<span style=\'color:"+(f.squawk==="7700"?"#ff3b30":f.squawk==="7600"?"#ff9f0a":"#fff")+";\'>"+_E(f.squawk||"----")+"</span>"' +
+                '+"<span style=\'color:rgba(0,242,255,0.6);\'>STATUS</span><span style=\'color:#00ff41;\'>"+_E(f.status)+"</span>"' +
                 '+"<span style=\'color:rgba(0,242,255,0.6);\'>GLIDE</span><span style=\'color:"+_gsCol+";font-weight:bold;\'>"  +_gsTxt+"</span>"' +
               '+"</div>"' +
             '+"</div>";' +
@@ -905,7 +906,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'if(al.n){ctx.fillStyle="rgba(255,255,255,0.65)";ctx.font="9px \'Courier New\'";ctx.textAlign="left";ctx.fillText(al.n,_cx+8,_cy+32);}' +
             // FL + speed
             'ctx.fillStyle="rgba(0,242,255,0.8)";ctx.font="10px \'Courier New\'";' +
-            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  ▸  "+(f.spd||0)+"kt",_cx+8,_cy+48);' +
+            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  ▸  "+_E(f.spd||0)+"kt",_cx+8,_cy+48);' +
             // status bar
             'ctx.fillStyle="#00ff41";ctx.font="bold 8px \'Courier New\'";' +
             'ctx.fillText(f.status||"",_cx+8,_cy+64);' +
@@ -915,7 +916,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'ctx.fillStyle=f.col;ctx.font="9px \'Courier New\'";ctx.textAlign="left";' +
             'ctx.fillText(f.c,lx,ly);' +
             'ctx.fillStyle="rgba(255,255,255,0.45)";ctx.font="8px \'Courier New\'";' +
-            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  "+(f.spd||0)+"kt",lx,ly+10);' +
+            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  "+_E(f.spd||0)+"kt",lx,ly+10);' +
             'if(al.n){ctx.fillStyle="rgba(255,255,255,0.3)";ctx.font="7.5px \'Courier New\'";ctx.fillText(al.n,lx,ly+20);}' +
           '}' +
         '});' +
@@ -1019,12 +1020,12 @@ _RENDERERS['playbook'] = function(b) {
     navBtns + '</div>' +
     '<script>(function(){' +
     // duration/next map for auto-advance
-    'var _dur=' + JSON.stringify((function() {
+    'var _dur=' + _jsJson((function() {
       var d = {};
       slides.forEach(function(s) { if (s.duration) d[s.id || ''] = s.duration; });
       return d;
     })()) + ';' +
-    'var _nxt=' + JSON.stringify((function() {
+    'var _nxt=' + _jsJson((function() {
       var n = {};
       slides.forEach(function(s, i) {
         var nextId = s.next || (slides[(i + 1) % slides.length] || {}).id || '0';
@@ -1091,7 +1092,7 @@ _RENDERERS['fids_board'] = function(b) {
   var refreshMs   = b.refresh_ms !== undefined ? b.refresh_ms : 9000;
 
   // ── Simulated LFBO schedule ────────────────────────────────────────────────
-  var SCHED_DEP = JSON.stringify([
+  var SCHED_DEP = _jsJson([
     {call:'AFR7201',dest:'PARIS CDG',           gate:'D42'},
     {call:'EZY4821',dest:'LONDON GATWICK',       gate:'C18'},
     {call:'VLG2241',dest:'BARCELONA-EL PRAT',   gate:'A07'},
@@ -1109,7 +1110,7 @@ _RENDERERS['fids_board'] = function(b) {
     {call:'RAM4521',dest:'CASABLANCA MED V',     gate:'A19'}
   ]);
 
-  var SCHED_ARR = JSON.stringify([
+  var SCHED_ARR = _jsJson([
     {call:'BAW345', dest:'LONDON HEATHROW',      gate:'D44'},
     {call:'DLH892', dest:'FRANCFORT AM MAIN',    gate:'C20'},
     {call:'KLM2187',dest:'AMSTERDAM SCHIPHOL',   gate:'A09'},

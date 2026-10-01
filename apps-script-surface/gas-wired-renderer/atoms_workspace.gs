@@ -104,7 +104,7 @@ _RENDERERS['sheet_stats'] = function(b) {
       var op = ops[i];
       badges += '<div style="flex:1;min-width:80px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;text-align:center;">' +
                 '<div style="font-size:1.4rem;font-weight:800;color:' + _esc(accent) + ';">' + _esc(String(values[op] || '—')) + '</div>' +
-                '<div style="font-size:0.72rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.08em;">' + (LABELS[op] || op) + '</div>' +
+                '<div style="font-size:0.72rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.08em;">' + _esc(LABELS[op] || op) + '</div>' +
                 '</div>';
     }
     badges += '</div>';
@@ -264,7 +264,7 @@ _RENDERERS['sheet_form_submit'] = function(b) {
          '<form id="' + formId + '" onsubmit="return false;" style="margin-top:12px;">' +
          inputs +
          '<div style="display:flex;align-items:center;gap:12px;margin-top:4px;">' +
-         '<button onclick="a2uiSheetSubmit(\'' + formId + '\',\'' + _esc(spreadsheetId) + '\',\'' + _esc(sheetName) + '\')" style="padding:8px 20px;border-radius:7px;background:' + _esc(accent) + ';color:#fff;border:none;font-size:0.85rem;font-weight:600;cursor:pointer;">' + _esc(submit_label) + '</button>' +
+         '<button onclick="a2uiSheetSubmit(' + _esc(_jsJson(String(formId))) + ',' + _esc(_jsJson(String(spreadsheetId))) + ',' + _esc(_jsJson(String(sheetName))) + ')" style="padding:8px 20px;border-radius:7px;background:' + _esc(accent) + ';color:#fff;border:none;font-size:0.85rem;font-weight:600;cursor:pointer;">' + _esc(submit_label) + '</button>' +
          '<span id="' + formId + '-status" style="font-size:0.8rem;color:var(--muted);"></span>' +
          '</div>' +
          '</form>' +

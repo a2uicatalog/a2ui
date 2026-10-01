@@ -99,7 +99,7 @@ _RENDERERS['glowing_stat'] = function(b) {
 //   padding — inner padding (default 28px)
 //   radius  — border radius (default 16px)
 _RENDERERS['glass_card'] = function(b) {
-  var content = b.content || '';
+  var content = _esc(b.content || '');
   var title   = b.title   || '';
   var blur    = b.blur    !== undefined ? b.blur : 18;
   var bg      = b.bg      || 'rgba(255,255,255,0.05)';
@@ -135,7 +135,7 @@ _RENDERERS['glass_card'] = function(b) {
 //   padding  — inner padding (default 24px)
 //   radius   — border radius (default 14px)
 _RENDERERS['gradient_border_card'] = function(b) {
-  var content = b.content || '';
+  var content = _esc(b.content || '');
   var title   = b.title   || '';
   var colours = b.colours || ['#6366f1','#8b5cf6','#ec4899','#f59e0b'];
   var bg      = b.bg      || '#0c0e1a';
@@ -260,7 +260,7 @@ _RENDERERS['dark_feature_grid'] = function(b) {
     { icon: '🔒', title: 'Secure',   description: 'No external dependencies. CSP-safe inline JS only.' },
     { icon: '🎨', title: 'Flexible', description: 'Dark and light themes, any accent colour, 290+ atoms.' }
   ];
-  var cols   = b.columns || 3;
+  var cols   = parseInt(b.columns, 10) || 3;
   var accent = b.accent  || '#6366f1';
 
   var cards = '';

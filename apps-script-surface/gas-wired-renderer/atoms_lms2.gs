@@ -9,7 +9,7 @@ _RENDERERS['video_checkpoint'] = function(b) {
   var title  = b.title        || '';
   var cps    = b.checkpoints  || [];
 
-  var cpJson = JSON.stringify(cps.map(function(cp) {
+  var cpJson = _jsJson(cps.map(function(cp) {
     return {
       at:   parseInt(cp.at_seconds || 0),
       q:    cp.question    || '',
@@ -261,7 +261,7 @@ _RENDERERS['annotation_highlight'] = function(b) {
     );
   }
 
-  var notesJson = JSON.stringify(notes.map(function(n) {
+  var notesJson = _jsJson(notes.map(function(n) {
     return { term: n.term, explanation: n.explanation || '', color: n.color || '#f59e0b' };
   }));
 
@@ -300,8 +300,8 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   var steps  = b.steps  || [];
   var accent = b.accent || '#6366f1';
 
-  var ids     = JSON.stringify(steps.map(function(s, i) { return s.id || ('step' + i); }));
-  var urls    = JSON.stringify(steps.map(function(s) { return s.action_url || ''; }));
+  var ids     = _jsJson(steps.map(function(s, i) { return s.id || ('step' + i); }));
+  var urls    = _jsJson(steps.map(function(s) { return s.action_url || ''; }));
 
   var stepHtml = '';
   for (var i = 0; i < steps.length; i++) {

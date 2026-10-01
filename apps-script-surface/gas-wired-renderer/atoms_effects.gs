@@ -55,7 +55,7 @@ _RENDERERS['magnetic_element'] = function(b) {
   var strength = b.strength || 0.4;
   var accent   = b.accent   || '#6366f1';
   var label    = b.label    || 'Hover me';
-  var content  = b.content  ||
+  var content  = b.content ? _esc(b.content) :
     '<span style="display:inline-block;padding:12px 28px;border-radius:100px;' +
     'background:' + _esc(accent) + ';color:#fff;font-size:0.9rem;font-weight:700;' +
     'letter-spacing:0.02em;cursor:default;user-select:none;">' + _esc(label) + '</span>';
@@ -96,7 +96,7 @@ _RENDERERS['magnetic_element'] = function(b) {
 //   duration — animation ms (default 700)
 //   gravity  — downward pull factor (default 1.2)
 _RENDERERS['particle_burst'] = function(b) {
-  var count    = b.count    || 14;
+  var count    = parseInt(b.count, 10) || 14;
   var colours  = b.colours  || ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#34d399','#60a5fa'];
   var psize    = b.size     || 8;
   var duration = b.duration || 700;
@@ -105,7 +105,7 @@ _RENDERERS['particle_burst'] = function(b) {
 
   return '<script>(function(){' +
     'if(window.__a2uiBurst)return;window.__a2uiBurst=true;' +
-    'var C=' + JSON.stringify(colours) + ';' +
+    'var C=' + _jsJson(colours) + ';' +
     'var N=' + count + ',D=' + duration + ',G=' + gravity + ',S=' + psize + ',H=' + half + ';' +
     'window.addEventListener("click",function(e){' +
       'for(var i=0;i<N;i++){' +
@@ -179,7 +179,7 @@ _RENDERERS['tilt_card'] = function(b) {
   var accent  = b.accent  || 'rgba(255,255,255,0.15)';
   var padding = b.padding || '28px';
   var title   = b.title   || '';
-  var content = b.content || '<p style="margin:0;font-size:0.9rem;opacity:0.8;">Move your cursor over this card.</p>';
+  var content = b.content ? _esc(b.content) : '<p style="margin:0;font-size:0.9rem;opacity:0.8;">Move your cursor over this card.</p>';
   var uid     = 'tlt' + Math.random().toString(36).substr(2, 6);
 
   var glareHtml = glare

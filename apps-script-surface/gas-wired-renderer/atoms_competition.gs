@@ -102,7 +102,7 @@ _RENDERERS['standings_table'] = function(b) {
         'text-align:center;color:var(--muted,#5f6368);">No scores yet — save a round below.</td></tr></tbody>' +
       '</table></div>' +
       '<script>(function(){' +
-      'var TD=' + JSON.stringify(td) + ',NUM=' + JSON.stringify(num) + ';' +
+      'var TD=' + _jsJson(td) + ',NUM=' + _jsJson(num) + ';' +
       'var st={scores:null,names:null,mode:"310"};' +
       'function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[c];});}' +
       'function team(s){return String(s).split("&").map(function(x){return x.trim();}).filter(Boolean);}' +

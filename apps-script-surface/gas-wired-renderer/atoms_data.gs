@@ -218,7 +218,7 @@ _RENDERERS['data_source'] = function(b) {
       'if(typeof cb==="function")cb(data);' +
     '}' +
     // Deferred initial dispatch — gives all atom scripts time to register callbacks
-    (initial !== null ? 'setTimeout(function(){dispatch(' + JSON.stringify(initial) + ');},80);' : '') +
+    (initial !== null ? 'setTimeout(function(){dispatch(' + _jsJson(initial) + ');},80);' : '') +
     // Client-side refresh via GAS surface transport
     (refresh > 0 && url ?
       'setInterval(function(){' +
@@ -288,7 +288,7 @@ _RENDERERS['adsb_feed'] = function(b) {
       'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];' +
       'if(typeof cb==="function")cb(flights);' +
     '}' +
-    'setTimeout(function(){dispatch(' + JSON.stringify(initialFlights) + ');},80);' +
+    'setTimeout(function(){dispatch(' + _jsJson(initialFlights) + ');},80);' +
     (refresh > 0 ?
       'setInterval(function(){' +
         'if(typeof google!=="undefined"&&google.script){' +
@@ -349,7 +349,7 @@ _RENDERERS['metar_feed'] = function(b) {
       'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];' +
       'if(typeof cb==="function")cb(data);' +
     '}' +
-    'setTimeout(function(){dispatch(' + JSON.stringify(initial) + ');},80);' +
+    'setTimeout(function(){dispatch(' + _jsJson(initial) + ');},80);' +
     (refresh > 0 ?
       'setInterval(function(){' +
         'if(typeof google!=="undefined"&&google.script){' +
@@ -395,7 +395,7 @@ _RENDERERS['firestore_read'] = function(b) {
       'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];' +
       'if(typeof cb==="function")cb(data);' +
     '}' +
-    (initial !== null ? 'setTimeout(function(){dispatch(' + JSON.stringify(initial) + ');},80);' : '') +
+    (initial !== null ? 'setTimeout(function(){dispatch(' + _jsJson(initial) + ');},80);' : '') +
     (refresh > 0 && project && collection && docId ?
       'setInterval(function(){' +
         'if(typeof google!=="undefined"&&google.script){' +

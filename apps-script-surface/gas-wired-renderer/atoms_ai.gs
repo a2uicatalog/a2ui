@@ -32,7 +32,7 @@ function _vertexGenerate(userPrompt, bodyText, opts) {
     method: 'post',
     headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() },
     contentType: 'application/json',
-    payload: JSON.stringify(payload),
+    payload: _jsJson(payload),
     muteHttpExceptions: true
   });
 
@@ -430,7 +430,7 @@ _RENDERERS['tool_call_card'] = function(b) {
 
   var argsHtml = '';
   if (b.args !== undefined && b.args !== null) {
-    var argsStr = (typeof b.args === 'object') ? JSON.stringify(b.args, null, 2) : String(b.args);
+    var argsStr = (typeof b.args === 'object') ? _jsJson(b.args, null, 2) : String(b.args);
     argsHtml = block('Arguments', argsStr, false);
   }
 
@@ -438,7 +438,7 @@ _RENDERERS['tool_call_card'] = function(b) {
   if (b.error) {
     resultHtml = block('Error', String(b.error), true);
   } else if (b.result !== undefined && b.result !== null) {
-    var resultStr = (typeof b.result === 'object') ? JSON.stringify(b.result, null, 2) : String(b.result);
+    var resultStr = (typeof b.result === 'object') ? _jsJson(b.result, null, 2) : String(b.result);
     resultHtml = block('Result', resultStr, false);
   }
 

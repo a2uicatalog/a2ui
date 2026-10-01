@@ -10,7 +10,38 @@ from typing import List, Dict, Any
 import re, math, base64, urllib.request, urllib.error, json as _json
 from datetime import datetime, timezone
 from pathlib import Path
-import markdown as _md
+import markdown as _md_lib
+from markdown.treeprocessors import Treeprocessor as _MdTree
+
+
+def _md_url_ok(v):
+    m = re.match(r'^[ \t\n\r\f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):', v)
+    return not m or m.group(1).lower() in ('http', 'https', 'mailto', 'tel')
+
+
+class _MdSafeUrls(_MdTree):
+    """Drop href/src values whose scheme is not http(s)/mailto/tel/relative (javascript:, data:, vbscript: ...)."""
+    def run(self, root):
+        for el in root.iter():
+            for attr in ('href', 'src'):
+                v = el.get(attr)
+                if v is not None and not _md_url_ok(v):
+                    del el.attrib[attr]
+
+
+class _SafeMarkdown:
+    """Drop-in for markdown.markdown() (2026-10-01): raw HTML in the source is shown as text, never parsed as markup, and unsafe
+    link/image schemes are removed. Every renderer here that renders payload markdown goes through this."""
+    @staticmethod
+    def markdown(text, **kw):
+        m = _md_lib.Markdown(**kw)
+        m.preprocessors.deregister('html_block')
+        m.inlinePatterns.deregister('html')
+        m.treeprocessors.register(_MdSafeUrls(m), 'a2ui_safe_urls', 0)
+        return m.convert(text if isinstance(text, str) else str(text))
+
+
+_md = _SafeMarkdown()
 
 
 def _render_unknown(block: Dict[str, Any]) -> str:
@@ -53,6 +84,7 @@ def render(blocks: List[Dict[str, Any]], theme: str = "light") -> str:
         theme: 'light' (default, web/blog) or 'dark' (meet-stage)
     """
     _mo_install()  # generic `enter` prop (see the design-motion block at the end of this file); idempotent
+    _gd_install()  # payload guard: validates CSS/number/URL/id fields before any renderer sees them; idempotent
     parts = []
     for block in blocks:
         btype = block.get("component") or block.get("type")
@@ -60,7 +92,7 @@ def render(blocks: List[Dict[str, Any]], theme: str = "light") -> str:
         if fn:
             parts.append(fn(block))
         else:
-            parts.append(f'<!-- unknown block type: {btype} -->')
+            parts.append(f'<!-- unknown block type: {_cv_esc(btype)} -->')
     html = "\n\n".join(parts)
     if theme == "dark":
         html = _DARK_OVERRIDES + html
@@ -81,7 +113,10 @@ _ABBR_STYLE = (
 )
 
 def _md_inline(text: str) -> str:
-    """Convert **bold**, *italic*, `code`, links, and [term](def:...) abbr tooltips to HTML."""
+    """Convert **bold**, *italic*, `code`, links, and [term](def:...) abbr tooltips to HTML.
+    The text is HTML-escaped FIRST (2026-10-01), so payload markup shows as text; a link keeps its href only for http(s), mailto,
+    tel and relative URLs. Callers pass raw text, never pre-escaped text."""
+    text = _cv_esc(text if isinstance(text, str) else ('' if text is None else str(text)))
     text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
     text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
     text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
@@ -90,7 +125,13 @@ def _md_inline(text: str) -> str:
         term, defn = m.group(1), m.group(2)[4:]  # strip "def:"
         return f'<abbr title="{defn}" style="{_ABBR_STYLE}">{term}</abbr>'
     text = re.sub(r'\[([^\]]+)\]\((def:[^)]+)\)', _abbr, text)
-    text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>', text)
+
+    def _link(m):
+        label, href = m.group(1), m.group(2)
+        if not _md_url_ok(_wa_h.unescape(href)):
+            return label
+        return f'<a href="{href}" target="_blank" rel="noopener noreferrer">{label}</a>'
+    text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', _link, text)
     return text
 
 
@@ -106,7 +147,7 @@ def _render_intro(b: dict) -> str:
     parts = []
     if b.get("series_label") and b.get("series_url"):
         parts.append(
-            f'<p><em>In <a href="{b["series_url"]}">{b["series_label"]}</a>, '
+            f'<p><em>In <a href="{_cv_esc(b["series_url"])}">{_cv_esc(b["series_label"])}</a>, '
             f'{_md_inline(b.get("continuation", "I covered the background. This article picks up from there."))}</em></p>'
         )
     if b.get("note"):
@@ -130,7 +171,7 @@ def _render_subheading(b: dict) -> str:
 def _render_quote(b: dict) -> str:
     html = f'<blockquote><p>{_md_inline(b.get("text", ""))}</p>'
     if b.get("attribution"):
-        html += f'<footer>— {b["attribution"]}</footer>'
+        html += f'<footer>— {_cv_esc(b["attribution"])}</footer>'
     html += '</blockquote>'
     return html
 
@@ -138,12 +179,12 @@ def _render_quote(b: dict) -> str:
 def _render_code(b: dict) -> str:
     lang = b.get("language", "")
     content = b.get("content", "").replace("<", "&lt;").replace(">", "&gt;")
-    return f'<pre><code class="language-{lang}">{content}</code></pre>'
+    return f'<pre><code class="language-{_cv_esc(lang)}">{content}</code></pre>'
 
 
 def _render_pipeline(b: dict) -> str:
     steps = b.get("steps", [])
-    flow = " ──► ".join(f"<code>{s}</code>" for s in steps)
+    flow = " ──► ".join(f"<code>{_cv_esc(s)}</code>" for s in steps)
     return f'<p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;">{flow}</p>'
 
 
@@ -169,7 +210,7 @@ def _render_youtube(b: dict) -> str:
     # is enabled by the video owner.
     vid_id = _youtube_id(b.get("url", ""))
     params = f"?rel=0&modestbranding=1"
-    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:6px;text-align:center;">{b["caption"]}</p>' if b.get("caption") else ""
+    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:6px;text-align:center;">{_cv_esc(b["caption"])}</p>' if b.get("caption") else ""
     return (
         f'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:1.2rem 0;border-radius:8px;">'
         f'<iframe src="https://www.youtube.com/embed/{vid_id}{params}" '
@@ -200,23 +241,23 @@ def _img_src(url: str) -> str:
 
 def _render_image(b: dict) -> str:
     width = b.get("width", "100%")
-    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:6px;text-align:center;">{b.get("caption","")}</p>' if b.get("caption") else ""
+    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:6px;text-align:center;">{_cv_esc(b.get("caption",""))}</p>' if b.get("caption") else ""
     src = _img_src(b["url"])
     return (
         f'<div style="margin:1.2rem 0;text-align:center;">'
-        f'<img src="{src}" alt="{b.get("alt","")}" '
-        f'style="width:{width};height:auto;border-radius:8px;display:block;margin:0 auto;"/>'
+        f'<img src="{src}" alt="{_cv_esc(b.get("alt",""))}" '
+        f'style="width:{_cv_esc(width)};height:auto;border-radius:8px;display:block;margin:0 auto;"/>'
         f'{caption}</div>'
     )
 
 
 def _render_image_pair(b: dict) -> str:
     def cell(side):
-        caption = f'<p style="font-size:0.78rem;opacity:0.6;margin-top:6px;">{side.get("caption","")}</p>' if side.get("caption") else ""
+        caption = f'<p style="font-size:0.78rem;opacity:0.6;margin-top:6px;">{_cv_esc(side.get("caption",""))}</p>' if side.get("caption") else ""
         src = _img_src(side["url"])
         return (
             f'<td style="width:50%;padding:0 8px;vertical-align:top;text-align:center;">'
-            f'<img src="{src}" alt="{side.get("alt","")}" '
+            f'<img src="{src}" alt="{_cv_esc(side.get("alt",""))}" '
             f'style="width:100%;height:auto;border-radius:8px;display:block;"/>'
             f'{caption}</td>'
         )
@@ -242,12 +283,12 @@ _DIAGRAM_CSS = (
 )
 
 def _render_diagram(b: dict) -> str:
-    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:8px;text-align:center;">Hover to zoom · {b["caption"]}</p>' if b.get("caption") else '<p style="font-size:0.78rem;opacity:0.5;margin-top:6px;text-align:center;">Hover to zoom</p>'
+    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:8px;text-align:center;">Hover to zoom · {_cv_esc(b["caption"])}</p>' if b.get("caption") else '<p style="font-size:0.78rem;opacity:0.5;margin-top:6px;text-align:center;">Hover to zoom</p>'
     return (
         f'{_DIAGRAM_CSS}'
         f'<div class="tm-diagram" style="margin:1.5rem 0;padding:20px;background:#f8f9fa;'
         f'border:1px solid #e0e0e0;border-radius:12px;text-align:center;overflow:visible;">'
-        f'<img src="{b["url"]}" alt="diagram" style="max-width:100%;height:auto;" onclick="return false;"/>'
+        f'<img src="{_cv_esc(b["url"])}" alt="diagram" style="max-width:100%;height:auto;" onclick="return false;"/>'
         f'{caption}</div>'
     )
 
@@ -264,8 +305,10 @@ def _render_github_repo_card(b: dict) -> str:
     stars = forks = 0
     language = ""
     updated = ""
-    url = f"https://github.com/{repo}" if repo else b.get("url", "#")
+    url = f"https://github.com/{_cv_esc(repo)}" if repo else b.get("url", "#")
 
+    if repo and not re.fullmatch(r"[A-Za-z0-9._-]{1,100}/[A-Za-z0-9._-]{1,100}", str(repo)):
+        repo = ""  # not an owner/name pair: never build an API URL from it
     if repo:
         try:
             api_req = urllib.request.Request(
@@ -294,10 +337,10 @@ def _render_github_repo_card(b: dict) -> str:
         f'{language}</span>'
     ) if language else ""
     updated_html = f'<span style="font-size:0.78rem;color:#9aa0a6;">{updated}</span>' if updated else ""
-    desc_html    = f'<p style="margin:6px 0 10px;font-size:0.85rem;color:#555;line-height:1.5;">{description}</p>' if description else ""
+    desc_html    = f'<p style="margin:6px 0 10px;font-size:0.85rem;color:#555;line-height:1.5;">{_cv_esc(description)}</p>' if description else ""
 
     return (
-        f'<a href="{url}" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin:0.8rem 0;">'
+        f'<a href="{_cv_esc(url)}" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin:0.8rem 0;">'
         f'<div style="border:1px solid #d0d7de;border-radius:10px;padding:16px 20px;'
         f'background:#fff;transition:box-shadow 0.15s;font-family:system-ui,sans-serif;" '
         f'onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\'" '
@@ -306,7 +349,7 @@ def _render_github_repo_card(b: dict) -> str:
         f'<svg width="16" height="16" viewBox="0 0 16 16" fill="#555" style="flex-shrink:0;">'
         f'<path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/>'
         f'</svg>'
-        f'<span style="font-size:0.9rem;font-weight:600;color:#0969da;">{display_label}</span>'
+        f'<span style="font-size:0.9rem;font-weight:600;color:#0969da;">{_cv_esc(display_label)}</span>'
         f'</div>'
         f'{desc_html}'
         f'<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
@@ -324,7 +367,7 @@ def _render_github_repo_card(b: dict) -> str:
 
 def _render_repo_links(b: dict) -> str:
     items = "".join(
-        f'<li><strong>{l["label"]}:</strong> <a href="{l["url"]}">{l["url"].replace("https://","")}</a></li>'
+        f'<li><strong>{_cv_esc(l["label"])}:</strong> <a href="{_cv_esc(l["url"])}">{_cv_esc(l["url"].replace("https://",""))}</a></li>'
         for l in b.get("links", [])
     )
     return f'<ul style="list-style:none;padding:0;">{items}</ul>'
@@ -338,7 +381,7 @@ def _render_before_after(b: dict) -> str:
     before_code  = b.get("before", "").replace("<", "&lt;").replace(">", "&gt;")
     after_code   = b.get("after",  "").replace("<", "&lt;").replace(">", "&gt;")
     caption      = b.get("caption", "")
-    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{caption}</p>' if caption else ""
+    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{_cv_esc(caption)}</p>' if caption else ""
 
     def panel(label, code, color, bg):
         return (
@@ -354,8 +397,8 @@ def _render_before_after(b: dict) -> str:
 
     return (
         f'<div style="display:flex;gap:12px;margin:1.5rem 0;align-items:flex-start;">'
-        f'{panel(f"✗ {before_label}", before_code, "#c5221f", "#fff8f7")}'
-        f'{panel(f"✓ {after_label}", after_code, "#137333", "#f0faf4")}'
+        f'{panel(f"✗ {_cv_esc(before_label)}", before_code, "#c5221f", "#fff8f7")}'
+        f'{panel(f"✓ {_cv_esc(after_label)}", after_code, "#137333", "#f0faf4")}'
         f'</div>'
         f'{caption_html}'
     )
@@ -380,7 +423,7 @@ def _render_api_reference(b: dict) -> str:
         "method":   ("#f3e8fd", "#8430ce"),
     }
     bg, color = kind_colors.get(kind, kind_colors["function"])
-    method_badge = f'<span style="background:#137333;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;margin-right:8px;">{http_method}</span>' if http_method else ""
+    method_badge = f'<span style="background:#137333;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;margin-right:8px;">{_cv_esc(http_method)}</span>' if http_method else ""
     deprecated_html = '<span style="background:#c5221f;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;margin-left:8px;">DEPRECATED</span>' if deprecated else ""
 
     # Parameters table
@@ -390,11 +433,11 @@ def _render_api_reference(b: dict) -> str:
             bg = "background:#f8f9fa;" if i % 2 else ""
             req = "✓" if p.get("required") else ""
             default_val = p.get("default")
-            default_html = f'<br/><code style="color:#34a853;font-size:0.9em;">default: {default_val}</code>' if default_val is not None else ""
+            default_html = f'<br/><code style="color:#34a853;font-size:0.9em;">default: {_cv_esc(default_val)}</code>' if default_val is not None else ""
             return (
                 f'<tr style="{bg}">'
-                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#1a73e8;white-space:nowrap;">{p.get("name","")}</td>'
-                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#e37400;">{p.get("type","")}</td>'
+                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#1a73e8;white-space:nowrap;">{_cv_esc(p.get("name",""))}</td>'
+                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#e37400;">{_cv_esc(p.get("type",""))}</td>'
                 f'<td style="padding:8px 12px;font-size:0.82em;color:#c5221f;text-align:center;">{req}</td>'
                 f'<td style="padding:8px 12px;font-size:0.82em;color:#5f6368;">{_md_inline(p.get("description",""))}{default_html}</td>'
                 f'</tr>'
@@ -433,9 +476,9 @@ def _render_api_reference(b: dict) -> str:
         ex_label = example.get("label", "Example")
         example_html = (
             f'<div style="margin-top:12px;">'
-            f'<p style="font-size:0.8rem;font-weight:600;color:#5f6368;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">{ex_label}</p>'
+            f'<p style="font-size:0.8rem;font-weight:600;color:#5f6368;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(ex_label)}</p>'
             f'<pre style="margin:0;padding:14px;background:#f8f9fa;border-radius:6px;overflow-x:auto;font-size:0.84rem;line-height:1.6;">'
-            f'<code class="language-{ex_lang}">{ex_code}</code>'
+            f'<code class="language-{_cv_esc(ex_lang)}">{ex_code}</code>'
             f'</pre></div>'
         )
 
@@ -443,9 +486,9 @@ def _render_api_reference(b: dict) -> str:
         f'<div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
         f'<div style="background:{bg};padding:14px 18px;border-bottom:1px solid #e0e0e0;">'
         f'{method_badge}'
-        f'<code style="font-size:1rem;font-weight:700;color:{color};">{name}</code>'
+        f'<code style="font-size:1rem;font-weight:700;color:{color};">{_cv_esc(name)}</code>'
         f'{deprecated_html}'
-        f'<span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">{kind}</span>'
+        f'<span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(kind)}</span>'
         f'</div>'
         f'<div style="padding:14px 18px;">'
         f'<p style="color:#3c4043;margin-bottom:8px;">{_md_inline(description)}</p>'
@@ -461,7 +504,7 @@ def _render_closing(b: dict) -> str:
     tags = b.get("tags", [])
     tag_html = ""
     if tags:
-        tag_html = '<p style="opacity:0.5;font-size:0.85rem;">' + " ".join(f"#{t}" for t in tags) + "</p>"
+        tag_html = '<p style="opacity:0.5;font-size:0.85rem;">' + " ".join(f"#{_cv_esc(t)}" for t in tags) + "</p>"
     return text + tag_html
 
 
@@ -477,7 +520,7 @@ def _render_callout(b: dict) -> str:
     emoji, bg, border, text_color = styles.get(kind, styles["info"])
     title = b.get("title", "")
     text = _md_inline(b.get("text", ""))
-    title_html = f'<strong style="color:{text_color};display:block;margin-bottom:4px;">{emoji} {title}</strong>' if title else f'<strong style="color:{text_color};">{emoji} </strong>'
+    title_html = f'<strong style="color:{text_color};display:block;margin-bottom:4px;">{emoji} {_cv_esc(title)}</strong>' if title else f'<strong style="color:{text_color};">{emoji} </strong>'
     return (
         f'<div style="background:{bg};border-left:4px solid {border};border-radius:0 8px 8px 0;'
         f'padding:16px 20px;margin:1.5rem 0;">'
@@ -497,7 +540,7 @@ def _render_steps(b: dict) -> str:
         steps_html.append(
             f'<li style="display:flex;gap:16px;margin-bottom:20px;align-items:flex-start;">'
             f'<span style="flex:0 0 28px;height:28px;background:#1a73e8;color:white;border-radius:50%;'
-            f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">{i}</span>'
+            f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">{_cv_esc(i)}</span>'
             f'<div style="padding-top:3px;">{label}{text}</div>'
             f'</li>'
         )
@@ -514,9 +557,9 @@ def _render_table(b: dict) -> str:
     rows = b.get("rows", [])
     caption = b.get("caption", "")
 
-    caption_html = f'<caption style="font-size:0.85rem;opacity:0.6;margin-bottom:8px;text-align:left;">{caption}</caption>' if caption else ""
+    caption_html = f'<caption style="font-size:0.85rem;opacity:0.6;margin-bottom:8px;text-align:left;">{_cv_esc(caption)}</caption>' if caption else ""
     th_cells = "".join(
-        f'<th style="background:#f1f3f4;border:1px solid #dadce0;padding:10px 14px;text-align:left;font-weight:600;white-space:nowrap;">{h}</th>'
+        f'<th style="background:#f1f3f4;border:1px solid #dadce0;padding:10px 14px;text-align:left;font-weight:600;white-space:nowrap;">{_cv_esc(h)}</th>'
         for h in headers
     )
     rows_html = []
@@ -572,18 +615,18 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
     # Dynamic CSS for this tab group's checked states
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
-        f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
+        f'{{background:var(--surface,#fff);color:{_cv_esc(accent)};border-bottom-color:{_cv_esc(accent)};font-weight:700;}}\n'
         f'#{group}_t{i}:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
     )
 
     inputs = "".join(
-        f'<input type="radio" id="{group}_t{i}" name="{group}" {"checked" if i == 1 else ""}>'
+        f'<input type="radio" id="{group}_t{_cv_esc(i)}" name="{group}" {"checked" if i == 1 else ""}>'
         for i, _ in enumerate(tabs, 1)
     )
     labels = "".join(
-        f'<label class="tm-tab-label" for="{group}_t{i}">{tab.get("label","Tab")}</label>'
+        f'<label class="tm-tab-label" for="{group}_t{_cv_esc(i)}">{_cv_esc(tab.get("label","Tab"))}</label>'
         for i, tab in enumerate(tabs, 1)
     )
     panels = "".join(
@@ -606,15 +649,15 @@ def _render_key_value(b: dict) -> str:
     """Key-value pairs — for env vars, config options, API fields."""
     items = b.get("items", [])
     title = b.get("title", "")
-    title_html = f'<p style="font-weight:600;margin-bottom:8px;">{title}</p>' if title else ""
+    title_html = f'<p style="font-weight:600;margin-bottom:8px;">{_cv_esc(title)}</p>' if title else ""
     def _kv_row(item):
         required_html = "<strong>Required</strong> — " if item.get("required") else ""
         default_val = item.get("default")
-        default_html = f'<br/><code style="color:#34a853;">default: {default_val}</code>' if default_val is not None else ""
+        default_html = f'<br/><code style="color:#34a853;">default: {_cv_esc(default_val)}</code>' if default_val is not None else ""
         return (
             f'<tr>'
             f'<td style="padding:8px 12px;font-family:monospace;font-size:0.85em;color:#1a73e8;white-space:nowrap;'
-            f'border-bottom:1px solid #f0f0f0;vertical-align:top;font-weight:600;">{item.get("key","")}</td>'
+            f'border-bottom:1px solid #f0f0f0;vertical-align:top;font-weight:600;">{_cv_esc(item.get("key",""))}</td>'
             f'<td style="padding:8px 12px;color:#5f6368;font-size:0.85em;border-bottom:1px solid #f0f0f0;">'
             f'{required_html}{_md_inline(item.get("description",""))}{default_html}'
             f'</td></tr>'
@@ -634,7 +677,7 @@ def _render_gallery(b: dict) -> str:
     images  = b.get("images", [])
     cols    = b.get("cols", 3)
     caption = b.get("caption", "")
-    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:10px;text-align:center;">{caption}</p>' if caption else ""
+    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:10px;text-align:center;">{_cv_esc(caption)}</p>' if caption else ""
 
     # Unique ID per gallery instance
     import hashlib
@@ -642,7 +685,7 @@ def _render_gallery(b: dict) -> str:
 
     lightbox_css = f"""
 <style>
-.{gid}-wrap{{display:grid;grid-template-columns:repeat({cols},1fr);gap:10px;margin:1.5rem 0;}}
+.{gid}-wrap{{display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:10px;margin:1.5rem 0;}}
 @media(max-width:600px){{.{gid}-wrap{{grid-template-columns:repeat(2,1fr);}}}}
 .{gid}-item{{position:relative;overflow:hidden;border-radius:8px;cursor:zoom-in;aspect-ratio:16/10;background:#f1f3f4;}}
 .{gid}-item img{{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s ease;}}
@@ -669,13 +712,13 @@ def _render_gallery(b: dict) -> str:
         url     = img.get("url", "")
         alt     = img.get("alt", "")
         cap     = img.get("caption", "")
-        lb_id   = f"{gid}-lb{i}"
-        cap_html = f"<figcaption>{cap}</figcaption>" if cap else ""
+        lb_id   = f"{gid}-lb{_cv_esc(i)}"
+        cap_html = f"<figcaption>{_cv_esc(cap)}</figcaption>" if cap else ""
 
         items_html.append(
             f'<figure class="{gid}-item">'
             f'<a href="#{lb_id}" style="display:block;height:100%;">'
-            f'<img src="{url}" alt="{alt}" loading="lazy"/>'
+            f'<img src="{_cv_esc(url)}" alt="{_cv_esc(alt)}" loading="lazy"/>'
             f'</a>'
             f'{cap_html}'
             f'</figure>'
@@ -683,8 +726,8 @@ def _render_gallery(b: dict) -> str:
         lightboxes_html.append(
             f'<div id="{lb_id}" class="{gid}-lb">'
             f'<a href="#" class="{gid}-lb-close">✕</a>'
-            f'<img src="{url}" alt="{alt}"/>'
-            f'{"<figcaption>" + cap + "</figcaption>" if cap else ""}'
+            f'<img src="{_cv_esc(url)}" alt="{_cv_esc(alt)}"/>'
+            f'{"<figcaption>" + _cv_esc(cap) + "</figcaption>" if cap else ""}'
             f'</div>'
         )
 
@@ -701,12 +744,12 @@ def _render_video_pair(b: dict) -> str:
     left  = b.get("left",  {})
     right = b.get("right", {})
     caption = b.get("caption", "")
-    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{caption}</p>' if caption else ""
+    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{_cv_esc(caption)}</p>' if caption else ""
 
     def video_cell(v):
         vid_id  = _youtube_id(v.get("url", ""))
         label   = v.get("label", "")
-        label_html = f'<p style="font-size:0.82rem;font-weight:600;margin-bottom:6px;color:#3c4043;">{label}</p>' if label else ""
+        label_html = f'<p style="font-size:0.82rem;font-weight:600;margin-bottom:6px;color:#3c4043;">{_cv_esc(label)}</p>' if label else ""
         params = f"?rel=0&modestbranding=1"
         return (
             f'<div style="flex:1;min-width:0;">'
@@ -770,7 +813,7 @@ def _render_carousel(b: dict) -> str:
             f'<style>#{cid}_s{i}:checked ~ .{cid}-inner .{cid}-track'
             f'{{transform:translateX(-{offset}%);}}\n'
             f'#{cid}_s{i}:checked ~ .{cid}-dots .{cid}-dot:nth-child({i})'
-            f'{{background:{accent};transform:scale(1.25);}}</style>'
+            f'{{background:{_cv_esc(accent)};transform:scale(1.25);}}</style>'
         )
 
     # Radio inputs
@@ -786,12 +829,12 @@ def _render_carousel(b: dict) -> str:
         label      = slide.get("label", "")
         sub        = slide.get("subtitle", "")
         label_html = (
-            f'<div class="{cid}-caption"><strong>{label}</strong>'
-            f'{"<span>" + sub + "</span>" if sub else ""}</div>'
+            f'<div class="{cid}-caption"><strong>{_cv_esc(label)}</strong>'
+            f'{"<span>" + _cv_esc(sub) + "</span>" if sub else ""}</div>'
         ) if label else ""
         slides_html += (
             f'<div class="{cid}-slide">'
-            f'<img src="{url}" alt="{label}" loading="lazy"/>'
+            f'<img src="{_cv_esc(url)}" alt="{_cv_esc(label)}" loading="lazy"/>'
             f'{label_html}'
             f'</div>'
         )
@@ -858,7 +901,7 @@ def _render_carousel(b: dict) -> str:
         for i in range(1, n + 1)
     )
 
-    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{caption}</p>' if caption else ""
+    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{_cv_esc(caption)}</p>' if caption else ""
 
     return (
         "".join(css_parts)
@@ -950,17 +993,17 @@ def _render_stat_card(b: dict) -> str:
     delta_arrow = "▲" if is_up else "▼"
     delta_html = (
         f'<span style="font-size:0.85rem;font-weight:700;color:{delta_color};margin-left:10px;">'
-        f'{delta_arrow} {delta}</span>'
+        f'{delta_arrow} {_esc(str(delta))}</span>'
     ) if delta else ""
 
     return (
         f'<div style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);'
-        f'border:1px solid {accent}44;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 32px;margin:1rem 0;'
-        f'box-shadow:0 0 20px {accent}22,inset 0 0 20px {accent}08;min-width:200px;text-align:center;">'
-        f'<div style="font-size:0.75rem;font-weight:700;color:{accent};letter-spacing:0.12em;'
-        f'text-transform:uppercase;margin-bottom:8px;">{label}</div>'
+        f'border:1px solid {_cv_esc(accent)}44;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 32px;margin:1rem 0;'
+        f'box-shadow:0 0 20px {_cv_esc(accent)}22,inset 0 0 20px {_cv_esc(accent)}08;min-width:200px;text-align:center;">'
+        f'<div style="font-size:0.75rem;font-weight:700;color:{_cv_esc(accent)};letter-spacing:0.12em;'
+        f'text-transform:uppercase;margin-bottom:8px;">{_esc(str(label))}</div>'
         f'<div style="font-size:2.8rem;font-weight:900;color:#ffffff;line-height:1;font-family:monospace;">'
-        f'{value}{delta_html}'
+        f'{_esc(str(value))}{delta_html}'
         f'</div>'
         f'</div>'
     )
@@ -980,20 +1023,20 @@ def _render_progress_bar(b: dict) -> str:
     show_pct = b.get("show_percent", True)
     caption = b.get("caption", "")
 
-    pct_html = f'<span style="font-size:0.8rem;font-weight:700;color:{accent};">{value}%</span>' if show_pct else ""
-    caption_html = f'<p style="font-size:0.78rem;opacity:0.5;margin-top:4px;">{caption}</p>' if caption else ""
+    pct_html = f'<span style="font-size:0.8rem;font-weight:700;color:{_cv_esc(accent)};">{value}%</span>' if show_pct else ""
+    caption_html = f'<p style="font-size:0.78rem;opacity:0.5;margin-top:4px;">{_cv_esc(caption)}</p>' if caption else ""
 
     return (
         f'<style>'
-        f'@keyframes {pid}-glow{{0%,100%{{box-shadow:0 0 6px {accent}88;}}50%{{box-shadow:0 0 16px {accent};}} }}'
+        f'@keyframes {pid}-glow{{0%,100%{{box-shadow:0 0 6px {_cv_esc(accent)}88;}}50%{{box-shadow:0 0 16px {_cv_esc(accent)};}} }}'
         f'</style>'
         f'<div style="margin:1rem 0;">'
         f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
-        f'<span style="font-size:0.85rem;font-weight:600;">{label}</span>'
+        f'<span style="font-size:0.85rem;font-weight:600;">{_cv_esc(label)}</span>'
         f'{pct_html}'
         f'</div>'
         f'<div style="background:rgba(255,255,255,0.08);border-radius:100px;height:10px;overflow:hidden;">'
-        f'<div style="width:{value}%;height:100%;border-radius:100px;background:linear-gradient(90deg,{accent},{accent}99);'
+        f'<div style="width:{value}%;height:100%;border-radius:100px;background:linear-gradient(90deg,{_cv_esc(accent)},{_cv_esc(accent)}99);'
         f'animation:{pid}-glow 2s ease-in-out infinite;transition:width 0.8s ease;"></div>'
         f'</div>'
         f'{caption_html}'
@@ -1009,7 +1052,7 @@ def _render_badge_group(b: dict) -> str:
     """
     badges  = b.get("badges", [])
     title   = b.get("title", "")
-    title_html = f'<p style="font-size:0.82rem;font-weight:600;margin-bottom:8px;opacity:0.7;">{title}</p>' if title else ""
+    title_html = f'<p style="font-size:0.82rem;font-weight:600;margin-bottom:8px;opacity:0.7;">{_cv_esc(title)}</p>' if title else ""
 
     COLOR_MAP = {
         "green":  ("#00ff88", "#003322"),
@@ -1041,7 +1084,7 @@ def _render_badge_group(b: dict) -> str:
             f'<span class="{bid}" style="display:inline-flex;align-items:center;background:{bg};color:{fg};'
             f'border:1px solid {fg}44;border-radius:100px;padding:4px 12px;font-size:0.78rem;'
             f'font-weight:700;letter-spacing:0.04em;margin:3px;">'
-            f'{dot}{text}</span>'
+            f'{dot}{_cv_esc(text)}</span>'
         )
 
     return (
@@ -1057,7 +1100,7 @@ def _render_timeline(b: dict) -> str:
     events = b.get("events", [])
     accent = b.get("accent", "#1a73e8")
     title  = b.get("title", "")
-    title_html = f'<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">{title}</p>' if title else ""
+    title_html = f'<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">{_cv_esc(title)}</p>' if title else ""
 
     items_html = []
     for i, event in enumerate(events):
@@ -1067,8 +1110,8 @@ def _render_timeline(b: dict) -> str:
         text    = _md_inline(event.get("text", ""))
         tag     = event.get("tag", "")
         tag_html = (
-            f'<span style="background:{accent}18;color:{accent};font-size:0.72rem;font-weight:700;'
-            f'padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;">{tag}</span>'
+            f'<span style="background:{_cv_esc(accent)}18;color:{_cv_esc(accent)};font-size:0.72rem;font-weight:700;'
+            f'padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;">{_cv_esc(tag)}</span>'
         ) if tag else ""
 
         connector = "" if is_last else '<div style="width:2px;background:#e0e0e0;flex:1;min-height:24px;margin-top:4px;"></div>'
@@ -1076,17 +1119,17 @@ def _render_timeline(b: dict) -> str:
             f'<div style="display:flex;gap:0;position:relative;">'
             # Left column — dot + line
             f'<div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;">'
-            f'<div style="width:14px;height:14px;border-radius:50%;background:{accent};'
-            f'border:3px solid #fff;box-shadow:0 0 0 2px {accent};flex:0 0 14px;margin-top:3px;z-index:1;"></div>'
+            f'<div style="width:14px;height:14px;border-radius:50%;background:{_cv_esc(accent)};'
+            f'border:3px solid #fff;box-shadow:0 0 0 2px {_cv_esc(accent)};flex:0 0 14px;margin-top:3px;z-index:1;"></div>'
             f'{connector}'
             f'</div>'
             # Right column — content
             f'<div style="padding-bottom:28px;padding-left:12px;flex:1;min-width:0;">'
             f'<div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;">'
-            f'<span style="font-size:0.78rem;font-weight:600;color:{accent};font-family:monospace;letter-spacing:0.04em;">{date}</span>'
+            f'<span style="font-size:0.78rem;font-weight:600;color:{_cv_esc(accent)};font-family:monospace;letter-spacing:0.04em;">{_cv_esc(date)}</span>'
             f'{tag_html}'
             f'</div>'
-            f'<p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;">{label}</p>'
+            f'<p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;">{_cv_esc(label)}</p>'
             f'<p style="color:#5f6368;font-size:0.88rem;line-height:1.6;margin:0;">{text}</p>'
             f'</div>'
             f'</div>'
@@ -1127,7 +1170,7 @@ def _render_annotated_code(b: dict) -> str:
             rendered_lines.append(f'<span style="display:block;">{escaped}</span>')
 
     code_html = "".join(rendered_lines)
-    caption_html = f'<p style="font-size:0.8rem;opacity:0.6;margin:6px 0 0;text-align:center;">{caption}</p>' if caption else ""
+    caption_html = f'<p style="font-size:0.8rem;opacity:0.6;margin:6px 0 0;text-align:center;">{_cv_esc(caption)}</p>' if caption else ""
 
     # Annotation explanations
     annotation_items = "".join(
@@ -1143,7 +1186,7 @@ def _render_annotated_code(b: dict) -> str:
         f'<div style="margin:1.5rem 0;">'
         f'<pre style="margin:0;padding:18px;background:#1e1e2e;border-radius:10px 10px 0 0;'
         f'overflow-x:auto;font-size:0.84rem;line-height:1.7;color:#cdd6f4;">'
-        f'<code class="language-{language}">{code_html}</code>'
+        f'<code class="language-{_cv_esc(language)}">{code_html}</code>'
         f'</pre>'
         f'{caption_html}'
         f'<ol style="list-style:none;padding:16px 20px;margin:0;background:#fffbf0;'
@@ -1160,7 +1203,7 @@ def _render_sparkline(b: dict) -> str:
     """TODO: Renders a small, simple line chart without axes or coordinates, showing general """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ sparkline ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ sparkline ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 
@@ -1169,28 +1212,28 @@ def _render_metric_delta(b: dict) -> str:
     """TODO: Renders a key performance indicator with its current value and a numerical or pe"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ metric_delta ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ metric_delta ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_trend_indicator(b: dict) -> str:
     """TODO: Renders a simple visual indicator (e.g., arrow, icon) representing the direction"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ trend_indicator ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ trend_indicator ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_breadcrumb(b: dict) -> str:
     """TODO: A navigation aid indicating the user's current location within a hierarchical st"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ breadcrumb ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ breadcrumb ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pagination(b: dict) -> str:
     """TODO: A control for navigating through a series of pages or results."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pagination ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ pagination ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_stepper(atom: dict) -> str:
@@ -1234,14 +1277,14 @@ def _render_stepper(atom: dict) -> str:
         if completed:
             indicator = (
                 f'<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;'
-                f'background:{color}22;border:2px solid {color};display:flex;'
+                f'background:{_cv_esc(color)}22;border:2px solid {_cv_esc(color)};display:flex;'
                 f'align-items:center;justify-content:center;">'
                 f'<svg width="14" height="14" viewBox="0 0 20 20" fill="none" '
-                f'stroke="{color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
-                f'<style>@keyframes ck_{uid}_{i}{{to{{stroke-dashoffset:0;}}}}'
-                f'.ck_{uid}_{i}{{stroke-dasharray:{check_len};stroke-dashoffset:{check_len};'
-                f'animation:ck_{uid}_{i} 0.35s ease-out {i*0.08:.2f}s forwards;}}</style>'
-                f'<path class="ck_{uid}_{i}" d="M4,10 L8,14 L16,6"/>'
+                f'stroke="{_cv_esc(color)}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
+                f'<style>@keyframes ck_{uid}_{_cv_esc(i)}{{to{{stroke-dashoffset:0;}}}}'
+                f'.ck_{uid}_{_cv_esc(i)}{{stroke-dasharray:{check_len};stroke-dashoffset:{check_len};'
+                f'animation:ck_{uid}_{_cv_esc(i)} 0.35s ease-out {i*0.08:.2f}s forwards;}}</style>'
+                f'<path class="ck_{uid}_{_cv_esc(i)}" d="M4,10 L8,14 L16,6"/>'
                 f'</svg></div>'
             )
             lc, dc = "#cbd5e1", "#475569"
@@ -1252,11 +1295,11 @@ def _render_stepper(atom: dict) -> str:
                 f'100%{{transform:scale(1.9);opacity:0;}}}}'
                 f'.asp_{uid}{{animation:asp_{uid} 1.8s ease-out infinite;}}</style>'
                 f'<div class="asp_{uid}" style="position:absolute;inset:0;border-radius:50%;'
-                f'border:2px solid {color};"></div>'
-                f'<div style="position:absolute;inset:0;border-radius:50%;border:2px solid {color};'
-                f'background:{color}22;display:flex;align-items:center;justify-content:center;">'
-                f'<div style="width:8px;height:8px;border-radius:50%;background:{color};'
-                f'box-shadow:0 0 6px {color};"></div></div></div>'
+                f'border:2px solid {_cv_esc(color)};"></div>'
+                f'<div style="position:absolute;inset:0;border-radius:50%;border:2px solid {_cv_esc(color)};'
+                f'background:{_cv_esc(color)}22;display:flex;align-items:center;justify-content:center;">'
+                f'<div style="width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};'
+                f'box-shadow:0 0 6px {_cv_esc(color)};"></div></div></div>'
             )
             lc, dc = "#f1f5f9", "#94a3b8"
         else:  # pending
@@ -1269,7 +1312,7 @@ def _render_stepper(atom: dict) -> str:
             )
             lc, dc = "#64748b", "#374151"
         desc_html = (
-            f'<div style="font-size:0.8rem;color:{dc};margin-top:2px;">{step["description"]}</div>'
+            f'<div style="font-size:0.8rem;color:{dc};margin-top:2px;">{_cv_esc(step["description"])}</div>'
         ) if step["description"] else ""
         # Connector line between steps
         connector = ""
@@ -1277,20 +1320,20 @@ def _render_stepper(atom: dict) -> str:
             lc2 = color if completed else "#1e293b"
             connector = (
                 f'<div style="width:2px;height:14px;margin:3px 0 3px 13px;'
-                f'background:{lc2};border-radius:1px;"></div>'
+                f'background:{_cv_esc(lc2)};border-radius:1px;"></div>'
             )
         items_html.append(
             f'<div>'
             f'<div style="display:flex;align-items:flex-start;gap:12px;">'
             f'{indicator}'
             f'<div style="padding-top:4px;">'
-            f'<div style="font-size:0.95rem;font-weight:600;color:{lc};">{step["label"]}</div>'
+            f'<div style="font-size:0.95rem;font-weight:600;color:{lc};">{_cv_esc(step["label"])}</div>'
             f'{desc_html}</div></div>'
             f'{connector}</div>'
         )
     heading_html = (
         f'<div style="font-size:0.85rem;font-weight:700;color:#64748b;letter-spacing:.07em;'
-        f'text-transform:uppercase;margin-bottom:16px;">{heading}</div>'
+        f'text-transform:uppercase;margin-bottom:16px;">{_cv_esc(heading)}</div>'
     ) if heading else ""
     return (
         f'<div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;'
@@ -1302,28 +1345,28 @@ def _render_tab_bar(b: dict) -> str:
     """TODO: A horizontal navigation component displaying a set of clickable tabs, typically """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ tab_bar ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ tab_bar ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_anchor_list(b: dict) -> str:
     """TODO: A list of links that navigate to specific sections within the current document o"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ anchor_list ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ anchor_list ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_faq_accordion(b: dict) -> str:
     """TODO: Renders a list of questions and answers, where answers are hidden until the ques"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ faq_accordion ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ faq_accordion ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_glossary_term(b: dict) -> str:
     """TODO: Renders a term with its definition, often with an optional link for more details"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ glossary_term ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ glossary_term ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_footnote(b: dict) -> str:
@@ -1331,14 +1374,14 @@ def _render_footnote(b: dict) -> str:
     text = b.get("text", "")
     return (f'<div style="margin:0.5rem 0;font-size:0.78rem;color:#6b7280;padding-left:1.2rem;'
             f'border-left:2px solid #e5e7eb;">'
-            f'<sup style="color:#7c3aed;font-weight:600;">[{fid}]</sup> {text}'
+            f'<sup style="color:#7c3aed;font-weight:600;">[{_cv_esc(fid)}]</sup> {_cv_esc(text)}'
             f'</div>')
 
 def _render_footnote_group(b: dict) -> str:
     footnotes = b.get("footnotes", [])
     rows = "".join(
         f'<div style="margin:4px 0;font-size:0.78rem;color:#6b7280;padding-left:1.2rem;">'
-        f'<sup style="color:#7c3aed;font-weight:600;">[{fn.get("id","?")}]</sup> {fn.get("text","")}'
+        f'<sup style="color:#7c3aed;font-weight:600;">[{_cv_esc(fn.get("id","?"))}]</sup> {_cv_esc(fn.get("text",""))}'
         f'</div>'
         for fn in footnotes
     )
@@ -1351,30 +1394,30 @@ def _render_blockquote_with_avatar(b: dict) -> str:
     """TODO: Renders a blockquote with an associated avatar and attribution."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ blockquote_with_avatar ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ blockquote_with_avatar ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pull_stat(b: dict) -> str:
     """TODO: Renders a prominent, large statistic or number, often with a brief descriptive l"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pull_stat ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ pull_stat ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_accordion_item(b: dict) -> str:
     """TODO: Renders a single section of content that can be expanded or collapsed by clickin"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ accordion_item ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ accordion_item ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_tooltip(b: dict) -> str:
     text   = b.get("text", "")
     target = b.get("target", "hover me")
     return (f'<div style="margin:1rem 0;display:inline-block;position:relative;">'
-            f'<span style="border-bottom:1px dashed #7c3aed;cursor:help;color:#7c3aed;">{target}</span>'
+            f'<span style="border-bottom:1px dashed #7c3aed;cursor:help;color:#7c3aed;">{_cv_esc(target)}</span>'
             f'<div style="margin-top:6px;padding:6px 10px;background:#1f2937;color:#f9fafb;'
-            f'border-radius:6px;font-size:0.78rem;max-width:240px;line-height:1.4;">{text}</div>'
+            f'border-radius:6px;font-size:0.78rem;max-width:240px;line-height:1.4;">{_cv_esc(text)}</div>'
             f'</div>')
 
 def _render_hover_card(b: dict) -> str:
@@ -1383,7 +1426,7 @@ def _render_hover_card(b: dict) -> str:
     content  = render(blocks) if blocks else ""
     return (f'<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">'
             f'<div style="padding:10px 14px;background:#f3f4f6;font-size:0.85rem;font-weight:600;'
-            f'color:#374151;border-bottom:1px solid #e5e7eb;">{trigger}</div>'
+            f'color:#374151;border-bottom:1px solid #e5e7eb;">{_cv_esc(trigger)}</div>'
             f'<div style="padding:12px 14px;font-size:0.85rem;">{content}</div>'
             f'</div>')
 
@@ -1393,7 +1436,7 @@ def _render_collapsible_panel(b: dict) -> str:
     content = render(blocks) if blocks else ""
     return (f'<details style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">'
             f'<summary style="padding:10px 14px;background:#f3f4f6;font-weight:600;font-size:0.85rem;'
-            f'color:#374151;cursor:pointer;list-style:none;">▶ {title}</summary>'
+            f'color:#374151;cursor:pointer;list-style:none;">▶ {_cv_esc(title)}</summary>'
             f'<div style="padding:12px 14px;font-size:0.85rem;">{content}</div>'
             f'</details>')
 
@@ -1403,7 +1446,7 @@ def _render_css_modal(b: dict) -> str:
     content = render(blocks) if blocks else ""
     return (f'<div style="margin:1rem 0;">'
             f'<button style="padding:8px 16px;background:#7c3aed;color:#fff;border:none;border-radius:6px;'
-            f'font-size:0.85rem;cursor:pointer;">{trigger}</button>'
+            f'font-size:0.85rem;cursor:pointer;">{_cv_esc(trigger)}</button>'
             f'<div style="margin-top:8px;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             f'background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 4px 12px rgba(0,0,0,0.08);font-size:0.85rem;">{content}</div>'
             f'</div>')
@@ -1412,42 +1455,42 @@ def _render_audio_player(b: dict) -> str:
     """TODO: Renders an embedded audio player for a given URL."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ audio_player ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ audio_player ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_audio_link(b: dict) -> str:
     """TODO: Renders a clickable link to an audio file, often with an audio icon."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ audio_link ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ audio_link ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pdf_preview(b: dict) -> str:
     """TODO: Renders an image thumbnail of a PDF document with a link to the full PDF."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pdf_preview ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ pdf_preview ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_document_link(b: dict) -> str:
     """TODO: Renders a clickable link to a document (e.g., PDF, DOCX), often with a document """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ document_link ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ document_link ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_video_thumbnail(b: dict) -> str:
     """TODO: Renders a static image thumbnail for a video, with a play icon overlay and a lin"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ video_thumbnail ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ video_thumbnail ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_video_card(b: dict) -> str:
     """TODO: Renders a card with a video thumbnail, title, and description, linking to the vi"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ video_card ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ video_card ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_code_diff(atom: dict) -> str:
@@ -1481,8 +1524,8 @@ def _render_code_diff(atom: dict) -> str:
         # skip "? " hint lines
     header = ""
     if label or language:
-        lbl  = f'<span style="font-size:13px;font-weight:600;color:#94a3b8;">{label}</span>' if label else ""
-        lang = f'<span style="font-size:11px;color:#64748b;background:#1e293b;padding:2px 8px;border-radius:4px;">{language}</span>' if language else ""
+        lbl  = f'<span style="font-size:13px;font-weight:600;color:#94a3b8;">{_cv_esc(label)}</span>' if label else ""
+        lang = f'<span style="font-size:11px;color:#64748b;background:#1e293b;padding:2px 8px;border-radius:4px;">{_cv_esc(language)}</span>' if language else ""
         header = (
             f'<div style="display:flex;align-items:center;justify-content:space-between;'
             f'padding:10px 14px;border-bottom:1px solid #1e293b;">{lbl}{lang}</div>'
@@ -1497,7 +1540,7 @@ def _render_code_snippet_pair(b: dict) -> str:
     """TODO: Renders two distinct code snippets side-by-side or stacked, without diff highlig"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ code_snippet_pair ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ code_snippet_pair ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_framed_screenshot(b: dict) -> str:
@@ -1516,14 +1559,14 @@ def _render_framed_screenshot(b: dict) -> str:
         '</div>'
     )
     caption_html = (
-        f'<p style="font-size:0.78rem;color:#5f6368;margin:8px 0 0;text-align:center;">{caption}</p>'
+        f'<p style="font-size:0.78rem;color:#5f6368;margin:8px 0 0;text-align:center;">{_cv_esc(caption)}</p>'
         if caption else ""
     )
     return (
         f'<div style="margin:1.5rem 0;border:1px solid #dadce0;border-radius:10px;'
         f'overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
         f'{chrome}'
-        f'<img src="{url}" alt="{alt}" style="width:100%;height:auto;display:block;"/>'
+        f'<img src="{_cv_esc(url)}" alt="{_cv_esc(alt)}" style="width:100%;height:auto;display:block;"/>'
         f'</div>'
         f'{caption_html}'
     )
@@ -1532,63 +1575,63 @@ def _render_image_with_caption(b: dict) -> str:
     """TODO: Renders a single image with a descriptive caption below it."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ image_with_caption ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ image_with_caption ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_alert_banner(b: dict) -> str:
     """TODO: A prominent banner displaying a message, often with an icon and an optional acti"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ alert_banner ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ alert_banner ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_toast_notification(b: dict) -> str:
     """TODO: A small, temporary, non-intrusive message that appears and disappears automatica"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ toast_notification ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ toast_notification ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_loading_skeleton(b: dict) -> str:
     """TODO: A placeholder UI that shows the structure of content while it's loading, indicat"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ loading_skeleton ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ loading_skeleton ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_empty_state(b: dict) -> str:
     """TODO: A UI pattern displayed when there is no data to show, often with an image, messa"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ empty_state ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ empty_state ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_spinner(b: dict) -> str:
     """TODO: A simple rotating animation indicating that content is loading or an operation i"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ spinner ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ spinner ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_status_pill(b: dict) -> str:
     """TODO: A small, colored label or "pill" used to display a concise status for an item."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ status_pill ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ status_pill ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_inline_feedback_message(b: dict) -> str:
     """TODO: A small, contextual message displayed inline with content, often used for valida"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ inline_feedback_message ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ inline_feedback_message ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_rating_stars(b: dict) -> str:
     """TODO: A visual component allowing users to rate an item using a series of stars, or di"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ rating_stars ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ rating_stars ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_progress_circle(atom: dict) -> str:
@@ -1605,7 +1648,7 @@ def _render_progress_circle(atom: dict) -> str:
     fs    = max(11, px // 6)
     label_html = (
         f'<div style="font-size:{max(10,px//10)}px;color:#94a3b8;margin-top:6px;'
-        f'text-align:center;max-width:{px}px;">{label}</div>'
+        f'text-align:center;max-width:{px}px;">{_cv_esc(label)}</div>'
     ) if label else ""
     return (
         f'<style>'
@@ -1618,7 +1661,7 @@ def _render_progress_circle(atom: dict) -> str:
         f'<svg width="{px}" height="{px}" viewBox="0 0 100 100" '
         f'style="transform:rotate(-90deg);display:block;">'
         f'<circle cx="50" cy="50" r="{r}" fill="none" stroke="#1e293b" stroke-width="9"/>'
-        f'<circle class="pc_{uid}" cx="50" cy="50" r="{r}" fill="none" stroke="{color}" '
+        f'<circle class="pc_{uid}" cx="50" cy="50" r="{r}" fill="none" stroke="{_cv_esc(color)}" '
         f'stroke-width="9" stroke-linecap="round"/>'
         f'</svg>'
         f'<div style="position:absolute;inset:0;display:flex;align-items:center;'
@@ -1631,14 +1674,14 @@ def _render_action_required_card(b: dict) -> str:
     """TODO: A card highlighting an important status or issue that requires immediate user at"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ action_required_card ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ action_required_card ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_feature_matrix(b: dict) -> str:
     """TODO: Renders a table comparing features across multiple products or versions."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ feature_matrix ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ feature_matrix ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pricing_tier_card(b: dict) -> str:
@@ -1699,15 +1742,15 @@ def _render_skill_bars(b: dict) -> str:
         rows += (
             f'<div style="margin-bottom:14px;">'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:5px;">'
-            f'<span style="font-size:13px;font-weight:600;color:#374151;">{label}</span>'
+            f'<span style="font-size:13px;font-weight:600;color:#374151;">{_cv_esc(label)}</span>'
             + (f'<span style="font-size:12px;color:#6b7280;">{pct}%</span>' if show_pct else "")
-            + f'</div><div style="height:{height}px;background:#e5e7eb;border-radius:{rad};overflow:hidden;">'
-            f'<div style="height:100%;width:{pct}%;background:{color};border-radius:{rad};"></div>'
+            + f'</div><div style="height:{_cv_esc(height)}px;background:#e5e7eb;border-radius:{rad};overflow:hidden;">'
+            f'<div style="height:100%;width:{pct}%;background:{_cv_esc(color)};border-radius:{rad};"></div>'
             f'</div>'
-            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:3px;">{s["sublabel"]}</div>' if s.get("sublabel") else "")
+            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:3px;">{_cv_esc(s["sublabel"])}</div>' if s.get("sublabel") else "")
             + '</div>'
         )
-    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">{b["title"]}</div>' if b.get("title") else ""
+    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
     return f'{title_html}<div style="margin:1rem 0;">{rows}</div>'
 
 
@@ -1718,16 +1761,16 @@ def _render_icon_stat_row(b: dict) -> str:
     cells  = ""
     for s in stats:
         color = s.get("accent", s.get("color", accent))
-        icon_html = (f'<div style="font-size:32px;margin-bottom:8px;">{s["icon"]}</div>' if s.get("icon")
-                     else f'<div style="width:40px;height:40px;border-radius:50%;background:{color}18;margin:0 auto 8px;"></div>')
+        icon_html = (f'<div style="font-size:32px;margin-bottom:8px;">{_cv_esc(s["icon"])}</div>' if s.get("icon")
+                     else f'<div style="width:40px;height:40px;border-radius:50%;background:{_cv_esc(color)}18;margin:0 auto 8px;"></div>')
         cells += (
             f'<div style="text-align:center;padding:20px 12px;">{icon_html}'
-            f'<div style="font-size:28px;font-weight:900;color:{color};line-height:1;margin-bottom:4px;">'
-            + (f'<span style="font-size:16px;">{s["prefix"]}</span>' if s.get("prefix") else "")
-            + str(s.get("value", ""))
-            + (f'<span style="font-size:16px;">{s["suffix"]}</span>' if s.get("suffix") else "")
-            + f'</div><div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">{s.get("label","")}</div>'
-            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:2px;">{s["sub"]}</div>' if s.get("sub") else "")
+            f'<div style="font-size:28px;font-weight:900;color:{_cv_esc(color)};line-height:1;margin-bottom:4px;">'
+            + (f'<span style="font-size:16px;">{_cv_esc(s["prefix"])}</span>' if s.get("prefix") else "")
+            + _cv_esc(str(s.get("value", "")))
+            + (f'<span style="font-size:16px;">{_cv_esc(s["suffix"])}</span>' if s.get("suffix") else "")
+            + f'</div><div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">{_cv_esc(s.get("label",""))}</div>'
+            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:2px;">{_cv_esc(s["sub"])}</div>' if s.get("sub") else "")
             + '</div>'
         )
     return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;margin:1.5rem 0;">{cells}</div>'
@@ -1766,7 +1809,7 @@ def _render_color_section(b: dict) -> str:
         _t = _theme_tokens("site")
         base_bg, tc = _t["surface2"], _t["text"]
     else:
-        base_bg = (f"{accent}10" if style == "tint" else accent if style == "solid" else "#0f172a" if style == "dark" else "#f8fafc")
+        base_bg = (f"{_cv_esc(accent)}10" if style == "tint" else accent if style == "solid" else "#0f172a" if style == "dark" else "#f8fafc")
         tc      = "#fff" if style in ("solid", "dark") else "#111827"
     padding = b.get("padding", "24px")
     # Optional grid-paper texture (added 2026-07-24 for technical/blueprint-
@@ -1775,11 +1818,11 @@ def _render_color_section(b: dict) -> str:
     # colour is a faint tint of the accent so it reads as texture, not
     # decoration competing with the content.
     if b.get("grid"):
-        grid_line = f"{accent}14" if style in ("light", "tint") else f"{accent}20"
+        grid_line = f"{_cv_esc(accent)}14" if style in ("light", "tint") else f"{_cv_esc(accent)}20"
         bg = (
             f"linear-gradient({grid_line} 1px, transparent 1px) 0 0 / 32px 32px, "
             f"linear-gradient(90deg, {grid_line} 1px, transparent 1px) 0 0 / 32px 32px, "
-            f"{base_bg}"
+            f"{_cv_esc(base_bg)}"
         )
     else:
         bg = base_bg
@@ -1793,8 +1836,8 @@ def _render_color_section(b: dict) -> str:
     # so a wide blueprint doesn't run the full column width when that reads
     # as too far right; omitted → full width as before.
     mw = b.get("max_width")
-    max_css = f"max-width:{mw};margin-left:auto;margin-right:auto;" if mw else ""
-    return f'<div style="background:{bg};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:{padding};margin:1.5rem 0;color:{tc};overflow:hidden;{max_css}">{inner}</div>'
+    max_css = f"max-width:{_cv_esc(mw)};margin-left:auto;margin-right:auto;" if mw else ""
+    return f'<div style="background:{_cv_esc(bg)};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:{_cv_esc(padding)};margin:1.5rem 0;color:{tc};overflow:hidden;{max_css}">{inner}</div>'
 
 
 def _render_tag_cloud(b: dict) -> str:
@@ -1812,8 +1855,8 @@ def _render_tag_cloud(b: dict) -> str:
         size  = round(base + (w / max_w) * rng)
         alpha = hex(round(10 + (w / max_w) * 25))[2:]
         fw    = "700" if size > 16 else "500"
-        html += f'<span style="display:inline-block;margin:4px;padding:4px 12px;font-size:{size}px;font-weight:{fw};color:{color};background:{color}{alpha};border-radius:99px;">{label}</span>'
-    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">{b["title"]}</div>' if b.get("title") else ""
+        html += f'<span style="display:inline-block;margin:4px;padding:4px 12px;font-size:{size}px;font-weight:{fw};color:{_cv_esc(color)};background:{_cv_esc(color)}{alpha};border-radius:99px;">{_cv_esc(label)}</span>'
+    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
     return f'{title_html}<div style="display:flex;flex-wrap:wrap;gap:2px;margin:1rem 0;">{html}</div>'
 
 
@@ -1831,13 +1874,13 @@ def _render_step_progress(b: dict) -> str:
         fw      = "700" if active else "500"
         icon    = "✓" if done else str(i + 1)
         line_bg = accent if done else "#e5e7eb"
-        line    = f'<div style="flex:1;height:2px;background:{line_bg};margin-top:-1px;"></div>' if i < len(steps) - 1 else ""
+        line    = f'<div style="flex:1;height:2px;background:{_cv_esc(line_bg)};margin-top:-1px;"></div>' if i < len(steps) - 1 else ""
         items  += (
             f'<div style="display:flex;flex-direction:column;align-items:center;flex:1 1 0;">'
             f'<div style="display:flex;align-items:center;width:100%;">'
-            f'<div style="width:28px;height:28px;border-radius:50%;background:{circ_bg};color:{circ_tc};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">{icon}</div>'
+            f'<div style="width:28px;height:28px;border-radius:50%;background:{_cv_esc(circ_bg)};color:{circ_tc};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">{icon}</div>'
             f'{line}</div>'
-            f'<div style="margin-top:6px;font-size:11px;font-weight:{fw};color:{label_c};text-align:center;width:100%;">{s.get("label", s.get("title",""))}</div>'
+            f'<div style="margin-top:6px;font-size:11px;font-weight:{fw};color:{label_c};text-align:center;width:100%;">{_cv_esc(s.get("label", s.get("title","")))}</div>'
             f'</div>'
         )
     return f'<div style="display:flex;align-items:flex-start;gap:0;margin:1.5rem 0;padding:0 8px;">{items}</div>'
@@ -1852,8 +1895,8 @@ def _render_split_pane(b: dict) -> str:
     right_inner = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (right.get("blocks") or []))
     return (
         f'<div style="display:grid;grid-template-columns:1fr 1fr;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);margin:1.5rem 0;">'
-        f'<div style="background:{left_bg};padding:24px;">{left_inner}</div>'
-        f'<div style="background:{right_bg};padding:24px;border-left:1px solid #e5e7eb;">{right_inner}</div>'
+        f'<div style="background:{_cv_esc(left_bg)};padding:24px;">{left_inner}</div>'
+        f'<div style="background:{_cv_esc(right_bg)};padding:24px;border-left:1px solid #e5e7eb;">{right_inner}</div>'
         f'</div>'
     )
 
@@ -1861,15 +1904,15 @@ def _render_split_pane(b: dict) -> str:
 def _render_gradient_hero(b: dict) -> str:
     accent  = b.get("accent", "#6366f1")
     accent2 = b.get("accent2", "#8b5cf6")
-    grad    = b.get("gradient", f"linear-gradient(135deg,{accent}22 0%,{accent2}18 60%,#fff8 100%)")
+    grad    = b.get("gradient", f"linear-gradient(135deg,{_cv_esc(accent)}22 0%,{_cv_esc(accent2)}18 60%,#fff8 100%)")
     align   = "center" if b.get("align") == "center" else "left"
     mx      = "margin-left:auto;margin-right:auto;" if align == "center" else ""
     return (
-        f'<div style="padding:48px 32px;border-radius:16px;background:{grad};margin:0 0 1.5rem;text-align:{align};">'
-        + (f'<div style="display:inline-block;background:{accent};color:#fff;border-radius:99px;padding:3px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">{b["badge"]}</div>' if b.get("badge") else "")
+        f'<div style="padding:48px 32px;border-radius:16px;background:{_cv_esc(grad)};margin:0 0 1.5rem;text-align:{align};">'
+        + (f'<div style="display:inline-block;background:{_cv_esc(accent)};color:#fff;border-radius:99px;padding:3px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">{_cv_esc(b["badge"])}</div>' if b.get("badge") else "")
         + f'<div style="font-size:36px;font-weight:900;line-height:1.15;color:#111827;margin-bottom:12px;letter-spacing:-0.02em;">{_md_inline(b.get("title", b.get("heading","")))}</div>'
         + (f'<div style="font-size:17px;color:#4b5563;line-height:1.6;margin-bottom:20px;max-width:600px;{mx}">{_md_inline(b["subtitle"] if b.get("subtitle") else b.get("subtext",""))}</div>' if b.get("subtitle") or b.get("subtext") else "")
-        + (f'<a href="{b["cta_url"]}" style="display:inline-block;background:{accent};color:#fff;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:700;text-decoration:none;">{b["cta_label"]}</a>' if b.get("cta_label") and b.get("cta_url") else "")
+        + (f'<a href="{_cv_esc(b["cta_url"])}" style="display:inline-block;background:{_cv_esc(accent)};color:#fff;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:700;text-decoration:none;">{_cv_esc(b["cta_label"])}</a>' if b.get("cta_label") and b.get("cta_url") else "")
         + '</div>'
     )
 
@@ -1887,25 +1930,25 @@ def _render_icon_list(b: dict) -> str:
         icon  = item.get("icon", "•")
         rows += (
             f'<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">'
-            f'<div style="flex:0 0 {icon_px};height:{icon_px};border-radius:50%;background:{color}18;display:flex;align-items:center;justify-content:center;font-size:{icon_em};">{icon}</div>'
+            f'<div style="flex:0 0 {icon_px};height:{icon_px};border-radius:50%;background:{_cv_esc(color)}18;display:flex;align-items:center;justify-content:center;font-size:{icon_em};">{_cv_esc(icon)}</div>'
             f'<div style="flex:1;padding-top:{pt};">'
-            + (f'<div style="font-size:{font_px};font-weight:700;color:#111827;margin-bottom:2px;">{item["label"]}</div>' if item.get("label") else "")
+            + (f'<div style="font-size:{font_px};font-weight:700;color:#111827;margin-bottom:2px;">{_cv_esc(item["label"])}</div>' if item.get("label") else "")
             + (f'<div style="font-size:{font_px};color:#4b5563;line-height:1.5;">{_md_inline(item["text"])}</div>' if item.get("text") else "")
             + '</div></div>'
         )
-    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">{b["title"]}</div>' if b.get("title") else ""
+    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
     return f'{title_html}<div style="margin:1rem 0;">{rows}</div>'
 
 
 def _render_highlight_box(b: dict) -> str:
     accent = b.get("accent", "#6366f1")
     style  = b.get("style", "gradient")
-    bg     = (f"linear-gradient(135deg,{accent}18 0%,{accent}08 100%)" if style == "gradient"
-              else f"{accent}12" if style == "solid" else "#fff")
-    border = f"2px solid {accent}" if style == "outline" else f"1px solid {accent}30"
+    bg     = (f"linear-gradient(135deg,{_cv_esc(accent)}18 0%,{_cv_esc(accent)}08 100%)" if style == "gradient"
+              else f"{_cv_esc(accent)}12" if style == "solid" else "#fff")
+    border = f"2px solid {_cv_esc(accent)}" if style == "outline" else f"1px solid {_cv_esc(accent)}30"
     return (
         f'<div style="background:{bg};border:{border};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 28px;margin:1.5rem 0;">'
-        + (f'<span style="font-size:28px;margin-bottom:10px;display:block;">{b["icon"]}</span>' if b.get("icon") else "")
+        + (f'<span style="font-size:28px;margin-bottom:10px;display:block;">{_cv_esc(b["icon"])}</span>' if b.get("icon") else "")
         + (f'<div style="font-size:18px;font-weight:800;color:#111827;margin-bottom:8px;">{_md_inline(b["title"])}</div>' if b.get("title") else "")
         + f'<div style="font-size:14px;color:#374151;line-height:1.65;">{_md_inline(b.get("text",""))}</div>'
         + '</div>'
@@ -1920,10 +1963,10 @@ def _render_two_tone_card(b: dict) -> str:
     inner     = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (b.get("blocks") or b.get("content") or []))
     return (
         f'<div style="border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);margin:1rem 0;">'
-        f'<div style="background:{header_bg};padding:20px 24px;">'
-        + (f'<span style="font-size:24px;margin-bottom:8px;display:block;">{b["icon"]}</span>' if b.get("icon") else "")
-        + f'<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">{b.get("title","")}</div>'
-        + (f'<div style="font-size:13px;color:{sub_col};">{b["subtitle"]}</div>' if b.get("subtitle") else "")
+        f'<div style="background:{_cv_esc(header_bg)};padding:20px 24px;">'
+        + (f'<span style="font-size:24px;margin-bottom:8px;display:block;">{_cv_esc(b["icon"])}</span>' if b.get("icon") else "")
+        + f'<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">{_cv_esc(b.get("title",""))}</div>'
+        + (f'<div style="font-size:13px;color:{sub_col};">{_cv_esc(b["subtitle"])}</div>' if b.get("subtitle") else "")
         + f'</div><div style="background:#fff;padding:20px 24px;">{inner}</div></div>'
     )
 
@@ -1945,13 +1988,13 @@ def _render_metric_row(b: dict) -> str:
         edge   = "" if i % cols == 0 else "border-left:1px solid #e5e7eb;"
         cells += (
             f'<div style="text-align:center;padding:16px 8px;{edge}">'
-            f'<div style="font-size:32px;font-weight:900;color:{accent};line-height:1;margin-bottom:4px;">'
-            + (f'<span style="font-size:18px;">{m["prefix"]}</span>' if m.get("prefix") else "")
-            + str(m.get("value",""))
-            + (f'<span style="font-size:18px;">{m["suffix"]}</span>' if m.get("suffix") else "")
+            f'<div style="font-size:32px;font-weight:900;color:{_cv_esc(accent)};line-height:1;margin-bottom:4px;">'
+            + (f'<span style="font-size:18px;">{_cv_esc(m["prefix"])}</span>' if m.get("prefix") else "")
+            + _cv_esc(str(m.get("value","")))
+            + (f'<span style="font-size:18px;">{_cv_esc(m["suffix"])}</span>' if m.get("suffix") else "")
             + (f'<span style="font-size:16px;color:{tc};margin-left:4px;">{trend}</span>' if trend else "")
-            + f'</div><div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">{m.get("label","")}</div>'
-            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:2px;">{m["sub"]}</div>' if m.get("sub") else "")
+            + f'</div><div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">{_cv_esc(m.get("label",""))}</div>'
+            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:2px;">{_cv_esc(m["sub"])}</div>' if m.get("sub") else "")
             + '</div>'
         )
     return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">{cells}</div>'
@@ -1971,20 +2014,20 @@ def _render_numbered_list(b: dict) -> str:
         border = _t["border"]
         # Ghost number: accent-tinted so the "blueprint" feel reads on both a
         # light and a dark ground (var(--border) would vanish on light).
-        num_c = f"{accent}44"
+        num_c = f"{_cv_esc(accent)}44"
         cards = ""
         for i, item in enumerate(b.get("items", [])):
             num = item.get("number", i + 1)
             top_border = f"border-top:1px solid {border};" if i > 0 else ""
             tags_html = "".join(
                 f'<span style="font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;'
-                f'letter-spacing:0.05em;padding:2px 8px;border:1px solid {accent}55;color:{accent};'
+                f'letter-spacing:0.05em;padding:2px 8px;border:1px solid {_cv_esc(accent)}55;color:{_cv_esc(accent)};'
                 f'border-radius:3px;margin-right:6px;">{_esc(t)}</span>'
                 for t in (item.get("tags") or [])
             )
             cards += (
                 f'<div style="display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;{top_border}">'
-                + f'<div style="grid-row:span 2;font-size:30px;font-weight:800;color:{num_c};line-height:1;">{num}</div>'
+                + f'<div style="grid-row:span 2;font-size:30px;font-weight:800;color:{num_c};line-height:1;">{_cv_esc(num)}</div>'
                 + f'<div style="font-weight:700;font-size:15px;color:{text_c};display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
                 + _esc(item.get("title", "")) + tags_html + '</div>'
                 + f'<div style="color:{dim_c};font-size:13.5px;line-height:1.55;">{_md_inline(item.get("text",""))}</div>'
@@ -2000,20 +2043,20 @@ def _render_numbered_list(b: dict) -> str:
     for i, item in enumerate(b.get("items", [])):
         num = i + 1
         if style == "large":
-            num_el = f'<div style="font-size:48px;font-weight:900;color:{accent}20;line-height:1;position:absolute;top:-8px;left:0;">{num}</div>'
+            num_el = f'<div style="font-size:48px;font-weight:900;color:{_cv_esc(accent)}20;line-height:1;position:absolute;top:-8px;left:0;">{num}</div>'
             wrap   = "position:relative;padding-left:44px;margin-bottom:28px;"
             pt     = ' style="padding-top:4px;"'
         else:
-            num_el = f'<div style="flex:0 0 28px;height:28px;border-radius:50%;background:{accent};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">{num}</div>'
+            num_el = f'<div style="flex:0 0 28px;height:28px;border-radius:50%;background:{_cv_esc(accent)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">{num}</div>'
             wrap   = "display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;"
             pt     = ""
         rows += (
             f'<div style="{wrap}">{num_el}<div{pt}>'
-            + (f'<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:3px;">{item["label"]}</div>' if item.get("label") else "")
+            + (f'<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:3px;">{_cv_esc(item["label"])}</div>' if item.get("label") else "")
             + (f'<div style="font-size:14px;color:#4b5563;line-height:1.6;">{_md_inline(item["text"])}</div>' if item.get("text") else "")
             + '</div></div>'
         )
-    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">{b["title"]}</div>' if b.get("title") else ""
+    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
     return f'{title_html}<div style="margin:1rem 0;">{rows}</div>'
 
 
@@ -2031,7 +2074,7 @@ def _render_page_header(b: dict) -> str:
         bg = b.get("background") or _t["surface2"]
         tc, sc = _t["text"], _t["dim"]
     else:
-        bg = b.get("background") or ("#0f172a" if dark else f"linear-gradient(135deg,{accent}18 0%,#fff 60%)")
+        bg = b.get("background") or ("#0f172a" if dark else f"linear-gradient(135deg,{_cv_esc(accent)}18 0%,#fff 60%)")
         tc = "#f8fafc" if dark else "#111827"
         sc = "#94a3b8" if dark else "#6b7280"
     meta = b.get("meta") or []
@@ -2055,11 +2098,11 @@ def _render_page_header(b: dict) -> str:
     tag_font = ("font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;letter-spacing:0.08em;"
                 if b.get("condensed") else "")
     return (
-        f'<div style="padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:{bg};border-bottom:3px solid {accent};">'
-        + (f'<span style="font-size:36px;margin-bottom:10px;display:block;">{b["icon"]}</span>' if b.get("icon") else "")
+        f'<div style="padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:{_cv_esc(bg)};border-bottom:3px solid {_cv_esc(accent)};">'
+        + (f'<span style="font-size:36px;margin-bottom:10px;display:block;">{_cv_esc(b["icon"])}</span>' if b.get("icon") else "")
         + f'<div style="font-size:28px;font-weight:800;color:{tc};line-height:1.2;margin-bottom:6px;{title_font}">{_md_inline(b.get("title",""))}</div>'
         + (f'<div style="font-size:15px;color:{sc};line-height:1.5;margin-bottom:10px;">{_md_inline(b["subtitle"])}</div>' if b.get("subtitle") else "")
-        + (f'<span style="display:inline-block;background:{accent};color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;{tag_font}">{b["tag"]}</span>' if b.get("tag") else "")
+        + (f'<span style="display:inline-block;background:{_cv_esc(accent)};color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;{tag_font}">{_cv_esc(b["tag"])}</span>' if b.get("tag") else "")
         + meta_html
         + '</div>'
     )
@@ -2071,15 +2114,15 @@ def _render_back_button(b: dict) -> str:
     style  = b.get("style", "ghost")
     url    = b.get("url", b.get("nav_slug", "#"))
     if b.get("nav_slug") and not b.get("url"):
-        url = f'?nav={b["nav_slug"]}'
+        url = f'?nav={_cv_esc(b["nav_slug"])}'
     css = (
-        f'border:1.5px solid {accent};color:{accent};background:#fff;border-radius:8px;padding:6px 16px;' if style == "outline"
-        else f'color:{accent};background:none;padding:4px 0;' if style == "text"
-        else f'background:{accent}14;color:{accent};border-radius:8px;padding:6px 16px;'
+        f'border:1.5px solid {_cv_esc(accent)};color:{_cv_esc(accent)};background:#fff;border-radius:8px;padding:6px 16px;' if style == "outline"
+        else f'color:{_cv_esc(accent)};background:none;padding:4px 0;' if style == "text"
+        else f'background:{_cv_esc(accent)}14;color:{_cv_esc(accent)};border-radius:8px;padding:6px 16px;'
     )
     return (
         f'<div style="margin:0.5rem 0 1rem;">'
-        f'<a href="{url}" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;text-decoration:none;{css}">{label}</a>'
+        f'<a href="{_cv_esc(url)}" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;text-decoration:none;{css}">{_cv_esc(label)}</a>'
         f'</div>'
     )
 
@@ -2090,12 +2133,12 @@ def _render_section_break(b: dict) -> str:
     label       = b.get("label", "")
     border_style = "dashed" if style == "dashed" else "dotted" if style == "dots" else "solid"
     if not label:
-        return f'<hr style="border:none;border-top:1px {border_style} {accent};margin:2rem 0;" />'
+        return f'<hr style="border:none;border-top:1px {border_style} {_cv_esc(accent)};margin:2rem 0;" />'
     return (
         f'<div style="display:flex;align-items:center;gap:12px;margin:2rem 0;">'
-        f'<div style="flex:1;border-top:1px {border_style} {accent};"></div>'
-        f'<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;white-space:nowrap;">{label}</span>'
-        f'<div style="flex:1;border-top:1px {border_style} {accent};"></div>'
+        f'<div style="flex:1;border-top:1px {border_style} {_cv_esc(accent)};"></div>'
+        f'<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;white-space:nowrap;">{_cv_esc(label)}</span>'
+        f'<div style="flex:1;border-top:1px {border_style} {_cv_esc(accent)};"></div>'
         f'</div>'
     )
 
@@ -2104,13 +2147,13 @@ def _render_chip_group(b: dict) -> str:
     scroll = b.get("layout") == "scroll"
     chips_html = ""
     for c in b.get("chips", []):
-        bg  = (c.get("color", "#6366f1") if c.get("active") else (c["color"] + "18" if c.get("color") else "#f3f4f6"))
+        bg  = (c.get("color", "#6366f1") if c.get("active") else (_cv_esc(c["color"]) + "18" if c.get("color") else "#f3f4f6"))
         tc  = "#fff" if c.get("active") else (c.get("color") or "#374151")
-        tag = f'a href="{c["url"]}"' if c.get("url") else "span"
+        tag = f'a href="{_cv_esc(c["url"])}"' if c.get("url") else "span"
         end = "a" if c.get("url") else "span"
-        chips_html += f'<{tag} style="display:inline-flex;align-items:center;background:{bg};color:{tc};border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;">{c.get("label","")}</{end}>'
+        chips_html += f'<{tag} style="display:inline-flex;align-items:center;background:{_cv_esc(bg)};color:{_cv_esc(tc)};border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;">{_cv_esc(c.get("label",""))}</{end}>'
     wrap = "display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;" if scroll else "display:flex;flex-wrap:wrap;gap:8px;"
-    label_html = f'<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:6px;">{b["label"]}</div>' if b.get("label") else ""
+    label_html = f'<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:6px;">{_cv_esc(b["label"])}</div>' if b.get("label") else ""
     return f'{label_html}<div style="{wrap}margin:0.75rem 0;">{chips_html}</div>'
 
 
@@ -2126,7 +2169,7 @@ def _render_columns(b: dict) -> str:
         inner  = "".join(_RENDERERS.get(bl.get("type", ""), _render_unknown)(bl) for bl in blocks)
         col_html += f'<div style="min-width:0;">{inner}</div>'
     return (
-        f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap};'
+        f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:{_cv_esc(gap)};'
         f'align-items:{align};margin:1.5rem 0;">'
         f'{col_html}</div>'
     )
@@ -2138,23 +2181,23 @@ def _render_person_card(b: dict) -> str:
     photo  = b.get("photo_url", b.get("photo", ""))
     name   = b.get("name", "")
     initial = (name[:1] or "?").upper()
-    avatar = (f'<img src="{photo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" />'
+    avatar = (f'<img src="{_cv_esc(photo)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" />'
               if photo else
-              f'<span style="font-size:22px;font-weight:700;color:#fff;">{initial}</span>')
+              f'<span style="font-size:22px;font-weight:700;color:#fff;">{_cv_esc(initial)}</span>')
     tags_html = "".join(
-        f'<span style="background:#f3f4f6;color:#374151;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:500;">{t}</span>'
+        f'<span style="background:#f3f4f6;color:#374151;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:500;">{_cv_esc(t)}</span>'
         for t in b.get("tags", [])
     )
     links_html = ""
-    if b.get("email"):    links_html += f'<a href="mailto:{b["email"]}" style="color:{accent};font-size:12px;text-decoration:none;">✉ {b["email"]}</a>'
-    if b.get("linkedin"): links_html += f'<a href="{b["linkedin"]}" style="color:{accent};font-size:12px;text-decoration:none;margin-left:10px;">in LinkedIn</a>'
+    if b.get("email"):    links_html += f'<a href="mailto:{_cv_esc(b["email"])}" style="color:{_cv_esc(accent)};font-size:12px;text-decoration:none;">✉ {_cv_esc(b["email"])}</a>'
+    if b.get("linkedin"): links_html += f'<a href="{_cv_esc(b["linkedin"])}" style="color:{_cv_esc(accent)};font-size:12px;text-decoration:none;margin-left:10px;">in LinkedIn</a>'
     bio_html = f'<div style="font-size:13px;color:#374151;line-height:1.5;margin-bottom:8px;">{_md_inline(b["bio"])}</div>' if b.get("bio") else ""
     return (
         f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-        f'<div style="flex:0 0 56px;height:56px;border-radius:50%;background:{accent};display:flex;align-items:center;justify-content:center;overflow:hidden;">{avatar}</div>'
+        f'<div style="flex:0 0 56px;height:56px;border-radius:50%;background:{_cv_esc(accent)};display:flex;align-items:center;justify-content:center;overflow:hidden;">{avatar}</div>'
         f'<div style="flex:1;min-width:0;">'
-        f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;">{name}</div>'
-        + (f'<div style="font-size:13px;color:#6b7280;margin-bottom:8px;">{b["role"]}</div>' if b.get("role") else "")
+        f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;">{_cv_esc(name)}</div>'
+        + (f'<div style="font-size:13px;color:#6b7280;margin-bottom:8px;">{_cv_esc(b["role"])}</div>' if b.get("role") else "")
         + bio_html
         + (f'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">{tags_html}</div>' if tags_html else "")
         + (f'<div>{links_html}</div>' if links_html else "")
@@ -2171,21 +2214,21 @@ def _render_agenda_block(b: dict) -> str:
         bg = type_colors.get(s.get("type", ""), "#fff")
         slots_html += (
             f'<div style="display:flex;border-bottom:1px solid #f3f4f6;">'
-            f'<div style="flex:0 0 72px;padding:12px 8px;font-size:12px;font-weight:600;color:{accent};border-right:2px solid {accent};text-align:right;">{s.get("time","")}</div>'
+            f'<div style="flex:0 0 72px;padding:12px 8px;font-size:12px;font-weight:600;color:{_cv_esc(accent)};border-right:2px solid {_cv_esc(accent)};text-align:right;">{_cv_esc(s.get("time",""))}</div>'
             f'<div style="flex:1;padding:10px 14px;background:{bg};">'
-            f'<div style="font-size:14px;font-weight:600;color:#111827;">{s.get("title","")}</div>'
-            + (f'<div style="font-size:12px;color:#6b7280;margin-top:2px;">👤 {s["speaker"]}</div>' if s.get("speaker") else "")
-            + (f'<div style="font-size:12px;color:#6b7280;margin-top:2px;">📍 {s["location"]}</div>' if s.get("location") else "")
-            + (f'<div style="font-size:12px;color:#374151;margin-top:4px;">{s["description"]}</div>' if s.get("description") else "")
-            + (f'<div style="font-size:10px;font-weight:600;text-transform:uppercase;color:#9ca3af;margin-top:4px;">{s["type"]}</div>' if s.get("type") else "")
+            f'<div style="font-size:14px;font-weight:600;color:#111827;">{_cv_esc(s.get("title",""))}</div>'
+            + (f'<div style="font-size:12px;color:#6b7280;margin-top:2px;">👤 {_cv_esc(s["speaker"])}</div>' if s.get("speaker") else "")
+            + (f'<div style="font-size:12px;color:#6b7280;margin-top:2px;">📍 {_cv_esc(s["location"])}</div>' if s.get("location") else "")
+            + (f'<div style="font-size:12px;color:#374151;margin-top:4px;">{_cv_esc(s["description"])}</div>' if s.get("description") else "")
+            + (f'<div style="font-size:10px;font-weight:600;text-transform:uppercase;color:#9ca3af;margin-top:4px;">{_cv_esc(s["type"])}</div>' if s.get("type") else "")
             + '</div></div>'
         )
     header = ""
     if b.get("title") or b.get("date"):
         header = (
             f'<div style="padding:12px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">'
-            + (f'<span style="font-size:15px;font-weight:700;color:#111827;">{b["title"]}</span>' if b.get("title") else "<span></span>")
-            + (f'<span style="font-size:12px;color:#6b7280;">{b["date"]}</span>' if b.get("date") else "")
+            + (f'<span style="font-size:15px;font-weight:700;color:#111827;">{_cv_esc(b["title"])}</span>' if b.get("title") else "<span></span>")
+            + (f'<span style="font-size:12px;color:#6b7280;">{_cv_esc(b["date"])}</span>' if b.get("date") else "")
             + '</div>'
         )
     return f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;">{header}{slots_html}</div>'
@@ -2206,12 +2249,12 @@ def _render_risk_flag(b: dict) -> str:
             f'<div style="border-left:4px solid {border};background:{bg};border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;">'
             f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
             f'<span style="background:{border};color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">{label}</span>'
-            f'<span style="font-size:14px;font-weight:600;color:#111827;">{r.get("title","")}</span></div>'
+            f'<span style="font-size:14px;font-weight:600;color:#111827;">{_cv_esc(r.get("title",""))}</span></div>'
             + (f'<div style="font-size:13px;color:#374151;line-height:1.5;">{_md_inline(r["description"])}</div>' if r.get("description") else "")
-            + (f'<div style="font-size:12px;color:#6b7280;margin-top:6px;">💡 <em>{r["mitigation"]}</em></div>' if r.get("mitigation") else "")
+            + (f'<div style="font-size:12px;color:#6b7280;margin-top:6px;">💡 <em>{_cv_esc(r["mitigation"])}</em></div>' if r.get("mitigation") else "")
             + '</div>'
         )
-    title_html = f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;margin-bottom:8px;">{b["title"]}</div>' if b.get("title") else ""
+    title_html = f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;margin-bottom:8px;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
     return title_html + rows
 
 
@@ -2230,12 +2273,12 @@ def _render_action_items(b: dict) -> str:
         rows += (
             f'<tr style="background:{row_bg};">'
             f'<td style="padding:10px 14px;font-size:13px;color:#111827;">{_md_inline(item.get("action",""))}</td>'
-            f'<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">{item.get("owner","—")}</td>'
-            f'<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">{item.get("due","—")}</td>'
-            f'<td style="padding:10px 14px;text-align:center;"><span style="font-size:12px;color:{color};background:{bg};border-radius:99px;padding:2px 10px;font-weight:600;">{icon} {status_label}</span></td>'
+            f'<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">{_cv_esc(item.get("owner","—"))}</td>'
+            f'<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">{_cv_esc(item.get("due","—"))}</td>'
+            f'<td style="padding:10px 14px;text-align:center;"><span style="font-size:12px;color:{color};background:{bg};border-radius:99px;padding:2px 10px;font-weight:600;">{icon} {_cv_esc(status_label)}</span></td>'
             '</tr>'
         )
-    title_html = f'<div style="padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:700;color:#111827;">{b["title"]}</div>' if b.get("title") else ""
+    title_html = f'<div style="padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:700;color:#111827;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
     return (
         f'<div style="margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
         f'{title_html}'
@@ -2280,7 +2323,7 @@ def _render_side_by_side_spec(b: dict) -> str:
     """TODO: Renders a detailed comparison of two items, displaying their attributes and valu"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ side_by_side_spec ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ side_by_side_spec ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_product_spec_table(b: dict) -> str:
@@ -2308,42 +2351,42 @@ def _render_comparison_grid(b: dict) -> str:
     """TODO: Renders a grid comparing multiple products or services with features, often usin"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ comparison_grid ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ comparison_grid ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_versus_block(b: dict) -> str:
     """TODO: Renders a block explicitly comparing two entities with a prominent "VS" separato"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ versus_block ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ versus_block ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_rating_comparison(b: dict) -> str:
     """TODO: Renders a comparison of multiple items based on star ratings or numerical scores"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ rating_comparison ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ rating_comparison ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_capability_checklist(b: dict) -> str:
     """TODO: Renders a list of capabilities, indicating which items possess each capability u"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ capability_checklist ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ capability_checklist ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_toggle_switch(b: dict) -> str:
     """TODO: Renders a visual on/off switch."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ toggle_switch ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ toggle_switch ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_expandable_text(b: dict) -> str:
     """TODO: Renders a block of text that can be expanded or collapsed to reveal more content"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ expandable_text ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ expandable_text ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_flip_card(b: dict) -> str:
@@ -2362,7 +2405,7 @@ def _render_image_hotspots(b: dict) -> str:
     """TODO: Renders an image with interactive points that display information on hover."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ image_hotspots ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ image_hotspots ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_css_dropdown_menu(b: dict) -> str:
@@ -2370,10 +2413,10 @@ def _render_css_dropdown_menu(b: dict) -> str:
     trigger = b.get("trigger_text", b.get("trigger", b.get("label", "Menu")))
     items   = b.get("menu_items", b.get("items", []))
     items_html = "".join(
-        f'<a href="{item.get("url","#")}" style="display:block;padding:8px 16px;'
+        f'<a href="{_cv_esc(item.get("url","#"))}" style="display:block;padding:8px 16px;'
         f'font-size:0.87rem;color:#3c4043;text-decoration:none;white-space:nowrap;'
         f'transition:background .1s;" onmouseover="this.style.background=\'#f8f9fa\'" '
-        f'onmouseout="this.style.background=\'\';">{item.get("label","")}</a>'
+        f'onmouseout="this.style.background=\'\';">{_cv_esc(item.get("label",""))}</a>'
         for item in items
     )
     return (
@@ -2382,7 +2425,7 @@ def _render_css_dropdown_menu(b: dict) -> str:
         f'<summary style="list-style:none;display:inline-flex;align-items:center;gap:6px;'
         f'padding:8px 14px;background:#fff;border:1px solid #dadce0;border-radius:6px;'
         f'cursor:pointer;font-size:0.88rem;font-weight:500;color:#3c4043;user-select:none;">'
-        f'{trigger}'
+        f'{_cv_esc(trigger)}'
         f'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">'
         f'<path d="M6 9l6 6 6-6"/></svg></summary>'
         f'<div style="position:absolute;top:calc(100% + 4px);left:0;z-index:20;'
@@ -2419,7 +2462,7 @@ def _render_star_rating_input(b: dict) -> str:
         f'</style>'
     )
     label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:6px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:6px;">{_cv_esc(label)}</div>'
     ) if label else ""
     return (
         f'{style}<div style="margin:1rem 0;">{label_html}'
@@ -2451,13 +2494,13 @@ def _render_segmented_control(b: dict) -> str:
         f'</style>'
     )
     items_html = "".join(
-        f'<input type="radio" id="sgc{uid}_{o["value"]}" name="{name}_{uid}" '
-        f'value="{o["value"]}"{" checked" if o["value"]==selected else ""}>'
-        f'<label for="sgc{uid}_{o["value"]}">{o["label"]}</label>'
+        f'<input type="radio" id="sgc{uid}_{_cv_esc(o["value"])}" name="{_cv_esc(name)}_{uid}" '
+        f'value="{_cv_esc(o["value"])}"{" checked" if o["value"]==selected else ""}>'
+        f'<label for="sgc{uid}_{_cv_esc(o["value"])}">{_cv_esc(o["label"])}</label>'
         for o in norm
     )
     label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:6px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:6px;">{_cv_esc(label)}</div>'
     ) if label else ""
     return (
         f'{style}<div style="margin:1rem 0;">{label_html}'
@@ -2527,14 +2570,14 @@ def _render_custom_checkbox_group(b: dict) -> str:
         val     = opt.get("value", opt.get("label", ""))
         lbl     = opt.get("label", val)
         checked = " checked" if opt.get("is_checked", opt.get("checked", False)) else ""
-        cid     = f"ccg{uid}_{i}"
+        cid     = f"ccg{uid}_{_cv_esc(i)}"
         items_html += (
-            f'<div><input type="checkbox" id="{cid}" name="{name}" value="{val}"{checked}>'
-            f'<label for="{cid}"><span class="box">{check_svg}</span>{lbl}</label></div>'
+            f'<div><input type="checkbox" id="{cid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}"{checked}>'
+            f'<label for="{cid}"><span class="box">{check_svg}</span>{_cv_esc(lbl)}</label></div>'
         )
 
     label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{_cv_esc(label)}</div>'
     ) if label else ""
     return (
         f'{style}<div class="ccg{uid}" style="margin:1rem 0;">'
@@ -2549,7 +2592,7 @@ def _render_css_slide_panel(b: dict) -> str:
     content = render(blocks) if blocks else ""
     return (f'<div style="margin:1rem 0;display:flex;gap:12px;align-items:flex-start;">'
             f'<button style="padding:8px 14px;background:#374151;color:#fff;border:none;border-radius:6px;'
-            f'font-size:0.82rem;cursor:pointer;white-space:nowrap;">{trigger} →</button>'
+            f'font-size:0.82rem;cursor:pointer;white-space:nowrap;">{_cv_esc(trigger)} →</button>'
             f'<div style="flex:1;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
             f'border-left:3px solid #374151;font-size:0.85rem;">{content}</div>'
             f'</div>')
@@ -2625,56 +2668,56 @@ def _render_avatar_group(b: dict) -> str:
     """TODO: Renders a stack or row of small user avatars, often indicating a group or commun"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ avatar_group ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ avatar_group ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_contributor_list(b: dict) -> str:
     """TODO: Renders a list of individuals who have contributed to a project or community, wi"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ contributor_list ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ contributor_list ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_customer_logo_grid(b: dict) -> str:
     """TODO: Renders a grid or row of logos from featured customers or partners."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ customer_logo_grid ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ customer_logo_grid ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_social_proof_banner(b: dict) -> str:
     """TODO: Renders a prominent banner highlighting a key social proof metric or achievement"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ social_proof_banner ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ social_proof_banner ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_media_mention_card(b: dict) -> str:
     """TODO: Renders a card showcasing a mention or feature in a media publication."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ media_mention_card ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ media_mention_card ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_expert_endorsement(b: dict) -> str:
     """TODO: Renders an endorsement from an industry expert, including their quote, name, and"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ expert_endorsement ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ expert_endorsement ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_review_callout(b: dict) -> str:
     """TODO: Renders a short, impactful quote from a customer review, often accompanied by a """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ review_callout ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ review_callout ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_social_feed_embed(b: dict) -> str:
     """TODO: Renders an embedded snippet of a social media post, such as a tweet or Instagram"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ social_feed_embed ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ social_feed_embed ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 
@@ -2691,7 +2734,7 @@ def _render_terminal_block(b: dict) -> str:
         f'<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>'
         f'<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>'
         f'<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>'
-        f'<span style="margin-left:8px;color:#9ca3af;font-size:0.75rem;">{shell}</span>'
+        f'<span style="margin-left:8px;color:#9ca3af;font-size:0.75rem;">{_cv_esc(shell)}</span>'
         f'</div>'
         f'<div style="padding:14px 18px;">'
         f'<span style="color:#a78bfa;">{prompt}</span> '
@@ -2706,13 +2749,13 @@ def _render_file_tree(b: dict) -> str:
         icon    = "📁 " if item.get("type") == "dir" else "📄 "
         name    = item.get("name", "")
         color   = "#60a5fa" if item.get("type") == "dir" else "#e2e8f0"
-        html    = f'<div style="padding:1px 0;color:{color};font-size:0.82rem;">{indent}{icon}{name}</div>'
+        html    = f'<div style="padding:1px 0;color:{color};font-size:0.82rem;">{indent}{icon}{_cv_esc(name)}</div>'
         for child in item.get("children", []):
             html += _node(child, depth + 1)
         return html
     nodes    = b.get("nodes", [])
     title    = b.get("title", "")
-    title_html = f'<div style="font-size:0.78rem;color:#9ca3af;margin-bottom:8px;">{title}</div>' if title else ""
+    title_html = f'<div style="font-size:0.78rem;color:#9ca3af;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else ""
     inner    = "".join(_node(n) for n in nodes)
     return (
         f'<div style="background:#1e1e2e;border-radius:10px;padding:16px 20px;margin:1.2rem 0;'
@@ -2727,9 +2770,9 @@ def _render_tabbed_code(b: dict) -> str:
         return ""
     uid = abs(_wa_shash(str(tabs))) % 100000
     labels = "".join(
-        f'<label for="tc-{uid}-{i}" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;'
+        f'<label for="tc-{uid}-{_cv_esc(i)}" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;'
         f'font-weight:600;border-bottom:2px solid {"#7c3aed" if i==0 else "transparent"};'
-        f'color:{"#7c3aed" if i==0 else "#9ca3af"};">{t.get("label", t.get("language","Tab"))}</label>'
+        f'color:{"#7c3aed" if i==0 else "#9ca3af"};">{_cv_esc(t.get("label", t.get("language","Tab")))}</label>'
         for i, t in enumerate(tabs)
     )
     panels = "".join(
@@ -2754,19 +2797,19 @@ def _render_http_request_block(b: dict) -> str:
     color   = colors.get(method, "#6b7280")
     hdrs_html = "".join(
         f'<div style="font-size:0.78rem;font-family:monospace;color:#374151;">'
-        f'<span style="color:#6b7280;">{k}:</span> {v}</div>'
+        f'<span style="color:#6b7280;">{_cv_esc(k)}:</span> {_cv_esc(v)}</div>'
         for k, v in (headers or {}).items()
     )
     body_html = (
         f'<pre style="background:#f9fafb;border-radius:6px;padding:10px;margin-top:10px;'
-        f'font-size:0.78rem;overflow:auto;color:#374151;">{body}</pre>'
+        f'font-size:0.78rem;overflow:auto;color:#374151;">{_cv_esc(body)}</pre>'
     ) if body else ""
     return (
         f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
         f'<div style="padding:10px 16px;display:flex;align-items:center;gap:10px;background:#f9fafb;">'
         f'<span style="background:{color};color:#fff;font-weight:700;font-size:0.75rem;'
-        f'padding:3px 10px;border-radius:5px;font-family:monospace;">{method}</span>'
-        f'<span style="font-family:monospace;font-size:0.85rem;color:#374151;">{url}</span>'
+        f'padding:3px 10px;border-radius:5px;font-family:monospace;">{_cv_esc(method)}</span>'
+        f'<span style="font-family:monospace;font-size:0.85rem;color:#374151;">{_cv_esc(url)}</span>'
         f'</div>'
         f'{"<div style=padding:10px 16px;>" + hdrs_html + "</div>" if hdrs_html else ""}'
         f'{body_html}</div>'
@@ -2778,9 +2821,9 @@ def _render_env_var_list(b: dict) -> str:
     rows = "".join(
         f'<tr>'
         f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;'
-        f'white-space:nowrap;border-bottom:1px solid #f3f4f6;">{v.get("key","")}</td>'
-        f'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{v.get("description","")}</td>'
-        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#6b7280;border-bottom:1px solid #f3f4f6;">{v.get("default","—")}</td>'
+        f'white-space:nowrap;border-bottom:1px solid #f3f4f6;">{_cv_esc(v.get("key",""))}</td>'
+        f'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{_cv_esc(v.get("description",""))}</td>'
+        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#6b7280;border-bottom:1px solid #f3f4f6;">{_cv_esc(v.get("default","—"))}</td>'
         f'<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">'
         f'{"<span style=color:#dc2626;font-size:0.72rem;font-weight:700;>required</span>" if v.get("required") else "<span style=color:#9ca3af;font-size:0.72rem;>optional</span>"}'
         f'</td></tr>'
@@ -2804,13 +2847,13 @@ def _render_prerequisite_checklist(b: dict) -> str:
     lis = "".join(
         f'<li style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:0.88rem;">'
         f'<span style="color:#16a34a;flex-shrink:0;margin-top:1px;">✓</span>'
-        f'<span style="color:#374151;">{item}</span></li>'
+        f'<span style="color:#374151;">{_cv_esc(item)}</span></li>'
         for item in items
     )
     return (
         f'<div style="border:1px solid #bbf7d0;border-radius:10px;padding:16px 20px;'
         f'background:#f0fdf4;margin:1.2rem 0;">'
-        f'<div style="font-weight:700;color:#15803d;margin-bottom:10px;">{title}</div>'
+        f'<div style="font-weight:700;color:#15803d;margin-bottom:10px;">{_cv_esc(title)}</div>'
         f'<ul style="list-style:none;padding:0;margin:0;">{lis}</ul></div>'
     )
 
@@ -2821,10 +2864,10 @@ def _render_keyboard_shortcut(b: dict) -> str:
     key_html = " + ".join(
         f'<kbd style="display:inline-block;padding:2px 8px;font-family:monospace;font-size:0.8rem;'
         f'border:1px solid #d1d5db;border-bottom:3px solid #9ca3af;border-radius:4px;'
-        f'background:#f9fafb;color:#374151;">{k}</kbd>'
+        f'background:#f9fafb;color:#374151;">{_cv_esc(k)}</kbd>'
         for k in keys
     )
-    action_html = f'<span style="margin-left:10px;font-size:0.85rem;color:#6b7280;">{action}</span>' if action else ""
+    action_html = f'<span style="margin-left:10px;font-size:0.85rem;color:#6b7280;">{_cv_esc(action)}</span>' if action else ""
     return f'<div style="margin:0.5rem 0;display:inline-flex;align-items:center;">{key_html}{action_html}</div>'
 
 
@@ -2832,13 +2875,13 @@ def _render_api_param_table(b: dict) -> str:
     params = b.get("parameters", [])
     rows = "".join(
         f'<tr>'
-        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;border-bottom:1px solid #f3f4f6;">{p.get("name","")}</td>'
-        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#2563eb;border-bottom:1px solid #f3f4f6;">{p.get("type","")}</td>'
+        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;border-bottom:1px solid #f3f4f6;">{_cv_esc(p.get("name",""))}</td>'
+        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#2563eb;border-bottom:1px solid #f3f4f6;">{_cv_esc(p.get("type",""))}</td>'
         f'<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">'
         f'{"<span style=color:#dc2626;font-size:0.72rem;font-weight:700;>required</span>" if p.get("required") else "<span style=color:#9ca3af;font-size:0.72rem;>optional</span>"}'
         f'</td>'
-        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#6b7280;border-bottom:1px solid #f3f4f6;">{p.get("default","—")}</td>'
-        f'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{p.get("description","")}</td>'
+        f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#6b7280;border-bottom:1px solid #f3f4f6;">{_cv_esc(p.get("default","—"))}</td>'
+        f'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{_cv_esc(p.get("description",""))}</td>'
         f'</tr>'
         for p in params
     )
@@ -2861,9 +2904,9 @@ def _render_reading_progress_bar(b):
     return (f'<div style="margin:1rem 0;">'
             f'<div style="font-size:0.75rem;color:#6b7280;margin-bottom:4px;">Reading progress</div>'
             f'<div style="height:3px;background:#e5e7eb;border-radius:2px;">'
-            f'<div style="height:100%;width:{pct}%;background:{color};border-radius:2px;"></div>'
+            f'<div style="height:100%;width:{_cv_esc(pct)}%;background:{_cv_esc(color)};border-radius:2px;"></div>'
             f'</div>'
-            f'<div style="font-size:0.7rem;color:#9ca3af;margin-top:2px;">{pct}% complete — fixed to top of page while scrolling</div>'
+            f'<div style="font-size:0.7rem;color:#9ca3af;margin-top:2px;">{_cv_esc(pct)}% complete — fixed to top of page while scrolling</div>'
             f'</div>')
 
 def _render_table_of_contents(b):
@@ -2875,7 +2918,7 @@ def _render_table_of_contents(b):
         indent = "padding-left:1.2rem;" if level > 1 else ""
         rows += (f'<li style="margin:4px 0;{indent}">'
                  f'<a href="#" style="color:#7c3aed;text-decoration:none;font-size:{0.9 if level==1 else 0.85}rem;">'
-                 f'{"└ " if level > 1 else ""}{text}</a></li>')
+                 f'{"└ " if level > 1 else ""}{_cv_esc(text)}</a></li>')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;'
             f'background:#f9fafb;margin:1.5rem 0;">'
             f'<div style="font-weight:700;color:#374151;margin-bottom:10px;font-size:0.85rem;">Contents</div>'
@@ -2885,14 +2928,14 @@ def _render_article_hero(b):
     title    = b.get("title", "")
     subtitle = b.get("subtitle", b.get("overline", ""))
     img_url  = b.get("image", b.get("image_url", ""))
-    img_html = (f'<img src="{_img_src(img_url)}" alt="{title}" '
+    img_html = (f'<img src="{_img_src(img_url)}" alt="{_cv_esc(title)}" '
                 f'style="width:100%;height:220px;object-fit:cover;border-radius:12px;margin-bottom:16px;display:block;">'
                 if img_url else "")
     sub_html = (f'<p style="margin:0 0 4px;font-size:0.78rem;font-weight:600;color:#7c3aed;'
-                f'text-transform:uppercase;letter-spacing:0.05em;">{subtitle}</p>'
+                f'text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(subtitle)}</p>'
                 if subtitle else "")
     return (f'<div style="margin:1.5rem 0;">{img_html}{sub_html}'
-            f'<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">{title}</h1>'
+            f'<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">{_cv_esc(title)}</h1>'
             f'</div>')
 
 def _render_scroll_to_top(b):
@@ -2910,14 +2953,14 @@ def _render_article_series_nav(b):
     url   = b.get("url", "#")
     nav = ""
     if prev:
-        nav += f'<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">← {prev}</a>'
+        nav += f'<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">← {_cv_esc(prev)}</a>'
     if prev and nxt:
         nav += '<span style="margin:0 8px;color:#d1d5db;">|</span>'
     if nxt:
-        nav += f'<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">{nxt} →</a>'
+        nav += f'<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">{_cv_esc(nxt)} →</a>'
     return (f'<div style="border:1px solid #ede9fe;border-radius:10px;padding:14px 18px;'
             f'background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
-            f'<div style="font-weight:600;color:#7c3aed;font-size:0.85rem;">📚 <a href="{url}" style="color:#7c3aed;text-decoration:none;">{title}</a></div>'
+            f'<div style="font-weight:600;color:#7c3aed;font-size:0.85rem;">📚 <a href="{_cv_esc(url)}" style="color:#7c3aed;text-decoration:none;">{_cv_esc(title)}</a></div>'
             f'<div>{nav}</div>'
             f'</div>')
 
@@ -2928,11 +2971,11 @@ def _render_post_metadata_bar(b):
     
     parts = []
     if author:
-        parts.append(f'<span style="font-weight: 600; color: #374151;">✍️ {author}</span>')
+        parts.append(f'<span style="font-weight: 600; color: #374151;">✍️ {_cv_esc(author)}</span>')
     if date:
-        parts.append(f'<span style="color: #6b7280;">📅 {date}</span>')
+        parts.append(f'<span style="color: #6b7280;">📅 {_cv_esc(date)}</span>')
     if read_time:
-        parts.append(f'<span style="color: #6b7280;">⏱️ {read_time} min read</span>')
+        parts.append(f'<span style="color: #6b7280;">⏱️ {_cv_esc(read_time)} min read</span>')
         
     inner = ' <span style="color: #e5e7eb; margin: 0 8px;">|</span> '.join(parts)
     return (f'<div class="post-metadata-bar" style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; '
@@ -2947,9 +2990,9 @@ def _render_notification_badge(b):
             f'  <svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
             f'  </svg>'
-            f'  <span style="position:absolute;top:0;right:0;transform:translate(25%, -25%);background:{color};color:#fff;'
+            f'  <span style="position:absolute;top:0;right:0;transform:translate(25%, -25%);background:{_cv_esc(color)};color:#fff;'
             f'               font-size:0.7rem;font-weight:700;border-radius:9999px;padding:2px 6px;line-height:1;min-width:16px;'
-            f'               text-align:center;box-shadow:0 0 0 2px #fff;">{text}</span>'
+            f'               text-align:center;box-shadow:0 0 0 2px #fff;">{_cv_esc(text)}</span>'
             f'</div>')
 
 def _render_expandable_list(b):
@@ -2961,13 +3004,13 @@ def _render_expandable_list(b):
             child_html = "".join(f'<div style="margin-left: 16px;">{render_node(c)}</div>' for c in children)
             return (f'<details style="margin: 4px 0; font-size: 0.9rem;">'
                     f'  <summary style="cursor: pointer; font-weight: 500; color: #1f2937; outline: none; list-style-type: none;">'
-                    f'    <span style="display: inline-block; margin-right: 4px;">▶</span> {text}'
+                    f'    <span style="display: inline-block; margin-right: 4px;">▶</span> {_cv_esc(text)}'
                     f'  </summary>'
                     f'  <div style="padding-left: 12px; border-left: 1px dashed #d1d5db; margin-top: 2px;">{child_html}</div>'
                     f'</details>')
         else:
             return (f'<div style="margin: 4px 0; color: #4b5563; font-size: 0.9rem; padding-left: 14px;">'
-                    f'  • {text}'
+                    f'  • {_cv_esc(text)}'
                     f'</div>')
     list_items = "".join(render_node(item) for item in items)
     return (f'<div class="expandable-list" style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; margin: 1rem 0;">'
@@ -2986,8 +3029,8 @@ def _render_poll_block(b):
         opts_html += (
             f'<div style="margin-bottom: 12px; position: relative;">'
             f'  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; color: #374151; margin-bottom: 4px; z-index: 10; position: relative;">'
-            f'    <span>{text}</span>'
-            f'    <span>{votes} votes ({pct:.1f}%)</span>'
+            f'    <span>{_cv_esc(text)}</span>'
+            f'    <span>{_cv_esc(votes)} votes ({pct:.1f}%)</span>'
             f'  </div>'
             f'  <div style="height: 24px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative; border: 1px solid #e5e7eb;">'
             f'    <div style="width: {pct:.1f}%; height: 100%; background: #7c3aed; opacity: 0.15; position: absolute; left: 0; top: 0; border-radius: 5px;"></div>'
@@ -2996,23 +3039,23 @@ def _render_poll_block(b):
         )
     return (f'<div class="poll-block" style="padding: 16px; border: 1px solid #ede9fe; border-radius: 12px; background: #fff; '
             f'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin: 1.2rem 0;">'
-            f'  <h4 style="margin: 0 0 16px; font-size: 1rem; font-weight: 700; color: #111827;">📊 {question}</h4>'
+            f'  <h4 style="margin: 0 0 16px; font-size: 1rem; font-weight: 700; color: #111827;">📊 {_cv_esc(question)}</h4>'
             f'  {opts_html}'
             f'</div>')
 
 def _render_abbr_tooltip(b):
     text = b.get("text", "")
     title = b.get("title", "")
-    return (f'<abbr title="{title}" style="text-decoration: underline dotted #7c3aed; text-underline-offset: 4px; '
-            f'cursor: help; font-weight: 600; color: #4338ca;">{text}</abbr>')
+    return (f'<abbr title="{_cv_esc(title)}" style="text-decoration: underline dotted #7c3aed; text-underline-offset: 4px; '
+            f'cursor: help; font-weight: 600; color: #4338ca;">{_cv_esc(text)}</abbr>')
 
 def _render_copy_to_clipboard(b):
     text = b.get("text", "")
     val = b.get("value", "")
     return (f'<span class="copy-to-clipboard" style="display: inline-flex; align-items: center; gap: 6px; '
             f'background: #f3f4f6; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: #1f2937;">'
-            f'  <span>{text}</span>'
-            f'  <button onclick="navigator.clipboard.writeText(\'{val}\'); this.textContent=\'✓\'; setTimeout(() => this.textContent=\'📋\', 1000)" '
+            f'  <span>{_cv_esc(text)}</span>'
+            f'  <button onclick="navigator.clipboard.writeText({_cv_esc(_js_json(str(val)))}); this.textContent=\'✓\'; setTimeout(() => this.textContent=\'📋\', 1000)" '
             f'          style="border: none; background: none; cursor: pointer; font-size: 0.85rem; padding: 0; display: inline-flex; align-items: center; justify-content: center; outline: none; margin-left: 4px;" title="Copy to clipboard">'
             f'    📋'
             f'  </button>'
@@ -3022,27 +3065,27 @@ def _render_embed_codepen(b):
     pen_id = b.get("pen_id","")
     user = b.get("user_handle","")
     return (f'<p><iframe height="600" style="width:100%;border:1px solid #e5e7eb;border-radius:8px;'
-            f'margin:1.2rem 0;" src="https://codepen.io/{user}/embed/{pen_id}?default-tab=result" '
+            f'margin:1.2rem 0;" src="https://codepen.io/{_cv_esc(user)}/embed/{_cv_esc(pen_id)}?default-tab=result" '
             f'loading="lazy" allowtransparency="true" allowfullscreen="true"></iframe></p>')
 
 def _render_embed_stackblitz(b):
     project_id = b.get("project_id","")
-    return (f'<iframe src="https://stackblitz.com/edit/{project_id}?embed=1" '
+    return (f'<iframe src="https://stackblitz.com/edit/{_cv_esc(project_id)}?embed=1" '
             f'style="width:100%;height:500px;border:1px solid #e5e7eb;border-radius:8px;margin:1.2rem 0;" '
             f'loading="lazy"></iframe>')
 
 def _render_embed_gist(b):
     gist_id = b.get("gist_id","")
-    return (f'<script src="https://gist.github.com/{gist_id}.js"></script>')
+    return (f'<script src="https://gist.github.com/{_cv_esc(gist_id)}.js"></script>')
 
 def _render_embed_tweet(b):
     tweet_id = b.get("tweet_id","")
-    return (f'<blockquote class="twitter-tweet" style="margin:1.2rem 0;"><a href="https://twitter.com/twitter/status/{tweet_id}"></a></blockquote>'
+    return (f'<blockquote class="twitter-tweet" style="margin:1.2rem 0;"><a href="https://twitter.com/twitter/status/{_cv_esc(tweet_id)}"></a></blockquote>'
             f'<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>')
 
 def _render_embed_google_slides(b):
     pres_id = b.get("presentation_id","")
-    return (f'<iframe src="https://docs.google.com/presentation/d/{pres_id}/embed" '
+    return (f'<iframe src="https://docs.google.com/presentation/d/{_cv_esc(pres_id)}/embed" '
             f'frameborder="0" width="100%" height="569" allowfullscreen="true" mozallowfullscreen="true" '
             f'webkitallowfullscreen="true" style="border:1px solid #e5e7eb;border-radius:8px;margin:1.2rem 0;"></iframe>')
 
@@ -3050,13 +3093,13 @@ def _render_lottie_animation(b):
     url = b.get("src_url","")
     loop = b.get("loop",True)
     return (f'<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>'
-            f'<lottie-player src="{url}" background="transparent" speed="1" style="width:100%;max-height:400px;margin:1.2rem 0;" '
+            f'<lottie-player src="{_cv_esc(url)}" background="transparent" speed="1" style="width:100%;max-height:400px;margin:1.2rem 0;" '
             f'{"loop" if loop else ""} autoplay></lottie-player>')
 
 def _render_figma_embed(b):
     url = b.get("embed_url","")
     return (f'<iframe style="border:1px solid #e5e7eb;border-radius:8px;width:100%;height:500px;margin:1.2rem 0;" '
-            f'src="{url}" allowfullscreen></iframe>')
+            f'src="{_cv_esc(url)}" allowfullscreen></iframe>')
 
 
 def _render_difficulty_badge(b):
@@ -3072,14 +3115,14 @@ def _render_caution_block(b):
     return (f'<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:8px;'
             f'padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">'
             f'<div style="font-weight:700;color:#991b1b;margin-bottom:6px;">⚠ Caution</div>'
-            f'<p style="margin:0;font-size:0.88rem;color:#7f1d1d;">{msg}</p></div>')
+            f'<p style="margin:0;font-size:0.88rem;color:#7f1d1d;">{_cv_esc(msg)}</p></div>')
 
 def _render_checklist_interactive(b):
     items = b.get("items", [])
     lis = "".join(
         f'<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f3f4f6;">'
         f'<input type="checkbox" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">'
-        f'<span style="font-size:0.88rem;color:#374151;">{item}</span></li>'
+        f'<span style="font-size:0.88rem;color:#374151;">{_cv_esc(item)}</span></li>'
         for item in items
     )
     return (f'<ul style="list-style:none;padding:0;margin:1.2rem 0;'
@@ -3090,13 +3133,13 @@ def _render_glossary_inline(b):
     defn = b.get("definition","").replace('"','&quot;')
     return (f'<span style="position:relative;display:inline-block;">'
             f'<span style="border-bottom:2px dotted #7c3aed;cursor:help;color:#7c3aed;font-weight:600;" '
-            f'title="{defn}">{term}</span></span>')
+            f'title="{defn}">{_cv_esc(term)}</span></span>')
 
 def _render_time_estimate(b):
     mins = b.get("minutes", 5)
     return (f'<span style="display:inline-flex;align-items:center;gap:5px;'
             f'font-size:0.78rem;color:#6b7280;background:#f3f4f6;'
-            f'padding:3px 10px;border-radius:100px;">🕐 {mins} min read</span>')
+            f'padding:3px 10px;border-radius:100px;">🕐 {_cv_esc(mins)} min read</span>')
 
 def _render_progress_checkpoint(b):
     current = b.get("current_step", 1)
@@ -3114,17 +3157,17 @@ def _render_progress_checkpoint(b):
             f'<div style="background:#f3f4f6;border-radius:100px;height:6px;overflow:hidden;">'
             f'<div style="height:100%;background:#7c3aed;width:{pct}%;border-radius:100px;"></div>'
             f'</div>'
-            f'<div style="font-size:0.78rem;color:#6b7280;margin-top:6px;">Step {current} of {total}</div>'
+            f'<div style="font-size:0.78rem;color:#6b7280;margin-top:6px;">Step {_cv_esc(current)} of {_cv_esc(total)}</div>'
             f'</div>')
 
 def _render_social_share_bar(b):
     platforms = b.get("platforms", ["twitter","linkedin"])
     url       = b.get("url", "")
     cfg = {
-        "twitter":  ("#1da1f2", "X / Twitter", f"https://twitter.com/intent/tweet?url={url}"),
-        "linkedin": ("#0a66c2", "LinkedIn",     f"https://www.linkedin.com/sharing/share-offsite/?url={url}"),
-        "facebook": ("#1877f2", "Facebook",     f"https://www.facebook.com/sharer/sharer.php?u={url}"),
-        "reddit":   ("#ff4500", "Reddit",       f"https://reddit.com/submit?url={url}"),
+        "twitter":  ("#1da1f2", "X / Twitter", f"https://twitter.com/intent/tweet?url={_cv_esc(url)}"),
+        "linkedin": ("#0a66c2", "LinkedIn",     f"https://www.linkedin.com/sharing/share-offsite/?url={_cv_esc(url)}"),
+        "facebook": ("#1877f2", "Facebook",     f"https://www.facebook.com/sharer/sharer.php?u={_cv_esc(url)}"),
+        "reddit":   ("#ff4500", "Reddit",       f"https://reddit.com/submit?url={_cv_esc(url)}"),
     }
     btns = "".join(
         f'<a href="{cfg[p][2]}" target="_blank" rel="noopener" '
@@ -3140,12 +3183,12 @@ def _render_newsletter_cta(b):
     button_label = b.get("button_label", "Subscribe")
     return (f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px 28px;'
             f'background:linear-gradient(135deg,#f9fafb,#f3f4f6);margin:1.5rem 0;text-align:center;">'
-            f'<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:8px;">{headline}</div>'
+            f'<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:8px;">{_cv_esc(headline)}</div>'
             f'<div style="display:flex;gap:8px;max-width:400px;margin:12px auto 0;">'
             f'<input type="email" placeholder="you@example.com" '
             f'style="flex:1;padding:8px 14px;border:1px solid #d1d5db;border-radius:6px;font-size:0.88rem;">'
             f'<button style="padding:8px 18px;background:#7c3aed;color:#fff;border:none;'
-            f'border-radius:6px;font-weight:600;font-size:0.88rem;cursor:pointer;">{button_label}</button>'
+            f'border-radius:6px;font-weight:600;font-size:0.88rem;cursor:pointer;">{_cv_esc(button_label)}</button>'
             f'</div></div>')
 
 def _render_author_bio_card(b):
@@ -3153,33 +3196,33 @@ def _render_author_bio_card(b):
     avatar = b.get("image", b.get("avatar_url", b.get("avatar","")))
     bio    = b.get("bio","")
     links  = b.get("links",{}) or {}
-    avatar_html = (f'<img src="{_img_src(avatar)}" alt="{name}" '
+    avatar_html = (f'<img src="{_img_src(avatar)}" alt="{_cv_esc(name)}" '
                    f'style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
                    if avatar else
                    f'<div style="width:56px;height:56px;border-radius:50%;background:#e5e7eb;'
                    f'display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👤</div>')
     links_html = "".join(
-        f'<a href="{v}" target="_blank" rel="noopener" '
-        f'style="font-size:0.78rem;color:#6b7280;text-decoration:none;margin-right:10px;">{k}</a>'
+        f'<a href="{_cv_esc(v)}" target="_blank" rel="noopener" '
+        f'style="font-size:0.78rem;color:#6b7280;text-decoration:none;margin-right:10px;">{_cv_esc(k)}</a>'
         for k, v in links.items()
     )
     return (f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:18px 22px;'
             f'display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">'
             f'{avatar_html}'
-            f'<div><div style="font-weight:700;color:#111827;margin-bottom:4px;">{name}</div>'
-            f'<p style="margin:0 0 8px;font-size:0.85rem;color:#6b7280;line-height:1.5;">{bio}</p>'
+            f'<div><div style="font-weight:700;color:#111827;margin-bottom:4px;">{_cv_esc(name)}</div>'
+            f'<p style="margin:0 0 8px;font-size:0.85rem;color:#6b7280;line-height:1.5;">{_cv_esc(bio)}</p>'
             f'{"<div>" + links_html + "</div>" if links_html else ""}'
             f'</div></div>')
 
 def _render_related_posts_grid(b):
     posts = b.get("posts",[])
     cards = "".join(
-        f'<a href="{p.get("url","#")}" style="display:block;border:1px solid #e5e7eb;border-radius:8px;'
+        f'<a href="{_cv_esc(p.get("url","#"))}" style="display:block;border:1px solid #e5e7eb;border-radius:8px;'
         f'padding:14px 16px;text-decoration:none;transition:box-shadow 0.15s;" '
         f'onmouseover="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,0.08)\'" '
         f'onmouseout="this.style.boxShadow=\'none\'">'
-        f'{"<div style=font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;margin-bottom:4px;>" + p.get("topic","") + "</div>" if p.get("topic") else ""}'
-        f'<div style="font-size:0.88rem;font-weight:600;color:#111827;line-height:1.4;">{p.get("title","")}</div>'
+        f'{"<div style=font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;margin-bottom:4px;>" + _cv_esc(p.get("topic","")) + "</div>" if p.get("topic") else ""}'
+        f'<div style="font-size:0.88rem;font-weight:600;color:#111827;line-height:1.4;">{_cv_esc(p.get("title",""))}</div>'
         f'</a>'
         for p in posts
     )
@@ -3193,19 +3236,19 @@ def _render_series_overview_card(b):
     name  = b.get("series_name","")
     parts = b.get("parts",[])
     items = "".join(
-        f'<a href="{p.get("url","#")}" style="display:flex;align-items:center;gap:10px;padding:8px 0;'
+        f'<a href="{_cv_esc(p.get("url","#"))}" style="display:flex;align-items:center;gap:10px;padding:8px 0;'
         f'border-bottom:1px solid #f3f4f6;text-decoration:none;">'
         f'<span style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;'
         f'justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;'
         f'background:{"#7c3aed" if p.get("current") else "#f3f4f6"};'
         f'color:{"#fff" if p.get("current") else "#6b7280"};">{i+1}</span>'
         f'<span style="font-size:0.85rem;{"font-weight:700;color:#7c3aed;" if p.get("current") else "color:#374151;"}">'
-        f'{p.get("title","")}</span></a>'
+        f'{_cv_esc(p.get("title",""))}</span></a>'
         for i, p in enumerate(parts)
     )
     return (f'<div style="border:1px solid #ede9fe;border-radius:10px;padding:16px 20px;'
             f'background:#faf5ff;margin:1.2rem 0;">'
-            f'<div style="font-weight:700;color:#7c3aed;margin-bottom:10px;">📖 {name}</div>'
+            f'<div style="font-weight:700;color:#7c3aed;margin-bottom:10px;">📖 {_cv_esc(name)}</div>'
             f'{items}</div>')
 
 def _render_reaction_group(b):
@@ -3223,12 +3266,12 @@ def _render_reaction_group(b):
 def _render_share_quote(b):
     text   = b.get("text","")
     author = b.get("author","")
-    tweet_text = f"{text[:200]} — {author}" if author else text[:200]
+    tweet_text = f"{_cv_esc(text[:200])} — {_cv_esc(author)}" if author else text[:200]
     return (f'<div style="border-left:4px solid #7c3aed;padding:16px 20px;background:#faf5ff;'
             f'border-radius:0 10px 10px 0;margin:1.5rem 0;position:relative;">'
-            f'<p style="font-size:1rem;font-style:italic;color:#1e1b4b;line-height:1.6;margin:0 0 10px;">"{text}"</p>'
-            f'{"<div style=font-size:0.8rem;color:#7c3aed;font-weight:600;>— " + author + "</div>" if author else ""}'
-            f'<a href="https://twitter.com/intent/tweet?text={tweet_text.replace(" ","+")}" target="_blank" rel="noopener" '
+            f'<p style="font-size:1rem;font-style:italic;color:#1e1b4b;line-height:1.6;margin:0 0 10px;">"{_cv_esc(text)}"</p>'
+            f'{"<div style=font-size:0.8rem;color:#7c3aed;font-weight:600;>— " + _cv_esc(author) + "</div>" if author else ""}'
+            f'<a href="https://twitter.com/intent/tweet?text={_cv_esc(tweet_text.replace(" ","+"))}" target="_blank" rel="noopener" '
             f'style="display:inline-flex;align-items:center;gap:5px;font-size:0.75rem;color:#6b7280;'
             f'text-decoration:none;margin-top:8px;">Share this →</a></div>')
 
@@ -3236,26 +3279,26 @@ def _render_follow_cta(b):
     msg   = b.get("message","Follow for more")
     links = b.get("platform_links",{}) or {}
     btns  = "".join(
-        f'<a href="{v}" target="_blank" rel="noopener" '
+        f'<a href="{_cv_esc(v)}" target="_blank" rel="noopener" '
         f'style="padding:8px 18px;border:1px solid #d1d5db;border-radius:6px;font-size:0.85rem;'
-        f'font-weight:600;color:#374151;text-decoration:none;">{k}</a>'
+        f'font-weight:600;color:#374151;text-decoration:none;">{_cv_esc(k)}</a>'
         for k, v in links.items()
     )
     return (f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;'
             f'display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;'
             f'gap:12px;margin:1.5rem 0;background:#f9fafb;">'
-            f'<span style="font-size:0.95rem;font-weight:600;color:#111827;">{msg}</span>'
+            f'<span style="font-size:0.95rem;font-weight:600;color:#111827;">{_cv_esc(msg)}</span>'
             f'<div style="display:flex;gap:8px;flex-wrap:wrap;">{btns}</div></div>')
 
 def _render_follow_button(b):
     handle   = b.get("target_handle","")
     platform = b.get("platform","twitter")
-    urls = {"twitter": f"https://twitter.com/{handle}", "github": f"https://github.com/{handle}", "linkedin": f"https://linkedin.com/in/{handle}"}
+    urls = {"twitter": f"https://twitter.com/{_cv_esc(handle)}", "github": f"https://github.com/{_cv_esc(handle)}", "linkedin": f"https://linkedin.com/in/{_cv_esc(handle)}"}
     url = urls.get(platform, "#")
     return (f'<a href="{url}" target="_blank" rel="noopener" '
             f'style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;'
             f'border:1px solid #d1d5db;border-radius:6px;font-size:0.85rem;font-weight:600;'
-            f'color:#374151;text-decoration:none;background:#f9fafb;">Follow @{handle}</a>')
+            f'color:#374151;text-decoration:none;background:#f9fafb;">Follow @{_cv_esc(handle)}</a>')
 
 
 def _render_version_badge(b):
@@ -3265,15 +3308,15 @@ def _render_version_badge(b):
     c = colors.get(status,"#6b7280")
     return (f'<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid {c};'
             f'border-radius:100px;padding:2px 10px;font-size:0.75rem;font-weight:700;color:{c};'
-            f'font-family:monospace;">v{v}'
-            f'{"<span style=opacity:0.7;font-weight:400;margin-left:2px;> · " + status + "</span>" if status != "stable" else ""}'
+            f'font-family:monospace;">v{_cv_esc(v)}'
+            f'{"<span style=opacity:0.7;font-weight:400;margin-left:2px;> · " + _cv_esc(status) + "</span>" if status != "stable" else ""}'
             f'</span>')
 
 def _render_deprecation_notice(b):
     alt = b.get("alternative","")
     rv  = b.get("removal_version","")
-    rv_html = f'<div style="margin-top:6px;font-size:0.8rem;color:#991b1b;">Removed in: <code>{rv}</code></div>' if rv else ""
-    alt_html = f'<div style="margin-top:4px;font-size:0.85rem;">Use instead: <code style="background:#fef2f2;padding:1px 6px;border-radius:4px;">{alt}</code></div>' if alt else ""
+    rv_html = f'<div style="margin-top:6px;font-size:0.8rem;color:#991b1b;">Removed in: <code>{_cv_esc(rv)}</code></div>' if rv else ""
+    alt_html = f'<div style="margin-top:4px;font-size:0.85rem;">Use instead: <code style="background:#fef2f2;padding:1px 6px;border-radius:4px;">{_cv_esc(alt)}</code></div>' if alt else ""
     return (f'<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:8px;'
             f'padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">'
             f'<div style="font-weight:700;color:#991b1b;margin-bottom:4px;">⚠ Deprecated</div>'
@@ -3284,7 +3327,7 @@ def _render_experimental_banner(b):
     return (f'<div style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:8px;'
             f'padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">'
             f'<div style="font-weight:700;color:#92400e;margin-bottom:4px;">🧪 Experimental</div>'
-            f'{"<p style=font-size:0.85rem;color:#78350f;margin:0;>" + msg + "</p>" if msg else ""}</div>')
+            f'{"<p style=font-size:0.85rem;color:#78350f;margin:0;>" + _cv_esc(msg) + "</p>" if msg else ""}</div>')
 
 def _render_cli_command(b):
     cmd = b.get("command","").replace("<","&lt;").replace(">","&gt;")
@@ -3316,7 +3359,7 @@ def _render_json_tree_viewer(b):
     import json as _json2
     raw = b.get("data","")
     try:
-        pretty = _json2.dumps(_json2.loads(raw), indent=2)
+        pretty = _js_json(_json2.loads(raw), indent=2)
     except Exception:
         pretty = raw
     pretty = pretty.replace("<","&lt;").replace(">","&gt;")
@@ -3328,7 +3371,7 @@ def _render_json_tree_viewer(b):
 def _render_key_takeaways(b):
     raw = b.get("items", b.get("points", []))
     points = [p.get("text", p) if isinstance(p, dict) else p for p in raw]
-    lis = "".join(f'<li style="margin-bottom:6px;font-size:0.88rem;color:#1e3a5f;">{p}</li>' for p in points)
+    lis = "".join(f'<li style="margin-bottom:6px;font-size:0.88rem;color:#1e3a5f;">{_cv_esc(p)}</li>' for p in points)
     return (f'<div style="border:1px solid #bfdbfe;border-left:4px solid #2563eb;border-radius:8px;'
             f'padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">'
             f'<div style="font-weight:700;color:#1d4ed8;margin-bottom:10px;">🔑 Key takeaways</div>'
@@ -3340,14 +3383,14 @@ def _render_summary_box(b):
             f'background:#f9fafb;margin:1.2rem 0;">'
             f'<div style="font-weight:700;color:#374151;margin-bottom:8px;font-size:0.82rem;'
             f'text-transform:uppercase;letter-spacing:0.08em;">Summary</div>'
-            f'<p style="margin:0;color:#4b5563;font-size:0.9rem;line-height:1.6;">{text}</p></div>')
+            f'<p style="margin:0;color:#4b5563;font-size:0.9rem;line-height:1.6;">{_cv_esc(text)}</p></div>')
 
 def _render_learning_objectives(b):
     objs = b.get("objectives",[])
     lis = "".join(
         f'<li style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:0.88rem;">'
         f'<span style="color:#2563eb;flex-shrink:0;margin-top:1px;">→</span>'
-        f'<span style="color:#1e3a5f;">{o}</span></li>'
+        f'<span style="color:#1e3a5f;">{_cv_esc(o)}</span></li>'
         for o in objs
     )
     return (f'<div style="border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;'
@@ -3364,14 +3407,14 @@ def _render_changelog_entry(b):
         f'<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:4px;">'
         f'<span style="font-size:0.7rem;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;'
         f'background:{tag_colors.get(str(c.get("type","changed")).lower(),"#6b7280")}22;'
-        f'color:{tag_colors.get(str(c.get("type","changed")).lower(),"#6b7280")};">{c.get("type","changed").upper()}</span>'
-        f'<span style="font-size:0.85rem;color:#374151;">{c.get("text","")}</span></div>'
+        f'color:{tag_colors.get(str(c.get("type","changed")).lower(),"#6b7280")};">{_cv_esc(c.get("type","changed").upper())}</span>'
+        f'<span style="font-size:0.85rem;color:#374151;">{_cv_esc(c.get("text",""))}</span></div>'
         for c in changes
     )
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;margin:1.2rem 0;">'
             f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
-            f'<span style="font-family:monospace;font-weight:700;font-size:0.95rem;color:#374151;">v{version}</span>'
-            f'{"<span style=font-size:0.8rem;color:#9ca3af;>" + date + "</span>" if date else ""}'
+            f'<span style="font-family:monospace;font-weight:700;font-size:0.95rem;color:#374151;">v{_cv_esc(version)}</span>'
+            f'{"<span style=font-size:0.8rem;color:#9ca3af;>" + _cv_esc(date) + "</span>" if date else ""}'
             f'</div>{items_html}</div>')
 
 def _render_release_notes(b):
@@ -3381,13 +3424,13 @@ def _render_release_notes(b):
     changed = b.get("changed",[])
     def section(label, items, color):
         if not items: return ""
-        lis = "".join(f'<li style="font-size:0.85rem;color:#374151;margin-bottom:3px;">{i}</li>' for i in items)
+        lis = "".join(f'<li style="font-size:0.85rem;color:#374151;margin-bottom:3px;">{_cv_esc(i)}</li>' for i in items)
         return (f'<div style="margin-bottom:14px;">'
                 f'<div style="font-weight:700;font-size:0.78rem;text-transform:uppercase;'
                 f'letter-spacing:0.08em;color:{color};margin-bottom:6px;">{label}</div>'
                 f'<ul style="margin:0;padding-left:1.2em;">{lis}</ul></div>')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 22px;margin:1.2rem 0;">'
-            f'<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:14px;">{title}</div>'
+            f'<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:14px;">{_cv_esc(title)}</div>'
             f'{section("Added", added, "#16a34a")}'
             f'{section("Fixed", fixed, "#2563eb")}'
             f'{section("Changed", changed, "#d97706")}'
@@ -3396,12 +3439,12 @@ def _render_release_notes(b):
 def _render_further_reading(b):
     links = b.get("links",[])
     items = "".join(
-        f'<a href="{l.get("url","#")}" target="_blank" rel="noopener" '
+        f'<a href="{_cv_esc(l.get("url","#"))}" target="_blank" rel="noopener" '
         f'style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;'
         f'border-bottom:1px solid #f3f4f6;text-decoration:none;">'
         f'<span style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>'
-        f'<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">{l.get("title","")}</div>'
-        f'{"<div style=font-size:0.78rem;color:#6b7280;margin-top:2px;>" + l.get("annotation","") + "</div>" if l.get("annotation") else ""}'
+        f'<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">{_cv_esc(l.get("title",""))}</div>'
+        f'{"<div style=font-size:0.78rem;color:#6b7280;margin-top:2px;>" + _cv_esc(l.get("annotation","")) + "</div>" if l.get("annotation") else ""}'
         f'</div></a>'
         for l in links
     )
@@ -3412,13 +3455,13 @@ def _render_further_reading(b):
 def _render_resources_list(b):
     items = b.get("items",[])
     rows = "".join(
-        f'<a href="{i.get("url","#")}" target="_blank" rel="noopener" '
+        f'<a href="{_cv_esc(i.get("url","#"))}" target="_blank" rel="noopener" '
         f'style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;'
         f'border-bottom:1px solid #f3f4f6;text-decoration:none;">'
-        f'<span style="font-size:0.88rem;color:#1d4ed8;font-weight:500;">{i.get("title","")}</span>'
+        f'<span style="font-size:0.88rem;color:#1d4ed8;font-weight:500;">{_cv_esc(i.get("title",""))}</span>'
         f'<div style="display:flex;align-items:center;gap:8px;">'
-        f'{"<span style=font-size:0.75rem;color:#9ca3af;>" + i.get("size","") + "</span>" if i.get("size") else ""}'
-        f'{"<span style=font-size:0.72rem;background:#f3f4f6;padding:2px 6px;border-radius:4px;color:#6b7280;>" + i.get("type","").upper() + "</span>" if i.get("type") else ""}'
+        f'{"<span style=font-size:0.75rem;color:#9ca3af;>" + _cv_esc(i.get("size","")) + "</span>" if i.get("size") else ""}'
+        f'{"<span style=font-size:0.72rem;background:#f3f4f6;padding:2px 6px;border-radius:4px;color:#6b7280;>" + _cv_esc(i.get("type","").upper()) + "</span>" if i.get("type") else ""}'
         f'</div></a>'
         for i in items
     )
@@ -3431,17 +3474,17 @@ def _render_sidebar_note(b):
     content = b.get("content","")
     return (f'<div style="border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:12px 16px;'
             f'background:#faf5ff;margin:1.2rem 0;">'
-            f'<div style="font-weight:700;font-size:0.8rem;color:#7c3aed;margin-bottom:4px;">{title}</div>'
-            f'<p style="margin:0;font-size:0.85rem;color:#4b5563;">{content}</p></div>')
+            f'<div style="font-weight:700;font-size:0.8rem;color:#7c3aed;margin-bottom:4px;">{_cv_esc(title)}</div>'
+            f'<p style="margin:0;font-size:0.85rem;color:#4b5563;">{_cv_esc(content)}</p></div>')
 
 
 def _render_color_swatch_grid(b: dict) -> str:
     colors = b.get("colors", [])
     items = "".join(
         f'<div style="display:flex;flex-direction:column;gap:4px;">'
-        f'<div style="width:100%;height:40px;background:{c.get("hex","#e5e7eb")};border-radius:4px;"></div>'
-        f'<div style="font-size:0.65rem;color:#6b7280;text-align:center;">{c.get("name","")}</div>'
-        f'<div style="font-size:0.6rem;color:#9ca3af;text-align:center;font-family:monospace;">{c.get("hex","")}</div>'
+        f'<div style="width:100%;height:40px;background:{_cv_esc(c.get("hex","#e5e7eb"))};border-radius:4px;"></div>'
+        f'<div style="font-size:0.65rem;color:#6b7280;text-align:center;">{_cv_esc(c.get("name",""))}</div>'
+        f'<div style="font-size:0.6rem;color:#9ca3af;text-align:center;font-family:monospace;">{_cv_esc(c.get("hex",""))}</div>'
         f'</div>'
         for c in colors
     )
@@ -3554,7 +3597,7 @@ def _render_chartjs_bar(b: dict) -> str:
         group_x_start = pad_l + i * slot_width + (slot_width - bar_group_w) / 2
         
         # Add label text
-        x_labels += f'<text x="{pad_l + i * slot_width + slot_width/2}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">{lbl}</text>'
+        x_labels += f'<text x="{pad_l + i * slot_width + slot_width/2}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
         
         for di, ds in enumerate(datasets):
             data = ds.get("data", [])
@@ -3564,8 +3607,8 @@ def _render_chartjs_bar(b: dict) -> str:
                 bar_x = group_x_start + di * single_bar_w
                 bar_y = pad_t + chart_h - bar_h
                 
-                grad_id = f"bar_grad_{chart_id}_{di}"
-                glow_id = f"bar_glow_{chart_id}_{di}"
+                grad_id = f"bar_grad_{chart_id}_{_cv_esc(di)}"
+                glow_id = f"bar_glow_{chart_id}_{_cv_esc(di)}"
                 
                 # Draw rounded top bars using path or rect with rx
                 bars_html.append(f"""
@@ -3576,7 +3619,7 @@ def _render_chartjs_bar(b: dict) -> str:
     bars_markup = "\n".join(bars_html)
     
     label = datasets[0].get("label", "") if datasets else ""
-    label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{label}</div>' if label else ""
+    label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
     
     return f"""
     <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
@@ -3641,7 +3684,7 @@ def _render_chartjs_line(b: dict) -> str:
             if n_labels > 8 and i % (n_labels // 4) != 0 and i != n_labels - 1:
                 continue
             x = pad_l + (i / (n_labels - 1)) * chart_w
-            x_labels += f'<text x="{x}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">{lbl}</text>'
+            x_labels += f'<text x="{x}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
             
     # Draw paths for datasets
     colors = [
@@ -3670,8 +3713,8 @@ def _render_chartjs_line(b: dict) -> str:
         stroke_color = color_set["stroke"]
         stop_color = color_set["stop"]
         
-        grad_id = f"grad_{chart_id}_{di}"
-        glow_id = f"glow_{chart_id}_{di}"
+        grad_id = f"grad_{chart_id}_{_cv_esc(di)}"
+        glow_id = f"glow_{chart_id}_{_cv_esc(di)}"
         
         defs.append(f"""
         <linearGradient id="{grad_id}" x1="0" y1="0" x2="0" y2="1">
@@ -3699,7 +3742,7 @@ def _render_chartjs_line(b: dict) -> str:
     series_html = "\n".join(series_elements)
     
     label = datasets[0].get("label", "") if datasets else ""
-    label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{label}</div>' if label else ""
+    label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
     
     return f"""
     <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
@@ -3784,12 +3827,12 @@ def _render_metric_comparison_card(b: dict) -> str:
         delta_str = ""
         delta_color = "#6b7280"
     return (f'<div style="margin:1rem 0;padding:14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">'
-            f'<div style="font-size:0.72rem;color:#6b7280;margin-bottom:8px;">{label}</div>'
+            f'<div style="font-size:0.72rem;color:#6b7280;margin-bottom:8px;">{_cv_esc(label)}</div>'
             f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
             f'<div><div style="font-size:0.65rem;color:#9ca3af;">Now</div>'
-            f'<div style="font-size:1.4rem;font-weight:700;color:#7c3aed;">{current}</div></div>'
+            f'<div style="font-size:1.4rem;font-weight:700;color:#7c3aed;">{_cv_esc(current)}</div></div>'
             f'<div><div style="font-size:0.65rem;color:#9ca3af;">Before</div>'
-            f'<div style="font-size:1.4rem;font-weight:700;color:#9ca3af;">{previous}</div></div>'
+            f'<div style="font-size:1.4rem;font-weight:700;color:#9ca3af;">{_cv_esc(previous)}</div></div>'
             f'</div>'
             f'<div style="margin-top:6px;font-size:0.72rem;color:{delta_color};font-weight:600;">{delta_str}</div>'
             f'</div>')
@@ -3828,14 +3871,14 @@ def _render_mini_sparkline_set(b: dict) -> str:
         colors = ["#a855f7", "#10b981", "#3b82f6", "#f59e0b"]
         stroke_color = colors[si % len(colors)]
         
-        grad_id = f"spark_grad_{chart_id}_{si}"
-        glow_id = f"spark_glow_{chart_id}_{si}"
+        grad_id = f"spark_grad_{chart_id}_{_cv_esc(si)}"
+        glow_id = f"spark_glow_{chart_id}_{_cv_esc(si)}"
         
         cards.append(f"""
         <div style="padding:16px;background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.05);border-radius:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <span style="font-size:0.75rem;font-weight:600;color:#94a3b8;font-family:monospace;letter-spacing:0.02em;">{label}</span>
-            <span style="font-size:1.1rem;font-weight:800;color:#f1f5f9;font-family:monospace;">{latest}</span>
+            <span style="font-size:0.75rem;font-weight:600;color:#94a3b8;font-family:monospace;letter-spacing:0.02em;">{_cv_esc(label)}</span>
+            <span style="font-size:1.1rem;font-weight:800;color:#f1f5f9;font-family:monospace;">{_cv_esc(latest)}</span>
           </div>
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
@@ -3883,8 +3926,8 @@ def _render_donut_stat(b: dict) -> str:
     <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="{donut_id}_grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="{color}" />
-          <stop offset="100%" stop-color="{color}" stop-opacity="0.6" />
+          <stop offset="0%" stop-color="{_cv_esc(color)}" />
+          <stop offset="100%" stop-color="{_cv_esc(color)}" stop-opacity="0.6" />
         </linearGradient>
         <filter id="{donut_id}_glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
@@ -3898,23 +3941,23 @@ def _render_donut_stat(b: dict) -> str:
       <circle cx="50" cy="50" r="{r}" fill="none" stroke="url(#{donut_id}_grad)" stroke-width="10" 
               stroke-dasharray="{stroke_dasharray}" stroke-dashoffset="{stroke_dashoffset}"
               stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#{donut_id}_glow)" />
-      <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">{value:,.0f}{unit}</text>
+      <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">{value:,.0f}{_cv_esc(unit)}</text>
       <text x="50" y="64" fill="rgba(255,255,255,0.4)" font-size="7" font-weight="600" font-family="monospace" text-anchor="middle">{percentage:.1f}%</text>
     </svg>
     """
     
     return f"""
     <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
-      <div style="width:{size};height:{size};flex-shrink:0;">
+      <div style="width:{_cv_esc(size)};height:{_cv_esc(size)};flex-shrink:0;">
         {svg_html}
       </div>
       <div>
-        <div style="font-size:0.75rem;font-weight:700;color:#94a3b8;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;">{label}</div>
+        <div style="font-size:0.75rem;font-weight:700;color:#94a3b8;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;">{_cv_esc(label)}</div>
         <div style="font-size:1.5rem;font-weight:800;color:#f1f5f9;font-family:-apple-system,sans-serif;margin-bottom:6px;">
-          {value:,.0f}{unit} <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.4);">/ {max_value:,.0f}{unit}</span>
+          {value:,.0f}{_cv_esc(unit)} <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.4);">/ {max_value:,.0f}{_cv_esc(unit)}</span>
         </div>
         <div style="font-size:0.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{color};"></span>
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};"></span>
           Progress Status: {percentage:.1f}% Target Met
         </div>
       </div>
@@ -3977,13 +4020,13 @@ def _render_heatmap(b: dict) -> str:
     for r_idx, lbl in enumerate(labels_y):
         if r_idx < num_rows:
             y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2 + 3
-            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="end">{lbl}</text>'
+            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>'
             
     x_labels = ""
     for c_idx, lbl in enumerate(labels_x):
         if c_idx < num_cols:
             x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2
-            x_labels += f'<text x="{x}" y="{pad_t - 10}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="middle">{lbl}</text>'
+            x_labels += f'<text x="{x}" y="{pad_t - 10}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
             
     cells_html = []
     heatmap_id = f"heat_{_wa_oid(b)}"
@@ -4002,7 +4045,7 @@ def _render_heatmap(b: dict) -> str:
                 
             cells_html.append(f"""
             <rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{cell_color}" rx="4" ry="4" {glow_attr}>
-              <title>{val:,.1f}{unit}</title>
+              <title>{val:,.1f}{_cv_esc(unit)}</title>
             </rect>
             """)
             
@@ -4106,8 +4149,8 @@ def _render_uptime_timeline(b: dict) -> str:
             color = "#059669"
         blocks.append(f'<div style="background:{color};height:20px;border-radius:var(--a2ui-radius-sm,6px);" title="{color}"></div>')
     return (f'<div style="margin:1rem 0;padding:12px;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));border-radius:var(--a2ui-radius,12px);">'
-            f'<div style="display:grid;grid-template-columns:repeat({days},1fr);gap:2px;">{"".join(blocks)}</div>'
-            f'<div style="font-size:0.7rem;color:var(--a2ui-muted,#666666);margin-top:6px;">{days}-day uptime: {uptime}%</div>'
+            f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(days)},1fr);gap:2px;">{"".join(blocks)}</div>'
+            f'<div style="font-size:0.7rem;color:var(--a2ui-muted,#666666);margin-top:6px;">{_cv_esc(days)}-day uptime: {uptime}%</div>'
             f'</div>')
 
 def _render_command_palette(b: dict) -> str:
@@ -4170,7 +4213,7 @@ def _render_punch_card(b: dict) -> str:
     for r_idx, lbl in enumerate(labels_days):
         if r_idx < num_rows:
             y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2 + 3
-            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{lbl}</text>'
+            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>'
             
     bubbles_html = []
     punch_id = f"punch_{_wa_oid(b)}"
@@ -4195,8 +4238,8 @@ def _render_punch_card(b: dict) -> str:
                 glow_attr = f'filter="url(#{punch_id}_glow)"'
                 
             bubbles_html.append(f"""
-            <circle cx="{x}" cy="{y}" r="{r:.1f}" fill="{color}" fill-opacity="{opacity:.2f}" {glow_attr}>
-              <title>{labels_days[r_idx]} {c_idx:02d}:00 - {val:,.0f} commits</title>
+            <circle cx="{x}" cy="{y}" r="{r:.1f}" fill="{_cv_esc(color)}" fill-opacity="{opacity:.2f}" {glow_attr}>
+              <title>{_cv_esc(labels_days[r_idx])} {c_idx:02d}:00 - {val:,.0f} commits</title>
             </circle>
             """)
             
@@ -4222,14 +4265,14 @@ def _render_punch_card(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
           <div>
-            {f'<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:2px;">{title}</div>' if title else ''}
-            {f'<div style="font-size:0.75rem;color:rgba(255,255,255,0.4);font-family:monospace;">{subtitle}</div>' if subtitle else ''}
+            {f'<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:2px;">{_cv_esc(title)}</div>' if title else ''}
+            {f'<div style="font-size:0.75rem;color:rgba(255,255,255,0.4);font-family:monospace;">{_cv_esc(subtitle)}</div>' if subtitle else ''}
           </div>
           <div style="display:flex;gap:12px;font-size:0.75rem;color:rgba(255,255,255,0.4);font-family:monospace;align-items:center;">
             <span>Less</span>
-            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{color};opacity:0.3;"></span>
-            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{color};opacity:0.6;"></span>
-            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:{color};opacity:1.0;"></span>
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{_cv_esc(color)};opacity:0.3;"></span>
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};opacity:0.6;"></span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:{_cv_esc(color)};opacity:1.0;"></span>
             <span>More</span>
           </div>
         </div>
@@ -4380,12 +4423,12 @@ def _svg_sankey_flow(b: dict) -> str:
         x1 = rp["x"]
         dx = (x1 - x0) / 2
         
-        top_curve = f"C {x0 + dx} {y_l}, {x1 - dx} {y_r}, {x1} {y_r}"
+        top_curve = f"C {x0 + dx} {y_l}, {x1 - dx} {y_r}, {_cv_esc(x1)} {y_r}"
         bot_curve = f"C {x1 - dx} {y_r + link_h_r}, {x0 + dx} {y_l + link_h_l}, {x0} {y_l + link_h_l}"
         
-        path_data = f"M {x0} {y_l} {top_curve} L {x1} {y_r + link_h_r} {bot_curve} Z"
+        path_data = f"M {x0} {y_l} {top_curve} L {_cv_esc(x1)} {y_r + link_h_r} {bot_curve} Z"
         
-        grad_id = f"{sankey_id}_grad_{idx}"
+        grad_id = f"{sankey_id}_grad_{_cv_esc(idx)}"
         link_color = link.get("color")
         
         if link_color:
@@ -4394,16 +4437,16 @@ def _svg_sankey_flow(b: dict) -> str:
         else:
             gradients_html.append(f"""
             <linearGradient id="{grad_id}" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="{lp['color']}" stop-opacity="0.3" />
-              <stop offset="100%" stop-color="{rp['color']}" stop-opacity="0.3" />
+              <stop offset="0%" stop-color="{_cv_esc(lp['color'])}" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="{_cv_esc(rp['color'])}" stop-opacity="0.3" />
             </linearGradient>
             """)
             fill_val = f"url(#{grad_id})"
             opacity = 1.0
             
         links_html.append(f"""
-        <path d="{path_data}" fill="{fill_val}" opacity="{opacity}" style="transition: opacity 0.2s;" onmouseover="this.setAttribute('opacity', '0.65')" onmouseout="this.setAttribute('opacity', '{opacity}')">
-          <title>{lp['label']} → {rp['label']}: {v:,.0f}</title>
+        <path d="{path_data}" fill="{_cv_esc(fill_val)}" opacity="{opacity}" style="transition: opacity 0.2s;" onmouseover="this.setAttribute('opacity', '0.65')" onmouseout="this.setAttribute('opacity', '{opacity}')">
+          <title>{_cv_esc(lp['label'])} → {_cv_esc(rp['label'])}: {v:,.0f}</title>
         </path>
         """)
         
@@ -4411,38 +4454,38 @@ def _svg_sankey_flow(b: dict) -> str:
     labels_html = []
     
     for nid, lp in left_positions.items():
-        node_glow_id = f"{sankey_id}_node_glow_{nid}"
+        node_glow_id = f"{sankey_id}_node_glow_{_cv_esc(nid)}"
         gradients_html.append(f"""
         <linearGradient id="{node_glow_id}_grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{lp['color']}" />
-          <stop offset="100%" stop-color="{lp['color']}" stop-opacity="0.6" />
+          <stop offset="0%" stop-color="{_cv_esc(lp['color'])}" />
+          <stop offset="100%" stop-color="{_cv_esc(lp['color'])}" stop-opacity="0.6" />
         </linearGradient>
         """)
         
         nodes_html.append(f"""
-        <rect x="{lp['x']}" y="{lp['y']}" width="{lp['w']}" height="{lp['h']}" fill="url(#{node_glow_id}_grad)" rx="3" ry="3" />
+        <rect x="{_cv_esc(lp['x'])}" y="{_cv_esc(lp['y'])}" width="{_cv_esc(lp['w'])}" height="{_cv_esc(lp['h'])}" fill="url(#{node_glow_id}_grad)" rx="3" ry="3" />
         """)
         
         labels_html.append(f"""
-        <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="end">{lp['label']}</text>
+        <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="end">{_cv_esc(lp['label'])}</text>
         <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 15}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{lp['total']:,.0f}</text>
         """)
         
     for nid, rp in right_positions.items():
-        node_glow_id = f"{sankey_id}_node_glow_{nid}"
+        node_glow_id = f"{sankey_id}_node_glow_{_cv_esc(nid)}"
         gradients_html.append(f"""
         <linearGradient id="{node_glow_id}_grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{rp['color']}" />
-          <stop offset="100%" stop-color="{rp['color']}" stop-opacity="0.6" />
+          <stop offset="0%" stop-color="{_cv_esc(rp['color'])}" />
+          <stop offset="100%" stop-color="{_cv_esc(rp['color'])}" stop-opacity="0.6" />
         </linearGradient>
         """)
         
         nodes_html.append(f"""
-        <rect x="{rp['x']}" y="{rp['y']}" width="{rp['w']}" height="{rp['h']}" fill="url(#{node_glow_id}_grad)" rx="3" ry="3" />
+        <rect x="{_cv_esc(rp['x'])}" y="{_cv_esc(rp['y'])}" width="{_cv_esc(rp['w'])}" height="{_cv_esc(rp['h'])}" fill="url(#{node_glow_id}_grad)" rx="3" ry="3" />
         """)
         
         labels_html.append(f"""
-        <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="start">{rp['label']}</text>
+        <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="start">{_cv_esc(rp['label'])}</text>
         <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 15}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="start">{rp['total']:,.0f}</text>
         """)
         
@@ -4474,7 +4517,7 @@ def _render_sankey_flow(b: dict) -> str:
     if title:
         header_html = f"""
         <div style="margin-bottom:16px;">
-          <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{title}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{_cv_esc(title)}</div>
         </div>
         """
 
@@ -4504,11 +4547,11 @@ def _render_cohort_retention(b: dict) -> str:
     headers.append('<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;">Cohort</div>')
     headers.append('<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:right;">Size</div>')
     for p in periods:
-        headers.append(f'<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:center;">{p}</div>')
+        headers.append(f'<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:center;">{_cv_esc(p)}</div>')
         
     rows_html = []
     for row_idx, cohort in enumerate(cohorts):
-        name = cohort.get("cohort_name", f"Cohort {row_idx}")
+        name = cohort.get("cohort_name", f"Cohort {_cv_esc(row_idx)}")
         size = cohort.get("original_size", "—")
         if isinstance(size, (int, float)):
             size_str = f"{size:,.0f}"
@@ -4518,8 +4561,8 @@ def _render_cohort_retention(b: dict) -> str:
         rates = cohort.get("retention_rates", [])
         
         row_cells = []
-        row_cells.append(f'<div style="font-weight:700;color:#f1f5f9;font-size:0.85rem;padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;">{name}</div>')
-        row_cells.append(f'<div style="color:rgba(255,255,255,0.6);font-size:0.85rem;font-family:monospace;padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:right;display:flex;align-items:center;justify-content:flex-end;">{size_str}</div>')
+        row_cells.append(f'<div style="font-weight:700;color:#f1f5f9;font-size:0.85rem;padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;">{_cv_esc(name)}</div>')
+        row_cells.append(f'<div style="color:rgba(255,255,255,0.6);font-size:0.85rem;font-family:monospace;padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:right;display:flex;align-items:center;justify-content:flex-end;">{_cv_esc(size_str)}</div>')
         
         for p_idx in range(num_periods):
             if p_idx < len(rates):
@@ -4562,7 +4605,7 @@ def _render_cohort_retention(b: dict) -> str:
     if title:
         header_html = f"""
         <div style="margin-bottom:16px;">
-          <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{title}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{_cv_esc(title)}</div>
         </div>
         """
         
@@ -4588,7 +4631,7 @@ def _render_task_list(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#00f2ff; font-weight:900;">⬡</span> {title}
+            <span style="color:#00f2ff; font-weight:900;">⬡</span> {_cv_esc(title)}
           </div>
           <div style="font-size:0.75rem; font-family:monospace; color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.04); padding:4px 8px; border-radius:12px;border-radius:var(--a2ui-radius,12px); border:1px solid rgba(255,255,255,0.06);">
             {len(tasks)} Tasks
@@ -4626,8 +4669,8 @@ def _render_task_list(b: dict) -> str:
         assignee_html = ""
         if assignee:
             assignee_html = f"""
-            <div style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #00f2ff 0%, #0072ff 100%); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; font-family:monospace; border:1px solid rgba(255,255,255,0.2); flex-shrink:0;" title="Assignee: {assignee}">
-              {assignee[:2].upper()}
+            <div style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #00f2ff 0%, #0072ff 100%); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; font-family:monospace; border:1px solid rgba(255,255,255,0.2); flex-shrink:0;" title="Assignee: {_cv_esc(assignee)}">
+              {_cv_esc(assignee[:2].upper())}
             </div>
             """
             
@@ -4635,7 +4678,7 @@ def _render_task_list(b: dict) -> str:
         if due_date:
             due_html = f"""
             <div style="font-size:0.75rem; font-family:monospace; color:rgba(255,255,255,0.5); display:flex; align-items:center; gap:4px; padding:3px 8px; border-radius:4px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); flex-shrink:0;">
-              <span style="font-size:0.7rem;">📅</span> {due_date}
+              <span style="font-size:0.7rem;">📅</span> {_cv_esc(due_date)}
             </div>
             """
             
@@ -4646,7 +4689,7 @@ def _render_task_list(b: dict) -> str:
               {checkbox_inner}
             </div>
             <div style="font-size:0.9rem; font-weight:500; font-family:sans-serif; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; {text_style}">
-              {text}
+              {_cv_esc(text)}
             </div>
           </div>
           
@@ -4681,7 +4724,7 @@ def _render_sentiment_summary(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#ec4899; font-weight:900;">⬡</span> {title}
+            <span style="color:#ec4899; font-weight:900;">⬡</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -4720,7 +4763,7 @@ def _render_sentiment_summary(b: dict) -> str:
         <path d="M 15 60 A 35 35 0 0 1 85 60" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round" />
         <path d="M 15 60 A 35 35 0 0 1 85 60" fill="none" stroke="url(#{gauge_id}_grad)" stroke-width="8" stroke-linecap="round"
               stroke-dasharray="{stroke_dasharray}" stroke-dashoffset="{stroke_dashoffset}" filter="url(#{gauge_id}_glow)" />
-        <text x="50" y="53" text-anchor="middle" font-weight="900" font-size="18" fill="#f1f5f9" font-family="monospace">{sentiment_index}%</text>
+        <text x="50" y="53" text-anchor="middle" font-weight="900" font-size="18" fill="#f1f5f9" font-family="monospace">{_cv_esc(sentiment_index)}%</text>
         <text x="50" y="70" text-anchor="middle" font-weight="800" font-size="7" fill="{sentiment_color}" font-family="monospace" letter-spacing="0.1em">{sentiment_label}</text>
       </svg>
     </div>
@@ -4805,11 +4848,11 @@ def _render_sentiment_summary(b: dict) -> str:
         themes_html.append(f"""
         <div style="display:flex; flex-direction:column; gap:4px; padding:8px 12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:6px;">
           <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.8rem;">
-            <div style="font-weight:600; color:#f1f5f9; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:70%;">{theme_name}</div>
-            <div style="font-size:0.7rem; font-family:monospace; color:{theme_color}; background:rgba(255,255,255,0.03); padding:1px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05); text-transform:uppercase;">{mood}</div>
+            <div style="font-weight:600; color:#f1f5f9; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:70%;">{_cv_esc(theme_name)}</div>
+            <div style="font-size:0.7rem; font-family:monospace; color:{theme_color}; background:rgba(255,255,255,0.03); padding:1px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05); text-transform:uppercase;">{_cv_esc(mood)}</div>
           </div>
           <div style="width:100%; height:4px; background:rgba(255,255,255,0.04); border-radius:2px; overflow:hidden;">
-            <div style="width:{score}%; height:100%; background:{theme_color}; border-radius:2px; box-shadow:0 0 4px {theme_color};"></div>
+            <div style="width:{_cv_esc(score)}%; height:100%; background:{theme_color}; border-radius:2px; box-shadow:0 0 4px {theme_color};"></div>
           </div>
         </div>
         """)
@@ -4848,7 +4891,7 @@ def _render_conversion_funnel(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#10b981; font-weight:900;">▼</span> {title}
+            <span style="color:#10b981; font-weight:900;">▼</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -4929,7 +4972,7 @@ def _render_conversion_funnel(b: dict) -> str:
             
         elements.append(f"""
         <polygon points="{pts}" fill="url(#{funnel_id}_grad)" stroke="#00f2ff" stroke-width="1.5" filter="url(#{funnel_id}_glow)" style="transition:all 0.2s;" />
-        <text x="{cx:.1f}" y="{y1 + bar_h / 2.0 + 3:.1f}" fill="#f1f5f9" font-size="9.5" font-weight="800" font-family="monospace" text-anchor="middle">{name}: {percent_label}</text>
+        <text x="{cx:.1f}" y="{y1 + bar_h / 2.0 + 3:.1f}" fill="#f1f5f9" font-size="9.5" font-weight="800" font-family="monospace" text-anchor="middle">{_cv_esc(name)}: {percent_label}</text>
         {leak_html}
         """)
         
@@ -4962,7 +5005,7 @@ def _render_gauge_sla(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#00f2ff; font-weight:900;">◵</span> {title}
+            <span style="color:#00f2ff; font-weight:900;">◵</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -5020,8 +5063,8 @@ def _render_gauge_sla(b: dict) -> str:
         <line x1="150" y1="140" x2="{nx:.1f}" y2="{ny:.1f}" stroke="{status_color}" stroke-width="3" stroke-linecap="round" filter="url(#{gauge_id}_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="{status_color}" stroke-width="3" />
         
-        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{val:,.1f}{unit}</text>
-        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{status_label} · {label.upper()}</text>
+        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{val:,.1f}{_cv_esc(unit)}</text>
+        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{status_label} · {_cv_esc(label.upper())}</text>
       </svg>
     </div>
     """
@@ -5047,7 +5090,7 @@ def _render_stacked_area(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#38bdf8; font-weight:900;">⬟</span> {title}
+            <span style="color:#38bdf8; font-weight:900;">⬟</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -5088,7 +5131,7 @@ def _render_stacked_area(b: dict) -> str:
     x_labels_html = ""
     for i, lbl in enumerate(labels):
         x = pad_l + (i / max(1, n_pts - 1)) * chart_w
-        x_labels_html += f'<text x="{x}" y="{pad_t + chart_h + 18}" fill="rgba(255,255,255,0.4)" font-size="8.5" font-family="monospace" text-anchor="middle">{lbl}</text>'
+        x_labels_html += f'<text x="{x}" y="{pad_t + chart_h + 18}" fill="rgba(255,255,255,0.4)" font-size="8.5" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
         
     for s_idx in range(n_series - 1, -1, -1):
         s = series[s_idx]
@@ -5104,12 +5147,12 @@ def _render_stacked_area(b: dict) -> str:
         path_pts = " ".join(f"{px:.1f},{py:.1f}" for px, py in coords)
         area_pts = f"{pad_l:.1f},{pad_t + chart_h:.1f} " + path_pts + f" {pad_l + chart_w:.1f},{pad_t + chart_h:.1f}"
         
-        layer_id = f"stack_layer_{s_idx}_{_wa_oid(b)}"
+        layer_id = f"stack_layer_{_cv_esc(s_idx)}_{_wa_oid(b)}"
         
         defs_html.append(f"""
         <linearGradient id="{layer_id}_area_grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{color}" stop-opacity="0.3" />
-          <stop offset="100%" stop-color="{color}" stop-opacity="0.0" />
+          <stop offset="0%" stop-color="{_cv_esc(color)}" stop-opacity="0.3" />
+          <stop offset="100%" stop-color="{_cv_esc(color)}" stop-opacity="0.0" />
         </linearGradient>
         <filter id="{layer_id}_glow" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="1.5" result="blur" />
@@ -5122,7 +5165,7 @@ def _render_stacked_area(b: dict) -> str:
         
         layers_svg.append(f"""
         <polygon points="{area_pts}" fill="url(#{layer_id}_area_grad)" />
-        <polyline points="{path_pts}" fill="none" stroke="{color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#{layer_id}_glow)" />
+        <polyline points="{path_pts}" fill="none" stroke="{_cv_esc(color)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#{layer_id}_glow)" />
         """)
         
     legends_html = []
@@ -5131,8 +5174,8 @@ def _render_stacked_area(b: dict) -> str:
         label_name = s.get("label", "")
         legends_html.append(f"""
         <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; font-family:monospace; color:rgba(255,255,255,0.7);">
-          <div style="width:10px; height:10px; border-radius:3px; background:{color}; box-shadow: 0 0 6px {color};"></div>
-          <span>{label_name}</span>
+          <div style="width:10px; height:10px; border-radius:3px; background:{_cv_esc(color)}; box-shadow: 0 0 6px {_cv_esc(color)};"></div>
+          <span>{_cv_esc(label_name)}</span>
         </div>
         """)
     legends_container = f'<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; justify-content:center;">{"".join(legends_html)}</div>'
@@ -5211,11 +5254,11 @@ def _svg_calibration_plot(b: dict, tokens: dict) -> str:
             if pt.get("ci_low") is not None and pt.get("ci_high") is not None:
                 y_lo, y_hi = py(pt["ci_low"]), py(pt["ci_high"])
                 points_html.append(f'<line x1="{cx:.1f}" y1="{y_lo:.1f}" x2="{cx:.1f}" y2="{y_hi:.1f}" '
-                                   f'stroke="{color}" stroke-width="1.5" opacity="0.55" />')
-            points_html.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="{color}" '
+                                   f'stroke="{_cv_esc(color)}" stroke-width="1.5" opacity="0.55" />')
+            points_html.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="{_cv_esc(color)}" '
                                f'fill-opacity="0.85" stroke="{tokens["surface"]}" stroke-width="1.2" />')
         legend_html.append(f'<span style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;">'
-                           f'<span style="width:9px;height:9px;border-radius:50%;background:{color};display:inline-block;"></span>'
+                           f'<span style="width:9px;height:9px;border-radius:50%;background:{_cv_esc(color)};display:inline-block;"></span>'
                            f'<span style="font-size:12px;color:{tokens["dim"]};">{label}</span></span>')
 
     x_label = _esc(b.get("x_label", "Predicted probability"))
@@ -5263,7 +5306,7 @@ def _render_scatter_trend(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#10b981; font-weight:900;">⬡</span> {title}
+            <span style="color:#10b981; font-weight:900;">⬡</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -5350,7 +5393,7 @@ def _render_scatter_trend(b: dict) -> str:
         
         {grid_lines}
         
-        <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{label_x.upper()}</text>
+        <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{_cv_esc(label_x.upper())}</text>
         
         <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{_wa_oid(b)})" />
         
@@ -5378,7 +5421,7 @@ def _render_call_mood_board(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#d946ef; font-weight:900;">⬡</span> {title}
+            <span style="color:#d946ef; font-weight:900;">⬡</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -5392,13 +5435,13 @@ def _render_call_mood_board(b: dict) -> str:
         <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
           <div style="display:flex; align-items:center; justify-content:space-between;">
             <span style="font-size:0.85rem; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
-              <span style="width:8px; height:8px; border-radius:50%; background:{color}; box-shadow:0 0 8px {color}; display:inline-block;"></span>
-              {name}
+              <span style="width:8px; height:8px; border-radius:50%; background:{_cv_esc(color)}; box-shadow:0 0 8px {_cv_esc(color)}; display:inline-block;"></span>
+              {_cv_esc(name)}
             </span>
-            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:{color};">{intensity}%</span>
+            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:{_cv_esc(color)};">{_cv_esc(intensity)}%</span>
           </div>
           <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
-            <div style="width:{intensity}%; height:100%; background:linear-gradient(90deg, {color}88, {color}); border-radius:10px; box-shadow:0 0 6px {color}66;"></div>
+            <div style="width:{_cv_esc(intensity)}%; height:100%; background:linear-gradient(90deg, {_cv_esc(color)}88, {_cv_esc(color)}); border-radius:10px; box-shadow:0 0 6px {_cv_esc(color)}66;"></div>
           </div>
         </div>
         """)
@@ -5429,7 +5472,7 @@ def _render_call_mood_board(b: dict) -> str:
         font_size = 0.75 + (weight / 200.0)
         themes_html.append(f"""
         <span style="display:inline-block; font-size:{font_size:.2f}rem; font-weight:700; color:{color_theme}; background:{bg}; border:1px solid {border}; padding:6px 12px; border-radius:20px; margin:4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-          {term}
+          {_cv_esc(term)}
         </span>
         """)
         
@@ -5437,7 +5480,7 @@ def _render_call_mood_board(b: dict) -> str:
     if summary:
         summary_html = f"""
         <div style="margin-top:20px; padding:12px 16px; background:rgba(255,255,255,0.02); border-left:3px solid #d946ef; border-radius:0 8px 8px 0; font-size:0.85rem; line-height:1.6; color:rgba(255,255,255,0.7); font-style:italic;">
-          {summary}
+          {_cv_esc(summary)}
         </div>
         """
         
@@ -5478,7 +5521,7 @@ def _render_github_activity_grid(b: dict) -> str:
             <svg width="12" height="12" viewBox="0 0 16 16" fill="rgba(255,255,255,0.5)">
               <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
             </svg>
-            @{username}
+            @{_cv_esc(username)}
           </span>
         </div>
         """ if username else ""
@@ -5486,7 +5529,7 @@ def _render_github_activity_grid(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#26a641; font-weight:900;">⬡</span> {title or "GitHub Contribution Stream"}
+            <span style="color:#26a641; font-weight:900;">⬡</span> {_cv_esc(title or "GitHub Contribution Stream")}
           </div>
           {user_badge}
         </div>
@@ -5531,13 +5574,13 @@ def _render_github_activity_grid(b: dict) -> str:
       <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:10px 16px; flex-grow:1; min-width:100px;">
         <div style="font-size:0.65rem; font-family:monospace; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px;">Contributions</div>
         <div style="font-size:1.3rem; font-weight:800; color:#f1f5f9; font-family:monospace; display:flex; align-items:baseline; gap:4px;">
-          {total} <span style="font-size:0.75rem; color:#26a641; font-weight:bold;">YTD</span>
+          {_cv_esc(total)} <span style="font-size:0.75rem; color:#26a641; font-weight:bold;">YTD</span>
         </div>
       </div>
       <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:10px 16px; flex-grow:1; min-width:100px;">
         <div style="font-size:0.65rem; font-family:monospace; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px;">Active Streak</div>
         <div style="font-size:1.3rem; font-weight:800; color:#f1f5f9; font-family:monospace; display:flex; align-items:baseline; gap:4px;">
-          {streak} <span style="font-size:0.75rem; color:#39d353; font-weight:bold;">days 🔥</span>
+          {_cv_esc(streak)} <span style="font-size:0.75rem; color:#39d353; font-weight:bold;">days 🔥</span>
         </div>
       </div>
     </div>
@@ -5569,8 +5612,8 @@ def _form_field_html(field: dict) -> str:
 
     req_star = '<span style="color:#ea4335;margin-left:2px;">*</span>' if required else ""
     label_html = (
-        f'<label for="{name}" style="display:block;font-size:0.83rem;font-weight:600;'
-        f'color:#3c4043;margin-bottom:5px;">{label}{req_star}</label>'
+        f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
+        f'color:#3c4043;margin-bottom:5px;">{_cv_esc(label)}{req_star}</label>'
     )
     input_style = (
         "width:100%;padding:9px 12px;border:1px solid #dadce0;border-radius:6px;"
@@ -5578,19 +5621,19 @@ def _form_field_html(field: dict) -> str:
         "font-family:inherit;outline:none;"
     )
     if ftype == "textarea":
-        ctrl = (f'<textarea id="{name}" name="{name}" placeholder="{placeholder}" '
+        ctrl = (f'<textarea id="{_cv_esc(name)}" name="{_cv_esc(name)}" placeholder="{_cv_esc(placeholder)}" '
                 f'style="{input_style}height:88px;resize:vertical;" '
                 f'{"required" if required else ""}></textarea>')
     elif ftype == "select":
-        opts = f'<option value="">{placeholder or "Select…"}</option>' + "".join(
-            f'<option value="{o["value"]}">{o["label"]}</option>'
+        opts = f'<option value="">{_cv_esc(placeholder or "Select…")}</option>' + "".join(
+            f'<option value="{_cv_esc(o["value"])}">{_cv_esc(o["label"])}</option>'
             for o in field.get("options", [])
         )
-        ctrl = (f'<select id="{name}" name="{name}" style="{input_style}" '
+        ctrl = (f'<select id="{_cv_esc(name)}" name="{_cv_esc(name)}" style="{input_style}" '
                 f'{"required" if required else ""}>{opts}</select>')
     else:
-        ctrl = (f'<input id="{name}" type="{ftype}" name="{name}" '
-                f'placeholder="{placeholder}" style="{input_style}" '
+        ctrl = (f'<input id="{_cv_esc(name)}" type="{_cv_esc(ftype)}" name="{_cv_esc(name)}" '
+                f'placeholder="{_cv_esc(placeholder)}" style="{input_style}" '
                 f'{"required" if required else ""}>')
 
     return f'<div style="display:flex;flex-direction:column;">{label_html}{ctrl}</div>'
@@ -5605,7 +5648,7 @@ def _render_form(b: dict) -> str:
     cancel_label = b.get("cancel_label", "")
 
     title_html = (
-        f'<div style="font-size:1.0rem;font-weight:700;color:#1a1a2e;margin-bottom:4px;">{title}</div>'
+        f'<div style="font-size:1.0rem;font-weight:700;color:#1a1a2e;margin-bottom:4px;">{_cv_esc(title)}</div>'
         if title else ""
     )
     desc_html = (
@@ -5617,7 +5660,7 @@ def _render_form(b: dict) -> str:
     cancel_btn = (
         f'<button type="button" style="padding:9px 20px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
         f'background:#ffffff;background:var(--a2ui-surface,#ffffff);color:#3c4043;font-size:0.88rem;font-weight:500;cursor:pointer;">'
-        f'{cancel_label}</button>'
+        f'{_cv_esc(cancel_label)}</button>'
     ) if cancel_label else ""
 
     return (
@@ -5629,7 +5672,7 @@ def _render_form(b: dict) -> str:
         f'{cancel_btn}'
         f'<button type="button" style="padding:9px 24px;border-radius:6px;border:none;'
         f'background:#1a73e8;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">'
-        f'{submit_label}</button>'
+        f'{_cv_esc(submit_label)}</button>'
         f'</div></div></div>'
     )
 
@@ -5646,10 +5689,10 @@ def _render_form_input(b: dict) -> str:
     req_star = '<span style="color:#ea4335;margin-left:2px;">*</span>' if required else ""
     return (
         f'<div style="margin:1rem 0;">'
-        f'<label for="{name}" style="display:block;font-size:0.83rem;font-weight:600;'
-        f'color:#3c4043;margin-bottom:5px;">{label}{req_star}</label>'
-        f'<input id="{name}" type="{ftype}" name="{name}" placeholder="{placeholder}" '
-        f'value="{value}" style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
+        f'color:#3c4043;margin-bottom:5px;">{_cv_esc(label)}{req_star}</label>'
+        f'<input id="{_cv_esc(name)}" type="{_cv_esc(ftype)}" name="{_cv_esc(name)}" placeholder="{_cv_esc(placeholder)}" '
+        f'value="{_cv_esc(value)}" style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
         f'border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;color:#3c4043;box-sizing:border-box;" '
         f'{"required" if required else ""}>'
         f'</div>'
@@ -5665,14 +5708,14 @@ def _render_form_select(b: dict) -> str:
     rules       = b.get("rules", [])
     required    = "required" in rules
     req_star = '<span style="color:#ea4335;margin-left:2px;">*</span>' if required else ""
-    opts = f'<option value="">{placeholder or "Select…"}</option>' + "".join(
-        f'<option value="{o["value"]}">{o["label"]}</option>' for o in options
+    opts = f'<option value="">{_cv_esc(placeholder or "Select…")}</option>' + "".join(
+        f'<option value="{_cv_esc(o["value"])}">{_cv_esc(o["label"])}</option>' for o in options
     )
     return (
         f'<div style="margin:1rem 0;">'
-        f'<label for="{name}" style="display:block;font-size:0.83rem;font-weight:600;'
-        f'color:#3c4043;margin-bottom:5px;">{label}{req_star}</label>'
-        f'<select id="{name}" name="{name}" style="width:100%;padding:9px 12px;'
+        f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
+        f'color:#3c4043;margin-bottom:5px;">{_cv_esc(label)}{req_star}</label>'
+        f'<select id="{_cv_esc(name)}" name="{_cv_esc(name)}" style="width:100%;padding:9px 12px;'
         f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;color:#3c4043;'
         f'background:#ffffff;background:var(--a2ui-surface,#ffffff);box-sizing:border-box;" {"required" if required else ""}>'
         f'{opts}</select>'
@@ -5693,20 +5736,20 @@ def _render_form_radio_group(b: dict) -> str:
         lbl     = opt.get("label", "")
         desc    = opt.get("description", "")
         checked = "checked" if val == default_value else ""
-        desc_html = f'<span style="font-size:0.78rem;color:#5f6368;margin-top:1px;">{desc}</span>' if desc else ""
+        desc_html = f'<span style="font-size:0.78rem;color:#5f6368;margin-top:1px;">{_cv_esc(desc)}</span>' if desc else ""
         items_html += (
             f'<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;'
             f'padding:10px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-            f'<input type="radio" name="{name}" value="{val}" {checked} '
+            f'<input type="radio" name="{_cv_esc(name)}" value="{_cv_esc(val)}" {checked} '
             f'style="margin-top:3px;accent-color:#1a73e8;flex-shrink:0;">'
             f'<span style="display:flex;flex-direction:column;">'
-            f'<span style="font-size:0.88rem;font-weight:600;color:#3c4043;">{lbl}</span>'
+            f'<span style="font-size:0.88rem;font-weight:600;color:#3c4043;">{_cv_esc(lbl)}</span>'
             f'{desc_html}</span></label>'
         )
 
     return (
         f'<div style="margin:1rem 0;">'
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{_cv_esc(label)}</div>'
         f'<div style="display:flex;flex-direction:column;gap:6px;">{items_html}</div>'
         f'</div>'
     )
@@ -5724,20 +5767,20 @@ def _render_form_checkbox_group(b: dict) -> str:
         lbl     = opt.get("label", "")
         desc    = opt.get("description", "")
         checked = "checked" if opt.get("default_checked") else ""
-        desc_html = f'<span style="font-size:0.78rem;color:#5f6368;margin-top:1px;">{desc}</span>' if desc else ""
+        desc_html = f'<span style="font-size:0.78rem;color:#5f6368;margin-top:1px;">{_cv_esc(desc)}</span>' if desc else ""
         items_html += (
             f'<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;'
             f'padding:10px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-            f'<input type="checkbox" name="{name}[{oname}]" {checked} '
+            f'<input type="checkbox" name="{_cv_esc(name)}[{_cv_esc(oname)}]" {checked} '
             f'style="margin-top:3px;accent-color:#1a73e8;flex-shrink:0;">'
             f'<span style="display:flex;flex-direction:column;">'
-            f'<span style="font-size:0.88rem;font-weight:600;color:#3c4043;">{lbl}</span>'
+            f'<span style="font-size:0.88rem;font-weight:600;color:#3c4043;">{_cv_esc(lbl)}</span>'
             f'{desc_html}</span></label>'
         )
 
     return (
         f'<div style="margin:1rem 0;">'
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{_cv_esc(label)}</div>'
         f'<div style="display:flex;flex-direction:column;gap:6px;">{items_html}</div>'
         f'</div>'
     )
@@ -5751,7 +5794,7 @@ def _render_form_switch_group(b: dict) -> str:
     items = b.get("items", [])
 
     label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{_cv_esc(label)}</div>'
         if label else ""
     )
 
@@ -5762,15 +5805,15 @@ def _render_form_switch_group(b: dict) -> str:
         idesc   = item.get("description", "")
         checked = item.get("default_checked", False)
         sid     = "sw_" + hashlib.md5(f"{name}_{iname}".encode()).hexdigest()[:6]
-        desc_html = f'<span style="font-size:0.78rem;color:#5f6368;">{idesc}</span>' if idesc else ""
+        desc_html = f'<span style="font-size:0.78rem;color:#5f6368;">{_cv_esc(idesc)}</span>' if idesc else ""
         rows += (
             f'<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;'
             f'padding:12px 14px;border-bottom:1px solid #f0f0f0;">'
             f'<div style="display:flex;flex-direction:column;gap:2px;">'
-            f'<span style="font-size:0.88rem;font-weight:600;color:#3c4043;">{ilabel}</span>'
+            f'<span style="font-size:0.88rem;font-weight:600;color:#3c4043;">{_cv_esc(ilabel)}</span>'
             f'{desc_html}</div>'
             # CSS-only toggle: hidden checkbox + styled label
-            f'<input type="checkbox" id="{sid}" name="{name}[{iname}]" '
+            f'<input type="checkbox" id="{sid}" name="{_cv_esc(name)}[{_cv_esc(iname)}]" '
             f'{"checked" if checked else ""} style="display:none;">'
             f'<label for="{sid}" style="position:relative;display:inline-block;'
             f'width:42px;height:24px;flex-shrink:0;cursor:pointer;">'
@@ -5806,7 +5849,7 @@ def _render_form_slider(b: dict) -> str:
     val   = b.get("value", mn)
     unit  = b.get("unit", "")
     sid   = "sl_" + hashlib.md5(name.encode()).hexdigest()[:6]
-    unit_str = f" {unit}" if unit else ""
+    unit_str = f" {_cv_esc(unit)}" if unit else ""
 
     return (
         f'<style>'
@@ -5823,14 +5866,14 @@ def _render_form_slider(b: dict) -> str:
         f'</style>'
         f'<div style="margin:1rem 0;">'
         f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-        f'<label for="{sid}" style="font-size:0.83rem;font-weight:600;color:#3c4043;">{label}</label>'
-        f'<span style="font-size:0.88rem;font-weight:700;color:#1a73e8;">{val}{unit_str}</span>'
+        f'<label for="{sid}" style="font-size:0.83rem;font-weight:600;color:#3c4043;">{_cv_esc(label)}</label>'
+        f'<span style="font-size:0.88rem;font-weight:700;color:#1a73e8;">{_cv_esc(val)}{unit_str}</span>'
         f'</div>'
-        f'<input id="{sid}" type="range" name="{name}" min="{mn}" max="{mx}" step="{step}" value="{val}" '
+        f'<input id="{sid}" type="range" name="{_cv_esc(name)}" min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" step="{_cv_esc(step)}" value="{_cv_esc(val)}" '
         f'style="width:100%;margin:0;">'
         f'<div style="display:flex;justify-content:space-between;margin-top:6px;">'
-        f'<span style="font-size:0.75rem;color:#9aa0a6;">{mn}{unit_str}</span>'
-        f'<span style="font-size:0.75rem;color:#9aa0a6;">{mx}{unit_str}</span>'
+        f'<span style="font-size:0.75rem;color:#9aa0a6;">{_cv_esc(mn)}{unit_str}</span>'
+        f'<span style="font-size:0.75rem;color:#9aa0a6;">{_cv_esc(mx)}{unit_str}</span>'
         f'</div>'
         f'</div>'
     )
@@ -5853,20 +5896,20 @@ def _render_form_date_picker(b: dict) -> str:
             f'<div style="display:flex;gap:10px;">'
             f'<div style="flex:1;">'
             f'<label style="display:block;font-size:0.75rem;color:#5f6368;margin-bottom:3px;">From</label>'
-            f'<input type="date" name="{name}_from" min="{mn}" max="{mx}" '
+            f'<input type="date" name="{_cv_esc(name)}_from" min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" '
             f'style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'font-size:0.88rem;color:#3c4043;box-sizing:border-box;"></div>'
             f'<div style="flex:1;">'
             f'<label style="display:block;font-size:0.75rem;color:#5f6368;margin-bottom:3px;">To</label>'
-            f'<input type="date" name="{name}_to" min="{mn}" max="{mx}" '
+            f'<input type="date" name="{_cv_esc(name)}_to" min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" '
             f'style="width:100%;padding:9px 12px;border:1px solid #dadce0;border-radius:6px;'
             f'font-size:0.88rem;color:#3c4043;box-sizing:border-box;"></div>'
             f'</div>'
         )
     else:
         ctrl = (
-            f'<input id="{name}" type="date" name="{name}" value="{value}" '
-            f'min="{mn}" max="{mx}" '
+            f'<input id="{_cv_esc(name)}" type="date" name="{_cv_esc(name)}" value="{_cv_esc(value)}" '
+            f'min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" '
             f'style="width:100%;padding:9px 12px;border:1px solid #dadce0;border-radius:6px;'
             f'font-size:0.9rem;color:#3c4043;box-sizing:border-box;" '
             f'{"required" if required else ""}>'
@@ -5874,8 +5917,8 @@ def _render_form_date_picker(b: dict) -> str:
 
     return (
         f'<div style="margin:1rem 0;">'
-        f'<label for="{name}" style="display:block;font-size:0.83rem;font-weight:600;'
-        f'color:#3c4043;margin-bottom:5px;">{label}{req_star}</label>'
+        f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
+        f'color:#3c4043;margin-bottom:5px;">{_cv_esc(label)}{req_star}</label>'
         f'{ctrl}'
         f'</div>'
     )
@@ -5899,7 +5942,7 @@ def _render_modal(b: dict) -> str:
     for block in blocks:
         btype = block.get("component") or block.get("type")
         fn = _RENDERERS.get(btype)
-        inner_html += fn(block) if fn else f'<p>{block}</p>'
+        inner_html += fn(block) if fn else f'<p>{_cv_esc(block)}</p>'
 
     desc_html = f'<p style="font-size:0.88rem;color:#94a3b8;margin:4px 0 16px;">{_md_inline(description)}</p>' if description else ""
 
@@ -5916,23 +5959,23 @@ def _render_modal(b: dict) -> str:
         # Trigger button
         f'<label for="{mid}" style="display:inline-block;padding:9px 22px;border-radius:6px;'
         f'background:#1a73e8;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">'
-        f'{trigger_label}</label>'
+        f'{_cv_esc(trigger_label)}</label>'
         f'<input type="checkbox" id="{mid}">'
         # Backdrop + dialog
         f'<div class="{mid}-bd">'
         f'<div style="background:#1e293b;border-radius:12px;padding:28px 28px 20px;'
         f'max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);">'
-        f'<div style="font-size:1.0rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">{title}</div>'
+        f'<div style="font-size:1.0rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">{_cv_esc(title)}</div>'
         f'{desc_html}'
         f'{inner_html}'
         f'<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">'
         f'<label for="{mid}" style="padding:9px 20px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
         f'border:1px solid rgba(255,255,255,0.15);'
         f'background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:0.88rem;font-weight:500;cursor:pointer;">'
-        f'{cancel_label}</label>'
+        f'{_cv_esc(cancel_label)}</label>'
         f'<label for="{mid}" style="padding:9px 22px;border-radius:6px;border:none;'
         f'background:#3b82f6;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">'
-        f'{confirm_label}</label>'
+        f'{_cv_esc(confirm_label)}</label>'
         f'</div></div></div>'
         f'</div>'
     )
@@ -5965,14 +6008,14 @@ def _render_follow_up_chips(b: dict) -> str:
 
     label_html = (
         f'<div style="font-size:0.75rem;font-weight:600;color:#9aa0a6;'
-        f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">{label}</div>'
+        f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">{_cv_esc(label)}</div>'
     ) if label else ""
 
     chips = "".join(
         f'<span style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;'
         f'border-radius:100px;border:1px solid {border};background:{bg};'
-        f'color:{accent};font-size:0.85rem;font-weight:500;cursor:pointer;white-space:nowrap;">'
-        f'{item}'
+        f'color:{_cv_esc(accent)};font-size:0.85rem;font-weight:500;cursor:pointer;white-space:nowrap;">'
+        f'{_cv_esc(item)}'
         f'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
         f'<path d="M2 5h6M5.5 2l3 3-3 3"/>'
         f'</svg>'
@@ -6008,7 +6051,7 @@ def _render_choicebox_group(b: dict) -> str:
     input_type = "checkbox" if multiple else "radio"
 
     label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:10px;">{label}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:10px;">{_cv_esc(label)}</div>'
     ) if label else ""
 
     cards = ""
@@ -6020,10 +6063,10 @@ def _render_choicebox_group(b: dict) -> str:
         disabled = item.get("disabled", False)
         iid      = f"{gid}_{hashlib.md5(val.encode()).hexdigest()[:4]}"
         icon_html = (
-            f'<span style="font-size:1.6rem;line-height:1;margin-bottom:4px;">{icon}</span>'
+            f'<span style="font-size:1.6rem;line-height:1;margin-bottom:4px;">{_cv_esc(icon)}</span>'
         ) if icon else ""
         desc_html = (
-            f'<span style="font-size:0.78rem;color:#5f6368;margin-top:2px;">{desc}</span>'
+            f'<span style="font-size:0.78rem;color:#5f6368;margin-top:2px;">{_cv_esc(desc)}</span>'
         ) if desc else ""
         opacity  = "opacity:0.45;" if disabled else ""
         cursor   = "default" if disabled else "pointer"
@@ -6033,18 +6076,18 @@ def _render_choicebox_group(b: dict) -> str:
             f'style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;'
             f'border:1.5px solid #dadce0;border-radius:10px;cursor:{cursor};'
             f'background:#fff;{opacity}">'
-            f'<input type="{input_type}" id="{iid}" name="{name}" value="{val}" {dis_attr} '
+            f'<input type="{input_type}" id="{iid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}" {dis_attr} '
             f'style="display:none;">'
             f'{icon_html}'
-            f'<span style="font-size:0.9rem;font-weight:600;color:#3c4043;">{title}</span>'
+            f'<span style="font-size:0.9rem;font-weight:600;color:#3c4043;">{_cv_esc(title)}</span>'
             f'{desc_html}'
             f'</label>'
         )
 
     submit_html = (
         f'<button type="submit" style="margin-top:12px;padding:9px 22px;border-radius:6px;'
-        f'border:none;background:{accent};color:#fff;font-size:0.88rem;font-weight:600;'
-        f'cursor:pointer;">{submit_label}</button>'
+        f'border:none;background:{_cv_esc(accent)};color:#fff;font-size:0.88rem;font-weight:600;'
+        f'cursor:pointer;">{_cv_esc(submit_label)}</button>'
     ) if submit_label else ""
 
     return (
@@ -6077,12 +6120,12 @@ def _render_feedback_prompt(b: dict) -> str:
     placeholder = b.get("placeholder", "")
     action_url  = b.get("action_url", "")
 
-    wrap_open  = f'<form action="{action_url}" method="post">' if action_url else ""
+    wrap_open  = f'<form action="{_cv_esc(action_url)}" method="post">' if action_url else ""
     wrap_close = "</form>" if action_url else ""
 
     q_html = (
         f'<div style="font-size:0.88rem;font-weight:500;color:#3c4043;margin-bottom:10px;">'
-        f'{question}</div>'
+        f'{_cv_esc(question)}</div>'
     ) if question else ""
 
     if style == "stars":
@@ -6122,7 +6165,7 @@ def _render_feedback_prompt(b: dict) -> str:
         )
 
     text_html = (
-        f'<textarea name="{fid}_comment" placeholder="{placeholder}" '
+        f'<textarea name="{fid}_comment" placeholder="{_cv_esc(placeholder)}" '
         f'style="display:block;margin-top:10px;width:100%;box-sizing:border-box;padding:8px 10px;'
         f'border:1px solid #dadce0;border-radius:6px;font-size:0.85rem;color:#3c4043;'
         f'resize:vertical;min-height:64px;background:#fff;"></textarea>'
@@ -6171,32 +6214,32 @@ def _render_marquee_strip(b: dict) -> str:
             # `text` rendered nothing for those items (surface-parity debt). 2026-09-27.
             text = item.get("text") or item.get("label", "")
             img_html = (
-                f'<img src="{img}" alt="{text}" '
+                f'<img src="{_cv_esc(img)}" alt="{_cv_esc(text)}" '
                 f'style="height:28px;object-fit:contain;vertical-align:middle;opacity:0.75;">'
             ) if img else ""
             return (
                 f'<span style="display:inline-flex;align-items:center;gap:8px;'
                 f'white-space:nowrap;font-size:0.9rem;color:#5f6368;font-weight:500;">'
-                f'{img_html}{text}</span>'
+                f'{img_html}{_cv_esc(text)}</span>'
             )
         return (
             f'<span style="display:inline-block;white-space:nowrap;'
-            f'font-size:0.9rem;color:#5f6368;font-weight:500;">{item}</span>'
+            f'font-size:0.9rem;color:#5f6368;font-weight:500;">{_cv_esc(item)}</span>'
         )
 
     items_content = "".join(_item_html(it) for it in items)
     # duplicate the full set for a seamless loop
     track_content = (
-        f'<span style="display:inline-flex;align-items:center;gap:{gap};padding-right:{gap};">'
+        f'<span style="display:inline-flex;align-items:center;gap:{_cv_esc(gap)};padding-right:{_cv_esc(gap)};">'
         f'{items_content}</span>'
-        f'<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:{gap};padding-right:{gap};">'
+        f'<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:{_cv_esc(gap)};padding-right:{_cv_esc(gap)};">'
         f'{items_content}</span>'
     )
 
     label_html = (
         f'<div style="font-size:0.75rem;font-weight:600;color:#9ca3af;'
         f'letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">'
-        f'{label}</div>'
+        f'{_cv_esc(label)}</div>'
     ) if label else ""
 
     return (
@@ -6232,7 +6275,7 @@ def _render_typewriter_text(b: dict) -> str:
 
     cursor_css = (
         f'.{tid}::after{{content:"|";animation:{tid}-blink 0.75s step-end infinite;'
-        f'color:{color};margin-left:2px;}}'
+        f'color:{_cv_esc(color)};margin-left:2px;}}'
         f'@keyframes {tid}-blink{{0%,100%{{opacity:1}}50%{{opacity:0}}}}'
     ) if cursor else ""
 
@@ -6240,13 +6283,13 @@ def _render_typewriter_text(b: dict) -> str:
         f'<style>'
         f'.{tid}{{display:inline-block;overflow:hidden;white-space:nowrap;'
         f'width:0;animation:{tid}-type {dur} steps({chars},end) forwards;'
-        f'animation-delay:{delay};}}'
+        f'animation-delay:{_cv_esc(delay)};}}'
         f'@keyframes {tid}-type{{to{{width:{chars}ch}}}}'
         f'{cursor_css}'
         f'</style>'
-        f'<div style="margin:1rem 0;font-size:{size};font-weight:{weight};'
-        f'color:{color};line-height:1.2;font-family:monospace;">'
-        f'<span class="{tid}">{text}</span>'
+        f'<div style="margin:1rem 0;font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};'
+        f'color:{_cv_esc(color)};line-height:1.2;font-family:monospace;">'
+        f'<span class="{tid}">{_cv_esc(text)}</span>'
         f'</div>'
     )
 
@@ -6276,7 +6319,7 @@ def _render_animated_border_card(b: dict) -> str:
 
     title_html = (
         f'<div style="font-size:1rem;font-weight:700;color:#202124;margin-bottom:8px;">'
-        f'{title}</div>'
+        f'{_cv_esc(title)}</div>'
     ) if title else ""
 
     body_html = _md_inline(body) if body else ""
@@ -6284,13 +6327,13 @@ def _render_animated_border_card(b: dict) -> str:
     return (
         f'<style>'
         f'.{cid}-wrap{{position:relative;border-radius:12px;padding:{pad}px;'
-        f'overflow:hidden;background:{bg};margin:1rem 0;}}'
+        f'overflow:hidden;background:{_cv_esc(bg)};margin:1rem 0;}}'
         f'.{cid}-wrap::before{{content:"";position:absolute;inset:-100%;'
         f'width:300%;height:300%;'
-        f'background:conic-gradient(from 0deg,transparent 0deg,{accent} 60deg,'
-        f'{accent2} 120deg,transparent 180deg);'
+        f'background:conic-gradient(from 0deg,transparent 0deg,{_cv_esc(accent)} 60deg,'
+        f'{_cv_esc(accent2)} 120deg,transparent 180deg);'
         f'animation:{cid}-spin {dur} linear infinite;z-index:0;}}'
-        f'.{cid}-inner{{position:relative;z-index:1;background:{bg};'
+        f'.{cid}-inner{{position:relative;z-index:1;background:{_cv_esc(bg)};'
         f'border-radius:{12 - pad}px;padding:20px 22px;}}'
         f'@keyframes {cid}-spin{{to{{transform:rotate(360deg)}}}}'
         f'</style>'
@@ -6321,7 +6364,7 @@ def _render_aurora_background(b: dict) -> str:
 
     title_html = (
         f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">'
-        f'{title}</div>'
+        f'{_cv_esc(title)}</div>'
     ) if title else ""
     body_html = (
         f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">'
@@ -6331,16 +6374,16 @@ def _render_aurora_background(b: dict) -> str:
     return (
         f'<style>'
         f'.{aid}{{position:relative;border-radius:16px;overflow:hidden;'
-        f'background:{background};padding:40px 36px;margin:1rem 0;min-height:120px;}}'
-        f'.{aid}-blobs{{position:absolute;inset:0;overflow:hidden;opacity:{opacity};}}'
+        f'background:{_cv_esc(background)};padding:40px 36px;margin:1rem 0;min-height:120px;}}'
+        f'.{aid}-blobs{{position:absolute;inset:0;overflow:hidden;opacity:{_cv_esc(opacity)};}}'
         f'.{aid}-b1{{position:absolute;top:-20%;left:-10%;width:60%;height:80%;'
-        f'background:radial-gradient(ellipse at center,{c1} 0%,transparent 70%);'
+        f'background:radial-gradient(ellipse at center,{_cv_esc(c1)} 0%,transparent 70%);'
         f'animation:{aid}-b1 {d1} ease-in-out infinite;}}'
         f'.{aid}-b2{{position:absolute;top:10%;right:-15%;width:70%;height:70%;'
-        f'background:radial-gradient(ellipse at center,{c2} 0%,transparent 70%);'
+        f'background:radial-gradient(ellipse at center,{_cv_esc(c2)} 0%,transparent 70%);'
         f'animation:{aid}-b2 {d2} ease-in-out infinite;}}'
         f'.{aid}-b3{{position:absolute;bottom:-20%;left:30%;width:50%;height:60%;'
-        f'background:radial-gradient(ellipse at center,{c3} 0%,transparent 70%);'
+        f'background:radial-gradient(ellipse at center,{_cv_esc(c3)} 0%,transparent 70%);'
         f'animation:{aid}-b3 {d3} ease-in-out infinite;}}'
         f'.{aid}-content{{position:relative;z-index:1;}}'
         f'@keyframes {aid}-b1{{0%,100%{{transform:translate(0,0) scale(1)}}'
@@ -6367,24 +6410,24 @@ def _render_dot_grid_background(b: dict) -> str:
     variant  = b.get("variant", "dots")
     title    = b.get("title", "")
     body     = b.get("body", "")
-    dot_color = b.get("dot_color", "rgba(148,163,184,0.35)")
+    dot_color = _safe_css(b.get("dot_color"), "rgba(148,163,184,0.35)")
     background = b.get("background", "#0d1525")
     spacing  = int(b.get("spacing", 24))
-    dot_size = b.get("dot_size", 1)
+    dot_size = _safe_css(b.get("dot_size"), "1")
 
     if variant == "grid":
-        pattern = (f'linear-gradient({dot_color} 1px,transparent 1px),'
-                   f'linear-gradient(90deg,{dot_color} 1px,transparent 1px)')
+        pattern = (f'linear-gradient({_cv_esc(dot_color)} 1px,transparent 1px),'
+                   f'linear-gradient(90deg,{_cv_esc(dot_color)} 1px,transparent 1px)')
     elif variant == "cross":
         # thick "+" markers at each intersection
-        pattern = (f'linear-gradient({dot_color} 1px,transparent 1px),'
-                   f'linear-gradient(90deg,{dot_color} 1px,transparent 1px)')
+        pattern = (f'linear-gradient({_cv_esc(dot_color)} 1px,transparent 1px),'
+                   f'linear-gradient(90deg,{_cv_esc(dot_color)} 1px,transparent 1px)')
     else:  # dots
-        pattern = f'radial-gradient(circle,{dot_color} {dot_size}px,transparent {dot_size}px)'
+        pattern = f'radial-gradient(circle,{_cv_esc(dot_color)} {_cv_esc(dot_size)}px,transparent {_cv_esc(dot_size)}px)'
 
     title_html = (
         f'<div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">'
-        f'{title}</div>'
+        f'{_cv_esc(title)}</div>'
     ) if title else ""
     body_html = (
         f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">'
@@ -6393,7 +6436,7 @@ def _render_dot_grid_background(b: dict) -> str:
 
     return (
         f'<div style="margin:1rem 0;border-radius:12px;overflow:hidden;padding:36px;'
-        f'background-color:{background};background-image:{pattern};'
+        f'background-color:{_cv_esc(background)};background-image:{pattern};'
         f'background-size:{spacing}px {spacing}px;">'
         f'{title_html}{body_html}'
         f'</div>'
@@ -6418,9 +6461,9 @@ def _render_shimmer_button(b: dict) -> str:
     hl = _hex_to_rgba(accent, 0.5)
 
     tag = "a" if href else "button"
-    href_attr = f' href="{href}"' if href else ' type="button"'
+    href_attr = f' href="{_cv_esc(href)}"' if href else ' type="button"'
     desc_html = (
-        f'<div style="margin-top:6px;font-size:0.78rem;color:#64748b;">{description}</div>'
+        f'<div style="margin-top:6px;font-size:0.78rem;color:#64748b;">{_cv_esc(description)}</div>'
     ) if description else ""
 
     return (
@@ -6429,13 +6472,13 @@ def _render_shimmer_button(b: dict) -> str:
         f'100%{{background-position:200% center}}}}'
         f'.{sid}{{display:inline-block;padding:{pad};font-size:{fsize};font-weight:600;'
         f'color:#f1f5f9;border:1px solid rgba(255,255,255,0.14);border-radius:8px;cursor:pointer;'
-        f'background:linear-gradient(105deg,{bg} 38%,{hl} 50%,{bg} 62%);'
+        f'background:linear-gradient(105deg,{_cv_esc(bg)} 38%,{hl} 50%,{_cv_esc(bg)} 62%);'
         f'background-size:200% auto;'
         f'animation:{sid}-sw {dur} linear infinite;'
         f'text-decoration:none;letter-spacing:0.01em;}}'
         f'</style>'
         f'<div style="margin:1rem 0;">'
-        f'<{tag}{href_attr} class="{sid}">{label}</{tag}>'
+        f'<{tag}{href_attr} class="{sid}">{_cv_esc(label)}</{tag}>'
         f'{desc_html}'
         f'</div>'
     )
@@ -6469,7 +6512,7 @@ def _render_card_stack(b: dict) -> str:
 
         title_html = (
             f'<div style="font-size:0.95rem;font-weight:700;color:#f1f5f9;margin-bottom:5px;">'
-            f'{title}</div>'
+            f'{_cv_esc(title)}</div>'
         ) if title and is_front else ""
         body_html = (
             f'<div style="font-size:0.85rem;color:#94a3b8;line-height:1.5;'
@@ -6477,15 +6520,15 @@ def _render_card_stack(b: dict) -> str:
             f'{_md_inline(body)}</div>'
         ) if body and is_front else ""
         accent_bar = (
-            f'<div style="width:28px;height:3px;background:{accent};'
+            f'<div style="width:28px;height:3px;background:{_cv_esc(accent)};'
             f'border-radius:2px;margin-bottom:10px;"></div>'
         ) if is_front else ""
 
         cards_html.append(
             f'<div style="position:absolute;top:0;left:0;right:0;height:{h}px;'
-            f'border:1px solid {border};background:{bg};border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+            f'border:1px solid {_cv_esc(border)};background:{_cv_esc(bg)};border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             f'padding:20px 22px;box-sizing:border-box;'
-            f'transform:rotate({ang}deg) translateY({off}px);'
+            f'transform:rotate({_cv_esc(ang)}deg) translateY({_cv_esc(off)}px);'
             f'z-index:{z};opacity:{opacity};">'
             f'{accent_bar}{title_html}{body_html}'
             f'</div>'
@@ -6520,22 +6563,22 @@ def _render_entity_list(b: dict) -> str:
         icon_html = (
             f'<div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;'
             f'display:flex;align-items:center;justify-content:center;font-size:1.1rem;'
-            f'flex-shrink:0;">{icon}</div>'
+            f'flex-shrink:0;">{_cv_esc(icon)}</div>'
         ) if icon else (
             f'<div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;'
             f'display:flex;align-items:center;justify-content:center;font-size:0.88rem;'
-            f'font-weight:700;color:#7c3aed;flex-shrink:0;">{name[:1].upper()}</div>'
+            f'font-weight:700;color:#7c3aed;flex-shrink:0;">{_cv_esc(name[:1].upper())}</div>'
         )
         badge_bg, badge_fg = STATUS_COLORS.get(status, ("#f3f4f6", "#6b7280"))
         status_html = (
             f'<span style="font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:100px;'
-            f'background:{badge_bg};color:{badge_fg};">{status}</span>'
+            f'background:{badge_bg};color:{badge_fg};">{_cv_esc(status)}</span>'
         ) if status else ""
         subtitle_html = (
-            f'<div style="font-size:0.75rem;color:var(--a2ui-muted,#666666);">{subtitle}</div>'
+            f'<div style="font-size:0.75rem;color:var(--a2ui-muted,#666666);">{_cv_esc(subtitle)}</div>'
         ) if subtitle else ""
         meta_html = (
-            f'<div style="font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);white-space:nowrap;">{meta}</div>'
+            f'<div style="font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);white-space:nowrap;">{_cv_esc(meta)}</div>'
         ) if meta else ""
         rows += (
             f'<div style="display:flex;align-items:center;gap:12px;padding:10px 0;'
@@ -6543,7 +6586,7 @@ def _render_entity_list(b: dict) -> str:
             f'{icon_html}'
             f'<div style="flex:1;min-width:0;">'
             f'<div style="font-size:0.88rem;font-weight:600;color:var(--a2ui-text,#171717);'
-            f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{name}</div>'
+            f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{_cv_esc(name)}</div>'
             f'{subtitle_html}'
             f'</div>'
             f'{status_html}'
@@ -6574,7 +6617,7 @@ def _render_prompt_template(b: dict) -> str:
 
     label_html = (
         f'<div style="font-size:0.72rem;font-weight:600;color:#6b7280;'
-        f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">{label}</div>'
+        f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">{_cv_esc(label)}</div>'
     ) if label else ""
 
     copy_btn = (
@@ -6619,8 +6662,8 @@ def _render_model_card(b: dict) -> str:
     badge_border = _hex_to_rgba(accent, 0.30)
 
     provider_html = (
-        f'<span style="font-size:0.72rem;font-weight:600;color:{accent};'
-        f'text-transform:uppercase;letter-spacing:0.07em;">{provider}</span>'
+        f'<span style="font-size:0.72rem;font-weight:600;color:{_cv_esc(accent)};'
+        f'text-transform:uppercase;letter-spacing:0.07em;">{_cv_esc(provider)}</span>'
     ) if provider else ""
 
     meta_items = []
@@ -6631,8 +6674,8 @@ def _render_model_card(b: dict) -> str:
     meta_html = "".join(
         f'<div style="display:flex;flex-direction:column;gap:1px;">'
         f'<span style="font-size:0.68rem;color:#9ca3af;text-transform:uppercase;'
-        f'letter-spacing:0.05em;">{k}</span>'
-        f'<span style="font-size:0.82rem;font-weight:600;color:#374151;">{v}</span>'
+        f'letter-spacing:0.05em;">{_cv_esc(k)}</span>'
+        f'<span style="font-size:0.82rem;font-weight:600;color:#374151;">{_cv_esc(v)}</span>'
         f'</div>'
         for k, v in meta_items
     )
@@ -6643,7 +6686,7 @@ def _render_model_card(b: dict) -> str:
 
     badges = "".join(
         f'<span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;'
-        f'background:{badge_bg};color:{accent};border:1px solid {badge_border};'
+        f'background:{badge_bg};color:{_cv_esc(accent)};border:1px solid {badge_border};'
         f'font-weight:500;">{_esc(cap)}</span>'
         for cap in capabilities
     )
@@ -6655,7 +6698,7 @@ def _render_model_card(b: dict) -> str:
         f'<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'{provider_html}'
-        f'<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">{name}</div>'
+        f'<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">{_cv_esc(name)}</div>'
         f'{badges_html}'
         f'{meta_wrap}'
         f'</div>'
@@ -6676,11 +6719,11 @@ def _render_conversation_snippet(b: dict) -> str:
         return (
             f'<div style="display:flex;flex-direction:column;'
             f'align-items:{"flex-end" if align == "right" else "flex-start"};gap:4px;">'
-            f'<span style="font-size:0.7rem;font-weight:600;color:{label_color};'
-            f'padding:0 4px;">{label}</span>'
+            f'<span style="font-size:0.7rem;font-weight:600;color:{_cv_esc(label_color)};'
+            f'padding:0 4px;">{_cv_esc(label)}</span>'
             f'<div style="max-width:80%;padding:10px 14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             f'border:1px solid {bd};background:{bg};font-size:0.86rem;'
-            f'color:#374151;line-height:1.5;white-space:pre-wrap;">{text}</div>'
+            f'color:#374151;line-height:1.5;white-space:pre-wrap;">{_cv_esc(text)}</div>'
             f'</div>'
         )
 
@@ -6698,7 +6741,7 @@ def _render_shortcut_legend(b: dict) -> str:
     items = b.get("items", [])
 
     title_html = (
-        f'<div style="font-size:0.8rem;font-weight:700;color:#374151;margin-bottom:10px;">{title}</div>'
+        f'<div style="font-size:0.8rem;font-weight:700;color:#374151;margin-bottom:10px;">{_cv_esc(title)}</div>'
     ) if title else ""
 
     rows = ""
@@ -6708,13 +6751,13 @@ def _render_shortcut_legend(b: dict) -> str:
         kbd_html = "".join(
             f'<kbd style="display:inline-block;padding:2px 7px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);font-family:monospace;'
-            f'font-size:0.78rem;color:#374151;box-shadow:0 1px 0 #d1d5db;">{k}</kbd>'
+            f'font-size:0.78rem;color:#374151;box-shadow:0 1px 0 #d1d5db;">{_cv_esc(k)}</kbd>'
             for k in keys
         )
         rows += (
             f'<div style="display:flex;align-items:center;justify-content:space-between;'
             f'padding:6px 0;border-bottom:1px solid #f3f4f6;">'
-            f'<span style="font-size:0.82rem;color:#374151;">{action}</span>'
+            f'<span style="font-size:0.82rem;color:#374151;">{_cv_esc(action)}</span>'
             f'<div style="display:flex;gap:3px;align-items:center;">{kbd_html}</div>'
             f'</div>'
         )
@@ -6751,10 +6794,10 @@ def _render_rating_summary_bar(b: dict) -> str:
         width = round(count / max_count * 100)
         bars += (
             f'<div style="display:flex;align-items:center;gap:8px;">'
-            f'<span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">{stars}</span>'
-            f'<span style="font-size:0.82rem;color:{accent};">★</span>'
+            f'<span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">{_cv_esc(stars)}</span>'
+            f'<span style="font-size:0.82rem;color:{_cv_esc(accent)};">★</span>'
             f'<div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;">'
-            f'<div style="width:{width}%;height:100%;border-radius:100px;background:{accent};"></div>'
+            f'<div style="width:{width}%;height:100%;border-radius:100px;background:{_cv_esc(accent)};"></div>'
             f'</div>'
             f'<span style="font-size:0.75rem;color:#6b7280;width:3ch;text-align:right;">{pct}%</span>'
             f'</div>'
@@ -6780,7 +6823,7 @@ def _render_roadmap_card(b: dict) -> str:
     periods = b.get("periods", [])
 
     title_html = (
-        f'<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:14px;">{title}</div>'
+        f'<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:14px;">{_cv_esc(title)}</div>'
     ) if title else ""
 
     cols = ""
@@ -6796,13 +6839,13 @@ def _render_roadmap_card(b: dict) -> str:
                 f'<div style="display:flex;align-items:flex-start;gap:7px;padding:5px 0;">'
                 f'<span style="font-size:0.72rem;font-weight:700;padding:1px 5px;'
                 f'border-radius:4px;background:{bg};color:{fg};flex-shrink:0;">{icon}</span>'
-                f'<span style="font-size:0.8rem;color:#374151;">{text}</span>'
+                f'<span style="font-size:0.8rem;color:#374151;">{_cv_esc(text)}</span>'
                 f'</div>'
             )
         cols += (
             f'<div style="flex:1;min-width:120px;">'
             f'<div style="font-size:0.72rem;font-weight:700;color:#6b7280;'
-            f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">{label}</div>'
+            f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">{_cv_esc(label)}</div>'
             f'{item_rows}'
             f'</div>'
         )
@@ -6823,7 +6866,7 @@ def _render_notification_stack(b: dict) -> str:
 
     title_html = (
         f'<div style="font-size:0.82rem;font-weight:700;color:#374151;'
-        f'padding:0 14px 8px;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">{title}</div>'
+        f'padding:0 14px 8px;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">{_cv_esc(title)}</div>'
     ) if title else ""
 
     rows = ""
@@ -6836,10 +6879,10 @@ def _render_notification_stack(b: dict) -> str:
 
         body_html = (
             f'<div style="font-size:0.75rem;color:#6b7280;margin-top:1px;'
-            f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{body}</div>'
+            f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{_cv_esc(body)}</div>'
         ) if body else ""
         time_html = (
-            f'<div style="font-size:0.7rem;color:#9ca3af;white-space:nowrap;flex-shrink:0;">{time}</div>'
+            f'<div style="font-size:0.7rem;color:#9ca3af;white-space:nowrap;flex-shrink:0;">{_cv_esc(time)}</div>'
         ) if time else ""
         dot = (
             f'<div style="width:8px;height:8px;border-radius:50%;background:#1a73e8;'
@@ -6850,11 +6893,11 @@ def _render_notification_stack(b: dict) -> str:
             f'<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;'
             f'background:{"#f0f7ff" if unread else "#fff"};'
             f'border-bottom:1px solid #f3f4f6;">'
-            f'<span style="font-size:1.2rem;line-height:1;flex-shrink:0;">{icon}</span>'
+            f'<span style="font-size:1.2rem;line-height:1;flex-shrink:0;">{_cv_esc(icon)}</span>'
             f'<div style="flex:1;min-width:0;">'
             f'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;">'
             f'<span style="font-size:0.82rem;font-weight:{"700" if unread else "500"};'
-            f'color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{ntitle}</span>'
+            f'color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{_cv_esc(ntitle)}</span>'
             f'{time_html}'
             f'</div>'
             f'{body_html}'
@@ -6887,17 +6930,17 @@ def _render_inline_alert(b: dict) -> str:
     icon   = b.get("icon") or p["icon"]
 
     detail_html = (
-        f'<div style="font-size:0.75rem;color:{p["text"]};opacity:0.8;margin-top:2px;">{detail}</div>'
+        f'<div style="font-size:0.75rem;color:{p["text"]};opacity:0.8;margin-top:2px;">{_cv_esc(detail)}</div>'
     ) if detail else ""
 
     return (
         f'<div style="display:inline-flex;align-items:flex-start;gap:6px;'
         f'background:{p["bg"]};border:1px solid {p["border"]};border-radius:6px;'
         f'padding:5px 10px;margin:2px 0;max-width:100%;box-sizing:border-box;">'
-        f'<span style="font-size:1rem;line-height:1.4;flex-shrink:0;">{icon}</span>'
+        f'<span style="font-size:1rem;line-height:1.4;flex-shrink:0;">{_cv_esc(icon)}</span>'
         f'<div>'
         f'<span style="font-size:0.82rem;font-weight:600;color:{p["text"]};'
-        f'line-height:1.4;">{msg}</span>'
+        f'line-height:1.4;">{_cv_esc(msg)}</span>'
         f'{detail_html}'
         f'</div>'
         f'</div>'
@@ -6912,7 +6955,7 @@ def _render_source_citation(b: dict) -> str:
     heading_html = (
         f'<div style="font-size:0.78rem;font-weight:700;color:#374151;'
         f'letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">'
-        f'{heading}</div>'
+        f'{_cv_esc(heading)}</div>'
     ) if heading else ""
 
     cards = ""
@@ -6926,18 +6969,18 @@ def _render_source_citation(b: dict) -> str:
         meta    = " · ".join(filter(None, [author, date]))
 
         title_el = (
-            f'<a href="{url}" style="font-size:0.82rem;font-weight:600;color:#1a73e8;'
-            f'text-decoration:none;" target="_blank">{title}</a>'
+            f'<a href="{_cv_esc(url)}" style="font-size:0.82rem;font-weight:600;color:#1a73e8;'
+            f'text-decoration:none;" target="_blank">{_cv_esc(title)}</a>'
         ) if url else (
-            f'<span style="font-size:0.82rem;font-weight:600;color:#111827;">{title}</span>'
+            f'<span style="font-size:0.82rem;font-weight:600;color:#111827;">{_cv_esc(title)}</span>'
         )
         excerpt_el = (
             f'<div style="font-size:0.75rem;color:#6b7280;margin-top:3px;'
             f'font-style:italic;border-left:2px solid #e5e7eb;padding-left:8px;">'
-            f'"{excerpt}"</div>'
+            f'"{_cv_esc(excerpt)}"</div>'
         ) if excerpt else ""
         meta_el = (
-            f'<div style="font-size:0.7rem;color:#9ca3af;margin-top:2px;">{meta}</div>'
+            f'<div style="font-size:0.7rem;color:#9ca3af;margin-top:2px;">{_cv_esc(meta)}</div>'
         ) if meta else ""
 
         cards += (
@@ -6945,7 +6988,7 @@ def _render_source_citation(b: dict) -> str:
             f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             f'<span style="font-size:0.72rem;font-weight:700;color:#fff;'
             f'background:#6b7280;border-radius:3px;padding:1px 5px;'
-            f'flex-shrink:0;align-self:flex-start;margin-top:1px;">[{num}]</span>'
+            f'flex-shrink:0;align-self:flex-start;margin-top:1px;">[{_cv_esc(num)}]</span>'
             f'<div style="flex:1;min-width:0;">{title_el}{excerpt_el}{meta_el}</div>'
             f'</div>'
         )
@@ -6972,7 +7015,7 @@ def _render_llm_comparison_table(b: dict) -> str:
         f'<div style="margin-bottom:10px;padding:8px 12px;background:#f8fafc;'
         f'border:1px solid #e2e8f0;border-radius:6px;font-size:0.8rem;'
         f'color:#475569;font-family:monospace;">'
-        f'<span style="font-weight:700;color:#374151;">Prompt: </span>{prompt}</div>'
+        f'<span style="font-weight:700;color:#374151;">Prompt: </span>{_cv_esc(prompt)}</div>'
     ) if prompt else ""
 
     col_w = f"{100 // max(len(models), 1)}%"
@@ -6991,17 +7034,17 @@ def _render_llm_comparison_table(b: dict) -> str:
         headers += (
             f'<th style="width:{col_w};padding:8px 10px;text-align:left;'
             f'border-bottom:2px solid {color};font-size:0.8rem;font-weight:700;'
-            f'color:{color};">{name}</th>'
+            f'color:{color};">{_cv_esc(name)}</th>'
         )
         outputs += (
             f'<td style="width:{col_w};padding:8px 10px;vertical-align:top;'
             f'border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;'
-            f'line-height:1.55;">{out}</td>'
+            f'line-height:1.55;">{_cv_esc(out)}</td>'
         )
         if show_meta:
             parts = []
-            if lat:  parts.append(f"{lat} ms")
-            if toks: parts.append(f"{toks} tok")
+            if lat:  parts.append(f"{_cv_esc(lat)} ms")
+            if toks: parts.append(f"{_cv_esc(toks)} tok")
             if cost: parts.append(f"${cost:.4f}")
             meta_row += (
                 f'<td style="padding:6px 10px;font-size:0.7rem;color:#9ca3af;'
@@ -7036,11 +7079,11 @@ def _render_confidence_bar(b: dict) -> str:
             f'<div style="margin-bottom:8px;">'
             f'<div style="display:flex;justify-content:space-between;'
             f'font-size:0.78rem;color:#374151;margin-bottom:3px;">'
-            f'<span>{label}</span>'
-            f'<span style="font-weight:700;color:{color};">{round(pct)}%</span>'
+            f'<span>{_cv_esc(label)}</span>'
+            f'<span style="font-weight:700;color:{_cv_esc(color)};">{round(pct)}%</span>'
             f'</div>'
             f'<div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">'
-            f'<div style="width:{pct}%;height:100%;background:{color};'
+            f'<div style="width:{pct}%;height:100%;background:{_cv_esc(color)};'
             f'border-radius:4px;transition:width .4s;"></div>'
             f'</div>'
             f'</div>'
@@ -7079,7 +7122,7 @@ def _render_token_budget_meter(b: dict) -> str:
         return f"{n/1000:.1f}k" if n >= 1000 else str(n)
 
     model_html = (
-        f'<span style="font-size:0.72rem;color:#9ca3af;margin-left:6px;">{model}</span>'
+        f'<span style="font-size:0.72rem;color:#9ca3af;margin-left:6px;">{_cv_esc(model)}</span>'
     ) if model else ""
 
     if animate:
@@ -7099,7 +7142,7 @@ def _render_token_budget_meter(b: dict) -> str:
             f'<div style="display:flex;align-items:baseline;justify-content:space-between;'
             f'margin-bottom:6px;">'
             f'<span style="font-size:1rem;font-weight:700;color:#ffffff;">'
-            f'{label}{model_html}</span>'
+            f'{_cv_esc(label)}{model_html}</span>'
             f'<span style="font-size:2rem;font-weight:800;color:#ffffff;font-family:monospace;">'
             f'<span class="tbm_{uid}"></span>'
             f'<span style="color:#6b7280;"> / {_fmt(total)}</span>'
@@ -7118,7 +7161,7 @@ def _render_token_budget_meter(b: dict) -> str:
         f'<div style="display:flex;align-items:baseline;justify-content:space-between;'
         f'margin-bottom:6px;">'
         f'<span style="font-size:0.8rem;font-weight:600;color:#374151;">'
-        f'{label}{model_html}</span>'
+        f'{_cv_esc(label)}{model_html}</span>'
         f'<span style="font-size:0.78rem;font-weight:700;color:{color};">'
         f'{_fmt(used)} / {_fmt(total)} ({round(pct)}%)</span>'
         f'</div>'
@@ -7184,7 +7227,7 @@ def _render_chartjs_pie(b: dict) -> str:
                 f"L {x1:.2f} {y1:.2f} "
                 f"A {r} {r} 0 {large} 1 {x2:.2f} {y2:.2f} Z"
             )
-        slices_svg += f'<path d="{path}" fill="{color}" stroke="#fff" stroke-width="2"/>'
+        slices_svg += f'<path d="{path}" fill="{_cv_esc(color)}" stroke="#fff" stroke-width="2"/>'
 
         if show_labels and pct > 0.04:
             mid = start + sweep / 2
@@ -7198,8 +7241,8 @@ def _render_chartjs_pie(b: dict) -> str:
         if show_legend:
             legend_html += (
                 f'<div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;">'
-                f'<span style="width:10px;height:10px;border-radius:2px;background:{color};flex-shrink:0;"></span>'
-                f'<span>{label}</span>'
+                f'<span style="width:10px;height:10px;border-radius:2px;background:{_cv_esc(color)};flex-shrink:0;"></span>'
+                f'<span>{_cv_esc(label)}</span>'
                 f'<span style="margin-left:auto;font-weight:600;">{round(pct*100)}%</span>'
                 f'</div>'
             )
@@ -7207,7 +7250,7 @@ def _render_chartjs_pie(b: dict) -> str:
 
     title_html = (
         f'<div style="font-size:0.85rem;font-weight:700;color:#111827;text-align:center;'
-        f'margin-bottom:6px;">{title}</div>'
+        f'margin-bottom:6px;">{_cv_esc(title)}</div>'
     ) if title else ""
 
     legend_block = (
@@ -7242,8 +7285,8 @@ def _render_text_callout(b: dict) -> str:
         f'<div style="margin:0.5rem 0;padding:8px 12px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
         f'background:{p["bg"]};border:1px solid {p["border"]};">'
         f'<div style="font-size:0.78rem;font-weight:700;color:{p["title"]};'
-        f'margin-bottom:2px;">{title}</div>'
-        f'<div style="font-size:0.8rem;color:{p["body"]};line-height:1.5;">{desc}</div>'
+        f'margin-bottom:2px;">{_cv_esc(title)}</div>'
+        f'<div style="font-size:0.8rem;color:{p["body"]};line-height:1.5;">{_cv_esc(desc)}</div>'
         f'</div>'
     )
 
@@ -7258,8 +7301,8 @@ def _render_tag_block(b: dict) -> str:
 
     chips = "".join(
         f'<span style="display:inline-block;padding:3px 10px;border-radius:9999px;'
-        f'background:{bg};border:1px solid {border};color:{text};'
-        f'font-size:0.78rem;font-weight:500;white-space:nowrap;">{t}</span>'
+        f'background:{_cv_esc(bg)};border:1px solid {_cv_esc(border)};color:{text};'
+        f'font-size:0.78rem;font-weight:500;white-space:nowrap;">{_cv_esc(t)}</span>'
         for t in tags
     )
     return (
@@ -7279,7 +7322,7 @@ def _render_variant_selector(b: dict) -> str:
 
     label_html = (
         f'<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">'
-        f'{label}</div>'
+        f'{_cv_esc(label)}</div>'
     ) if label else ""
 
     style = (
@@ -7300,12 +7343,12 @@ def _render_variant_selector(b: dict) -> str:
         desc  = item.get("description", "")
         chk   = "checked" if val == default else ""
         desc_html = (
-            f'<div style="font-size:0.75rem;color:#6b7280;margin-top:2px;">{desc}</div>'
+            f'<div style="font-size:0.75rem;color:#6b7280;margin-top:2px;">{_cv_esc(desc)}</div>'
         ) if desc else ""
         cards += (
             f'<label>'
-            f'<input type="radio" name="{name}" value="{val}" {chk}>'
-            f'<div style="font-size:0.85rem;font-weight:600;color:#111827;">{title}</div>'
+            f'<input type="radio" name="{_cv_esc(name)}" value="{_cv_esc(val)}" {chk}>'
+            f'<div style="font-size:0.85rem;font-weight:600;color:#111827;">{_cv_esc(title)}</div>'
             f'{desc_html}'
             f'</label>'
         )
@@ -7397,7 +7440,7 @@ def _render_otp_input(b: dict) -> str:
         border_color = "#1a73e8" if digit else "#dadce0"
         bg           = "#f0f4ff" if digit else "#fff"
         boxes += (
-            f'<input type="text" maxlength="1" value="{digit}" '
+            f'<input type="text" maxlength="1" value="{_cv_esc(digit)}" '
             f'style="width:44px;height:52px;text-align:center;font-size:1.3rem;'
             f'font-weight:700;border:2px solid {border_color};border-radius:8px;'
             f'background:{bg};color:#202124;outline:none;'
@@ -7430,11 +7473,11 @@ def _render_bento_grid(b: dict) -> str:
         icon     = tile.get("icon", "")
         span     = int(tile.get("span", 1))
         color    = tile.get("color", _COLORS[i % len(_COLORS)])
-        bg       = tile.get("background", f"{color}0d")
+        bg       = tile.get("background", f"{_cv_esc(color)}0d")
         col_span = f"1 / span {min(span, cols)}" if span > 1 else "auto"
-        icon_html = f'<span style="font-size:1.7rem;margin-bottom:4px;">{icon}</span>' if icon else ""
+        icon_html = f'<span style="font-size:1.7rem;margin-bottom:4px;">{_cv_esc(icon)}</span>' if icon else ""
         tiles_html += (
-            f'<div style="grid-column:{col_span};background:{bg};border:1px solid {color}28;'
+            f'<div style="grid-column:{col_span};background:{_cv_esc(bg)};border:1px solid {_cv_esc(color)}28;'
             f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;display:flex;flex-direction:column;gap:6px;">'
             f'{icon_html}'
             f'<div style="font-size:{"1.05rem" if span>1 else "0.92rem"};'
@@ -7461,7 +7504,7 @@ def _render_cta_section(b: dict) -> str:
     primary_html = (
         f'<a href="{_h.escape(primary.get("url","#"))}" '
         f'style="display:inline-flex;align-items:center;padding:11px 22px;'
-        f'background:#ffffff;background:var(--a2ui-surface,#ffffff);color:{bg};font-size:0.9rem;font-weight:700;'
+        f'background:#ffffff;background:var(--a2ui-surface,#ffffff);color:{_cv_esc(bg)};font-size:0.9rem;font-weight:700;'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;">{_h.escape(primary.get("label",""))}</a>'
     ) if primary else ""
     secondary_html = (
@@ -7473,7 +7516,7 @@ def _render_cta_section(b: dict) -> str:
     ) if secondary else ""
 
     return (
-        f'<div style="margin:1.5rem 0;background:{bg};border-radius:14px;padding:36px 32px;text-align:center;">'
+        f'<div style="margin:1.5rem 0;background:{_cv_esc(bg)};border-radius:14px;padding:36px 32px;text-align:center;">'
         f'<h3 style="font-size:1.4rem;font-weight:800;color:#fff;margin:0 0 10px;">{_h.escape(heading)}</h3>'
         f'<p style="font-size:0.93rem;color:rgba(255,255,255,0.85);margin:0 auto 24px;'
         f'max-width:480px;line-height:1.65;">{_h.escape(body)}</p>'
@@ -7504,21 +7547,21 @@ def _render_animated_counter(b: dict) -> str:
         suffix = c.get("suffix", "")
         prefix = c.get("prefix", "")
         color  = c.get("color", _COLORS[i % len(_COLORS)])
-        prop   = f"--ac{uid}p{i}"
-        cv     = f"ac{uid}cv{i}"
-        cid    = f"ac{uid}i{i}"
+        prop   = f"--ac{uid}p{_cv_esc(i)}"
+        cv     = f"ac{uid}cv{_cv_esc(i)}"
+        cid    = f"ac{uid}i{_cv_esc(i)}"
         style_parts.append(
             f'@property {prop}{{syntax:"<integer>";initial-value:0;inherits:false;}}'
             f'@keyframes {cid}{{from{{{prop}:0}}to{{{prop}:{val}}}}}'
             f'.{cid}{{animation:{cid} {duration}s ease-out forwards;counter-reset:{cv} var({prop});}}'
-            f'.{cid}::after{{content:"{prefix}" counter({cv}) "{suffix}";'
-            f'font-size:2.2rem;font-weight:800;color:{color};}}'
+            f'.{cid}::after{{content:"{_cv_esc(prefix)}" counter({cv}) "{_cv_esc(suffix)}";'
+            f'font-size:2.2rem;font-weight:800;color:{_cv_esc(color)};}}'
         )
         items_html += (
             f'<div style="text-align:center;padding:16px 28px;">'
             f'<div class="{cid}"></div>'
             f'<div style="font-size:0.84rem;color:#5f6368;margin-top:4px;font-weight:500;">'
-            f'{label}</div></div>'
+            f'{_cv_esc(label)}</div></div>'
         )
 
     return (
@@ -7542,7 +7585,7 @@ def _render_combobox(b: dict) -> str:
     rules       = b.get("rules", [])
     req_star    = '<span style="color:#ea4335;margin-left:2px;">*</span>' if "required" in rules else ""
 
-    datalist_id   = f"dl-{name}"
+    datalist_id   = f"dl-{_cv_esc(name)}"
     datalist_opts = "".join(f'<option value="{_h.escape(o.get("label",""))}"></option>' for o in options)
 
     selected_label = next((o.get("label","") for o in options if o.get("value") == selected), "")
@@ -7566,7 +7609,7 @@ def _render_combobox(b: dict) -> str:
         )
 
     label_html = (
-        f'<label for="{name}" style="display:block;font-size:0.83rem;font-weight:600;'
+        f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
         f'color:#3c4043;margin-bottom:5px;">{_h.escape(label)}{req_star}</label>'
     ) if label else ""
 
@@ -7579,7 +7622,7 @@ def _render_combobox(b: dict) -> str:
         f'border-bottom:1px solid #f1f3f4;">'
         f'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2">'
         f'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>'
-        f'<input type="text" id="{name}" name="{name}" list="{datalist_id}" '
+        f'<input type="text" id="{_cv_esc(name)}" name="{_cv_esc(name)}" list="{datalist_id}" '
         f'placeholder="{_h.escape(placeholder)}" value="{_h.escape(selected_label)}" '
         f'style="flex:1;border:none;outline:none;padding:9px 0;font-size:0.9rem;'
         f'color:#3c4043;background:transparent;">'
@@ -7620,13 +7663,13 @@ def _render_feature_grid(b: dict) -> str:
         color = feat.get("color", _COLORS[i % len(_COLORS)])
         badge_html = (
             f'<span style="font-size:0.68rem;font-weight:600;letter-spacing:.05em;'
-            f'text-transform:uppercase;color:{color};background:{color}1a;'
+            f'text-transform:uppercase;color:{_cv_esc(color)};background:{_cv_esc(color)}1a;'
             f'padding:2px 7px;border-radius:10px;margin-left:8px;">{_h.escape(badge)}</span>'
         ) if badge else ""
         items_html += (
             f'<div style="display:flex;flex-direction:column;gap:10px;">'
-            f'<div style="width:42px;height:42px;border-radius:10px;background:{color}18;'
-            f'display:flex;align-items:center;justify-content:center;font-size:1.15rem;">{icon}</div>'
+            f'<div style="width:42px;height:42px;border-radius:10px;background:{_cv_esc(color)}18;'
+            f'display:flex;align-items:center;justify-content:center;font-size:1.15rem;">{_cv_esc(icon)}</div>'
             f'<div style="font-size:0.95rem;font-weight:600;color:#202124;">'
             f'{_h.escape(title)}{badge_html}</div>'
             f'<div style="font-size:0.85rem;color:#5f6368;line-height:1.6;">{_h.escape(desc)}</div>'
@@ -7996,7 +8039,7 @@ def _render_quiz_question(b: dict) -> str:
     inputs = ""
     labels = ""
     for i, opt in enumerate(options):
-        inp_id = f"{uid}_o{i}"
+        inp_id = f"{uid}_o{_cv_esc(i)}"
         is_correct = (i == correct)
         correct_css = (
             f'#{inp_id}:checked ~ .{uid}_opts label[for="{inp_id}"]'
@@ -8020,13 +8063,13 @@ def _render_quiz_question(b: dict) -> str:
     explain_html = (
         f'<div class="{uid}_explain" style="display:none;margin-top:12px;padding:12px 14px;'
         f'background:#eff6ff;border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;'
-        f'font-size:0.85rem;color:#1e40af;">{explain}</div>'
+        f'font-size:0.85rem;color:#1e40af;">{_cv_esc(explain)}</div>'
     ) if explain else ""
 
     return (
         f'<div style="border:1.5px solid {border};border-radius:12px;padding:20px 24px;'
         f'margin:1.2rem 0;background:{bg};">'
-        f'<p style="font-weight:600;font-size:0.95rem;color:{text_col};margin:0 0 14px;">{question}</p>'
+        f'<p style="font-weight:600;font-size:0.95rem;color:{text_col};margin:0 0 14px;">{_cv_esc(question)}</p>'
         f'{inputs}'
         f'<div class="{uid}_opts">{labels}</div>'
         f'{explain_html}'
@@ -8055,16 +8098,16 @@ def _render_product_thumbnail(b: dict) -> str:
     bg, fg, label = STATUS.get(status, STATUS["active"])
 
     img = (
-        f'<img src="{image_url}" alt="{title}" style="width:100%;height:120px;object-fit:cover;border-radius:4px;margin-bottom:12px;">'
+        f'<img src="{_cv_esc(image_url)}" alt="{_cv_esc(title)}" style="width:100%;height:120px;object-fit:cover;border-radius:4px;margin-bottom:12px;">'
         if image_url else
         '<div style="width:100%;height:120px;background:#f4f6f8;border-radius:4px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:#8c9196;font-size:24px;">🖼</div>'
     )
-    price_html = f'<span style="font-size:18px;font-weight:700;color:#202223;">{price}</span>'
+    price_html = f'<span style="font-size:18px;font-weight:700;color:#202223;">{_cv_esc(price)}</span>'
     if compare_price:
-        price_html += f'<span style="font-size:14px;color:#8c9196;text-decoration:line-through;margin-left:8px;">{compare_price}</span>'
+        price_html += f'<span style="font-size:14px;color:#8c9196;text-decoration:line-through;margin-left:8px;">{_cv_esc(compare_price)}</span>'
 
     tags_html = "".join(
-        f'<span style="background:#f1f2f3;color:#6d7175;font-size:11px;padding:2px 8px;border-radius:20px;">{t}</span>'
+        f'<span style="background:#f1f2f3;color:#6d7175;font-size:11px;padding:2px 8px;border-radius:20px;">{_cv_esc(t)}</span>'
         for t in tags
     )
     tags_section = f'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;">{tags_html}</div>' if tags else ""
@@ -8072,9 +8115,9 @@ def _render_product_thumbnail(b: dict) -> str:
     return (
         f'<div style="background:#fff;border:1px solid #e1e3e5;border-radius:8px;padding:16px;max-width:280px;">'
         f'{img}'
-        f'<div style="font-size:13px;font-weight:600;color:#202223;margin-bottom:2px;">{title}</div>'
-        + (f'<div style="font-size:12px;color:#6d7175;margin-bottom:8px;">{vendor}</div>' if vendor else '')
-        + (f'<div style="font-size:11px;color:#8c9196;font-family:monospace;margin-bottom:8px;">SKU: {sku}</div>' if sku else '')
+        f'<div style="font-size:13px;font-weight:600;color:#202223;margin-bottom:2px;">{_cv_esc(title)}</div>'
+        + (f'<div style="font-size:12px;color:#6d7175;margin-bottom:8px;">{_cv_esc(vendor)}</div>' if vendor else '')
+        + (f'<div style="font-size:11px;color:#8c9196;font-family:monospace;margin-bottom:8px;">SKU: {_cv_esc(sku)}</div>' if sku else '')
         + f'<div style="margin-bottom:10px;">{price_html}</div>'
         f'<span style="background:{bg};color:{fg};font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;">{label}</span>'
         f'{tags_section}'
@@ -8101,8 +8144,8 @@ def _render_order_status_card(b: dict) -> str:
 
     items_html = "".join(
         f'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f4f6f8;font-size:13px;">'
-        f'<span style="color:#202223;">{item.get("title","")}</span>'
-        f'<span style="color:#6d7175;">×{item.get("qty",1)} &mdash; {item.get("price","")}</span>'
+        f'<span style="color:#202223;">{_cv_esc(item.get("title",""))}</span>'
+        f'<span style="color:#6d7175;">×{_cv_esc(item.get("qty",1))} &mdash; {_cv_esc(item.get("price",""))}</span>'
         f'</div>'
         for item in items
     )
@@ -8110,14 +8153,14 @@ def _render_order_status_card(b: dict) -> str:
     return (
         f'<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e1e3e5;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
         f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
-        f'<span style="font-size:16px;font-weight:700;color:#202223;">{order_number}</span>'
+        f'<span style="font-size:16px;font-weight:700;color:#202223;">{_cv_esc(order_number)}</span>'
         f'<div style="display:flex;align-items:center;gap:10px;">'
-        + (f'<span style="font-size:12px;color:#6d7175;">{date}</span>' if date else '')
-        + f'<span style="background:{bg};color:{fg};font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;">{status.capitalize()}</span>'
+        + (f'<span style="font-size:12px;color:#6d7175;">{_cv_esc(date)}</span>' if date else '')
+        + f'<span style="background:{bg};color:{fg};font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;">{_cv_esc(status.capitalize())}</span>'
         f'</div></div>'
-        + (f'<div style="font-size:12px;color:#6d7175;margin-bottom:12px;">Customer: {customer}</div>' if customer else '')
+        + (f'<div style="font-size:12px;color:#6d7175;margin-bottom:12px;">Customer: {_cv_esc(customer)}</div>' if customer else '')
         + (f'<div style="margin-bottom:12px;">{items_html}</div>' if items_html else '')
-        + (f'<div style="text-align:right;font-size:15px;font-weight:700;color:#202223;">Total: {total}</div>' if total else '')
+        + (f'<div style="text-align:right;font-size:15px;font-weight:700;color:#202223;">Total: {_cv_esc(total)}</div>' if total else '')
         + '</div>'
     )
 
@@ -8135,15 +8178,15 @@ def _render_inventory_table(b: dict) -> str:
         qty_style  = "color:#856404;font-weight:600;" if low_stock else "color:#202223;"
         rows_html += (
             f'<tr style="{row_bg}">'
-            f'<td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#6d7175;">{item.get("sku","")}</td>'
-            f'<td style="padding:10px 12px;font-size:13px;font-weight:500;color:#202223;">{item.get("product","")}</td>'
-            f'<td style="padding:10px 12px;text-align:right;{qty_style}">{available}{"⚠" if low_stock else ""}</td>'
-            f'<td style="padding:10px 12px;text-align:right;color:#6d7175;">{item.get("committed","—")}</td>'
-            f'<td style="padding:10px 12px;font-size:12px;color:#6d7175;">{item.get("location","—")}</td>'
+            f'<td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#6d7175;">{_cv_esc(item.get("sku",""))}</td>'
+            f'<td style="padding:10px 12px;font-size:13px;font-weight:500;color:#202223;">{_cv_esc(item.get("product",""))}</td>'
+            f'<td style="padding:10px 12px;text-align:right;{qty_style}">{_cv_esc(available)}{"⚠" if low_stock else ""}</td>'
+            f'<td style="padding:10px 12px;text-align:right;color:#6d7175;">{_cv_esc(item.get("committed","—"))}</td>'
+            f'<td style="padding:10px 12px;font-size:12px;color:#6d7175;">{_cv_esc(item.get("location","—"))}</td>'
             f'</tr>'
         )
 
-    title_html = f'<div style="background:#f1f2f3;padding:12px 16px;font-weight:600;font-size:13px;color:#202223;border-bottom:1px solid #e1e3e5;">{title}</div>' if title else ''
+    title_html = f'<div style="background:#f1f2f3;padding:12px 16px;font-weight:600;font-size:13px;color:#202223;border-bottom:1px solid #e1e3e5;">{_cv_esc(title)}</div>' if title else ''
     return (
         f'<div style="border:1px solid #e1e3e5;border-radius:8px;overflow:hidden;">'
         f'{title_html}'
@@ -8196,7 +8239,7 @@ def _render_jira_ticket(b: dict) -> str:
     s_bg, s_fg = STATUS_COLORS.get(status, ("#dfe1e6", "#42526e"))
 
     labels_html = "".join(
-        f'<span style="background:#dfe1e6;color:#172b4d;font-size:11px;padding:2px 6px;border-radius:3px;">{lbl}</span>'
+        f'<span style="background:#dfe1e6;color:#172b4d;font-size:11px;padding:2px 6px;border-radius:3px;">{_cv_esc(lbl)}</span>'
         for lbl in labels
     )
 
@@ -8204,14 +8247,14 @@ def _render_jira_ticket(b: dict) -> str:
         f'<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;">'
         f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
         f'<span style="font-size:15px;">{icon}</span>'
-        f'<span style="font-size:12px;font-weight:600;color:#0052cc;">{key}</span>'
-        f'<span style="margin-left:auto;background:{s_bg};color:{s_fg};font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;">{status}</span>'
+        f'<span style="font-size:12px;font-weight:600;color:#0052cc;">{_cv_esc(key)}</span>'
+        f'<span style="margin-left:auto;background:{s_bg};color:{s_fg};font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(status)}</span>'
         f'</div>'
-        f'<div style="font-size:15px;font-weight:500;color:#172b4d;margin-bottom:10px;line-height:1.4;">{summary}</div>'
-        + (f'<div style="font-size:13px;color:#5e6c84;margin-bottom:12px;line-height:1.5;">{description}</div>' if description else '')
+        f'<div style="font-size:15px;font-weight:500;color:#172b4d;margin-bottom:10px;line-height:1.4;">{_cv_esc(summary)}</div>'
+        + (f'<div style="font-size:13px;color:#5e6c84;margin-bottom:12px;line-height:1.5;">{_cv_esc(description)}</div>' if description else '')
         + f'<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'
-        f'<span style="font-size:12px;color:#5e6c84;">{p_icon} {priority.capitalize()}</span>'
-        + (f'<span style="font-size:12px;color:#5e6c84;">👤 {assignee}</span>' if assignee else '')
+        f'<span style="font-size:12px;color:#5e6c84;">{p_icon} {_cv_esc(priority.capitalize())}</span>'
+        + (f'<span style="font-size:12px;color:#5e6c84;">👤 {_cv_esc(assignee)}</span>' if assignee else '')
         + labels_html
         + '</div></div>'
     )
@@ -8237,9 +8280,9 @@ def _render_sprint_board(b: dict) -> str:
             f'<div style="display:flex;align-items:flex-start;gap:6px;">'
             f'<span style="font-size:11px;flex-shrink:0;margin-top:1px;">{icon}</span>'
             f'<div style="flex:1;min-width:0;">'
-            f'<div style="font-size:12px;font-weight:500;color:#172b4d;line-height:1.3;margin-bottom:4px;">{t.get("summary","")}</div>'
+            f'<div style="font-size:12px;font-weight:500;color:#172b4d;line-height:1.3;margin-bottom:4px;">{_cv_esc(t.get("summary",""))}</div>'
             f'<div style="display:flex;align-items:center;gap:6px;">'
-            f'<span style="font-size:10px;color:#0052cc;font-weight:600;">{t.get("key","")}</span>'
+            f'<span style="font-size:10px;color:#0052cc;font-weight:600;">{_cv_esc(t.get("key",""))}</span>'
             f'<span style="width:7px;height:7px;border-radius:50%;background:{p_color};flex-shrink:0;"></span>'
             f'</div></div></div></div>'
         )
@@ -8261,7 +8304,7 @@ def _render_sprint_board(b: dict) -> str:
             + '</div>'
         )
 
-    name_html = f'<div style="font-size:14px;font-weight:700;color:#172b4d;margin-bottom:12px;">{sprint_name}</div>' if sprint_name else ''
+    name_html = f'<div style="font-size:14px;font-weight:700;color:#172b4d;margin-bottom:12px;">{_cv_esc(sprint_name)}</div>' if sprint_name else ''
     return (
         f'<div style="font-family:-apple-system,sans-serif;">'
         f'{name_html}'
@@ -8340,20 +8383,20 @@ def _render_data_grid(b: dict) -> str:
                 value    = row.get(key, "")
                 border   = "border-right:1px solid #e0e0e0;"
                 if col_type == "number":
-                    cells += f'<td style="padding:10px 12px;text-align:right;font-size:13px;color:#161616;font-variant-numeric:tabular-nums;{border}">{value}</td>'
+                    cells += f'<td style="padding:10px 12px;text-align:right;font-size:13px;color:#161616;font-variant-numeric:tabular-nums;{border}">{_cv_esc(value)}</td>'
                 elif col_type == "status":
                     sc_bg, sc_fg = STATUS_COLORS.get(str(value).lower(), ("#e2e3e5", "#383d41"))
                     cells += (f'<td style="padding:10px 12px;{border}"><span style="background:{sc_bg};'
-                              f'color:{sc_fg};font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;">{value}</span></td>')
+                              f'color:{sc_fg};font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;">{_cv_esc(value)}</span></td>')
                 elif col_type == "tag":
                     cells += (f'<td style="padding:10px 12px;{border}"><span style="background:#d0e2ff;'
-                              f'color:#0043ce;font-size:11px;padding:2px 8px;border-radius:3px;">{value}</span></td>')
+                              f'color:#0043ce;font-size:11px;padding:2px 8px;border-radius:3px;">{_cv_esc(value)}</span></td>')
                 else:
-                    cells += f'<td style="padding:10px 12px;font-size:13px;color:#161616;{border}">{value}</td>'
+                    cells += f'<td style="padding:10px 12px;font-size:13px;color:#161616;{border}">{_cv_esc(value)}</td>'
             html += f'<tr style="background:{row_bg};border-bottom:1px solid #e0e0e0;">{cells}</tr>'
         return html
 
-    title_html = f'<div style="background:#161616;color:#fff;padding:12px 16px;font-size:14px;font-weight:600;">{title}</div>' if title else ''
+    title_html = f'<div style="background:#161616;color:#fff;padding:12px 16px;font-size:14px;font-weight:600;">{_cv_esc(title)}</div>' if title else ''
 
     if not multi:
         # Simple render — no CSS pagination needed
@@ -8392,7 +8435,7 @@ def _render_data_grid(b: dict) -> str:
         for i in range(n)
     )
     pages_html = "".join(
-        f'<div class="dg{uid}pg dg{uid}pg{i}">'
+        f'<div class="dg{uid}pg dg{uid}pg{_cv_esc(i)}">'
         f'<table style="width:100%;border-collapse:collapse;">'
         f'<thead>{_header()}</thead>'
         f'<tbody>{_tbody(pg, i * per_page)}</tbody>'
@@ -8437,22 +8480,22 @@ def _render_tree_view(b: dict) -> str:
         else:
             exp_html = '<span style="width:14px;display:inline-block;flex-shrink:0;"></span>'
 
-        icon_html = f'<span style="margin-right:4px;">{icon}</span>' if icon else ""
-        meta_html = f'<span style="margin-left:auto;font-size:11px;color:#8d8d8d;white-space:nowrap;">{meta}</span>' if meta else ""
+        icon_html = f'<span style="margin-right:4px;">{_cv_esc(icon)}</span>' if icon else ""
+        meta_html = f'<span style="margin-left:auto;font-size:11px;color:#8d8d8d;white-space:nowrap;">{_cv_esc(meta)}</span>' if meta else ""
         children_html = "".join(render_node(c, depth + 1) for c in children) if (children and expanded) else ""
 
         return (
             f'<div style="padding-left:{indent_px}px;">'
             f'<div style="display:flex;align-items:center;padding:4px 8px;cursor:pointer;">'
             f'{exp_html}{icon_html}'
-            f'<span style="font-size:13px;color:#161616;flex:1;">{label}</span>'
+            f'<span style="font-size:13px;color:#161616;flex:1;">{_cv_esc(label)}</span>'
             f'{meta_html}'
             f'</div>'
             f'{children_html}'
             f'</div>'
         )
 
-    title_html = f'<div style="background:#f4f4f4;padding:10px 16px;font-size:13px;font-weight:600;color:#161616;border-bottom:1px solid #e0e0e0;">{title}</div>' if title else ''
+    title_html = f'<div style="background:#f4f4f4;padding:10px 16px;font-size:13px;font-weight:600;color:#161616;border-bottom:1px solid #e0e0e0;">{_cv_esc(title)}</div>' if title else ''
     nodes_html = "".join(render_node(n) for n in nodes)
 
     return (
@@ -8504,7 +8547,7 @@ def _render_heatmap_calendar(b: dict) -> str:
             d_str = f"{year}-{month:02d}-{day:02d}"
             count = data_dict.get(d_str, 0)
             color = get_color(count)
-            tip   = f'{d_str}: {count}{" "+unit if unit else ""}'
+            tip   = f'{d_str}: {_cv_esc(count)}{" "+_cv_esc(unit) if unit else ""}'
             cells.append(
                 f'<td title="{tip}" style="width:16px;height:16px;background:{color};'
                 f'border-radius:2px;border:1px solid rgba(0,0,0,0.04);cursor:default;"></td>'
@@ -8528,11 +8571,11 @@ def _render_heatmap_calendar(b: dict) -> str:
     legend = (
         '<div style="display:flex;align-items:center;gap:4px;margin-top:12px;">'
         '<span style="font-size:10px;color:#8d8d8d;margin-right:2px;">Less</span>'
-        + "".join(f'<span style="width:12px;height:12px;background:{c};border-radius:2px;border:1px solid rgba(0,0,0,0.04);display:inline-block;"></span>' for c in color_scale)
+        + "".join(f'<span style="width:12px;height:12px;background:{_cv_esc(c)};border-radius:2px;border:1px solid rgba(0,0,0,0.04);display:inline-block;"></span>' for c in color_scale)
         + '<span style="font-size:10px;color:#8d8d8d;margin-left:2px;">More</span></div>'
     )
 
-    title_html = f'<div style="font-size:14px;font-weight:600;color:#161616;margin-bottom:12px;">{title}</div>' if title else ''
+    title_html = f'<div style="font-size:14px;font-weight:600;color:#161616;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else ''
     return (
         f'<div style="font-family:-apple-system,sans-serif;">'
         f'{title_html}'
@@ -8620,7 +8663,7 @@ def _render_media_stream_card(b: dict) -> str:
         return (
             f'<div style="margin:1rem 0;border:1px solid #334155;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
             f'{title_html}'
-            f'<div style="height:{height};background:#0f172a;display:flex;align-items:center;'
+            f'<div style="height:{_cv_esc(height)};background:#0f172a;display:flex;align-items:center;'
             f'justify-content:center;color:#475569;font-size:0.85rem;">{message}</div>'
             f'</div>'
         )
@@ -8639,7 +8682,7 @@ def _render_media_stream_card(b: dict) -> str:
     return (
         f'<div style="margin:1rem 0;border:1px solid #334155;border-radius:8px;overflow:hidden;background:#0f172a;">'
         f'{title_html}'
-        f'<div style="position:relative;height:{height};background:#0f172a;">'
+        f'<div style="position:relative;height:{_cv_esc(height)};background:#0f172a;">'
         f'<iframe src="{embed_url}" '
         f'style="position:absolute;inset:0;width:100%;height:100%;border:none;" '
         f'allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" '
@@ -8696,7 +8739,7 @@ def _render_live_aggregator(b: dict) -> str:
             f'<span style="font-size:0.85rem;color:#e2e8f0;font-weight:500;">{_h.escape(label)}</span>'
             f'{val_html}</div>'
             f'<div style="height:8px;background:#1e293b;border-radius:4px;overflow:hidden;">'
-            f'<div style="height:100%;width:{pct:.1f}%;background:{color};border-radius:4px;'
+            f'<div style="height:100%;width:{pct:.1f}%;background:{_cv_esc(color)};border-radius:4px;'
             f'transition:width 0.5s ease;"></div>'
             f'</div></div>'
         )
@@ -8765,7 +8808,7 @@ def _render_vote_button_group(b: dict) -> str:
         label    = opt.get("label", "")
         value    = opt.get("value", label)
         checked  = "checked" if opt.get("selected", False) else ""
-        bid      = f"{name}_{i}"
+        bid      = f"{name}_{_cv_esc(i)}"
         btns += (
             f'<span style="display:inline-block;">'
             f'<input type="{inp}" id="{bid}" name="{name}" value="{_h.escape(value)}" {checked}>'
@@ -8870,7 +8913,7 @@ def _render_word_flip(atom: dict) -> str:
     import hashlib
     words = atom.get("words", [])
     if not words or len(words) < 2:
-        return f'<span>{words[0] if words else ""}</span>'
+        return f'<span>{_cv_esc(words[0] if words else "")}</span>'
     uid      = hashlib.md5(str(atom).encode()).hexdigest()[:6]
     speed_s  = {"slow": 4.0, "normal": 2.5, "fast": 1.2}.get(atom.get("speed", "normal"), 2.5)
     n        = len(words)
@@ -8882,7 +8925,7 @@ def _render_word_flip(atom: dict) -> str:
     suffix   = atom.get("suffix", "")
     # N+1 spans: words + duplicate first for seamless loop reset
     spans    = "".join(
-        f'<span style="display:block;height:1.2em;line-height:1.2em;">{w}</span>'
+        f'<span style="display:block;height:1.2em;line-height:1.2em;">{_cv_esc(w)}</span>'
         for w in [*words, words[0]]
     )
     # translateY target: -N/(N+1)*100% moves through N words; steps(N,end) snaps to each
@@ -8892,13 +8935,13 @@ def _render_word_flip(atom: dict) -> str:
         f'@keyframes wf_{uid}{{0%{{transform:translateY(0);}}100%{{transform:translateY(-{target}%);}}}}'
         f'.wfi_{uid}{{animation:wf_{uid} {total}s steps({n},end) infinite;display:block;}}'
         f'</style>'
-        f'<span style="font-size:{size};">'
-        f'{prefix}'
+        f'<span style="font-size:{_cv_esc(size)};">'
+        f'{_cv_esc(prefix)}'
         f'<span style="display:inline-flex;overflow:hidden;height:1.2em;vertical-align:middle;'
-        f'color:{color};font-weight:{weight};">'
+        f'color:{_cv_esc(color)};font-weight:{_cv_esc(weight)};">'
         f'<span class="wfi_{uid}">{spans}</span>'
         f'</span>'
-        f'{suffix}'
+        f'{_cv_esc(suffix)}'
         f'</span>'
     )
 
@@ -8921,10 +8964,10 @@ def _render_sonar_pulse(atom: dict) -> str:
     label_html = (
         f'<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
         f'font-size:{dot_r - 1}px;font-weight:700;color:{color};z-index:2;'
-        f'white-space:nowrap;">{label}</span>'
+        f'white-space:nowrap;">{_cv_esc(label)}</span>'
     ) if label else ""
     body_html = (
-        f'<div style="font-size:0.82rem;color:#94a3b8;margin-top:10px;text-align:center;">{body}</div>'
+        f'<div style="font-size:0.82rem;color:#94a3b8;margin-top:10px;text-align:center;">{_cv_esc(body)}</div>'
     ) if body else ""
     rings_css = ""
     rings_html = ""
@@ -8971,15 +9014,15 @@ def _render_blur_fade_in(atom: dict) -> str:
     from_transform = drift_map.get(direction, "translateY(16px)")
     title = atom.get("title", "")
     body  = atom.get("body", "")
-    title_html = f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{title}</div>' if title else ""
-    body_html  = f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">{body}</div>' if body else ""
+    title_html = f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else ""
+    body_html  = f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">{_cv_esc(body)}</div>' if body else ""
     content    = title_html + body_html if (title or body) else '<div style="font-size:0.9rem;color:#94a3b8;">Content fades in with blur reveal.</div>'
     return (
         f'<style>'
-        f'@keyframes bfi_{uid}{{from{{opacity:0;filter:blur({blur});transform:{from_transform};}}'
+        f'@keyframes bfi_{uid}{{from{{opacity:0;filter:blur({_cv_esc(blur)});transform:{from_transform};}}'
         f'to{{opacity:1;filter:blur(0);transform:translate(0);}}}}'
-        f'.bfi_{uid}{{animation:bfi_{uid} {dur} ease-out {delay} both;'
-        f'background:{bg};border-radius:12px;padding:24px 28px;margin:1rem 0;}}'
+        f'.bfi_{uid}{{animation:bfi_{uid} {dur} ease-out {_cv_esc(delay)} both;'
+        f'background:{_cv_esc(bg)};border-radius:12px;padding:24px 28px;margin:1rem 0;}}'
         f'</style>'
         f'<div class="bfi_{uid}">{content}</div>'
     )
@@ -9001,36 +9044,36 @@ def _render_glow_button(atom: dict) -> str:
         text_color = "#6b7280"
     elif state == "fired":
         bg        = "#0f2e1e"
-        shadow    = f"0 0 16px {color_f}, 0 0 32px {color_f}44"
+        shadow    = f"0 0 16px {_cv_esc(color_f)}, 0 0 32px {_cv_esc(color_f)}44"
         cursor    = "default"
         text_color = color_f
         pulse      = (
             f'@keyframes gb_pulse_{uid}{{0%,100%{{box-shadow:{shadow};}} '
-            f'50%{{box-shadow:0 0 8px {color_f}88;}}}}'
+            f'50%{{box-shadow:0 0 8px {_cv_esc(color_f)}88;}}}}'
             f'.gb_{uid}{{animation:gb_pulse_{uid} 1.8s ease-in-out infinite;}}'
         )
     else:  # ready
         bg        = "#0c1e2e"
-        shadow    = f"0 0 14px {color_r}, 0 0 28px {color_r}44"
+        shadow    = f"0 0 14px {_cv_esc(color_r)}, 0 0 28px {_cv_esc(color_r)}44"
         cursor    = "pointer"
         text_color = color_r
         pulse      = (
             f'@keyframes gb_pulse_{uid}{{0%,100%{{box-shadow:{shadow};}} '
-            f'50%{{box-shadow:0 0 6px {color_r}66;}}}}'
+            f'50%{{box-shadow:0 0 6px {_cv_esc(color_r)}66;}}}}'
             f'.gb_{uid}{{animation:gb_pulse_{uid} 2.4s ease-in-out infinite;}}'
         )
-    desc_html = f'<div style="font-size:12px;color:#6b7280;margin-top:6px;text-align:center;">{desc}</div>' if desc else ""
+    desc_html = f'<div style="font-size:12px;color:#6b7280;margin-top:6px;text-align:center;">{_cv_esc(desc)}</div>' if desc else ""
     tag = "a" if href else "button"
-    href_attr = f' href="{href}"' if href else ""
+    href_attr = f' href="{_cv_esc(href)}"' if href else ""
     return (
         f'<style>'
-        f'.gb_{uid}{{display:inline-block;background:{bg};color:{text_color};'
+        f'.gb_{uid}{{display:inline-block;background:{bg};color:{_cv_esc(text_color)};'
         f'font-size:{fsize};font-weight:600;padding:{pad};border-radius:8px;'
-        f'border:1px solid {text_color}44;box-shadow:{shadow};cursor:{cursor};'
+        f'border:1px solid {_cv_esc(text_color)}44;box-shadow:{shadow};cursor:{cursor};'
         f'text-decoration:none;transition:box-shadow 0.2s;}}'
         f'{pulse}</style>'
         f'<div style="margin:1rem 0;display:inline-block;">'
-        f'<{tag} class="gb_{uid}"{href_attr}>{label}</{tag}>{desc_html}'
+        f'<{tag} class="gb_{uid}"{href_attr}>{_cv_esc(label)}</{tag}>{desc_html}'
         f'</div>'
     )
 
@@ -9059,8 +9102,8 @@ def _render_animated_beam(atom: dict) -> str:
         f'.bm_{uid}{{stroke-dasharray:{path_len};stroke-dashoffset:{path_len};'
         f'animation:beam_{uid} {dur} linear infinite;}}'
     ) if active else ""
-    label_html = f'<div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase;">{label}</div>' if label else ""
-    body_html  = f'<div style="font-size:0.85rem;color:#94a3b8;margin-top:6px;">{body}</div>' if body else ""
+    label_html = f'<div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
+    body_html  = f'<div style="font-size:0.85rem;color:#94a3b8;margin-top:6px;">{_cv_esc(body)}</div>' if body else ""
     return (
         f'<style>{anim_css}</style>'
         f'<div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;'
@@ -9069,18 +9112,18 @@ def _render_animated_beam(atom: dict) -> str:
         f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
         f'style="display:block;max-width:100%;">'
         # path track
-        f'<path d="{ctrl}" fill="none" stroke="{color}22" stroke-width="2"/>'
+        f'<path d="{ctrl}" fill="none" stroke="{_cv_esc(color)}22" stroke-width="2"/>'
         # animated beam dot
-        f'<path class="bm_{uid}" d="{ctrl}" fill="none" stroke="{color}" '
+        f'<path class="bm_{uid}" d="{ctrl}" fill="none" stroke="{_cv_esc(color)}" '
         f'stroke-width="2.5" stroke-linecap="round"/>'
         # nodes
-        f'<circle cx="{lx}" cy="{cy}" r="{NR}" fill="#1e293b" stroke="{color}" stroke-width="2"/>'
-        f'<circle cx="{rx}" cy="{cy}" r="{NR}" fill="#1e293b" stroke="{color}" stroke-width="2"/>'
+        f'<circle cx="{lx}" cy="{cy}" r="{NR}" fill="#1e293b" stroke="{_cv_esc(color)}" stroke-width="2"/>'
+        f'<circle cx="{rx}" cy="{cy}" r="{NR}" fill="#1e293b" stroke="{_cv_esc(color)}" stroke-width="2"/>'
         # labels inside nodes (truncated)
         f'<text x="{lx}" y="{cy+1}" text-anchor="middle" dominant-baseline="middle" '
-        f'font-size="9" font-family="monospace" fill="{color}">{from_lbl[:6]}</text>'
+        f'font-size="9" font-family="monospace" fill="{_cv_esc(color)}">{_cv_esc(from_lbl[:6])}</text>'
         f'<text x="{rx}" y="{cy+1}" text-anchor="middle" dominant-baseline="middle" '
-        f'font-size="9" font-family="monospace" fill="{color}">{to_lbl[:6]}</text>'
+        f'font-size="9" font-family="monospace" fill="{_cv_esc(color)}">{_cv_esc(to_lbl[:6])}</text>'
         f'</svg>'
         f'{body_html}</div>'
     )
@@ -9109,19 +9152,19 @@ def _render_encrypted_reveal(atom: dict) -> str:
         scrambled = "".join(rng.choice(charset) for _ in text)
         pct       = i * pct_step
         kf_stops.append(
-            f'{pct}%{{content:"{scrambled}";color:{s_color};}}'
+            f'{pct}%{{content:"{scrambled}";color:{_cv_esc(s_color)};}}'
         )
-    kf_stops.append(f'100%{{content:"{text}";color:{color};}}')
+    kf_stops.append(f'100%{{content:"{_cv_esc(text)}";color:{_cv_esc(color)};}}')
     kf_body = "".join(kf_stops)
     pad = "24px 28px" if bg != "transparent" else "0"
     br  = "12px" if bg != "transparent" else "0"
     return (
         f'<style>'
         f'@keyframes er_{uid}{{{kf_body}}}'
-        f'.er_{uid}::after{{content:"{text}";font-size:{size};font-weight:{weight};'
-        f'color:{color};letter-spacing:.04em;font-family:monospace;'
-        f'animation:er_{uid} {total_dur} steps(1,end) {delay} forwards;}}'
-        f'.er_wrap_{uid}{{background:{bg};border-radius:{br};padding:{pad};margin:1rem 0;}}'
+        f'.er_{uid}::after{{content:"{_cv_esc(text)}";font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};'
+        f'color:{_cv_esc(color)};letter-spacing:.04em;font-family:monospace;'
+        f'animation:er_{uid} {total_dur} steps(1,end) {_cv_esc(delay)} forwards;}}'
+        f'.er_wrap_{uid}{{background:{_cv_esc(bg)};border-radius:{br};padding:{pad};margin:1rem 0;}}'
         f'</style>'
         f'<div class="er_wrap_{uid}"><span class="er_{uid}"></span></div>'
     )
@@ -9180,8 +9223,8 @@ def _render_typewriter(b: dict) -> str:
     weight   = b.get("weight", "600")
     bg       = b.get("background", "#f8fafc")
     cursor_css = (
-        f'@keyframes tw_blink_{uid}{{0%,100%{{border-color:transparent}}50%{{border-color:{color}}}}}'
-        f'.tw_{uid}{{border-right:2px solid {color};animation:tw_{uid} {dur}s steps({n},end) forwards,'
+        f'@keyframes tw_blink_{uid}{{0%,100%{{border-color:transparent}}50%{{border-color:{_cv_esc(color)}}}}}'
+        f'.tw_{uid}{{border-right:2px solid {_cv_esc(color)};animation:tw_{uid} {dur}s steps({n},end) forwards,'
         f'tw_blink_{uid} 0.75s step-end {dur}s infinite;}}'
     ) if cursor else (
         f'.tw_{uid}{{animation:tw_{uid} {dur}s steps({n},end) forwards;}}'
@@ -9192,11 +9235,11 @@ def _render_typewriter(b: dict) -> str:
         f'@keyframes tw_{uid}{{from{{width:0}}to{{width:{n}ch}}}}'
         f'{cursor_css}'
         f'</style>'
-        f'<div style="padding:20px 24px;background:{bg};border-radius:10px;'
+        f'<div style="padding:20px 24px;background:{_cv_esc(bg)};border-radius:10px;'
         f'border:1px solid #e2e8f0;margin:1rem 0;font-family:monospace;">'
         f'<span class="tw_{uid}" style="display:inline-block;overflow:hidden;'
-        f'white-space:nowrap;font-size:{size};font-weight:{weight};color:{color};">'
-        f'{text}</span></div>'
+        f'white-space:nowrap;font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};color:{_cv_esc(color)};">'
+        f'{_cv_esc(text)}</span></div>'
     )
 
 
@@ -9217,20 +9260,20 @@ def _render_number_odometer(b: dict) -> str:
             strip = "".join(f'<div style="height:1.1em;line-height:1.1em;">{n}</div>' for n in range(10))
             digits_html += (
                 f'<style>'
-                f'@keyframes od_{uid}_{i}{{from{{transform:translateY(0)}}to{{transform:translateY(-{d * 10}%)}}}}'
+                f'@keyframes od_{uid}_{_cv_esc(i)}{{from{{transform:translateY(0)}}to{{transform:translateY(-{d * 10}%)}}}}'
                 f'</style>'
                 f'<div style="overflow:hidden;height:1.1em;">'
-                f'<div style="animation:od_{uid}_{i} {dur}s cubic-bezier(.4,0,.2,1) {delay}s both;">'
+                f'<div style="animation:od_{uid}_{_cv_esc(i)} {dur}s cubic-bezier(.4,0,.2,1) {delay}s both;">'
                 f'{strip}</div></div>'
             )
         else:
-            digits_html += f'<div style="padding:0 2px;">{ch}</div>'
-    label_html = f'<div style="font-size:0.8rem;color:#64748b;margin-top:6px;letter-spacing:0.05em;text-transform:uppercase;">{label}</div>' if label else ""
+            digits_html += f'<div style="padding:0 2px;">{_cv_esc(ch)}</div>'
+    label_html = f'<div style="font-size:0.8rem;color:#64748b;margin-top:6px;letter-spacing:0.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
     return (
         f'<div style="display:inline-flex;flex-direction:column;align-items:center;'
         f'padding:20px 28px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin:1rem 0;">'
-        f'<div style="display:flex;align-items:center;font-size:{size};font-weight:800;'
-        f'color:{color};font-family:monospace;gap:1px;">'
+        f'<div style="display:flex;align-items:center;font-size:{_cv_esc(size)};font-weight:800;'
+        f'color:{_cv_esc(color)};font-family:monospace;gap:1px;">'
         f'{digits_html}</div>'
         f'{label_html}</div>'
     )
@@ -9255,9 +9298,9 @@ def _render_typing_indicator(b: dict) -> str:
         f'<div style="display:flex;align-items:flex-end;gap:8px;margin:1rem 0;">'
         f'<div style="width:32px;height:32px;border-radius:50%;background:{dot_col};'
         f'display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;'
-        f'color:#fff;flex-shrink:0;">{name[0].upper()}</div>'
+        f'color:#fff;flex-shrink:0;">{_cv_esc(name[0].upper())}</div>'
         f'<div style="display:flex;flex-direction:column;gap:3px;">'
-        f'<span style="font-size:11px;color:{text_col};font-weight:500;">{name}</span>'
+        f'<span style="font-size:11px;color:{text_col};font-weight:500;">{_cv_esc(name)}</span>'
         f'<div style="background:{bg};border-radius:18px 18px 18px 4px;padding:12px 16px;'
         f'display:inline-flex;align-items:center;gap:2px;">'
         f'<span class="ti_dot_{uid}"></span>'
@@ -9297,7 +9340,7 @@ def _render_countdown_timer(b: dict) -> str:
             f'</div>'
         )
 
-    sep = f'<div style="font-size:2rem;font-weight:800;color:{accent};padding-bottom:16px;align-self:flex-end;padding-right:2px;">:</div>'
+    sep = f'<div style="font-size:2rem;font-weight:800;color:{_cv_esc(accent)};padding-bottom:16px;align-self:flex-end;padding-right:2px;">:</div>'
     parts = []
     if hours:
         parts.append(segment(hours, "hrs"))
@@ -9306,7 +9349,7 @@ def _render_countdown_timer(b: dict) -> str:
     parts.append(sep)
     parts.append(segment(seconds, "sec"))
 
-    label_html = f'<div style="font-size:0.82rem;color:{sub_col};margin-top:10px;letter-spacing:0.06em;">{label}</div>' if label else ""
+    label_html = f'<div style="font-size:0.82rem;color:{sub_col};margin-top:10px;letter-spacing:0.06em;">{_cv_esc(label)}</div>' if label else ""
     return (
         f'<div style="display:inline-flex;flex-direction:column;align-items:center;'
         f'padding:24px 28px;background:{bg};border:1px solid {border};border-radius:14px;margin:1rem 0;">'
@@ -9326,17 +9369,17 @@ def _render_gradient_text(b: dict) -> str:
     size   = b.get("size", "2rem")
     weight = b.get("weight", "800")
     dur    = float(b.get("duration", 4))
-    grad   = f"{from_c}, {via}, {to_c}" if via else f"{from_c}, {to_c}"
+    grad   = f"{_cv_esc(from_c)}, {_cv_esc(via)}, {_cv_esc(to_c)}" if via else f"{_cv_esc(from_c)}, {_cv_esc(to_c)}"
     return (
         f'<style>'
         f'@keyframes gt_{uid}{{0%,100%{{background-position:0% 50%}}50%{{background-position:100% 50%}}}}'
-        f'.gt_{uid}{{background:linear-gradient(90deg,{grad},{from_c});background-size:200% auto;'
+        f'.gt_{uid}{{background:linear-gradient(90deg,{grad},{_cv_esc(from_c)});background-size:200% auto;'
         f'-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;'
         f'animation:gt_{uid} {dur}s ease infinite;}}'
         f'</style>'
         f'<div style="margin:1rem 0;padding:16px 0;">'
-        f'<span class="gt_{uid}" style="font-size:{size};font-weight:{weight};line-height:1.2;">'
-        f'{text}</span></div>'
+        f'<span class="gt_{uid}" style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};line-height:1.2;">'
+        f'{_cv_esc(text)}</span></div>'
     )
 
 
@@ -9356,10 +9399,10 @@ def _render_reveal_on_scroll(b: dict) -> str:
         f'.ros_{uid}{{opacity:0;transform:{from_t};transition:opacity {dur}s ease,transform {dur}s ease;}}'
         f'.ros_{uid}.visible{{opacity:1;transform:translate(0);}}'
         f'</style>'
-        f'<div class="ros_{uid}" style="padding:24px 28px;background:{bg};border-left:3px solid {accent};'
+        f'<div class="ros_{uid}" style="padding:24px 28px;background:{_cv_esc(bg)};border-left:3px solid {_cv_esc(accent)};'
         f'border-radius:0 10px 10px 0;margin:1rem 0;">'
-        f'<div style="font-weight:700;color:#0f172a;margin-bottom:6px;">{title}</div>'
-        f'<div style="font-size:0.9rem;color:#64748b;line-height:1.6;">{body}</div>'
+        f'<div style="font-weight:700;color:#0f172a;margin-bottom:6px;">{_cv_esc(title)}</div>'
+        f'<div style="font-size:0.9rem;color:#64748b;line-height:1.6;">{_cv_esc(body)}</div>'
         f'</div>'
         f'<script>(function(){{var el=document.currentScript.previousElementSibling;'
         f'if(!el)return;'
@@ -9389,17 +9432,17 @@ def _render_word_scramble(b: dict) -> str:
             text[i] if i < revealed else rng.choice(chars)
             for i in range(n)
         )
-        keyframe_steps.append(f'{pct}%{{content:"{scrambled}"}}')
-    keyframe_steps.append(f'100%{{content:"{text}"}}')
+        keyframe_steps.append(f'{pct}%{{content:"{_cv_esc(scrambled)}"}}')
+    keyframe_steps.append(f'100%{{content:"{_cv_esc(text)}"}}')
     return (
         f'<style>'
         f'@keyframes ws_{uid}{{{";".join(keyframe_steps)}}}'
-        f'.ws_{uid}::after{{content:"{text}";animation:ws_{uid} {dur}s steps({frames},end) forwards;}}'
+        f'.ws_{uid}::after{{content:"{_cv_esc(text)}";animation:ws_{uid} {dur}s steps({frames},end) forwards;}}'
         f'</style>'
         f'<div style="margin:1rem 0;padding:16px 0;">'
-        f'<span class="ws_{uid}" style="font-size:{size};font-weight:{weight};'
-        f'color:{color};font-family:monospace;letter-spacing:0.04em;">'
-        f'<span style="display:none;">{text}</span>'
+        f'<span class="ws_{uid}" style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};'
+        f'color:{_cv_esc(color)};font-family:monospace;letter-spacing:0.04em;">'
+        f'<span style="display:none;">{_cv_esc(text)}</span>'
         f'</span></div>'
     )
 
@@ -9410,7 +9453,7 @@ def _render_svg_path_draw(b: dict) -> str:
     color = b.get("color", "#4f46e5")
     dur   = float(b.get("duration", 1.5))
     label = b.get("label", "")
-    label_html = f'<div style="font-size:0.8rem;color:#64748b;text-align:center;margin-top:4px;">{label}</div>' if label else ""
+    label_html = f'<div style="font-size:0.8rem;color:#64748b;text-align:center;margin-top:4px;">{_cv_esc(label)}</div>' if label else ""
 
     # Text mode — SVG <text> stroke-dashoffset draw animation
     text = b.get("text", "")
@@ -9432,7 +9475,7 @@ def _render_svg_path_draw(b: dict) -> str:
             chars_svg = []
             for i, ch in enumerate(text):
                 delay = i * char_dur
-                cid   = f"c{i}_{uid}"
+                cid   = f"c{_cv_esc(i)}_{uid}"
                 x     = font_size * 0.2 + i * char_w + char_w / 2
                 chars_svg.append(
                     f'<style>'
@@ -9441,8 +9484,8 @@ def _render_svg_path_draw(b: dict) -> str:
                     f'animation:sc_{cid} {char_dur:.3f}s ease-out {delay:.3f}s forwards;}}'
                     f'</style>'
                     f'<text class="sc_{cid}" x="{x:.1f}" y="{y:.1f}" text-anchor="middle" '
-                    f'font-size="{font_size}" font-weight="{weight}" font-family="{font}" '
-                    f'stroke="{color}" stroke-width="1.5">{ch}</text>'
+                    f'font-size="{font_size}" font-weight="{_cv_esc(weight)}" font-family="{_cv_esc(font)}" '
+                    f'stroke="{_cv_esc(color)}" stroke-width="1.5">{_cv_esc(ch)}</text>'
                 )
             return (
                 f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;overflow-x:auto;">'
@@ -9462,9 +9505,9 @@ def _render_svg_path_draw(b: dict) -> str:
             f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;overflow-x:auto;">'
             f'<svg viewBox="0 0 {vw:.0f} {vh:.0f}" width="100%" style="max-width:{vw:.0f}px;">'
             f'<text class="spt_{uid}" x="{vw/2:.0f}" y="{y:.0f}" '
-            f'text-anchor="middle" font-size="{font_size}" font-weight="{weight}" '
-            f'font-family="{font}" stroke="{color}" stroke-width="1.5">'
-            f'{text}</text></svg>'
+            f'text-anchor="middle" font-size="{font_size}" font-weight="{_cv_esc(weight)}" '
+            f'font-family="{_cv_esc(font)}" stroke="{_cv_esc(color)}" stroke-width="1.5">'
+            f'{_cv_esc(text)}</text></svg>'
             f'{label_html}</div>'
         )
 
@@ -9500,13 +9543,13 @@ def _render_svg_path_draw(b: dict) -> str:
         for i, (pd, plen, sw) in enumerate(segments):
             delay    = t / total * dur
             seg_dur  = plen / total * dur
-            sid      = f"tr{i}_{uid}"
+            sid      = f"tr{_cv_esc(i)}_{uid}"
             seg_parts.append(
                 f'<style>'
                 f'@keyframes {sid}{{from{{stroke-dashoffset:{plen}}}to{{stroke-dashoffset:0}}}}'
                 f'</style>'
                 f'<path stroke-dasharray="{plen}" stroke-dashoffset="{plen}" fill="none" '
-                f'stroke="{color}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" '
+                f'stroke="{_cv_esc(color)}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" '
                 f'style="animation:{sid} {seg_dur:.3f}s ease-out {delay:.3f}s forwards;" d="{pd}"/>'
             )
             t += plen
@@ -9542,7 +9585,7 @@ def _render_svg_path_draw(b: dict) -> str:
             return " ".join(out)
 
         def poly(pts, fill, stroke, sw=1.2):
-            return f'<polygon points="{iso_pts(*pts)}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}" stroke-linejoin="round"/>'
+            return f'<polygon points="{iso_pts(*pts)}" fill="{fill}" stroke="{_cv_esc(stroke)}" stroke-width="{sw}" stroke-linejoin="round"/>'
 
         parts  = []
         n      = len(grid_sorted)
@@ -9550,7 +9593,7 @@ def _render_svg_path_draw(b: dict) -> str:
         b_dur   = dur * 0.35
 
         for i, (gx, gy, h) in enumerate(grid_sorted):
-            bid   = f"ic{i}_{uid}"
+            bid   = f"ic{_cv_esc(i)}_{uid}"
             delay = i * stagger
             # right wall (x=gx+1)
             rf = poly([(gx+1,gy,0),(gx+1,gy,h),(gx+1,gy+1,h),(gx+1,gy+1,0)],
@@ -9602,7 +9645,7 @@ def _render_svg_path_draw(b: dict) -> str:
         for idx, (li, x, y) in enumerate(nodes):
             delay    = node_phase * idx / n_nodes
             seg_dur  = node_phase / n_nodes + 0.15
-            nid      = f"nn{idx}_{uid}"
+            nid      = f"nn{_cv_esc(idx)}_{uid}"
             # layer colour: input=cyan, hidden=purple, output=green
             ncol = [color, "#a78bfa", "#a78bfa", "#34d399"]
             nc   = ncol[li] if li < len(ncol) else color
@@ -9610,7 +9653,7 @@ def _render_svg_path_draw(b: dict) -> str:
                 f'<style>@keyframes {nid}{{from{{stroke-dashoffset:{circ};opacity:0}}'
                 f'to{{stroke-dashoffset:0;opacity:1}}}}</style>'
                 f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="rgba(0,0,0,0.6)" '
-                f'stroke="{nc}" stroke-width="2" '
+                f'stroke="{_cv_esc(nc)}" stroke-width="2" '
                 f'stroke-dasharray="{circ}" stroke-dashoffset="{circ}" '
                 f'style="animation:{nid} {seg_dur:.3f}s ease-out {delay:.3f}s forwards;opacity:0;"/>'
             )
@@ -9645,13 +9688,13 @@ def _render_svg_path_draw(b: dict) -> str:
             idx_in_layer   = layer_edge_idx[li]
             delay    = layer_starts[li] + layer_edge_dur * idx_in_layer / count_in_layer
             seg_dur  = layer_edge_dur / count_in_layer + 0.12
-            eid      = f"ne{eidx}_{uid}"
+            eid      = f"ne{_cv_esc(eidx)}_{uid}"
             layer_edge_idx[li] += 1
             parts.append(
                 f'<style>@keyframes {eid}{{from{{stroke-dashoffset:{elen_i};opacity:0}}'
                 f'to{{stroke-dashoffset:0;opacity:0.35}}}}</style>'
                 f'<line x1="{fx:.1f}" y1="{fy:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" '
-                f'stroke="{edge_color}" stroke-width="1" '
+                f'stroke="{_cv_esc(edge_color)}" stroke-width="1" '
                 f'stroke-dasharray="{elen_i}" stroke-dashoffset="{elen_i}" '
                 f'style="animation:{eid} {seg_dur:.3f}s ease-out {delay:.3f}s forwards;opacity:0;"/>'
             )
@@ -9680,7 +9723,7 @@ def _render_svg_path_draw(b: dict) -> str:
         f'</style>'
         f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
         f'<svg viewBox="0 0 {vw} {vh}" width="160" height="160" fill="none" '
-        f'stroke="{color}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round">'
+        f'stroke="{_cv_esc(color)}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round">'
         f'<path class="sp_{uid}" d="{path_d}"/></svg>'
         f'{label_html}</div>'
     )
@@ -9812,8 +9855,8 @@ def _render_toast_notification(b: dict) -> str:
         f'<div style="width:28px;height:28px;border-radius:50%;background:{accent};flex-shrink:0;'
         f'display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:700;">{icon}</div>'
         f'<div style="flex:1;min-width:0;">'
-        f'<div style="font-size:0.88rem;font-weight:700;color:#0f172a;margin-bottom:2px;">{title}</div>'
-        f'<div style="font-size:0.8rem;color:#64748b;line-height:1.4;">{message}</div>'
+        f'<div style="font-size:0.88rem;font-weight:700;color:#0f172a;margin-bottom:2px;">{_cv_esc(title)}</div>'
+        f'<div style="font-size:0.8rem;color:#64748b;line-height:1.4;">{_cv_esc(message)}</div>'
         f'</div></div>'
     )
 
@@ -9829,14 +9872,14 @@ def _render_parallax_card(b: dict) -> str:
     depth   = int(b.get("depth", 15))
     return (
         f'<style>'
-        f'.pc_{uid}{{background:{bg};border-radius:16px;padding:28px;margin:1rem 0;'
+        f'.pc_{uid}{{background:{_cv_esc(bg)};border-radius:16px;padding:28px;margin:1rem 0;'
         f'max-width:320px;border:1px solid rgba(255,255,255,0.08);'
         f'box-shadow:0 20px 60px rgba(0,0,0,0.3);transform-style:preserve-3d;'
         f'transition:transform 0.15s ease,box-shadow 0.15s ease;cursor:default;'
         f'perspective:800px;}}'
         f'.pc_{uid}:hover{{box-shadow:0 30px 80px rgba(0,0,0,0.4);}}'
         f'.pc_inner_{uid}{{transform-style:preserve-3d;}}'
-        f'.pc_badge_{uid}{{display:inline-block;background:{accent};color:#fff;'
+        f'.pc_badge_{uid}{{display:inline-block;background:{_cv_esc(accent)};color:#fff;'
         f'font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;'
         f'margin-bottom:14px;transform:translateZ(20px);}}'
         f'.pc_title_{uid}{{font-size:1.25rem;font-weight:800;color:#f1f5f9;margin-bottom:8px;'
@@ -9845,9 +9888,9 @@ def _render_parallax_card(b: dict) -> str:
         f'</style>'
         f'<div class="pc_{uid}">'
         f'<div class="pc_inner_{uid}">'
-        + (f'<div class="pc_badge_{uid}">{badge}</div>' if badge else '')
-        + f'<span class="pc_title_{uid}">{title}</span>'
-        f'<span class="pc_body_{uid}">{body}</span>'
+        + (f'<div class="pc_badge_{uid}">{_cv_esc(badge)}</div>' if badge else '')
+        + f'<span class="pc_title_{uid}">{_cv_esc(title)}</span>'
+        f'<span class="pc_body_{uid}">{_cv_esc(body)}</span>'
         f'</div></div>'
         f'<script>(function(){{'
         f'var c=document.currentScript.previousElementSibling;'
@@ -9871,11 +9914,11 @@ def _render_hint_reveal(b: dict) -> str:
     label  = b.get("label", "Show hint")
     accent = b.get("accent", "#6366f1")
     return (
-        f'<details style="margin:0.8rem 0;border-left:3px solid {accent};'
+        f'<details style="margin:0.8rem 0;border-left:3px solid {_cv_esc(accent)};'
         f'padding:8px 14px;border-radius:0 8px 8px 0;background:#f8fafc;">'
         f'<summary style="cursor:pointer;font-size:0.88rem;font-weight:600;'
-        f'color:{accent};list-style:none;user-select:none;">💡 {label}</summary>'
-        f'<p style="margin:8px 0 0;font-size:0.88rem;color:#475569;line-height:1.6;">{hint}</p>'
+        f'color:{_cv_esc(accent)};list-style:none;user-select:none;">💡 {_cv_esc(label)}</summary>'
+        f'<p style="margin:8px 0 0;font-size:0.88rem;color:#475569;line-height:1.6;">{_cv_esc(hint)}</p>'
         f'</details>'
     )
 
@@ -9897,12 +9940,12 @@ def _render_match_exercise(b: dict) -> str:
 
     left_col  = "".join(
         f'<div style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
-        f'margin:4px 0;font-size:0.88rem;color:#1e293b;background:#f8fafc;">{t}</div>'
+        f'margin:4px 0;font-size:0.88rem;color:#1e293b;background:#f8fafc;">{_cv_esc(t)}</div>'
         for t in terms
     )
     right_col = "".join(
         f'<div style="padding:8px 14px;border:1.5px solid #ddd6fe;border-radius:8px;'
-        f'margin:4px 0;font-size:0.88rem;color:#4c1d95;background:#f5f3ff;cursor:grab;">{d}</div>'
+        f'margin:4px 0;font-size:0.88rem;color:#4c1d95;background:#f5f3ff;cursor:grab;">{_cv_esc(d)}</div>'
         for d in defs
     )
     return (
@@ -9917,7 +9960,7 @@ def _render_match_exercise(b: dict) -> str:
 def _render_fill_in_blank(b: dict) -> str:
     import hashlib, re
     uid      = "fib" + hashlib.md5(str(b).encode()).hexdigest()[:6]
-    template = b.get("template", "")
+    template = _cv_esc(b.get("template", ""))
     answers  = b.get("answers", [])
     hint     = b.get("hint", "")
     case_s   = b.get("case_sensitive", False)
@@ -9927,18 +9970,17 @@ def _render_fill_in_blank(b: dict) -> str:
         i = idx[0]; idx[0] += 1
         ans = answers[i] if i < len(answers) else ""
         accepted = ans if isinstance(ans, list) else [ans]
-        accepted_js = "[" + ",".join(f'"{a}"' for a in accepted) + "]"
         flag = "" if case_s else ".toLowerCase()"
-        check_js = f'var v=this.value{flag};var ok=[{",".join(repr(a.lower() if not case_s else a) for a in accepted)}].indexOf(v)>-1;this.style.borderColor=ok?"#10b981":"#ef4444";this.style.background=ok?"#d1fae5":"#fee2e2";'
+        check_js = f'var v=this.value{flag};var ok={_js_json([str(a).lower() if not case_s else str(a) for a in accepted])}.indexOf(v)>-1;this.style.borderColor=ok?"#10b981":"#ef4444";this.style.background=ok?"#d1fae5":"#fee2e2";'
         return (
-            f'<input id="{uid}_{i}" type="text" onblur="{check_js}" '
+            f'<input id="{uid}_{i}" type="text" onblur="{_cv_esc(check_js)}" '
             f'style="border:1.5px solid #cbd5e1;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:4px 8px;'
             f'font-size:0.9em;width:120px;margin:0 4px;transition:all 0.2s;" '
             f'placeholder="___" autocomplete="off"/>'
         )
 
     body = re.sub(r'\{blank\}', make_input, template)
-    hint_html = f'<p style="font-size:0.8rem;color:#64748b;margin-top:10px;">💡 {hint}</p>' if hint else ""
+    hint_html = f'<p style="font-size:0.8rem;color:#64748b;margin-top:10px;">💡 {_cv_esc(hint)}</p>' if hint else ""
     return (
         f'<div style="border:1.5px solid #e2e8f0;border-radius:12px;padding:20px 24px;margin:1.2rem 0;background:#fff;">'
         f'<p style="font-size:0.95rem;color:#1e293b;margin:0 0 8px;line-height:1.9;">{body}</p>'
@@ -9981,18 +10023,18 @@ def _render_linkedin_post_image(b: dict) -> str:
         quote   = b.get("quote", "")
         attr    = b.get("attribution", "")
         attr_html = (
-            f'<div style="margin-top:24px;font-size:0.85rem;color:{accent};'
-            f'font-family:monospace;letter-spacing:0.05em;">{attr}</div>'
+            f'<div style="margin-top:24px;font-size:0.85rem;color:{_cv_esc(accent)};'
+            f'font-family:monospace;letter-spacing:0.05em;">{_cv_esc(attr)}</div>'
         ) if attr else ""
         return (
             f'<div style="aspect-ratio:1.91/1;background:#0f172a;border-radius:12px;'
             f'display:flex;align-items:center;justify-content:center;padding:48px;'
             f'position:relative;overflow:hidden;margin:1.5rem 0;">'
             f'<div style="position:absolute;bottom:0;left:0;right:0;height:4px;'
-            f'background:linear-gradient(90deg,{accent},#3b82f6);"></div>'
+            f'background:linear-gradient(90deg,{_cv_esc(accent)},#3b82f6);"></div>'
             f'<div style="text-align:center;max-width:80%;">'
             f'<div style="font-size:clamp(1.1rem,2.5vw,1.8rem);color:#f1f5f9;'
-            f'font-weight:700;line-height:1.4;font-style:italic;">&ldquo;{quote}&rdquo;</div>'
+            f'font-weight:700;line-height:1.4;font-style:italic;">&ldquo;{_cv_esc(quote)}&rdquo;</div>'
             f'{attr_html}'
             f'</div></div>'
             f'{caption_html}'
@@ -10008,10 +10050,10 @@ def _render_linkedin_post_image(b: dict) -> str:
             lbl_html = (
                 f'<div style="padding:8px 12px;font-size:0.72rem;font-weight:600;'
                 f'color:#5f6368;background:#f1f3f4;border-bottom:1px solid #e0e0e0;'
-                f'letter-spacing:0.04em;text-transform:uppercase;">{label}</div>'
+                f'letter-spacing:0.04em;text-transform:uppercase;">{_cv_esc(label)}</div>'
             ) if label else ""
             img_html = (
-                f'<img src="{url}" alt="{label}" style="width:100%;height:100%;'
+                f'<img src="{_cv_esc(url)}" alt="{_cv_esc(label)}" style="width:100%;height:100%;'
                 f'object-fit:cover;object-position:top;display:block;"/>'
             ) if url else (
                 f'<div style="flex:1;background:#f8f9fa;display:flex;align-items:center;'
@@ -10023,7 +10065,7 @@ def _render_linkedin_post_image(b: dict) -> str:
             )
         inner_caption = (
             f'<div style="padding:10px 16px;font-size:0.8rem;color:#5f6368;'
-            f'text-align:center;border-top:1px solid #e0e0e0;background:#f8f9fa;">{caption}</div>'
+            f'text-align:center;border-top:1px solid #e0e0e0;background:#f8f9fa;">{_cv_esc(caption)}</div>'
         ) if caption else ""
         return (
             f'<div style="aspect-ratio:1.91/1;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
@@ -10043,7 +10085,7 @@ def _render_linkedin_post_image(b: dict) -> str:
             boxes = "".join(
                 f'<div style="background:{fill};border:1.5px solid {border};border-radius:8px;'
                 f'padding:10px 16px;font-size:0.8rem;font-weight:600;color:{color};'
-                f'text-align:center;white-space:nowrap;">{i.get("label","")}</div>'
+                f'text-align:center;white-space:nowrap;">{_cv_esc(i.get("label",""))}</div>'
                 for i in items
             )
             return f'<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">{boxes}</div>'
@@ -10051,11 +10093,11 @@ def _render_linkedin_post_image(b: dict) -> str:
         runtime_box = (
             f'<div style="background:#1e40af;border:2px solid #3b82f6;border-radius:10px;'
             f'padding:14px 24px;font-size:0.9rem;font-weight:700;color:#fff;'
-            f'text-align:center;margin:0 auto;max-width:360px;">{runtime}</div>'
+            f'text-align:center;margin:0 auto;max-width:360px;">{_cv_esc(runtime)}</div>'
         )
         caption_bar = (
             f'<div style="font-size:0.78rem;color:#5f6368;text-align:center;'
-            f'margin-top:12px;font-style:italic;">{caption}</div>'
+            f'margin-top:12px;font-style:italic;">{_cv_esc(caption)}</div>'
         ) if caption else ""
         return (
             f'<div style="aspect-ratio:1.91/1;background:#f8f9fa;border:1px solid #e0e0e0;'
@@ -10069,7 +10111,7 @@ def _render_linkedin_post_image(b: dict) -> str:
             f'{caption_html}'
         )
 
-    return f'<div style="color:#9aa0a6;font-style:italic;">Unknown linkedin_post_image mode: {mode}</div>'
+    return f'<div style="color:#9aa0a6;font-style:italic;">Unknown linkedin_post_image mode: {_cv_esc(mode)}</div>'
 
 
 _RENDERERS["linkedin_post_image"] = _render_linkedin_post_image
@@ -10099,7 +10141,7 @@ def _render_reveal(b: dict) -> str:
     for i, child in enumerate(blocks):
         d = base_delay + (i * stagger if animation == "stagger" else 0)
         child_html = _RENDERERS.get(child.get("type", ""), _render_unknown)(child)
-        parts.append(f'<div style="opacity:0;animation:rv_{uid} {dur}ms {reveal_ease} {d}ms both;">{child_html}</div>')
+        parts.append(f'<div style="opacity:0;animation:rv_{uid} {_cv_esc(dur)}ms {reveal_ease} {d}ms both;">{child_html}</div>')
     if not parts:
         parts = [f'<div style="color:#94a3b8;font-style:italic;padding:8px;">reveal (no blocks)</div>']
     return f'<style>{kf}</style>{"".join(parts)}'
@@ -10118,8 +10160,8 @@ def _render_shimmer_text(b: dict) -> str:
     return (
         f'<style>'
         f'@keyframes st_{uid}{{0%{{background-position:200% center;}}100%{{background-position:-200% center;}}}}'
-        f'.st_{uid}{{font-size:{size};font-weight:800;'
-        f'background:linear-gradient(90deg,{fr},{via},{to},{via},{fr});'
+        f'.st_{uid}{{font-size:{_cv_esc(size)};font-weight:800;'
+        f'background:linear-gradient(90deg,{_cv_esc(fr)},{_cv_esc(via)},{_cv_esc(to)},{_cv_esc(via)},{_cv_esc(fr)});'
         f'background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
         f'background-clip:text;animation:st_{uid} 3s linear infinite;display:inline-block;}}'
         f'</style>'
@@ -10148,7 +10190,7 @@ def _render_number_flip(b: dict) -> str:
         if ch.isdigit():
             target = int(ch)
             pct = target * 100
-            kf = f"nf{uid}{i}"
+            kf = f"nf{uid}{_cv_esc(i)}"
             keyframes += f'@keyframes {kf}{{from{{transform:translateY(0);}}to{{transform:translateY(-{pct}%);}}}} '
             slots = "".join(f'<span style="display:block;height:1em;line-height:1em;">{d}</span>' for d in range(10))
             digits_html += (
@@ -10162,7 +10204,7 @@ def _render_number_flip(b: dict) -> str:
     return (
         f'<style>{keyframes}</style>'
         f'<div style="margin:1rem 0;text-align:center;">'
-        f'<div style="font-size:{size};font-weight:700;color:#f1f5f9;line-height:1;font-variant-numeric:tabular-nums;">'
+        f'<div style="font-size:{_cv_esc(size)};font-weight:700;color:#f1f5f9;line-height:1;font-variant-numeric:tabular-nums;">'
         f'{prefix}{digits_html}{suffix}</div>{label_html}</div>'
     )
 
@@ -10182,7 +10224,7 @@ def _render_progress_ring(b: dict) -> str:
     circ  = 2 * math.pi * r
     dash  = round(circ * value / 100, 2)
     cx = cy = size / 2
-    label_html = f'<div style="font-size:0.78rem;color:#94a3b8;margin-top:6px;text-align:center;">{label}</div>' if label else ""
+    label_html = f'<div style="font-size:0.78rem;color:#94a3b8;margin-top:6px;text-align:center;">{_cv_esc(label)}</div>' if label else ""
     return (
         f'<style>'
         f'@keyframes pr_{uid}{{from{{stroke-dasharray:0 {circ:.2f};}}to{{stroke-dasharray:{dash} {circ:.2f};}}}}'
@@ -10190,8 +10232,8 @@ def _render_progress_ring(b: dict) -> str:
         f'<div style="margin:1rem 0;display:flex;flex-direction:column;align-items:center;">'
         f'<div style="position:relative;width:{size}px;height:{size}px;">'
         f'<svg width="{size}" height="{size}" style="transform:rotate(-90deg);">'
-        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{track}" stroke-width="{sw}"/>'
-        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="{sw}"'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{_cv_esc(track)}" stroke-width="{sw}"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{_cv_esc(color)}" stroke-width="{sw}"'
         f' stroke-linecap="round" stroke-dasharray="0 {circ:.2f}"'
         f' style="animation:pr_{uid} 1.2s ease-out 0.1s forwards;"/>'
         f'</svg>'
@@ -10211,7 +10253,7 @@ def _render_confetti_burst(b: dict) -> str:
     count   = int(b.get("count", 80))
     dur     = int(b.get("duration", 2000))
     colors  = b.get("colors") or ["#6366f1","#a855f7","#ec4899","#f59e0b","#34d399","#38bdf8"]
-    colors_js = str(colors).replace("'", '"')
+    colors_js = _js_json([c for c in colors if isinstance(c, str) and _gd_css(c)] if isinstance(colors, list) else []) if colors else '[]'
     if trigger == "load":
         call = f"document.addEventListener('DOMContentLoaded',function(){{_cburst_{uid}();}});"
         btn_html = ""
@@ -10220,7 +10262,7 @@ def _render_confetti_burst(b: dict) -> str:
         btn_html = (
             f'<button onclick="_cburst_{uid}()" style="background:#6366f1;color:#fff;'
             f'font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;'
-            f'border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;">{label}</button>'
+            f'border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;">{_cv_esc(label)}</button>'
         )
     return (
         f'<div style="margin:1rem 0;text-align:center;" id="cb_{uid}">'
@@ -10258,7 +10300,7 @@ def _render_ripple_button(b: dict) -> str:
     accent = b.get("accent", "#6366f1")
     size_map = {"sm": ("10px 20px", "0.8rem"), "md": ("12px 28px", "0.95rem"), "lg": ("16px 36px", "1.1rem")}
     pad, fsz = size_map.get(b.get("size", "md"), ("12px 28px", "0.95rem"))
-    icon_html = f'<span style="margin-right:6px;">{icon}</span>' if icon else ""
+    icon_html = f'<span style="margin-right:6px;">{_cv_esc(icon)}</span>' if icon else ""
     inner = f'{icon_html}{label}'
     click = (
         f'var r=document.createElement("span");'
@@ -10281,7 +10323,7 @@ def _render_ripple_button(b: dict) -> str:
         f'</style>'
         f'<div style="margin:1rem 0;text-align:center;">'
         f'<{el} style="position:relative;overflow:hidden;display:inline-block;'
-        f'background:{accent};color:#fff;font-weight:700;font-size:{fsz};padding:{pad};'
+        f'background:{_cv_esc(accent)};color:#fff;font-weight:700;font-size:{fsz};padding:{pad};'
         f'border:none;border-radius:10px;cursor:pointer;text-decoration:none;">{inner}'
         f'</{("a" if url else "button")}></div>'
     )
@@ -10303,12 +10345,12 @@ def _render_wave_divider(b: dict) -> str:
         f'@keyframes wv_{uid}{{0%{{transform:{xform} translateX(0);}}100%{{transform:{xform} translateX(-50%);}}}}'
         f'</style>'
         f'<div style="overflow:hidden;height:{h}px;margin:0.5rem 0;position:relative;">'
-        f'<div style="display:flex;width:200%;animation:wv_{uid} {speed}s linear infinite;">'
+        f'<div style="display:flex;width:200%;animation:wv_{uid} {_cv_esc(speed)}s linear infinite;">'
         f'<svg viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
-        f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{color}" opacity="{opacity}"/>'
+        f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{_cv_esc(color)}" opacity="{_cv_esc(opacity)}"/>'
         f'</svg>'
         f'<svg viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
-        f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{color}" opacity="{opacity}"/>'
+        f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{_cv_esc(color)}" opacity="{_cv_esc(opacity)}"/>'
         f'</svg>'
         f'</div></div>'
     )
@@ -10335,7 +10377,7 @@ def _render_floating_badge(b: dict) -> str:
         f'50%{{transform:translateY(-10px);box-shadow:0 16px 32px rgba(0,0,0,0.12);}}}}'
         f'</style>'
         f'<div style="margin:1rem 0;text-align:center;">'
-        f'<div style="display:inline-block;font-size:{fsz};animation:fb_{uid} {speed}s ease-in-out infinite;">{icon}</div>'
+        f'<div style="display:inline-block;font-size:{fsz};animation:fb_{uid} {_cv_esc(speed)}s ease-in-out infinite;">{_cv_esc(icon)}</div>'
         f'{label_html}</div>'
     )
 
@@ -10351,13 +10393,12 @@ def _render_spotlight_card(b: dict) -> str:
     if blocks:
         inner = "".join(_RENDERERS.get(ch.get("type", ""), _render_unknown)(ch) for ch in blocks)
     else:
-        import markdown as _md
         inner = _md.markdown(content) if content else '<p style="color:#94a3b8;">spotlight card content</p>'
     return (
         f'<div id="sc_{uid}" style="position:relative;overflow:hidden;border-radius:16px;'
         f'border:1px solid #334155;background:#0f172a;padding:28px;margin:1rem 0;">'
         f'<div id="scg_{uid}" style="position:absolute;pointer-events:none;border-radius:50%;'
-        f'width:300px;height:300px;background:radial-gradient(circle,{accent}22 0%,transparent 70%);'
+        f'width:300px;height:300px;background:radial-gradient(circle,{_cv_esc(accent)}22 0%,transparent 70%);'
         f'transform:translate(-50%,-50%);top:50%;left:50%;transition:none;"></div>'
         f'<div style="position:relative;z-index:1;">{inner}</div>'
         f'</div>'
@@ -10385,13 +10426,12 @@ def _render_animated_border(b: dict) -> str:
     if blocks:
         inner = "".join(_RENDERERS.get(ch.get("type", ""), _render_unknown)(ch) for ch in blocks)
     else:
-        import markdown as _md
         inner = _md.markdown(content) if content else '<p style="color:#94a3b8;">animated border content</p>'
     return (
         f'<style>'
         f'@keyframes ab_{uid}{{0%{{--ab-angle:0deg;}}100%{{--ab-angle:360deg;}}}}'
         f'.abw_{uid}{{margin:1rem 0;padding:2px;border-radius:14px;'
-        f'background:conic-gradient(from var(--ab-angle,0deg),{fr},{via},{to},{via},{fr});'
+        f'background:conic-gradient(from var(--ab-angle,0deg),{_cv_esc(fr)},{_cv_esc(via)},{_cv_esc(to)},{_cv_esc(via)},{_cv_esc(fr)});'
         f'animation:ab_{uid} 4s linear infinite;}}'
         f'@property --ab-angle{{syntax:"<angle>";initial-value:0deg;inherits:false;}}'
         f'</style>'
@@ -10420,8 +10460,8 @@ def _render_pulse_dot(b: dict) -> str:
         f'50%{{transform:scale(1.5);opacity:0.5;}}}}'
         f'</style>'
         f'<span style="display:{display};align-items:center;margin:0.4rem 0;">'
-        f'<span style="width:{sz}px;height:{sz}px;border-radius:50%;background:{color};'
-        f'display:inline-block;animation:pd_{uid} {speed}s ease-in-out infinite;"></span>'
+        f'<span style="width:{sz}px;height:{sz}px;border-radius:50%;background:{_cv_esc(color)};'
+        f'display:inline-block;animation:pd_{uid} {_cv_esc(speed)}s ease-in-out infinite;"></span>'
         f'{label_html}</span>'
     )
 
@@ -10438,7 +10478,7 @@ def _render_loading_dots(b: dict) -> str:
     align = b.get("align", "flex-start")
     label_html = f'<span style="font-size:0.82rem;color:#94a3b8;margin-left:8px;">{_html.escape(label)}</span>' if label else ""
     dots = "".join(
-        f'<span style="width:{sz}px;height:{sz}px;border-radius:50%;background:{color};'
+        f'<span style="width:{sz}px;height:{sz}px;border-radius:50%;background:{_cv_esc(color)};'
         f'display:inline-block;animation:ld_{uid} 1.1s ease-in-out {i*0.18:.2f}s infinite;"></span>'
         for i in range(3)
     )
@@ -10447,7 +10487,7 @@ def _render_loading_dots(b: dict) -> str:
         f'@keyframes ld_{uid}{{0%,80%,100%{{transform:scale(0.6);opacity:0.4;}}'
         f'40%{{transform:scale(1);opacity:1;}}}}'
         f'</style>'
-        f'<div style="display:flex;align-items:center;gap:5px;justify-content:{align};margin:0.6rem 0;">'
+        f'<div style="display:flex;align-items:center;gap:5px;justify-content:{_cv_esc(align)};margin:0.6rem 0;">'
         f'{dots}{label_html}</div>'
     )
 
@@ -10465,7 +10505,7 @@ def _render_countdown_ring(b: dict) -> str:
     r        = (size - sw) / 2
     circ     = round(2 * math.pi * r, 2)
     cx = cy  = size / 2
-    label_html = f'<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;text-align:center;">{label}</div>' if label else ""
+    label_html = f'<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;text-align:center;">{_cv_esc(label)}</div>' if label else ""
     return (
         f'<style>'
         f'@keyframes cr_{uid}{{from{{stroke-dasharray:{circ} 0;}}to{{stroke-dasharray:0 {circ};}}}}'
@@ -10474,7 +10514,7 @@ def _render_countdown_ring(b: dict) -> str:
         f'<div style="position:relative;width:{size}px;height:{size}px;">'
         f'<svg width="{size}" height="{size}" style="transform:rotate(-90deg);">'
         f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#334155" stroke-width="{sw}"/>'
-        f'<circle id="crring_{uid}" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="{sw}"'
+        f'<circle id="crring_{uid}" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{_cv_esc(color)}" stroke-width="{sw}"'
         f' stroke-linecap="round" stroke-dasharray="{circ} 0"'
         f' style="animation:cr_{uid} {duration}s linear forwards;"/>'
         f'</svg>'
@@ -10523,7 +10563,7 @@ def _render_skeleton(b: dict) -> str:
             f'</div></div>'
         )
     elif kind == "image":
-        return base + f'<div class="skb_{uid}" style="height:{height};border-radius:10px;margin:1rem 0;"></div>'
+        return base + f'<div class="skb_{uid}" style="height:{_cv_esc(height)};border-radius:10px;margin:1rem 0;"></div>'
     elif kind == "list":
         items = "".join(
             f'<div style="display:flex;gap:10px;align-items:center;margin:8px 0;">'
@@ -10578,7 +10618,7 @@ def _render_marquee(b: dict) -> str:
         icon = item.get("icon", "")
         if url and not text and not icon:
             return f'<img src="{_html.escape(url)}" style="height:28px;object-fit:contain;opacity:0.8;"/>'
-        icon_h = f'<span style="margin-right:5px;">{icon}</span>' if icon else ""
+        icon_h = f'<span style="margin-right:5px;">{_cv_esc(icon)}</span>' if icon else ""
         text_h = f'<span style="color:#e2e8f0;font-size:0.85rem;">{_html.escape(text)}</span>' if text else ""
         return f'<span style="display:inline-flex;align-items:center;white-space:nowrap;gap:4px;">{icon_h}{text_h}</span>'
     strip = f'<span style="display:inline-flex;align-items:center;gap:{gap}px;">'
@@ -10592,7 +10632,7 @@ def _render_marquee(b: dict) -> str:
         f'<div style="margin:1rem 0;">{title_html}'
         f'<div style="overflow:hidden;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 0;'
         f'background:#0f172a;">'
-        f'<div style="display:flex;width:max-content;animation:mq_{uid} {speed}s linear infinite;animation-direction:{anim_dir};">'
+        f'<div style="display:flex;width:max-content;animation:mq_{uid} {_cv_esc(speed)}s linear infinite;animation-direction:{anim_dir};">'
         f'<div style="display:inline-flex;align-items:center;gap:{gap}px;padding:0 {gap}px;">'
         + "".join(_item_html(i) for i in items)
         + f'</div><div style="display:inline-flex;align-items:center;gap:{gap}px;padding:0 {gap}px;">'
@@ -10619,8 +10659,8 @@ def _render_cursor_glow(b: dict) -> str:
         f'background:var(--bg,#0c1117);border-radius:12px;border-radius:var(--a2ui-radius,12px);">'
         f'<div id="cg_{uid}" style="position:absolute;pointer-events:none;'
         f'width:{size}px;height:{size}px;border-radius:50%;'
-        f'background:radial-gradient(circle,{color} 0%,transparent 70%);'
-        f'opacity:{opacity};mix-blend-mode:{blend};'
+        f'background:radial-gradient(circle,{_cv_esc(color)} 0%,transparent 70%);'
+        f'opacity:{opacity};mix-blend-mode:{_cv_esc(blend)};'
         f'transform:translate(-50%,-50%);top:-999px;left:-999px;transition:none;"></div>'
         f'</div>'
         f'<script>(function(){{'
@@ -10652,7 +10692,7 @@ def _render_cursor_trail(b: dict) -> str:
         f'background:var(--bg,#0c1117);border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:none;"></div>'
         f'<script>(function(){{'
         f'var wrap=document.getElementById("ctw_{uid}");'
-        f'var n={length},s={speed},col="{color}",dotSz={size};'
+        f'var n={length},s={speed},col="{_cv_esc(color)}",dotSz={size};'
         f'var dots=[],pts=[],active=false;'
         f'for(var i=0;i<n;i++){{'
         f'var d=document.createElement("div");var scale=1-i/n;'
@@ -10687,7 +10727,7 @@ def _render_particle_burst(b: dict) -> str:
     size    = int(b.get("size", 8))
     dur     = int(b.get("duration", 700))
     gravity = float(b.get("gravity", 1.2))
-    cols_js = str(colours).replace("'", '"')
+    cols_js = _js_json([c for c in colours if isinstance(c, str) and _gd_css(c)] if isinstance(colours, list) else []) if colours else '[]'
     return (
         f'<script>(function(){{'
         f'var cols={cols_js},n={count},sz={size},dur={dur},g={gravity};'
@@ -10725,7 +10765,7 @@ def _render_spotlight_cursor(b: dict) -> str:
         f'background:var(--bg,#0c1117);border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:crosshair;">'
         f'<div id="sp_{uid}" style="position:absolute;inset:0;pointer-events:none;'
         f'background:radial-gradient(circle {radius}px at -999px -999px,'
-        f'transparent 0%,transparent {radius}px,{color} {radius+soft}px);'
+        f'transparent 0%,transparent {radius}px,{_cv_esc(color)} {radius+soft}px);'
         f'opacity:{darkness};transition:none;"></div>'
         f'</div>'
         f'<script>(function(){{'
@@ -10754,10 +10794,10 @@ def _render_magnetic_element(b: dict) -> str:
     radius   = int(b.get("radius", 120))
     strength = float(b.get("strength", 0.4))
     if content:
-        inner = content
+        inner = _cv_esc(content)  # payload text, never markup (2026-10-01)
     elif label:
         inner = (
-            f'<span style="background:{accent};color:#fff;font-weight:700;'
+            f'<span style="background:{_cv_esc(accent)};color:#fff;font-weight:700;'
             f'font-size:0.9rem;padding:10px 22px;border-radius:9999px;display:inline-block;">'
             f'{_html.escape(label)}</span>'
         )
@@ -10791,12 +10831,12 @@ def _render_tilt_card(b: dict) -> str:
     max_tilt = float(b.get("max_tilt", 14))
     glare    = b.get("glare", True)
     accent   = b.get("accent", "rgba(255,255,255,0.15)")
-    title_html = f'<div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{title}</div>' if title else ""
-    content_html = f'<div style="font-size:0.88rem;color:#94a3b8;line-height:1.6;">{content}</div>' if content else \
+    title_html = f'<div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else ""
+    content_html = f'<div style="font-size:0.88rem;color:#94a3b8;line-height:1.6;">{_cv_esc(content)}</div>' if content else \
                    f'<div style="color:#94a3b8;font-style:italic;">Hover to tilt</div>'
     glare_html = (
         f'<div id="tg_{uid}" style="position:absolute;inset:0;pointer-events:none;border-radius:12px;'
-        f'background:radial-gradient(circle at 50% 0%,{accent},transparent 70%);opacity:0;transition:opacity 0.2s;"></div>'
+        f'background:radial-gradient(circle at 50% 0%,{_cv_esc(accent)},transparent 70%);opacity:0;transition:opacity 0.2s;"></div>'
     ) if glare else ""
     return (
         f'<div style="margin:1rem 0;perspective:800px;">'
@@ -10816,7 +10856,7 @@ def _render_tilt_card(b: dict) -> str:
         f'var ny=(e.clientY-r.top)/r.height-0.5;'
         f'var rx=ny*mt*-2;var ry=nx*mt*2;'
         f'card.style.transform="rotateX("+rx+"deg) rotateY("+ry+"deg)";'
-        f'if(glare){{glare.style.opacity="1";glare.style.background="radial-gradient(circle at "+(nx+0.5)*100+"% "+(ny+0.5)*100+"%, {accent}, transparent 70%)"}}'
+        f'if(glare){{glare.style.opacity="1";glare.style.background="radial-gradient(circle at "+(nx+0.5)*100+"% "+(ny+0.5)*100+"%, {_cv_esc(accent)}, transparent 70%)"}}'
         f'}});'
         f'card.addEventListener("mouseleave",function(){{'
         f'card.style.transform="rotateX(0) rotateY(0)";'
@@ -10843,10 +10883,10 @@ def _render_word_reveal(b: dict) -> str:
         f'{_html.escape(w)}</span>'
         for i, w in enumerate(words)
     )
-    color_css = f"background:{grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" if grad else f"color:{color};"
+    color_css = f"background:{_cv_esc(grad)};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" if grad else f"color:{_cv_esc(color)};"
     return (
         f'<style>@keyframes wr_{uid}{{from{{opacity:0;transform:translateY(16px);}}to{{opacity:1;transform:translateY(0);}}}}</style>'
-        f'<div style="font-size:{size};font-weight:{weight};line-height:1.2;margin:1rem 0;{color_css}">{spans}</div>'
+        f'<div style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};line-height:1.2;margin:1rem 0;{color_css}">{spans}</div>'
     )
 
 _RENDERERS["word_reveal"] = _render_word_reveal
@@ -10863,7 +10903,7 @@ def _render_count_up_stat(b: dict) -> str:
     label_html = f'<div style="font-size:0.85rem;color:#94a3b8;margin-top:4px;">{_html.escape(label)}</div>' if label else ""
     return (
         f'<div style="margin:1rem 0;text-align:center;">'
-        f'<div style="font-size:clamp(2.5rem,6vw,4rem);font-weight:800;color:{color};'
+        f'<div style="font-size:clamp(2.5rem,6vw,4rem);font-weight:800;color:{_cv_esc(color)};'
         f'font-variant-numeric:tabular-nums;">'
         f'{_html.escape(prefix)}<span id="cu_{uid}">0</span>{_html.escape(suffix)}'
         f'</div>{label_html}</div>'
@@ -10893,8 +10933,8 @@ def _render_reveal_line(b: dict) -> str:
         f'<style>'
         f'@keyframes rl_{uid}{{from{{clip-path:inset(0 100% 0 0);}}to{{clip-path:inset(0 0% 0 0);}}}}'
         f'</style>'
-        f'<div style="font-size:{size};font-weight:{weight};line-height:1.1;margin:1rem 0;'
-        f'background:{grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+        f'<div style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};line-height:1.1;margin:1rem 0;'
+        f'background:{_cv_esc(grad)};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
         f'background-clip:text;clip-path:inset(0 100% 0 0);'
         f'animation:rl_{uid} {dur}ms cubic-bezier(.4,0,.2,1) 0.1s forwards;">'
         f'{text}</div>'
@@ -10911,8 +10951,8 @@ def _render_gradient_heading(b: dict) -> str:
     weight = b.get("weight", 900)
     align  = b.get("align", "left")
     return (
-        f'<div style="font-size:{size};font-weight:{weight};text-align:{align};margin:1rem 0;'
-        f'background:{grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+        f'<div style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};text-align:{_cv_esc(align)};margin:1rem 0;'
+        f'background:{_cv_esc(grad)};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
         f'background-clip:text;line-height:1.2;">{text}</div>'
     )
 
@@ -10928,12 +10968,12 @@ def _render_display_quote(b: dict) -> str:
     align  = b.get("align", "center")
     attr_html = (
         f'<div style="font-size:0.82rem;letter-spacing:0.06em;font-family:monospace;'
-        f'color:{color};margin-top:16px;">&mdash; {_html.escape(attr)}</div>'
+        f'color:{_cv_esc(color)};margin-top:16px;">&mdash; {_html.escape(attr)}</div>'
     ) if attr else ""
     return (
-        f'<div style="margin:1.5rem 0;text-align:{align};padding:0 1rem;">'
-        f'<div style="font-size:2.5rem;color:{color};line-height:1;margin-bottom:4px;">&ldquo;</div>'
-        f'<div style="font-size:{size};font-weight:700;color:#f1f5f9;line-height:1.45;font-style:italic;">{text}</div>'
+        f'<div style="margin:1.5rem 0;text-align:{_cv_esc(align)};padding:0 1rem;">'
+        f'<div style="font-size:2.5rem;color:{_cv_esc(color)};line-height:1;margin-bottom:4px;">&ldquo;</div>'
+        f'<div style="font-size:{_cv_esc(size)};font-weight:700;color:#f1f5f9;line-height:1.45;font-style:italic;">{text}</div>'
         f'{attr_html}</div>'
     )
 
@@ -10955,7 +10995,7 @@ def _render_split_stat(b: dict) -> str:
         f'border:1px solid #1e293b;border-radius:14px;padding:28px;background:#0f172a;">'
         f'<div style="text-align:center;flex-shrink:0;">'
         f'<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;'
-        f'color:{color};text-shadow:0 0 40px {color}66;">'
+        f'color:{_cv_esc(color)};text-shadow:0 0 40px {_cv_esc(color)}66;">'
         f'{prefix}{value}{suffix}</div></div>'
         f'<div style="flex:1;">{heading_html}{body_html}</div>'
         f'</div>'
@@ -10970,11 +11010,11 @@ def _render_section_label(b: dict) -> str:
     color  = b.get("colour", b.get("color", "var(--a2ui-accent,#6366f1)"))
     margin = b.get("margin", "24px 0 12px")
     return (
-        f'<div style="display:inline-flex;align-items:center;gap:8px;margin:{margin};">'
+        f'<div style="display:inline-flex;align-items:center;gap:8px;margin:{_cv_esc(margin)};">'
         f'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;'
-        f'background:{color};box-shadow:0 0 8px {color};"></span>'
+        f'background:{_cv_esc(color)};box-shadow:0 0 8px {_cv_esc(color)};"></span>'
         f'<span style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;'
-        f'text-transform:uppercase;color:{color};">{text}</span>'
+        f'text-transform:uppercase;color:{_cv_esc(color)};">{text}</span>'
         f'</div>'
     )
 
@@ -11043,8 +11083,8 @@ def _render_text_highlight(b: dict) -> str:
         )
     processed = re.sub(r'\*\*(.+?)\*\*', _replace, _html.escape(text).replace(r'\*\*', '**'))
     return (
-        f'<p style="font-size:{size};font-weight:{weight};color:#e2e8f0;'
-        f'line-height:1.7;text-align:{align};margin:1rem 0;">{processed}</p>'
+        f'<p style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};color:#e2e8f0;'
+        f'line-height:1.7;text-align:{_cv_esc(align)};margin:1rem 0;">{processed}</p>'
     )
 
 _RENDERERS["text_highlight"] = _render_text_highlight
@@ -11109,11 +11149,11 @@ def _render_palette(b: dict) -> str:
     accent2 = b.get("accent2", b.get("accent", "#8b5cf6"))
     gap     = b.get("block_gap", "1.25rem")
     extra   = ""
-    if b.get("text_color"): extra += f"--text:{b['text_color']};"
-    if b.get("bg_color"):   extra += f"--bg:{b['bg_color']};"
-    if b.get("muted_color"):extra += f"--muted:{b['muted_color']};"
+    if b.get("text_color"): extra += f"--text:{_cv_esc(b['text_color'])};"
+    if b.get("bg_color"):   extra += f"--bg:{_cv_esc(b['bg_color'])};"
+    if b.get("muted_color"):extra += f"--muted:{_cv_esc(b['muted_color'])};"
     extra += _token_css(b)
-    return f"<style>:root{{--a2ui-accent:{accent};--a2ui-accent2:{accent2};--a2ui-block-gap:{gap};{extra}}}</style>"
+    return f"<style>:root{{--a2ui-accent:{_cv_esc(accent)};--a2ui-accent2:{_cv_esc(accent2)};--a2ui-block-gap:{_cv_esc(gap)};{extra}}}</style>"
 
 _RENDERERS["palette"] = _render_palette
 
@@ -11126,10 +11166,10 @@ def _render_drive_image(b: dict) -> str:
     file_id = m.group(1) if m else raw
     src = f"https://drive.google.com/uc?id={urllib.parse.quote(file_id)}&export=view"
     alt = b.get("alt") or b.get("caption") or ""
-    caption_html = f'<figcaption style="font-size:0.82rem;color:#6b7280;margin-top:8px;font-style:italic;">{b["caption"]}</figcaption>' if b.get("caption") else ""
+    caption_html = f'<figcaption style="font-size:0.82rem;color:#6b7280;margin-top:8px;font-style:italic;">{_cv_esc(b["caption"])}</figcaption>' if b.get("caption") else ""
     radius = "border-radius:8px;" if b.get("rounded", True) else ""
-    w = f"width:{b['width']};" if b.get("width") else "max-width:100%;"
-    return f'<figure style="margin:1.2rem 0;text-align:center;"><img src="{src}" alt="{alt}" style="{w}{radius}display:block;margin:0 auto;" loading="lazy">{caption_html}</figure>'
+    w = f"width:{_cv_esc(b['width'])};" if b.get("width") else "max-width:100%;"
+    return f'<figure style="margin:1.2rem 0;text-align:center;"><img src="{src}" alt="{_cv_esc(alt)}" style="{w}{radius}display:block;margin:0 auto;" loading="lazy">{caption_html}</figure>'
 
 _RENDERERS["drive_image"] = _render_drive_image
 
@@ -11141,9 +11181,9 @@ def _render_print_button(b: dict) -> str:
     accent = b.get("accent", "var(--a2ui-accent,#6366f1)")
     size   = {"sm": "0.8rem", "lg": "1rem"}.get(b.get("size", "md"), "0.875rem")
     icon   = "🖨️ " if b.get("icon", True) else ""
-    return (f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;text-align:{align};">'
-            f'<button onclick="window.print()" style="background:{accent};color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:{size};font-weight:600;cursor:pointer;">'
-            f'{icon}{label}</button></div>')
+    return (f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;text-align:{_cv_esc(align)};">'
+            f'<button onclick="window.print()" style="background:{_cv_esc(accent)};color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:{size};font-weight:600;cursor:pointer;">'
+            f'{icon}{_cv_esc(label)}</button></div>')
 
 _RENDERERS["print_button"] = _render_print_button
 
@@ -11155,10 +11195,10 @@ def _render_maps_embed(b: dict) -> str:
     height  = str(b.get("height", 360))
     zoom    = str(b.get("zoom", 14))
     caption = b.get("caption", "")
-    src     = f"https://maps.google.com/maps?q={urllib.parse.quote(q)}&output=embed&z={zoom}"
-    cap_html = f'<figcaption style="font-size:0.82rem;color:#6b7280;margin-top:6px;">{caption}</figcaption>' if caption else ""
+    src     = f"https://maps.google.com/maps?q={urllib.parse.quote(q)}&output=embed&z={_cv_esc(zoom)}"
+    cap_html = f'<figcaption style="font-size:0.82rem;color:#6b7280;margin-top:6px;">{_cv_esc(caption)}</figcaption>' if caption else ""
     return (f'<figure style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
-            f'<iframe src="{src}" width="100%" height="{height}" style="border:0;border-radius:10px;display:block;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{q}"></iframe>'
+            f'<iframe src="{src}" width="100%" height="{_cv_esc(height)}" style="border:0;border-radius:10px;display:block;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{_cv_esc(q)}"></iframe>'
             f'{cap_html}</figure>')
 
 _RENDERERS["maps_embed"] = _render_maps_embed
@@ -11171,14 +11211,14 @@ def _render_sheet_form(b: dict) -> str:
     fields = b.get("fields", [])
     req_star = '&nbsp;<span style="color:#ef4444">*</span>'
     field_rows = "".join(
-        '<div style="margin-bottom:10px;font-size:0.85rem;"><strong>' + f.get("label", "") + '</strong>'
+        '<div style="margin-bottom:10px;font-size:0.85rem;"><strong>' + _cv_esc(f.get("label", "")) + '</strong>'
         + (req_star if f.get("required") else "")
         + '<div style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:6px;color:#9ca3af;margin-top:4px;">'
-        + f.get("placeholder", "") + '&nbsp;</div></div>'
+        + _cv_esc(f.get("placeholder", "")) + '&nbsp;</div></div>'
         for f in fields
     )
     note = '<div style="margin-top:12px;font-size:0.78rem;color:#9ca3af;font-style:italic;">⚠ sheet_form requires Google Apps Script — form submission not available in this renderer.</div>'
-    title_div = '<div style="font-weight:700;margin-bottom:14px;">' + title + "</div>" if title else ""
+    title_div = '<div style="font-weight:700;margin-bottom:14px;">' + _cv_esc(title) + "</div>" if title else ""
     return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">'
             + title_div + field_rows + note + '</div>')
 
@@ -11230,7 +11270,7 @@ def _render_google_icon(b: dict) -> str:
     inline = b.get("inline", True) is not False
     label  = f'<span style="font-size:0.82rem;color:var(--muted,#6b7280);margin-left:6px;">{_h.escape(str(b["label"]))}</span>' if b.get("label") else ""
     css_vars = _ms_vars(fill, weight, 0, opsz)
-    icon_span = f'<span class="ms-icon" style="{css_vars};font-size:{size};color:{color};" aria-hidden="true">{name}</span>'
+    icon_span = f'<span class="ms-icon" style="{css_vars};font-size:{size};color:{_cv_esc(color)};" aria-hidden="true">{name}</span>'
     disp = "inline-flex" if inline else "flex"
     margin = "" if inline else "margin:var(--a2ui-block-gap,1.25rem) 0;"
     return _ms_font(style) + f'<span style="display:{disp};align-items:center;{margin}">{icon_span}{label}</span>'
@@ -11254,8 +11294,8 @@ def _render_icon_badge(b: dict) -> str:
     return (
         _ms_font(style)
         + '<div style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
-        + f'<div style="display:flex;align-items:center;justify-content:center;background:{bg};padding:{pad};border-radius:{radius};">'
-        + f'<span class="ms-icon" style="{css_vars};font-size:{size}px;color:{color};" aria-hidden="true">{name}</span>'
+        + f'<div style="display:flex;align-items:center;justify-content:center;background:{_cv_esc(bg)};padding:{pad};border-radius:{radius};">'
+        + f'<span class="ms-icon" style="{css_vars};font-size:{size}px;color:{_cv_esc(color)};" aria-hidden="true">{name}</span>'
         + f'</div>{label}</div>'
     )
 
@@ -11273,7 +11313,7 @@ def _render_icon_row(b: dict) -> str:
     css_base = _ms_vars(fill, 400, 0, size)
     cells = "".join(
         '<div style="display:flex;align-items:center;gap:8px;">'
-        + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{item.get("color") or item.get("accent") or color};flex-shrink:0;" aria-hidden="true">{_h.escape(str(item.get("name") or item.get("icon") or "check"))}</span>'
+        + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{_cv_esc(item.get("color") or item.get("accent") or color)};flex-shrink:0;" aria-hidden="true">{_h.escape(str(item.get("name") or item.get("icon") or "check"))}</span>'
         + (f'<span style="font-size:0.875rem;color:var(--text,#374151);">{_h.escape(str(item.get("label") or item.get("text") or ""))}</span>' if item.get("label") or item.get("text") else "")
         + '</div>'
         for item in items
@@ -11294,7 +11334,7 @@ def _render_icon_feature_grid(b: dict) -> str:
     css_base = _ms_vars(fill, 400, 0, size)
     cells = "".join(
         '<div style="padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-        + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{item.get("color") or item.get("accent") or accent};display:block;margin-bottom:10px;" aria-hidden="true">{_h.escape(str(item.get("icon") or item.get("name") or "star"))}</span>'
+        + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{_cv_esc(item.get("color") or item.get("accent") or accent)};display:block;margin-bottom:10px;" aria-hidden="true">{_h.escape(str(item.get("icon") or item.get("name") or "star"))}</span>'
         + (f'<div style="font-size:0.875rem;font-weight:700;color:var(--text,#111827);margin-bottom:4px;">{_h.escape(str(item.get("title") or item.get("label") or ""))}</div>' if item.get("title") or item.get("label") else "")
         + (f'<div style="font-size:0.8rem;color:var(--muted,#6b7280);line-height:1.5;">{_h.escape(str(item.get("text") or item.get("description") or ""))}</div>' if item.get("text") or item.get("description") else "")
         + '</div>'
@@ -11330,7 +11370,7 @@ def _render_icon_checklist(b: dict) -> str:
             sub  = f'<div style="font-size:0.75rem;color:var(--muted,#9ca3af);margin-top:2px;">{_h.escape(str(item["sublabel"]))}</div>' if item.get("sublabel") else ""
         rows.append(
             '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f3f4f6);">'
-            + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{c};flex-shrink:0;margin-top:1px;" aria-hidden="true">{_h.escape(icon)}</span>'
+            + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{_cv_esc(c)};flex-shrink:0;margin-top:1px;" aria-hidden="true">{_h.escape(icon)}</span>'
             + f'<div><div style="font-size:0.875rem;color:var(--text,#374151);">{_h.escape(text)}</div>{sub}</div>'
             + '</div>'
         )
@@ -11347,8 +11387,8 @@ def _render_trend_indicator(b: dict) -> str:
     ctx = b.get("context", "")
     cfg = {"up": ("↑","#10b981","#d1fae5"), "down": ("↓","#ef4444","#fee2e2"), "stable": ("→","#6b7280","#f3f4f6")}.get(d, ("→","#6b7280","#f3f4f6"))
     col = b.get("color", cfg[1])
-    ctx_html = f'<span style="font-size:.75rem;color:#6b7280;margin-left:6px;">{ctx}</span>' if ctx else ""
-    return f'<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:{cfg[2]};font-size:.82rem;font-weight:600;color:{col};">{cfg[0]} {label}{ctx_html}</span>'
+    ctx_html = f'<span style="font-size:.75rem;color:#6b7280;margin-left:6px;">{_cv_esc(ctx)}</span>' if ctx else ""
+    return f'<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:{cfg[2]};font-size:.82rem;font-weight:600;color:{_cv_esc(col)};">{cfg[0]} {_cv_esc(label)}{ctx_html}</span>'
 
 def _render_metric_delta(b: dict) -> str:
     label, cur = b.get("label",""), b.get("current_value") or b.get("value","")
@@ -11356,17 +11396,17 @@ def _render_metric_delta(b: dict) -> str:
     col = "#10b981" if dtype=="increase" else "#ef4444" if dtype=="decrease" else "#6b7280"
     bg  = "#d1fae5" if dtype=="increase" else "#fee2e2" if dtype=="decrease" else "#f3f4f6"
     arr = "↑" if dtype=="increase" else "↓" if dtype=="decrease" else "→"
-    delta_html = f'<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:{bg};color:{col};font-size:.8rem;font-weight:600;">{arr} {delta}</span>' if delta else ""
-    inner = (f'<div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;">{label}</div>'
-             f'<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);margin:4px 0;">{cur}</div>{delta_html}')
+    delta_html = f'<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:{bg};color:{col};font-size:.8rem;font-weight:600;">{arr} {_cv_esc(delta)}</span>' if delta else ""
+    inner = (f'<div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;">{_cv_esc(label)}</div>'
+             f'<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);margin:4px 0;">{_cv_esc(cur)}</div>{delta_html}')
     return _card_chrome(inner, "card", "display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;")
 
 def _render_review_callout(b: dict) -> str:
     rating, max_r = round(b.get("rating",5)), b.get("max_rating",5)
     stars = "".join(f'<span style="color:{"#fbbf24" if i<=rating else "#e5e7eb"};">★</span>' for i in range(1,max_r+1))
-    product = f'<div style="font-size:.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:8px;">{b.get("product_name","")}</div>' if b.get("product_name") else ""
-    author  = f'<div style="margin-top:10px;font-size:.8rem;font-weight:600;color:#6b7280;">— {b.get("author_name","")}</div>' if b.get("author_name") else ""
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{product}<div style="margin-bottom:10px;">{stars}</div><blockquote style="margin:0;font-size:.9rem;line-height:1.6;font-style:italic;">"{b.get("review_text","")}"</blockquote>{author}</div>'
+    product = f'<div style="font-size:.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:8px;">{_cv_esc(b.get("product_name",""))}</div>' if b.get("product_name") else ""
+    author  = f'<div style="margin-top:10px;font-size:.8rem;font-weight:600;color:#6b7280;">— {_cv_esc(b.get("author_name",""))}</div>' if b.get("author_name") else ""
+    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{product}<div style="margin-bottom:10px;">{stars}</div><blockquote style="margin:0;font-size:.9rem;line-height:1.6;font-style:italic;">"{_cv_esc(b.get("review_text",""))}"</blockquote>{author}</div>'
 
 def _svg_sparkline(b: dict) -> str:
     data = b.get("data", [])
@@ -11379,7 +11419,7 @@ def _svg_sparkline(b: dict) -> str:
     pts = " ".join(f'{(i/(len(data)-1))*w:.1f},{h-((v-mn)/r)*(h-4)-2:.1f}' for i,v in enumerate(data))
     fill_pts = " ".join(f'{(i/(len(data)-1))*w:.1f},{h-((v-mn)/r)*(h-4)-2:.1f}' for i,v in enumerate(data))
     area = f"0,{h} {fill_pts} {w},{h}"
-    return f'<svg width="{w}" height="{h}" style="display:inline-block;vertical-align:middle;"><polygon points="{area}" fill="{color}" fill-opacity="0.1"/><polyline points="{pts}" fill="none" stroke="{color}" stroke-width="{lw}" stroke-linejoin="round" stroke-linecap="round"/></svg>'
+    return f'<svg width="{w}" height="{h}" style="display:inline-block;vertical-align:middle;"><polygon points="{area}" fill="{_cv_esc(color)}" fill-opacity="0.1"/><polyline points="{pts}" fill="none" stroke="{_cv_esc(color)}" stroke-width="{_cv_esc(lw)}" stroke-linejoin="round" stroke-linecap="round"/></svg>'
 
 
 def _render_sparkline(b: dict) -> str:
@@ -11394,29 +11434,29 @@ def _render_toggle_switch(b: dict) -> str:
     name = b.get("name", uid)
     accent = b.get("accent","#6366f1")
     return (f'<div style="display:flex;align-items:center;gap:10px;margin:var(--a2ui-block-gap,1.25rem) 0;">'
-            f'<input type="checkbox" id="{uid}" name="{name}"{checked} style="display:none;">'
+            f'<input type="checkbox" id="{uid}" name="{_cv_esc(name)}"{checked} style="display:none;">'
             f'<label for="{uid}" style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:.875rem;color:#111827;">'
-            f'<span style="width:44px;height:24px;border-radius:12px;background:{""+accent if b.get("is_checked") else "#d1d5db"};display:inline-flex;align-items:center;padding:2px;">'
+            f'<span style="width:44px;height:24px;border-radius:12px;background:{""+_cv_esc(accent) if b.get("is_checked") else "#d1d5db"};display:inline-flex;align-items:center;padding:2px;">'
             f'<span style="width:20px;height:20px;border-radius:50%;background:#fff;transform:translateX({"20px" if b.get("is_checked") else "0"});transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></span>'
-            f'{label}</label></div>')
+            f'{_cv_esc(label)}</label></div>')
 
 def _render_sentiment_summary(b: dict) -> str:
     idx = b.get("sentiment_index") or b.get("positive", 0)
     neg = b.get("negative", 100 - idx)
     neu = max(0, 100 - idx - neg)
-    title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{b.get("title","")}</div>' if b.get("title") else ""
-    def bar(lbl, pct, col, bg): return f'<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:.78rem;color:#6b7280;margin-bottom:3px;"><span>{lbl}</span><span>{pct}%</span></div><div style="background:{bg};border-radius:4px;height:8px;"><div style="background:{col};width:{pct}%;height:100%;border-radius:4px;"></div></div></div>'
-    score = f'<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#10b981;">{idx}%</div><div style="font-size:.78rem;color:#6b7280;">Positive sentiment</div></div>'
+    title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
+    def bar(lbl, pct, col, bg): return f'<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:.78rem;color:#6b7280;margin-bottom:3px;"><span>{lbl}</span><span>{_cv_esc(pct)}%</span></div><div style="background:{bg};border-radius:4px;height:8px;"><div style="background:{col};width:{_cv_esc(pct)}%;height:100%;border-radius:4px;"></div></div></div>'
+    score = f'<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#10b981;">{_cv_esc(idx)}%</div><div style="font-size:.78rem;color:#6b7280;">Positive sentiment</div></div>'
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{title}{score}{bar("Positive",idx,"#10b981","#d1fae5")}{bar("Neutral",neu,"#6b7280","#f3f4f6")}{bar("Negative",neg,"#ef4444","#fee2e2")}</div>'
 
 def _render_expandable_text(b: dict) -> str:
     summary = b.get("summary","Read more")
     details = _md_inline(b.get("details") or b.get("content",""))
     open_attr = " open" if b.get("initial_state_expanded") else ""
-    return f'<details{open_attr} style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><summary style="padding:10px 14px;font-size:.875rem;font-weight:600;color:#111827;cursor:pointer;background:#f9fafb;list-style:none;">▶ {summary}</summary><div style="padding:14px 16px;font-size:.875rem;line-height:1.6;">{details}</div></details>'
+    return f'<details{open_attr} style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><summary style="padding:10px 14px;font-size:.875rem;font-weight:600;color:#111827;cursor:pointer;background:#f9fafb;list-style:none;">▶ {_cv_esc(summary)}</summary><div style="padding:14px 16px;font-size:.875rem;line-height:1.6;">{details}</div></details>'
 
 def _render_conversion_funnel(b: dict) -> str:
-    title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{b.get("title","")}</div>' if b.get("title") else ""
+    title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     steps, accent = b.get("steps",[]), b.get("accent","#6366f1")
     max_v = max((float(s.get("value",0)) for s in steps), default=1) or 1
     html = ""
@@ -11425,26 +11465,26 @@ def _render_conversion_funnel(b: dict) -> str:
         pct = val / max_v * 100
         opacity = max(0.3, 1 - i*0.12)
         conv = f"{val/float(steps[i-1].get('value',1))*100:.0f}% of prev" if i > 0 else ""
-        html += f'<div style="text-align:center;margin-bottom:4px;"><div style="display:inline-block;width:{pct:.0f}%;background:{accent};opacity:{opacity:.2f};color:#fff;padding:8px 12px;border-radius:4px;font-size:.85rem;font-weight:600;min-width:140px;">{s.get("stage") or s.get("label","")} — {s.get("value","")}</div>{"<div style=font-size:.72rem;color:#9ca3af;margin-top:2px>"+conv+"</div>" if conv else ""}</div>'
+        html += f'<div style="text-align:center;margin-bottom:4px;"><div style="display:inline-block;width:{pct:.0f}%;background:{_cv_esc(accent)};opacity:{opacity:.2f};color:#fff;padding:8px 12px;border-radius:4px;font-size:.85rem;font-weight:600;min-width:140px;">{_cv_esc(s.get("stage") or s.get("label",""))} — {_cv_esc(s.get("value",""))}</div>{"<div style=font-size:.72rem;color:#9ca3af;margin-top:2px>"+conv+"</div>" if conv else ""}</div>'
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{html}</div>'
 
 def _render_stacked_area(b: dict) -> str:
-    title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:12px;">{b.get("title","")}</div>' if b.get("title") else ""
+    title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:12px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     labels, series = b.get("labels",[]), b.get("series",[])
     colors = ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#0ea5e9"]
     totals = [sum(s.get("data",[0]*99)[i] if i<len(s.get("data",[])) else 0 for s in series) for i,_ in enumerate(labels)]
     max_t = max(totals) if totals else 1
     rows = ""
     for i, lbl in enumerate(labels):
-        segs = "".join(f'<div style="width:{s.get("data",[0]*99)[i]/max_t*100:.1f}%;height:100%;background:{s.get("color",colors[si%len(colors)])};display:inline-block;" title="{s.get("label","")}: {s.get("data",[0]*99)[i]}"></div>' for si,s in enumerate(series) if i<len(s.get("data",[])))
-        rows += f'<div style="margin-bottom:8px;"><div style="font-size:.75rem;color:#6b7280;margin-bottom:2px;">{lbl}</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;">{segs}</div></div>'
-    legend = "".join(f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:{s.get("color",colors[si%len(colors)])}"></span>{s.get("label","")}</span>' for si,s in enumerate(series))
+        segs = "".join(f'<div style="width:{s.get("data",[0]*99)[i]/max_t*100:.1f}%;height:100%;background:{_cv_esc(s.get("color",colors[si%len(colors)]))};display:inline-block;" title="{_cv_esc(s.get("label",""))}: {_cv_esc(s.get("data",[0]*99)[i])}"></div>' for si,s in enumerate(series) if i<len(s.get("data",[])))
+        rows += f'<div style="margin-bottom:8px;"><div style="font-size:.75rem;color:#6b7280;margin-bottom:2px;">{_cv_esc(lbl)}</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;">{segs}</div></div>'
+    legend = "".join(f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:{_cv_esc(s.get("color",colors[si%len(colors)]))}"></span>{_cv_esc(s.get("label",""))}</span>' for si,s in enumerate(series))
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{rows}<div style="margin-top:10px;">{legend}</div></div>'
 
 def _render_data_grid(b: dict) -> str:
-    title = f'<div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">{b.get("title","")}</div>' if b.get("title") else ""
+    title = f'<div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     cols, rows_data = b.get("columns",[]), b.get("rows",[])
-    ths = "".join(f'<th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">{c.get("header",c.get("key",""))}</th>' for c in cols)
+    ths = "".join(f'<th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">{_cv_esc(c.get("header",c.get("key","")))}</th>' for c in cols)
     trs = ""
     for ri, row in enumerate(rows_data):
         tds = ""
@@ -11453,11 +11493,11 @@ def _render_data_grid(b: dict) -> str:
             if c.get("type") == "status":
                 smap = {"active":("✓","#10b981","#d1fae5"),"inactive":("✗","#ef4444","#fee2e2"),"pending":("○","#f59e0b","#fef3c7")}
                 cfg = smap.get(val.lower(), ("?","#6b7280","#f3f4f6"))
-                cell = f'<span style="padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600;background:{cfg[2]};color:{cfg[1]};">{cfg[0]} {val}</span>'
+                cell = f'<span style="padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600;background:{cfg[2]};color:{cfg[1]};">{cfg[0]} {_cv_esc(val)}</span>'
             elif c.get("type") == "tag":
-                cell = f'<span style="padding:2px 8px;border-radius:12px;font-size:.75rem;background:#dbeafe;color:#1d4ed8;">{val}</span>'
+                cell = f'<span style="padding:2px 8px;border-radius:12px;font-size:.75rem;background:#dbeafe;color:#1d4ed8;">{_cv_esc(val)}</span>'
             else:
-                cell = val
+                cell = _cv_esc(val)
             tds += f'<td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{cell}</td>'
         bg = "#f9fafb" if ri%2 else "#fff"
         trs += f'<tr style="background:{bg};">{tds}</tr>'
@@ -11468,27 +11508,27 @@ def _render_action_required_card(b: dict) -> str:
     umap = {"high":("#ef4444","#fef2f2","🔴"),"medium":("#f59e0b","#fffbeb","🟡"),"low":("#3b82f6","#eff6ff","🔵")}
     col,bg,di = umap.get(urgency,umap["medium"])
     icon = b.get("icon",di)
-    btn = f'<a href="{b.get("action_url","#")}" target="_top" style="display:inline-block;margin-top:14px;padding:8px 20px;background:{col};color:#fff;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">{b.get("action_label","Take action")}</a>' if b.get("action_label") and b.get("action_url") else ""
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid {col};border-radius:0 10px 10px 0;background:{bg};"><div style="display:flex;align-items:flex-start;gap:12px;"><span style="font-size:1.4rem;">{icon}</span><div><div style="font-weight:700;font-size:.95rem;">{b.get("title","Action Required")}</div>{"<div style=font-size:.85rem;color:#6b7280;margin-top:4px;line-height:1.5>"+b.get("description","")+"</div>" if b.get("description") else ""}{btn}</div></div></div>'
+    btn = f'<a href="{_cv_esc(b.get("action_url","#"))}" target="_top" style="display:inline-block;margin-top:14px;padding:8px 20px;background:{col};color:#fff;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">{_cv_esc(b.get("action_label","Take action"))}</a>' if b.get("action_label") and b.get("action_url") else ""
+    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid {col};border-radius:0 10px 10px 0;background:{bg};"><div style="display:flex;align-items:flex-start;gap:12px;"><span style="font-size:1.4rem;">{_cv_esc(icon)}</span><div><div style="font-weight:700;font-size:.95rem;">{_cv_esc(b.get("title","Action Required"))}</div>{"<div style=font-size:.85rem;color:#6b7280;margin-top:4px;line-height:1.5>"+_cv_esc(b.get("description",""))+"</div>" if b.get("description") else ""}{btn}</div></div></div>'
 
 # Lightweight dispatch for remaining stubs — they all follow the same pattern
 def _render_avatar_group(b: dict) -> str:
     avatars = b.get("avatars",[])[:6]; total = b.get("total_count",len(avatars))
     colors = ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#0ea5e9"]
-    imgs = "".join(f'<div title="{a.get("name","")}" style="width:36px;height:36px;border-radius:50%;background:{colors[i%len(colors)]};border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;margin-left:{"-10" if i>0 else "0"}px;">{"".join(w[0] for w in a.get("name","?").split()[:2]).upper()}</div>' for i,a in enumerate(avatars))
+    imgs = "".join(f'<div title="{_cv_esc(a.get("name",""))}" style="width:36px;height:36px;border-radius:50%;background:{colors[i%len(colors)]};border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;margin-left:{"-10" if i>0 else "0"}px;">{_cv_esc("".join(w[0] for w in a.get("name","?").split()[:2]).upper())}</div>' for i,a in enumerate(avatars))
     extra = f'<div style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#6b7280;margin-left:-10px;">+{total-len(avatars)}</div>' if total>len(avatars) else ""
-    label = f'<span style="font-size:.82rem;color:#6b7280;margin-left:10px;">{b.get("label","")}</span>' if b.get("label") else ""
+    label = f'<span style="font-size:.82rem;color:#6b7280;margin-left:10px;">{_cv_esc(b.get("label",""))}</span>' if b.get("label") else ""
     return f'<div style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">{imgs}{extra}{label}</div>'
 
 def _render_tree_view(b: dict) -> str:
     def node(n, d=0):
         kids = n.get("children",[])
         pad = d*16; icon = n.get("icon","📁" if kids else "📄")
-        lbl = f'<span style="padding-left:{pad}px;font-size:.85rem;">{icon} {n.get("label","")}</span>'
+        lbl = f'<span style="padding-left:{pad}px;font-size:.85rem;">{_cv_esc(icon)} {_cv_esc(n.get("label",""))}</span>'
         if not kids: return f'<div style="padding:3px 8px;color:#374151;">{lbl}</div>'
         inner = "".join(node(c,d+1) for c in kids)
         return f'<details{"open" if n.get("expanded",True) else ""}><summary style="padding:3px 8px;cursor:pointer;list-style:none;color:#374151;">{lbl}</summary>{inner}</details>'
-    title = f'<div style="font-weight:700;font-size:.9rem;margin-bottom:10px;">{b.get("title","")}</div>' if b.get("title") else ""
+    title = f'<div style="font-weight:700;font-size:.9rem;margin-bottom:10px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">{title}{"".join(node(n) for n in b.get("nodes",[]))}</div>'
 
 def _render_noop_stub(name):
@@ -11565,7 +11605,7 @@ def _wa_uid(b=None):
     if b is None:
         return _wa_uuid.uuid4().hex[:8]
     try:
-        canon = _wa_json.dumps(b, sort_keys=True, default=str, separators=(',', ':'))
+        canon = _js_json(b, sort_keys=True, default=str, separators=(',', ':'))
     except Exception:
         return _wa_uuid.uuid4().hex[:8]
     return _wa_hashlib.sha1(canon.encode('utf-8')).hexdigest()[:8]
@@ -11629,11 +11669,11 @@ def _render_achievement_badge(b: dict) -> str:
     if size == 'pill':
         return (f'<span style="display:inline-flex;align-items:center;gap:6px;border:1.5px solid {_esc(color)};'
                 f'border-radius:100px;padding:6px 14px;{locked_sty}">'
-                f'<span style="font-size:1.1rem;">{icon}</span>'
+                f'<span style="font-size:1.1rem;">{_cv_esc(icon)}</span>'
                 f'<span style="color:{_esc(color)};font-size:0.8rem;font-weight:600;">{_esc(b.get("title",""))}</span></span>')
     return (f'<div style="display:inline-flex;align-items:center;gap:14px;border:1.5px solid {_esc(color)};'
             f'border-radius:12px;padding:14px 18px;{locked_sty}">'
-            f'<div style="font-size:2rem;">{icon}</div><div>'
+            f'<div style="font-size:2rem;">{_cv_esc(icon)}</div><div>'
             f'<div style="font-weight:700;color:{_esc(color)};font-size:0.9rem;">{_esc(b.get("title",""))}</div>'
             f'{"<div style=font-size:.8rem;color:#6b7280;>"+_esc(b["description"])+"</div>" if b.get("description") else ""}'
             f'{unlocked_html}</div></div>')
@@ -11711,7 +11751,7 @@ def _render_alert_banner(b: dict) -> str:
     ico = b.get('icon') or icons.get(variant, 'ℹ️')
     return (f'<div style="border-left:4px solid {col};background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:12px 16px;'
             f'border-radius:0 8px 8px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;">'
-            f'<span style="font-size:1.1rem;">{ico}</span>'
+            f'<span style="font-size:1.1rem;">{_cv_esc(ico)}</span>'
             f'<div style="font-weight:500;">{_md_inline(b.get("text",""))}</div></div>')
 
 _RENDERERS['alert_banner'] = _render_alert_banner
@@ -11879,11 +11919,11 @@ def _render_back_button(b: dict) -> str:
     accent = b.get('accent', '#6366f1')
     style = b.get('style', 'ghost')
     if style == 'outline':
-        css = f'border:1.5px solid {accent};color:{accent};background:#fff;border-radius:8px;padding:6px 16px;'
+        css = f'border:1.5px solid {_cv_esc(accent)};color:{_cv_esc(accent)};background:#fff;border-radius:8px;padding:6px 16px;'
     elif style == 'text':
-        css = f'color:{accent};background:none;padding:4px 0;'
+        css = f'color:{_cv_esc(accent)};background:none;padding:4px 0;'
     else:
-        css = f'background:{accent}22;color:{accent};border-radius:8px;padding:6px 16px;'
+        css = f'background:{_cv_esc(accent)}22;color:{_cv_esc(accent)};border-radius:8px;padding:6px 16px;'
     base = f'display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:inherit;{css}'
     if b.get('url'):
         el = f'<a href="{_esc(b["url"])}" style="{base}">{_esc(label)}</a>'
@@ -11931,7 +11971,7 @@ def _render_before_after(b: dict) -> str:
     def panel(label, code, color, bg):
         return (f'<div style="flex:1;min-width:0;">'
                 f'<div style="background:{color};color:#fff;font-size:0.72rem;font-weight:700;'
-                f'padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">{label}</div>'
+                f'padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">{_cv_esc(label)}</div>'
                 f'<pre style="margin:0;padding:14px;background:{bg};overflow-x:auto;font-size:0.82rem;'
                 f'border-radius:0 0 6px 6px;"><code class="language-{_esc(lang)}">{code}</code></pre></div>')
     return (f'<div style="margin:1.5rem 0;">'
@@ -11989,7 +12029,7 @@ def _render_callout2(b: dict) -> str:
     color = b.get('color', '#6366f1')
     return (f'<div style="border-left:4px solid {_esc(color)};background:#f9fafb;padding:12px 16px;'
             f'border-radius:0 8px 8px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;">'
-            f'<span style="font-size:1.2rem;">{icon}</span>'
+            f'<span style="font-size:1.2rem;">{_cv_esc(icon)}</span>'
             f'<div>{_md_inline(b.get("text",""))}</div></div>')
 
 _RENDERERS['callout'] = _render_callout2
@@ -12061,12 +12101,12 @@ def _render_chip_group(b: dict) -> str:
     multi = b.get('multiple', False)
     input_type = 'checkbox' if multi else 'radio'
     html_parts = [f'<style>#{uid} input{{display:none;}}'
-                  f'#{uid} input:checked+label{{background:{accent};color:#fff;border-color:{accent};}}</style>'
+                  f'#{uid} input:checked+label{{background:{_cv_esc(accent)};color:#fff;border-color:{_cv_esc(accent)};}}</style>'
                   f'<div id="{uid}" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;">']
     for i, chip in enumerate(chips):
         text = chip if isinstance(chip, str) else chip.get('label', str(chip))
         val = chip if isinstance(chip, str) else chip.get('value', text)
-        cid = f'{uid}_{i}'
+        cid = f'{uid}_{_cv_esc(i)}'
         html_parts.append(f'<input type="{input_type}" id="{cid}" name="{uid}" value="{_esc(str(val))}">'
                           f'<label for="{cid}" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;'
                           f'font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">{_esc(str(text))}</label>')
@@ -12158,21 +12198,21 @@ def _render_code_snippet_pair(b: dict) -> str:
                      f'#{uid} #s{uid}_{i}:checked ~ .tabs label:nth-child({i+1}){{border-bottom-color:#1a73e8;color:#1a73e8;}}' for i in range(len(snippets)))
            + f'#{uid} .panels > div{{display:none;}}</style>')
     for i, s in enumerate(snippets):
-        tabs += (f'<input type="radio" id="s{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>'
+        tabs += (f'<input type="radio" id="s{uid}_{_cv_esc(i)}" name="{uid}" {"checked" if i==0 else ""}>'
                  ) if False else ''
-        tabs += f'<input type="radio" id="s{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>'
+        tabs += f'<input type="radio" id="s{uid}_{_cv_esc(i)}" name="{uid}" {"checked" if i==0 else ""}>'
         lang = s.get('language', '')
         code = s.get('code', '').replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
-        panels += (f'<div class="p{uid}_{i}">'
+        panels += (f'<div class="p{uid}_{_cv_esc(i)}">'
                    f'<pre style="margin:0;padding:14px;background:#1e1e2e;font-size:0.82rem;overflow-x:auto;">'
                    f'<code class="language-{_esc(lang)}">{code}</code></pre></div>')
-    labels = ''.join(f'<label for="s{uid}_{i}" style="padding:8px 14px;cursor:pointer;font-size:0.82rem;'
+    labels = ''.join(f'<label for="s{uid}_{_cv_esc(i)}" style="padding:8px 14px;cursor:pointer;font-size:0.82rem;'
                      f'font-weight:600;color:#5f6368;border-bottom:2px solid transparent;margin-bottom:-2px;">'
                      f'{_esc(s.get("label",s.get("language",f"Tab {i+1}")))}</label>'
                      for i, s in enumerate(snippets))
     return (f'<div id="{uid}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
             f'{css}'
-            + ''.join(f'<input type="radio" id="s{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>' for i in range(len(snippets)))
+            + ''.join(f'<input type="radio" id="s{uid}_{_cv_esc(i)}" name="{uid}" {"checked" if i==0 else ""}>' for i in range(len(snippets)))
             + f'<div class="tabs" style="display:flex;border-bottom:2px solid #e5e7eb;">{labels}</div>'
             f'<div class="panels">{panels}</div></div>')
 
@@ -12212,7 +12252,7 @@ def _render_color_swatch_grid(b: dict) -> str:
                      f'border:1px solid #00000015;margin-bottom:4px;"></div>'
                      f'<div style="font-size:0.72rem;color:#374151;font-weight:600;">{_esc(name)}</div>'
                      f'<div style="font-family:monospace;font-size:0.68rem;color:#9ca3af;">{_esc(hex_val)}</div></div>')
-    return (f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:12px;margin:1.5rem 0;">'
+    return (f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:12px;margin:1.5rem 0;">'
             f'{swatches}</div>')
 
 _RENDERERS['color_swatch_grid'] = _render_color_swatch_grid
@@ -12277,11 +12317,11 @@ def _render_concept_map(b: dict) -> str:
         x2 = 50 + 38 * math.cos(math.radians(deg))
         y2 = 50 + 38 * math.sin(math.radians(deg))
         items += (f'<div style="position:absolute;left:{x2:.1f}%;top:{y2:.1f}%;transform:translate(-50%,-50%);'
-                  f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1.5px solid {accent};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:5px 10px;'
-                  f'font-size:0.75rem;font-weight:600;color:{accent};white-space:nowrap;">{_esc(label)}</div>')
+                  f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1.5px solid {_cv_esc(accent)};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:5px 10px;'
+                  f'font-size:0.75rem;font-weight:600;color:{_cv_esc(accent)};white-space:nowrap;">{_esc(label)}</div>')
     return (f'<div style="position:relative;width:100%;aspect-ratio:1;max-width:360px;margin:1.5rem auto;">'
             f'<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);'
-            f'background:{accent};color:#fff;border-radius:12px;padding:10px 16px;font-weight:700;'
+            f'background:{_cv_esc(accent)};color:#fff;border-radius:12px;padding:10px 16px;font-weight:700;'
             f'font-size:0.9rem;text-align:center;">{_esc(center)}</div>'
             f'{items}</div>')
 
@@ -12321,9 +12361,9 @@ def _render_copy_code_button(b: dict) -> str:
     # implements the current, minimal design). Kept `code` as a fallback for any payload
     # still sending the old shape. 2026-09-27.
     text = b.get('text_to_copy', b.get('code', ''))
-    escaped = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace("'", "\\'")
+    escaped = _cv_esc(_js_json(str(text)))
     return (f'<div style="display:inline-block;margin:0.5rem 0;">'
-            f'<button onclick="navigator.clipboard.writeText(\'{escaped}\')" '
+            f'<button onclick="navigator.clipboard.writeText({escaped})" '
             f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;'
             f'border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">'
             f'<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">'
@@ -12403,13 +12443,13 @@ _RENDERERS['date_picker'] = _render_date_picker
 def _render_deploy_button(b: dict) -> str:
     platform = b.get('platform', 'heroku')
     url = b.get('url', '#')
-    label = b.get('label', f'Deploy to {platform.title()}')
+    label = b.get('label', f'Deploy to {_cv_esc(platform.title())}')
     icons = {'heroku': '🟣', 'netlify': '🟢', 'vercel': '⚫', 'railway': '🔵', 'render': '🟤'}
     icon = b.get('icon') or icons.get(platform, '🚀')
     return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
             f'style="display:inline-flex;align-items:center;gap:8px;background:#111827;color:#fff;'
             f'text-decoration:none;padding:10px 20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);font-weight:700;font-size:0.88rem;'
-            f'margin:1rem 0;">{icon} {_esc(label)}</a>')
+            f'margin:1rem 0;">{_cv_esc(icon)} {_esc(label)}</a>')
 
 _RENDERERS['deploy_button'] = _render_deploy_button
 
@@ -12483,7 +12523,7 @@ def _render_document_link(b: dict) -> str:
             f'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
             f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 16px;text-decoration:none;color:#374151;'
             f'font-size:0.86rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:0.5rem 0;">'
-            f'{icon} {_esc(title)}</a>')
+            f'{_cv_esc(icon)} {_esc(title)}</a>')
 
 _RENDERERS['document_link'] = _render_document_link
 
@@ -12529,7 +12569,7 @@ def _render_empty_state(b: dict) -> str:
     btn_label = b.get('action_label') or b.get('button_label', '')
     btn_url = b.get('action_url') or b.get('button_url', '#')
     icon_html = (f'<img src="{_esc(image_url)}" alt="" style="max-width:120px;max-height:120px;'
-                 f'margin-bottom:12px;">' if image_url else f'<div style="font-size:2.5rem;margin-bottom:12px;">{icon}</div>')
+                 f'margin-bottom:12px;">' if image_url else f'<div style="font-size:2.5rem;margin-bottom:12px;">{_cv_esc(icon)}</div>')
     btn = (f'<a href="{_esc(btn_url)}" style="display:inline-block;margin-top:12px;padding:8px 20px;'
            f'background:#6366f1;color:#fff;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;font-size:0.85rem;font-weight:600;">'
            f'{_esc(btn_label)}</a>' if btn_label else '')
@@ -12610,7 +12650,7 @@ def _render_feature_card(b: dict) -> str:
     text = b.get('text') or b.get('description', '')
     accent = b.get('accent', '#6366f1')
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:1rem 0;">'
-            f'<div style="font-size:1.6rem;margin-bottom:8px;">{icon}</div>'
+            f'<div style="font-size:1.6rem;margin-bottom:8px;">{_cv_esc(icon)}</div>'
             f'<div style="font-weight:700;color:{_esc(accent)};margin-bottom:6px;">{_esc(title)}</div>'
             f'<div style="font-size:0.88rem;color:#6b7280;">{_md_inline(text)}</div></div>')
 
@@ -12721,9 +12761,9 @@ _RENDERERS['follow_cta'] = _render_follow_cta
 def _render_footnote(b: dict) -> str:
     number = b.get('number', 1)
     text = b.get('text', '')
-    return (f'<div id="fn{number}" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;'
+    return (f'<div id="fn{_cv_esc(number)}" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;'
             f'font-size:0.82rem;color:#6b7280;display:flex;gap:8px;align-items:flex-start;">'
-            f'<span style="font-weight:700;flex-shrink:0;">[{number}]</span>'
+            f'<span style="font-weight:700;flex-shrink:0;">[{_cv_esc(number)}]</span>'
             f'<span>{_md_inline(text)}</span></div>')
 
 _RENDERERS['footnote'] = _render_footnote
@@ -12739,7 +12779,7 @@ def _render_footnote_group(b: dict) -> str:
         text = item if isinstance(item, str) else item.get('text', '')
         num = item.get('id', item.get('number', i)) if isinstance(item, dict) else i
         rows += (f'<div style="display:flex;gap:8px;font-size:0.82rem;color:#6b7280;padding:4px 0;">'
-                 f'<span style="font-weight:700;flex-shrink:0;">[{num}]</span><span>{_md_inline(text)}</span></div>')
+                 f'<span style="font-weight:700;flex-shrink:0;">[{_cv_esc(num)}]</span><span>{_md_inline(text)}</span></div>')
     return f'<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">{rows}</div>'
 
 _RENDERERS['footnote_group'] = _render_footnote_group
@@ -12796,7 +12836,7 @@ def _render_gallery(b: dict) -> str:
                  f'<img src="{_esc(src)}" alt="{_esc(alt)}" style="width:100%;height:100%;object-fit:cover;"></div>')
     cap_html = f'<p style="font-size:0.8rem;color:#6b7280;text-align:center;margin:8px 0 0;">{_esc(caption)}</p>' if caption else ''
     return (f'<div style="margin:1.5rem 0;">'
-            f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:{_esc(gap)};">{imgs}</div>'
+            f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:{_esc(gap)};">{imgs}</div>'
             f'{cap_html}</div>')
 
 _RENDERERS['gallery'] = _render_gallery
@@ -12826,10 +12866,10 @@ _RENDERERS['glossary_term'] = _render_glossary_term
 
 def _render_gradient_text(b: dict) -> str:
     text = b.get('text', '')
-    from_color = b.get('from', '#6366f1')
-    to_color = b.get('to', '#a855f7')
-    size = b.get('size', '2rem')
-    tag = b.get('tag', 'span')
+    from_color = _safe_css(b.get('from'), '#6366f1')
+    to_color = _safe_css(b.get('to'), '#a855f7')
+    size = _safe_css(b.get('size'), '2rem')
+    tag = b.get('tag') if b.get('tag') in ('span', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em') else 'span'
     style = (f'background:linear-gradient(135deg,{_esc(from_color)},{_esc(to_color)});'
              f'-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
              f'background-clip:text;font-size:{_esc(size)};font-weight:800;display:inline-block;')
@@ -12863,7 +12903,7 @@ def _render_heatmap(b: dict) -> str:
             c = item.get('col', '')
             pct = val / max_val
             bg = f'hsl({220 + pct * 120:.0f},{60 + pct * 40:.0f}%,{95 - pct * 40:.0f}%)'
-            cells += f'<td title="{_esc(str(r))} / {_esc(str(c))}: {val}" style="width:32px;height:32px;background:{bg};text-align:center;font-size:0.72rem;border:1px solid #fff;"></td>'
+            cells += f'<td title="{_esc(str(r))} / {_esc(str(c))}: {_cv_esc(val)}" style="width:32px;height:32px;background:{bg};text-align:center;font-size:0.72rem;border:1px solid #fff;"></td>'
     title_html = f'<div style="font-weight:700;margin-bottom:8px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;overflow-x:auto;">'
             f'{title_html}'
@@ -12919,7 +12959,7 @@ def _render_icon_stat_row(b: dict) -> str:
         value = item.get('value', '')
         label = item.get('label', '')
         stats += (f'<div style="text-align:center;padding:10px;">'
-                  f'<div style="font-size:1.4rem;">{icon}</div>'
+                  f'<div style="font-size:1.4rem;">{_cv_esc(icon)}</div>'
                   f'<div style="font-size:1.1rem;font-weight:800;color:#111827;">{_esc(str(value))}</div>'
                   f'<div style="font-size:0.78rem;color:#6b7280;">{_esc(label)}</div></div>')
     return f'<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:8px;margin:1.5rem 0;">{stats}</div>'
@@ -12999,7 +13039,7 @@ def _render_inline_alert(b: dict) -> str:
     detail_html = f'<div style="font-size:0.76rem;opacity:0.85;margin-top:2px;">{_md_inline(detail)}</div>' if detail else ''
     return (f'<div style="display:inline-flex;align-items:center;gap:6px;background:{col}18;'
             f'color:{col};border:1px solid {col}40;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:4px 12px;'
-            f'font-size:0.83rem;font-weight:500;">{icon} <span>{_md_inline(text)}{detail_html}</span></div>')
+            f'font-size:0.83rem;font-weight:500;">{_cv_esc(icon)} <span>{_md_inline(text)}{detail_html}</span></div>')
 
 _RENDERERS['inline_alert'] = _render_inline_alert
 
@@ -13033,7 +13073,7 @@ def _render_json_preview(b: dict) -> str:
     indent = b.get('indent', 2)
     title = b.get('title', '')
     try:
-        formatted = json.dumps(data, indent=indent, ensure_ascii=False)
+        formatted = _js_json(data, indent=indent, ensure_ascii=False)
     except Exception:
         formatted = str(data)
     escaped = formatted.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
@@ -13051,7 +13091,7 @@ def _render_json_tree_viewer(b: dict) -> str:
     data = b.get('data') or b.get('payload', {})
     title = b.get('title', 'JSON')
     try:
-        formatted = json.dumps(data, indent=2, ensure_ascii=False)
+        formatted = _js_json(data, indent=2, ensure_ascii=False)
     except Exception:
         formatted = str(data)
     escaped = formatted.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
@@ -13084,8 +13124,8 @@ def _render_kanban_board(b: dict) -> str:
                           f'{"<div style=display:flex;gap:4px;flex-wrap:wrap;>"+tag_html+"</div>" if tag_html else ""}'
                           f'</div>')
         cols_html += (f'<div style="flex:0 0 {col_width};min-width:{col_width};">'
-                      f'<div style="padding:8px;background:{color}18;border-top:3px solid {color};'
-                      f'border-radius:6px 6px 0 0;font-size:0.8rem;font-weight:700;color:{color};'
+                      f'<div style="padding:8px;background:{_cv_esc(color)}18;border-top:3px solid {_cv_esc(color)};'
+                      f'border-radius:6px 6px 0 0;font-size:0.8rem;font-weight:700;color:{_cv_esc(color)};'
                       f'margin-bottom:6px;">{_esc(name)}</div>'
                       f'{card_html}</div>')
     return f'<div style="display:flex;gap:12px;overflow-x:auto;padding:4px;margin:1.5rem 0;">{cols_html}</div>'
@@ -13120,7 +13160,7 @@ def _render_label_value_grid(b: dict) -> str:
                   f'<div style="font-size:0.75rem;color:#9ca3af;font-weight:600;text-transform:uppercase;'
                   f'letter-spacing:0.05em;margin-bottom:2px;">{_esc(label)}</div>'
                   f'<div style="font-size:0.9rem;font-weight:600;color:#111827;">{_esc(str(value))}</div></div>')
-    return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:0 24px;margin:1rem 0;">{cells}</div>'
+    return f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:0 24px;margin:1rem 0;">{cells}</div>'
 
 _RENDERERS['label_value_grid'] = _render_label_value_grid
 
@@ -13150,7 +13190,7 @@ def _render_link_card(b: dict) -> str:
             f'style="display:block;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
             f'text-decoration:none;margin:0.75rem 0;transition:box-shadow 0.15s;">'
             f'<div style="display:flex;align-items:flex-start;gap:12px;">'
-            f'<span style="font-size:1.3rem;">{icon}</span>'
+            f'<span style="font-size:1.3rem;">{_cv_esc(icon)}</span>'
             f'<div><div style="font-weight:700;color:#111827;margin-bottom:4px;">{_esc(title)}</div>'
             f'{"<div style=font-size:0.84rem;color:#6b7280;>"+_esc(desc)+"</div>" if desc else ""}'
             f'</div></div></a>')
@@ -13181,7 +13221,7 @@ def _render_lottie_animation(b: dict) -> str:
     loop = 'true' if b.get('loop', True) else 'false'
     return (f'<div style="text-align:center;margin:1.5rem 0;">'
             f'<lottie-player src="{_esc(url)}" background="transparent" speed="1" '
-            f'style="width:{width}px;height:{height}px;" loop="{loop}" autoplay></lottie-player>'
+            f'style="width:{_cv_esc(width)}px;height:{_cv_esc(height)}px;" loop="{loop}" autoplay></lottie-player>'
             f'<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>'
             f'</div>')
 
@@ -13222,7 +13262,7 @@ def _render_metric_card(b: dict) -> str:
     delta_icon = '↑' if is_up else '↓' if is_up is False else ''
     delta_html = (f'<div style="font-size:0.78rem;font-weight:600;color:{delta_color};">'
                   f'{delta_icon} {_esc(str(delta))}</div>' if delta else '')
-    icon_html = f'<div style="font-size:1.5rem;margin-bottom:4px;">{icon}</div>' if icon else ''
+    icon_html = f'<div style="font-size:1.5rem;margin-bottom:4px;">{_cv_esc(icon)}</div>' if icon else ''
     return (f'<div style="border:1px solid {_esc(accent)}33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;'
             f'background:{_esc(accent)}08;min-width:120px;">'
             f'{icon_html}'
@@ -13262,14 +13302,14 @@ def _render_notification_badge(b: dict) -> str:
     max_count = b.get('max', 99)
     show = count
     if isinstance(count, int) and count > max_count:
-        show = f'{max_count}+'
+        show = f'{_cv_esc(max_count)}+'
     badge_html = (f'<span style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;'
                   f'font-size:0.65rem;font-weight:800;border-radius:99px;min-width:18px;height:18px;'
                   f'display:flex;align-items:center;justify-content:center;padding:0 4px;">'
                   f'{_esc(str(show))}</span>' if count != '' else '')
     return (f'<span style="position:relative;display:inline-flex;align-items:center;'
             f'justify-content:center;width:36px;height:36px;">'
-            f'<span style="font-size:1.3rem;">{icon}</span>{badge_html}</span>')
+            f'<span style="font-size:1.3rem;">{_cv_esc(icon)}</span>{badge_html}</span>')
 
 _RENDERERS['notification_badge'] = _render_notification_badge
 
@@ -13364,7 +13404,7 @@ def _render_pipeline(b: dict) -> str:
         steps_html += (f'<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">'
                        f'<div style="width:36px;height:36px;border-radius:50%;background:{_esc(accent)};'
                        f'color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;'
-                       f'font-size:0.82rem;">{icon or str(i+1)}</div>'
+                       f'font-size:0.82rem;">{_cv_esc(icon or str(i+1))}</div>'
                        f'<span style="font-size:0.72rem;color:#374151;text-align:center;max-width:70px;">'
                        f'{_esc(label)}</span></div>')
         if i < len(steps) - 1:
@@ -13382,7 +13422,7 @@ def _render_poll_block(b: dict) -> str:
     opts_html = ''
     for i, opt in enumerate(options):
         text = opt if isinstance(opt, str) else opt.get('text', str(opt))
-        oid = f'{uid}_{i}'
+        oid = f'{uid}_{_cv_esc(i)}'
         opts_html += (f'<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;'
                       f'border:1.5px solid #e5e7eb;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;margin-bottom:6px;font-size:0.88rem;">'
                       f'<input type="radio" name="{uid}" id="{oid}" style="accent-color:#6366f1;">'
@@ -13432,19 +13472,19 @@ def _render_pricing_card(b: dict) -> str:
     feat_html = ''.join(f'<li style="display:flex;gap:8px;font-size:0.86rem;padding:4px 0;color:#374151;">'
                         f'<span style="color:#10b981;">✓</span>{_esc(f if isinstance(f,str) else f.get("text",""))}</li>'
                         for f in features)
-    border = f'2px solid {accent}' if highlighted else '1px solid #e5e7eb'
+    border = f'2px solid {_cv_esc(accent)}' if highlighted else '1px solid #e5e7eb'
     badge = (f'<div style="text-align:center;margin-bottom:10px;">'
-             f'<span style="background:{accent};color:#fff;font-size:0.72rem;font-weight:700;'
+             f'<span style="background:{_cv_esc(accent)};color:#fff;font-size:0.72rem;font-weight:700;'
              f'padding:2px 12px;border-radius:100px;">Most Popular</span></div>' if highlighted else '')
     return (f'<div style="border:{border};border-radius:14px;padding:24px;max-width:280px;'
-            f'margin:1rem auto;{"background:"+accent+"08;" if highlighted else ""}">'
+            f'margin:1rem auto;{"background:"+_cv_esc(accent)+"08;" if highlighted else ""}">'
             f'{badge}'
-            f'<div style="font-weight:800;font-size:1rem;color:{accent};">{_esc(name)}</div>'
+            f'<div style="font-weight:800;font-size:1rem;color:{_cv_esc(accent)};">{_esc(name)}</div>'
             f'<div style="margin:10px 0;">'
             f'<span style="font-size:2rem;font-weight:900;color:#111827;">{_esc(str(price))}</span>'
             f'<span style="font-size:0.82rem;color:#6b7280;">{_esc(period)}</span></div>'
             f'<ul style="list-style:none;padding:0;margin:0 0 16px;">{feat_html}</ul>'
-            f'<a href="{_esc(cta_url)}" style="display:block;text-align:center;background:{accent};color:#fff;'
+            f'<a href="{_esc(cta_url)}" style="display:block;text-align:center;background:{_cv_esc(accent)};color:#fff;'
             f'text-decoration:none;padding:10px;border-radius:8px;font-weight:700;font-size:0.88rem;">{_esc(cta)}</a>'
             f'</div>')
 
@@ -13511,16 +13551,16 @@ def _render_quiz_block(b: dict) -> str:
     for i, opt in enumerate(options):
         text = opt if isinstance(opt, str) else opt.get('text', str(opt))
         is_correct = i == correct
-        oid = f'{uid}_{i}'
+        oid = f'{uid}_{_cv_esc(i)}'
         reveal_style = f'border-color:{"#16a34a" if is_correct else "#dc2626"};background:{"#f0fdf4" if is_correct else "#fef2f2"};'
         opts_html += (f'<label id="opt{oid}" style="display:flex;align-items:center;gap:10px;padding:9px 14px;'
                       f'border:1.5px solid #e5e7eb;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;margin-bottom:6px;'
                       f'font-size:0.88rem;">'
-                      f'<input type="radio" name="{uid}" value="{i}" '
+                      f'<input type="radio" name="{uid}" value="{_cv_esc(i)}" '
                       f'onchange="(function(el,correct){{var opts=document.querySelectorAll(\'[id^=opt{uid}_]\');'
                       f'opts.forEach(function(o,j){{o.style.borderColor=j==correct?\'#16a34a\':\'#dc2626\';'
                       f'o.style.background=j==correct?\'#f0fdf4\':\'#fef2f2\';}});'
-                      f'var ex=document.getElementById(\'ex{uid}\');if(ex)ex.style.display=\'block\';}})(this,{correct})" '
+                      f'var ex=document.getElementById(\'ex{uid}\');if(ex)ex.style.display=\'block\';}})(this,{_cv_esc(correct)})" '
                       f'style="accent-color:#6366f1;">'
                       f'<span>{_esc(text)}</span></label>')
     exp_html = (f'<div id="ex{uid}" style="display:none;margin-top:8px;padding:10px 14px;'
@@ -13591,7 +13631,7 @@ def _render_repo_links(b: dict) -> str:
         items += (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
                   f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;'
                   f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;color:#374151;'
-                  f'font-size:0.84rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:4px;">{icon} {_esc(label)}</a>')
+                  f'font-size:0.84rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:4px;">{_cv_esc(icon)} {_esc(label)}</a>')
     return f'<div style="margin:1rem 0;">{items}</div>'
 
 _RENDERERS['repo_links'] = _render_repo_links
@@ -13611,7 +13651,7 @@ def _render_resources_list(b: dict) -> str:
         rows += (f'<li style="display:flex;align-items:center;justify-content:space-between;'
                  f'padding:7px 0;border-bottom:1px solid #f3f4f6;">'
                  f'<a href="{_esc(url)}" target="_blank" rel="noopener" style="color:#7c3aed;'
-                 f'text-decoration:none;font-size:0.88rem;">{icon} {_esc(label)}</a>'
+                 f'text-decoration:none;font-size:0.88rem;">{_cv_esc(icon)} {_esc(label)}</a>'
                  f'{tag_html}</li>')
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;">'
             f'<div style="font-weight:700;margin-bottom:8px;">📚 {_esc(title)}</div>'
@@ -13762,7 +13802,7 @@ def _render_star_rating_display(b: dict) -> str:
     return (f'<div style="display:flex;align-items:center;gap:8px;">'
             f'<span>{stars}</span>'
             f'<span style="font-weight:700;color:#111827;">{rating:.1f}</span>'
-            f'{"<span style=font-size:0.82rem;color:#9ca3af;>("+str(reviews)+" reviews)</span>" if reviews else ""}'
+            f'{"<span style=font-size:0.82rem;color:#9ca3af;>("+_cv_esc(str(reviews))+" reviews)</span>" if reviews else ""}'
             f'{"<span style=font-size:0.84rem;color:#6b7280;>"+_esc(label)+"</span>" if label else ""}'
             f'</div>')
 
@@ -13863,10 +13903,10 @@ def _render_tab_bar(b: dict) -> str:
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#6366f1')
     css = (f'<style>#{uid} input{{display:none;}}'
-           + ''.join(f'#{uid} #t{uid}_{i}:checked~div label:nth-child({i+1}){{border-bottom-color:{accent};color:{accent};font-weight:700;}}'
+           + ''.join(f'#{uid} #t{uid}_{i}:checked~div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};font-weight:700;}}'
                      for i in range(len(tabs)))
            + '</style>')
-    labels = ''.join(f'<label for="t{uid}_{i}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
+    labels = ''.join(f'<label for="t{uid}_{_cv_esc(i)}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
                      f'color:#6b7280;border-bottom:2px solid transparent;margin-bottom:-2px;">'
                      f'{_esc(t.get("label", t) if isinstance(t, dict) else str(t))}</label>'
                      for i, t in enumerate(tabs))
@@ -13921,8 +13961,8 @@ def _render_tag_cloud(b: dict) -> str:
             size = 0.72 + weight * 0.12
         else:
             text, size = str(tag), 0.84
-        items += (f'<span style="display:inline-block;padding:3px 10px;background:{accent}12;'
-                  f'color:{accent};border:1px solid {accent}30;border-radius:100px;font-size:{size:.2f}rem;'
+        items += (f'<span style="display:inline-block;padding:3px 10px;background:{_cv_esc(accent)}12;'
+                  f'color:{_cv_esc(accent)};border:1px solid {_cv_esc(accent)}30;border-radius:100px;font-size:{size:.2f}rem;'
                   f'font-weight:600;margin:3px;">{_esc(text)}</span>')
     return f'<div style="margin:1rem 0;display:flex;flex-wrap:wrap;gap:4px;">{items}</div>'
 
@@ -13939,7 +13979,7 @@ def _render_tech_stack(b: dict) -> str:
         desc = item.get('description', '') if isinstance(item, dict) else ''
         cards += (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;'
                   f'display:flex;align-items:center;gap:10px;">'
-                  f'<span style="font-size:1.2rem;">{icon}</span>'
+                  f'<span style="font-size:1.2rem;">{_cv_esc(icon)}</span>'
                   f'<div><div style="font-weight:700;font-size:0.85rem;">{_esc(name)}</div>'
                   f'{"<div style=font-size:0.75rem;color:#9ca3af;>"+_esc(desc)+"</div>" if desc else ""}'
                   f'</div></div>')
@@ -13999,7 +14039,7 @@ def _render_time_estimate(b: dict) -> str:
     icon = b.get('icon', '⏱')
     return (f'<div style="display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;'
             f'color:#9ca3af;padding:4px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;">'
-            f'{icon} <span style="font-weight:600;color:#374151;">{_esc(str(estimate))}</span> {_esc(label)}</div>')
+            f'{_cv_esc(icon)} <span style="font-weight:600;color:#374151;">{_esc(str(estimate))}</span> {_esc(label)}</div>')
 
 _RENDERERS['time_estimate'] = _render_time_estimate
 
@@ -14017,7 +14057,7 @@ def _render_timeline(b: dict) -> str:
         items += (f'<div style="position:relative;padding-left:40px;margin-bottom:20px;">'
                   f'<div style="position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;'
                   f'background:{_esc(accent)};color:#fff;display:flex;align-items:center;justify-content:center;'
-                  f'font-size:0.7rem;">{icon}</div>'
+                  f'font-size:0.7rem;">{_cv_esc(icon)}</div>'
                   f'<div style="position:absolute;left:12px;top:26px;width:2px;'
                   f'background:{_esc(accent)}44;height:calc(100% + 8px);"></div>'
                   f'{"<div style=font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);margin-bottom:2px;>"+_esc(date)+"</div>" if date else ""}'
@@ -14044,7 +14084,7 @@ def _render_toast_notification(b: dict) -> str:
     return (f'<div id="{uid}" style="display:flex;align-items:center;gap:10px;background:{bg};'
             f'border:1px solid {bc};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 16px;font-size:0.88rem;'
             f'margin:0.75rem 0;position:relative;">'
-            f'<span>{icon}</span><span>{_md_inline(text)}</span>'
+            f'<span>{_cv_esc(icon)}</span><span>{_md_inline(text)}</span>'
             f'<button onclick="document.getElementById(\'{uid}\').style.display=\'none\'" '
             f'style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;'
             f'border:none;cursor:pointer;color:#6b7280;font-size:1rem;">×</button></div>')
@@ -14197,7 +14237,7 @@ def _render_call_mood_board(b: dict) -> str:
         items += (f'<label style="display:flex;flex-direction:column;align-items:center;gap:4px;'
                   f'cursor:pointer;padding:8px;">'
                   f'<input type="radio" name="{uid}" style="display:none;">'
-                  f'<span style="font-size:2rem;">{emoji}</span>'
+                  f'<span style="font-size:2rem;">{_cv_esc(emoji)}</span>'
                   f'{"<span style=font-size:0.72rem;color:#6b7280;>"+_esc(label)+"</span>" if label else ""}'
                   f'</label>')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:1.5rem 0;">'
@@ -14293,7 +14333,7 @@ def _render_customer_logo_grid(b: dict) -> str:
     title_html = (f'<div style="text-align:center;font-size:0.84rem;color:#9ca3af;margin-bottom:12px;">'
                   f'{_esc(title)}</div>' if title else '')
     return (f'<div style="margin:1.5rem 0;">{title_html}'
-            f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:0;'
+            f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:0;'
             f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
             f'{items}</div></div>')
 
@@ -14363,7 +14403,7 @@ def _render_github_repo_card(b: dict) -> str:
     description = b.get('description', '')
     stars = b.get('stars', '')
     lang = b.get('language', '')
-    url = b.get('url') or (f'https://github.com/{owner}/{repo}' if owner and repo else '#')
+    url = b.get('url') or (f'https://github.com/{_cv_esc(owner)}/{_cv_esc(repo)}' if owner and repo else '#')
     return (f'<div style="border:1px solid #d0d7de;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 18px;'
             f'max-width:340px;margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
@@ -14372,7 +14412,7 @@ def _render_github_repo_card(b: dict) -> str:
             f'text-decoration:none;font-size:0.9rem;">{_esc(owner)}/{_esc(repo)}</a></div>'
             f'{"<p style=font-size:0.84rem;color:#6b7280;margin:0 0 10px;>"+_esc(description)+"</p>" if description else ""}'
             f'<div style="display:flex;gap:14px;font-size:0.78rem;color:#6b7280;">'
-            f'{"<span>⭐ "+str(stars)+"</span>" if stars else ""}'
+            f'{"<span>⭐ "+_cv_esc(str(stars))+"</span>" if stars else ""}'
             f'{"<span>🔵 "+_esc(lang)+"</span>" if lang else ""}'
             f'</div></div>')
 
@@ -14391,7 +14431,7 @@ def _render_heatmap_calendar(b: dict) -> str:
     for date_str, val in list(data.items())[:52*7]:
         pct = val / max_val if max_val else 0
         bg = f'hsla({220+pct*100:.0f},70%,{90-pct*50:.0f}%,1)'
-        cells += (f'<div title="{_esc(date_str)}: {val}" style="width:12px;height:12px;border-radius:2px;'
+        cells += (f'<div title="{_esc(date_str)}: {_cv_esc(val)}" style="width:12px;height:12px;border-radius:2px;'
                   f'background:{bg};flex-shrink:0;"></div>')
     title_html = f'<div style="font-size:0.84rem;font-weight:700;margin-bottom:6px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
@@ -14411,8 +14451,8 @@ def _render_image_hotspots(b: dict) -> str:
         y = hs.get('y', 50)
         label = hs.get('label', '')
         desc = hs.get('description', '')
-        sid = f'{uid}_s{i}'
-        spots += (f'<div style="position:absolute;left:{x}%;top:{y}%;transform:translate(-50%,-50%);z-index:2;">'
+        sid = f'{uid}_s{_cv_esc(i)}'
+        spots += (f'<div style="position:absolute;left:{_cv_esc(x)}%;top:{_cv_esc(y)}%;transform:translate(-50%,-50%);z-index:2;">'
                   f'<button onclick="var el=document.getElementById(\'{sid}\');el.style.display=el.style.display===\'block\'?\'none\':\'block\'" '
                   f'style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;'
                   f'cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">{i+1}</button>'
@@ -14618,12 +14658,12 @@ def _render_scatter_trend(b: dict) -> str:
     pad = 20
     def tx(x): return pad + (x - x_min) / (x_max - x_min) * (width - 2 * pad) if x_max != x_min else pad
     def ty(y): return height - pad - (y - y_min) / (y_max - y_min) * (height - 2 * pad) if y_max != y_min else height // 2
-    circles = ''.join(f'<circle cx="{tx(p.get("x",0)):.1f}" cy="{ty(p.get("y",0)):.1f}" r="4" fill="{accent}" opacity="0.75"/>'
+    circles = ''.join(f'<circle cx="{tx(p.get("x",0)):.1f}" cy="{ty(p.get("y",0)):.1f}" r="4" fill="{_cv_esc(accent)}" opacity="0.75"/>'
                       for p in points if isinstance(p, dict))
     title_html = f'<div style="font-size:0.84rem;font-weight:700;margin-bottom:6px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
-            f'<svg width="{width}" height="{height}" style="overflow:visible;">'
-            f'<rect x="0" y="0" width="{width}" height="{height}" fill="#f9fafb" rx="6"/>'
+            f'<svg width="{_cv_esc(width)}" height="{_cv_esc(height)}" style="overflow:visible;">'
+            f'<rect x="0" y="0" width="{_cv_esc(width)}" height="{_cv_esc(height)}" fill="#f9fafb" rx="6"/>'
             f'{circles}'
             f'</svg>'
             f'{"<div style=font-size:0.75rem;text-align:center;color:#9ca3af;>"+_esc(x_label)+"</div>" if x_label else ""}'
@@ -14665,9 +14705,9 @@ def _render_animated_counter(b: dict) -> str:
     label = b.get('label', '')
     duration = b.get('duration', 2000)
     return (f'<div style="text-align:center;padding:16px;">'
-            f'<div id="{uid}" style="font-size:2.5rem;font-weight:900;color:#111827;">{prefix}0{suffix}</div>'
+            f'<div id="{uid}" style="font-size:2.5rem;font-weight:900;color:#111827;">{_cv_esc(prefix)}0{_cv_esc(suffix)}</div>'
             f'{"<div style=font-size:0.84rem;color:#9ca3af;margin-top:4px;>"+_esc(label)+"</div>" if label else ""}'
-            f'<script>(function(){{var el=document.getElementById("{uid}"),start=0,target={target},dur={duration},step=target/dur*16;'
+            f'<script>(function(){{var el=document.getElementById("{uid}"),start=0,target={_cv_esc(target)},dur={_cv_esc(duration)},step=target/dur*16;'
             f'var iv=setInterval(function(){{start=Math.min(start+step,target);el.textContent="{_esc(prefix)}"+Math.round(start)+"{_esc(suffix)}";if(start>=target)clearInterval(iv);}},16);}})();</script>'
             f'</div>')
 
@@ -14694,14 +14734,14 @@ def _render_api_reference(b: dict) -> str:
                    f'<th style="text-align:left;padding:6px 10px;font-size:0.72rem;color:#9ca3af;text-transform:uppercase;">Type</th>'
                    f'<th style="text-align:left;padding:6px 10px;font-size:0.72rem;color:#9ca3af;text-transform:uppercase;">Description</th></tr></thead>'
                    f'<tbody>{param_rows}</tbody></table>' if param_rows else '')
-    resp_str = _j.dumps(response, indent=2) if isinstance(response, (dict, list)) else str(response)
+    resp_str = _js_json(response, indent=2) if isinstance(response, (dict, list)) else str(response)
     resp_html = (f'<pre style="margin:8px 0 0;padding:10px;background:#0f1117;border-radius:6px;'
                  f'font-size:0.78rem;color:#a6e3a1;overflow-x:auto;">{resp_str.replace("<","&lt;").replace(">","&gt;")}</pre>'
                  if response else '')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;">'
             f'<div style="padding:10px 14px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
             f'display:flex;align-items:center;gap:10px;">'
-            f'<span style="background:{mc};color:#fff;font-size:0.72rem;font-weight:800;padding:2px 8px;border-radius:4px;">{method}</span>'
+            f'<span style="background:{mc};color:#fff;font-size:0.72rem;font-weight:800;padding:2px 8px;border-radius:4px;">{_cv_esc(method)}</span>'
             f'<code style="font-family:monospace;font-size:0.88rem;color:#374151;">{_esc(path)}</code></div>'
             f'{"<p style=padding:10px 14px 4px;font-size:0.88rem;color:#374151;margin:0;>"+_esc(description)+"</p>" if description else ""}'
             f'{"<div style=padding:0 14px 10px;>"+params_html+"</div>" if params_html else ""}'
@@ -14716,11 +14756,11 @@ def _render_app_download_badge(b: dict) -> str:
     url = b.get('url', '#')
     icons = {'ios': '🍎 Download on the App Store', 'android': '🤖 Get it on Google Play',
              'windows': '🪟 Get it from Microsoft', 'macos': '🖥 Download for Mac'}
-    label = b.get('label') or icons.get(platform, f'Download ({platform})')
+    label = b.get('label') or icons.get(platform, f'Download ({_cv_esc(platform)})')
     bgs = {'ios': '#000', 'android': '#1a1a2e', 'windows': '#0078d4', 'macos': '#1d1d1f'}
     bg = b.get('bg') or bgs.get(platform, '#111827')
     return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
-            f'style="display:inline-flex;align-items:center;gap:8px;background:{bg};color:#fff;'
+            f'style="display:inline-flex;align-items:center;gap:8px;background:{_cv_esc(bg)};color:#fff;'
             f'text-decoration:none;padding:10px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.84rem;font-weight:700;'
             f'margin:0.5rem 0;">{_esc(label)}</a>')
 
@@ -14829,7 +14869,7 @@ def _render_card_grid(b: dict) -> str:
         icon = card.get('icon', '')
         url = card.get('url', '')
         accent = card.get('accent', '#6366f1')
-        content = (f'<div style="font-size:1.4rem;margin-bottom:8px;">{icon}</div>' if icon else '')
+        content = (f'<div style="font-size:1.4rem;margin-bottom:8px;">{_cv_esc(icon)}</div>' if icon else '')
         content += f'<div style="font-weight:700;color:#111827;font-size:0.9rem;">{_esc(title)}</div>'
         if text:
             content += f'<div style="font-size:0.84rem;color:#6b7280;margin-top:4px;">{_md_inline(text)}</div>'
@@ -14839,7 +14879,7 @@ def _render_card_grid(b: dict) -> str:
             items += f'<a href="{_esc(url)}" style="{cell_style}">{content}</a>'
         else:
             items += f'<div style="{cell_style}">{content}</div>'
-    return (f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);'
+    return (f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);'
             f'gap:{_esc(gap)};margin:1.5rem 0;">{items}</div>')
 
 _RENDERERS['card_grid'] = _render_card_grid
@@ -14891,14 +14931,14 @@ def _render_chart_bar(b: dict) -> str:
         label = d.get('label', '') if isinstance(d, dict) else str(d)
         pct = val / max_val * 100
         bars += (f'<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0;">'
-                 f'<div style="font-size:0.72rem;font-weight:700;color:#374151;">{val}</div>'
+                 f'<div style="font-size:0.72rem;font-weight:700;color:#374151;">{_cv_esc(val)}</div>'
                  f'<div style="width:100%;background:{_esc(color)};border-radius:4px 4px 0 0;'
                  f'height:{pct/100*height:.0f}px;min-height:2px;"></div>'
                  f'<div style="font-size:0.68rem;color:#9ca3af;text-align:center;overflow:hidden;'
                  f'text-overflow:ellipsis;white-space:nowrap;max-width:60px;">{_esc(str(label))}</div></div>')
     title_html = f'<div style="font-size:0.84rem;font-weight:700;margin-bottom:8px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
-            f'<div style="display:flex;align-items:flex-end;gap:4px;height:{height}px;'
+            f'<div style="display:flex;align-items:flex-end;gap:4px;height:{_cv_esc(height)}px;'
             f'border-bottom:1px solid #e5e7eb;padding:0 4px;">{bars}</div></div>')
 
 _RENDERERS['chart_bar'] = _render_chart_bar
@@ -14921,12 +14961,12 @@ def _render_chart_line(b: dict) -> str:
     def tx(i): return pad + i / max(n-1, 1) * (width - 2*pad)
     def ty(v): return height - pad - (v - min_v) / rng * (height - 2*pad)
     points = ' '.join(f'{tx(i):.1f},{ty(v):.1f}' for i, v in enumerate(vals))
-    circles = ''.join(f'<circle cx="{tx(i):.1f}" cy="{ty(v):.1f}" r="4" fill="{color}"/>' for i, v in enumerate(vals))
+    circles = ''.join(f'<circle cx="{tx(i):.1f}" cy="{ty(v):.1f}" r="4" fill="{_cv_esc(color)}"/>' for i, v in enumerate(vals))
     title_html = f'<div style="font-size:0.84rem;font-weight:700;margin-bottom:6px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
-            f'<svg width="{width}" height="{height}">'
-            f'<rect width="{width}" height="{height}" fill="#f9fafb" rx="6"/>'
-            f'<polyline points="{points}" fill="none" stroke="{color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<svg width="{_cv_esc(width)}" height="{_cv_esc(height)}">'
+            f'<rect width="{_cv_esc(width)}" height="{_cv_esc(height)}" fill="#f9fafb" rx="6"/>'
+            f'<polyline points="{points}" fill="none" stroke="{_cv_esc(color)}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
             f'{circles}'
             f'</svg></div>')
 
@@ -14963,15 +15003,15 @@ def _render_chart_donut(b: dict) -> str:
         large = 1 if sweep > 180 else 0
         slices += (f'<path d="M{x1:.1f},{y1:.1f} A{r:.1f},{r:.1f} 0 {large},1 {x2:.1f},{y2:.1f}'
                    f' L{xi2:.1f},{yi2:.1f} A{r_inner:.1f},{r_inner:.1f} 0 {large},0 {xi1:.1f},{yi1:.1f} Z"'
-                   f' fill="{color}"/>')
+                   f' fill="{_cv_esc(color)}"/>')
         legend += (f'<div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">'
-                   f'<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:{color};flex-shrink:0;"></span>'
-                   f'{_esc(str(label))} ({val})</div>')
+                   f'<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:{_cv_esc(color)};flex-shrink:0;"></span>'
+                   f'{_esc(str(label))} ({_cv_esc(val)})</div>')
         angle += sweep
     title_html = f'<div style="font-size:0.84rem;font-weight:700;margin-bottom:8px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
             f'<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
-            f'<svg width="{size}" height="{size}">{slices}</svg>'
+            f'<svg width="{_cv_esc(size)}" height="{_cv_esc(size)}">{slices}</svg>'
             f'<div style="display:flex;flex-direction:column;gap:5px;">{legend}</div>'
             f'</div></div>')
 
@@ -15091,12 +15131,12 @@ def _render_emoji_reaction(b: dict) -> str:
         eid = f'{uid}_{_wa_uid(b)}'
         buttons += (f'<button id="{eid}" onclick="(function(el,e){{var c=parseInt(el.dataset.count||0)+1;'
                     f'el.dataset.count=c;el.querySelector(\'.cnt\').textContent=c;el.style.background=\'#ede9fe\';}})('
-                    f'document.getElementById(\'{eid}\'),\'{emoji}\')" '
-                    f'data-count="{cnt}" '
+                    f'document.getElementById(\'{eid}\'),\'{_cv_esc(emoji)}\')" '
+                    f'data-count="{_cv_esc(cnt)}" '
                     f'style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;'
                     f'border:1.5px solid #e5e7eb;border-radius:100px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);cursor:pointer;'
                     f'font-size:0.85rem;">'
-                    f'{emoji} <span class="cnt">{cnt}</span></button>')
+                    f'{_cv_esc(emoji)} <span class="cnt">{_cv_esc(cnt)}</span></button>')
     return f'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:1rem 0;">{buttons}</div>'
 
 _RENDERERS['emoji_reaction'] = _render_emoji_reaction
@@ -15117,10 +15157,10 @@ def _render_event_card(b: dict) -> str:
             f'{img_html}'
             f'<div style="padding:14px 16px;">'
             f'<div style="font-weight:800;font-size:0.95rem;color:#111827;margin-bottom:6px;">{_esc(title)}</div>'
-            f'{"<div style=font-size:0.82rem;color:"+accent+";font-weight:600;margin-bottom:2px;>📅 "+_esc(date)+("  "+_esc(time) if time else "")+"</div>" if date else ""}'
+            f'{"<div style=font-size:0.82rem;color:"+_cv_esc(accent)+";font-weight:600;margin-bottom:2px;>📅 "+_esc(date)+("  "+_esc(time) if time else "")+"</div>" if date else ""}'
             f'{"<div style=font-size:0.82rem;color:#6b7280;margin-bottom:8px;>📍 "+_esc(location)+"</div>" if location else ""}'
             f'{"<p style=font-size:0.84rem;color:#374151;margin:0 0 10px;>"+_md_inline(description)+"</p>" if description else ""}'
-            f'<a href="{_esc(url)}" style="display:inline-block;background:{accent};color:#fff;'
+            f'<a href="{_esc(url)}" style="display:inline-block;background:{_cv_esc(accent)};color:#fff;'
             f'text-decoration:none;padding:7px 16px;border-radius:6px;font-size:0.84rem;font-weight:700;">Register</a>'
             f'</div></div>')
 
@@ -15138,7 +15178,7 @@ def _render_feature_section(b: dict) -> str:
         name = feat.get('title') or feat.get('name', '') if isinstance(feat, dict) else str(feat)
         desc = feat.get('description') or feat.get('text', '') if isinstance(feat, dict) else ''
         items += (f'<div style="display:flex;gap:12px;">'
-                  f'<span style="font-size:1.3rem;flex-shrink:0;">{icon}</span>'
+                  f'<span style="font-size:1.3rem;flex-shrink:0;">{_cv_esc(icon)}</span>'
                   f'<div><div style="font-weight:700;color:#111827;font-size:0.9rem;margin-bottom:4px;">{_esc(name)}</div>'
                   f'{"<div style=font-size:0.85rem;color:#6b7280;>"+_md_inline(desc)+"</div>" if desc else ""}'
                   f'</div></div>')
@@ -15190,7 +15230,7 @@ def _render_hero_section(b: dict) -> str:
             f'text-align:center;">'
             f'<h1 style="font-size:2.2rem;font-weight:900;color:#111827;margin:0 0 12px;line-height:1.15;">{_esc(title)}</h1>'
             f'{"<p style=font-size:1.05rem;color:#6b7280;margin:0 0 20px;max-width:560px;margin-left:auto;margin-right:auto;>"+_esc(subtitle)+"</p>" if subtitle else ""}'
-            f'{"<a href="+chr(34)+_esc(cta_url)+chr(34)+" style=display:inline-block;background:"+accent+";color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:800;font-size:0.95rem;>"+_esc(cta)+"</a>" if cta else ""}'
+            f'{"<a href="+chr(34)+_esc(cta_url)+chr(34)+" style=display:inline-block;background:"+_cv_esc(accent)+";color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:800;font-size:0.95rem;>"+_esc(cta)+"</a>" if cta else ""}'
             f'{"<div style=margin-top:24px;>"+img_html+"</div>" if img_html else ""}'
             f'</div>')
 
@@ -15202,7 +15242,7 @@ def _render_icon(b: dict) -> str:
     size = b.get('size', '1.5rem')
     color = b.get('color', 'inherit')
     emoji = b.get('emoji') or name
-    return f'<span style="font-size:{_esc(str(size))};color:{_esc(color)};display:inline-block;">{emoji}</span>'
+    return f'<span style="font-size:{_esc(str(size))};color:{_esc(color)};display:inline-block;">{_cv_esc(emoji)}</span>'
 
 _RENDERERS['icon'] = _render_icon
 
@@ -15218,10 +15258,10 @@ def _render_icon_grid(b: dict) -> str:
             emoji = icon.get('icon') or icon.get('emoji', '')
             label = icon.get('label', '')
         items += (f'<div style="text-align:center;padding:10px;">'
-                  f'<div style="font-size:1.6rem;">{emoji}</div>'
+                  f'<div style="font-size:1.6rem;">{_cv_esc(emoji)}</div>'
                   f'{"<div style=font-size:0.72rem;color:#6b7280;margin-top:4px;>"+_esc(label)+"</div>" if label else ""}'
                   f'</div>')
-    return (f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:4px;margin:1rem 0;">'
+    return (f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:4px;margin:1rem 0;">'
             f'{items}</div>')
 
 _RENDERERS['icon_grid'] = _render_icon_grid
@@ -15235,9 +15275,9 @@ def _render_info_card(b: dict) -> str:
     return (f'<div style="border:1px solid {_esc(accent)}40;border-radius:10px;padding:14px 18px;'
             f'background:{_esc(accent)}08;margin:1rem 0;">'
             f'<div style="display:flex;align-items:flex-start;gap:10px;">'
-            f'<span style="font-size:1.2rem;flex-shrink:0;">{icon}</span>'
+            f'<span style="font-size:1.2rem;flex-shrink:0;">{_cv_esc(icon)}</span>'
             f'<div>'
-            f'{"<div style=font-weight:700;color:"+accent+";margin-bottom:4px;>"+_esc(title)+"</div>" if title else ""}'
+            f'{"<div style=font-weight:700;color:"+_cv_esc(accent)+";margin-bottom:4px;>"+_esc(title)+"</div>" if title else ""}'
             f'<div style="font-size:0.88rem;color:#374151;">{_md_inline(text)}</div>'
             f'</div></div></div>')
 
@@ -15283,7 +15323,7 @@ def _render_leaderboard(b: dict) -> str:
         rows += (f'<tr style="background:{"#fffbf0" if rank<=3 else "#fff" if i%2==0 else "#f9fafb"};">'
                  f'<td style="padding:8px 12px;text-align:center;">{medal}</td>'
                  f'<td style="padding:8px 12px;">{av_html} <span style="font-size:0.88rem;font-weight:600;">{_esc(name)}</span></td>'
-                 f'<td style="padding:8px 12px;text-align:right;font-weight:700;font-size:0.9rem;">{score}</td></tr>')
+                 f'<td style="padding:8px 12px;text-align:right;font-weight:700;font-size:0.9rem;">{_cv_esc(score)}</td></tr>')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:10px 14px;font-weight:700;border-bottom:1px solid #e5e7eb;background:#f9fafb;">🏆 {_esc(title)}</div>'
             f'<table style="width:100%;border-collapse:collapse;">'
@@ -15358,10 +15398,10 @@ def _render_mini_chart(b: dict) -> str:
     def tx(i): return pad + i / max(n - 1, 1) * (width - 2 * pad)
     def ty(v): return height - pad - (v - mn) / rng * (height - 2 * pad)
     pts = ' '.join(f'{tx(i):.1f},{ty(v):.1f}' for i, v in enumerate(vals))
-    fill_pts = f'0,{height} ' + pts + f' {width},{height}'
-    return (f'<svg width="{width}" height="{height}" style="vertical-align:middle;overflow:visible;">'
-            f'<polygon points="{fill_pts}" fill="{color}" opacity="0.15"/>'
-            f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="1.5"/>'
+    fill_pts = f'0,{_cv_esc(height)} ' + pts + f' {_cv_esc(width)},{_cv_esc(height)}'
+    return (f'<svg width="{_cv_esc(width)}" height="{_cv_esc(height)}" style="vertical-align:middle;overflow:visible;">'
+            f'<polygon points="{fill_pts}" fill="{_cv_esc(color)}" opacity="0.15"/>'
+            f'<polyline points="{pts}" fill="none" stroke="{_cv_esc(color)}" stroke-width="1.5"/>'
             f'</svg>')
 
 _RENDERERS['mini_chart'] = _render_mini_chart
@@ -15431,7 +15471,7 @@ def _render_progress_circle(b: dict) -> str:
     return (f'<div style="display:inline-flex;flex-direction:column;align-items:center;gap:6px;">'
             f'<svg width="{size}" height="{size}">'
             f'<circle cx="{center:.1f}" cy="{center:.1f}" r="{r:.1f}" fill="none" stroke="#e5e7eb" stroke-width="8"/>'
-            f'<circle cx="{center:.1f}" cy="{center:.1f}" r="{r:.1f}" fill="none" stroke="{color}" stroke-width="8"'
+            f'<circle cx="{center:.1f}" cy="{center:.1f}" r="{r:.1f}" fill="none" stroke="{_cv_esc(color)}" stroke-width="8"'
             f' stroke-linecap="round" stroke-dasharray="{dash:.1f} {circ:.1f}"'
             f' transform="rotate(-90 {center:.1f} {center:.1f})"/>'
             f'<text x="{center:.1f}" y="{center:.1f}" text-anchor="middle" dominant-baseline="middle"'
@@ -15455,7 +15495,7 @@ def _render_progress_steps(b: dict) -> str:
         bg = accent if done or active else '#e5e7eb'
         col = '#fff' if done or active else '#9ca3af'
         items += (f'<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">'
-                  f'<div style="width:28px;height:28px;border-radius:50%;background:{bg};color:{col};'
+                  f'<div style="width:28px;height:28px;border-radius:50%;background:{_cv_esc(bg)};color:{col};'
                   f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;">'
                   f'{"✓" if done else str(i+1)}</div>'
                   f'<span style="font-size:0.7rem;color:{"#374151" if active or done else "#9ca3af"};'
@@ -15497,8 +15537,8 @@ def _render_range_slider(b: dict) -> str:
     return (f'<div style="margin:1rem 0;">'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:6px;">'
             f'{"<label style=font-size:0.82rem;font-weight:600;>"+_esc(label)+"</label>" if label else "<span></span>"}'
-            f'<span id="{uid}_v" style="font-size:0.84rem;font-weight:700;color:#6366f1;">{val}</span></div>'
-            f'<input type="range" id="{uid}" min="{min_v}" max="{max_v}" value="{val}" step="{step}" '
+            f'<span id="{uid}_v" style="font-size:0.84rem;font-weight:700;color:#6366f1;">{_cv_esc(val)}</span></div>'
+            f'<input type="range" id="{uid}" min="{_cv_esc(min_v)}" max="{_cv_esc(max_v)}" value="{_cv_esc(val)}" step="{_cv_esc(step)}" '
             f'oninput="document.getElementById(\'{uid}_v\').textContent=this.value" '
             f'style="width:100%;accent-color:#6366f1;"></div>')
 
@@ -15534,11 +15574,11 @@ def _render_service_card(b: dict) -> str:
     url = b.get('url', '#')
     accent = b.get('accent', '#6366f1')
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;max-width:280px;margin:1rem 0;">'
-            f'<div style="font-size:2rem;margin-bottom:10px;">{icon}</div>'
+            f'<div style="font-size:2rem;margin-bottom:10px;">{_cv_esc(icon)}</div>'
             f'<div style="font-weight:800;color:#111827;font-size:0.95rem;margin-bottom:6px;">{_esc(title)}</div>'
             f'{"<p style=font-size:0.85rem;color:#6b7280;margin:0 0 12px;>"+_md_inline(description)+"</p>" if description else ""}'
-            f'{"<div style=font-size:1.1rem;font-weight:900;color:"+accent+";margin-bottom:10px;>"+_esc(str(price))+"</div>" if price else ""}'
-            f'{"<a href="+chr(34)+_esc(url)+chr(34)+" style=display:inline-block;background:"+accent+";color:#fff;text-decoration:none;padding:7px 16px;border-radius:6px;font-weight:700;font-size:0.84rem;>"+_esc(cta)+"</a>" if cta else ""}'
+            f'{"<div style=font-size:1.1rem;font-weight:900;color:"+_cv_esc(accent)+";margin-bottom:10px;>"+_esc(str(price))+"</div>" if price else ""}'
+            f'{"<a href="+chr(34)+_esc(url)+chr(34)+" style=display:inline-block;background:"+_cv_esc(accent)+";color:#fff;text-decoration:none;padding:7px 16px;border-radius:6px;font-weight:700;font-size:0.84rem;>"+_esc(cta)+"</a>" if cta else ""}'
             f'</div>')
 
 _RENDERERS['service_card'] = _render_service_card
@@ -15578,7 +15618,7 @@ def _render_social_links(b: dict) -> str:
         icon = link.get('icon') or icons_map.get(platform, '🔗') if isinstance(link, dict) else '🔗'
         items += (f'<a href="{_esc(url)}" target="_blank" rel="noopener" title="{_esc(label)}" '
                   f'style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;'
-                  f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:1.1rem;text-decoration:none;">{icon}</a>')
+                  f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:1.1rem;text-decoration:none;">{_cv_esc(icon)}</a>')
     return f'<div style="display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0;">{items}</div>'
 
 _RENDERERS['social_links'] = _render_social_links
@@ -15596,12 +15636,12 @@ def _render_stats_grid(b: dict) -> str:
         is_up = s.get('is_up', None) if isinstance(s, dict) else None
         delta_col = '#10b981' if is_up else '#ef4444' if is_up is False else '#9ca3af'
         items += (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px;text-align:center;">'
-                  f'{"<div style=font-size:1.4rem;margin-bottom:4px;>"+icon+"</div>" if icon else ""}'
+                  f'{"<div style=font-size:1.4rem;margin-bottom:4px;>"+_cv_esc(icon)+"</div>" if icon else ""}'
                   f'<div style="font-size:1.6rem;font-weight:900;color:#111827;">{_esc(str(value))}</div>'
                   f'<div style="font-size:0.78rem;color:#9ca3af;margin-top:2px;">{_esc(label)}</div>'
                   f'{"<div style=font-size:0.78rem;color:"+delta_col+";font-weight:600;>"+("↑ " if is_up else "↓ " if is_up is False else "")+_esc(str(delta))+"</div>" if delta else ""}'
                   f'</div>')
-    return (f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:12px;margin:1.5rem 0;">'
+    return (f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:12px;margin:1.5rem 0;">'
             f'{items}</div>')
 
 _RENDERERS['stats_grid'] = _render_stats_grid
@@ -15612,7 +15652,7 @@ def _render_sticky_note(b: dict) -> str:
     color = b.get('color', '#fef08a')
     rotate = b.get('rotate', -1)
     return (f'<div style="display:inline-block;background:{_esc(color)};padding:14px 16px;'
-            f'border-radius:2px;transform:rotate({rotate}deg);'
+            f'border-radius:2px;transform:rotate({_cv_esc(rotate)}deg);'
             f'box-shadow:2px 3px 8px rgba(0,0,0,0.12);font-size:0.88rem;'
             f'font-family:cursive,sans-serif;max-width:200px;margin:1rem;'
             f'line-height:1.6;">{_md_inline(text)}</div>')
@@ -15654,17 +15694,17 @@ def _render_tabs(b: dict) -> str:
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#6366f1')
     css = (f'<style>#{uid} input{{display:none;}}'
-           + ''.join(f'#{uid} #tb{uid}_{i}:checked~.ta div label:nth-child({i+1}){{border-bottom-color:{accent};color:{accent};}}'
+           + ''.join(f'#{uid} #tb{uid}_{i}:checked~.ta div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};}}'
                      f'#{uid} #tb{uid}_{i}:checked~.tp .p{uid}_{i}{{display:block;}}'
                      for i in range(len(tabs)))
            + f'#{uid} .tp>div{{display:none;}}</style>')
     inputs = ''.join(f'<input type="radio" id="tb{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>'
                      for i in range(len(tabs)))
-    labels = ''.join(f'<label for="tb{uid}_{i}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
+    labels = ''.join(f'<label for="tb{uid}_{_cv_esc(i)}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
                      f'color:#6b7280;border-bottom:2px solid transparent;margin-bottom:-2px;">'
                      f'{_esc(t.get("label", t) if isinstance(t, dict) else str(t))}</label>'
                      for i, t in enumerate(tabs))
-    panels = ''.join(f'<div class="p{uid}_{i}" style="padding:14px;">'
+    panels = ''.join(f'<div class="p{uid}_{_cv_esc(i)}" style="padding:14px;">'
                      f'{_md_inline(t.get("content","") if isinstance(t, dict) else "")}</div>'
                      for i, t in enumerate(tabs))
     return (f'<div id="{uid}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
@@ -15702,7 +15742,7 @@ def _render_team_grid(b: dict) -> str:
             cards += content
     title_html = f'<div style="font-weight:700;margin-bottom:12px;font-size:1rem;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
-            f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:12px;">{cards}</div></div>')
+            f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:12px;">{cards}</div></div>')
 
 _RENDERERS['team_grid'] = _render_team_grid
 
@@ -15746,7 +15786,7 @@ def _render_ticker_tape(b: dict) -> str:
     return (f'<div style="overflow:hidden;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'padding:8px 0;margin:1rem 0;">'
             f'<style>@keyframes a2ui-ticker{uid}{{from{{transform:translateX(100%);}}to{{transform:translateX(-100%);}}}}'
-            f'#{uid}{{animation:a2ui-ticker{uid} {speed}s linear infinite;white-space:nowrap;display:inline-block;}}</style>'
+            f'#{uid}{{animation:a2ui-ticker{uid} {_cv_esc(speed)}s linear infinite;white-space:nowrap;display:inline-block;}}</style>'
             f'<div id="{uid}" style="font-size:0.84rem;padding:0 12px;">{content}</div></div>')
 
 _RENDERERS['ticker_tape'] = _render_ticker_tape
@@ -15794,7 +15834,7 @@ def _render_embed_codepen(b: dict) -> str:
     slug = b.get('slug') or b.get('url', '#').rstrip('/').split('/')[-1]
     user = b.get('user', '')
     height = b.get('height', '400px')
-    url = b.get('url') or (f'https://codepen.io/{user}/pen/{slug}' if user and slug else '#')
+    url = b.get('url') or (f'https://codepen.io/{_cv_esc(user)}/pen/{_cv_esc(slug)}' if user and slug else '#')
     title = b.get('title', 'CodePen Embed')
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:7px 12px;background:#1e1e2e;border-bottom:1px solid #333;'
@@ -15834,7 +15874,7 @@ _RENDERERS['embed_google_slides'] = _render_embed_google_slides
 
 def _render_embed_stackblitz(b: dict) -> str:
     project_id = b.get('project_id') or b.get('id', '')
-    url = b.get('url') or (f'https://stackblitz.com/edit/{project_id}?embed=1' if project_id else '#')
+    url = b.get('url') or (f'https://stackblitz.com/edit/{_cv_esc(project_id)}?embed=1' if project_id else '#')
     title = b.get('title', 'StackBlitz')
     height = b.get('height', '400px')
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
@@ -15890,7 +15930,7 @@ def _render_typewriter(b: dict) -> str:
     speed = b.get('speed', 80)
     loop = b.get('loop', True)
     cursor = b.get('cursor', '|')
-    texts_json = str(texts).replace("'", '"')
+    texts_json = _js_json([str(t) for t in texts] if isinstance(texts, list) else [str(texts)])
     return (f'<span id="{uid}" style="font-family:monospace;"></span>'
             f'<span style="animation:a2ui-blink 1s step-end infinite;">{_esc(cursor)}</span>'
             f'<style>@keyframes a2ui-blink{{50%{{opacity:0;}}}}</style>'
@@ -15900,7 +15940,7 @@ def _render_typewriter(b: dict) -> str:
             f'var txt=texts[ti];'
             f'if(!del){{el.textContent=txt.slice(0,++ci);if(ci>=txt.length){{del=true;ci=txt.length+10;}}}}'
             f'else{{ci--;if(ci<=0){{del=false;ci=0;ti={"(ti+1)%texts.length" if loop else "Math.min(ti+1,texts.length-1)"};}}el.textContent=txt.slice(0,ci);}}'
-            f'}},{speed});}})();</script>')
+            f'}},{_cv_esc(speed)});}})();</script>')
 
 _RENDERERS['typewriter'] = _render_typewriter
 
@@ -15945,8 +15985,8 @@ def _render_chart_radar(b: dict) -> str:
                       for i in range(n))
     title_html = f'<div style="font-size:0.84rem;font-weight:700;margin-bottom:6px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="margin:1.5rem 0;">{title_html}'
-            f'<svg width="{size}" height="{size}">{rings}'
-            f'<polygon points="{data_pts}" fill="{color}" opacity="0.25" stroke="{color}" stroke-width="2"/>'
+            f'<svg width="{_cv_esc(size)}" height="{_cv_esc(size)}">{rings}'
+            f'<polygon points="{data_pts}" fill="{_cv_esc(color)}" opacity="0.25" stroke="{_cv_esc(color)}" stroke-width="2"/>'
             f'{lbl_els}</svg></div>')
 
 _RENDERERS['chart_radar'] = _render_chart_radar
@@ -15968,7 +16008,7 @@ def _render_number_input(b: dict) -> str:
     return (f'<div style="margin:1rem 0;">'
             f'{"<label for="+chr(34)+uid+chr(34)+" style=display:block;font-size:0.82rem;font-weight:600;margin-bottom:4px;>"+_esc(label)+"</label>" if label else ""}'
             f'<input type="number" id="{uid}" value="{_esc(str(val))}" '
-            f'{"min="+str(min_v) if min_v != "" else ""} {"max="+str(max_v) if max_v != "" else ""} step="{step}" '
+            f'{"min="+_cv_esc(str(min_v)) if min_v != "" else ""} {"max="+_cv_esc(str(max_v)) if max_v != "" else ""} step="{_cv_esc(step)}" '
             f'style="border:1.5px solid #e5e7eb;border-radius:6px;padding:8px 12px;font-size:0.88rem;'
             f'max-width:160px;outline:none;"></div>')
 
@@ -16511,7 +16551,7 @@ def _render_carousel(b: dict) -> str:
             f'<style>#{cid}_s{i}:checked ~ .{cid}-inner .{cid}-track'
             f'{{transform:translateX(-{offset}%);}}\n'
             f'#{cid}_s{i}:checked ~ .{cid}-dots .{cid}-dot:nth-child({i})'
-            f'{{background:{accent};transform:scale(1.25);}}</style>'
+            f'{{background:{_cv_esc(accent)};transform:scale(1.25);}}</style>'
         )
 
     # Radio inputs
@@ -16527,12 +16567,12 @@ def _render_carousel(b: dict) -> str:
         label      = slide.get("label", "")
         sub        = slide.get("subtitle", "")
         label_html = (
-            f'<div class="{cid}-caption"><strong>{label}</strong>'
-            f'{"<span>" + sub + "</span>" if sub else ""}</div>'
+            f'<div class="{cid}-caption"><strong>{_cv_esc(label)}</strong>'
+            f'{"<span>" + _cv_esc(sub) + "</span>" if sub else ""}</div>'
         ) if label else ""
         slides_html += (
             f'<div class="{cid}-slide">'
-            f'<img src="{url}" alt="{label}" loading="lazy"/>'
+            f'<img src="{_cv_esc(url)}" alt="{_cv_esc(label)}" loading="lazy"/>'
             f'{label_html}'
             f'</div>'
         )
@@ -16599,7 +16639,7 @@ def _render_carousel(b: dict) -> str:
         for i in range(1, n + 1)
     )
 
-    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{caption}</p>' if caption else ""
+    caption_html = f'<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">{_cv_esc(caption)}</p>' if caption else ""
 
     return (
         "".join(css_parts)
@@ -16648,8 +16688,8 @@ def _render_code_diff(atom: dict) -> str:
         # skip "? " hint lines
     header = ""
     if label or language:
-        lbl  = f'<span style="font-size:13px;font-weight:600;color:#94a3b8;">{label}</span>' if label else ""
-        lang = f'<span style="font-size:11px;color:#64748b;background:#1e293b;padding:2px 8px;border-radius:4px;">{language}</span>' if language else ""
+        lbl  = f'<span style="font-size:13px;font-weight:600;color:#94a3b8;">{_cv_esc(label)}</span>' if label else ""
+        lang = f'<span style="font-size:11px;color:#64748b;background:#1e293b;padding:2px 8px;border-radius:4px;">{_cv_esc(language)}</span>' if language else ""
         header = (
             f'<div style="display:flex;align-items:center;justify-content:space-between;'
             f'padding:10px 14px;border-bottom:1px solid #1e293b;">{lbl}{lang}</div>'
@@ -16698,7 +16738,7 @@ def _render_progress_circle(atom: dict) -> str:
     fs    = max(11, px // 6)
     label_html = (
         f'<div style="font-size:{max(10,px//10)}px;color:#94a3b8;margin-top:6px;'
-        f'text-align:center;max-width:{px}px;">{label}</div>'
+        f'text-align:center;max-width:{px}px;">{_cv_esc(label)}</div>'
     ) if label else ""
     return (
         f'<style>'
@@ -16711,7 +16751,7 @@ def _render_progress_circle(atom: dict) -> str:
         f'<svg width="{px}" height="{px}" viewBox="0 0 100 100" '
         f'style="transform:rotate(-90deg);display:block;">'
         f'<circle cx="50" cy="50" r="{r}" fill="none" stroke="#1e293b" stroke-width="9"/>'
-        f'<circle class="pc_{uid}" cx="50" cy="50" r="{r}" fill="none" stroke="{color}" '
+        f'<circle class="pc_{uid}" cx="50" cy="50" r="{r}" fill="none" stroke="{_cv_esc(color)}" '
         f'stroke-width="9" stroke-linecap="round"/>'
         f'</svg>'
         f'<div style="position:absolute;inset:0;display:flex;align-items:center;'
@@ -16728,11 +16768,11 @@ def _render_post_metadata_bar(b):
     
     parts = []
     if author:
-        parts.append(f'<span style="font-weight: 600; color: #374151;">✍️ {author}</span>')
+        parts.append(f'<span style="font-weight: 600; color: #374151;">✍️ {_cv_esc(author)}</span>')
     if date:
-        parts.append(f'<span style="color: #6b7280;">📅 {date}</span>')
+        parts.append(f'<span style="color: #6b7280;">📅 {_cv_esc(date)}</span>')
     if read_time:
-        parts.append(f'<span style="color: #6b7280;">⏱️ {read_time} min read</span>')
+        parts.append(f'<span style="color: #6b7280;">⏱️ {_cv_esc(read_time)} min read</span>')
         
     inner = ' <span style="color: #e5e7eb; margin: 0 8px;">|</span> '.join(parts)
     return (f'<div class="post-metadata-bar" style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; '
@@ -16748,9 +16788,9 @@ def _render_notification_badge(b):
             f'  <svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
             f'  </svg>'
-            f'  <span style="position:absolute;top:0;right:0;transform:translate(25%, -25%);background:{color};color:#fff;'
+            f'  <span style="position:absolute;top:0;right:0;transform:translate(25%, -25%);background:{_cv_esc(color)};color:#fff;'
             f'               font-size:0.7rem;font-weight:700;border-radius:9999px;padding:2px 6px;line-height:1;min-width:16px;'
-            f'               text-align:center;box-shadow:0 0 0 2px #fff;">{text}</span>'
+            f'               text-align:center;box-shadow:0 0 0 2px #fff;">{_cv_esc(text)}</span>'
             f'</div>')
 _RENDERERS["notification_badge"] = _render_notification_badge
 
@@ -16766,8 +16806,8 @@ def _render_poll_block(b):
         opts_html += (
             f'<div style="margin-bottom: 12px; position: relative;">'
             f'  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; color: #374151; margin-bottom: 4px; z-index: 10; position: relative;">'
-            f'    <span>{text}</span>'
-            f'    <span>{votes} votes ({pct:.1f}%)</span>'
+            f'    <span>{_cv_esc(text)}</span>'
+            f'    <span>{_cv_esc(votes)} votes ({pct:.1f}%)</span>'
             f'  </div>'
             f'  <div style="height: 24px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative; border: 1px solid #e5e7eb;">'
             f'    <div style="width: {pct:.1f}%; height: 100%; background: #7c3aed; opacity: 0.15; position: absolute; left: 0; top: 0; border-radius: 5px;"></div>'
@@ -16776,7 +16816,7 @@ def _render_poll_block(b):
         )
     return (f'<div class="poll-block" style="padding: 16px; border: 1px solid #ede9fe; border-radius: 12px; background: #fff; '
             f'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin: 1.2rem 0;">'
-            f'  <h4 style="margin: 0 0 16px; font-size: 1rem; font-weight: 700; color: #111827;">📊 {question}</h4>'
+            f'  <h4 style="margin: 0 0 16px; font-size: 1rem; font-weight: 700; color: #111827;">📊 {_cv_esc(question)}</h4>'
             f'  {opts_html}'
             f'</div>')
 _RENDERERS["poll_block"] = _render_poll_block
@@ -16786,8 +16826,8 @@ def _render_copy_to_clipboard(b):
     val = b.get("value", "")
     return (f'<span class="copy-to-clipboard" style="display: inline-flex; align-items: center; gap: 6px; '
             f'background: #f3f4f6; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: #1f2937;">'
-            f'  <span>{text}</span>'
-            f'  <button onclick="navigator.clipboard.writeText(\'{val}\'); this.textContent=\'✓\'; setTimeout(() => this.textContent=\'📋\', 1000)" '
+            f'  <span>{_cv_esc(text)}</span>'
+            f'  <button onclick="navigator.clipboard.writeText({_cv_esc(_js_json(str(val)))}); this.textContent=\'✓\'; setTimeout(() => this.textContent=\'📋\', 1000)" '
             f'          style="border: none; background: none; cursor: pointer; font-size: 0.85rem; padding: 0; display: inline-flex; align-items: center; justify-content: center; outline: none; margin-left: 4px;" title="Copy to clipboard">'
             f'    📋'
             f'  </button>'
@@ -16853,8 +16893,8 @@ def _svg_gauge_sla(b: dict) -> str:
         <line x1="150" y1="140" x2="{nx:.1f}" y2="{ny:.1f}" stroke="{status_color}" stroke-width="3" stroke-linecap="round" filter="url(#{gauge_id}_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="{status_color}" stroke-width="3" />
 
-        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{val:,.1f}{unit}</text>
-        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{status_label} · {label.upper()}</text>
+        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{val:,.1f}{_cv_esc(unit)}</text>
+        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{status_label} · {_cv_esc(label.upper())}</text>
       </svg>
     """
 
@@ -16867,7 +16907,7 @@ def _render_gauge_sla(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#00f2ff; font-weight:900;">◵</span> {title}
+            <span style="color:#00f2ff; font-weight:900;">◵</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -16971,7 +17011,7 @@ def _svg_scatter_trend(b: dict) -> str:
 
         {grid_lines}
 
-        <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{label_x.upper()}</text>
+        <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{_cv_esc(label_x.upper())}</text>
 
         <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{_wa_oid(b)})" />
 
@@ -16989,7 +17029,7 @@ def _render_scatter_trend(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#10b981; font-weight:900;">⬡</span> {title}
+            <span style="color:#10b981; font-weight:900;">⬡</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -17022,7 +17062,7 @@ def _render_call_mood_board(b: dict) -> str:
         header_html = f"""
         <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#d946ef; font-weight:900;">⬡</span> {title}
+            <span style="color:#d946ef; font-weight:900;">⬡</span> {_cv_esc(title)}
           </div>
         </div>
         """
@@ -17036,13 +17076,13 @@ def _render_call_mood_board(b: dict) -> str:
         <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:12px;border-radius:var(--a2ui-radius,12px); padding:12px; display:flex; flex-direction:column; gap:8px;">
           <div style="display:flex; align-items:center; justify-content:space-between;">
             <span style="font-size:0.85rem; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
-              <span style="width:8px; height:8px; border-radius:50%; background:{color}; box-shadow:0 0 8px {color}; display:inline-block;"></span>
-              {name}
+              <span style="width:8px; height:8px; border-radius:50%; background:{_cv_esc(color)}; box-shadow:0 0 8px {_cv_esc(color)}; display:inline-block;"></span>
+              {_cv_esc(name)}
             </span>
-            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:{color};">{intensity}%</span>
+            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:{_cv_esc(color)};">{_cv_esc(intensity)}%</span>
           </div>
           <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
-            <div style="width:{intensity}%; height:100%; background:linear-gradient(90deg, {color}88, {color}); border-radius:10px; box-shadow:0 0 6px {color}66;"></div>
+            <div style="width:{_cv_esc(intensity)}%; height:100%; background:linear-gradient(90deg, {_cv_esc(color)}88, {_cv_esc(color)}); border-radius:10px; box-shadow:0 0 6px {_cv_esc(color)}66;"></div>
           </div>
         </div>
         """)
@@ -17073,7 +17113,7 @@ def _render_call_mood_board(b: dict) -> str:
         font_size = 0.75 + (weight / 200.0)
         themes_html.append(f"""
         <span style="display:inline-block; font-size:{font_size:.2f}rem; font-weight:700; color:{color_theme}; background:{bg}; border:1px solid {border}; padding:6px 12px; border-radius:20px; margin:4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-          {term}
+          {_cv_esc(term)}
         </span>
         """)
         
@@ -17081,7 +17121,7 @@ def _render_call_mood_board(b: dict) -> str:
     if summary:
         summary_html = f"""
         <div style="margin-top:20px; padding:12px 16px; background:rgba(255,255,255,0.02); border-left:3px solid #d946ef; border-radius:0 8px 8px 0; font-size:0.85rem; line-height:1.6; color:rgba(255,255,255,0.7); font-style:italic;">
-          {summary}
+          {_cv_esc(summary)}
         </div>
         """
         
@@ -17121,12 +17161,12 @@ def _render_feedback_prompt(b: dict) -> str:
     placeholder = b.get("placeholder", "")
     action_url  = b.get("action_url", "")
 
-    wrap_open  = f'<form action="{action_url}" method="post">' if action_url else ""
+    wrap_open  = f'<form action="{_cv_esc(action_url)}" method="post">' if action_url else ""
     wrap_close = "</form>" if action_url else ""
 
     q_html = (
         f'<div style="font-size:0.88rem;font-weight:500;color:#3c4043;margin-bottom:10px;">'
-        f'{question}</div>'
+        f'{_cv_esc(question)}</div>'
     ) if question else ""
 
     if style == "stars":
@@ -17166,7 +17206,7 @@ def _render_feedback_prompt(b: dict) -> str:
         )
 
     text_html = (
-        f'<textarea name="{fid}_comment" placeholder="{placeholder}" '
+        f'<textarea name="{fid}_comment" placeholder="{_cv_esc(placeholder)}" '
         f'style="display:block;margin-top:10px;width:100%;box-sizing:border-box;padding:8px 10px;'
         f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#3c4043;'
         f'resize:vertical;min-height:64px;background:#ffffff;background:var(--a2ui-surface,#ffffff);"></textarea>'
@@ -17203,7 +17243,7 @@ def _render_intro(b: dict) -> str:
     parts = []
     if b.get("series_label") and b.get("series_url"):
         parts.append(
-            f'<p><em>In <a href="{b["series_url"]}">{b["series_label"]}</a>, '
+            f'<p><em>In <a href="{_cv_esc(b["series_url"])}">{_cv_esc(b["series_label"])}</a>, '
             f'{_md_inline(b.get("continuation", "I covered the background. This article picks up from there."))}</em></p>'
         )
     if b.get("note"):
@@ -17219,14 +17259,14 @@ _RENDERERS["intro"] = _render_intro
 def _render_quote(b: dict) -> str:
     html = f'<blockquote><p>{_md_inline(b.get("text", ""))}</p>'
     if b.get("attribution"):
-        html += f'<footer>— {b["attribution"]}</footer>'
+        html += f'<footer>— {_cv_esc(b["attribution"])}</footer>'
     html += '</blockquote>'
     return html
 _RENDERERS["quote"] = _render_quote
 
 def _render_pipeline(b: dict) -> str:
     steps = b.get("steps", [])
-    flow = " ──► ".join(f"<code>{s}</code>" for s in steps)
+    flow = " ──► ".join(f"<code>{_cv_esc(s)}</code>" for s in steps)
     return f'<p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);">{flow}</p>'
 _RENDERERS["pipeline"] = _render_pipeline
 
@@ -17243,18 +17283,18 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
     # Dynamic CSS for this tab group's checked states
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
-        f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
+        f'{{background:var(--surface,#fff);color:{_cv_esc(accent)};border-bottom-color:{_cv_esc(accent)};font-weight:700;}}\n'
         f'#{group}_t{i}:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
     )
 
     inputs = "".join(
-        f'<input type="radio" id="{group}_t{i}" name="{group}" {"checked" if i == 1 else ""}>'
+        f'<input type="radio" id="{group}_t{_cv_esc(i)}" name="{group}" {"checked" if i == 1 else ""}>'
         for i, _ in enumerate(tabs, 1)
     )
     labels = "".join(
-        f'<label class="tm-tab-label" for="{group}_t{i}">{tab.get("label","Tab")}</label>'
+        f'<label class="tm-tab-label" for="{group}_t{_cv_esc(i)}">{_cv_esc(tab.get("label","Tab"))}</label>'
         for i, tab in enumerate(tabs, 1)
     )
     panels = "".join(
@@ -17293,18 +17333,18 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
 
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
-        f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
+        f'{{background:var(--surface,#fff);color:{_cv_esc(accent)};border-bottom-color:{_cv_esc(accent)};font-weight:700;}}\n'
         f'#{group}_t{i}:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
     )
     inputs = "".join(
-        f'<input type="radio" id="{group}_t{i}" name="{group}" '
+        f'<input type="radio" id="{group}_t{_cv_esc(i)}" name="{group}" '
         f'{"checked" if (i - 1) == default_index else ""}>'
         for i, _ in enumerate(tabs, 1)
     )
     labels = "".join(
-        f'<label class="tm-tab-label" for="{group}_t{i}">{_esc(tab.get("label", "Tab"))}</label>'
+        f'<label class="tm-tab-label" for="{group}_t{_cv_esc(i)}">{_esc(tab.get("label", "Tab"))}</label>'
         for i, tab in enumerate(tabs, 1)
     )
     def _panel_style(tab):
@@ -17314,7 +17354,7 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
         # color_section or not (a plain heading/body/table tab gets the
         # same treatment as a color_section-wrapped one).
         mw = tab.get("max_width")
-        return f' style="max-width:{mw};margin-left:auto;margin-right:auto;"' if mw else ""
+        return f' style="max-width:{_cv_esc(mw)};margin-left:auto;margin-right:auto;"' if mw else ""
 
     panels = "".join(
         f'<div class="tm-tab-panel"{_panel_style(tab)}>'
@@ -17566,7 +17606,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
         # line (JS, below), which starts at the image's right edge and
         # reads each pin's real position from the DOM directly.
         lines = "".join(
-            f'<line x1="{p.get("x", 0)}" y1="{p.get("y", 0)}" x2="100" y2="{p.get("y", 0)}" '
+            f'<line x1="{_cv_esc(p.get("x", 0))}" y1="{_cv_esc(p.get("y", 0))}" x2="100" y2="{_cv_esc(p.get("y", 0))}" '
             f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
             for p in pins if p.get("connector") == "continuous"
         )
@@ -17592,8 +17632,8 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
                 if advance else ""
             )
             markers.append(
-                f'<div class="pp-pin{adv_cls}" data-pin-idx="{i}" '
-                f'style="top:{p.get("y", 0)}%;left:{p.get("x", 0)}%;"{adv_attr}>'
+                f'<div class="pp-pin{adv_cls}" data-pin-idx="{_cv_esc(i)}" '
+                f'style="top:{_cv_esc(p.get("y", 0))}%;left:{_cv_esc(p.get("x", 0))}%;"{adv_attr}>'
                 f'{display_num[i]}</div>'
             )
         markers = "".join(markers)
@@ -17625,7 +17665,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             field_style = f' style="font-size:{_esc(p["field_size"])}"' if p.get("field_size") else ""
             note_style = f' style="font-size:{_esc(p["note_size"])}"' if p.get("note_size") else ""
             label_html = (
-                f'<div class="pp-label" data-pin-idx="{i}"><span class="pp-field"{field_style}>{field}{badge_html}</span>'
+                f'<div class="pp-label" data-pin-idx="{_cv_esc(i)}"><span class="pp-field"{field_style}>{field}{badge_html}</span>'
                 f'<span class="pp-note{chrome_cls}"{note_style}><span class="pp-num">{display_num[i]}.</span> {note}</span></div>'
             )
             (left_labels if p.get("x", 0) < 50 else right_labels).append(label_html)
@@ -17642,11 +17682,11 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
         active = " active" if idx == 0 else ""
         display = "display:block;" if idx == 0 else "display:none;"
         return (
-            f'<div class="pp-state{active}" data-state="{uid}_{idx}" style="{display}">'
+            f'<div class="pp-state{active}" data-state="{uid}_{_cv_esc(idx)}" style="{display}">'
             f'<div class="pp-plate">'
             f'{left_side_html}'
             f'<div class="pp-imgwrap" style="width:{width}px;">'
-            f'<img src="{img}" alt="{_esc(state["alt"]) if state.get("alt") else f"{title} — captured UI state"}">'
+            f'<img src="{_cv_esc(img)}" alt="{_esc(state["alt"]) if state.get("alt") else f"{title} — captured UI state"}">'
             f'<svg viewBox="0 0 100 100" preserveAspectRatio="none">{lines}</svg>'
             f'{markers}'
             f'</div>'
@@ -17665,11 +17705,11 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
         # regardless of which one was actually checked (real bug, found
         # 2026-07-25 while adding click-to-advance pins).
         pairs = "".join(
-            f'<input type="radio" name="{uid}_toggle" id="{uid}_t{i}"'
+            f'<input type="radio" name="{uid}_toggle" id="{uid}_t{_cv_esc(i)}"'
             f'{" checked" if i == 0 else ""} '
             f'onchange="document.querySelectorAll(\'[data-state^=\\\'{uid}_\\\']\').forEach(function(el){{'
-            f'el.style.display = (el.dataset.state === \'{uid}_{i}\') ? \'block\' : \'none\';}});">'
-            f'<label for="{uid}_t{i}">{_esc(s.get("label", f"State {i+1}"))}</label>'
+            f'el.style.display = (el.dataset.state === \'{uid}_{_cv_esc(i)}\') ? \'block\' : \'none\';}});">'
+            f'<label for="{uid}_t{_cv_esc(i)}">{_esc(s.get("label", f"State {i+1}"))}</label>'
             for i, s in enumerate(states)
         )
         toggles_html = f'<div class="pp-toggles">{pairs}</div>'
@@ -17689,7 +17729,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     if equiv:
         status = equiv.get("status", "no")
         icon = {"yes": "✓", "partial": "~", "no": "✗"}.get(status, "?")
-        cls = f"pp-chat-{status}"
+        cls = f"pp-chat-{_cv_esc(status)}"
         note = _esc(equiv.get("note", ""))
         title_attr = f' title="{note}"' if note else ""
         surface = _esc(equiv.get("surface", "equivalent"))
@@ -17719,7 +17759,7 @@ def _scrollspy_script(ids: list) -> str:
     which one is in view and toggles .sg-active-link on every matching
     #anchor on the page — nav sub-link AND any other link (e.g. a TL;DR
     table row) pointing at the same id."""
-    ids_json = _json.dumps(ids)
+    ids_json = _js_json(ids)
     return (
         "<script>"
         "(function(){"
@@ -17764,7 +17804,7 @@ def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
 
     def _anchor(text, idx, sub_idx=None):
         base = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
-        return f"{uid}_{idx}_{sub_idx}_{base}" if sub_idx is not None else f"{uid}_{idx}_{base}"
+        return f"{uid}_{_cv_esc(idx)}_{_cv_esc(sub_idx)}_{base}" if sub_idx is not None else f"{uid}_{_cv_esc(idx)}_{base}"
 
     nav_items = []
     section_htmls = []
@@ -17782,7 +17822,7 @@ def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
                     blk = dict(blk)
                     blk["id"] = sub_anchor
                     blocks[bi] = blk
-                sub_links.append(f'<a class="sg-sub" href="#{sub_anchor}">{_esc(sub_title)}</a>')
+                sub_links.append(f'<a class="sg-sub" href="#{_cv_esc(sub_anchor)}">{_esc(sub_title)}</a>')
                 spy_ids.append(sub_anchor)
         nav_items.append(
             f'<div class="sg-navsection">'
@@ -17836,15 +17876,15 @@ def _render_key_value(b: dict) -> str:
     """Key-value pairs — for env vars, config options, API fields."""
     items = b.get("items", [])
     title = b.get("title", "")
-    title_html = f'<p style="font-weight:600;margin-bottom:8px;">{title}</p>' if title else ""
+    title_html = f'<p style="font-weight:600;margin-bottom:8px;">{_cv_esc(title)}</p>' if title else ""
     def _kv_row(item):
         required_html = "<strong>Required</strong> — " if item.get("required") else ""
         default_val = item.get("default")
-        default_html = f'<br/><code style="color:#34a853;">default: {default_val}</code>' if default_val is not None else ""
+        default_html = f'<br/><code style="color:#34a853;">default: {_cv_esc(default_val)}</code>' if default_val is not None else ""
         return (
             f'<tr>'
             f'<td style="padding:8px 12px;font-family:monospace;font-size:0.85em;color:#1a73e8;white-space:nowrap;'
-            f'border-bottom:1px solid #f0f0f0;vertical-align:top;font-weight:600;">{item.get("key","")}</td>'
+            f'border-bottom:1px solid #f0f0f0;vertical-align:top;font-weight:600;">{_cv_esc(item.get("key",""))}</td>'
             f'<td style="padding:8px 12px;color:#5f6368;font-size:0.85em;border-bottom:1px solid #f0f0f0;">'
             f'{required_html}{_md_inline(item.get("description",""))}{default_html}'
             f'</td></tr>'
@@ -17878,7 +17918,7 @@ def _render_api_reference(b: dict) -> str:
         "method":   ("#f3e8fd", "#8430ce"),
     }
     bg, color = kind_colors.get(kind, kind_colors["function"])
-    method_badge = f'<span style="background:#137333;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;margin-right:8px;">{http_method}</span>' if http_method else ""
+    method_badge = f'<span style="background:#137333;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;margin-right:8px;">{_cv_esc(http_method)}</span>' if http_method else ""
     deprecated_html = '<span style="background:#c5221f;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;margin-left:8px;">DEPRECATED</span>' if deprecated else ""
 
     # Parameters table
@@ -17888,11 +17928,11 @@ def _render_api_reference(b: dict) -> str:
             bg = "background:#f8f9fa;" if i % 2 else ""
             req = "✓" if p.get("required") else ""
             default_val = p.get("default")
-            default_html = f'<br/><code style="color:#34a853;font-size:0.9em;">default: {default_val}</code>' if default_val is not None else ""
+            default_html = f'<br/><code style="color:#34a853;font-size:0.9em;">default: {_cv_esc(default_val)}</code>' if default_val is not None else ""
             return (
                 f'<tr style="{bg}">'
-                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#1a73e8;white-space:nowrap;">{p.get("name","")}</td>'
-                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#e37400;">{p.get("type","")}</td>'
+                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#1a73e8;white-space:nowrap;">{_cv_esc(p.get("name",""))}</td>'
+                f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82em;color:#e37400;">{_cv_esc(p.get("type",""))}</td>'
                 f'<td style="padding:8px 12px;font-size:0.82em;color:#c5221f;text-align:center;">{req}</td>'
                 f'<td style="padding:8px 12px;font-size:0.82em;color:#5f6368;">{_md_inline(p.get("description",""))}{default_html}</td>'
                 f'</tr>'
@@ -17931,9 +17971,9 @@ def _render_api_reference(b: dict) -> str:
         ex_label = example.get("label", "Example")
         example_html = (
             f'<div style="margin-top:12px;">'
-            f'<p style="font-size:0.8rem;font-weight:600;color:#5f6368;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">{ex_label}</p>'
+            f'<p style="font-size:0.8rem;font-weight:600;color:#5f6368;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(ex_label)}</p>'
             f'<pre style="margin:0;padding:14px;background:#f8f9fa;border-radius:6px;overflow-x:auto;font-size:0.84rem;line-height:1.6;">'
-            f'<code class="language-{ex_lang}">{ex_code}</code>'
+            f'<code class="language-{_cv_esc(ex_lang)}">{ex_code}</code>'
             f'</pre></div>'
         )
 
@@ -17941,9 +17981,9 @@ def _render_api_reference(b: dict) -> str:
         f'<div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
         f'<div style="background:{bg};padding:14px 18px;border-bottom:1px solid #e0e0e0;">'
         f'{method_badge}'
-        f'<code style="font-size:1rem;font-weight:700;color:{color};">{name}</code>'
+        f'<code style="font-size:1rem;font-weight:700;color:{color};">{_cv_esc(name)}</code>'
         f'{deprecated_html}'
-        f'<span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">{kind}</span>'
+        f'<span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(kind)}</span>'
         f'</div>'
         f'<div style="padding:14px 18px;">'
         f'<p style="color:#3c4043;margin-bottom:8px;">{_md_inline(description)}</p>'
@@ -18114,7 +18154,7 @@ def _render_knowledge_check(b: dict) -> str:
     correct = int(b.get('correct', 0))
     explain = _md.markdown(b.get('explanation', '')) if b.get('explanation') else ''
     opts_html = ''.join(
-        f'<button onclick="{uid}pick({i})" style="display:block;width:100%;text-align:left;'
+        f'<button onclick="{uid}pick({_cv_esc(i)})" style="display:block;width:100%;text-align:left;'
         f'padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);'
         f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);cursor:pointer;font-size:0.88rem;">{_esc(str(o))}</button>'
         for i, o in enumerate(options)
@@ -18126,7 +18166,7 @@ def _render_knowledge_check(b: dict) -> str:
           f'b.style.borderColor=j==={correct}?"#34d399":j===i?"#f87171":"#e5e7eb";}});'
           f'var ex=document.getElementById("{uid}ex");if(ex)ex.style.display="block";}}</script>')
     opts_html2 = ''.join(
-        f'<button data-{uid} onclick="{uid}pick({i})" style="display:block;width:100%;text-align:left;'
+        f'<button data-{uid} onclick="{uid}pick({_cv_esc(i)})" style="display:block;width:100%;text-align:left;'
         f'padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#f9fafb;'
         f'border:1px solid #e5e7eb;cursor:pointer;font-size:0.88rem;">{_esc(str(o))}</button>'
         for i, o in enumerate(options)
@@ -18403,7 +18443,7 @@ def _ws_badge(app: str, size: int) -> str:
     initials = app[:2].upper()
     return (f'<div style="width:{size}px;height:{size}px;border-radius:{size//5}px;background:{col};'
             f'display:flex;align-items:center;justify-content:center;color:#fff;'
-            f'font-size:{size//3}px;font-weight:700;">{initials}</div>')
+            f'font-size:{size//3}px;font-weight:700;">{_cv_esc(initials)}</div>')
 
 def _render_workspace_logo(b: dict) -> str:
     app = (b.get('app') or b.get('name') or 'drive').lower()
@@ -18516,7 +18556,7 @@ _LEGO_MATERIAL_PROFILE = {"BH": 1.2, "PL": 0.4, "SR": 0.3, "SH": 0.18, "SN": 10,
 
 
 def _brick_material_profile_src() -> str:
-    return "var LEGO_MATERIAL_PROFILE = " + _json.dumps(_LEGO_MATERIAL_PROFILE, separators=(",", ":")) + ";"
+    return "var LEGO_MATERIAL_PROFILE = " + _js_json(_LEGO_MATERIAL_PROFILE, separators=(",", ":")) + ";"
 
 
 def _js_number(v):
@@ -18690,7 +18730,7 @@ def _render_brick_build_3d(b: dict) -> str:
         "partsModel": parts_model,
     }
     uid = "brk" + _wa_uid(b)[:6]
-    payload = _json.dumps(cfg, separators=(",", ":"), ensure_ascii=False).replace("<", "\\u003c")
+    payload = _js_json(cfg, separators=(",", ":"), ensure_ascii=False).replace("<", "\\u003c")
     return (
         '<div style="border-radius:14px;overflow:hidden;color:#0f1c28;'
         'font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;'
@@ -18921,7 +18961,7 @@ def _ff_lines(text, dflt):
 
 
 def _ff_lines_js(lines):
-    return _wa_json.dumps(lines, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
+    return _js_json(lines, ensure_ascii=False, separators=(',', ':'))
 
 
 def _ff_script(js, uid, cfg):
@@ -18959,7 +18999,7 @@ def _ff_overlay(align, bg_rgb, pal, eyebrow, title, body, ink='#ffffff'):
         f'<div style="max-width:{"80%" if align == "center" else "58%"};">'
         + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_cv_esc(eyebrow)}</div>' if eyebrow else '')
         + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:{ink};letter-spacing:-0.02em;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else '')
-        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba({ink_rgb},0.78);">{_md_inline(_cv_esc(body))}</div>' if body else '')
+        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba({ink_rgb},0.78);">{_md_inline(body)}</div>' if body else '')
         + '</div></div>'
     )
 
@@ -19387,7 +19427,7 @@ def _render_meteor_shower(b: dict) -> str:
     has = bool(title or body)
     content = ('<div style="position:relative;z-index:1;">'
                + (f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else '')
-               + (f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">{_md_inline(_cv_esc(body))}</div>' if body else '')
+               + (f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">{_md_inline(body)}</div>' if body else '')
                + '</div>') if has else ''
     return (f'<style>@keyframes met-{uid}-fall{{0%{{opacity:0;transform:translateX(0) translateY(-80px) rotate(35deg)}}10%{{opacity:1}}90%{{opacity:1}}100%{{opacity:0;transform:translateX(160px) translateY(420px) rotate(35deg)}}}}</style>'
             f'<div style="position:relative;overflow:hidden;border-radius:16px;background:{bg};padding:{"40px 36px" if has else "60px 0"};margin:1rem 0;min-height:{140 if has else 120}px;">{meteors}{content}</div>')
@@ -20138,7 +20178,7 @@ def _render_sun_path(b: dict) -> str:
     date = b.get('date') if isinstance(b.get('date'), str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', b.get('date')) else ''
     tz = 'null' if b.get('tz') in ('local', None) else _ff_num(b.get('tz'), 0, -12, 14, 2)
     height, live = _ff_int(b.get('height'), 300, 200, 600), ('false' if b.get('live') is False else 'true')
-    cfg = ('{lat:' + lat + ',lon:' + lon + ',date:"' + date + '",tz:' + tz + ',label:' + _ff_js_str(b.get('label'), 40, 'Sun')
+    cfg = ('{lat:' + lat + ',lon:' + lon + ',date:"' + _cv_esc(date) + '",tz:' + tz + ',label:' + _ff_js_str(b.get('label'), 40, 'Sun')
            + ',bg:"' + th['bg'] + '",ink:"' + _ff_rgb(th['ink']) + '",acc:"' + _ff_rgb(acc) + '",live:' + live + '}')
     return _ff_panel(height, th['bg'], _ff_canvas('sun-' + uid) + _ff_script(_SUN_PATH_JS, uid, cfg))
 
@@ -20191,13 +20231,13 @@ def _render_tonal_scale(b: dict) -> str:
     name = b.get('name') if isinstance(b.get('name'), str) and re.fullmatch(r'[a-z][a-z0-9-]{0,19}', b.get('name')) else 'accent'
     contrast = 'false' if b.get('show_contrast') is False else 'true'
     show_code = b.get('show_code') is not False
-    cfg = '{hex:"' + hx + '",steps:' + str(steps) + ',name:"' + name + '",contrast:' + contrast + '}'
+    cfg = '{hex:"' + hx + '",steps:' + str(steps) + ',name:"' + _cv_esc(name) + '",contrast:' + contrast + '}'
     mono = _CV_VOICES['mono']
     inner = (f'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
              f'<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};">tonal scale · OKLCH</div>'
              f'<div style="font-family:{mono};font-size:0.78rem;color:{th["mute"]};">{hx} · {steps} tones</div></div>'
              f'<div id="tn-{uid}" style="display:flex;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;min-height:72px;border:1px solid {th["line"]};"><div style="flex:1;background:{hx};"></div></div>'
-             + (f'<pre id="tnc-{uid}" style="margin:14px 0 0;padding:12px 14px;border-radius:8px;background:{th["soft"]};border:1px solid {th["line"]};font-family:{mono};font-size:0.72rem;line-height:1.5;color:{th["ink"]};overflow-x:auto;">:root {{\n  --{name}-500: {hx};\n}}</pre>' if show_code else '')
+             + (f'<pre id="tnc-{uid}" style="margin:14px 0 0;padding:12px 14px;border-radius:8px;background:{th["soft"]};border:1px solid {th["line"]};font-family:{mono};font-size:0.72rem;line-height:1.5;color:{th["ink"]};overflow-x:auto;">:root {{\n  --{_cv_esc(name)}-500: {hx};\n}}</pre>' if show_code else '')
              + '<script>' + _TONAL_SCALE_JS.replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script>')
     return _cv_card(th, inner)
 
@@ -20385,7 +20425,7 @@ def _render_cohort_progress_board(b: dict) -> str:
         prog = row.get('progress', {})
         cells = ''.join(
             f'<td style="padding:8px 12px;text-align:center;font-size:0.82rem;">'
-            f'{"✅" if prog.get(f"done:{m}") else str(prog.get(f"score:{m}", "—"))}</td>'
+            f'{_cv_esc("✅" if prog.get(f"done:{m}") else str(prog.get(f"score:{m}", "—")))}</td>'
             for m in modules
         ) if modules else ''
         rows += f'<tr><td style="padding:8px 12px;font-size:0.82rem;">{email}</td>{cells}</tr>'
@@ -20610,11 +20650,11 @@ def _render_scenario_branch(b: dict) -> str:
         outcome = _md.markdown(_outcome_src) if _outcome_src else ''
         correct = bool(c.get('correct'))
         col = '#34d399' if correct else '#f87171' if c.get('outcome') else '#6b7280'
-        btns += (f'<button id="{uid}c{i}" onclick="{uid}pick({i})" style="display:block;width:100%;'
+        btns += (f'<button id="{uid}c{_cv_esc(i)}" onclick="{uid}pick({_cv_esc(i)})" style="display:block;width:100%;'
                  f'text-align:left;padding:12px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin-bottom:8px;'
                  f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);cursor:pointer;font-size:0.88rem;">'
                  f'{label}</button>')
-        results += (f'<div id="{uid}r{i}" style="display:none;padding:12px;border-radius:8px;'
+        results += (f'<div id="{uid}r{_cv_esc(i)}" style="display:none;padding:12px;border-radius:8px;'
                     f'background:#f9fafb;border-left:3px solid {col};margin-top:6px;">{outcome}</div>')
     context_html = f'<div style="font-size:0.85rem;color:#6b7280;margin-bottom:12px;">{context}</div>' if context else ''
     js = (f'<script>function {uid}pick(i){{'
@@ -20873,7 +20913,7 @@ def _render_take_away_card(b: dict) -> str:
     size = _esc(b.get('size', '1.4rem'))
     gradient = b.get('gradient', '')
     if gradient:
-        h_style = ('background:' + gradient + ';-webkit-background-clip:text;'
+        h_style = ('background:' + _cv_esc(gradient) + ';-webkit-background-clip:text;'
                    '-webkit-text-fill-color:transparent;background-clip:text;')
     else:
         h_style = 'color:' + accent + ';'
@@ -21099,7 +21139,7 @@ def _render_sequence_diagram(b: dict) -> str:
     # lifeline. surface bg so they sit above the section's grid ground.
     header = ''.join(
         f'<div style="flex:1;display:flex;justify-content:center;padding:0 4px;">'
-        f'<div style="border:1.5px solid {accent}66;background:{surface_c};border-radius:7px;'
+        f'<div style="border:1.5px solid {_cv_esc(accent)}66;background:{surface_c};border-radius:7px;'
         f'padding:6px 14px;font-weight:700;font-size:12.5px;color:{text_c};letter-spacing:0.01em;'
         f'text-align:center;white-space:nowrap;">{_esc(lbl)}</div></div>'
         for lbl in actor_labels
@@ -21110,7 +21150,7 @@ def _render_sequence_diagram(b: dict) -> str:
         for c in centers
     )
 
-    note_bg = f'{accent}10' if theme in (None, 'light') else f'{accent}1c'
+    note_bg = f'{_cv_esc(accent)}10' if theme in (None, 'light') else f'{_cv_esc(accent)}1c'
     autonumber = bool(b.get('autonumber'))
     counter = [0]  # mutable so nested frames share the running count
 
@@ -21481,13 +21521,13 @@ def _render_sheet_form_submit(b: dict) -> str:
         if isinstance(fld, str):
             fname, ftype, flabel = fld, 'text', fld
         else:
-            fname = _esc(fld.get('name', ''))
-            ftype = _esc(fld.get('type', 'text'))
-            flabel = _esc(fld.get('label', fname))
+            fname = fld.get('name', '')
+            ftype = fld.get('type', 'text')
+            flabel = fld.get('label', fname)
         inputs += ('<div style="margin-bottom:12px;">'
                    '<label style="display:block;font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;">'
-                   + flabel + '</label>'
-                   '<input type="' + ftype + '" name="' + fname + '" '
+                   + _cv_esc(flabel) + '</label>'
+                   '<input type="' + _cv_esc(ftype) + '" name="' + _cv_esc(fname) + '" '
                    'style="width:100%;padding:8px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
                    'font-size:0.875rem;box-sizing:border-box;"></div>')
     return ('<div style="margin:1rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
@@ -21506,12 +21546,12 @@ def _render_copy_prompt(b: dict) -> str:
     prompt = _esc(b.get('prompt', ''))
     label = _esc(b.get('label', 'Copy prompt'))
     accent = _esc(b.get('accent', '#6366f1'))
-    raw_prompt = b.get('prompt', '').replace("'", "\\'").replace('\n', '\\n')
+    raw_prompt = _cv_esc(_js_json(str(b.get('prompt', ''))))
     return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid ' + accent + '44;'
             'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + accent + '08;">'
             '<div style="font-size:0.82rem;color:#374151;margin-bottom:10px;font-style:italic;">'
             + prompt + '</div>'
-            '<button onclick="navigator.clipboard.writeText(\'' + raw_prompt + '\').then(function(){'
+            '<button onclick="navigator.clipboard.writeText(' + raw_prompt + ').then(function(){'
             'this.textContent=\'Copied!\';}.bind(this))" '
             'style="padding:6px 16px;background:' + accent + ';color:#fff;border:none;border-radius:6px;'
             'font-size:0.82rem;font-weight:600;cursor:pointer;">' + label + '</button></div>')
@@ -21560,8 +21600,8 @@ _RENDERERS["prompt_to_schema"] = _render_prompt_to_schema
 
 def _render_script_run_button(b: dict) -> str:
     label = _esc(b.get('label', 'Run'))
-    fn = _esc(b.get('function_name', ''))
-    arg = _esc(str(b.get('argument', '')))
+    fn = _safe_ident(b.get('function_name'), '')
+    arg = _cv_esc(_js_json(str(b.get('argument')))) if b.get('argument') not in (None, '') else ''
     return ('<div style="margin:1rem 0;">'
             '<button onclick="if(window.google&&google.script){'
             'google.script.run.' + fn + '(' + (arg if arg else '') + ')}'
@@ -21617,7 +21657,7 @@ _RENDERERS["multi_doc_ai_brief"] = _render_multi_doc_ai_brief
 
 
 def _render_ai_build_trace(b: dict) -> str:
-    model = _esc(b.get('model', ''))
+    model = b.get('model', '')
     prompt_tok = int(b.get('prompt_tokens', 0))
     think_tok = int(b.get('thinking_tokens', 0))
     output_tok = int(b.get('output_tokens', 0))
@@ -21724,13 +21764,13 @@ def _render_dark_hero(b: dict) -> str:
                 'max-width:560px;' + ('margin-left:auto;margin-right:auto;' if align == 'center' else '') + '">'
                 + subtext + '</p>') if subtext else ''
     cta_html = ('<a href="' + cta_url + '" target="_blank" rel="noopener noreferrer" '
-                'style="display:inline-block;padding:13px 30px;border-radius:100px;background:' + gradient + ';'
+                'style="display:inline-block;padding:13px 30px;border-radius:100px;background:' + _cv_esc(gradient) + ';'
                 'color:#fff;font-weight:700;font-size:0.9rem;text-decoration:none;">'
                 + cta_label + '</a>') if cta_label else ''
     return ('<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;">'
             + badge_html
             + '<h1 style="margin:0 0 18px;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;'
-            'background:' + gradient + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+            'background:' + _cv_esc(gradient) + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
             'background-clip:text;">' + heading + '</h1>'
             + sub_html + cta_html + '</div>')
 _RENDERERS["dark_hero"] = _render_dark_hero
@@ -21775,14 +21815,14 @@ def _render_glass_card(b: dict) -> str:
     return ('<div style="background:' + bg + ';backdrop-filter:blur(' + str(blur) + 'px);'
             '-webkit-backdrop-filter:blur(' + str(blur) + 'px);border:1px solid ' + border + ';'
             'border-radius:' + radius + ';padding:' + padding + ';position:relative;overflow:hidden;">'
-            + title_html + content + '</div>')
+            + title_html + _cv_esc(content) + '</div>')
 _RENDERERS["glass_card"] = _render_glass_card
 
 
 def _render_gradient_border_card(b: dict) -> str:
     content = b.get('content', '')
     title = _esc(b.get('title', ''))
-    colours = b.get('colours', ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'])
+    colours = [c for c in (b.get('colours') or []) if isinstance(c, str) and _gd_css(c)] or ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b']
     bg = _esc(b.get('bg', '#0c0e1a'))
     angle = int(b.get('angle', 135))
     padding = _esc(b.get('padding', '24px'))
@@ -21792,7 +21832,7 @@ def _render_gradient_border_card(b: dict) -> str:
                   'margin-bottom:12px;">' + title + '</div>') if title else ''
     return ('<div style="padding:1.5px;border-radius:' + radius + ';background:' + grad + ';">'
             '<div style="background:' + bg + ';border-radius:calc(' + radius + ' - 1.5px);padding:' + padding + ';">'
-            + title_html + content + '</div></div>')
+            + title_html + _cv_esc(content) + '</div></div>')
 _RENDERERS["gradient_border_card"] = _render_gradient_border_card
 
 
@@ -21820,7 +21860,7 @@ def _render_floating_orbs(b: dict) -> str:
         dly = f'{i * 1.8:.1f}s'
         anim = ('animation:' + uid + ' ' + dur + ' ease-in-out ' + dly + ' infinite;') if animate else ''
         orb_divs += ('<div style="position:absolute;pointer-events:none;width:' + str(sz) + 'px;height:'
-                     + str(sz) + 'px;left:' + str(o.get('x', 50)) + '%;top:' + str(o.get('y', 50))
+                     + str(sz) + 'px;left:' + _cv_esc(str(o.get('x', 50))) + '%;top:' + _cv_esc(str(o.get('y', 50)))
                      + '%;transform:translate(-50%,-50%);background:radial-gradient(circle at 40% 40%,'
                      + col + ' 0%,transparent 68%);filter:blur(' + str(blur) + 'px);opacity:'
                      + str(opacity) + ';' + anim + '"></div>')
@@ -22126,7 +22166,7 @@ def _render_scramble_reveal(b: dict) -> str:
     import hashlib
     uid = 'scr' + hashlib.md5((text + title).encode()).hexdigest()[:5]
     raw = b.get('text', b.get('title', 'Hello'))
-    raw_esc = raw.replace("'", "\\'")
+    raw_esc = _js_json(str(raw))
     return ('<div style="padding:16px 0;">'
             + ('<div style="font-size:0.82rem;font-weight:700;color:#9ca3af;margin-bottom:6px;">'
                + title + '</div>' if title else '')
@@ -22134,7 +22174,7 @@ def _render_scramble_reveal(b: dict) -> str:
             'color:#6366f1;min-height:1.6em;"></div>'
             '<script>(function(){'
             "var el=document.getElementById('" + uid + "');"
-            "var target='" + raw_esc + "';"
+            "var target=" + raw_esc + ";"
             'var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";'
             'var iter=0,max=target.length*6;'
             '(function tick(){'
@@ -22742,8 +22782,8 @@ def _render_spring_nodes(b: dict) -> str:
     height = int(b.get('height', 340))
     import hashlib, json
     uid = 'sn' + hashlib.md5(str(nodes[:2]).encode()).hexdigest()[:5]
-    nodes_js = json.dumps(nodes)
-    edges_js = json.dumps(edges)
+    nodes_js = _js_json(nodes)
+    edges_js = _js_json(edges)
     return ('<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
             'background:' + bg + ';display:block;cursor:grab;"></canvas>'
             '<script>(function(){'
@@ -22802,8 +22842,8 @@ def _render_geo_mercator_radar(b: dict) -> str:
     links = b.get('links', [])
     import hashlib, json
     uid = 'gmr' + hashlib.md5(title.encode()).hexdigest()[:5]
-    nodes_js = json.dumps(nodes)
-    links_js = json.dumps(links)
+    nodes_js = _js_json(nodes)
+    links_js = _js_json(links)
     return ('<div style="position:relative;">'
             + ('<div style="font-size:0.72rem;font-weight:700;color:' + color + ';'
                'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + title + '</div>' if title else '')
@@ -22886,7 +22926,7 @@ def _render_geo_europe_airspace(b: dict) -> str:
         {'id': 'MAD', 'lat': 40.49, 'lon': -3.57},
     ])
     import json
-    apt_js = json.dumps(airports)
+    apt_js = _js_json(airports)
     return ('<div style="position:relative;margin:1rem 0;">'
             '<div style="font-size:0.72rem;font-weight:700;color:#00f2ff;letter-spacing:0.1em;'
             'text-transform:uppercase;margin-bottom:6px;">' + title + '</div>'
@@ -23093,7 +23133,7 @@ def _render_atom_anatomy(b: dict) -> str:
         rendered = _RENDERERS.get(schema_data.get('type', ''), _render_unknown)(schema_data)
     except Exception:
         rendered = '<em style="color:#9ca3af;">Could not render preview</em>'
-    schema_str = _esc(_json.dumps(schema_data, indent=2))
+    schema_str = _esc(_js_json(schema_data, indent=2))
     return ('<div style="margin:1rem 0;border:1px solid ' + accent + '33;'
             'border-radius:12px;overflow:hidden;">'
             '<div style="padding:8px 16px;background:' + accent + '06;font-size:0.7rem;font-weight:700;'
@@ -23335,7 +23375,7 @@ def _render_playbook(b: dict) -> str:
         title = _esc(s.get('title', ''))
         text = _md_inline(s.get('text', s.get('body', '')))
         display = 'block' if i == 0 else 'none'
-        slide_html += ('<div id="' + uid + 's' + str(i) + '" style="display:' + display + ';padding:24px;'
+        slide_html += ('<div id="' + uid + 's' + _cv_esc(str(i)) + '" style="display:' + display + ';padding:24px;'
                        'min-height:120px;">'
                        + ('<div style="font-size:1.2rem;font-weight:700;color:#111827;margin-bottom:8px;">' + title + '</div>' if title else '')
                        + ('<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div>' if text else '')
@@ -23643,7 +23683,7 @@ def _journey_source_bar(b: dict) -> str:
     )
     meta = ' · '.join(_esc(x) for x in [
         src.get('author'), src.get('publication'), src.get('published'),
-        f"{src['read_minutes']} min read" if src.get('read_minutes') else None,
+        f"{_cv_esc(src['read_minutes'])} min read" if src.get('read_minutes') else None,
     ] if x)
 
     # What the reader asked this reading to look for. A steered reading is a
@@ -23693,7 +23733,7 @@ def _render_concept_rung(b: dict) -> str:
     else:
         chip_bg = f'var(--accent-soft,{_JOURNEY_PALETTE_LIGHT["accent_soft"]})'
         chip_fg = f'var(--accent,{_JOURNEY_PALETTE_LIGHT["accent"]})'
-        default_label = f'DEPTH {b.get("badge", "")}'.strip()
+        default_label = f'DEPTH {_cv_esc(b.get("badge", ""))}'.strip()
     label = _esc(b.get('label') or default_label)
     title = _mdcode(b.get('title', ''))
     paras = [p.strip() for p in (b.get('body') or '').split('\n\n') if p.strip()]
@@ -24230,7 +24270,7 @@ def _render_incident_log(b: dict) -> str:
             f'<div style="text-align:center;flex:1;">'
             f'<div style="height:34px;border-radius:7px;background:{bg};border:1px solid {border};'
             f'display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;'
-            f'color:{text};">{d.get("count", 0) or "·"}</div>'
+            f'color:{text};">{_cv_esc(d.get("count", 0) or "·")}</div>'
             f'<div style="font-size:10.5px;letter-spacing:.08em;color:#5A6390;margin-top:5px;'
             f'text-transform:uppercase;">{_esc(d.get("label", ""))}</div></div>'
         )
@@ -24694,7 +24734,7 @@ def _render_weather_outlook(b: dict) -> str:
         f'<div style="{_CARD_OPEN}">'
         f'{_card_head(b.get("title", "OUTLOOK"), b.get("city", ""), rose=True)}'
         f'<div style="margin-top:8px;">{rows}</div>'
-        f'{_card_foot(f"shared scale {lo_bound}–{hi_bound}°C", "weather_outlook")}'
+        f'{_card_foot(f"shared scale {_cv_esc(lo_bound)}–{_cv_esc(hi_bound)}°C", "weather_outlook")}'
         f'</div>'
     )
 _RENDERERS['weather_outlook'] = _render_weather_outlook
@@ -24836,7 +24876,7 @@ def _shade_hex(hex_colour: str, percent: float) -> str:
     try:
         num = int(h, 16)
     except ValueError:
-        return "#" + h
+        return "#" + _cv_esc(h)
     r, g, bl = (num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF
     amt = round(2.55 * percent)
     r = max(0, min(255, r + amt))
@@ -24901,10 +24941,10 @@ def _render_masonry_elevation(b: dict) -> str:
                     stroke, stroke_w, rx = _shade_hex(colour, -18), 0.75, 1.5
                 else:  # blueprint
                     fill, stroke, stroke_w, rx = "none", "#5b8fc7", 1, 0
-                stroke_attr = f' stroke="{stroke}" stroke-width="{stroke_w}"' if stroke_w else ""
+                stroke_attr = f' stroke="{_cv_esc(stroke)}" stroke-width="{_cv_esc(stroke_w)}"' if stroke_w else ""
                 parts.append(
                     f'<rect x="{bx:.1f}" y="{y + gap:.1f}" width="{bw:.1f}" '
-                    f'height="{course_px - gap:.1f}" rx="{rx}" fill="{fill}"{stroke_attr}/>'
+                    f'height="{course_px - gap:.1f}" rx="{_cv_esc(rx)}" fill="{_cv_esc(fill)}"{stroke_attr}/>'
                 )
             x += unit_px
             block_idx += 1
@@ -25190,7 +25230,7 @@ def _render_tool_call_card(b: dict) -> str:
     args_html = ''
     if args is not None:
         if isinstance(args, (dict, list)):
-            args_str = json.dumps(args, indent=2)
+            args_str = _js_json(args, indent=2)
         else:
             args_str = str(args)
         args_html = (
@@ -25212,7 +25252,7 @@ def _render_tool_call_card(b: dict) -> str:
         )
     elif res is not None:
         if isinstance(res, (dict, list)):
-            res_str = json.dumps(res, indent=2)
+            res_str = _js_json(res, indent=2)
         else:
             res_str = str(res)
         res_html = (
@@ -25888,7 +25928,7 @@ def _expand_seat_layout(layout: dict) -> list:
         row = []
         for c in range(n_cols):
             clabel = col_labels[c] if c < len(col_labels) else chr(ord("A") + c)
-            sid = f"{rlabel}{clabel}"
+            sid = f"{_cv_esc(rlabel)}{_cv_esc(clabel)}"
             status = "occupied" if sid in occupied else ("premium" if is_premium else "available")
             seat = {"id": sid, "label": sid, "status": status}
             price = price_premium if (is_premium and price_premium is not None) else price_default
@@ -25936,7 +25976,7 @@ def _render_seat_map(b: dict) -> str:
             occupied = status == "occupied"
             bg, border = status_style.get(status, status_style["available"])
             iid = f"{gid}_{hashlib.md5(sid.encode()).hexdigest()[:4]}"
-            title = label + (f' — {price}' if price is not None else '')
+            title = label + (f' — {_cv_esc(price)}' if price is not None else '')
             seats_html += (
                 f'<label for="{iid}" class="{gid}-seat" title="{_esc(title)}" '
                 f'style="display:flex;align-items:center;justify-content:center;'
@@ -25972,7 +26012,7 @@ def _render_seat_map(b: dict) -> str:
         f'<script>(function(){{'
         f'var inputs=document.querySelectorAll(".{gid}-input");'
         f'var out=document.getElementById("{gid}_summary");'
-        f'var tpl={_json.dumps(summary_template)};'
+        f'var tpl={_js_json(summary_template)};'
         f'inputs.forEach(function(inp){{inp.addEventListener("change",function(){{'
         f'if(out&&inp.checked)out.textContent=tpl.replace("{{label}}",inp.getAttribute("data-label")||"");'
         f'}});}});'
@@ -26006,7 +26046,7 @@ def _render_slot_scheduler(b: dict) -> str:
     location = _esc(b.get("location", ""))
     timezone_label = _esc(b.get("timezone", ""))
     summary_template = b.get("summary_template", "")
-    gid = "ss_" + hashlib.md5(_json.dumps(dates, sort_keys=True).encode()).hexdigest()[:6]
+    gid = "ss_" + hashlib.md5(_js_json(dates, sort_keys=True).encode()).hexdigest()[:6]
 
     dates_html = ""
     for d in dates:
@@ -26061,7 +26101,7 @@ def _render_slot_scheduler(b: dict) -> str:
         f'if(btn)btn.disabled=false;}}}});}});'
         f'if(btn)btn.addEventListener("click",function(){{'
         f'if(!picked||!conf)return;'
-        f'var tpl={_json.dumps(summary_template)};'
+        f'var tpl={_js_json(summary_template)};'
         f'var text=tpl.replace("{{date}}",picked.date).replace("{{time}}",picked.time);'
         f'if(confText)confText.textContent=text||(picked.date+" "+picked.time);'
         f'conf.style.display="block";'
@@ -26098,7 +26138,7 @@ def _render_option_plan_builder(b: dict) -> str:
     options = b.get("options", [])
     total_label = _esc(b.get("total_label", "Total"))
     summary_template = b.get("summary_template", "")
-    gid = "opb_" + hashlib.md5(_json.dumps(options, sort_keys=True).encode()).hexdigest()[:6]
+    gid = "opb_" + hashlib.md5(_js_json(options, sort_keys=True).encode()).hexdigest()[:6]
 
     options_html = ""
     for opt in options:
@@ -26112,9 +26152,9 @@ def _render_option_plan_builder(b: dict) -> str:
             f'<label for="{cid}" style="display:flex;align-items:center;justify-content:space-between;'
             f'padding:8px 4px;border-bottom:1px solid #f1f3f4;cursor:pointer;font-size:0.85rem;color:#3c4043;">'
             f'<span><input type="checkbox" id="{cid}" class="{gid}-input" '
-            f'data-price="{price_delta}" data-label="{_esc(label)}" '
+            f'data-price="{_cv_esc(price_delta)}" data-label="{_esc(label)}" '
             f'{"checked" if default_on else ""} style="margin-right:8px;">{label}</span>'
-            f'<span style="color:#5f6368;">{sign}{price_delta}</span>'
+            f'<span style="color:#5f6368;">{sign}{_cv_esc(price_delta)}</span>'
             f'</label>'
         )
 
@@ -26128,7 +26168,7 @@ def _render_option_plan_builder(b: dict) -> str:
         f'var inputs=document.querySelectorAll(".{gid}-input");'
         f'var totalEl=document.getElementById("{gid}_total");'
         f'var summaryEl=document.getElementById("{gid}_summary");'
-        f'var tpl={_json.dumps(summary_template)};'
+        f'var tpl={_js_json(summary_template)};'
         f'function recompute(){{'
         f'var total=0;'
         f'inputs.forEach(function(inp){{if(inp.checked)total+=parseFloat(inp.getAttribute("data-price"))||0;}});'
@@ -26331,7 +26371,7 @@ def _mo_enter_spec(e):
     fx = _MO_FX[name]
     return {
         'name': name,
-        'kf': '@keyframes moe-' + name + '{' + fx['kf'] + '}',
+        'kf': '@keyframes moe-' + _cv_esc(name) + '{' + fx['kf'] + '}',
         'ease': _mo_ease_css(e.get('ease'), fx['e']),
         'dur': _mo_dur(e.get('duration'), fx['d']),
         'delay': _ff_int(e.get('delay'), 0, 0, 20000),
@@ -26349,6 +26389,139 @@ def _mo_enter_wrap(s, html, extra_delay=0, seed=None):
 def _mo_enter(b, html):
     s = _mo_enter_spec(b.get('enter'))
     return _mo_enter_wrap(s, html, 0, b) if s else html
+
+
+# ── Payload guard (2026-10-01): twin of atom.gs _gd*. Validates CSS/number/URL/id fields before any renderer sees them. ──
+_GD_CSS_KEY = re.compile(r'^(accent[0-9]?|colou?rs?[0-9]?|colou?r_scale|bg|background|bg_colou?r|background_colou?r|fill[0-9]?|stroke|border|border_colou?r|glow|glow_colou?r|gradient|gradient_(from|to)|track_colou?r|text_colou?r|ink|tint|shadow|align|text_align|angle|blur|gap|height|width|max_width|min_width|max_height|min_height|margin|padding|radius|border_radius|opacity|size|font_size|weight|font_weight|top_offset|dark_bg|blend|soft_edge|darkness)$')
+_GD_NUM_KEY = re.compile(r'^(total_(pages|steps|count|contributions|gb)|current_(page|part|step)|speed|zoom|gravity|strength|max_tilt|max_dist|duration|length|xp_(current|next)|review_count|(prompt|output|thinking|total)_tokens|sentiment_index|delay|interval|seed|depth|max_value|min_value|limit)$')
+_GD_URL_KEY = re.compile(r'^(url|href|src|link|image|avatar|logo|poster|thumbnail|endpoint)$|_(url|href|src)$')
+_GD_ID_KEY = re.compile(r'(^|_)id$|slug$|^lockedcallsign$')
+_GD_GLYPH_KEY = re.compile(r'^(icon|emoji|glyph|reactions|symbol|bullet|marker)$')
+_GD_GLYPH_BAD = re.compile('[<>"\'`\\\\\x00-\x1f\x7f]')
+_GD_CSS_FN = {'rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color', 'color-mix', 'var', 'calc', 'min', 'max', 'clamp',
+              'linear-gradient', 'radial-gradient', 'conic-gradient', 'repeating-linear-gradient', 'repeating-radial-gradient', 'repeating-conic-gradient', 'cubic-bezier', 'steps'}
+_GD_CSS_BAD = re.compile('["\'<>;{}\\\\`:@&=!\x00-\x1f\x7f\u2028\u2029]|/\\*|\\*/')
+_GD_CSS_CALL = re.compile(r'([a-zA-Z_-][a-zA-Z0-9_-]*)[ \t\n\r\f\v]*\(')
+_GD_NUM_RE = re.compile(r'^-?[0-9]+(\.[0-9]+)?[a-z%]{0,4}$|^[a-z][a-z-]{0,24}$')
+_GD_URL_BAD = re.compile('["\'<>\\\\`\x00-\x1f\x7f\u2028\u2029]')
+_GD_URL_STRICT = re.compile(r'_(url|href|src)$|^(url|href|src|endpoint)$')
+_GD_WS = re.compile('[ \t\n\r\f\v]')
+_GD_SCHEME = re.compile(r'^[ \t\n\r\f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):')
+_GD_DATA_IMG = re.compile(r'^[ \t\n\r\f\v]*data:image/(png|jpe?g|gif|webp|avif)[;,]', re.I)
+_GD_ID_RE = re.compile(r'^[A-Za-z0-9_.:/?=&%#~+@,-]{1,300}$')
+
+
+def _js_json(v, **kw):
+    """Script-safe JSON, twin of atom.gs _jsJson: < > & ' U+2028 U+2029 become \\u escapes. Same value when parsed; cannot close a
+    <script>, open a tag or end a single-quoted attribute."""
+    return _json.dumps(v, **kw).translate(_JS_JSON_ESC)
+
+
+_JS_JSON_ESC = {ord(c): '\\u%04x' % ord(c) for c in '<>&\'' + chr(0x2028) + chr(0x2029)}
+
+
+def _gd_lower(s):
+    # JS toLowerCase on the ASCII letters the key patterns use; non-ASCII keys never match a policed key either way
+    return s.lower()
+
+
+def _gd_css(v):
+    if len(v) > 300 or _GD_CSS_BAD.search(v):
+        return False
+    return all(m.group(1).lower() in _GD_CSS_FN for m in _GD_CSS_CALL.finditer(v))
+
+
+def _safe_css(v, dflt):
+    """A CSS value from a payload field that has no standard guarded name: kept if it passes the guard's CSS check, else the default."""
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        return str(v)
+    return v if isinstance(v, str) and _gd_css(v) else dflt
+
+
+def _safe_ident(v, dflt=''):
+    """A JS/CSS identifier (function name, tag name) from a payload field."""
+    return v if isinstance(v, str) and re.fullmatch(r'[A-Za-z_$][A-Za-z0-9_$]{0,63}', v) else dflt
+
+
+def _gd_url(k, v):
+    if len(v) > 2048 or _GD_URL_BAD.search(v):
+        return False
+    if _GD_URL_STRICT.search(k) and _GD_WS.search(v):
+        return False
+    m = _GD_SCHEME.match(v)
+    if not m:
+        return True
+    s = m.group(1).lower()
+    if s in ('http', 'https', 'mailto', 'tel'):
+        return True
+    return s == 'data' and bool(_GD_DATA_IMG.match(v))
+
+
+def _gd_ok(k, v):
+    if _GD_URL_KEY.search(k):
+        return _gd_url(k, v)
+    if _GD_ID_KEY.search(k):
+        return bool(_GD_ID_RE.match(v))
+    if _GD_GLYPH_KEY.search(k):
+        return len(v) <= 64 and not _GD_GLYPH_BAD.search(v)
+    if _GD_NUM_KEY.search(k):
+        return bool(_GD_NUM_RE.match(v))
+    if _GD_CSS_KEY.search(k):
+        return _gd_css(v)
+    return True
+
+
+_GD_STRUCT_KEY = re.compile(r'^(colou?rs|colou?r_scale)$')
+
+
+def _gd_scalar(k):
+    return (not _GD_STRUCT_KEY.search(k)) and bool(_GD_CSS_KEY.search(k) or _GD_NUM_KEY.search(k) or _GD_ID_KEY.search(k) or (_GD_GLYPH_KEY.search(k) and k != 'reactions'))
+
+
+def _gd_clean(v, k):
+    if isinstance(v, list):
+        out = []
+        for x in v:
+            if isinstance(x, str):
+                if _gd_ok(k, x):
+                    out.append(x)
+            else:
+                out.append(_gd_clean(x, k))
+        return out
+    if isinstance(v, dict):
+        o = {}
+        for key, val in v.items():
+            lk = _gd_lower(key) if isinstance(key, str) else key
+            if isinstance(val, str):
+                if _gd_ok(lk, val):
+                    o[key] = val
+            elif isinstance(val, (dict, list)) and _gd_scalar(lk):
+                # a single-value field (colour, size, number, id, icon) never holds an object; a list keeps only valid strings and numbers
+                if isinstance(val, list):
+                    o[key] = [x for x in val if (isinstance(x, str) and _gd_ok(lk, x)) or (isinstance(x, (int, float)) and not isinstance(x, str))]
+            else:
+                o[key] = _gd_clean(val, lk)
+        return o
+    return v
+
+
+# These validate their own payload with a real parser and an allowlist (SVG attributes such as fill="url(#grad)" are legal there).
+_GD_SELF_VALIDATED = {'freeform_canvas', 'agent_sketchpad'}
+
+
+def _gd_install():
+    """Wrap every registered renderer once (idempotent) with the payload guard. Twin of atom.gs _gdInstall."""
+    for k, f in list(_RENDERERS.items()):
+        if not callable(f) or getattr(f, '_gd', False) or k in _GD_SELF_VALIDATED:
+            continue
+
+        def make(f):
+            def w(b):
+                return f(_gd_clean(b, '') if isinstance(b, dict) else b)
+            w._gd = True
+            w._mo = getattr(f, '_mo', False)
+            return w
+        _RENDERERS[k] = make(f)
 
 
 def _mo_install():
@@ -26503,7 +26676,7 @@ def _render_demo_window(b: dict) -> str:
             break
     for i, nv in enumerate(nav):
         n = nv if isinstance(nv, dict) else {'label': nv}
-        k = 'max(0,calc(1 - max(var(--s,' + str(act) + ') - ' + str(i) + ',' + str(i) + ' - var(--s,' + str(act) + '))))'
+        k = 'max(0,calc(1 - max(var(--s,' + _cv_esc(str(act)) + ') - ' + _cv_esc(str(i)) + ',' + _cv_esc(str(i)) + ' - var(--s,' + _cv_esc(str(act)) + '))))'
         items += ('<div style="--k:' + k + ';position:relative;display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:600;color:' + c['mute'] + ';color:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),' + c['mute'] + ');">'
                   + '<span style="position:absolute;inset:0;border-radius:8px;background:rgba(' + _ff_rgb(acc) + ',0.12);opacity:var(--k);"></span>'
                   + '<span style="position:relative;width:12px;height:12px;border-radius:4px;border:1.5px solid ' + c['line'] + ';border-color:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),' + c['line'] + ');flex:none;"></span><span style="position:relative;">' + _cv_esc(_cv_str(n.get('label'), 24)) + '</span></div>')
@@ -26651,7 +26824,7 @@ def _render_demo_caption(b: dict) -> str:
         l = l0 if isinstance(l0, dict) else {'text': l0}
         who, text = _cv_str(l.get('who'), 10) or 'agent', _cv_str(l.get('text'), 120)
         sr.append(who + ': ' + text)
-        pills += ('<div style="grid-area:1/1;display:flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:999px;background:' + bg + ';color:' + ink + ';font-size:15px;font-weight:500;white-space:nowrap;box-shadow:0 10px 30px -10px rgba(2,6,23,0.6);opacity:max(0,calc(1 - max(var(--s,0) - ' + str(i) + ',' + str(i) + ' - var(--s,0))));">'
+        pills += ('<div style="grid-area:1/1;display:flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:999px;background:' + bg + ';color:' + ink + ';font-size:15px;font-weight:500;white-space:nowrap;box-shadow:0 10px 30px -10px rgba(2,6,23,0.6);opacity:max(0,calc(1 - max(var(--s,0) - ' + _cv_esc(str(i)) + ',' + _cv_esc(str(i)) + ' - var(--s,0))));">'
                   + '<span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#05210f;background:' + acc + ';">' + _cv_esc(who) + '</span>' + _cv_esc(text) + '</div>')
     return ('<div style="display:grid;justify-items:center;font-family:' + _MO_SANS + ';" role="group" aria-label="Captions">' + pills
             + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">' + _cv_esc(' '.join(sr)) + '</span></div>')
@@ -26796,6 +26969,7 @@ def _mo_timeline(b: dict) -> str:
     if len(tracks) > 40:
         st['dropped'] += len(tracks) - 40
         tracks = tracks[:40]
+    tg = tg + _mo_stitch(b, ids, bpm, dur_n, st)  # scene hand-overs first, so a track you write on the same layer wins
     for tr in tracks:
         tid = _mo_id(tr.get('target')) if isinstance(tr, dict) else ''
         if not tid or not ids.get(tid) or not isinstance(tr.get('keys'), list):
@@ -26881,6 +27055,58 @@ def _render_motion_layer(b: dict) -> str:
             + ('<!-- a2ui: motion_layer ignored ' + str(st['dropped']) + ' invalid or over-limit item(s) -->' if st['dropped'] else ''))
 
 
+def _mo_chars(s):
+    """Rich text: *word* takes the accent colour, ** is a literal asterisk. Chars are (c, a) so a unit keeps its colour."""
+    out, a, cs, i = [], False, list(s), 0
+    while i < len(cs):
+        if cs[i] == '*':
+            if i + 1 < len(cs) and cs[i + 1] == '*':
+                out.append((cs[i], a))
+                i += 2
+                continue
+            a = not a
+            i += 1
+            continue
+        out.append((cs[i], a))
+        i += 1
+    return out
+
+
+def _mo_plain(s):
+    return ''.join(c for c, _a in _mo_chars(s))
+
+
+def _mo_words(chs):
+    words, cur = [], []
+    for ch in chs:
+        if ch[0] == ' ':
+            if cur:
+                words.append(cur)
+            cur = []
+        else:
+            cur.append(ch)
+    if cur:
+        words.append(cur)
+    return words
+
+
+def _mo_runs(chs, acc):
+    html, i = '', 0
+    while i < len(chs):
+        j, a, t = i, chs[i][1], ''
+        while j < len(chs) and chs[j][1] == a:
+            t += chs[j][0]
+            j += 1
+        t = _cv_esc(t).replace('\n', '<br>')
+        html += ('<span style="color:' + acc + ';">' + t + '</span>') if a else t
+        i = j
+    return html
+
+
+def _mo_sr(plain):
+    return '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">' + _cv_esc(plain) + '</span>'
+
+
 def _render_motion_text(b: dict) -> str:
     raw = (b.get('text') if isinstance(b.get('text'), str) else '').split('\n')
     lines, total = [], 0
@@ -26902,23 +27128,31 @@ def _render_motion_text(b: dict) -> str:
     S = _ff_int(b.get('overlap'), 3, 1, 8)
     track, lh = _ff_num(b.get('tracking'), -0.02, -0.1, 0.5, 3), _ff_num(b.get('line_height'), 1.05, 0.8, 2, 2)
     color, align, upper = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), b.get('uppercase') is True
+    accent = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)')
     units = []
     for i, ln in enumerate(lines):
+        chs = _mo_chars(ln)
         if mode in ('block', 'lines'):
-            units.append({'t': ln, 'brk': i > 0 and mode == 'block'})
+            units.append({'c': chs, 'brk': i > 0 and mode == 'block'})
             continue
-        for j, wd in enumerate(ln.split(' ')):
-            if not wd:
-                continue
-            u = {'t': wd, 'brk': i > 0 and j == 0, 'sp': j > 0}
+        for j, wd in enumerate(_mo_words(chs)):
+            u = {'c': wd, 'brk': i > 0 and j == 0, 'sp': j > 0}
             if mode == 'chars':
                 u['chars'] = True
             units.append(u)
+
+    def joined(sep):
+        allc = []
+        for x, ln in enumerate(lines):
+            if x:
+                allc.append((sep, False))
+            allc.extend(_mo_chars(ln))
+        return allc
     if mode == 'block':
-        units = [{'t': '\n'.join(lines), 'block': True}]
-    N = sum(len(u['t']) if u.get('chars') else 1 for u in units)
+        units = [{'c': joined('\n'), 'block': True}]
+    N = sum(len(u['c']) if u.get('chars') else 1 for u in units)
     if N > 120:
-        units, N, mode = [{'t': ' '.join(lines), 'block': True}], 1, 'block'
+        units, N, mode = [{'c': joined(' '), 'block': True}], 1, 'block'
     idx = [0]
 
     def uvar(n):
@@ -26939,23 +27173,23 @@ def _render_motion_text(b: dict) -> str:
     out = ''
     for u in units:
         if u.get('block'):
-            out += wrap_unit(_cv_esc(u['t']).replace('\n', '<br>'), nxt(), True)
+            out += wrap_unit(_mo_runs(u['c'], accent), nxt(), True)
             continue
         if u.get('brk'):
             out += '<br>'
         if u.get('sp'):
             out += ' '
         if mode == 'lines':
-            out += wrap_unit(_cv_esc(u['t']), nxt(), True)
+            out += wrap_unit(_mo_runs(u['c'], accent), nxt(), True)
             continue
         if u.get('chars'):
-            ch = ''.join(wrap_unit(_cv_esc(c), nxt(), False) for c in u['t'])
+            ch = ''.join(wrap_unit(_mo_runs([c], accent), nxt(), False) for c in u['c'])
             out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>'
         else:
-            out += wrap_unit(_cv_esc(u['t']), nxt(), False)
+            out += wrap_unit(_mo_runs(u['c'], accent), nxt(), False)
     return ('<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
             + ('text-transform:uppercase;' if upper else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
-            + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">' + _cv_esc(' '.join(lines)) + '</span>'
+            + _mo_sr(_mo_plain(' '.join(lines)))
             + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>')
 
 
@@ -27007,5 +27241,313 @@ _RENDERERS['motion_text'] = _render_motion_text
 _RENDERERS['motion_shape'] = _render_motion_shape
 _RENDERERS['motion_counter'] = _render_motion_counter
 
+# ─── atoms from a studied reference film (2026-10-01): see the matching block in atoms_motion.gs ─────────────────────────
+_MO_MIX_LINE = 'color-mix(in srgb,var(--mt-ink,#f1f5f9) 14%,transparent)'
+_MO_MIX_FILL = 'color-mix(in srgb,var(--mt-ink,#f1f5f9) 5%,transparent)'
+
+
+def _render_motion_pill(b: dict) -> str:
+    text, size, icon = _cv_str(b.get('text'), 60) or 'Label', _ff_int(b.get('size'), 28, 10, 120), _cv_str(b.get('icon'), 2)
+    acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'fill', '')
+    align = _ff_pick(b.get('align'), _MO_ALIGN, 'start')
+    jc = 'flex-end' if align == 'right' else ('center' if align == 'center' else 'flex-start')
+    return ('<div style="display:flex;justify-content:' + jc + ';width:100%;">'
+            + '<div style="display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
+            + _mo_sr(_mo_plain(text))
+            + '<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:0.55em;">' + ('<span style="color:' + acc + ';">' + _cv_esc(icon) + '</span>' if icon else '') + '<span>' + _mo_runs(_mo_chars(text), acc) + '</span></span></div></div>')
+
+
+def _render_motion_checklist(b: dict) -> str:
+    title, size, acc = _cv_str(b.get('title'), 40), _ff_int(b.get('size'), 26, 10, 80), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)')
+    src = b.get('items') if isinstance(b.get('items'), list) else []
+    items = []
+    for it in src:
+        if len(items) >= 6:
+            break
+        obj = isinstance(it, dict)
+        t = _cv_str(it if isinstance(it, str) else (it.get('text') if obj else ''), 40)
+        if t:
+            items.append((t, _cv_str(it.get('icon'), 2) if obj else ''))
+    if not items:
+        items = [('Item', '')]
+    n, skel, rows = len(items), _ff_int(b.get('skeleton'), 0, 0, 4), ''
+    tick = '<svg viewBox="0 0 16 16" width="62%" height="62%" aria-hidden="true"><path d="M3.8 8.6l2.8 2.8 5.6-5.8" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    for i, (t, ic) in enumerate(items):
+        rows += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n) + ' - ' + str(i) + '),1);display:flex;align-items:center;gap:0.7em;padding:0.55em 0.8em;border-radius:0.7em;background:' + _MO_MIX_FILL + ';opacity:calc(0.4 + 0.6*var(--u));margin-top:0.55em;">'
+                 + ('<span aria-hidden="true">' + _cv_esc(ic) + '</span>' if ic else '')
+                 + '<span style="flex:1;font-weight:600;transform:translateX(calc((1 - var(--u))*-0.4em));">' + _cv_esc(t) + '</span>'
+                 + '<span aria-hidden="true" style="position:relative;width:1.35em;height:1.35em;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid ' + _MO_MIX_LINE + ';">'
+                 + '<span style="position:absolute;left:-2px;top:-2px;right:-2px;bottom:-2px;border-radius:50%;background:' + acc + ';display:flex;align-items:center;justify-content:center;transform:scale(var(--u));">' + tick + '</span></span></div>')
+    for _ in range(skel):
+        rows += '<div aria-hidden="true" style="height:2.3em;border-radius:0.7em;background:' + _MO_MIX_FILL + ';margin-top:0.55em;"></div>'
+    return ('<div style="box-sizing:border-box;width:100%;padding:0.9em;border-radius:1.1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#f1f5f9);font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;line-height:1.2;">'
+            + ('<div style="font-weight:700;font-size:0.9em;">' + _cv_esc(title) + '</div>' if title else '') + rows + '</div>')
+
+
+def _mo_num_ok(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+
+
+def _render_motion_stepper(b: dict) -> str:
+    size, acc, cap = _ff_int(b.get('size'), 16, 8, 60), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _cv_str(b.get('title'), 40)
+    cols = []
+    for c in (b.get('columns') if isinstance(b.get('columns'), list) else []):
+        if len(cols) >= 6:
+            break
+        if not isinstance(c, (dict, list)):
+            continue
+        cd = c if isinstance(c, dict) else {}
+        its = []
+        for it in (cd.get('items') if isinstance(cd.get('items'), list) else []):
+            if len(its) >= 4:
+                break
+            obj = isinstance(it, dict)
+            tx = _cv_str(it if isinstance(it, str) else (it.get('text') if obj else ''), 40)
+            if not tx:
+                continue
+            its.append({'t': tx, 'm': _cv_str(it.get('meta'), 16) if obj else '', 'v': _ff_num(it.get('value'), 0, 0, 1, 2) if obj else '0'})
+        cols.append({'t': _cv_str(cd.get('title'), 24) or 'Step', 'items': its})
+    if not cols:
+        cols = [{'t': 'Step', 'items': [{'t': 'Item', 'm': '', 'v': '0'}]}]
+    C, R = len(cols), max(len(c['items']) for c in cols)
+    fsrc = b.get('focus') if isinstance(b.get('focus'), list) else []
+    bsrc = b.get('badges') if isinstance(b.get('badges'), list) else []
+    fmap = {}
+    for i, f in enumerate(fsrc[:6]):
+        if isinstance(f, list) and len(f) >= 2 and _mo_num_ok(f[0]) and _mo_num_ok(f[1]):
+            fmap[str(math.floor(f[0])) + ',' + str(math.floor(f[1]))] = _cv_str(bsrc[i] if i < len(bsrc) else None, 6)
+    dim = '0.7' if fmap else '0'
+    html = '<div style="position:relative;width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);">'
+    if cap:
+        html += '<div style="font-family:' + _FF_FONTS['mono'] + ';font-size:0.62em;letter-spacing:0.2em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-bottom:1.4em;opacity:clamp(0,calc(var(--p,1)*6),1);">' + _cv_esc(cap) + '</div>'
+    html += ('<div style="position:relative;display:grid;grid-template-columns:repeat(' + str(C) + ',minmax(0,1fr));column-gap:0.9em;">'
+             + '<div aria-hidden="true" style="position:absolute;left:0.4em;right:0;top:0.4em;height:2px;background:' + acc + ';opacity:0.85;transform-origin:0 0;transform:scaleX(clamp(0,var(--p,1),1));"></div>')
+    if b.get('scan') is True:
+        html += '<div aria-hidden="true" style="position:absolute;top:0;bottom:0;left:calc(var(--s,1)*100%);width:2px;background:linear-gradient(transparent,' + acc + ',transparent);box-shadow:0 0 18px ' + acc + ';opacity:min(calc(var(--s,1)*8),calc((1 - var(--s,1))*8),1);z-index:3;"></div>'
+    for i, col in enumerate(cols):
+        html += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(C + 1) + ' - ' + _cv_esc(str(i)) + '),1);position:relative;">'
+                 + '<div style="display:flex;align-items:center;gap:0.55em;font-weight:700;font-size:0.95em;margin-bottom:1em;opacity:var(--u);transform:translateY(calc((1 - var(--u))*0.5em));">'
+                 + '<span aria-hidden="true" style="position:relative;z-index:1;width:0.8em;height:0.8em;flex:none;border-radius:50%;background:' + acc + ';"></span>' + _cv_esc(col['t']) + '</div>')
+        for j, cell in enumerate(col['items']):
+            key = _cv_esc(str(i)) + ',' + str(j)
+            foc = key in fmap
+            html += ('<div style="--v:clamp(0,calc(var(--u)*' + str(R + 1) + ' - ' + str(j) + '),1);position:relative;margin-bottom:0.6em;padding:0.7em 0.8em;box-sizing:border-box;border-radius:0.6em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';font-size:0.8em;line-height:1.25;'
+                     + 'opacity:' + ('var(--v)' if foc else 'calc(var(--v)*(1 - ' + dim + '*var(--s,1)))') + ';transform:translateY(calc((1 - var(--v))*0.6em));">' + _cv_esc(cell['t']))
+            if cell['m']:
+                html += ('<div style="display:flex;justify-content:space-between;font-family:' + _FF_FONTS['mono'] + ';font-size:0.8em;color:var(--mt-mute,#94a3b8);margin-top:0.5em;opacity:var(--s,1);">' + _cv_esc(cell['m']) + '</div>'
+                         + '<div aria-hidden="true" style="height:3px;border-radius:2px;background:' + acc + ';margin-top:0.35em;transform-origin:0 50%;transform:scaleX(calc(var(--s,1)*' + cell['v'] + '));"></div>')
+            if foc:
+                html += '<span aria-hidden="true" style="position:absolute;left:-1px;top:-1px;right:-1px;bottom:-1px;border-radius:inherit;border:2px solid ' + acc + ';box-shadow:0 0 22px color-mix(in srgb,' + acc + ' 35%,transparent);opacity:var(--s,1);"></span>'
+                if fmap[key]:
+                    html += '<span style="position:absolute;top:-0.7em;right:-0.5em;background:' + acc + ';color:#0b0b0b;font-family:' + _FF_FONTS['mono'] + ';font-weight:700;font-size:0.75em;padding:0.15em 0.55em;border-radius:999px;transform:scale(var(--s,1));">' + _cv_esc(fmap[key]) + '</span>'
+            html += '</div>'
+        html += '</div>'
+    return html + '</div></div>'
+
+
+def _render_motion_orbit(b: dict) -> str:
+    size = _ff_int(b.get('size'), 64, 24, 160)
+    items = []
+    for it in (b.get('items') if isinstance(b.get('items'), list) else []):
+        if len(items) >= 12:
+            break
+        t = _cv_str(it if isinstance(it, str) else (it.get('text') if isinstance(it, dict) else ''), 8)
+        if t:
+            items.append(t)
+    if not items:
+        items = ['A']
+    n, rx, ry = len(items), _ff_int(b.get('rx'), 40, 5, 60), _ff_int(b.get('ry'), 36, 5, 60)
+    start, spin = _ff_int(b.get('start'), -90, -360, 360), _ff_int(b.get('spin'), 40, -360, 360)
+    fill, ink = _mo_ink(b, 'fill', '#ffffff'), _mo_ink(b, 'ink', '#111827')
+    html = '<div style="position:relative;width:100%;height:100%;">'
+    if b.get('ring') is not False:
+        html += '<div aria-hidden="true" style="position:absolute;left:' + str(50 - rx) + '%;top:' + str(50 - ry) + '%;width:' + str(2 * rx) + '%;height:' + str(2 * ry) + '%;box-sizing:border-box;border-radius:50%;border:1px dashed ' + _MO_MIX_LINE + ';opacity:clamp(0,var(--p,1),1);"></div>'
+    for i, t in enumerate(items):
+        a = start + math.floor(i * 360 / n + 0.5)
+        fs = size * 22 // 100 if len(t) > 2 else size * 42 // 100
+        ang = 'calc(' + str(a) + 'deg + var(--s,0)*' + str(spin) + 'deg)'
+        html += ('<div style="--u:clamp(0,calc((var(--p,1)*' + str(n + 3) + ' - ' + str(i) + ')/3),1);position:absolute;left:calc(50% + ' + str(rx) + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + str(ry) + '%*var(--u)*sin(' + ang + '));width:' + str(size) + 'px;height:' + str(size) + 'px;margin:-' + str(size // 2) + 'px 0 0 -' + str(size // 2) + 'px;display:flex;align-items:center;justify-content:center;border-radius:28%;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:scale(var(--u));opacity:var(--u);">' + _cv_esc(t) + '</div>')
+    return html + '</div>'
+
+
+_MO_KW = re.compile(r'\b(const|let|var|function|return|export|default|import|from|await|async|if|else|for|new)\b', re.ASCII)
+
+
+def _render_motion_code(b: dict) -> str:
+    src = b.get('lines') if isinstance(b.get('lines'), list) else []
+    lines = []
+    for ln in src:
+        if len(lines) >= 14:
+            break
+        lines.append(re.sub(r'[ \t\r\n]+$', '', ln)[:72] if isinstance(ln, str) else '')
+    if not lines:
+        lines = ['// code']
+    size, file_, acc = _ff_int(b.get('size'), 18, 8, 60), _cv_str(b.get('file'), 32), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)')
+    starts, total = [], 0
+    for ln in lines:
+        starts.append(total)
+        total += len(ln)
+    T, rows = max(1, total), ''
+    for i, ln in enumerate(lines):
+        ln_len, esc = len(ln), _cv_esc(ln)
+        if re.match(r'^[ \t]*//', ln):
+            body = '<span style="color:var(--mt-mute,#94a3b8);">' + esc + '</span>'
+        else:
+            body = _MO_KW.sub(lambda m: '<span style="color:' + acc + ';">' + m.group(0) + '</span>', esc)
+        rows += ('<div style="--t:clamp(0,calc(var(--p,1)*' + str(T) + ' - ' + str(starts[i]) + '),' + str(ln_len) + ');display:flex;height:1.6em;align-items:center;">'
+                 + '<span style="display:block;overflow:hidden;white-space:pre;width:calc(var(--t)*1ch);">' + body + '</span>'
+                 + '<span aria-hidden="true" style="flex:none;width:0.6ch;height:1.15em;background:' + acc + ';opacity:calc(clamp(0,calc(var(--t)*1000),1)*clamp(0,calc((' + str(ln_len) + ' - var(--t))*1000),1));"></span></div>')
+    dot = '<span style="width:0.65em;height:0.65em;border-radius:50%;background:' + _MO_MIX_LINE + ';"></span>'
+    return ('<div style="box-sizing:border-box;width:100%;padding:0.9em 1.2em 1.1em;border-radius:1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#f1f5f9);font-family:' + _FF_FONTS['mono'] + ';font-size:' + str(size) + 'px;">'
+            + '<div aria-hidden="true" style="display:flex;align-items:center;gap:0.45em;margin-bottom:0.8em;">' + dot + dot + dot
+            + ('<span style="margin-left:0.6em;font-size:0.72em;color:var(--mt-mute,#94a3b8);">' + _cv_esc(file_) + '</span>' if file_ else '') + '</div>'
+            + _mo_sr(' '.join(lines)) + '<div aria-hidden="true">' + rows + '</div></div>')
+
+
+def _render_motion_mark(b: dict) -> str:
+    size, a1, a2 = _ff_int(b.get('size'), 120, 24, 600), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'accent2', '#00b7c3')
+    ew, ang = max(4, size * 5 // 48), 'calc(197deg + var(--s,0)*360deg)'
+
+    def el(rot, pr, w, op, col):
+        return ('<ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(' + str(rot) + ' 12 12)" pathLength="1" style="stroke:' + col + ';stroke-width:' + w + ';' + ('opacity:' + op + ';' if op else '')
+                + 'stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,' + pr + ',1));"/>')
+    return ('<div role="img" aria-label="A2UI Catalog mark" style="position:relative;width:' + str(size) + 'px;height:' + str(size) + 'px;">'
+            + '<svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true" style="display:block;overflow:visible;fill:none;">'
+            + el(-32, 'var(--p,1)', '1.5', '', a1) + el(32, 'calc(var(--p,1)*1.5 - 0.25)', '1.5', '', a2) + el(90, 'calc(var(--p,1)*1.5 - 0.5)', '1.1', '0.35', a1)
+            + '<circle cx="12" cy="12" r="2.7" style="fill:' + a1 + ';transform-box:fill-box;transform-origin:center;transform:scale(clamp(0,calc(var(--p,1)*4),1));"/></svg>'
+            + '<div aria-hidden="true" style="position:absolute;left:calc(50% + 35.335%*cos(' + ang + ') + 9.715%*sin(' + ang + '));top:calc(50% - 22.08%*cos(' + ang + ') + 15.548%*sin(' + ang + '));width:' + str(ew) + 'px;height:' + str(ew) + 'px;border-radius:50%;background:' + a2 + ';transform:translate(-50%,-50%);opacity:clamp(0,calc((var(--p,1) - 0.7)*4),1);"></div></div>')
+
+
+def _render_motion_browser(b: dict) -> str:
+    size, acc, q = _ff_int(b.get('size'), 16, 8, 40), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), list(_cv_str(b.get('query'), 16))
+    ph = _cv_str(b.get('placeholder'), 24) or 'Search atoms…'
+    chips, cards = [], []
+    for c in (b.get('chips') if isinstance(b.get('chips'), list) else []):
+        if len(chips) >= 6:
+            break
+        ct = _cv_str(c, 24)
+        if ct:
+            chips.append(ct)
+    for c in (b.get('cards') if isinstance(b.get('cards'), list) else []):
+        if len(cards) >= 6:
+            break
+        if not isinstance(c, dict):
+            continue
+        cards.append({'t': _cv_str(c.get('title'), 28) or 'Atom', 'x': _cv_str(c.get('text'), 90), 'g': _cv_str(c.get('badge'), 16), 's': _cv_str(c.get('source'), 20),
+                      'p': _mo_render(c['preview']) if isinstance(c.get('preview'), dict) else ''})
+    well = _mo_ink(b, 'well', '')
+    N, cols = len(cards), _ff_int(b.get('columns'), 3, 2, 4)
+    pick = min(_ff_int(b.get('pick'), -1, -1, 5), N - 1) if N else -1
+    count = _cv_str(b.get('count'), 16)
+    typed = ''.join('<span style="opacity:clamp(0,calc(var(--q)*' + str(len(q)) + ' - ' + str(i) + '),1);">' + _cv_esc(ch) + '</span>' for i, ch in enumerate(q))
+    html = ('<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);">'
+            + '<div style="--q:clamp(0,calc(var(--p,1)*3.334),1);position:relative;display:flex;align-items:center;gap:0.7em;box-sizing:border-box;padding:0.7em 1em;border-radius:0.7em;border:1.5px solid ' + acc + ';background:' + _MO_MIX_FILL + ';">'
+            + '<svg viewBox="0 0 16 16" width="1.1em" height="1.1em" aria-hidden="true" style="flex:none;opacity:0.55;"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10.6L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
+            + '<span style="position:relative;flex:1;min-height:1.3em;">' + (_mo_sr(''.join(q)) if q else '')
+            + '<span aria-hidden="true" style="position:absolute;left:0;top:0;color:var(--mt-mute,#94a3b8);opacity:calc(1 - clamp(0,calc(var(--p,1)*30),1));white-space:nowrap;">' + _cv_esc(ph) + '</span>'
+            + '<span aria-hidden="true" style="white-space:nowrap;">' + typed + '</span></span></div>')
+    if chips or count:
+        html += '<div style="display:flex;align-items:center;gap:0.5em;margin:0.9em 0 1.1em;flex-wrap:wrap;opacity:clamp(0,calc(var(--p,1)*10),1);">'
+        for i, ch in enumerate(chips):
+            html += ('<span style="padding:0.35em 0.9em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';font-size:0.8em;font-weight:600;'
+                     + ('background:color-mix(in srgb,' + acc + ' 16%,transparent);color:' + acc + ';border-color:transparent;' if i == 0 else 'color:var(--mt-mute,#94a3b8);') + '">' + _cv_esc(ch) + '</span>')
+        html += ('<span style="margin-left:auto;font-size:0.8em;color:var(--mt-mute,#94a3b8);opacity:clamp(0,calc((var(--p,1) - 0.3)*10),1);">' + _cv_esc(count) + '</span>' if count else '') + '</div>'
+    html += '<div style="display:grid;grid-template-columns:repeat(' + str(cols) + ',minmax(0,1fr));gap:0.9em;">'
+    for i, cd in enumerate(cards):
+        pk = i == pick
+        html += ('<div style="--u:clamp(0,calc((clamp(0,calc((var(--p,1) - 0.3)*1.4286),1)*' + str(N + 2) + ' - ' + str(i) + ')/2),1);position:relative;border-radius:0.8em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';overflow:hidden;opacity:var(--u);'
+                 + 'transform:translateY(calc((1 - var(--u))*0.8em)' + (' - var(--s,1)*0.35em' if pk else '') + ');">'
+                 + '<div aria-hidden="true" style="height:7.2em;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid ' + _MO_MIX_LINE + ';' + ('background-color:' + well + ';' if well else '') + 'background-image:radial-gradient(color-mix(in srgb,var(--mt-ink,#f1f5f9) 16%,transparent) 1px,transparent 1px);background-size:12px 12px;"><div style="transform:scale(0.92);pointer-events:none;">' + cd['p'] + '</div></div>'
+                 + '<div style="padding:0.85em 0.95em 0.95em;"><div style="font-weight:700;font-size:1em;">' + _cv_esc(cd['t']) + '</div>'
+                 + '<div style="font-size:0.82em;line-height:1.4;color:var(--mt-mute,#94a3b8);margin-top:0.35em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em;">' + _cv_esc(cd['x']) + '</div>'
+                 + '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5em;margin-top:0.7em;">'
+                 + ('<span style="padding:0.25em 0.7em;border-radius:0.5em;font-size:0.72em;font-weight:700;white-space:nowrap;background:color-mix(in srgb,' + acc + ' 16%,transparent);color:' + acc + ';">' + _cv_esc(cd['g']) + '</span>' if cd['g'] else '<span></span>')
+                 + ('<span style="padding:0.2em 0.6em;border-radius:999px;font-size:0.68em;font-weight:700;white-space:nowrap;background:' + _MO_MIX_FILL + ';color:var(--mt-mute,#94a3b8);">' + _cv_esc(cd['s']) + '</span>' if cd['s'] else '') + '</div></div>'
+                 + ('<span aria-hidden="true" style="position:absolute;left:-1px;top:-1px;right:-1px;bottom:-1px;border-radius:inherit;border:2px solid ' + acc + ';box-shadow:0 14px 34px color-mix(in srgb,' + acc + ' 30%,transparent);opacity:var(--s,1);"></span>' if pk else '') + '</div>')
+    return html + '</div></div>'
+
+
+_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1}
+_MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}}
+_MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}}
+_MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0}
+
+
+def _mo_at(k, bpm, dur):
+    t = None
+    kt, kb = k.get('t'), k.get('beat')
+    if _mo_num_ok(kt):
+        t = kt
+    elif _mo_num_ok(kb) and bpm:
+        t = kb * 60 / bpm
+    return None if t is None else max(0, min(dur, t))
+
+
+def _mo_stitch_key(lst, t, props, ease=None):
+    k = {'t': t}
+    k.update(props)
+    if ease:
+        k['ease'] = ease
+    lst.append(k)
+
+
+def _mo_stitch(b, ids, bpm, dur, st):
+    src = b.get('scenes') if isinstance(b.get('scenes'), list) else []
+    if len(src) > 12:
+        st['dropped'] += len(src) - 12
+        src = src[:12]
+    sc = []
+    for i, s in enumerate(src):
+        sid = _mo_id(s.get('layer')) if isinstance(s, dict) else ''
+        t = _mo_at(s, bpm, dur) if sid and ids.get(sid) else None
+        if t is None:
+            st['dropped'] += 1
+            continue
+        sc.append({'id': sid, 't': t, 'i': i, 'fx': s['transition'] if isinstance(s.get('transition'), str) and s['transition'] in _MO_STITCH else ''})
+    sc.sort(key=lambda e: (e['t'], e['i']))
+    dfx = b['stitch'] if isinstance(b.get('stitch'), str) and b['stitch'] in _MO_STITCH else 'dissolve'
+    ov, out = float(_ff_num(b.get('overlap'), 0.6, 0, 3, 2)), []
+    for i, cur in enumerate(sc):
+        nxt = sc[i + 1] if i + 1 < len(sc) else None
+        keys, fin, fout = [], cur['fx'] or dfx, ((nxt['fx'] or dfx) if nxt else '')
+        if cur['t'] > 0:
+            if fin == 'cut':
+                _mo_stitch_key(keys, 0, {'opacity': 0})
+                _mo_stitch_key(keys, cur['t'], {'opacity': 1}, 'hold')
+            else:
+                frm = _MO_STITCH_IN[fin]
+                _mo_stitch_key(keys, 0, frm)
+                _mo_stitch_key(keys, cur['t'], frm)
+                _mo_stitch_key(keys, cur['t'] + ov, _MO_REST, 'expo-out')
+        if nxt:
+            if fout == 'cut':
+                _mo_stitch_key(keys, nxt['t'], {'opacity': 0}, 'hold')
+            else:
+                _mo_stitch_key(keys, nxt['t'], _MO_REST)
+                _mo_stitch_key(keys, nxt['t'] + ov, _MO_STITCH_OUT[fout], 'accelerate')
+        if not keys:
+            continue
+        props = {p for k in keys for p in k if p not in ('t', 'ease')}
+        live = {p for p in props if len({k[p] for k in keys if p in k}) > 1}
+        clean = []
+        for k in keys:
+            kk = {'t': k['t']}
+            for p in live:
+                if p in k:
+                    kk[p] = k[p]
+            if k.get('ease'):
+                kk['ease'] = k['ease']
+            clean.append(kk)
+        pjs = _mo_track_js(clean, _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st)
+        if pjs:
+            out.append('{i:"' + _cv_esc(cur['id']) + '",p:{' + pjs + '}}')
+    return out
+
+
+for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
+                         ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser)):
+    _RENDERERS[_mo_name] = _mo_fn
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
+_gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()

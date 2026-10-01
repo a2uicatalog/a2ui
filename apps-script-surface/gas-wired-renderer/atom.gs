@@ -28,6 +28,7 @@ function renderAtoms(blocks, opts) {
   // including ones nested in containers that call _RENDERERS[...] directly, can
   // take a motion entrance. Idempotent; no `enter` on a block = unchanged output.
   if (typeof _moInstall === 'function') _moInstall();
+  _gdInstall(); // payload guard: validates CSS/number/URL/id fields before any renderer sees them (atom.gs)
 
   // ── pack gate ──────────────────────────────────────────────────────────────
   // A lean workbench offers only some packs; everything else degrades gracefully.
@@ -95,6 +96,96 @@ function _esc(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// Script-safe JSON (2026-10-01): JSON.stringify, with < > & ' U+2028 U+2029 written as \u escapes. Still valid JSON that parses to the SAME
+// value, but it can no longer close a <script>, open a tag, or end a single-quoted attribute. Every server-side JSON.stringify in the
+// renderer files goes through this (rewritten mechanically; client code inside string literals is untouched). Python twin: _js_json.
+function _jsJson(v, r, s) {
+  var j = JSON.stringify(v, r, s);
+  return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
+}
+
+// ── Payload guard (2026-10-01) ────────────────────────────────────────────────
+// Runs BEFORE every renderer (installed by _gdInstall from renderAtoms, like _moInstall). Fields whose name says they hold a CSS value,
+// a number, a URL or an id are VALIDATED, not escaped: a valid value passes byte-for-byte, an invalid one is dropped so the atom falls
+// back to its default. That closes injection through those fields in every atom at once, without double-escaping anything. Text fields
+// are escaped by each renderer (_esc). Python twin: renderers/web_article.py _gd_*; tests/test_payload_guard.py holds them together.
+var _GD_CSS_KEY = /^(accent[0-9]?|colou?rs?[0-9]?|colou?r_scale|bg|background|bg_colou?r|background_colou?r|fill[0-9]?|stroke|border|border_colou?r|glow|glow_colou?r|gradient|gradient_(from|to)|track_colou?r|text_colou?r|ink|tint|shadow|align|text_align|angle|blur|gap|height|width|max_width|min_width|max_height|min_height|margin|padding|radius|border_radius|opacity|size|font_size|weight|font_weight|top_offset|dark_bg|blend|soft_edge|darkness)$/;
+var _GD_NUM_KEY = /^(total_(pages|steps|count|contributions|gb)|current_(page|part|step)|speed|zoom|gravity|strength|max_tilt|max_dist|duration|length|xp_(current|next)|review_count|(prompt|output|thinking|total)_tokens|sentiment_index|delay|interval|seed|depth|max_value|min_value|limit)$/;
+var _GD_URL_KEY = /^(url|href|src|link|image|avatar|logo|poster|thumbnail|endpoint)$|_(url|href|src)$/;
+var _GD_ID_KEY = /(^|_)id$|slug$|^lockedcallsign$/;
+var _GD_GLYPH_KEY = /^(icon|emoji|glyph|reactions|symbol|bullet|marker)$/;
+var _GD_CSS_FN = {'rgb': 1, 'rgba': 1, 'hsl': 1, 'hsla': 1, 'hwb': 1, 'lab': 1, 'lch': 1, 'oklab': 1, 'oklch': 1, 'color': 1, 'color-mix': 1, 'var': 1, 'calc': 1, 'min': 1, 'max': 1, 'clamp': 1,
+  'linear-gradient': 1, 'radial-gradient': 1, 'conic-gradient': 1, 'repeating-linear-gradient': 1, 'repeating-radial-gradient': 1, 'repeating-conic-gradient': 1, 'cubic-bezier': 1, 'steps': 1};
+function _gdCss(v) {
+  if (v.length > 300 || /["'<>;{}\\`:@&=!\u0000-\u001f\u007f\u2028\u2029]|\/\*|\*\//.test(v)) return false;
+  var re = /([a-zA-Z_-][a-zA-Z0-9_-]*)[ \t\n\r\f\v]*\(/g, m;
+  while ((m = re.exec(v)) !== null) if (!Object.prototype.hasOwnProperty.call(_GD_CSS_FN, m[1].toLowerCase())) return false;
+  return true;
+}
+function _gdNum(v) { return /^-?[0-9]+(\.[0-9]+)?[a-z%]{0,4}$|^[a-z][a-z-]{0,24}$/.test(v); }
+function _gdUrl(k, v) {
+  if (v.length > 2048 || /["'<>\\`\u0000-\u001f\u007f\u2028\u2029]/.test(v)) return false;
+  if (/_(url|href|src)$|^(url|href|src|endpoint)$/.test(k) && /[ \t\n\r\f\v]/.test(v)) return false;
+  var m = /^[ \t\n\r\f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
+  if (!m) return true;
+  var s = m[1].toLowerCase();
+  if (s === 'http' || s === 'https' || s === 'mailto' || s === 'tel') return true;
+  return s === 'data' && /^[ \t\n\r\f\v]*data:image\/(png|jpe?g|gif|webp|avif)[;,]/i.test(v);
+}
+function _gdId(v) { return /^[A-Za-z0-9_.:/?=&%#~+@,-]{1,300}$/.test(v); }
+// an icon is a glyph, an emoji or an entity: never markup, quotes or escapes
+function _gdGlyph(v) { return v.length <= 64 && !/[<>"'`\\\u0000-\u001f\u007f]/.test(v); }
+function _gdOk(k, v) {
+  if (_GD_URL_KEY.test(k)) return _gdUrl(k, v);
+  if (_GD_ID_KEY.test(k)) return _gdId(v);
+  if (_GD_GLYPH_KEY.test(k)) return _gdGlyph(v);
+  if (_GD_NUM_KEY.test(k)) return _gdNum(v);
+  if (_GD_CSS_KEY.test(k)) return _gdCss(v);
+  return true;
+}
+var _GD_STRUCT_KEY = /^(colou?rs|colou?r_scale)$/;
+function _gdScalar(k) { return !_GD_STRUCT_KEY.test(k) && (_GD_CSS_KEY.test(k) || _GD_NUM_KEY.test(k) || _GD_ID_KEY.test(k) || (_GD_GLYPH_KEY.test(k) && k !== 'reactions')); }
+// A cleaned copy. Strings under a policed key are kept or dropped; arrays under one lose their invalid strings; objects recurse.
+function _gdClean(v, k) {
+  if (Array.isArray(v)) {
+    var a = [];
+    for (var i = 0; i < v.length; i++) { var x = v[i]; if (typeof x === 'string') { if (_gdOk(k, x)) a.push(x); } else a.push(_gdClean(x, k)); }
+    return a;
+  }
+  if (v && typeof v === 'object') {
+    var o = {};
+    for (var key in v) {
+      if (!Object.prototype.hasOwnProperty.call(v, key)) continue;
+      var val = v[key], lk = key.toLowerCase();
+      if (typeof val === 'string') { if (_gdOk(lk, val)) o[key] = val; }
+      else if (val && typeof val === 'object' && _gdScalar(lk)) {
+        // a single-value field (colour, size, number, id, icon) never holds an object; a list keeps only valid strings and numbers
+        if (!Array.isArray(val)) continue;
+        var arr = [];
+        for (var j = 0; j < val.length; j++) { var x = val[j]; if (typeof x === 'string') { if (_gdOk(lk, x)) arr.push(x); } else if (typeof x === 'number' || typeof x === 'boolean') arr.push(x); }
+        o[key] = arr;
+      }
+      else o[key] = _gdClean(val, lk);
+    }
+    return o;
+  }
+  return v;
+}
+// These validate their own payload with a real parser and an allowlist (SVG attributes such as fill="url(#grad)" are legal there); the generic guard would second-guess them.
+var _GD_SELF_VALIDATED = {'freeform_canvas': 1, 'agent_sketchpad': 1};
+function _gdInstall() {
+  for (var k in _RENDERERS) {
+    var f = _RENDERERS[k];
+    if (typeof f !== 'function' || f._gd || Object.prototype.hasOwnProperty.call(_GD_SELF_VALIDATED, k)) continue;
+    _RENDERERS[k] = (function(f) {
+      var w = function(b) { return f(b && typeof b === 'object' && !Array.isArray(b) ? _gdClean(b, '') : b); };
+      w._gd = true;
+      w._mo = f._mo;
+      return w;
+    })(f);
+  }
 }
 
 // Shared theme colour set for the "blueprint"/technical atoms — mirrors
@@ -409,7 +500,7 @@ _RENDERERS['lesson_nav'] = function(b) {
   var moduleLabel = b.module_label ? '<div class="asw-lesson-nav-module">' + _esc(b.module_label) + '</div>' : '';
   
   var checkbox = b.show_completion ? 
-    '<label class="asw-complete-row"><input type="checkbox" onchange="if(typeof localStorage !== \'undefined\'){localStorage.setItem(\'complete-\' + ' + JSON.stringify(b.current_title) + ', this.checked);}"> Mark as complete</label>' : '';
+    '<label class="asw-complete-row"><input type="checkbox" onchange="if(typeof localStorage !== \'undefined\'){localStorage.setItem(\'complete-\' + ' + _jsJson(b.current_title) + ', this.checked);}"> Mark as complete</label>' : '';
 
   return '<div class="asw-lesson-nav">' +
          prevHtml +
@@ -466,7 +557,7 @@ _RENDERERS['quiz_question'] = function(b) {
   var options = (b.options || []).map(function(o) {
     return (typeof o === 'string') ? o : (o.label || o.text || o.value || String(o));
   });
-  var correctIdx = b.correct || 0;
+  var correctIdx = parseInt(b.correct, 10) || 0;
   var explanation = b.explanation || '';
   var atomId = b.id || 'quiz-' + Math.floor(Math.random() * 100000);
   var uid = 'q' + Math.floor(Math.random() * 100000);
@@ -478,7 +569,7 @@ _RENDERERS['quiz_question'] = function(b) {
 
   var expHtml = explanation ? '<div class="asw-quiz-explain" id="' + uid + '-explain">' + _markdownToHtml(explanation) + '</div>' : '';
 
-  var initScript = '<script>(function(){ initQuiz(' + JSON.stringify(uid) + ',' + correctIdx + ',' + JSON.stringify(atomId) + '); })();</script>';
+  var initScript = '<script>(function(){ initQuiz(' + _jsJson(uid) + ',' + correctIdx + ',' + _jsJson(atomId) + '); })();</script>';
 
   return '<div class="asw-quiz" id="' + uid + '-quiz">' +
          '<div class="asw-quiz-label">Question</div>' +
@@ -490,7 +581,7 @@ _RENDERERS['quiz_question'] = function(b) {
 };
 
 _RENDERERS['fill_in_blank'] = function(b) {
-  var template = b.template || '';
+  var template = _esc(b.template || '');
   var atomId = b.id || 'fib-' + Math.floor(Math.random() * 100000);
   var uid = 'fib' + Math.floor(Math.random() * 100000);
   var hintHtml = b.hint ? '<p style="margin-top:8px;font-size:0.8rem;color:var(--muted)">💡 ' + _esc(b.hint) + '</p>' : '';
@@ -501,7 +592,7 @@ _RENDERERS['fill_in_blank'] = function(b) {
     return '<input class="asw-fib-input" id="' + uid + '-inp-' + i + '" data-idx="' + i + '" placeholder="…" autocomplete="off">';
   });
 
-  var initScript = '<script>(function(){ initFillInBlank(' + JSON.stringify(uid) + ',' + JSON.stringify(atomId) + '); })();</script>';
+  var initScript = '<script>(function(){ initFillInBlank(' + _jsJson(uid) + ',' + _jsJson(atomId) + '); })();</script>';
 
   return '<div class="asw-fib" id="' + uid + '-fib">' +
          '<div class="asw-fib-label">Fill in the blank</div>' +
@@ -553,7 +644,7 @@ _RENDERERS['match_exercise'] = function(b) {
     rightsHtml += '<div class="asw-match-item" id="' + uid + '-r-' + r + '" data-side="right" data-idx="' + r + '">' + _esc(rights[r].text) + '</div>';
   }
 
-  var initScript = '<script>(function(){ initMatchExercise(' + JSON.stringify(uid) + ',' + JSON.stringify(atomId) + ',' + JSON.stringify(correctMap) + '); })();</script>';
+  var initScript = '<script>(function(){ initMatchExercise(' + _jsJson(uid) + ',' + _jsJson(atomId) + ',' + _jsJson(correctMap) + '); })();</script>';
 
   return '<div class="asw-match">' +
          '<div class="asw-match-label">Matching Exercise</div>' +
@@ -603,8 +694,8 @@ _RENDERERS['achievement_badge'] = function(b) {
 };
 
 _RENDERERS['score_summary'] = function(b) {
-  var correct = b.correct || 0;
-  var total = b.total || 1;
+  var correct = parseInt(b.correct, 10) || 0;
+  var total = parseInt(b.total, 10) || 1;
   var pct = Math.min(100, Math.round((correct / total) * 100));
   var passed = pct >= (b.pass_threshold || 60);
   var classPct = passed ? '' : ' fail';
@@ -1140,7 +1231,7 @@ function submitPollVote(pollId, option) {
   var tally = {};
   try { tally = JSON.parse(props.getProperty(key) || '{}'); } catch(e) {}
   tally[option] = (tally[option] || 0) + 1;
-  props.setProperty(key, JSON.stringify(tally));
+  props.setProperty(key, _jsJson(tally));
   return tally;
 }
 
@@ -1190,8 +1281,8 @@ _RENDERERS['repo_links'] = function(b) {
 };
 
 _RENDERERS['before_after'] = function(b) {
-  var beforeLabel = b.before_label || 'Before';
-  var afterLabel = b.after_label || 'After';
+  var beforeLabel = _esc(b.before_label || 'Before');
+  var afterLabel = _esc(b.after_label || 'After');
   var lang = b.language || '';
   var beforeCode = (b.before || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var afterCode = (b.after || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1243,7 +1334,7 @@ _RENDERERS['api_reference'] = function(b) {
   }
   var returnsHtml = returns ? '<div style="margin-top:12px;font-size:0.82rem;color:#374151;"><strong>Returns:</strong> <code>' + _esc(returns.type||returns||'') + '</code>' + (returns.description ? ' — ' + _esc(returns.description) : '') + '</div>' : '';
   var exampleHtml = example ? '<div style="margin-top:14px;"><div style="font-size:0.72rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Example</div>' +
-    '<pre style="background:#1e1e2e;color:#cdd6f4;padding:12px;border-radius:6px;overflow-x:auto;font-size:0.8rem;"><code>' + _esc(example).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>') + '</code></pre></div>' : '';
+    '<pre style="background:#1e1e2e;color:#cdd6f4;padding:12px;border-radius:6px;overflow-x:auto;font-size:0.8rem;"><code>' + _esc(example) + '</code></pre></div>' : '';
   return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin:1.5rem 0;">' +
     '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">' + kindHtml + sigHtml + '</div>' +
     descHtml + paramsHtml + returnsHtml + exampleHtml + '</div>';
@@ -1960,7 +2051,7 @@ _RENDERERS['tabbed_code'] = function(b) {
 };
 
 _RENDERERS['http_request_block'] = function(b) {
-  var method = (b.method || 'GET').toUpperCase();
+  var method = _esc(String(b.method || 'GET').toUpperCase());
   var url = b.url || '';
   var headers = b.headers || {};
   var body = b.body || '';
@@ -2165,7 +2256,7 @@ _RENDERERS['reaction_group'] = function(b) {
 _RENDERERS['share_quote'] = function(b) {
   var text = b.text || '';
   var author = b.author || '';
-  var tweetText = (text.substring(0,200) + (author ? ' — ' + author : '')).replace(/ /g,'+');
+  var tweetText = encodeURIComponent(String(text).substring(0,200) + (author ? ' — ' + author : ''));
   return '<div style="border-left:4px solid #7c3aed;padding:16px 20px;background:#faf5ff;border-radius:0 10px 10px 0;margin:1.5rem 0;">' +
     '<p style="font-size:1rem;font-style:italic;color:#1e1b4b;line-height:1.6;margin:0 0 10px;">"' + _esc(text) + '"</p>' +
     (author ? '<div style="font-size:0.8rem;color:#7c3aed;font-weight:600;">— ' + _esc(author) + '</div>' : '') +
@@ -2236,15 +2327,15 @@ _RENDERERS['abbr_tooltip'] = function(b) {
 
 _RENDERERS['copy_to_clipboard'] = function(b) {
   var text = b.text || '';
-  var val = (b.value || text).replace(/'/g,"\\'");
+  var val = _esc(_jsJson(String(b.value || text)));
   return '<span style="display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.85rem;color:#1f2937;">' +
     '<span>' + _esc(text) + '</span>' +
-    '<button onclick="navigator.clipboard.writeText(\'' + val + '\');this.textContent=\'✓\';setTimeout(function(){this.textContent=\'📋\';}.bind(this),1000)" style="border:none;background:none;cursor:pointer;font-size:0.85rem;padding:0;">📋</button></span>';
+    '<button onclick="navigator.clipboard.writeText(' + val + ');this.textContent=\'✓\';setTimeout(function(){this.textContent=\'📋\';}.bind(this),1000)" style="border:none;background:none;cursor:pointer;font-size:0.85rem;padding:0;">📋</button></span>';
 };
 
 _RENDERERS['copy_code_button'] = function(b) {
-  var text = (b.text_to_copy || '').replace(/'/g,"\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="display:inline-block;margin:0.5rem 0;"><button onclick="navigator.clipboard.writeText(\'' + text + '\')" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">' +
+  var text = _esc(_jsJson(String(b.text_to_copy || '')));
+  return '<div style="display:inline-block;margin:0.5rem 0;"><button onclick="navigator.clipboard.writeText(' + text + ')" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">' +
     '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>Copy</button></div>';
 };
 
@@ -2257,7 +2348,7 @@ _RENDERERS['log_output'] = function(b) {
 _RENDERERS['json_tree_viewer'] = function(b) {
   var raw = b.data || b.json || '';
   var pretty = raw;
-  try { pretty = JSON.stringify(JSON.parse(raw), null, 2); } catch(e) {}
+  try { pretty = _jsJson(JSON.parse(raw), null, 2); } catch(e) {}
   var escaped = pretty.replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return '<div style="background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1.2rem 0;max-height:400px;overflow:auto;">' +
     '<pre style="margin:0;font-family:monospace;font-size:0.8rem;color:#e2e8f0;">' + escaped + '</pre></div>';
@@ -2287,7 +2378,7 @@ _RENDERERS['segmented_control'] = function(b) {
   var selected = b.selected_value || b.selected || '';
   var name = b.name || 'seg';
   var label = b.label || '';
-  var norm = options.map(function(o){ return typeof o === 'string' ? {value:o,label:o} : o; });
+  var norm = options.map(function(o){ var v = typeof o === 'string' ? o : (o && typeof o === 'object' ? o.value : ''), l = typeof o === 'string' ? o : (o && typeof o === 'object' ? o.label : ''); return {value: _esc(v == null ? '' : String(v)), label: _esc(l == null ? '' : String(l))}; });
   if (!selected && norm.length) selected = norm[0].value;
   var items = norm.map(function(o){
     return '<input type="radio" id="sgc' + uid + '_' + o.value + '" name="' + name + '_' + uid + '" value="' + _esc(o.value) + '"' + (o.value===selected?' checked':'') + ' style="display:none;">' +
@@ -2606,7 +2697,7 @@ _RENDERERS['sheet_badge'] = function(b) {
     + 'el.addEventListener("click",function(e){'
     + 'e.preventDefault();'
     + 'el.style.opacity="0.5";el.style.pointerEvents="none";'
-    + 'var sn=' + JSON.stringify(sheet) + '||(((window.__A2UI_SCHEMA__||{}).app||{}).storage||{}).sheet||"";'
+    + 'var sn=' + _jsJson(sheet) + '||(((window.__A2UI_SCHEMA__||{}).app||{}).storage||{}).sheet||"";'
     + 'google.script.run'
     + '.withSuccessHandler(function(r){'
     + 'el.style.opacity="";el.style.pointerEvents="";'
@@ -2882,12 +2973,12 @@ _RENDERERS['photo_upload'] = function(b) {
         // arrives after this markup was written.
         'var host=wrap.closest("[data-subject-id]")||wrap;' +
         'var subject=host.getAttribute("data-subject-id")||"";' +
-        'var url=' + JSON.stringify(String(endpoint)) + ';' +
+        'var url=' + _jsJson(String(endpoint)) + ';' +
         'if(!url){status.textContent="No upload endpoint configured.";return;}' +
         'if(!subject){status.textContent="Nothing to attach this photo to yet.";return;}' +
         'var fd=new FormData();' +
-        'fd.append(' + JSON.stringify(String(fieldName)) + ',f,f.name||"photo.jpg");' +
-        'fd.append(' + JSON.stringify(String(subjectField)) + ',subject);' +
+        'fd.append(' + _jsJson(String(fieldName)) + ',f,f.name||"photo.jpg");' +
+        'fd.append(' + _jsJson(String(subjectField)) + ',subject);' +
         'status.textContent="Uploading "+(f.name||"photo")+"…";' +
         'fetch(url,{method:"POST",body:fd,credentials:"same-origin"})' +
           '.then(function(r){return r.json();})' +
@@ -3206,7 +3297,7 @@ _RENDERERS['follow_up_chips'] = function(b) {
     }
     var onclick = '';
     if (action) {
-      onclick = ' onclick="google.script.run.withFailureHandler(function(){}).withSuccessHandler(function(){}).handleChipAction(' + JSON.stringify(action) + ')"';
+      onclick = ' onclick="google.script.run.withFailureHandler(function(){}).withSuccessHandler(function(){}).handleChipAction(' + _jsJson(action) + ')"';
     }
     chipsHtml += '<button class="fuc-chip-' + uid + '"' + onclick + (action ? ' style="cursor:pointer;"' : '') + '>' + _esc(text) + '</button>';
   }
@@ -4463,7 +4554,7 @@ _RENDERERS['sheet_form'] = function(b) {
     + 'google.script.run'
     + '.withSuccessHandler(function(){btn.innerHTML="✓ Submitted";btn.style.background="#10b981";form.reset();})'
     + '.withFailureHandler(function(err){btn.disabled=false;btn.textContent="Retry";alert("Error: "+err.message);})'
-    + '.a2uiSheetFormSubmit(' + JSON.stringify(sheet) + ',data,' + JSON.stringify(ssId) + ');'
+    + '.a2uiSheetFormSubmit(' + _jsJson(sheet) + ',data,' + _jsJson(ssId) + ');'
     + '});'
     + '})();</script>';
 
@@ -4791,7 +4882,7 @@ _RENDERERS['seat_map'] = function(b) {
     ? '<script>(function(){' +
       'var inputs=document.querySelectorAll(".sm-input-' + uid + '");' +
       'var out=document.getElementById("sm-summary-' + uid + '");' +
-      'var tpl=' + JSON.stringify(summaryTemplate) + ';' +
+      'var tpl=' + _jsJson(summaryTemplate) + ';' +
       'inputs.forEach(function(inp){inp.addEventListener("change",function(){' +
       'if(out&&inp.checked)out.textContent=tpl.replace("{label}",inp.getAttribute("data-label")||"");' +
       '});});' +
@@ -4867,7 +4958,7 @@ _RENDERERS['slot_scheduler'] = function(b) {
     'if(btn)btn.disabled=false;}});});' +
     'if(btn)btn.addEventListener("click",function(){' +
     'if(!picked||!conf)return;' +
-    'var tpl=' + JSON.stringify(summaryTemplate) + ';' +
+    'var tpl=' + _jsJson(summaryTemplate) + ';' +
     'var text=tpl.replace("{date}",picked.date).replace("{time}",picked.time);' +
     'if(confText)confText.textContent=text||(picked.date+" "+picked.time);' +
     'conf.style.display="block";' +
@@ -4917,7 +5008,7 @@ _RENDERERS['option_plan_builder'] = function(b) {
     'var inputs=document.querySelectorAll(".opb-input-' + uid + '");' +
     'var totalEl=document.getElementById("opb-total-' + uid + '");' +
     'var summaryEl=document.getElementById("opb-summary-' + uid + '");' +
-    'var tpl=' + JSON.stringify(summaryTemplate) + ';' +
+    'var tpl=' + _jsJson(summaryTemplate) + ';' +
     'function recompute(){' +
     'var total=0;' +
     'inputs.forEach(function(inp){if(inp.checked)total+=parseFloat(inp.getAttribute("data-price"))||0;});' +

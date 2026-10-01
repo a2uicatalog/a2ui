@@ -36,7 +36,8 @@ from renderers import web_article as wa  # noqa: E402
 DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_chart", "demo_toggle_grid", "demo_progress",
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + DEMO_ATOMS
+REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser"]  # from the studied reference film, 2026-10-01
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -90,12 +91,22 @@ TIMELINE = {
     "camera": {"keys": [{"t": 0, "zoom": 1}, {"t": 4, "zoom": 1.2, "ry": -8, "rx": 4, "ease": "quart-in-out"}]},
 }
 
+STITCHED = {
+    "type": "motion_timeline", "duration": 9, "bpm": 120, "title": "S", "stitch": "push",
+    "blocks": [{"type": "motion_layer", "id": "s1", "blocks": [{"type": "motion_text", "id": "a", "text": "One", "place": {"x": 5, "y": 5, "w": 50}}]},
+               {"type": "motion_layer", "id": "s2", "blocks": [{"type": "motion_text", "text": "Two", "place": {"x": 5, "y": 5, "w": 50}}]},
+               {"type": "motion_layer", "id": "s3", "blocks": [{"type": "motion_pill", "text": "Three *now*", "place": {"x": 5, "y": 5}}]}],
+    "scenes": [{"layer": "s1", "t": 0}, {"layer": "s2", "beat": 6, "transition": "zoom-through"}, {"layer": "s3", "t": 6}],
+}
+
 PAYLOADS = {
     "motion_group": [{}, {"effect": "pop", "stagger": 40, "blocks": [{"type": "demo_orb"}, {"type": "demo_cursor", "id": "c"}]},
                      {"effect": "<bad>", "ease": "zzz", "duration": -5, "delay": 99999999, "on": "view", "blocks": [{"type": "demo_orb"}]}],
     "motion_tokens": [{}, {"show": "ease", "theme": "light", "accent": "#F97316"}, {"show": "duration"}],
     "motion_timeline": [{}, TIMELINE,
                         dict(TIMELINE, aspect="9:16", loop=False, autoplay=False, controls=False, backdrop="grid", theme="light", poster=3, accent="#F97316", background="#101820"),
+                        STITCHED, dict(STITCHED, stitch="zoom-through", overlap=1.2), dict(STITCHED, stitch="cut"), dict(STITCHED, stitch="<x>", overlap="no"),
+                        dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "nope", "t": 2}, {"layer": "s2", "beat": 2, "transition": "blur"}, {"layer": "s3", "t": "x"}, "junk", {"layer": "s3", "t": 5, "transition": "<b>"}]),
                         dict(TIMELINE, blocks=TIMELINE["blocks"] + [{"type": "motion_timeline"}, {"type": "no_such_atom"}, "junk"],
                              tracks=TIMELINE["tracks"] + [{"target": "nope", "keys": []}, {"target": "cur", "keys": [{"t": "x"}, None, {"beat": 1, "x": 5}]}])],
     "demo_window": [{}, {"title": "Lumen", "tone": "dark", "accent": "#2563EB", "nav": [{"label": "Home"}, {"label": "Reports", "active": True}, "Contacts"], "heading": "Hi", "sub": "there",
@@ -119,12 +130,34 @@ PAYLOADS = {
                     {"text": "a b c\nd e", "mode": "words", "reveal": "drop", "overlap": 5, "align": "middle"},
                     {"text": "chars <b>& \"q\" \u2603", "mode": "chars", "reveal": "blur", "align": "end"},
                     {"text": "x" * 200, "mode": "chars"}, {"text": "a\nb\nc\nd\ne\nf", "mode": "block", "reveal": "fade"}, {"text": ""},
-                    {"text": "x", "color": "red", "reveal": "toString", "mode": "constructor", "font": "__proto__", "weight": "hasOwnProperty", "size": 99999}],
+                    {"text": "x", "color": "red", "reveal": "toString", "mode": "constructor", "font": "__proto__", "weight": "hasOwnProperty", "size": 99999},
+                    {"text": "il te faut un *plan*.\nand *a b* c", "mode": "words", "reveal": "fade", "accent": "#ff6a2b"},
+                    {"text": "co*mm*ent *on fait ?*", "mode": "chars", "reveal": "mask"}, {"text": "*all* ** star <b>*", "mode": "lines"},
+                    {"text": "*x\ny* z", "mode": "block"}, {"text": "*" * 150, "mode": "chars"}],
     "motion_shape": [{}, {"shape": "circle", "fill": "#FF0000", "fill2": "#0000ff", "angle": 135, "blur": 150, "draw": "fade", "w": 400, "h": 300},
                      {"shape": "ring", "thickness": 10, "fill": "#ffb347", "fill2": "#ff3d81"}, {"shape": "ring", "draw": "scale"}, {"shape": "line", "thickness": 4, "draw": "grow-y"},
                      {"shape": "rect", "radius": 80, "draw": "sweep", "fill": "url(javascript:alert(1))"}, {"shape": "<x>", "draw": "none", "w": "9", "h": True}],
     "motion_counter": [{}, {"to": 1207, "from": 100, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "size": 200, "label": "artists <b>", "label_size": 20, "align": "middle", "color": "#ffb347"},
                        {"to": "abc"}, {"to": -5.5, "from": "x", "decimals": 9, "font": "mono", "weight": "regular"}],
+    "motion_pill": [{}, {"text": "Comment *Motion* under this post", "icon": "\u2191", "size": 40, "align": "middle", "accent": "#ff6a2b", "color": "#fff6e8", "fill": "#1a1020"},
+                    {"text": "a ** b <i>*x", "align": "end"}, {"text": 5, "icon": "\"><b>", "size": 9999, "align": "toString"}],
+    "motion_checklist": [{}, {"title": "The recipe <b>", "items": ["Your know-how", {"text": "Your process", "icon": "\U0001F4C1"}, "Your automations", {"text": ""}, 5, None, "x" * 80, "g", "h"], "skeleton": 2, "size": 30, "accent": "#ff6a2b"},
+                          {"items": "nope", "skeleton": 99}],
+    "motion_stepper": [{}, {"title": "Process map", "scan": True, "accent": "#ff6a2b", "size": 18,
+                            "columns": [{"title": "Prospecting", "items": ["Find leads", {"text": "LinkedIn messages", "meta": "5 h/wk", "value": 0.6}, "Enrich"]},
+                                        {"title": "Sales <b>", "items": [{"text": "Calls", "meta": "7 h/wk", "value": 2}, "Proposals"]},
+                                        {"title": "Delivery"}, "junk", None, [], {}, {"title": "Seventh", "items": ["x"]}],
+                            "focus": [[0, 1], [1, 0], [9, 9], "bad", [0.9, 1.9], [True, 1]], "badges": ["92", "<81>", "x", "y", 7]},
+                       {"columns": [{"items": [1, 2, 3, 4, 5, 6]}], "focus": [[0, 0]]}, {"columns": "no", "focus": "no"}],
+    "motion_orbit": [{}, {"items": ["N", "G", "Mail", {"text": "Drive"}, "", 5, "This is long", "<b>", "&", "Q", "R", "S", "T"], "size": 80, "rx": 42, "ry": 30, "start": -60, "spin": 120, "fill": "#101820", "ink": "#ffb347"},
+                        {"items": ["A"], "ring": False, "size": 9999, "rx": 0, "spin": "x"}, {"items": 3}],
+    "motion_code": [{}, {"file": "Cockpit.tsx <x>", "size": 20, "accent": "#ff6a2b", "lines": ["export default function Cockpit() {", "  const leads = useLeads(\"enrichie\");", "  // we don't type this by hand", "", "  return await sync(leads, 'auto') ", "x" * 100, 5]},
+                       {"lines": "no"}, {"lines": ["a"] * 30}],
+    "motion_mark": [{}, {"size": 200, "accent": "#6267e7", "accent2": "#2ac4ce"}, {"size": 9999, "accent": "red", "accent2": "url(x)"}, {"size": "x"}],
+    "motion_browser": [{}, {"query": "stat", "placeholder": "Search atoms\u2026", "chips": ["All", "Web", "MCP Apps", "", 5], "count": "51 atoms", "columns": 2, "pick": 1, "accent": "#6267e7", "well": "#dfe6f1",
+                           "cards": [{"title": "Stat Card", "text": "single KPI value with label delta and accent colour indicator", "badge": "MCP Apps", "source": "a2uicatalog", "preview": {"type": "stat_card", "value": "1,234", "label": "Stat"}},
+                                     {"title": "Status <b>", "text": "x" * 120, "badge": "<i>", "preview": {"type": "stat_card", "value": "9", "label": "<Live>", "delta": "+1"}}, "junk", {"title": "", "preview": {"type": "no_such_atom"}}, {"preview": "no"}]},
+                          {"cards": "no", "chips": "no", "pick": 99, "query": "q" * 40}, {"query": "ab", "pick": 5, "cards": [{"title": "Only"}]}],
     "demo_panel": [{}, {"tone": "dark", "accent": "#38bdf8", "avatar": "SKX", "title": "Sam", "sub": "Head of Sales", "badge": "Prospect", "rows": [{"label": "Team", "value": "40"}, "x"]}],
 }
 CASES = [(a, b) for a, bs in PAYLOADS.items() for b in bs]
@@ -195,8 +228,9 @@ def test_enter_hostile_values_never_become_markup():
     e = {"effect": "\"><script>alert(1)</script>", "ease": "x;}</style><script>alert(2)</script>", "duration": "9;}", "delay": "<b>"}
     html = _py({"type": "demo_orb", "enter": e})
     assert "alert" not in html and "<b>" not in html
-    # "9;}" is read like parseInt("9;}") = 9: a number, never CSS. The bad effect/ease fall back to the defaults.
-    assert re.search(r"animation:moe-rise 9ms cubic-bezier\(0\.16,1,0\.3,1\) 0ms both", html)
+    # "9;}" is no longer read leniently as 9: the payload guard drops a duration that is not a plain number, so the default applies.
+    # The bad effect/ease fall back to the defaults too. Nothing hostile reaches the CSS.
+    assert re.search(r"animation:moe-rise [0-9]+ms cubic-bezier\(0\.16,1,0\.3,1\) 0ms both", html) and "9;}" not in html
 
 
 # ─── hostile input on the timeline ──────────────────────────────────────────
@@ -378,7 +412,7 @@ def test_every_documented_field_is_actually_read_by_the_renderer():
     # motion_group builds its entrance through _moEnterSpec (reads effect/ease/duration/delay/on from its own block);
     # the timeline reads per-child fields (id/place/layer) and track/camera keys in its helpers.
     shared = {"motion_group": src[src.index("function _moEnterSpec"):src.index("var _MO_VIEW_JS")],
-              "motion_timeline": src[src.index("var _MO_ASPECT"):src.index("_RENDERERS['motion_timeline']")]}
+              "motion_timeline": src[src.index("var _MO_ASPECT"):src.index("_RENDERERS['motion_timeline']")] + src[src.index("var _MO_STITCH ="):]}
     missing = []
     for name in MOTION_ATOMS:
         a = starts[name]

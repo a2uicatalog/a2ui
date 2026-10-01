@@ -141,7 +141,7 @@ _RENDERERS['photo_stepper'] = function(b) {
   }).join('');
 
   var slidesHtml = images.map(function(img, i) {
-    var rowJson = _esc(JSON.stringify(img));
+    var rowJson = _esc(_jsJson(img));
     var badgeCls = sid + '-badge' + (img.active ? ' ps-badge-active' : '');
     var badge = img.badge ? '<span class="' + badgeCls + '">' + _esc(img.badge) + '</span>' : '';
     var voters = img.starred_by_display ? '<div class="ps-voters">' + _esc(img.starred_by_display) + '</div>' : '';

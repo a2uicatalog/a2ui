@@ -282,7 +282,7 @@ function _sgAnchor(text, uid, idx, subIdx) {
 function _scrollspyScript(ids) {
   return '<script>' +
     '(function(){' +
-    'window.__a2uiSpyIds = (window.__a2uiSpyIds || []).concat(' + JSON.stringify(ids) + ');' +
+    'window.__a2uiSpyIds = (window.__a2uiSpyIds || []).concat(' + _jsJson(ids) + ');' +
     'if (window.__a2uiSpyInit) return;' +
     'window.__a2uiSpyInit = true;' +
     'document.addEventListener("DOMContentLoaded", function(){' +

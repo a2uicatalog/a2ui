@@ -179,7 +179,7 @@ def test_labels_can_never_break_out_of_the_script(core_js, label):
 
 def test_dollar_sequences_survive_the_gas_replacer(core_js):
     for html in _both(core_js, {"center": "$&$'", "rings": [{"label": "$`", "items": ["$$"]}]}):
-        assert 'c:"$&$\'"' in html and '"l":"$`"' in html and '"i":["$$"]' in html
+        assert 'c:"$\\u0026$\\u0027"' in html and '"l":"$`"' in html and '"i":["$$"]' in html
 
 
 @pytest.mark.parametrize("bad", [

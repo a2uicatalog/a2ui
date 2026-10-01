@@ -94,7 +94,7 @@ def test_flow_field_overlay_unchanged_for_the_dark_default():
 
 def test_message_lanes_labels_are_json_strings_and_clamped():
     html = _render_message_lanes(PAYLOADS["message_lanes"][1])
-    assert 'from:"Claude\'s agent",to:"claude.ai \\u003csurface>"' in html and "lanes:6,rate:1.7" in html
+    assert 'from:"Claude\\u0027s agent",to:"claude.ai \\u003csurface\\u003e"' in html and "lanes:6,rate:1.7" in html
     assert 'pal:["255,255,255","255,255,255"]' in html   # single colour is doubled so pal[1] exists
     html = _render_message_lanes(PAYLOADS["message_lanes"][2])
     assert 'from:"agent"' in html and 'to:"' + "x" * 24 + '"' in html and "lanes:6,rate:1," in html

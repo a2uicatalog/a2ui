@@ -154,7 +154,7 @@ _RENDERERS['schema_qr'] = function(b) {
           ? 'var input=document.getElementById("qr-in-' + uid + '");'
             + 'input.addEventListener("input",function(){render(input.value.trim());});'
             + 'render(input.value.trim()||window.location.href);'
-          : 'render(' + JSON.stringify(url) + '||window.location.href);')
+          : 'render(' + _jsJson(url) + '||window.location.href);')
       + '})();<\/script>';
   }
 
@@ -232,7 +232,7 @@ _RENDERERS['atom_anatomy'] = function(b) {
   var label  = b.label || 'atom';
   var schema = b.schema || {};
   var accent = b.accent || '#6366f1';
-  var schemaStr = JSON.stringify(schema, null, 2);
+  var schemaStr = _jsJson(schema, null, 2);
   var rendered  = '';
   try { rendered = renderAtoms([schema]); } catch(e) { rendered = '<em style="color:var(--muted);">Could not render preview</em>'; }
   return '<div style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
@@ -274,7 +274,7 @@ _RENDERERS['prompt_to_schema'] = function(b) {
   var output = b.output || 'The rendered page';
   var accent = b.accent || '#6366f1';
   var labels = b.labels || ['Natural language', 'Generated schema', 'Rendered page'];
-  var schemaStr = typeof schema === 'object' ? JSON.stringify(schema, null, 2) : String(schema);
+  var schemaStr = typeof schema === 'object' ? _jsJson(schema, null, 2) : String(schema);
 
   return '<style>'
     + '#pts-' + uid + '{display:flex;gap:0;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin:1rem 0;}'
@@ -363,7 +363,7 @@ _RENDERERS['live_vote'] = function(b) {
   var writeUrl = b.write_url || '';
   var poll     = parseInt(b.poll_interval || b.poll || 5000, 10);
   var accent   = b.accent || '#6366f1';
-  var optsJson = JSON.stringify(options);
+  var optsJson = _jsJson(options);
 
   var optBtns = options.map(function(o) {
     return '<button class="lv-opt-' + uid + '" data-opt="' + _esc(o) + '">' + _esc(o) + '</button>';
@@ -399,8 +399,8 @@ _RENDERERS['live_vote'] = function(b) {
     + '</div>'
     + '<script>(function(){'
     + 'var opts=' + optsJson + ';'
-    + 'var sheetUrl=' + JSON.stringify(sheetUrl) + ';'
-    + 'var writeUrl=' + JSON.stringify(writeUrl) + ';'
+    + 'var sheetUrl=' + _jsJson(sheetUrl) + ';'
+    + 'var writeUrl=' + _jsJson(writeUrl) + ';'
     + 'var poll=' + poll + ';'
     + 'var voted=false;'
     + 'var counts={};opts.forEach(function(o){counts[o]=0;});'
@@ -454,7 +454,7 @@ _RENDERERS['reaction_shower'] = function(b) {
   var sheetUrl  = b.sheet_url || '';
   var poll      = parseInt(b.poll_interval || b.poll || 4000, 10);
   var accent    = b.accent || '#6366f1';
-  var countsJson = JSON.stringify(reactions.reduce(function(m, r) { m[r] = 0; return m; }, {}));
+  var countsJson = _jsJson(reactions.reduce(function(m, r) { m[r] = 0; return m; }, {}));
 
   return '<style>'
     + '#rs-' + uid + '{position:relative;overflow:hidden;}'
@@ -480,10 +480,10 @@ _RENDERERS['reaction_shower'] = function(b) {
     + '</div>'
     + '</div>'
     + '<script>(function(){'
-    + 'var reactions=' + JSON.stringify(reactions) + ';'
+    + 'var reactions=' + _jsJson(reactions) + ';'
     + 'var counts=' + countsJson + ';'
-    + 'var writeUrl=' + JSON.stringify(writeUrl) + ';'
-    + 'var sheetUrl=' + JSON.stringify(sheetUrl) + ';'
+    + 'var writeUrl=' + _jsJson(writeUrl) + ';'
+    + 'var sheetUrl=' + _jsJson(sheetUrl) + ';'
     + 'var poll=' + poll + ';'
 
     + 'function shower(emoji){'
@@ -547,8 +547,8 @@ _RENDERERS['raise_hand'] = function(b) {
     + '<script>(function(){'
     + 'var btn=document.getElementById("rh-btn-' + uid + '");'
     + 'var countEl=document.getElementById("rh-count-' + uid + '");'
-    + 'var writeUrl=' + JSON.stringify(writeUrl) + ';'
-    + 'var sheetUrl=' + JSON.stringify(sheetUrl) + ';'
+    + 'var writeUrl=' + _jsJson(writeUrl) + ';'
+    + 'var sheetUrl=' + _jsJson(sheetUrl) + ';'
     + 'var poll=' + poll + ';'
     + 'var raised=false;var count=0;'
     + 'btn.addEventListener("click",function(){'
@@ -666,7 +666,7 @@ _RENDERERS['live_edit'] = function(b) {
     + 'var preview=document.getElementById("le-preview-' + uid + '");'
     + 'var err=document.getElementById("le-err-' + uid + '");'
     + 'var btn=document.getElementById("le-run-' + uid + '");'
-    + 'var rendererUrl=' + JSON.stringify(rendererUrl) + ';'
+    + 'var rendererUrl=' + _jsJson(rendererUrl) + ';'
     + 'function run(){'
     + '  try{'
     + '    var obj=JSON.parse(ta.value.trim()||"{}");'

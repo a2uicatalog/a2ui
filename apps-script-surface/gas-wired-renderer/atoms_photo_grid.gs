@@ -39,7 +39,7 @@ _RENDERERS['photo_grid'] = function(b) {
 // _a2uiUpdateTableRows already carry between the two environments.
 function _a2uiPhotoGridItemsHtml(images) {
   return images.map(function(img) {
-    var rowJson = _esc(JSON.stringify(img));
+    var rowJson = _esc(_jsJson(img));
     var activeCls = img.active ? ' pg-active' : '';
     var badge = img.badge ? '<span class="pg-badge' + (img.active ? ' pg-badge-active' : '') +
       '">' + _esc(img.badge) + '</span>' : '';

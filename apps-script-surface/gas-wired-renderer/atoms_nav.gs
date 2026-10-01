@@ -15,7 +15,7 @@ _RENDERERS['nav_bar'] = function(b) {
   var sticky = b.sticky  !== false; // default true
 
   // Server-side: build link list JSON for client resolution
-  var linksJson = JSON.stringify(links.map(function(l) {
+  var linksJson = _jsJson(links.map(function(l) {
     return {
       slug:    l.nav_slug || '',
       url:     l.url      || '',
@@ -78,7 +78,8 @@ _RENDERERS['nav_bar'] = function(b) {
         'a.style.cssText=baseStyle+(isActive?activeStyle:idleStyle);' +
         'a.onmouseover=function(){if(!isActive){this.style.background="rgba(255,255,255,0.06)";this.style.color="#e2e8f0";this.style.borderColor="rgba(255,255,255,0.12)";}};' +
         'a.onmouseout=function(){if(!isActive){this.style.background="rgba(255,255,255,0.03)";this.style.color="#94a3b8";this.style.borderColor="rgba(255,255,255,0.07)";}};' +
-        'a.innerHTML=(l.icon?"<span>"+l.icon+"</span>":"")+"<span>"+l.label+"</span>";' +
+        // textContent, never innerHTML: label and icon are payload text (found by the execution fuzz, 2026-10-01)
+        'if(l.icon){var ic=document.createElement("span");ic.textContent=l.icon;a.appendChild(ic);}var lb=document.createElement("span");lb.textContent=l.label;a.appendChild(lb);' +
         'bar.appendChild(a);' +
       '});' +
     '})();<\/script>' +
@@ -205,8 +206,8 @@ _RENDERERS['theme_toggle'] = function(b) {
     // catalog is completely unaffected.
     (b.persist_to && b.persist_action ?
       'if(window._a2uiEngine){try{' +
-      'window._a2uiEngine.trigger(' + JSON.stringify(String(b.persist_to)) + ',"setValue",dark?"dark":"light");' +
-      'var _pa=window._a2uiEngine.nodes[' + JSON.stringify(String(b.persist_action)) + '];' +
+      'window._a2uiEngine.trigger(' + _jsJson(String(b.persist_to)) + ',"setValue",dark?"dark":"light");' +
+      'var _pa=window._a2uiEngine.nodes[' + _jsJson(String(b.persist_action)) + '];' +
       'if(_pa&&_pa._run)_pa._run();' +
       '}catch(e){}}' : '') +
     '});' +
@@ -330,7 +331,7 @@ _RENDERERS['lens_grid'] = function(b) {
     'btn.style.borderColor="#4f46e5";' +
     (target ?
       'if(window._a2uiEngine){try{' +
-      'window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",btn.getAttribute("data-lg-value"));' +
+      'window._a2uiEngine.trigger(' + _jsJson(String(target)) + ',"setValue",btn.getAttribute("data-lg-value"));' +
       '}catch(e){}}' : '') +
     '});' +
     '})(btns[i]);' +
@@ -371,13 +372,13 @@ _RENDERERS['domain_picker'] = function(b) {
     'inp.value="";' +
     (target ?
       'if(window._a2uiEngine){try{' +
-      'window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",' + JSON.stringify(String(defaultVal)) + ');' +
+      'window._a2uiEngine.trigger(' + _jsJson(String(target)) + ',"setValue",' + _jsJson(String(defaultVal)) + ');' +
       '}catch(e){}}' : '') +
     '});' +
     'inp.addEventListener("input",function(){' +
     (target ?
       'if(window._a2uiEngine){try{' +
-      'window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",inp.value);' +
+      'window._a2uiEngine.trigger(' + _jsJson(String(target)) + ',"setValue",inp.value);' +
       '}catch(e){}}' : '') +
     '});' +
     '})();<\/script>'
@@ -416,7 +417,7 @@ _RENDERERS['tab_group'] = function(b) {
 
   function panelJs(valueExpr) {
     return Object.keys(panels).map(function(val) {
-      return 'ez(' + JSON.stringify(String(panels[val])) + ',' + valueExpr + '===' + JSON.stringify(String(val)) + ');';
+      return 'ez(' + _jsJson(String(panels[val])) + ',' + valueExpr + '===' + _jsJson(String(val)) + ');';
     }).join('');
   }
 
@@ -424,7 +425,7 @@ _RENDERERS['tab_group'] = function(b) {
     '<div id="' + uid + '" style="display:inline-flex;gap:8px;flex-wrap:wrap;">' + pills + '</div>' +
     '<script>(function(){' +
     'function ez(id,show){var el=document.getElementById("a2ui-"+id);if(el)el.style.display=show?"":"none";}' +
-    panelJs(JSON.stringify(String(selected))) +
+    panelJs(_jsJson(String(selected))) +
     'var wrap=document.getElementById("' + uid + '");' +
     'var btns=wrap.querySelectorAll("button");' +
     'for(var i=0;i<btns.length;i++){' +
@@ -434,7 +435,7 @@ _RENDERERS['tab_group'] = function(b) {
     'for(var j=0;j<btns.length;j++){btns[j].style.background="#fff";btns[j].style.color="#374151";btns[j].style.borderColor="#d9dcf5";}' +
     'btn.style.background="#4f46e5";btn.style.color="#fff";btn.style.borderColor="#4f46e5";' +
     panelJs('v') +
-    (target ? 'if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",v);}catch(e){}}' : '') +
+    (target ? 'if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + _jsJson(String(target)) + ',"setValue",v);}catch(e){}}' : '') +
     '});' +
     '})(btns[i]);' +
     '}' +
@@ -467,7 +468,7 @@ _RENDERERS['breadcrumb'] = function(b) {
   var uid   = 'brd' + Math.random().toString(36).substr(2, 6);
   var items = b.items || [];
 
-  var crumbsJson = JSON.stringify(items.map(function(c) {
+  var crumbsJson = _jsJson(items.map(function(c) {
     return { slug: c.slug || '', label: c.label || '', icon: c.icon || '' };
   }));
 
