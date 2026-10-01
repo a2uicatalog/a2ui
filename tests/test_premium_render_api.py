@@ -10,6 +10,7 @@ Needs this subproject's OWN dependencies (premium-render-api/requirements.txt: f
 google-cloud-storage), which the base repo's tests/ suite doesn't otherwise require -- skipped entirely if
 not installed, same mechanism as test_cloud_run_renderer.py.
 """
+import json
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -39,6 +40,35 @@ def client(monkeypatch):
     return pra_server.app.test_client()
 
 
+@pytest.fixture()
+def fake_storage(monkeypatch):
+    # /trigger stages the BOM to GCS before calling the Admin API -- stub out google.cloud.storage so tests
+    # don't need real credentials/network, and record what was uploaded for assertions.
+    uploads = {}
+
+    class _FakeBlob:
+        def __init__(self, name):
+            self.name = name
+
+        def upload_from_string(self, data, content_type=None):
+            uploads[self.name] = (data, content_type)
+
+    class _FakeBucket:
+        def blob(self, name):
+            return _FakeBlob(name)
+
+    class _FakeClient:
+        def __init__(self, **kw):
+            pass
+
+        def bucket(self, name):
+            return _FakeBucket()
+
+    monkeypatch.setitem(sys.modules, "google.cloud.storage", MagicMock(Client=_FakeClient))
+    monkeypatch.setattr(pra_server, "_access_token", lambda: (MagicMock(), "fake-token"))
+    return uploads
+
+
 def test_healthz(client):
     r = client.get("/healthz")
     assert r.status_code == 200
@@ -63,7 +93,7 @@ def test_trigger_rejects_malformed_row(client):
     assert r.status_code == 400
 
 
-def test_trigger_calls_admin_api_and_returns_job_id(client, monkeypatch):
+def test_trigger_calls_admin_api_and_returns_job_id(client, fake_storage, monkeypatch):
     calls = []
 
     def fake_authed_post(url, body):
@@ -83,10 +113,16 @@ def test_trigger_calls_admin_api_and_returns_job_id(client, monkeypatch):
     assert url.endswith(f"/jobs/{pra_server.JOB_NAME}:run")
     env = {e["name"]: e["value"] for e in run_body["overrides"]["containerOverrides"][0]["env"]}
     assert env["OUT_GCS_PREFIX"] == f"renders/{body['renderId']}"
+    assert env["PARTS_MODEL_GCS_PATH"] == f"renders/{body['renderId']}/input.json"
     assert run_body["overrides"]["taskCount"] == 1
 
+    # the BOM was actually staged to GCS at the path handed to the Job
+    uploaded_data, uploaded_content_type = fake_storage[env["PARTS_MODEL_GCS_PATH"]]
+    assert json.loads(uploaded_data) == {"partsModel": [["3001", 0, -24, 0, 0, 4]]}
+    assert uploaded_content_type == "application/json"
 
-def test_trigger_rate_limited_after_max_per_hour(client, monkeypatch):
+
+def test_trigger_rate_limited_after_max_per_hour(client, fake_storage, monkeypatch):
     monkeypatch.setattr(pra_server, "_authed_post", lambda url, body: {
         "metadata": {"name": "projects/p/locations/r/jobs/j/executions/x"}})
     for _ in range(pra_server.MAX_RENDERS_PER_HOUR):
@@ -97,10 +133,25 @@ def test_trigger_rate_limited_after_max_per_hour(client, monkeypatch):
     assert r.get_json()["ok"] is False
 
 
-def test_trigger_reports_admin_api_failure_without_crashing(client, monkeypatch):
+def test_trigger_reports_admin_api_failure_without_crashing(client, fake_storage, monkeypatch):
     def fake_authed_post(url, body):
         raise RuntimeError("simulated Admin API error")
     monkeypatch.setattr(pra_server, "_authed_post", fake_authed_post)
+    r = client.post("/trigger", json={"partsModel": [["3001", 0, -24, 0, 0, 4]]})
+    assert r.status_code == 502
+    assert r.get_json()["ok"] is False
+
+
+def test_trigger_reports_gcs_staging_failure_without_crashing(client, monkeypatch):
+    class _FailingClient:
+        def __init__(self, **kw):
+            pass
+
+        def bucket(self, name):
+            raise RuntimeError("simulated GCS error")
+
+    monkeypatch.setitem(sys.modules, "google.cloud.storage", MagicMock(Client=_FailingClient))
+    monkeypatch.setattr(pra_server, "_access_token", lambda: (MagicMock(), "fake-token"))
     r = client.post("/trigger", json={"partsModel": [["3001", 0, -24, 0, 0, 4]]})
     assert r.status_code == 502
     assert r.get_json()["ok"] is False
@@ -158,7 +209,7 @@ def test_status_mints_signed_urls_on_success(client, monkeypatch):
     fake_bucket.blob.assert_any_call("renders/some-uuid/turntable.mp4")
 
 
-def test_cors_headers_present(client, monkeypatch):
+def test_cors_headers_present(client, fake_storage, monkeypatch):
     monkeypatch.setattr(pra_server, "_authed_post", lambda url, body: {
         "metadata": {"name": "projects/p/locations/r/jobs/j/executions/x"}})
     r = client.post("/trigger", json={"partsModel": [["3001", 0, -24, 0, 0, 4]]})

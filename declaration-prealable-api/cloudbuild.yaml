@@ -1,0 +1,7 @@
+# Explicit --file build, repo root as context — same pattern as a2a_counterpart/premium-render-api's
+# own cloudbuild.yaml files.
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'declaration-prealable-api/Dockerfile', '-t', '${_IMAGE}', '.']
+images:
+  - '${_IMAGE}'

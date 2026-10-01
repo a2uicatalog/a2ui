@@ -7,8 +7,13 @@ rebuilt for no reason on every deploy), calls scripts/brick_models/render_blende
 then uploads the two real output files to GCS as raw bytes (no signing capability needed/granted here --
 signing happens in premium-render-api, which holds the narrower-is-safer signing IAM role; this Job's own
 service account only needs roles/storage.objectAdmin on the output bucket).
+
+The BOM itself arrives as a GCS object path (PARTS_MODEL_GCS_PATH), not inline in an env var -- found live
+2026-10-01 that Cloud Run Jobs caps total env var size at 32KiB, which a real complete kit (1798 parts)
+blows past when base64-encoded (~87.5KB). premium-render-api stages the JSON to
+gs://<OUT_GCS_BUCKET>/<PARTS_MODEL_GCS_PATH> before triggering; this Job just downloads it, same bucket/SA
+already used for the output upload below.
 """
-import base64
 import json
 import os
 import subprocess
@@ -42,13 +47,16 @@ def distinct_part_ids(parts_model_rows):
 
 
 def main():
-    parts_model_b64 = os.environ.get("PARTS_MODEL_B64")
-    if not parts_model_b64:
-        fatal("PARTS_MODEL_B64 not set")
+    parts_model_gcs_path = os.environ.get("PARTS_MODEL_GCS_PATH")
+    if not parts_model_gcs_path:
+        fatal("PARTS_MODEL_GCS_PATH not set")
     out_gcs_bucket = os.environ.get("OUT_GCS_BUCKET")
     out_gcs_prefix = os.environ.get("OUT_GCS_PREFIX")
     if not out_gcs_bucket or not out_gcs_prefix:
         fatal("OUT_GCS_BUCKET / OUT_GCS_PREFIX not set")
+
+    from google.cloud import storage
+    storage_client = storage.Client()
 
     resolution = os.environ.get("RESOLUTION", "1600x1200")
     still_samples = os.environ.get("STILL_SAMPLES", "128")
@@ -60,7 +68,7 @@ def main():
     no_video = os.environ.get("NO_VIDEO", "") == "1"
 
     WORK_DIR.mkdir(parents=True, exist_ok=True)
-    bom_raw = base64.b64decode(parts_model_b64)
+    bom_raw = storage_client.bucket(out_gcs_bucket).blob(parts_model_gcs_path).download_as_bytes()
     bom = json.loads(bom_raw)
     rows = bom["partsModel"] if isinstance(bom, dict) and "partsModel" in bom else bom
 
@@ -129,9 +137,7 @@ def main():
         hero_path.write_bytes(hero_backup.read_bytes())  # restore the real, full-quality hero over the cheap throwaway one
 
     print("uploading outputs to GCS")
-    from google.cloud import storage
-    client = storage.Client()
-    bucket = client.bucket(out_gcs_bucket)
+    bucket = storage_client.bucket(out_gcs_bucket)
     for name in ("hero.png", "turntable.mp4"):
         local = out_dir / name
         if not local.exists():

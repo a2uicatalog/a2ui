@@ -63,3 +63,9 @@ Pillow
 # across 100+ parts; numpy is the standard tool for this and every other Python geometry file in this repo already
 # assumes it's available in dev (scripts/brick_models/gemini_qa.py's renderer also uses it).
 numpy
+# Was already a real, undeclared dependency (scripts/a2a_agent_sketch.py's render_strokes_to_png uses
+# cairosvg.svg2png) -- never added here, invisible because that script isn't exercised by the standard pytest
+# suite. Surfaced 2026-10-01 adding declaration_prealable/dp5_elevation.py + dp2_plan_masse.py, which need the
+# same SVG->PNG rasterization and now declare it properly instead of letting a second undeclared user accrue --
+# same silent-drift class requirements.txt's own header comment already documents for Pillow/defusedxml.
+cairosvg

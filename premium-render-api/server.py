@@ -18,6 +18,14 @@ with no sticky session, so any in-process state would be unreliable anyway, and 
 scale that needs a real job-tracking store, see the plan's own "out of scope for v1" section): the GCS output
 prefix is a UUID generated HERE at trigger time (before the real Cloud Run execution name is even known) and
 handed back to the client alongside the execution name; the client passes BOTH back on every /status poll.
+
+The partsModel BOM itself is staged to GCS (`renders/<uuid>/input.json`) and the Job is handed only that path
+via env var -- NOT base64-embedded directly into the Admin API's containerOverrides.env, which is what the
+original v1 implementation did. Found live 2026-10-01: Cloud Run Jobs caps total env var size at 32KiB: a
+real, complete kit (1798 parts, H175) base64-encodes to ~87.5KB, well past that ceiling, and the Admin API
+rejected the jobs.run call with a 400 the first time a real (not test-slice) BOM was tried. GCS staging has no
+such ceiling. Requires this service's own SA to hold write (not just read) access on the output bucket --
+upgraded from roles/storage.objectViewer to roles/storage.objectAdmin, still scoped to this one bucket only.
 """
 import collections
 import json
@@ -127,12 +135,21 @@ def trigger():
     if _rate_limited():
         return jsonify({"ok": False, "error": "Too many premium renders requested recently -- try again later."}), 429
 
-    import base64
     render_id = str(uuid.uuid4())
-    parts_model_b64 = base64.b64encode(json.dumps({"partsModel": parts_model}).encode()).decode()
+    input_path = f"renders/{render_id}/input.json"
+
+    try:
+        from google.cloud import storage
+        credentials, _ = _access_token()
+        client = storage.Client(credentials=credentials, project=PROJECT)
+        bucket = client.bucket(OUT_BUCKET)
+        bucket.blob(input_path).upload_from_string(
+            json.dumps({"partsModel": parts_model}), content_type="application/json")
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"ok": False, "error": f"could not stage render input: {e}"}), 502
 
     env = [
-        {"name": "PARTS_MODEL_B64", "value": parts_model_b64},
+        {"name": "PARTS_MODEL_GCS_PATH", "value": input_path},
         {"name": "OUT_GCS_BUCKET", "value": OUT_BUCKET},
         {"name": "OUT_GCS_PREFIX", "value": f"renders/{render_id}"},
     ]
