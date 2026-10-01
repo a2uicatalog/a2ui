@@ -66,8 +66,10 @@ def test_off_grid_keys_warn_only_when_bpm_is_set():
 
 
 def test_first_key_after_zero_is_informational_not_a_warning():
-    p = tl(tracks=[{"target": "a", "keys": [{"beat": 4, "p": 0}, {"beat": 8, "p": 1}]}])
+    p = tl(tracks=[{"target": "a", "keys": [{"beat": 4, "opacity": 0}, {"beat": 5, "opacity": 1, "ease": "expo-out"}]}])
     assert has(p, "first key at 2.00s", "info") and msgs(p, "warn") == []
+    quiet = tl(tracks=[{"target": "a", "keys": [{"beat": 4, "p": 0}, {"beat": 8, "p": 1}]}])
+    assert not has(quiet, "first key at", "info"), "p holding 0 until its key is the default, not news"
 
 
 def test_camera_shake_needs_more_than_two_direction_changes():

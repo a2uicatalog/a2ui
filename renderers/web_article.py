@@ -26475,8 +26475,8 @@ def _mo_num(v, dflt):
     return max(-1e9, min(1e9, x))
 
 
-def _mo_count(to, dec, pre, suf, style=''):
-    return ('<span data-mt-num="1" data-from="0" data-to="' + _ff_num(to, 0, -1e9, 1e9, dec) + '" data-dec="' + str(dec) + '" data-pre="' + _cv_esc(pre) + '" data-suf="' + _cv_esc(suf) + '"'
+def _mo_count(to, dec, pre, suf, style='', frm=0):
+    return ('<span data-mt-num="1" data-from="' + _ff_num(frm or 0, 0, -1e9, 1e9, dec) + '" data-to="' + _ff_num(to, 0, -1e9, 1e9, dec) + '" data-dec="' + str(dec) + '" data-pre="' + _cv_esc(pre) + '" data-suf="' + _cv_esc(suf) + '"'
             + (' style="' + style + '"' if style else '') + '>' + _cv_esc(_mo_fmt(to, dec, pre, suf)) + '</span>')
 
 
@@ -26721,6 +26721,43 @@ def _mo_track_js(keys, ranges, order, dur, bpm, def_ease, st):
     return ','.join(parts)
 
 
+def _mo_placed(blk, seen, ids, st):
+    """One child at its `place` (percent of the parent box: a timeline's stage or a motion_layer). None = dropped (counted in st)."""
+    if not isinstance(blk, dict):
+        st['dropped'] += 1
+        return None
+    typ = blk.get('component') or blk.get('type')
+    fn = _RENDERERS.get(typ)
+    if not fn or typ == 'motion_timeline':
+        st['dropped'] += 1
+        return None
+    try:
+        html = fn(blk)
+    except Exception:  # noqa: BLE001
+        st['dropped'] += 1
+        return None
+    bid = _mo_id(blk.get('id'))
+    if bid and seen.get(bid):
+        bid = ''
+        st['dropped'] += 1
+    if bid:
+        seen[bid] = 1
+        ids[bid] = 1
+    pl = blk.get('place') if isinstance(blk.get('place'), dict) else {}
+    px, py = _ff_num(pl.get('x'), 0, -100, 200, 2), _ff_num(pl.get('y'), 0, -100, 200, 2)
+    sz = ''
+    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)  # noqa: E731
+    if num(pl.get('w')):
+        sz += 'width:' + _ff_num(pl.get('w'), 100, 0, 300, 2) + '%;'
+    elif typ == 'motion_layer':
+        sz += 'width:100%;'
+    if num(pl.get('h')):
+        sz += 'height:' + _ff_num(pl.get('h'), 100, 0, 300, 2) + '%;'
+    elif typ == 'motion_layer':
+        sz += 'height:100%;'
+    return ('<div class="mt-el"' + (' data-mt-id="' + bid + '" data-mt-x="' + px + '" data-mt-y="' + py + '"' if bid else '') + ' style="position:absolute;left:' + px + '%;top:' + py + '%;' + sz + 'z-index:' + str(_ff_int(pl.get('z'), 1, 0, 99)) + ';transform-origin:' + _ff_pick(pl.get('origin'), _MO_ORIGIN, 'c') + ';">' + html + '</div>')
+
+
 _mo_tl_depth = [0]
 
 
@@ -26746,34 +26783,9 @@ def _mo_timeline(b: dict) -> str:
         st['dropped'] += len(blocks) - 24
         blocks = blocks[:24]
     for blk in blocks:
-        if not isinstance(blk, dict):
-            st['dropped'] += 1
+        wrap = _mo_placed(blk, seen, ids, st)
+        if wrap is None:
             continue
-        typ = blk.get('component') or blk.get('type')
-        fn = _RENDERERS.get(typ)
-        if not fn or typ == 'motion_timeline':
-            st['dropped'] += 1
-            continue
-        try:
-            html = fn(blk)
-        except Exception:  # noqa: BLE001
-            st['dropped'] += 1
-            continue
-        bid = _mo_id(blk.get('id'))
-        if bid and seen.get(bid):
-            bid = ''
-            st['dropped'] += 1
-        if bid:
-            seen[bid] = 1
-            ids[bid] = 1
-        pl = blk.get('place') if isinstance(blk.get('place'), dict) else {}
-        px, py = _ff_num(pl.get('x'), 0, -100, 200, 2), _ff_num(pl.get('y'), 0, -100, 200, 2)
-        sz = ''
-        if isinstance(pl.get('w'), (int, float)) and not isinstance(pl.get('w'), bool):
-            sz += 'width:' + _ff_num(pl.get('w'), 100, 0, 300, 2) + '%;'
-        if isinstance(pl.get('h'), (int, float)) and not isinstance(pl.get('h'), bool):
-            sz += 'height:' + _ff_num(pl.get('h'), 100, 0, 300, 2) + '%;'
-        wrap = ('<div class="mt-el"' + (' data-mt-id="' + bid + '" data-mt-x="' + px + '" data-mt-y="' + py + '"' if bid else '') + ' style="position:absolute;left:' + px + '%;top:' + py + '%;' + sz + 'z-index:' + str(_ff_int(pl.get('z'), 1, 0, 99)) + ';transform-origin:' + _ff_pick(pl.get('origin'), _MO_ORIGIN, 'c') + ';">' + html + '</div>')
         if blk.get('layer') == 'hud':
             hud += wrap
         else:
@@ -26821,7 +26833,7 @@ def _mo_timeline(b: dict) -> str:
     return ('<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _cv_esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
             + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
             + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + str(W) + '/' + str(H) + ';overflow:hidden;border-radius:16px;background:' + st_bg + ';border:1px solid ' + th['line'] + ';">'
-            + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + 'overflow:hidden;">'
+            + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + '--mt-ink:' + th['ink'] + ';--mt-mute:' + th['mute'] + ';--mt-acc:' + acc + ';overflow:hidden;">'
             + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
             + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>'
             + controls + note
@@ -26845,6 +26857,155 @@ for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens
                          ('demo_progress', _render_demo_progress), ('demo_cursor', _render_demo_cursor), ('demo_caption', _render_demo_caption),
                          ('demo_orb', _render_demo_orb), ('demo_panel', _render_demo_panel)):
     _RENDERERS[_mo_name] = _mo_fn
+
+
+_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1}
+_MO_ALIGN = {'start': 'left', 'middle': 'center', 'end': 'right'}
+
+
+def _mo_ink(b, key, dflt):
+    return _ff_hex(b.get(key), '') or dflt
+
+
+def _render_motion_layer(b: dict) -> str:
+    blocks = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    st, seen, ids, out = {'dropped': 0}, {}, {}, ''
+    if len(blocks) > 24:
+        st['dropped'] += len(blocks) - 24
+        blocks = blocks[:24]
+    for blk in blocks:
+        wr = _mo_placed(blk, seen, ids, st)
+        if wr is not None:
+            out += wr
+    return ('<div style="position:absolute;left:0;top:0;width:100%;height:100%;">' + out + '</div>'
+            + ('<!-- a2ui: motion_layer ignored ' + str(st['dropped']) + ' invalid or over-limit item(s) -->' if st['dropped'] else ''))
+
+
+def _render_motion_text(b: dict) -> str:
+    raw = (b.get('text') if isinstance(b.get('text'), str) else '').split('\n')
+    lines, total = [], 0
+    for ln0 in raw:
+        if len(lines) >= 4:
+            break
+        ln = ln0.strip()[:60]
+        if not ln:
+            continue
+        ln = ln[:max(0, 160 - total)]
+        total += len(ln)
+        if ln:
+            lines.append(ln)
+    if not lines:
+        lines = ['Text']
+    size, weight, font = _ff_int(b.get('size'), 64, 10, 400), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), _ff_pick(b.get('font'), _FF_FONTS, 'sans')
+    mode = b.get('mode') if b.get('mode') in ('block', 'words', 'chars') else 'lines'
+    reveal = b.get('reveal') if isinstance(b.get('reveal'), str) and b.get('reveal') in _MO_REVEAL else 'rise'
+    S = _ff_int(b.get('overlap'), 3, 1, 8)
+    track, lh = _ff_num(b.get('tracking'), -0.02, -0.1, 0.5, 3), _ff_num(b.get('line_height'), 1.05, 0.8, 2, 2)
+    color, align, upper = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), b.get('uppercase') is True
+    units = []
+    for i, ln in enumerate(lines):
+        if mode in ('block', 'lines'):
+            units.append({'t': ln, 'brk': i > 0 and mode == 'block'})
+            continue
+        for j, wd in enumerate(ln.split(' ')):
+            if not wd:
+                continue
+            u = {'t': wd, 'brk': i > 0 and j == 0, 'sp': j > 0}
+            if mode == 'chars':
+                u['chars'] = True
+            units.append(u)
+    if mode == 'block':
+        units = [{'t': '\n'.join(lines), 'block': True}]
+    N = sum(len(u['t']) if u.get('chars') else 1 for u in units)
+    if N > 120:
+        units, N, mode = [{'t': ' '.join(lines), 'block': True}], 1, 'block'
+    idx = [0]
+
+    def uvar(n):
+        return '--u:clamp(0,calc((var(--p,1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1);'
+
+    def wrap_unit(inner, n, blockish):
+        inl = 'display:block;' if blockish else 'display:inline-block;'
+        if reveal == 'mask':
+            return ('<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>')
+        fx = ('' if reveal == 'fade' else 'transform:translateY(calc((1 - var(--u))*-0.6em));' if reveal == 'drop'
+              else 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' if reveal == 'blur'
+              else 'transform:translateY(calc((1 - var(--u))*0.6em));')
+        return '<span style="' + uvar(n) + inl + 'opacity:var(--u);' + fx + '">' + inner + '</span>'
+
+    def nxt():
+        idx[0] += 1
+        return idx[0] - 1
+    out = ''
+    for u in units:
+        if u.get('block'):
+            out += wrap_unit(_cv_esc(u['t']).replace('\n', '<br>'), nxt(), True)
+            continue
+        if u.get('brk'):
+            out += '<br>'
+        if u.get('sp'):
+            out += ' '
+        if mode == 'lines':
+            out += wrap_unit(_cv_esc(u['t']), nxt(), True)
+            continue
+        if u.get('chars'):
+            ch = ''.join(wrap_unit(_cv_esc(c), nxt(), False) for c in u['t'])
+            out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>'
+        else:
+            out += wrap_unit(_cv_esc(u['t']), nxt(), False)
+    return ('<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
+            + ('text-transform:uppercase;' if upper else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
+            + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">' + _cv_esc(' '.join(lines)) + '</span>'
+            + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>')
+
+
+def _render_motion_shape(b: dict) -> str:
+    shape = b.get('shape') if b.get('shape') in ('circle', 'ring', 'line') else 'rect'
+    fill, fill2 = _mo_ink(b, 'fill', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'fill2', '')
+    angle, thick = _ff_int(b.get('angle'), 90, 0, 360), _ff_int(b.get('thickness'), 6, 1, 200)
+    radius, blur = _ff_int(b.get('radius'), 0, 0, 500), _ff_int(b.get('blur'), 0, 0, 200)
+    dflt = 'sweep' if shape == 'ring' else ('scale' if shape == 'circle' else 'grow-x')
+    d = b.get('draw')
+    draw = d if d in ('grow-x', 'grow-y', 'scale', 'fade', 'none') or (d == 'sweep' and shape == 'ring') else dflt
+    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)  # noqa: E731
+    wd = str(_ff_int(b.get('w'), 100, 1, 3000)) + 'px' if num(b.get('w')) else '100%'
+    ht = str(_ff_int(b.get('h'), 100, 1, 3000)) + 'px' if num(b.get('h')) else '100%'
+    if shape == 'line':
+        ht = str(thick) + 'px'
+    bg = 'linear-gradient(' + str(angle) + 'deg,' + fill + ',' + fill2 + ')' if fill2 else fill
+    origin = '50% 100%' if draw == 'grow-y' else ('50% 50%' if draw == 'scale' else '0 50%')
+    if shape == 'ring':
+        mask = 'radial-gradient(farthest-side,transparent calc(100% - ' + str(thick) + 'px),#000 calc(100% - ' + str(thick) + 'px + 1px))'
+        if draw == 'sweep':
+            bg = 'conic-gradient(from -90deg,' + (fill2 if fill2 else fill) + ' calc(var(--p,1)*360deg),transparent 0)'
+        extra = 'border-radius:50%;-webkit-mask:' + mask + ';mask:' + mask + ';'
+    elif shape == 'circle':
+        extra = 'border-radius:50%;'
+    else:
+        extra = 'border-radius:' + str(thick if shape == 'line' else radius) + 'px;'
+    tf = ('transform:scaleX(var(--p,1));' if draw == 'grow-x' else 'transform:scaleY(var(--p,1));' if draw == 'grow-y'
+          else 'transform:scale(var(--p,1));' if draw == 'scale' else '')
+    op = 'opacity:var(--p,1);' if draw == 'fade' else ''
+    return ('<div aria-hidden="true" style="width:' + wd + ';height:' + ht + ';box-sizing:border-box;background:' + bg + ';' + extra + tf + op + 'transform-origin:' + origin + ';'
+            + ('filter:blur(' + str(blur) + 'px);' if blur else '') + '"></div>')
+
+
+def _render_motion_counter(b: dict) -> str:
+    dec, to, frm = _ff_int(b.get('decimals'), 0, 0, 3), _mo_num(b.get('to'), 100), _mo_num(b.get('from'), 0)
+    pre, suf = _cv_str(b.get('prefix'), 4), _cv_str(b.get('suffix'), 8)
+    size, weight, font = _ff_int(b.get('size'), 96, 10, 400), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), _ff_pick(b.get('font'), _FF_FONTS, 'display')
+    color, align, label = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), _cv_str(b.get('label'), 40)
+    lsize = _ff_int(b.get('label_size'), max(11, size // 5), 8, 80)
+    return ('<div style="width:100%;text-align:' + align + ';">'
+            + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.02em;color:' + color + ';font-variant-numeric:tabular-nums;">' + _mo_count(to, dec, pre, suf, '', frm) + '</div>'
+            + ('<div style="font-family:' + _MO_SANS + ';font-size:' + str(lsize) + 'px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-top:0.5em;">' + _cv_esc(label) + '</div>' if label else '')
+            + '</div>')
+
+
+_RENDERERS['motion_layer'] = _render_motion_layer
+_RENDERERS['motion_text'] = _render_motion_text
+_RENDERERS['motion_shape'] = _render_motion_shape
+_RENDERERS['motion_counter'] = _render_motion_counter
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()

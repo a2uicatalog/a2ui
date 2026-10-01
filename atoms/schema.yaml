@@ -9856,6 +9856,150 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_layer
+  stage: preview
+  description: 'A scene. Children are any atoms, placed in percent of THIS layer (place {x, y, w, h, z, origin}, id, exactly
+    as inside a motion_timeline), and the whole layer moves as one: give the layer an id and fade, slide, scale or blur it
+    with opacity, x, y, scale and blur tracks to cut between scenes. Use it inside a motion_timeline; a layer with no place
+    fills the stage. Layers are what make a piece with several scenes cheap to author: one id per scene instead of one track
+    per element.'
+  compact_description: 'scene container for a motion_timeline: children placed in percent of the layer, animated as one'
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and masks are not supported in email clients
+  fields:
+    blocks: array (max 24) of any atom blocks. Each may carry id (^[a-z][a-z0-9_-]{0,31}$), place {x, y, w, h, z, origin}.
+      Ids must be unique across the whole timeline.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_text
+  stage: preview
+  description: 'Kinetic type. The text reveals unit by unit as p goes 0 to 1: per line, word or character (or all at once),
+    with reveal "mask" (each unit slides up out of a clipped line, the signature designed look), "rise", "drop", "fade" or
+    "blur". Sized in px on the stage, so the composition is identical at any width, and coloured from the stage theme unless
+    a colour is given. Screen readers get the plain text. Standalone it renders fully revealed. Plain HTML and CSS, no script:
+    it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.'
+  compact_description: kinetic type that reveals by line, word or character as progress advances
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and masks are not supported in email clients
+  fields:
+    text: string (max 4 lines of 60 characters, 160 total; lines split on \n). Default "Text".
+    size: integer (optional). Font size px, 10-400. Default 64.
+    font: '"sans" | "serif" | "mono" | "display" (optional, default "sans"). display is a heavy grotesque.'
+    weight: '"regular" | "bold" | "black" (optional, default "bold")'
+    mode: '"lines" | "words" | "chars" | "block" (optional, default "lines"). What reveals in turn. lines never wraps; more
+      than 120 units falls back to block.'
+    reveal: '"mask" | "rise" | "drop" | "fade" | "blur" (optional, default "rise")'
+    overlap: integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.
+    tracking: number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02.
+    line_height: number (optional). 0.8-2. Default 1.05.
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    align: '"start" | "middle" | "end" (optional, default "start")'
+    uppercase: bool (optional). Default false.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_shape
+  stage: preview
+  description: 'A form that draws or grows with p: a bar or rule (grow-x, grow-y), a disc (scale), a ring that sweeps round
+    like a progress dial (sweep), or a fade; solid or a two-colour gradient at an angle, with rounded corners, and an optional
+    heavy blur that makes it a soft glow behind everything. Fills its placed box, or w/h px. Plain HTML and CSS, no script:
+    it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.'
+  compact_description: bar, rule, disc, sweeping ring or soft glow that draws with progress
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and masks are not supported in email clients
+  fields:
+    shape: '"rect" | "circle" | "ring" | "line" (optional, default "rect")'
+    fill: '"#rrggbb" (optional). Default the stage accent.'
+    fill2: '"#rrggbb" (optional). Second colour; makes a gradient (for a ring, the sweep colour).'
+    angle: integer (optional). Gradient angle in degrees, 0-360. Default 90.
+    thickness: integer (optional). Ring and line thickness px, 1-200. Default 6.
+    radius: integer (optional). Rect corner radius px, 0-500. Default 0.
+    draw: '"grow-x" | "grow-y" | "scale" | "sweep" | "fade" | "none" (optional). Default grow-x for rect and line, scale for
+      circle, sweep for ring. sweep is ring only.'
+    blur: integer (optional). Blur px, 0-200. A big blur on a gradient disc is an ambient glow. Default 0.
+    w: integer (optional). Width px, 1-3000. Default 100% of the placed box.
+    h: integer (optional). Height px, 1-3000. Default 100% of the placed box. A line is thickness tall.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_counter
+  stage: preview
+  description: 'A big number that counts from `from` to `to` as p goes 0 to 1, with thousands separators, prefix, suffix,
+    fixed decimals and an optional small-caps caption under it. The generic form of a stat for any topic: nights, artists,
+    kilometres, followers. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track
+    sets, and standalone it renders its final state.'
+  compact_description: big counting number with an optional caption
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and masks are not supported in email clients
+  fields:
+    to: number (optional). Value at p = 1. Default 100.
+    from: number (optional). Value at p = 0. Default 0.
+    decimals: integer (optional). 0-3. Default 0.
+    prefix: string (optional, max 4).
+    suffix: string (optional, max 8).
+    label: string (optional, max 40). Caption.
+    label_size: integer (optional). Caption px, 8-80. Default a fifth of size.
+    size: integer (optional). Number size px, 10-400. Default 96.
+    font: '"sans" | "serif" | "mono" | "display" (optional, default "display")'
+    weight: '"regular" | "bold" | "black" (optional, default "black")'
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    align: '"start" | "middle" | "end" (optional, default "start")'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

@@ -14,7 +14,7 @@ Checks (level in brackets):
   [warn] an entrance (opacity rising to ~1) slower than 600 ms       the benchmark caps entrances near 600 ms on expo-out
   [warn] camera shake: rz changing direction more than twice
   [warn] keys off the beat grid when bpm is set (t not on a half beat, tolerance 20 ms)
-  [info] a property's first key is after t=0                         it holds that value from t=0 (hidden until its key)
+  [info] a property's first key is after t=0 (not p/step)            it holds that value from t=0 (hidden until its key)
   [info] no bpm                                                      benchmark pieces sit on a beat grid
   [info] duration over 40 s                                          typical pieces are 15-40 s
   [info] no `ease` on a key and no timeline default                  falls back to "standard": fine, but unnamed
@@ -84,7 +84,7 @@ def lint_timeline(tl: dict) -> list[tuple[str, str]]:
             pk = [k for k in keys if isinstance(k.get(p), (int, float))]
             if not pk:
                 continue
-            if tm(pk[0]) > 0.001:
+            if tm(pk[0]) > 0.001 and p not in LINEAR_OK:  # p/step holding 0 until their key is the intended default, not news
                 out.append(("info", f"{target}.{p}: first key at {tm(pk[0]):.2f}s, so it holds that value from t=0 (fine if it should be hidden until then)"))
             for prev, k in zip(pk, pk[1:]):
                 e = _ease_name(k.get("ease"), default)

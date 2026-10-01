@@ -35,7 +35,8 @@ from renderers import web_article as wa  # noqa: E402
 
 DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_chart", "demo_toggle_grid", "demo_progress",
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + DEMO_ATOMS
+PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -111,6 +112,19 @@ PAYLOADS = {
     "demo_cursor": [{}, {"label": "Supersonik <x>", "accent": "#ff0000"}, {"label": ""}],
     "demo_caption": [{}, {"lines": [{"who": "agent pt", "text": "Claro <b>"}, {"text": "no who"}, "bare"], "tone": "light", "accent": "#00ff00"}],
     "demo_orb": [{}, {"size": 200, "bars": 5, "label": "Agent", "accent": "#22d3ee"}, {"size": 9999, "bars": 99}],
+    "motion_layer": [{}, {"blocks": [{"type": "motion_text", "id": "a", "text": "Hi", "place": {"x": 5, "y": 5, "w": 50}},
+                                      {"type": "motion_shape", "shape": "ring", "place": {"x": 60, "y": 10, "w": 30, "h": 50, "z": 3}},
+                                      "junk", {"type": "motion_timeline"}, {"type": "no_such_atom"}, {"type": "motion_layer", "id": "inner", "blocks": []}]}],
+    "motion_text": [{}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
+                    {"text": "a b c\nd e", "mode": "words", "reveal": "drop", "overlap": 5, "align": "middle"},
+                    {"text": "chars <b>& \"q\" \u2603", "mode": "chars", "reveal": "blur", "align": "end"},
+                    {"text": "x" * 200, "mode": "chars"}, {"text": "a\nb\nc\nd\ne\nf", "mode": "block", "reveal": "fade"}, {"text": ""},
+                    {"text": "x", "color": "red", "reveal": "toString", "mode": "constructor", "font": "__proto__", "weight": "hasOwnProperty", "size": 99999}],
+    "motion_shape": [{}, {"shape": "circle", "fill": "#FF0000", "fill2": "#0000ff", "angle": 135, "blur": 150, "draw": "fade", "w": 400, "h": 300},
+                     {"shape": "ring", "thickness": 10, "fill": "#ffb347", "fill2": "#ff3d81"}, {"shape": "ring", "draw": "scale"}, {"shape": "line", "thickness": 4, "draw": "grow-y"},
+                     {"shape": "rect", "radius": 80, "draw": "sweep", "fill": "url(javascript:alert(1))"}, {"shape": "<x>", "draw": "none", "w": "9", "h": True}],
+    "motion_counter": [{}, {"to": 1207, "from": 100, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "size": 200, "label": "artists <b>", "label_size": 20, "align": "middle", "color": "#ffb347"},
+                       {"to": "abc"}, {"to": -5.5, "from": "x", "decimals": 9, "font": "mono", "weight": "regular"}],
     "demo_panel": [{}, {"tone": "dark", "accent": "#38bdf8", "avatar": "SKX", "title": "Sam", "sub": "Head of Sales", "badge": "Prospect", "rows": [{"label": "Team", "value": "40"}, "x"]}],
 }
 CASES = [(a, b) for a, bs in PAYLOADS.items() for b in bs]
@@ -396,3 +410,81 @@ def test_enter_schema_accepts_what_the_renderer_accepts():
     for bad in ("spin", {"effect": "rise", "extra": 1}, {"ease": "bounce"}, {"duration": 99999}, 5):
         assert not v.is_valid(bad), bad
     assert set(g.MOTION_TOKENS) == set(wa._MO_EASE) and g.MOTION_EFFECTS == list(wa._MO_FX)
+
+
+# ─── the topic-free primitives, in a real browser ───────────────────────────
+def _probe(block: dict, t: float, js: str):
+    """Render block at time t in headless Chromium, run `js` (an expression over the live DOM), return its JSON value."""
+    html = ("<!doctype html><meta charset=utf-8><body style='margin:0'>" + _py(block)
+            + "<script>document.documentElement.setAttribute('data-probe', JSON.stringify((function(){" + js + "})()));</script>")
+    with tempfile.TemporaryDirectory() as td:
+        f = Path(td) / "p.html"
+        f.write_text(html)
+        out = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=1500",
+                              "--dump-dom", f"file://{f}#t={t}"], capture_output=True, text=True, timeout=90).stdout
+    m = re.search(r"data-probe='([^']*)'|data-probe=\"([^\"]*)\"", out)
+    assert m, out[:400]
+    import html as _h
+    return json.loads(_h.unescape(m.group(1) or m.group(2)))
+
+
+def _scene(children, tracks, **kw):
+    blk = {"type": "motion_timeline", "duration": 4, "controls": False, "autoplay": False, "ease": "linear",
+           "blocks": [{"type": "motion_layer", "id": "scene", "blocks": children}], "tracks": tracks}
+    blk.update(kw)
+    return blk
+
+
+@browser
+def test_motion_text_units_reveal_in_turn_with_the_expected_opacity():
+    blk = _scene([{"type": "motion_text", "id": "t", "text": "ONE\nTWO", "reveal": "fade", "overlap": 3, "place": {"x": 5, "y": 5, "w": 80}}],
+                 [{"target": "t", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    # N = 2 lines, overlap 3: unit i = clamp((p*(N+3) - i)/3). At p = 0.5: unit 0 -> 0.8333, unit 1 -> 0.5
+    got = _probe(blk, 2, "var u=document.querySelectorAll('[data-mt-id=t] span[aria-hidden] > span');return Array.prototype.map.call(u,function(e){return +getComputedStyle(e).opacity;});")
+    assert got == pytest.approx([2.5 / 3, 1.5 / 3], abs=0.01)
+    start = _probe(blk, 0, "var u=document.querySelectorAll('[data-mt-id=t] span[aria-hidden] > span');return Array.prototype.map.call(u,function(e){return +getComputedStyle(e).opacity;});")
+    end = _probe(blk, 4, "var u=document.querySelectorAll('[data-mt-id=t] span[aria-hidden] > span');return Array.prototype.map.call(u,function(e){return +getComputedStyle(e).opacity;});")
+    assert start == [0, 0] and end == [1, 1]
+
+
+@browser
+def test_motion_text_mask_slides_each_line_up_out_of_a_clip():
+    blk = _scene([{"type": "motion_text", "id": "t", "text": "ONE\nTWO", "reveal": "mask", "size": 100, "place": {"x": 5, "y": 5, "w": 80}}],
+                 [{"target": "t", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "var u=document.querySelectorAll('[data-mt-id=t] span[aria-hidden] > span > span');return Array.prototype.map.call(u,function(e){var m=getComputedStyle(e).transform;return m==='none'?0:parseFloat(m.split(',')[5]);});"
+    y0, y1 = _probe(blk, 0, js)
+    assert y0 > 0 and y1 > 0, "fully hidden below the clip at p = 0"
+    assert _probe(blk, 4, js) == [0, 0], "settled at p = 1"
+
+
+@browser
+def test_motion_counter_counts_from_a_start_value():
+    blk = _scene([{"type": "motion_counter", "id": "c", "from": 100, "to": 300, "suffix": "k", "label": "Followers", "place": {"x": 5, "y": 5, "w": 40}}],
+                 [{"target": "c", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "return document.querySelector('[data-mt-num]').textContent;"
+    assert _probe(blk, 0, js) == "100k" and _probe(blk, 2, js) == "200k" and _probe(blk, 4, js) == "300k"
+
+
+@browser
+def test_motion_shape_draws_with_progress():
+    kids = [{"type": "motion_shape", "id": "bar", "shape": "rect", "place": {"x": 5, "y": 5, "w": 50, "h": 10}},
+            {"type": "motion_shape", "id": "ring", "shape": "ring", "thickness": 8, "place": {"x": 5, "y": 30, "w": 20, "h": 36}}]
+    blk = _scene(kids, [{"target": "bar", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}, {"target": "ring", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    bar = "return getComputedStyle(document.querySelector('[data-mt-id=bar] > div')).transform;"
+    ring = "return getComputedStyle(document.querySelector('[data-mt-id=ring] > div')).backgroundImage;"
+    assert _probe(blk, 2, bar) == "matrix(0.5, 0, 0, 1, 0, 0)"
+    assert "180deg" in _probe(blk, 2, ring) and "conic-gradient" in _probe(blk, 2, ring)
+    assert "360deg" in _probe(blk, 4, ring)
+
+
+@browser
+def test_layers_move_as_one_and_their_children_stay_addressable():
+    blk = _scene([{"type": "motion_text", "id": "inner", "text": "Hi", "reveal": "fade", "place": {"x": 10, "y": 10, "w": 30}}],
+                 [{"target": "scene", "keys": [{"t": 0, "opacity": 0, "x": 10}, {"t": 4, "opacity": 1, "x": 0}]},
+                  {"target": "inner", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "var s=document.querySelector('[data-mt-id=scene]'),i=document.querySelector('[data-mt-id=inner]');return [+s.style.opacity, s.style.transform, i.style.getPropertyValue('--p')];"
+    op, tf, p = _probe(blk, 2, js)
+    assert op == pytest.approx(0.5, abs=0.01) and tf == "translate(64px, 0px)" and p == "0.5000"
+    # a layer with no place fills the stage: its children are positioned against the stage, not against a zero box
+    box = _probe(blk, 0, "var e=document.querySelector('[data-mt-id=scene]').getBoundingClientRect(),v=document.querySelector('.mt-vp').getBoundingClientRect();return [Math.round(e.width/v.width*100), Math.round(e.height/v.height*100)];")
+    assert box == [100, 100]

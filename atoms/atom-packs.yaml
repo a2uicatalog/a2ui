@@ -317,6 +317,10 @@ a2ui-editorial-v1:
 - time_estimate
 - tooltip_glossary
 a2ui-effects-v1:
+- motion_layer
+- motion_text
+- motion_shape
+- motion_counter
 - motion_timeline
 - motion_group
 - motion_tokens

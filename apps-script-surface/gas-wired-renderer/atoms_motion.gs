@@ -235,8 +235,8 @@ function _moFmt(v, dec, pre, suf) {
 }
 function _moNum(v, dflt) { var x = typeof v === 'number' ? v : parseFloat(v); return isNaN(x) ? dflt : Math.max(-1e9, Math.min(1e9, x)); }
 // A recounting number: its text is the final value; the timeline rewrites it from --p.
-function _moCount(to, dec, pre, suf, style) {
-  return '<span data-mt-num="1" data-from="0" data-to="' + _ffNum(to, 0, -1e9, 1e9, dec) + '" data-dec="' + dec + '" data-pre="' + _esc(pre) + '" data-suf="' + _esc(suf) + '"' + (style ? ' style="' + style + '"' : '') + '>' + _esc(_moFmt(to, dec, pre, suf)) + '</span>';
+function _moCount(to, dec, pre, suf, style, from) {
+  return '<span data-mt-num="1" data-from="' + _ffNum(from || 0, 0, -1e9, 1e9, dec) + '" data-to="' + _ffNum(to, 0, -1e9, 1e9, dec) + '" data-dec="' + dec + '" data-pre="' + _esc(pre) + '" data-suf="' + _esc(suf) + '"' + (style ? ' style="' + style + '"' : '') + '>' + _esc(_moFmt(to, dec, pre, suf)) + '</span>';
 }
 
 _RENDERERS['demo_window'] = function(b) {
@@ -493,6 +493,23 @@ function _moTrackJs(keys, ranges, order, dur, bpm, defEase, st) {
   return parts.join(',');
 }
 
+// One child at its `place` (percent of the parent box: a timeline's stage or a motion_layer). null = dropped (counted in st).
+function _moPlaced(blk, seen, ids, st) {
+  if (!blk || typeof blk !== 'object') { st.dropped++; return null; }
+  var type = blk.component || blk.type, fn = _RENDERERS[type];
+  if (!fn || type === 'motion_timeline') { st.dropped++; return null; }
+  var html;
+  try { html = fn(blk); } catch (err) { st.dropped++; return null; }
+  var id = _moId(blk.id);
+  if (id && seen[id]) { id = ''; st.dropped++; }
+  if (id) { seen[id] = 1; ids[id] = 1; }
+  var pl = blk.place && typeof blk.place === 'object' ? blk.place : {};
+  var px = _ffNum(pl.x, 0, -100, 200, 2), py = _ffNum(pl.y, 0, -100, 200, 2), sz = '';
+  // a layer with no size fills its parent: its own children are placed in percent of it
+  if (typeof pl.w === 'number') sz += 'width:' + _ffNum(pl.w, 100, 0, 300, 2) + '%;'; else if (type === 'motion_layer') sz += 'width:100%;';
+  if (typeof pl.h === 'number') sz += 'height:' + _ffNum(pl.h, 100, 0, 300, 2) + '%;'; else if (type === 'motion_layer') sz += 'height:100%;';
+  return '<div class="mt-el"' + (id ? ' data-mt-id="' + id + '" data-mt-x="' + px + '" data-mt-y="' + py + '"' : '') + ' style="position:absolute;left:' + px + '%;top:' + py + '%;' + sz + 'z-index:' + _ffInt(pl.z, 1, 0, 99) + ';transform-origin:' + _ffPick(pl.origin, _MO_ORIGIN, 'c') + ';">' + html + '</div>';
+}
 var _moTlDepth = 0;
 function _moTimeline(b) {
   var uid = Math.random().toString(36).substr(2, 6), th = _ffTheme(b), acc = _ffHex(b.accent, '#38bdf8');
@@ -507,21 +524,8 @@ function _moTimeline(b) {
   var st = {dropped: 0, keys: 0}, seen = {}, ids = {}, world = '', hud = '', blocks = Array.isArray(b.blocks) ? b.blocks : [];
   if (blocks.length > 24) { st.dropped += blocks.length - 24; blocks = blocks.slice(0, 24); }
   for (var i = 0; i < blocks.length; i++) {
-    var blk = blocks[i];
-    if (!blk || typeof blk !== 'object') { st.dropped++; continue; }
-    var type = blk.component || blk.type, fn = _RENDERERS[type];
-    if (!fn || type === 'motion_timeline') { st.dropped++; continue; }
-    var html;
-    try { html = fn(blk); } catch (err) { st.dropped++; continue; }
-    var id = _moId(blk.id);
-    if (id && seen[id]) { id = ''; st.dropped++; }
-    if (id) { seen[id] = 1; ids[id] = 1; }
-    var pl = blk.place && typeof blk.place === 'object' ? blk.place : {};
-    var px = _ffNum(pl.x, 0, -100, 200, 2), py = _ffNum(pl.y, 0, -100, 200, 2);
-    var sz = '';
-    if (typeof pl.w === 'number') sz += 'width:' + _ffNum(pl.w, 100, 0, 300, 2) + '%;';
-    if (typeof pl.h === 'number') sz += 'height:' + _ffNum(pl.h, 100, 0, 300, 2) + '%;';
-    var wrap = '<div class="mt-el"' + (id ? ' data-mt-id="' + id + '" data-mt-x="' + px + '" data-mt-y="' + py + '"' : '') + ' style="position:absolute;left:' + px + '%;top:' + py + '%;' + sz + 'z-index:' + _ffInt(pl.z, 1, 0, 99) + ';transform-origin:' + _ffPick(pl.origin, _MO_ORIGIN, 'c') + ';">' + html + '</div>';
+    var blk = blocks[i], wrap = _moPlaced(blk, seen, ids, st);
+    if (wrap === null) continue;
     if (blk.layer === 'hud') hud += wrap; else world += wrap;
   }
   // Targets may be nested (a page inside a window): collect every data-mt-id the
@@ -554,7 +558,7 @@ function _moTimeline(b) {
   return '<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
     + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
     + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + W + '/' + H + ';overflow:hidden;border-radius:16px;background:' + stBg + ';border:1px solid ' + th.line + ';">'
-    + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + stBg + ';' + glow + 'overflow:hidden;">'
+    + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + stBg + ';' + glow + '--mt-ink:' + th.ink + ';--mt-mute:' + th.mute + ';--mt-acc:' + acc + ';overflow:hidden;">'
     + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
     + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none;">' + hud + '</div></div></div>'
     + controls + note
@@ -565,4 +569,111 @@ _RENDERERS['motion_timeline'] = function(b) {
   if (_moTlDepth > 0) return '<!-- a2ui: motion_timeline cannot nest inside another motion_timeline -->';
   _moTlDepth++;
   try { return _moTimeline(b); } finally { _moTlDepth--; }
+};
+
+// ─── topic-free primitives (added after the first composition outside the SaaS demo) ──
+// motion_layer groups children into a scene; motion_text, motion_shape and motion_counter draw type, forms and numbers
+// from the stage theme (--mt-ink / --mt-acc / --mt-mute, set by motion_timeline) and move with --p like the demo kit.
+// Standalone they render their FINAL state.
+var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1};
+var _MO_ALIGN = {start: 'left', middle: 'center', end: 'right'};
+function _moInk(b, key, dflt) { var h = _ffHex(b[key], ''); return h || dflt; }
+
+// A scene: children placed in percent of THIS layer, moved as one (opacity/x/scale/blur tracks on the layer id).
+_RENDERERS['motion_layer'] = function(b) {
+  var blocks = Array.isArray(b.blocks) ? b.blocks : [], st = {dropped: 0}, seen = {}, ids = {}, out = '';
+  if (blocks.length > 24) { st.dropped += blocks.length - 24; blocks = blocks.slice(0, 24); }
+  for (var i = 0; i < blocks.length; i++) { var w = _moPlaced(blocks[i], seen, ids, st); if (w !== null) out += w; }
+  return '<div style="position:absolute;left:0;top:0;width:100%;height:100%;">' + out + '</div>'
+    + (st.dropped ? '<!-- a2ui: motion_layer ignored ' + st.dropped + ' invalid or over-limit item(s) -->' : '');
+};
+
+// Kinetic type. Each unit (block, line, word or character) reveals in turn as --p goes 0..1.
+_RENDERERS['motion_text'] = function(b) {
+  var raw = (typeof b.text === 'string' ? b.text : '').split('\n'), lines = [], total = 0, i, j;
+  for (i = 0; i < raw.length && lines.length < 4; i++) {
+    var ln = raw[i].trim().slice(0, 60);
+    if (!ln) continue;
+    ln = ln.slice(0, Math.max(0, 160 - total)); total += ln.length;
+    if (ln) lines.push(ln);
+  }
+  if (!lines.length) lines = ['Text'];
+  var size = _ffInt(b.size, 64, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
+  var mode = (b.mode === 'block' || b.mode === 'words' || b.mode === 'chars') ? b.mode : 'lines';
+  var reveal = (typeof b.reveal === 'string' && Object.prototype.hasOwnProperty.call(_MO_REVEAL, b.reveal)) ? b.reveal : 'rise';
+  var S = _ffInt(b.overlap, 3, 1, 8), track = _ffNum(b.tracking, -0.02, -0.1, 0.5, 3), lh = _ffNum(b.line_height, 1.05, 0.8, 2, 2);
+  var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), upper = b.uppercase === true;
+  // units: [{html, brk}] ; brk marks a line break BEFORE the unit
+  var units = [];
+  for (i = 0; i < lines.length; i++) {
+    if (mode === 'block' || mode === 'lines') { units.push({t: lines[i], brk: i > 0 && mode === 'block'}); continue; }
+    var words = lines[i].split(' ');
+    for (j = 0; j < words.length; j++) {
+      if (!words[j]) continue;
+      if (mode === 'words') units.push({t: words[j], brk: i > 0 && j === 0, sp: j > 0});
+      else units.push({t: words[j], brk: i > 0 && j === 0, sp: j > 0, chars: true});
+    }
+  }
+  if (mode === 'block') { var all = lines.join('\n'); units = [{t: all, block: true}]; }
+  var N = 0, k;
+  for (k = 0; k < units.length; k++) N += units[k].chars ? Array.from(units[k].t).length : 1;
+  if (N > 120) { units = [{t: lines.join(' '), block: true}]; N = 1; mode = 'block'; }
+  var idx = 0;
+  function uvar(n) { return '--u:clamp(0,calc((var(--p,1)*' + (N + S) + ' - ' + n + ')/' + S + '),1);'; }
+  function wrapUnit(inner, n, blockish) {
+    var inl = blockish ? 'display:block;' : 'display:inline-block;';
+    if (reveal === 'mask') return '<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>';
+    var fx = reveal === 'fade' ? '' : reveal === 'drop' ? 'transform:translateY(calc((1 - var(--u))*-0.6em));' : reveal === 'blur' ? 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' : 'transform:translateY(calc((1 - var(--u))*0.6em));';
+    return '<span style="' + uvar(n) + inl + 'opacity:var(--u);' + fx + '">' + inner + '</span>';
+  }
+  var out = '';
+  for (k = 0; k < units.length; k++) {
+    var u = units[k];
+    if (u.block) { out += wrapUnit(_esc(u.t).replace(/\n/g, '<br>'), idx++, true); continue; }
+    if (u.brk) out += '<br>';
+    if (u.sp) out += ' ';
+    if (mode === 'lines') { out += wrapUnit(_esc(u.t), idx++, true); continue; }
+    if (u.chars) {
+      var cs = Array.from(u.t), ch = '';
+      for (j = 0; j < cs.length; j++) ch += wrapUnit(_esc(cs[j]), idx++, false);
+      out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>';
+    } else out += wrapUnit(_esc(u.t), idx++, false);
+  }
+  return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
+    + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">' + _esc(lines.join(' ')) + '</span>'
+    + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
+};
+
+// Forms: bars, rules, discs, sweeping rings, gradients, soft glows. Fills its placed box, or w/h px.
+_RENDERERS['motion_shape'] = function(b) {
+  var shape = (b.shape === 'circle' || b.shape === 'ring' || b.shape === 'line') ? b.shape : 'rect';
+  var fill = _moInk(b, 'fill', 'var(--mt-acc,#38bdf8)'), fill2 = _moInk(b, 'fill2', '');
+  var angle = _ffInt(b.angle, 90, 0, 360), thick = _ffInt(b.thickness, 6, 1, 200), radius = _ffInt(b.radius, 0, 0, 500), blur = _ffInt(b.blur, 0, 0, 200);
+  var dflt = shape === 'ring' ? 'sweep' : (shape === 'circle' ? 'scale' : 'grow-x');
+  var draw = (b.draw === 'grow-x' || b.draw === 'grow-y' || b.draw === 'scale' || b.draw === 'fade' || b.draw === 'none' || (b.draw === 'sweep' && shape === 'ring')) ? b.draw : dflt;
+  var w = typeof b.w === 'number' ? _ffInt(b.w, 100, 1, 3000) + 'px' : '100%', h = typeof b.h === 'number' ? _ffInt(b.h, 100, 1, 3000) + 'px' : '100%';
+  if (shape === 'line') h = thick + 'px';
+  var bg = fill2 ? 'linear-gradient(' + angle + 'deg,' + fill + ',' + fill2 + ')' : fill, extra = '';
+  var origin = draw === 'grow-y' ? '50% 100%' : (draw === 'scale' ? '50% 50%' : '0 50%');
+  if (shape === 'ring') {
+    var mask = 'radial-gradient(farthest-side,transparent calc(100% - ' + thick + 'px),#000 calc(100% - ' + thick + 'px + 1px))';
+    bg = draw === 'sweep' ? 'conic-gradient(from -90deg,' + (fill2 ? fill2 : fill) + ' calc(var(--p,1)*360deg),transparent 0)' : bg;
+    extra = 'border-radius:50%;-webkit-mask:' + mask + ';mask:' + mask + ';';
+  } else if (shape === 'circle') extra = 'border-radius:50%;';
+  else extra = 'border-radius:' + (shape === 'line' ? thick : radius) + 'px;';
+  var tf = draw === 'grow-x' ? 'transform:scaleX(var(--p,1));' : draw === 'grow-y' ? 'transform:scaleY(var(--p,1));' : draw === 'scale' ? 'transform:scale(var(--p,1));' : '';
+  var op = draw === 'fade' ? 'opacity:var(--p,1);' : '';
+  return '<div aria-hidden="true" style="width:' + w + ';height:' + h + ';box-sizing:border-box;background:' + bg + ';' + extra + tf + op + 'transform-origin:' + origin + ';' + (blur ? 'filter:blur(' + blur + 'px);' : '') + '"></div>';
+};
+
+// A big number that counts from `from` to `to` as --p goes 0..1, with an optional caption.
+_RENDERERS['motion_counter'] = function(b) {
+  var dec = _ffInt(b.decimals, 0, 0, 3), to = _moNum(b.to, 100), from = _moNum(b.from, 0), pre = _moStr(b.prefix, 4), suf = _moStr(b.suffix, 8);
+  var size = _ffInt(b.size, 96, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), font = _ffPick(b.font, _FF_FONTS, 'display');
+  var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), label = _moStr(b.label, 40);
+  var lsize = _ffInt(b.label_size, Math.max(11, Math.floor(size / 5)), 8, 80);
+  return '<div style="width:100%;text-align:' + align + ';">'
+    + '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.02em;color:' + color + ';font-variant-numeric:tabular-nums;">' + _moCount(to, dec, pre, suf, '', from) + '</div>'
+    + (label ? '<div style="font-family:' + _MO_SANS + ';font-size:' + lsize + 'px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-top:0.5em;">' + _esc(label) + '</div>' : '')
+    + '</div>';
 };
