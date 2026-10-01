@@ -39,10 +39,13 @@
 // at the top of _brickKit(), so parameterizing this one declaration is sufficient: no other call site needs
 // to change. LEGO stays the only populated profile -- this is the seam, not a second material's rollout.
 // Standalone fallback (2026-10-01): atom.gs defines _jsJson in the full bundle; tests and tools that load this file alone get the same helper.
-var _jsJson = (typeof _jsJson === 'function') ? _jsJson : function(v, r, s) {
-  var j = JSON.stringify(v, r, s);
-  return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
-};
+// Assigned on the global object, never redeclared: a second declaration of the name is a SyntaxError once the files are one ES module (the Worker).
+if (typeof _jsJson === 'undefined') {
+  globalThis._jsJson = function(v, r, s) {
+    var j = JSON.stringify(v, r, s);
+    return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
+  };
+}
 
 var LEGO_MATERIAL_PROFILE = {BH:1.2, PL:0.4, SR:0.3, SH:0.18, SN:10, studs:true};
 function _brickKit(materialProfile) {

@@ -25,10 +25,13 @@
 // rejected outright rather than silently skipped.
 
 // Standalone fallback (2026-10-01): atom.gs defines _jsJson in the full bundle; tests and tools that load this file alone get the same helper.
-var _jsJson = (typeof _jsJson === 'function') ? _jsJson : function(v, r, s) {
-  var j = JSON.stringify(v, r, s);
-  return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
-};
+// Assigned on the global object, never redeclared: a second declaration of the name is a SyntaxError once the files are one ES module (the Worker).
+if (typeof _jsJson === 'undefined') {
+  globalThis._jsJson = function(v, r, s) {
+    var j = JSON.stringify(v, r, s);
+    return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
+  };
+}
 
 var _FREEFORM_MAX_DEPTH = 64; // defense-in-depth against pathological nesting DoS
 
