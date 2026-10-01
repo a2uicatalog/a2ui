@@ -10552,7 +10552,7 @@ blocks:
     license: MIT
 - type: motion_shake
   stage: preview
-  description: 'Camera shake. Its children (up to 12 atoms, each placed by `place` in percent of the shake's box, like a motion_layer) jolt and settle as p goes 0 to 1: the shake is strongest at p = 0 and gone by p = 1, so key p to 0 on the beat and back to 1 over the decay. Plain CSS sin() and cos(), deterministic; standalone it renders at rest.'
+  description: 'Camera shake. Its children (up to 12 atoms, each placed by `place` in percent of the shake box, like a motion_layer) jolt and settle as p goes 0 to 1: the shake is strongest at p = 0 and gone by p = 1, so key p to 0 on the beat and back to 1 over the decay. Plain CSS sin() and cos(), deterministic; standalone it renders at rest.'
   compact_description: wrapper that jolts its children on a beat and settles
   surfaces:
     works_on:
