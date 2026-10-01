@@ -10,6 +10,7 @@ Needs this subproject's OWN dependencies (premium-render-api/requirements.txt: f
 google-cloud-storage), which the base repo's tests/ suite doesn't otherwise require -- skipped entirely if
 not installed, same mechanism as test_cloud_run_renderer.py.
 """
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -18,12 +19,17 @@ from unittest.mock import MagicMock
 import pytest
 
 PREMIUM_RENDER_API = Path(__file__).parent.parent / "premium-render-api"
-sys.path.insert(0, str(PREMIUM_RENDER_API))
 
 pytest.importorskip("flask", reason="premium-render-api's own dependency, not the base repo's")
 pytest.importorskip("google.auth", reason="premium-render-api's own dependency, not the base repo's")
 
-import server as pra_server  # noqa: E402
+# Loaded via importlib with a UNIQUE module name -- see tests/test_cloud_run_renderer.py's own
+# comment on this exact spot for why: a bare `import server` after `sys.path.insert` collides
+# across this repo's multiple server.py subprojects (cloud-run-renderer, premium-render-api,
+# declaration-prealable-api all have one), confirmed live 2026-10-01.
+_spec = importlib.util.spec_from_file_location("premium_render_api_server", PREMIUM_RENDER_API / "server.py")
+pra_server = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(pra_server)
 
 
 @pytest.fixture()

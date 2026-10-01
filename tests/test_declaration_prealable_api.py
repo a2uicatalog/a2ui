@@ -4,19 +4,27 @@ style mirroring tests/test_premium_render_api.py's own convention for this estat
 services.
 """
 import base64
+import importlib.util
 import sys
 from pathlib import Path
 
 import pytest
 
 DP_API = Path(__file__).parent.parent / "declaration-prealable-api"
-sys.path.insert(0, str(DP_API))
+# server.py does `from declaration_prealable import ...` at module scope -- needs the repo root
+# (declaration_prealable's own parent) on sys.path BEFORE the module executes.
 sys.path.insert(0, str(DP_API.parent))
 
 pytest.importorskip("flask", reason="declaration-prealable-api's own dependency, not the base repo's")
 pytest.importorskip("cairosvg", reason="declaration-prealable-api's own dependency, not the base repo's")
 
-import server as dp_server  # noqa: E402
+# Loaded via importlib with a UNIQUE module name, not a bare `import server` -- see
+# tests/test_cloud_run_renderer.py's own comment on this exact spot: this repo has multiple
+# subprojects each with their own server.py, and a bare `import server` collides across them in
+# sys.modules (confirmed live 2026-10-01, running this file alongside test_premium_render_api.py).
+_spec = importlib.util.spec_from_file_location("declaration_prealable_api_server", DP_API / "server.py")
+dp_server = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(dp_server)
 
 TOKEN = "test-signing-key"
 dp_server.DP_SIGNING_KEY = TOKEN

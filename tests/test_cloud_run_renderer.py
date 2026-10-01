@@ -13,16 +13,15 @@ suite doesn't otherwise require -- skipped entirely if they're not
 installed, so this never breaks a CI job that only installs the base
 repo's own dependencies.
 """
-import sys
+import importlib.util
 from pathlib import Path
 
 import pytest
 
 CLOUD_RUN_RENDERER = Path(__file__).parent.parent / "cloud-run-renderer"
-sys.path.insert(0, str(CLOUD_RUN_RENDERER))
 
 # Flask is checked FIRST and by the same mechanism as the other two: without
-# it, `import server` below raises at COLLECTION time, which pytest reports as
+# it, loading server.py below raises at COLLECTION time, which pytest reports as
 # an error that aborts the whole run -- not as a skip. That is what happened in
 # the base repo's own environment (found 2026-08-01), so the guard this file's
 # docstring promises was not actually working.
@@ -31,7 +30,17 @@ pytest.importorskip("playwright", reason="cloud-run-renderer's own dependency, n
 pytest.importorskip("PIL", reason="cloud-run-renderer's own dependency, not the base repo's")
 
 from flask.testing import FlaskClient  # noqa: E402
-import server as crr_server  # noqa: E402
+
+# Loaded via importlib with a UNIQUE module name, not `sys.path.insert` + bare `import server` --
+# this repo now has THREE subprojects each with their own server.py (cloud-run-renderer,
+# premium-render-api, declaration-prealable-api); a bare `import server` caches under the same
+# generic name in sys.modules, so whichever test file loads second silently gets the FIRST file's
+# module instead of its own. Confirmed live 2026-10-01: running this file's and
+# test_premium_render_api.py's tests together produced 13 spurious AttributeErrors, traced to
+# exactly this collision -- not a flaky-test issue.
+_spec = importlib.util.spec_from_file_location("cloud_run_renderer_server", CLOUD_RUN_RENDERER / "server.py")
+crr_server = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(crr_server)
 
 # Use the server's OWN encode functions rather than a duplicated local
 # copy -- a hand-rolled copy here silently drifted out of sync with the
