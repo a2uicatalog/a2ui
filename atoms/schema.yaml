@@ -10242,6 +10242,38 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_sketch
+  stage: preview
+  description: 'Strokes that draw themselves one after another as p goes 0 to 1, like an agent sketching: each stroke is path
+    data (M, L, H, V, C, S, Q, T, A, Z with numbers; anything else and the stroke is dropped), drawn in a chosen colour and
+    width, optionally with a soft fill that appears as it is drawn. Not raw SVG markup, so nothing but a path can reach the page.
+    Sized by a viewBox (w by h, default 400 by 400) and scaled to its placed box. Plain SVG and CSS, no script: it moves with the
+    --p custom property a motion_timeline p track sets, and standalone it renders the finished drawing.'
+  compact_description: strokes that draw themselves in turn, like an agent sketching
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    strokes: 'array (max 24) of {d, color?, width?, fill?, fill_opacity?}. d is path data (max 700 characters of path commands, numbers
+      and separators). color and fill are "#rrggbb"; width 1-24 px (default 6); fill_opacity 0-1 (default 0.2). Strokes draw in order.'
+    w: integer (optional). ViewBox width, 50-2000. Default 400.
+    h: integer (optional). ViewBox height, 50-2000. Default 400.
+    label: string (optional, max 60). Accessible name of the drawing. Default "Sketch".
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

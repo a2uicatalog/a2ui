@@ -36,7 +36,7 @@ from renderers import web_article as wa  # noqa: E402
 DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_chart", "demo_toggle_grid", "demo_progress",
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
-REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser"]  # from the studied reference film, 2026-10-01
+REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch"]  # from the studied reference film, 2026-10-01
 MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
@@ -158,6 +158,10 @@ PAYLOADS = {
                            "cards": [{"title": "Stat Card", "text": "single KPI value with label delta and accent colour indicator", "badge": "MCP Apps", "source": "a2uicatalog", "preview": {"type": "stat_card", "value": "1,234", "label": "Stat"}},
                                      {"title": "Status <b>", "text": "x" * 120, "badge": "<i>", "preview": {"type": "stat_card", "value": "9", "label": "<Live>", "delta": "+1"}}, "junk", {"title": "", "preview": {"type": "no_such_atom"}}, {"preview": "no"}]},
                           {"cards": "no", "chips": "no", "pick": 99, "query": "q" * 40}, {"query": "ab", "pick": 5, "cards": [{"title": "Only"}]}],
+    "motion_sketch": [{}, {"label": "A robot <b>", "w": 300, "h": 200, "strokes": [{"d": "M 10 10 L 100 10 Q 120 10 120 30 Z", "color": "#6267e7", "width": 8, "fill": "#00b7c3", "fill_opacity": 0.3},
+                                                                 {"d": "M10 10 a 10 10 0 1 0 20 0 a 10 10 0 1 0 -20 0"}, {"d": "M 0 0 L 1e2 -5.5"}]},
+                       {"strokes": [{"d": "M 0 0\" onload=\"alert(1)"}, {"d": "<script>alert(1)</script>"}, {"d": "url(javascript:alert(1))"}, {"d": "M 0 0 L 10 10 \n L 5 5"}, {"d": "x" * 800}, {"d": 5}, "junk", {"d": "M 1 1 Z", "color": "red", "fill": "url(x)", "width": 999}]},
+                       {"strokes": "no", "w": "x", "h": 9999}],
     "demo_panel": [{}, {"tone": "dark", "accent": "#38bdf8", "avatar": "SKX", "title": "Sam", "sub": "Head of Sales", "badge": "Prospect", "rows": [{"label": "Team", "value": "40"}, "x"]}],
 }
 CASES = [(a, b) for a, bs in PAYLOADS.items() for b in bs]
@@ -522,3 +526,15 @@ def test_layers_move_as_one_and_their_children_stay_addressable():
     # a layer with no place fills the stage: its children are positioned against the stage, not against a zero box
     box = _probe(blk, 0, "var e=document.querySelector('[data-mt-id=scene]').getBoundingClientRect(),v=document.querySelector('.mt-vp').getBoundingClientRect();return [Math.round(e.width/v.width*100), Math.round(e.height/v.height*100)];")
     assert box == [100, 100]
+
+
+def test_motion_sketch_only_ever_emits_paths_from_a_strict_grammar():
+    """Strokes are path data, not markup: an attribute break-out, a tag, a URL or a control character drops the stroke."""
+    hostile = ['M 0 0" onload="alert(1)', "<script>alert(1)</script>", "url(javascript:alert(1))", "M 0 0 L 1 1; background:red", "M 0 0 L 1 1 '", "x" * 800, "M 0 0   L 1 1"]
+    html = _py({"type": "motion_sketch", "strokes": [{"d": d} for d in hostile] + [{"d": "M 0 0 L 10 10 Z", "color": "red", "fill": "url(x)", "width": 999}]})
+    assert html.count("pathLength") == 1, "only the one valid stroke is drawn"
+    assert "onload" not in html and "<script" not in html and "javascript" not in html and "background:red" not in html
+    # the colour fell back (not a #rrggbb), the width clamped to 24, and no fill layer was made
+    assert "stroke:var(--mt-ink,#f1f5f9)" in html and "stroke-width:24" in html and "url(x)" not in html
+    # the drawing is a pure function of p: stroke 0 of 1 is complete at p = 1 and undrawn at p = 0
+    assert "stroke-dashoffset:calc(1 - var(--u))" in html and "clamp(0,calc(var(--p,1)*1 - 0),1)" in html

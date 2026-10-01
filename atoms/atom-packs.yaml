@@ -328,6 +328,7 @@ a2ui-effects-v1:
 - motion_code
 - motion_mark
 - motion_browser
+- motion_sketch
 - motion_timeline
 - motion_group
 - motion_tokens

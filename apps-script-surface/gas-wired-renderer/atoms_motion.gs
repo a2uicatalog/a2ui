@@ -906,6 +906,27 @@ _RENDERERS['motion_browser'] = function(b) {
   return html + '</div></div>';
 };
 
+// Strokes that DRAW themselves in turn as p goes 0..1: path data from a strict grammar (path commands, numbers and separators only,
+// so nothing but a path can reach the markup), each stroke optionally tinted. A film's "an agent sketches a robot".
+var _MO_PATH_OK = /^[MmLlHhVvCcSsQqTtAaZz0-9eE.,+\- \t\n\r]{1,700}$/;
+_RENDERERS['motion_sketch'] = function(b) {
+  var src = Array.isArray(b.strokes) ? b.strokes : [], st = [], i;
+  for (i = 0; i < src.length && st.length < 24; i++) {
+    var s = src[i];
+    if (!s || typeof s !== 'object' || typeof s.d !== 'string') continue;
+    var d = s.d.trim();
+    if (!_MO_PATH_OK.test(d)) continue;
+    st.push({d: d, c: _moInk(s, 'color', 'var(--mt-ink,#f1f5f9)'), w: _ffInt(s.width, 6, 1, 24), f: _moInk(s, 'fill', ''), fo: _ffNum(s.fill_opacity, 0.2, 0, 1, 2)});
+  }
+  var vw = _ffInt(b.w, 400, 50, 2000), vh = _ffInt(b.h, 400, 50, 2000), n = st.length, label = _moStr(b.label, 60) || 'Sketch', body = '';
+  for (i = 0; i < n; i++) {
+    var u = '--u:clamp(0,calc(var(--p,1)*' + n + ' - ' + i + '),1);';
+    if (st[i].f) body += '<path d="' + st[i].d + '" style="' + u + 'fill:' + st[i].f + ';stroke:none;opacity:calc(var(--u)*' + st[i].fo + ');"/>';
+    body += '<path d="' + st[i].d + '" pathLength="1" style="' + u + 'fill:none;stroke:' + st[i].c + ';stroke-width:' + st[i].w + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));"/>';
+  }
+  return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label) + '">' + body + '</svg>';
+};
+
 // ─── stitching: scenes that hand over to each other ─────────────────────────────────────────────────────────────────
 // motion_timeline `scenes: [{layer, t|beat, transition?}]` turns a list of scene layers into the tracks that cross them, so a
 // film is stitched by declaring where each scene starts instead of hand-writing four tracks per cut. The window between one

@@ -27467,6 +27467,30 @@ def _render_motion_browser(b: dict) -> str:
     return html + '</div></div>'
 
 
+_MO_PATH_OK = re.compile(r'^[MmLlHhVvCcSsQqTtAaZz0-9eE.,+\- \t\n\r]{1,700}$')
+
+
+def _render_motion_sketch(b: dict) -> str:
+    st = []
+    for s in (b.get('strokes') if isinstance(b.get('strokes'), list) else []):
+        if len(st) >= 24:
+            break
+        if not isinstance(s, dict) or not isinstance(s.get('d'), str):
+            continue
+        d = s['d'].strip()
+        if not _MO_PATH_OK.match(d):
+            continue
+        st.append({'d': d, 'c': _mo_ink(s, 'color', 'var(--mt-ink,#f1f5f9)'), 'w': _ff_int(s.get('width'), 6, 1, 24), 'f': _mo_ink(s, 'fill', ''), 'fo': _ff_num(s.get('fill_opacity'), 0.2, 0, 1, 2)})
+    vw, vh, n = _ff_int(b.get('w'), 400, 50, 2000), _ff_int(b.get('h'), 400, 50, 2000), len(st)
+    label, body = _cv_str(b.get('label'), 60) or 'Sketch', ''
+    for i, s in enumerate(st):
+        u = '--u:clamp(0,calc(var(--p,1)*' + str(n) + ' - ' + str(i) + '),1);'
+        if s['f']:
+            body += '<path d="' + s['d'] + '" style="' + u + 'fill:' + s['f'] + ';stroke:none;opacity:calc(var(--u)*' + s['fo'] + ');"/>'
+        body += ('<path d="' + s['d'] + '" pathLength="1" style="' + u + 'fill:none;stroke:' + s['c'] + ';stroke-width:' + str(s['w']) + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));"/>')
+    return '<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label) + '">' + body + '</svg>'
+
+
 _MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1}
 _MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}}
 _MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}}
@@ -27545,7 +27569,7 @@ def _mo_stitch(b, ids, bpm, dur, st):
 
 
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
-                         ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser)):
+                         ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
