@@ -1175,10 +1175,10 @@ _RENDERERS['motion_stack3d'] = function(b) {
 
 // Camera shake: its children jolt and settle as p goes 0 to 1 (set p to 0 at the impact), at rest by p = 1.
 _RENDERERS['motion_shake'] = function(b) {
-  var amp = _ffInt(b.amount, 12, 1, 80), freq = _ffInt(b.frequency, 9, 1, 40), tilt = _ffNum(b.tilt, 1.5, 0, 10, 1), blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i;
-  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  var amp = _ffInt(b.amount, 12, 1, 80), freq = _ffInt(b.frequency, 9, 1, 40), tilt = _ffNum(b.tilt, 1.5, 0, 10, 1), blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 12) : [], inner = '', i, st = {dropped: 0}, seen = {}, ids = {};
+  for (i = 0; i < blocks.length; i++) { var w = _moPlaced(blocks[i], seen, ids, st); if (w !== null) inner += w; }
   var tf = 'translate(calc(var(--k)*' + amp + 'px*sin(calc(var(--p,1)*' + freq + '*6.2832))),calc(var(--k)*' + Math.floor(amp * 0.6 + 0.5) + 'px*cos(calc(var(--p,1)*' + freq + '*8.1 + 1)))) rotate(calc(var(--k)*' + tilt + 'deg*sin(calc(var(--p,1)*' + freq + '*5.3))))';
-  return '<div style="--k:clamp(0,calc(1 - var(--p,1)),1);position:relative;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>';
+  return '<div style="--k:clamp(0,calc(1 - var(--p,1)),1);position:absolute;left:0;top:0;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>';
 };
 
 // A full-frame flash: a hard white (or tinted) pop that fades out, the hit on a beat. Invisible at p = 1.

@@ -10552,7 +10552,7 @@ blocks:
     license: MIT
 - type: motion_shake
   stage: preview
-  description: 'Camera shake. Its children (up to 6 atoms) jolt and settle as p goes 0 to 1: the shake is strongest at p = 0 and gone by p = 1, so key p to 0 on the beat and back to 1 over the decay. Plain CSS sin() and cos(), deterministic; standalone it renders at rest.'
+  description: 'Camera shake. Its children (up to 12 atoms, each placed by `place` in percent of the shake's box, like a motion_layer) jolt and settle as p goes 0 to 1: the shake is strongest at p = 0 and gone by p = 1, so key p to 0 on the beat and back to 1 over the decay. Plain CSS sin() and cos(), deterministic; standalone it renders at rest.'
   compact_description: wrapper that jolts its children on a beat and settles
   surfaces:
     works_on:
@@ -10569,7 +10569,7 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    blocks: 'array (max 6) of atom blocks.'
+    blocks: 'array (max 12) of atom blocks, each with an optional place {x, y, w, h} in percent.'
     amount: 'integer (optional). Peak travel px, 1-80. Default 12.'
     frequency: 'integer (optional). Oscillations over p, 1-40. Default 9.'
     tilt: 'number (optional). Peak rotation degrees, 0-10. Default 1.5.'

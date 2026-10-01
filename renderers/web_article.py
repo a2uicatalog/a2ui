@@ -27801,9 +27801,13 @@ def _render_motion_stack3d(b: dict) -> str:
 
 def _render_motion_shake(b: dict) -> str:
     amp, freq, tilt = _ff_int(b.get('amount'), 12, 1, 80), _ff_int(b.get('frequency'), 9, 1, 40), _ff_num(b.get('tilt'), 1.5, 0, 10, 1)
-    inner = ''.join(_mo_child(blk) for blk in (b['blocks'][:6] if isinstance(b.get('blocks'), list) else []))
+    st, seen, ids, inner = {'dropped': 0}, {}, {}, ''
+    for blk in (b['blocks'][:12] if isinstance(b.get('blocks'), list) else []):
+        wr = _mo_placed(blk, seen, ids, st)
+        if wr is not None:
+            inner += wr
     tf = ('translate(calc(var(--k)*' + str(amp) + 'px*sin(calc(var(--p,1)*' + str(freq) + '*6.2832))),calc(var(--k)*' + str(int(math.floor(amp * 0.6 + 0.5))) + 'px*cos(calc(var(--p,1)*' + str(freq) + '*8.1 + 1)))) rotate(calc(var(--k)*' + tilt + 'deg*sin(calc(var(--p,1)*' + str(freq) + '*5.3))))')
-    return '<div style="--k:clamp(0,calc(1 - var(--p,1)),1);position:relative;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>'
+    return '<div style="--k:clamp(0,calc(1 - var(--p,1)),1);position:absolute;left:0;top:0;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>'
 
 
 def _render_motion_flash(b: dict) -> str:
