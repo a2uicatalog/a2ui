@@ -407,13 +407,20 @@ def test_overshoot_curves_never_push_opacity_outside_zero_to_one():
 
 
 # ─── schema declarations ─────────────────────────────────────────────────────
-def test_every_motion_atom_is_declared_as_a_preview_atom():
+# Promoted to stable 2026-10-01 on Curtis's explicit go-ahead (the a2uicatalog.ai landing film is built from them). The demo kit (demo_*)
+# and motion_path stay preview: nothing published uses them yet, and a stable atom's field names are a public contract.
+PROMOTED = {"motion_timeline", "motion_group", "motion_tokens", "motion_layer", "motion_text", "motion_shape", "motion_counter", "motion_mark", "motion_browser",
+            "motion_orbit", "motion_code", "motion_checklist", "motion_pill", "motion_sketch", "motion_leader", "motion_mask"}
+
+
+def test_every_motion_atom_is_declared_with_the_right_stage():
     import yaml
     atoms = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms" / "schema.yaml").read_text())["blocks"]}
     for name in MOTION_ATOMS:
         assert name in atoms, f"{name} missing from atoms/schema.yaml"
         a = atoms[name]
-        assert a.get("stage") == "preview", f"{name} must stay preview until Curtis opts in"
+        want = "stable" if name in PROMOTED else "preview"
+        assert a.get("stage", "stable") == want, f"{name} should be {want}"
         assert a.get("fields") and a.get("description") and a.get("compact_description") and a.get("surfaces", {}).get("works_on")
 
 

@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 524 atoms.** One line each:
+1. **Compact index — all 540 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 524 atoms)
+### Compact index (all 540 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -667,6 +667,22 @@ does not exist.
 - `gradient_mesh_live` — soft colour blobs drifting on a noise field, pointer-reactive, hero background
 - `wave_terrain` — live flyover of noise-shaped ridgelines scrolling toward the viewer, hero background
 - `orbit_rings` — tilted orbit rings, each a tier of labelled satellites around a centre node
+- `motion_timeline` — timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber
+- `motion_group` — staggered entrance for a list of blocks, with tokenised easing
+- `motion_tokens` — reference card of the named easing curves, duration tokens and entrance effects
+- `motion_layer` — scene container for a motion_timeline: children placed in percent of the layer, animated as one
+- `motion_text` — kinetic type that reveals by line, word or character as progress advances
+- `motion_shape` — bar, rule, disc, sweeping ring or soft glow that draws with progress
+- `motion_counter` — big counting number with an optional caption
+- `motion_pill` — rounded call-to-action chip with an accent word that stays on screen across scenes
+- `motion_checklist` — card whose items tick off in turn as progress advances
+- `motion_orbit` — tiles that fly out onto an ellipse and orbit a centre as progress advances
+- `motion_code` — code window that types itself in as progress advances
+- `motion_mark` — the A2UI Catalog logo mark that draws itself and sends an electron round its orbit
+- `motion_browser` — search box, filter chips and a grid of cards with live atom previews that types and rises in
+- `motion_sketch` — strokes that draw themselves in turn, like an agent sketching
+- `motion_leader` — callout line with a start dot, arrowhead and label that draws itself
+- `motion_mask` — reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars
 - `dot_grid_background` — CSS repeating dot or grid pattern panel background
 - `shimmer_button` — button with CSS background-position shimmer sweep animation
 - `card_stack` — CSS-fanned stack of 2–4 cards with rotation and opacity tiers

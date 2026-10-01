@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Motion Timeline — A2UI Atomic Catalog</title>
+  <meta name="description" content="A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:"hud" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours prefers-reduced-motion (holds the poster frame; controls still work).">
+  <link rel="alternate" type="text/markdown" href="/atoms/motion_timeline.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Motion Timeline", "item": "https://a2uicatalog.ai/atoms/motion_timeline/" }
+    ]
+  }
+  </script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>/*brand-tokens:8925e7c1*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(58% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+  --negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);--accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+  --negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);--shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2);text-decoration:none}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:var(--warn)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / motion_timeline
+  </nav>
+
+  <h1>Motion Timeline</h1>
+  <p class="desc">A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:"hud" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours prefers-reduced-motion (holds the poster frame; controls still work).</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>The timeline needs JavaScript; the stage renders empty. Use a still image of the poster frame.</td></tr><tr><td>google-chat</td><td>Inline script not supported</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of motion_timeline"><div id="mt-371dce" class="mt-root" data-pl="0" role="group" aria-label="Motion sequence" style="margin:1rem 0;font-family:system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif;"><style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}</style><div class="mt-vp" style="position:relative;width:100%;aspect-ratio:1280/720;overflow:hidden;border-radius:16px;background:#0b0d12;border:1px solid #1f2430;"><div class="mt-st" style="position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:#0b0d12;background-image:radial-gradient(ellipse at 50% 0%,rgba(56,189,248,0.22) 0%,rgba(56,189,248,0) 62%);--mt-ink:#f1f5f9;--mt-mute:#94a3b8;--mt-acc:#38bdf8;overflow:hidden;"><div class="mt-cam" style="position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;transform-style:preserve-3d;"></div><div class="mt-hud" style="position:absolute;left:0;top:0;width:1280px;height:720px;pointer-events:none;"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 4px 0;color:#f1f5f9;"><button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid #1f2430;background:#12151c;color:#f1f5f9;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;"><svg class="mt-ic-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5L12 7L3 12.5Z" fill="currentColor"/></svg><svg class="mt-ic-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="8.3" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/></svg></button><input type="range" class="mt-rng" min="0" max="1000" value="0" aria-label="Timeline position" style="flex:1;min-width:0;accent-color:#38bdf8;"><span class="mt-tm" style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.72rem;color:#94a3b8;min-width:64px;text-align:right;">0:00</span></div><script>(function(){var C={W:1280,H:720,dur:12,poster:7.2,loop:true,auto:true,tg:[],cam:null};var root=document.getElementById("mt-371dce");if(!root)return;var vp=root.querySelector(".mt-vp"),st=root.querySelector(".mt-st"),cam=root.querySelector(".mt-cam"),btn=root.querySelector(".mt-play"),rng=root.querySelector(".mt-rng"),tm=root.querySelector(".mt-tm");var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function bez(a,b,t){var u=1-t;return 3*u*u*t*a+3*u*t*t*b+t*t*t;}function ez(e,u){if(u<=0)return 0;if(u>=1)return 1;if(!e)return u;if(e===1)return 0;var lo=0,hi=1,t=u;for(var i=0;i<28;i++){t=(lo+hi)/2;if(bez(e[0],e[2],t)<u)lo=t;else hi=t;}return bez(e[1],e[3],t);}function at(ks,t){var n=ks.length;if(t<=ks[0][0])return ks[0][1];if(t>=ks[n-1][0])return ks[n-1][1];for(var i=1;i<n;i++){if(t<=ks[i][0]){var a=ks[i-1],b=ks[i];return a[1]+(b[1]-a[1])*ez(b[2],(t-a[0])/(b[0]-a[0]));}}return ks[n-1][1];}function fm(v,d,p,s){var neg=v<0;v=Math.abs(v);var m=Math.pow(10,d),k=Math.floor(v*m+0.5),ip=Math.floor(k/m),fp=""+(k%m);while(fp.length<d)fp="0"+fp;var g="",ds=""+ip;for(var i=ds.length;i>0;i-=3){g=ds.slice(Math.max(0,i-3),i)+(g?",":"")+g;}return (neg&&k>0?"-":"")+p+g+(d>0?"."+fp:"")+s;}var els={},nl=root.querySelectorAll("[data-mt-id]");for(var i=0;i<nl.length;i++){var el=nl[i],x0=parseFloat(el.getAttribute("data-mt-x")),y0=parseFloat(el.getAttribute("data-mt-y"));els[el.getAttribute("data-mt-id")]={e:el,x0:isNaN(x0)?0:x0,y0:isNaN(y0)?0:y0,nums:el.querySelectorAll("[data-mt-num]")};}function ap(g,t){var o=els[g.i];if(!o)return;var v={};for(var k in g.p)v[k]=at(g.p[k],t);var e=o.e,tr="";if(v.x!==undefined||v.y!==undefined){tr+="translate("+((v.x===undefined?0:v.x-o.x0)*C.W/100).toFixed(2)+"px,"+((v.y===undefined?0:v.y-o.y0)*C.H/100).toFixed(2)+"px) ";}if(v.rx!==undefined)tr+="rotateX("+v.rx.toFixed(2)+"deg) ";if(v.ry!==undefined)tr+="rotateY("+v.ry.toFixed(2)+"deg) ";if(v.rotate!==undefined)tr+="rotate("+v.rotate.toFixed(2)+"deg) ";if(v.scale!==undefined)tr+="scale("+Math.max(0,v.scale).toFixed(4)+")";if(tr)e.style.transform=tr;if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip));e.style.clipPath=cl<0.999?"inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)":"";}if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}cam.style.transform="translate("+(C.W/2)+"px,"+(C.H/2)+"px) scale("+g("zoom",1).toFixed(4)+") rotateX("+g("rx",0).toFixed(2)+"deg) rotateY("+g("ry",0).toFixed(2)+"deg) rotate("+g("rz",0).toFixed(2)+"deg) translate("+(-g("x",50)*C.W/100).toFixed(2)+"px,"+(-g("y",50)*C.H/100).toFixed(2)+"px)";}function fit(){var k=vp.clientWidth/C.W;st.style.transform="scale("+k.toFixed(5)+")";st.style.visibility="visible";}fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(vp);}else{window.addEventListener("resize",fit);}var t=0,pl=false,last=0,raf=0,manual=false;function lab(x){var s=Math.floor(x),m=Math.floor(s/60);s=s%60;return m+":"+(s<10?"0":"")+s;}function seek(x){t=Math.max(0,Math.min(C.dur,x));for(var i=0;i<C.tg.length;i++)ap(C.tg[i],t);cp(t);if(rng)rng.value=Math.floor(t/C.dur*1000+0.5);if(tm)tm.textContent=lab(t)+" / "+lab(C.dur);}function tick(ts){if(!pl)return;var nt=t+(ts-last)/1000;last=ts;if(nt>=C.dur){if(C.loop){nt=nt%C.dur;}else{nt=C.dur;pause();}}seek(nt);if(pl)raf=requestAnimationFrame(tick);}function play(){if(pl)return;if(t>=C.dur)t=0;pl=true;last=performance.now();root.setAttribute("data-pl","1");raf=requestAnimationFrame(tick);}function pause(){pl=false;cancelAnimationFrame(raf);root.setAttribute("data-pl","0");}if(btn)btn.addEventListener("click",function(){if(pl){manual=true;pause();}else{manual=false;play();}});if(rng)rng.addEventListener("input",function(){manual=true;pause();seek(parseFloat(rng.value)/1000*C.dur);});var hm=/t=([0-9.]+)/.exec(location.hash||""),want=C.auto&&!RM&&!hm;seek(hm?parseFloat(hm[1]):(RM||!C.auto)?C.poster:0);window.__a2uiMotion=window.__a2uiMotion||{};window.__a2uiMotion["371dce"]={seek:seek,play:play,pause:pause,dur:C.dur};if(want){if(window.IntersectionObserver){new IntersectionObserver(function(a){if(a[0].isIntersecting){if(!manual)play();}else if(pl){pause();}},{threshold:0.25}).observe(root);}else{play();}}})();</script></div></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, max 80). Accessible name of the stage. Default "Motion sequence".</td><td>optional</td></tr><tr><td>aspect</td><td>"16:9" | "4:3" | "1:1" | "9:16" (optional, default "16:9"). The stage is laid out at 1280x720, 1200x900, 1000x1000 or 720x1280 logical px and scaled to the container.</td><td>optional</td></tr><tr><td>duration</td><td>number. Seconds, clamped 2-120. Default 12.</td><td>optional</td></tr><tr><td>bpm</td><td>integer. 0-240. When set, keys may use `beat` (t = beat * 60 / bpm) instead of `t`.</td><td>optional</td></tr><tr><td>ease</td><td>string | [x1,y1,x2,y2]. Default ease for keys that do not name one. A token from motion_tokens (not "hold"). Default "standard".</td><td>optional</td></tr><tr><td>loop</td><td>bool. Default true.</td><td>optional</td></tr><tr><td>autoplay</td><td>bool. Plays when scrolled into view, pauses when it leaves. Default true. Off, or under prefers-reduced-motion, it shows the poster frame.</td><td>optional</td></tr><tr><td>controls</td><td>bool. Play/pause button, scrubber and clock. Default true.</td><td>optional</td></tr><tr><td>poster</td><td>number. Seconds; the frame shown when not autoplaying. Default 60% of duration.</td><td>optional</td></tr><tr><td>theme</td><td>"dark" | "light"  (optional, default "dark"). Stage background and control colours.</td><td>optional</td></tr><tr><td>accent</td><td>"#rrggbb". Glow and control accent. Default "#38bdf8".</td><td>optional</td></tr><tr><td>background</td><td>"#rrggbb". Stage background override.</td><td>optional</td></tr><tr><td>backdrop</td><td>"glow" | "grid" | "flat" (optional, default "glow")</td><td>optional</td></tr><tr><td>blocks</td><td>array (max 24) of any atom blocks. Each may also carry id (^[a-z][a-z0-9_-]{0,31}$, makes it addressable by a track), place {x, y, w, h, z, origin} (x/y/w/h in percent of the stage; z 0-99; origin "c"|"tl"|"t"|"b"|"l"|"r" is the transform origin), and layer "world" (default, moves with the camera) or "hud" (stays on screen).</td><td>required</td></tr><tr><td>tracks</td><td>array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?, scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?}. x,y are the element's top-left in percent of the stage (for an element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom's progress (chart draw, bar growth, toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, "hold" (jump at the key), or four numbers.</td><td>required</td></tr><tr><td>scenes</td><td>array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the next scene's start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through, blur, rise, whip, wipe and applies to the scene it names (the hand-over INTO it); without one the timeline's `stitch` is used. Your own tracks on the same layer are applied after these and win, so a scene can still do its own entrance.</td><td>optional</td></tr><tr><td>stitch</td><td>"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" | "whip" | "wipe" (optional, default "dissolve"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one. The hand-over used by scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed.</td><td>optional</td></tr><tr><td>overlap</td><td>number. Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.</td><td>optional</td></tr><tr><td>camera</td><td>{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?}]} (max 48 keys), optional. x,y are the focus point in percent of the stage (default 50,50); zoom 0.25-6 (default 1); rx, ry, rz tilt in degrees. Moves only layer:"world" children.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "motion_timeline",
+  "tracks": 1
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:motion_timeline",
+  "displayName": "Motion Timeline",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/motion_timeline",
+  "capabilities": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+  ],
+  "description": "A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:\"hud\" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours prefers-reduced-motion (holds the poster frame; controls still work).",
+  "representativeQueries": [
+    "show a timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber",
+    "a stage of child atoms choreographed on one clock, the way a product or launch video is: everything",
+    "render a motion timeline"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

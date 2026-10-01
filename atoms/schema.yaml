@@ -9376,7 +9376,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_timeline
-  stage: preview
   description: 'A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen
     is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2).
     Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed
@@ -9455,7 +9454,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_group
-  stage: preview
   description: 'Blocks that enter one after another: a stagger, set once. Every child gets the same entrance (effect, ease,
     duration) offset by stagger milliseconds, on load or when scrolled into view. The general-purpose alternative to hand-setting
     a delay on each block; for a single block use the `enter` prop that any atom accepts.'
@@ -9497,7 +9495,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_tokens
-  stage: preview
   description: 'The catalogue''s motion vocabulary, drawn: every named easing curve with a dot riding it, the cubic-bezier
     it stands for and what it is for, the five duration tokens, and the nine entrance effects. The same names are accepted
     by the `enter` prop on any atom, by motion_group, by reveal, and by every ease field in motion_timeline, so an agent learns
@@ -9865,7 +9862,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_layer
-  stage: preview
   description: 'A scene. Children are any atoms, placed in percent of THIS layer (place {x, y, w, h, z, origin}, id, exactly
     as inside a motion_timeline), and the whole layer moves as one: give the layer an id and fade, slide, scale or blur it
     with opacity, x, y, scale and blur tracks to cut between scenes. Use it inside a motion_timeline; a layer with no place
@@ -9894,7 +9890,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_text
-  stage: preview
   description: 'Kinetic type. The text reveals unit by unit as p goes 0 to 1: per line, word or character (or all at once),
     with reveal "mask" (each unit slides up out of a clipped line, the signature designed look), "rise", "drop", "fade" or
     "blur". Sized in px on the stage, so the composition is identical at any width, and coloured from the stage theme unless
@@ -9939,7 +9934,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_shape
-  stage: preview
   description: 'A form that draws or grows with p: a bar or rule (grow-x, grow-y), a disc (scale), a ring that sweeps round
     like a progress dial (sweep), or a fade; solid or a two-colour gradient at an angle, with rounded corners, and an optional
     heavy blur that makes it a soft glow behind everything. Fills its placed box, or w/h px. Plain HTML and CSS, no script:
@@ -9976,7 +9970,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_counter
-  stage: preview
   description: 'A big number that counts from `from` to `to` as p goes 0 to 1, with thousands separators, prefix, suffix,
     fixed decimals and an optional small-caps caption under it. The generic form of a stat for any topic: nights, artists,
     kilometres, followers. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track
@@ -10014,7 +10007,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_pill
-  stage: preview
   description: 'A rounded call-to-action chip: "Comment *Motion* under this post". The words between asterisks take the accent
     colour (two asterisks in a row are a literal one), with an optional leading glyph. It fades and rises with p, and put in a
     layer with layer:"hud" it stays on screen across every scene and camera move, the way social films keep their ask visible.
@@ -10048,7 +10040,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_checklist
-  stage: preview
   description: 'A card of items that tick off one after another as p goes 0 to 1: each row brightens and slides in while its
     check pops, with optional empty placeholder rows under the real ones (the "recipe" card: your knowledge, your process, your
     automations). Plain HTML and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and
@@ -10114,7 +10105,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_orbit
-  stage: preview
   description: 'Tiles that fly out from the centre onto an ellipse as p goes 0 to 1, then swing round it as step goes 0 to 1:
     the ring of app icons around a product shot. Tiles are text (a letter, a glyph or a short label), never brand logos, so there
     is nothing to license. Place it over the same box as the thing it surrounds. Uses CSS cos() and sin(), so it needs a current
@@ -10149,7 +10139,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_code
-  stage: preview
   description: 'A code window that types itself in as p goes 0 to 1: monospace lines revealed left to right in order with a
     caret on the line being typed, keywords in the accent colour and // comments dimmed. No script and no per-letter markup,
     because a line''s width is its character count in ch. For show, not for syntax highlighting. Standalone it renders all the
@@ -10179,7 +10168,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_mark
-  stage: preview
   description: 'The catalogue''s own mark (three tilted ellipses around a nucleus, one electron) that draws itself as p goes 0 to
     1 and whose electron circles its orbit as step goes 0 to 1. The opening frame of a film or a brand sting. Geometry is the
     site logo''s; the two colours are fields. Plain SVG and CSS, no script: it moves with the --p and --s custom properties a
@@ -10208,7 +10196,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_browser
-  stage: preview
   description: 'The catalogue browser, as a shot: a search box that types its query, filter chips with a count, and a grid of
     cards that rise in, each holding a LIVE render of a real atom (give the atom block as the card''s preview) with its name,
     description, surface badge and source. One card can be picked: it lifts and takes an accent outline as step goes 0 to 1.
@@ -10247,7 +10234,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_sketch
-  stage: preview
   description: 'Strokes that draw themselves one after another as p goes 0 to 1, like an agent sketching: each stroke is path
     data (M, L, H, V, C, S, Q, T, A, Z with numbers; anything else and the stroke is dropped), drawn in a chosen colour and
     width, optionally with a soft fill that appears as it is drawn. Not raw SVG markup, so nothing but a path can reach the page.
@@ -10279,7 +10265,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_leader
-  stage: preview
   description: 'A callout line that draws itself from one point to another as p goes 0 to 1: straight or bent, with a start dot, an
     arrowhead that lands at the end, and a label that fades in beside the tip. The annotation that points at a part of a diagram,
     a map or a product shot. Points are in viewBox units (w by h, default 400 by 300) and the whole thing scales to its placed box.
@@ -10356,7 +10341,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_mask
-  stage: preview
   description: 'Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a
     rounded rectangle that opens, or venetian bars. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes
     in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current

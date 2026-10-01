@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (524 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (540 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -13717,6 +13717,915 @@
     "I need a way to visually connect related tools and data sources to a central project idea.",
     "Show me how different teams' responsibilities relate to a core platform feature.",
     "I want to display the layers of information and actions available for a specific user role."
+   ]
+  },
+  "motion_timeline": {
+   "type": "object",
+   "description": "A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:\"hud\" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours prefers-reduced-motion (holds the poster frame; controls still work).",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_timeline"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 80). Accessible name of the stage. Default \"Motion sequence\"."
+      },
+      "aspect": {
+       "description": "\"16:9\" | \"4:3\" | \"1:1\" | \"9:16\" (optional, default \"16:9\"). The stage is laid out at 1280x720, 1200x900, 1000x1000 or 720x1280 logical px and scaled to the container."
+      },
+      "duration": {
+       "description": "number (optional). Seconds, clamped 2-120. Default 12.",
+       "type": "number"
+      },
+      "bpm": {
+       "description": "integer (optional). 0-240. When set, keys may use `beat` (t = beat * 60 / bpm) instead of `t`.",
+       "type": "number"
+      },
+      "ease": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string | [x1,y1,x2,y2] (optional). Default ease for keys that do not name one. A token from motion_tokens (not \"hold\"). Default \"standard\"."
+      },
+      "loop": {
+       "description": "bool (optional). Default true.",
+       "type": "boolean"
+      },
+      "autoplay": {
+       "description": "bool (optional). Plays when scrolled into view, pauses when it leaves. Default true. Off, or under prefers-reduced-motion, it shows the poster frame.",
+       "type": "boolean"
+      },
+      "controls": {
+       "description": "bool (optional). Play/pause button, scrubber and clock. Default true.",
+       "type": "boolean"
+      },
+      "poster": {
+       "description": "number (optional). Seconds; the frame shown when not autoplaying. Default 60% of duration.",
+       "type": "number"
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"dark\"). Stage background and control colours."
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Glow and control accent. Default \"#38bdf8\"."
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Stage background override."
+      },
+      "backdrop": {
+       "description": "\"glow\" | \"grid\" | \"flat\" (optional, default \"glow\")"
+      },
+      "blocks": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 24) of any atom blocks. Each may also carry id (^[a-z][a-z0-9_-]{0,31}$, makes it addressable by a track), place {x, y, w, h, z, origin} (x/y/w/h in percent of the stage; z 0-99; origin \"c\"|\"tl\"|\"t\"|\"b\"|\"l\"|\"r\" is the transform origin), and layer \"world\" (default, moves with the camera) or \"hud\" (stays on screen)."
+      },
+      "tracks": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?, scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?}. x,y are the element's top-left in percent of the stage (for an element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom's progress (chart draw, bar growth, toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, \"hold\" (jump at the key), or four numbers."
+      },
+      "scenes": {
+       "description": "array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the next scene's start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through, blur, rise, whip, wipe and applies to the scene it names (the hand-over INTO it); without one the timeline's `stitch` is used. Your own tracks on the same layer are applied after these and win, so a scene can still do its own entrance.",
+       "type": "array"
+      },
+      "stitch": {
+       "description": "\"cut\" | \"dissolve\" | \"push\" | \"zoom-through\" | \"blur\" | \"rise\" | \"whip\" | \"wipe\" (optional, default \"dissolve\"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one. The hand-over used by scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed."
+      },
+      "overlap": {
+       "description": "number (optional). Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.",
+       "type": "number"
+      },
+      "camera": {
+       "description": "{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?}]} (max 48 keys), optional. x,y are the focus point in percent of the stage (default 50,50); zoom 0.25-6 (default 1); rx, ry, rz tilt in degrees. Moves only layer:\"world\" children.",
+       "type": "object"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ],
+   "x-routing-text": "A stage of child atoms choreographed on one clock like a product or launch video: tracks animate children by id (opacity, position, scale, tilt, blur, wipe, progress, caption step), a camera pans zooms and tilts, easing is a named token or four cubic-bezier numbers, keys can sit on a BPM beat grid. Scrubbable, loopable, frame-exact.",
+   "x-intent-phrases": [
+    "Recreate a product demo video as an interactive page, with a cursor, charts that draw themselves and captions.",
+    "Choreograph a motion-design sequence where elements enter on easing curves and the camera pushes in.",
+    "Make a launch film for our app that I can scrub through and loop."
+   ]
+  },
+  "motion_group": {
+   "type": "object",
+   "description": "Blocks that enter one after another: a stagger, set once. Every child gets the same entrance (effect, ease, duration) offset by stagger milliseconds, on load or when scrolled into view. The general-purpose alternative to hand-setting a delay on each block; for a single block use the `enter` prop that any atom accepts.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_group"
+      },
+      "blocks": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 40) of any atom blocks."
+      },
+      "effect": {
+       "description": "\"fade\" | \"rise\" | \"drop\" | \"slide-left\" | \"slide-right\" | \"scale\" | \"blur\" | \"wipe\" | \"pop\" (optional, default \"rise\")"
+      },
+      "ease": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string | [x1,y1,x2,y2] (optional). A token from motion_tokens, or four numbers. Default depends on the effect (expo-out for most)."
+      },
+      "duration": {
+       "description": "integer | \"instant\" | \"quick\" | \"base\" | \"slow\" | \"cinematic\" (optional). Milliseconds 0-8000 or a duration token. Default 560.",
+       "type": "number"
+      },
+      "delay": {
+       "description": "integer (optional). Milliseconds before the first child, 0-20000. Default 0.",
+       "type": "number"
+      },
+      "stagger": {
+       "description": "integer (optional). Milliseconds between children, 0-1000. Default 80.",
+       "type": "number"
+      },
+      "on": {
+       "description": "\"load\" | \"view\" (optional, default \"load\"). \"view\" waits until the group is scrolled into view; without JavaScript it simply shows."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ],
+   "x-routing-text": "Blocks that enter one after another with a set stagger: the same entrance effect, ease and duration for every child, offset per child, on load or when scrolled into view.",
+   "x-intent-phrases": [
+    "Have these cards appear one after another with a short stagger.",
+    "Fade and slide my list items in on load, expo-out, 80ms apart.",
+    "Reveal this section's blocks as the reader scrolls to them."
+   ]
+  },
+  "motion_tokens": {
+   "type": "object",
+   "description": "The catalogue's motion vocabulary, drawn: every named easing curve with a dot riding it, the cubic-bezier it stands for and what it is for, the five duration tokens, and the nine entrance effects. The same names are accepted by the `enter` prop on any atom, by motion_group, by reveal, and by every ease field in motion_timeline, so an agent learns the vocabulary once. Honours prefers-reduced-motion (dots stay still).",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_tokens"
+      },
+      "show": {
+       "description": "\"ease\" | \"duration\" | \"both\" (optional, default \"both\")"
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"dark\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default \"#38bdf8\"."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ],
+   "x-routing-text": "Reference card for the catalogue's motion vocabulary: named easing curves (expo-out, standard, emphasized, quart-in-out, overshoot...) each drawn as a dot riding the curve with its cubic-bezier and its use, duration tokens, and entrance effects.",
+   "x-intent-phrases": [
+    "Show me the easing curves I can use for UI animation and what each is for.",
+    "What motion tokens does this catalogue offer?",
+    "Give me a motion style guide for our design system."
+   ]
+  },
+  "motion_layer": {
+   "type": "object",
+   "description": "A scene. Children are any atoms, placed in percent of THIS layer (place {x, y, w, h, z, origin}, id, exactly as inside a motion_timeline), and the whole layer moves as one: give the layer an id and fade, slide, scale or blur it with opacity, x, y, scale and blur tracks to cut between scenes. Use it inside a motion_timeline; a layer with no place fills the stage. Layers are what make a piece with several scenes cheap to author: one id per scene instead of one track per element.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_layer"
+      },
+      "blocks": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 24) of any atom blocks. Each may carry id (^[a-z][a-z0-9_-]{0,31}$), place {x, y, w, h, z, origin}. Ids must be unique across the whole timeline."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_text": {
+   "type": "object",
+   "description": "Kinetic type. The text reveals unit by unit as p goes 0 to 1: per line, word or character (or all at once), with reveal \"mask\" (each unit slides up out of a clipped line, the signature designed look), \"rise\", \"drop\", \"fade\" or \"blur\". Sized in px on the stage, so the composition is identical at any width, and coloured from the stage theme unless a colour is given. Screen readers get the plain text. Standalone it renders fully revealed. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_text"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (max 4 lines of 60 characters, 160 total; lines split on \\n). Default \"Text\". A word between asterisks (*plan*) takes the accent colour, whichever way the text reveals; two asterisks in a row are a literal one."
+      },
+      "size": {
+       "description": "integer (optional). Font size px, 10-400. Default 64.",
+       "type": "number"
+      },
+      "font": {
+       "description": "\"sans\" | \"serif\" | \"mono\" | \"display\" (optional, default \"sans\"). display is a heavy grotesque."
+      },
+      "weight": {
+       "description": "\"regular\" | \"bold\" | \"black\" (optional, default \"bold\")"
+      },
+      "mode": {
+       "description": "\"lines\" | \"words\" | \"chars\" | \"block\" (optional, default \"lines\"). What reveals in turn. lines never wraps; more than 120 units falls back to block."
+      },
+      "reveal": {
+       "description": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it."
+      },
+      "overlap": {
+       "description": "integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.",
+       "type": "number"
+      },
+      "tracking": {
+       "description": "number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02.",
+       "type": "number"
+      },
+      "line_height": {
+       "description": "number (optional). 0.8-2. Default 1.05.",
+       "type": "number"
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Default the stage ink."
+      },
+      "align": {
+       "description": "\"start\" | \"middle\" | \"end\" (optional, default \"start\")"
+      },
+      "uppercase": {
+       "description": "bool (optional). Default false.",
+       "type": "boolean"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Colour of words wrapped in asterisks. Default the stage accent."
+      },
+      "bar": {
+       "description": "\"#rrggbb\" (optional). Colour of the highlight bar for reveal \"bar\". Default the stage accent."
+      },
+      "extrude": {
+       "description": "integer (optional). Depth in px of a solid 3D extrusion behind the type, 0-30. Default 0.",
+       "type": "number"
+      },
+      "extrude_color": {
+       "description": "\"#rrggbb\" (optional). Extrusion colour. Default \"#0b0b14\"."
+      },
+      "extrude_dir": {
+       "description": "\"diagonal\" | \"down\" (optional, default \"diagonal\"). Which way the extrusion falls."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_shape": {
+   "type": "object",
+   "description": "A form that draws or grows with p: a bar or rule (grow-x, grow-y), a disc (scale), a ring that sweeps round like a progress dial (sweep), or a fade; solid or a two-colour gradient at an angle, with rounded corners, and an optional heavy blur that makes it a soft glow behind everything. Fills its placed box, or w/h px. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_shape"
+      },
+      "shape": {
+       "description": "\"rect\" | \"circle\" | \"ring\" | \"line\" (optional, default \"rect\")"
+      },
+      "fill": {
+       "description": "\"#rrggbb\" (optional). Default the stage accent."
+      },
+      "fill2": {
+       "description": "\"#rrggbb\" (optional). Second colour; makes a gradient (for a ring, the sweep colour)."
+      },
+      "angle": {
+       "description": "integer (optional). Gradient angle in degrees, 0-360. Default 90.",
+       "type": "number"
+      },
+      "thickness": {
+       "description": "integer (optional). Ring and line thickness px, 1-200. Default 6.",
+       "type": "number"
+      },
+      "radius": {
+       "description": "integer (optional). Rect corner radius px, 0-500. Default 0.",
+       "type": "number"
+      },
+      "draw": {
+       "description": "\"grow-x\" | \"grow-y\" | \"scale\" | \"sweep\" | \"fade\" | \"none\" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only."
+      },
+      "blur": {
+       "description": "integer (optional). Blur px, 0-200. A big blur on a gradient disc is an ambient glow. Default 0.",
+       "type": "number"
+      },
+      "w": {
+       "description": "integer (optional). Width px, 1-3000. Default 100% of the placed box.",
+       "type": "number"
+      },
+      "h": {
+       "description": "integer (optional). Height px, 1-3000. Default 100% of the placed box. A line is thickness tall.",
+       "type": "number"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_counter": {
+   "type": "object",
+   "description": "A big number that counts from `from` to `to` as p goes 0 to 1, with thousands separators, prefix, suffix, fixed decimals and an optional small-caps caption under it. The generic form of a stat for any topic: nights, artists, kilometres, followers. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_counter"
+      },
+      "to": {
+       "description": "number (optional). Value at p = 1. Default 100.",
+       "type": "number"
+      },
+      "from": {
+       "description": "number (optional). Value at p = 0. Default 0.",
+       "type": "number"
+      },
+      "decimals": {
+       "description": "integer (optional). 0-3. Default 0.",
+       "type": "number"
+      },
+      "prefix": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 4)."
+      },
+      "suffix": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 8)."
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 40). Caption."
+      },
+      "label_size": {
+       "description": "integer (optional). Caption px, 8-80. Default a fifth of size.",
+       "type": "number"
+      },
+      "size": {
+       "description": "integer (optional). Number size px, 10-400. Default 96.",
+       "type": "number"
+      },
+      "font": {
+       "description": "\"sans\" | \"serif\" | \"mono\" | \"display\" (optional, default \"display\")"
+      },
+      "weight": {
+       "description": "\"regular\" | \"bold\" | \"black\" (optional, default \"black\")"
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Default the stage ink."
+      },
+      "align": {
+       "description": "\"start\" | \"middle\" | \"end\" (optional, default \"start\")"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_pill": {
+   "type": "object",
+   "description": "A rounded call-to-action chip: \"Comment *Motion* under this post\". The words between asterisks take the accent colour (two asterisks in a row are a literal one), with an optional leading glyph. It fades and rises with p, and put in a layer with layer:\"hud\" it stays on screen across every scene and camera move, the way social films keep their ask visible. Plain HTML and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders its final state.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_pill"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (max 60). Default \"Label\". *word* takes the accent colour; ** is a literal asterisk."
+      },
+      "icon": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 2). A glyph before the text, in the accent colour."
+      },
+      "size": {
+       "description": "integer (optional). Font size px, 10-120. Default 28.",
+       "type": "number"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default the stage accent."
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Text colour. Default the stage ink."
+      },
+      "fill": {
+       "description": "\"#rrggbb\" (optional). Chip fill. Default a faint tint of the stage ink."
+      },
+      "align": {
+       "description": "\"start\" | \"middle\" | \"end\" (optional, default \"start\")"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_checklist": {
+   "type": "object",
+   "description": "A card of items that tick off one after another as p goes 0 to 1: each row brightens and slides in while its check pops, with optional empty placeholder rows under the real ones (the \"recipe\" card: your knowledge, your process, your automations). Plain HTML and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders every item ticked.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_checklist"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 40)."
+      },
+      "items": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 6) of string or {text, icon?} (text max 40, icon max 2 characters). Default one item \"Item\"."
+      },
+      "skeleton": {
+       "description": "integer (optional). Empty placeholder rows under the items, 0-4. Default 0.",
+       "type": "number"
+      },
+      "size": {
+       "description": "integer (optional). Font size px, 10-80. Default 26.",
+       "type": "number"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Colour of the ticks. Default the stage accent."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_orbit": {
+   "type": "object",
+   "description": "Tiles that fly out from the centre onto an ellipse as p goes 0 to 1, then swing round it as step goes 0 to 1: the ring of app icons around a product shot. Tiles are text (a letter, a glyph or a short label), never brand logos, so there is nothing to license. Place it over the same box as the thing it surrounds. Uses CSS cos() and sin(), so it needs a current browser. Plain HTML and CSS, no script; standalone it renders the tiles in place.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_orbit"
+      },
+      "items": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label)."
+      },
+      "size": {
+       "description": "integer (optional). Tile px, 24-160. Default 64.",
+       "type": "number"
+      },
+      "rx": {
+       "description": "integer (optional). Horizontal radius, percent of the placed box, 5-60. Default 40.",
+       "type": "number"
+      },
+      "ry": {
+       "description": "integer (optional). Vertical radius, percent of the placed box, 5-60. Default 36.",
+       "type": "number"
+      },
+      "start": {
+       "description": "integer (optional). Angle of the first tile in degrees, -360 to 360. Default -90 (top).",
+       "type": "number"
+      },
+      "spin": {
+       "description": "integer (optional). Degrees the ring turns as step goes 0 to 1, -360 to 360. Default 40.",
+       "type": "number"
+      },
+      "fill": {
+       "description": "\"#rrggbb\" (optional). Tile colour. Default \"#ffffff\"."
+      },
+      "ink": {
+       "description": "\"#rrggbb\" (optional). Tile text colour. Default \"#111827\"."
+      },
+      "ring": {
+       "description": "bool (optional). A faint dashed ellipse behind the tiles. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_code": {
+   "type": "object",
+   "description": "A code window that types itself in as p goes 0 to 1: monospace lines revealed left to right in order with a caret on the line being typed, keywords in the accent colour and // comments dimmed. No script and no per-letter markup, because a line's width is its character count in ch. For show, not for syntax highlighting. Standalone it renders all the code.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_code"
+      },
+      "lines": {
+       "description": "array (max 14) of string (max 72 characters each). Blank strings are blank lines.",
+       "type": "array"
+      },
+      "file": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 32). Shown in the window bar."
+      },
+      "size": {
+       "description": "integer (optional). Font size px, 8-60. Default 18.",
+       "type": "number"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Keywords and caret. Default the stage accent."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_mark": {
+   "type": "object",
+   "description": "The catalogue's own mark (three tilted ellipses around a nucleus, one electron) that draws itself as p goes 0 to 1 and whose electron circles its orbit as step goes 0 to 1. The opening frame of a film or a brand sting. Geometry is the site logo's; the two colours are fields. Plain SVG and CSS, no script: it moves with the --p and --s custom properties a motion_timeline p and step track set, and standalone it renders the finished mark.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_mark"
+      },
+      "size": {
+       "description": "integer (optional). Width and height px, 24-600. Default 120.",
+       "type": "number"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Two ellipses and the nucleus. Default the stage accent."
+      },
+      "accent2": {
+       "description": "\"#rrggbb\" (optional). The third ellipse and the electron. Default \"#00b7c3\"."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_browser": {
+   "type": "object",
+   "description": "The catalogue browser, as a shot: a search box that types its query, filter chips with a count, and a grid of cards that rise in, each holding a LIVE render of a real atom (give the atom block as the card's preview) with its name, description, surface badge and source. One card can be picked: it lifts and takes an accent outline as step goes 0 to 1. p 0 to 0.3 types the query, p 0.3 to 1 brings the cards in. Use it to show a library of components honestly, with real names, real descriptions and real renders, instead of a mock-up. Plain HTML and CSS, no script; standalone it renders the finished screen.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_browser"
+      },
+      "query": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 16). Typed into the search box as p goes 0 to 0.3."
+      },
+      "placeholder": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 24). Shown before typing starts. Default \"Search atoms...\"."
+      },
+      "chips": {
+       "description": "array (max 6) of string (max 24). The first is drawn active.",
+       "type": "array"
+      },
+      "count": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 16). For example \"51 atoms\"."
+      },
+      "cards": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 6) of {title (max 28), text (max 90), badge? (max 16), source? (max 20), preview? (an atom block, rendered live)}."
+      },
+      "columns": {
+       "description": "integer (optional). 2-4. Default 3.",
+       "type": "number"
+      },
+      "pick": {
+       "description": "integer (optional). Index of the card to lift and outline as step goes 0 to 1, -1 for none. Default -1.",
+       "type": "number"
+      },
+      "size": {
+       "description": "integer (optional). Base font px, 8-40. Default 16.",
+       "type": "number"
+      },
+      "well": {
+       "description": "\"#rrggbb\" (optional). Background of the preview area of each card. Real atoms are drawn for their own surfaces and some hard-code dark text, so on a dark stage give them a light well. Default none."
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Search border, active chip, picked card. Default the stage accent."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_sketch": {
+   "type": "object",
+   "description": "Strokes that draw themselves one after another as p goes 0 to 1, like an agent sketching: each stroke is path data (M, L, H, V, C, S, Q, T, A, Z with numbers; anything else and the stroke is dropped), drawn in a chosen colour and width, optionally with a soft fill that appears as it is drawn. Not raw SVG markup, so nothing but a path can reach the page. Sized by a viewBox (w by h, default 400 by 400) and scaled to its placed box. Plain SVG and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders the finished drawing.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_sketch"
+      },
+      "strokes": {
+       "description": "array (max 24) of {d, color?, width?, fill?, fill_opacity?}. d is path data (max 700 characters of path commands, numbers and separators). color and fill are \"#rrggbb\"; width 1-24 px (default 6); fill_opacity 0-1 (default 0.2). Strokes draw in order.",
+       "type": "array"
+      },
+      "w": {
+       "description": "integer (optional). ViewBox width, 50-2000. Default 400.",
+       "type": "number"
+      },
+      "h": {
+       "description": "integer (optional). ViewBox height, 50-2000. Default 400.",
+       "type": "number"
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 60). Accessible name of the drawing. Default \"Sketch\"."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_leader": {
+   "type": "object",
+   "description": "A callout line that draws itself from one point to another as p goes 0 to 1: straight or bent, with a start dot, an arrowhead that lands at the end, and a label that fades in beside the tip. The annotation that points at a part of a diagram, a map or a product shot. Points are in viewBox units (w by h, default 400 by 300) and the whole thing scales to its placed box. Plain SVG and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders finished.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_leader"
+      },
+      "from": {
+       "description": "[x, y] (optional). Start point in viewBox units. Default [48, 210] on the default 400 by 300 box.",
+       "type": "array"
+      },
+      "to": {
+       "description": "[x, y] (optional). End point, where the arrowhead lands. Default [352, 90].",
+       "type": "array"
+      },
+      "curve": {
+       "description": "integer (optional). Bend, -100 to 100, as a percentage of the line length at its middle. 0 is straight. Default 0.",
+       "type": "number"
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 40). Text beside the tip."
+      },
+      "label_at": {
+       "description": "\"end\" | \"start\" (optional, default \"end\")"
+      },
+      "arrow": {
+       "description": "bool (optional). Arrowhead. Default true.",
+       "type": "boolean"
+      },
+      "dot": {
+       "description": "bool (optional). Dot at the start. Default true.",
+       "type": "boolean"
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Line, dot and arrowhead. Default the stage accent."
+      },
+      "label_color": {
+       "description": "\"#rrggbb\" (optional). Default the stage ink."
+      },
+      "width": {
+       "description": "integer (optional). Line px, 1-24. Default 4.",
+       "type": "number"
+      },
+      "size": {
+       "description": "integer (optional). Label px, 8-80. Default 22.",
+       "type": "number"
+      },
+      "w": {
+       "description": "integer (optional). ViewBox width, 50-2000. Default 400.",
+       "type": "number"
+      },
+      "h": {
+       "description": "integer (optional). ViewBox height, 50-2000. Default 300.",
+       "type": "number"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_mask": {
+   "type": "object",
+   "description": "Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle that opens, or venetian bars. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current browser. At p = 1 the child is fully visible; standalone it renders fully revealed.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_mask"
+      },
+      "shape": {
+       "description": "\"blob\" | \"circle\" | \"diagonal\" | \"rounded\" | \"bars\" (optional, default \"blob\")"
+      },
+      "blocks": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "dot_grid_background": {

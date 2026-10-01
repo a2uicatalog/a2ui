@@ -47,6 +47,24 @@ EVAL_PATH = os.path.join(ROOT, "..", "a2ui-private", "mcp-worker", "test", "comp
 # (real pre-existing debt) but silently no-opped on agent_sketchpad itself
 # ("0 to generate for") because the live site didn't know about it yet.
 KNOWN_UNCOVERED_BASELINE = frozenset({
+    # Added 2026-10-01 promoting the motion atoms in this same commit -- remove after this push deploys and
+    # atom-multirep-onboard is rerun to cover them.
+    "motion_browser",
+    "motion_checklist",
+    "motion_code",
+    "motion_counter",
+    "motion_group",
+    "motion_layer",
+    "motion_leader",
+    "motion_mark",
+    "motion_mask",
+    "motion_orbit",
+    "motion_pill",
+    "motion_shape",
+    "motion_sketch",
+    "motion_text",
+    "motion_timeline",
+    "motion_tokens",
     # Added 2026-09-22 promoting calibration_plot in this same commit -- remove
     # after this push deploys and atom-multirep-onboard is rerun to cover it.
     "calibration_plot",

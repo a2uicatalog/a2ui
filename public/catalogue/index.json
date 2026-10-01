@@ -1164,7 +1164,7 @@
       "title": "Motion & decorative",
       "alwaysResolved": false,
       "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), ready-made animated scenes of places and single verified clipart images from a provenance-checked kit (scene_stage, clipart: hospital helipad, data centre, wind farm and 42 more places; props by id, never SVG), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
-      "atomCount": 102,
+      "atomCount": 118,
       "atoms": [
         {
           "type": "agent_sketchpad",
@@ -1383,6 +1383,70 @@
         {
           "type": "meteor_shower",
           "description": "CSS-animated diagonal falling meteor streaks on a dark panel"
+        },
+        {
+          "type": "motion_browser",
+          "description": "search box, filter chips and a grid of cards with live atom previews that types and rises in"
+        },
+        {
+          "type": "motion_checklist",
+          "description": "card whose items tick off in turn as progress advances"
+        },
+        {
+          "type": "motion_code",
+          "description": "code window that types itself in as progress advances"
+        },
+        {
+          "type": "motion_counter",
+          "description": "big counting number with an optional caption"
+        },
+        {
+          "type": "motion_group",
+          "description": "staggered entrance for a list of blocks, with tokenised easing"
+        },
+        {
+          "type": "motion_layer",
+          "description": "scene container for a motion_timeline: children placed in percent of the layer, animated as one"
+        },
+        {
+          "type": "motion_leader",
+          "description": "callout line with a start dot, arrowhead and label that draws itself"
+        },
+        {
+          "type": "motion_mark",
+          "description": "the A2UI Catalog logo mark that draws itself and sends an electron round its orbit"
+        },
+        {
+          "type": "motion_mask",
+          "description": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars"
+        },
+        {
+          "type": "motion_orbit",
+          "description": "tiles that fly out onto an ellipse and orbit a centre as progress advances"
+        },
+        {
+          "type": "motion_pill",
+          "description": "rounded call-to-action chip with an accent word that stays on screen across scenes"
+        },
+        {
+          "type": "motion_shape",
+          "description": "bar, rule, disc, sweeping ring or soft glow that draws with progress"
+        },
+        {
+          "type": "motion_sketch",
+          "description": "strokes that draw themselves in turn, like an agent sketching"
+        },
+        {
+          "type": "motion_text",
+          "description": "kinetic type that reveals by line, word or character as progress advances"
+        },
+        {
+          "type": "motion_timeline",
+          "description": "timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber"
+        },
+        {
+          "type": "motion_tokens",
+          "description": "reference card of the named easing curves, duration tokens and entrance effects"
         },
         {
           "type": "neon_glow",

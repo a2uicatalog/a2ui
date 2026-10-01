@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 524,
+ "atomCount": 540,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -2918,6 +2918,166 @@
   {
    "type": "orbit_rings",
    "compact": "tilted orbit rings, each a tier of labelled satellites around a centre node",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_timeline",
+   "compact": "timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_group",
+   "compact": "staggered entrance for a list of blocks, with tokenised easing",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_tokens",
+   "compact": "reference card of the named easing curves, duration tokens and entrance effects",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_layer",
+   "compact": "scene container for a motion_timeline: children placed in percent of the layer, animated as one",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_text",
+   "compact": "kinetic type that reveals by line, word or character as progress advances",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_shape",
+   "compact": "bar, rule, disc, sweeping ring or soft glow that draws with progress",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_counter",
+   "compact": "big counting number with an optional caption",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_pill",
+   "compact": "rounded call-to-action chip with an accent word that stays on screen across scenes",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_checklist",
+   "compact": "card whose items tick off in turn as progress advances",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_orbit",
+   "compact": "tiles that fly out onto an ellipse and orbit a centre as progress advances",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_code",
+   "compact": "code window that types itself in as progress advances",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_mark",
+   "compact": "the A2UI Catalog logo mark that draws itself and sends an electron round its orbit",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_browser",
+   "compact": "search box, filter chips and a grid of cards with live atom previews that types and rises in",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_sketch",
+   "compact": "strokes that draw themselves in turn, like an agent sketching",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_leader",
+   "compact": "callout line with a start dot, arrowhead and label that draws itself",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "motion_mask",
+   "compact": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
    "surfaces": [
     "web",
     "google-meet-stage",

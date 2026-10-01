@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 524 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 540 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -5264,6 +5264,294 @@
         "show a tilted orbit rings, each a tier of labelled satellites around a centre node",
         "a system map that moves: up to three tilted orbit rings around a centre node, where each ring is a tier of",
         "render a orbit rings"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_timeline",
+      "displayName": "Motion Timeline",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_timeline",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:\"hud\" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours prefers-reduced-motion (holds the poster frame; controls still work).",
+      "representativeQueries": [
+        "show a timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber",
+        "a stage of child atoms choreographed on one clock, the way a product or launch video is: everything on screen is a",
+        "render a motion timeline"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_group",
+      "displayName": "Motion Group",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_group",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Blocks that enter one after another: a stagger, set once. Every child gets the same entrance (effect, ease, duration) offset by stagger milliseconds, on load or when scrolled into view. The general-purpose alternative to hand-setting a delay on each block; for a single block use the `enter` prop that any atom accepts.",
+      "representativeQueries": [
+        "show a staggered entrance for a list of blocks, with tokenised easing",
+        "blocks that enter one after another: a stagger, set once. every child gets the same entrance (effect, ease, duration)",
+        "render a motion group"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_tokens",
+      "displayName": "Motion Tokens",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_tokens",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "The catalogue's motion vocabulary, drawn: every named easing curve with a dot riding it, the cubic-bezier it stands for and what it is for, the five duration tokens, and the nine entrance effects. The same names are accepted by the `enter` prop on any atom, by motion_group, by reveal, and by every ease field in motion_timeline, so an agent learns the vocabulary once. Honours prefers-reduced-motion (dots stay still).",
+      "representativeQueries": [
+        "show a reference card of the named easing curves, duration tokens and entrance effects",
+        "the catalogue's motion vocabulary, drawn: every named easing curve with a dot riding it, the cubic-bezier it stands",
+        "render a motion tokens"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_layer",
+      "displayName": "Motion Layer",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_layer",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A scene. Children are any atoms, placed in percent of THIS layer (place {x, y, w, h, z, origin}, id, exactly as inside a motion_timeline), and the whole layer moves as one: give the layer an id and fade, slide, scale or blur it with opacity, x, y, scale and blur tracks to cut between scenes. Use it inside a motion_timeline; a layer with no place fills the stage. Layers are what make a piece with several scenes cheap to author: one id per scene instead of one track per element.",
+      "representativeQueries": [
+        "show a scene container for a motion_timeline: children placed in percent of the layer, animated as one",
+        "a scene. children are any atoms, placed in percent of this layer (place {x, y, w, h, z, origin}, id, exactly as inside",
+        "render a motion layer"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_text",
+      "displayName": "Motion Text",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_text",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Kinetic type. The text reveals unit by unit as p goes 0 to 1: per line, word or character (or all at once), with reveal \"mask\" (each unit slides up out of a clipped line, the signature designed look), \"rise\", \"drop\", \"fade\" or \"blur\". Sized in px on the stage, so the composition is identical at any width, and coloured from the stage theme unless a colour is given. Screen readers get the plain text. Standalone it renders fully revealed. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.",
+      "representativeQueries": [
+        "show a kinetic type that reveals by line, word or character as progress advances",
+        "kinetic type. the text reveals unit by unit as p goes 0 to 1: per line, word or character (or all at once), with",
+        "render a motion text"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_shape",
+      "displayName": "Motion Shape",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_shape",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A form that draws or grows with p: a bar or rule (grow-x, grow-y), a disc (scale), a ring that sweeps round like a progress dial (sweep), or a fade; solid or a two-colour gradient at an angle, with rounded corners, and an optional heavy blur that makes it a soft glow behind everything. Fills its placed box, or w/h px. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.",
+      "representativeQueries": [
+        "show a bar, rule, disc, sweeping ring or soft glow that draws with progress",
+        "a form that draws or grows with p: a bar or rule (grow-x, grow-y), a disc (scale), a ring that sweeps round like a",
+        "render a motion shape"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_counter",
+      "displayName": "Motion Counter",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_counter",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A big number that counts from `from` to `to` as p goes 0 to 1, with thousands separators, prefix, suffix, fixed decimals and an optional small-caps caption under it. The generic form of a stat for any topic: nights, artists, kilometres, followers. Plain HTML and CSS, no script: it moves with the --p custom property that a motion_timeline p track sets, and standalone it renders its final state.",
+      "representativeQueries": [
+        "show a big counting number with an optional caption",
+        "a big number that counts from `from` to `to` as p goes 0 to 1, with thousands separators, prefix, suffix, fixed",
+        "render a motion counter"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_pill",
+      "displayName": "Motion Pill",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_pill",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A rounded call-to-action chip: \"Comment *Motion* under this post\". The words between asterisks take the accent colour (two asterisks in a row are a literal one), with an optional leading glyph. It fades and rises with p, and put in a layer with layer:\"hud\" it stays on screen across every scene and camera move, the way social films keep their ask visible. Plain HTML and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders its final state.",
+      "representativeQueries": [
+        "show a rounded call-to-action chip with an accent word that stays on screen across scenes",
+        "a rounded call-to-action chip: \"comment *motion* under this post\". the words between asterisks take the accent colour",
+        "render a motion pill"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_checklist",
+      "displayName": "Motion Checklist",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_checklist",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A card of items that tick off one after another as p goes 0 to 1: each row brightens and slides in while its check pops, with optional empty placeholder rows under the real ones (the \"recipe\" card: your knowledge, your process, your automations). Plain HTML and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders every item ticked.",
+      "representativeQueries": [
+        "show a card whose items tick off in turn as progress advances",
+        "a card of items that tick off one after another as p goes 0 to 1: each row brightens and slides in while its check",
+        "render a motion checklist"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_orbit",
+      "displayName": "Motion Orbit",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_orbit",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Tiles that fly out from the centre onto an ellipse as p goes 0 to 1, then swing round it as step goes 0 to 1: the ring of app icons around a product shot. Tiles are text (a letter, a glyph or a short label), never brand logos, so there is nothing to license. Place it over the same box as the thing it surrounds. Uses CSS cos() and sin(), so it needs a current browser. Plain HTML and CSS, no script; standalone it renders the tiles in place.",
+      "representativeQueries": [
+        "show a tiles that fly out onto an ellipse and orbit a centre as progress advances",
+        "tiles that fly out from the centre onto an ellipse as p goes 0 to 1, then swing round it as step goes 0 to 1: the ring",
+        "render a motion orbit"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_code",
+      "displayName": "Motion Code",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_code",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A code window that types itself in as p goes 0 to 1: monospace lines revealed left to right in order with a caret on the line being typed, keywords in the accent colour and // comments dimmed. No script and no per-letter markup, because a line's width is its character count in ch. For show, not for syntax highlighting. Standalone it renders all the code.",
+      "representativeQueries": [
+        "show a code window that types itself in as progress advances",
+        "a code window that types itself in as p goes 0 to 1: monospace lines revealed left to right in order with a caret on",
+        "render a motion code"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_mark",
+      "displayName": "Motion Mark",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_mark",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "The catalogue's own mark (three tilted ellipses around a nucleus, one electron) that draws itself as p goes 0 to 1 and whose electron circles its orbit as step goes 0 to 1. The opening frame of a film or a brand sting. Geometry is the site logo's; the two colours are fields. Plain SVG and CSS, no script: it moves with the --p and --s custom properties a motion_timeline p and step track set, and standalone it renders the finished mark.",
+      "representativeQueries": [
+        "show a the A2UI Catalog logo mark that draws itself and sends an electron round its orbit",
+        "the catalogue's own mark (three tilted ellipses around a nucleus, one electron) that draws itself as p goes 0 to 1 and",
+        "render a motion mark"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_browser",
+      "displayName": "Motion Browser",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_browser",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "The catalogue browser, as a shot: a search box that types its query, filter chips with a count, and a grid of cards that rise in, each holding a LIVE render of a real atom (give the atom block as the card's preview) with its name, description, surface badge and source. One card can be picked: it lifts and takes an accent outline as step goes 0 to 1. p 0 to 0.3 types the query, p 0.3 to 1 brings the cards in. Use it to show a library of components honestly, with real names, real descriptions and real renders, instead of a mock-up. Plain HTML and CSS, no script; standalone it renders the finished screen.",
+      "representativeQueries": [
+        "show a search box, filter chips and a grid of cards with live atom previews that types and rises in",
+        "the catalogue browser, as a shot: a search box that types its query, filter chips with a count, and a grid of cards",
+        "render a motion browser"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_sketch",
+      "displayName": "Motion Sketch",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_sketch",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Strokes that draw themselves one after another as p goes 0 to 1, like an agent sketching: each stroke is path data (M, L, H, V, C, S, Q, T, A, Z with numbers; anything else and the stroke is dropped), drawn in a chosen colour and width, optionally with a soft fill that appears as it is drawn. Not raw SVG markup, so nothing but a path can reach the page. Sized by a viewBox (w by h, default 400 by 400) and scaled to its placed box. Plain SVG and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders the finished drawing.",
+      "representativeQueries": [
+        "show a strokes that draw themselves in turn, like an agent sketching",
+        "strokes that draw themselves one after another as p goes 0 to 1, like an agent sketching: each stroke is path data (m,",
+        "render a motion sketch"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_leader",
+      "displayName": "Motion Leader",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_leader",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A callout line that draws itself from one point to another as p goes 0 to 1: straight or bent, with a start dot, an arrowhead that lands at the end, and a label that fades in beside the tip. The annotation that points at a part of a diagram, a map or a product shot. Points are in viewBox units (w by h, default 400 by 300) and the whole thing scales to its placed box. Plain SVG and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders finished.",
+      "representativeQueries": [
+        "show a callout line with a start dot, arrowhead and label that draws itself",
+        "a callout line that draws itself from one point to another as p goes 0 to 1: straight or bent, with a start dot, an",
+        "render a motion leader"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_mask",
+      "displayName": "Motion Mask",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_mask",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle that opens, or venetian bars. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current browser. At p = 1 the child is fully visible; standalone it renders fully revealed.",
+      "representativeQueries": [
+        "show a reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
+        "reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a",
+        "render a motion mask"
       ]
     },
     {
