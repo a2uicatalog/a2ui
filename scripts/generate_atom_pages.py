@@ -1657,6 +1657,45 @@ def _atom_spotlight_html():
     }})();</script>'''
 
 
+# ─── homepage film (2026-10-01): four stable-atom motion_timeline films (wide/tall x light/dark), rendered at build time ───────
+# The film JSON in landing/ is plain catalogue data (only stable atoms; tests/test_landing_film.py holds that). The page shows
+# the wide one from 760px and the tall one below, in the visitor's theme; Replay/Skip drive the film's own seek()/play().
+LANDING_FILM_CSS = r'''<style id="film-hero-css">
+.film-hero{position:relative;background:var(--bg,#f6f9fd);overflow:hidden}
+.film-hero .mf{display:none;margin:0 auto;width:100%}
+.film-hero .mf-wide{max-width:calc((100vh - 60px)*16/9)}
+.film-hero .mf-tall{max-width:calc((100vh - 60px)*9/16)}
+.film-hero .mt-root{margin:0!important}
+.film-hero .mt-vp{border-radius:0!important;border:0!important}
+@media(min-width:760px){:root:not([data-theme="dark"]) .film-hero .mf-wide.mf-light,:root[data-theme="dark"] .film-hero .mf-wide.mf-dark{display:block}}
+@media(max-width:759px){:root:not([data-theme="dark"]) .film-hero .mf-tall.mf-light,:root[data-theme="dark"] .film-hero .mf-tall.mf-dark{display:block}}
+.film-ui{position:absolute;right:16px;top:14px;display:flex;gap:8px;z-index:5}
+.film-ui button{font:600 12px/1 var(--font,system-ui);color:var(--text-muted,#515963);background:var(--surface,#fff);border:1px solid var(--border,#d9dfe8);border-radius:999px;padding:7px 12px;cursor:pointer;opacity:.85}
+.film-ui button:hover{opacity:1}
+.film-cue{display:flex;justify-content:center;padding:0 0 18px;opacity:0;animation:filmcue .8s ease 22s forwards}
+.film-cue button{font:600 13px/1 var(--font,system-ui);color:var(--accent,#6267e7);background:none;border:0;cursor:pointer;padding:10px 14px}
+@keyframes filmcue{to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.film-cue{animation:none;opacity:1}}
+</style>'''
+
+LANDING_FILM_JS = r'''<script id="film-hero-js">(function(){var h=document.querySelector(".film-hero");if(!h)return;
+function cur(){var v=h.querySelectorAll(".mf");for(var i=0;i<v.length;i++){if(v[i].offsetParent){var r=v[i].querySelector(".mt-root");return r&&window.__a2uiMotion&&window.__a2uiMotion[r.id.slice(3)];}}}
+h.addEventListener("click",function(e){var b=e.target.closest("[data-film]");if(!b)return;var k=b.getAttribute("data-film");
+if(k==="more"){var m=document.querySelector("main");if(m)m.scrollIntoView({behavior:"smooth"});return;}
+var f=cur();if(!f)return;if(k==="skip"){f.pause();f.seek(f.dur);}else{f.seek(0);f.play();}});})();</script>'''
+
+
+def render_landing_film():
+    def film(aspect, theme):
+        d = json.loads((ROOT / "landing" / f"film-{aspect}-{theme}.json").read_text())
+        return (f'<div class="mf mf-{aspect} mf-{theme}">'
+                + _web_renderer._RENDERERS["motion_timeline"](dict(d["blocks"][0])) + "</div>")
+    return ('<section class="film-hero" aria-label="A2UI Catalog introduction">'
+            + "".join(film(a, t) for a in ("wide", "tall") for t in ("light", "dark"))
+            + '<div class="film-ui"><button type="button" data-film="replay">Replay</button><button type="button" data-film="skip">Skip</button></div>'
+            + '<div class="film-cue"><button type="button" data-film="more">Explore the catalog &darr;</button></div></section>')
+
+
 def generate_index(atoms):
     # A visitor lands on the hero stat ("501 atoms"), scrolls two screens, and
     # hits the MCP Apps banner's real, different, ALSO-exact number (atoms
@@ -1668,6 +1707,7 @@ def generate_index(atoms):
     # -- not a hand-typed literal, so it can't go stale the way gen_readme_
     # badges.py's fix was written to prevent ("450+" sitting stale past 473).
     atom_count_rounded = f"{(len(atoms) // 50) * 50}+"
+    _landing_film = render_landing_film()
     all_surfaces = []
     for atom in atoms:
         for s in (atom.get("surfaces") or {}).get("works_on") or []:
@@ -1942,9 +1982,11 @@ def generate_index(atoms):
   </script>
   {SITE_HEAD_JS}
   {INDEX_CSS}
+  {LANDING_FILM_CSS}
 </head>
 <body>
   {site_header("atoms")}
+  {_landing_film}
   <main class="wrap">
   <header class="hero">
     <div class="halo"></div>
@@ -2022,6 +2064,7 @@ def generate_index(atoms):
   </footer>
   </main>
   {INDEX_JS}
+  {LANDING_FILM_JS}
   {SITE_FOOT_JS}
 {_cursor_glow_html()}
 </body>

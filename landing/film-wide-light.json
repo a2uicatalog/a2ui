@@ -1,0 +1,1191 @@
+{
+  "title": "A2UI Catalog: the modern A2UI catalog",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "motion_timeline",
+      "title": "A2UI Catalog: the modern A2UI catalog",
+      "aspect": "16:9",
+      "duration": 33,
+      "bpm": 120,
+      "ease": "standard",
+      "loop": false,
+      "accent": "#6267e7",
+      "background": "#f6f9fd",
+      "backdrop": "flat",
+      "theme": "light",
+      "controls": false,
+      "poster": 32.5,
+      "stitch": "zoom-through",
+      "overlap": 0.9,
+      "scenes": [
+        {
+          "layer": "s1",
+          "t": 0
+        },
+        {
+          "layer": "s2",
+          "t": 4.6
+        },
+        {
+          "layer": "s3",
+          "t": 10.2
+        },
+        {
+          "layer": "s3b",
+          "t": 15.2,
+          "transition": "whip"
+        },
+        {
+          "layer": "s4",
+          "t": 21.2
+        },
+        {
+          "layer": "s5",
+          "t": 26.6,
+          "transition": "wipe"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "motion_shape",
+          "id": "glowa",
+          "shape": "circle",
+          "place": {
+            "x": 52,
+            "y": -22,
+            "w": 75,
+            "h": 133.33,
+            "z": 0
+          },
+          "fill": "#6267e7",
+          "fill2": "#00b7c3",
+          "angle": 135,
+          "blur": 170,
+          "draw": "fade"
+        },
+        {
+          "type": "motion_shape",
+          "id": "glowb",
+          "shape": "circle",
+          "place": {
+            "x": -20,
+            "y": 45,
+            "w": 60,
+            "h": 106.67,
+            "z": 0
+          },
+          "fill": "#00b7c3",
+          "fill2": "#6267e7",
+          "angle": 40,
+          "blur": 170,
+          "draw": "fade"
+        },
+        {
+          "type": "motion_layer",
+          "id": "s1",
+          "place": {
+            "z": 2
+          },
+          "blocks": [
+            {
+              "type": "motion_mark",
+              "id": "mark",
+              "size": 150,
+              "accent": "#6267e7",
+              "accent2": "#00b7c3",
+              "place": {
+                "x": 6,
+                "y": 10,
+                "w": 11.72,
+                "h": 20.83
+              }
+            },
+            {
+              "type": "motion_text",
+              "id": "t1",
+              "text": "*A2UI* Catalog",
+              "place": {
+                "x": 6,
+                "y": 36,
+                "w": 94
+              },
+              "font": "sans",
+              "weight": "black",
+              "reveal": "mask",
+              "line_height": 0.98,
+              "tracking": -0.035,
+              "color": "#141b24",
+              "accent": "#6267e7",
+              "size": 140,
+              "mode": "words"
+            },
+            {
+              "type": "motion_shape",
+              "id": "r1",
+              "shape": "line",
+              "place": {
+                "x": 6,
+                "y": 66,
+                "w": 22,
+                "h": 1
+              },
+              "thickness": 6,
+              "fill": "#00b7c3"
+            },
+            {
+              "type": "motion_text",
+              "id": "sub",
+              "text": "YOUR ONE STOP FOR THE\nMODERN A2UI CATALOG.",
+              "place": {
+                "x": 6,
+                "y": 71,
+                "w": 90
+              },
+              "size": 32,
+              "weight": "bold",
+              "tracking": 0.12,
+              "reveal": "bar",
+              "bar": "#6267e7",
+              "mode": "lines",
+              "color": "#ffffff",
+              "line_height": 1.3
+            }
+          ]
+        },
+        {
+          "type": "motion_layer",
+          "id": "s2",
+          "place": {
+            "z": 2
+          },
+          "blocks": [
+            {
+              "type": "motion_text",
+              "id": "h2",
+              "text": "Useful for\n*humans.*",
+              "place": {
+                "x": 6,
+                "y": 30,
+                "w": 30
+              },
+              "font": "sans",
+              "weight": "black",
+              "reveal": "mask",
+              "line_height": 0.98,
+              "tracking": -0.035,
+              "color": "#141b24",
+              "accent": "#6267e7",
+              "size": 64
+            },
+            {
+              "type": "motion_mask",
+              "id": "mkb",
+              "shape": "blob",
+              "place": {
+                "x": 38,
+                "y": 7,
+                "w": 58,
+                "h": 84
+              },
+              "blocks": [
+                {
+                  "type": "motion_browser",
+                  "id": "browse",
+                  "query": "stat",
+                  "chips": [
+                    "All",
+                    "Web",
+                    "MCP Apps",
+                    "Google Chat",
+                    "Apps Script Web",
+                    "PDF"
+                  ],
+                  "count": "51 atoms",
+                  "columns": 3,
+                  "pick": 0,
+                  "size": 16,
+                  "accent": "#6267e7",
+                  "cards": [
+                    {
+                      "title": "Stat Card",
+                      "text": "single KPI value with label delta and accent colour indicator",
+                      "badge": "MCP Apps",
+                      "source": "UIverse.io community",
+                      "preview": {
+                        "type": "stat_card",
+                        "value": "1,234",
+                        "label": "Stat card",
+                        "accent": "#6267e7"
+                      }
+                    },
+                    {
+                      "title": "Donut Stat",
+                      "text": "CSS ring chart with centre value and percentage its proportion or progress.",
+                      "badge": "MCP Apps",
+                      "source": "UIverse.io community",
+                      "preview": {
+                        "type": "donut_stat",
+                        "value": 75,
+                        "max_value": 100,
+                        "label": "Done",
+                        "unit": "%",
+                        "size": 64,
+                        "color": "#6267e7"
+                      }
+                    },
+                    {
+                      "title": "Pull Stat",
+                      "text": "large display number pulled from prose for emphasis descriptive label.",
+                      "badge": "MCP Apps",
+                      "source": "a2uicatalog",
+                      "preview": {
+                        "type": "pull_stat",
+                        "value": "73%",
+                        "label": "of teams"
+                      }
+                    },
+                    {
+                      "title": "Count Up Stat",
+                      "text": "animated count-up number stat with cubic ease, auto-plays on load",
+                      "badge": "MCP Apps",
+                      "source": "a2uicatalog",
+                      "preview": {
+                        "type": "count_up_stat",
+                        "value": 1200,
+                        "label": "Atoms",
+                        "suffix": "+",
+                        "duration": 0
+                      }
+                    },
+                    {
+                      "title": "Progress Ring",
+                      "text": "animated circular progress gauge",
+                      "badge": "MCP Apps",
+                      "source": "a2uicatalog",
+                      "preview": {
+                        "type": "progress_ring",
+                        "value": 68,
+                        "size": 64,
+                        "label": "Done",
+                        "color": "#6267e7"
+                      }
+                    },
+                    {
+                      "title": "Status Pill",
+                      "text": "coloured status pill badge an item.",
+                      "badge": "MCP Apps",
+                      "source": "UIverse.io community",
+                      "preview": {
+                        "type": "status_pill",
+                        "label": "Live"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "motion_leader",
+              "id": "lead",
+              "w": 1280,
+              "h": 720,
+              "from": [
+                345,
+                402
+              ],
+              "to": [
+                480,
+                240
+              ],
+              "curve": -26,
+              "label": "a real atom, rendered live",
+              "label_at": "start",
+              "width": 4,
+              "size": 24,
+              "color": "#00b7c3",
+              "label_color": "#141b24",
+              "place": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              }
+            }
+          ]
+        },
+        {
+          "type": "motion_layer",
+          "id": "s3",
+          "place": {
+            "z": 2
+          },
+          "blocks": [
+            {
+              "type": "motion_text",
+              "id": "h3",
+              "text": "Declarative\nfor *AI agents.*",
+              "place": {
+                "x": 6,
+                "y": 24,
+                "w": 46
+              },
+              "font": "sans",
+              "weight": "black",
+              "reveal": "mask",
+              "line_height": 0.98,
+              "tracking": -0.035,
+              "color": "#141b24",
+              "accent": "#6267e7",
+              "size": 70
+            },
+            {
+              "type": "motion_code",
+              "id": "code",
+              "file": "agent-output.json",
+              "size": 26,
+              "accent": "#6267e7",
+              "lines": [
+                "{",
+                "  \"type\": \"stat_card\",",
+                "  \"label\": \"Typed atoms\",",
+                "  \"value\": \"500+\"",
+                "}"
+              ],
+              "place": {
+                "x": 50,
+                "y": 14,
+                "w": 44
+              }
+            },
+            {
+              "type": "stat_card",
+              "id": "num",
+              "label": "Typed atoms",
+              "value": "500+",
+              "accent": "#6267e7",
+              "place": {
+                "x": 50,
+                "y": 60,
+                "w": 44
+              }
+            }
+          ]
+        },
+        {
+          "type": "motion_layer",
+          "id": "s3b",
+          "place": {
+            "z": 2
+          },
+          "blocks": [
+            {
+              "type": "motion_text",
+              "id": "h3b",
+              "text": "Agents\n*compose.*",
+              "place": {
+                "x": 6,
+                "y": 26,
+                "w": 46
+              },
+              "font": "sans",
+              "weight": "black",
+              "reveal": "mask",
+              "line_height": 0.98,
+              "tracking": -0.035,
+              "color": "#141b24",
+              "accent": "#6267e7",
+              "size": 92
+            },
+            {
+              "type": "motion_text",
+              "id": "h3bs",
+              "text": "THE CATALOG RENDERS.",
+              "place": {
+                "x": 6,
+                "y": 62,
+                "w": 46
+              },
+              "size": 26,
+              "weight": "bold",
+              "tracking": 0.14,
+              "reveal": "bar",
+              "bar": "#00b7c3",
+              "mode": "lines",
+              "color": "#08121a"
+            },
+            {
+              "type": "tool_call_card",
+              "id": "tcall",
+              "tool_name": "render_surface",
+              "status": "success",
+              "args": "{ \"blocks\": 3 }",
+              "result": "3 atoms rendered",
+              "place": {
+                "x": 52,
+                "y": 9,
+                "w": 30.000000000000004,
+                "origin": "tl"
+              }
+            },
+            {
+              "type": "motion_checklist",
+              "id": "cstack",
+              "title": "Agent run",
+              "size": 27,
+              "accent": "#6267e7",
+              "items": [
+                "Plan the surface",
+                "Compose typed JSON",
+                "Render on any surface"
+              ],
+              "place": {
+                "x": 52,
+                "y": 57,
+                "w": 42
+              }
+            }
+          ]
+        },
+        {
+          "type": "motion_layer",
+          "id": "s4",
+          "place": {
+            "z": 2
+          },
+          "blocks": [
+            {
+              "type": "motion_text",
+              "id": "h4",
+              "text": "One catalog,\nevery *surface.*",
+              "place": {
+                "x": 6,
+                "y": 24,
+                "w": 46
+              },
+              "font": "sans",
+              "weight": "black",
+              "reveal": "mask",
+              "line_height": 0.98,
+              "tracking": -0.035,
+              "color": "#141b24",
+              "accent": "#6267e7",
+              "size": 70
+            },
+            {
+              "type": "motion_text",
+              "id": "h4s",
+              "text": "WEB · MEET · CHAT · MCP APPS · APPS SCRIPT",
+              "place": {
+                "x": 6,
+                "y": 62,
+                "w": 40
+              },
+              "size": 22,
+              "weight": "bold",
+              "tracking": 0.12,
+              "reveal": "fade",
+              "mode": "words",
+              "color": "#515963",
+              "line_height": 1.4
+            },
+            {
+              "type": "motion_mark",
+              "id": "mark2",
+              "size": 130,
+              "accent": "#6267e7",
+              "accent2": "#00b7c3",
+              "place": {
+                "x": 68.92,
+                "y": 40.97,
+                "w": 10.16,
+                "h": 18.06
+              }
+            },
+            {
+              "type": "motion_orbit",
+              "id": "orb",
+              "items": [
+                "Web",
+                "Meet",
+                "Chat",
+                "MCP",
+                "Script"
+              ],
+              "size": 92,
+              "rx": 40,
+              "ry": 36,
+              "spin": 72,
+              "fill": "#ffffff",
+              "ink": "#141b24",
+              "place": {
+                "x": 52,
+                "y": 6,
+                "w": 44,
+                "h": 88
+              }
+            }
+          ]
+        },
+        {
+          "type": "motion_layer",
+          "id": "s5",
+          "place": {
+            "z": 2
+          },
+          "blocks": [
+            {
+              "type": "motion_text",
+              "id": "cta",
+              "text": "Try it\n*today.*",
+              "place": {
+                "x": 6,
+                "y": 14,
+                "w": 94
+              },
+              "font": "sans",
+              "weight": "black",
+              "reveal": "mask",
+              "line_height": 0.98,
+              "tracking": -0.035,
+              "color": "#141b24",
+              "accent": "#6267e7",
+              "size": 168,
+              "extrude": 6,
+              "extrude_color": "#d4daf0"
+            },
+            {
+              "type": "motion_pill",
+              "id": "pill1",
+              "text": "Browse the *atoms*",
+              "icon": "→",
+              "size": 38,
+              "accent": "#6267e7",
+              "color": "#141b24",
+              "fill": "#ffffff",
+              "place": {
+                "x": 6,
+                "y": 66,
+                "w": 38
+              }
+            },
+            {
+              "type": "motion_pill",
+              "id": "pill2",
+              "text": "Add the *MCP* connector",
+              "icon": "+",
+              "size": 38,
+              "accent": "#6267e7",
+              "color": "#141b24",
+              "fill": "#ffffff",
+              "place": {
+                "x": 47,
+                "y": 66,
+                "w": 46
+              }
+            },
+            {
+              "type": "motion_sketch",
+              "id": "sk",
+              "label": "An agent sketching a robot that sketches a robot",
+              "strokes": [
+                {
+                  "d": "M 250 110 L 385 110 L 385 285 L 250 285 Z",
+                  "color": "#141b24",
+                  "width": 6
+                },
+                {
+                  "d": "M 270 285 L 255 380 M 365 285 L 380 380",
+                  "color": "#141b24",
+                  "width": 6
+                },
+                {
+                  "d": "M 95 75 L 175 75 Q 195 75 195 95 L 195 155 Q 195 175 175 175 L 95 175 Q 75 175 75 155 L 75 95 Q 75 75 95 75 Z",
+                  "color": "#6267e7",
+                  "width": 7,
+                  "fill": "#6267e7",
+                  "fill_opacity": 0.15
+                },
+                {
+                  "d": "M 135 75 L 135 42 M 143 30 a 8 8 0 1 0 -16 0 a 8 8 0 1 0 16 0",
+                  "color": "#00b7c3",
+                  "width": 6
+                },
+                {
+                  "d": "M 112 118 a 10 10 0 1 0 20 0 a 10 10 0 1 0 -20 0 M 138 118 a 10 10 0 1 0 20 0 a 10 10 0 1 0 -20 0",
+                  "color": "#141b24",
+                  "width": 6
+                },
+                {
+                  "d": "M 108 150 Q 135 168 162 150",
+                  "color": "#141b24",
+                  "width": 6
+                },
+                {
+                  "d": "M 92 195 L 178 195 L 178 300 L 92 300 Z",
+                  "color": "#6267e7",
+                  "width": 7,
+                  "fill": "#6267e7",
+                  "fill_opacity": 0.1
+                },
+                {
+                  "d": "M 135 232 a 9 9 0 1 0 18 0 a 9 9 0 1 0 -18 0",
+                  "color": "#00b7c3",
+                  "width": 5,
+                  "fill": "#00b7c3",
+                  "fill_opacity": 0.5
+                },
+                {
+                  "d": "M 92 215 L 55 262 L 70 285",
+                  "color": "#141b24",
+                  "width": 7
+                },
+                {
+                  "d": "M 178 215 L 232 190",
+                  "color": "#141b24",
+                  "width": 7
+                },
+                {
+                  "d": "M 226 193 L 268 158 L 281 146",
+                  "color": "#00b7c3",
+                  "width": 9
+                },
+                {
+                  "d": "M 112 300 L 112 358 M 158 300 L 158 358",
+                  "color": "#141b24",
+                  "width": 7
+                },
+                {
+                  "d": "M 94 358 L 128 358 M 142 358 L 176 358",
+                  "color": "#141b24",
+                  "width": 7
+                },
+                {
+                  "d": "M 290 165 L 340 165 L 340 205 L 290 205 Z",
+                  "color": "#6267e7",
+                  "width": 5
+                },
+                {
+                  "d": "M 304 183 L 305 183 M 326 183 L 327 183",
+                  "color": "#141b24",
+                  "width": 8
+                },
+                {
+                  "d": "M 315 165 L 315 150",
+                  "color": "#00b7c3",
+                  "width": 5
+                },
+                {
+                  "d": "M 40 382 Q 200 396 360 382",
+                  "color": "#00b7c3",
+                  "width": 5
+                }
+              ],
+              "w": 400,
+              "h": 400,
+              "place": {
+                "x": 66,
+                "y": 5,
+                "w": 30
+              }
+            },
+            {
+              "type": "motion_text",
+              "id": "more",
+              "text": "ARTICLES · DOCS · RUNBOOKS · GALLERY",
+              "place": {
+                "x": 6,
+                "y": 82,
+                "w": 90
+              },
+              "size": 26,
+              "weight": "bold",
+              "tracking": 0.14,
+              "reveal": "fade",
+              "mode": "words",
+              "color": "#515963"
+            }
+          ]
+        }
+      ],
+      "tracks": [
+        {
+          "target": "glowa",
+          "keys": [
+            {
+              "t": 0,
+              "p": 0
+            },
+            {
+              "t": 3,
+              "p": 0.16,
+              "ease": "quart-in-out"
+            },
+            {
+              "t": 21.2,
+              "p": 0.16
+            },
+            {
+              "t": 29.6,
+              "p": 0,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "glowb",
+          "keys": [
+            {
+              "t": 0,
+              "p": 0
+            },
+            {
+              "t": 6,
+              "p": 0.128,
+              "ease": "quart-in-out"
+            },
+            {
+              "t": 21.2,
+              "p": 0.128
+            },
+            {
+              "t": 29.6,
+              "p": 0,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "mark",
+          "keys": [
+            {
+              "t": 0.2,
+              "p": 0
+            },
+            {
+              "t": 2.4,
+              "p": 1,
+              "ease": "quart-in-out"
+            },
+            {
+              "t": 0.2,
+              "step": 0
+            },
+            {
+              "t": 4.6,
+              "step": 1,
+              "ease": "standard"
+            }
+          ]
+        },
+        {
+          "target": "t1",
+          "keys": [
+            {
+              "t": 0.7,
+              "p": 0
+            },
+            {
+              "t": 3,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "r1",
+          "keys": [
+            {
+              "t": 2,
+              "p": 0
+            },
+            {
+              "t": 3.4,
+              "p": 1,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "sub",
+          "keys": [
+            {
+              "t": 2.6,
+              "p": 0
+            },
+            {
+              "t": 4.2,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "h2",
+          "keys": [
+            {
+              "t": 4.8999999999999995,
+              "p": 0
+            },
+            {
+              "t": 7,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "mkb",
+          "keys": [
+            {
+              "t": 4.85,
+              "p": 0
+            },
+            {
+              "t": 6.3,
+              "p": 1,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "browse",
+          "keys": [
+            {
+              "t": 5.1,
+              "p": 0,
+              "step": 0
+            },
+            {
+              "t": 9,
+              "p": 1,
+              "ease": "standard"
+            },
+            {
+              "t": 9.6,
+              "step": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "lead",
+          "keys": [
+            {
+              "t": 7.199999999999999,
+              "p": 0
+            },
+            {
+              "t": 8.6,
+              "p": 1,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "h3",
+          "keys": [
+            {
+              "t": 10.5,
+              "p": 0
+            },
+            {
+              "t": 12.799999999999999,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "code",
+          "keys": [
+            {
+              "t": 11.2,
+              "p": 0
+            },
+            {
+              "t": 13.6,
+              "p": 1,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "num",
+          "keys": [
+            {
+              "t": 13.399999999999999,
+              "opacity": 0,
+              "y": 64,
+              "scale": 0.96
+            },
+            {
+              "t": 14.6,
+              "opacity": 1,
+              "y": 60,
+              "scale": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "h3b",
+          "keys": [
+            {
+              "t": 15.5,
+              "p": 0
+            },
+            {
+              "t": 17.8,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "h3bs",
+          "keys": [
+            {
+              "t": 16.599999999999998,
+              "p": 0
+            },
+            {
+              "t": 18.4,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "tcall",
+          "keys": [
+            {
+              "t": 16,
+              "opacity": 0,
+              "y": 13,
+              "scale": 1.4
+            },
+            {
+              "t": 17.2,
+              "opacity": 1,
+              "y": 9,
+              "scale": 1.4,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "cstack",
+          "keys": [
+            {
+              "t": 17.599999999999998,
+              "opacity": 0,
+              "y": 62,
+              "p": 0
+            },
+            {
+              "t": 18.599999999999998,
+              "opacity": 1,
+              "y": 57,
+              "ease": "expo-out"
+            },
+            {
+              "t": 20.6,
+              "p": 1,
+              "ease": "standard"
+            }
+          ]
+        },
+        {
+          "target": "h4",
+          "keys": [
+            {
+              "t": 21.5,
+              "p": 0
+            },
+            {
+              "t": 23.8,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "h4s",
+          "keys": [
+            {
+              "t": 22.8,
+              "p": 0
+            },
+            {
+              "t": 24.8,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "mark2",
+          "keys": [
+            {
+              "t": 21.599999999999998,
+              "p": 0
+            },
+            {
+              "t": 23.599999999999998,
+              "p": 1,
+              "ease": "quart-in-out"
+            }
+          ]
+        },
+        {
+          "target": "orb",
+          "keys": [
+            {
+              "t": 22,
+              "p": 0,
+              "step": 0
+            },
+            {
+              "t": 24.599999999999998,
+              "p": 1,
+              "step": 0.2,
+              "ease": "expo-out"
+            },
+            {
+              "t": 26.2,
+              "step": 1,
+              "ease": "standard"
+            }
+          ]
+        },
+        {
+          "target": "sk",
+          "keys": [
+            {
+              "t": 27.400000000000002,
+              "opacity": 0,
+              "p": 0
+            },
+            {
+              "t": 27.8,
+              "opacity": 1
+            },
+            {
+              "t": 33,
+              "p": 1,
+              "ease": "linear"
+            }
+          ]
+        },
+        {
+          "target": "cta",
+          "keys": [
+            {
+              "t": 26.900000000000002,
+              "p": 0
+            },
+            {
+              "t": 29,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "pill1",
+          "keys": [
+            {
+              "t": 28.200000000000003,
+              "p": 0
+            },
+            {
+              "t": 29.400000000000002,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "pill2",
+          "keys": [
+            {
+              "t": 28.5,
+              "p": 0
+            },
+            {
+              "t": 29.700000000000003,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        },
+        {
+          "target": "more",
+          "keys": [
+            {
+              "t": 29.200000000000003,
+              "p": 0
+            },
+            {
+              "t": 30.8,
+              "p": 1,
+              "ease": "expo-out"
+            }
+          ]
+        }
+      ],
+      "camera": {
+        "keys": [
+          {
+            "t": 0,
+            "zoom": 1,
+            "x": 50,
+            "y": 50
+          },
+          {
+            "t": 4.6,
+            "zoom": 1.03,
+            "x": 49,
+            "y": 50,
+            "ease": "quart-in-out"
+          },
+          {
+            "t": 10.2,
+            "zoom": 1,
+            "x": 50,
+            "y": 50,
+            "ease": "quart-in-out"
+          },
+          {
+            "t": 15.2,
+            "zoom": 1.04,
+            "x": 51,
+            "y": 50,
+            "ease": "quart-in-out"
+          },
+          {
+            "t": 21.2,
+            "zoom": 1,
+            "x": 50,
+            "y": 50,
+            "ease": "quart-in-out"
+          },
+          {
+            "t": 26.6,
+            "zoom": 1,
+            "x": 50,
+            "y": 50,
+            "ease": "quart-in-out"
+          },
+          {
+            "t": 33,
+            "zoom": 1,
+            "x": 50,
+            "y": 50
+          }
+        ]
+      }
+    }
+  ]
+}
