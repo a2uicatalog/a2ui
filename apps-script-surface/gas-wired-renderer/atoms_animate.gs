@@ -15,6 +15,8 @@ _RENDERERS['reveal'] = function(b) {
   var staggerMs = b.stagger_delay || 120;
   var blocks   = b.blocks    || [];
   var isStagger = anim === 'stagger';
+  // `ease`: a motion token or four numbers (atoms_motion.gs); absent keeps the original curve byte for byte.
+  var easeCss = (b.ease !== undefined && typeof _moEaseCss === 'function') ? _moEaseCss(b.ease, 'standard') : 'cubic-bezier(0.4,0,0.2,1)';
 
   var css = '<style>'
     + '@keyframes ' + uid + '-fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}'
@@ -22,7 +24,7 @@ _RENDERERS['reveal'] = function(b) {
     + '@keyframes ' + uid + '-sl{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}'
     + '@keyframes ' + uid + '-sr{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}'
     + '@keyframes ' + uid + '-sc{from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}'
-    + '.' + uid + '{animation-fill-mode:both;animation-timing-function:cubic-bezier(0.4,0,0.2,1);}'
+    + '.' + uid + '{animation-fill-mode:both;animation-timing-function:' + easeCss + ';}'
     + '.' + uid + '-fade_up{animation-name:' + uid + '-fu}'
     + '.' + uid + '-fade_in{animation-name:' + uid + '-fi}'
     + '.' + uid + '-slide_left{animation-name:' + uid + '-sl}'

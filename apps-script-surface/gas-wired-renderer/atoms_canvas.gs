@@ -3670,7 +3670,8 @@ _RENDERERS['great_circle'] = function(b) {
 var _BZ_PRESETS = {ease: [0.25, 0.1, 0.25, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1], overshoot: [0.34, 1.56, 0.64, 1], anticipate: [0.68, -0.55, 0.27, 1.55]};
 _RENDERERS['bezier_easing'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6), th = _ffTheme(b), acc = _ffHex(b.accent, '#38bdf8');
-  var pre = (typeof b.preset === 'string' && Object.prototype.hasOwnProperty.call(_BZ_PRESETS, b.preset)) ? _BZ_PRESETS[b.preset] : null;
+  var pre = (typeof b.preset === 'string' && Object.prototype.hasOwnProperty.call(_BZ_PRESETS, b.preset)) ? _BZ_PRESETS[b.preset]
+    : (typeof b.preset === 'string' && typeof _MO_EASE !== 'undefined' && Object.prototype.hasOwnProperty.call(_MO_EASE, b.preset)) ? _MO_EASE[b.preset] : null;  // any motion token (atoms_motion.gs)
   var P = pre ? [_ffNum(pre[0], 0, 0, 1, 3), _ffNum(pre[1], 0, -1, 2, 3), _ffNum(pre[2], 0, 0, 1, 3), _ffNum(pre[3], 0, -1, 2, 3)]
     : [_ffNum(b.x1, 0.25, 0, 1, 3), _ffNum(b.y1, 0.1, -1, 2, 3), _ffNum(b.x2, 0.25, 0, 1, 3), _ffNum(b.y2, 1, -1, 2, 3)];
   var dur = _ffInt(b.duration, 1200, 200, 4000), edit = b.editable === false ? 'false' : 'true', height = _ffInt(b.height, 300, 200, 500);

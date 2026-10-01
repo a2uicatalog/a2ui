@@ -24,6 +24,11 @@ function renderAtoms(blocks, opts) {
   var theme = opts.theme || 'light';
   var sidebar = !!opts.sidebar;
 
+  // Generic `enter` prop (atoms_motion.gs): wrap every renderer once so any atom,
+  // including ones nested in containers that call _RENDERERS[...] directly, can
+  // take a motion entrance. Idempotent; no `enter` on a block = unchanged output.
+  if (typeof _moInstall === 'function') _moInstall();
+
   // ── pack gate ──────────────────────────────────────────────────────────────
   // A lean workbench offers only some packs; everything else degrades gracefully.
   // Source of enabled packs: opts.enabledPacks, else the A2UI_ENABLED_PACKS script

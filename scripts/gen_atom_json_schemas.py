@@ -170,7 +170,31 @@ def advanced_parse_field(raw_string: str):
     raise ValueError("irreducibly free-text")
 
 
-def build_atom_schema(block: dict) -> dict:
+# The catalogue-wide `enter` prop (atoms_motion.gs: any atom can take a motion entrance). Injected into every atom's
+# strict schema ONLY once design motion is published (motion_timeline leaves stage: preview) or in the gated full
+# mirror -- advertising a prop the deployed renderers do not yet honour would be a public claim made before release.
+MOTION_TOKENS = ["linear", "ease", "ease-in", "ease-out", "ease-in-out", "overshoot", "anticipate", "standard", "emphasized",
+                 "decelerate", "accelerate", "expo-out", "quint-out", "quart-in-out", "expo-in-out"]
+MOTION_EFFECTS = ["fade", "rise", "drop", "slide-left", "slide-right", "scale", "blur", "wipe", "pop"]
+ENTER_SCHEMA = {
+    "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+    "oneOf": [
+        {"type": "string", "enum": MOTION_EFFECTS},
+        {"type": "object", "additionalProperties": False, "properties": {
+            "effect": {"type": "string", "enum": MOTION_EFFECTS},
+            "ease": {"oneOf": [{"type": "string", "enum": MOTION_TOKENS}, {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4}]},
+            "duration": {"oneOf": [{"type": "string", "enum": ["instant", "quick", "base", "slow", "cinematic"]}, {"type": "integer", "minimum": 0, "maximum": 8000}]},
+            "delay": {"type": "integer", "minimum": 0, "maximum": 20000},
+            "on": {"type": "string", "enum": ["load", "view"]}}},
+    ],
+}
+
+
+def motion_is_public(blocks: list, full: bool) -> bool:
+    return full or any(b.get("type") == "motion_timeline" and b.get("stage") != "preview" for b in blocks)
+
+
+def build_atom_schema(block: dict, with_enter: bool = False) -> dict:
     atom_type = block["type"]
     properties = {"type": {"type": "string", "const": atom_type}}
     required = ["type"]
@@ -203,6 +227,9 @@ def build_atom_schema(block: dict) -> dict:
         if not is_optional:
             required.append(target)
 
+    if with_enter and "enter" not in properties:
+        properties["enter"] = ENTER_SCHEMA
+
     return {"type": "object", "properties": properties, "required": required, "additionalProperties": False}
 
 
@@ -212,13 +239,15 @@ def main() -> None:
     args = parser.parse_args()
 
     data = yaml.safe_load(SCHEMA_YAML.read_text())
-    if os.environ.get("A2UI_CATALOG_FULL") == "1":
+    full = os.environ.get("A2UI_CATALOG_FULL") == "1"
+    with_enter = motion_is_public(data["blocks"], full)
+    if full:
         blocks = list(data["blocks"])
     else:
         blocks = [b for b in data["blocks"]
                   if b.get("stage") != "preview" and b.get("visibility") != "private"]
 
-    per_atom = [build_atom_schema(b) for b in blocks]
+    per_atom = [build_atom_schema(b, with_enter) for b in blocks]
     combined = {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "A2UI Block List Schema",

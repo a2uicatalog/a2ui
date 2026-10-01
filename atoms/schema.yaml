@@ -9324,7 +9324,7 @@ blocks:
     - surface: email
       reason: Canvas and inline JavaScript are not supported in email clients
   fields:
-    preset: '"ease" | "ease-in" | "ease-out" | "ease-in-out" | "overshoot" | "anticipate"  (optional). Overrides x1..y2 when given.'
+    preset: '"ease" | "ease-in" | "ease-out" | "ease-in-out" | "overshoot" | "anticipate" | "linear" | "standard" | "emphasized" | "decelerate" | "accelerate" | "expo-out" | "quint-out" | "quart-in-out" | "expo-in-out"  (optional). Any motion token (see motion_tokens). Overrides x1..y2 when given.'
     x1: number (optional). Control point 1 x, 0..1. Default 0.25.
     y1: number (optional). Control point 1 y, -1..2. Default 0.1.
     x2: number (optional). Control point 2 x, 0..1. Default 0.25.
@@ -9371,6 +9371,487 @@ blocks:
     show_contrast: bool (optional). Show the best text contrast per tone. Default true.
     show_code: bool (optional). Append the CSS custom properties block. Default true.
     theme: '"dark" | "light"  (optional, default "dark")'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_timeline
+  stage: preview
+  description: 'A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen
+    is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2).
+    Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed
+    by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit
+    listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:"hud"
+    children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP
+    .to(); before a property''s first key it holds that first value, so an element can be hidden until its first key. Ease
+    is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers;
+    with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated:
+    one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out,
+    a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours
+    prefers-reduced-motion (holds the poster frame; controls still work).'
+  compact_description: timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a
+    scrubber
+  routing_text: 'A stage of child atoms choreographed on one clock like a product or launch video: tracks animate children
+    by id (opacity, position, scale, tilt, blur, wipe, progress, caption step), a camera pans zooms and tilts, easing is a
+    named token or four cubic-bezier numbers, keys can sit on a BPM beat grid. Scrubbable, loopable, frame-exact.'
+  intent_phrases:
+  - Recreate a product demo video as an interactive page, with a cursor, charts that draw themselves and captions.
+  - Choreograph a motion-design sequence where elements enter on easing curves and the camera pushes in.
+  - Make a launch film for our app that I can scrub through and loop.
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: The timeline needs JavaScript; the stage renders empty. Use a still image of the poster frame.
+    - surface: google-chat
+      note: Inline script not supported
+    incompatible_on:
+    - surface: email
+      reason: Inline JavaScript, CSS custom properties and 3D transforms are not supported in email clients
+  fields:
+    title: string (optional, max 80). Accessible name of the stage. Default "Motion sequence".
+    aspect: '"16:9" | "4:3" | "1:1" | "9:16" (optional, default "16:9"). The stage is laid out at 1280x720, 1200x900, 1000x1000
+      or 720x1280 logical px and scaled to the container.'
+    duration: number (optional). Seconds, clamped 2-120. Default 12.
+    bpm: integer (optional). 0-240. When set, keys may use `beat` (t = beat * 60 / bpm) instead of `t`.
+    ease: string | [x1,y1,x2,y2] (optional). Default ease for keys that do not name one. A token from motion_tokens (not "hold").
+      Default "standard".
+    loop: bool (optional). Default true.
+    autoplay: bool (optional). Plays when scrolled into view, pauses when it leaves. Default true. Off, or under prefers-reduced-motion,
+      it shows the poster frame.
+    controls: bool (optional). Play/pause button, scrubber and clock. Default true.
+    poster: number (optional). Seconds; the frame shown when not autoplaying. Default 60% of duration.
+    theme: '"dark" | "light"  (optional, default "dark"). Stage background and control colours.'
+    accent: '"#rrggbb" (optional). Glow and control accent. Default "#38bdf8".'
+    background: '"#rrggbb" (optional). Stage background override.'
+    backdrop: '"glow" | "grid" | "flat" (optional, default "glow")'
+    blocks: array (max 24) of any atom blocks. Each may also carry id (^[a-z][a-z0-9_-]{0,31}$, makes it addressable by a
+      track), place {x, y, w, h, z, origin} (x/y/w/h in percent of the stage; z 0-99; origin "c"|"tl"|"t"|"b"|"l"|"r" is the
+      transform origin), and layer "world" (default, moves with the camera) or "hud" (stays on screen).
+    tracks: 'array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?,
+      scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?}. x,y are the element''s top-left in percent of the stage (for an
+      element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt
+      -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom''s progress (chart draw, bar growth,
+      toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects
+      the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, "hold" (jump at the
+      key), or four numbers.'
+    camera: '{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?}]} (max 48 keys), optional. x,y are the focus point in
+      percent of the stage (default 50,50); zoom 0.25-6 (default 1); rx, ry, rz tilt in degrees. Moves only layer:"world"
+      children.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_group
+  stage: preview
+  description: 'Blocks that enter one after another: a stagger, set once. Every child gets the same entrance (effect, ease,
+    duration) offset by stagger milliseconds, on load or when scrolled into view. The general-purpose alternative to hand-setting
+    a delay on each block; for a single block use the `enter` prop that any atom accepts.'
+  compact_description: staggered entrance for a list of blocks, with tokenised easing
+  routing_text: 'Blocks that enter one after another with a set stagger: the same entrance effect, ease and duration for every
+    child, offset per child, on load or when scrolled into view.'
+  intent_phrases:
+  - Have these cards appear one after another with a short stagger.
+  - Fade and slide my list items in on load, expo-out, 80ms apart.
+  - Reveal this section's blocks as the reader scrolls to them.
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state, without motion
+    - surface: google-chat
+      note: Inline style animation is not supported; blocks appear without motion
+    incompatible_on:
+    - surface: email
+      reason: CSS animations are not supported in most email clients
+  fields:
+    blocks: array (max 40) of any atom blocks.
+    effect: '"fade" | "rise" | "drop" | "slide-left" | "slide-right" | "scale" | "blur" | "wipe" | "pop" (optional, default
+      "rise")'
+    ease: string | [x1,y1,x2,y2] (optional). A token from motion_tokens, or four numbers. Default depends on the effect (expo-out
+      for most).
+    duration: integer | "instant" | "quick" | "base" | "slow" | "cinematic" (optional). Milliseconds 0-8000 or a duration
+      token. Default 560.
+    delay: integer (optional). Milliseconds before the first child, 0-20000. Default 0.
+    stagger: integer (optional). Milliseconds between children, 0-1000. Default 80.
+    'on': '"load" | "view" (optional, default "load"). "view" waits until the group is scrolled into view; without JavaScript
+      it simply shows.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_tokens
+  stage: preview
+  description: 'The catalogue''s motion vocabulary, drawn: every named easing curve with a dot riding it, the cubic-bezier
+    it stands for and what it is for, the five duration tokens, and the nine entrance effects. The same names are accepted
+    by the `enter` prop on any atom, by motion_group, by reveal, and by every ease field in motion_timeline, so an agent learns
+    the vocabulary once. Honours prefers-reduced-motion (dots stay still).'
+  compact_description: reference card of the named easing curves, duration tokens and entrance effects
+  routing_text: 'Reference card for the catalogue''s motion vocabulary: named easing curves (expo-out, standard, emphasized,
+    quart-in-out, overshoot...) each drawn as a dot riding the curve with its cubic-bezier and its use, duration tokens, and
+    entrance effects.'
+  intent_phrases:
+  - Show me the easing curves I can use for UI animation and what each is for.
+  - What motion tokens does this catalogue offer?
+  - Give me a motion style guide for our design system.
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the table without the moving dots
+    - surface: google-chat
+      note: Inline style animation is not supported; shows the table only
+    incompatible_on:
+    - surface: email
+      reason: CSS animations and min() are not supported in most email clients
+  fields:
+    show: '"ease" | "duration" | "both" (optional, default "both")'
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_window
+  stage: preview
+  description: 'A product-UI window for demos: traffic-light title bar, sidebar nav, and a content column of child blocks
+    (any atoms). With stack:true the children overlap in one cell so screens can crossfade under opacity tracks. The window
+    sets the colours its demo children read, so a chart or KPI row inside it matches its tone. A timeline step track on the
+    window moves the sidebar highlight between nav items. Plain HTML and CSS, no script: its motion hangs off custom properties
+    a motion_timeline sets (--p progress, --s step), so standalone it renders its final state.'
+  compact_description: app-window mock with sidebar nav and stackable screens for product demos
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    title: string (optional, max 28). App name in the sidebar. Default "App".
+    nav: array (max 8) of {label, active?} or strings (optional). Sidebar items; the one with active:true is highlighted until
+      a step track on this window moves the highlight (step N = Nth item).
+    heading: string (optional, max 60). Page heading when not using demo_page.
+    sub: string (optional, max 90).
+    blocks: array (max 10) of any atom blocks. Each may carry an id so a timeline can animate it.
+    stack: bool (optional). Overlap the children in one grid cell (screens that crossfade). Default false (a column).
+    tone: '"light" | "dark" (optional, default "light")'
+    accent: '"#rrggbb" (optional). Default "#2563eb".'
+    height: integer (optional). Minimum height in px, 240-900. Default 460. Inside a motion_timeline the place height wins.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_page
+  stage: preview
+  description: 'One screen of a demo window: a heading, a sub line and a column of blocks. Give several to a demo_window (stack:true)
+    and crossfade or slide them with opacity and x tracks.'
+  compact_description: titled column of blocks; one screen of a demo window
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    heading: string (optional, max 60).
+    sub: string (optional, max 90).
+    blocks: array (max 8) of any atom blocks; each may carry an id.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_wordmark
+  stage: preview
+  description: 'A large outlined wordmark for behind a camera move: transparent fill, stroked letters, sized in px. Place
+    it on a low z and fade it in under an opacity track.'
+  compact_description: ghost outlined wordmark for a motion backdrop
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    text: string (max 24).
+    size: integer (optional). Font size px, 24-600. Default 200.
+    outline: '"ink" | "accent" (optional, default "ink")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    tone: '"dark" | "light" (optional, default "dark")'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_kpis
+  stage: preview
+  description: 'A row of up to four KPI tiles whose numbers COUNT: give a p track (0 to 1) and the value recounts from zero
+    on the way, formatted with thousands separators, prefix, suffix and fixed decimals. Without a timeline it shows the final
+    values. Plain HTML and CSS, no script: its motion hangs off custom properties a motion_timeline sets (--p progress, --s
+    step), so standalone it renders its final state.'
+  compact_description: row of KPI tiles whose numbers count up with progress
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    items: array (max 4) of {label (max 24), value (number), prefix? (max 4), suffix? (max 6), decimals? (0-3), delta? (max
+      14)}
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_chart
+  stage: preview
+  description: 'A chart that draws itself: kind "line" traces its path and fades in the area, kind "bars" grows the bars one
+    after another, both driven by p (0 to 1). One bar or the last point can carry a callout chip that appears as the draw
+    finishes. Plain HTML and CSS, no script: its motion hangs off custom properties a motion_timeline sets (--p progress,
+    --s step), so standalone it renders its final state.'
+  compact_description: line or bar chart that draws itself with progress, with an optional callout
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    kind: '"line" | "bars" (optional, default "line")'
+    data: array (2-24) of numbers. Fewer than 2 uses a placeholder series.
+    labels: array (max 24) of strings (optional, max 8 chars each). Axis labels under the chart.
+    highlight: integer (optional). Index of the emphasised bar or callout point. Default the last.
+    callout: string (optional, max 28). Chip over the highlighted point.
+    title: string (optional, max 40).
+    height: integer (optional). Plot height px, 80-500. Default 200.
+    accent: '"#rrggbb" (optional). Default the window accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_toggle_grid
+  stage: preview
+  description: 'A grid of integration-style cards, each with a switch that flips on as p passes its on_at threshold, so a
+    timeline can turn them on one by one. Plain HTML and CSS, no script: its motion hangs off custom properties a motion_timeline
+    sets (--p progress, --s step), so standalone it renders its final state.'
+  compact_description: grid of cards with switches that flip on at progress thresholds
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    cards: array (max 9) of {title (max 22), sub? (max 30), on_at? (0-1)} or strings. on_at defaults to an even spread from
+      0.12 to 0.82.
+    columns: integer (optional). 1-4. Default 3.
+    accent: '"#rrggbb" (optional). Default the window accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_progress
+  stage: preview
+  description: 'A labelled progress bar whose fill and counter follow p (0 to 1): "Syncing contacts ... 1,207 contacts". A
+    suffix that starts with a letter gets a leading space. Plain HTML and CSS, no script: its motion hangs off custom properties
+    a motion_timeline sets (--p progress, --s step), so standalone it renders its final state.'
+  compact_description: labelled progress bar with a counting number
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    label: string (optional, max 40).
+    to: number (optional). The value at p = 1. Default 100.
+    decimals: integer (optional). 0-3. Default 0.
+    prefix: string (optional, max 4).
+    suffix: string (optional, max 12).
+    accent: '"#rrggbb" (optional). Default the window accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_cursor
+  stage: preview
+  description: 'A pointer with a name tag and a click ripple. Place it with origin "tl" so its tip is the coordinate, glide
+    it with x and y tracks, and pulse p from 0 to 1 to click. Plain HTML and CSS, no script: its motion hangs off custom properties
+    a motion_timeline sets (--p progress, --s step), so standalone it renders its final state.'
+  compact_description: animated pointer with a name tag and click ripple
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    label: string (optional, max 24). Name tag beside the pointer.
+    accent: '"#rrggbb" (optional). Tag and ripple colour. Default "#2563eb".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_caption
+  stage: preview
+  description: 'Caption pills that crossfade as a step track moves: line N is fully visible at step N and fades across the
+    gap to its neighbours, so the time between two step keys is the crossfade. Every line is also in a visually hidden transcript
+    for screen readers. Put it on layer "hud". Plain HTML and CSS, no script: its motion hangs off custom properties a motion_timeline
+    sets (--p progress, --s step), so standalone it renders its final state.'
+  compact_description: caption pills that crossfade by timeline step, with a screen-reader transcript
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    lines: array (max 12) of {who (max 10, default "agent"), text (max 120)} or strings.
+    tone: '"dark" | "light" (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Badge colour. Default "#22c55e".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_orb
+  stage: preview
+  description: 'A glowing orb, optionally with a small level meter, that swells with p: a voice or presence indicator. Key
+    p rapidly while the agent speaks and hold it low otherwise. Plain HTML and CSS, no script: its motion hangs off custom
+    properties a motion_timeline sets (--p progress, --s step), so standalone it renders its final state.'
+  compact_description: glowing orb and level bars that swell with progress; a voice-agent indicator
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    size: integer (optional). Orb diameter px, 40-400. Default 160.
+    bars: integer (optional). Level bars under the orb, 0-9. Default 0.
+    label: string (optional, max 30).
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: demo_panel
+  stage: preview
+  description: 'A small card for a demo: optional avatar initials, title, sub line, a badge, and up to eight label/value rows.
+    Fills its placed box. Plain HTML and CSS, no script: its motion hangs off custom properties a motion_timeline sets (--p
+    progress, --s step), so standalone it renders its final state.'
+  compact_description: small card with avatar, title, badge and label/value rows
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    title: string (optional, max 40).
+    sub: string (optional, max 50).
+    avatar: string (optional, max 3). Initials in a circle.
+    badge: string (optional, max 14).
+    rows: array (max 8) of {label (max 28), value (max 28)} or strings.
+    tone: '"light" | "dark" (optional, default "light")'
+    accent: '"#rrggbb" (optional).'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

@@ -317,6 +317,20 @@ a2ui-editorial-v1:
 - time_estimate
 - tooltip_glossary
 a2ui-effects-v1:
+- motion_timeline
+- motion_group
+- motion_tokens
+- demo_window
+- demo_page
+- demo_wordmark
+- demo_kpis
+- demo_chart
+- demo_toggle_grid
+- demo_progress
+- demo_cursor
+- demo_caption
+- demo_orb
+- demo_panel
 - ambient_gradient
 - animated_beam
 - animated_border

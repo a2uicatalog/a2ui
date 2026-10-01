@@ -52,6 +52,7 @@ def render(blocks: List[Dict[str, Any]], theme: str = "light") -> str:
         blocks: List of block dicts conforming to atoms/schema.yaml
         theme: 'light' (default, web/blog) or 'dark' (meet-stage)
     """
+    _mo_install()  # generic `enter` prop (see the design-motion block at the end of this file); idempotent
     parts = []
     for block in blocks:
         btype = block.get("component") or block.get("type")
@@ -10084,6 +10085,7 @@ def _render_reveal(b: dict) -> str:
     base_delay = b.get("delay", 0)
     stagger   = b.get("stagger_delay", 120)
     blocks    = b.get("blocks") or []
+    reveal_ease = _mo_ease_css(b.get("ease"), "standard") if "ease" in b else "ease-out"  # motion token or four numbers; absent = unchanged
     kf_map = {
         "fade_up":    f"@keyframes rv_{uid}{{from{{opacity:0;transform:translateY(20px);}}to{{opacity:1;transform:translateY(0);}}}}",
         "fade_in":    f"@keyframes rv_{uid}{{from{{opacity:0;}}to{{opacity:1;}}}}",
@@ -10097,7 +10099,7 @@ def _render_reveal(b: dict) -> str:
     for i, child in enumerate(blocks):
         d = base_delay + (i * stagger if animation == "stagger" else 0)
         child_html = _RENDERERS.get(child.get("type", ""), _render_unknown)(child)
-        parts.append(f'<div style="opacity:0;animation:rv_{uid} {dur}ms ease-out {d}ms both;">{child_html}</div>')
+        parts.append(f'<div style="opacity:0;animation:rv_{uid} {dur}ms {reveal_ease} {d}ms both;">{child_html}</div>')
     if not parts:
         parts = [f'<div style="color:#94a3b8;font-style:italic;padding:8px;">reveal (no blocks)</div>']
     return f'<style>{kf}</style>{"".join(parts)}'
@@ -20159,6 +20161,8 @@ def _render_bezier_easing(b: dict) -> str:
     uid = _wa_uid(b)[:6]
     th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
     pre = _BZ_PRESETS.get(b.get('preset')) if isinstance(b.get('preset'), str) else None
+    if pre is None and isinstance(b.get('preset'), str):
+        pre = _MO_EASE.get(b.get('preset'))  # any motion token (design-motion block at the end of this file)
     if pre:
         P = [_ff_num(pre[0], 0, 0, 1, 3), _ff_num(pre[1], 0, -1, 2, 3), _ff_num(pre[2], 0, 0, 1, 3), _ff_num(pre[3], 0, -1, 2, 3)]
     else:
@@ -26172,3 +26176,675 @@ def _render_clipart(b: dict) -> str:
 
 _RENDERERS['scene_stage'] = _render_scene_stage
 _RENDERERS['clipart'] = _render_clipart
+
+
+# ─── design motion: tokens, generic `enter`, motion_group/tokens/timeline, demo kit ───
+# 1:1 twin of apps-script-surface/gas-wired-renderer/atoms_motion.gs (2026-09-30; rationale there).
+# The two JS templates below are generated from the .gs text byte for byte. tests/test_motion_atoms.py. Edit BOTH.
+_MO_VIEW_JS = (
+    '(function(){var e=document.getElementById("mo-%%UID%%");if(!e)return;'
+    'if(!window.IntersectionObserver)return;e.classList.add("mo-arm");'
+    'var o=new IntersectionObserver(function(a){if(a[0].isIntersecting){e.classList.remove("mo-arm");o.disconnect();}},{threshold:0.15});o.observe(e);'
+    '})();'
+)
+
+_MO_TIMELINE_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var root=document.getElementById("mt-%%UID%%");if(!root)return;'
+    'var vp=root.querySelector(".mt-vp"),st=root.querySelector(".mt-st"),cam=root.querySelector(".mt-cam"),btn=root.querySelector(".mt-play"),rng=root.querySelector(".mt-rng"),tm=root.querySelector(".mt-tm");'
+    'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+    'function bez(a,b,t){var u=1-t;return 3*u*u*t*a+3*u*t*t*b+t*t*t;}'
+    'function ez(e,u){if(u<=0)return 0;if(u>=1)return 1;if(!e)return u;if(e===1)return 0;var lo=0,hi=1,t=u;for(var i=0;i<28;i++){t=(lo+hi)/2;if(bez(e[0],e[2],t)<u)lo=t;else hi=t;}return bez(e[1],e[3],t);}'
+    'function at(ks,t){var n=ks.length;if(t<=ks[0][0])return ks[0][1];if(t>=ks[n-1][0])return ks[n-1][1];for(var i=1;i<n;i++){if(t<=ks[i][0]){var a=ks[i-1],b=ks[i];return a[1]+(b[1]-a[1])*ez(b[2],(t-a[0])/(b[0]-a[0]));}}return ks[n-1][1];}'
+    'function fm(v,d,p,s){var neg=v<0;v=Math.abs(v);var m=Math.pow(10,d),k=Math.floor(v*m+0.5),ip=Math.floor(k/m),fp=""+(k%m);while(fp.length<d)fp="0"+fp;var g="",ds=""+ip;for(var i=ds.length;i>0;i-=3){g=ds.slice(Math.max(0,i-3),i)+(g?",":"")+g;}return (neg&&k>0?"-":"")+p+g+(d>0?"."+fp:"")+s;}'
+    'var els={},nl=root.querySelectorAll("[data-mt-id]");'
+    'for(var i=0;i<nl.length;i++){var el=nl[i],x0=parseFloat(el.getAttribute("data-mt-x")),y0=parseFloat(el.getAttribute("data-mt-y"));els[el.getAttribute("data-mt-id")]={e:el,x0:isNaN(x0)?0:x0,y0:isNaN(y0)?0:y0,nums:el.querySelectorAll("[data-mt-num]")};}'
+    'function ap(g,t){var o=els[g.i];if(!o)return;var v={};for(var k in g.p)v[k]=at(g.p[k],t);var e=o.e,tr="";'
+    'if(v.x!==undefined||v.y!==undefined){tr+="translate("+((v.x===undefined?0:v.x-o.x0)*C.W/100).toFixed(2)+"px,"+((v.y===undefined?0:v.y-o.y0)*C.H/100).toFixed(2)+"px) ";}'
+    'if(v.rx!==undefined)tr+="rotateX("+v.rx.toFixed(2)+"deg) ";if(v.ry!==undefined)tr+="rotateY("+v.ry.toFixed(2)+"deg) ";if(v.rotate!==undefined)tr+="rotate("+v.rotate.toFixed(2)+"deg) ";if(v.scale!==undefined)tr+="scale("+Math.max(0,v.scale).toFixed(4)+")";'
+    'if(tr)e.style.transform=tr;'
+    'if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);'
+    'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";'
+    'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip));e.style.clipPath=cl<0.999?"inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)":"";}'
+    'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}'
+    'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}'
+    'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}'
+    'cam.style.transform="translate("+(C.W/2)+"px,"+(C.H/2)+"px) scale("+g("zoom",1).toFixed(4)+") rotateX("+g("rx",0).toFixed(2)+"deg) rotateY("+g("ry",0).toFixed(2)+"deg) rotate("+g("rz",0).toFixed(2)+"deg) translate("+(-g("x",50)*C.W/100).toFixed(2)+"px,"+(-g("y",50)*C.H/100).toFixed(2)+"px)";}'
+    'function fit(){var k=vp.clientWidth/C.W;st.style.transform="scale("+k.toFixed(5)+")";st.style.visibility="visible";}'
+    'fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(vp);}else{window.addEventListener("resize",fit);}'
+    'var t=0,pl=false,last=0,raf=0,manual=false;'
+    'function lab(x){var s=Math.floor(x),m=Math.floor(s/60);s=s%60;return m+":"+(s<10?"0":"")+s;}'
+    'function seek(x){t=Math.max(0,Math.min(C.dur,x));for(var i=0;i<C.tg.length;i++)ap(C.tg[i],t);cp(t);if(rng)rng.value=Math.floor(t/C.dur*1000+0.5);if(tm)tm.textContent=lab(t)+" / "+lab(C.dur);}'
+    'function tick(ts){if(!pl)return;var nt=t+(ts-last)/1000;last=ts;if(nt>=C.dur){if(C.loop){nt=nt%C.dur;}else{nt=C.dur;pause();}}seek(nt);if(pl)raf=requestAnimationFrame(tick);}'
+    'function play(){if(pl)return;if(t>=C.dur)t=0;pl=true;last=performance.now();root.setAttribute("data-pl","1");raf=requestAnimationFrame(tick);}'
+    'function pause(){pl=false;cancelAnimationFrame(raf);root.setAttribute("data-pl","0");}'
+    'if(btn)btn.addEventListener("click",function(){if(pl){manual=true;pause();}else{manual=false;play();}});'
+    'if(rng)rng.addEventListener("input",function(){manual=true;pause();seek(parseFloat(rng.value)/1000*C.dur);});'
+    'var hm=/t=([0-9.]+)/.exec(location.hash||""),want=C.auto&&!RM&&!hm;'
+    'seek(hm?parseFloat(hm[1]):(RM||!C.auto)?C.poster:0);'
+    'window.__a2uiMotion=window.__a2uiMotion||{};window.__a2uiMotion["%%UID%%"]={seek:seek,play:play,pause:pause,dur:C.dur};'
+    'if(want){if(window.IntersectionObserver){new IntersectionObserver(function(a){if(a[0].isIntersecting){if(!manual)play();}else if(pl){pause();}},{threshold:0.25}).observe(root);}else{play();}}'
+    '})();'
+)
+
+
+_MO_EASE = {
+    'linear': [0, 0, 1, 1],
+    'ease': [0.25, 0.1, 0.25, 1],
+    'ease-in': [0.42, 0, 1, 1],
+    'ease-out': [0, 0, 0.58, 1],
+    'ease-in-out': [0.42, 0, 0.58, 1],
+    'overshoot': [0.34, 1.56, 0.64, 1],
+    'anticipate': [0.68, -0.55, 0.27, 1.55],
+    'standard': [0.4, 0, 0.2, 1],
+    'emphasized': [0.2, 0, 0, 1],
+    'decelerate': [0, 0, 0.2, 1],
+    'accelerate': [0.4, 0, 1, 1],
+    'expo-out': [0.16, 1, 0.3, 1],
+    'quint-out': [0.22, 1, 0.36, 1],
+    'quart-in-out': [0.76, 0, 0.24, 1],
+    'expo-in-out': [0.87, 0, 0.13, 1],
+}
+_MO_EASE_ORDER = ['expo-out', 'quint-out', 'decelerate', 'standard', 'emphasized', 'quart-in-out', 'expo-in-out', 'accelerate',
+                  'overshoot', 'anticipate', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear']
+_MO_EASE_NOTE = {
+    'expo-out': 'arrivals: fast launch, long soft landing',
+    'quint-out': 'settling UI: a touch gentler than expo-out',
+    'decelerate': 'elements entering from off-screen',
+    'standard': 'on-screen moves: cursor glides, reflows',
+    'emphasized': 'the one hero move on a scene',
+    'quart-in-out': 'camera moves and wipes',
+    'expo-in-out': 'big symmetric transitions',
+    'accelerate': 'exits: leaving the stage',
+    'overshoot': 'playful landings (use once, sparingly)',
+    'anticipate': 'wind-up before a move (use once)',
+    'ease': 'CSS default',
+    'ease-in': 'CSS ease-in',
+    'ease-out': 'CSS ease-out',
+    'ease-in-out': 'CSS ease-in-out',
+    'linear': 'progress bars and loops only',
+}
+_MO_DUR = {'instant': 120, 'quick': 240, 'base': 400, 'slow': 640, 'cinematic': 1000}
+_MO_FX = {
+    'fade': {'kf': 'from{opacity:0}', 'e': 'expo-out', 'd': 560},
+    'rise': {'kf': 'from{opacity:0;transform:translateY(24px)}', 'e': 'expo-out', 'd': 560},
+    'drop': {'kf': 'from{opacity:0;transform:translateY(-24px)}', 'e': 'expo-out', 'd': 560},
+    'slide-left': {'kf': 'from{opacity:0;transform:translateX(-32px)}', 'e': 'expo-out', 'd': 560},
+    'slide-right': {'kf': 'from{opacity:0;transform:translateX(32px)}', 'e': 'expo-out', 'd': 560},
+    'scale': {'kf': 'from{opacity:0;transform:scale(0.92)}', 'e': 'quint-out', 'd': 560},
+    'blur': {'kf': 'from{opacity:0;filter:blur(12px);transform:translateY(8px)}', 'e': 'expo-out', 'd': 560},
+    'wipe': {'kf': 'from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}', 'e': 'quart-in-out', 'd': 720},
+    'pop': {'kf': 'from{opacity:0;transform:scale(0.6)}', 'e': 'overshoot', 'd': 480},
+}
+_MO_FX_ORDER = ['fade', 'rise', 'drop', 'slide-left', 'slide-right', 'scale', 'blur', 'wipe', 'pop']
+_MO_SANS = 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif'
+_MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]}
+_MO_PROPS = {'x': [-200, 300], 'y': [-200, 300], 'opacity': [0, 1], 'scale': [0, 6], 'rotate': [-360, 360], 'rx': [-80, 80],
+             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40]}
+_MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step']
+_MO_CAM = {'x': [-100, 200], 'y': [-100, 200], 'zoom': [0.25, 6], 'rx': [-80, 80], 'ry': [-80, 80], 'rz': [-180, 180]}
+_MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz']
+_MO_ORIGIN = {'c': '50% 50%', 'tl': '0 0', 't': '50% 0', 'b': '50% 100%', 'l': '0 50%', 'r': '100% 50%'}
+
+
+def _mo_id(v):
+    return v if isinstance(v, str) and re.fullmatch(r'[a-z][a-z0-9_-]{0,31}', v) else ''
+
+
+def _mo_ease_arr(v, dflt):
+    a = None
+    if isinstance(v, str) and v in _MO_EASE:
+        a = _MO_EASE[v]
+    elif isinstance(v, list) and len(v) == 4:
+        a = v
+    if a is None:
+        a = _MO_EASE[dflt]
+    return [_ff_num(a[0], 0, 0, 1, 3), _ff_num(a[1], 0, -1, 2, 3), _ff_num(a[2], 0, 0, 1, 3), _ff_num(a[3], 0, -1, 2, 3)]
+
+
+def _mo_ease_css(v, dflt):
+    return 'cubic-bezier(' + ','.join(_mo_ease_arr(v, dflt)) + ')'
+
+
+def _mo_ease_js(v, dflt):
+    if v is None:
+        v = dflt
+    if v == 'hold':
+        return '1'
+    if v == 'linear':
+        return '0'
+    return '[' + ','.join(_mo_ease_arr(v, dflt)) + ']'
+
+
+def _mo_dur(v, dflt):
+    if isinstance(v, str) and v in _MO_DUR:
+        return _MO_DUR[v]
+    return _ff_int(v, dflt, 0, 8000)
+
+
+def _mo_enter_spec(e):
+    if isinstance(e, str):
+        e = {'effect': e}
+    if not isinstance(e, dict):
+        return None
+    name = e.get('effect') if isinstance(e.get('effect'), str) and e.get('effect') in _MO_FX else 'rise'
+    fx = _MO_FX[name]
+    return {
+        'name': name,
+        'kf': '@keyframes moe-' + name + '{' + fx['kf'] + '}',
+        'ease': _mo_ease_css(e.get('ease'), fx['e']),
+        'dur': _mo_dur(e.get('duration'), fx['d']),
+        'delay': _ff_int(e.get('delay'), 0, 0, 20000),
+        'view': e.get('on') == 'view',
+    }
+
+
+def _mo_enter_wrap(s, html, extra_delay=0, seed=None):
+    uid = _wa_uid(seed if seed is not None else s)[:6] if s['view'] else ''
+    return ('<style>' + s['kf'] + '@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style>'
+            + '<div class="mo-x"' + (' id="mo-' + uid + '"' if uid else '') + ' style="animation:moe-' + s['name'] + ' ' + str(s['dur']) + 'ms ' + s['ease'] + ' ' + str(s['delay'] + (extra_delay or 0)) + 'ms both;">' + html + '</div>'
+            + ('<script>' + _MO_VIEW_JS.replace('%%UID%%', uid) + '</script>' if uid else ''))
+
+
+def _mo_enter(b, html):
+    s = _mo_enter_spec(b.get('enter'))
+    return _mo_enter_wrap(s, html, 0, b) if s else html
+
+
+def _mo_install():
+    """Wrap every registered renderer once (idempotent): a block carrying `enter` gets the entrance wrapper,
+    every other block returns exactly what it always did. Twin of atoms_motion.gs _moInstall."""
+    for k, f in list(_RENDERERS.items()):
+        if not callable(f) or getattr(f, '_mo', False):
+            continue
+
+        def make(f):
+            def w(b):
+                h = f(b)
+                return _mo_enter(b, h) if isinstance(b, dict) and b.get('enter') else h
+            w._mo = True
+            return w
+        _RENDERERS[k] = make(f)
+
+
+def _mo_render(blk):
+    if not isinstance(blk, dict):
+        return ''
+    t = blk.get('component') or blk.get('type')
+    fn = _RENDERERS.get(t)
+    if not fn:
+        return '<!-- a2ui: unknown atom "' + _cv_esc(t) + '" -->'
+    try:
+        return fn(blk)
+    except Exception as err:  # noqa: BLE001 — same contract as renderAtoms: one bad child never kills the page
+        return '<!-- a2ui: ' + _cv_esc(t) + ' failed: ' + _cv_esc(err) + ' -->'
+
+
+def _mo_child(blk):
+    html = _mo_render(blk)
+    bid = _mo_id(blk.get('id')) if isinstance(blk, dict) else ''
+    return '<div data-mt-id="' + bid + '">' + html + '</div>' if bid else html
+
+
+def _render_motion_group(b: dict) -> str:
+    blocks = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    s = _mo_enter_spec({'effect': b.get('effect'), 'ease': b.get('ease'), 'duration': b.get('duration'), 'delay': b.get('delay'), 'on': b.get('on')})
+    stagger = _ff_int(b.get('stagger'), 80, 0, 1000)
+    n = min(len(blocks), 40)
+    out = [_mo_enter_wrap(s, _mo_child(blocks[i]), i * stagger, [b.get('id'), i]) for i in range(n)]
+    note = '<!-- a2ui: motion_group showed ' + str(n) + ' of ' + str(len(blocks)) + ' blocks (max 40) -->' if len(blocks) > n else ''
+    return ''.join(out) + note
+
+
+def _render_motion_tokens(b: dict) -> str:
+    th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
+    show = b.get('show') if b.get('show') in ('ease', 'duration') else 'both'
+    mono = _CV_VOICES['mono']
+    rows = ''
+    if show != 'duration':
+        for k in _MO_EASE_ORDER:
+            a = _mo_ease_arr(k, 'standard')
+            css = 'cubic-bezier(' + ','.join(a) + ')'
+            rows += ('<div style="display:grid;grid-template-columns:minmax(96px,132px) 1fr;gap:6px 14px;align-items:center;padding:9px 0;border-top:1px solid ' + th['line'] + ';">'
+                     + '<div style="font-family:' + mono + ';font-size:0.8rem;color:' + th['ink'] + ';">' + _cv_esc(k) + '</div>'
+                     + '<div style="position:relative;height:14px;border-radius:7px;background:' + th['soft'] + ';"><div class="mtk-dot" style="position:absolute;top:1px;left:1px;width:12px;height:12px;border-radius:50%;background:' + acc + ';animation:mtk-run 2200ms ' + css + ' infinite alternate;"></div></div>'
+                     + '<div></div><div style="font-size:0.72rem;color:' + th['mute'] + ';"><span style="font-family:' + mono + ';">' + css + '</span> · ' + _cv_esc(_MO_EASE_NOTE[k]) + '</div></div>')
+    dur = ''
+    if show != 'ease':
+        for nm in ['instant', 'quick', 'base', 'slow', 'cinematic']:
+            ms = _MO_DUR[nm]
+            dur += ('<div style="display:grid;grid-template-columns:minmax(96px,132px) 1fr 64px;gap:14px;align-items:center;padding:7px 0;border-top:1px solid ' + th['line'] + ';">'
+                    + '<div style="font-family:' + mono + ';font-size:0.8rem;color:' + th['ink'] + ';">' + nm + '</div>'
+                    + '<div style="height:8px;border-radius:4px;background:' + th['soft'] + ';"><div style="height:8px;border-radius:4px;background:' + acc + ';width:' + _ff_num(ms / 10, 0, 0, 100, 1) + '%;"></div></div>'
+                    + '<div style="font-family:' + mono + ';font-size:0.75rem;color:' + th['mute'] + ';text-align:right;">' + str(ms) + 'ms</div></div>')
+    fxs = ''
+    if show != 'duration':
+        fxs = ('<div style="margin-top:14px;padding-top:12px;border-top:1px solid ' + th['line'] + ';font-size:0.72rem;color:' + th['mute'] + ';">enter effects: <span style="font-family:' + mono + ';">' + ' · '.join(_MO_FX_ORDER) + '</span></div>')
+    inner = ('<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th['mute'] + ';margin-bottom:10px;">motion tokens</div>'
+             + '<style>@keyframes mtk-run{from{transform:translateX(0)}to{transform:translateX(calc(min(520px,60vw) - 14px))}}@media (prefers-reduced-motion:reduce){.mtk-dot{animation:none!important}}</style>'
+             + rows + dur + fxs)
+    return _cv_card(th, inner)
+
+
+_MO_LIGHT = {'bg': '#ffffff', 'ink': '#0f172a', 'mute': '#64748b', 'line': '#e5e9f0', 'soft': '#f4f6fa', 'card': '#ffffff'}
+_MO_DARK = {'bg': '#0f1420', 'ink': '#e8edf5', 'mute': '#8a94a7', 'line': '#222a3a', 'soft': '#171d2b', 'card': '#141a27'}
+
+
+def _mo_tone(tone):
+    return _MO_DARK if tone == 'dark' else _MO_LIGHT
+
+
+def _mo_v(name, dflt):
+    return 'var(--dw-' + name + ',' + dflt + ')'
+
+
+def _mo_acc(b):
+    return _ff_hex(b.get('accent'), '') or _mo_v('acc', '#2563eb')
+
+
+def _mo_acc_rgb(b):
+    h = _ff_hex(b.get('accent'), '')
+    return _ff_rgb(h) if h else _mo_v('accrgb', '37,99,235')
+
+
+def _mo_fmt(v, dec, pre, suf):
+    x = _mo_num(v, 0)
+    m = 10 ** dec
+    n = math.floor(abs(x) * m + 0.5)
+    ip, fp = str(n // m), str(n % m).zfill(dec) if dec > 0 else ''
+    g = ''
+    i = len(ip)
+    while i > 0:
+        g = ip[max(0, i - 3):i] + (',' if g else '') + g
+        i -= 3
+    return ('-' if x < 0 and n > 0 else '') + pre + g + ('.' + fp if dec > 0 else '') + suf
+
+
+def _mo_num(v, dflt):
+    if isinstance(v, bool) or v is None:
+        return dflt
+    if isinstance(v, (int, float)):
+        x = float(v)
+    else:
+        try:
+            x = float(v) if isinstance(v, str) and v.strip() else dflt
+        except ValueError:
+            x = dflt
+    if x != x:
+        return dflt
+    return max(-1e9, min(1e9, x))
+
+
+def _mo_count(to, dec, pre, suf, style=''):
+    return ('<span data-mt-num="1" data-from="0" data-to="' + _ff_num(to, 0, -1e9, 1e9, dec) + '" data-dec="' + str(dec) + '" data-pre="' + _cv_esc(pre) + '" data-suf="' + _cv_esc(suf) + '"'
+            + (' style="' + style + '"' if style else '') + '>' + _cv_esc(_mo_fmt(to, dec, pre, suf)) + '</span>')
+
+
+def _mo_vars(c, acc=None):
+    v = '--dw-bg:' + c['bg'] + ';--dw-ink:' + c['ink'] + ';--dw-mute:' + c['mute'] + ';--dw-line:' + c['line'] + ';--dw-soft:' + c['soft'] + ';--dw-card:' + c['card'] + ';'
+    if acc:
+        v += '--dw-acc:' + acc + ';--dw-accrgb:' + _ff_rgb(acc) + ';'
+    return v
+
+
+def _render_demo_window(b: dict) -> str:
+    tn = 'dark' if b.get('tone') == 'dark' else 'light'
+    c, acc = _mo_tone(tn), _ff_hex(b.get('accent'), '#2563eb')
+    title = _cv_str(b.get('title'), 28) or 'App'
+    nav = b.get('nav')[:8] if isinstance(b.get('nav'), list) else []
+    blocks = b.get('blocks')[:10] if isinstance(b.get('blocks'), list) else []
+    minh = _ff_int(b.get('height'), 460, 240, 900)
+    heading, sub = _cv_str(b.get('heading'), 60), _cv_str(b.get('sub'), 90)
+    vars_ = _mo_vars(c, acc)
+    items, act = '', 0
+    for a, nv in enumerate(nav):
+        if isinstance(nv, dict) and nv.get('active') is True:
+            act = a
+            break
+    for i, nv in enumerate(nav):
+        n = nv if isinstance(nv, dict) else {'label': nv}
+        k = 'max(0,calc(1 - max(var(--s,' + str(act) + ') - ' + str(i) + ',' + str(i) + ' - var(--s,' + str(act) + '))))'
+        items += ('<div style="--k:' + k + ';position:relative;display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:600;color:' + c['mute'] + ';color:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),' + c['mute'] + ');">'
+                  + '<span style="position:absolute;inset:0;border-radius:8px;background:rgba(' + _ff_rgb(acc) + ',0.12);opacity:var(--k);"></span>'
+                  + '<span style="position:relative;width:12px;height:12px;border-radius:4px;border:1.5px solid ' + c['line'] + ';border-color:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),' + c['line'] + ');flex:none;"></span><span style="position:relative;">' + _cv_esc(_cv_str(n.get('label'), 24)) + '</span></div>')
+    body, stack = '', b.get('stack') is True
+    for blk in blocks:
+        if not stack:
+            body += _mo_child(blk)
+            continue
+        sid = _mo_id(blk.get('id')) if isinstance(blk, dict) else ''
+        body += '<div' + (' data-mt-id="' + sid + '"' if sid else '') + ' style="grid-area:1/1;min-width:0;">' + _mo_render(blk) + '</div>'
+    return ('<div style="' + vars_ + 'width:100%;height:100%;min-height:' + str(minh) + 'px;box-sizing:border-box;display:flex;border-radius:14px;overflow:hidden;background:' + c['bg'] + ';color:' + c['ink'] + ';font-family:' + _MO_SANS + ';box-shadow:0 30px 80px -24px rgba(2,6,23,0.5),0 0 0 1px ' + c['line'] + ';">'
+            + '<div style="width:176px;flex:none;padding:16px 12px;background:' + c['soft'] + ';border-right:1px solid ' + c['line'] + ';box-sizing:border-box;">'
+            + '<div style="display:flex;align-items:center;gap:8px;padding:2px 6px 14px;font-weight:700;font-size:15px;"><span style="width:18px;height:18px;border-radius:6px;background:' + acc + ';flex:none;"></span>' + _cv_esc(title) + '</div>'
+            + '<div style="display:flex;flex-direction:column;gap:2px;">' + items + '</div></div>'
+            + '<div style="flex:1;min-width:0;padding:22px 26px;box-sizing:border-box;' + ('display:grid;align-content:start;' if stack else 'display:flex;flex-direction:column;gap:14px;') + '">'
+            + (('<div><div style="font-size:21px;font-weight:700;letter-spacing:-0.01em;">' + _cv_esc(heading) + '</div>' + ('<div style="font-size:12.5px;color:' + c['mute'] + ';margin-top:3px;">' + _cv_esc(sub) + '</div>' if sub else '') + '</div>') if heading else '')
+            + body + '</div></div>')
+
+
+def _render_demo_page(b: dict) -> str:
+    blocks = b.get('blocks')[:8] if isinstance(b.get('blocks'), list) else []
+    heading, sub = _cv_str(b.get('heading'), 60), _cv_str(b.get('sub'), 90)
+    body = ''.join(_mo_child(blk) for blk in blocks)
+    return ('<div style="display:flex;flex-direction:column;gap:14px;font-family:' + _MO_SANS + ';color:' + _mo_v('ink', '#0f172a') + ';">'
+            + (('<div><div style="font-size:21px;font-weight:700;letter-spacing:-0.01em;">' + _cv_esc(heading) + '</div>' + ('<div style="font-size:12.5px;color:' + _mo_v('mute', '#64748b') + ';margin-top:3px;">' + _cv_esc(sub) + '</div>' if sub else '') + '</div>') if heading else '')
+            + body + '</div>')
+
+
+def _render_demo_wordmark(b: dict) -> str:
+    size, acc = _ff_int(b.get('size'), 200, 24, 600), _ff_hex(b.get('accent'), '#38bdf8')
+    tn = 'light' if b.get('tone') == 'light' else 'dark'
+    ink = '15,23,42' if tn == 'light' else '241,245,249'
+    return ('<div style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:800;letter-spacing:-0.04em;line-height:1;white-space:nowrap;color:transparent;-webkit-text-stroke:2px rgba(' + (_ff_rgb(acc) if b.get('outline') == 'accent' else ink) + ',0.9);user-select:none;" aria-hidden="true">' + _cv_esc(_cv_str(b.get('text'), 24)) + '</div>')
+
+
+def _render_demo_kpis(b: dict) -> str:
+    items = b.get('items')[:4] if isinstance(b.get('items'), list) else []
+    out = ''
+    for it0 in items:
+        it = it0 if isinstance(it0, dict) else {}
+        dec = _ff_int(it.get('decimals'), 0, 0, 3)
+        pre, suf, delta = _cv_str(it.get('prefix'), 4), _cv_str(it.get('suffix'), 6), _cv_str(it.get('delta'), 14)
+        out += ('<div style="flex:1 1 0;min-width:0;padding:12px 14px;border-radius:10px;border:1px solid ' + _mo_v('line', '#e5e9f0') + ';background:' + _mo_v('card', '#ffffff') + ';">'
+                + '<div style="font-size:11.5px;color:' + _mo_v('mute', '#64748b') + ';font-weight:500;">' + _cv_esc(_cv_str(it.get('label'), 24)) + '</div>'
+                + '<div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;"><div style="font-size:26px;font-weight:700;letter-spacing:-0.02em;color:' + _mo_v('ink', '#0f172a') + ';">' + _mo_count(_mo_num(it.get('value'), 0), dec, pre, suf) + '</div>'
+                + ('<div style="font-size:11.5px;font-weight:600;color:#16a34a;">' + _cv_esc(delta) + '</div>' if delta else '') + '</div></div>')
+    return '<div style="display:flex;gap:12px;font-family:' + _MO_SANS + ';">' + out + '</div>'
+
+
+def _render_demo_chart(b: dict) -> str:
+    kind = 'bars' if b.get('kind') == 'bars' else 'line'
+    raw = b.get('data')[:24] if isinstance(b.get('data'), list) else []
+    data = [_mo_num(v, 0) for v in raw]
+    if len(data) < 2:
+        data = [2, 5, 3, 7, 6, 9]
+    labels = b.get('labels') if isinstance(b.get('labels'), list) else []
+    n, h, W = len(data), _ff_int(b.get('height'), 200, 80, 500), 600
+    acc, acc_rgb = _mo_acc(b), _mo_acc_rgb(b)
+    lo, hi = min(data), max(data)
+    if kind == 'bars':
+        lo = min(0, lo)
+    span = (hi - lo) or 1
+    pad = 14
+
+    def cy(v):
+        return h - pad - (v - lo) / span * (h - 2 * pad)
+    hv = b.get('highlight')
+    hl = int(hv) if isinstance(hv, (int, float)) and not isinstance(hv, bool) and 0 <= hv < n else n - 1
+    svg, call_x, call_y = '', 0, 0
+    if kind == 'bars':
+        step = W / n
+        bw = step * 0.62
+        for i in range(n):
+            y = cy(data[i])
+            x = step * i + (step - bw) / 2
+            is_hl = i == hl
+            svg += ('<rect x="' + _ff_num(x, 0, 0, 1000, 1) + '" y="' + _ff_num(y, 0, 0, 1000, 1) + '" width="' + _ff_num(bw, 0, 0, 1000, 1) + '" height="' + _ff_num(h - pad - y, 0, 0, 1000, 1) + '" rx="3" fill="' + (acc if is_hl else 'rgba(' + acc_rgb + ',0.22)') + '" style="transform-box:fill-box;transform-origin:bottom;transform:scaleY(clamp(0,calc((var(--p,1)*' + str(n + 3) + ' - ' + str(i) + ')/3),1));"/>')
+            if is_hl:
+                call_x, call_y = (x + bw / 2) / W * 100, y / h * 100
+    else:
+        d, dx = '', W / (n - 1)
+        for i in range(n):
+            d += ('L' if i else 'M') + _ff_num(dx * i, 0, 0, 1000, 1) + ' ' + _ff_num(cy(data[i]), 0, 0, 1000, 1)
+        svg += ('<path d="' + d + 'L' + str(W) + ' ' + str(h) + 'L0 ' + str(h) + 'Z" fill="rgba(' + acc_rgb + ',0.10)" style="opacity:var(--p,1);"/>'
+                + '<path d="' + d + '" pathLength="1" fill="none" stroke="' + acc + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--p,1));"/>')
+        call_x, call_y = dx * hl / W * 100, cy(data[hl]) / h * 100
+    callout, tags = _cv_str(b.get('callout'), 28), ''
+    if callout:
+        tags = ('<div style="position:absolute;left:' + _ff_num(call_x, 0, 0, 100, 1) + '%;top:' + _ff_num(call_y, 0, 0, 100, 1) + '%;transform:translate(-50%,-150%);white-space:nowrap;padding:4px 9px;border-radius:7px;font-size:11.5px;font-weight:600;background:' + _mo_v('ink', '#0f172a') + ';color:' + _mo_v('bg', '#ffffff') + ';opacity:clamp(0,calc((var(--p,1) - 0.8)*10),1);">' + _cv_esc(callout) + '</div>')
+    lab = ''
+    if labels:
+        lab = '<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:' + _mo_v('mute', '#64748b') + ';">'
+        for i in range(min(n, len(labels))):
+            lab += '<span>' + _cv_esc(_cv_str(labels[i], 8)) + '</span>'
+        lab += '</div>'
+    return ('<div style="font-family:' + _MO_SANS + ';padding:10px 12px 8px;border-radius:10px;border:1px solid ' + _mo_v('line', '#e5e9f0') + ';background:' + _mo_v('card', '#ffffff') + ';">'
+            + ('<div style="font-size:12px;font-weight:600;color:' + _mo_v('ink', '#0f172a') + ';margin-bottom:6px;">' + _cv_esc(_cv_str(b.get('title'), 40)) + '</div>' if b.get('title') else '')
+            + '<div style="position:relative;height:' + str(h) + 'px;"><svg viewBox="0 0 ' + str(W) + ' ' + str(h) + '" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible;" aria-hidden="true">' + svg + '</svg>' + tags + '</div>' + lab + '</div>')
+
+
+def _render_demo_toggle_grid(b: dict) -> str:
+    cards = b.get('cards')[:9] if isinstance(b.get('cards'), list) else []
+    n, cols = len(cards), _ff_int(b.get('columns'), 3, 1, 4)
+    acc, acc_rgb = _mo_acc(b), _mo_acc_rgb(b)
+    out = ''
+    for i, c0 in enumerate(cards):
+        c = c0 if isinstance(c0, dict) else {'title': c0}
+        on = _ff_num(c.get('on_at'), 0.12 + 0.7 * i / (n - 1) if n > 1 else 0.4, 0, 1, 2)
+        k = 'clamp(0,calc((var(--p,1) - ' + on + ')*14),1)'
+        out += ('<div style="position:relative;display:flex;align-items:center;gap:10px;padding:12px 12px;border-radius:10px;border:1px solid ' + _mo_v('line', '#e5e9f0') + ';background:' + _mo_v('card', '#ffffff') + ';">'
+                + '<span style="width:30px;height:30px;border-radius:8px;flex:none;background:rgba(' + acc_rgb + ',0.14);"></span>'
+                + '<div style="min-width:0;flex:1;"><div style="font-size:13px;font-weight:600;color:' + _mo_v('ink', '#0f172a') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _cv_esc(_cv_str(c.get('title'), 22)) + '</div>'
+                + ('<div style="font-size:11px;color:' + _mo_v('mute', '#64748b') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _cv_esc(_cv_str(c.get('sub'), 30)) + '</div>' if c.get('sub') else '') + '</div>'
+                + '<span style="position:relative;width:34px;height:20px;border-radius:10px;flex:none;background:' + _mo_v('line', '#e5e9f0') + ';"><span style="position:absolute;inset:0;border-radius:10px;background:' + acc + ';opacity:' + k + ';"></span>'
+                + '<span style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transform:translateX(calc(' + k + '*14px));"></span></span></div>')
+    return '<div style="display:grid;grid-template-columns:repeat(' + str(cols) + ',minmax(0,1fr));gap:10px;font-family:' + _MO_SANS + ';">' + out + '</div>'
+
+
+def _render_demo_progress(b: dict) -> str:
+    dec, to = _ff_int(b.get('decimals'), 0, 0, 3), _mo_num(b.get('to'), 100)
+    pre, suf, acc = _cv_str(b.get('prefix'), 4), _cv_str(b.get('suffix'), 12), _mo_acc(b)
+    if re.match(r'[A-Za-z]', suf):
+        suf = ' ' + suf
+    return ('<div style="font-family:' + _MO_SANS + ';padding:10px 12px;border-radius:10px;border:1px solid ' + _mo_v('line', '#e5e9f0') + ';background:' + _mo_v('card', '#ffffff') + ';">'
+            + '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;"><span style="font-weight:600;color:' + _mo_v('ink', '#0f172a') + ';">' + _cv_esc(_cv_str(b.get('label'), 40)) + '</span>'
+            + '<span style="color:' + _mo_v('mute', '#64748b') + ';font-variant-numeric:tabular-nums;">' + _mo_count(to, dec, pre, suf) + '</span></div>'
+            + '<div style="height:6px;border-radius:3px;background:' + _mo_v('soft', '#f4f6fa') + ';overflow:hidden;"><div style="height:6px;border-radius:3px;background:' + acc + ';width:calc(var(--p,1)*100%);"></div></div></div>')
+
+
+def _render_demo_cursor(b: dict) -> str:
+    acc, label = _ff_hex(b.get('accent'), '#2563eb'), _cv_str(b.get('label'), 24)
+    return ('<div style="position:relative;width:0;height:0;font-family:' + _MO_SANS + ';">'
+            + '<span style="position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:2px solid ' + acc + ';opacity:calc(var(--p,0)*(1 - var(--p,0))*4);transform:scale(calc(0.5 + var(--p,0)*1.3));"></span>'
+            + '<svg width="22" height="26" viewBox="0 0 22 26" style="position:absolute;left:0;top:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));" aria-hidden="true"><path d="M1 1L1 20L6.2 15.4L9.6 23.4L13 22L9.7 14.2L16.6 14.2Z" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+            + ('<span style="position:absolute;left:16px;top:22px;white-space:nowrap;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;color:#ffffff;background:' + acc + ';box-shadow:0 2px 6px rgba(0,0,0,0.25);">' + _cv_esc(label) + '</span>' if label else '')
+            + '</div>')
+
+
+def _render_demo_caption(b: dict) -> str:
+    lines = b.get('lines')[:12] if isinstance(b.get('lines'), list) else []
+    tn, acc = ('light' if b.get('tone') == 'light' else 'dark'), _ff_hex(b.get('accent'), '#22c55e')
+    bg, ink = ('#ffffff' if tn == 'light' else '#0b1220'), ('#0f172a' if tn == 'light' else '#f1f5f9')
+    pills, sr = '', []
+    for i, l0 in enumerate(lines):
+        l = l0 if isinstance(l0, dict) else {'text': l0}
+        who, text = _cv_str(l.get('who'), 10) or 'agent', _cv_str(l.get('text'), 120)
+        sr.append(who + ': ' + text)
+        pills += ('<div style="grid-area:1/1;display:flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:999px;background:' + bg + ';color:' + ink + ';font-size:15px;font-weight:500;white-space:nowrap;box-shadow:0 10px 30px -10px rgba(2,6,23,0.6);opacity:max(0,calc(1 - max(var(--s,0) - ' + str(i) + ',' + str(i) + ' - var(--s,0))));">'
+                  + '<span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#05210f;background:' + acc + ';">' + _cv_esc(who) + '</span>' + _cv_esc(text) + '</div>')
+    return ('<div style="display:grid;justify-items:center;font-family:' + _MO_SANS + ';" role="group" aria-label="Captions">' + pills
+            + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">' + _cv_esc(' '.join(sr)) + '</span></div>')
+
+
+def _render_demo_orb(b: dict) -> str:
+    size, acc = _ff_int(b.get('size'), 160, 40, 400), _ff_hex(b.get('accent'), '#38bdf8')
+    rgb, bars, label = _ff_rgb(acc), _ff_int(b.get('bars'), 0, 0, 9), _cv_str(b.get('label'), 30)
+    weights = ['0.7', '1', '0.55', '0.9', '0.4', '0.8', '0.6', '1', '0.5']
+    wv = ''
+    for i in range(bars):
+        wv += '<span style="width:3px;height:14px;border-radius:2px;background:' + acc + ';transform:scaleY(calc(0.25 + var(--p,0)*' + weights[i] + '*0.75));"></span>'
+    return ('<div style="display:flex;flex-direction:column;align-items:center;gap:10px;font-family:' + _MO_SANS + ';">'
+            + '<div style="position:relative;width:' + str(size) + 'px;height:' + str(size) + 'px;">'
+            + '<span style="position:absolute;inset:-40%;border-radius:50%;background:radial-gradient(circle,rgba(' + rgb + ',0.55) 0%,rgba(' + rgb + ',0) 62%);opacity:calc(0.45 + var(--p,0)*0.55);transform:scale(calc(0.9 + var(--p,0)*0.25));"></span>'
+            + '<span style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffff 0%,rgba(' + rgb + ',0.95) 38%,rgba(' + rgb + ',0.55) 100%);transform:scale(calc(1 + var(--p,0)*0.16));"></span></div>'
+            + ('<div style="display:flex;gap:3px;align-items:center;height:16px;">' + wv + '</div>' if bars else '')
+            + ('<div style="font-size:11.5px;color:' + _mo_v('mute', '#94a3b8') + ';font-weight:600;">' + _cv_esc(label) + '</div>' if label else '') + '</div>')
+
+
+def _render_demo_panel(b: dict) -> str:
+    tn = 'dark' if b.get('tone') == 'dark' else 'light'
+    c, acc = _mo_tone(tn), _ff_hex(b.get('accent'), '')
+    rows = b.get('rows')[:8] if isinstance(b.get('rows'), list) else []
+    vars_ = _mo_vars(c, acc or None)
+    out = ''
+    for r0 in rows:
+        r = r0 if isinstance(r0, dict) else {'label': r0}
+        out += ('<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid ' + c['line'] + ';font-size:12px;"><span style="color:' + c['mute'] + ';">' + _cv_esc(_cv_str(r.get('label'), 28)) + '</span><span style="font-weight:600;color:' + c['ink'] + ';text-align:right;">' + _cv_esc(_cv_str(r.get('value'), 28)) + '</span></div>')
+    av, badge, title, sub = _cv_str(b.get('avatar'), 3), _cv_str(b.get('badge'), 14), _cv_str(b.get('title'), 40), _cv_str(b.get('sub'), 50)
+    return ('<div style="' + vars_ + 'box-sizing:border-box;width:100%;height:100%;padding:14px 16px;border-radius:12px;background:' + c['card'] + ';color:' + c['ink'] + ';border:1px solid ' + c['line'] + ';font-family:' + _MO_SANS + ';box-shadow:0 18px 40px -22px rgba(2,6,23,0.45);">'
+            + '<div style="display:flex;align-items:center;gap:10px;' + ('margin-bottom:8px;' if rows else '') + '">'
+            + ('<span style="width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:' + c['soft'] + ';color:' + c['ink'] + ';">' + _cv_esc(av) + '</span>' if av else '')
+            + '<div style="min-width:0;flex:1;"><div style="font-size:13px;font-weight:700;">' + _cv_esc(title) + '</div>' + ('<div style="font-size:11px;color:' + c['mute'] + ';">' + _cv_esc(sub) + '</div>' if sub else '') + '</div>'
+            + ('<span style="padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:' + c['soft'] + ';color:' + c['mute'] + ';">' + _cv_esc(badge) + '</span>' if badge else '') + '</div>'
+            + out + '</div>')
+
+
+def _mo_track_js(keys, ranges, order, dur, bpm, def_ease, st):
+    lst = []
+    for i, k in enumerate(keys):
+        if not isinstance(k, dict):
+            st['dropped'] += 1
+            continue
+        t = None
+        kt, kb = k.get('t'), k.get('beat')
+        if isinstance(kt, (int, float)) and not isinstance(kt, bool) and math.isfinite(kt):
+            t = kt
+        elif isinstance(kb, (int, float)) and not isinstance(kb, bool) and math.isfinite(kb) and bpm:
+            t = kb * 60 / bpm
+        if t is None:
+            st['dropped'] += 1
+            continue
+        lst.append((max(0, min(dur, t)), i, k))
+    lst.sort(key=lambda e: (e[0], e[1]))
+    parts = []
+    for prop in order:
+        rg, pts = ranges[prop], []
+        for t, _i, k in lst:
+            v = k.get(prop)
+            if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+                continue
+            pts.append('[' + _ff_num(t, 0, 0, 100000, 3) + ',' + _ff_num(v, 0, rg[0], rg[1], 3) + ',' + _mo_ease_js(k.get('ease'), def_ease) + ']')
+        if pts:
+            parts.append(prop + ':[' + ','.join(pts) + ']')
+            st['keys'] += len(pts)
+    return ','.join(parts)
+
+
+_mo_tl_depth = [0]
+
+
+def _mo_timeline(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
+    W, H = _ff_pick(b.get('aspect'), _MO_ASPECT, '16:9')
+    dur = _ff_num(b.get('duration'), 12, 2, 120, 2)
+    dur_n, bpm = float(dur), _ff_int(b.get('bpm'), 0, 0, 240)
+    de = b.get('ease')
+    def_ease = de if isinstance(de, str) and de != 'hold' and de in _MO_EASE else 'standard'
+    loop = 'false' if b.get('loop') is False else 'true'
+    auto = 'false' if b.get('autoplay') is False else 'true'
+    ctl = b.get('controls') is not False
+    poster = _ff_num(b.get('poster'), dur_n * 0.6, 0, dur_n, 2)
+    bg = _ff_hex(b.get('background'), '')
+    backdrop = 'flat' if b.get('backdrop') == 'flat' else ('grid' if b.get('backdrop') == 'grid' else 'glow')
+    st_bg = bg or th['bg']
+    title = _cv_str(b.get('title'), 80) or 'Motion sequence'
+    st, seen, ids, world, hud = {'dropped': 0, 'keys': 0}, {}, {}, '', ''
+    blocks = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    if len(blocks) > 24:
+        st['dropped'] += len(blocks) - 24
+        blocks = blocks[:24]
+    for blk in blocks:
+        if not isinstance(blk, dict):
+            st['dropped'] += 1
+            continue
+        typ = blk.get('component') or blk.get('type')
+        fn = _RENDERERS.get(typ)
+        if not fn or typ == 'motion_timeline':
+            st['dropped'] += 1
+            continue
+        try:
+            html = fn(blk)
+        except Exception:  # noqa: BLE001
+            st['dropped'] += 1
+            continue
+        bid = _mo_id(blk.get('id'))
+        if bid and seen.get(bid):
+            bid = ''
+            st['dropped'] += 1
+        if bid:
+            seen[bid] = 1
+            ids[bid] = 1
+        pl = blk.get('place') if isinstance(blk.get('place'), dict) else {}
+        px, py = _ff_num(pl.get('x'), 0, -100, 200, 2), _ff_num(pl.get('y'), 0, -100, 200, 2)
+        sz = ''
+        if isinstance(pl.get('w'), (int, float)) and not isinstance(pl.get('w'), bool):
+            sz += 'width:' + _ff_num(pl.get('w'), 100, 0, 300, 2) + '%;'
+        if isinstance(pl.get('h'), (int, float)) and not isinstance(pl.get('h'), bool):
+            sz += 'height:' + _ff_num(pl.get('h'), 100, 0, 300, 2) + '%;'
+        wrap = ('<div class="mt-el"' + (' data-mt-id="' + bid + '" data-mt-x="' + px + '" data-mt-y="' + py + '"' if bid else '') + ' style="position:absolute;left:' + px + '%;top:' + py + '%;' + sz + 'z-index:' + str(_ff_int(pl.get('z'), 1, 0, 99)) + ';transform-origin:' + _ff_pick(pl.get('origin'), _MO_ORIGIN, 'c') + ';">' + html + '</div>')
+        if blk.get('layer') == 'hud':
+            hud += wrap
+        else:
+            world += wrap
+    for f in re.findall(r'data-mt-id="[a-z][a-z0-9_-]{0,31}"', world + hud):
+        ids[f[12:-1]] = 1
+    tg, tracks = [], b.get('tracks') if isinstance(b.get('tracks'), list) else []
+    if len(tracks) > 40:
+        st['dropped'] += len(tracks) - 40
+        tracks = tracks[:40]
+    for tr in tracks:
+        tid = _mo_id(tr.get('target')) if isinstance(tr, dict) else ''
+        if not tid or not ids.get(tid) or not isinstance(tr.get('keys'), list):
+            st['dropped'] += 1
+            continue
+        keys = tr['keys']
+        if len(keys) > 48:
+            st['dropped'] += len(keys) - 48
+            keys = keys[:48]
+        pjs = _mo_track_js(keys, _MO_PROPS, _MO_PROP_ORDER, dur_n, bpm, def_ease, st)
+        if pjs:
+            tg.append('{i:"' + tid + '",p:{' + pjs + '}}')
+    cam_js = 'null'
+    cam = b.get('camera')
+    cm = cam['keys'][:48] if isinstance(cam, dict) and isinstance(cam.get('keys'), list) else None
+    if cm is not None:
+        cj = _mo_track_js(cm, _MO_CAM, _MO_CAM_ORDER, dur_n, bpm, def_ease, st)
+        if cj:
+            cam_js = '{' + cj + '}'
+    cfg = '{W:' + str(W) + ',H:' + str(H) + ',dur:' + dur + ',poster:' + poster + ',loop:' + loop + ',auto:' + auto + ',tg:[' + ','.join(tg) + '],cam:' + cam_js + '}'
+    if backdrop == 'glow':
+        glow = 'background-image:radial-gradient(ellipse at 50% 0%,rgba(' + _ff_rgb(acc) + ',0.22) 0%,rgba(' + _ff_rgb(acc) + ',0) 62%);'
+    elif backdrop == 'grid':
+        glow = 'background-image:linear-gradient(rgba(' + _ff_rgb(th['ink']) + ',0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(' + _ff_rgb(th['ink']) + ',0.06) 1px,transparent 1px);background-size:48px 48px;'
+    else:
+        glow = ''
+    icon = ('<svg class="mt-ic-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5L12 7L3 12.5Z" fill="currentColor"/></svg><svg class="mt-ic-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="8.3" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/></svg>')
+    controls = ''
+    if ctl:
+        controls = ('<div style="display:flex;align-items:center;gap:12px;padding:10px 4px 0;color:' + th['ink'] + ';">'
+                    + '<button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid ' + th['line'] + ';background:' + th['soft'] + ';color:' + th['ink'] + ';display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;">' + icon + '</button>'
+                    + '<input type="range" class="mt-rng" min="0" max="1000" value="0" aria-label="Timeline position" style="flex:1;min-width:0;accent-color:' + acc + ';">'
+                    + '<span class="mt-tm" style="font-family:' + _CV_VOICES['mono'] + ';font-size:0.72rem;color:' + th['mute'] + ';min-width:64px;text-align:right;">0:00</span></div>')
+    note = '<!-- a2ui: motion_timeline ignored ' + str(st['dropped']) + ' invalid or over-limit item(s) -->' if st['dropped'] else ''
+    return ('<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _cv_esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
+            + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
+            + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + str(W) + '/' + str(H) + ';overflow:hidden;border-radius:16px;background:' + st_bg + ';border:1px solid ' + th['line'] + ';">'
+            + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + 'overflow:hidden;">'
+            + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
+            + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>'
+            + controls + note
+            + '<script>' + _MO_TIMELINE_JS.replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script></div>')
+
+
+def _render_motion_timeline(b: dict) -> str:
+    # A timeline inside a timeline would share ids and clocks: refuse, and say so.
+    if _mo_tl_depth[0] > 0:
+        return '<!-- a2ui: motion_timeline cannot nest inside another motion_timeline -->'
+    _mo_tl_depth[0] += 1
+    try:
+        return _mo_timeline(b)
+    finally:
+        _mo_tl_depth[0] -= 1
+
+
+for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens', _render_motion_tokens), ('motion_timeline', _render_motion_timeline),
+                         ('demo_window', _render_demo_window), ('demo_page', _render_demo_page), ('demo_wordmark', _render_demo_wordmark),
+                         ('demo_kpis', _render_demo_kpis), ('demo_chart', _render_demo_chart), ('demo_toggle_grid', _render_demo_toggle_grid),
+                         ('demo_progress', _render_demo_progress), ('demo_cursor', _render_demo_cursor), ('demo_caption', _render_demo_caption),
+                         ('demo_orb', _render_demo_orb), ('demo_panel', _render_demo_panel)):
+    _RENDERERS[_mo_name] = _mo_fn
+
+# MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
+_mo_install()
