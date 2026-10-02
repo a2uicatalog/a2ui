@@ -25821,7 +25821,8 @@ _RENDERERS['motion_timeline'] = function(b) {
 // motion_layer groups children into a scene; motion_text, motion_shape and motion_counter draw type, forms and numbers
 // from the stage theme (--mt-ink / --mt-acc / --mt-mute, set by motion_timeline) and move with --p like the demo kit.
 // Standalone they render their FINAL state.
-var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1};
+var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1, flap: 1};
+var _MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
 var _MO_ALIGN = {start: 'left', middle: 'center', end: 'right'};
 function _moInk(b, key, dflt) { var h = _ffHex(b[key], ''); return h || dflt; }
 
@@ -25900,6 +25901,15 @@ _RENDERERS['motion_text'] = function(b) {
     return all;
   }
   if (mode === 'block') units = [{c: joined('\n'), block: true}];
+  var pr = Array.isArray(b.prism) ? b.prism : [], pw = [], prism = '', pk;
+  for (pk = 0; pk < pr.length && pw.length < 4; pk++) { var pwd = _moStr(pr[pk], 14); if (pwd) pw.push(pwd); }
+  if (pw.length >= 2) { // a turning 3D prism that cycles the words with the second dial (--s)
+    var pf = pw.length === 2 ? [pw[0], pw[1], pw[0], pw[1]] : pw, pn = pf.length, pz = pn === 3 ? '0.289' : '0.5', pm = 0, pface = '', pj;
+    for (pj = 0; pj < pw.length; pj++) pm = Math.max(pm, Array.from(pw[pj]).length);
+    for (pj = 0; pj < pn; pj++) pface += '<span aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:1em;line-height:1;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateX(' + Math.floor(360 * pj / pn + 0.5) + 'deg) translateZ(' + pz + 'em);">' + _esc(pf[pj]) + '</span>';
+    prism = '<span style="display:inline-block;position:relative;vertical-align:bottom;margin-left:0.3em;width:' + _ffNum(pm * 0.62, 1, 1, 12, 2) + 'em;height:1em;line-height:1;perspective:12em;color:' + accent + ';opacity:clamp(0,calc(var(--p,1)*6),1);">'
+      + _moSr(pw.join(', ')) + '<span aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;transform-style:preserve-3d;transform:translateZ(-' + pz + 'em) rotateX(calc(var(--s,0)*-360deg));">' + pface + '</span></span>';
+  }
   var N = 0, k;
   for (k = 0; k < units.length; k++) N += units[k].chars ? units[k].c.length : 1;
   if (N > 120) { units = [{c: joined(' '), block: true}]; N = 1; mode = 'block'; }
@@ -25923,6 +25933,11 @@ _RENDERERS['motion_text'] = function(b) {
   function wrapUnit0(inner, n, blockish) {
     var inl = blockish ? 'display:block;' : 'display:inline-block;';
     if (reveal === 'bar') return '<span style="' + uvar(n) + (blockish ? 'display:block;width:fit-content;' : 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>';
+    if (reveal === 'flap') { // a slot-reel flip: three seeded decoy glyphs scroll past before the real one lands
+      var dg = '', dk;
+      for (dk = 0; dk < 3; dk++) dg += '<span aria-hidden="true" style="display:block;height:1em;">' + _MO_FLAP.charAt((n * 7 + dk * 11 + 3) % _MO_FLAP.length) + '</span>';
+      return '<span style="' + uvar(n) + 'display:inline-block;overflow:hidden;height:1em;line-height:1;vertical-align:bottom;"><span style="display:block;transform:translateY(calc(var(--u)*-3em));">' + dg + '<span style="display:block;height:1em;">' + inner + '</span></span></span>';
+    }
     if (reveal === 'mask') return '<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>';
     var fx = reveal === 'fade' ? '' : reveal === 'drop' ? 'transform:translateY(calc((1 - var(--u))*-0.6em));' : reveal === 'blur' ? 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' : 'transform:translateY(calc((1 - var(--u))*0.6em));';
     return '<span style="' + uvar(n) + inl + 'opacity:var(--u);' + fx + '">' + inner + '</span>';
@@ -25942,7 +25957,7 @@ _RENDERERS['motion_text'] = function(b) {
   }
   return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (textShadow ? 'text-shadow:' + textShadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
     + _moSr(_moPlain(lines.join(' ')))
-    + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
+    + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>';
 };
 
 // Forms: bars, rules, discs, sweeping rings, gradients, soft glows. Fills its placed box, or w/h px.
@@ -25972,9 +25987,23 @@ _RENDERERS['motion_counter'] = function(b) {
   var dec = _ffInt(b.decimals, 0, 0, 3), to = _moNum(b.to, 100), from = _moNum(b.from, 0), pre = _moStr(b.prefix, 4), suf = _moStr(b.suffix, 8);
   var size = _ffInt(b.size, 96, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), font = _ffPick(b.font, _FF_FONTS, 'display');
   var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), label = _moStr(b.label, 40);
-  var lsize = _ffInt(b.label_size, Math.max(11, Math.floor(size / 5)), 8, 80);
+  var lsize = _ffInt(b.label_size, Math.max(11, Math.floor(size / 5)), 8, 80), shown;
+  if (b.roll === true) { // odometer: every digit is a 0-9 strip that scrolls to its value, left to right, as p goes 0 to 1 (counts from zero)
+    var txt = _moFmt(to, dec, pre, suf), chs = Array.from(txt), nd = 0, rk, rolled = '';
+    for (rk = 0; rk < chs.length; rk++) if (/[0-9]/.test(chs[rk])) nd++;
+    var di = 0;
+    for (rk = 0; rk < chs.length; rk++) {
+      if (/[0-9]/.test(chs[rk])) {
+        var strip = '', dd;
+        for (dd = 0; dd < 10; dd++) strip += '<span style="display:block;height:1em;">' + dd + '</span>';
+        rolled += '<span style="--u:clamp(0,calc(var(--p,1)*' + (nd + 1) + ' - ' + di + '),1);display:inline-block;overflow:hidden;height:1em;vertical-align:bottom;"><span style="display:block;transform:translateY(calc(var(--u)*-' + chs[rk] + 'em));">' + strip + '</span></span>';
+        di++;
+      } else rolled += '<span style="display:inline-block;height:1em;vertical-align:bottom;white-space:pre;">' + _esc(chs[rk]) + '</span>';
+    }
+    shown = _moSr(txt) + '<span aria-hidden="true">' + rolled + '</span>';
+  } else shown = _moCount(to, dec, pre, suf, '', from);
   return '<div style="width:100%;text-align:' + align + ';">'
-    + '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.02em;color:' + color + ';font-variant-numeric:tabular-nums;">' + _moCount(to, dec, pre, suf, '', from) + '</div>'
+    + '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.02em;color:' + color + ';font-variant-numeric:tabular-nums;' + (b.roll === true ? 'height:1em;overflow:hidden;' : '') + '">' + shown + '</div>'
     + (label ? '<div style="font-family:' + _MO_SANS + ';font-size:' + lsize + 'px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-top:0.5em;">' + _esc(label) + '</div>' : '')
     + '</div>';
 };
