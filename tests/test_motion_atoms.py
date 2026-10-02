@@ -37,9 +37,9 @@ DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_ch
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
 REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch", "motion_leader", "motion_path", "motion_mask"]  # from the studied reference film, 2026-10-01
-REEL3 = ["motion_device", "motion_strike", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
-REEL4 = ["motion_marquee", "motion_glitch", "motion_bounce", "motion_scatter", "motion_contours", "motion_rail"]  # fourth batch, 2026-10-01
-REEL5 = ["motion_image", "motion_chart", "motion_captions", "motion_lower_third", "motion_wave", "motion_repeat"]  # batch 5, 2026-10-02
+REEL3 = ["motion_device", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
+REEL4 = ["motion_marquee", "motion_bounce", "motion_scatter", "motion_contours", "motion_rail"]  # fourth batch, 2026-10-01
+REEL5 = ["motion_image", "motion_chart", "motion_lower_third", "motion_wave", "motion_repeat"]  # batch 5, 2026-10-02
 REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
 MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + DEMO_ATOMS
 
@@ -131,7 +131,7 @@ PAYLOADS = {
     "motion_layer": [{}, {"blocks": [{"type": "motion_text", "id": "a", "text": "Hi", "place": {"x": 5, "y": 5, "w": 50}},
                                       {"type": "motion_shape", "shape": "ring", "place": {"x": 60, "y": 10, "w": 30, "h": 50, "z": 3}},
                                       "junk", {"type": "motion_timeline"}, {"type": "no_such_atom"}, {"type": "motion_layer", "id": "inner", "blocks": []}]}],
-    "motion_text": [{}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
+    "motion_text": [{}, {"text": "Cut *this*", "decor": "strike", "decor_color": "#ff3d81", "mode": "words"}, {"text": "mark it", "decor": "highlight", "mode": "lines"}, {"text": "under", "decor": "underline", "mode": "chars"}, {"text": "Il te faut un plan", "mode": "words", "karaoke": "pill", "accent": "#ff6a2b"}, {"text": "co lor", "mode": "words", "karaoke": "color"}, {"text": "MOVE", "split": 30, "split_a": "#ff0055", "split_b": "#00ffff", "extrude": 8}, {"text": "x", "decor": "toString", "karaoke": "constructor", "split": 9999, "split_a": "red;x", "decor_color": "url(x)"}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
                     {"text": "a b c\nd e", "mode": "words", "reveal": "drop", "overlap": 5, "align": "middle"},
                     {"text": "chars <b>& \"q\" \u2603", "mode": "chars", "reveal": "blur", "align": "end"},
                     {"text": "x" * 200, "mode": "chars"}, {"text": "a\nb\nc\nd\ne\nf", "mode": "block", "reveal": "fade"}, {"text": ""},
@@ -176,8 +176,6 @@ PAYLOADS = {
                      {"d": "M 0 0\" onload=\"alert(1)", "nodes": ["junk", None, [], {}, {"x": "9", "y": "x", "at": 7, "label": "<script>"}], "marker": False}, {"d": 5, "nodes": [{"x": 1, "y": 1}] * 12, "w": 9999}],
     "motion_device": [{}, {"kind": "laptop", "width": 640, "scroll": 400, "label": "Site <b>", "fill": "#101820", "accent": "#ff6a2b", "blocks": [{"type": "motion_pill", "text": "Hello"}, {"type": "motion_counter", "to": 5}]},
                       {"kind": "tablet", "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"kind": "toString", "width": 99999, "scroll": "x", "fill": "url(x)", "blocks": "no"}],
-    "motion_strike": [{}, {"text": "The old way <b>", "mode": "highlight", "size": 90, "align": "middle", "accent": "#ff6a2b", "color": "#fff6e8", "weight": "bold"}, {"text": "Cut", "mode": "underline"},
-                      {"text": "x" * 200, "mode": "constructor", "weight": "hasOwnProperty", "color": "red", "size": 99999}, {"text": 5}],
     "motion_rays": [{}, {"kind": "speed", "count": 12, "thickness": 0.3, "strength": 0.6, "accent": "#ff6a2b"}, {"kind": "burst", "count": 7, "thickness": 0.77, "spin": -90, "strength": 1},
                     {"kind": "__proto__", "count": 9999, "thickness": "x", "spin": "9;}", "strength": 99, "accent": "url(javascript:alert(1))"}, {"count": 3, "thickness": 0}],
     "motion_hud": [{}, {"seconds": 36, "label": "REC <b>", "size": 18, "corners": False, "accent": "#ff3d3d", "color": "#ffffff"}, {"bar": False, "seconds": 99999, "size": 1}, {"seconds": "x", "label": "x" * 80, "corners": "no"}],
@@ -189,7 +187,6 @@ PAYLOADS = {
                      {"amount": 9999, "frequency": "x", "tilt": 99, "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"blocks": "no"}],
     "motion_flash": [{}, {"color": "#ffeecc", "strength": 0.5}, {"color": "red;x", "strength": 99}, {"strength": "x"}],
     "motion_marquee": [{}, {"rows": ["DESIGN \u00b7 ANIMATION", "TIMING <b>", "x" * 120, "", 5, None, "a", "b", "c"], "size": 60, "weight": "bold", "color": "#fff6e8", "accent": "#ff6a2b"}, {"rows": "no", "size": 9999, "weight": "toString", "color": "url(x)"}],
-    "motion_glitch": [{}, {"text": "MOVE <b>", "size": 200, "split": 30, "align": "middle", "color": "#ffffff", "accent": "#ff0055", "accent2": "#00ffff"}, {"text": 5, "split": 9999, "size": "x", "weight": "constructor", "accent": "red;x"}],
     "motion_bounce": [{}, {"bounces": 5, "size": 80, "height": 400, "trail": False, "accent": "#ff6a2b"}, {"bounces": 9999, "size": "x", "height": -5, "accent": "url(javascript:alert(1))"}],
     "motion_scatter": [{}, {"items": ["Ticket", {"title": "Label <b>", "text": "x" * 80}, {"title": ""}, 5, None, "a", "b", "c", "d", "e"], "card_w": 30, "size": 20, "fill": "#101820", "color": "#ffffff", "accent": "#ff6a2b"}, {"items": "no", "card_w": 9999, "fill": "url(x)"}],
     "motion_contours": [{}, {"lines": 20, "width": 3, "accent": "#38bdf8", "accent2": "#ff6a2b"}, {"lines": 9999, "width": "x", "accent": "red;x", "accent2": "url(x)"}],
@@ -198,7 +195,6 @@ PAYLOADS = {
                      {"mode": "polaroid", "url": "data:image/png;base64,iVBORw0KGgo=", "caption": "Day 1"}, {"url": "javascript:alert(1)", "mode": "toString", "ratio": "x", "zoom": 99, "pan_x": "x", "radius": 9999, "accent": "red;x"}, {"url": "//evil.com/x.png"}],
     "motion_chart": [{}, {"kind": "line", "data": [3, {"value": 9, "label": "Q2 <b>"}, 5, 7], "title": "Growth", "unit": "%", "accent": "#ff6a2b"}, {"kind": "donut", "data": [{"value": 30, "label": "a"}, {"value": 20}, 10, 40, 5], "accent2": "#2ac4ce"},
                       {"kind": "bars", "data": [1, -5, "x", None, True, {"value": 1e300}, {"label": "no value"}, 4, 4, 4, 4, 4], "height": 9999, "size": "x", "unit": "x" * 20}, {"data": "no", "kind": "constructor"}, {"kind": "donut", "data": [0, 0]}, {"kind": "line", "data": [5]}],
-    "motion_captions": [{}, {"text": "Il te faut un *plan* now", "size": 90, "align": "end", "style": "color", "color": "#ffffff", "accent": "#ff6a2b"}, {"text": "x" * 300}, {"text": 5, "size": 9999, "align": "toString", "accent": "url(x)"}, {"text": "  a   b  "}],
     "motion_lower_third": [{}, {"name": "Ada <b>", "role": "Mathematician", "size": 60, "accent": "#ff6a2b", "color": "#fff", "fill": "#112233"}, {"name": 5, "role": "x" * 100, "size": 9999, "fill": "url(x)"}],
     "motion_wave": [{}, {"bars": 48, "height": 200, "gap": 6, "accent": "#ff6a2b", "accent2": "#2ac4ce"}, {"bars": 9999, "height": "x", "gap": -3, "accent": "red;x"}],
     "motion_repeat": [{}, {"blocks": [{"type": "motion_pill", "text": "Hi"}], "copies": 8, "dx": 5, "dy": 3, "rotate": 20, "scale": 0.85}, {"blocks": "no", "copies": 9999, "dx": "x", "scale": 99}, {"blocks": [{"type": "no_such_atom"}]}, {"blocks": [{"type": "motion_text", "id": "t", "text": "x"}], "copies": 3}],

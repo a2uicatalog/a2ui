@@ -12040,7 +12040,13 @@
     "bar": "\"#rrggbb\" (optional). Colour of the highlight bar for reveal \"bar\". Default the stage accent.",
     "extrude": "integer (optional). Depth in px of a solid 3D extrusion behind the type, 0-30. Default 0.",
     "extrude_color": "\"#rrggbb\" (optional). Extrusion colour. Default \"#0b0b14\".",
-    "extrude_dir": "\"diagonal\" | \"down\" (optional, default \"diagonal\"). Which way the extrusion falls."
+    "extrude_dir": "\"diagonal\" | \"down\" (optional, default \"diagonal\"). Which way the extrusion falls.",
+    "decor": "\"strike\" | \"underline\" | \"highlight\" (optional). A line that sweeps across each unit (line, word or character) in turn as the second dial (--s) goes 0 to 1: a strike-through (the text dims), an underline, or a marker highlight behind it. With no step track it shows finished.",
+    "decor_color": "\"#rrggbb\" (optional). The sweep. Default the accent.",
+    "karaoke": "\"pill\" | \"color\" (optional). Lights each unit (use mode words) in turn as --s goes 0 to 1, as a pill behind it or a colour change: the animated caption. Nothing is lit at 0 or 1.",
+    "split": "integer (optional). Red and cyan copies pull apart by this many px at the peak of --s and sit together at 0: the chromatic glitch. 0-60. Default 0 (off).",
+    "split_a": "\"#rrggbb\" (optional). Left copy. Default a hot pink.",
+    "split_b": "\"#rrggbb\" (optional). Right copy. Default cyan."
    },
    "source": {
     "name": "a2uicatalog",

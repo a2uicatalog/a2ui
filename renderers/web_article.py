@@ -27131,6 +27131,10 @@ def _render_motion_text(b: dict) -> str:
     accent = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)')
     bar, ext, extc = _mo_ink(b, 'bar', 'var(--mt-acc,#38bdf8)'), _ff_int(b.get('extrude'), 0, 0, 30), _mo_ink(b, 'extrude_color', '#0b0b14')
     shadow = ','.join(('0' if b.get('extrude_dir') == 'down' else str(si) + 'px') + ' ' + str(si) + 'px 0 ' + extc for si in range(1, ext + 1))
+    decor, decor_c, kara = _mo_own(_MO_DECOR, b.get('decor'), ''), _mo_ink(b, 'decor_color', accent), _mo_own(_MO_KARA, b.get('karaoke'), '')
+    spl, sp_a, sp_b = _ff_int(b.get('split'), 0, 0, 60), _mo_ink(b, 'split_a', '#ff2d6f'), _mo_ink(b, 'split_b', '#19d3ff')
+    sd = 'calc(var(--s,0)*' + str(spl) + 'px)'
+    text_shadow = ','.join(x for x in (shadow, ('calc(-1*' + sd + ') 0 ' + sp_a + ',' + sd + ' 0 ' + sp_b) if spl else '') if x)
     units = []
     for i, ln in enumerate(lines):
         chs = _mo_chars(ln)
@@ -27161,6 +27165,22 @@ def _render_motion_text(b: dict) -> str:
         return '--u:clamp(0,calc((var(--p,1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1);'
 
     def wrap_unit(inner, n, blockish):
+        h = wrap_unit0(inner, n, blockish)
+        if kara:
+            h = ('<span style="--k:clamp(0,calc(1.5 - abs(var(--s,1)*' + str(N) + ' - ' + _ff_num(n + 0.5, 0, 0, 1000, 1) + ')*3),1);display:inline-block;padding:0.04em 0.24em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + ('#0b0712' if kara == 'pill' else accent) + ');'
+                 + ('background:color-mix(in srgb,' + accent + ' calc(var(--k)*100%),transparent);' if kara == 'pill' else '') + '">' + h + '</span>')
+        if decor:
+            dv = 'clamp(0,calc((var(--s,1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1)'
+            if decor == 'strike':
+                bar2 = 'left:-2%;top:54%;height:0.09em;width:calc(104%*' + dv + ');background:' + decor_c + ';'
+            elif decor == 'underline':
+                bar2 = 'left:0;bottom:-0.08em;height:0.1em;width:calc(100%*' + dv + ');background:' + decor_c + ';'
+            else:
+                bar2 = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + dv + ');background:color-mix(in srgb,' + decor_c + ' 38%,transparent);z-index:-1;'
+            h = ('<span style="position:relative;isolation:isolate;' + ('display:block;width:fit-content;' if blockish else 'display:inline-block;') + '">' + h + '<span aria-hidden="true" style="position:absolute;' + bar2 + '"></span></span>')
+        return h
+
+    def wrap_unit0(inner, n, blockish):
         inl = 'display:block;' if blockish else 'display:inline-block;'
         if reveal == 'bar':
             return ('<span style="' + uvar(n) + ('display:block;width:fit-content;' if blockish else 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>')
@@ -27192,7 +27212,7 @@ def _render_motion_text(b: dict) -> str:
         else:
             out += wrap_unit(_mo_runs(u['c'], accent), nxt(), False)
     return ('<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
-            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + shadow + ';' if shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
+            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
             + _mo_sr(_mo_plain(' '.join(lines)))
             + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>')
 
@@ -27682,7 +27702,8 @@ def _mo_own(t, v, d):
 
 
 _MO_DEVICE = {'phone': 1, 'laptop': 1, 'tablet': 1}
-_MO_STRIKE = {'strike': 1, 'highlight': 1, 'underline': 1}
+_MO_DECOR = {'strike': 1, 'highlight': 1, 'underline': 1}
+_MO_KARA = {'pill': 1, 'color': 1}
 _MO_RAYS = {'burst': 1, 'speed': 1}
 _MO_CELLS = {'pop': 1, 'flip': 1, 'fill': 1}
 _MO_STACK = {'ring': 1, 'stack': 1}
@@ -27706,22 +27727,6 @@ def _render_motion_device(b: dict) -> str:
             + '<div style="position:relative;box-sizing:border-box;width:100%;aspect-ratio:' + asp + ';border:' + str(bz) + 'px solid ' + fill + ';border-radius:' + str(rad) + 'px;background:' + fill + ';outline:1px solid color-mix(in srgb,' + acc + ' 45%,transparent);box-shadow:0 24px 60px rgba(0,0,0,0.35);">'
             + notch + '<div style="position:relative;width:100%;height:100%;overflow:hidden;border-radius:' + str(max(2, rad - bz)) + 'px;background:var(--mt-bg,#0f1420);color:var(--mt-ink,#f1f5f9);">'
             + '<div style="transform:translateY(calc(var(--s,0)*-' + str(scroll) + 'px));">' + inner + '</div></div></div>' + base + '</div>')
-
-
-def _render_motion_strike(b: dict) -> str:
-    text, mode, size = _cv_str(b.get('text'), 80) or 'Text', _mo_own(_MO_STRIKE, b.get('mode'), 'strike'), _ff_int(b.get('size'), 64, 10, 400)
-    acc, color, align = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start')
-    weight, pc, dim = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), 'clamp(0,var(--p,1),1)', ''
-    if mode == 'strike':
-        bar = 'left:-2%;top:54%;height:0.09em;width:calc(104%*' + pc + ');background:' + acc + ';'
-        dim = 'opacity:calc(1 - 0.45*' + pc + ');'
-    elif mode == 'underline':
-        bar = 'left:0;bottom:-0.08em;height:0.1em;width:calc(100%*' + pc + ');background:' + acc + ';'
-    else:
-        bar = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + pc + ');background:color-mix(in srgb,' + acc + ' 38%,transparent);z-index:-1;'
-    return ('<div style="width:100%;text-align:' + align + ';">' + _mo_sr(text)
-            + '<span aria-hidden="true" style="position:relative;display:inline-block;isolation:isolate;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1.1;color:' + color + ';' + dim + '">' + _cv_esc(text)
-            + '<span style="position:absolute;' + bar + '"></span></span></div>')
 
 
 def _render_motion_rays(b: dict) -> str:
@@ -27840,15 +27845,6 @@ def _render_motion_marquee(b: dict) -> str:
         out += ('<div style="overflow:hidden;white-space:nowrap;opacity:calc(clamp(0,calc(var(--p,1)*' + str(len(rows) + 1) + ' - ' + str(i) + '),1)*' + ('0.55' if i % 2 else '1') + ');margin-top:0.8em;">'
                 + '<div style="display:inline-block;color:' + hi + ';transform:translateX(calc(var(--s,0)*' + str(d * 50) + '%' + (' - 50%' if d > 0 else '') + '));">' + unit * 4 + '</div></div>')
     return ('<div role="img" aria-label="' + _cv_esc(', '.join(rows)) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';letter-spacing:0.04em;line-height:1;text-transform:uppercase;">' + out + '</div>')
-
-
-def _render_motion_glitch(b: dict) -> str:
-    text, size, split = _cv_str(b.get('text'), 40) or 'GLITCH', _ff_int(b.get('size'), 120, 10, 400), _ff_int(b.get('split'), 14, 0, 60)
-    color, c1, c2 = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'accent', '#ff2d6f'), _mo_ink(b, 'accent2', '#19d3ff')
-    align, weight = _ff_pick(b.get('align'), _MO_ALIGN, 'start'), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black')
-    d = 'calc(var(--s,0)*' + str(split) + 'px)'
-    return ('<div style="width:100%;text-align:' + align + ';">' + _mo_sr(text) + '<span aria-hidden="true" style="display:inline-block;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.03em;color:' + color
-            + ';text-shadow:calc(-1*' + d + ') 0 ' + c1 + ',' + d + ' 0 ' + c2 + ';opacity:clamp(0,calc(var(--p,1)*8),1);clip-path:inset(0 calc((1 - clamp(0,calc(var(--p,1)*2),1))*100%) 0 0);">' + _cv_esc(text) + '</span></div>')
 
 
 def _render_motion_bounce(b: dict) -> str:
@@ -28033,19 +28029,6 @@ def _render_motion_chart(b: dict) -> str:
             + ('<div style="font-weight:800;margin-bottom:0.4em;">' + _cv_esc(title) + '</div>' if title else '') + body + '</div>')
 
 
-def _render_motion_captions(b: dict) -> str:
-    text = _cv_str(b.get('text'), 120) or 'Words that light up as they are spoken'
-    words = [w for w in re.split(r'\s+', text) if w][:24]
-    n = len(words)
-    size, acc, color = _ff_int(b.get('size'), 48, 10, 200), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)')
-    align, pill, out = _ff_pick(b.get('align'), _MO_ALIGN, 'middle'), b.get('style') != 'color', ''
-    for i, w in enumerate(words):
-        k = 'clamp(0,calc(1.5 - abs(var(--s,1)*' + str(n) + ' - ' + _ff_num(i + 0.5, 0, 0, 100, 1) + ')*3),1)'
-        out += ('<span style="--k:' + k + ';display:inline-block;margin:0.08em 0.14em;padding:0.04em 0.28em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + ('#0b0712' if pill else acc) + ');'
-                + ('background:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),transparent);' if pill else '') + 'transform:scale(calc(1 + var(--k)*0.08));">' + _cv_esc(w) + '</span>')
-    return ('<div role="img" aria-label="' + _cv_esc(text) + '" style="width:100%;text-align:' + align + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:800;line-height:1.25;opacity:clamp(0,calc(var(--p,1)*5),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.4em));">' + out + '</div>')
-
-
 def _render_motion_lower_third(b: dict) -> str:
     name, role, size = _cv_str(b.get('name'), 40) or 'Name', _cv_str(b.get('role'), 60), _ff_int(b.get('size'), 36, 10, 120)
     acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'fill', '#0b0712')
@@ -28164,11 +28147,11 @@ def _render_motion_textpath(b: dict) -> str:
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
-                         ('motion_device', _render_motion_device), ('motion_strike', _render_motion_strike), ('motion_rays', _render_motion_rays), ('motion_hud', _render_motion_hud),
+                         ('motion_device', _render_motion_device), ('motion_rays', _render_motion_rays), ('motion_hud', _render_motion_hud),
                          ('motion_cells', _render_motion_cells), ('motion_stack3d', _render_motion_stack3d), ('motion_shake', _render_motion_shake), ('motion_flash', _render_motion_flash),
-                         ('motion_marquee', _render_motion_marquee), ('motion_glitch', _render_motion_glitch), ('motion_bounce', _render_motion_bounce), ('motion_scatter', _render_motion_scatter),
+                         ('motion_marquee', _render_motion_marquee), ('motion_bounce', _render_motion_bounce), ('motion_scatter', _render_motion_scatter),
                          ('motion_contours', _render_motion_contours), ('motion_rail', _render_motion_rail),
-                         ('motion_image', _render_motion_image), ('motion_chart', _render_motion_chart), ('motion_captions', _render_motion_captions), ('motion_lower_third', _render_motion_lower_third),
+                         ('motion_image', _render_motion_image), ('motion_chart', _render_motion_chart), ('motion_lower_third', _render_motion_lower_third),
                          ('motion_wave', _render_motion_wave), ('motion_repeat', _render_motion_repeat),
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath)):
     _RENDERERS[_mo_name] = _mo_fn

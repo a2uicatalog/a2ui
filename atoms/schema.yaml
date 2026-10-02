@@ -9929,6 +9929,12 @@ blocks:
     extrude: integer (optional). Depth in px of a solid 3D extrusion behind the type, 0-30. Default 0.
     extrude_color: '"#rrggbb" (optional). Extrusion colour. Default "#0b0b14".'
     extrude_dir: '"diagonal" | "down" (optional, default "diagonal"). Which way the extrusion falls.'
+    decor: '"strike" | "underline" | "highlight" (optional). A line that sweeps across each unit (line, word or character) in turn as the second dial (--s) goes 0 to 1: a strike-through (the text dims), an underline, or a marker highlight behind it. With no step track it shows finished.'
+    decor_color: '"#rrggbb" (optional). The sweep. Default the accent.'
+    karaoke: '"pill" | "color" (optional). Lights each unit (use mode words) in turn as --s goes 0 to 1, as a pill behind it or a colour change: the animated caption. Nothing is lit at 0 or 1.'
+    split: 'integer (optional). Red and cyan copies pull apart by this many px at the peak of --s and sit together at 0: the chromatic glitch. 0-60. Default 0 (off).'
+    split_a: '"#rrggbb" (optional). Left copy. Default a hot pink.'
+    split_b: '"#rrggbb" (optional). Right copy. Default cyan.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -10370,7 +10376,7 @@ blocks:
     license: MIT
 - type: motion_device
   stage: preview
-  description: 'A phone, tablet or laptop frame with children inside its screen. Children are ordinary atoms; the second dial (--s) scrolls their content up by `scroll` px, so a page can be shown scrolling inside a device. The frame rises in with p. Plain HTML and CSS, no script; standalone it renders the finished frame.'
+  description: 'A phone, tablet or laptop frame with children inside its screen. Children are ordinary atoms; the second dial (--s) scrolls their content up by `scroll` px, so a page can be shown scrolling inside a device. The frame rises in with p. Plain HTML and CSS, no script; standalone it renders the finished frame. Use inside a motion_timeline, where the frame holds live atoms that scroll with the film clock. For a static device-framed screenshot, use framed_screenshot.'
   compact_description: device frame (phone, tablet, laptop) holding atoms, with scrolling content
   surfaces:
     works_on:
@@ -10394,36 +10400,6 @@ blocks:
     label: 'string (optional, max 40). Accessible name. Default "Device screen".'
     fill: '"#rrggbb" (optional). Bezel colour. Default near-black.'
     accent: '"#rrggbb" (optional). Bezel outline. Default the stage accent.'
-  source:
-    name: a2uicatalog
-    url: https://github.com/a2uicatalog/a2ui
-    license: MIT
-- type: motion_strike
-  stage: preview
-  description: 'Text with a line that sweeps across it as p goes 0 to 1: a strike-through (the text dims), a marker highlight behind it, or an underline, in the accent colour. The edit that crosses out the old way. Plain HTML and CSS; standalone it renders finished.'
-  compact_description: text with a sweeping strike-through, highlight or underline
-  surfaces:
-    works_on:
-    - web
-    - google-meet-stage
-    - google-apps-script-web
-    - mcp-apps
-    degraded_on:
-    - surface: pdf
-      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
-    - surface: google-chat
-      note: Inline CSS functions and custom properties are not supported
-    incompatible_on:
-    - surface: email
-      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
-  fields:
-    text: 'string (max 80). The words.'
-    mode: '"strike" | "highlight" | "underline" (optional, default "strike")'
-    size: 'integer (optional). px, 10-400. Default 64.'
-    weight: '"regular" | "bold" | "black" (optional, default "black")'
-    align: '"start" | "middle" | "end" (optional)'
-    color: '"#rrggbb" (optional). Text. Default the stage ink.'
-    accent: '"#rrggbb" (optional). The sweep. Default the stage accent.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -10522,7 +10498,7 @@ blocks:
     license: MIT
 - type: motion_stack3d
   stage: preview
-  description: 'Cards in 3D. Mode ring arranges up to 6 cards around a ring that turns with the second dial (--s = 1 is one full turn); mode stack lays them as an isometric pile that fans apart as --s goes 0 to 1. Cards rise in with p. Plain CSS 3D transforms, no script; standalone it renders the finished arrangement.'
+  description: 'Cards in 3D. Mode ring arranges up to 6 cards around a ring that turns with the second dial (--s = 1 is one full turn); mode stack lays them as an isometric pile that fans apart as --s goes 0 to 1. Cards rise in with p. Plain CSS 3D transforms, no script; standalone it renders the finished arrangement. Use inside a motion_timeline. For a plain stacked or scrollable set of cards, use depth_stack, card_stack or carousel.'
   compact_description: cards in a turning 3D ring or an isometric stack that fans apart
   surfaces:
     works_on:
@@ -10579,7 +10555,7 @@ blocks:
     license: MIT
 - type: motion_flash
   stage: preview
-  description: 'A full-frame flash: a hard pop of white (or a tint) that fades out as p goes 0 to 1, the hit on a beat. Key p to 0 at the impact and up to 1 over the fade. Invisible at p = 1, so standalone it renders nothing. Plain CSS, no script.'
+  description: 'A full-frame flash: a hard pop of white (or a tint) that fades out as p goes 0 to 1, the hit on a beat. Key p to 0 at the impact and up to 1 over the fade. Invisible at p = 1, so standalone it renders nothing. Plain CSS, no script. Use inside a motion_timeline. For a confetti or celebration overlay, use effect_overlay or confetti_burst.'
   compact_description: full-frame flash pop on a beat, fading out
   surfaces:
     works_on:
@@ -10604,7 +10580,7 @@ blocks:
     license: MIT
 - type: motion_marquee
   stage: preview
-  description: 'Rows of big uppercase text that slide sideways without end, alternate rows in opposite directions, the second row in the accent colour: the ticker behind a headline. The second dial (--s) is the travel, one full cycle per unit; the rows fade in one after another with p. Plain CSS, no script; standalone it renders the finished rows.'
+  description: 'Rows of big uppercase text that slide sideways without end, alternate rows in opposite directions, the second row in the accent colour: the ticker behind a headline. The second dial (--s) is the travel, one full cycle per unit; the rows fade in one after another with p. Plain CSS, no script; standalone it renders the finished rows. Use inside a motion_timeline. For a standalone ticker that scrolls by itself with no film clock, use marquee or marquee_strip.'
   compact_description: sliding rows of ticker text behind a headline
   surfaces:
     works_on:
@@ -10626,37 +10602,6 @@ blocks:
     weight: '"regular" | "bold" | "black" (optional, default "black")'
     color: '"#rrggbb" (optional). Default the stage ink.'
     accent: '"#rrggbb" (optional). The second row. Default the stage accent.'
-  source:
-    name: a2uicatalog
-    url: https://github.com/a2uicatalog/a2ui
-    license: MIT
-- type: motion_glitch
-  stage: preview
-  description: 'Type with a chromatic split: a red and a cyan copy pull apart by `split` px as the second dial (--s) goes 0 to 1 and sit together at 0, over a reveal that wipes in with p. The glitch hit on a kinetic title. Plain CSS text-shadow, no script.'
-  compact_description: type with a red and cyan chromatic split that pulses
-  surfaces:
-    works_on:
-    - web
-    - google-meet-stage
-    - google-apps-script-web
-    - mcp-apps
-    degraded_on:
-    - surface: pdf
-      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
-    - surface: google-chat
-      note: Inline CSS functions and custom properties are not supported
-    incompatible_on:
-    - surface: email
-      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
-  fields:
-    text: 'string (max 40).'
-    size: 'integer (optional). px, 10-400. Default 120.'
-    split: 'integer (optional). Peak separation px, 0-60. Default 14.'
-    weight: '"regular" | "bold" | "black" (optional, default "black")'
-    align: '"start" | "middle" | "end" (optional)'
-    color: '"#rrggbb" (optional). Default the stage ink.'
-    accent: '"#rrggbb" (optional). Left copy. Default a hot pink.'
-    accent2: '"#rrggbb" (optional). Right copy. Default cyan.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -10691,7 +10636,7 @@ blocks:
     license: MIT
 - type: motion_scatter
   stage: preview
-  description: 'Cards that fly in from outside the frame and settle at scattered, tilted rest positions, one after another as p goes 0 to 1: the pile of tickets, labels or notes. Up to 8 cards at fixed resting spots. Fills its placed box. Plain CSS, no script; standalone it renders the finished pile.'
+  description: 'Cards that fly in from outside the frame and settle at scattered, tilted rest positions, one after another as p goes 0 to 1: the pile of tickets, labels or notes. Up to 8 cards at fixed resting spots. Fills its placed box. Plain CSS, no script; standalone it renders the finished pile. Use inside a motion_timeline. For a static fanned stack of cards, use card_stack.'
   compact_description: cards flying in to settle in a scattered tilted pile
   surfaces:
     works_on:
@@ -10720,7 +10665,7 @@ blocks:
     license: MIT
 - type: motion_contours
   stage: preview
-  description: 'Flowing contour lines, like a topographic or wind map, that draw themselves one after another as p goes 0 to 1 and drift sideways with the second dial (--s). A calm moving background for a title. Plain SVG and CSS, no script; fills its box and crops to it.'
+  description: 'Flowing contour lines, like a topographic or wind map, that draw themselves one after another as p goes 0 to 1 and drift sideways with the second dial (--s). A calm moving background for a title. Plain SVG and CSS, no script; fills its box and crops to it. Use inside a motion_timeline. For a standalone self-animating background, use geo_contour_waves or flow_field.'
   compact_description: flowing contour lines that draw and drift as a background
   surfaces:
     works_on:
@@ -10747,7 +10692,7 @@ blocks:
     license: MIT
 - type: motion_rail
   stage: preview
-  description: 'A progress rail with labelled stops: the line fills as p goes 0 to 1 and each stop fills and its label brightens as the line reaches it. The pipeline bar along the bottom of an explainer. 2 to 6 stops. Plain CSS, no script; standalone it renders complete.'
+  description: 'A progress rail with labelled stops: the line fills as p goes 0 to 1 and each stop fills and its label brightens as the line reaches it. The pipeline bar along the bottom of an explainer. 2 to 6 stops. Plain CSS, no script; standalone it renders complete. Use inside a motion_timeline. For a static or self-animating step indicator, use step_progress or stepper.'
   compact_description: labelled progress rail whose stops light as it fills
   surfaces:
     works_on:
@@ -10773,7 +10718,7 @@ blocks:
     license: MIT
 - type: motion_image
   stage: preview
-  description: 'An image that moves. Mode kenburns is a slow pan and zoom over the film (p), parallax stacks up to 4 layers that slide at different speeds with the second dial (--s), polaroid drops in tilted with a caption. Images must be https or site-relative (a data:image under 2 KB also passes, for tiny placeholders); anything else (or no url) shows a gradient placeholder. Plain CSS, no script; standalone it shows the finished frame.'
+  description: 'An image that moves. Mode kenburns is a slow pan and zoom over the film (p), parallax stacks up to 4 layers that slide at different speeds with the second dial (--s), polaroid drops in tilted with a caption. Images must be https or site-relative (a data:image under 2 KB also passes, for tiny placeholders); anything else (or no url) shows a gradient placeholder. Plain CSS, no script; standalone it shows the finished frame. Use inside a motion_timeline. For a plain image or a click-to-zoom lightbox, use image or zoomable_image.'
   compact_description: image with Ken Burns pan and zoom, parallax layers or a polaroid drop-in
   surfaces:
     works_on:
@@ -10807,7 +10752,7 @@ blocks:
     license: MIT
 - type: motion_chart
   stage: preview
-  description: 'Data that draws itself as p goes 0 to 1: bars that grow in turn with their values, a line that draws with its points and an area fade, or a donut that fills segment by segment with the total in the middle. Up to 8 non-negative values. Plain CSS and SVG, no script; standalone it renders the finished chart.'
+  description: 'Data that draws itself as p goes 0 to 1: bars that grow in turn with their values, a line that draws with its points and an area fade, or a donut that fills segment by segment with the total in the middle. Up to 8 non-negative values. Plain CSS and SVG, no script; standalone it renders the finished chart. Use inside a motion_timeline. For an interactive chart, use chartjs_bar, chartjs_line or chartjs_pie; for a single ring value, donut_stat or progress_ring.'
   compact_description: bar, line or donut chart that draws itself
   surfaces:
     works_on:
@@ -10833,35 +10778,6 @@ blocks:
     label: 'string (optional, max 80). Accessible name.'
     accent: '"#rrggbb" (optional). Default the stage accent.'
     accent2: '"#rrggbb" (optional). Alternate bars and second donut segment.'
-  source:
-    name: a2uicatalog
-    url: https://github.com/a2uicatalog/a2ui
-    license: MIT
-- type: motion_captions
-  stage: preview
-  description: 'Captions with a karaoke highlight: the line rises in with p, then each word lights in turn (a pill, or a colour change with style color) as the second dial (--s) goes 0 to 1. Up to 24 words. The animated caption for muted social video. Plain CSS, no script; standalone no word is lit.'
-  compact_description: karaoke-style captions that light word by word
-  surfaces:
-    works_on:
-    - web
-    - google-meet-stage
-    - google-apps-script-web
-    - mcp-apps
-    degraded_on:
-    - surface: pdf
-      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
-    - surface: google-chat
-      note: Inline CSS functions and custom properties are not supported
-    incompatible_on:
-    - surface: email
-      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
-  fields:
-    text: 'string (max 120).'
-    size: 'integer (optional). px, 10-200. Default 48.'
-    align: '"start" | "middle" | "end" (optional, default "middle")'
-    style: '"pill" | "color" (optional, default "pill")'
-    color: '"#rrggbb" (optional). Default the stage ink.'
-    accent: '"#rrggbb" (optional). Highlight. Default the stage accent.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -10954,7 +10870,7 @@ blocks:
     license: MIT
 - type: motion_media
   stage: preview
-  description: 'A video poster with a play button that becomes the real player on click: YouTube, Vimeo or Loom, found from the url. The poster and button build on the film clock (p); the second dial (--s) pulses a ring around the button. The player is a lazy iframe that is not fetched until the viewer clicks, and it starts muted, so the film stays deterministic and nothing plays by itself. With an unrecognised url it is just the poster. Plain HTML and CSS, no script.'
+  description: 'A video poster with a play button that becomes the real player on click: YouTube, Vimeo or Loom, found from the url. The poster and button build on the film clock (p); the second dial (--s) pulses a ring around the button. The player is a lazy iframe that is not fetched until the viewer clicks, and it starts muted, so the film stays deterministic and nothing plays by itself. With an unrecognised url it is just the poster. Plain HTML and CSS, no script. Use inside a motion_timeline. For a plain embed with no poster stage, use media_stream_card or youtube; for a static clickable poster, video_thumbnail or video_card.'
   compact_description: video poster with a play button that turns into the real player on click
   surfaces:
     works_on:
@@ -10983,7 +10899,7 @@ blocks:
     license: MIT
 - type: motion_chat
   stage: preview
-  description: 'A chat that plays on the clock as p goes 0 to 1: up to 6 messages rise in turn, user messages on the right in the accent colour, agent messages on the left, and each agent message shows typing dots before its text appears. Plain CSS, no script; standalone it renders the finished conversation.'
+  description: 'A chat that plays on the clock as p goes 0 to 1: up to 6 messages rise in turn, user messages on the right in the accent colour, agent messages on the left, and each agent message shows typing dots before its text appears. Plain CSS, no script; standalone it renders the finished conversation. Use inside a motion_timeline, where the clock plays the messages. For a standalone animated thread, use chat_sequence; for a static exchange, conversation_snippet.'
   compact_description: chat conversation that plays message by message with typing dots
   surfaces:
     works_on:
@@ -11010,7 +10926,7 @@ blocks:
     license: MIT
 - type: motion_wiggle
   stage: preview
-  description: 'Wiggle: its children (up to 12 atoms, each placed by `place` in percent of the wiggle box, like a motion_layer) drift and tremble continuously as the second dial (--s) runs, and sit still at 0. The always-moving, never-static look for floating elements. Plain CSS sin(), deterministic and seekable.'
+  description: 'Wiggle: its children (up to 12 atoms, each placed by `place` in percent of the wiggle box, like a motion_layer) drift and tremble continuously as the second dial (--s) runs, and sit still at 0. The always-moving, never-static look for floating elements. Plain CSS sin(), deterministic and seekable. Use inside a motion_timeline. For decorative floating orbs or badges with no clock, use floating_orbs or floating_badge.'
   compact_description: wrapper whose children drift and tremble as a dial runs
   surfaces:
     works_on:
@@ -11037,7 +10953,7 @@ blocks:
     license: MIT
 - type: motion_textpath
   stage: preview
-  description: 'Text that runs along a curve and types itself on, one character at a time, as p goes 0 to 1. d is path data from the same strict grammar as motion_path (commands and numbers only; anything else falls back to a gentle arc), optionally shown as a faint guide line. Plain SVG textPath, no script; standalone it renders the whole line.'
+  description: 'Text that runs along a curve and types itself on, one character at a time, as p goes 0 to 1. d is path data from the same strict grammar as motion_path (commands and numbers only; anything else falls back to a gentle arc), optionally shown as a faint guide line. Plain SVG textPath, no script; standalone it renders the whole line. Use inside a motion_timeline. To draw a path with no text on it, use svg_path_draw or motion_path.'
   compact_description: text that follows a curved path and types on
   surfaces:
     works_on:

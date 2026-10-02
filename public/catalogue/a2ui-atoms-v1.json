@@ -14024,6 +14024,25 @@
       },
       "extrude_dir": {
        "description": "\"diagonal\" | \"down\" (optional, default \"diagonal\"). Which way the extrusion falls."
+      },
+      "decor": {
+       "description": "\"strike\" | \"underline\" | \"highlight\" (optional). A line that sweeps across each unit (line, word or character) in turn as the second dial (--s) goes 0 to 1: a strike-through (the text dims), an underline, or a marker highlight behind it. With no step track it shows finished."
+      },
+      "decor_color": {
+       "description": "\"#rrggbb\" (optional). The sweep. Default the accent."
+      },
+      "karaoke": {
+       "description": "\"pill\" | \"color\" (optional). Lights each unit (use mode words) in turn as --s goes 0 to 1, as a pill behind it or a colour change: the animated caption. Nothing is lit at 0 or 1."
+      },
+      "split": {
+       "description": "integer (optional). Red and cyan copies pull apart by this many px at the peak of --s and sit together at 0: the chromatic glitch. 0-60. Default 0 (off).",
+       "type": "number"
+      },
+      "split_a": {
+       "description": "\"#rrggbb\" (optional). Left copy. Default a hot pink."
+      },
+      "split_b": {
+       "description": "\"#rrggbb\" (optional). Right copy. Default cyan."
       }
      },
      "required": [

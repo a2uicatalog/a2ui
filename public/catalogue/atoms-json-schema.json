@@ -40372,6 +40372,51 @@
               "down\" (optional, default \"diagonal\"). Which way the extrusion falls."
             ]
           },
+          "decor": {
+            "type": "string",
+            "enum": [
+              "strike",
+              "underline",
+              "highlight\" (optional). A line that sweeps across each unit (line, word or character) in turn as the second dial (--s) goes 0 to 1: a strike-through (the text dims), an underline, or a marker highlight behind it. With no step track it shows finished."
+            ]
+          },
+          "decor_color": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "karaoke": {
+            "type": "string",
+            "enum": [
+              "pill",
+              "color\" (optional). Lights each unit (use mode words) in turn as --s goes 0 to 1, as a pill behind it or a colour change: the animated caption. Nothing is lit at 0 or 1."
+            ]
+          },
+          "split": {
+            "type": "integer"
+          },
+          "split_a": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "split_b": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [

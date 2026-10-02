@@ -635,7 +635,9 @@ _RENDERERS['motion_text'] = function(b) {
   var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), upper = b.uppercase === true;
   var accent = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)');
   var bar = _moInk(b, 'bar', 'var(--mt-acc,#38bdf8)'), ext = _ffInt(b.extrude, 0, 0, 30), extc = _moInk(b, 'extrude_color', '#0b0b14'), shadow = '', si;
+  var decor = _moOwn(_MO_DECOR, b.decor, ''), decorC = _moInk(b, 'decor_color', accent), kara = _moOwn(_MO_KARA, b.karaoke, ''), spl = _ffInt(b.split, 0, 0, 60), spA = _moInk(b, 'split_a', '#ff2d6f'), spB = _moInk(b, 'split_b', '#19d3ff');
   for (si = 1; si <= ext; si++) shadow += (si > 1 ? ',' : '') + (b.extrude_dir === 'down' ? '0' : si + 'px') + ' ' + si + 'px 0 ' + extc;
+  var sd = 'calc(var(--s,0)*' + spl + 'px)', textShadow = [shadow, spl ? 'calc(-1*' + sd + ') 0 ' + spA + ',' + sd + ' 0 ' + spB : ''].filter(function(x) { return x; }).join(',');
   // units: [{c: chars, brk}] ; brk marks a line break BEFORE the unit
   var units = [];
   for (i = 0; i < lines.length; i++) {
@@ -659,6 +661,21 @@ _RENDERERS['motion_text'] = function(b) {
   var idx = 0;
   function uvar(n) { return '--u:clamp(0,calc((var(--p,1)*' + (N + S) + ' - ' + n + ')/' + S + '),1);'; }
   function wrapUnit(inner, n, blockish) {
+    var h = wrapUnit0(inner, n, blockish);
+    if (kara) {
+      h = '<span style="--k:clamp(0,calc(1.5 - abs(var(--s,1)*' + N + ' - ' + (n + 0.5) + ')*3),1);display:inline-block;padding:0.04em 0.24em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + (kara === 'pill' ? '#0b0712' : accent) + ');'
+        + (kara === 'pill' ? 'background:color-mix(in srgb,' + accent + ' calc(var(--k)*100%),transparent);' : '') + '">' + h + '</span>';
+    }
+    if (decor) {
+      var dv = 'clamp(0,calc((var(--s,1)*' + (N + S) + ' - ' + n + ')/' + S + '),1)', bar2;
+      if (decor === 'strike') bar2 = 'left:-2%;top:54%;height:0.09em;width:calc(104%*' + dv + ');background:' + decorC + ';';
+      else if (decor === 'underline') bar2 = 'left:0;bottom:-0.08em;height:0.1em;width:calc(100%*' + dv + ');background:' + decorC + ';';
+      else bar2 = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + dv + ');background:color-mix(in srgb,' + decorC + ' 38%,transparent);z-index:-1;';
+      h = '<span style="position:relative;isolation:isolate;' + (blockish ? 'display:block;width:fit-content;' : 'display:inline-block;') + '">' + h + '<span aria-hidden="true" style="position:absolute;' + bar2 + '"></span></span>';
+    }
+    return h;
+  }
+  function wrapUnit0(inner, n, blockish) {
     var inl = blockish ? 'display:block;' : 'display:inline-block;';
     if (reveal === 'bar') return '<span style="' + uvar(n) + (blockish ? 'display:block;width:fit-content;' : 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>';
     if (reveal === 'mask') return '<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>';
@@ -678,7 +695,7 @@ _RENDERERS['motion_text'] = function(b) {
       out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>';
     } else out += wrapUnit(_moRuns(u.c, accent), idx++, false);
   }
-  return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (shadow ? 'text-shadow:' + shadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
+  return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (textShadow ? 'text-shadow:' + textShadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
     + _moSr(_moPlain(lines.join(' ')))
     + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
 };
@@ -1075,7 +1092,8 @@ function _moStitch(b, ids, bpm, dur, st) {
 // Same contract as the rest: plain HTML+CSS driven by --p (build) and --s (second dial), no per-atom script, standalone it renders finished.
 function _moOwn(t, v, d) { return (typeof v === 'string' && Object.prototype.hasOwnProperty.call(t, v)) ? v : d; }
 var _MO_DEVICE = {phone: 1, laptop: 1, tablet: 1};
-var _MO_STRIKE = {strike: 1, highlight: 1, underline: 1};
+var _MO_DECOR = {strike: 1, highlight: 1, underline: 1};
+var _MO_KARA = {pill: 1, color: 1};
 var _MO_RAYS = {burst: 1, speed: 1};
 var _MO_CELLS = {pop: 1, flip: 1, fill: 1};
 var _MO_STACK = {ring: 1, stack: 1};
@@ -1096,18 +1114,6 @@ _RENDERERS['motion_device'] = function(b) {
     + '<div style="transform:translateY(calc(var(--s,0)*-' + scroll + 'px));">' + inner + '</div></div></div>' + base + '</div>';
 };
 
-// Text with a line that sweeps across it: a strike-through, a marker highlight or an underline, in the accent colour.
-_RENDERERS['motion_strike'] = function(b) {
-  var text = _moStr(b.text, 80) || 'Text', mode = _moOwn(_MO_STRIKE, b.mode, 'strike'), size = _ffInt(b.size, 64, 10, 400);
-  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start');
-  var weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), pc = 'clamp(0,var(--p,1),1)', bar, dim = '';
-  if (mode === 'strike') { bar = 'left:-2%;top:54%;height:0.09em;width:calc(104%*' + pc + ');background:' + acc + ';'; dim = 'opacity:calc(1 - 0.45*' + pc + ');'; }
-  else if (mode === 'underline') bar = 'left:0;bottom:-0.08em;height:0.1em;width:calc(100%*' + pc + ');background:' + acc + ';';
-  else bar = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + pc + ');background:color-mix(in srgb,' + acc + ' 38%,transparent);z-index:-1;';
-  return '<div style="width:100%;text-align:' + align + ';">' + _moSr(text)
-    + '<span aria-hidden="true" style="position:relative;display:inline-block;isolation:isolate;font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1.1;color:' + color + ';' + dim + '">' + _esc(text)
-    + '<span style="position:absolute;' + bar + '"></span></span></div>';
-};
 
 // A sunburst that fans out behind a hero (burst), or streaks that sweep across the frame (speed). --s turns or slides it.
 _RENDERERS['motion_rays'] = function(b) {
@@ -1207,14 +1213,6 @@ _RENDERERS['motion_marquee'] = function(b) {
   return '<div role="img" aria-label="' + _esc(rows.join(', ')) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:' + weight + ';letter-spacing:0.04em;line-height:1;text-transform:uppercase;">' + out + '</div>';
 };
 
-// Type with a chromatic split: red and cyan copies pull apart by `split` px at the peak of --s and settle together at 0.
-_RENDERERS['motion_glitch'] = function(b) {
-  var text = _moStr(b.text, 40) || 'GLITCH', size = _ffInt(b.size, 120, 10, 400), split = _ffInt(b.split, 14, 0, 60), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)');
-  var c1 = _moInk(b, 'accent', '#ff2d6f'), c2 = _moInk(b, 'accent2', '#19d3ff'), align = _ffPick(b.align, _MO_ALIGN, 'start'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black');
-  var d = 'calc(var(--s,0)*' + split + 'px)';
-  return '<div style="width:100%;text-align:' + align + ';">' + _moSr(text) + '<span aria-hidden="true" style="display:inline-block;font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.03em;color:' + color
-    + ';text-shadow:calc(-1*' + d + ') 0 ' + c1 + ',' + d + ' 0 ' + c2 + ';opacity:clamp(0,calc(var(--p,1)*8),1);clip-path:inset(0 calc((1 - clamp(0,calc(var(--p,1)*2),1))*100%) 0 0);">' + _esc(text) + '</span></div>';
-};
 
 // A ball that bounces across the box as p goes 0..1, squashing as it lands and stretching in the air, with a dotted trail.
 _RENDERERS['motion_bounce'] = function(b) {
@@ -1358,17 +1356,6 @@ _RENDERERS['motion_chart'] = function(b) {
     + (title ? '<div style="font-weight:800;margin-bottom:0.4em;">' + _esc(title) + '</div>' : '') + body + '</div>';
 };
 
-// Captions with a karaoke highlight: the line rises in with p, then each word lights in turn as the second dial (--s) goes 0 to 1.
-_RENDERERS['motion_captions'] = function(b) {
-  var text = _moStr(b.text, 120) || 'Words that light up as they are spoken', words = text.split(/\s+/).filter(function(w) { return w; }).slice(0, 24), n = words.length, i, out = '';
-  var size = _ffInt(b.size, 48, 10, 200), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'middle'), pill = b.style !== 'color';
-  for (i = 0; i < n; i++) {
-    var k = 'clamp(0,calc(1.5 - abs(var(--s,1)*' + n + ' - ' + (i + 0.5) + ')*3),1)';
-    out += '<span style="--k:' + k + ';display:inline-block;margin:0.08em 0.14em;padding:0.04em 0.28em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + (pill ? '#0b0712' : acc) + ');'
-      + (pill ? 'background:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),transparent);' : '') + 'transform:scale(calc(1 + var(--k)*0.08));">' + _esc(words[i]) + '</span>';
-  }
-  return '<div role="img" aria-label="' + _esc(text) + '" style="width:100%;text-align:' + align + ';font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:800;line-height:1.25;opacity:clamp(0,calc(var(--p,1)*5),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.4em));">' + out + '</div>';
-};
 
 // Lower third: an accent bar draws, the name slides out of it, the role fades in under it.
 _RENDERERS['motion_lower_third'] = function(b) {
