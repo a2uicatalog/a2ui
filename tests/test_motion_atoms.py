@@ -731,4 +731,5 @@ def test_ribbon_band_straddles_the_reveal_edge_and_leaves_with_it():
     top_edge = float(scene.split(",")[1].split("%")[0])
     bl, br = (float(v.strip().split("%")[0]) for v in band[len("polygon("):].split(",")[:2])
     assert bl <= top_edge <= br, (bl, top_edge, br)
+    assert _probe(blk, 4.9, js)[1].startswith("polygon("), "the band stays a band even when the reveal is almost done"
     assert _probe(blk, 5.2, js)[0] == 0 and _probe(blk, 5.2, js)[2] in ("", "none")

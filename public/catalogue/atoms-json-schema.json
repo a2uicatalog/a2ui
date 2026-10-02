@@ -39648,23 +39648,57 @@
               ]
             }
           },
+          "morphs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "t | beat": {
+                  "type": "string"
+                },
+                "dur": {
+                  "type": "string"
+                },
+                "ease": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "from",
+                "to",
+                "t | beat"
+              ]
+            }
+          },
           "stitch": {
-            "type": "string",
-            "enum": [
-              "cut",
-              "dissolve",
-              "push",
-              "zoom-through",
-              "blur",
-              "rise",
-              "whip",
-              "wipe",
-              "iris",
-              "clock",
-              "slice",
-              "flip",
-              "spin\" (optional, default \"dissolve\"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through. The hand-over used by scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed."
-            ]
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y",
+                "w"
+              ]
+            }
           },
           "overlap": {
             "type": "number"
@@ -39696,6 +39730,9 @@
                   "type": "string"
                 },
                 "rz": {
+                  "type": "string"
+                },
+                "z": {
                   "type": "string"
                 }
               },
