@@ -121,6 +121,36 @@ def collect_answers_interactively():
             "north_angle_deg": north_angle_deg,
         }
 
+    print("\n-- Photos (DP6/DP7/DP8) --\n"
+          "Required whenever the wall is visible from the public road (espace public) -- NOT only in "
+          "a secteur protege, see README.md and art. R.431-10 c/d du code de l'urbanisme.")
+    wall_visible = _ask_choice("Is the wall/cloture visible from the public road?", ["yes", "no"], "yes")
+    wall_visible_from_public = (wall_visible == "yes")
+    photos = None
+    if wall_visible_from_public:
+        proche_path = _ask("Path to a real close-range site photo (JPEG/PNG) -- becomes DP7, and the "
+                            "base photo for DP6. Leave blank to skip DP6/DP7/DP8 for now.", "", str)
+        if proche_path:
+            try:
+                from PIL import Image
+                w_px, h_px = Image.open(proche_path).size
+                print(f"  -> loaded {proche_path} ({w_px}x{h_px}px)")
+                print("  Enter the pixel coordinates of the wall's LEFT and RIGHT base points in that "
+                      "photo (open it in any image viewer to read these off).")
+                lx = _ask("  Left base point, pixel x", round(w_px * 0.3), float)
+                ly = _ask("  Left base point, pixel y", round(h_px * 0.7), float)
+                rx = _ask("  Right base point, pixel x", round(w_px * 0.7), float)
+                ry = _ask("  Right base point, pixel y", round(h_px * 0.7), float)
+                lointain_path = _ask("Path to a real distant/wide landscape photo (optional, becomes "
+                                      "DP8) -- leave blank only if none is possible", "", str)
+                photos = {"proche_path": proche_path, "lointain_path": lointain_path or None,
+                          "left_base_px": [lx, ly], "right_base_px": [rx, ry]}
+            except Exception as e:
+                print(f"  -> could not load that photo ({e}), skipping DP6/DP7/DP8")
+        else:
+            print("  -> no photo provided -- add DP6/DP7/DP8 manually before submitting, since the "
+                  "wall is visible from the public road")
+
     date_iso = _ask("Date (ISO)", date.today().isoformat())
 
     return {
@@ -130,6 +160,8 @@ def collect_answers_interactively():
                  "finish_label": finish_label, "finish_colour_hex": finish_colour_hex},
         "plot": plot,
         "parcel_lookup": parcel_lookup_meta,
+        "wall_visible_from_public": wall_visible_from_public,
+        "photos": photos,
     }
 
 
@@ -147,12 +179,19 @@ def build_project(answers: dict) -> DPProject:
                       date_iso=answers.get("date_iso", date.today().isoformat()))
 
 
-def generate_dossier(project: DPProject, out_dir, include_3d=False, parcel_lookup_meta=None):
+def generate_dossier(project: DPProject, out_dir, include_3d=False, parcel_lookup_meta=None,
+                      wall_visible_from_public=None, photos=None):
     """Writes every automatable DP piece into out_dir, plus project.json (the input, for
     reproducibility/audit) and a checklist.txt of the remaining manual steps. parcel_lookup_meta, when
     given (collect_answers_interactively's "parcel_lookup" key -- lon/lat/label/contenance_m2/zone
     info from parcel_lookup.build_plot_from_address), also generates DP1_situation.png and enriches
-    the checklist with the real zone/document pointer instead of the generic manual-lookup line."""
+    the checklist with the real zone/document pointer instead of the generic manual-lookup line.
+
+    wall_visible_from_public (True/False/None) and photos (collect_answers_interactively's "photos"
+    key -- {proche_path, lointain_path, left_base_px, right_base_px}, or None) drive DP6/DP7/DP8: see
+    dp6_insertion.py's own module docstring for why these are required whenever the wall is visible
+    from the public road, not only in a secteur protégé (a wrong claim this project's README used to
+    make, corrected 2026-10-02 against the real, current CERFA 16702*03 bordereau)."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -161,6 +200,8 @@ def generate_dossier(project: DPProject, out_dir, include_3d=False, parcel_looku
         "wall": vars(project.wall),
         "plot": {**vars(project.plot)},
         "parcel_lookup": parcel_lookup_meta,
+        "wall_visible_from_public": wall_visible_from_public,
+        "photos": photos,
     }, indent=2, default=list))
 
     written = []
@@ -195,6 +236,30 @@ def generate_dossier(project: DPProject, out_dir, include_3d=False, parcel_looku
         except ImportError as e:
             written.append(f"3D supplementary visual skipped -- bpy not available ({e})")
 
+    if photos and photos.get("proche_path"):
+        try:
+            from declaration_prealable import dp6_insertion
+            proche_bytes = Path(photos["proche_path"]).read_bytes()
+            (out_dir / "DP7_photo_proche.jpg").write_bytes(dp6_insertion.package_site_photo_bytes(
+                proche_bytes, "DP7", "Photo - environnement proche", project.address))
+            written.append("DP7_photo_proche.jpg")
+
+            (out_dir / "DP6_insertion.png").write_bytes(dp6_insertion.composite_dp6_insertion_bytes(
+                proche_bytes, photos["left_base_px"], photos["right_base_px"], project.wall,
+                project.address))
+            written.append("DP6_insertion.png")
+
+            if photos.get("lointain_path"):
+                lointain_bytes = Path(photos["lointain_path"]).read_bytes()
+                (out_dir / "DP8_photo_lointain.jpg").write_bytes(dp6_insertion.package_site_photo_bytes(
+                    lointain_bytes, "DP8", "Photo - paysage lointain", project.address))
+                written.append("DP8_photo_lointain.jpg")
+            else:
+                written.append("DP8_photo_lointain.jpg skipped -- no distant photo provided (legally "
+                                "OK only if you can justify that none is possible)")
+        except Exception as e:
+            written.append(f"DP6/DP7/DP8 skipped -- {e}")
+
     if parcel_lookup_meta:
         area_line = (f"  - Real parcel: {parcel_lookup_meta.get('idu', 'unknown')}, "
                      f"{parcel_lookup_meta.get('contenance_m2', '?')} m2 (official cadastre figure).")
@@ -219,6 +284,22 @@ def generate_dossier(project: DPProject, out_dir, include_3d=False, parcel_looku
                 f"cadastre.gouv.fr centred on {project.address} -- not auto-generated, the official "
                 f"guidance itself expects this.\n")
 
+    if wall_visible_from_public is True:
+        visibility_line = ("  - Wall/cloture noted as VISIBLE from the public road: DP6 (insertion "
+                            "dans l'environnement), DP7 (photo proche) and DP8 (photo lointain) are "
+                            "required per the official bordereau (art. R.431-10 c/d du code de "
+                            "l'urbanisme) -- NOT only in a secteur protege. See pieces above; if DP8 "
+                            "was skipped, confirm your justification still holds.")
+    elif wall_visible_from_public is False:
+        visibility_line = ("  - Wall/cloture noted as NOT visible from the public road, and not in a "
+                            "site patrimonial remarquable / abords d'un monument historique: DP6/DP7/"
+                            "DP8 are not required per the official bordereau (art. R.431-10 c/d) -- "
+                            "verify this is still true for the real site before submitting.")
+    else:
+        visibility_line = ("  - Visibility from the public road was not specified: confirm whether "
+                            "DP6/DP7/DP8 are required (art. R.431-10 c/d -- required if visible from "
+                            "l'espace public, or in a site patrimonial remarquable / abords MH).")
+
     checklist = f"""Déclaration préalable dossier -- {project.address}, {project.commune}
 Generated {project.date_iso}. This is a DRAFTING AID, not a legal guarantee of acceptance
 (see declaration_prealable/README.md).
@@ -230,6 +311,7 @@ Automated pieces in this folder:
 Still needed, manually (see README.md for sourcing):
   - CERFA n°16702*03 form itself, filled in: https://www.formulaires.service-public.gouv.fr/gf/cerfa_16702.do
 {dp1_line}{plu_line}
+{visibility_line}
   - DP3 (coupe) only if the site's terrain profile changes -- not included here.
   - Two complete paper dossiers for a mail submission (more if in a secteur protege).
 """
@@ -265,7 +347,9 @@ def main(argv=None):
         out_dir = Path(__file__).resolve().parent / "dossiers" / f"{project.date_iso}_{slug}"
 
     written = generate_dossier(project, out_dir, include_3d=args.include_3d,
-                                parcel_lookup_meta=answers.get("parcel_lookup"))
+                                parcel_lookup_meta=answers.get("parcel_lookup"),
+                                wall_visible_from_public=answers.get("wall_visible_from_public"),
+                                photos=answers.get("photos"))
     print(f"\nDossier written to {out_dir}:")
     for w in written:
         print(f"  - {w}")

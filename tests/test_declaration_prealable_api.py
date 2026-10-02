@@ -124,6 +124,93 @@ def test_options_preflight(client):
     assert r.headers.get("Access-Control-Allow-Origin") == "*"
 
 
+# -- /generate with DP6/DP7/DP8 photos -- see declaration_prealable/dp6_insertion.py's own module
+# docstring for why these are required whenever the wall is visible from the public road, not only in
+# a secteur protégé.
+
+def _fake_jpeg_base64(width=400, height=300):
+    import base64
+    import io
+    from PIL import Image
+    img = Image.new("RGB", (width, height), (100, 140, 180))
+    out = io.BytesIO()
+    img.save(out, format="JPEG")
+    return base64.b64encode(out.getvalue()).decode()
+
+
+def test_generate_without_photos_omits_dp6_dp7_dp8_keys(client):
+    r = client.post("/generate", json=_valid_body(), headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 200
+    data = r.get_json()
+    for key in ("dp6_png_base64", "dp7_jpeg_base64", "dp8_jpeg_base64"):
+        assert key not in data
+
+
+def test_generate_with_photo_proche_returns_dp6_and_dp7(client):
+    body = _valid_body()
+    body["photoProcheBase64"] = _fake_jpeg_base64()
+    body["wallBaseLeftPx"] = [100, 250]
+    body["wallBaseRightPx"] = [300, 250]
+    r = client.post("/generate", json=body, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 200
+    data = r.get_json()
+    assert data["ok"] is True
+    dp6_bytes = base64.b64decode(data["dp6_png_base64"])
+    assert dp6_bytes[:8] == b"\x89PNG\r\n\x1a\n"
+    dp7_bytes = base64.b64decode(data["dp7_jpeg_base64"])
+    assert dp7_bytes[:3] == b"\xff\xd8\xff"
+    assert "dp8_jpeg_base64" not in data  # no distant photo given -> not returned
+
+
+def test_generate_with_both_photos_returns_dp6_dp7_dp8(client):
+    body = _valid_body()
+    body["photoProcheBase64"] = _fake_jpeg_base64()
+    body["wallBaseLeftPx"] = [100, 250]
+    body["wallBaseRightPx"] = [300, 250]
+    body["photoLointainBase64"] = _fake_jpeg_base64()
+    r = client.post("/generate", json=body, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 200
+    data = r.get_json()
+    assert base64.b64decode(data["dp8_jpeg_base64"])[:3] == b"\xff\xd8\xff"
+
+
+def test_generate_rejects_photo_proche_without_base_points(client):
+    body = _valid_body()
+    body["photoProcheBase64"] = _fake_jpeg_base64()
+    r = client.post("/generate", json=body, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 400
+    assert "wallBaseLeftPx" in r.get_json()["error"]
+
+
+def test_generate_rejects_coincident_base_points(client):
+    body = _valid_body()
+    body["photoProcheBase64"] = _fake_jpeg_base64()
+    body["wallBaseLeftPx"] = [200, 250]
+    body["wallBaseRightPx"] = [200, 250]
+    r = client.post("/generate", json=body, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 400
+    assert "too close" in r.get_json()["error"]
+
+
+def test_generate_rejects_bad_base64_photo(client):
+    body = _valid_body()
+    body["photoProcheBase64"] = "not-valid-base64!!!"
+    body["wallBaseLeftPx"] = [100, 250]
+    body["wallBaseRightPx"] = [300, 250]
+    r = client.post("/generate", json=body, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 400
+
+
+def test_generate_rejects_oversized_photo(client):
+    body = _valid_body()
+    body["photoProcheBase64"] = base64.b64encode(b"x" * (dp_server.MAX_PHOTO_BYTES + 1)).decode()
+    body["wallBaseLeftPx"] = [100, 250]
+    body["wallBaseRightPx"] = [300, 250]
+    r = client.post("/generate", json=body, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 400
+    assert "exceeds" in r.get_json()["error"]
+
+
 # -- /lookup-parcel -- parcel_lookup's own outbound network calls are mocked, same discipline as
 # /generate never hitting real GCP in a unit test.
 

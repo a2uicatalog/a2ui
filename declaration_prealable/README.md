@@ -45,7 +45,28 @@ not just this one.
   `dp5_elevation.py`.
 - DP3 (coupe) only applies if the project changes the terrain profile — not
   built here; add it if the real site's topography needs it.
-- DP6/DP7/DP8/DP11 only apply in a secteur protégé — not built here.
+- **DP6/DP7/DP8 are required whenever the project creates or modifies a
+  construction VISIBLE FROM THE PUBLIC ROAD (l'espace public), or the site
+  sits in a site patrimonial remarquable / abords d'un monument historique —
+  NOT only in a "secteur protégé," which is what this README wrongly claimed
+  until 2026-10-02.** A street-facing clôture is visible from the public road
+  in almost every real case, so these pieces are very likely required, not
+  optional extras. Corrected against the real, current CERFA 16702\*03
+  packet's own "Bordereau de dépôt des pièces jointes" (the official form's
+  own annex, fetched and read directly 2026-10-02, not inferred from a
+  secondary source):
+  - **DP6**: "Un document graphique permettant d'apprécier l'insertion du
+    projet de construction dans son environnement" [Art. R.431-10 c] — the
+    "mockup after." See "Photos + insertion mockup" below.
+  - **DP7**: "Une photographie permettant de situer le terrain dans
+    l'environnement proche" [Art. R.431-10 d] — the "photo before," close
+    range.
+  - **DP8**: "Une photographie permettant de situer le terrain dans le
+    paysage lointain" [Art. R.431-10 d] — the "photo before," wide/distant
+    (skippable only if you can justify that no distant photo is possible).
+  - DP11 and the rest of the bordereau's conditional pieces (PSMV, cœur de
+    parc national, agrivoltaïque, etc.) genuinely don't apply to a
+    standalone clôture and stay out of scope here.
 - Each piece is submitted as its own JPEG/PNG/PDF file (not one combined
   document), so this directory outputs **one SVG + PNG per piece** — no PDF
   assembly.
@@ -68,6 +89,10 @@ commune's PLU before submission.
 - `dp2_plan_masse.py` — `render_dp2_svg(project)` / `render_dp2_png(project,
   out_path)`: the site plan (boundary, existing structures, wall placement,
   boundary distances, north arrow, scale bar).
+- `dp6_insertion.py` — `package_site_photo_bytes(...)` (DP7/DP8: the
+  applicant's own real photo, captioned, no compositing) and
+  `composite_dp6_insertion_bytes(...)` (DP6: the wall composited onto that
+  photo, to scale). See "Photos + insertion mockup" below.
 - `render_wall_3d.py` — `render_wall_3d_png(project, out_path, ...)`: an
   optional photorealistic supplementary visual (NOT a substitute for DP5's 2D
   piece — DP5 itself stays `dp5_elevation.py`'s output). Reuses
@@ -214,6 +239,47 @@ boundary?" before falling back to the manual rectangle questions;
 `declaration-prealable-api`'s `POST /lookup-parcel` route and
 `build_intake_page.py`'s "Rechercher la parcelle réelle" button do the same
 for the web form. All three outbound APIs are free and require no API key.
+
+## Photos + insertion mockup (`dp6_insertion.py`)
+
+Built 2026-10-02, prompted by a real question from the project's own user ("is it possible to put the
+property in focus, and can we add a photo feature?") that led directly to re-reading the real CERFA
+16702\*03 packet and finding the README's wrong DP6/DP7/DP8 claim above.
+
+- **DP7/DP8 — the "photo before"**: the applicant's own real site photo(s), captioned with the piece
+  code/title/address and re-encoded as JPEG (resized to a practical ceiling, `MAX_PHOTO_WIDTH=1600`,
+  if larger). No compositing — this piece IS the real, unmodified photo.
+- **DP6 — the "mockup after"**: the wall composited onto the applicant's own "photo proche," to scale,
+  in the right place, with the same red-leader-line material/colour callout convention `dp5_elevation.py`
+  already uses for DP5. The scale comes from the applicant's own two clicks: the wall's left and right
+  BASE points on their real photo. Since the wall's real `length_m` is already known from the intake
+  answers, the pixel distance between those two clicks gives a local pixels-per-metre scale, and the
+  wall is drawn as a vertical (screen-space) extrusion of that scale × `height_m`.
+  **Honest limit**: this is a same-depth-plane scale, not full perspective/camera correction — accurate
+  when the wall sits roughly perpendicular to the camera in a roughly level photo, matching the
+  official text's own tolerance ("aucune échelle stricte n'est imposée," but proportions must look
+  realistic), but it will visibly misjudge height if the source photo is taken from a steep up/down
+  angle. Not oversold as a real photogrammetric insertion.
+- **Click-to-place UI**: both surfaces let the applicant mark the wall's base points directly — the web
+  form via two real clicks on the uploaded photo (coordinates captured against the image's own
+  `naturalWidth`/`naturalHeight`, not its displayed CSS size, so they stay correct regardless of how
+  the browser scales the preview), the CLI via typed pixel coordinates (same underlying compositing
+  function either way — `build_intake_page.py`'s JS and `intake.py`'s prompts are two front ends over
+  one engine, not two separate implementations).
+- **Wired into both surfaces**: `intake.py` asks whether the wall is visible from the public road before
+  asking for photos, and `generate_dossier` writes `DP6_insertion.png`/`DP7_photo_proche.jpg`/
+  `DP8_photo_lointain.jpg` plus a `checklist.txt` line citing the real article and stating whether
+  these pieces are required for this project. `declaration-prealable-api`'s `/generate` route accepts
+  `photoProcheBase64`/`photoLointainBase64`/`wallBaseLeftPx`/`wallBaseRightPx` as optional extras on the
+  same call (not a new route) and returns `dp6_png_base64`/`dp7_jpeg_base64`/`dp8_jpeg_base64` only
+  when the corresponding photo was actually supplied — a request with no photos behaves exactly as
+  before. `build_intake_page.py`'s form shows a "le mur est visible depuis l'espace public" checkbox,
+  file inputs for both photos, and an interactive click layer over the uploaded "photo proche" preview.
+- **Verified live, real browser, 2026-10-02**: a real headless-Chromium run against the real generated
+  page and a real local instance of the backend uploaded a real JPEG, captured two real mouse clicks on
+  the rendered image, submitted, and confirmed the returned DP6 PNG shows the wall rectangle landing
+  exactly at the clicked base points with the correct scale/colour/callout — not just a passing unit
+  test on synthetic coordinates.
 
 ## Not yet done
 

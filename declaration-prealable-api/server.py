@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 
 from flask import Flask, jsonify, request  # noqa: E402
 
-from declaration_prealable import dp1_situation, dp2_plan_masse, dp5_elevation, parcel_lookup  # noqa: E402
+from declaration_prealable import dp1_situation, dp2_plan_masse, dp5_elevation, dp6_insertion, parcel_lookup  # noqa: E402
 from declaration_prealable.intake import build_project  # noqa: E402
 
 # Same posture as cloud-run-renderer/server.py's own RENDER_SIGNING_KEY: a Secret-Manager-bound env var
@@ -49,8 +49,12 @@ MAX_COORD_M = 1000.0
 MAX_LENGTH_M = 100.0
 MAX_HEIGHT_M = 10.0
 MAX_THICKNESS_MM = 1000.0
+MAX_PHOTO_BYTES = 8 * 1024 * 1024  # a real phone-camera JPEG is typically 2-6 MB; generous but bounded
+MAX_PIXEL_COORD = 20000.0  # no real photo upload plausibly exceeds this in either dimension
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 24 * 1024 * 1024  # two base64-encoded MAX_PHOTO_BYTES photos (~1.33x
+                                                       # encoding overhead each) plus the JSON body
 
 
 def _forbidden(msg):
@@ -111,6 +115,31 @@ def _points(points, name):
     if not isinstance(points, list) or len(points) > MAX_POINTS:
         raise ValidationError(f"{name} must be an array of at most {MAX_POINTS} points")
     return [_point(p, f"{name}[]") for p in points]
+
+
+def _photo_bytes(b64_value, name):
+    import base64 as _base64
+    if not isinstance(b64_value, str) or not b64_value:
+        raise ValidationError(f"{name} must be a non-empty base64 string")
+    try:
+        raw = _base64.b64decode(b64_value, validate=True)
+    except Exception:
+        raise ValidationError(f"{name} is not valid base64")
+    if len(raw) > MAX_PHOTO_BYTES:
+        raise ValidationError(f"{name} exceeds {MAX_PHOTO_BYTES} bytes")
+    return raw
+
+
+def _pixel_point(p, name):
+    if not (isinstance(p, (list, tuple)) and len(p) == 2):
+        raise ValidationError(f"{name} must be a [x, y] pixel pair")
+    try:
+        x, y = float(p[0]), float(p[1])
+    except (TypeError, ValueError):
+        raise ValidationError(f"{name} must be numeric")
+    if not (0 <= x <= MAX_PIXEL_COORD and 0 <= y <= MAX_PIXEL_COORD):
+        raise ValidationError(f"{name} out of plausible pixel range")
+    return [x, y]
 
 
 def validate_answers(body):
@@ -186,23 +215,49 @@ def generate():
     body = request.get_json(silent=True)
     try:
         answers = validate_answers(body)
+        # DP6/DP7/DP8 are OPTIONAL extras on the same /generate call -- see dp6_insertion.py's own
+        # module docstring for why these are required whenever the wall is visible from the public
+        # road (not only in a secteur protégé, a wrong claim this project's own README previously made).
+        # photoProcheBase64 becomes both DP7 and DP6's base photo; photoLointainBase64 (optional)
+        # becomes DP8 on its own.
+        photo_proche_b64 = body.get("photoProcheBase64") if isinstance(body, dict) else None
+        photo_lointain_b64 = body.get("photoLointainBase64") if isinstance(body, dict) else None
+        photo_proche_bytes = left_px = right_px = None
+        if photo_proche_b64:
+            photo_proche_bytes = _photo_bytes(photo_proche_b64, "photoProcheBase64")
+            left_px = _pixel_point(body.get("wallBaseLeftPx"), "wallBaseLeftPx")
+            right_px = _pixel_point(body.get("wallBaseRightPx"), "wallBaseRightPx")
+        photo_lointain_bytes = (_photo_bytes(photo_lointain_b64, "photoLointainBase64")
+                                 if photo_lointain_b64 else None)
     except ValidationError as e:
         return jsonify({"ok": False, "error": str(e)}), 400
 
     project = build_project(answers)
 
+    import base64
     try:
-        dp2_png = dp2_plan_masse.render_dp2_png_bytes(project)
-        dp5_png = dp5_elevation.render_dp5_png_bytes(project)
+        response = {
+            "ok": True,
+            "dp2_png_base64": base64.b64encode(dp2_plan_masse.render_dp2_png_bytes(project)).decode(),
+            "dp5_png_base64": base64.b64encode(dp5_elevation.render_dp5_png_bytes(project)).decode(),
+        }
+        if photo_proche_bytes is not None:
+            dp7_jpeg = dp6_insertion.package_site_photo_bytes(
+                photo_proche_bytes, "DP7", "Photo - environnement proche", project.address)
+            response["dp7_jpeg_base64"] = base64.b64encode(dp7_jpeg).decode()
+            dp6_png = dp6_insertion.composite_dp6_insertion_bytes(
+                photo_proche_bytes, left_px, right_px, project.wall, project.address)
+            response["dp6_png_base64"] = base64.b64encode(dp6_png).decode()
+        if photo_lointain_bytes is not None:
+            dp8_jpeg = dp6_insertion.package_site_photo_bytes(
+                photo_lointain_bytes, "DP8", "Photo - paysage lointain", project.address)
+            response["dp8_jpeg_base64"] = base64.b64encode(dp8_jpeg).decode()
+    except ValueError as e:  # bad click points (coincident, out of bounds), bad wall length, etc.
+        return jsonify({"ok": False, "error": str(e)}), 400
     except Exception as e:  # noqa: BLE001 -- report to the client, don't leak a stack trace
         return jsonify({"ok": False, "error": f"could not generate documents: {e}"}), 500
 
-    import base64
-    return jsonify({
-        "ok": True,
-        "dp2_png_base64": base64.b64encode(dp2_png).decode(),
-        "dp5_png_base64": base64.b64encode(dp5_png).decode(),
-    })
+    return jsonify(response)
 
 
 @app.route("/lookup-parcel", methods=["POST", "OPTIONS"])

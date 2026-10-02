@@ -102,6 +102,66 @@ def test_generate_dossier_without_parcel_lookup_keeps_manual_dp1_line(tmp_path):
     assert "export an annotated extract from geoportail" in checklist
 
 
+def _write_fake_photo(path):
+    from PIL import Image
+    Image.new("RGB", (800, 600), (120, 160, 200)).save(path, format="JPEG")
+
+
+def test_generate_dossier_with_photos_writes_dp6_dp7_dp8(tmp_path):
+    project = intake.build_project(_sample_answers())
+    proche_path = tmp_path / "proche.jpg"
+    _write_fake_photo(proche_path)
+    photos = {"proche_path": str(proche_path), "lointain_path": None,
+              "left_base_px": [200, 500], "right_base_px": [600, 500]}
+    out_dir = tmp_path / "out"
+
+    written = intake.generate_dossier(project, out_dir, wall_visible_from_public=True, photos=photos)
+
+    assert (out_dir / "DP6_insertion.png").exists()
+    assert (out_dir / "DP7_photo_proche.jpg").exists()
+    assert not (out_dir / "DP8_photo_lointain.jpg").exists()
+    assert any("DP6_insertion.png" in w for w in written)
+    assert any("DP7_photo_proche.jpg" in w for w in written)
+    assert any("DP8_photo_lointain.jpg skipped" in w for w in written)
+
+    checklist = (out_dir / "checklist.txt").read_text()
+    assert "VISIBLE from the public road" in checklist
+    assert "R.431-10" in checklist
+
+    saved = json.loads((out_dir / "project.json").read_text())
+    assert saved["wall_visible_from_public"] is True
+
+
+def test_generate_dossier_with_photos_including_lointain(tmp_path):
+    project = intake.build_project(_sample_answers())
+    proche_path, lointain_path = tmp_path / "proche.jpg", tmp_path / "lointain.jpg"
+    _write_fake_photo(proche_path)
+    _write_fake_photo(lointain_path)
+    photos = {"proche_path": str(proche_path), "lointain_path": str(lointain_path),
+              "left_base_px": [200, 500], "right_base_px": [600, 500]}
+    out_dir = tmp_path / "out"
+
+    written = intake.generate_dossier(project, out_dir, wall_visible_from_public=True, photos=photos)
+
+    assert (out_dir / "DP8_photo_lointain.jpg").exists()
+    assert any("DP8_photo_lointain.jpg" in w and "skipped" not in w for w in written)
+
+
+def test_generate_dossier_not_visible_notes_dp6_dp7_dp8_not_required(tmp_path):
+    project = intake.build_project(_sample_answers())
+    written = intake.generate_dossier(project, tmp_path, wall_visible_from_public=False)
+    assert not any("DP6" in w for w in written)
+    checklist = (tmp_path / "checklist.txt").read_text()
+    assert "NOT visible from the public road" in checklist
+
+
+def test_generate_dossier_visibility_unspecified_prompts_to_confirm(tmp_path):
+    project = intake.build_project(_sample_answers())
+    intake.generate_dossier(project, tmp_path)
+    checklist = (tmp_path / "checklist.txt").read_text()
+    assert "not specified" in checklist
+
+
 def test_cli_end_to_end_with_answers_file(tmp_path):
     answers_path = tmp_path / "answers.json"
     answers_path.write_text(json.dumps(_sample_answers()))

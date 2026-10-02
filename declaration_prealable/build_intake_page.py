@@ -93,7 +93,8 @@ PAGE = r"""<!DOCTYPE html>
 <body>
 <main>
   <h1>Déclaration préalable — mur de clôture</h1>
-  <p class="lede">Génère DP2 (plan de masse) et DP5 (représentation de l'aspect extérieur) — voir
+  <p class="lede">Génère DP2 (plan de masse), DP5 (aspect extérieur), et — si le mur est visible depuis
+    l'espace public — DP6 (insertion dans l'environnement), DP7 et DP8 (photos). Voir
     declaration_prealable/README.md pour le détail des pièces requises. Ceci est une aide au
     brouillon, pas une garantie d'acceptation.</p>
 
@@ -192,7 +193,30 @@ PAGE = r"""<!DOCTYPE html>
       </div>
     </fieldset>
 
-    <button id="go" type="submit">Générer DP2 + DP5</button>
+    <fieldset>
+      <legend>Photos (DP6, DP7, DP8)</legend>
+      <p class="note" style="margin:0 0 10px">Obligatoires dès que le mur est visible depuis l'espace
+        public (rue, trottoir, voie publique) — pas seulement en secteur protégé (art. R.431-10 c/d
+        du code de l'urbanisme).</p>
+      <label style="display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;color:var(--ink)">
+        <input type="checkbox" id="wallVisible" style="width:auto" checked> Le mur est visible depuis
+        l'espace public
+      </label>
+      <div id="photoFields">
+        <label for="photoProche">Photo proche — devient DP7, et sert de base à DP6</label>
+        <input type="file" id="photoProche" accept="image/*">
+        <p class="note" id="photoClickNote" style="margin-top:8px"></p>
+        <div id="photoClickWrap" style="position:relative;display:none;margin-top:4px">
+          <img id="photoPreview" style="width:100%;display:block;border:1px solid var(--rule);border-radius:4px">
+          <div id="photoMarkers" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor:crosshair"></div>
+        </div>
+
+        <label for="photoLointain" style="margin-top:14px">Photo lointain (optionnel) — devient DP8</label>
+        <input type="file" id="photoLointain" accept="image/*">
+      </div>
+    </fieldset>
+
+    <button id="go" type="submit">Générer le dossier</button>
     <p class="note" id="status"></p>
   </form>
 
@@ -217,6 +241,21 @@ PAGE = r"""<!DOCTYPE html>
       <img id="dp2Img" alt="DP2">
       <div><a class="dl" id="dp2Dl" download="DP2_plan_masse.png">Télécharger DP2_plan_masse.png</a></div>
     </div>
+    <div class="piece" id="dp6Piece" style="display:none">
+      <h3>DP6 — Insertion du projet dans son environnement</h3>
+      <img id="dp6Img" alt="DP6">
+      <div><a class="dl" id="dp6Dl" download="DP6_insertion.png">Télécharger DP6_insertion.png</a></div>
+    </div>
+    <div class="piece" id="dp7Piece" style="display:none">
+      <h3>DP7 — Photo, environnement proche</h3>
+      <img id="dp7Img" alt="DP7">
+      <div><a class="dl" id="dp7Dl" download="DP7_photo_proche.jpg">Télécharger DP7_photo_proche.jpg</a></div>
+    </div>
+    <div class="piece" id="dp8Piece" style="display:none">
+      <h3>DP8 — Photo, paysage lointain</h3>
+      <img id="dp8Img" alt="DP8">
+      <div><a class="dl" id="dp8Dl" download="DP8_photo_lointain.jpg">Télécharger DP8_photo_lointain.jpg</a></div>
+    </div>
   </div>
 </main>
 <script>
@@ -227,6 +266,61 @@ function $(id){return document.getElementById(id)}
 $('date_iso').value=new Date().toISOString().slice(0,10);
 $('hasExisting').onchange=function(){
   $('existingFields').className=this.checked?'show':'';
+};
+
+$('wallVisible').onchange=function(){
+  $('photoFields').style.display=this.checked?'':'none';
+};
+
+var photoProcheDataUrl=null, photoProcheNatural=null, wallLeftPx=null, wallRightPx=null;
+var photoLointainDataUrl=null;
+
+$('photoProche').onchange=function(){
+  var f=this.files[0];
+  wallLeftPx=null;wallRightPx=null;photoProcheDataUrl=null;photoProcheNatural=null;
+  $('photoMarkers').innerHTML='';
+  if(!f){$('photoClickWrap').style.display='none';$('photoClickNote').textContent='';return}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    photoProcheDataUrl=e.target.result;
+    $('photoPreview').src=photoProcheDataUrl;
+    $('photoClickWrap').style.display='';
+    $('photoClickNote').className='note';
+    $('photoClickNote').textContent="Cliquez d'abord la base GAUCHE du mur à créer, puis sa base DROITE.";
+  };
+  reader.readAsDataURL(f);
+};
+
+$('photoPreview').onload=function(){
+  photoProcheNatural={w:this.naturalWidth,h:this.naturalHeight};
+};
+
+$('photoMarkers').onclick=function(ev){
+  if(!photoProcheNatural){return}
+  if(wallLeftPx&&wallRightPx){return} // both points already set; re-choose the file to restart
+  var rect=$('photoPreview').getBoundingClientRect();
+  var cx=ev.clientX-rect.left, cy=ev.clientY-rect.top;
+  var nx=cx*(photoProcheNatural.w/rect.width), ny=cy*(photoProcheNatural.h/rect.height);
+  var marker=document.createElement('div');
+  marker.style.cssText='position:absolute;width:10px;height:10px;border-radius:50%;background:#d93025;'
+    +'border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none';
+  marker.style.left=cx+'px';marker.style.top=cy+'px';
+  $('photoMarkers').appendChild(marker);
+  if(!wallLeftPx){
+    wallLeftPx=[nx,ny];
+    $('photoClickNote').textContent='Base gauche enregistrée — cliquez maintenant la base DROITE.';
+  }else{
+    wallRightPx=[nx,ny];
+    $('photoClickNote').textContent='Les deux bases sont enregistrées. (Re-choisissez le fichier photo pour recommencer.)';
+  }
+};
+
+$('photoLointain').onchange=function(){
+  var f=this.files[0];
+  if(!f){photoLointainDataUrl=null;return}
+  var reader=new FileReader();
+  reader.onload=function(e){photoLointainDataUrl=e.target.result};
+  reader.readAsDataURL(f);
 };
 
 var realParcel=null;
@@ -303,23 +397,50 @@ $('dpForm').onsubmit=function(ev){
     plot:plot
   };
 
+  if($('wallVisible').checked){
+    if(!photoProcheDataUrl||!wallLeftPx||!wallRightPx){
+      status.className='note err';
+      status.textContent='Le mur est visible depuis l’espace public : ajoutez la photo proche et '
+        +'cliquez ses deux bases avant de générer (ou décochez la case si ce n’est pas le cas).';
+      return;
+    }
+    body.photoProcheBase64=photoProcheDataUrl.split(',')[1];
+    body.wallBaseLeftPx=wallLeftPx;
+    body.wallBaseRightPx=wallRightPx;
+    if(photoLointainDataUrl){
+      body.photoLointainBase64=photoLointainDataUrl.split(',')[1];
+    }
+  }
+
   goBtn.disabled=true;goBtn.textContent='Génération…';
   fetch(API_BASE+'/generate',{method:'POST',
     headers:{'Content-Type':'application/json','X-Render-Token':TOKEN},
     body:JSON.stringify(body)})
     .then(function(r){return r.json()})
     .then(function(j){
-      goBtn.disabled=false;goBtn.textContent='Générer DP2 + DP5';
+      goBtn.disabled=false;goBtn.textContent='Générer le dossier';
       if(!j.ok){status.className='note err';status.textContent=j.error||'Échec de la génération.';return}
       status.textContent='';
       var dp5Src='data:image/png;base64,'+j.dp5_png_base64;
       var dp2Src='data:image/png;base64,'+j.dp2_png_base64;
       $('dp5Img').src=dp5Src;$('dp5Dl').href=dp5Src;
       $('dp2Img').src=dp2Src;$('dp2Dl').href=dp2Src;
+      if(j.dp6_png_base64){
+        var dp6Src='data:image/png;base64,'+j.dp6_png_base64;
+        $('dp6Img').src=dp6Src;$('dp6Dl').href=dp6Src;$('dp6Piece').style.display='';
+      }
+      if(j.dp7_jpeg_base64){
+        var dp7Src='data:image/jpeg;base64,'+j.dp7_jpeg_base64;
+        $('dp7Img').src=dp7Src;$('dp7Dl').href=dp7Src;$('dp7Piece').style.display='';
+      }
+      if(j.dp8_jpeg_base64){
+        var dp8Src='data:image/jpeg;base64,'+j.dp8_jpeg_base64;
+        $('dp8Img').src=dp8Src;$('dp8Dl').href=dp8Src;$('dp8Piece').style.display='';
+      }
       results.className='results show';
     })
     .catch(function(){
-      goBtn.disabled=false;goBtn.textContent='Générer DP2 + DP5';
+      goBtn.disabled=false;goBtn.textContent='Générer le dossier';
       status.className='note err';status.textContent='Impossible de contacter le service de génération.';
     });
 };
