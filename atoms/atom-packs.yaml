@@ -346,6 +346,16 @@ a2ui-effects-v1:
 - motion_scatter
 - motion_contours
 - motion_rail
+- motion_image
+- motion_chart
+- motion_captions
+- motion_lower_third
+- motion_wave
+- motion_repeat
+- motion_media
+- motion_chat
+- motion_wiggle
+- motion_textpath
 - motion_timeline
 - motion_group
 - motion_tokens

@@ -39658,7 +39658,12 @@
               "blur",
               "rise",
               "whip",
-              "wipe\" (optional, default \"dissolve\"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one. The hand-over used by scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed."
+              "wipe",
+              "iris",
+              "clock",
+              "slice",
+              "flip",
+              "spin\" (optional, default \"dissolve\"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through. The hand-over used by scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed."
             ]
           },
           "overlap": {

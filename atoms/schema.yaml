@@ -9441,9 +9441,9 @@ blocks:
     scenes: 'array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a
       motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the
       next scene''s start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through,
-      blur, rise, whip, wipe and applies to the scene it names (the hand-over INTO it); without one the timeline''s `stitch` is used. Your own
+      blur, rise, whip, wipe, iris, clock, slice, flip, spin and applies to the scene it names (the hand-over INTO it); without one the timeline''s `stitch` is used. Your own
       tracks on the same layer are applied after these and win, so a scene can still do its own entrance.'
-    stitch: '"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" | "whip" | "wipe" (optional, default "dissolve"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one. The hand-over used by
+    stitch: '"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" | "whip" | "wipe" | "iris" | "clock" | "slice" | "flip" | "spin" (optional, default "dissolve"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through. The hand-over used by
       scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed.'
     overlap: number (optional). Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.
     camera: '{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?}]} (max 48 keys), optional. x,y are the focus point in
@@ -10767,6 +10767,301 @@ blocks:
     steps: 'array (2-6) of strings, max 24 each.'
     size: 'integer (optional). Text px, 8-60. Default 16.'
     accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_image
+  stage: preview
+  description: 'An image that moves. Mode kenburns is a slow pan and zoom over the film (p), parallax stacks up to 4 layers that slide at different speeds with the second dial (--s), polaroid drops in tilted with a caption. Images must be https or site-relative (a data:image under 2 KB also passes, for tiny placeholders); anything else (or no url) shows a gradient placeholder. Plain CSS, no script; standalone it shows the finished frame.'
+  compact_description: image with Ken Burns pan and zoom, parallax layers or a polaroid drop-in
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    url: 'string (optional). https image or site-relative path (data:image only under 2 KB). Otherwise a placeholder shows.'
+    mode: '"kenburns" | "parallax" | "polaroid" (optional, default "kenburns")'
+    layers: 'array (max 4) of {url, depth?} for parallax. depth 0-1 is how far the layer slides with --s. Default one layer from url.'
+    ratio: '"16:9" | "4:3" | "1:1" | "3:4" | "9:16" (optional, default "16:9")'
+    zoom: 'number (optional). End zoom for kenburns, 1-2. Default 1.15.'
+    pan_x: 'integer (optional). Pan in percent over the film, -20 to 20. Default -3.'
+    pan_y: 'integer (optional). Pan in percent, -20 to 20. Default -2.'
+    radius: 'integer (optional). Corner px, 0-60. Default 12.'
+    caption: 'string (optional, max 60).'
+    alt: 'string (optional, max 80). Accessible name. Default "Image".'
+    accent: '"#rrggbb" (optional). Placeholder colour. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_chart
+  stage: preview
+  description: 'Data that draws itself as p goes 0 to 1: bars that grow in turn with their values, a line that draws with its points and an area fade, or a donut that fills segment by segment with the total in the middle. Up to 8 non-negative values. Plain CSS and SVG, no script; standalone it renders the finished chart.'
+  compact_description: bar, line or donut chart that draws itself
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    kind: '"bars" | "line" | "donut" (optional, default "bars")'
+    data: 'array (max 8) of numbers or {value, label?}. Negative or non-numeric entries are dropped. label max 14.'
+    title: 'string (optional, max 40).'
+    unit: 'string (optional, max 6). Appended to values, e.g. % or k.'
+    height: 'integer (optional). Bars height or donut size px, 80-800. Default 260.'
+    size: 'integer (optional). Text px, 8-60. Default 18.'
+    label: 'string (optional, max 80). Accessible name.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Alternate bars and second donut segment.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_captions
+  stage: preview
+  description: 'Captions with a karaoke highlight: the line rises in with p, then each word lights in turn (a pill, or a colour change with style color) as the second dial (--s) goes 0 to 1. Up to 24 words. The animated caption for muted social video. Plain CSS, no script; standalone no word is lit.'
+  compact_description: karaoke-style captions that light word by word
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    text: 'string (max 120).'
+    size: 'integer (optional). px, 10-200. Default 48.'
+    align: '"start" | "middle" | "end" (optional, default "middle")'
+    style: '"pill" | "color" (optional, default "pill")'
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    accent: '"#rrggbb" (optional). Highlight. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_lower_third
+  stage: preview
+  description: 'A lower third: an accent bar draws, the name slides out of it behind a clip, and the role fades in under it as p goes 0 to 1. Plain CSS, no script; standalone it renders finished.'
+  compact_description: name and role lower third that draws and slides in
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    name: 'string (max 40).'
+    role: 'string (optional, max 60).'
+    size: 'integer (optional). Name px, 10-120. Default 36.'
+    color: '"#rrggbb" (optional). Name. Default the stage ink.'
+    accent: '"#rrggbb" (optional). Bar and role. Default the stage accent.'
+    fill: '"#rrggbb" (optional). Panel. Default near-black.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_wave
+  stage: preview
+  description: 'An audio-style waveform: 8 to 64 rounded bars whose heights move with the second dial (--s) and rise in left to right with p. Heights come from a fixed seed so it is deterministic and seekable. Plain CSS abs() and sin(), no script.'
+  compact_description: audio waveform bars that move on the clock
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    bars: 'integer (optional). 8-64. Default 32.'
+    height: 'integer (optional). px, 20-600. Default 120.'
+    gap: 'integer (optional). px, 0-20. Default 3.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Every second bar.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_repeat
+  stage: preview
+  description: 'A repeater: copies of one child block, each stepped by an offset (dx, dy in percent of the box), a rotation and a scale, appearing one after another as p goes 0 to 1. The stacked, fanned or spiralling duplicate effect. Only the first block is used; children cannot carry ids here, since they repeat. Plain CSS, no script.'
+  compact_description: copies of one block fanned or stacked with offset, rotation and scale
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    blocks: 'array of atom blocks. Only the first is repeated.'
+    copies: 'integer (optional). 2-16. Default 6.'
+    dx: 'number (optional). Step in percent of the box width, -60 to 60. Default 8.'
+    dy: 'number (optional). Step in percent of the box height, -60 to 60. Default 0.'
+    rotate: 'number (optional). Step in degrees, -90 to 90. Default 12.'
+    scale: 'number (optional). Step multiplier, 0.5-1.5. Default 0.92.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_media
+  stage: preview
+  description: 'A video poster with a play button that becomes the real player on click: YouTube, Vimeo or Loom, found from the url. The poster and button build on the film clock (p); the second dial (--s) pulses a ring around the button. The player is a lazy iframe that is not fetched until the viewer clicks, and it starts muted, so the film stays deterministic and nothing plays by itself. With an unrecognised url it is just the poster. Plain HTML and CSS, no script.'
+  compact_description: video poster with a play button that turns into the real player on click
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    url: 'string. A YouTube watch or youtu.be link, a Vimeo link or a Loom share link.'
+    poster: 'string (optional). https image or site-relative path (data:image only under 2 KB). Default a gradient.'
+    title: 'string (optional, max 60). Caption and accessible name. Default "Video".'
+    ratio: '"16:9" | "4:3" | "1:1" | "3:4" | "9:16" (optional, default "16:9")'
+    radius: 'integer (optional). Corner px, 0-60. Default 12.'
+    accent: '"#rrggbb" (optional). Play button. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_chat
+  stage: preview
+  description: 'A chat that plays on the clock as p goes 0 to 1: up to 6 messages rise in turn, user messages on the right in the accent colour, agent messages on the left, and each agent message shows typing dots before its text appears. Plain CSS, no script; standalone it renders the finished conversation.'
+  compact_description: chat conversation that plays message by message with typing dots
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    messages: 'array (max 6) of strings or {from: "user" | "agent", text}. Plain strings alternate user, agent. text max 120.'
+    agent: 'string (optional, max 20). Small label above the thread.'
+    size: 'integer (optional). Text px, 8-60. Default 22.'
+    accent: '"#rrggbb" (optional). User bubbles. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_wiggle
+  stage: preview
+  description: 'Wiggle: its children (up to 12 atoms, each placed by `place` in percent of the wiggle box, like a motion_layer) drift and tremble continuously as the second dial (--s) runs, and sit still at 0. The always-moving, never-static look for floating elements. Plain CSS sin(), deterministic and seekable.'
+  compact_description: wrapper whose children drift and tremble as a dial runs
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    blocks: 'array (max 12) of atom blocks, each with an optional place {x, y, w, h} in percent.'
+    amount: 'integer (optional). Peak travel px, 1-80. Default 10.'
+    frequency: 'integer (optional). Oscillations per unit of --s, 1-40. Default 6.'
+    tilt: 'number (optional). Peak rotation degrees, 0-15. Default 2.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_textpath
+  stage: preview
+  description: 'Text that runs along a curve and types itself on, one character at a time, as p goes 0 to 1. d is path data from the same strict grammar as motion_path (commands and numbers only; anything else falls back to a gentle arc), optionally shown as a faint guide line. Plain SVG textPath, no script; standalone it renders the whole line.'
+  compact_description: text that follows a curved path and types on
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    text: 'string (max 40).'
+    d: 'string (optional, max 700 characters of path commands, numbers and separators). Default a gentle arc.'
+    guide: 'bool (optional). Show the path as a faint line. Default false.'
+    size: 'integer (optional). Text px, 8-120. Default 30.'
+    w: 'integer (optional). ViewBox width, 50-2000. Default 400.'
+    h: 'integer (optional). ViewBox height, 50-2000. Default 300.'
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    accent: '"#rrggbb" (optional). Guide line. Default the stage accent.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

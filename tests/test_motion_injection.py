@@ -71,7 +71,7 @@ def test_no_motion_atom_field_can_inject():
             for payload in [TAG, CSS, NQ] + CODE:
                 for v in (payload, [payload], [{k: payload for k in KEYS}]):
                     blk = {"type": typ, f: v}
-                    if typ in ("motion_layer", "motion_group", "motion_mask", "motion_shake", "motion_device"):
+                    if typ in ("motion_layer", "motion_group", "motion_mask", "motion_shake", "motion_device", "motion_repeat", "motion_wiggle"):
                         blk.setdefault("blocks", [{"type": "motion_pill", "text": payload, "href": payload}])
                     try:
                         out = wa._RENDERERS[typ](blk)

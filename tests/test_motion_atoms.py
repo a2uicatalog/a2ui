@@ -39,7 +39,9 @@ PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
 REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch", "motion_leader", "motion_path", "motion_mask"]  # from the studied reference film, 2026-10-01
 REEL3 = ["motion_device", "motion_strike", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
 REEL4 = ["motion_marquee", "motion_glitch", "motion_bounce", "motion_scatter", "motion_contours", "motion_rail"]  # fourth batch, 2026-10-01
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + DEMO_ATOMS
+REEL5 = ["motion_image", "motion_chart", "motion_captions", "motion_lower_third", "motion_wave", "motion_repeat"]  # batch 5, 2026-10-02
+REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -192,6 +194,19 @@ PAYLOADS = {
     "motion_scatter": [{}, {"items": ["Ticket", {"title": "Label <b>", "text": "x" * 80}, {"title": ""}, 5, None, "a", "b", "c", "d", "e"], "card_w": 30, "size": 20, "fill": "#101820", "color": "#ffffff", "accent": "#ff6a2b"}, {"items": "no", "card_w": 9999, "fill": "url(x)"}],
     "motion_contours": [{}, {"lines": 20, "width": 3, "accent": "#38bdf8", "accent2": "#ff6a2b"}, {"lines": 9999, "width": "x", "accent": "red;x", "accent2": "url(x)"}],
     "motion_rail": [{}, {"steps": ["Question", "Load PDF", "Verify <b>", "Answer", "", 5, None, "x" * 60, "g"], "size": 20, "accent": "#ff6a2b"}, {"steps": "no", "size": 9999}, {"steps": ["only"]}],
+    "motion_image": [{}, {"url": "https://example.com/a.jpg", "mode": "kenburns", "zoom": 1.4, "pan_x": 10, "pan_y": -8, "ratio": "4:3", "radius": 24, "caption": "A <b>photo</b>", "alt": "x"}, {"mode": "parallax", "layers": [{"url": "https://example.com/1.png", "depth": 0.2}, {"url": "/img/2.png", "depth": 1}, "junk", {"url": "javascript:alert(1)"}, {"url": "https://x.y/a\" onerror=\"alert(1)"}, {}, {}, {}], "ratio": "1:1"},
+                     {"mode": "polaroid", "url": "data:image/png;base64,iVBORw0KGgo=", "caption": "Day 1"}, {"url": "javascript:alert(1)", "mode": "toString", "ratio": "x", "zoom": 99, "pan_x": "x", "radius": 9999, "accent": "red;x"}, {"url": "//evil.com/x.png"}],
+    "motion_chart": [{}, {"kind": "line", "data": [3, {"value": 9, "label": "Q2 <b>"}, 5, 7], "title": "Growth", "unit": "%", "accent": "#ff6a2b"}, {"kind": "donut", "data": [{"value": 30, "label": "a"}, {"value": 20}, 10, 40, 5], "accent2": "#2ac4ce"},
+                      {"kind": "bars", "data": [1, -5, "x", None, True, {"value": 1e300}, {"label": "no value"}, 4, 4, 4, 4, 4], "height": 9999, "size": "x", "unit": "x" * 20}, {"data": "no", "kind": "constructor"}, {"kind": "donut", "data": [0, 0]}, {"kind": "line", "data": [5]}],
+    "motion_captions": [{}, {"text": "Il te faut un *plan* now", "size": 90, "align": "end", "style": "color", "color": "#ffffff", "accent": "#ff6a2b"}, {"text": "x" * 300}, {"text": 5, "size": 9999, "align": "toString", "accent": "url(x)"}, {"text": "  a   b  "}],
+    "motion_lower_third": [{}, {"name": "Ada <b>", "role": "Mathematician", "size": 60, "accent": "#ff6a2b", "color": "#fff", "fill": "#112233"}, {"name": 5, "role": "x" * 100, "size": 9999, "fill": "url(x)"}],
+    "motion_wave": [{}, {"bars": 48, "height": 200, "gap": 6, "accent": "#ff6a2b", "accent2": "#2ac4ce"}, {"bars": 9999, "height": "x", "gap": -3, "accent": "red;x"}],
+    "motion_repeat": [{}, {"blocks": [{"type": "motion_pill", "text": "Hi"}], "copies": 8, "dx": 5, "dy": 3, "rotate": 20, "scale": 0.85}, {"blocks": "no", "copies": 9999, "dx": "x", "scale": 99}, {"blocks": [{"type": "no_such_atom"}]}, {"blocks": [{"type": "motion_text", "id": "t", "text": "x"}], "copies": 3}],
+    "motion_media": [{}, {"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "poster": "https://example.com/p.jpg", "title": "Demo <b>", "ratio": "4:3", "radius": 20, "accent": "#ff6a2b"}, {"url": "https://vimeo.com/123456", "title": "V"}, {"url": "https://www.loom.com/share/abc123DEF"},
+                     {"url": "javascript:alert(1)", "poster": "javascript:alert(1)", "title": 5, "ratio": "x", "radius": 9999}, {"url": "https://www.youtube.com/watch?v=aaaaaaaaaaa\" onload=\"alert(1)", "title": "\"><img src=x onerror=alert(1)>"}],
+    "motion_chat": [{}, {"agent": "Claude <b>", "size": 26, "accent": "#ff6a2b", "messages": [{"from": "user", "text": "Make me a UI"}, {"from": "agent", "text": "On it \u2713"}, "plain", "plain two", {"text": ""}, 5, None, "x" * 200, "g"]}, {"messages": "no", "size": 9999, "accent": "red;x"}],
+    "motion_wiggle": [{}, {"amount": 25, "frequency": 12, "tilt": 6, "blocks": [{"type": "motion_pill", "id": "a", "text": "x", "place": {"x": 10, "y": 10}}, {"type": "motion_text", "text": "y", "place": {"x": 30, "y": 40, "w": 50}}]}, {"amount": 9999, "frequency": "x", "tilt": 99, "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 14}, {"blocks": "no"}],
+    "motion_textpath": [{}, {"text": "Along the curve <b>", "d": "M 10 200 Q 200 0 390 200", "guide": True, "size": 40, "w": 400, "h": 250, "color": "#ffffff", "accent": "#ff6a2b"}, {"text": "x" * 80, "d": "M 0 0\" onload=\"alert(1)", "size": 9999, "w": "x", "color": "url(x)"}, {"text": 5, "d": 5, "guide": "yes"}, {"text": "a b  c", "d": "M 0 0 L 100 100"}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],

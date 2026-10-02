@@ -422,8 +422,8 @@ _RENDERERS['demo_panel'] = function(b) {
 
 // ─── motion_timeline ─────────────────────────────────────────────────────────
 var _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]};
-var _MO_PROPS = {x: [-200, 300], y: [-200, 300], opacity: [0, 1], scale: [0, 6], rotate: [-360, 360], rx: [-80, 80], ry: [-80, 80], blur: [0, 40], clip: [0, 1], p: [-0.5, 1.5], step: [0, 40]};
-var _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step'];
+var _MO_PROPS = {x: [-200, 300], y: [-200, 300], opacity: [0, 1], scale: [0, 6], rotate: [-360, 360], rx: [-80, 80], ry: [-80, 80], blur: [0, 40], clip: [0, 1], p: [-0.5, 1.5], step: [0, 40], cs: [0, 5]};
+var _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs'];
 var _MO_CAM = {x: [-100, 200], y: [-100, 200], zoom: [0.25, 6], rx: [-80, 80], ry: [-80, 80], rz: [-180, 180]};
 var _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz'];
 var _MO_ORIGIN = {c: '50% 50%', tl: '0 0', t: '50% 0', b: '50% 100%', l: '0 50%', r: '100% 50%'};
@@ -445,7 +445,7 @@ var _MO_TIMELINE_JS =
   'if(tr)e.style.transform=tr;' +
   'if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);' +
   'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";' +
-  'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip));e.style.clipPath=cl<0.999?"inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)":"";}' +
+  'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}' +
   'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}' +
   'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}' +
   'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}' +
@@ -1014,13 +1014,13 @@ _RENDERERS['motion_mask'] = function(b) {
 // scene's start and `overlap` seconds later is the hand-over: the old scene leaves while the new one arrives. Your own tracks
 // on the same layer are applied after, and win.
 var _MO_STITCH = {
-  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1
+  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1
 };
 var _MO_STITCH_IN = {
-  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}
+  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}, 'iris': {clip: 0, cs: 1}, 'clock': {clip: 0, cs: 2}, 'slice': {clip: 0, cs: 3}, 'flip': {opacity: 0, ry: -90}, 'spin': {opacity: 0, rotate: -14, scale: 0.8, blur: 6}
 };
 var _MO_STITCH_OUT = {
-  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: -8}, 'zoom-through': {opacity: 0, scale: 1.12, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: -6}, 'whip': {opacity: 0, x: -18, blur: 22}, 'wipe': {opacity: 0}
+  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: -8}, 'zoom-through': {opacity: 0, scale: 1.12, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: -6}, 'whip': {opacity: 0, x: -18, blur: 22}, 'wipe': {opacity: 0}, 'iris': {opacity: 0}, 'clock': {opacity: 0}, 'slice': {opacity: 0}, 'flip': {opacity: 0, ry: 90}, 'spin': {opacity: 0, rotate: 14, scale: 1.2, blur: 6}
 };
 var _MO_REST = {opacity: 1, x: 0, y: 0, scale: 1, blur: 0, clip: 1};
 function _moAt(k, bpm, dur) {
@@ -1053,7 +1053,7 @@ function _moStitch(b, ids, bpm, dur, st) {
     }
     if (nxt) {
       if (fout === 'cut') _moStitchKey(keys, nxt.t, {opacity: 0}, 'hold');
-      else if (fout === 'wipe') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
+      else if (fout === 'wipe' || fout === 'iris' || fout === 'clock' || fout === 'slice') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
       else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, _MO_STITCH_OUT[fout], 'accelerate'); }
     }
     if (!keys.length) continue;
@@ -1062,6 +1062,7 @@ function _moStitch(b, ids, bpm, dur, st) {
     // a rest key may carry props this scene never moves: keep only the props some transition really animates
     var live = {};
     for (p in props) { var seenVals = {}, cnt = 0; for (q = 0; q < keys.length; q++) if (own.call(keys[q], p) && !own.call(seenVals, keys[q][p])) { seenVals[keys[q][p]] = 1; cnt++; } if (cnt > 1) live[p] = 1; }
+    if (live.clip) live.cs = 1; // the clip shape is constant but must ride with the clip
     var clean = [];
     for (q = 0; q < keys.length; q++) { var kk = {t: keys[q].t}; for (p in live) if (own.call(keys[q], p)) kk[p] = keys[q][p]; if (keys[q].ease) kk.ease = keys[q].ease; clean.push(kk); }
     var pjs = _moTrackJs(clean, _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st);
@@ -1268,4 +1269,197 @@ _RENDERERS['motion_rail'] = function(b) {
   return '<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);height:4.4em;">'
     + '<div style="position:absolute;left:4em;right:4em;top:0;height:0;"><div style="position:absolute;left:0;right:0;top:0.4em;height:2px;background:' + _MO_MIX_LINE + ';"></div>'
     + '<div style="position:absolute;left:0;top:0.4em;height:2px;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></div>' + out + '</div></div>';
+};
+
+// ─── batch 5 (2026-10-02, from the motion-mechanics sweep): image moves, charts that draw, captions, lower third, waveform, repeater ───
+// https images, site-relative paths and data:image only; anything else falls back to a gradient placeholder.
+var _MO_IMG_OK = /^(https:\/\/[^\s"'<>\\`]{1,500}|\/(?!\/)[^\s"'<>\\`]{0,500}|data:image\/(png|jpe?g|gif|webp|avif);base64,[A-Za-z0-9+\/=]{1,200000})$/;
+function _moImg(v) { return (typeof v === 'string' && _MO_IMG_OK.test(v.trim())) ? v.trim() : ''; }
+var _MO_RATIO = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '3:4': '3/4', '9:16': '9/16'};
+var _MO_IMG_MODE = {kenburns: 1, parallax: 1, polaroid: 1};
+
+// An image that moves: a slow pan and zoom (kenburns), stacked layers that slide at different speeds with --s (parallax), or a
+// polaroid that drops in tilted with a caption.
+_RENDERERS['motion_image'] = function(b) {
+  var mode = _moOwn(_MO_IMG_MODE, b.mode, 'kenburns'), ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), rad = _ffInt(b.radius, 12, 0, 60), alt = _moStr(b.alt, 80) || 'Image', cap = _moStr(b.caption, 60);
+  var zoom = _ffNum(b.zoom, 1.15, 1, 2, 2), px = _ffInt(b.pan_x, -3, -20, 20), py = _ffInt(b.pan_y, -2, -20, 20), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), url = _moImg(b.url);
+  function pic(u, extra) {
+    return u ? '<img src="' + _esc(u) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;left:-12%;top:-12%;width:124%;height:124%;object-fit:cover;' + extra + '">'
+      : '<div aria-hidden="true" style="position:absolute;left:-12%;top:-12%;width:124%;height:124%;background:linear-gradient(135deg,' + acc + ',color-mix(in srgb,' + acc + ' 25%,#0b0712));' + extra + '"></div>';
+  }
+  var inner = '';
+  if (mode === 'parallax') {
+    var src = Array.isArray(b.layers) ? b.layers : [], i, n = 0;
+    for (i = 0; i < src.length && n < 4; i++) {
+      var l = src[i], u = l && typeof l === 'object' ? _moImg(l.url) : '', d = l && typeof l === 'object' ? _ffNum(l.depth, 0.5, 0, 1, 2) : '0.5';
+      if (!u && !(l && typeof l === 'object')) continue;
+      inner += pic(u, 'transform:translateX(calc(var(--s,0)*' + _ffNum(parseFloat(d) * 14, 0, 0, 14, 2) + '%));');
+      n++;
+    }
+    if (!n) inner = pic(url, 'transform:translateX(calc(var(--s,0)*7%));');
+  } else {
+    inner = pic(url, 'transform:translate(calc(var(--p,1)*' + px + '%),calc(var(--p,1)*' + py + '%)) scale(calc(1 + var(--p,1)*' + _ffNum(zoom - 1, 0.15, 0, 1, 2) + '));');
+  }
+  var frame = '<div style="position:relative;overflow:hidden;aspect-ratio:' + ratio + ';border-radius:' + rad + 'px;width:100%;background:#0b0712;">' + inner + '</div>';
+  if (mode === 'polaroid') {
+    return '<div role="img" aria-label="' + _esc(alt) + '" style="width:100%;box-sizing:border-box;padding:4% 4% 0;background:#fff;border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,0.4);opacity:clamp(0,calc(var(--p,1)*5),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*-30%)) rotate(calc(-6deg + clamp(0,var(--p,1),1)*3deg));">'
+      + '<div style="position:relative;overflow:hidden;aspect-ratio:' + (ratio === '16/9' ? '1/1' : ratio) + ';background:#0b0712;">' + pic(url, '') + '</div>'
+      + '<div style="padding:0.9em 0 1.1em;text-align:center;font-family:' + _MO_SANS + ';font-weight:700;color:#14161c;font-size:1.1em;min-height:1.4em;">' + _esc(cap) + '</div></div>';
+  }
+  return '<div role="img" aria-label="' + _esc(alt) + '" style="width:100%;">' + frame + (cap ? '<div style="margin-top:0.6em;font-family:' + _MO_SANS + ';font-size:0.9em;color:var(--mt-mute,#94a3b8);">' + _esc(cap) + '</div>' : '') + '</div>';
+};
+
+// Data that draws itself: bars that grow, a line that draws with its points, or a donut that fills segment by segment.
+var _MO_CHART = {bars: 1, line: 1, donut: 1};
+_RENDERERS['motion_chart'] = function(b) {
+  var kind = _moOwn(_MO_CHART, b.kind, 'bars'), src = Array.isArray(b.data) ? b.data : [], pts = [], i;
+  for (i = 0; i < src.length && pts.length < 8; i++) {
+    var it = src[i], obj = it && typeof it === 'object', v = obj ? it.value : it;
+    if (typeof v !== 'number' || !isFinite(v) || v < 0) continue;
+    pts.push({v: Math.min(v, 1e9), l: obj ? _moStr(it.label, 14) : ''});
+  }
+  if (!pts.length) pts = [{v: 40, l: 'A'}, {v: 70, l: 'B'}, {v: 55, l: 'C'}];
+  var n = pts.length, mx = 0, tot = 0, size = _ffInt(b.size, 18, 8, 60), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), acc2 = _moInk(b, 'accent2', ''), unit = _moStr(b.unit, 6), title = _moStr(b.title, 40);
+  for (i = 0; i < n; i++) { mx = Math.max(mx, pts[i].v); tot += pts[i].v; }
+  if (mx <= 0) mx = 1;
+  if (tot <= 0) tot = 1;
+  var body = '', lab = _moStr(b.label, 80) || title || 'Chart';
+  if (kind === 'bars') {
+    for (i = 0; i < n; i++) {
+      var h = _ffNum(pts[i].v / mx * 100, 0, 0, 100, 1), col = acc2 && i % 2 ? acc2 : acc;
+      body += '<div style="--u:clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1);flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;height:100%;">'
+        + '<div style="margin-bottom:0.3em;font-weight:700;opacity:var(--u);">' + _esc(_moFmt(pts[i].v, 0, '', unit)) + '</div>'
+        + '<div style="width:70%;height:calc(' + h + '%*var(--u)*0.8);background:' + col + ';border-radius:0.3em 0.3em 0 0;"></div>'
+        + '<div style="margin-top:0.5em;font-size:0.8em;color:var(--mt-mute,#94a3b8);white-space:nowrap;">' + _esc(pts[i].l) + '</div></div>';
+    }
+    body = '<div style="display:flex;align-items:flex-end;gap:2%;height:' + _ffInt(b.height, 260, 80, 800) + 'px;padding-top:1.5em;border-bottom:2px solid ' + _MO_MIX_LINE + ';">' + body + '</div>';
+  } else if (kind === 'line') {
+    var W = 400, H = 200, d = '', area = '', dots = '';
+    for (i = 0; i < n; i++) {
+      var x = n > 1 ? Math.floor(i * W * 10 / (n - 1)) / 10 : W / 2, y = _ffNum(H - 10 - pts[i].v / mx * (H - 30), 0, 0, H, 1);
+      d += (i ? ' L ' : 'M ') + _ffNum(x, 0, 0, W, 1) + ' ' + y;
+      dots += '<circle cx="' + _ffNum(x, 0, 0, W, 1) + '" cy="' + y + '" r="5" style="fill:' + acc + ';transform-box:fill-box;transform-origin:center;transform:scale(clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1));"/>';
+    }
+    area = d + ' L ' + _ffNum(n > 1 ? W : W / 2, 0, 0, W, 1) + ' ' + H + ' L ' + _ffNum(n > 1 ? 0 : W / 2, 0, 0, W, 1) + ' ' + H + ' Z';
+    body = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" aria-hidden="true" style="display:block;overflow:visible;">'
+      + '<path d="' + area + '" style="fill:' + acc + ';opacity:calc(0.18*clamp(0,calc(var(--p,1) - 0.5)*2,1));"/>'
+      + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + acc + ';stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>' + dots + '</svg>';
+  } else {
+    var cum = 0, segs = '', cols = [acc, acc2 || 'color-mix(in srgb,' + acc + ' 55%,#fff)', 'color-mix(in srgb,' + acc + ' 35%,#0b0712)', 'color-mix(in srgb,' + acc + ' 70%,#ff3d81)'];
+    for (i = 0; i < n; i++) {
+      var share = pts[i].v / tot, c0 = _ffNum(cum, 0, 0, 1, 4), sh = _ffNum(share, 0, 0, 1, 4);
+      segs += '<circle cx="60" cy="60" r="44" pathLength="1" style="fill:none;stroke:' + cols[i % 4] + ';stroke-width:16;stroke-dasharray:calc(clamp(0,calc(var(--p,1) - ' + c0 + '),' + sh + ')) 1;stroke-dashoffset:-' + c0 + ';transform:rotate(-90deg);transform-origin:60px 60px;"/>';
+      cum += share;
+    }
+    body = '<svg viewBox="0 0 120 120" width="' + _ffInt(b.height, 260, 80, 800) + '" aria-hidden="true" style="display:block;margin:0 auto;max-width:100%;">' + segs
+      + '<text x="60" y="60" text-anchor="middle" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:16px;font-weight:800;fill:var(--mt-ink,#f1f5f9);">' + _esc(_moFmt(tot, 0, '', unit)) + '</text></svg>';
+  }
+  return '<div role="img" aria-label="' + _esc(lab) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);">'
+    + (title ? '<div style="font-weight:800;margin-bottom:0.4em;">' + _esc(title) + '</div>' : '') + body + '</div>';
+};
+
+// Captions with a karaoke highlight: the line rises in with p, then each word lights in turn as the second dial (--s) goes 0 to 1.
+_RENDERERS['motion_captions'] = function(b) {
+  var text = _moStr(b.text, 120) || 'Words that light up as they are spoken', words = text.split(/\s+/).filter(function(w) { return w; }).slice(0, 24), n = words.length, i, out = '';
+  var size = _ffInt(b.size, 48, 10, 200), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'middle'), pill = b.style !== 'color';
+  for (i = 0; i < n; i++) {
+    var k = 'clamp(0,calc(1.5 - abs(var(--s,1)*' + n + ' - ' + (i + 0.5) + ')*3),1)';
+    out += '<span style="--k:' + k + ';display:inline-block;margin:0.08em 0.14em;padding:0.04em 0.28em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + (pill ? '#0b0712' : acc) + ');'
+      + (pill ? 'background:color-mix(in srgb,' + acc + ' calc(var(--k)*100%),transparent);' : '') + 'transform:scale(calc(1 + var(--k)*0.08));">' + _esc(words[i]) + '</span>';
+  }
+  return '<div role="img" aria-label="' + _esc(text) + '" style="width:100%;text-align:' + align + ';font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:800;line-height:1.25;opacity:clamp(0,calc(var(--p,1)*5),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.4em));">' + out + '</div>';
+};
+
+// Lower third: an accent bar draws, the name slides out of it, the role fades in under it.
+_RENDERERS['motion_lower_third'] = function(b) {
+  var name = _moStr(b.name, 40) || 'Name', role = _moStr(b.role, 60), size = _ffInt(b.size, 36, 10, 120), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), fill = _moInk(b, 'fill', '#0b0712');
+  return '<div style="display:flex;align-items:stretch;font-family:' + _MO_SANS + ';font-size:' + size + 'px;">'
+    + '<div aria-hidden="true" style="width:0.18em;background:' + acc + ';transform-origin:50% 100%;transform:scaleY(clamp(0,calc(var(--p,1)*4),1));"></div>'
+    + '<div style="overflow:hidden;padding:0.25em 0.8em 0.3em 0.6em;background:color-mix(in srgb,' + fill + ' 82%,transparent);clip-path:inset(0 calc((1 - clamp(0,calc(var(--p,1)*2.2 - 0.2),1))*100%) 0 0);">'
+    + '<div style="font-weight:800;line-height:1.1;color:' + color + ';white-space:nowrap;">' + _esc(name) + '</div>'
+    + (role ? '<div style="margin-top:0.15em;font-size:0.55em;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:' + acc + ';white-space:nowrap;opacity:clamp(0,calc((var(--p,1) - 0.45)*4),1);">' + _esc(role) + '</div>' : '') + '</div></div>';
+};
+
+// An audio-style waveform: bars whose heights move with the second dial (--s), rising in with p. Heights are seeded, so it is deterministic.
+var _MO_WAVE_SEED = [5, 9, 3, 8, 6, 10, 4, 7, 9, 2, 8, 5, 10, 3, 7, 6];
+_RENDERERS['motion_wave'] = function(b) {
+  var n = _ffInt(b.bars, 32, 8, 64), h = _ffInt(b.height, 120, 20, 600), gap = _ffInt(b.gap, 3, 0, 20), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), acc2 = _moInk(b, 'accent2', ''), i, out = '';
+  for (i = 0; i < n; i++) {
+    var base = _MO_WAVE_SEED[i % 16] / 10, ph = _ffNum(i * 0.7 + _MO_WAVE_SEED[(i * 5) % 16] * 0.3, 0, 0, 100, 2), col = acc2 && i % 2 ? acc2 : acc;
+    out += '<div style="flex:1;min-width:1px;height:calc(' + h + 'px*' + _ffNum(base, 0.5, 0, 1, 2) + '*(0.35 + 0.65*abs(sin(calc(var(--s,0)*20 + ' + ph + ')))) *clamp(0,calc(var(--p,1)*3 - ' + _ffNum(i / n * 1.5, 0, 0, 2, 2) + '),1));background:' + col + ';border-radius:999px;"></div>';
+  }
+  return '<div role="img" aria-label="Audio waveform" style="display:flex;align-items:center;gap:' + gap + 'px;width:100%;height:' + h + 'px;">' + out + '</div>';
+};
+
+// Repeater: copies of one child, each stepped by an offset, rotation and scale, appearing one after another as p goes 0 to 1.
+_RENDERERS['motion_repeat'] = function(b) {
+  var n = _ffInt(b.copies, 6, 2, 16), dx = _ffNum(b.dx, 8, -60, 60, 1), dy = _ffNum(b.dy, 0, -60, 60, 1), rot = _ffNum(b.rotate, 12, -90, 90, 1), sc = _ffNum(b.scale, 0.92, 0.5, 1.5, 3), blk = Array.isArray(b.blocks) && b.blocks.length ? b.blocks[0] : null, i, out = '';
+  var inner = blk ? _moRender(blk) : '';
+  for (i = 0; i < n; i++) {
+    out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1);position:absolute;left:0;top:0;width:100%;height:100%;opacity:var(--u);transform:translate(calc(' + dx + '%*' + i + '),calc(' + dy + '%*' + i + ')) rotate(calc(' + rot + 'deg*' + i + ')) scale(calc(' + _ffNum(Math.pow(sc, i), 1, 0, 10, 4) + '));">' + inner + '</div>';
+  }
+  return '<div style="position:relative;width:100%;height:100%;">' + out + '</div>';
+};
+
+// ─── batch 6 (2026-10-02): poster-to-player, clock-driven chat, wiggle, text on a path ───────────────────────────────────────
+// A poster with a play button that becomes the real player on click (YouTube, Vimeo or Loom). The player loads only after the click:
+// a hidden-until-checked iframe with loading=lazy is not fetched, so the film stays deterministic and nothing autoplays on its own.
+var _MO_MEDIA_CSS = '<style>.mtm-f{display:none}.mtm-c:checked~.mtm-f{display:block}.mtm-c:checked~.mtm-ui{display:none}.mtm-c:checked{pointer-events:none}</style>';
+_RENDERERS['motion_media'] = function(b) {
+  var url = typeof b.url === 'string' ? b.url : '', src = '', m;
+  if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/))) src = 'https://www.youtube.com/embed/' + m[1] + '?rel=0&autoplay=1&mute=1&playsinline=1';
+  else if ((m = url.match(/vimeo\.com\/(\d+)/))) src = 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&muted=1';
+  else if ((m = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/))) src = 'https://www.loom.com/embed/' + m[1] + '?autoplay=1';
+  var ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), rad = _ffInt(b.radius, 12, 0, 60), title = _moStr(b.title, 60) || 'Video', acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), poster = _moImg(b.poster);
+  var bg = poster ? '<img src="' + _esc(poster) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;transform:scale(calc(1.02 + var(--p,1)*0.06));">'
+    : '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(135deg,color-mix(in srgb,' + acc + ' 45%,#0b0712),#0b0712);"></div>';
+  var play = '<div aria-hidden="true" style="position:absolute;left:50%;top:50%;width:5.2em;height:5.2em;margin:-2.6em 0 0 -2.6em;border-radius:50%;background:' + acc + ';display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 calc(var(--s,0)*1.4em) color-mix(in srgb,' + acc + ' calc((1 - var(--s,0))*40%),transparent);transform:scale(clamp(0,calc(var(--p,1)*3),1));">'
+    + '<svg viewBox="0 0 24 24" width="46%" height="46%" style="margin-left:8%;"><path d="M6 3.5v17l14-8.5z" fill="#fff"/></svg></div>';
+  return (src ? _MO_MEDIA_CSS : '') + '<div role="group" aria-label="' + _esc(title) + '" style="position:relative;width:100%;aspect-ratio:' + ratio + ';border-radius:' + rad + 'px;overflow:hidden;background:#000;font-family:' + _MO_SANS + ';font-size:16px;">'
+    + (src ? '<input type="checkbox" class="mtm-c" aria-label="Play ' + _esc(title) + '" style="position:absolute;left:0;top:0;width:100%;height:100%;margin:0;opacity:0;z-index:3;cursor:pointer;">' : '')
+    + '<div class="mtm-ui" style="position:absolute;left:0;top:0;width:100%;height:100%;">' + bg + play
+    + '<div style="position:absolute;left:0;right:0;bottom:0;padding:1.6em 1.2em 0.9em;background:linear-gradient(transparent,rgba(0,0,0,0.65));color:#fff;font-weight:700;opacity:clamp(0,calc(var(--p,1)*4),1);">' + _esc(title) + '</div></div>'
+    + (src ? '<iframe class="mtm-f" loading="lazy" src="' + _esc(src) + '" title="' + _esc(title) + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="position:absolute;left:0;top:0;width:100%;height:100%;border:0;"></iframe>' : '') + '</div>';
+};
+
+// A chat that plays on the clock: each message rises in turn, and an agent message shows typing dots first.
+_RENDERERS['motion_chat'] = function(b) {
+  var src = Array.isArray(b.messages) ? b.messages : [], msgs = [], i;
+  for (i = 0; i < src.length && msgs.length < 6; i++) {
+    var m = src[i], obj = m && typeof m === 'object', t = _moStr(typeof m === 'string' ? m : (obj ? m.text : ''), 120);
+    if (t) msgs.push({t: t, me: obj ? m.from === 'user' : i % 2 === 0});
+  }
+  if (!msgs.length) msgs = [{t: 'Hello', me: true}, {t: 'Hi, how can I help?', me: false}];
+  var n = msgs.length, size = _ffInt(b.size, 22, 8, 60), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), name = _moStr(b.agent, 20), out = '';
+  for (i = 0; i < n; i++) {
+    var me = msgs[i].me, u = '--u:clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1);';
+    var dots = me ? '' : '<span aria-hidden="true" style="position:absolute;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:0.25em;opacity:calc(clamp(0,calc(var(--u)*8),1)*(1 - clamp(0,calc((var(--u) - 0.3)*8),1)));">'
+      + '<i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i><i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i><i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i></span>';
+    out += '<div style="' + u + 'display:flex;justify-content:' + (me ? 'flex-end' : 'flex-start') + ';margin-top:0.6em;transform:translateY(calc((1 - var(--u))*0.8em));">'
+      + '<div style="position:relative;max-width:78%;padding:0.6em 0.95em;border-radius:1.1em;' + (me ? 'border-bottom-right-radius:0.3em;background:' + acc + ';color:#fff;' : 'border-bottom-left-radius:0.3em;background:' + _MO_MIX_FILL + ';border:1px solid ' + _MO_MIX_LINE + ';color:var(--mt-ink,#f1f5f9);') + 'line-height:1.3;opacity:clamp(0,calc(var(--u)*6),1);">'
+      + dots + '<span style="opacity:' + (me ? '1' : 'clamp(0,calc((var(--u) - 0.35)*8),1)') + ';">' + _esc(msgs[i].t) + '</span></div></div>';
+  }
+  return '<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;">' + (name ? '<div style="font-size:0.75em;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);">' + _esc(name) + '</div>' : '') + out + '</div>';
+};
+
+// Wiggle: its children drift and tremble continuously as the second dial (--s) runs, at rest at 0. Children are placed in percent of the box.
+_RENDERERS['motion_wiggle'] = function(b) {
+  var amp = _ffInt(b.amount, 10, 1, 80), freq = _ffInt(b.frequency, 6, 1, 40), rot = _ffNum(b.tilt, 2, 0, 15, 1), blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 12) : [], inner = '', i, st = {dropped: 0}, seen = {}, ids = {};
+  for (i = 0; i < blocks.length; i++) { var w = _moPlaced(blocks[i], seen, ids, st); if (w !== null) inner += w; }
+  var tf = 'translate(calc(' + amp + 'px*sin(calc(var(--s,0)*' + freq + '*6.2832))),calc(' + Math.floor(amp * 0.7 + 0.5) + 'px*sin(calc(var(--s,0)*' + freq + '*8.1)))) rotate(calc(' + rot + 'deg*sin(calc(var(--s,0)*' + freq + '*5.3))))';
+  return '<div style="position:absolute;left:0;top:0;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>';
+};
+
+// Text that runs along a path and types itself on, one character at a time as p goes 0 to 1.
+_RENDERERS['motion_textpath'] = function(b) {
+  var text = _moStr(b.text, 40) || 'Text on a path', d = typeof b.d === 'string' ? b.d.trim() : '';
+  if (!_MO_PATH_OK.test(d)) d = 'M 20 220 C 120 40 280 40 380 220';
+  var vw = _ffInt(b.w, 400, 50, 2000), vh = _ffInt(b.h, 300, 50, 2000), size = _ffInt(b.size, 30, 8, 120), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), guide = b.guide === true;
+  var h = 7, i, chars = Array.from(text), n = chars.length, spans = '';
+  for (i = 0; i < d.length; i++) h = (h * 31 + d.charCodeAt(i)) % 1000003;
+  var id = 'mtp' + h;
+  for (i = 0; i < n; i++) spans += '<tspan style="fill-opacity:clamp(0,calc(var(--p,1)*' + (n + 2) + ' - ' + i + '),1);">' + _esc(chars[i] === ' ' ? ' ' : chars[i]) + '</tspan>';
+  return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" role="img" aria-label="' + _esc(text) + '" style="display:block;overflow:visible;">'
+    + '<defs><path id="' + id + '" d="' + d + '"/></defs>' + (guide ? '<path d="' + d + '" style="fill:none;stroke:' + acc + ';stroke-width:2;opacity:0.35;"/>' : '')
+    + '<text style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:800;fill:' + color + ';letter-spacing:0.04em;"><textPath href="#' + id + '" startOffset="4%">' + spans + '</textPath></text></svg>';
 };
