@@ -10993,6 +10993,118 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_goo
+  stage: preview
+  description: 'Liquid blobs that merge and split like metaballs: up to 8 circles move from a start point to an end point as p goes 0 to 1 and orbit a little with the second dial (--s), inside an SVG whose goo filter (blur then an alpha threshold) is fixed markup, so nothing from the payload reaches it. Coordinates are in a 0-100 box that scales to the placed width. Plain SVG and CSS, no script; standalone it shows the finished blobs.'
+  compact_description: liquid metaball blobs that merge and split as they move
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    blobs: 'array (max 8) of {x, y, x2?, y2?, r?}. x, y start 0-100; x2, y2 end (default = start); r radius 2-40 (default 10).'
+    orbit: 'number (optional). Orbit radius in box units, 0-20. Default 4.'
+    color: '"#rrggbb" (optional). Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Every second blob.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_finish
+  stage: preview
+  description: 'A finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a vignette, warm or cool light leaks that drift, and an optional glass sheen that sweeps across with p. Place it last and full size (place 0,0,100,100); it never takes clicks. p fades it in. Plain SVG and CSS, no script.'
+  compact_description: film grain, vignette, light leaks and glass sheen over the frame
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    grain: 'bool (optional). Film grain. Default true.'
+    grain_amount: 'number (optional). 0-0.5. Default 0.12.'
+    grain_size: '"fine" | "medium" | "coarse" (optional, default "medium")'
+    vignette: 'bool (optional). Default true.'
+    vignette_amount: 'number (optional). 0-1. Default 0.55.'
+    leak: '"warm" | "cool" | false (optional, default "warm")'
+    leak_amount: 'number (optional). 0-1. Default 0.35.'
+    sheen: 'bool (optional). A diagonal highlight band sweeping across with p. Default false.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_assemble
+  stage: preview
+  description: 'The page assembling itself: up to 8 child atoms (any atoms) start scattered and tilted and fly into a bento grid, one after another as p goes 0 to 1. columns 2-4; a child can take span 2. Children cannot carry ids here. The agent-builds-the-page shot. Plain CSS, no script; standalone it renders the finished layout.'
+  compact_description: child atoms that fly in from scattered poses and snap into a bento grid
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    blocks: 'array (max 8) of atom blocks. A block may carry span 1 or 2 (columns it takes).'
+    columns: 'integer (optional). 2-4. Default 3.'
+    gap: 'integer (optional). px, 0-40. Default 14.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_iso
+  stage: preview
+  description: 'An isometric build: a grid of blocks (up to 12 by 12) that rise in a diagonal wave as p goes 0 to 1, each shaded in three faces (top, left, right) from one accent. Heights come from `heights` (0-10, row by row) or a fixed pattern. Plain CSS, no script; standalone it renders the finished city.'
+  compact_description: isometric blocks that rise in a diagonal wave
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    columns: 'integer (optional). 2-12. Default 6.'
+    rows: 'integer (optional). 2-12. Default 6.'
+    heights: 'array of numbers 0-10, row by row (optional). Missing entries use a fixed pattern.'
+    height: 'integer (optional). Height unit px, 4-40. Default 14.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

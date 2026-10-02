@@ -28258,6 +28258,87 @@ def _render_motion_textpath(b: dict) -> str:
             + '<text style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:800;fill:' + color + ';letter-spacing:0.04em;"><textPath href="#' + pid + '" startOffset="4%">' + spans + '</textPath></text></svg>')
 
 
+# ─── batch 7 (2026-10-02, premium spec items 8-11): see the matching block in atoms_motion.gs ───────────────────────────────────
+_MO_GRAIN = {'fine': 1.2, 'medium': 0.8, 'coarse': 0.45}
+_MO_LEAK = {'warm': ['#ff9a3c', '#ff3d81'], 'cool': ['#38bdf8', '#7c5cff']}
+_MO_POSE = [[-70, -50, -14], [60, -60, 11], [-80, 40, 9], [70, 55, -12], [-30, -90, 7], [40, 85, -9], [-90, -10, 13], [85, 5, -6]]
+
+
+def _render_motion_goo(b: dict) -> str:
+    bl = []
+    for s in (b.get('blobs') if isinstance(b.get('blobs'), list) else []):
+        if len(bl) >= 8:
+            break
+        if not isinstance(s, dict):
+            continue
+        def nv(v):  # numbers only: strings parse differently in the two twins
+            return v if _mo_num_ok(v) else None
+        x, y = _ff_num(nv(s.get('x')), 50, 0, 100, 1), _ff_num(nv(s.get('y')), 50, 0, 100, 1)
+        bl.append({'x': x, 'y': y, 'x2': _ff_num(nv(s.get('x2')), float(x), 0, 100, 1), 'y2': _ff_num(nv(s.get('y2')), float(y), 0, 100, 1), 'r': _ff_num(nv(s.get('r')), 10, 2, 40, 1)})
+    if not bl:
+        bl = [{'x': '30', 'y': '50', 'x2': '45', 'y2': '50', 'r': '12'}, {'x': '70', 'y': '50', 'x2': '55', 'y2': '50', 'r': '12'}]
+    col, col2, orb = _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'accent2', ''), _ff_num(b.get('orbit'), 4, 0, 20, 1)
+    cfg = ''.join(B['x'] + ',' + B['y'] + ',' + B['x2'] + ',' + B['y2'] + ',' + B['r'] + ';' for B in bl)
+    h = 0
+    for ch in cfg:
+        h = (h * 31 + ord(ch)) % 1000003
+    fid, out = 'mtgoo' + str(h), ''
+    for i, B in enumerate(bl):
+        c, ph = (col2 if (col2 and i % 2) else col), _ff_num(i * 1.9, 0, 0, 20, 1)
+        out += ('<circle r="' + B['r'] + '" style="fill:' + c + ';transform:translate(calc(' + B['x'] + 'px + (' + B['x2'] + ' - ' + B['x'] + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*sin(calc(var(--s,0)*6.2832 + ' + ph + '))),calc(' + B['y'] + 'px + (' + B['y2'] + ' - ' + B['y'] + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*cos(calc(var(--s,0)*6.2832 + ' + ph + '))));"/>')
+    return ('<svg viewBox="0 0 100 100" width="100%" role="img" aria-label="Liquid blobs" style="display:block;overflow:visible;"><defs><filter id="' + fid + '" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"/></filter></defs>'
+            + '<g filter="url(#' + fid + ')">' + out + '</g></svg>')
+
+
+def _render_motion_finish(b: dict) -> str:
+    gr = _ff_pick(b.get('grain_size'), _MO_GRAIN, 'medium')
+    gs = 0 if b.get('grain') is False else _ff_num(b.get('grain_amount'), 0.12, 0, 0.5, 2)
+    vg = 0 if b.get('vignette') is False else _ff_num(b.get('vignette_amount'), 0.55, 0, 1, 2)
+    lk = '' if b.get('leak') is False else _mo_own(_MO_LEAK, b.get('leak'), 'warm')
+    sh, ls, L, out = b.get('sheen') is True, _ff_num(b.get('leak_amount'), 0.35, 0, 1, 2), (_MO_LEAK[lk] if lk else None), ''
+    fade = 'clamp(0,calc(var(--p,1)*4),1)'
+    if float(gs) > 0:
+        out += ('<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:calc(' + str(gs) + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + str(gr) + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>')
+    if L:
+        out += ('<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:screen;opacity:calc(' + ls + '*' + fade + ');background:radial-gradient(ellipse 45% 70% at calc(10% + var(--s,0)*30%) 20%,' + L[0] + ',transparent 70%),radial-gradient(ellipse 40% 60% at calc(95% - var(--s,0)*25%) 90%,' + L[1] + ',transparent 70%);"></div>')
+    if float(vg) > 0:
+        out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:' + fade + ';background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,' + str(vg) + ') 100%);"></div>'
+    if sh:
+        out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;"><div style="position:absolute;top:-20%;bottom:-20%;width:22%;left:calc(-30% + clamp(0,var(--p,1),1)*150%);background:linear-gradient(100deg,transparent,rgba(255,255,255,0.22),transparent);transform:skewX(-18deg);"></div></div>'
+    return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;pointer-events:none;">' + out + '</div>'
+
+
+def _render_motion_assemble(b: dict) -> str:
+    src = b['blocks'][:8] if isinstance(b.get('blocks'), list) else []
+    cols, gap, n, out = _ff_int(b.get('columns'), 3, 2, 4), _ff_int(b.get('gap'), 14, 0, 40), len(src), ''
+    for i, c in enumerate(src):
+        span = _ff_int(c.get('span'), 1, 1, 2) if isinstance(c, dict) else 1
+        P = _MO_POSE[i % 8]
+        out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n + 2) + ' - ' + str(i) + '),1);grid-column:span ' + str(min(span, cols)) + ';opacity:var(--u);transform:translate(calc((1 - var(--u))*' + str(P[0]) + '%),calc((1 - var(--u))*' + str(P[1]) + '%)) rotate(calc((1 - var(--u))*' + str(P[2]) + 'deg)) scale(calc(0.7 + 0.3*var(--u)));min-width:0;">' + _mo_render(c) + '</div>')
+    return '<div style="display:grid;grid-template-columns:repeat(' + str(cols) + ',minmax(0,1fr));gap:' + str(gap) + 'px;width:100%;align-items:start;">' + out + '</div>'
+
+
+def _render_motion_iso(b: dict) -> str:
+    cols, rows, unit = _ff_int(b.get('columns'), 6, 2, 12), _ff_int(b.get('rows'), 6, 2, 12), _ff_int(b.get('height'), 14, 4, 40)
+    ku, acc, T = _ff_num(unit * 0.0086, 0.1, 0, 1, 4), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), cols + rows + 1
+    hs = b['heights'] if isinstance(b.get('heights'), list) else []
+    tw = 200 / (cols + rows + 1)
+    rm = 0.62 * tw
+    ext, tiles = tw * (0.25 * (cols + rows - 2) + 0.5) + rm, ''
+    for r in range(rows):
+        for c in range(cols):
+            idx = r * cols + c
+            hv = max(0, min(10, hs[idx])) if (idx < len(hs) and _mo_num_ok(hs[idx])) else ((idx * 7 + r * 3 + c * 5) % 9) + 1
+            hh = _ff_num(hv, 1, 0, 10, 1)
+            F = hh + '*' + ku + '*var(--u)'
+            left, top, w = _ff_num((c - r + rows - 1) * tw / 2, 0, 0, 100, 3), _ff_num((rm + (c + r) * 0.25 * tw) / ext * 100, 0, 0, 200, 3), _ff_num(tw, 1, 0, 100, 3)
+            tiles += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(T) + ' - ' + str(r + c) + '),1);position:absolute;left:' + left + '%;top:' + top + '%;width:' + w + '%;aspect-ratio:2/1;opacity:var(--u);">'
+                      + '<div style="position:absolute;left:0;width:50%;top:calc(50% - 100%*' + F + ');height:calc(100%*' + F + ' + 1px);transform-origin:0 0;transform:skewY(26.565deg);background:color-mix(in srgb,' + acc + ' 62%,#000);"></div>'
+                      + '<div style="position:absolute;left:50%;width:50%;top:calc(100% - 100%*' + F + ');height:calc(100%*' + F + ' + 1px);transform-origin:0 0;transform:skewY(-26.565deg);background:color-mix(in srgb,' + acc + ' 38%,#000);"></div>'
+                      + '<div style="position:absolute;left:0;right:0;top:0;height:100%;transform:translateY(calc(-100%*' + F + '));background:' + acc + ';clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></div></div>')
+    return '<div role="img" aria-label="Isometric blocks rising" style="position:relative;width:100%;aspect-ratio:100/' + _ff_num(ext, 1, 1, 400, 3) + ';">' + tiles + '</div>'
+
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
@@ -28267,7 +28348,8 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_contours', _render_motion_contours), ('motion_rail', _render_motion_rail),
                          ('motion_image', _render_motion_image), ('motion_chart', _render_motion_chart), ('motion_lower_third', _render_motion_lower_third),
                          ('motion_wave', _render_motion_wave), ('motion_repeat', _render_motion_repeat),
-                         ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath)):
+                         ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
+                         ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

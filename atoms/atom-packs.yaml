@@ -353,6 +353,10 @@ a2ui-effects-v1:
 - motion_chat
 - motion_wiggle
 - motion_textpath
+- motion_goo
+- motion_finish
+- motion_assemble
+- motion_iso
 - motion_timeline
 - motion_group
 - motion_tokens

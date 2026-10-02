@@ -41,7 +41,8 @@ REEL3 = ["motion_device", "motion_rays", "motion_hud", "motion_cells", "motion_s
 REEL4 = ["motion_marquee", "motion_bounce", "motion_scatter", "motion_contours", "motion_rail"]  # fourth batch, 2026-10-01
 REEL5 = ["motion_image", "motion_chart", "motion_lower_third", "motion_wave", "motion_repeat"]  # batch 5, 2026-10-02
 REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + DEMO_ATOMS
+REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batch 7, 2026-10-02
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -221,6 +222,10 @@ PAYLOADS = {
     "motion_chat": [{}, {"agent": "Claude <b>", "size": 26, "accent": "#ff6a2b", "messages": [{"from": "user", "text": "Make me a UI"}, {"from": "agent", "text": "On it \u2713"}, "plain", "plain two", {"text": ""}, 5, None, "x" * 200, "g"]}, {"messages": "no", "size": 9999, "accent": "red;x"}],
     "motion_wiggle": [{}, {"amount": 25, "frequency": 12, "tilt": 6, "blocks": [{"type": "motion_pill", "id": "a", "text": "x", "place": {"x": 10, "y": 10}}, {"type": "motion_text", "text": "y", "place": {"x": 30, "y": 40, "w": 50}}]}, {"amount": 9999, "frequency": "x", "tilt": 99, "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 14}, {"blocks": "no"}],
     "motion_textpath": [{}, {"text": "Along the curve <b>", "d": "M 10 200 Q 200 0 390 200", "guide": True, "size": 40, "w": 400, "h": 250, "color": "#ffffff", "accent": "#ff6a2b"}, {"text": "x" * 80, "d": "M 0 0\" onload=\"alert(1)", "size": 9999, "w": "x", "color": "url(x)"}, {"text": 5, "d": 5, "guide": "yes"}, {"text": "a b  c", "d": "M 0 0 L 100 100"}],
+    "motion_goo": [{}, {"blobs": [{"x": 20, "y": 30, "x2": 60, "y2": 70, "r": 14}, {"x": 80, "y": 30, "x2": 40, "y2": 70, "r": 12}, "junk", None, {"x": "x", "r": 999}] + [{"x": 5, "y": 5}] * 10, "orbit": 9, "color": "#ff6a2b", "accent2": "#2ac4ce"}, {"blobs": "no", "orbit": "x", "color": "url(x)"}, {"blobs": [{"x": 1e9, "y": -1e9, "x2": "9;}", "r": -4}]}],
+    "motion_finish": [{}, {"grain_size": "coarse", "grain_amount": 0.3, "vignette_amount": 0.9, "leak": "cool", "leak_amount": 0.8, "sheen": True}, {"grain": False, "vignette": False, "leak": False}, {"grain_size": "toString", "grain_amount": "x", "vignette_amount": 99, "leak": "constructor", "leak_amount": -3, "sheen": "yes"}],
+    "motion_assemble": [{}, {"columns": 4, "gap": 20, "blocks": [{"type": "motion_pill", "text": "A", "span": 2}, {"type": "motion_counter", "to": 9}, "junk", {"type": "no_such_atom"}, {"type": "motion_chart", "kind": "donut", "data": [3, 4]}, {"type": "motion_pill", "text": "x", "span": 99}] + [{"type": "motion_pill", "text": "y"}] * 9}, {"blocks": "no", "columns": 9999, "gap": "x"}, {"blocks": [{"type": "motion_text", "id": "t", "text": "x"}]}],
+    "motion_iso": [{}, {"columns": 8, "rows": 5, "heights": [1, 5, 9, 10, 0, 3, "x", None, True, -5, 99, 4], "height": 20, "accent": "#ff6a2b"}, {"columns": 9999, "rows": "x", "heights": "no", "height": -4, "accent": "red;x"}, {"columns": 2, "rows": 2}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],

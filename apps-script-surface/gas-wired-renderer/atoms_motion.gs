@@ -1538,3 +1538,72 @@ _RENDERERS['motion_textpath'] = function(b) {
     + '<defs><path id="' + id + '" d="' + d + '"/></defs>' + (guide ? '<path d="' + d + '" style="fill:none;stroke:' + acc + ';stroke-width:2;opacity:0.35;"/>' : '')
     + '<text style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:800;fill:' + color + ';letter-spacing:0.04em;"><textPath href="#' + id + '" startOffset="4%">' + spans + '</textPath></text></svg>';
 };
+
+// ─── batch 7 (2026-10-02, premium spec items 8-11): liquid blobs, finishing layer, page assembly, isometric build ──────────────────
+var _MO_GRAIN = {fine: 1.2, medium: 0.8, coarse: 0.45};
+var _MO_LEAK = {warm: ['#ff9a3c', '#ff3d81'], cool: ['#38bdf8', '#7c5cff']};
+var _MO_POSE = [[-70, -50, -14], [60, -60, 11], [-80, 40, 9], [70, 55, -12], [-30, -90, 7], [40, 85, -9], [-90, -10, 13], [85, 5, -6]];
+
+// Liquid blobs that merge and split (metaballs): circles move between a start and an end point as p goes 0 to 1 and orbit a little
+// with --s, inside an SVG whose goo filter is fixed markup (blur then an alpha threshold); nothing from the payload reaches the filter.
+_RENDERERS['motion_goo'] = function(b) {
+  var src = Array.isArray(b.blobs) ? b.blobs : [], bl = [], i;
+  for (i = 0; i < src.length && bl.length < 8; i++) {
+    var s = src[i];
+    if (!s || typeof s !== 'object') continue;
+    function nv(v) { return typeof v === 'number' && isFinite(v) ? v : undefined; } // numbers only: strings parse differently in the two twins
+    var x = _ffNum(nv(s.x), 50, 0, 100, 1), y = _ffNum(nv(s.y), 50, 0, 100, 1);
+    bl.push({x: x, y: y, x2: _ffNum(nv(s.x2), parseFloat(x), 0, 100, 1), y2: _ffNum(nv(s.y2), parseFloat(y), 0, 100, 1), r: _ffNum(nv(s.r), 10, 2, 40, 1)});
+  }
+  if (!bl.length) bl = [{x: '30', y: '50', x2: '45', y2: '50', r: '12'}, {x: '70', y: '50', x2: '55', y2: '50', r: '12'}];
+  var col = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)'), col2 = _moInk(b, 'accent2', ''), orb = _ffNum(b.orbit, 4, 0, 20, 1), h = 0, cfg = '', out = '', k;
+  for (i = 0; i < bl.length; i++) cfg += bl[i].x + ',' + bl[i].y + ',' + bl[i].x2 + ',' + bl[i].y2 + ',' + bl[i].r + ';';
+  for (k = 0; k < cfg.length; k++) h = (h * 31 + cfg.charCodeAt(k)) % 1000003;
+  var fid = 'mtgoo' + h;
+  for (i = 0; i < bl.length; i++) {
+    var B = bl[i], c = col2 && i % 2 ? col2 : col, ph = _ffNum(i * 1.9, 0, 0, 20, 1);
+    out += '<circle r="' + B.r + '" style="fill:' + c + ';transform:translate(calc(' + B.x + 'px + (' + B.x2 + ' - ' + B.x + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*sin(calc(var(--s,0)*6.2832 + ' + ph + '))),calc(' + B.y + 'px + (' + B.y2 + ' - ' + B.y + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*cos(calc(var(--s,0)*6.2832 + ' + ph + '))));"/>';
+  }
+  return '<svg viewBox="0 0 100 100" width="100%" role="img" aria-label="Liquid blobs" style="display:block;overflow:visible;"><defs><filter id="' + fid + '" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"/></filter></defs>'
+    + '<g filter="url(#' + fid + ')">' + out + '</g></svg>';
+};
+
+// A finishing layer for the whole frame: film grain, a vignette, drifting light leaks and a glass sheen. Place it last, full size;
+// it never takes clicks. p fades it in, --s drifts the grain and the leaks.
+_RENDERERS['motion_finish'] = function(b) {
+  var gr = _ffPick(b.grain_size, _MO_GRAIN, 'medium'), gs = b.grain === false ? 0 : _ffNum(b.grain_amount, 0.12, 0, 0.5, 2), vg = b.vignette === false ? 0 : _ffNum(b.vignette_amount, 0.55, 0, 1, 2);
+  var lk = b.leak === false ? '' : _moOwn(_MO_LEAK, b.leak, 'warm'), sh = b.sheen === true, ls = _ffNum(b.leak_amount, 0.35, 0, 1, 2), L = lk ? _MO_LEAK[lk] : null, out = '';
+  var fade = 'clamp(0,calc(var(--p,1)*4),1)';
+  if (gs > 0) out += '<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:calc(' + gs + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + gr + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>';
+  if (L) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:screen;opacity:calc(' + ls + '*' + fade + ');background:radial-gradient(ellipse 45% 70% at calc(10% + var(--s,0)*30%) 20%,' + L[0] + ',transparent 70%),radial-gradient(ellipse 40% 60% at calc(95% - var(--s,0)*25%) 90%,' + L[1] + ',transparent 70%);"></div>';
+  if (vg > 0) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:' + fade + ';background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,' + vg + ') 100%);"></div>';
+  if (sh) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;"><div style="position:absolute;top:-20%;bottom:-20%;width:22%;left:calc(-30% + clamp(0,var(--p,1),1)*150%);background:linear-gradient(100deg,transparent,rgba(255,255,255,0.22),transparent);transform:skewX(-18deg);"></div></div>';
+  return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;pointer-events:none;">' + out + '</div>';
+};
+
+// Page assembly: child atoms start scattered and tilted and land in a bento grid, one after another as p goes 0 to 1.
+_RENDERERS['motion_assemble'] = function(b) {
+  var src = Array.isArray(b.blocks) ? b.blocks.slice(0, 8) : [], cols = _ffInt(b.columns, 3, 2, 4), gap = _ffInt(b.gap, 14, 0, 40), i, out = '', n = src.length;
+  for (i = 0; i < n; i++) {
+    var c = src[i], span = c && typeof c === 'object' ? _ffInt(c.span, 1, 1, 2) : 1, P = _MO_POSE[i % 8];
+    out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (n + 2) + ' - ' + i + '),1);grid-column:span ' + Math.min(span, cols) + ';opacity:var(--u);transform:translate(calc((1 - var(--u))*' + P[0] + '%),calc((1 - var(--u))*' + P[1] + '%)) rotate(calc((1 - var(--u))*' + P[2] + 'deg)) scale(calc(0.7 + 0.3*var(--u)));min-width:0;">' + _moRender(c) + '</div>';
+  }
+  return '<div style="display:grid;grid-template-columns:repeat(' + cols + ',minmax(0,1fr));gap:' + gap + 'px;width:100%;align-items:start;">' + out + '</div>';
+};
+
+// Isometric build: a grid of blocks that rise in a diagonal wave as p goes 0 to 1, shaded in three faces from one accent.
+_RENDERERS['motion_iso'] = function(b) {
+  var cols = _ffInt(b.columns, 6, 2, 12), rows = _ffInt(b.rows, 6, 2, 12), unit = _ffInt(b.height, 14, 4, 40), ku = _ffNum(unit * 0.0086, 0.1, 0, 1, 4), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), T = cols + rows + 1;
+  var hs = Array.isArray(b.heights) ? b.heights : [], r, c, tiles = '';
+  var tw = 200 / (cols + rows + 1), rm = 0.62 * tw, ext = tw * (0.25 * (cols + rows - 2) + 0.5) + rm;
+  for (r = 0; r < rows; r++) for (c = 0; c < cols; c++) {
+    var idx = r * cols + c, hv = idx < hs.length && typeof hs[idx] === 'number' && isFinite(hs[idx]) ? Math.max(0, Math.min(10, hs[idx])) : ((idx * 7 + r * 3 + c * 5) % 9) + 1;
+    var hh = _ffNum(hv, 1, 0, 10, 1), F = hh + '*' + ku + '*var(--u)';
+    var left = _ffNum((c - r + rows - 1) * tw / 2, 0, 0, 100, 3), top = _ffNum((rm + (c + r) * 0.25 * tw) / ext * 100, 0, 0, 200, 3), w = _ffNum(tw, 1, 0, 100, 3);
+    tiles += '<div style="--u:clamp(0,calc(var(--p,1)*' + T + ' - ' + (r + c) + '),1);position:absolute;left:' + left + '%;top:' + top + '%;width:' + w + '%;aspect-ratio:2/1;opacity:var(--u);">'
+      + '<div style="position:absolute;left:0;width:50%;top:calc(50% - 100%*' + F + ');height:calc(100%*' + F + ' + 1px);transform-origin:0 0;transform:skewY(26.565deg);background:color-mix(in srgb,' + acc + ' 62%,#000);"></div>'
+      + '<div style="position:absolute;left:50%;width:50%;top:calc(100% - 100%*' + F + ');height:calc(100%*' + F + ' + 1px);transform-origin:0 0;transform:skewY(-26.565deg);background:color-mix(in srgb,' + acc + ' 38%,#000);"></div>'
+      + '<div style="position:absolute;left:0;right:0;top:0;height:100%;transform:translateY(calc(-100%*' + F + '));background:' + acc + ';clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></div></div>';
+  }
+  return '<div role="img" aria-label="Isometric blocks rising" style="position:relative;width:100%;aspect-ratio:100/' + _ffNum(ext, 1, 1, 400, 3) + ';">' + tiles + '</div>';
+};
