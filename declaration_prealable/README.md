@@ -159,9 +159,20 @@ DP1 screenshot, via three free/keyless French government open-data APIs
   cadastral surface area in m²**. Reprojected to local metres via a flat
   tangent-plane approximation (accurate at parcel scale, no projection-
   library dependency) — cross-checked live against a real parcel: computed
-  shoelace area 236.4 m² vs. official 237 m² (~0.25% off). Feeds
-  `PlotGeometry.boundary_points_m` directly — `dp2_plan_masse.py` needed
-  **zero changes** to render the real (often irregular) shape, since it
+  shoelace area 236.4 m² vs. official 237 m² (~0.25% off). **Real edge case
+  found live with a real user's actual address**: a correctly-geocoded BAN
+  housenumber point (score 0.96) can still fall just outside every parcel
+  polygon — confirmed by point-in-polygon testing the raw API response
+  directly, not assumed (BAN places the point at the road-frontage/entrance,
+  not always strictly inside the cadastral boundary; one real case measured
+  only ~0.5m from the true parcel's own edge, essentially ON the boundary
+  line). An exact-point query then legitimately returns zero features even
+  though real parcel data exists. `fetch_parcel` falls back to a small
+  bounding-box query and picks the nearest parcel by real point-to-boundary
+  distance (not centroid distance, which is a looser, sometimes-misleading
+  proxy for large/irregular parcels) when the exact point comes up empty.
+  Feeds `PlotGeometry.boundary_points_m` directly — `dp2_plan_masse.py`
+  needed **zero changes** to render the real (often irregular) shape, since it
   already accepted an arbitrary polygon, not just a rectangle.
 - **Real building footprints** — `cadastre.data.gouv.fr`'s Etalab per-commune
   building bundle (apicarto's own "wfs-geoportail" module can't serve BDTOPO

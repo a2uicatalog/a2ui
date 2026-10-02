@@ -60,18 +60,7 @@ def geocode_address(address, commune):
     return lon, lat, props.get("label", q), props.get("citycode")
 
 
-def fetch_parcel(lon, lat):
-    """Returns the real cadastral parcel at (lon, lat): {polygon_wgs84, contenance_m2, idu, commune}.
-    polygon_wgs84 is a flat list of (lon, lat) tuples for the parcel's outer ring (first ring of the
-    first polygon -- a real parcel can be a MultiPolygon, but a single outer ring is what every piece
-    downstream needs)."""
-    geom = json.dumps({"type": "Point", "coordinates": [lon, lat]})
-    url = CADASTRE_URL + "?" + urllib.parse.urlencode({"geom": geom})
-    data = _get_json(url)
-    features = data.get("features") or []
-    if not features:
-        raise ValueError(f"no cadastral parcel found at ({lon}, {lat})")
-    f = features[0]
+def _feature_to_parcel(f):
     geom_type = f["geometry"]["type"]
     coords = f["geometry"]["coordinates"]
     ring = coords[0][0] if geom_type == "MultiPolygon" else coords[0]
@@ -83,6 +72,67 @@ def fetch_parcel(lon, lat):
         "idu": props.get("idu"),
         "commune": props.get("nom_com"),
     }
+
+
+def _dist_point_to_segment_m(lon, lat, a, b):
+    """Distance in real metres from (lon, lat) to segment a-b (both WGS84) -- reuses the same
+    flat-tangent-plane approximation as wgs84_polygon_to_local_metres, accurate at this scale."""
+    m_per_deg_lon = 111320.0 * math.cos(math.radians(lat))
+    px, py = lon * m_per_deg_lon, lat * 111320.0
+    ax, ay = a[0] * m_per_deg_lon, a[1] * 111320.0
+    bx, by = b[0] * m_per_deg_lon, b[1] * 111320.0
+    dx, dy = bx - ax, by - ay
+    seg_len_sq = dx * dx + dy * dy
+    if seg_len_sq == 0:
+        return math.hypot(px - ax, py - ay)
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / seg_len_sq))
+    cx, cy = ax + t * dx, ay + t * dy
+    return math.hypot(px - cx, py - cy)
+
+
+def _dist_point_to_polygon_boundary_m(lon, lat, polygon_wgs84):
+    n = len(polygon_wgs84)
+    return min(_dist_point_to_segment_m(lon, lat, polygon_wgs84[i], polygon_wgs84[(i + 1) % n])
+               for i in range(n))
+
+
+def fetch_parcel(lon, lat, fallback_radius_m=80):
+    """Returns the real cadastral parcel at (lon, lat): {polygon_wgs84, contenance_m2, idu, commune}.
+    polygon_wgs84 is a flat list of (lon, lat) tuples for the parcel's outer ring (first ring of the
+    first polygon -- a real parcel can be a MultiPolygon, but a single outer ring is what every piece
+    downstream needs).
+
+    Found live 2026-10-02: a real, correctly-geocoded BAN address point ("type": "housenumber", score
+    0.96) can still fall OUTSIDE every real parcel polygon -- confirmed by point-in-polygon testing
+    directly against the raw API response, not assumed. BAN places a housenumber point at the
+    address's road-frontage/entrance point, which is not always strictly inside the cadastral parcel
+    boundary (gardens/driveways/setbacks). An exact-point query then legitimately returns zero
+    features even though real parcel data exists for the commune (confirmed live: a small bounding
+    box around the same failing point returned 23 real parcels). Falls back to the NEAREST parcel by
+    real point-to-polygon-boundary distance (not centroid distance, which can be misleading for
+    large/irregular parcels) within fallback_radius_m when the exact point comes up empty."""
+    geom = json.dumps({"type": "Point", "coordinates": [lon, lat]})
+    url = CADASTRE_URL + "?" + urllib.parse.urlencode({"geom": geom})
+    data = _get_json(url)
+    features = data.get("features") or []
+    if features:
+        return _feature_to_parcel(features[0])
+
+    d = fallback_radius_m / 111320.0
+    d_lon = fallback_radius_m / (111320.0 * math.cos(math.radians(lat)))
+    box = {"type": "Polygon", "coordinates": [[
+        [lon - d_lon, lat - d], [lon + d_lon, lat - d],
+        [lon + d_lon, lat + d], [lon - d_lon, lat + d], [lon - d_lon, lat - d],
+    ]]}
+    url2 = CADASTRE_URL + "?" + urllib.parse.urlencode({"geom": json.dumps(box)})
+    data2 = _get_json(url2)
+    nearby = data2.get("features") or []
+    if not nearby:
+        raise ValueError(f"no cadastral parcel found within {fallback_radius_m} m of ({lon}, {lat})")
+
+    best = min(nearby, key=lambda f: _dist_point_to_polygon_boundary_m(
+        lon, lat, _feature_to_parcel(f)["polygon_wgs84"]))
+    return _feature_to_parcel(best)
 
 
 def wgs84_polygon_to_local_metres(polygon_wgs84, origin=None):

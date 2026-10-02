@@ -99,6 +99,68 @@ def test_fetch_parcel_returns_real_polygon_and_contenance():
     assert parcel["polygon_wgs84"][0] == (2.35992649, 48.85573989)
 
 
+# Captured live 2026-10-02 against apicarto.ign.fr/api/cadastre/parcelle for a real bounding-box
+# query around (1.521457, 43.635056) -- the real address point for "10 Rue Marie Curie, Montrabé"
+# that the EXACT-point query returns zero features for (confirmed live: a real, correctly-geocoded
+# BAN housenumber point can still fall outside every parcel polygon -- it sits ~18.5m from the
+# nearest parcel's own boundary, ~29.6m from a further one, matching the real point-to-boundary
+# distances found investigating this live).
+REAL_NEARBY_PARCELS_RESPONSE = {
+    "type": "FeatureCollection",
+    "features": [
+        {"type": "Feature", "id": "parcelle.89902084", "geometry": {"type": "MultiPolygon", "coordinates": [[[
+            [1.52110081, 43.63508065], [1.52109859, 43.63508485], [1.52139416, 43.6351696],
+            [1.52147995, 43.63499464], [1.52119209, 43.63491387], [1.52110081, 43.63508065],
+        ]]]}, "properties": {"nom_com": "Montrabé", "idu": "31389000AT0089", "contenance": 528}},
+        {"type": "Feature", "id": "parcelle.11008189", "geometry": {"type": "MultiPolygon", "coordinates": [[[
+            [1.52168738, 43.6354028], [1.52176814, 43.63518764], [1.52152868, 43.63513741],
+            [1.52142752, 43.63534122], [1.52168738, 43.6354028],
+        ]]]}, "properties": {"nom_com": "Montrabé", "idu": "31389000AT0120", "contenance": 504}},
+    ],
+}
+
+
+def test_fetch_parcel_falls_back_to_nearest_when_exact_point_misses():
+    # Real bug found live 2026-10-02: a correctly-geocoded address point can fall just outside every
+    # real parcel polygon (BAN places housenumber points at the road-frontage/entrance, not always
+    # strictly inside the cadastral boundary). The exact-point query returns empty; fetch_parcel must
+    # fall back to a bounding-box query and pick the nearest parcel by real boundary distance.
+    empty = {"type": "FeatureCollection", "features": []}
+    responses = [json.dumps(empty).encode(), json.dumps(REAL_NEARBY_PARCELS_RESPONSE).encode()]
+    calls = []
+
+    def fake_urlopen(req, timeout=15):
+        calls.append(req)
+        return _mock_urlopen(responses[len(calls) - 1])
+
+    with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+        parcel = pl.fetch_parcel(1.521457, 43.635056)
+
+    assert len(calls) == 2  # exact point first (empty), then the fallback box -- not more, not fewer
+    # AT0089 is genuinely the nearer of the two real candidates to the real query point.
+    assert parcel["idu"] == "31389000AT0089"
+    assert parcel["contenance_m2"] == 528
+
+
+def test_fetch_parcel_raises_when_nothing_found_even_with_fallback():
+    empty = {"type": "FeatureCollection", "features": []}
+    with patch("urllib.request.urlopen", return_value=_mock_urlopen(json.dumps(empty).encode())):
+        with pytest.raises(ValueError, match="no cadastral parcel found"):
+            pl.fetch_parcel(0.0, 0.0)
+
+
+def test_dist_point_to_polygon_boundary_m_matches_real_measurement():
+    # Real cross-check, measured live: the query point sits only ~0.5m from AT0089's own boundary --
+    # essentially ON the edge, which is exactly why the exact point-in-polygon test missed it (a
+    # genuine floating-point/which-side-of-the-line edge case, not a loose "somewhere nearby" match).
+    # The much larger ~18.5m figure from this investigation's own centroid-distance ranking was a
+    # looser proxy; this is the real edge distance the fallback selection actually uses.
+    polygon = REAL_NEARBY_PARCELS_RESPONSE["features"][0]["geometry"]["coordinates"][0][0]
+    polygon_wgs84 = [(p[0], p[1]) for p in polygon]
+    d = pl._dist_point_to_polygon_boundary_m(1.521457, 43.635056, polygon_wgs84)
+    assert d < 5
+
+
 def test_wgs84_polygon_to_local_metres_is_centred_on_centroid():
     polygon = REAL_PARCEL_RESPONSE["features"][0]["geometry"]["coordinates"][0][0]
     polygon_wgs84 = [(p[0], p[1]) for p in polygon]
