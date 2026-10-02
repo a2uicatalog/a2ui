@@ -42,7 +42,7 @@ REEL4 = ["motion_marquee", "motion_bounce", "motion_scatter", "motion_contours",
 REEL5 = ["motion_image", "motion_chart", "motion_lower_third", "motion_wave", "motion_repeat"]  # batch 5, 2026-10-02
 REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
 REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batch 7, 2026-10-02
-REEL8 = ["motion_particles", "motion_morph"]  # batch 8, 2026-10-02
+REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-10-02
 MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
@@ -231,6 +231,8 @@ PAYLOADS = {
                          {"text": "WWWWWWWWWWWWWWWWWWWW"}, {"text": "   ", "shape": "toString", "seed": 1e20, "dot": 999, "color": "url(x)"}, {"text": 5, "shape": "blob"}],
     "motion_morph": [{}, {"shapes": ["blob", "heart"], "glossy": True, "fill2": "#5b2bff"}, {"glossy": "yes"}, {"shapes": ["circle", "square", "heart", "star"], "fill": "#ff6a2b", "fill2": "#5b2bff", "rotate": 180}, {"shapes": ["plus", "arrow"]},
                      {"shapes": ["nope", "constructor", 5, None, "circle"], "fill": "red;x", "rotate": "x"}, {"shapes": "no"}, {"shapes": ["hexagon", "diamond", "triangle", "blob", "star"]}],
+    "motion_shader": [{}, {"kind": "aurora", "color1": "#001020", "color2": "#38bdf8", "color3": "#7c5cff", "scale": 5, "span": 40, "speed": 2, "still": True, "ratio": "1:1", "radius": 20, "label": "Sky <b>"},
+                      {"fill": True}, {"kind": "toString", "color1": "red", "color2": "url(x)", "scale": "x", "span": 1e9, "label": "</script><script>alert(1)</script>"}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],
@@ -756,3 +758,13 @@ def test_roll_scrolls_each_digit_to_its_value_and_prism_turns():
                 [{"target": "t", "keys": [{"t": 0, "p": 1}, {"t": 0, "step": 0}, {"t": 4, "step": 1}]}])
     tj = "var e=document.querySelector('[data-mt-id=t] [style*=preserve-3d]');return getComputedStyle(e).transform;"
     assert _probe(pr, 0, tj) != _probe(pr, 2, tj)
+
+
+def test_shader_template_is_byte_identical_and_takes_only_numbers(core_js):
+    g = _node(core_js, "console.log(JSON.stringify(_MO_SHADER_JS));")
+    assert g == wa._MO_SHADER_JS
+    html = _py({"type": "motion_shader", "label": "</script><script>alert(1)</script>", "color1": "#ff0000"})
+    script = html[html.index("<script>") + 8:html.index("</script>")]
+    cfg = re.search(r"var C=(\{.*?\}),cv=", script).group(1)
+    assert re.fullmatch(r"\{c1:\[[0-9.,]+\],c2:\[[0-9.,]+\],c3:\[[0-9.,]+\],sc:[0-9.]+,k:[01],span:[0-9.]+,speed:[0-9.]+,still:(true|false)\}", cfg), cfg
+    assert "alert" not in script

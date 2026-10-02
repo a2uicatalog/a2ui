@@ -28482,6 +28482,27 @@ def _render_motion_morph(b: dict) -> str:
     return '<div role="img" aria-label="' + _cv_esc(' to '.join(sh)) + '" style="width:100%;' + ('filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' if gl else '') + '">' + inner + '</div>'
 
 
+# ─── WebGL spike (2026-10-02): see the matching block in atoms_motion.gs ──────────────────────────────────────────────────────────
+_MO_SHADER_JS = '(function(){var r=document.getElementById("mt-%%UID%%");if(!r)return;var C=%%CFG%%,cv=r.querySelector("canvas"),gl=null;try{gl=cv.getContext("webgl",{antialias:false,preserveDrawingBuffer:true});}catch(e){}if(!gl){cv.style.display="none";return;}var VS="attribute vec2 a;void main(){gl_Position=vec4(a,0.0,1.0);}";var FS="precision mediump float;uniform float t;uniform vec2 R;uniform vec3 c1;uniform vec3 c2;uniform vec3 c3;uniform float sc;uniform float k;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}float fb(vec2 p){float v=0.0;float a=0.5;for(int j=0;j<4;j++){v+=a*n(p);p*=2.02;a*=0.5;}return v;}void main(){vec2 u=gl_FragCoord.xy/R;vec2 p=u*vec2(R.x/R.y,1.0)*sc;float T=t*0.35;vec2 q=vec2(fb(p+T),fb(p+vec2(5.2,1.3)-T));vec2 w=vec2(fb(p+2.2*q+vec2(1.7,9.2)+T*0.6),fb(p+2.2*q+vec2(8.3,2.8)-T*0.4));float f=fb(p+2.2*w);vec3 col=mix(c1,c2,clamp(f*f*2.2,0.0,1.0));col=mix(col,c3,clamp(length(q)*0.9-0.2,0.0,1.0));if(k>0.5){float b=smoothstep(0.25,0.85,fb(vec2(u.x*3.0+T,u.y*1.3-T*0.3)+q*1.5));col=mix(c1*0.18,mix(c2,c3,u.x),b*(1.0-u.y*0.55));}gl_FragColor=vec4(col,1.0);}";function sh(ty,src){var s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);return gl.getShaderParameter(s,gl.COMPILE_STATUS)?s:null;}var vs=sh(gl.VERTEX_SHADER,VS),fs=sh(gl.FRAGMENT_SHADER,FS);if(!vs||!fs){cv.style.display="none";return;}var pg=gl.createProgram();gl.attachShader(pg,vs);gl.attachShader(pg,fs);gl.linkProgram(pg);if(!gl.getProgramParameter(pg,gl.LINK_STATUS)){cv.style.display="none";return;}gl.useProgram(pg);var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);var al=gl.getAttribLocation(pg,"a");gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);function U(nm){return gl.getUniformLocation(pg,nm);}var uT=U("t"),uR=U("R");gl.uniform3fv(U("c1"),C.c1);gl.uniform3fv(U("c2"),C.c2);gl.uniform3fv(U("c3"),C.c3);gl.uniform1f(U("sc"),C.sc);gl.uniform1f(U("k"),C.k);var t0=performance.now(),lt=-1,lw=0,lh=0,vis=true,red=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;}).observe(r);}function fr(){requestAnimationFrame(fr);if(!vis)return;var d=Math.min(window.devicePixelRatio||1,1.5),w=Math.min(960,Math.round(cv.clientWidth*d)),hh=Math.round(w*cv.clientHeight/Math.max(1,cv.clientWidth));if(w<2||hh<2)return;var sv=getComputedStyle(r).getPropertyValue("--s").trim(),tt=sv!==""?parseFloat(sv)*C.span:((C.still||red)?0:(performance.now()-t0)/1000*C.speed);if(isNaN(tt))tt=0;if(tt===lt&&w===lw&&hh===lh)return;if(w!==lw||hh!==lh){cv.width=w;cv.height=hh;gl.viewport(0,0,w,hh);lw=w;lh=hh;}lt=tt;gl.uniform1f(uT,tt);gl.uniform2f(uR,w,hh);gl.drawArrays(gl.TRIANGLES,0,3);}fr();})();'
+_MO_SHADER_KIND = {'liquid': 1, 'aurora': 1}
+
+
+def _mo_rgb3(h):
+    return '[' + ','.join(_ff_num(int(h[i:i + 2], 16) / 255, 0, 0, 1, 3) for i in (1, 3, 5)) + ']'
+
+
+def _render_motion_shader(b: dict) -> str:
+    uid, kind = _wa_uid(b)[:6], _mo_own(_MO_SHADER_KIND, b.get('kind'), 'liquid')
+    c1, c2, c3 = _ff_hex(b.get('color1'), '#0b0712'), _ff_hex(b.get('color2'), '#ff3d81'), _ff_hex(b.get('color3'), '#ffb347')
+    sc, span, speed, still = _ff_num(b.get('scale'), 2, 0.5, 12, 2), _ff_num(b.get('span'), 20, 0, 600, 2), _ff_num(b.get('speed'), 1, 0, 5, 2), b.get('still') is True
+    ratio, fill, rad = _ff_pick(b.get('ratio'), _MO_RATIO, '16:9'), b.get('fill') is True, _ff_int(b.get('radius'), 0, 0, 60)
+    label = _cv_str(b.get('label'), 60) or 'Animated gradient background'
+    cfg = ('{c1:' + _mo_rgb3(c1) + ',c2:' + _mo_rgb3(c2) + ',c3:' + _mo_rgb3(c3) + ',sc:' + sc + ',k:' + ('1' if kind == 'aurora' else '0') + ',span:' + span + ',speed:' + speed + ',still:' + ('true' if still else 'false') + '}')
+    return ('<div id="mt-' + uid + '" role="img" aria-label="' + _cv_esc(label) + '" style="position:relative;width:100%;' + ('height:100%;' if fill else 'aspect-ratio:' + ratio + ';') + 'overflow:hidden;border-radius:' + str(rad) + 'px;background:linear-gradient(135deg,' + c1 + ',' + c2 + ' 55%,' + c3 + ');opacity:clamp(0,calc(var(--p,1)*3),1);">'
+            + '<style>@media print{#mt-' + uid + ' canvas{display:none}}</style><canvas aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas>'
+            + '<script>' + _MO_SHADER_JS.replace('%%UID%%', uid, 1).replace('%%CFG%%', cfg, 1) + '</script></div>')
+
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
@@ -28493,7 +28514,8 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_wave', _render_motion_wave), ('motion_repeat', _render_motion_repeat),
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
                          ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso),
-                         ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph)):
+                         ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph),
+                         ('motion_shader', _render_motion_shader)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

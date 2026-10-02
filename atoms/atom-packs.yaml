@@ -359,6 +359,7 @@ a2ui-effects-v1:
 - motion_iso
 - motion_particles
 - motion_morph
+- motion_shader
 - motion_timeline
 - motion_group
 - motion_tokens
