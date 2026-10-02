@@ -121,6 +121,9 @@ PAYLOADS = {
                         dict(TIMELINE, blocks=[dict(TIMELINE["blocks"][0], place=dict(TIMELINE["blocks"][0].get("place") or {}, depth=0.5))] + TIMELINE["blocks"][1:],
                              camera={"keys": [{"t": 0, "z": 0}, {"t": 4, "z": 900}, {"t": 6, "z": 99999}]}),
                         dict(STITCHED, blocks=[dict(STITCHED["blocks"][0], place={"depth": "x"}), dict(STITCHED["blocks"][1], place={"depth": 99}), dict(STITCHED["blocks"][2], place={"depth": -1})]),
+                        dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "portal", "portal": {"x": 60, "y": 20, "w": 30}}, {"layer": "s3", "t": 6, "transition": "portal"},
+                                                ]),
+                        dict(STITCHED, stitch="portal", scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "portal": {"x": "x", "y": 1, "w": 2}}, {"layer": "s3", "t": 6, "portal": {"x": 999, "y": -5, "w": 1}}]),
                         MORPHED, dict(MORPHED, morphs=[{"from": "a", "to": "a", "t": 1}, {"from": "a", "to": "nope", "t": 1}, {"from": "s1", "to": "b", "t": 1}, {"from": "a", "to": "b", "beat": 4, "dur": 99, "ease": "hold"},
                                                        {"from": "a", "to": "b", "t": "x"}, "junk", {"from": "a", "to": "b", "t": 2, "ease": "toString"}, {"from": "a", "to": "b", "t": 9}]),
                         dict(MORPHED, bpm=120, blocks=MORPHED["blocks"] + [{"type": "motion_pill", "id": "mcut0", "text": "taken", "place": {"x": 1, "y": 1, "w": 5}}]),
@@ -703,3 +706,15 @@ def test_depth_is_invisible_at_rest_and_gives_parallax_when_the_camera_dollies()
     assert abs(far0 - near0) <= 1.5, (far0, near0)
     far1, near1 = _probe(film(600), 4, w)
     assert near1 > far1 * 1.1, (far1, near1)
+
+
+@browser
+def test_portal_new_scene_starts_as_the_box_and_ends_filling_the_frame():
+    blk = dict(STITCHED, bpm=0, overlap=2.0, controls=False, autoplay=False,
+               scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "portal", "portal": {"x": 60, "y": 20, "w": 30}}])
+    js = ("var e=document.querySelector('[data-mt-id=s2]'),v=document.querySelector('.mt-st').getBoundingClientRect(),r=e.getBoundingClientRect();"
+          "return [Math.round((r.left-v.left)/v.width*100),Math.round((r.top-v.top)/v.height*100),Math.round(r.width/v.width*100),+e.style.opacity];")
+    assert _probe(blk, 3, js) == [60, 20, 30, 1]
+    assert _probe(blk, 5, js) == [0, 0, 100, 1]
+    old = "var e=document.querySelector('[data-mt-id=s1]');return +e.style.opacity;"
+    assert _probe(blk, 5.5, old) == 0

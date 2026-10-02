@@ -27694,7 +27694,7 @@ def _render_motion_mask(b: dict) -> str:
             + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' if mask else '') + '">' + inner + '</div>')
 
 
-_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1}
+_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1}
 _MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
 _MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
 _MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0, 'clip': 1}
@@ -27718,6 +27718,14 @@ def _mo_stitch_key(lst, t, props, ease=None):
     lst.append(k)
 
 
+def _mo_portal(v):
+    num = lambda x: isinstance(x, (int, float)) and not isinstance(x, bool)  # noqa: E731
+    if not isinstance(v, dict) or not num(v.get('x')) or not num(v.get('y')) or not num(v.get('w')):
+        return None
+    w = float(_ff_num(v['w'], 30, 17, 90, 2))
+    return {'x': float(_ff_num(v['x'], 0, 0, 100, 2)) + w / 2, 'y': float(_ff_num(v['y'], 0, 0, 100, 2)) + w / 2, 'w': w}
+
+
 def _mo_stitch(b, ids, bpm, dur, st):
     src = b.get('scenes') if isinstance(b.get('scenes'), list) else []
     if len(src) > 12:
@@ -27730,17 +27738,27 @@ def _mo_stitch(b, ids, bpm, dur, st):
         if t is None:
             st['dropped'] += 1
             continue
-        sc.append({'id': sid, 't': t, 'i': i, 'fx': s['transition'] if isinstance(s.get('transition'), str) and s['transition'] in _MO_STITCH else ''})
+        sc.append({'id': sid, 't': t, 'i': i, 'fx': s['transition'] if isinstance(s.get('transition'), str) and s['transition'] in _MO_STITCH else '', 'pb': _mo_portal(s.get('portal'))})
     sc.sort(key=lambda e: (e['t'], e['i']))
     dfx = b['stitch'] if isinstance(b.get('stitch'), str) and b['stitch'] in _MO_STITCH else 'dissolve'
     ov, out = float(_ff_num(b.get('overlap'), 0.6, 0, 3, 2)), []
     for i, cur in enumerate(sc):
         nxt = sc[i + 1] if i + 1 < len(sc) else None
         keys, fin, fout = [], cur['fx'] or dfx, ((nxt['fx'] or dfx) if nxt else '')
+        if fin == 'portal' and not cur['pb']:
+            fin = 'dissolve'
+        if fout == 'portal' and not nxt['pb']:
+            fout = 'dissolve'
         if cur['t'] > 0:
             if fin == 'cut':
                 _mo_stitch_key(keys, 0, {'opacity': 0})
                 _mo_stitch_key(keys, cur['t'], {'opacity': 1}, 'hold')
+            elif fin == 'portal':  # the new scene starts as the box and grows to fill the frame, glued to the old scene's zoom
+                P = cur['pb']
+                s0 = P['w'] / 100
+                _mo_stitch_key(keys, 0, {'opacity': 0, 'x': P['x'] - 50, 'y': P['y'] - 50, 'scale': s0})
+                _mo_stitch_key(keys, cur['t'], {'opacity': 1, 'x': P['x'] - 50, 'y': P['y'] - 50, 'scale': s0}, 'hold')
+                _mo_stitch_key(keys, cur['t'] + ov, {'x': 0, 'y': 0, 'scale': 1}, 'quart-in-out')
             else:
                 frm = _MO_STITCH_IN[fin]
                 _mo_stitch_key(keys, 0, frm)
@@ -27749,6 +27767,12 @@ def _mo_stitch(b, ids, bpm, dur, st):
         if nxt:
             if fout == 'cut':
                 _mo_stitch_key(keys, nxt['t'], {'opacity': 0}, 'hold')
+            elif fout == 'portal':  # the old scene zooms so the box fills the frame, then hands over
+                Q = nxt['pb']
+                kq = 100 / Q['w']
+                _mo_stitch_key(keys, nxt['t'], {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1})
+                _mo_stitch_key(keys, nxt['t'] + ov, {'x': -(Q['x'] - 50) * kq, 'y': -(Q['y'] - 50) * kq, 'scale': kq}, 'quart-in-out')
+                _mo_stitch_key(keys, nxt['t'] + ov + 0.02, {'opacity': 0}, 'hold')
             elif fout in ('wipe', 'iris', 'clock', 'slice'):  # the old scene stays until the new one has covered it
                 _mo_stitch_key(keys, nxt['t'], _MO_REST)
                 _mo_stitch_key(keys, nxt['t'] + ov, {'opacity': 0}, 'hold')

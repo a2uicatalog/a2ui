@@ -1091,7 +1091,7 @@ _RENDERERS['motion_mask'] = function(b) {
 // scene's start and `overlap` seconds later is the hand-over: the old scene leaves while the new one arrives. Your own tracks
 // on the same layer are applied after, and win.
 var _MO_STITCH = {
-  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1
+  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1
 };
 var _MO_STITCH_IN = {
   'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}, 'iris': {clip: 0, cs: 1}, 'clock': {clip: 0, cs: 2}, 'slice': {clip: 0, cs: 3}, 'flip': {opacity: 0, ry: -90}, 'spin': {opacity: 0, rotate: -14, scale: 0.8, blur: 6}
@@ -1112,24 +1112,42 @@ function _moStitchKey(list, t, props, ease) {
   if (ease) k.ease = ease;
   list.push(k);
 }
+// Portal: the box in the old scene (stage percent, uniform scale so it keeps the stage's shape) that becomes the new scene.
+function _moPortal(v) {
+  if (!v || typeof v !== 'object' || typeof v.x !== 'number' || typeof v.y !== 'number' || typeof v.w !== 'number') return null;
+  var w = parseFloat(_ffNum(v.w, 30, 17, 90, 2));
+  return {x: parseFloat(_ffNum(v.x, 0, 0, 100, 2)) + w / 2, y: parseFloat(_ffNum(v.y, 0, 0, 100, 2)) + w / 2, w: w};
+}
 function _moStitch(b, ids, bpm, dur, st) {
   var src = Array.isArray(b.scenes) ? b.scenes : [], sc = [], i, own = Object.prototype.hasOwnProperty;
   if (src.length > 12) { st.dropped += src.length - 12; src = src.slice(0, 12); }
   for (i = 0; i < src.length; i++) {
     var s = src[i], id = s && typeof s === 'object' ? _moId(s.layer) : '', t = id && ids[id] ? _moAt(s, bpm, dur) : null;
     if (t === null) { st.dropped++; continue; }
-    sc.push({id: id, t: t, i: i, fx: (typeof s.transition === 'string' && own.call(_MO_STITCH, s.transition)) ? s.transition : ''});
+    sc.push({id: id, t: t, i: i, fx: (typeof s.transition === 'string' && own.call(_MO_STITCH, s.transition)) ? s.transition : '', pb: _moPortal(s.portal)});
   }
   sc.sort(function(a, c) { return a.t - c.t || a.i - c.i; });
   var dfx = (typeof b.stitch === 'string' && own.call(_MO_STITCH, b.stitch)) ? b.stitch : 'dissolve', ov = parseFloat(_ffNum(b.overlap, 0.6, 0, 3, 2)), out = [];
   for (i = 0; i < sc.length; i++) {
     var cur = sc[i], nxt = i + 1 < sc.length ? sc[i + 1] : null, keys = [], fin = cur.fx || dfx, fout = nxt ? (nxt.fx || dfx) : '', p, from;
+    if (fin === 'portal' && !cur.pb) fin = 'dissolve';
+    if (fout === 'portal' && !nxt.pb) fout = 'dissolve';
     if (cur.t > 0) {
       if (fin === 'cut') { _moStitchKey(keys, 0, {opacity: 0}); _moStitchKey(keys, cur.t, {opacity: 1}, 'hold'); }
+      else if (fin === 'portal') { // the new scene starts as the box and grows to fill the frame, glued to the old scene's zoom
+        var P = cur.pb, s0 = P.w / 100;
+        _moStitchKey(keys, 0, {opacity: 0, x: P.x - 50, y: P.y - 50, scale: s0}); _moStitchKey(keys, cur.t, {opacity: 1, x: P.x - 50, y: P.y - 50, scale: s0}, 'hold');
+        _moStitchKey(keys, cur.t + ov, {x: 0, y: 0, scale: 1}, 'quart-in-out');
+      }
       else { from = _MO_STITCH_IN[fin]; _moStitchKey(keys, 0, from); _moStitchKey(keys, cur.t, from); _moStitchKey(keys, cur.t + ov, _MO_REST, 'expo-out'); }
     }
     if (nxt) {
       if (fout === 'cut') _moStitchKey(keys, nxt.t, {opacity: 0}, 'hold');
+      else if (fout === 'portal') { // the old scene zooms so the box fills the frame, then hands over
+        var Q = nxt.pb, kq = 100 / Q.w;
+        _moStitchKey(keys, nxt.t, {opacity: 1, x: 0, y: 0, scale: 1}); _moStitchKey(keys, nxt.t + ov, {x: -(Q.x - 50) * kq, y: -(Q.y - 50) * kq, scale: kq}, 'quart-in-out');
+        _moStitchKey(keys, nxt.t + ov + 0.02, {opacity: 0}, 'hold');
+      }
       else if (fout === 'wipe' || fout === 'iris' || fout === 'clock' || fout === 'slice') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
       else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, _MO_STITCH_OUT[fout], 'accelerate'); }
     }
