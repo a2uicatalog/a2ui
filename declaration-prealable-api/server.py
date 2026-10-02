@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 
 from flask import Flask, jsonify, request  # noqa: E402
 
-from declaration_prealable import dp2_plan_masse, dp5_elevation  # noqa: E402
+from declaration_prealable import dp1_situation, dp2_plan_masse, dp5_elevation, parcel_lookup  # noqa: E402
 from declaration_prealable.intake import build_project  # noqa: E402
 
 # Same posture as cloud-run-renderer/server.py's own RENDER_SIGNING_KEY: a Secret-Manager-bound env var
@@ -202,6 +202,50 @@ def generate():
         "ok": True,
         "dp2_png_base64": base64.b64encode(dp2_png).decode(),
         "dp5_png_base64": base64.b64encode(dp5_png).decode(),
+    })
+
+
+@app.route("/lookup-parcel", methods=["POST", "OPTIONS"])
+def lookup_parcel():
+    """Real parcel geometry/area/PLU-zone lookup via free/keyless government APIs (BAN + IGN
+    APIcarto), see declaration_prealable/parcel_lookup.py's own module docstring for the sourced
+    grounding. Same synchronous/no-GCS shape and X-Render-Token gate as /generate -- the three
+    outbound calls (geocode, cadastre, zone-urba) plus one WMS image fetch are all sub-second."""
+    if request.method == "OPTIONS":
+        return _cors(app.make_default_options_response())
+
+    token_err = _require_token()
+    if token_err:
+        return token_err
+
+    body = request.get_json(silent=True) or {}
+    try:
+        if not isinstance(body, dict):
+            raise ValidationError("body must be a JSON object")
+        address = _str(body.get("address"), "address")
+        commune = _str(body.get("commune"), "commune")
+        wall_length_m = _num(body.get("wallLengthM", 3.0), "wallLengthM", 0.2, MAX_LENGTH_M)
+        wall_offset_m = _num(body.get("wallOffsetM", 1.0), "wallOffsetM", 0.0, MAX_COORD_M)
+    except ValidationError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
+
+    try:
+        plot, meta = parcel_lookup.build_plot_from_address(address, commune, wall_length_m, wall_offset_m)
+        dp1_png = dp1_situation.render_dp1_png_bytes(meta["lon"], meta["lat"], address)
+    except Exception as e:  # noqa: BLE001 -- report to the client, don't leak a stack trace
+        return jsonify({"ok": False, "error": f"could not look up parcel: {e}"}), 502
+
+    import base64
+    return jsonify({
+        "ok": True,
+        "boundaryPointsM": plot.boundary_points_m,
+        "wallPointsM": plot.wall_points_m,
+        "contenanceM2": meta["contenance_m2"],
+        "idu": meta["idu"],
+        "zoneCode": meta["zone_code"],
+        "zoneLibelle": meta["zone_libelle"],
+        "reglementPdfFilename": meta["reglement_pdf_filename"],
+        "dp1PngBase64": base64.b64encode(dp1_png).decode(),
     })
 
 

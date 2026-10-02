@@ -147,6 +147,9 @@ PAGE = r"""<!DOCTYPE html>
 
     <fieldset>
       <legend>Parcelle (pour DP2)</legend>
+      <button type="button" id="lookupBtn">Rechercher la parcelle réelle (cadastre.gouv.fr)</button>
+      <p class="note" id="lookupNote"></p>
+      <div id="manualPlotFields">
       <div class="row">
         <div><label for="plot_width_m">Largeur parcelle (m)</label>
           <input id="plot_width_m" type="number" step="0.5" min="1" max="1000" value="20"></div>
@@ -158,6 +161,7 @@ PAGE = r"""<!DOCTYPE html>
           <input id="wall_offset_x_m" type="number" step="0.1" min="0" max="1000" value="0.5"></div>
         <div><label for="wall_offset_y_m">Mur : distance limite avant (m)</label>
           <input id="wall_offset_y_m" type="number" step="0.1" min="0" max="1000" value="2.0"></div>
+      </div>
       </div>
       <label for="north_angle_deg">Angle Nord (°, horaire depuis le haut de page)</label>
       <input id="north_angle_deg" type="number" step="1" min="-360" max="360" value="0">
@@ -186,6 +190,11 @@ PAGE = r"""<!DOCTYPE html>
   </form>
 
   <div class="results" id="results">
+    <div class="piece" id="dp1Piece" style="display:none">
+      <h3>DP1 — Plan de situation</h3>
+      <img id="dp1Img" alt="DP1">
+      <div><a class="dl" id="dp1Dl" download="DP1_situation.png">Télécharger DP1_situation.png</a></div>
+    </div>
     <div class="piece">
       <h3>DP5 — Représentation de l'aspect extérieur</h3>
       <img id="dp5Img" alt="DP5">
@@ -208,26 +217,62 @@ $('hasExisting').onchange=function(){
   $('existingFields').className=this.checked?'show':'';
 };
 
+var realParcel=null;
+$('lookupBtn').onclick=function(){
+  var btn=$('lookupBtn'),note=$('lookupNote');
+  if(!$('commune').value||!$('address').value){note.className='note err';note.textContent='Renseignez d’abord la commune et l’adresse.';return}
+  btn.disabled=true;btn.textContent='Recherche en cours…';note.className='note';note.textContent='';
+  fetch(API_BASE+'/lookup-parcel',{method:'POST',
+    headers:{'Content-Type':'application/json','X-Render-Token':TOKEN},
+    body:JSON.stringify({address:$('address').value, commune:$('commune').value,
+      wallLengthM:parseFloat($('length_m').value)||3.0, wallOffsetM:1.0})})
+    .then(function(r){return r.json()})
+    .then(function(j){
+      btn.disabled=false;btn.textContent='Rechercher la parcelle réelle (cadastre.gouv.fr)';
+      if(!j.ok){note.className='note err';note.textContent=j.error||'Parcelle introuvable.';return}
+      realParcel=j;
+      $('manualPlotFields').style.display='none';
+      var zoneTxt=j.zoneLibelle?(' — zone PLU : '+j.zoneLibelle):'';
+      note.className='note';
+      note.textContent='Parcelle trouvée : '+j.contenanceM2+' m² (cadastre, réf. '+j.idu+')'+zoneTxt+'.';
+      var dp1Src='data:image/png;base64,'+j.dp1PngBase64;
+      $('dp1Img').src=dp1Src;$('dp1Dl').href=dp1Src;$('dp1Piece').style.display='';
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='Rechercher la parcelle réelle (cadastre.gouv.fr)';
+      note.className='note err';note.textContent='Impossible de contacter le service de recherche.';
+    });
+};
+
 $('dpForm').onsubmit=function(ev){
   ev.preventDefault();
   var goBtn=$('go'),status=$('status'),results=$('results');
   status.className='note';status.textContent='';results.className='results';
 
-  var planWidth=parseFloat($('plot_width_m').value),planDepth=parseFloat($('plot_depth_m').value);
-  var ox=parseFloat($('wall_offset_x_m').value),oy=parseFloat($('wall_offset_y_m').value);
   var length=parseFloat($('length_m').value);
-
-  var plot={
-    boundary_points_m:[[0,0],[planWidth,0],[planWidth,planDepth],[0,planDepth]],
-    wall_points_m:[[ox,oy],[ox+length,oy]],
-    north_angle_deg:parseFloat($('north_angle_deg').value)||0,
-    existing_structures:[]
-  };
-  if($('hasExisting').checked){
-    var sx=parseFloat($('ex_x').value),sy=parseFloat($('ex_y').value);
-    var sw=parseFloat($('ex_w').value),sd=parseFloat($('ex_d').value);
-    plot.existing_structures=[{label:'Maison existante',
-      points_m:[[sx,sy],[sx+sw,sy],[sx+sw,sy+sd],[sx,sy+sd]]}];
+  var plot;
+  if(realParcel){
+    plot={
+      boundary_points_m:realParcel.boundaryPointsM,
+      wall_points_m:realParcel.wallPointsM,
+      north_angle_deg:parseFloat($('north_angle_deg').value)||0,
+      existing_structures:[]
+    };
+  }else{
+    var planWidth=parseFloat($('plot_width_m').value),planDepth=parseFloat($('plot_depth_m').value);
+    var ox=parseFloat($('wall_offset_x_m').value),oy=parseFloat($('wall_offset_y_m').value);
+    plot={
+      boundary_points_m:[[0,0],[planWidth,0],[planWidth,planDepth],[0,planDepth]],
+      wall_points_m:[[ox,oy],[ox+length,oy]],
+      north_angle_deg:parseFloat($('north_angle_deg').value)||0,
+      existing_structures:[]
+    };
+    if($('hasExisting').checked){
+      var sx=parseFloat($('ex_x').value),sy=parseFloat($('ex_y').value);
+      var sw=parseFloat($('ex_w').value),sd=parseFloat($('ex_d').value);
+      plot.existing_structures=[{label:'Maison existante',
+        points_m:[[sx,sy],[sx+sw,sy],[sx+sw,sy+sd],[sx,sy+sd]]}];
+    }
   }
 
   var body={

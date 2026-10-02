@@ -122,3 +122,60 @@ def test_cors_headers_present(client):
 def test_options_preflight(client):
     r = client.options("/generate")
     assert r.headers.get("Access-Control-Allow-Origin") == "*"
+
+
+# -- /lookup-parcel -- parcel_lookup's own outbound network calls are mocked, same discipline as
+# /generate never hitting real GCP in a unit test.
+
+_REAL_PLOT = type("P", (), {"boundary_points_m": [(0, 0), (10, 0), (10, 10), (0, 10)],
+                             "wall_points_m": [(1, 1), (6, 1)]})()
+_REAL_META = {"lon": 2.35995, "lat": 48.855602, "label": "12 Rue de Rivoli 75004 Paris",
+              "contenance_m2": 237, "computed_area_m2": 236.4, "idu": "75104000AM0008",
+              "zone_code": "U", "zone_libelle": "Zone urbaine Sauvegardée",
+              "reglement_pdf_filename": "75056_reglement_20131218_A.pdf"}
+
+
+def test_lookup_parcel_rejects_missing_token(client):
+    r = client.post("/lookup-parcel", json={"address": "1 rue X", "commune": "Paris"})
+    assert r.status_code == 403
+
+
+def test_lookup_parcel_rejects_missing_fields(client):
+    r = client.post("/lookup-parcel", json={}, headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 400
+
+
+def test_lookup_parcel_succeeds_and_returns_real_shape(client, monkeypatch):
+    monkeypatch.setattr(dp_server.parcel_lookup, "build_plot_from_address",
+                         lambda address, commune, length, offset: (_REAL_PLOT, _REAL_META))
+    monkeypatch.setattr(dp_server.dp1_situation, "render_dp1_png_bytes",
+                         lambda lon, lat, address: b"\x89PNG\r\n\x1a\nfake")
+
+    r = client.post("/lookup-parcel", json={"address": "12 rue de rivoli", "commune": "paris",
+                                             "wallLengthM": 5.0, "wallOffsetM": 1.0},
+                     headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 200
+    data = r.get_json()
+    assert data["ok"] is True
+    assert data["contenanceM2"] == 237
+    assert data["zoneLibelle"] == "Zone urbaine Sauvegardée"
+    assert data["reglementPdfFilename"] == "75056_reglement_20131218_A.pdf"
+    assert data["boundaryPointsM"] == [[0, 0], [10, 0], [10, 10], [0, 10]]
+    png_bytes = base64.b64decode(data["dp1PngBase64"])
+    assert png_bytes[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_lookup_parcel_reports_upstream_failure_without_crashing(client, monkeypatch):
+    def fail(*a, **kw):
+        raise ValueError("no BAN geocoding match")
+    monkeypatch.setattr(dp_server.parcel_lookup, "build_plot_from_address", fail)
+
+    r = client.post("/lookup-parcel", json={"address": "nowhere", "commune": "nowhere"},
+                     headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 502
+    assert r.get_json()["ok"] is False
+
+
+def test_lookup_parcel_options_preflight(client):
+    r = client.options("/lookup-parcel")
+    assert r.headers.get("Access-Control-Allow-Origin") == "*"

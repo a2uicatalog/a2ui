@@ -3,6 +3,7 @@ through collect_answers_interactively()'s real input() prompts -- those are exer
 in CI, matching the general house convention of not unit-testing interactive terminal I/O directly.
 """
 import json
+from pathlib import Path
 
 import pytest
 
@@ -65,6 +66,40 @@ def test_generate_dossier_without_3d_does_not_mention_3d_file():
     project = intake.build_project(_sample_answers())
     written = intake.generate_dossier(project, project_dir := __import__("tempfile").mkdtemp(), include_3d=False)
     assert not any("3d" in w.lower() for w in written if w.endswith(".png"))
+
+
+def test_generate_dossier_with_parcel_lookup_enriches_checklist_and_skips_manual_dp1_line(tmp_path, monkeypatch):
+    project = intake.build_project(_sample_answers())
+    meta = {"lon": 2.35995, "lat": 48.855602, "label": "12 Rue de Rivoli 75004 Paris",
+            "contenance_m2": 237, "computed_area_m2": 236.4, "idu": "75104000AM0008",
+            "zone_code": "U", "zone_libelle": "Zone urbaine Sauvegardée",
+            "reglement_pdf_filename": "75056_reglement_20131218_A.pdf"}
+
+    def fake_render_dp1_png(lon, lat, address, out_path):
+        Path(out_path).write_bytes(b"\x89PNG\r\n\x1a\nfake")
+        return out_path
+
+    monkeypatch.setattr("declaration_prealable.dp1_situation.render_dp1_png", fake_render_dp1_png)
+    written = intake.generate_dossier(project, tmp_path, parcel_lookup_meta=meta)
+
+    assert (tmp_path / "DP1_situation.png").exists()
+    assert any("DP1_situation.png" in w for w in written)
+    checklist = (tmp_path / "checklist.txt").read_text()
+    assert "75104000AM0008" in checklist
+    assert "237 m2" in checklist
+    assert "75056_reglement_20131218_A.pdf" in checklist
+    assert "export an annotated extract from geoportail" not in checklist  # manual-DP1 line suppressed
+
+    saved = json.loads((tmp_path / "project.json").read_text())
+    assert saved["parcel_lookup"]["idu"] == "75104000AM0008"
+
+
+def test_generate_dossier_without_parcel_lookup_keeps_manual_dp1_line(tmp_path):
+    project = intake.build_project(_sample_answers())
+    written = intake.generate_dossier(project, tmp_path)
+    assert not any("DP1_situation" in w for w in written)
+    checklist = (tmp_path / "checklist.txt").read_text()
+    assert "export an annotated extract from geoportail" in checklist
 
 
 def test_cli_end_to_end_with_answers_file(tmp_path):

@@ -29,10 +29,11 @@ not just this one.
   façade/roof; a new freestanding wall has no existing façade, so DP5 carries
   that role. Confirmed from an official-style municipal guide's own
   "pièces obligatoires" table ("Une clôture - DP1, DP2, DP5").
-- **DP1** (plan de situation) is **out of scope here** — the official
-  guidance itself says to source it directly from a public mapping site
-  (géoportail.gouv.fr, cadastre.gouv.fr) or a road map, not to custom-render
-  it.
+- **DP1** (plan de situation): the official guidance says to source it from a
+  public mapping site (géoportail.gouv.fr, cadastre.gouv.fr) or a road map —
+  **automated as of 2026-10-02** via real free/keyless French government
+  open-data APIs (geocoding + a real IGN aerial/cadastral map screenshot),
+  not a hand-drawn substitute. See "Real parcel data automation" below.
 - **DP2** (plan de masse, échelle 1/50–1/500): whole-plot site plan — north
   arrow, existing structures, the wall "à créer," distances to the plot
   boundary. → `dp2_plan_masse.py`.
@@ -139,12 +140,51 @@ over real HTTP (not just the in-process Flask test client — this is where
 the `libcairo2` gap was actually caught); a real headless-Chromium run
 against the real generated page and the real running container filled the
 form, submitted, and confirmed both images render inline with working
-download links. **Not yet deployed** — no real Cloud Run service, no real
-Secret Manager secret, nothing committed/pushed. See
-`.claude/plans/cozy-forging-newt.md` for the full deploy plan (new
-`deployments.declaration-prealable-api` + process entries in
-`a2ui-private/ops/project-ops.yaml`, matching `premium-render-api-deploy`'s
-shape).
+download links. **Live since 2026-10-02** at
+`full.a2uicatalog.ai/declaration-prealable/` (Cloudflare-Access-gated),
+backed by the deployed `declaration-prealable-api` Cloud Run service — see
+`a2ui-private/ops/project-ops.yaml`'s `deployments.declaration-prealable-api`
+and `processes.declaration-prealable-api-deploy`.
+
+## Real parcel data automation (`parcel_lookup.py`, `dp1_situation.py`)
+
+Built 2026-10-02: address → real parcel boundary, area, PLU zone, and a real
+DP1 screenshot, via three free/keyless French government open-data APIs
+(confirmed live, not assumed from documentation):
+
+- **Geocoding** — `api-adresse.data.gouv.fr` (BAN): address → WGS84
+  coordinates.
+- **Real parcel geometry** — `apicarto.ign.fr/api/cadastre/parcelle` (IGN):
+  returns the actual parcel polygon plus `contenance` — the **official
+  cadastral surface area in m²**. Reprojected to local metres via a flat
+  tangent-plane approximation (accurate at parcel scale, no projection-
+  library dependency) — cross-checked live against a real parcel: computed
+  shoelace area 236.4 m² vs. official 237 m² (~0.25% off). Feeds
+  `PlotGeometry.boundary_points_m` directly — `dp2_plan_masse.py` needed
+  **zero changes** to render the real (often irregular) shape, since it
+  already accepted an arbitrary polygon, not just a rectangle.
+- **DP1 screenshot** — `data.geopf.fr/wms-r` (IGN WMS): a real aerial
+  orthophoto with the cadastral parcel-boundary overlay composited on top,
+  annotated with a north arrow, scale bar, and address caption. **Real
+  server quirk found live**: the overlay layer returns as an opaque
+  white-background image even with `TRANSPARENT=true` requested (confirmed:
+  no alpha channel at all) — fixed by chroma-keying the white background to
+  transparent in Pillow before compositing, rather than trusting the
+  server's own transparency flag.
+- **PLU zone** — `apicarto.ign.fr/api/gpu/zone-urba` (IGN Géoportail de
+  l'Urbanisme): the real zone classification (e.g. "Zone urbaine
+  Sauvegardée") plus the applicable règlement PDF's filename. **Honest
+  limit**: this is a document *pointer*, not parsed rule values — actual
+  height/material/colour limits live in that PDF's prose (non-standardised
+  per commune), not reliably machine-extractable. `checklist.txt` surfaces
+  the real document name instead of a generic "go check your PLU" line, but
+  a human still opens and reads it.
+
+Wired into both surfaces: `intake.py`'s CLI asks "look up the real parcel
+boundary?" before falling back to the manual rectangle questions;
+`declaration-prealable-api`'s `POST /lookup-parcel` route and
+`build_intake_page.py`'s "Rechercher la parcelle réelle" button do the same
+for the web form. All three outbound APIs are free and require no API key.
 
 ## Not yet done
 

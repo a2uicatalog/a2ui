@@ -143,10 +143,16 @@ def render_dp2_svg(project: DPProject) -> str:
                      f'stroke="#d93025" stroke-width="4"/>')
         wall_len_m = math.hypot(b_m[0] - a_m[0], b_m[1] - a_m[1])
         mid_px = ((a_px[0] + b_px[0]) / 2, (a_px[1] + b_px[1]) / 2)
-        # A halo keeps this legible when a boundary-distance callout lands nearby (found live: a wall
-        # placed close to a plot corner put both labels in the same small area) -- robust to any
-        # text/line crossing, not just this one case.
-        parts.append(_text_with_halo(mid_px[0], mid_px[1] - 18, f'Clôture à créer — {wall_len_m:.2f} m',
+        # A short leader line to a FIXED, generous offset -- not just a halo at a small fixed offset.
+        # Found live with a real (short, tight-cornered) urban parcel: when the wall is short relative
+        # to the plot's own drawn scale and sits close to a corner, a small offset still collided with
+        # the nearby boundary-distance callouts even with a halo. A leader line to a guaranteed-clear
+        # position (matching dp5_elevation.py's own material-callout leader-line fix for the same
+        # class of problem) is robust regardless of scale, unlike tuning one more pixel offset.
+        label_px = (mid_px[0], mid_px[1] - 46)
+        parts.append(f'<line x1="{mid_px[0]:.1f}" y1="{mid_px[1]-6:.1f}" x2="{label_px[0]:.1f}" '
+                     f'y2="{label_px[1]+6:.1f}" stroke="#d93025" stroke-width="1"/>')
+        parts.append(_text_with_halo(label_px[0], label_px[1], f'Clôture à créer — {wall_len_m:.2f} m',
                                       12, "#d93025", weight="600"))
 
         # Distance from each wall endpoint to the nearest plot boundary edge --
@@ -162,7 +168,12 @@ def render_dp2_svg(project: DPProject) -> str:
                 parts.append(f'<line x1="{end_px[0]:.1f}" y1="{end_px[1]:.1f}" '
                              f'x2="{nearest_px[0]:.1f}" y2="{nearest_px[1]:.1f}" '
                              f'stroke="#1a73e8" stroke-width="1" stroke-dasharray="3,2"/>')
-                lx, ly = (end_px[0] + nearest_px[0]) / 2, (end_px[1] + nearest_px[1]) / 2
+                # 75% of the way toward the boundary point, not the midpoint -- found live with a
+                # real (short, tight-cornered) urban parcel: a midpoint anchor sits right next to the
+                # wall's own length label when the wall is close to a corner, overlapping it even with
+                # a halo. Biasing toward the boundary end keeps real clearance from the wall label.
+                lx = end_px[0] + 0.75 * (nearest_px[0] - end_px[0])
+                ly = end_px[1] + 0.75 * (nearest_px[1] - end_px[1])
                 parts.append(_text_with_halo(lx, ly - 4, f'{d:.2f} m', 11, "#1a73e8", halo_width=3))
 
     parts.append("</g>")
