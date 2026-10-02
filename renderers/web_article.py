@@ -26934,6 +26934,70 @@ def _mo_placed(blk, seen, ids, st):
 _mo_tl_depth = [0]
 
 
+def _mo_boxes(blocks):
+    """Stage-percent boxes for ids at the top level or one motion_layer deep (see _moBoxes in atoms_motion.gs)."""
+    out = {}
+
+    def num(v, d, lo, hi):
+        return float(_ff_num(v, d, lo, hi, 2))
+    isnum = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)  # noqa: E731
+    for b in blocks:
+        if not isinstance(b, dict) or b.get('layer') == 'hud':
+            continue
+        pl = b.get('place') if isinstance(b.get('place'), dict) else {}
+        bid = _mo_id(b.get('id'))
+        bx, by = num(pl.get('x'), 0, -100, 200), num(pl.get('y'), 0, -100, 200)
+        if bid and isnum(pl.get('w')) and bid not in out:
+            out[bid] = {'x': bx, 'y': by, 'w': num(pl.get('w'), 100, 0, 300), 'b': b}
+        if (b.get('component') or b.get('type')) == 'motion_layer' and isinstance(b.get('blocks'), list):
+            lw = num(pl.get('w'), 100, 0, 300) if isnum(pl.get('w')) else 100
+            lh = num(pl.get('h'), 100, 0, 300) if isnum(pl.get('h')) else 100
+            for c in b['blocks'][:24]:
+                if not isinstance(c, dict):
+                    continue
+                cp = c.get('place') if isinstance(c.get('place'), dict) else {}
+                cid = _mo_id(c.get('id'))
+                if not cid or not isnum(cp.get('w')) or cid in out:
+                    continue
+                out[cid] = {'x': bx + num(cp.get('x'), 0, -100, 200) * lw / 100, 'y': by + num(cp.get('y'), 0, -100, 200) * lh / 100, 'w': num(cp.get('w'), 100, 0, 300) * lw / 100, 'b': c}
+    return out
+
+
+def _mo_morphs(b, blocks, ids, bpm, dur, st):
+    src = b.get('morphs') if isinstance(b.get('morphs'), list) else []
+    html, tg = '', []
+    if not src:
+        return html, tg
+    if len(src) > 6:
+        st['dropped'] += len(src) - 6
+        src = src[:6]
+    box = _mo_boxes(blocks)
+    for i, m in enumerate(src):
+        fid = _mo_id(m.get('from')) if isinstance(m, dict) else ''
+        tid = _mo_id(m.get('to')) if isinstance(m, dict) else ''
+        gid = 'mcut' + str(i)
+        t = _mo_at(m, bpm, dur) if (fid and tid and fid != tid and fid in box and tid in box and ids.get(fid) and ids.get(tid) and not ids.get(gid)) else None
+        if t is None:
+            st['dropped'] += 1
+            continue
+        d = float(_ff_num(m.get('dur'), 0.8, 0.1, 4, 2))
+        ez = m['ease'] if isinstance(m.get('ease'), str) and m['ease'] != 'hold' and m['ease'] in _MO_EASE else 'quart-in-out'
+        A, Z = box[fid], box[tid]
+        sc = Z['w'] / A['w'] if A['w'] > 0 else 1
+        t1 = min(dur, t + d)
+        fx, fy = _ff_num(A['x'], 0, -100, 200, 2), _ff_num(A['y'], 0, -100, 200, 2)
+        copy = {k: v for k, v in A['b'].items() if k not in ('id', 'place')}
+        html += ('<div class="mt-el" data-mt-id="' + gid + '" data-mt-x="' + fx + '" data-mt-y="' + fy + '" aria-hidden="true" style="position:absolute;left:' + fx + '%;top:' + fy + '%;width:' + _ff_num(A['w'], 100, 0, 300, 2) + '%;z-index:60;transform-origin:0 0;opacity:0;pointer-events:none;">' + _mo_render(copy) + '</div>')
+        x0, y0 = float(fx), float(fy)
+        gk = [{'t': 0, 'opacity': 0, 'x': x0, 'y': y0, 'scale': 1}, {'t': t, 'opacity': 1, 'x': x0, 'y': y0, 'scale': 1, 'ease': 'hold'},
+              {'t': t1, 'opacity': 1, 'x': Z['x'], 'y': Z['y'], 'scale': sc, 'ease': ez}, {'t': min(dur, t1 + 0.02), 'opacity': 0, 'ease': 'hold'}]
+        gj = _mo_track_js(gk, _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st)
+        fj = _mo_track_js([{'t': 0, 'opacity': 1}, {'t': t, 'opacity': 0, 'ease': 'hold'}], _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st)
+        tj = _mo_track_js([{'t': 0, 'opacity': 0}, {'t': t1, 'opacity': 1, 'ease': 'hold'}], _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st)
+        tg += ['{i:"' + gid + '",p:{' + gj + '}}', '{i:"' + fid + '",p:{' + fj + '}}', '{i:"' + tid + '",p:{' + tj + '}}']
+    return html, tg
+
+
 def _mo_timeline(b: dict) -> str:
     uid = _wa_uid(b)[:6]
     th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
@@ -26982,6 +27046,9 @@ def _mo_timeline(b: dict) -> str:
         pjs = _mo_track_js(keys, _MO_PROPS, _MO_PROP_ORDER, dur_n, bpm, def_ease, st)
         if pjs:
             tg.append('{i:"' + tid + '",p:{' + pjs + '}}')
+    mc_html, mc_tg = _mo_morphs(b, blocks, ids, bpm, dur_n, st)  # after your tracks: the morph owns from/to opacity during its flight
+    world += mc_html
+    tg += mc_tg
     cam_js = 'null'
     cam = b.get('camera')
     cm = cam['keys'][:48] if isinstance(cam, dict) and isinstance(cam.get('keys'), list) else None

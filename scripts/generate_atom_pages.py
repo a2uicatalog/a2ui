@@ -2080,6 +2080,7 @@ SURFACE_NAMES = {
     "email":                        "Email",
     "pdf":                          "PDF",
     "mcp-apps":                     "MCP Apps",
+    "claude-code":                  "Claude Code",
 }
 
 GAS_SURFACES = {"google-meet-stage", "google-apps-script-web", "google-apps-script-side-panel", "google-chat"}

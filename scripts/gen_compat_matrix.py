@@ -34,6 +34,7 @@ SURFACES = [
     ("google-meet-stage", "meet"),
     ("google-chat", "chat"),
     ("mcp-apps", "mcp-apps"),
+    ("claude-code", "claude-code"),
     ("email", "email"),
     ("pdf", "pdf"),
 ]

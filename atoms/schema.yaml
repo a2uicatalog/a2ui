@@ -42,6 +42,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
   fields:
     text: string
   source: *id001
@@ -62,6 +63,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
   fields:
     text: string
   source: *id001
@@ -82,6 +84,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
   fields:
     text: string
   source: *id001
@@ -123,6 +126,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
     degraded_on:
     - surface: google-chat
       note: renders as monospace text, no syntax highlighting
@@ -423,6 +427,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
     degraded_on:
     - surface: google-chat
       note: border-left and background colour stripped — use bold text prefix instead
@@ -448,6 +453,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
     degraded_on:
     - surface: google-chat
       note: custom list styling stripped — use bullet_list with manual numbering
@@ -480,6 +486,7 @@ blocks:
     - pdf
     - google-apps-script-web
     - mcp-apps
+    - claude-code
     degraded_on:
     - surface: google-chat
       note: HTML tables not supported in Chat cards — use bullet_list or key_value
@@ -1219,6 +1226,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - mcp-apps
+    - claude-code
     degraded_on:
     - surface: pdf
       note: animation not rendered — shows static bar
@@ -3973,6 +3981,7 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
+    - claude-code
     degraded_on:
     - surface: google-chat
       note: Outer borders disappear, presenting as plain bullet lists.
@@ -7918,6 +7927,7 @@ blocks:
     - google-apps-script-web
     - pdf
     - mcp-apps
+    - claude-code
   fields:
     cols: integer (optional, default 4)
     accent: string (optional, default hex for all metrics)
@@ -9443,6 +9453,7 @@ blocks:
       next scene''s start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through,
       blur, rise, whip, wipe, iris, clock, slice, flip, spin and applies to the scene it names (the hand-over INTO it); without one the timeline''s `stitch` is used. Your own
       tracks on the same layer are applied after these and win, so a scene can still do its own entrance.'
+    morphs: 'array (max 6) of {from, to, t | beat, dur?, ease?} (optional). Match cut: a copy of the `from` child flies from its box to the `to` child''s box (resizing on the way) starting at t, over dur seconds (0.1-4, default 0.8), with ease (a motion token, default quart-in-out). from hides when the flight starts and to appears when it lands, so the morph owns their opacity: do not also give them opacity tracks. Both must have a numeric place.w and sit at the top level or directly inside a motion_layer; others are dropped and reported.'
     stitch: '"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" | "whip" | "wipe" | "iris" | "clock" | "slice" | "flip" | "spin" (optional, default "dissolve"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through. The hand-over used by
       scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed.'
     overlap: number (optional). Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.
@@ -13590,6 +13601,7 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
+    - claude-code
   fields:
     text: string
     color: string (optional, hex colour)

@@ -510,6 +510,55 @@ function _moPlaced(blk, seen, ids, st) {
   if (typeof pl.h === 'number') sz += 'height:' + _ffNum(pl.h, 100, 0, 300, 2) + '%;'; else if (type === 'motion_layer') sz += 'height:100%;';
   return '<div class="mt-el"' + (id ? ' data-mt-id="' + id + '" data-mt-x="' + px + '" data-mt-y="' + py + '"' : '') + ' style="position:absolute;left:' + px + '%;top:' + py + '%;' + sz + 'z-index:' + _ffInt(pl.z, 1, 0, 99) + ';transform-origin:' + _ffPick(pl.origin, _MO_ORIGIN, 'c') + ';">' + html + '</div>';
 }
+// ─── match cut (2026-10-02): an element flies from its box in one scene to its box in another ─────────────────────────────
+// `morphs: [{from, to, t|beat, dur?, ease?}]`. Every child is placed in percent, so the server knows both boxes (stage percent,
+// through at most one motion_layer) and writes the flight as ordinary tracks on a ghost copy of `from`: the ghost is drawn with its
+// origin at its top-left, so translate + scale land it exactly on the `to` box. `from` hides when the flight starts and `to` appears
+// when it ends (the morph owns their opacity). Both need a numeric place.w; anything else is dropped and counted.
+function _moBoxes(blocks) {
+  var out = {}, i, j;
+  function num(v, d, lo, hi) { return parseFloat(_ffNum(v, d, lo, hi, 2)); }
+  for (i = 0; i < blocks.length; i++) {
+    var b = blocks[i];
+    if (!b || typeof b !== 'object' || b.layer === 'hud') continue;
+    var pl = b.place && typeof b.place === 'object' ? b.place : {}, id = _moId(b.id);
+    var bx = num(pl.x, 0, -100, 200), by = num(pl.y, 0, -100, 200);
+    if (id && typeof pl.w === 'number' && !out[id]) out[id] = {x: bx, y: by, w: num(pl.w, 100, 0, 300), b: b};
+    if ((b.component || b.type) === 'motion_layer' && Array.isArray(b.blocks)) {
+      var lw = typeof pl.w === 'number' ? num(pl.w, 100, 0, 300) : 100, lh = typeof pl.h === 'number' ? num(pl.h, 100, 0, 300) : 100;
+      for (j = 0; j < b.blocks.length && j < 24; j++) {
+        var c = b.blocks[j];
+        if (!c || typeof c !== 'object') continue;
+        var cp = c.place && typeof c.place === 'object' ? c.place : {}, cid = _moId(c.id);
+        if (!cid || typeof cp.w !== 'number' || out[cid]) continue;
+        out[cid] = {x: bx + num(cp.x, 0, -100, 200) * lw / 100, y: by + num(cp.y, 0, -100, 200) * lh / 100, w: num(cp.w, 100, 0, 300) * lw / 100, b: c};
+      }
+    }
+  }
+  return out;
+}
+function _moMorphs(b, blocks, ids, bpm, dur, st) {
+  var src = Array.isArray(b.morphs) ? b.morphs : [], res = {html: '', tg: []}, i, own = Object.prototype.hasOwnProperty;
+  if (!src.length) return res;
+  if (src.length > 6) { st.dropped += src.length - 6; src = src.slice(0, 6); }
+  var box = _moBoxes(blocks);
+  for (i = 0; i < src.length; i++) {
+    var m = src[i], fid = m && typeof m === 'object' ? _moId(m.from) : '', tid = m && typeof m === 'object' ? _moId(m.to) : '', gid = 'mcut' + i;
+    var t = fid && tid && fid !== tid && box[fid] && box[tid] && ids[fid] && ids[tid] && !ids[gid] ? _moAt(m, bpm, dur) : null;
+    if (t === null) { st.dropped++; continue; }
+    var d = parseFloat(_ffNum(m.dur, 0.8, 0.1, 4, 2)), ez = (typeof m.ease === 'string' && m.ease !== 'hold' && own.call(_MO_EASE, m.ease)) ? m.ease : 'quart-in-out';
+    var A = box[fid], Z = box[tid], sc = A.w > 0 ? Z.w / A.w : 1, t1 = Math.min(dur, t + d);
+    var fx = _ffNum(A.x, 0, -100, 200, 2), fy = _ffNum(A.y, 0, -100, 200, 2), copy = {}, k;
+    for (k in A.b) if (own.call(A.b, k) && k !== 'id' && k !== 'place') copy[k] = A.b[k];
+    res.html += '<div class="mt-el" data-mt-id="' + gid + '" data-mt-x="' + fx + '" data-mt-y="' + fy + '" aria-hidden="true" style="position:absolute;left:' + fx + '%;top:' + fy + '%;width:' + _ffNum(A.w, 100, 0, 300, 2) + '%;z-index:60;transform-origin:0 0;opacity:0;pointer-events:none;">' + _moRender(copy) + '</div>';
+    var x0 = parseFloat(fx), y0 = parseFloat(fy);
+    var gk = [{t: 0, opacity: 0, x: x0, y: y0, scale: 1}, {t: t, opacity: 1, x: x0, y: y0, scale: 1, ease: 'hold'}, {t: t1, opacity: 1, x: Z.x, y: Z.y, scale: sc, ease: ez}, {t: Math.min(dur, t1 + 0.02), opacity: 0, ease: 'hold'}];
+    var gj = _moTrackJs(gk, _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st), fj = _moTrackJs([{t: 0, opacity: 1}, {t: t, opacity: 0, ease: 'hold'}], _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st);
+    var tj = _moTrackJs([{t: 0, opacity: 0}, {t: t1, opacity: 1, ease: 'hold'}], _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st);
+    res.tg.push('{i:"' + gid + '",p:{' + gj + '}}', '{i:"' + fid + '",p:{' + fj + '}}', '{i:"' + tid + '",p:{' + tj + '}}');
+  }
+  return res;
+}
 var _moTlDepth = 0;
 function _moTimeline(b) {
   var uid = Math.random().toString(36).substr(2, 6), th = _ffTheme(b), acc = _ffHex(b.accent, '#38bdf8');
@@ -543,6 +592,8 @@ function _moTimeline(b) {
     var pjs = _moTrackJs(keys, _MO_PROPS, _MO_PROP_ORDER, durN, bpm, defEase, st);
     if (pjs) tg.push('{i:"' + tid + '",p:{' + pjs + '}}');
   }
+  var mc = _moMorphs(b, blocks, ids, bpm, durN, st); // after your tracks: the morph owns from/to opacity during its flight
+  world += mc.html; tg = tg.concat(mc.tg);
   var camJs = 'null', cm = b.camera && typeof b.camera === 'object' && Array.isArray(b.camera.keys) ? b.camera.keys.slice(0, 48) : null;
   if (cm) { var cj = _moTrackJs(cm, _MO_CAM, _MO_CAM_ORDER, durN, bpm, defEase, st); if (cj) camJs = '{' + cj + '}'; }
   var cfg = '{W:' + W + ',H:' + H + ',dur:' + dur + ',poster:' + poster + ',loop:' + loop + ',auto:' + auto + ',tg:[' + tg.join(',') + '],cam:' + camJs + '}';

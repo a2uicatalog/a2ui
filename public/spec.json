@@ -54,7 +54,8 @@
      "email",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ]
    },
    "fields": {
@@ -84,7 +85,8 @@
      "email",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ]
    },
    "fields": {
@@ -114,7 +116,8 @@
      "email",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ]
    },
    "fields": {
@@ -178,7 +181,8 @@
      "google-meet-stage",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ],
     "degraded_on": [
      {
@@ -611,7 +615,8 @@
      "google-meet-stage",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ],
     "degraded_on": [
      {
@@ -653,7 +658,8 @@
      "google-meet-stage",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ],
     "degraded_on": [
      {
@@ -697,7 +703,8 @@
      "email",
      "pdf",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ],
     "degraded_on": [
      {
@@ -1467,7 +1474,8 @@
      "web",
      "google-meet-stage",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ],
     "degraded_on": [
      {
@@ -5239,7 +5247,8 @@
     "works_on": [
      "web",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ],
     "degraded_on": [
      {
@@ -10265,7 +10274,8 @@
      "web",
      "google-apps-script-web",
      "pdf",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ]
    },
    "fields": {
@@ -15462,7 +15472,8 @@
     "works_on": [
      "web",
      "google-apps-script-web",
-     "mcp-apps"
+     "mcp-apps",
+     "claude-code"
     ]
    },
    "fields": {

@@ -97,7 +97,8 @@
         "email",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "One or more prose paragraphs",
       "representativeQueries": [
@@ -118,7 +119,8 @@
         "email",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "H2 section title",
       "representativeQueries": [
@@ -138,7 +140,8 @@
         "email",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "H3 subsection title",
       "representativeQueries": [
@@ -176,7 +179,8 @@
         "google-meet-stage",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Fenced code block",
       "representativeQueries": [
@@ -388,7 +392,8 @@
         "google-meet-stage",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Highlighted alert box \u2014 info, warning, tip, or danger",
       "representativeQueries": [
@@ -407,7 +412,8 @@
         "google-meet-stage",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Numbered sequential steps with blue circle indicators",
       "representativeQueries": [
@@ -427,7 +433,8 @@
         "email",
         "pdf",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "HTML table with styled headers, alternating rows, horizontal scroll",
       "representativeQueries": [
@@ -707,7 +714,8 @@
         "web",
         "google-meet-stage",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Animated CSS progress bar with glow pulse effect",
       "representativeQueries": [
@@ -2402,7 +2410,8 @@
       "capabilities": [
         "web",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Displays a highlighted summary box containing critical bullet points from an article.",
       "representativeQueries": [
@@ -4650,7 +4659,8 @@
         "web",
         "google-apps-script-web",
         "pdf",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Horizontal strip of static metrics \u2014 value, label, optional prefix/suffix and trend indicator. Cleaner than animated_counter for non-animated use.",
       "representativeQueries": [
@@ -6882,7 +6892,8 @@
       "capabilities": [
         "web",
         "google-apps-script-web",
-        "mcp-apps"
+        "mcp-apps",
+        "claude-code"
       ],
       "description": "Inline badge pill with accent colour",
       "representativeQueries": [

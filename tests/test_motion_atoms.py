@@ -103,6 +103,14 @@ STITCHED = {
     "scenes": [{"layer": "s1", "t": 0}, {"layer": "s2", "beat": 6, "transition": "zoom-through"}, {"layer": "s3", "t": 6}],
 }
 
+MORPHED = {
+    "type": "motion_timeline", "duration": 8, "title": "M", "stitch": "dissolve", "controls": False, "autoplay": False,
+    "blocks": [{"type": "motion_layer", "id": "s1", "blocks": [{"type": "motion_pill", "id": "a", "text": "Fly *me*", "place": {"x": 5, "y": 10, "w": 30}}]},
+               {"type": "motion_layer", "id": "s2", "place": {"x": 10, "y": 0, "w": 80, "h": 100}, "blocks": [{"type": "motion_pill", "id": "b", "text": "Fly *me*", "place": {"x": 50, "y": 40, "w": 40}}]}],
+    "scenes": [{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3}],
+    "morphs": [{"from": "a", "to": "b", "t": 3, "dur": 1, "ease": "linear"}],
+}
+
 PAYLOADS = {
     "motion_group": [{}, {"effect": "pop", "stagger": 40, "blocks": [{"type": "demo_orb"}, {"type": "demo_cursor", "id": "c"}]},
                      {"effect": "<bad>", "ease": "zzz", "duration": -5, "delay": 99999999, "on": "view", "blocks": [{"type": "demo_orb"}]}],
@@ -110,6 +118,9 @@ PAYLOADS = {
     "motion_timeline": [{}, TIMELINE,
                         dict(TIMELINE, aspect="9:16", loop=False, autoplay=False, controls=False, backdrop="grid", theme="light", poster=3, accent="#F97316", background="#101820"),
                         STITCHED, dict(STITCHED, stitch="zoom-through", overlap=1.2), dict(STITCHED, stitch="cut"), dict(STITCHED, stitch="<x>", overlap="no"),
+                        MORPHED, dict(MORPHED, morphs=[{"from": "a", "to": "a", "t": 1}, {"from": "a", "to": "nope", "t": 1}, {"from": "s1", "to": "b", "t": 1}, {"from": "a", "to": "b", "beat": 4, "dur": 99, "ease": "hold"},
+                                                       {"from": "a", "to": "b", "t": "x"}, "junk", {"from": "a", "to": "b", "t": 2, "ease": "toString"}, {"from": "a", "to": "b", "t": 9}]),
+                        dict(MORPHED, bpm=120, blocks=MORPHED["blocks"] + [{"type": "motion_pill", "id": "mcut0", "text": "taken", "place": {"x": 1, "y": 1, "w": 5}}]),
                         dict(STITCHED, stitch="whip"), dict(STITCHED, stitch="wipe", overlap=1.0), dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "wipe"}, {"layer": "s3", "t": 6, "transition": "whip"}]),
                         dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "nope", "t": 2}, {"layer": "s2", "beat": 2, "transition": "blur"}, {"layer": "s3", "t": "x"}, "junk", {"layer": "s3", "t": 5, "transition": "<b>"}]),
                         dict(TIMELINE, blocks=TIMELINE["blocks"] + [{"type": "motion_timeline"}, {"type": "no_such_atom"}, "junk"],
@@ -660,3 +671,18 @@ def test_path_marker_rides_the_path_with_p():
     num = lambda v: float(re.search(r"-?[0-9.]+", str(v)).group(0))
     assert num(b_) == pytest.approx(0.5, abs=0.02), "the drawn line is half drawn at p = 0.5"
     assert abs(num(a)) == pytest.approx(0.5, abs=0.02), "and the marker sits at the same place"
+
+
+@browser
+def test_match_cut_ghost_lands_exactly_on_the_target_box():
+    blk = dict(MORPHED)
+    rect = ("var g=document.querySelector('[data-mt-id=mcut0]'),z=document.querySelector('[data-mt-id=b]'),a=document.querySelector('[data-mt-id=a]');"
+            "var r=g.getBoundingClientRect(),q=z.getBoundingClientRect();return [Math.round(r.left-q.left),Math.round(r.top-q.top),Math.round(r.width-q.width),"
+            "+g.style.opacity,+a.style.opacity,+z.style.opacity];")
+    dx, dy, dw, go, ao, zo = _probe(blk, 4, rect)
+    assert abs(dx) <= 1 and abs(dy) <= 1 and abs(dw) <= 1, (dx, dy, dw)
+    assert go == 1 and ao == 0 and zo == 1
+    # before the flight the ghost is hidden and the source shows; mid-flight the ghost is between the two boxes
+    assert _probe(blk, 2, rect)[3:5] == [0, 1]
+    mid = _probe(blk, 3.5, rect)
+    assert mid[3] == 1 and mid[4] == 0 and mid[5] == 0 and abs(mid[0]) > 5

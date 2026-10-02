@@ -4,7 +4,7 @@ Animated CSS progress bar with glow pulse effect
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, claude-code
 
 ## Fields
 

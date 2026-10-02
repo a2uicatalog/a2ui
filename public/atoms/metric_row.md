@@ -4,7 +4,7 @@ Horizontal strip of static metrics — value, label, optional prefix/suffix and 
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, claude-code
 
 ## Fields
 

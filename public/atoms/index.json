@@ -26,7 +26,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -39,7 +40,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -52,7 +54,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -75,7 +78,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -199,7 +203,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -210,7 +215,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -222,7 +228,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -374,7 +381,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -1333,7 +1341,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -2587,7 +2596,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {
@@ -3803,7 +3813,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ]
   },
   {

@@ -89,7 +89,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "One or more prose paragraphs",
    "x-intent-phrases": [
@@ -129,7 +130,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "H2 section title",
    "x-intent-phrases": [
@@ -169,7 +171,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "H3 subsection title",
    "x-intent-phrases": [
@@ -254,7 +257,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Fenced code block",
    "x-intent-phrases": [
@@ -714,7 +718,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Highlighted alert box — info, warning, tip, or danger A one-off confirmation that an action just succeeded, or a live warning that needs a response (e.g. 'saved', 'entry recorded', 'someone else is editing this'), is usually toast_notification, inline_feedback_message, inline_alert, or action_required_card instead -- callout is for a persistent note inside the page's own content, not a moment-in-time reaction to what the user just did.",
    "x-intent-phrases": [
@@ -754,7 +759,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Numbered sequential steps with blue circle indicators",
    "x-intent-phrases": [
@@ -805,7 +811,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "HTML table with styled headers, alternating rows, horizontal scroll",
    "x-intent-phrases": [
@@ -1607,7 +1614,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Horizontal bar showing how much of a task, list or goal is complete, as a filled share of the total (for example 6 of 10 done). Animated CSS fill with a soft glow.",
    "x-intent-phrases": [
@@ -5839,7 +5847,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Displays a highlighted summary box containing critical bullet points from an article.",
    "x-intent-phrases": [
@@ -11705,7 +11714,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Horizontal strip of static metrics — value, label, optional prefix/suffix and trend indicator. Cleaner than animated_counter for non-animated use.",
    "x-intent-phrases": [
@@ -18634,7 +18644,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "claude-code"
    ],
    "x-routing-text": "Inline badge pill with accent colour",
    "x-intent-phrases": [

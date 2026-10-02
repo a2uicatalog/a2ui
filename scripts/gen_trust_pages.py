@@ -626,6 +626,8 @@ specific surface.
 - `google-apps-script-side-panel` — Apps Script side panel.
 - `google-chat` — Chat cards; visuals arrive as server-rendered images (Chat's own
   widget set cannot express custom charts or layout).
+- `claude-code` — native terminal panes inside Claude Code via the `claude-code-surface/`
+  plugin (a mod); a subset of atoms, others show a placeholder.
 - `email` / `pdf` — static print channels; no scripting, no interactivity.
 
 ## Choosing one

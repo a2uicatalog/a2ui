@@ -4,7 +4,7 @@ Inline badge pill with accent colour
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, claude-code
 
 ## Fields
 

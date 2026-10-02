@@ -4,7 +4,7 @@ HTML table with styled headers, alternating rows, horizontal scroll
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, claude-code
 
 ## Fields
 
