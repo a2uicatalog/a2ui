@@ -162,6 +162,14 @@ def _tiny_overlay_png_bytes():
     return buf.getvalue()
 
 
+def test_fetch_aerial_photo_bytes_returns_plain_unannotated_jpeg():
+    pytest.importorskip("PIL")
+    with patch("urllib.request.urlopen", return_value=_mock_urlopen(_tiny_jpeg_bytes())) as m:
+        photo = pl.fetch_aerial_photo_bytes(2.35995, 48.855602, width=40)
+    assert photo == _tiny_jpeg_bytes()  # untouched -- no compositing, no annotation drawn on it
+    assert m.call_count == 1  # exactly one WMS call, no overlay fetch
+
+
 def test_fetch_dp1_screenshot_bytes_produces_real_png_with_overlay_composited():
     pytest.importorskip("PIL")
     calls = []

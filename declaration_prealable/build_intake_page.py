@@ -147,6 +147,9 @@ PAGE = r"""<!DOCTYPE html>
 
     <fieldset>
       <legend>Parcelle (pour DP2)</legend>
+      <label style="display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;color:var(--ink)">
+        <input type="checkbox" id="includeRawAerial" style="width:auto"> Inclure la photo aérienne brute (non annotée) au téléchargement
+      </label>
       <button type="button" id="lookupBtn">Rechercher la parcelle réelle (cadastre.gouv.fr)</button>
       <p class="note" id="lookupNote"></p>
       <div id="manualPlotFields">
@@ -195,6 +198,11 @@ PAGE = r"""<!DOCTYPE html>
       <img id="dp1Img" alt="DP1">
       <div><a class="dl" id="dp1Dl" download="DP1_situation.png">Télécharger DP1_situation.png</a></div>
     </div>
+    <div class="piece" id="aerialPiece" style="display:none">
+      <h3>Photo aérienne brute (non annotée)</h3>
+      <img id="aerialImg" alt="Photo aérienne">
+      <div><a class="dl" id="aerialDl" download="photo_aerienne.jpg">Télécharger photo_aerienne.jpg</a></div>
+    </div>
     <div class="piece">
       <h3>DP5 — Représentation de l'aspect extérieur</h3>
       <img id="dp5Img" alt="DP5">
@@ -225,7 +233,8 @@ $('lookupBtn').onclick=function(){
   fetch(API_BASE+'/lookup-parcel',{method:'POST',
     headers:{'Content-Type':'application/json','X-Render-Token':TOKEN},
     body:JSON.stringify({address:$('address').value, commune:$('commune').value,
-      wallLengthM:parseFloat($('length_m').value)||3.0, wallOffsetM:1.0})})
+      wallLengthM:parseFloat($('length_m').value)||3.0, wallOffsetM:1.0,
+      includeRawAerial:$('includeRawAerial').checked})})
     .then(function(r){return r.json()})
     .then(function(j){
       btn.disabled=false;btn.textContent='Rechercher la parcelle réelle (cadastre.gouv.fr)';
@@ -237,6 +246,10 @@ $('lookupBtn').onclick=function(){
       note.textContent='Parcelle trouvée : '+j.contenanceM2+' m² (cadastre, réf. '+j.idu+')'+zoneTxt+'.';
       var dp1Src='data:image/png;base64,'+j.dp1PngBase64;
       $('dp1Img').src=dp1Src;$('dp1Dl').href=dp1Src;$('dp1Piece').style.display='';
+      if(j.aerialPhotoJpegBase64){
+        var aerialSrc='data:image/jpeg;base64,'+j.aerialPhotoJpegBase64;
+        $('aerialImg').src=aerialSrc;$('aerialDl').href=aerialSrc;$('aerialPiece').style.display='';
+      }
     })
     .catch(function(){
       btn.disabled=false;btn.textContent='Rechercher la parcelle réelle (cadastre.gouv.fr)';

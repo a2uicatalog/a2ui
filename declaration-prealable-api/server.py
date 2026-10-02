@@ -226,17 +226,20 @@ def lookup_parcel():
         commune = _str(body.get("commune"), "commune")
         wall_length_m = _num(body.get("wallLengthM", 3.0), "wallLengthM", 0.2, MAX_LENGTH_M)
         wall_offset_m = _num(body.get("wallOffsetM", 1.0), "wallOffsetM", 0.0, MAX_COORD_M)
+        include_raw_aerial = bool(body.get("includeRawAerial", False))
     except ValidationError as e:
         return jsonify({"ok": False, "error": str(e)}), 400
 
     try:
         plot, meta = parcel_lookup.build_plot_from_address(address, commune, wall_length_m, wall_offset_m)
         dp1_png = dp1_situation.render_dp1_png_bytes(meta["lon"], meta["lat"], address)
+        aerial_jpeg = (parcel_lookup.fetch_aerial_photo_bytes(meta["lon"], meta["lat"])
+                       if include_raw_aerial else None)
     except Exception as e:  # noqa: BLE001 -- report to the client, don't leak a stack trace
         return jsonify({"ok": False, "error": f"could not look up parcel: {e}"}), 502
 
     import base64
-    return jsonify({
+    response = {
         "ok": True,
         "boundaryPointsM": plot.boundary_points_m,
         "existingStructures": plot.existing_structures,
@@ -247,7 +250,10 @@ def lookup_parcel():
         "zoneLibelle": meta["zone_libelle"],
         "reglementPdfFilename": meta["reglement_pdf_filename"],
         "dp1PngBase64": base64.b64encode(dp1_png).decode(),
-    })
+    }
+    if aerial_jpeg is not None:
+        response["aerialPhotoJpegBase64"] = base64.b64encode(aerial_jpeg).decode()
+    return jsonify(response)
 
 
 @app.route("/healthz", methods=["GET"])

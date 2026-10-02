@@ -169,6 +169,26 @@ def test_lookup_parcel_succeeds_and_returns_real_shape(client, monkeypatch):
                                             "points_m": [[2, 2], [8, 2], [8, 8], [2, 8]]}]
     png_bytes = base64.b64decode(data["dp1PngBase64"])
     assert png_bytes[:8] == b"\x89PNG\r\n\x1a\n"
+    assert "aerialPhotoJpegBase64" not in data  # not requested -> not fetched, not returned
+
+
+def test_lookup_parcel_includes_raw_aerial_when_requested(client, monkeypatch):
+    monkeypatch.setattr(dp_server.parcel_lookup, "build_plot_from_address",
+                         lambda address, commune, length, offset: (_REAL_PLOT, _REAL_META))
+    monkeypatch.setattr(dp_server.dp1_situation, "render_dp1_png_bytes",
+                         lambda lon, lat, address: b"\x89PNG\r\n\x1a\nfake")
+    calls = []
+    monkeypatch.setattr(dp_server.parcel_lookup, "fetch_aerial_photo_bytes",
+                         lambda lon, lat: calls.append((lon, lat)) or b"\xff\xd8\xff\xe0fakejpeg")
+
+    r = client.post("/lookup-parcel", json={"address": "12 rue de rivoli", "commune": "paris",
+                                             "includeRawAerial": True},
+                     headers={"X-Render-Token": TOKEN})
+    assert r.status_code == 200
+    data = r.get_json()
+    assert len(calls) == 1  # only fetched when actually requested
+    jpeg_bytes = base64.b64decode(data["aerialPhotoJpegBase64"])
+    assert jpeg_bytes[:3] == b"\xff\xd8\xff"
 
 
 def test_lookup_parcel_reports_upstream_failure_without_crashing(client, monkeypatch):

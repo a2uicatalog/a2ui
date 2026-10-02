@@ -219,34 +219,44 @@ def _draw_annotations(img_bytes, bbox, address):
     return out.getvalue()
 
 
+def _bbox_for_radius(lon, lat, radius_m):
+    d_lat = radius_m / 111320.0
+    d_lon = radius_m / (111320.0 * math.cos(math.radians(lat)))
+    return (lon - d_lon, lat - d_lat, lon + d_lon, lat + d_lat)  # (lon_min, lat_min, lon_max, lat_max)
+
+
+def _wms_get(bbox, layers, fmt, transparent=False, width=1200, height=1200):
+    lon_min, lat_min, lon_max, lat_max = bbox
+    params = {
+        "LAYERS": layers, "FORMAT": fmt, "SERVICE": "WMS", "VERSION": "1.3.0",
+        "REQUEST": "GetMap", "STYLES": "", "CRS": "EPSG:4326",
+        "BBOX": f"{lat_min},{lon_min},{lat_max},{lon_max}",
+        "WIDTH": str(width), "HEIGHT": str(height),
+    }
+    if transparent:
+        params["TRANSPARENT"] = "true"
+    url = WMS_URL + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers=_UA)
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return resp.read()
+
+
+def fetch_aerial_photo_bytes(lon, lat, radius_m=120, width=1200):
+    """The plain, UNANNOTATED IGN orthophoto -- no cadastral overlay, no north arrow/scale/caption. A
+    separate, optional download for anyone who wants the raw aerial view itself rather than (or
+    alongside) the annotated DP1 piece fetch_dp1_screenshot_bytes produces. Real JPEG bytes, not
+    PNG -- no compositing step needs the alpha channel PNG gives fetch_dp1_screenshot_bytes."""
+    bbox = _bbox_for_radius(lon, lat, radius_m)
+    return _wms_get(bbox, "ORTHOIMAGERY.ORTHOPHOTOS", "image/jpeg", width=width, height=width)
+
+
 def fetch_dp1_screenshot_bytes(lon, lat, address, radius_m=120, width=1200):
     """Real DP1 plan-de-situation image: an orthophoto centred on (lon, lat) with the cadastral
     parcel-boundary overlay composited on top, annotated with a north arrow, scale bar, and address
     caption. radius_m=120 gives a roughly 1/2000-1/4000 view -- well inside the official 1/5000-1/25000
     range, close enough to actually show the parcel rather than a dot."""
-    lat_mid = lat
-    d_lat = radius_m / 111320.0
-    d_lon = radius_m / (111320.0 * math.cos(math.radians(lat_mid)))
-    lon_min, lon_max = lon - d_lon, lon + d_lon
-    lat_min, lat_max = lat - d_lat, lat + d_lat
-    bbox = (lon_min, lat_min, lon_max, lat_max)
-    height = width
-
-    def _wms_get(layers, fmt, transparent=False):
-        params = {
-            "LAYERS": layers, "FORMAT": fmt, "SERVICE": "WMS", "VERSION": "1.3.0",
-            "REQUEST": "GetMap", "STYLES": "", "CRS": "EPSG:4326",
-            "BBOX": f"{lat_min},{lon_min},{lat_max},{lon_max}",
-            "WIDTH": str(width), "HEIGHT": str(height),
-        }
-        if transparent:
-            params["TRANSPARENT"] = "true"
-        url = WMS_URL + "?" + urllib.parse.urlencode(params)
-        req = urllib.request.Request(url, headers=_UA)
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return resp.read()
-
-    ortho_bytes = _wms_get("ORTHOIMAGERY.ORTHOPHOTOS", "image/jpeg")
+    bbox = _bbox_for_radius(lon, lat, radius_m)
+    ortho_bytes = _wms_get(bbox, "ORTHOIMAGERY.ORTHOPHOTOS", "image/jpeg", width=width, height=width)
 
     import io
     from PIL import Image
@@ -257,7 +267,8 @@ def fetch_dp1_screenshot_bytes(lon, lat, address, radius_m=120, width=1200):
         # channel at all) -- a real server quirk, not a request-parameter bug. Chroma-key the
         # near-white background to transparent ourselves before compositing, so the black
         # parcel-boundary hatching/lines still overlay the orthophoto instead of replacing it.
-        overlay_bytes = _wms_get("CADASTRALPARCELS.PARCELS", "image/png", transparent=True)
+        overlay_bytes = _wms_get(bbox, "CADASTRALPARCELS.PARCELS", "image/png", transparent=True,
+                                  width=width, height=width)
         overlay = Image.open(io.BytesIO(overlay_bytes)).convert("L").resize(base.size)
         overlay_rgba = Image.new("RGBA", overlay.size)
         overlay_rgba.paste((20, 20, 20, 255), mask=overlay.point(lambda p: 255 - p))

@@ -192,6 +192,11 @@ DP1 screenshot, via three free/keyless French government open-data APIs
   per commune), not reliably machine-extractable. `checklist.txt` surfaces
   the real document name instead of a generic "go check your PLU" line, but
   a human still opens and reads it.
+- **Raw aerial photo (optional)** — `parcel_lookup.fetch_aerial_photo_bytes`:
+  the plain, unannotated IGN orthophoto (no cadastral overlay, no north
+  arrow/scale/caption), gated behind an "Inclure la photo aérienne brute"
+  checkbox in the web form (`includeRawAerial` on `/lookup-parcel`) and only
+  fetched when actually requested.
 
 Wired into both surfaces: `intake.py`'s CLI asks "look up the real parcel
 boundary?" before falling back to the manual rectangle questions;
