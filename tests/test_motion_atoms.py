@@ -38,7 +38,8 @@ DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_ch
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
 REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch", "motion_leader", "motion_path", "motion_mask"]  # from the studied reference film, 2026-10-01
 REEL3 = ["motion_device", "motion_strike", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + DEMO_ATOMS
+REEL4 = ["motion_marquee", "motion_glitch", "motion_bounce", "motion_scatter", "motion_contours", "motion_rail"]  # fourth batch, 2026-10-01
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -185,6 +186,12 @@ PAYLOADS = {
     "motion_shake": [{}, {"amount": 30, "frequency": 14, "tilt": 3.5, "blocks": [{"type": "motion_text", "id": "t", "text": "Hit", "place": {"x": 1, "y": 1}}, {"type": "motion_pill", "text": "x"}]},
                      {"amount": 9999, "frequency": "x", "tilt": 99, "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"blocks": "no"}],
     "motion_flash": [{}, {"color": "#ffeecc", "strength": 0.5}, {"color": "red;x", "strength": 99}, {"strength": "x"}],
+    "motion_marquee": [{}, {"rows": ["DESIGN \u00b7 ANIMATION", "TIMING <b>", "x" * 120, "", 5, None, "a", "b", "c"], "size": 60, "weight": "bold", "color": "#fff6e8", "accent": "#ff6a2b"}, {"rows": "no", "size": 9999, "weight": "toString", "color": "url(x)"}],
+    "motion_glitch": [{}, {"text": "MOVE <b>", "size": 200, "split": 30, "align": "middle", "color": "#ffffff", "accent": "#ff0055", "accent2": "#00ffff"}, {"text": 5, "split": 9999, "size": "x", "weight": "constructor", "accent": "red;x"}],
+    "motion_bounce": [{}, {"bounces": 5, "size": 80, "height": 400, "trail": False, "accent": "#ff6a2b"}, {"bounces": 9999, "size": "x", "height": -5, "accent": "url(javascript:alert(1))"}],
+    "motion_scatter": [{}, {"items": ["Ticket", {"title": "Label <b>", "text": "x" * 80}, {"title": ""}, 5, None, "a", "b", "c", "d", "e"], "card_w": 30, "size": 20, "fill": "#101820", "color": "#ffffff", "accent": "#ff6a2b"}, {"items": "no", "card_w": 9999, "fill": "url(x)"}],
+    "motion_contours": [{}, {"lines": 20, "width": 3, "accent": "#38bdf8", "accent2": "#ff6a2b"}, {"lines": 9999, "width": "x", "accent": "red;x", "accent2": "url(x)"}],
+    "motion_rail": [{}, {"steps": ["Question", "Load PDF", "Verify <b>", "Answer", "", 5, None, "x" * 60, "g"], "size": 20, "accent": "#ff6a2b"}, {"steps": "no", "size": 9999}, {"steps": ["only"]}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],

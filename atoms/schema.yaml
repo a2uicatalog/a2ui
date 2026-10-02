@@ -10602,6 +10602,175 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_marquee
+  stage: preview
+  description: 'Rows of big uppercase text that slide sideways without end, alternate rows in opposite directions, the second row in the accent colour: the ticker behind a headline. The second dial (--s) is the travel, one full cycle per unit; the rows fade in one after another with p. Plain CSS, no script; standalone it renders the finished rows.'
+  compact_description: sliding rows of ticker text behind a headline
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    rows: 'array (max 5) of strings, max 80 each. The text of each row.'
+    size: 'integer (optional). px, 10-200. Default 40.'
+    weight: '"regular" | "bold" | "black" (optional, default "black")'
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    accent: '"#rrggbb" (optional). The second row. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_glitch
+  stage: preview
+  description: 'Type with a chromatic split: a red and a cyan copy pull apart by `split` px as the second dial (--s) goes 0 to 1 and sit together at 0, over a reveal that wipes in with p. The glitch hit on a kinetic title. Plain CSS text-shadow, no script.'
+  compact_description: type with a red and cyan chromatic split that pulses
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    text: 'string (max 40).'
+    size: 'integer (optional). px, 10-400. Default 120.'
+    split: 'integer (optional). Peak separation px, 0-60. Default 14.'
+    weight: '"regular" | "bold" | "black" (optional, default "black")'
+    align: '"start" | "middle" | "end" (optional)'
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    accent: '"#rrggbb" (optional). Left copy. Default a hot pink.'
+    accent2: '"#rrggbb" (optional). Right copy. Default cyan.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_bounce
+  stage: preview
+  description: 'A ball that bounces across its box as p goes 0 to 1, squashing flat as it lands and stretching in the air, each bounce lower than the last, with a dotted trail. The classic squash-and-stretch exercise. Plain CSS abs(), sin() and cos(), no script; standalone it sits at the end of its path.'
+  compact_description: bouncing ball with squash and stretch and a dotted trail
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    bounces: 'integer (optional). 1-8. Default 3.'
+    size: 'integer (optional). Ball px, 8-300. Default 60.'
+    height: 'integer (optional). Box height px, 40-800. Default 260.'
+    trail: 'bool (optional). Dotted trail. Default true.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_scatter
+  stage: preview
+  description: 'Cards that fly in from outside the frame and settle at scattered, tilted rest positions, one after another as p goes 0 to 1: the pile of tickets, labels or notes. Up to 8 cards at fixed resting spots. Fills its placed box. Plain CSS, no script; standalone it renders the finished pile.'
+  compact_description: cards flying in to settle in a scattered tilted pile
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    items: 'array (max 8) of strings or {title, text?}. title max 30, text max 50.'
+    card_w: 'integer (optional). Card width as a percent of the box, 10-50. Default 24.'
+    size: 'integer (optional). Text px, 8-60. Default 18.'
+    fill: '"#rrggbb" (optional). Card colour. Default white.'
+    color: '"#rrggbb" (optional). Card text. Default near-black.'
+    accent: '"#rrggbb" (optional). Card top edge. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_contours
+  stage: preview
+  description: 'Flowing contour lines, like a topographic or wind map, that draw themselves one after another as p goes 0 to 1 and drift sideways with the second dial (--s). A calm moving background for a title. Plain SVG and CSS, no script; fills its box and crops to it.'
+  compact_description: flowing contour lines that draw and drift as a background
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    lines: 'integer (optional). 3-30. Default 12.'
+    width: 'integer (optional). Line px, 1-12. Default 2.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Every third line. Default none.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_rail
+  stage: preview
+  description: 'A progress rail with labelled stops: the line fills as p goes 0 to 1 and each stop fills and its label brightens as the line reaches it. The pipeline bar along the bottom of an explainer. 2 to 6 stops. Plain CSS, no script; standalone it renders complete.'
+  compact_description: labelled progress rail whose stops light as it fills
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    steps: 'array (2-6) of strings, max 24 each.'
+    size: 'integer (optional). Text px, 8-60. Default 16.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

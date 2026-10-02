@@ -104,6 +104,15 @@ first, not last.
   the general rule this incident is an instance of: a known issue is not
   an accepted one.
 
+## New atoms start injection-clean
+
+- `tests/test_motion_injection.py` runs every motion atom's declared fields through attack strings (three shapes) and parses the
+  output with an HTML parser; a new motion atom is covered automatically by being in `atoms/schema.yaml`. Non-motion atoms: add a
+  hostile payload to their own test. The full-catalogue fuzz (JS renderer static scan + real-browser execution + Python twin) lives
+  in `a2ui-private/security/xss-fuzz` (`xss_fuzz.py`, `py_fuzz.py`, `exec_fuzz.py`); run all three after adding atoms; target is 0/0/0.
+- Fields named like a CSS value, number, URL, id or icon are validated by the payload guard; text is escaped by the renderer. Never
+  put a raw field into markup, a style, a script or a URL without one of those.
+
 ## Improvement work is measured, not asserted
 
 `ops/improve.yaml` (private tier) declares the benchmark. When the work

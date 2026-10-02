@@ -1186,3 +1186,86 @@ _RENDERERS['motion_flash'] = function(b) {
   var col = _moInk(b, 'color', '#ffffff'), st = _ffNum(b.strength, 0.8, 0.1, 1, 2);
   return '<div aria-hidden="true" style="width:100%;height:100%;pointer-events:none;background:' + col + ';opacity:calc(clamp(0,calc(var(--p,1)*10),1)*(1 - clamp(0,var(--p,1),1))*' + st + ');"></div>';
 };
+
+// ─── fourth reference batch (2026-10-01, five LinkedIn/YouTube motion pieces): marquee rows, glitch type, bounce, scatter, contours, rail ───
+var _MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4]];
+var _MO_WAVE = [14, -22, 30, -10, 24, -30, 8, -18];
+
+// Rows of big text that slide sideways forever (--s is the travel), alternate rows going opposite ways: the ticker behind a headline.
+_RENDERERS['motion_marquee'] = function(b) {
+  var src = Array.isArray(b.rows) ? b.rows : [], rows = [], i;
+  for (i = 0; i < src.length && rows.length < 5; i++) { var t = _moStr(src[i], 80); if (t) rows.push(t); }
+  if (!rows.length) rows = ['MARQUEE'];
+  var size = _ffInt(b.size, 40, 10, 200), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), gap = 0.8, out = '';
+  var weight = _ffPick(b.weight, _FF_WEIGHTS, 'black');
+  for (i = 0; i < rows.length; i++) {
+    var unit = '<span style="padding-right:1.2em;">' + _esc(rows[i]) + ' &middot; </span>', dir = i % 2 ? 1 : -1, hi = i === 1 ? acc : color;
+    out += '<div style="overflow:hidden;white-space:nowrap;opacity:calc(clamp(0,calc(var(--p,1)*' + (rows.length + 1) + ' - ' + i + '),1)*' + (i % 2 ? '0.55' : '1') + ');margin-top:' + gap + 'em;">'
+      + '<div style="display:inline-block;color:' + hi + ';transform:translateX(calc(var(--s,0)*' + (dir * 50) + '%' + (dir > 0 ? ' - 50%' : '') + '));">' + unit + unit + unit + unit + '</div></div>';
+  }
+  return '<div role="img" aria-label="' + _esc(rows.join(', ')) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:' + weight + ';letter-spacing:0.04em;line-height:1;text-transform:uppercase;">' + out + '</div>';
+};
+
+// Type with a chromatic split: red and cyan copies pull apart by `split` px at the peak of --s and settle together at 0.
+_RENDERERS['motion_glitch'] = function(b) {
+  var text = _moStr(b.text, 40) || 'GLITCH', size = _ffInt(b.size, 120, 10, 400), split = _ffInt(b.split, 14, 0, 60), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)');
+  var c1 = _moInk(b, 'accent', '#ff2d6f'), c2 = _moInk(b, 'accent2', '#19d3ff'), align = _ffPick(b.align, _MO_ALIGN, 'start'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black');
+  var d = 'calc(var(--s,0)*' + split + 'px)';
+  return '<div style="width:100%;text-align:' + align + ';">' + _moSr(text) + '<span aria-hidden="true" style="display:inline-block;font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.03em;color:' + color
+    + ';text-shadow:calc(-1*' + d + ') 0 ' + c1 + ',' + d + ' 0 ' + c2 + ';opacity:clamp(0,calc(var(--p,1)*8),1);clip-path:inset(0 calc((1 - clamp(0,calc(var(--p,1)*2),1))*100%) 0 0);">' + _esc(text) + '</span></div>';
+};
+
+// A ball that bounces across the box as p goes 0..1, squashing as it lands and stretching in the air, with a dotted trail.
+_RENDERERS['motion_bounce'] = function(b) {
+  var n = _ffInt(b.bounces, 3, 1, 8), size = _ffInt(b.size, 60, 8, 300), h = _ffInt(b.height, 260, 40, 800), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), trail = b.trail !== false, k, dots = '';
+  function ph(d) { return '(clamp(0,calc(var(--p,1) - ' + d + '),1)*' + n + '*3.14159)'; }
+  function pos(d) { return 'left:calc(clamp(0,calc(var(--p,1) - ' + d + '),1)*(100% - ' + size + 'px));top:calc(' + h + 'px - ' + size + 'px - abs(sin(' + ph(d) + '))*(' + h + 'px - ' + size + 'px)*(1 - clamp(0,calc(var(--p,1) - ' + d + '),1)*0.6));'; }
+  if (trail) for (k = 1; k <= 8; k++) dots += '<div style="position:absolute;width:' + Math.max(3, Math.floor(size / 6)) + 'px;height:' + Math.max(3, Math.floor(size / 6)) + 'px;margin:' + Math.floor(size / 2) + 'px 0 0 ' + Math.floor(size / 2) + 'px;border-radius:50%;background:' + acc + ';opacity:' + _ffNum(0.5 - k * 0.05, 0, 0, 1, 2) + ';' + pos(_ffNum(k * 0.012, 0, 0, 1, 3)) + '"></div>';
+  var sq = 'abs(cos(' + ph(0) + '))';
+  return '<div role="img" aria-label="A bouncing ball" style="position:relative;width:100%;height:' + h + 'px;">' + dots
+    + '<div aria-hidden="true" style="position:absolute;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + acc + ';transform-origin:50% 100%;transform:scale(calc(1 + ' + sq + '*' + sq + '*' + sq + '*0.35),calc(1 - ' + sq + '*' + sq + '*' + sq + '*0.4));' + pos(0) + '"></div>'
+    + '<div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:2px;background:' + _MO_MIX_LINE + ';"></div></div>';
+};
+
+// Cards that fly in from outside the frame and settle at scattered, tilted rest positions: the pile of tickets, labels or notes.
+_RENDERERS['motion_scatter'] = function(b) {
+  var src = Array.isArray(b.items) ? b.items : [], items = [], i;
+  for (i = 0; i < src.length && items.length < 8; i++) { var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30); if (t) items.push({t: t, x: obj ? _moStr(it.text, 50) : ''}); }
+  if (!items.length) items = [{t: 'Card', x: ''}];
+  var size = _ffInt(b.size, 18, 8, 60), w = _ffInt(b.card_w, 24, 10, 50), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), fill = _moInk(b, 'fill', '#ffffff'), ink = _moInk(b, 'color', '#14161c'), out = '';
+  for (i = 0; i < items.length; i++) {
+    var P = _MO_SCATTER[i], dx = (i % 2 ? 1 : -1) * (60 + i * 7), dy = -40 - i * 5;
+    out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (items.length + 2) + ' - ' + i + '),1);position:absolute;left:' + P[0] + '%;top:' + P[1] + '%;width:' + w + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+      + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + dx + '%),calc((1 - var(--u))*' + dy + '%)) rotate(calc(' + P[2] + 'deg + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
+      + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';
+  }
+  return '<div style="position:relative;width:100%;height:100%;min-height:12em;font-family:' + _MO_SANS + ';font-size:' + size + 'px;">' + out + '</div>';
+};
+
+// Flowing contour lines that draw themselves and drift (--s slides them sideways), like a topographic or wind-map background.
+_RENDERERS['motion_contours'] = function(b) {
+  var n = _ffInt(b.lines, 12, 3, 30), wd = _ffInt(b.width, 2, 1, 12), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), acc2 = _moInk(b, 'accent2', ''), W = 1000, H = 600, i, out = '';
+  for (i = 0; i < n; i++) {
+    var y = Math.floor((i + 0.5) * H / n), a = _MO_WAVE[i % 8] * 2, a2 = _MO_WAVE[(i * 3 + 1) % 8] * 2, col = acc2 && i % 3 === 0 ? acc2 : acc;
+    var d = 'M-200 ' + y + ' C 0 ' + (y + a) + ' 200 ' + (y - a) + ' 400 ' + y + ' S 800 ' + (y + a2) + ' 1000 ' + y + ' S 1400 ' + (y - a2) + ' 1600 ' + y + ' S 2000 ' + (y + a) + ' 2200 ' + y;
+    out += '<path d="' + d + '" pathLength="1" style="--u:clamp(0,calc(var(--p,1)*' + (n + 3) + ' - ' + _ffNum(i * 0.6, 0, 0, 100, 1) + '),1);fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));opacity:' + _ffNum(0.35 + (i % 4) * 0.15, 0, 0, 1, 2) + ';"/>';
+  }
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display:block;overflow:hidden;"><g style="transform:translateX(calc(var(--s,0)*-800px));">' + out + '</g></svg>';
+};
+
+// A progress rail with labelled stops: the line fills as p goes 0..1 and each label lights when the fill reaches it.
+_RENDERERS['motion_rail'] = function(b) {
+  var src = Array.isArray(b.steps) ? b.steps : [], st = [], i;
+  for (i = 0; i < src.length && st.length < 6; i++) { var t = _moStr(src[i], 24); if (t) st.push(t); }
+  if (st.length < 2) st = ['Start', 'Finish'];
+  var n = st.length, size = _ffInt(b.size, 16, 8, 60), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), out = '';
+  for (i = 0; i < n; i++) {
+    var x = _ffNum(Math.floor(i * 1000 / (n - 1)) / 10, 0, 0, 100, 1);
+    out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (n - 1) + ' - ' + _ffNum(i - 0.0001, 0, -1, 10, 4) + ' ),1);position:absolute;left:' + x + '%;top:0;transform:translateX(-50%);text-align:center;">'
+      + '<div style="width:0.9em;height:0.9em;margin:0 auto;border-radius:50%;box-sizing:border-box;border:2px solid ' + acc + ';background:color-mix(in srgb,' + acc + ' calc(var(--u)*100%),transparent);"></div>'
+      + '<div style="margin-top:0.7em;white-space:nowrap;font-weight:700;opacity:calc(0.4 + 0.6*var(--u));">' + _esc(st[i]) + '</div></div>';
+  }
+  return '<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);height:4.4em;">'
+    + '<div style="position:absolute;left:4em;right:4em;top:0;height:0;"><div style="position:absolute;left:0;right:0;top:0.4em;height:2px;background:' + _MO_MIX_LINE + ';"></div>'
+    + '<div style="position:absolute;left:0;top:0.4em;height:2px;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></div>' + out + '</div></div>';
+};

@@ -27815,11 +27815,122 @@ def _render_motion_flash(b: dict) -> str:
     return '<div aria-hidden="true" style="width:100%;height:100%;pointer-events:none;background:' + col + ';opacity:calc(clamp(0,calc(var(--p,1)*10),1)*(1 - clamp(0,var(--p,1),1))*' + st + ');"></div>'
 
 
+# ─── fourth reference batch (2026-10-01): see the matching block in atoms_motion.gs ──────────────────────────────────────────
+_MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4]]
+_MO_WAVE = [14, -22, 30, -10, 24, -30, 8, -18]
+
+
+def _render_motion_marquee(b: dict) -> str:
+    rows = []
+    for r in (b.get('rows') if isinstance(b.get('rows'), list) else []):
+        if len(rows) >= 5:
+            break
+        t = _cv_str(r, 80)
+        if t:
+            rows.append(t)
+    if not rows:
+        rows = ['MARQUEE']
+    size, acc, color = _ff_int(b.get('size'), 40, 10, 200), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)')
+    weight, out = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), ''
+    for i, row in enumerate(rows):
+        unit = '<span style="padding-right:1.2em;">' + _cv_esc(row) + ' &middot; </span>'
+        d, hi = (1 if i % 2 else -1), (acc if i == 1 else color)
+        out += ('<div style="overflow:hidden;white-space:nowrap;opacity:calc(clamp(0,calc(var(--p,1)*' + str(len(rows) + 1) + ' - ' + str(i) + '),1)*' + ('0.55' if i % 2 else '1') + ');margin-top:0.8em;">'
+                + '<div style="display:inline-block;color:' + hi + ';transform:translateX(calc(var(--s,0)*' + str(d * 50) + '%' + (' - 50%' if d > 0 else '') + '));">' + unit * 4 + '</div></div>')
+    return ('<div role="img" aria-label="' + _cv_esc(', '.join(rows)) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';letter-spacing:0.04em;line-height:1;text-transform:uppercase;">' + out + '</div>')
+
+
+def _render_motion_glitch(b: dict) -> str:
+    text, size, split = _cv_str(b.get('text'), 40) or 'GLITCH', _ff_int(b.get('size'), 120, 10, 400), _ff_int(b.get('split'), 14, 0, 60)
+    color, c1, c2 = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'accent', '#ff2d6f'), _mo_ink(b, 'accent2', '#19d3ff')
+    align, weight = _ff_pick(b.get('align'), _MO_ALIGN, 'start'), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black')
+    d = 'calc(var(--s,0)*' + str(split) + 'px)'
+    return ('<div style="width:100%;text-align:' + align + ';">' + _mo_sr(text) + '<span aria-hidden="true" style="display:inline-block;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.03em;color:' + color
+            + ';text-shadow:calc(-1*' + d + ') 0 ' + c1 + ',' + d + ' 0 ' + c2 + ';opacity:clamp(0,calc(var(--p,1)*8),1);clip-path:inset(0 calc((1 - clamp(0,calc(var(--p,1)*2),1))*100%) 0 0);">' + _cv_esc(text) + '</span></div>')
+
+
+def _render_motion_bounce(b: dict) -> str:
+    n, size, h = _ff_int(b.get('bounces'), 3, 1, 8), _ff_int(b.get('size'), 60, 8, 300), _ff_int(b.get('height'), 260, 40, 800)
+    acc, trail = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), b.get('trail') is not False
+
+    def ph(d):
+        return '(clamp(0,calc(var(--p,1) - ' + str(d) + '),1)*' + str(n) + '*3.14159)'
+
+    def pos(d):
+        return ('left:calc(clamp(0,calc(var(--p,1) - ' + str(d) + '),1)*(100% - ' + str(size) + 'px));top:calc(' + str(h) + 'px - ' + str(size) + 'px - abs(sin(' + ph(d) + '))*(' + str(h) + 'px - ' + str(size) + 'px)*(1 - clamp(0,calc(var(--p,1) - ' + str(d) + '),1)*0.6));')
+    dots = ''
+    if trail:
+        for k in range(1, 9):
+            dd = _ff_num(k * 0.012, 0, 0, 1, 3)
+            dots += ('<div style="position:absolute;width:' + str(max(3, size // 6)) + 'px;height:' + str(max(3, size // 6)) + 'px;margin:' + str(size // 2) + 'px 0 0 ' + str(size // 2) + 'px;border-radius:50%;background:' + acc + ';opacity:' + _ff_num(0.5 - k * 0.05, 0, 0, 1, 2) + ';' + pos(dd) + '"></div>')
+    sq = 'abs(cos(' + ph(0) + '))'
+    return ('<div role="img" aria-label="A bouncing ball" style="position:relative;width:100%;height:' + str(h) + 'px;">' + dots
+            + '<div aria-hidden="true" style="position:absolute;width:' + str(size) + 'px;height:' + str(size) + 'px;border-radius:50%;background:' + acc + ';transform-origin:50% 100%;transform:scale(calc(1 + ' + sq + '*' + sq + '*' + sq + '*0.35),calc(1 - ' + sq + '*' + sq + '*' + sq + '*0.4));' + pos(0) + '"></div>'
+            + '<div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:2px;background:' + _MO_MIX_LINE + ';"></div></div>')
+
+
+def _render_motion_scatter(b: dict) -> str:
+    items = []
+    for it in (b.get('items') if isinstance(b.get('items'), list) else []):
+        if len(items) >= 8:
+            break
+        obj = isinstance(it, dict)
+        t = _cv_str(it if isinstance(it, str) else (it.get('title') if obj else ''), 30)
+        if t:
+            items.append((t, _cv_str(it.get('text'), 50) if obj else ''))
+    if not items:
+        items = [('Card', '')]
+    size, w = _ff_int(b.get('size'), 18, 8, 60), _ff_int(b.get('card_w'), 24, 10, 50)
+    acc, fill, ink, out = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'fill', '#ffffff'), _mo_ink(b, 'color', '#14161c'), ''
+    for i, (t, x) in enumerate(items):
+        P = _MO_SCATTER[i]
+        dx, dy = (1 if i % 2 else -1) * (60 + i * 7), -40 - i * 5
+        out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(len(items) + 2) + ' - ' + str(i) + '),1);position:absolute;left:' + str(P[0]) + '%;top:' + str(P[1]) + '%;width:' + str(w) + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+                + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + str(dx) + '%),calc((1 - var(--u))*' + str(dy) + '%)) rotate(calc(' + str(P[2]) + 'deg + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
+                + '<div style="font-weight:800;">' + _cv_esc(t) + '</div>' + ('<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')
+    return '<div style="position:relative;width:100%;height:100%;min-height:12em;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">' + out + '</div>'
+
+
+def _render_motion_contours(b: dict) -> str:
+    n, wd = _ff_int(b.get('lines'), 12, 3, 30), _ff_int(b.get('width'), 2, 1, 12)
+    acc, acc2, W, H, out = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'accent2', ''), 1000, 600, ''
+    for i in range(n):
+        y = int(math.floor((i + 0.5) * H / n))
+        a, a2 = _MO_WAVE[i % 8] * 2, _MO_WAVE[(i * 3 + 1) % 8] * 2
+        col = acc2 if (acc2 and i % 3 == 0) else acc
+        d = ('M-200 ' + str(y) + ' C 0 ' + str(y + a) + ' 200 ' + str(y - a) + ' 400 ' + str(y) + ' S 800 ' + str(y + a2) + ' 1000 ' + str(y) + ' S 1400 ' + str(y - a2) + ' 1600 ' + str(y) + ' S 2000 ' + str(y + a) + ' 2200 ' + str(y))
+        out += ('<path d="' + d + '" pathLength="1" style="--u:clamp(0,calc(var(--p,1)*' + str(n + 3) + ' - ' + _ff_num(i * 0.6, 0, 0, 100, 1) + '),1);fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));opacity:' + _ff_num(0.35 + (i % 4) * 0.15, 0, 0, 1, 2) + ';"/>')
+    return ('<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" width="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display:block;overflow:hidden;"><g style="transform:translateX(calc(var(--s,0)*-800px));">' + out + '</g></svg>')
+
+
+def _render_motion_rail(b: dict) -> str:
+    st = []
+    for s in (b.get('steps') if isinstance(b.get('steps'), list) else []):
+        if len(st) >= 6:
+            break
+        t = _cv_str(s, 24)
+        if t:
+            st.append(t)
+    if len(st) < 2:
+        st = ['Start', 'Finish']
+    n, size, acc, out = len(st), _ff_int(b.get('size'), 16, 8, 60), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), ''
+    for i, t in enumerate(st):
+        x = _ff_num(int(math.floor(i * 1000 / (n - 1))) / 10, 0, 0, 100, 1)
+        out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n - 1) + ' - ' + _ff_num(i - 0.0001, 0, -1, 10, 4) + ' ),1);position:absolute;left:' + x + '%;top:0;transform:translateX(-50%);text-align:center;">'
+                + '<div style="width:0.9em;height:0.9em;margin:0 auto;border-radius:50%;box-sizing:border-box;border:2px solid ' + acc + ';background:color-mix(in srgb,' + acc + ' calc(var(--u)*100%),transparent);"></div>'
+                + '<div style="margin-top:0.7em;white-space:nowrap;font-weight:700;opacity:calc(0.4 + 0.6*var(--u));">' + _cv_esc(t) + '</div></div>')
+    return ('<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);height:4.4em;">'
+            + '<div style="position:absolute;left:4em;right:4em;top:0;height:0;"><div style="position:absolute;left:0;right:0;top:0.4em;height:2px;background:' + _MO_MIX_LINE + ';"></div>'
+            + '<div style="position:absolute;left:0;top:0.4em;height:2px;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></div>' + out + '</div></div>')
+
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
                          ('motion_device', _render_motion_device), ('motion_strike', _render_motion_strike), ('motion_rays', _render_motion_rays), ('motion_hud', _render_motion_hud),
-                         ('motion_cells', _render_motion_cells), ('motion_stack3d', _render_motion_stack3d), ('motion_shake', _render_motion_shake), ('motion_flash', _render_motion_flash)):
+                         ('motion_cells', _render_motion_cells), ('motion_stack3d', _render_motion_stack3d), ('motion_shake', _render_motion_shake), ('motion_flash', _render_motion_flash),
+                         ('motion_marquee', _render_motion_marquee), ('motion_glitch', _render_motion_glitch), ('motion_bounce', _render_motion_bounce), ('motion_scatter', _render_motion_scatter),
+                         ('motion_contours', _render_motion_contours), ('motion_rail', _render_motion_rail)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
