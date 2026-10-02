@@ -9457,7 +9457,7 @@ blocks:
     stitch: '"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" | "whip" | "wipe" | "iris" | "clock" | "slice" | "flip" | "spin" (optional, default "dissolve"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through. The hand-over used by
       scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed.'
     overlap: number (optional). Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.
-    camera: '{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?}]} (max 48 keys), optional. x,y are the focus point in
+    camera: '{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?, z?}]} (max 48 keys), optional. z (-1500 to 1500 px) dollies the camera through depth: top-level blocks with place.depth (0-1) sit further back and, with a compensating scale, look unchanged at z 0, so moving z gives real parallax. x,y are the focus point in
       percent of the stage (default 50,50); zoom 0.25-6 (default 1); rx, ry, rz tilt in degrees. Moves only layer:"world"
       children.'
   source:

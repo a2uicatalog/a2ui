@@ -26249,7 +26249,7 @@ _MO_TIMELINE_JS = (
     'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}'
     'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}'
     'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}'
-    'cam.style.transform="translate("+(C.W/2)+"px,"+(C.H/2)+"px) scale("+g("zoom",1).toFixed(4)+") rotateX("+g("rx",0).toFixed(2)+"deg) rotateY("+g("ry",0).toFixed(2)+"deg) rotate("+g("rz",0).toFixed(2)+"deg) translate("+(-g("x",50)*C.W/100).toFixed(2)+"px,"+(-g("y",50)*C.H/100).toFixed(2)+"px)";}'
+    'cam.style.transform="translate("+(C.W/2)+"px,"+(C.H/2)+"px) "+(c.z?"translateZ("+g("z",0).toFixed(2)+"px) ":"")+"scale("+g("zoom",1).toFixed(4)+") rotateX("+g("rx",0).toFixed(2)+"deg) rotateY("+g("ry",0).toFixed(2)+"deg) rotate("+g("rz",0).toFixed(2)+"deg) translate("+(-g("x",50)*C.W/100).toFixed(2)+"px,"+(-g("y",50)*C.H/100).toFixed(2)+"px)";}'
     'function fit(){var k=vp.clientWidth/C.W;st.style.transform="scale("+k.toFixed(5)+")";st.style.visibility="visible";}'
     'fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(vp);}else{window.addEventListener("resize",fit);}'
     'var t=0,pl=false,last=0,raf=0,manual=false;'
@@ -26322,8 +26322,8 @@ _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:1
 _MO_PROPS = {'x': [-200, 300], 'y': [-200, 300], 'opacity': [0, 1], 'scale': [0, 6], 'rotate': [-360, 360], 'rx': [-80, 80],
              'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 5]}
 _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs']
-_MO_CAM = {'x': [-100, 200], 'y': [-100, 200], 'zoom': [0.25, 6], 'rx': [-80, 80], 'ry': [-80, 80], 'rz': [-180, 180]}
-_MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz']
+_MO_CAM = {'x': [-100, 200], 'y': [-100, 200], 'zoom': [0.25, 6], 'rx': [-80, 80], 'ry': [-80, 80], 'rz': [-180, 180], 'z': [-1500, 1500]}
+_MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz', 'z']
 _MO_ORIGIN = {'c': '50% 50%', 'tl': '0 0', 't': '50% 0', 'b': '50% 100%', 'l': '0 50%', 'r': '100% 50%'}
 
 
@@ -26934,6 +26934,19 @@ def _mo_placed(blk, seen, ids, st):
 _mo_tl_depth = [0]
 
 
+def _mo_depth(blk, wrap):
+    """place.depth 0-1 pushes a top-level block back in 3D; the compensating scale keeps it identical while the camera is at z 0."""
+    pl = blk.get('place') if isinstance(blk.get('place'), dict) else {}
+    dv = pl.get('depth')
+    if not isinstance(dv, (int, float)) or isinstance(dv, bool) or not math.isfinite(dv) or not dv > 0:
+        return wrap
+    d = float(_ff_num(dv, 0, 0, 1, 2)) * 1200
+    if d <= 0:
+        return wrap
+    return ('<div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;transform-style:preserve-3d;transform-origin:50% 50%;transform:translateZ(-' + _ff_num(d, 0, 0, 1200, 1) + 'px) scale(' + _ff_num((1800 + d) / 1800, 1, 1, 2, 4) + ');">'
+            + wrap.replace('style="position:absolute;', 'style="pointer-events:auto;position:absolute;', 1) + '</div>')
+
+
 def _mo_boxes(blocks):
     """Stage-percent boxes for ids at the top level or one motion_layer deep (see _moBoxes in atoms_motion.gs)."""
     out = {}
@@ -27026,7 +27039,7 @@ def _mo_timeline(b: dict) -> str:
         if blk.get('layer') == 'hud':
             hud += wrap
         else:
-            world += wrap
+            world += _mo_depth(blk, wrap)
     for f in re.findall(r'data-mt-id="[a-z][a-z0-9_-]{0,31}"', world + hud):
         ids[f[12:-1]] = 1
     tg, tracks = [], b.get('tracks') if isinstance(b.get('tracks'), list) else []

@@ -424,8 +424,8 @@ _RENDERERS['demo_panel'] = function(b) {
 var _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]};
 var _MO_PROPS = {x: [-200, 300], y: [-200, 300], opacity: [0, 1], scale: [0, 6], rotate: [-360, 360], rx: [-80, 80], ry: [-80, 80], blur: [0, 40], clip: [0, 1], p: [-0.5, 1.5], step: [0, 40], cs: [0, 5]};
 var _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs'];
-var _MO_CAM = {x: [-100, 200], y: [-100, 200], zoom: [0.25, 6], rx: [-80, 80], ry: [-80, 80], rz: [-180, 180]};
-var _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz'];
+var _MO_CAM = {x: [-100, 200], y: [-100, 200], zoom: [0.25, 6], rx: [-80, 80], ry: [-80, 80], rz: [-180, 180], z: [-1500, 1500]};
+var _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz', 'z'];
 var _MO_ORIGIN = {c: '50% 50%', tl: '0 0', t: '50% 0', b: '50% 100%', l: '0 50%', r: '100% 50%'};
 
 var _MO_TIMELINE_JS =
@@ -449,7 +449,7 @@ var _MO_TIMELINE_JS =
   'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}' +
   'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}' +
   'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}' +
-  'cam.style.transform="translate("+(C.W/2)+"px,"+(C.H/2)+"px) scale("+g("zoom",1).toFixed(4)+") rotateX("+g("rx",0).toFixed(2)+"deg) rotateY("+g("ry",0).toFixed(2)+"deg) rotate("+g("rz",0).toFixed(2)+"deg) translate("+(-g("x",50)*C.W/100).toFixed(2)+"px,"+(-g("y",50)*C.H/100).toFixed(2)+"px)";}' +
+  'cam.style.transform="translate("+(C.W/2)+"px,"+(C.H/2)+"px) "+(c.z?"translateZ("+g("z",0).toFixed(2)+"px) ":"")+"scale("+g("zoom",1).toFixed(4)+") rotateX("+g("rx",0).toFixed(2)+"deg) rotateY("+g("ry",0).toFixed(2)+"deg) rotate("+g("rz",0).toFixed(2)+"deg) translate("+(-g("x",50)*C.W/100).toFixed(2)+"px,"+(-g("y",50)*C.H/100).toFixed(2)+"px)";}' +
   'function fit(){var k=vp.clientWidth/C.W;st.style.transform="scale("+k.toFixed(5)+")";st.style.visibility="visible";}' +
   'fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(vp);}else{window.addEventListener("resize",fit);}' +
   'var t=0,pl=false,last=0,raf=0,manual=false;' +
@@ -515,6 +515,15 @@ function _moPlaced(blk, seen, ids, st) {
 // through at most one motion_layer) and writes the flight as ordinary tracks on a ghost copy of `from`: the ghost is drawn with its
 // origin at its top-left, so translate + scale land it exactly on the `to` box. `from` hides when the flight starts and `to` appears
 // when it ends (the morph owns their opacity). Both need a numeric place.w; anything else is dropped and counted.
+// place.depth 0-1 pushes a top-level block back in 3D; the compensating scale keeps it identical while the camera is at z 0.
+function _moDepth(blk, wrap) {
+  var pl = blk.place && typeof blk.place === 'object' ? blk.place : {}, dv = pl.depth;
+  if (typeof dv !== 'number' || !isFinite(dv) || !(dv > 0)) return wrap;
+  var d = parseFloat(_ffNum(dv, 0, 0, 1, 2)) * 1200;
+  if (d <= 0) return wrap;
+  return '<div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;transform-style:preserve-3d;transform-origin:50% 50%;transform:translateZ(-' + _ffNum(d, 0, 0, 1200, 1) + 'px) scale(' + _ffNum((1800 + d) / 1800, 1, 1, 2, 4) + ');">'
+    + wrap.replace('style="position:absolute;', 'style="pointer-events:auto;position:absolute;') + '</div>';
+}
 function _moBoxes(blocks) {
   var out = {}, i, j;
   function num(v, d, lo, hi) { return parseFloat(_ffNum(v, d, lo, hi, 2)); }
@@ -575,7 +584,7 @@ function _moTimeline(b) {
   for (var i = 0; i < blocks.length; i++) {
     var blk = blocks[i], wrap = _moPlaced(blk, seen, ids, st);
     if (wrap === null) continue;
-    if (blk.layer === 'hud') hud += wrap; else world += wrap;
+    if (blk.layer === 'hud') hud += wrap; else world += _moDepth(blk, wrap);
   }
   // Targets may be nested (a page inside a window): collect every data-mt-id the
   // children actually emitted. Agent text is _esc'd, so it cannot forge one.

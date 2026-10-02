@@ -118,6 +118,9 @@ PAYLOADS = {
     "motion_timeline": [{}, TIMELINE,
                         dict(TIMELINE, aspect="9:16", loop=False, autoplay=False, controls=False, backdrop="grid", theme="light", poster=3, accent="#F97316", background="#101820"),
                         STITCHED, dict(STITCHED, stitch="zoom-through", overlap=1.2), dict(STITCHED, stitch="cut"), dict(STITCHED, stitch="<x>", overlap="no"),
+                        dict(TIMELINE, blocks=[dict(TIMELINE["blocks"][0], place=dict(TIMELINE["blocks"][0].get("place") or {}, depth=0.5))] + TIMELINE["blocks"][1:],
+                             camera={"keys": [{"t": 0, "z": 0}, {"t": 4, "z": 900}, {"t": 6, "z": 99999}]}),
+                        dict(STITCHED, blocks=[dict(STITCHED["blocks"][0], place={"depth": "x"}), dict(STITCHED["blocks"][1], place={"depth": 99}), dict(STITCHED["blocks"][2], place={"depth": -1})]),
                         MORPHED, dict(MORPHED, morphs=[{"from": "a", "to": "a", "t": 1}, {"from": "a", "to": "nope", "t": 1}, {"from": "s1", "to": "b", "t": 1}, {"from": "a", "to": "b", "beat": 4, "dur": 99, "ease": "hold"},
                                                        {"from": "a", "to": "b", "t": "x"}, "junk", {"from": "a", "to": "b", "t": 2, "ease": "toString"}, {"from": "a", "to": "b", "t": 9}]),
                         dict(MORPHED, bpm=120, blocks=MORPHED["blocks"] + [{"type": "motion_pill", "id": "mcut0", "text": "taken", "place": {"x": 1, "y": 1, "w": 5}}]),
@@ -686,3 +689,17 @@ def test_match_cut_ghost_lands_exactly_on_the_target_box():
     assert _probe(blk, 2, rect)[3:5] == [0, 1]
     mid = _probe(blk, 3.5, rect)
     assert mid[3] == 1 and mid[4] == 0 and mid[5] == 0 and abs(mid[0]) > 5
+
+
+@browser
+def test_depth_is_invisible_at_rest_and_gives_parallax_when_the_camera_dollies():
+    def film(z):
+        return {"type": "motion_timeline", "duration": 4, "controls": False, "autoplay": False, "ease": "linear",
+                "blocks": [{"type": "motion_layer", "id": "far", "place": {"depth": 0.6}, "blocks": [{"type": "motion_pill", "id": "fp", "text": "far", "place": {"x": 10, "y": 10, "w": 20}}]},
+                           {"type": "motion_layer", "id": "near", "blocks": [{"type": "motion_pill", "id": "np", "text": "near", "place": {"x": 10, "y": 60, "w": 20}}]}],
+                "camera": {"keys": [{"t": 0, "z": 0}, {"t": 4, "z": z}]}}
+    w = "return [document.querySelector('[data-mt-id=fp]').getBoundingClientRect().width, document.querySelector('[data-mt-id=np]').getBoundingClientRect().width];"
+    far0, near0 = _probe(film(600), 0, w)
+    assert abs(far0 - near0) <= 1.5, (far0, near0)
+    far1, near1 = _probe(film(600), 4, w)
+    assert near1 > far1 * 1.1, (far1, near1)
