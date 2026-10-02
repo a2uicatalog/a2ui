@@ -422,6 +422,7 @@ write-ups are published on the <a href="/blog/">blog</a>.</p>
 <li><a href="/openapi.json">OpenAPI specification</a> — the full API surface</li>
 <li><a href="/llms.txt">llms.txt</a> — the agent-facing overview</li>
 <li><a href="/surfaces/mcp-apps">MCP Apps playground</a> — render atoms in a sandboxed MCP host</li>
+<li><a href="/surfaces/claude-code">Claude Code surface</a> — render atoms natively in Claude Code panes</li>
 </ul>"""),
         "contact": dict(
             title="Contact",
@@ -737,6 +738,7 @@ Apps Script, Google Chat and MCP Apps — instead of generating HTML.
 - [OpenAPI specification]({BASE}/openapi.json)
 - [agents.md]({BASE}/agents.md) — agent-facing how-to
 - [MCP Apps playground]({BASE}/surfaces/mcp-apps)
+- [Claude Code surface]({BASE}/surfaces/claude-code)
 
 ## What this is
 

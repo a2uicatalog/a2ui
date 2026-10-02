@@ -2083,6 +2083,15 @@ SURFACE_NAMES = {
     "claude-code":                  "Claude Code",
 }
 
+# Short install note for the claude-code surface page, the only other surface
+# with a hand-authored lead (same single `hero` slot as MCP_APPS_HERO_HTML).
+CLAUDE_CODE_NOTE_HTML = """
+<div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:14px;color:var(--muted);margin:0 0 20px">
+<strong style="color:var(--text)">Claude Code, via a mod.</strong> The <code>a2ui-claude-code</code> plugin draws these atoms as native terminal panes inside Claude Code: <code>/a2ui payload.json</code>, payloads from the a2uicatalog MCP server, animated progress bars for scripts (<code>a2ui-progress build 42</code>) and a long-job dashboard. Atoms this surface does not draw yet show a placeholder.
+<br><br>Install from the repository: <code>claude --plugin-dir a2ui/claude-code-surface</code> &middot; <a href="https://github.com/a2uicatalog/a2ui/tree/main/claude-code-surface">source and README</a>
+</div>
+"""
+
 GAS_SURFACES = {"google-meet-stage", "google-apps-script-web", "google-apps-script-side-panel", "google-chat"}
 
 # Hand-authored launch hero for the mcp-apps surface page, prepended above the
@@ -2810,7 +2819,8 @@ def generate_surface_page(surface, atoms):
     is_gas  = surface in GAS_SURFACES
     hero    = (MCP_APPS_HERO_HTML.replace("__BUNDLE_HASH__", _bundle_hash())
                .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
-               if surface == "mcp-apps" else "")
+               if surface == "mcp-apps" else
+               CLAUDE_CODE_NOTE_HTML if surface == "claude-code" else "")
     # The same iso_fireworks_panel that runs inside the sandboxed MCP Apps
     # view, now rendered by the PAGE itself — a fixed right-half overlay over
     # the viewport rather than the iframe. Dogfooding: the page about atoms

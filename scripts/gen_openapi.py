@@ -555,6 +555,7 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
 - [Agent discovery document]({base}/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
 - [MCP Apps playground]({base}/surfaces/mcp-apps): Renders atoms live inside MCP Apps-capable hosts (e.g. claude.ai); paste a payload or open a `#p=` link.
+- [Claude Code surface]({base}/surfaces/claude-code): The `a2ui-claude-code` plugin (a Claude Code mod, source `claude-code-surface/` in the GitHub repository) draws atoms natively in Claude Code panes: `/a2ui <payload.json>`, a2uicatalog MCP payloads, animated script progress bars and a long-job dashboard.
 - [Self-host the renderer]({base}/renderer): Deploy your own Apps Script renderer in 4 commands — own the URL, no shared-demo rate limit.
 
 ## When to use this
