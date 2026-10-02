@@ -113,12 +113,40 @@ def render_dp2_svg(project: DPProject) -> str:
         '<g transform="translate(0,120)">',
     ]
 
-    # Boundary polygon
+    # Boundary polygon -- a light fill puts the subject property visually "in focus" against the
+    # otherwise-blank page (nothing previously distinguished the parcel's own interior from empty
+    # space around it), kept pale enough that existing_structures' own grey fill and the wall/
+    # dimension lines drawn afterward all stay clearly legible on top of it.
     if len(plot.boundary_points_m) >= 2:
-        pts_px = [proj.pt(p) for p in plot.boundary_points_m]
+        pts_m = plot.boundary_points_m
+        pts_px = [proj.pt(p) for p in pts_m]
         path = " ".join(f'{"M" if i == 0 else "L"}{x:.1f},{y:.1f}' for i, (x, y) in enumerate(pts_px))
-        parts.append(f'<path d="{path} Z" fill="none" stroke="#202124" stroke-width="2" '
+        parts.append(f'<path d="{path} Z" fill="#eaf2fb" stroke="#202124" stroke-width="2" '
                      f'stroke-dasharray="6,3"/>')
+
+        # Edge length dimensions (metres) -- matches a real surveyed plan's own convention of
+        # labelling each boundary segment, not just the overall site. Offset perpendicular to each
+        # edge, AWAY from the polygon's own centroid, so the label sits outside the parcel rather
+        # than overlapping its interior (existing structures, the wall, etc.).
+        cx_m = sum(p[0] for p in pts_m) / len(pts_m)
+        cy_m = sum(p[1] for p in pts_m) / len(pts_m)
+        n = len(pts_m)
+        for i in range(n - 1 if pts_m[0] == pts_m[-1] else n):
+            a_m, b_m = pts_m[i], pts_m[(i + 1) % n]
+            if a_m == b_m:
+                continue
+            edge_len_m = math.hypot(b_m[0] - a_m[0], b_m[1] - a_m[1])
+            mid_m = ((a_m[0] + b_m[0]) / 2, (a_m[1] + b_m[1]) / 2)
+            # outward unit normal to this edge, in metre-space
+            ex, ey = b_m[0] - a_m[0], b_m[1] - a_m[1]
+            nx, ny = -ey, ex
+            norm = math.hypot(nx, ny) or 1.0
+            nx, ny = nx / norm, ny / norm
+            if (nx * (mid_m[0] - cx_m) + ny * (mid_m[1] - cy_m)) < 0:
+                nx, ny = -nx, -ny  # flip to point away from centroid
+            label_m = (mid_m[0] + nx * 1.2, mid_m[1] + ny * 1.2)  # 1.2 m outward, in metre-space
+            lx, ly = proj.pt(label_m)
+            parts.append(_text_with_halo(lx, ly, f'{edge_len_m:.2f} m', 10, "#5f6368"))
 
     # Existing structures
     for s in plot.existing_structures:

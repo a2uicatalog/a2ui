@@ -60,6 +60,29 @@ def test_dp2_svg_contains_wall_length_label():
     assert "Clôture à créer" in svg
 
 
+def test_dp2_svg_contains_boundary_edge_dimensions():
+    # The boundary is a 12x15 rectangle -- each edge's real length should be labelled, not just the
+    # overall site, matching a real surveyed plan's own convention.
+    svg = dp2.render_dp2_svg(_project())
+    assert "12.00 m" in svg
+    assert "15.00 m" in svg
+
+
+def test_dp2_svg_handles_closed_ring_boundary_without_duplicate_or_missing_edge():
+    # A boundary whose first and last points are the SAME (a closed ring, as IGN's real cadastre API
+    # returns) must produce exactly N edges for an N-sided polygon, not N+1 (double-counting the
+    # closing edge) or N-2 (missing one).
+    closed_square = [(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)]
+    wall = WallSpec(length_m=2.0, height_m=1.5)
+    plot = PlotGeometry(boundary_points_m=closed_square, wall_points_m=[(1, 1), (3, 1)])
+    project = DPProject(commune="X", address="Y", wall=wall, plot=plot, date_iso="2026-10-02")
+    svg = dp2.render_dp2_svg(project)
+    # _text_with_halo emits TWO <text> elements per label (halo copy + fill copy) -- 4 real edges * 2
+    # = 8. The real regression this test guards against is an off-by-one in the edge loop's range()
+    # bound when the input is a closed ring (first point repeated as the last).
+    assert svg.count("10.00 m") == 8
+
+
 def test_dp2_svg_contains_existing_structure_label():
     svg = dp2.render_dp2_svg(_project())
     assert "Maison" in svg
