@@ -128,7 +128,9 @@ def test_options_preflight(client):
 # /generate never hitting real GCP in a unit test.
 
 _REAL_PLOT = type("P", (), {"boundary_points_m": [(0, 0), (10, 0), (10, 10), (0, 10)],
-                             "wall_points_m": [(1, 1), (6, 1)]})()
+                             "wall_points_m": [(1, 1), (6, 1)],
+                             "existing_structures": [{"label": "Bâtiment existant",
+                                                       "points_m": [(2, 2), (8, 2), (8, 8), (2, 8)]}]})()
 _REAL_META = {"lon": 2.35995, "lat": 48.855602, "label": "12 Rue de Rivoli 75004 Paris",
               "contenance_m2": 237, "computed_area_m2": 236.4, "idu": "75104000AM0008",
               "zone_code": "U", "zone_libelle": "Zone urbaine Sauvegardée",
@@ -161,6 +163,10 @@ def test_lookup_parcel_succeeds_and_returns_real_shape(client, monkeypatch):
     assert data["zoneLibelle"] == "Zone urbaine Sauvegardée"
     assert data["reglementPdfFilename"] == "75056_reglement_20131218_A.pdf"
     assert data["boundaryPointsM"] == [[0, 0], [10, 0], [10, 10], [0, 10]]
+    # Real bug found live 2026-10-02: existingStructures (the real building footprint) was never
+    # returned to the frontend at all -- confirm it actually flows through the response now.
+    assert data["existingStructures"] == [{"label": "Bâtiment existant",
+                                            "points_m": [[2, 2], [8, 2], [8, 8], [2, 8]]}]
     png_bytes = base64.b64decode(data["dp1PngBase64"])
     assert png_bytes[:8] == b"\x89PNG\r\n\x1a\n"
 

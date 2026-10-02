@@ -239,6 +239,7 @@ def lookup_parcel():
     return jsonify({
         "ok": True,
         "boundaryPointsM": plot.boundary_points_m,
+        "existingStructures": plot.existing_structures,
         "wallPointsM": plot.wall_points_m,
         "contenanceM2": meta["contenance_m2"],
         "idu": meta["idu"],

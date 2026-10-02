@@ -86,7 +86,7 @@ def collect_answers_interactively():
             north_angle_deg = _ask("North angle, degrees clockwise from 'up' on the page", 0.0, float)
             plot = {
                 "boundary_points_m": plot_obj.boundary_points_m,
-                "existing_structures": [],
+                "existing_structures": plot_obj.existing_structures,
                 "wall_points_m": plot_obj.wall_points_m,
                 "north_angle_deg": north_angle_deg,
             }

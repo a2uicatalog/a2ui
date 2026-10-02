@@ -12,6 +12,7 @@ PDF's filename -- NOT parsed numeric rule values (height/material/colour limits)
 that PDF's prose, which is not reliably machine-extractable (non-standardised per-commune documents).
 This module stops at the document pointer; a human still reads the PDF.
 """
+import gzip
 import json
 import math
 import urllib.parse
@@ -21,6 +22,7 @@ BAN_URL = "https://api-adresse.data.gouv.fr/search/"
 CADASTRE_URL = "https://apicarto.ign.fr/api/cadastre/parcelle"
 ZONE_URBA_URL = "https://apicarto.ign.fr/api/gpu/zone-urba"
 WMS_URL = "https://data.geopf.fr/wms-r"
+BUILDINGS_URL_TMPL = "https://cadastre.data.gouv.fr/bundler/cadastre-etalab/communes/{citycode}/geojson/batiments"
 
 _UA = {"User-Agent": "declaration-prealable (a2uicatalog.ai)"}
 
@@ -28,11 +30,24 @@ _UA = {"User-Agent": "declaration-prealable (a2uicatalog.ai)"}
 def _get_json(url, timeout=15):
     req = urllib.request.Request(url, headers=_UA)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read())
+        raw = resp.read()
+    # cadastre.data.gouv.fr's building bundler sends real gzip bytes regardless of whether the
+    # request advertised Accept-Encoding support (confirmed live 2026-10-02: urllib.request sends no
+    # such header by default, yet the response still starts with the gzip magic bytes \x1f\x8b) --
+    # detect and decompress explicitly rather than relying on the server to honour a header it
+    # apparently ignores.
+    if raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    return json.loads(raw)
 
 
 def geocode_address(address, commune):
-    """Returns (lon, lat, label) for the best-scored match, or raises ValueError if nothing matched."""
+    """Returns (lon, lat, label, citycode) for the best-scored match, or raises ValueError if nothing
+    matched. citycode is the real INSEE commune code BAN resolved the address to -- needed (not the
+    cadastre parcelle response's own code_insee) because Paris/Lyon/Marseille address geocoding
+    resolves to an ARRONDISSEMENT-level code (e.g. "75104"), which is what fetch_buildings needs to
+    match the commune-level building dataset; the cadastre response's code_insee is the city-level
+    code (e.g. "75056") and does not match that dataset's own per-arrondissement keying."""
     q = f"{address}, {commune}"
     url = BAN_URL + "?" + urllib.parse.urlencode({"q": q, "limit": 1})
     data = _get_json(url)
@@ -41,7 +56,8 @@ def geocode_address(address, commune):
         raise ValueError(f"no BAN geocoding match for {q!r}")
     f = features[0]
     lon, lat = f["geometry"]["coordinates"]
-    return lon, lat, f["properties"].get("label", q)
+    props = f["properties"]
+    return lon, lat, props.get("label", q), props.get("citycode")
 
 
 def fetch_parcel(lon, lat):
@@ -69,15 +85,67 @@ def fetch_parcel(lon, lat):
     }
 
 
-def wgs84_polygon_to_local_metres(polygon_wgs84):
-    """Flat local-tangent-plane reprojection centred on the polygon's own centroid -- accurate at
-    parcel scale (tens of metres), no projection-library dependency needed. Origin is the centroid,
-    matching PlotGeometry's own "arbitrary origin" convention."""
-    lon0 = sum(p[0] for p in polygon_wgs84) / len(polygon_wgs84)
-    lat0 = sum(p[1] for p in polygon_wgs84) / len(polygon_wgs84)
+def wgs84_polygon_to_local_metres(polygon_wgs84, origin=None):
+    """Flat local-tangent-plane reprojection -- accurate at parcel scale (tens of metres), no
+    projection-library dependency needed. origin=(lon0, lat0), when given, MUST be used whenever more
+    than one polygon needs to land in the same local frame (e.g. a parcel boundary and a building on
+    it) -- each call defaulting to ITS OWN centroid (the pre-2026-10-02 behaviour) is only safe for a
+    single, standalone polygon; reprojecting a parcel and a building independently would silently put
+    them in two unrelated local coordinate systems, with no error, just a wrong drawing."""
+    if origin is None:
+        lon0 = sum(p[0] for p in polygon_wgs84) / len(polygon_wgs84)
+        lat0 = sum(p[1] for p in polygon_wgs84) / len(polygon_wgs84)
+    else:
+        lon0, lat0 = origin
     m_per_deg_lat = 111320.0
     m_per_deg_lon = 111320.0 * math.cos(math.radians(lat0))
     return [((lon - lon0) * m_per_deg_lon, (lat - lat0) * m_per_deg_lat) for lon, lat in polygon_wgs84]
+
+
+def _point_in_polygon(x, y, poly):
+    """Standard ray-casting test -- pure Python, no geometry-library dependency (matches this
+    module's own no-pyproj/no-shapely convention)."""
+    n = len(poly)
+    inside = False
+    j = n - 1
+    for i in range(n):
+        xi, yi = poly[i]
+        xj, yj = poly[j]
+        if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _polygon_centroid(polygon_wgs84):
+    return (sum(p[0] for p in polygon_wgs84) / len(polygon_wgs84),
+            sum(p[1] for p in polygon_wgs84) / len(polygon_wgs84))
+
+
+def fetch_buildings_on_parcel(citycode, parcel_polygon_wgs84):
+    """Real building footprints on this parcel, via the Etalab cadastre.data.gouv.fr per-commune
+    building bundle (apicarto's own "wfs-geoportail" module cannot serve BDTOPO reliably -- a real
+    geometry-field configuration gap in that API, confirmed via its own documentation -- this Etalab
+    bundler is the real, working alternative). Returns a list of polygon_wgs84 rings (outer ring only,
+    matching fetch_parcel's own convention) for every building whose centroid falls inside the parcel
+    -- confirmed live 2026-10-02 against a real Paris parcel. The bundle itself covers the WHOLE
+    commune (thousands of buildings for a dense arrondissement), so this always filters before
+    returning -- never hand the raw bundle to a caller."""
+    url = BUILDINGS_URL_TMPL.format(citycode=citycode)
+    data = _get_json(url, timeout=25)
+    matches = []
+    for f in data.get("features") or []:
+        geom = f.get("geometry") or {}
+        gtype = geom.get("type")
+        coords = geom.get("coordinates")
+        if not coords:
+            continue
+        ring = coords[0][0] if gtype == "MultiPolygon" else coords[0]
+        polygon_wgs84 = [(pt[0], pt[1]) for pt in ring]
+        cx, cy = _polygon_centroid(polygon_wgs84)
+        if _point_in_polygon(cx, cy, parcel_polygon_wgs84):
+            matches.append(polygon_wgs84)
+    return matches
 
 
 def polygon_area_m2(points_m):
@@ -203,15 +271,30 @@ def fetch_dp1_screenshot_bytes(lon, lat, address, radius_m=120, width=1200):
 
 
 def build_plot_from_address(address, commune, wall_length_m, wall_offset_m=1.0):
-    """Orchestrates geocode -> parcel -> reprojection -> zone lookup into a populated PlotGeometry
-    (boundary_points_m only -- wall_points_m/existing_structures stay the caller's own data, this
-    isn't government-sourced) plus a metadata dict for the UI/checklist to surface."""
+    """Orchestrates geocode -> parcel -> reprojection -> zone lookup -> real building footprints into
+    a populated PlotGeometry plus a metadata dict for the UI/checklist to surface. wall_points_m stays
+    the caller's own data (not government-sourced); boundary_points_m AND existing_structures are both
+    real, reprojected onto the SAME shared local origin (the parcel's own centroid) -- see
+    wgs84_polygon_to_local_metres's own docstring for why a shared origin is required, not optional,
+    once more than one polygon is being placed on the same drawing."""
     from declaration_prealable.project_schema import PlotGeometry
 
-    lon, lat, label = geocode_address(address, commune)
+    lon, lat, label, citycode = geocode_address(address, commune)
     parcel = fetch_parcel(lon, lat)
-    boundary_m = wgs84_polygon_to_local_metres(parcel["polygon_wgs84"])
+    origin = _polygon_centroid(parcel["polygon_wgs84"])
+    boundary_m = wgs84_polygon_to_local_metres(parcel["polygon_wgs84"], origin=origin)
     zone = fetch_zone_urba(lon, lat)
+
+    existing_structures = []
+    if citycode:
+        try:
+            for i, building_wgs84 in enumerate(fetch_buildings_on_parcel(citycode, parcel["polygon_wgs84"])):
+                building_m = wgs84_polygon_to_local_metres(building_wgs84, origin=origin)
+                label_n = "Bâtiment existant" if i == 0 else f"Bâtiment existant {i + 1}"
+                existing_structures.append({"label": label_n, "points_m": building_m})
+        except Exception:
+            pass  # real building footprints are a nice-to-have -- a fetch failure shouldn't block
+                  # the rest of the lookup, same posture as the DP1 overlay's own failure handling
 
     min_x = min(p[0] for p in boundary_m)
     min_y = min(p[1] for p in boundary_m)
@@ -219,13 +302,14 @@ def build_plot_from_address(address, commune, wall_length_m, wall_offset_m=1.0):
     wy0 = min_y + wall_offset_m
     wall_points_m = [(wx0, wy0), (wx0 + wall_length_m, wy0)]
 
-    plot = PlotGeometry(boundary_points_m=boundary_m, existing_structures=[],
+    plot = PlotGeometry(boundary_points_m=boundary_m, existing_structures=existing_structures,
                          wall_points_m=wall_points_m, north_angle_deg=0.0)
     meta = {
         "label": label, "lon": lon, "lat": lat,
         "contenance_m2": parcel["contenance_m2"],
         "computed_area_m2": round(polygon_area_m2(boundary_m), 1),
         "idu": parcel["idu"],
+        "buildings_found": len(existing_structures),
         "zone_code": zone["zone_code"] if zone else None,
         "zone_libelle": zone["zone_libelong"] if zone else None,
         "reglement_pdf_filename": zone["reglement_pdf_filename"] if zone else None,

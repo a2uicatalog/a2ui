@@ -256,7 +256,7 @@ $('dpForm').onsubmit=function(ev){
       boundary_points_m:realParcel.boundaryPointsM,
       wall_points_m:realParcel.wallPointsM,
       north_angle_deg:parseFloat($('north_angle_deg').value)||0,
-      existing_structures:[]
+      existing_structures:realParcel.existingStructures||[]
     };
   }else{
     var planWidth=parseFloat($('plot_width_m').value),planDepth=parseFloat($('plot_depth_m').value);

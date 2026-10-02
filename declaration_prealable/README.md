@@ -163,6 +163,19 @@ DP1 screenshot, via three free/keyless French government open-data APIs
   `PlotGeometry.boundary_points_m` directly — `dp2_plan_masse.py` needed
   **zero changes** to render the real (often irregular) shape, since it
   already accepted an arbitrary polygon, not just a rectangle.
+- **Real building footprints** — `cadastre.data.gouv.fr`'s Etalab per-commune
+  building bundle (apicarto's own "wfs-geoportail" module can't serve BDTOPO
+  reliably — a real geometry-field gap confirmed in its own docs). Filtered
+  to the buildings actually on this parcel via a plain point-in-polygon test
+  (no geometry-library dependency), reprojected onto the **same shared
+  origin** as the parcel boundary (not each polygon's own centroid — doing
+  that independently silently puts the building in an unrelated local frame,
+  a real bug found and fixed live 2026-10-02: the house was fetched but never
+  actually reached `existing_structures`, in three separate places —
+  `parcel_lookup.py` itself, `intake.py`'s CLI assembly, and the backend's
+  `/lookup-parcel` response — all three now fixed and covered by regression
+  tests). Also needed an explicit gzip-decompress fallback: this particular
+  server sends gzip bytes regardless of the request's `Accept-Encoding`.
 - **DP1 screenshot** — `data.geopf.fr/wms-r` (IGN WMS): a real aerial
   orthophoto with the cadastral parcel-boundary overlay composited on top,
   annotated with a north arrow, scale bar, and address caption. **Real

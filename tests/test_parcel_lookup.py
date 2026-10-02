@@ -18,8 +18,26 @@ REAL_BAN_RESPONSE = {
     "features": [{
         "type": "Feature",
         "geometry": {"type": "Point", "coordinates": [2.35995, 48.855602]},
-        "properties": {"label": "12 Rue de Rivoli 75004 Paris", "score": 0.97, "id": "75104_8249_00012"},
+        "properties": {"label": "12 Rue de Rivoli 75004 Paris", "score": 0.97, "id": "75104_8249_00012",
+                       "citycode": "75104"},
     }],
+}
+
+# Captured live 2026-10-02 against cadastre.data.gouv.fr's Etalab building bundler for commune 75104 --
+# trimmed to 2 of the real 2630 features: one whose centroid falls inside REAL_PARCEL_RESPONSE's own
+# polygon (the real match found live), one far outside it (must be filtered out).
+REAL_BUILDINGS_RESPONSE = {
+    "type": "FeatureCollection",
+    "features": [
+        {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[
+            [2.35993, 48.85572], [2.36009, 48.85567], [2.36005, 48.85559], [2.35988, 48.85563],
+            [2.35993, 48.85572],
+        ]]]}, "properties": {"type": "01", "commune": "75104"}},
+        {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[
+            [2.40000, 48.90000], [2.40010, 48.90000], [2.40010, 48.90010], [2.40000, 48.90010],
+            [2.40000, 48.90000],
+        ]]]}, "properties": {"type": "01", "commune": "75104"}},
+    ],
 }
 
 # Captured live 2026-10-02 against apicarto.ign.fr/api/cadastre/parcelle for the same point
@@ -58,10 +76,11 @@ def _mock_urlopen(payload_bytes):
 
 def test_geocode_address_returns_best_match():
     with patch("urllib.request.urlopen", return_value=_mock_urlopen(json.dumps(REAL_BAN_RESPONSE).encode())):
-        lon, lat, label = pl.geocode_address("12 rue de rivoli", "paris")
+        lon, lat, label, citycode = pl.geocode_address("12 rue de rivoli", "paris")
     assert lon == 2.35995
     assert lat == 48.855602
     assert label == "12 Rue de Rivoli 75004 Paris"
+    assert citycode == "75104"
 
 
 def test_geocode_address_raises_on_no_match():
@@ -177,18 +196,21 @@ def test_fetch_dp1_screenshot_bytes_survives_overlay_failure():
     assert png_bytes[:8] == b"\x89PNG\r\n\x1a\n"
 
 
-def test_build_plot_from_address_orchestrates_all_three_calls():
-    def fake_urlopen(req, timeout=15):
-        url = req.full_url if hasattr(req, "full_url") else req
-        if "api-adresse" in url:
-            return _mock_urlopen(json.dumps(REAL_BAN_RESPONSE).encode())
-        if "cadastre/parcelle" in url:
-            return _mock_urlopen(json.dumps(REAL_PARCEL_RESPONSE).encode())
-        if "gpu/zone-urba" in url:
-            return _mock_urlopen(json.dumps(REAL_ZONE_URBA_RESPONSE).encode())
-        raise AssertionError(f"unexpected URL: {url}")
+def _fake_urlopen_for_orchestration(req, timeout=15):
+    url = req.full_url if hasattr(req, "full_url") else req
+    if "api-adresse" in url:
+        return _mock_urlopen(json.dumps(REAL_BAN_RESPONSE).encode())
+    if "cadastre/parcelle" in url:
+        return _mock_urlopen(json.dumps(REAL_PARCEL_RESPONSE).encode())
+    if "gpu/zone-urba" in url:
+        return _mock_urlopen(json.dumps(REAL_ZONE_URBA_RESPONSE).encode())
+    if "bundler/cadastre-etalab" in url:
+        return _mock_urlopen(json.dumps(REAL_BUILDINGS_RESPONSE).encode())
+    raise AssertionError(f"unexpected URL: {url}")
 
-    with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+
+def test_build_plot_from_address_orchestrates_all_calls():
+    with patch("urllib.request.urlopen", side_effect=_fake_urlopen_for_orchestration):
         plot, meta = pl.build_plot_from_address("12 rue de rivoli", "paris", wall_length_m=5.0, wall_offset_m=1.0)
 
     assert len(plot.boundary_points_m) == 7
@@ -199,3 +221,59 @@ def test_build_plot_from_address_orchestrates_all_three_calls():
     assert meta["contenance_m2"] == 237
     assert meta["zone_code"] == "U"
     assert meta["reglement_pdf_filename"] == "75056_reglement_20131218_A.pdf"
+
+    # The real bug this round: existing_structures was always [] regardless of real building data.
+    # Confirms the fetched building is both present AND in the SAME local coordinate frame as the
+    # boundary (shared origin) -- a building point should land within the boundary's own bounding box,
+    # not off in an unrelated frame from being independently re-centred on its own centroid.
+    assert len(plot.existing_structures) == 1
+    assert meta["buildings_found"] == 1
+    bx = [p[0] for p in plot.existing_structures[0]["points_m"]]
+    by = [p[1] for p in plot.existing_structures[0]["points_m"]]
+    boundary_x = [p[0] for p in plot.boundary_points_m]
+    boundary_y = [p[1] for p in plot.boundary_points_m]
+    assert min(boundary_x) - 5 <= min(bx) and max(bx) <= max(boundary_x) + 5
+    assert min(boundary_y) - 5 <= min(by) and max(by) <= max(boundary_y) + 5
+
+
+def test_build_plot_from_address_survives_buildings_fetch_failure():
+    def fake_urlopen(req, timeout=15):
+        url = req.full_url if hasattr(req, "full_url") else req
+        if "bundler/cadastre-etalab" in url:
+            raise RuntimeError("simulated buildings fetch failure")
+        return _fake_urlopen_for_orchestration(req, timeout)
+
+    with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+        plot, meta = pl.build_plot_from_address("12 rue de rivoli", "paris", wall_length_m=5.0, wall_offset_m=1.0)
+    assert plot.existing_structures == []
+    assert meta["buildings_found"] == 0
+
+
+def test_fetch_buildings_on_parcel_filters_to_matches_only():
+    parcel_poly = REAL_PARCEL_RESPONSE["features"][0]["geometry"]["coordinates"][0][0]
+    parcel_poly = [(p[0], p[1]) for p in parcel_poly]
+    with patch("urllib.request.urlopen", return_value=_mock_urlopen(json.dumps(REAL_BUILDINGS_RESPONSE).encode())):
+        buildings = pl.fetch_buildings_on_parcel("75104", parcel_poly)
+    assert len(buildings) == 1  # the far-away fixture building must be filtered out
+
+
+def test_wgs84_polygon_to_local_metres_shared_origin_keeps_two_polygons_consistent():
+    # The real bug this round, isolated: reprojecting two polygons with DEFAULT (self-centroid) origins
+    # puts them in two unrelated local frames even though they're genuinely close together in the real
+    # world -- a shared origin must keep them close in the reprojected frame too.
+    parcel = [(2.3599, 48.8557), (2.3601, 48.8557), (2.3601, 48.8558), (2.3599, 48.8558)]
+    building = [(2.35991, 48.85571), (2.36005, 48.85571), (2.36005, 48.85578), (2.35991, 48.85578)]
+    origin = pl._polygon_centroid(parcel)
+
+    parcel_m = pl.wgs84_polygon_to_local_metres(parcel, origin=origin)
+    building_m = pl.wgs84_polygon_to_local_metres(building, origin=origin)
+    # same shared origin -> the two shapes' coordinates should be within a few metres of each other
+    assert abs(parcel_m[0][0] - building_m[0][0]) < 5
+    assert abs(parcel_m[0][1] - building_m[0][1]) < 5
+
+    # WITHOUT a shared origin, the building defaults to ITS OWN centroid (different from the parcel's,
+    # used above) -- demonstrating the bug this fixes, not just asserting the fix's own correct path.
+    # (parcel's own default centroid happens to equal `origin` here by construction, so only the
+    # building -- the one with a genuinely different self-centroid -- is the meaningful comparison.)
+    building_m_bad = pl.wgs84_polygon_to_local_metres(building)
+    assert building_m_bad[0] != pytest.approx(building_m[0])
