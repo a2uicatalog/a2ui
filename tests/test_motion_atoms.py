@@ -124,6 +124,7 @@ PAYLOADS = {
                         dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "portal", "portal": {"x": 60, "y": 20, "w": 30}}, {"layer": "s3", "t": 6, "transition": "portal"},
                                                 ]),
                         dict(STITCHED, stitch="portal", scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "portal": {"x": "x", "y": 1, "w": 2}}, {"layer": "s3", "t": 6, "portal": {"x": 999, "y": -5, "w": 1}}]),
+                        dict(STITCHED, stitch="ribbon", overlap=1.4), dict(STITCHED, stitch="ribbon", blocks=STITCHED["blocks"] + [{"type": "motion_pill", "id": "mrib1", "text": "x", "place": {"x": 1, "y": 1}}]),
                         MORPHED, dict(MORPHED, morphs=[{"from": "a", "to": "a", "t": 1}, {"from": "a", "to": "nope", "t": 1}, {"from": "s1", "to": "b", "t": 1}, {"from": "a", "to": "b", "beat": 4, "dur": 99, "ease": "hold"},
                                                        {"from": "a", "to": "b", "t": "x"}, "junk", {"from": "a", "to": "b", "t": 2, "ease": "toString"}, {"from": "a", "to": "b", "t": 9}]),
                         dict(MORPHED, bpm=120, blocks=MORPHED["blocks"] + [{"type": "motion_pill", "id": "mcut0", "text": "taken", "place": {"x": 1, "y": 1, "w": 5}}]),
@@ -718,3 +719,16 @@ def test_portal_new_scene_starts_as_the_box_and_ends_filling_the_frame():
     assert _probe(blk, 5, js) == [0, 0, 100, 1]
     old = "var e=document.querySelector('[data-mt-id=s1]');return +e.style.opacity;"
     assert _probe(blk, 5.5, old) == 0
+
+
+@browser
+def test_ribbon_band_straddles_the_reveal_edge_and_leaves_with_it():
+    blk = dict(STITCHED, stitch="ribbon", bpm=0, overlap=2.0, controls=False, autoplay=False, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3}])
+    js = ("var b=document.querySelector('[data-mt-id=mrib1]'),s=document.querySelector('[data-mt-id=s2]');"
+          "return [+b.style.opacity, b.style.clipPath, s.style.clipPath];")
+    op, band, scene = _probe(blk, 3.6, js)
+    assert op == 1 and band.startswith("polygon(") and scene.startswith("polygon(")
+    top_edge = float(scene.split(",")[1].split("%")[0])
+    bl, br = (float(v.strip().split("%")[0]) for v in band[len("polygon("):].split(",")[:2])
+    assert bl <= top_edge <= br, (bl, top_edge, br)
+    assert _probe(blk, 5.2, js)[0] == 0 and _probe(blk, 5.2, js)[2] in ("", "none")

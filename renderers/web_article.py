@@ -26245,7 +26245,7 @@ _MO_TIMELINE_JS = (
     'if(tr)e.style.transform=tr;'
     'if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);'
     'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";'
-    'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}'
+    'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}'
     'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}'
     'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}'
     'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}'
@@ -27047,6 +27047,8 @@ def _mo_timeline(b: dict) -> str:
         st['dropped'] += len(tracks) - 40
         tracks = tracks[:40]
     tg = tg + _mo_stitch(b, ids, bpm, dur_n, st)  # scene hand-overs first, so a track you write on the same layer wins
+    if st.get('rib'):
+        world += st['rib']
     for tr in tracks:
         tid = _mo_id(tr.get('target')) if isinstance(tr, dict) else ''
         if not tid or not ids.get(tid) or not isinstance(tr.get('keys'), list):
@@ -27694,9 +27696,9 @@ def _render_motion_mask(b: dict) -> str:
             + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' if mask else '') + '">' + inner + '</div>')
 
 
-_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1}
-_MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
-_MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
+_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1}
+_MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'ribbon': {'clip': 0, 'cs': 6}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
+_MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'ribbon': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
 _MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0, 'clip': 1}
 
 
@@ -27747,6 +27749,14 @@ def _mo_stitch(b, ids, bpm, dur, st):
         keys, fin, fout = [], cur['fx'] or dfx, ((nxt['fx'] or dfx) if nxt else '')
         if fin == 'portal' and not cur['pb']:
             fin = 'dissolve'
+        if fin == 'ribbon' and cur['t'] > 0:  # an accent band rides the reveal edge (clip shape 5 straddles shape 6's edge)
+            rid = 'mrib' + str(i)
+            if ids.get(rid):
+                fin = 'wipe'
+            else:
+                st['rib'] = st.get('rib', '') + ('<div class="mt-el" data-mt-id="' + rid + '" data-mt-x="0" data-mt-y="0" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:50;opacity:0;pointer-events:none;background:linear-gradient(100deg,var(--mt-acc,#38bdf8),color-mix(in srgb,var(--mt-acc,#38bdf8) 50%,#ffffff));"></div>')
+                rj = _mo_track_js([{'t': 0, 'opacity': 0, 'clip': 0, 'cs': 5}, {'t': cur['t'], 'opacity': 1, 'clip': 0, 'cs': 5, 'ease': 'hold'}, {'t': cur['t'] + ov, 'opacity': 1, 'clip': 1, 'cs': 5, 'ease': 'expo-out'}, {'t': cur['t'] + ov + 0.02, 'opacity': 0, 'ease': 'hold'}], _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st)
+                out.append('{i:"' + rid + '",p:{' + rj + '}}')
         if fout == 'portal' and not nxt['pb']:
             fout = 'dissolve'
         if cur['t'] > 0:
@@ -27773,7 +27783,7 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 _mo_stitch_key(keys, nxt['t'], {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1})
                 _mo_stitch_key(keys, nxt['t'] + ov, {'x': -(Q['x'] - 50) * kq, 'y': -(Q['y'] - 50) * kq, 'scale': kq}, 'quart-in-out')
                 _mo_stitch_key(keys, nxt['t'] + ov + 0.02, {'opacity': 0}, 'hold')
-            elif fout in ('wipe', 'iris', 'clock', 'slice'):  # the old scene stays until the new one has covered it
+            elif fout in ('wipe', 'iris', 'clock', 'slice', 'ribbon'):  # the old scene stays until the new one has covered it
                 _mo_stitch_key(keys, nxt['t'], _MO_REST)
                 _mo_stitch_key(keys, nxt['t'] + ov, {'opacity': 0}, 'hold')
             else:
