@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Report % completion to the a2ui-surface Claude Code mod.
+#   a2ui-progress <id> <percent> [label...]    e.g. a2ui-progress build 42 Compiling atoms
+#   a2ui-progress <id> done                    marks it 100% (cleared after a short while)
+#   a2ui-progress <id> clear                   removes it now
+# Writes ~/.cache/a2ui-progress/<id>.json atomically; any language can write the same JSON:
+#   {"label": "...", "value": 0-100, "caption": "optional"}
+set -eu
+dir="${A2UI_PROGRESS_DIR:-$HOME/.cache/a2ui-progress}"
+id="${1:?usage: a2ui-progress <id> <percent|done|clear> [label...]}"
+val="${2:?usage: a2ui-progress <id> <percent|done|clear> [label...]}"
+shift 2
+id="${id//[^A-Za-z0-9._-]/_}"
+mkdir -p "$dir"
+if [ "$val" = clear ]; then rm -f "$dir/$id.json"; exit 0; fi
+[ "$val" = done ] && val=100
+label="${*:-$id}"
+python3 - "$dir/$id.json" "$val" "$label" "${A2UI_PROGRESS_CAPTION:-}" <<'PY'
+import json, os, sys
+path, val, label, caption = sys.argv[1:]
+v = max(0.0, min(100.0, float(val)))
+tmp = path + ".tmp"
+with open(tmp, "w") as f:
+    json.dump({"label": label, "value": round(v, 1), "caption": caption}, f)
+os.replace(tmp, path)
+PY

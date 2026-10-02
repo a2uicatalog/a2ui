@@ -1,0 +1,18 @@
+{
+  "name": "a2ui-claude-code",
+  "version": "0.1.0",
+  "description": "A2UI catalogue atoms rendered natively in Claude Code panes: /a2ui payloads, a2uicatalog MCP auto-render, animated script progress bars and a long-job dashboard",
+  "author": { "name": "a2uicatalog", "url": "https://a2uicatalog.ai" },
+  "homepage": "https://a2uicatalog.ai/surfaces/claude-code",
+  "repository": "https://github.com/a2uicatalog/a2ui",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "gate_log": {
+      "type": "string",
+      "title": "Deploy gate log",
+      "description": "Optional path to a JSONL run log ({ts, process, status, duration_s}); its latest run shows in the status line. Empty turns it off.",
+      "default": ""
+    }
+  }
+}
