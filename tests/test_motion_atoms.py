@@ -150,7 +150,7 @@ PAYLOADS = {
     "motion_layer": [{}, {"blocks": [{"type": "motion_text", "id": "a", "text": "Hi", "place": {"x": 5, "y": 5, "w": 50}},
                                       {"type": "motion_shape", "shape": "ring", "place": {"x": 60, "y": 10, "w": 30, "h": 50, "z": 3}},
                                       "junk", {"type": "motion_timeline"}, {"type": "no_such_atom"}, {"type": "motion_layer", "id": "inner", "blocks": []}]}],
-    "motion_text": [{}, {"text": "Cut *this*", "decor": "strike", "decor_color": "#ff3d81", "mode": "words"}, {"text": "mark it", "decor": "highlight", "mode": "lines"}, {"text": "under", "decor": "underline", "mode": "chars"}, {"text": "Il te faut un plan", "mode": "words", "karaoke": "pill", "accent": "#ff6a2b"}, {"text": "co lor", "mode": "words", "karaoke": "color"}, {"text": "MOVE", "split": 30, "split_a": "#ff0055", "split_b": "#00ffff", "extrude": 8}, {"text": "x", "decor": "toString", "karaoke": "constructor", "split": 9999, "split_a": "red;x", "decor_color": "url(x)"}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
+    "motion_text": [{}, {"text": "We *build*", "prism": ["Build", "Ship", "Scale"], "size": 60}, {"text": "x", "prism": ["a", "b"]}, {"text": "x", "prism": ["<b>", "a\"b", 5, None, "x" * 40, "e", "f"]}, {"text": "x", "prism": "no"}, {"text": "x", "prism": ["only"]}, {"text": "SOLD OUT", "mode": "chars", "reveal": "flap", "size": 80}, {"text": "a b", "mode": "words", "reveal": "flap"}, {"text": "Cut *this*", "decor": "strike", "decor_color": "#ff3d81", "mode": "words"}, {"text": "mark it", "decor": "highlight", "mode": "lines"}, {"text": "under", "decor": "underline", "mode": "chars"}, {"text": "Il te faut un plan", "mode": "words", "karaoke": "pill", "accent": "#ff6a2b"}, {"text": "co lor", "mode": "words", "karaoke": "color"}, {"text": "MOVE", "split": 30, "split_a": "#ff0055", "split_b": "#00ffff", "extrude": 8}, {"text": "x", "decor": "toString", "karaoke": "constructor", "split": 9999, "split_a": "red;x", "decor_color": "url(x)"}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
                     {"text": "a b c\nd e", "mode": "words", "reveal": "drop", "overlap": 5, "align": "middle"},
                     {"text": "chars <b>& \"q\" \u2603", "mode": "chars", "reveal": "blur", "align": "end"},
                     {"text": "x" * 200, "mode": "chars"}, {"text": "a\nb\nc\nd\ne\nf", "mode": "block", "reveal": "fade"}, {"text": ""},
@@ -163,7 +163,7 @@ PAYLOADS = {
     "motion_shape": [{}, {"shape": "circle", "fill": "#FF0000", "fill2": "#0000ff", "angle": 135, "blur": 150, "draw": "fade", "w": 400, "h": 300},
                      {"shape": "ring", "thickness": 10, "fill": "#ffb347", "fill2": "#ff3d81"}, {"shape": "ring", "draw": "scale"}, {"shape": "line", "thickness": 4, "draw": "grow-y"},
                      {"shape": "rect", "radius": 80, "draw": "sweep", "fill": "url(javascript:alert(1))"}, {"shape": "<x>", "draw": "none", "w": "9", "h": True}],
-    "motion_counter": [{}, {"to": 1207, "from": 100, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "size": 200, "label": "artists <b>", "label_size": 20, "align": "middle", "color": "#ffb347"},
+    "motion_counter": [{}, {"to": 1207.5, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "roll": True, "size": 120}, {"to": -45, "roll": True}, {"to": "abc", "roll": True, "label": "x <b>"}, {"to": 98765432101, "roll": "yes"}, {"to": 1207, "from": 100, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "size": 200, "label": "artists <b>", "label_size": 20, "align": "middle", "color": "#ffb347"},
                        {"to": "abc"}, {"to": -5.5, "from": "x", "decimals": 9, "font": "mono", "weight": "regular"}],
     "motion_pill": [{}, {"text": "Comment *Motion* under this post", "icon": "\u2191", "size": 40, "align": "middle", "accent": "#ff6a2b", "color": "#fff6e8", "fill": "#1a1020"},
                     {"text": "a ** b <i>*x", "align": "end"}, {"text": 5, "icon": "\"><b>", "size": 9999, "align": "toString"}],
@@ -738,3 +738,16 @@ def test_ribbon_band_straddles_the_reveal_edge_and_leaves_with_it():
     assert bl <= top_edge <= br, (bl, top_edge, br)
     assert _probe(blk, 4.9, js)[1].startswith("polygon("), "the band stays a band even when the reveal is almost done"
     assert _probe(blk, 5.2, js)[0] == 0 and _probe(blk, 5.2, js)[2] in ("", "none")
+
+
+@browser
+def test_roll_scrolls_each_digit_to_its_value_and_prism_turns():
+    roll = {"type": "motion_counter", "to": 1207, "roll": True, "size": 100}
+    blk = _scene([dict(roll, id="r", place={"x": 5, "y": 5, "w": 60})], [{"target": "r", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "return Array.from(document.querySelectorAll('[data-mt-id=r] span[style*=\\'--u\\'] > span[style*=translateY]')).map(function(e){return Math.round(-new DOMMatrix(getComputedStyle(e).transform).m42/e.parentElement.offsetHeight);});"
+    assert _probe(blk, 0, js) == [0, 0, 0, 0]
+    assert _probe(blk, 4, js) == [1, 2, 0, 7]
+    pr = _scene([{"type": "motion_text", "id": "t", "text": "We", "prism": ["Build", "Ship", "Scale"], "place": {"x": 5, "y": 5, "w": 80}}],
+                [{"target": "t", "keys": [{"t": 0, "p": 1}, {"t": 0, "step": 0}, {"t": 4, "step": 1}]}])
+    tj = "var e=document.querySelector('[data-mt-id=t] [style*=preserve-3d]');return getComputedStyle(e).transform;"
+    assert _probe(pr, 0, tj) != _probe(pr, 2, tj)

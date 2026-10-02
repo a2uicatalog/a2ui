@@ -15,7 +15,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 | font | "sans" | "serif" | "mono" | "display" (optional, default "sans"). display is a heavy grotesque. |
 | weight | "regular" | "bold" | "black" (optional, default "bold") |
 | mode | "lines" | "words" | "chars" | "block" (optional, default "lines"). What reveals in turn. lines never wraps; more than 120 units falls back to block. |
-| reveal | "mask" | "rise" | "drop" | "fade" | "blur" | "bar" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. |
+| reveal | "mask" | "rise" | "drop" | "fade" | "blur" | "bar" | "flap" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). |
 | overlap | integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3. |
 | tracking | number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02. |
 | line_height | number (optional). 0.8-2. Default 1.05. |
@@ -33,6 +33,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 | split | integer (optional). Red and cyan copies pull apart by this many px at the peak of --s and sit together at 0: the chromatic glitch. 0-60. Default 0 (off). |
 | split_a | "#rrggbb" (optional). Left copy. Default a hot pink. |
 | split_b | "#rrggbb" (optional). Right copy. Default cyan. |
+| prism | array (2-4) of words, max 14 characters each (optional). A turning 3D prism after the text that cycles the words as the second dial (--s) goes 0 to 1 (one full turn): Build / Ship / Scale. Two words repeat to fill four faces. Needs at least two words, else ignored. |
 
 ## Example payload
 

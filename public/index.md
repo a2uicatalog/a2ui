@@ -16,6 +16,7 @@ Apps Script, Google Chat and MCP Apps — instead of generating HTML.
 - [OpenAPI specification](https://a2uicatalog.ai/openapi.json)
 - [agents.md](https://a2uicatalog.ai/agents.md) — agent-facing how-to
 - [MCP Apps playground](https://a2uicatalog.ai/surfaces/mcp-apps)
+- [Claude Code surface](https://a2uicatalog.ai/surfaces/claude-code)
 
 ## What this is
 

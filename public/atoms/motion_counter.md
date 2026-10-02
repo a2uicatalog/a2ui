@@ -22,6 +22,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 | weight | "regular" | "bold" | "black" (optional, default "black") |
 | color | "#rrggbb" (optional). Default the stage ink. |
 | align | "start" | "middle" | "end" (optional, default "start") |
+| roll | bool (optional). Odometer: every digit is a 0-9 strip that scrolls to its value, left to right, as p goes 0 to 1. Counts from zero (from is ignored). Default false. |
 
 ## Example payload
 

@@ -13999,7 +13999,7 @@
        "description": "\"lines\" | \"words\" | \"chars\" | \"block\" (optional, default \"lines\"). What reveals in turn. lines never wraps; more than 120 units falls back to block."
       },
       "reveal": {
-       "description": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it."
+       "description": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars)."
       },
       "overlap": {
        "description": "integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.",
@@ -14057,6 +14057,10 @@
       },
       "split_b": {
        "description": "\"#rrggbb\" (optional). Right copy. Default cyan."
+      },
+      "prism": {
+       "description": "array (2-4) of words, max 14 characters each (optional). A turning 3D prism after the text that cycles the words as the second dial (--s) goes 0 to 1 (one full turn): Build / Ship / Scale. Two words repeat to fill four faces. Needs at least two words, else ignored.",
+       "type": "array"
       }
      },
      "required": [
@@ -14191,6 +14195,10 @@
       },
       "align": {
        "description": "\"start\" | \"middle\" | \"end\" (optional, default \"start\")"
+      },
+      "roll": {
+       "description": "bool (optional). Odometer: every digit is a 0-9 strip that scrolls to its value, left to right, as p goes 0 to 1. Counts from zero (from is ignored). Default false.",
+       "type": "boolean"
       }
      },
      "required": [

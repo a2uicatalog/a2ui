@@ -40340,7 +40340,8 @@
               "drop",
               "fade",
               "blur",
-              "bar\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it."
+              "bar",
+              "flap\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars)."
             ]
           },
           "overlap": {
@@ -40453,6 +40454,9 @@
               "object",
               "array"
             ]
+          },
+          "prism": {
+            "type": "string"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -40797,6 +40801,9 @@
               "middle",
               "end\" (optional, default \"start\")"
             ]
+          },
+          "roll": {
+            "type": "boolean"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",

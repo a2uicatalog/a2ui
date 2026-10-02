@@ -27115,7 +27115,8 @@ for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens
     _RENDERERS[_mo_name] = _mo_fn
 
 
-_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1}
+_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1}
+_MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'
 _MO_ALIGN = {'start': 'left', 'middle': 'center', 'end': 'right'}
 
 
@@ -27238,6 +27239,22 @@ def _render_motion_text(b: dict) -> str:
         return allc
     if mode == 'block':
         units = [{'c': joined('\n'), 'block': True}]
+    pw = []
+    for pwd in (b.get('prism') if isinstance(b.get('prism'), list) else []):
+        if len(pw) >= 4:
+            break
+        w_ = _cv_str(pwd, 14)
+        if w_:
+            pw.append(w_)
+    prism = ''
+    if len(pw) >= 2:  # a turning 3D prism that cycles the words with the second dial (--s)
+        pf = [pw[0], pw[1], pw[0], pw[1]] if len(pw) == 2 else pw
+        pn = len(pf)
+        pz = '0.289' if pn == 3 else '0.5'
+        pm = max(len(list(w_)) for w_ in pw)
+        pface = ''.join('<span aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:1em;line-height:1;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateX(' + str(int(math.floor(360 * pj / pn + 0.5))) + 'deg) translateZ(' + pz + 'em);">' + _cv_esc(w2) + '</span>' for pj, w2 in enumerate(pf))
+        prism = ('<span style="display:inline-block;position:relative;vertical-align:bottom;margin-left:0.3em;width:' + _ff_num(pm * 0.62, 1, 1, 12, 2) + 'em;height:1em;line-height:1;perspective:12em;color:' + accent + ';opacity:clamp(0,calc(var(--p,1)*6),1);">'
+                 + _mo_sr(', '.join(pw)) + '<span aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;transform-style:preserve-3d;transform:translateZ(-' + pz + 'em) rotateX(calc(var(--s,0)*-360deg));">' + pface + '</span></span>')
     N = sum(len(u['c']) if u.get('chars') else 1 for u in units)
     if N > 120:
         units, N, mode = [{'c': joined(' '), 'block': True}], 1, 'block'
@@ -27266,6 +27283,9 @@ def _render_motion_text(b: dict) -> str:
         inl = 'display:block;' if blockish else 'display:inline-block;'
         if reveal == 'bar':
             return ('<span style="' + uvar(n) + ('display:block;width:fit-content;' if blockish else 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>')
+        if reveal == 'flap':  # a slot-reel flip: three seeded decoy glyphs scroll past before the real one lands
+            dg = ''.join('<span aria-hidden="true" style="display:block;height:1em;">' + _MO_FLAP[(n * 7 + dk * 11 + 3) % len(_MO_FLAP)] + '</span>' for dk in range(3))
+            return ('<span style="' + uvar(n) + 'display:inline-block;overflow:hidden;height:1em;line-height:1;vertical-align:bottom;"><span style="display:block;transform:translateY(calc(var(--u)*-3em));">' + dg + '<span style="display:block;height:1em;">' + inner + '</span></span></span>')
         if reveal == 'mask':
             return ('<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>')
         fx = ('' if reveal == 'fade' else 'transform:translateY(calc((1 - var(--u))*-0.6em));' if reveal == 'drop'
@@ -27296,7 +27316,7 @@ def _render_motion_text(b: dict) -> str:
     return ('<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
             + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
             + _mo_sr(_mo_plain(' '.join(lines)))
-            + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>')
+            + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>')
 
 
 def _render_motion_shape(b: dict) -> str:
@@ -27336,8 +27356,23 @@ def _render_motion_counter(b: dict) -> str:
     size, weight, font = _ff_int(b.get('size'), 96, 10, 400), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), _ff_pick(b.get('font'), _FF_FONTS, 'display')
     color, align, label = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), _cv_str(b.get('label'), 40)
     lsize = _ff_int(b.get('label_size'), max(11, size // 5), 8, 80)
+    if b.get('roll') is True:  # odometer: every digit is a 0-9 strip that scrolls to its value, left to right, as p goes 0 to 1 (counts from zero)
+        txt = _mo_fmt(to, dec, pre, suf)
+        chs = list(txt)
+        nd = sum(1 for ch in chs if '0' <= ch <= '9' and ch.isascii())
+        rolled, di = '', 0
+        for ch in chs:
+            if '0' <= ch <= '9' and ch.isascii():
+                strip = ''.join('<span style="display:block;height:1em;">' + str(dd) + '</span>' for dd in range(10))
+                rolled += ('<span style="--u:clamp(0,calc(var(--p,1)*' + str(nd + 1) + ' - ' + str(di) + '),1);display:inline-block;overflow:hidden;height:1em;vertical-align:bottom;"><span style="display:block;transform:translateY(calc(var(--u)*-' + ch + 'em));">' + strip + '</span></span>')
+                di += 1
+            else:
+                rolled += '<span style="display:inline-block;height:1em;vertical-align:bottom;white-space:pre;">' + _cv_esc(ch) + '</span>'
+        shown = _mo_sr(txt) + '<span aria-hidden="true">' + rolled + '</span>'
+    else:
+        shown = _mo_count(to, dec, pre, suf, '', frm)
     return ('<div style="width:100%;text-align:' + align + ';">'
-            + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.02em;color:' + color + ';font-variant-numeric:tabular-nums;">' + _mo_count(to, dec, pre, suf, '', frm) + '</div>'
+            + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1;letter-spacing:-0.02em;color:' + color + ';font-variant-numeric:tabular-nums;' + ('height:1em;overflow:hidden;' if b.get('roll') is True else '') + '">' + shown + '</div>'
             + ('<div style="font-family:' + _MO_SANS + ';font-size:' + str(lsize) + 'px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-top:0.5em;">' + _cv_esc(label) + '</div>' if label else '')
             + '</div>')
 
