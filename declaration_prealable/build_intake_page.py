@@ -147,10 +147,14 @@ PAGE = r"""<!DOCTYPE html>
 
     <fieldset>
       <legend>Parcelle (pour DP2)</legend>
-      <label style="display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;color:var(--ink)">
-        <input type="checkbox" id="includeRawAerial" style="width:auto"> Inclure la photo aérienne brute (non annotée) au téléchargement
-      </label>
+      <p class="note" style="margin:0 0 10px">Remplit automatiquement la limite de parcelle, le bâtiment
+        existant, et génère DP1 à partir de l'adresse ci-dessus — sans ce bouton, DP1 et la photo
+        aérienne ne seront pas disponibles, quel que soit ce que vous cochez ci-dessous.</p>
       <button type="button" id="lookupBtn">Rechercher la parcelle réelle (cadastre.gouv.fr)</button>
+      <label style="display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:13px;color:var(--ink)">
+        <input type="checkbox" id="includeRawAerial" style="width:auto"> … et inclure aussi la photo
+        aérienne brute (non annotée) au téléchargement
+      </label>
       <p class="note" id="lookupNote"></p>
       <div id="manualPlotFields">
       <div class="row">
