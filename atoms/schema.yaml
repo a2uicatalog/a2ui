@@ -11016,6 +11016,7 @@ blocks:
   fields:
     blobs: 'array (max 8) of {x, y, x2?, y2?, r?}. x, y start 0-100; x2, y2 end (default = start); r radius 2-40 (default 10).'
     orbit: 'number (optional). Orbit radius in box units, 0-20. Default 4.'
+    style: '"glossy" | "flat" (optional, default "glossy"). glossy fills all blobs with one continuous gradient (so merged blobs read as one liquid), adds a soft drop shadow under the merged shape and small specular highlights that merge with them; flat is a single solid colour per blob.'
     color: '"#rrggbb" (optional). Default the stage accent.'
     accent2: '"#rrggbb" (optional). Every second blob.'
   source:
@@ -11103,6 +11104,66 @@ blocks:
     heights: 'array of numbers 0-10, row by row (optional). Missing entries use a fixed pattern.'
     height: 'integer (optional). Height unit px, 4-40. Default 14.'
     accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_particles
+  stage: preview
+  description: 'Dots that start scattered and converge into a word or a shape as p goes 0 to 1, then scatter again with the second dial (--s). Text uses a built-in 5 by 7 dot font (A-Z, 0-9 and . , ! ? - : ''; up to 12 characters, other characters leave a gap); with no usable text the dots trace a shape outline (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow). Start positions come from a seeded integer sequence, so the same seed always gives the same film. Up to 400 dots. Plain SVG and CSS, no script; standalone it shows the finished word.'
+  compact_description: scattered dots that converge into dot-matrix text or a shape
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    text: 'string (optional, max 12). Uppercased.'
+    shape: '"circle" | "square" | "triangle" | "diamond" | "hexagon" | "star" | "heart" | "blob" | "plus" | "arrow" (optional, default "heart"). Used when there is no text.'
+    seed: 'integer (optional). 1-2147483646. Default 7.'
+    scatter: 'integer (optional). How far outside the box the dots start, in percent, 0-300. Default 100.'
+    dot: 'number (optional). Dot radius: for text in dot cells (1 = one cell), for a shape in the 0-100 box. 0.1-10. Default 0.42 for text, 1.6 for a shape.'
+    glow: 'bool (optional). A soft bloom around the dots. Default false.'
+    vary: 'bool (optional). Seeded size variation, 60-140 percent of dot. Default false.'
+    color: '"#rrggbb" (optional). Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Every third dot.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_morph
+  stage: preview
+  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow) played in order. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
+  compact_description: shape that morphs into the next shape
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    shapes: 'array (2-4) of preset names. Default circle then star.'
+    fill: '"#rrggbb" (optional). Default the stage accent.'
+    fill2: '"#rrggbb" (optional). Second colour of a 135 degree gradient.'
+    glossy: 'bool (optional). A specular highlight, a soft core shadow and a drop shadow, so the shape reads as a solid object. Default false.'
+    rotate: 'integer (optional). Degrees turned at --s = 1, -720 to 720. Default 0.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

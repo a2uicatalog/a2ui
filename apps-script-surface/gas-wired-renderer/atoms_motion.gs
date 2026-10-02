@@ -1589,12 +1589,19 @@ _RENDERERS['motion_goo'] = function(b) {
   for (i = 0; i < bl.length; i++) cfg += bl[i].x + ',' + bl[i].y + ',' + bl[i].x2 + ',' + bl[i].y2 + ',' + bl[i].r + ';';
   for (k = 0; k < cfg.length; k++) h = (h * 31 + cfg.charCodeAt(k)) % 1000003;
   var fid = 'mtgoo' + h;
+  var glossy = b.style !== 'flat', hl = '';
   for (i = 0; i < bl.length; i++) {
-    var B = bl[i], c = col2 && i % 2 ? col2 : col, ph = _ffNum(i * 1.9, 0, 0, 20, 1);
-    out += '<circle r="' + B.r + '" style="fill:' + c + ';transform:translate(calc(' + B.x + 'px + (' + B.x2 + ' - ' + B.x + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*sin(calc(var(--s,0)*6.2832 + ' + ph + '))),calc(' + B.y + 'px + (' + B.y2 + ' - ' + B.y + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*cos(calc(var(--s,0)*6.2832 + ' + ph + '))));"/>';
+    var B = bl[i], c = glossy ? 'url(#' + fid + 'g)' : (col2 && i % 2 ? col2 : col), ph = _ffNum(i * 1.9, 0, 0, 20, 1);
+    var tf = 'transform:translate(calc(' + B.x + 'px + (' + B.x2 + ' - ' + B.x + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*sin(calc(var(--s,0)*6.2832 + ' + ph + '))),calc(' + B.y + 'px + (' + B.y2 + ' - ' + B.y + ')*1px*clamp(0,var(--p,1),1) + ' + orb + 'px*cos(calc(var(--s,0)*6.2832 + ' + ph + '))));';
+    out += '<circle r="' + B.r + '" style="fill:' + c + ';' + tf + '"/>';
+    if (glossy) { var rf = parseFloat(B.r); hl += '<circle r="' + _ffNum(rf * 0.42, 1, 0, 40, 1) + '" cx="' + _ffNum(-rf * 0.32, 0, -40, 0, 1) + '" cy="' + _ffNum(-rf * 0.38, 0, -40, 0, 1) + '" style="' + tf + '"/>'; }
   }
-  return '<svg viewBox="0 0 100 100" width="100%" role="img" aria-label="Liquid blobs" style="display:block;overflow:visible;"><defs><filter id="' + fid + '" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"/></filter></defs>'
-    + '<g filter="url(#' + fid + ')">' + out + '</g></svg>';
+  var defs = '<filter id="' + fid + '" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"/>'
+    + (glossy ? '<feDropShadow dx="0" dy="1.6" stdDeviation="1.8" flood-color="#000" flood-opacity="0.35"/>' : '') + '</filter>';
+  if (glossy) defs += '<linearGradient id="' + fid + 'g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100"><stop offset="0" style="stop-color:color-mix(in srgb,' + col + ' 70%,#ffffff)"/><stop offset="0.55" style="stop-color:' + col + '"/><stop offset="1" style="stop-color:' + (col2 || 'color-mix(in srgb,' + col + ' 60%,#000000)') + '"/></linearGradient>'
+    + '<filter id="' + fid + 'h" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter>';
+  return '<svg viewBox="0 0 100 100" width="100%" role="img" aria-label="Liquid blobs" style="display:block;overflow:visible;"><defs>' + defs + '</defs>'
+    + '<g filter="url(#' + fid + ')">' + out + '</g>' + (glossy ? '<g filter="url(#' + fid + 'h)" style="fill:#ffffff;opacity:0.45;mix-blend-mode:screen;">' + hl + '</g>' : '') + '</svg>';
 };
 
 // A finishing layer for the whole frame: film grain, a vignette, drifting light leaks and a glass sheen. Place it last, full size;
@@ -1635,4 +1642,77 @@ _RENDERERS['motion_iso'] = function(b) {
       + '<div style="position:absolute;left:0;right:0;top:0;height:100%;transform:translateY(calc(-100%*' + F + '));background:' + acc + ';clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></div></div>';
   }
   return '<div role="img" aria-label="Isometric blocks rising" style="position:relative;width:100%;aspect-ratio:100/' + _ffNum(ext, 1, 1, 400, 3) + ';">' + tiles + '</div>';
+};
+
+// ─── batch 8 (2026-10-02, premium items 5-6): particles and shape morph. Integer geometry only, so both twins agree exactly ──────────
+// Shape outlines: 48 points each, equal-perimeter resampled, starting at the top and running clockwise, as tenths of a 0-100 box.
+var _MO_SHAPES = {
+  'circle': [500,40,560,44,619,56,676,75,730,102,780,135,825,175,865,220,898,270,925,324,944,381,956,440,960,500,956,560,944,619,925,676,898,730,865,780,825,825,780,865,730,898,676,925,619,944,560,956,500,960,440,956,381,944,324,925,270,898,220,865,175,825,135,780,102,730,75,676,56,619,44,560,40,500,44,440,56,381,75,324,102,270,135,220,175,175,220,135,270,102,324,75,381,56,440,44],
+  'square': [500,60,573,60,647,60,720,60,793,60,867,60,940,60,940,133,940,207,940,280,940,353,940,427,940,500,940,573,940,647,940,720,940,793,940,867,940,940,867,940,793,940,720,940,647,940,573,940,500,940,427,940,353,940,280,940,207,940,133,940,60,940,60,867,60,793,60,720,60,647,60,573,60,500,60,427,60,353,60,280,60,207,60,133,60,60,133,60,207,60,280,60,353,60,427,60],
+  'triangle': [500,60,527,110,554,161,581,211,608,261,635,312,662,362,689,412,716,463,743,513,770,563,797,614,824,664,851,714,878,764,905,815,932,865,900,880,843,880,786,880,728,880,671,880,614,880,557,880,500,880,443,880,386,880,329,880,272,880,214,880,157,880,100,880,68,865,95,815,122,764,149,714,176,664,203,614,230,563,257,513,284,463,311,412,338,362,365,312,392,261,419,211,446,161,473,110],
+  'diamond': [500,40,538,78,577,117,615,155,653,193,692,232,730,270,768,308,807,347,845,385,883,423,922,462,960,500,922,538,883,577,845,615,807,653,768,692,730,730,692,768,653,807,615,845,577,883,538,922,500,960,462,922,423,883,385,845,347,807,308,768,270,730,232,692,193,653,155,615,117,577,78,538,40,500,78,462,117,423,155,385,193,347,232,308,270,270,308,232,347,193,385,155,423,117,462,78],
+  'hexagon': [500,30,551,59,602,89,653,118,704,148,754,177,805,206,856,236,907,265,907,324,907,382,907,441,907,500,907,559,907,618,907,676,907,735,856,764,805,794,754,823,704,852,653,882,602,911,551,941,500,970,449,941,398,911,347,882,296,852,246,823,195,794,144,764,93,735,93,676,93,618,93,559,93,500,93,441,93,383,93,324,93,265,144,236,195,206,246,177,296,147,347,118,398,89,449,59],
+  'star': [500,40,524,106,549,173,573,239,598,305,632,359,702,362,773,364,844,367,914,370,934,389,879,433,823,477,768,521,712,564,702,623,721,691,740,759,759,827,778,895,735,877,676,838,618,798,559,759,500,720,441,759,382,798,324,838,265,877,222,895,241,827,260,759,279,691,298,623,288,564,232,521,177,477,121,433,66,389,86,370,156,367,227,364,298,362,368,359,402,305,427,239,451,173,476,106],
+  'heart': [500,320,516,263,547,212,589,170,641,141,698,127,758,130,814,147,865,179,906,222,934,274,947,332,943,391,925,448,895,499,858,546,817,589,774,630,729,669,683,707,638,747,595,788,555,832,521,881,500,936,479,881,445,832,405,788,362,747,317,707,271,669,226,630,183,589,142,546,105,499,75,448,57,391,53,332,66,274,94,222,135,179,186,147,242,130,302,127,359,141,411,170,453,212,484,263],
+  'blob': [500,60,556,70,609,88,660,112,708,143,750,180,789,221,832,257,871,299,903,345,929,395,948,448,959,504,943,558,920,609,890,657,854,701,812,739,767,772,733,817,693,857,647,891,598,918,545,938,490,949,435,937,381,919,331,894,284,863,241,825,203,784,159,748,121,707,89,660,63,610,43,557,30,502,45,448,67,396,95,347,130,302,170,263,216,229,254,188,295,149,341,117,391,91,445,72],
+  'plus': [620,60,620,133,620,207,620,280,620,353,667,380,740,380,813,380,887,380,940,400,940,473,940,547,940,620,867,620,793,620,720,620,647,620,620,667,620,740,620,813,620,887,600,940,527,940,453,940,380,940,380,867,380,793,380,720,380,647,333,620,260,620,187,620,113,620,60,600,60,527,60,453,60,380,133,380,207,380,280,380,353,380,380,333,380,260,380,187,380,113,400,60,473,60,547,60],
+  'arrow': [560,140,602,180,644,219,686,259,727,299,769,338,811,378,853,418,895,457,937,497,902,536,860,576,818,616,776,655,734,695,692,735,650,774,609,814,567,854,560,812,560,754,560,696,560,639,521,620,463,620,406,620,348,620,291,620,233,620,175,620,118,620,60,620,60,562,60,505,60,447,60,389,108,380,166,380,224,380,281,380,339,380,396,380,454,380,512,380,560,371,560,313,560,255,560,198]
+};
+// A 5x7 dot font (rows as 5-bit numbers, top row first).
+var _MO_FONT = {" ": [0,0,0,0,0,0,0], "!": [4,4,4,4,4,0,4], "'": [4,4,8,0,0,0,0], ",": [0,0,0,0,12,4,8], "-": [0,0,0,31,0,0,0], ".": [0,0,0,0,0,12,12], "0": [14,17,19,21,25,17,14], "1": [4,12,4,4,4,4,14], "2": [14,17,1,2,4,8,31], "3": [31,2,4,2,1,17,14], "4": [2,6,10,18,31,2,2], "5": [31,16,30,1,1,17,14], "6": [6,8,16,30,17,17,14], "7": [31,1,2,4,8,8,8], "8": [14,17,17,14,17,17,14], "9": [14,17,17,15,1,2,12], ":": [0,12,12,0,12,12,0], "?": [14,17,1,2,4,0,4], "A": [14,17,17,31,17,17,17], "B": [30,17,17,30,17,17,30], "C": [14,17,16,16,16,17,14], "D": [30,17,17,17,17,17,30], "E": [31,16,16,30,16,16,31], "F": [31,16,16,30,16,16,16], "G": [14,17,16,23,17,17,15], "H": [17,17,17,31,17,17,17], "I": [14,4,4,4,4,4,14], "J": [7,2,2,2,2,18,12], "K": [17,18,20,24,20,18,17], "L": [16,16,16,16,16,16,31], "M": [17,27,21,21,17,17,17], "N": [17,17,25,21,19,17,17], "O": [14,17,17,17,17,17,14], "P": [30,17,17,30,16,16,16], "Q": [14,17,17,17,21,18,13], "R": [30,17,17,30,20,18,17], "S": [15,16,16,14,1,1,30], "T": [31,4,4,4,4,4,4], "U": [17,17,17,17,17,17,14], "V": [17,17,17,17,17,10,4], "W": [17,17,17,21,21,21,10], "X": [17,17,10,4,10,17,17], "Y": [17,17,10,4,4,4,4], "Z": [31,1,2,4,8,16,31]};
+function _moT10(v) { var a = Math.abs(v); return (v < 0 ? '-' : '') + Math.floor(a / 10) + '.' + (a % 10); }
+
+// Particles: up to 400 dots start scattered (a seeded Park-Miller sequence, integer maths) and converge into dot-matrix text or a
+// shape outline as p goes 0 to 1; the second dial (--s) scatters them again.
+_RENDERERS['motion_particles'] = function(b) {
+  var text = typeof b.text === 'string' ? b.text.toUpperCase().slice(0, 12) : '', shape = _moOwn(_MO_SHAPES, b.shape, 'heart'), pts = [], W, H, i, r, c;
+  var chs = Array.from(text), useText = false;
+  for (i = 0; i < chs.length; i++) if (Object.prototype.hasOwnProperty.call(_MO_FONT, chs[i]) && chs[i] !== ' ') useText = true;
+  if (useText) {
+    W = chs.length * 60 - 10; H = 70;
+    for (i = 0; i < chs.length; i++) {
+      var g = Object.prototype.hasOwnProperty.call(_MO_FONT, chs[i]) ? _MO_FONT[chs[i]] : _MO_FONT[' '];
+      for (r = 0; r < 7; r++) for (c = 0; c < 5; c++) if (g[r] & (16 >> c)) pts.push([i * 60 + c * 10 + 5, r * 10 + 5]);
+    }
+  } else {
+    W = 1000; H = 1000;
+    var sp = _MO_SHAPES[shape];
+    for (i = 0; i < sp.length; i += 2) pts.push([sp[i], sp[i + 1]]);
+  }
+  if (pts.length > 400) pts = pts.slice(0, 400);
+  var seed = _ffInt(b.seed, 7, 1, 2147483646), spread = _ffInt(b.scatter, 100, 0, 300), rr = _ffNum(b.dot, useText ? 0.42 : 1.6, 0.1, 10, 2);
+  var col = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)'), col2 = _moInk(b, 'accent2', ''), out = '';
+  var sw = Math.floor(W * spread / 100), sh = Math.floor(H * spread / 100), vary = b.vary === true, glow = b.glow === true;
+  for (i = 0; i < pts.length; i++) {
+    seed = (seed * 16807) % 2147483647; var sx = (seed % (W + 2 * sw + 1)) - sw;
+    seed = (seed * 16807) % 2147483647; var sy = (seed % (H + 2 * sh + 1)) - sh;
+    seed = (seed * 16807) % 2147483647; var jt = seed % 10, ri = rr;
+    if (vary) { seed = (seed * 16807) % 2147483647; ri = _ffNum(parseFloat(rr) * (60 + (seed % 9) * 10) / 100, 0.42, 0.05, 20, 2); }
+    var tx = pts[i][0], ty = pts[i][1], fill = col2 && i % 3 === 0 ? col2 : col;
+    out += '<circle r="' + ri + '" style="--u:clamp(0,calc(var(--p,1)*2 - 0.' + jt + '),1);fill:' + fill + ';transform:translate(calc((' + _moT10(sx) + ' + ' + _moT10(tx - sx) + '*var(--u)*(1 - var(--s,0)))*1px),calc((' + _moT10(sy) + ' + ' + _moT10(ty - sy) + '*var(--u)*(1 - var(--s,0)))*1px));"/>';
+  }
+  var label = useText ? text : shape;
+  var gid = useText ? 'mtpglowt' : 'mtpglows', gf = glow ? '<defs><filter id="' + gid + '" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="' + (useText ? '0.45' : '1.6') + '" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' : '';
+  return '<svg viewBox="0 0 ' + _moT10(W) + ' ' + _moT10(H) + '" width="100%" role="img" aria-label="' + _esc(label) + '" style="display:block;overflow:visible;">' + gf + (glow ? '<g filter="url(#' + gid + ')">' + out + '</g>' : out) + '</svg>';
+};
+
+// Shape morph: one shape becomes the next (2 to 4 presets) as p goes 0 to 1. Every vertex of a 48-point clip polygon is a sum of
+// clamped steps, so the morph is pure CSS and scrubs exactly. --s turns it by `rotate` degrees.
+_RENDERERS['motion_morph'] = function(b) {
+  var src = Array.isArray(b.shapes) ? b.shapes : [], sh = [], i, j;
+  for (i = 0; i < src.length && sh.length < 4; i++) if (typeof src[i] === 'string' && Object.prototype.hasOwnProperty.call(_MO_SHAPES, src[i])) sh.push(src[i]);
+  if (sh.length < 2) sh = ['circle', 'star'];
+  var k = sh.length, pts = [], fill = _moInk(b, 'fill', 'var(--mt-acc,#38bdf8)'), fill2 = _moInk(b, 'fill2', ''), rot = _ffInt(b.rotate, 0, -720, 720);
+  for (i = 0; i < 96; i += 2) {
+    var x = _moT10(_MO_SHAPES[sh[0]][i]) + '%', y = _moT10(_MO_SHAPES[sh[0]][i + 1]) + '%';
+    for (j = 1; j < k; j++) {
+      var dx = _MO_SHAPES[sh[j]][i] - _MO_SHAPES[sh[j - 1]][i], dy = _MO_SHAPES[sh[j]][i + 1] - _MO_SHAPES[sh[j - 1]][i + 1], st = '*clamp(0,calc(var(--p,1)*' + (k - 1) + ' - ' + (j - 1) + '),1)';
+      if (dx) x += ' + ' + _moT10(dx) + '%' + st;
+      if (dy) y += ' + ' + _moT10(dy) + '%' + st;
+    }
+    pts.push('calc(' + x + ') calc(' + y + ')');
+  }
+  var gl = b.glossy === true, bg = (gl ? 'radial-gradient(circle at 32% 26%,rgba(255,255,255,0.42),rgba(255,255,255,0) 46%),radial-gradient(circle at 70% 85%,rgba(0,0,0,0.28),rgba(0,0,0,0) 55%),' : '') + (fill2 ? 'linear-gradient(135deg,' + fill + ',' + fill2 + ')' : fill), poly = 'polygon(' + pts.join(',') + ')';
+  var inner = '<div style="width:100%;aspect-ratio:1/1;background:' + bg + ';clip-path:' + poly + ';-webkit-clip-path:' + poly + ';' + (rot ? 'transform:rotate(calc(var(--s,0)*' + rot + 'deg));' : '') + '"></div>';
+  return '<div role="img" aria-label="' + _esc(sh.join(' to ')) + '" style="width:100%;' + (gl ? 'filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' : '') + '">' + inner + '</div>';
 };
