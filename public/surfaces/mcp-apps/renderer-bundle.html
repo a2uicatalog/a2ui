@@ -10850,13 +10850,41 @@ function _brickKit(materialProfile) {
   function m4ortho(h,n,f){var r=1/(n-f);return new Float32Array([1/h,0,0,0, 0,1/h,0,0, 0,0,2*r,0, 0,0,(f+n)*r,1]);}
   function glVS(){return [
     'attribute vec3 aP;attribute vec3 aN;attribute vec4 aK;attribute vec3 iA;attribute vec3 iB;attribute vec3 iC;attribute vec4 iM;',
+    // Flight attributes (motion_bricks `motion`, 2026-10-03): static per-instance, set once in setModel() like
+    // iA/iB/iC -- never per frame. iO start offset (world units, direction+distance), iR start euler (radians,
+    // spin folded in), iT (delay,flight) as fractions of uP. Orthogonal to iM: iM still drives the step-build
+    // drop/fade path; a model in `motion` mode leaves iM at a constant (0,0,0,1) and is driven by uP instead.
+    'attribute vec3 iO;attribute vec3 iR;attribute vec2 iT;',
     'uniform mat4 uVP;uniform mat4 uL;uniform float uKind;',
+    'uniform float uMotion;uniform float uP;uniform vec4 uE;uniform float uOD;',   // uE = (travel,sharpness,recoil,rotOvershoot)
     'varying vec3 vW;varying vec3 vN;varying vec3 vC;varying vec3 vQ;varying vec3 vS;varying vec4 vLS;varying float vA;varying float vH;',
+    // Snap easing: power ease-out to 1+o (fast travel, sharp stop), smoothstep recoil, smoothstep settle to 1.
+    // Ported from the validated standalone prototype (briefs/opus-lego-rotation-capability.md) unchanged.
+    'float snap(float t,float o){',
+    '  if(t<=0.0)return 0.0;if(t>=1.0)return 1.0;',
+    '  float t1=uE.x,t2=t1+(1.0-t1)*0.45,u;',
+    '  if(t<t1){u=t/t1;return (1.0+o)*(1.0-pow(1.0-u,uE.y));}',
+    '  if(t<t2){u=(t-t1)/(t2-t1);u=u*u*(3.0-2.0*u);return mix(1.0+o,1.0-o*uE.z,u);}',
+    '  u=(t-t2)/(1.0-t2);u=u*u*(3.0-2.0*u);return mix(1.0-o*uE.z,1.0,u);',
+    '}',
+    'mat3 rotE(vec3 a){',
+    '  float cx=cos(a.x),sx=sin(a.x),cy=cos(a.y),sy=sin(a.y),cz=cos(a.z),sz=sin(a.z);',
+    '  return mat3(cz,sz,0.0,-sz,cz,0.0,0.0,0.0,1.0)*mat3(cy,0.0,-sy,0.0,1.0,0.0,sy,0.0,cy)*mat3(1.0,0.0,0.0,0.0,cx,sx,0.0,-sx,cx);',
+    '}',
     'void main(){',
     '  float a=iM.w,h=0.0;if(a>=2.0){h=1.0;a-=2.0;}',
     '  vec3 q=aP;if(uKind<0.5)q=vec3('+glf(GAP)+')+aP*(iB-vec3('+glf(2*GAP)+'));',
-    '  vec3 w=iA+q+iM.xyz;',
-    '  vW=w;vN=aN;vC=mix(iC,aK.rgb,aK.w);vQ=q;vS=iB;vA=a;vH=h;vLS=uL*vec4(w,1.0);',
+    '  vec3 w,nrm=aN;',
+    '  if(uMotion>0.5){',
+    '    if(uP<iT.x){gl_Position=vec4(2.0,2.0,2.0,1.0);return;}',    // not launched yet: clipped away, same idiom as a<0.001 below
+    '    float t=clamp((uP-iT.x)/max(iT.y,1e-6),0.0,1.0),L=length(iO);',
+    '    float fp=snap(t,uOD/max(L,1e-3)),fr=snap(t,uE.w);',
+    '    vec3 piv=iA+iB*0.5;mat3 Rm=rotE(iR*(1.0-fr));',
+    '    w=piv+Rm*(iA+q-piv)+iO*(1.0-fp);nrm=Rm*aN;',
+    '  }else{',
+    '    w=iA+q+iM.xyz;',
+    '  }',
+    '  vW=w;vN=nrm;vC=mix(iC,aK.rgb,aK.w);vQ=q;vS=iB;vA=a;vH=h;vLS=uL*vec4(w,1.0);',
     '  gl_Position=a<0.001?vec4(2.0,2.0,2.0,1.0):uVP*vec4(w,1.0);',
     '}'].join('\n');}
   var GL_PREC='#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n';
@@ -10930,6 +10958,116 @@ function _brickKit(materialProfile) {
     '  else col=mix(col,lum<0.2?col+vec3(0.3):col*0.3,0.85*lineF(edge,0.9));',
     '  gl_FragColor=vec4(col,1.0);',
     '}'].join('\n');}
+
+  /* ---------- motion_bricks `motion` config (2026-10-03): payload guard + per-brick scheduling for the GPU flight
+     path in glVS() above. Ported near-verbatim from the validated standalone prototype
+     (briefs/opus-lego-rotation-capability.md) -- only the brick-centre math changed, to reuse this closure's own
+     BH/PL rather than take them as arguments. Guard shape matches the rest of this file's convention: numbers and
+     enum indices out, anything else dropped to a default, nothing free-text ever reaches the shader. ---------- */
+  var _BM_ENUM = {order: {'index': 0, 'base-up': 1, 'diagonal': 2, 'radial': 3}, from: {'above': 0, 'outward': 1, 'scatter': 2}, spinAxis: {'y': 0, 'x': 1, 'z': 2}};
+  var _BM_NUM = {window: [2.4, 0, 30], flight: [0.62, 0.1, 5], distance: [9, 0, 60], tilt: [70, 0, 360], spin: [0.5, -8, 8],
+    gravity: [0.5, 0, 1], jitter: [0.15, 0, 1], support: [1, 0, 1], seed: [7, 0, 2147483646], overshoot: [0.12, 0, 1],
+    rotOvershoot: [0.08, 0, 0.5], recoil: [0.45, 0, 1], travel: [0.58, 0.2, 0.9], sharpness: [4, 1.5, 8]};
+  function _bmNum(v, spec) {
+    var n = typeof v === 'number' ? v : (typeof v === 'string' && /^\s*-?\d+(\.\d+)?\s*$/.test(v) ? Number(v) : NaN);
+    if (!isFinite(n)) return spec[0];
+    return Math.min(spec[2], Math.max(spec[1], n));
+  }
+  function _bmVec3(v, dflt, lim) {
+    if (!Array.isArray(v) || v.length !== 3) return dflt ? dflt.slice() : null;
+    var out = [], i, n;
+    for (i = 0; i < 3; i++) { n = typeof v[i] === 'number' && isFinite(v[i]) ? v[i] : NaN; if (isNaN(n)) return dflt ? dflt.slice() : null; out.push(Math.max(-lim, Math.min(lim, n))); }
+    return out;
+  }
+  function _bmEnum(table, v, dflt) {
+    if (typeof v === 'number' && v >= 0 && Math.floor(v) === v) { for (var k in table) if (Object.prototype.hasOwnProperty.call(table, k) && table[k] === v) return v; return dflt; }
+    return typeof v === 'string' && Object.prototype.hasOwnProperty.call(table, v) ? table[v] : dflt;
+  }
+  function normaliseBrickMotion(raw) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    var has = function (k) { return Object.prototype.hasOwnProperty.call(raw, k); };
+    var m = Object.create(null), k;
+    m.order = _bmEnum(_BM_ENUM.order, has('order') ? raw.order : undefined, _BM_ENUM.order['diagonal']);
+    m.from = _bmEnum(_BM_ENUM.from, has('from') ? raw.from : undefined, _BM_ENUM.from['above']);
+    m.spinAxis = _bmEnum(_BM_ENUM.spinAxis, has('spinAxis') ? raw.spinAxis : undefined, 0);
+    for (k in _BM_NUM) m[k] = _bmNum(has(k) ? raw[k] : undefined, _BM_NUM[k]);
+    m.seed = Math.floor(m.seed); m.support = m.support >= 0.5 ? 1 : 0;
+    var d = _bmVec3(has('direction') ? raw.direction : undefined, [1, 0.55, 0.8], 100), L = Math.hypot(d[0], d[1], d[2]);
+    m.direction = L > 1e-6 ? [d[0] / L, d[1] / L, d[2] / L] : [1, 0.55, 0.8];
+    return Object.freeze(m);
+  }
+  function _bmRng(seed) { var s = (seed % 2147483646) + 1; return function () { s = (s * 16807) % 2147483647; return s / 2147483647; }; }
+  // Supports-first: a brick never launches before any brick it rests on, found through a stud-cell hash of tops.
+  function _bmSupportFirst(bricks, KN, flightOverWindow) {
+    var n = bricks.length, tops = Object.create(null), idx = [], i, x, z;
+    var lag = Math.min(0.08, 0.25 * flightOverWindow);
+    function cell(x, y, z) { return x + ',' + Math.round(y * 3) + ',' + z; }
+    for (i = 0; i < n; i++) idx.push(i);
+    idx.sort(function (a, b) { return bricks[a].y - bricks[b].y; });
+    var mx = 0;
+    idx.forEach(function (i) {
+      var b = bricks[i];
+      for (z = b.z; z < b.z + b.d; z++) for (x = b.x; x < b.x + b.w; x++) { var s = tops[cell(x, b.y, z)]; if (s !== undefined && KN[i] < KN[s] + lag) KN[i] = KN[s] + lag; }
+      for (z = b.z; z < b.z + b.d; z++) for (x = b.x; x < b.x + b.w; x++) tops[cell(x, b.y + b.h, z)] = i;
+      mx = Math.max(mx, KN[i]);
+    });
+    if (mx > 1) for (i = 0; i < n; i++) KN[i] /= mx;
+  }
+  // bricks: [{x,y,z,w,d,h}] in engine units. Returns {list:[{O,R,T}], total} -- O start offset, R start euler
+  // (radians, spin folded in), T=[delay,flight] as fractions of `total`. Same algorithm as the prototype's
+  // scheduleMotion(), brick centres computed from THIS closure's BH/PL instead of taking them as arguments.
+  // Shared core: C is a flat list of [x,y,z] world centres, one per instance, already computed by the caller
+  // (bricks use box centres, real parts use their own engine-space origin -- see scheduleMotionByCentres below).
+  // layerKey(i), if given, is the "base-up" ordering key (bricks: layer index; parts have no clean layer concept,
+  // so that order falls back to the Y centre like radial/diagonal do -- see scheduleMotionByCentres). supportFn(KN),
+  // if given, is the stud-occupancy support-first pass (bricks only: arbitrary rotated parts have no clean "sits on"
+  // relation this engine can derive cheaply, so parts mode never calls it, `support` is accepted and ignored there).
+  function _bmScheduleFromCentres(C, m, layerKey, supportFn) {
+    var n = C.length, r = _bmRng(m.seed), i;
+    var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+    for (i = 0; i < n; i++) for (var a = 0; a < 3; a++) { mn[a] = Math.min(mn[a], C[i][a]); mx[a] = Math.max(mx[a], C[i][a]); }
+    var mid = [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2];
+    var span = [Math.max(mx[0] - mn[0], 1e-6), Math.max(mx[1] - mn[1], 1e-6), Math.max(mx[2] - mn[2], 1e-6)];
+    var rmax = 1e-6;
+    for (i = 0; i < n; i++) rmax = Math.max(rmax, Math.hypot(C[i][0] - mid[0], C[i][2] - mid[2]));
+    var key = new Float64Array(n), kmin = 1e9, kmax = -1e9, dir = m.direction;
+    for (i = 0; i < n; i++) {
+      var c2 = C[i], yN = (c2[1] - mn[1]) / span[1], k;
+      if (m.order === 0) k = i;
+      else if (m.order === 1) k = layerKey ? layerKey(i) + 0.3 * ((c2[0] - mn[0]) / span[0] + (c2[2] - mn[2]) / span[2]) / 2 : yN;
+      else if (m.order === 2) k = (1 - m.gravity) * (dir[0] * c2[0] + dir[1] * c2[1] + dir[2] * c2[2]) / (Math.abs(dir[0]) * span[0] + Math.abs(dir[1]) * span[1] + Math.abs(dir[2]) * span[2]) + m.gravity * yN;
+      else k = (1 - m.gravity) * Math.hypot(c2[0] - mid[0], c2[2] - mid[2]) / rmax + m.gravity * yN;
+      key[i] = k; kmin = Math.min(kmin, k); kmax = Math.max(kmax, k);
+    }
+    var KN = new Float64Array(n);
+    for (i = 0; i < n; i++) { var kn = kmax > kmin ? (key[i] - kmin) / (kmax - kmin) : 0; KN[i] = Math.max(0, Math.min(1, kn + (r() - 0.5) * m.jitter * 0.15)); }
+    if (m.support && supportFn) supportFn(KN, m.flight / Math.max(m.window, 1e-6));
+    var total = m.window + m.flight, out = [], D2R = Math.PI / 180;
+    for (i = 0; i < n; i++) {
+      var kn = KN[i], O;
+      if (m.from === 0) O = [0, m.distance, 0];
+      else if (m.from === 1) { var hx = C[i][0] - mid[0], hz = C[i][2] - mid[2], hl = Math.hypot(hx, hz); if (hl < 1e-3) { hx = 1; hz = 0; hl = 1; } O = [hx / hl * m.distance, 0.35 * m.distance, hz / hl * m.distance]; }
+      else { var th = r() * 2 * Math.PI, ph = Math.acos(0.15 + 0.85 * r()); O = [Math.sin(ph) * Math.cos(th) * m.distance, Math.cos(ph) * m.distance, Math.sin(ph) * Math.sin(th) * m.distance]; }
+      var R = [(r() * 2 - 1) * m.tilt * D2R, (r() * 2 - 1) * m.tilt * D2R, (r() * 2 - 1) * m.tilt * D2R];
+      R[[1, 0, 2][m.spinAxis]] += m.spin * 2 * Math.PI;
+      out.push({O: O, R: R, T: [kn * m.window / total, m.flight / total]});
+    }
+    return {list: out, total: total};
+  }
+  // bricks: [{x,y,z,w,d,h}] in engine units. Thin wrapper: box centres + the real layer index for base-up order +
+  // the stud-occupancy support-first pass.
+  function scheduleBrickMotion(bricks, m) {
+    var C = bricks.map(function (b) { return [b.x + b.w / 2, PL + (b.y + b.h / 2) * BH, b.z + b.d / 2]; });
+    return _bmScheduleFromCentres(C, m, function (i) { return bricks[i].y; }, function (KN, flightOverWindow) { _bmSupportFirst(bricks, KN, flightOverWindow); });
+  }
+  // Real LDraw parts (motion_bricks `motion` on a partsModel, 2026-10-03): centres are each part's own engine-space
+  // origin (partEngineOf(e), already computed by the caller -- this function takes the result, not the raw entries,
+  // so it has no dependency on the parts system's own types). No layer index (base-up falls back to the Y centre,
+  // same as radial/diagonal already do without one) and no support-first pass (arbitrary rotated parts have no
+  // cheap "sits on" relation the way axis-aligned stud cells do -- `support` is accepted and silently has no effect).
+  function scheduleMotionByCentres(centres, m) {
+    return _bmScheduleFromCentres(centres, m, null, null);
+  }
   function glSupported(){
     try{var c=document.createElement('canvas'),g=c.getContext('webgl')||c.getContext('experimental-webgl');
       return !!(g&&g.getExtension('ANGLE_instanced_arrays'));}catch(e){return false;}
@@ -10946,6 +11084,14 @@ function _brickKit(materialProfile) {
     var gl=canvas.getContext('webgl',glOpts)||canvas.getContext('experimental-webgl',glOpts);
     if(!gl)return null;
     var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false,lineProg=null,condLineProg=null,lastVP=null,partAnim=null;
+    var motion=null,curP=0;   // motion_bricks `motion` config (null = today's behaviour, untouched) + the one per-frame progress value
+    // motion mode never calls status()/updateParts(), which is what previously drove `if(!partGroups)buildPartGroups()`
+    // every frame and so self-healed a part mesh arriving asynchronously (see setPartsModel's fetchPartMesh callback
+    // below). Found live, a SECOND instance of the same bug class as ensurePartGeo above: a real multi-part-type set
+    // (dozens of distinct part ids, each a separate async fetch) rendered nothing at all, because partGroups got
+    // nulled by the first arrival and nothing ever rebuilt it or told the outer render loop (createBrickBuild's own
+    // dirtyView, a different closure) to look again. onNeedsRedraw is the hook across that closure boundary.
+    var onNeedsRedraw=null;
     var shadowDirty=true,animDirty=true,nBox=0,nStud=0,tris=0,boxA=null,studA=null,studOf=null,lightVP=null;
     function shader(type,src){
       var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
@@ -11009,10 +11155,15 @@ function _brickKit(materialProfile) {
       gl.bindFramebuffer(gl.FRAMEBUFFER,null);
     }
     function upload(k,arr,usage){gl.bindBuffer(gl.ARRAY_BUFFER,buf[k]);gl.bufferData(gl.ARRAY_BUFFER,arr,usage);}
-    function setModel(M){
-      model=M;var B=M.bricks,n=B.length,i,b,c,x,z,sb=new Float32Array((n+1)*9);
-      for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);sb.set([b.x,PL+b.y*BH,b.z,b.w,b.h*BH,b.d,c[0],c[1],c[2]],i*9);}
-      c=linRGB(BASE);sb.set(NOBASE?[0,-1,0,0,0,0,c[0],c[1],c[2]]:[-MARGIN,0,-MARGIN,M.W+2*MARGIN,PL,M.D+2*MARGIN,c[0],c[1],c[2]],n*9);
+    function setModel(M,motionCfg){
+      model=M;motion=motionCfg||null;var B=M.bricks,n=B.length,i,b,c,x,z,ST=motion?17:9,sb=new Float32Array((n+1)*ST);
+      // Flight schedule (motion_bricks `motion`, 2026-10-03): one schedule call per model load, not per frame.
+      // sched.list[i] is {O,R,T} for brick i; the base/floor instance (index n) always keeps O=0,R=0,T=[-1,1] --
+      // the stage, present from frame one, never part of the build.
+      var sched=motion?scheduleBrickMotion(B,motion):null,Z3=[0,0,0],SEATED=[-1,1];
+      function row(A,sz,col,sc){return motion?[A[0],A[1],A[2],sz[0],sz[1],sz[2],col[0],col[1],col[2],(sc?sc.O:Z3)[0],(sc?sc.O:Z3)[1],(sc?sc.O:Z3)[2],(sc?sc.R:Z3)[0],(sc?sc.R:Z3)[1],(sc?sc.R:Z3)[2],(sc?sc.T:SEATED)[0],(sc?sc.T:SEATED)[1]]:[A[0],A[1],A[2],sz[0],sz[1],sz[2],col[0],col[1],col[2]];}
+      for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);sb.set(row([b.x,PL+b.y*BH,b.z],[b.w,b.h*BH,b.d],c,sched&&sched.list[i]),i*ST);}
+      c=linRGB(BASE);sb.set(row(NOBASE?[0,-1,0]:[-MARGIN,0,-MARGIN],NOBASE?[0,0,0]:[M.W+2*MARGIN,PL,M.D+2*MARGIN],c,null),n*ST);
       nBox=n+1;
       var occ=new Uint8Array(M.W*M.D*(M.L+1));
       B.forEach(function(b){for(var y=b.y;y<b.y+b.h;y++)for(var zz=b.z;zz<b.z+b.d;zz++)for(var xx=b.x;xx<b.x+b.w;xx++)occ[(y*M.D+zz)*M.W+xx]=1;});
@@ -11026,10 +11177,13 @@ function _brickKit(materialProfile) {
         if(!NOBASE)for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
       }
       var all=open.slice(0,STUD_CAP).concat(hidden.slice(0,Math.max(0,STUD_CAP-open.length)));
-      nStud=all.length;var ss=new Float32Array(nStud*9);studOf=new Int32Array(nStud);
-      all.forEach(function(s,j){studOf[j]=s[0];ss.set([s[1],s[2],s[3],0,0,0,s[4][0],s[4][1],s[4][2]],j*9);});
+      nStud=all.length;var ss=new Float32Array(nStud*ST);studOf=new Int32Array(nStud);
+      // Each stud inherits its owning brick's schedule (s[0]), the same indirection update() already uses below
+      // for the dynamic offset/alpha path -- a stud never flies independently of the brick it sits on.
+      all.forEach(function(s,j){studOf[j]=s[0];ss.set(row([s[1],s[2],s[3]],Z3,s[4],s[0]===n?null:sched&&sched.list[s[0]]),j*ST);});
       boxA=new Float32Array(nBox*4);studA=new Float32Array(nStud*4);
-      boxA[n*4+3]=1;
+      if(motion){for(i=0;i<nBox;i++)boxA[i*4+3]=1;for(i=0;i<nStud;i++)studA[i*4+3]=1;}   // GPU path owns hide/show via iT, not iM.w
+      else boxA[n*4+3]=1;
       upload('box',sb,gl.STATIC_DRAW);upload('stud',ss,gl.STATIC_DRAW);
       upload('boxA',boxA,gl.DYNAMIC_DRAW);upload('studA',studA,gl.DYNAMIC_DRAW);
       tris=nBox*12+nStud*studTris;
@@ -11059,20 +11213,26 @@ function _brickKit(materialProfile) {
         gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.enableVertexAttribArray(l);
         gl.vertexAttribPointer(l,size,gl.FLOAT,false,stride,off);ext.vertexAttribDivisorANGLE(l,div);locs.push(l);
       }
-      var st=m.stride||24;
+      var st=m.stride||24,iST=(motion?68:36);   // static instance stride: 68 bytes (17 floats) in motion mode, 36 otherwise
       attr('aP',m.vb,3,st,0,0);attr('aN',m.vb,3,st,12,0);
       if(st===40)attr('aK',m.vb,4,40,24,0);else if(A.aK!==undefined&&A.aK>=0)gl.vertexAttrib4f(A.aK,0,0,0,0);
-      attr('iA',buf[sk],3,36,0,1);attr('iB',buf[sk],3,36,12,1);attr('iC',buf[sk],3,36,24,1);attr('iM',buf[ak],4,16,0,1);
+      attr('iA',buf[sk],3,iST,0,1);attr('iB',buf[sk],3,iST,12,1);attr('iC',buf[sk],3,iST,24,1);attr('iM',buf[ak],4,16,0,1);
+      if(motion){attr('iO',buf[sk],3,iST,36,1);attr('iR',buf[sk],3,iST,48,1);attr('iT',buf[sk],2,iST,60,1);}
+      else if(A.iO!==undefined&&A.iO>=0){gl.vertexAttrib3f(A.iO,0,0,0);gl.vertexAttrib3f(A.iR,0,0,0);gl.vertexAttrib2f(A.iT,-1,1);}
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,m.ib);
       ext.drawElementsInstancedANGLE(gl.TRIANGLES,m.n,gl.UNSIGNED_SHORT,0,count);
       locs.forEach(function(l){ext.vertexAttribDivisorANGLE(l,0);gl.disableVertexAttribArray(l);});
     }
     function both(P){
+      if(P.u.uMotion)gl.uniform1f(P.u.uMotion,motion?1:0);
+      if(motion){gl.uniform1f(P.u.uP,curP);gl.uniform4f(P.u.uE,motion.travel,motion.sharpness,motion.recoil,motion.rotOvershoot);gl.uniform1f(P.u.uOD,motion.overshoot);}
       gl.uniform1f(P.u.uKind,0);drawSet(P,box,'box','boxA',nBox);
       if(nStud){gl.uniform1f(P.u.uKind,1);drawSet(P,stud,'stud','studA',nStud);}
     }
     function draw(c){
       if((!model&&!partsModelData)||lost)return;
+      curP=c.motionP||0;
+      if(motion)shadowDirty=true;   // bricks move every frame in motion mode (update()/animDirty never fires here) -- the shadow map must follow
       gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
       if(shadowOK&&shadowDirty&&lightVP){
         gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.viewport(0,0,smSize,smSize);
@@ -11110,7 +11270,7 @@ function _brickKit(materialProfile) {
        on the GPU. Per-group buffers are registered into the shared `buf{}` dict under generated keys so drawSet()
        itself needs no changes. Studs at part connectors are NOT yet drawn (v1: triangles + real edge lines only;
        connector studs are a fast follow once this is confirmed correct on screen -- see the brief). */
-    var partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0,partsTris=0;
+    var partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0,partsTris=0,partSched=null;
     // Connector studs (spec/brick-parts-v0.1.md Phase 2): local offsets only, in the same engine space as
     // buildPartGeo's vertices -- the shared unit `stud` mesh (studGeo(), same one the procedural box/stud system
     // uses) is instanced at partEngineOf(instance)+offset, so no per-part stud geometry is baked, just positions.
@@ -11153,12 +11313,18 @@ function _brickKit(materialProfile) {
     // partsModel: [{p,x,y,z,r,c,edge,step}], already sanitised (_partsModelSanitise). Kicks off mesh fetches for
     // every distinct id; rendering proceeds immediately, groups without a loaded mesh yet are skipped this frame
     // (loading placeholder deferred -- see the brief's Phase 2 notes).
-    function setPartsModel(list){
-      model=null;partsModelData=list;partGeomCache={};partGroups=null;
+    function setPartsModel(list,motionCfg){
+      model=null;partsModelData=list;partGeomCache={};partGroups=null;motion=motionCfg||null;
       var ids={};list.forEach(function(e){ids[e.p]=1;});
-      Object.keys(ids).forEach(function(id){fetchPartMesh(id,function(){partGroups=null;shadowDirty=true;})});
+      Object.keys(ids).forEach(function(id){fetchPartMesh(id,function(){
+        partGroups=null;shadowDirty=true;buildPartGroups();   // rebuild NOW (was: wait for updateParts() to notice, which motion mode never calls)
+        if(onNeedsRedraw)onNeedsRedraw();                     // and tell the outer loop (a different closure) to draw again
+      })});
       // Light matrix from the instance bounding box + a fixed pad for individual part extents (each part is
       // usually small relative to a whole model; refine per-part if a model of one huge part ever needs it).
+      // Flight schedule (motion_bricks `motion` on real parts, 2026-10-03): centres are each part's own engine
+      // origin, computed once here (same loop as the light-matrix bounding box, no second pass over the model).
+      partSched=motion?scheduleMotionByCentres(list.map(partEngineOf),motion):null;
       var mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
       list.forEach(function(e){var p=partEngineOf(e);for(var k=0;k<3;k++){mn[k]=Math.min(mn[k],p[k]);mx[k]=Math.max(mx[k],p[k]);}});
       var pad=3,cx=(mn[0]+mx[0])/2,cy=(mn[1]+mx[1])/2+pad*0.3,cz=(mn[2]+mx[2])/2;
@@ -11177,6 +11343,13 @@ function _brickKit(materialProfile) {
         groups[key].entries.push({idx:i,e:e});
       });
       partGroups=order.map(function(k){return groups[k];});
+      // motion_bricks `motion` on real parts (2026-10-03): ensurePartGeo is normally populated lazily from inside
+      // updateParts(), which motion mode never calls (same reasoning as the box/stud path -- no per-frame JS).
+      // Without this, partGeomCache stays empty forever and bothParts()/drawPartStuds() silently draw nothing --
+      // found live, the real bug this integration had (a blank canvas with zero GL errors). Runs here so a group
+      // arriving later (async mesh fetch -- see setPartsModel's fetchPartMesh callback) is covered too, not just
+      // the first, synchronous build.
+      if(motion)partGroups.forEach(ensurePartGeo);
     }
     function ensurePartGeo(grp){
       if(partGeomCache[grp.key])return partGeomCache[grp.key];
@@ -11188,26 +11361,42 @@ function _brickKit(materialProfile) {
       if(g.cv.length){cvb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cvb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.cv),gl.STATIC_DRAW);}
       var sKey='pgs'+(partBufSeq++),aKey='pga'+(partBufSeq++);
       buf[sKey]=gl.createBuffer();buf[aKey]=gl.createBuffer();
-      var n=grp.entries.length,sb=new Float32Array(n*9);
+      // motion_bricks `motion` on real parts (2026-10-03): same static-buffer widening as the box/stud path in
+      // setModel() above, stride 9->17 floats, iO/iR/iT from partSched (computed once in setPartsModel, looked up
+      // by the entry's ORIGINAL partsModelData index -- a group is per (part id, rotation), not per model, so this
+      // indirection is required, unlike setModel()'s bricks array which IS the model). The rotation pivot stays
+      // iA+iB*0.5 (glVS, unchanged) -- iB is the dummy [1,1,1] already written below, not a real part size, so the
+      // pivot is a small fixed offset from each part's own origin rather than its true geometric centre. Harmless:
+      // the pivot only shapes the MID-FLIGHT tumble, never the rest pose (rotation fully unwinds to zero by fp=1
+      // regardless of pivot, same proof as the stud buffer's iB=[0,0,0] case in setModel()) -- a real per-part
+      // centroid pivot is a possible follow-up, not required for this to look and seat correctly.
+      var ST=motion?17:9,SEATED=[-1,1],Z3=[0,0,0];
+      var n=grp.entries.length,sb=new Float32Array(n*ST);
       grp.entries.forEach(function(row,j){
-        var p=partEngineOf(row.e),c=linRGB(row.e.c);
-        sb.set([p[0],p[1],p[2], 1,1,1, c[0],c[1],c[2]],j*9);
+        var p=partEngineOf(row.e),c=linRGB(row.e.c),sc=motion&&partSched&&partSched.list[row.idx];
+        var vals=[p[0],p[1],p[2], 1,1,1, c[0],c[1],c[2]];
+        if(motion)vals=vals.concat(sc?sc.O:Z3,sc?sc.R:Z3,sc?sc.T:SEATED);
+        sb.set(vals,j*ST);
       });
       upload(sKey,sb,gl.STATIC_DRAW);
+      if(motion){var a4=new Float32Array(n*4);for(var ai=0;ai<n;ai++)a4[ai*4+3]=1;upload(aKey,a4,gl.DYNAMIC_DRAW);}   // GPU path owns hide/show via iT
       var out={mesh:m,edgeVB:evb,edgeCount:g.ev.length/6,condVB:cvb,condCount:g.cv.length/24,sKey:sKey,aKey:aKey,n:n};
       var studLocal=buildPartStuds(grp.mesh,grp.r);
       if(studLocal.length){
-        var sN=studLocal.length,total=n*sN,ssb=new Float32Array(total*9);
+        var sN=studLocal.length,total=n*sN,ssb=new Float32Array(total*ST);
         grp.entries.forEach(function(row,j){
-          var p=partEngineOf(row.e),c=linRGB(row.e.c);
+          var p=partEngineOf(row.e),c=linRGB(row.e.c),sc=motion&&partSched&&partSched.list[row.idx];
           studLocal.forEach(function(off,k){
-            var o=(j*sN+k)*9;
-            ssb.set([p[0]+off[0],p[1]+off[1],p[2]+off[2], 0,0,0, c[0],c[1],c[2]],o);
+            var o=(j*sN+k)*ST;
+            var vals=[p[0]+off[0],p[1]+off[1],p[2]+off[2], 0,0,0, c[0],c[1],c[2]];
+            if(motion)vals=vals.concat(sc?sc.O:Z3,sc?sc.R:Z3,sc?sc.T:SEATED);   // inherits its owning part's schedule, same as box/stud
+            ssb.set(vals,o);
           });
         });
         var studSKey='pgss'+(partBufSeq++),studAKey='pgsa'+(partBufSeq++);
         buf[studSKey]=gl.createBuffer();buf[studAKey]=gl.createBuffer();
         upload(studSKey,ssb,gl.STATIC_DRAW);
+        if(motion){var sa4=new Float32Array(total*4);for(var si=0;si<total;si++)sa4[si*4+3]=1;upload(studAKey,sa4,gl.DYNAMIC_DRAW);}
         out.studSKey=studSKey;out.studAKey=studAKey;out.studCount=total;out.studPerPart=sN;
       }
       partGeomCache[grp.key]=out;return out;
@@ -11241,6 +11430,12 @@ function _brickKit(materialProfile) {
     }
     function bothParts(P){
       if(!partGroups)return;
+      // both(P) sets these for box/stud; bothParts/drawPartStuds are a separate call site and need the same
+      // uniforms (motion_bricks `motion` on real parts, 2026-10-03) -- found live: without this, parts never
+      // moved at all (uMotion stayed at its GL default of 0, so every part sat in its rest pose, not blank --
+      // the actual blank-screen symptom this debugging session hit had a different cause, see setPartsModel).
+      if(P.u.uMotion)gl.uniform1f(P.u.uMotion,motion?1:0);
+      if(motion){gl.uniform1f(P.u.uP,curP);gl.uniform4f(P.u.uE,motion.travel,motion.sharpness,motion.recoil,motion.rotOvershoot);gl.uniform1f(P.u.uOD,motion.overshoot);}
       gl.uniform1f(P.u.uKind,2);   // real part triangles -- see glFS()'s uKind>=1.5 branch
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo)return;
@@ -11252,6 +11447,8 @@ function _brickKit(materialProfile) {
     // so they read identically to the procedural system's own studs.
     function drawPartStuds(P){
       if(!partGroups)return;
+      if(P.u.uMotion)gl.uniform1f(P.u.uMotion,motion?1:0);
+      if(motion){gl.uniform1f(P.u.uP,curP);gl.uniform4f(P.u.uE,motion.travel,motion.sharpness,motion.recoil,motion.rotOvershoot);gl.uniform1f(P.u.uOD,motion.overshoot);}
       gl.uniform1f(P.u.uKind,1);
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo||!geo.studCount)return;
@@ -11265,7 +11462,13 @@ function _brickKit(materialProfile) {
       // built yet has no lines, so no wire cubes float ahead of the bricks while Animate runs.
       // Colour: each part's own LDConfig edge colour (spec/brick-parts-v0.1.md §1.4 -- "the renderer takes its
       // line colours from there"), not a fixed grey -- so black-edged parts (colour 0 -> #808080) read correctly.
-      if(!partGroups||!lineProg)return;
+      // motion_bricks `motion` (2026-10-03): partAnim is filled by updateParts(), which motion mode never calls
+      // (same reasoning as the GPU geometry itself -- no per-frame JS). Left unguarded, every part's edge lines
+      // would draw at their final rest position regardless of flight progress -- found live, a full wireframe of
+      // the finished model floating over the correctly-animated solid geometry. Simplest correct fix: no edge
+      // overlay in motion mode (consistent with the studio look's own no-outlines aesthetic); a flight-aware
+      // version is future work, not required for the geometry itself to look and animate correctly.
+      if(!partGroups||!lineProg||motion)return;
       gl.useProgram(lineProg.p);
       gl.uniformMatrix4fv(lineProg.u.uVP,false,lastVP);
       partGroups.forEach(function(grp){
@@ -11286,7 +11489,7 @@ function _brickKit(materialProfile) {
     // drawPartEdges(), condLineProg's own vertex shader (see init()) does the same-side screen-space visibility
     // test per vertex, so this function just binds the four interleaved attribute streams and lets it cull.
     function drawPartConditional(){
-      if(!partGroups||!condLineProg)return;
+      if(!partGroups||!condLineProg||motion)return;   // same reasoning as drawPartEdges() above
       gl.useProgram(condLineProg.p);
       gl.uniformMatrix4fv(condLineProg.u.uVP,false,lastVP);
       var A=condLineProg.a;
@@ -11308,10 +11511,15 @@ function _brickKit(materialProfile) {
       });
     }
     canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();lost=true;});
-    canvas.addEventListener('webglcontextrestored',function(){lost=false;init();if(model)setModel(model);});
+    // `motion` (this closure's own copy, set by the real setModel(M,motionCfg) call) must be threaded back
+    // through here too, or a context loss silently reverts a motion_bricks model to the old animation on
+    // restore -- found live: headless SwiftShader loses the first WebGL context on this exact machine (see
+    // briefs/opus-lego-rotation-capability.md), so this path is not a rare edge case here, it is the common one.
+    canvas.addEventListener('webglcontextrestored',function(){lost=false;init();if(model)setModel(model,motion);else if(partsModelData)setPartsModel(partsModelData,motion);});
     init();
     return {setModel:setModel,update:update,draw:draw,tris:function(){return tris+partsTris;},
       setPartsModel:setPartsModel,updateParts:updateParts,
+      set onNeedsRedraw(fn){onNeedsRedraw=fn;},
       destroy:function(){var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();}};
   }
 
@@ -11323,15 +11531,29 @@ function _brickKit(materialProfile) {
       if(canvas.parentNode){var fresh=canvas.cloneNode(false);canvas.parentNode.replaceChild(fresh,canvas);canvas=fresh;}
     }
     var ctx=gr?null:canvas.getContext('2d');
+    if(gr)gr.onNeedsRedraw=function(){dirtyView=true;};   // a part mesh arriving async must wake the loop even if --p hasn't moved (motion mode)
     var o={shape:'heart',speed:1,orbit:true,bg:null,bricks:null,partsModel:null,mode:'animate',step:1};
     for(var k in opts)o[k]=opts[k];
     var usingParts=!!(o.partsModel&&o.partsModel.length);
     var reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // motion_bricks `motion` (2026-10-03): works on both the simple bricks path AND real LDraw parts (2026-10-03,
+    // second pass -- see scheduleMotionByCentres); guarded the same way every other field on this engine is. null
+    // when absent -- the GPU shader branch, the wider instance buffer and this file's own existing per-frame
+    // animation are all unchanged for every model that doesn't set it.
+    var motionCfg=o.motion?normaliseBrickMotion(o.motion):null;
     var M,bricks,N,st,OX,OY,OZ,AL,grid,statics,hl=[],dyn=[],vis=[];
     var PM;   // parts-mode stats, parallels M for the bricks path: {W,D,L,steps}, in engine units
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
-    var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0;
+    var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0,filmP=1;
     var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,onInspect=null,raf=0;
+    // Pre-existing gap, found live debugging motion_bricks `motion` on this machine (headless SwiftShader loses
+    // the first WebGL context -- see briefs/opus-lego-rotation-capability.md): glRenderer's own contextrestored
+    // handler rebuilds GL resources but has no reach into THIS closure's dirtyView, so loop()'s `if(dirtyView)`
+    // gate never fires again after a restore unless something else also happens to change p/az/orbit in the
+    // meantime -- the canvas then stays blank. Affects any clock:'film' model (motion or not); the default
+    // orbit:true auto-rotate masks it elsewhere by setting dirtyView every frame regardless. A second listener
+    // on the same canvas is additive (listeners stack; this never replaces glRenderer's own).
+    canvas.addEventListener('webglcontextrestored',function(){dirtyView=true;});
     if(o.clock==='film'){az=(o.azDeg||0)*Math.PI/180;if(o.elDeg!==undefined)el=o.elDeg*Math.PI/180;}
     if(o.base==='none')NOBASE=true;else if(typeof o.base==='string'&&/^#[0-9a-fA-F]{6}$/.test(o.base))BASE=o.base;
 
@@ -11458,7 +11680,7 @@ function _brickKit(materialProfile) {
       PM={W:Math.max(1,mx[0]-mn[0]+2),D:Math.max(1,mx[2]-mn[2]+2),ySpan:Math.max(1,mx[1]-mn[1]+2),
           steps:maxStep,cx:(mn[0]+mx[0])/2,cz:(mn[2]+mx[2])/2,cy:(mn[1]+mx[1])/2,
           bricks:list,trimmed:0,studs:0};   // bricks/trimmed/studs aliased so _brickMount's stepText()/info() readers work unchanged
-      if(gr)gr.setPartsModel(list);
+      if(gr)gr.setPartsModel(list,motionCfg);
       else{
         var ids={};list.forEach(function(e){ids[e.p]=1;});
         Object.keys(ids).forEach(function(id){fetchPartMesh(id,function(){dirtyView=true;})});
@@ -11489,7 +11711,7 @@ function _brickKit(materialProfile) {
       for(var y=0;y<M.L;y++)for(var z=0;z<M.D;z++)for(var x=0;x<M.W;x++)
         if(g[(y*M.D+z)*M.W+x]&&(y+1>=M.L||!g[((y+1)*M.D+z)*M.W+x]))studs++;
       M.studs=studs;
-      if(gr)gr.setModel(M);
+      if(gr)gr.setModel(M,motionCfg);
       if(o.step>M.steps)o.step=M.steps;
       if(onStats)onStats(info());
     }
@@ -11561,7 +11783,7 @@ function _brickKit(materialProfile) {
         setCamera();
         var R=usingParts?0.5*Math.hypot(PM.W+2*MARGIN,PM.D+2*MARGIN,PM.ySpan*1.1)
                          :0.5*Math.hypot(M.W+2*MARGIN,M.D+2*MARGIN,(PL+M.L*BH)*1.1);
-        gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg,look:o.look});
+        gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg,look:o.look,motionP:filmP});
         return;
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -11635,13 +11857,15 @@ function _brickKit(materialProfile) {
         var cs=getComputedStyle(canvas),pv=cs.getPropertyValue('--p').trim(),sv=cs.getPropertyValue('--s').trim();
         var fp=pv===''?1:Math.max(0,Math.min(1,parseFloat(pv)||0)),fs=sv===''?0:(parseFloat(sv)||0);
         var nt=fp*tBuild,na=(o.azDeg||0)*Math.PI/180+fs*(o.turns||0)*2*Math.PI;
+        if(fp!==filmP)dirtyView=true;   // motion mode: --p alone must redraw even if tNow/az (the OLD animation's clock) do not move
+        filmP=fp;
         if(nt!==tNow||na!==az){tNow=nt;az=na;dirtyView=true;}
       }else if(!reduced){
         if(o.mode!=='steps'){tNow+=dt*o.speed;if(tNow>=tCycle)tNow-=tCycle;}
         if(o.orbit&&!dragging)az+=dt*0.22*o.speed;
         dirtyView=true;
       }
-      if(dirtyView){dirtyView=false;status(tNow);draw();frames++;}
+      if(dirtyView){dirtyView=false;if(!motionCfg)status(tNow);draw();frames++;}
       // Runs even when the frame above was skipped (dirtyView false) -- a prefers-reduced-motion user never sets
       // dirtyView back to true after the first paint (the `if(!reduced){...dirtyView=true;}` block above is
       // skipped entirely for them), so nesting this inside that block would freeze onStats forever after one
@@ -29748,7 +29972,11 @@ _RENDERERS['motion_bricks'] = function(b) {
   var ang = _ffNum(b.angle, 24, -360, 360, 1), el = _ffNum(b.elevation, 26, 7, 75, 1), turns = _ffNum(b.turns, 1, -8, 8, 2);
   var ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), fill = b.fill === true, uid = Math.random().toString(36).substr(2, 6);
   var label = _moStr(b.label, 80) || (text ? 'Brick lettering: ' + text : (bricks ? 'Brick model' : 'Brick model: ' + shape));
-  var cfg = '{"shape":' + _jsJson(shape) + ',"bricks":' + _jsJson(bricks) + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _jsJson(b.base === 'none' ? 'none' : (_ffHex(b.base, '') || null)) + ',"look":"' + (b.look === 'instructions' ? 'instructions' : 'studio') + '"}';
+  // motion (2026-10-03, preview): bricks fly in rotating and snap into place, computed on the GPU from one progress
+  // value (_brickKit's own uP uniform) -- see normaliseBrickMotion() in atoms_brick.gs for the real validation
+  // (plain numbers and enum indices only); the type check here is a cheap first gate, not the guard itself.
+  var motion = b.motion && typeof b.motion === 'object' && !Array.isArray(b.motion) ? b.motion : null;
+  var cfg = '{"shape":' + _jsJson(shape) + ',"bricks":' + _jsJson(bricks) + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _jsJson(b.base === 'none' ? 'none' : (_ffHex(b.base, '') || null)) + ',"look":"' + (b.look === 'instructions' ? 'instructions' : 'studio') + '","motion":' + _jsJson(motion) + '}';
   return '<div id="mt-' + uid + '" style="position:relative;width:100%;' + (fill ? 'height:100%;' : 'aspect-ratio:' + ratio + ';') + '"><canvas role="img" aria-label="' + _esc(label) + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
     + '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';var K=(' + _brickKit.toString() + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();<\/script>';
 };
