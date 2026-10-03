@@ -1,54 +1,208 @@
-// atoms_brick.gs — brick_build_3d: equation-driven LEGO-style models that assemble stud by stud
-// Zero dependencies. WebGL (instanced, shadow-mapped) with a canvas-2D fallback. GAS CSP-safe. Surfaces: G M W
-//
-// Drawn in real LEGO proportions (8 mm stud pitch, 9.6 mm brick, 3.2 mm plate, 4.8 mm stud) in the style of
-// LDraw instruction renders: key-light shadows cast between parts, glossy ABS shading, a thin dark line on every
-// part edge and a yellow one on the parts added in the current step. Where WebGL or instancing is missing, a
-// software painter (perspective projection, backface culling, depth-sorted faces, Lambert shading, projected
-// shadows) draws the same model.
-// Models are either a named shape (implicit surfaces voxelised to the stud grid, tiled with running-bond
-// bricks and trimmed until every brick is anchored) or an explicit `bricks` array from an agent.
-//
-// Nothing about a design is taken on trust: validate() runs deterministic geometry checks (collisions,
-// anchoring through stud connections, connection count, centre of mass over the ground footprint) and the
-// atom shows the verdict beside the model. The same checks exist in Python (renderers/brick_validate.py)
-// and tests/fixtures/bricks/parity_cases.json keeps the two in lockstep.
-//
-// _brickKit() holds ALL the logic and no DOM access outside create(), so the renderer can serialise it into
-// the page with Function.prototype.toString (no string escaping of a 400-line engine) and Node can load it
-// straight from this file for the parity test (scripts/test_brick_validate_js.mjs).
-//
-// Fields:
-//   shape      — heart | sphere | torus | helix | pyramid | house (default heart). Ignored when bricks is set.
-//   bricks     — explicit model: [{x,y,z,w,d,h,c}] (stud x/z, layer y, footprint w×d, height h in bricks,
-//                hex colour c). Bound values arrive already resolved ({path:'/bricks'} → the array).
-//   mode       — animate | steps (default animate)
-//   step       — initial instruction step in steps mode (default 1)
-//   speed      — animation speed multiplier (default 1)
-//   orbit      — slow auto-orbit (default true); dragging always orbits
-//   height     — canvas height px (default 380)
-//   bg         — canvas background colour; transparent on the studio gradient when omitted
-//   scrubber   — show the animate/instructions toggle and step slider (default true)
-//   checks     — show the build-check verdicts (default true)
-//   parts      — show the parts list with an indicative cost (default false)
-
-// Material-context-aware architecture seam (2026-09-29, cozy-forging-newt.md Track B item 2): the render
-// proportions and connector-visual style are LEGO's CURRENT profile, not the only possible shape of this
-// engine. Every other consumer of BH/PL/SR/SH/SN below (WebGL shader source, canvas-2D fallback, camera
-// framing, instruction-step math -- ~30 call sites) is a closure over these SAME `var` bindings declared once
-// at the top of _brickKit(), so parameterizing this one declaration is sufficient: no other call site needs
-// to change. LEGO stays the only populated profile -- this is the seam, not a second material's rollout.
-// Standalone fallback (2026-10-01): atom.gs defines _jsJson in the full bundle; tests and tools that load this file alone get the same helper.
-// Assigned on the global object, never redeclared: a second declaration of the name is a SyntaxError once the files are one ES module (the Worker).
-if (typeof _jsJson === 'undefined') {
-  globalThis._jsJson = function(v, r, s) {
-    var j = JSON.stringify(v, r, s);
-    return typeof j === 'string' ? j.replace(/[<>&'\u2028\u2029]/g, function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }) : j;
-  };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brick Set Studio</title>
+<meta name="description" content="Search or pick any real LEGO set and watch it fly together with the studio shader look, imported live from the LDraw Official Model Repository. Fan-made, not affiliated with or endorsed by the LEGO Group.">
+<meta name="robots" content="noindex, nofollow">
+<script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+<style>/*brand-tokens:8925e7c1*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(58% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+  --negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);--accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+  --negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);--shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
 }
 
-var LEGO_MATERIAL_PROFILE = {BH:1.2, PL:0.4, SR:0.3, SH:0.18, SN:10, studs:true};
-function _brickKit(materialProfile) {
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+
+.wrap{max-width:1040px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:18px}
+@media (max-width:820px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px}
+.panel h2{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 2px}
+#setnum{display:flex;gap:6px}
+#setnum input{flex:1;min-width:0;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:inherit;font:inherit}
+#setnum button,#search input{padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:inherit;font:inherit;cursor:pointer}
+#setnum button:hover{border-color:var(--accent,#5b8def)}
+#search input{width:100%;cursor:text}
+#searchres,#gallery{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow:auto}
+.scard{display:flex;gap:8px;align-items:center;text-align:left;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);cursor:pointer;font:inherit;color:inherit}
+.scard:hover{border-color:var(--accent,#5b8def)}
+.scard img{width:36px;height:36px;object-fit:contain;border-radius:4px;background:#fff;flex:none}
+.scard .st{font-size:.78rem;font-weight:600;line-height:1.25}
+.scard .sp{font-size:.7rem;color:var(--muted)}
+.note{font-size:.78rem;color:var(--muted);min-height:1.2em}
+#stage-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:background .25s}
+#cv{width:100%;aspect-ratio:16/9;display:block;touch-action:none;cursor:grab}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.ctl button,.ctl select{padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:inherit;font:inherit;cursor:pointer}
+.ctl button:hover{border-color:var(--accent,#5b8def)}
+.swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer}
+.swatch[aria-pressed="true"]{border-color:var(--ink,#111)}
+.ctl label{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+#stats{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:.8rem}
+#stats b{display:block;font-size:1.05rem}
+#stats span{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+.wrap footer{border-top:1px solid var(--border);padding-top:12px;margin-top:20px}
+.wrap footer p{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+<div class="wrap">
+
+  <div>
+    <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:8px;">Brick Set Studio</h1>
+    <p style="color:var(--muted);font-size:13px;max-width:70ch;margin-bottom:18px;">Search or pick any real set below and watch it fly together, piece by piece, with the studio shader look -- glossy ABS, softbox reflections, no outlines. The rendering engine never changes; only which set is loaded and the backdrop do. Geometry comes live from the LDraw Official Model Repository, the same import already used by the <a href="/bricksdemo/design/">Brick Design Lab</a>.</p>
+  </div>
+  <div class="layout">
+    <div>
+      <div class="panel">
+        <h2>Set number</h2>
+        <div id="setnum"><input id="setid" placeholder="e.g. 21005-1" autocomplete="off"><button id="setgo" type="button">Load</button></div>
+        <p class="note" id="setnote"></p>
+      </div>
+      <div class="panel">
+        <h2>Search by name</h2>
+        <div id="search"><input id="q" placeholder="Search LEGO sets&hellip;" autocomplete="off"></div>
+        <div id="searchres"></div>
+        <p class="note" id="searchnote"></p>
+      </div>
+      <div class="panel">
+        <h2>Browse (ranked by real coverage)</h2>
+        <div id="gallery"></div>
+        <p class="note" id="gallerynote">Loading&hellip;</p>
+      </div>
+    </div>
+    <div>
+      <div id="stage-wrap">
+        <canvas id="cv"></canvas>
+      </div>
+      <div class="ctl">
+        <button id="replay" type="button">Replay</button>
+        <label>Backdrop <select id="bdstyle" aria-label="Backdrop style">
+          <option value="glow">Glow</option>
+          <option value="grid">Grid</option>
+          <option value="flat">Flat</option>
+        </select></label>
+        <label>Theme <select id="bdtheme" aria-label="Theme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select></label>
+        <span id="swatches" role="group" aria-label="Accent colour"></span>
+        <label><input id="bdvignette" type="checkbox" checked> Vignette</label>
+      </div>
+      <div id="stats"></div>
+      <div id="details" class="panel" hidden style="flex-direction:row;gap:14px;align-items:flex-start;margin-top:12px">
+        <img id="det-img" alt="" style="width:76px;height:76px;object-fit:contain;background:#fff;border-radius:6px;flex:none">
+        <div>
+          <div id="det-name" style="font-weight:700;font-size:1rem"></div>
+          <div id="det-meta" class="note" style="margin:2px 0 6px"></div>
+          <a id="det-link" href="#" target="_blank" rel="noopener" style="font-size:.78rem">View on Rebrickable &#8599;</a>
+        </div>
+      </div>
+      <p class="note" id="stagenote">Pick a set to begin.</p>
+    </div>
+  </div>
+  <footer>
+    <p>Import is live from the LDraw Official Model Repository (library.ldraw.org, CC BY 2.0) via the same route the Brick Design Lab uses. Set names and reference images in search and the gallery are from Rebrickable. The engine (the brick motion/studio shader) is <a href="https://github.com/a2uicatalog/a2ui">open source, MIT</a>. Fan-made, not affiliated with or endorsed by the LEGO Group. LEGO&reg; is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this content.</p>
+  </footer>
+
+</div>
+<script>
+var LEGO_MATERIAL_PROFILE = {"BH":1.2,"PL":0.4,"SR":0.3,"SH":0.18,"SN":10,"studs":true};
+var K=(function _brickKit(materialProfile) {
   /* ---------- constants: proportions, in stud-pitch units (1 = 8 mm for LEGO's own default profile) ---------- */
   var MP=materialProfile||LEGO_MATERIAL_PROFILE;
   var BH=MP.BH, PL=MP.PL, SR=MP.SR, SH=MP.SH, SN=MP.SN;   // LEGO default: brick 9.6mm, plate 3.2mm, stud r 2.4mm, stud h 1.4mm
@@ -2089,340 +2243,201 @@ function _brickKit(materialProfile) {
           // needs to drive the normal async load path). See tests/test_brick_parts_validate.mjs.
           _setPartMesh: function(id, m) { partMeshCache[id] = m; },
           geo: {box: boxGeo, stud: studGeo, vs: glVS, fs: glFS, fsDepth: GL_FS_DEPTH}};
+})();
+var cv=document.getElementById('cv');
+// Same origin (deployed on a2uicatalog.ai): relative paths, as every other page on the site uses. Any other
+// origin (a local preview, a mirror): absolute, since relative paths would otherwise resolve against whatever
+// is hosting THIS page, not the real API. The live Worker CORS-allows '*', so this works from anywhere.
+var API_ORIGIN=(location.hostname==='a2uicatalog.ai')?'':'https://a2uicatalog.ai';
+var atom=null,reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var DUR=5.2,playT0=null,playing=false,raf=0;
+function n(x){return (x||0).toLocaleString()}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+function frame(now){
+  raf=requestAnimationFrame(frame);
+  if(!playing)return;
+  if(playT0===null)playT0=now;
+  var t=Math.min(1,(now-playT0)/1000/DUR);
+  cv.style.setProperty('--p',String(t));
+  if(t>=1)playing=false;
+}
+raf=requestAnimationFrame(frame);
+
+function play(){
+  if(reduced){cv.style.setProperty('--p','1');return}
+  playT0=null;playing=true;
 }
 
-var _BRICK_MAX = 3000;   // bricks per model — bounds the canvas-2D fallback's per-frame depth sort
-var _BRICK_MODELS_MAX = 8;   // named models the picker will list
-
-// A small, hand-picked subset of LDConfig.ldr (NOT the full 322 codes) -- exactly what the curated demo parts and
-// models use today. Extend as new colours are needed (spec section 1.4); an unlisted code falls back to red with
-// a visible warning in the parts list, same as an unrecognised part id. Module-level (not inside _brickKit) since
-// _partsModelSanitise below is also module-level.
-var LDRAW_COLOURS = {0:'#1b2a34',1:'#0055bf',2:'#237841',4:'#c91a09',14:'#f2cd37',15:'#f4f4f4',25:'#d67923',
-                      71:'#969696',72:'#646464',191:'#fcac00',19:'#e4cd9e',27:'#bbe90b',28:'#958a73',70:'#582a12',
-                      272:'#0d325b',288:'#184632',320:'#720e0f',484:'#a95500'};
-var LDRAW_EDGE = {0:'#808080'};             // LDConfig's EDGE for colour 0 (black); every other listed colour uses '#333333'
-// Known LDraw ~Moved-to aliases for ids in the curated set (spec/brick-parts-v0.1.md §1.3/§6) -- the bake only
-// ever wrote the canonical id's JSON (e.g. public/parts/3023b.json), never the common/BrickLink id (3023), so an
-// agent naming a part by its everyday number 404s against PART_BASE with no warning unless resolved here first.
-// "the canonical id wins" -- resolved once, at sanitise time, so every downstream consumer (fetch, cache key,
-// rendering, the validator) sees only the canonical id.
-var PART_ID_ALIAS = {'3023':'3023b','3665':'3665a','3660':'3660a','60481':'60481a','4032':'4032a',
-                      '2654':'2654a','4073':'6141'};
-
-// Coerce an agent-supplied partsModel entry list into {p,x,y,z,r,c,edge,step} objects (spec/brick-parts-v0.1.md).
-// Array form [id,x,y,z,r,c] or [id,x,y,z,r,c,step]; object form {p,x,y,z,r,c,s}. Position is LDU (Y down, baseplate
-// top at y=0); r is a 0-23 index into PART_ROT (wrapped, never thrown on); c is an LDraw colour code (int, looked
-// up in the small LDRAW_COLOURS table above) or a '#rrggbb' string. An id not in the loaded part index still
-// passes through here -- the renderer draws it as a placeholder box with a warning; sanitising isn't where an
-// unknown id is caught, since that needs the index, which is fetched async.
-function _partsModelSanitise(list) {
-  if (!Array.isArray(list) || !list.length) return null;
-  var out = [];
-  var ni = function(v, lo, hi, dflt) { v = Math.floor(Number(v)); return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt; };
-  for (var i = 0; i < list.length && out.length < _BRICK_MAX; i++) {
-    var r = list[i], p, x, y, z, rot, c, step;
-    if (Array.isArray(r) && r.length >= 6 && r.length <= 7) {
-      p = r[0]; x = r[1]; y = r[2]; z = r[3]; rot = r[4]; c = r[5]; step = r[6];
-    } else if (r && typeof r === 'object' && !Array.isArray(r)) {
-      p = r.p; x = r.x; y = r.y; z = r.z; rot = r.r; c = r.c; step = r.s;
-    } else continue;
-    if (typeof p !== 'string' || !p) continue;
-    p = PART_ID_ALIAS[p] || p;
-    var code = typeof c === 'number' ? Math.floor(c) : null;
-    var colour = typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c) ? c.toLowerCase()
-               : (code !== null && LDRAW_COLOURS[code]) || '#c91a09';
-    var edge = (code !== null && LDRAW_EDGE[code]) || '#333333';
-    var ri = ((ni(rot, 0, 999999, 0) % 24) + 24) % 24;
-    out.push({p: p, x: ni(x, -4000, 4000, 0), y: ni(y, -4000, 0, 0), z: ni(z, -4000, 4000, 0), r: ri,
-              c: colour, edge: edge, step: step !== undefined ? ni(step, 1, 9999, 1) : undefined});
-  }
-  return out.length ? out : null;
+var coloursFetch=null;
+function colours(){
+  if(!coloursFetch)coloursFetch=fetch('/bricksdemo/ldraw_colours_full.json').then(function(r){return r.json()}).catch(function(){return {}});
+  return coloursFetch;
 }
-
-// Coerce an agent-supplied palette (max 256 entries) into #rrggbb strings; a bad entry keeps its index as the default red.
-function _brickPalette(list) {
-  var out = [];
-  if (!Array.isArray(list)) return out;
-  for (var i = 0; i < list.length && out.length < 256; i++) {
-    out.push(typeof list[i] === 'string' && /^#[0-9a-fA-F]{6}$/.test(list[i]) ? list[i].toLowerCase() : '#c91a09');
-  }
-  return out;
-}
-
-// Coerce an agent-supplied brick list into integers and #rrggbb colours, or return null if it is unusable.
-// A brick is an object {x, y, z, w, d, h, c} or a compact array [x, y, z, w, d, c] / [x, y, z, w, d, h, c]; `c` is
-// a #rrggbb string or an integer index into `palette`. The arrays make a 1000-brick model about a third of the size.
-// renderers/web_article.py (_render_brick_build_3d) is a hand-kept twin of this function and of the shell
-// below; tests/test_brick_web_twin.py renders both and compares. Edit BOTH.
-function _brickSanitise(list, palette) {
-  if (!Array.isArray(list) || !list.length) return null;
-  var out = [];
-  var n = function(v, lo, hi, dflt) {
-    v = Math.floor(Number(v));
-    return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
-  };
-  for (var i = 0; i < list.length && out.length < _BRICK_MAX; i++) {
-    var r = list[i], x, y, z, w, d, h, c;
-    if (Array.isArray(r) && (r.length === 6 || r.length === 7)) {
-      x = r[0]; y = r[1]; z = r[2]; w = r[3]; d = r[4];
-      h = r.length === 7 ? r[5] : 1; c = r[r.length - 1];
-    } else if (r && typeof r === 'object' && !Array.isArray(r)) {
-      x = r.x; y = r.y; z = r.z; w = r.w; d = r.d; h = r.h; c = r.c;
-    } else continue;
-    if (typeof c === 'number' && isFinite(c) && palette && palette.length) c = palette[Math.floor(c)];
-    c = typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c) ? c.toLowerCase() : '#c91a09';
-    out.push({x: n(x, 0, 255, 0), y: n(y, 0, 255, 0), z: n(z, 0, 255, 0),
-              w: n(w, 1, 32, 1), d: n(d, 1, 32, 1), h: n(h, 1, 8, 1), c: c});
-  }
-  return out.length ? out : null;
-}
-
-// Named models for the picker: up to _BRICK_MODELS_MAX of {name, bricks}, each brick list sanitised like `bricks`.
-// Entries whose brick list is unusable are skipped; a missing name becomes 'Model N'. Twinned in web_article.py.
-function _brickModels(list, palette) {
-  var out = [];
-  if (!Array.isArray(list)) return out;
-  for (var i = 0; i < list.length && out.length < _BRICK_MODELS_MAX; i++) {
-    var m = list[i];
-    if (!m || typeof m !== 'object') continue;
-    var pal = Array.isArray(m.palette) ? _brickPalette(m.palette) : palette;
-    var bl = _brickSanitise(m.bricks, pal);
-    if (!bl) continue;
-    var nm = typeof m.name === 'string' ? m.name.trim().slice(0, 40) : '';
-    out.push({name: nm || 'Model ' + (out.length + 1), bricks: bl});
-  }
-  return out;
-}
-
-// The atom's page wiring: canvas engine + scrubber + verdicts + parts table. Serialised into the page next to
-// _brickKit (Function.prototype.toString), and read out of this file by the Python web_article twin, so the
-// browser code has ONE source. Plain ES5, no closure over anything outside its arguments.
-function _brickMount(K, cfg, U) {
-  var $ = function(s) { return document.getElementById(U + s); };
-  var cv = $('c');
-  if (!cv) return;
-  function E(tag, css, text) {
-    var e = document.createElement(tag);
-    if (css) e.style.cssText = css;
-    if (text !== undefined) e.textContent = text;
-    return e;
-  }
-  var atom = K.create(cv, {shape: cfg.shape, bricks: cfg.bricks, partsModel: cfg.partsModel, speed: cfg.speed,
-                           orbit: cfg.orbit, bg: cfg.bg, mode: cfg.mode, step: cfg.step});
-  var mode = cfg.mode, report = null, last = null, range = null, info = null, btns = {};
-  var COL = {pass: '#1e7a45', warn: '#9a6700', fail: '#c4161a'};
-
-  function stepText() {
-    var M = atom.model(), n = +range.value, k = 0;
-    M.bricks.forEach(function(b) { if (b.step === n) k++; });
-    info.textContent = mode === 'steps'
-      ? 'step ' + n + ' of ' + M.steps + ' · +' + k + ' brick' + (k === 1 ? '' : 's')
-      : M.steps + ' steps · ' + M.bricks.length + ' bricks';
-    if (cfg.partsModel) drawStepParts(n);
-  }
-  // Step parts box (spec/brick-parts-v0.1.md §7): "for each step, group the new parts by (part id, colour),
-  // with a count ... the booklet's '2x / 1x' box and the on-screen box in Instructions mode." v1 simplification:
-  // a colour swatch + part id + count, not a rendered 3D thumbnail (matching drawParts()'s own existing swatch
-  // convention for the whole-model cost table -- no thumbnail-rendering pipeline exists yet for either).
-  function drawStepParts(n) {
-    var box = $('n');
-    if (!box) return;
-    box.textContent = '';
-    if (mode !== 'steps') return;
-    var groups = {}, order = [];
-    atom.model().bricks.forEach(function(b) {
-      if (b.step !== n) return;
-      var key = b.p + '|' + b.c;
-      if (!groups[key]) { groups[key] = {p: b.p, c: b.c, count: 0}; order.push(key); }
-      groups[key].count++;
-    });
-    if (!order.length) return;
-    box.appendChild(E('span', 'font-weight:600;color:#55636f;', 'New this step:'));
-    order.forEach(function(key) {
-      var g = groups[key];
-      var chip = E('span', 'display:inline-flex;align-items:center;gap:5px;border:1px solid #b8c2cc;' +
-                            'border-radius:6px;padding:2px 8px;background:#f7f9fb;');
-      chip.appendChild(E('span', 'display:inline-block;width:10px;height:10px;border-radius:2px;' +
-                                  'border:1px solid rgba(0,0,0,.25);background:' + g.c + ';'));
-      chip.appendChild(document.createTextNode('×' + g.count + ' ' + g.p));
-      box.appendChild(chip);
-    });
-  }
-  function setMode(m) {
-    mode = m;
-    atom.setMode(m);
-    for (var k in btns) {
-      btns[k].style.background = k === m ? '#d01012' : '#f7f9fb';
-      btns[k].style.color = k === m ? '#fff' : '#0f1c28';
-    }
-    stepText();
-  }
-  function buildPicker(row) {
-    var sel = E('select', 'font:inherit;font-weight:600;border:1px solid #b8c2cc;border-radius:6px;padding:4px 8px;' +
-                          'background:#f7f9fb;color:#0f1c28;cursor:pointer;max-width:min(240px,100%);');
-    sel.setAttribute('aria-label', 'Model');
-    function opt(v, t) { var o = E('option', '', t); o.value = v; sel.appendChild(o); }
-    if (cfg.bricks && cfg.start < 0) opt('c', 'Custom model');
-    for (var k in K.SHAPES) opt('s:' + k, K.SHAPES[k].label);
-    cfg.models.forEach(function(m, i) { opt('m:' + i, m.name); });
-    sel.value = cfg.start >= 0 ? 'm:' + cfg.start : cfg.bricks ? 'c' : 's:' + cfg.shape;
-    sel.addEventListener('change', function() {
-      var v = sel.value;
-      if (v.charAt(0) === 's') atom.setShape(v.slice(2));
-      else atom.setBricks(v === 'c' ? cfg.bricks : cfg.models[+v.slice(2)].bricks);
-    });
-    row.appendChild(sel);
-  }
-  function buildScrubber() {
-    var row = $('s');
-    if (!row) return;
-    if (cfg.picker) buildPicker(row);
-    if (!cfg.scrubber) return;
-    var bs = 'font:inherit;font-weight:600;border:1px solid #b8c2cc;border-radius:6px;padding:4px 10px;cursor:pointer;';
-    [['animate', 'Animate'], ['steps', 'Instructions']].forEach(function(p) {
-      var b = E('button', bs, p[1]);
-      b.type = 'button';
-      b.addEventListener('click', function() { setMode(p[0]); });
-      btns[p[0]] = b;
-      row.appendChild(b);
-    });
-    range = E('input');
-    range.type = 'range'; range.min = 1; range.max = atom.model().steps; range.value = cfg.step;
-    range.style.width = 'min(260px,50vw)';
-    range.setAttribute('aria-label', 'Instruction step');
-    range.addEventListener('input', function() {
-      if (mode !== 'steps') setMode('steps');
-      atom.setStep(+range.value);
-      stepText();
-    });
-    row.appendChild(range);
-    info = E('span', 'font-variant-numeric:tabular-nums;color:#55636f;');
-    row.appendChild(info);
-    setMode(cfg.mode);
-  }
-  function drawChecks() {
-    var ul = $('k');
-    if (!cfg.checks || !ul) return;
-    ul.textContent = '';
-    report.checks.forEach(function(c) {
-      var li = E('li', 'display:flex;gap:6px;align-items:baseline;');
-      li.title = c.detail;
-      li.appendChild(E('span', 'font-weight:700;color:' + COL[c.status] + ';',
-                       c.status === 'pass' ? '✓' : c.status === 'warn' ? '!' : '✗'));
-      li.appendChild(E('span', 'font-weight:600;', c.label));
-      li.appendChild(E('span', 'color:#55636f;', c.detail));
-      ul.appendChild(li);
-    });
-  }
-  function drawParts() {
-    var box = $('p');
-    if (!cfg.parts || !box) return;
-    box.textContent = '';
-    var t = E('table', 'border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;');
-    var hr = E('tr');
-    ['part', 'qty', 'est.'].forEach(function(x, i) {
-      hr.appendChild(E('th', 'text-align:' + (i ? 'right' : 'left') + ';font-weight:500;color:#55636f;padding:2px 12px 2px 0;', x));
-    });
-    t.appendChild(hr);
-    report.parts.forEach(function(p) {
-      var r = E('tr'), c0 = E('td', 'padding:2px 12px 2px 0;');
-      c0.appendChild(E('span', 'display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;' +
-                               'border:1px solid rgba(0,0,0,.25);background:' + p.hex + ';'));
-      c0.appendChild(document.createTextNode(p.size + ' ' + p.colour));
-      r.appendChild(c0);
-      r.appendChild(E('td', 'text-align:right;padding:2px 12px 2px 0;', String(p.count)));
-      r.appendChild(E('td', 'text-align:right;padding:2px 0;', '€' + p.line.toFixed(2)));
-      t.appendChild(r);
-    });
-    box.appendChild(t);
-    box.appendChild(E('div', 'color:#55636f;font-size:11px;padding-top:4px;',
-                      'indicative pricing formula, not BrickLink data · total €' + report.cost.toFixed(2)));
-  }
-  // Click-to-inspect readout (2026-09-30, data-driven parity with the Three.js viewer's own click-to-inspect):
-  // part id + real colour name, same PALNAME fallback-to-hex convention drawParts()'s cost table already
-  // uses for an unlisted colour. part is null when the click hit empty space (clears the readout).
-  function drawInspect(part) {
-    var box = $('i');
-    if (!box) return;
-    if (!part) { box.hidden = true; box.textContent = ''; return; }
-    box.hidden = false;
-    box.textContent = 'Selected: ' + part.p + ' (' + (K.PALNAME[part.c] || part.c) + ')';
-  }
-
-  buildScrubber();
-  atom.onInspect(drawInspect);
-  atom.onStats(function() {
-    var M = atom.model();
-    // K.validate() is grid/box-specific (b.x/y/z/w/d/h on an integer stud grid) and can't read real parts data
-    // (b.p/x/y/z/r, LDU units, no w/d/h) -- confirmed live, it used to silently produce NaN/undefined garbage
-    // through it instead of a crash (false "not anchored", "0 stud connections", "(NaN, NaN)" balance, cost rows
-    // reading "undefined×undefined … €NaN"). K.validateParts() (spec/brick-parts-v0.1.md §2-4, Phase 3) is the
-    // real replacement, verified against all 15 spec fixtures. It reads from partMeshCache, populated by async
-    // fetches that don't change `M` itself (PM is a stable, mutated-in-place object) -- so unlike the procedural
-    // path below, it can't gate on `M === last` or it would only ever check once, before meshes finish loading;
-    // it re-runs on every onStats tick (the render loop's own ~600ms cadence) until the real numbers are in.
-    if (cfg.partsModel) {
-      report = K.validateParts(M.bricks);
-      if (range) { range.max = M.steps; if (+range.value > M.steps) range.value = M.steps; stepText(); }
-      drawChecks();
-      return;
-    }
-    if (M === last) return;
-    last = M;
-    report = K.validate(M.bricks);
-    if (range) { range.max = M.steps; if (+range.value > M.steps) range.value = M.steps; stepText(); }
-    drawChecks();
-    drawParts();
+// /api/brick-omr returns partsModel as [id,x,y,z,r,colourIndex,step] arrays (same shape to_parts_model/omr-import.js
+// produce) -- K.create() expects the OBJECT form {p,x,y,z,r,c} (see _partsModelSanitise, atoms_brick.gs), the same
+// conversion the Brick Design Lab's own importSet() already does for its "parts" list. Skipping this was the real
+// bug behind an earlier blank canvas on a real multi-part set: fetchPartMesh was being called with id=undefined
+// for every entry, because array[i].p is undefined on a plain array.
+function toObjectForm(partsModel,colourTable){
+  return (partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){
+    var ci=p[5]|0,row=colourTable[ci]||{};
+    return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:row.hex||'#c91a09',edge:row.edge||'#333333'};
   });
 }
 
-_RENDERERS['brick_build_3d'] = function(b) {
-  var kit    = _brickKit();
-  var shape  = Object.prototype.hasOwnProperty.call(kit.SHAPES, b.shape) ? b.shape : 'heart';
-  var palette = _brickPalette(b.palette);
-  var bricks = _brickSanitise(b.bricks, palette);   // '' (unresolved binding) and junk fall back to shape
-  var models = _brickModels(b.models, palette), start = -1;
-  if (!bricks && typeof b.model === 'string') {
-    for (var j = 0; j < models.length; j++) if (models[j].name === b.model) { start = j; break; }
-    if (start >= 0) bricks = models[start].bricks;
-  }
-  var h      = Math.max(160, Math.min(900, parseInt(b.height, 10) || 380));
-  // Real parts (spec/brick-parts-v0.1.md): a separate field from `bricks`, never mixed in v0.1. Takes precedence
-  // when present and valid, same "explicit wins" rule as bricks vs. shape above.
-  var partsModel = _partsModelSanitise(b.partsModel);
-  var cfg = {
-    shape: shape, bricks: partsModel ? null : bricks,
-    mode:  b.mode === 'steps' ? 'steps' : 'animate',
-    step:  Math.max(1, parseInt(b.step, 10) || 1),
-    speed: b.speed !== undefined && isFinite(Number(b.speed)) ? Math.max(0.1, Math.min(4, Number(b.speed))) : 1,
-    orbit: b.orbit !== false,
-    bg:    typeof b.bg === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.bg) ? b.bg : null,
-    scrubber: b.scrubber !== false, checks: b.checks !== false, parts: b.parts === true,
-    models: partsModel ? [] : models, picker: partsModel ? false : (b.picker === false ? false : (b.picker === true || models.length > 0)),
-    start: partsModel ? -1 : start, partsModel: partsModel
-  };
-  var uid  = 'brk' + Math.random().toString(36).substr(2, 6);
-  var json = _jsJson(cfg);
+function loadSet(id,note){
+  note=note||document.getElementById('stagenote');
+  if(!id)return;
+  document.getElementById('setid').value=id;
+  note.textContent='Importing '+id+'\u2026';
+  document.getElementById('setgo').disabled=true;
+  Promise.all([
+    fetch(API_ORIGIN+'/api/brick-omr?set='+encodeURIComponent(id)).then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}})}),
+    colours(),
+    // Real set facts (name, year, part count, official box art, Rebrickable link) -- never invented copy.
+    // Best-effort: the import still proceeds if this particular lookup fails or the set isn't in Rebrickable.
+    fetch(API_ORIGIN+'/api/data/rebrickable_set?set_num='+encodeURIComponent(id)).then(function(r){return r.ok?r.json():null}).catch(function(){return null})
+  ]).then(function(res){
+      var j=res[0],colourTable=res[1],meta=res[2];
+      if(!j.ok){note.textContent=j.error||'Could not import that set.';return}
+      var c=j.coverage||{};
+      document.getElementById('stats').innerHTML=[['Set',j.set],['Real parts',n(c.parts)],['Rendered',n(c.renderable)],['Coverage',(c.fraction?Math.round(c.fraction*100):0)+'%']]
+        .map(function(s){return '<div><b>'+esc(String(s[1]))+'</b><span>'+esc(s[0])+'</span></div>'}).join('');
+      var det=document.getElementById('details');
+      if(meta&&meta.name){
+        det.hidden=false;
+        document.getElementById('det-img').src=meta.set_img_url||'';
+        document.getElementById('det-name').textContent=meta.name;
+        document.getElementById('det-meta').textContent=[meta.year,meta.num_parts?n(meta.num_parts)+' pieces (official count)':null,meta.set_num].filter(Boolean).join(' \u00b7 ');
+        document.getElementById('det-link').href=meta.set_url||('https://rebrickable.com/sets/'+encodeURIComponent(id)+'/');
+      }else{det.hidden=true}
+      var pm=toObjectForm(j.partsModel,colourTable);
+      atom=K.create(cv,{partsModel:pm,clock:'film',azDeg:20,elDeg:26,turns:0.35,base:null,look:'studio',
+        motion:{order:'diagonal',from:'above',window:2.4,flight:0.62,distance:9,tilt:70,spin:0.5}});
+      note.textContent=j.name+': '+n(c.renderable)+' of '+n(c.parts)+' real parts rendered ('+(c.fraction?Math.round(c.fraction*100):0)+'%).'+(c.tilted?(' '+n(c.tilted)+' sit at an angle not yet placed.'):'');
+      cv.style.setProperty('--p','0');
+      play();
+    })
+    .catch(function(){note.textContent='Could not reach the import service.'})
+    .then(function(){document.getElementById('setgo').disabled=false});
+}
 
-  return '<div style="border-radius:14px;overflow:hidden;color:#0f1c28;' +
-      'font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;' +
-      'background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0);">' +
-    '<div style="position:relative;height:' + h + 'px;">' +
-      '<canvas id="' + uid + 'c" role="img" aria-label="Animated 3D brick model" ' +
-        'style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas>' +
-    '</div>' +
-    '<div id="' + uid + 's" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div>' +
-    '<div id="' + uid + 'n" style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 14px 0;font-size:12px;"></div>' +
-    '<p id="' + uid + 'i" style="margin:0;padding:6px 14px 0;font-size:12px;color:#55636f;" hidden></p>' +
-    '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>' +
-    '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>' +
-    '</div>' +
-    // LEGO_MATERIAL_PROFILE must be re-declared here (not just .toString()'d in with _brickMount/_brickKit):
-    // this HTML string is executed in a SEPARATE script context (an iframe srcdoc) where only the two
-    // functions' own text exists -- _brickKit's `materialProfile||LEGO_MATERIAL_PROFILE` default otherwise
-    // throws ReferenceError there, even though it resolves fine in atoms_brick.gs's own top-level scope
-    // (found live 2026-09-29: broke every render on the public design page).
-    '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';(' +
-      _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");})();</script>';
-};
+document.getElementById('setgo').onclick=function(){loadSet(document.getElementById('setid').value.trim())};
+document.getElementById('setid').addEventListener('keydown',function(e){if(e.key==='Enter')loadSet(this.value.trim())});
+document.getElementById('replay').onclick=play;
+cv.addEventListener('pointerdown',function(){});   // _brickKit's own drag-to-orbit already listens on the canvas
+
+// Backdrop: the same three styles and formula as motion_timeline's own stage background (atoms_motion.gs
+// _moTimeline -- glow/grid/flat, hex->rgb for the CSS gradient), "studio aligned options" rather than a
+// separate ad hoc preset list. theme sets the base colour; accent tints glow/grid. No change to the brick
+// engine itself -- this is page-level CSS on #stage-wrap, painted behind the canvas, never the shader.
+var THEME_BG={dark:'#06050a',light:'#f6f5f2'},THEME_INK={dark:'#eef0f4',light:'#15131c'};
+var ACCENTS=[['#38bdf8','Cyan'],['#e9b25b','Amber'],['#f06595','Rose'],['#51cf66','Green'],['#a78bfa','Violet']];
+var bdState={style:'glow',theme:'dark',accent:ACCENTS[0][0],vignette:true};
+function hexRgb(h){h=h.replace('#','');return [0,2,4].map(function(i){return parseInt(h.slice(i,i+2),16)}).join(',')}
+// Vignette (2026-10-03, same reasoning as briefs/motion-stage-passes-grain-vignette-bloom.md's findings from the
+// hand-roll-and-analyse pass earlier this session): a simple radial darkening toward the edges, the one of those
+// three passes cheap enough to add here directly as page-level CSS -- draws the eye to the model, reads as a
+// deliberate shot rather than a flat screenshot. Grain/bloom are real follow-ups, not done here (see that brief).
+function applyBackdrop(){
+  var wrap=document.getElementById('stage-wrap'),bg=THEME_BG[bdState.theme],ink=THEME_INK[bdState.theme],acc=bdState.accent;
+  var layers=[];
+  if(bdState.style==='glow')layers.push('radial-gradient(ellipse at 50% 0%, rgba('+hexRgb(acc)+',0.22) 0%, rgba('+hexRgb(acc)+',0) 62%)');
+  else if(bdState.style==='grid')layers.push('linear-gradient(rgba('+hexRgb(ink)+',0.08) 1px,transparent 1px),linear-gradient(90deg,rgba('+hexRgb(ink)+',0.08) 1px,transparent 1px)');
+  if(bdState.vignette)layers.push('radial-gradient(ellipse 75% 75% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.4) 100%)');
+  wrap.style.background=bg;
+  wrap.style.backgroundImage=layers.join(',');
+  wrap.style.backgroundSize=bdState.style==='grid'?'48px 48px, 48px 48px, 100% 100%':'';
+}
+applyBackdrop();
+document.getElementById('bdstyle').addEventListener('change',function(){bdState.style=this.value;applyBackdrop()});
+document.getElementById('bdtheme').addEventListener('change',function(){bdState.theme=this.value;applyBackdrop()});
+document.getElementById('bdvignette').addEventListener('change',function(){bdState.vignette=this.checked;applyBackdrop()});
+var swBox=document.getElementById('swatches');
+ACCENTS.forEach(function(a,i){
+  var b=document.createElement('button');b.type='button';b.className='swatch';b.style.background=a[0];b.title=a[1];b.setAttribute('aria-label',a[1]);
+  b.setAttribute('aria-pressed',i===0?'true':'false');
+  b.onclick=function(){bdState.accent=a[0];applyBackdrop();Array.prototype.forEach.call(swBox.children,function(c){c.setAttribute('aria-pressed',c===b?'true':'false')})};
+  swBox.appendChild(b);
+});
+
+// Set gallery: same manifest and the same honest-coverage framing as the Brick Design Lab's gallery panel.
+fetch('/bricksdemo/set_gallery.json').then(function(r){return r.json()}).then(function(j){
+  var sets=j.sets||[];
+  var box=document.getElementById('gallery');box.innerHTML='';
+  sets.slice(0,40).forEach(function(s){
+    var b=document.createElement('button');b.type='button';b.className='scard';
+    var img=s.img_url?'<img src="'+esc(s.img_url)+'" alt="" loading="lazy">':'';
+    b.innerHTML=img+'<span><span class="st">'+esc(s.title)+'</span><br><span class="sp">'+s.set+' \u00b7 '+s.coverage_pct+'% renderable</span></span>';
+    b.onclick=function(){loadSet(s.set,document.getElementById('gallerynote'))};
+    box.appendChild(b);
+  });
+  document.getElementById('gallerynote').textContent=sets.length?(n(sets.length)+' real sets, ranked by coverage.'):'No sets available.';
+}).catch(function(){document.getElementById('gallerynote').textContent='Could not load the set gallery.'});
+
+// Live search, same endpoint the Brick Design Lab's search panel already calls.
+var searchSeq=0,searchTimer=null;
+document.getElementById('q').addEventListener('input',function(){
+  clearTimeout(searchTimer);
+  var q=this.value.trim();
+  var res=document.getElementById('searchres'),note=document.getElementById('searchnote');
+  if(!q){res.innerHTML='';note.textContent='';return}
+  searchTimer=setTimeout(function(){
+    var seq=++searchSeq;note.textContent='Searching\u2026';
+    fetch(API_ORIGIN+'/api/data/rebrickable_set_search?query='+encodeURIComponent(q))
+      .then(function(r){return r.json()})
+      .then(function(j){
+        if(seq!==searchSeq)return;
+        var items=(j&&j.results)||[];
+        res.innerHTML='';
+        items.slice(0,12).forEach(function(s){
+          var b=document.createElement('button');b.type='button';b.className='scard';
+          var img=s.img_url?'<img src="'+esc(s.img_url)+'" alt="" loading="lazy">':'';
+          b.innerHTML=img+'<span><span class="st">'+esc(s.title||s.name||s.set)+'</span><br><span class="sp">'+esc(s.set||'')+'</span></span>';
+          b.onclick=function(){loadSet(s.set,note)};
+          res.appendChild(b);
+        });
+        note.textContent=items.length?(items.length+' result(s). Not every result has a matching OMR model -- Load reports that honestly.'):'No matches.';
+      })
+      .catch(function(){if(seq===searchSeq)note.textContent='Search unavailable.'});
+  },320);
+});
+</script>
+<script>
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+
+</script>
+</body>
+</html>

@@ -82,3 +82,30 @@ def test_no_motion_atom_field_can_inject():
                     if s.hits:
                         leaks.append((typ, f, sorted(s.hits)))
     assert not leaks, leaks[:10]
+
+
+def test_motion_bricks_motion_field_cannot_inject():
+    # motion_bricks `motion` (2026-10-03, local-only, docs held pending Curtis's review) is NOT in schema.yaml, so
+    # _motion_atoms() above never sees it -- this is its dedicated coverage, same attack shapes as the schema-driven
+    # fuzz. Its real validation is client-side (normaliseBrickMotion in atoms_brick.gs); this only checks that
+    # whatever reaches _RENDERERS['motion_bricks']'s OUTPUT HTML -- the one thing a renderer bug could leak before
+    # that client-side guard ever runs -- stays inert.
+    wa._mo_install()
+    leaks = []
+    hostile_motion = [
+        TAG, CSS, NQ, *CODE,                                                  # motion itself is a hostile string/non-dict
+        {k: p for k in ("order", "from", "spinAxis", "direction", "window", "seed") for p in [TAG]},  # hostile values
+        {p: 1 for p in [TAG, CSS, NQ]},                                        # hostile keys
+        {"order": [TAG], "direction": [TAG, TAG, TAG]},                        # wrong-shaped values
+    ]
+    for v in hostile_motion:
+        blk = {"type": "motion_bricks", "bricks": [{"x": 0, "y": 0, "z": 0, "w": 1, "d": 1, "h": 1, "c": "#c91a09"}], "motion": v}
+        try:
+            out = wa._RENDERERS["motion_bricks"](blk)
+        except Exception:
+            continue
+        s = Scan()
+        s.feed(out)
+        if s.hits:
+            leaks.append(("motion_bricks", "motion", v, sorted(s.hits)))
+    assert not leaks, leaks[:5]
