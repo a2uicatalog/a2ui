@@ -11170,7 +11170,7 @@ blocks:
     license: MIT
 - type: motion_shader
   stage: preview
-  description: 'A WebGL shader background: a domain-warped liquid gradient (kind liquid) or soft aurora bands (kind aurora) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.'
+  description: 'A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.'
   compact_description: seekable WebGL liquid or aurora background with a CSS gradient fallback
   surfaces:
     works_on:
@@ -11189,7 +11189,7 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    kind: '"liquid" | "aurora" (optional, default "liquid")'
+    kind: '"liquid" | "aurora" | "silk" (optional, default "liquid"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen.'
     color1: '"#rrggbb" (optional). Deep colour. Default #0b0712.'
     color2: '"#rrggbb" (optional). Default #ff3d81.'
     color3: '"#rrggbb" (optional). Default #ffb347.'

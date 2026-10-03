@@ -239,7 +239,7 @@ PAYLOADS = {
     "motion_morph": [{}, {"shapes": ["blob", "heart"], "glossy": True, "fill2": "#5b2bff"}, {"glossy": "yes"}, {"shapes": ["circle", "square", "heart", "star"], "fill": "#ff6a2b", "fill2": "#5b2bff", "rotate": 180}, {"shapes": ["plus", "arrow"]},
                      {"shapes": ["nope", "constructor", 5, None, "circle"], "fill": "red;x", "rotate": "x"}, {"shapes": "no"}, {"shapes": ["hexagon", "diamond", "triangle", "blob", "star"]}],
     "motion_shader": [{}, {"kind": "aurora", "color1": "#001020", "color2": "#38bdf8", "color3": "#7c5cff", "scale": 5, "span": 40, "speed": 2, "still": True, "ratio": "1:1", "radius": 20, "label": "Sky <b>"},
-                      {"fill": True}, {"kind": "toString", "color1": "red", "color2": "url(x)", "scale": "x", "span": 1e9, "label": "</script><script>alert(1)</script>"}],
+                      {"fill": True}, {"kind": "silk", "color1": "#1a0b14", "color2": "#c2185b", "color3": "#ffd6e8", "scale": 1.4}, {"kind": "toString", "color1": "red", "color2": "url(x)", "scale": "x", "span": 1e9, "label": "</script><script>alert(1)</script>"}],
     "motion_object3d": [{}, {"shapes": ["cube", "knot"], "material": "gold", "turns": 2, "angle": 30, "tilt": -20, "size": 1.3, "span": 40, "still": True, "ratio": "1:1", "radius": 18},
                         {"shapes": ["blob", "text"], "text": "A2UI", "material": "iridescent", "typeface": "serif", "depth": 0.4, "backdrop": "#101018", "floor": False, "label": "Hero <b>"},
                         {"shapes": ["text"], "text": "D\u00e9clar\u00e9 \u2028x", "material": "glass", "color": "#C4ECFF", "accent": "#ff9a3d", "accent2": "#8a6cff", "fill": True},
@@ -785,7 +785,7 @@ def test_shader_template_is_byte_identical_and_takes_only_numbers(core_js):
     html = _py({"type": "motion_shader", "label": "</script><script>alert(1)</script>", "color1": "#ff0000"})
     script = html[html.index("<script>") + 8:html.index("</script>")]
     cfg = re.search(r"var C=(\{.*?\}),cv=", script).group(1)
-    assert re.fullmatch(r"\{c1:\[[0-9.,]+\],c2:\[[0-9.,]+\],c3:\[[0-9.,]+\],sc:[0-9.]+,k:[01],span:[0-9.]+,speed:[0-9.]+,still:(true|false)\}", cfg), cfg
+    assert re.fullmatch(r"\{c1:\[[0-9.,]+\],c2:\[[0-9.,]+\],c3:\[[0-9.,]+\],sc:[0-9.]+,k:[012],span:[0-9.]+,speed:[0-9.]+,still:(true|false)\}", cfg), cfg
     assert "alert" not in script
 
 
