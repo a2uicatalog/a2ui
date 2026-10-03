@@ -691,6 +691,8 @@ _RENDERERS['motion_text'] = function(b) {
   }
   if (!lines.length) lines = ['Text'];
   var size = _ffInt(b.size, 64, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
+  var vf = (typeof b.font === 'string' && typeof _MO_VFONTS !== 'undefined' && Object.prototype.hasOwnProperty.call(_MO_VFONTS, b.font)) ? b.font : '', fvs = vf ? _moVfVary(vf, b.vary) : '', von = _moOwn(_MO_VARY_ON, b.vary_on, 'unit');
+  if (vf) font = _MO_VFONTS[vf].stack;
   var mode = (b.mode === 'block' || b.mode === 'words' || b.mode === 'chars') ? b.mode : 'lines';
   var reveal = (typeof b.reveal === 'string' && Object.prototype.hasOwnProperty.call(_MO_REVEAL, b.reveal)) ? b.reveal : 'rise';
   var S = _ffInt(b.overlap, 3, 1, 8), track = _ffNum(b.tracking, -0.02, -0.1, 0.5, 3), lh = _ffNum(b.line_height, 1.05, 0.8, 2, 2);
@@ -733,6 +735,10 @@ _RENDERERS['motion_text'] = function(b) {
   function uvar(n) { return '--u:clamp(0,calc((var(--p,1)*' + (N + S) + ' - ' + n + ')/' + S + '),1);'; }
   function wrapUnit(inner, n, blockish) {
     var h = wrapUnit0(inner, n, blockish);
+    if (fvs) { // studio face axes, driven per unit by its reveal, by the second dial, or by a wave travelling along the second dial
+      var vv = von === 'dial' ? 'clamp(0,var(--s,1),1)' : 'clamp(0,calc((var(' + (von === 'wave' ? '--s' : '--p') + ',1)*' + (N + S) + ' - ' + n + ')/' + S + '),1)';
+      h = '<span style="--v:' + vv + ';' + (blockish ? 'display:block;' : 'display:inline-block;') + 'font-variation-settings:' + fvs + ';">' + h + '</span>';
+    }
     if (kara) {
       h = '<span style="--k:clamp(0,calc(1.5 - abs(var(--s,1)*' + N + ' - ' + (n + 0.5) + ')*3),1);display:inline-block;padding:0.04em 0.24em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + (kara === 'pill' ? '#0b0712' : accent) + ');'
         + (kara === 'pill' ? 'background:color-mix(in srgb,' + accent + ' calc(var(--k)*100%),transparent);' : '') + '">' + h + '</span>';
@@ -771,7 +777,7 @@ _RENDERERS['motion_text'] = function(b) {
       out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>';
     } else out += wrapUnit(_moRuns(u.c, accent), idx++, false);
   }
-  return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (textShadow ? 'text-shadow:' + textShadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
+  return (vf ? _moVfFace(vf) : '') + '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (textShadow ? 'text-shadow:' + textShadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
     + _moSr(_moPlain(lines.join(' ')))
     + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>';
 };

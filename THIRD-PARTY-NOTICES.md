@@ -67,6 +67,23 @@ just looks plainer.
 
 ---
 
+## Studio typefaces: Recursive, Anybody, Nabla, Fraunces
+
+- **Projects:** Recursive (https://github.com/arrowtype/recursive), Anybody (https://github.com/Etcetera-Type-Co/Anybody),
+  Nabla (https://github.com/justvanrossum/nabla), Fraunces (https://github.com/undercasetype/Fraunces)
+- **License:** SIL Open Font License 1.1 (each font's licence text is vendored verbatim beside it as `<name>-OFL.txt`)
+- **Copyright:** Copyright 2020 The Recursive Project Authors; Copyright 2020 The Anybody Project Authors; Copyright 2022 The
+  Nabla Project Authors; Copyright 2018 The Fraunces Project Authors
+- **Vendored as:** `public/vendors/fonts/{recursive,anybody,nabla,fraunces}.woff2`, the unmodified Google Fonts latin subsets
+  (all variable axes kept), fetched from pinned versioned fonts.gstatic.com URLs and sha256-verified by
+  `scripts/fetch_studio_fonts.py` (pinned 2026-10-03). The fonts are used under their own names only as fallbacks; the
+  catalogue's @font-face rules name them "A2UI Recursive" etc. No Reserved Font Name is used for a modified font (none are
+  modified).
+- **Used by:** the studio pack (preview): `motion_text` `font` + `vary` (animated variable-font axes) and `motion_object3d`
+  3D type. See `apps-script-surface/gas-wired-renderer/atoms_studio.gs` (`_MO_VFONTS`).
+
+---
+
 ## Three.js (three.js authors)
 
 - **Project:** Three.js — WebGL 3D rendering engine

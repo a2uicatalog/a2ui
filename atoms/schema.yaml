@@ -11205,6 +11205,52 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_object3d
+  stage: preview
+  description: 'A photoreal 3D hero object rendered live in WebGL: a raymarched shape (sphere, torus, cube, pill, knot, blob, lattice, twist, rings) or extruded 3D type, in one of seven materials (chrome, glass with dispersion, iridescent thin film, clay with soft shadows, gold, pearl, obsidian) lit by a procedural photo studio, with a contact shadow. Give two to four shapes and they morph into each other through the distance field as p goes 0 to 1 (a blob can grow into letters); the second dial (--s) turns it (turns per unit of --s), so a step track spins it and seeking shows exactly that frame. Standalone it turns and morphs on its own clock, or holds still with still true or under reduced motion. Transparent by default so it composites over whatever sits behind it in a film; give backdrop for a studio backdrop of its own. The shader and driver are fixed in the renderer and the config is numbers plus the 3D text as an escaped string, so nothing in the payload becomes code. A CSS rendering of the object is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. Preview: part of the studio pack.'
+  compact_description: live WebGL 3D hero object or 3D type in chrome, glass, gold, clay and more, morphing on the film clock
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the CSS fallback rendering; no WebGL
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    - surface: mcp-apps
+      note: Hosts that strip scripts show the CSS fallback rendering
+    incompatible_on:
+    - surface: email
+      reason: Scripts, WebGL and CSS custom properties are not supported in email clients
+  fields:
+    shapes: 'array of 1-4 of "sphere" | "torus" | "cube" | "pill" | "knot" | "blob" | "lattice" | "twist" | "rings" | "text" (optional, default ["blob"]). Several shapes morph in order as p goes 0 to 1.'
+    text: 'string (optional, max 14). The words for the "text" shape. Default "A2UI".'
+    typeface: '"display" | "serif" | "mono" | "rounded" | "recursive" | "anybody" | "fraunces" (optional, default "display"). Face for 3D type; the last three are studio faces loaded from a2uicatalog.ai, falling back to a system face where a host blocks web fonts.'
+    material: '"chrome" | "glass" | "iridescent" | "clay" | "gold" | "pearl" | "obsidian" (optional, default "chrome")'
+    color: '"#rrggbb" (optional). Material tint. Each material has its own default.'
+    accent: '"#rrggbb" (optional). First rim light, seen in reflections and edges.'
+    accent2: '"#rrggbb" (optional). Second rim light.'
+    backdrop: '"#rrggbb" (optional). Studio backdrop colour; omit for a transparent background that composites over the film.'
+    floor: 'bool (optional). Contact shadow under the object. Default true.'
+    turns: 'number (optional). Full turns per unit of --s, -8 to 8. Default 1.'
+    angle: 'number (optional). Starting turn in degrees, -360 to 360. Default 0.'
+    tilt: 'number (optional). Forward tilt in degrees, -60 to 60. Default 12.'
+    size: 'number (optional). Object size, 0.4-2. Default 1.'
+    depth: 'number (optional). Extrusion depth of 3D type, 0.05-0.6. Default 0.22.'
+    span: 'number (optional). Shader seconds per unit of --s for the blob wobble and iridescent drift, 0-600. Default 20.'
+    speed: 'number (optional). Standalone speed, 0-5. Default 1.'
+    still: 'bool (optional). Standalone, hold a still frame. Default false.'
+    ratio: '"16:9" | "4:3" | "1:1" | "3:4" | "9:16" (optional, default "16:9")'
+    fill: 'bool (optional). Fill the placed box height instead of using ratio. Default false.'
+    radius: 'integer (optional). Corner px, 0-60. Default 0.'
+    label: 'string (optional, max 80). Accessible name.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

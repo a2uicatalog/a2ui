@@ -27206,6 +27206,10 @@ def _render_motion_text(b: dict) -> str:
     if not lines:
         lines = ['Text']
     size, weight, font = _ff_int(b.get('size'), 64, 10, 400), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), _ff_pick(b.get('font'), _FF_FONTS, 'sans')
+    vf = b.get('font') if isinstance(b.get('font'), str) and b.get('font') in _MO_VFONTS else ''
+    fvs, von = (_mo_vf_vary(vf, b.get('vary')) if vf else ''), _mo_own(_MO_VARY_ON, b.get('vary_on'), 'unit')
+    if vf:
+        font = _MO_VFONTS[vf]['stack']
     mode = b.get('mode') if b.get('mode') in ('block', 'words', 'chars') else 'lines'
     reveal = b.get('reveal') if isinstance(b.get('reveal'), str) and b.get('reveal') in _MO_REVEAL else 'rise'
     S = _ff_int(b.get('overlap'), 3, 1, 8)
@@ -27265,6 +27269,9 @@ def _render_motion_text(b: dict) -> str:
 
     def wrap_unit(inner, n, blockish):
         h = wrap_unit0(inner, n, blockish)
+        if fvs:
+            vv = 'clamp(0,var(--s,1),1)' if von == 'dial' else 'clamp(0,calc((var(' + ('--s' if von == 'wave' else '--p') + ',1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1)'
+            h = '<span style="--v:' + vv + ';' + ('display:block;' if blockish else 'display:inline-block;') + 'font-variation-settings:' + fvs + ';">' + h + '</span>'
         if kara:
             h = ('<span style="--k:clamp(0,calc(1.5 - abs(var(--s,1)*' + str(N) + ' - ' + _ff_num(n + 0.5, 0, 0, 1000, 1) + ')*3),1);display:inline-block;padding:0.04em 0.24em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + ('#0b0712' if kara == 'pill' else accent) + ');'
                  + ('background:color-mix(in srgb,' + accent + ' calc(var(--k)*100%),transparent);' if kara == 'pill' else '') + '">' + h + '</span>')
@@ -27313,7 +27320,7 @@ def _render_motion_text(b: dict) -> str:
             out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>'
         else:
             out += wrap_unit(_mo_runs(u['c'], accent), nxt(), False)
-    return ('<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
+    return ((_mo_vf_face(vf) if vf else '') + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
             + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
             + _mo_sr(_mo_plain(' '.join(lines)))
             + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>')
@@ -28503,6 +28510,119 @@ def _render_motion_shader(b: dict) -> str:
             + '<script>' + _MO_SHADER_JS.replace('%%UID%%', uid, 1).replace('%%CFG%%', cfg, 1) + '</script></div>')
 
 
+
+# ─── studio pack (2026-10-03): twin of apps-script-surface/gas-wired-renderer/atoms_studio.gs. The WebGL drivers are NOT copied:
+# their source is read out of that file (what Function.prototype.toString returns in GAS), so the browser code exists once.
+_STUDIO_GS = Path(__file__).resolve().parent.parent / "apps-script-surface" / "gas-wired-renderer" / "atoms_studio.gs"
+_studio_src_cache: Dict[str, str] = {}
+
+
+def _studio_fn_src(name: str) -> str:
+    if name not in _studio_src_cache:
+        m = re.search(r'^function %s\(.*?\) \{.*?^\}' % re.escape(name), _STUDIO_GS.read_text(encoding="utf-8"), re.S | re.M)
+        if not m:
+            raise RuntimeError("studio pack: function %s not found in %s" % (name, _STUDIO_GS))
+        _studio_src_cache[name] = m.group(0)
+    return _studio_src_cache[name]
+
+
+# Twin of atoms_studio.gs's studio typefaces (_MO_VFONTS, _moVfFace, _moVfVary) -- edit BOTH.
+_MO_VFONT_BASE = 'https://a2uicatalog.ai/vendors/fonts/'
+_MO_VFONTS = {
+    'recursive': {'fam': 'A2UI Recursive', 'stack': "'A2UI Recursive',Recursive,system-ui,sans-serif", 'file': 'recursive.woff2', 'desc': 'font-weight:300 1000;font-style:oblique 0deg 15deg;',
+                  'axes': {'wght': [300, 1000], 'MONO': [0, 1], 'CASL': [0, 1], 'slnt': [-15, 0], 'CRSV': [0, 1]}},
+    'anybody': {'fam': 'A2UI Anybody', 'stack': "'A2UI Anybody',Anybody,system-ui,sans-serif", 'file': 'anybody.woff2', 'desc': 'font-weight:100 900;font-stretch:50% 150%;',
+                'axes': {'wght': [100, 900], 'wdth': [50, 150]}},
+    'nabla': {'fam': 'A2UI Nabla', 'stack': "'A2UI Nabla',Nabla,system-ui,sans-serif", 'file': 'nabla.woff2', 'desc': 'font-weight:400;',
+              'axes': {'EDPT': [0, 200], 'EHLT': [0, 24]}},
+    'fraunces': {'fam': 'A2UI Fraunces', 'stack': "'A2UI Fraunces',Fraunces,Georgia,serif", 'file': 'fraunces.woff2', 'desc': 'font-weight:100 900;',
+                 'axes': {'wght': [100, 900], 'opsz': [9, 144], 'SOFT': [0, 100], 'WONK': [0, 1]}},
+}
+_MO_VARY_ON = {'unit': 1, 'dial': 1, 'wave': 1}
+
+
+def _mo_vf_face(k):
+    f = _MO_VFONTS[k]
+    return "<style>@font-face{font-family:'" + f['fam'] + "';src:url(" + _MO_VFONT_BASE + f['file'] + ") format('woff2');" + f['desc'] + 'font-display:swap;}</style>'
+
+
+def _mo_vf_vary(k, vary):
+    if k not in _MO_VFONTS or not isinstance(vary, list):
+        return ''
+    axes, out, seen = _MO_VFONTS[k]['axes'], [], set()
+    for v in vary:
+        if len(out) >= 4:
+            break
+        if not isinstance(v, dict) or not isinstance(v.get('axis'), str) or v['axis'] not in axes or v['axis'] in seen:
+            continue
+        seen.add(v['axis'])
+        r = axes[v['axis']]
+        a, z = _ff_num(v.get('from'), r[0], r[0], r[1], 2), _ff_num(v.get('to'), r[1], r[0], r[1], 2)
+        d = _ff_num(float(z) - float(a), 0, r[0] - r[1], r[1] - r[0], 2)
+        out.append("'" + v['axis'] + "' calc(" + a + ' + ' + d + '*var(--v,1))')
+    return ','.join(out)
+
+_MO_OBJ_SHAPES = {'sphere': 0, 'torus': 1, 'cube': 2, 'pill': 3, 'knot': 4, 'blob': 5, 'lattice': 6, 'twist': 7, 'rings': 8, 'text': 9}
+_MO_OBJ_MATS = {'chrome': 0, 'glass': 1, 'iridescent': 2, 'clay': 3, 'gold': 4, 'pearl': 5, 'obsidian': 6}
+_MO_OBJ_PAL = {
+    'chrome': ['#e3e8ff', '#ff4f8b', '#4cc3ff', '#14121c'], 'glass': ['#c4ecff', '#ff9a3d', '#8a6cff', '#12131c'],
+    'iridescent': ['#ffffff', '#ff4f8b', '#4cc3ff', '#0e0c14'], 'clay': ['#f2a7b6', '#ffd6a5', '#a0c4ff', '#ece4d8'],
+    'gold': ['#ffcf6b', '#ff7a3d', '#ffe9b0', '#140e08'], 'pearl': ['#f3eee8', '#b8a7ff', '#ffd1e8', '#d8d0c6'],
+    'obsidian': ['#0a0a14', '#4cc3ff', '#ff4f8b', '#0a0a10'],
+}
+_MO_OBJ_FONT = {
+    'display': '800 %S system-ui,-apple-system,"Segoe UI",Roboto,sans-serif',
+    'serif': '700 %S Georgia,"Times New Roman",serif',
+    'mono': '700 %S ui-monospace,Menlo,Consolas,monospace',
+    'rounded': '800 %S ui-rounded,"SF Pro Rounded",system-ui,sans-serif',
+    'recursive': "900 %S 'A2UI Recursive',Recursive,system-ui,sans-serif",
+    'anybody': "900 %S 'A2UI Anybody',Anybody,system-ui,sans-serif",
+    'fraunces': "800 %S 'A2UI Fraunces',Fraunces,Georgia,serif",
+}
+
+
+def _render_motion_object3d(b: dict) -> str:
+    uid, src = _wa_uid(b)[:6], b.get('shapes') if isinstance(b.get('shapes'), list) else []
+    sh = []
+    for v in src:
+        if len(sh) >= 4:
+            break
+        if isinstance(v, str) and v in _MO_OBJ_SHAPES:
+            sh.append(v)
+    if not sh:
+        sh = ['blob']
+    mat = _mo_own(_MO_OBJ_MATS, b.get('material'), 'chrome')
+    pal, has_txt = _MO_OBJ_PAL[mat], 'text' in sh
+    txt = (_cv_str(b.get('text'), 14) or 'A2UI') if has_txt else ''
+    face = _mo_own(_MO_OBJ_FONT, b.get('typeface'), 'display')
+    font = _MO_OBJ_FONT[face]
+    c1, c2, c3 = _ff_hex(b.get('color'), pal[0]), _ff_hex(b.get('accent'), pal[1]), _ff_hex(b.get('accent2'), pal[2])
+    bd = b.get('backdrop')
+    bg_on = isinstance(bd, str) and re.fullmatch(r'#[0-9a-fA-F]{6}', bd) is not None
+    cb = bd.lower() if bg_on else pal[3]
+    turns, ang, tilt, zoom = _ff_num(b.get('turns'), 1, -8, 8, 2), _ff_num(b.get('angle'), 0, -360, 360, 1), _ff_num(b.get('tilt'), 12, -60, 60, 1), _ff_num(b.get('size'), 1, 0.4, 2, 2)
+    depth, span, speed = _ff_num(b.get('depth'), 0.22, 0.05, 0.6, 2), _ff_num(b.get('span'), 20, 0, 600, 2), _ff_num(b.get('speed'), 1, 0, 5, 2)
+    still, floor = b.get('still') is True, b.get('floor') is not False
+    ratio, fill, rad = _ff_pick(b.get('ratio'), _MO_RATIO, '16:9'), b.get('fill') is True, _ff_int(b.get('radius'), 0, 0, 60)
+    idx = [str(_MO_OBJ_SHAPES[k]) for k in sh]
+    label = _cv_str(b.get('label'), 80) or ('3D ' + mat + ' ' + (txt if has_txt else ' to '.join(sh)))
+    tf = lambda v: 'true' if v else 'false'
+    cfg = ('{c1:' + _mo_rgb3(c1) + ',c2:' + _mo_rgb3(c2) + ',c3:' + _mo_rgb3(c3) + ',cb:' + _mo_rgb3(cb) + ',mat:' + str(_MO_OBJ_MATS[mat]) + ',floor:' + tf(floor)
+           + ',tilt:' + tilt + ',zoom:' + zoom + ',depth:' + depth + ',bg:' + tf(bg_on) + ',ang:' + ang + ',turns:' + turns + ',span:' + span + ',speed:' + speed
+           + ',still:' + tf(still) + ',max:1100,n:' + str(len(idx)) + ',sh:[' + ','.join(idx) + '],txt:' + _js_json(txt, ensure_ascii=False) + ',font:' + _js_json(font, ensure_ascii=False) + '}')
+    if has_txt:
+        fb = ('<div style="font:900 min(13vw,8rem)/1 system-ui,-apple-system,sans-serif;letter-spacing:-0.02em;color:' + c1 + ';background:linear-gradient(180deg,#ffffff,' + c1 + ' 45%,' + c2
+              + ');-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">' + _cv_esc(txt) + '</div>')
+    else:
+        fb = ('<div style="width:38%;aspect-ratio:1/1;border-radius:' + ('22%' if sh[-1] == 'cube' else '50%') + ';background:radial-gradient(circle at 34% 28%,#ffffff,' + c1 + ' 20%,' + c3 + ' 62%,' + c2
+              + ');box-shadow:0 2.4em 2em -1.6em rgba(0,0,0,0.45);"></div>')
+    return ((_mo_vf_face(face) if has_txt and face in _MO_VFONTS else '') + '<div id="mt-' + uid + '" role="img" aria-label="' + _cv_esc(label) + '" style="position:relative;width:100%;' + ('height:100%;' if fill else 'aspect-ratio:' + ratio + ';') + 'overflow:hidden;border-radius:' + str(rad) + 'px;'
+            + ('background:radial-gradient(circle at 50% 45%,' + cb + ',#000 140%);' if bg_on else '') + '">'
+            + '<style>#mt-' + uid + '.gl>[data-fb]{display:none!important}@media print{#mt-' + uid + ' canvas{display:none}#mt-' + uid + '.gl>[data-fb]{display:flex!important}}</style>'
+            + '<div data-fb="" style="position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">' + fb + '</div>'
+            + '<canvas aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas>'
+            + '<script>(' + _studio_fn_src('_moStudioObj') + ')("' + uid + '",' + cfg + ');</script></div>')
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
@@ -28515,7 +28635,7 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
                          ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso),
                          ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph),
-                         ('motion_shader', _render_motion_shader)):
+                         ('motion_shader', _render_motion_shader), ('motion_object3d', _render_motion_object3d)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

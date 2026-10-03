@@ -43,7 +43,8 @@ REEL5 = ["motion_image", "motion_chart", "motion_lower_third", "motion_wave", "m
 REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
 REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batch 7, 2026-10-02
 REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-10-02
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + DEMO_ATOMS
+STUDIO = ["motion_object3d"]  # studio pack (atoms_studio.gs), 2026-10-03
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -68,7 +69,7 @@ def _node(core_js: str, body: str):
         d.write_text("global.window = global;\n" + core_js + "\n" + body)
         proc = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
         assert proc.returncode == 0, proc.stderr[-1500:]
-        return json.loads(proc.stdout.strip().splitlines()[-1])
+        return json.loads(proc.stdout.strip().split("\n")[-1])
 
 
 def _gas_batch(core_js: str, blocks: list[dict]) -> list[str]:
@@ -151,7 +152,11 @@ PAYLOADS = {
     "motion_layer": [{}, {"blocks": [{"type": "motion_text", "id": "a", "text": "Hi", "place": {"x": 5, "y": 5, "w": 50}},
                                       {"type": "motion_shape", "shape": "ring", "place": {"x": 60, "y": 10, "w": 30, "h": 50, "z": 3}},
                                       "junk", {"type": "motion_timeline"}, {"type": "no_such_atom"}, {"type": "motion_layer", "id": "inner", "blocks": []}]}],
-    "motion_text": [{}, {"text": "We *build*", "prism": ["Build", "Ship", "Scale"], "size": 60}, {"text": "x", "prism": ["a", "b"]}, {"text": "x", "prism": ["<b>", "a\"b", 5, None, "x" * 40, "e", "f"]}, {"text": "x", "prism": "no"}, {"text": "x", "prism": ["only"]}, {"text": "SOLD OUT", "mode": "chars", "reveal": "flap", "size": 80}, {"text": "a b", "mode": "words", "reveal": "flap"}, {"text": "Cut *this*", "decor": "strike", "decor_color": "#ff3d81", "mode": "words"}, {"text": "mark it", "decor": "highlight", "mode": "lines"}, {"text": "under", "decor": "underline", "mode": "chars"}, {"text": "Il te faut un plan", "mode": "words", "karaoke": "pill", "accent": "#ff6a2b"}, {"text": "co lor", "mode": "words", "karaoke": "color"}, {"text": "MOVE", "split": 30, "split_a": "#ff0055", "split_b": "#00ffff", "extrude": 8}, {"text": "x", "decor": "toString", "karaoke": "constructor", "split": 9999, "split_a": "red;x", "decor_color": "url(x)"}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
+    "motion_text": [{}, {"text": "{\"type\": \"card\"}", "font": "recursive", "mode": "chars", "vary": [{"axis": "MONO", "from": 1, "to": 0}, {"axis": "CASL", "from": 0, "to": 1}, {"axis": "wght", "from": 400, "to": 900}]},
+                    {"text": "Declare it once", "font": "recursive", "vary": [{"axis": "slnt", "from": 0, "to": -15}], "vary_on": "dial"}, {"text": "WIDE", "font": "anybody", "mode": "chars", "vary": [{"axis": "wdth", "from": 50, "to": 150}], "vary_on": "wave"},
+                    {"text": "3D", "font": "nabla", "vary": [{"axis": "EDPT", "from": 0, "to": 200}, {"axis": "EHLT", "to": 24}]}, {"text": "Soft serif", "font": "fraunces", "mode": "words", "vary": [{"axis": "SOFT", "from": 0, "to": 100}, {"axis": "WONK", "from": 0, "to": 1}, {"axis": "opsz", "from": 144, "to": 9}]},
+                    {"text": "plain", "font": "recursive"}, {"text": "x", "font": "fraunces", "vary": [{"axis": "wdth"}, {"axis": "toString"}, {"axis": "wght;color:red", "from": 1}, {"axis": "wght", "from": "x", "to": 1e9}, {"axis": "wght", "from": 200}, "no", None, {"axis": "opsz", "from": -5, "to": 99999}, {"axis": "SOFT"}, {"axis": "WONK"}]},
+                    {"text": "x", "font": "recursive", "vary": "MONO", "vary_on": "constructor"}, {"text": "x", "font": "sans", "vary": [{"axis": "wght", "from": 100, "to": 900}]}, {"text": "x", "font": "__proto__"}, {"text": "We *build*", "prism": ["Build", "Ship", "Scale"], "size": 60}, {"text": "x", "prism": ["a", "b"]}, {"text": "x", "prism": ["<b>", "a\"b", 5, None, "x" * 40, "e", "f"]}, {"text": "x", "prism": "no"}, {"text": "x", "prism": ["only"]}, {"text": "SOLD OUT", "mode": "chars", "reveal": "flap", "size": 80}, {"text": "a b", "mode": "words", "reveal": "flap"}, {"text": "Cut *this*", "decor": "strike", "decor_color": "#ff3d81", "mode": "words"}, {"text": "mark it", "decor": "highlight", "mode": "lines"}, {"text": "under", "decor": "underline", "mode": "chars"}, {"text": "Il te faut un plan", "mode": "words", "karaoke": "pill", "accent": "#ff6a2b"}, {"text": "co lor", "mode": "words", "karaoke": "color"}, {"text": "MOVE", "split": 30, "split_a": "#ff0055", "split_b": "#00ffff", "extrude": 8}, {"text": "x", "decor": "toString", "karaoke": "constructor", "split": 9999, "split_a": "red;x", "decor_color": "url(x)"}, {"text": "NORTH\nLIGHT", "size": 260, "font": "display", "weight": "black", "reveal": "mask", "tracking": -0.045, "line_height": 0.92, "color": "#FFF6E8", "uppercase": True},
                     {"text": "a b c\nd e", "mode": "words", "reveal": "drop", "overlap": 5, "align": "middle"},
                     {"text": "chars <b>& \"q\" \u2603", "mode": "chars", "reveal": "blur", "align": "end"},
                     {"text": "x" * 200, "mode": "chars"}, {"text": "a\nb\nc\nd\ne\nf", "mode": "block", "reveal": "fade"}, {"text": ""},
@@ -233,6 +238,13 @@ PAYLOADS = {
                      {"shapes": ["nope", "constructor", 5, None, "circle"], "fill": "red;x", "rotate": "x"}, {"shapes": "no"}, {"shapes": ["hexagon", "diamond", "triangle", "blob", "star"]}],
     "motion_shader": [{}, {"kind": "aurora", "color1": "#001020", "color2": "#38bdf8", "color3": "#7c5cff", "scale": 5, "span": 40, "speed": 2, "still": True, "ratio": "1:1", "radius": 20, "label": "Sky <b>"},
                       {"fill": True}, {"kind": "toString", "color1": "red", "color2": "url(x)", "scale": "x", "span": 1e9, "label": "</script><script>alert(1)</script>"}],
+    "motion_object3d": [{}, {"shapes": ["cube", "knot"], "material": "gold", "turns": 2, "angle": 30, "tilt": -20, "size": 1.3, "span": 40, "still": True, "ratio": "1:1", "radius": 18},
+                        {"shapes": ["blob", "text"], "text": "A2UI", "material": "iridescent", "typeface": "serif", "depth": 0.4, "backdrop": "#101018", "floor": False, "label": "Hero <b>"},
+                        {"shapes": ["text"], "text": "D\u00e9clar\u00e9 \u2028x", "material": "glass", "color": "#C4ECFF", "accent": "#ff9a3d", "accent2": "#8a6cff", "fill": True},
+                        {"shapes": ["sphere", "torus", "pill", "lattice", "twist", "rings"], "material": "clay", "backdrop": "#ECE4D8"},
+                        {"shapes": ["text"], "text": "</script><script>alert(1)</script>", "label": "</script><script>alert(2)</script>", "typeface": "toString"},
+                        {"shapes": ["nope", "constructor", 5, None], "material": "__proto__", "color": "red;x", "backdrop": "#12345", "turns": "x", "tilt": 1e9, "size": -4, "speed": "fast"},
+                        {"shapes": "no", "text": 7}, {"shapes": ["text"], "text": "   "}, {"material": "obsidian", "accent2": "url(x)"}, {"shapes": ["text"], "text": "Soft", "typeface": "fraunces", "material": "pearl"}, {"shapes": ["sphere"], "typeface": "recursive"}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],
@@ -490,7 +502,8 @@ def test_every_motion_atom_is_declared_with_the_right_stage():
 def test_every_documented_field_is_actually_read_by_the_renderer():
     """A field in the schema that no code reads is a lie an agent will act on."""
     import yaml
-    src = (ROOT / "apps-script-surface" / "gas-wired-renderer" / "atoms_motion.gs").read_text()
+    src = ((ROOT / "apps-script-surface" / "gas-wired-renderer" / "atoms_motion.gs").read_text() + "\n"
+           + (ROOT / "apps-script-surface" / "gas-wired-renderer" / "atoms_studio.gs").read_text())
     atoms = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms" / "schema.yaml").read_text())["blocks"]}
     starts = {m.group(1): m.start() for m in re.finditer(r"_RENDERERS\['([a-z0-9_]+)'\] = function", src)}
     order = sorted(starts.values()) + [len(src)]
@@ -768,3 +781,20 @@ def test_shader_template_is_byte_identical_and_takes_only_numbers(core_js):
     cfg = re.search(r"var C=(\{.*?\}),cv=", script).group(1)
     assert re.fullmatch(r"\{c1:\[[0-9.,]+\],c2:\[[0-9.,]+\],c3:\[[0-9.,]+\],sc:[0-9.]+,k:[01],span:[0-9.]+,speed:[0-9.]+,still:(true|false)\}", cfg), cfg
     assert "alert" not in script
+
+
+def test_object3d_config_is_numbers_and_escaped_strings_only(core_js):
+    """motion_object3d: the driver is fixed code read from atoms_studio.gs; the payload reaches it only as numbers, enum indexes and two
+    script-safe JSON strings (the 3D text and a font from a fixed table). A hostile text can neither close the script nor run."""
+    html = _py({"type": "motion_object3d", "shapes": ["text"], "text": "</script><b>", "label": "</script><script>alert(1)</script>"})
+    script = html[html.index("<script>(") + 8:html.rindex("</script>")]
+    assert "</" not in script and "alert" not in script
+    call = script[script.rindex(')("'):]
+    cfg = re.search(r'\)\("[a-z0-9]{6}",(\{.*\})\);$', call).group(1)
+    assert re.fullmatch(r'\{c1:\[[0-9.,]+\],c2:\[[0-9.,]+\],c3:\[[0-9.,]+\],cb:\[[0-9.,]+\],mat:[0-6],floor:(true|false),tilt:-?[0-9.]+,zoom:[0-9.]+,depth:[0-9.]+,'
+                        r'bg:(true|false),ang:-?[0-9.]+,turns:-?[0-9.]+,span:[0-9.]+,speed:[0-9.]+,still:(true|false),max:1100,n:[1-4],sh:\[[0-9,]+\],'
+                        r'txt:"(?:[^"\\]|\\.)*",font:"(?:[^"\\]|\\.)*"\}', cfg), cfg
+    assert '\\u003c/script\\u003e' in cfg
+    # the driver in the page is exactly the function in atoms_studio.gs, as GAS's toString would give it
+    g = _node(core_js, "console.log(JSON.stringify(_moStudioObj.toString()));")
+    assert g == wa._studio_fn_src("_moStudioObj") and g in html
