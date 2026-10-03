@@ -45,10 +45,8 @@ def resolve_deployment_id(renderer):
     if ops_data and 'deployments' in ops_data:
         try:
             deployments = ops_data['deployments']
-            if renderer in ('gem', 'main'):
+            if renderer in ('gem', 'main', 'wired'):
                 return deployments['gas-wired-renderer']['public_deployment']
-            elif renderer == 'wired':
-                return deployments['gas-trade-bot']['deployment']
             elif renderer == 'fakes':
                 return deployments['gas-fakes-schema-renderer-private']['head_deployment']
         except KeyError:
