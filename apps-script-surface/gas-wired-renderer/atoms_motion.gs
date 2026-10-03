@@ -693,7 +693,19 @@ _RENDERERS['motion_text'] = function(b) {
   var size = _ffInt(b.size, 64, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
   var vf = (typeof b.font === 'string' && typeof _MO_VFONTS !== 'undefined' && Object.prototype.hasOwnProperty.call(_MO_VFONTS, b.font)) ? b.font : '', fvs = vf ? _moVfVary(vf, b.vary) : '', von = _moOwn(_MO_VARY_ON, b.vary_on, 'unit');
   if (vf) font = _MO_VFONTS[vf].stack;
+  // Style flip (studio pack): every character is a two-faced card; a wave on the second dial turns it over to the matching character
+  // of flip_text (default: the same text) in its own face, colour, weight and animated axes. Characters mode only.
+  var flipOn = typeof b.flip_text === 'string' || typeof b.flip_font === 'string', flipFace = '', flipStack = '', flipFvs = '', flipChars = [];
+  if (flipOn) {
+    flipFace = (typeof b.flip_font === 'string' && typeof _MO_VFONTS !== 'undefined' && Object.prototype.hasOwnProperty.call(_MO_VFONTS, b.flip_font)) ? b.flip_font : '';
+    flipStack = flipFace ? _MO_VFONTS[flipFace].stack : _ffPick(b.flip_font, _FF_FONTS, 'serif');
+    flipFvs = flipFace ? _moVfVary(flipFace, b.flip_vary) : '';
+    var flipSrc = typeof b.flip_text === 'string' ? b.flip_text.slice(0, 160) : lines.join(' '), fcs = Array.from(_moPlain(flipSrc)), fi;
+    for (fi = 0; fi < fcs.length; fi++) if (fcs[fi] !== ' ' && fcs[fi] !== '\n') flipChars.push(fcs[fi]);
+  }
+  var flipColor = _moInk(b, 'flip_color', 'var(--mt-acc,#38bdf8)'), flipWeight = _ffPick(b.flip_weight, _FF_WEIGHTS, 'bold');
   var mode = (b.mode === 'block' || b.mode === 'words' || b.mode === 'chars') ? b.mode : 'lines';
+  if (flipOn) mode = 'chars';
   var reveal = (typeof b.reveal === 'string' && Object.prototype.hasOwnProperty.call(_MO_REVEAL, b.reveal)) ? b.reveal : 'rise';
   var S = _ffInt(b.overlap, 3, 1, 8), track = _ffNum(b.tracking, -0.02, -0.1, 0.5, 3), lh = _ffNum(b.line_height, 1.05, 0.8, 2, 2);
   var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), upper = b.uppercase === true;
@@ -739,6 +751,12 @@ _RENDERERS['motion_text'] = function(b) {
       var vv = von === 'dial' ? 'clamp(0,var(--s,1),1)' : 'clamp(0,calc((var(' + (von === 'wave' ? '--s' : '--p') + ',1)*' + (N + S) + ' - ' + n + ')/' + S + '),1)';
       h = '<span style="--v:' + vv + ';' + (blockish ? 'display:block;' : 'display:inline-block;') + 'font-variation-settings:' + fvs + ';">' + h + '</span>';
     }
+    if (flipOn) { // a two-faced card per character: the front turns away as the back turns in, in a wave along the second dial
+      var bc = n < flipChars.length ? flipChars[n] : '\u00a0', face = 'grid-area:1/1;justify-self:center;display:inline-block;backface-visibility:hidden;-webkit-backface-visibility:hidden;';
+      h = '<span style="--f:clamp(0,calc((var(--s,0)*' + (N + S) + ' - ' + n + ')/' + S + '),1);--v:var(--f);display:inline-grid;perspective:3.5em;vertical-align:bottom;">'
+        + '<span style="' + face + 'transform:rotateX(calc(var(--f)*-180deg));">' + h + '</span>'
+        + '<span aria-hidden="true" style="' + face + 'transform:rotateX(calc(180deg - var(--f)*180deg));font-family:' + flipStack + ';font-weight:' + flipWeight + ';color:' + flipColor + ';' + (flipFvs ? 'font-variation-settings:' + flipFvs + ';' : '') + '">' + _esc(bc) + '</span></span>';
+    }
     if (kara) {
       h = '<span style="--k:clamp(0,calc(1.5 - abs(var(--s,1)*' + N + ' - ' + (n + 0.5) + ')*3),1);display:inline-block;padding:0.04em 0.24em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + (kara === 'pill' ? '#0b0712' : accent) + ');'
         + (kara === 'pill' ? 'background:color-mix(in srgb,' + accent + ' calc(var(--k)*100%),transparent);' : '') + '">' + h + '</span>';
@@ -777,8 +795,10 @@ _RENDERERS['motion_text'] = function(b) {
       out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>';
     } else out += wrapUnit(_moRuns(u.c, accent), idx++, false);
   }
-  return (vf ? _moVfFace(vf) : '') + '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (textShadow ? 'text-shadow:' + textShadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
-    + _moSr(_moPlain(lines.join(' ')))
+  var srText = _moPlain(lines.join(' ')), flipPlain = flipOn && typeof b.flip_text === 'string' ? _moPlain(b.flip_text.slice(0, 160)).replace(/\n/g, ' ') : '';
+  if (flipPlain && flipPlain !== srText) srText += ', then ' + flipPlain;
+  return (vf ? _moVfFace(vf) : '') + (flipFace && flipFace !== vf ? _moVfFace(flipFace) : '') + '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (textShadow ? 'text-shadow:' + textShadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
+    + _moSr(srText)
     + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>';
 };
 

@@ -27210,7 +27210,18 @@ def _render_motion_text(b: dict) -> str:
     fvs, von = (_mo_vf_vary(vf, b.get('vary')) if vf else ''), _mo_own(_MO_VARY_ON, b.get('vary_on'), 'unit')
     if vf:
         font = _MO_VFONTS[vf]['stack']
+    flip_on = isinstance(b.get('flip_text'), str) or isinstance(b.get('flip_font'), str)
+    flip_face, flip_stack, flip_fvs, flip_chars = '', '', '', []
+    if flip_on:
+        flip_face = b.get('flip_font') if isinstance(b.get('flip_font'), str) and b.get('flip_font') in _MO_VFONTS else ''
+        flip_stack = _MO_VFONTS[flip_face]['stack'] if flip_face else _ff_pick(b.get('flip_font'), _FF_FONTS, 'serif')
+        flip_fvs = _mo_vf_vary(flip_face, b.get('flip_vary')) if flip_face else ''
+        flip_src = b['flip_text'][:160] if isinstance(b.get('flip_text'), str) else ' '.join(lines)
+        flip_chars = [c for c in _mo_plain(flip_src) if c != ' ' and c != '\n']
+    flip_color, flip_weight = _mo_ink(b, 'flip_color', 'var(--mt-acc,#38bdf8)'), _ff_pick(b.get('flip_weight'), _FF_WEIGHTS, 'bold')
     mode = b.get('mode') if b.get('mode') in ('block', 'words', 'chars') else 'lines'
+    if flip_on:
+        mode = 'chars'
     reveal = b.get('reveal') if isinstance(b.get('reveal'), str) and b.get('reveal') in _MO_REVEAL else 'rise'
     S = _ff_int(b.get('overlap'), 3, 1, 8)
     track, lh = _ff_num(b.get('tracking'), -0.02, -0.1, 0.5, 3), _ff_num(b.get('line_height'), 1.05, 0.8, 2, 2)
@@ -27272,6 +27283,13 @@ def _render_motion_text(b: dict) -> str:
         if fvs:
             vv = 'clamp(0,var(--s,1),1)' if von == 'dial' else 'clamp(0,calc((var(' + ('--s' if von == 'wave' else '--p') + ',1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1)'
             h = '<span style="--v:' + vv + ';' + ('display:block;' if blockish else 'display:inline-block;') + 'font-variation-settings:' + fvs + ';">' + h + '</span>'
+        if flip_on:
+            bc = flip_chars[n] if n < len(flip_chars) else '\u00a0'
+            face = 'grid-area:1/1;justify-self:center;display:inline-block;backface-visibility:hidden;-webkit-backface-visibility:hidden;'
+            h = ('<span style="--f:clamp(0,calc((var(--s,0)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1);--v:var(--f);display:inline-grid;perspective:3.5em;vertical-align:bottom;">'
+                 + '<span style="' + face + 'transform:rotateX(calc(var(--f)*-180deg));">' + h + '</span>'
+                 + '<span aria-hidden="true" style="' + face + 'transform:rotateX(calc(180deg - var(--f)*180deg));font-family:' + flip_stack + ';font-weight:' + flip_weight + ';color:' + flip_color + ';'
+                 + ('font-variation-settings:' + flip_fvs + ';' if flip_fvs else '') + '">' + _cv_esc(bc) + '</span></span>')
         if kara:
             h = ('<span style="--k:clamp(0,calc(1.5 - abs(var(--s,1)*' + str(N) + ' - ' + _ff_num(n + 0.5, 0, 0, 1000, 1) + ')*3),1);display:inline-block;padding:0.04em 0.24em;border-radius:0.3em;color:color-mix(in srgb,' + color + ' calc((1 - var(--k))*100%),' + ('#0b0712' if kara == 'pill' else accent) + ');'
                  + ('background:color-mix(in srgb,' + accent + ' calc(var(--k)*100%),transparent);' if kara == 'pill' else '') + '">' + h + '</span>')
@@ -27320,9 +27338,13 @@ def _render_motion_text(b: dict) -> str:
             out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>'
         else:
             out += wrap_unit(_mo_runs(u['c'], accent), nxt(), False)
-    return ((_mo_vf_face(vf) if vf else '') + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
+    sr_text = _mo_plain(' '.join(lines))
+    flip_plain = _mo_plain(b['flip_text'][:160]).replace('\n', ' ') if flip_on and isinstance(b.get('flip_text'), str) else ''
+    if flip_plain and flip_plain != sr_text:
+        sr_text += ', then ' + flip_plain
+    return ((_mo_vf_face(vf) if vf else '') + (_mo_vf_face(flip_face) if flip_face and flip_face != vf else '') + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
             + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
-            + _mo_sr(_mo_plain(' '.join(lines)))
+            + _mo_sr(sr_text)
             + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>')
 
 
