@@ -407,7 +407,10 @@ def test_bundle_size_guard(bundle):
     # template this size costs on claude.ai / ChatGPT. Nothing ships until the renderer is released. If a host objects, the
     # fallback is to put atoms_scene_data.gs back in EXCLUDE_FILES (gen_mcp_apps_bundle.py) and have the Worker inline only the
     # props one spec uses (~35 KB). Revert this number to 2_500_000 to force that decision.
-    assert len(bundle) < 3_500_000, f"bundle ballooned to {len(bundle)} bytes"
+    # Ceiling raised 3.5 -> 3.6 MB on 2026-10-03, with Curtis's go-ahead, for the motion_bricks
+    # GPU per-brick flight-motion capability (atoms_brick.gs growth, bricks + real LDraw parts).
+    # Delta checked, not accidental: bundle hit 3,514,012 bytes, ~14 KB over the old 3.5 MB ceiling.
+    assert len(bundle) < 3_600_000, f"bundle ballooned to {len(bundle)} bytes"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
 
 
