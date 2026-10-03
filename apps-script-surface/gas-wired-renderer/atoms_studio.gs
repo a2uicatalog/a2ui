@@ -254,3 +254,42 @@ _RENDERERS['motion_object3d'] = function(b) {
     + '<canvas aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas>'
     + '<script>(' + _moStudioObj.toString() + ')("' + uid + '",' + cfg + ');<\/script></div>';
 };
+
+// ─── motion_bricks: a LEGO-style brick sculpture on the film clock ─────────────────────────────────────────────────────────────
+// Reuses brick_build_3d's engine (_brickKit in atoms_brick.gs, unchanged apart from its film-clock hook) inside a lean, transparent
+// shell: bricks drop into place as --p goes 0 to 1 and the model turns with --s. A word is built in real bricks: each character of
+// the same 5x7 dot font motion_particles uses, every row's runs of dots merged into 1x1 to 1x4 bricks, `depth` studs deep.
+var _MO_BRICK_DEFAULT = ['#c91a09', '#f2cd37', '#0055bf', '#237841', '#fe8a18', '#36aebf'];
+function _moBrickText(t, palette, color, depth) {
+  if (typeof t !== 'string') return null;
+  var chs = Array.from(t.toUpperCase().trim()).slice(0, 12), out = [], x0 = 0, i, r, c;
+  var cols = color ? [color] : (palette.length ? palette : _MO_BRICK_DEFAULT);
+  for (i = 0; i < chs.length; i++) {
+    var g = Object.prototype.hasOwnProperty.call(_MO_FONT, chs[i]) ? _MO_FONT[chs[i]] : null;
+    if (!g) { x0 += 3; continue; }
+    var col = cols[i % cols.length];
+    for (r = 0; r < 7; r++) {
+      c = 0;
+      while (c < 5) {
+        if (!(g[r] & (16 >> c))) { c++; continue; }
+        var c0 = c;
+        while (c < 5 && (g[r] & (16 >> c))) c++;
+        var len = c - c0, k = c0;
+        while (len > 0) { var w = len >= 4 ? 4 : len; out.push({x: x0 + k, y: 6 - r, z: 0, w: w, d: depth, h: 1, c: col}); k += w; len -= w; }
+      }
+    }
+    x0 += 6;
+  }
+  return out.length ? out : null;
+}
+_RENDERERS['motion_bricks'] = function(b) {
+  var kit = _brickKit(), palette = _brickPalette(b.palette), color = _ffHex(b.color, '');
+  var shape = Object.prototype.hasOwnProperty.call(kit.SHAPES, b.shape) ? b.shape : 'heart', depth = _ffInt(b.depth, 2, 1, 4);
+  var text = _moStr(b.text, 12), bricks = _moBrickText(text, palette, color, depth) || _brickSanitise(b.bricks, palette);
+  var ang = _ffNum(b.angle, 24, -360, 360, 1), el = _ffNum(b.elevation, 26, 7, 75, 1), turns = _ffNum(b.turns, 1, -8, 8, 2);
+  var ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), fill = b.fill === true, uid = Math.random().toString(36).substr(2, 6);
+  var label = _moStr(b.label, 80) || (text ? 'Brick lettering: ' + text : (bricks ? 'Brick model' : 'Brick model: ' + shape));
+  var cfg = '{"shape":' + _jsJson(shape) + ',"bricks":' + _jsJson(bricks) + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _jsJson(b.base === 'none' ? 'none' : (_ffHex(b.base, '') || null)) + '}';
+  return '<div id="mt-' + uid + '" style="position:relative;width:100%;' + (fill ? 'height:100%;' : 'aspect-ratio:' + ratio + ';') + '"><canvas role="img" aria-label="' + _esc(label) + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
+    + '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';var K=(' + _brickKit.toString() + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();<\/script>';
+};

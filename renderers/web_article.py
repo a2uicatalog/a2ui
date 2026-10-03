@@ -28623,6 +28623,56 @@ def _render_motion_object3d(b: dict) -> str:
             + '<canvas aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas>'
             + '<script>(' + _studio_fn_src('_moStudioObj') + ')("' + uid + '",' + cfg + ');</script></div>')
 
+
+# Twin of atoms_studio.gs's motion_bricks. The engine is _brickKit, read out of atoms_brick.gs exactly as brick_build_3d does.
+_MO_BRICK_DEFAULT = ['#c91a09', '#f2cd37', '#0055bf', '#237841', '#fe8a18', '#36aebf']
+
+
+def _mo_brick_text(t, palette, color, depth):
+    if not isinstance(t, str):
+        return None
+    chs, out, x0 = list(t.upper().strip())[:12], [], 0
+    cols = [color] if color else (palette if palette else _MO_BRICK_DEFAULT)
+    for i, ch in enumerate(chs):
+        g = _MO_FONT.get(ch)
+        if g is None:
+            x0 += 3
+            continue
+        col = cols[i % len(cols)]
+        for r in range(7):
+            c = 0
+            while c < 5:
+                if not (g[r] & (16 >> c)):
+                    c += 1
+                    continue
+                c0 = c
+                while c < 5 and (g[r] & (16 >> c)):
+                    c += 1
+                ln, k = c - c0, c0
+                while ln > 0:
+                    w = 4 if ln >= 4 else ln
+                    out.append({'x': x0 + k, 'y': 6 - r, 'z': 0, 'w': w, 'd': depth, 'h': 1, 'c': col})
+                    k += w
+                    ln -= w
+        x0 += 6
+    return out or None
+
+
+def _render_motion_bricks(b: dict) -> str:
+    palette, color = _brick_palette(b.get('palette')), _ff_hex(b.get('color'), '')
+    shape = b.get('shape') if isinstance(b.get('shape'), str) and b.get('shape') in _BRICK_SHAPES else 'heart'
+    depth = _ff_int(b.get('depth'), 2, 1, 4)
+    text = _cv_str(b.get('text'), 12)
+    bricks = _mo_brick_text(text, palette, color, depth) or _brick_sanitise(b.get('bricks'), palette)
+    ang, el, turns = _ff_num(b.get('angle'), 24, -360, 360, 1), _ff_num(b.get('elevation'), 26, 7, 75, 1), _ff_num(b.get('turns'), 1, -8, 8, 2)
+    ratio, fill, uid = _ff_pick(b.get('ratio'), _MO_RATIO, '16:9'), b.get('fill') is True, _wa_uid(b)[:6]
+    label = _cv_str(b.get('label'), 80) or (('Brick lettering: ' + text) if text else ('Brick model' if bricks else 'Brick model: ' + shape))
+    cfg = ('{"shape":' + _js_json(shape, ensure_ascii=False) + ',"bricks":' + _js_json(bricks, separators=(",", ":"), ensure_ascii=False)
+           + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _js_json('none' if b.get('base') == 'none' else (_ff_hex(b.get('base'), '') or None), ensure_ascii=False) + '}')
+    return ('<div id="mt-' + uid + '" style="position:relative;width:100%;' + ('height:100%;' if fill else 'aspect-ratio:' + ratio + ';') + '"><canvas role="img" aria-label="' + _cv_esc(label)
+            + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
+            + '<script>(function(){' + _brick_material_profile_src() + 'var K=(' + _brick_fn_src("_brickKit") + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();</script>')
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
@@ -28635,7 +28685,7 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
                          ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso),
                          ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph),
-                         ('motion_shader', _render_motion_shader), ('motion_object3d', _render_motion_object3d)):
+                         ('motion_shader', _render_motion_shader), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

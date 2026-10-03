@@ -43,7 +43,7 @@ REEL5 = ["motion_image", "motion_chart", "motion_lower_third", "motion_wave", "m
 REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
 REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batch 7, 2026-10-02
 REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-10-02
-STUDIO = ["motion_object3d"]  # studio pack (atoms_studio.gs), 2026-10-03
+STUDIO = ["motion_object3d", "motion_bricks"]  # studio pack (atoms_studio.gs), 2026-10-03
 MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
@@ -245,6 +245,10 @@ PAYLOADS = {
                         {"shapes": ["text"], "text": "</script><script>alert(1)</script>", "label": "</script><script>alert(2)</script>", "typeface": "toString"},
                         {"shapes": ["nope", "constructor", 5, None], "material": "__proto__", "color": "red;x", "backdrop": "#12345", "turns": "x", "tilt": 1e9, "size": -4, "speed": "fast"},
                         {"shapes": "no", "text": 7}, {"shapes": ["text"], "text": "   "}, {"material": "obsidian", "accent2": "url(x)"}, {"shapes": ["text"], "text": "Soft", "typeface": "fraunces", "material": "pearl"}, {"shapes": ["sphere"], "typeface": "recursive"}],
+    "motion_bricks": [{}, {"text": "A2UI", "angle": -30, "elevation": 40, "turns": 2, "depth": 3, "ratio": "1:1"}, {"text": "json!", "color": "#C91A09"}, {"text": "UI", "palette": ["#ff4f8b", "#4cc3ff", "nope"], "fill": True},
+                      {"shape": "torus", "turns": -1.5, "base": "none"}, {"text": "OK", "base": "#1B1A22"}, {"text": "OK", "base": "red"}, {"bricks": [[0, 0, 0, 4, 2, "#c91a09"], [1, 1, 0, 2, 2, 1, "#f2cd37"], {"x": 0, "y": 2, "z": 0, "w": 2, "d": 2, "c": 0}], "palette": ["#0055bf"]},
+                      {"text": "</script><script>alert(1)", "label": "</script><script>alert(2)</script>", "color": "red;x", "palette": "no", "depth": 99, "angle": "x", "elevation": 1e9, "turns": None, "ratio": "toString"},
+                      {"shape": "constructor", "bricks": "nope"}, {"text": "   "}, {"text": "\u00e9\u00df \u2028 ~"}, {"text": 5, "shape": "house"}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],

@@ -927,8 +927,9 @@ function _brickKit(materialProfile) {
       if(SHOW_STUDS)stud(out,xa+0.5,T,za+0.5,c,a);
     }
   }
-  var BASE='#3f9a55',MARGIN=2;
+  var BASE='#3f9a55',MARGIN=2,NOBASE=false;   // NOBASE / BASE are set per kit by createBrickBuild's `base` option (film shell)
   function genBase(M,occ,out){
+    if(NOBASE)return;
     var x0=-MARGIN,x1=M.W+MARGIN,z0=-MARGIN,z1=M.D+MARGIN,x,z;
     for(z=z0;z<z1;z++)for(x=x0;x<x1;x++){
       if(occ(x,0,z))continue;
@@ -1150,7 +1151,7 @@ function _brickKit(materialProfile) {
     function setModel(M){
       model=M;var B=M.bricks,n=B.length,i,b,c,x,z,sb=new Float32Array((n+1)*9);
       for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);sb.set([b.x,PL+b.y*BH,b.z,b.w,b.h*BH,b.d,c[0],c[1],c[2]],i*9);}
-      c=linRGB(BASE);sb.set([-MARGIN,0,-MARGIN,M.W+2*MARGIN,PL,M.D+2*MARGIN,c[0],c[1],c[2]],n*9);
+      c=linRGB(BASE);sb.set(NOBASE?[0,-1,0,0,0,0,c[0],c[1],c[2]]:[-MARGIN,0,-MARGIN,M.W+2*MARGIN,PL,M.D+2*MARGIN,c[0],c[1],c[2]],n*9);
       nBox=n+1;
       var occ=new Uint8Array(M.W*M.D*(M.L+1));
       B.forEach(function(b){for(var y=b.y;y<b.y+b.h;y++)for(var zz=b.z;zz<b.z+b.d;zz++)for(var xx=b.x;xx<b.x+b.w;xx++)occ[(y*M.D+zz)*M.W+xx]=1;});
@@ -1161,7 +1162,7 @@ function _brickKit(materialProfile) {
         for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);var ty=b.y+b.h;
           for(z=b.z;z<b.z+b.d;z++)for(x=b.x;x<b.x+b.w;x++)add(i,x,PL+ty*BH,z,c,cov(x,ty,z));}
         c=linRGB(BASE);
-        for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
+        if(!NOBASE)for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
       }
       var all=open.slice(0,STUD_CAP).concat(hidden.slice(0,Math.max(0,STUD_CAP-open.length)));
       nStud=all.length;var ss=new Float32Array(nStud*9);studOf=new Int32Array(nStud);
@@ -1470,6 +1471,8 @@ function _brickKit(materialProfile) {
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
     var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0;
     var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,onInspect=null,raf=0;
+    if(o.clock==='film'){az=(o.azDeg||0)*Math.PI/180;if(o.elDeg!==undefined)el=o.elDeg*Math.PI/180;}
+    if(o.base==='none')NOBASE=true;else if(typeof o.base==='string'&&/^#[0-9a-fA-F]{6}$/.test(o.base))BASE=o.base;
 
     function occ(x,y,z){
       if(x<0||z<0||y<0||x>=M.W||z>=M.D||y>=M.L)return 0;
@@ -1726,6 +1729,7 @@ function _brickKit(materialProfile) {
       setCamera();
       var i,j;
       /* shadows: brick boxes projected along the light onto the baseplate, filled once so overlaps do not double up */
+      if(!NOBASE){
       ctx.save();
       ctx.beginPath();
       var bx0=-MARGIN,bx1=M.W+MARGIN,bz0=-MARGIN,bz1=M.D+MARGIN;
@@ -1744,6 +1748,7 @@ function _brickKit(materialProfile) {
       }
       ctx.fillStyle='rgba(10,20,30,0.26)';ctx.fill();
       ctx.restore();
+      }
 
       /* collect faces: cached static geometry + bricks currently in motion */
       dyn.length=0;
@@ -1763,7 +1768,14 @@ function _brickKit(materialProfile) {
       raf=requestAnimationFrame(loop);
       if(!visible)return;
       var dt=Math.min(0.05,(now-last)/1000);last=now;
-      if(!reduced){
+      if(o.clock==='film'){
+        // Film clock (motion_bricks, 2026-10-03): the build follows the inherited --p (0 = nothing placed, 1 = every brick settled)
+        // and the turntable follows --s (turns per unit), so a motion_timeline track drives both and seek(t) shows exactly that frame.
+        var cs=getComputedStyle(canvas),pv=cs.getPropertyValue('--p').trim(),sv=cs.getPropertyValue('--s').trim();
+        var fp=pv===''?1:Math.max(0,Math.min(1,parseFloat(pv)||0)),fs=sv===''?0:(parseFloat(sv)||0);
+        var nt=fp*tBuild,na=(o.azDeg||0)*Math.PI/180+fs*(o.turns||0)*2*Math.PI;
+        if(nt!==tNow||na!==az){tNow=nt;az=na;dirtyView=true;}
+      }else if(!reduced){
         if(o.mode!=='steps'){tNow+=dt*o.speed;if(tNow>=tCycle)tNow-=tCycle;}
         if(o.orbit&&!dragging)az+=dt*0.22*o.speed;
         dirtyView=true;
