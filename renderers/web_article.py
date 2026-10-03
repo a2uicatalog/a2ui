@@ -27846,11 +27846,15 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 _mo_stitch_key(keys, 0, {'opacity': 0, 'x': P['x'] - 50, 'y': P['y'] - 50, 'scale': s0})
                 _mo_stitch_key(keys, cur['t'], {'opacity': 1, 'x': P['x'] - 50, 'y': P['y'] - 50, 'scale': s0}, 'hold')
                 _mo_stitch_key(keys, cur['t'] + ov, {'x': 0, 'y': 0, 'scale': 1}, 'quart-in-out')
+            elif fin == 'letter':  # hidden until its start (clip 0 is the word at reading size, not nothing), then dives through the word
+                _mo_stitch_key(keys, 0, {'opacity': 0, 'clip': 0, 'cs': 9})
+                _mo_stitch_key(keys, cur['t'], {'opacity': 1, 'clip': 0, 'cs': 9}, 'hold')
+                _mo_stitch_key(keys, cur['t'] + max(ov, 1.4), _MO_REST, 'linear')
             else:
                 frm = _MO_STITCH_IN[fin]
                 _mo_stitch_key(keys, 0, frm)
                 _mo_stitch_key(keys, cur['t'], frm)
-                _mo_stitch_key(keys, cur['t'] + (max(ov, 1.4) if fin == 'letter' else ov), _MO_REST, 'linear' if fin == 'letter' else 'expo-out')
+                _mo_stitch_key(keys, cur['t'] + ov, _MO_REST, 'expo-out')
         if nxt:
             if fout == 'cut':
                 _mo_stitch_key(keys, nxt['t'], {'opacity': 0}, 'hold')

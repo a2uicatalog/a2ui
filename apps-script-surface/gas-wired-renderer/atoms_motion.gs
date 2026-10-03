@@ -1212,7 +1212,10 @@ function _moStitch(b, ids, bpm, dur, st) {
         _moStitchKey(keys, 0, {opacity: 0, x: P.x - 50, y: P.y - 50, scale: s0}); _moStitchKey(keys, cur.t, {opacity: 1, x: P.x - 50, y: P.y - 50, scale: s0}, 'hold');
         _moStitchKey(keys, cur.t + ov, {x: 0, y: 0, scale: 1}, 'quart-in-out');
       }
-      else { from = _MO_STITCH_IN[fin]; _moStitchKey(keys, 0, from); _moStitchKey(keys, cur.t, from); _moStitchKey(keys, cur.t + (fin === 'letter' ? Math.max(ov, 1.4) : ov), _MO_REST, fin === 'letter' ? 'linear' : 'expo-out'); }
+      else if (fin === 'letter') { // hidden until its start (clip 0 is the word at reading size, not nothing), then dives through the word
+        _moStitchKey(keys, 0, {opacity: 0, clip: 0, cs: 9}); _moStitchKey(keys, cur.t, {opacity: 1, clip: 0, cs: 9}, 'hold'); _moStitchKey(keys, cur.t + Math.max(ov, 1.4), _MO_REST, 'linear');
+      }
+      else { from = _MO_STITCH_IN[fin]; _moStitchKey(keys, 0, from); _moStitchKey(keys, cur.t, from); _moStitchKey(keys, cur.t + ov, _MO_REST, 'expo-out'); }
     }
     if (nxt) {
       if (fout === 'cut') _moStitchKey(keys, nxt.t, {opacity: 0}, 'hold');
