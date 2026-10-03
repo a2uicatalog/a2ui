@@ -10418,7 +10418,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_rays
-  stage: preview
   description: 'A sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns it), or horizontal speed streaks that sweep across the frame (kind speed, --s slides them). Plain CSS gradients, no script; standalone it renders finished.'
   compact_description: sunburst or speed-line background that fans in and turns
   surfaces:
@@ -10447,7 +10446,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_hud
-  stage: preview
   description: 'A heads-up display that fills its placed box: corner brackets, a timecode that counts up from 0 to `seconds` as p goes 0 to 1, a label top right and a progress bar along the bottom. The recording-viewfinder look. Plain HTML and CSS; the timecode is rewritten by the timeline clock like motion_counter.'
   compact_description: viewfinder HUD with corner brackets, counting timecode and progress bar
   surfaces:
@@ -10796,7 +10794,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_lower_third
-  stage: preview
   description: 'A lower third: an accent bar draws, the name slides out of it behind a clip, and the role fades in under it as p goes 0 to 1. Plain CSS, no script; standalone it renders finished.'
   compact_description: name and role lower third that draws and slides in
   surfaces:
@@ -11024,7 +11021,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_finish
-  stage: preview
   description: 'A finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a vignette, warm or cool light leaks that drift, and an optional glass sheen that sweeps across with p. Place it last and full size (place 0,0,100,100); it never takes clicks. p fades it in. Plain SVG and CSS, no script.'
   compact_description: film grain, vignette, light leaks and glass sheen over the frame
   surfaces:
@@ -11169,7 +11165,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: motion_shader
-  stage: preview
   description: 'A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.'
   compact_description: seekable WebGL liquid or aurora background with a CSS gradient fallback
   surfaces:

@@ -6,7 +6,7 @@ canonical: https://a2uicatalog.ai/sdk.md
 
 # A2UI Atomic Catalog — SDK & Client Libraries
 
-Official client libraries, SDK packages, CLI tools, and agent integrations for the A2UI Atomic Catalog (540 atoms).
+Official client libraries, SDK packages, CLI tools, and agent integrations for the A2UI Atomic Catalog (545 atoms).
 
 ## Official Packages
 

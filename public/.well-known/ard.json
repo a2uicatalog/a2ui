@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 540 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 545 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -5562,6 +5562,96 @@
         "show a reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
         "reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a",
         "render a motion mask"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_rays",
+      "displayName": "Motion Rays",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_rays",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns it), or horizontal speed streaks that sweep across the frame (kind speed, --s slides them). Plain CSS gradients, no script; standalone it renders finished.",
+      "representativeQueries": [
+        "show a sunburst or speed-line background that fans in and turns",
+        "a sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns it), or horizontal speed streaks that",
+        "render a motion rays"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_hud",
+      "displayName": "Motion Hud",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_hud",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A heads-up display that fills its placed box: corner brackets, a timecode that counts up from 0 to `seconds` as p goes 0 to 1, a label top right and a progress bar along the bottom. The recording-viewfinder look. Plain HTML and CSS; the timecode is rewritten by the timeline clock like motion_counter.",
+      "representativeQueries": [
+        "show a viewfinder HUD with corner brackets, counting timecode and progress bar",
+        "a heads-up display that fills its placed box: corner brackets, a timecode that counts up from 0 to `seconds` as p goes",
+        "render a motion hud"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_lower_third",
+      "displayName": "Motion Lower Third",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_lower_third",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A lower third: an accent bar draws, the name slides out of it behind a clip, and the role fades in under it as p goes 0 to 1. Plain CSS, no script; standalone it renders finished.",
+      "representativeQueries": [
+        "show a name and role lower third that draws and slides in",
+        "a lower third: an accent bar draws, the name slides out of it behind a clip, and the role fades in under it as p goes",
+        "render a motion lower third"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_finish",
+      "displayName": "Motion Finish",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_finish",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a vignette, warm or cool light leaks that drift, and an optional glass sheen that sweeps across with p. Place it last and full size (place 0,0,100,100); it never takes clicks. p fades it in. Plain SVG and CSS, no script.",
+      "representativeQueries": [
+        "show a film grain, vignette, light leaks and glass sheen over the frame",
+        "a finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a",
+        "render a motion finish"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_shader",
+      "displayName": "Motion Shader",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_shader",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.",
+      "representativeQueries": [
+        "show a seekable WebGL liquid or aurora background with a CSS gradient fallback",
+        "a webgl shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded",
+        "render a motion shader"
       ]
     },
     {

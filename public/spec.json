@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 540,
+ "atomCount": 545,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -12536,6 +12536,229 @@
    "fields": {
     "shape": "\"blob\" | \"circle\" | \"diagonal\" | \"rounded\" | \"bars\" (optional, default \"blob\")",
     "blocks": "array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "motion_rays",
+   "description": "A sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns it), or horizontal speed streaks that sweep across the frame (kind speed, --s slides them). Plain CSS gradients, no script; standalone it renders finished.",
+   "compact_description": "sunburst or speed-line background that fans in and turns",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline CSS functions and custom properties are not supported"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "kind": "\"burst\" | \"speed\" (optional, default \"burst\")",
+    "count": "integer (optional). Rays or lines, 4-64. Default 24.",
+    "thickness": "number (optional). Share of each step that is ray, 0.1-0.9. Default 0.5.",
+    "spin": "integer (optional). Degrees turned at --s = 1 (burst), -360 to 360. Default 45.",
+    "strength": "number (optional). Peak opacity, 0.05-1. Default 0.35.",
+    "accent": "\"#rrggbb\" (optional). Default the stage accent."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "motion_hud",
+   "description": "A heads-up display that fills its placed box: corner brackets, a timecode that counts up from 0 to `seconds` as p goes 0 to 1, a label top right and a progress bar along the bottom. The recording-viewfinder look. Plain HTML and CSS; the timecode is rewritten by the timeline clock like motion_counter.",
+   "compact_description": "viewfinder HUD with corner brackets, counting timecode and progress bar",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline CSS functions and custom properties are not supported"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "seconds": "integer (optional). Where the timecode ends, 1-3600. Default 10.",
+    "label": "string (optional, max 30). Top right, e.g. REC.",
+    "corners": "bool (optional). Corner brackets. Default true.",
+    "bar": "bool (optional). Progress bar. Default true.",
+    "size": "integer (optional). px, 8-60. Default 14.",
+    "color": "\"#rrggbb\" (optional). Default the stage ink.",
+    "accent": "\"#rrggbb\" (optional). Default the stage accent."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "motion_lower_third",
+   "description": "A lower third: an accent bar draws, the name slides out of it behind a clip, and the role fades in under it as p goes 0 to 1. Plain CSS, no script; standalone it renders finished.",
+   "compact_description": "name and role lower third that draws and slides in",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline CSS functions and custom properties are not supported"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "name": "string (max 40).",
+    "role": "string (optional, max 60).",
+    "size": "integer (optional). Name px, 10-120. Default 36.",
+    "color": "\"#rrggbb\" (optional). Name. Default the stage ink.",
+    "accent": "\"#rrggbb\" (optional). Bar and role. Default the stage accent.",
+    "fill": "\"#rrggbb\" (optional). Panel. Default near-black."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "motion_finish",
+   "description": "A finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a vignette, warm or cool light leaks that drift, and an optional glass sheen that sweeps across with p. Place it last and full size (place 0,0,100,100); it never takes clicks. p fades it in. Plain SVG and CSS, no script.",
+   "compact_description": "film grain, vignette, light leaks and glass sheen over the frame",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline CSS functions and custom properties are not supported"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "grain": "bool (optional). Film grain. Default true.",
+    "grain_amount": "number (optional). 0-0.5. Default 0.12.",
+    "grain_size": "\"fine\" | \"medium\" | \"coarse\" (optional, default \"medium\")",
+    "vignette": "bool (optional). Default true.",
+    "vignette_amount": "number (optional). 0-1. Default 0.55.",
+    "leak": "\"warm\" | \"cool\" | false (optional, default \"warm\")",
+    "leak_amount": "number (optional). 0-1. Default 0.35.",
+    "sheen": "bool (optional). A diagonal highlight band sweeping across with p. Default false."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "motion_shader",
+   "description": "A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.",
+   "compact_description": "seekable WebGL liquid or aurora background with a CSS gradient fallback",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the CSS gradient fallback; no shader"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline CSS functions and custom properties are not supported"
+     },
+     {
+      "surface": "mcp-apps",
+      "note": "Hosts that strip scripts show the CSS gradient fallback"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "kind": "\"liquid\" | \"aurora\" | \"silk\" (optional, default \"liquid\"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen.",
+    "color1": "\"#rrggbb\" (optional). Deep colour. Default #0b0712.",
+    "color2": "\"#rrggbb\" (optional). Default #ff3d81.",
+    "color3": "\"#rrggbb\" (optional). Default #ffb347.",
+    "scale": "number (optional). Pattern scale, 0.5-12. Default 2.",
+    "span": "number (optional). Shader seconds per unit of --s, 0-600. Default 20.",
+    "speed": "number (optional). Standalone speed, 0-5. Default 1.",
+    "still": "bool (optional). Standalone, hold a still frame. Default false.",
+    "ratio": "\"16:9\" | \"4:3\" | \"1:1\" | \"3:4\" | \"9:16\" (optional, default \"16:9\")",
+    "fill": "bool (optional). Fill the placed box height instead of using ratio. Default false.",
+    "radius": "integer (optional). Corner px, 0-60. Default 0.",
+    "label": "string (optional, max 60). Accessible name."
    },
    "source": {
     "name": "a2uicatalog",

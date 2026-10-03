@@ -143,7 +143,10 @@ def test_the_mcp_apps_bundle_itself_renders_scenes_and_clipart():
     assert 'class="a2ui-scene"' in scene and "<animate" in scene and "scene-atom:provenance" in scene, scene[:300]
     assert "not bundled on this surface" not in scene and "spec.preset must be one of" in bad
     assert 'class="a2ui-clipart"' in clip and "A turbine" in clip
-    assert len(bundle) < 3_500_000
+    # Same ceiling as tests/test_mcp_apps_bundle.py's test_bundle_size_guard, raised 3.5 -> 3.6 MB on
+    # 2026-10-03 with Curtis's go-ahead for the motion_bricks GPU flight-motion capability — kept in
+    # sync here since this test builds the same bundle independently rather than importing that guard.
+    assert len(bundle) < 3_600_000
 
 
 def test_published_scene_assets_match_the_data_the_renderer_embeds():

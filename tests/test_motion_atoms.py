@@ -494,7 +494,8 @@ def test_overshoot_curves_never_push_opacity_outside_zero_to_one():
 # Promoted to stable 2026-10-01 on Curtis's explicit go-ahead (the a2uicatalog.ai landing film is built from them). The demo kit (demo_*)
 # and motion_path stay preview: nothing published uses them yet, and a stable atom's field names are a public contract.
 PROMOTED = {"motion_timeline", "motion_group", "motion_tokens", "motion_layer", "motion_text", "motion_shape", "motion_counter", "motion_mark", "motion_browser",
-            "motion_orbit", "motion_code", "motion_checklist", "motion_pill", "motion_sketch", "motion_leader", "motion_mask"}
+            "motion_orbit", "motion_code", "motion_checklist", "motion_pill", "motion_sketch", "motion_leader", "motion_mask",
+            "motion_rays", "motion_hud", "motion_lower_third", "motion_shader", "motion_finish"}
 
 
 def test_every_motion_atom_is_declared_with_the_right_stage():

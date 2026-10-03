@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (540 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (545 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -14658,6 +14658,283 @@
       "blocks": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
        "description": "array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_rays": {
+   "type": "object",
+   "description": "A sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns it), or horizontal speed streaks that sweep across the frame (kind speed, --s slides them). Plain CSS gradients, no script; standalone it renders finished.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_rays"
+      },
+      "kind": {
+       "description": "\"burst\" | \"speed\" (optional, default \"burst\")"
+      },
+      "count": {
+       "description": "integer (optional). Rays or lines, 4-64. Default 24.",
+       "type": "number"
+      },
+      "thickness": {
+       "description": "number (optional). Share of each step that is ray, 0.1-0.9. Default 0.5.",
+       "type": "number"
+      },
+      "spin": {
+       "description": "integer (optional). Degrees turned at --s = 1 (burst), -360 to 360. Default 45.",
+       "type": "number"
+      },
+      "strength": {
+       "description": "number (optional). Peak opacity, 0.05-1. Default 0.35.",
+       "type": "number"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default the stage accent."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_hud": {
+   "type": "object",
+   "description": "A heads-up display that fills its placed box: corner brackets, a timecode that counts up from 0 to `seconds` as p goes 0 to 1, a label top right and a progress bar along the bottom. The recording-viewfinder look. Plain HTML and CSS; the timecode is rewritten by the timeline clock like motion_counter.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_hud"
+      },
+      "seconds": {
+       "description": "integer (optional). Where the timecode ends, 1-3600. Default 10.",
+       "type": "number"
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 30). Top right, e.g. REC."
+      },
+      "corners": {
+       "description": "bool (optional). Corner brackets. Default true.",
+       "type": "boolean"
+      },
+      "bar": {
+       "description": "bool (optional). Progress bar. Default true.",
+       "type": "boolean"
+      },
+      "size": {
+       "description": "integer (optional). px, 8-60. Default 14.",
+       "type": "number"
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Default the stage ink."
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default the stage accent."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_lower_third": {
+   "type": "object",
+   "description": "A lower third: an accent bar draws, the name slides out of it behind a clip, and the role fades in under it as p goes 0 to 1. Plain CSS, no script; standalone it renders finished.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_lower_third"
+      },
+      "name": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (max 40)."
+      },
+      "role": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 60)."
+      },
+      "size": {
+       "description": "integer (optional). Name px, 10-120. Default 36.",
+       "type": "number"
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Name. Default the stage ink."
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Bar and role. Default the stage accent."
+      },
+      "fill": {
+       "description": "\"#rrggbb\" (optional). Panel. Default near-black."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_finish": {
+   "type": "object",
+   "description": "A finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a vignette, warm or cool light leaks that drift, and an optional glass sheen that sweeps across with p. Place it last and full size (place 0,0,100,100); it never takes clicks. p fades it in. Plain SVG and CSS, no script.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_finish"
+      },
+      "grain": {
+       "description": "bool (optional). Film grain. Default true.",
+       "type": "boolean"
+      },
+      "grain_amount": {
+       "description": "number (optional). 0-0.5. Default 0.12.",
+       "type": "number"
+      },
+      "grain_size": {
+       "description": "\"fine\" | \"medium\" | \"coarse\" (optional, default \"medium\")"
+      },
+      "vignette": {
+       "description": "bool (optional). Default true.",
+       "type": "boolean"
+      },
+      "vignette_amount": {
+       "description": "number (optional). 0-1. Default 0.55.",
+       "type": "number"
+      },
+      "leak": {
+       "description": "\"warm\" | \"cool\" | false (optional, default \"warm\")"
+      },
+      "leak_amount": {
+       "description": "number (optional). 0-1. Default 0.35.",
+       "type": "number"
+      },
+      "sheen": {
+       "description": "bool (optional). A diagonal highlight band sweeping across with p. Default false.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "motion_shader": {
+   "type": "object",
+   "description": "A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_shader"
+      },
+      "kind": {
+       "description": "\"liquid\" | \"aurora\" | \"silk\" (optional, default \"liquid\"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen."
+      },
+      "color1": {
+       "description": "\"#rrggbb\" (optional). Deep colour. Default #0b0712."
+      },
+      "color2": {
+       "description": "\"#rrggbb\" (optional). Default #ff3d81."
+      },
+      "color3": {
+       "description": "\"#rrggbb\" (optional). Default #ffb347."
+      },
+      "scale": {
+       "description": "number (optional). Pattern scale, 0.5-12. Default 2.",
+       "type": "number"
+      },
+      "span": {
+       "description": "number (optional). Shader seconds per unit of --s, 0-600. Default 20.",
+       "type": "number"
+      },
+      "speed": {
+       "description": "number (optional). Standalone speed, 0-5. Default 1.",
+       "type": "number"
+      },
+      "still": {
+       "description": "bool (optional). Standalone, hold a still frame. Default false.",
+       "type": "boolean"
+      },
+      "ratio": {
+       "description": "\"16:9\" | \"4:3\" | \"1:1\" | \"3:4\" | \"9:16\" (optional, default \"16:9\")"
+      },
+      "fill": {
+       "description": "bool (optional). Fill the placed box height instead of using ratio. Default false.",
+       "type": "boolean"
+      },
+      "radius": {
+       "description": "integer (optional). Corner px, 0-60. Default 0.",
+       "type": "number"
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 60). Accessible name."
       }
      },
      "required": [
