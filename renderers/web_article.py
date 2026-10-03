@@ -26239,13 +26239,13 @@ _MO_TIMELINE_JS = (
     'function fm(v,d,p,s){var neg=v<0;v=Math.abs(v);var m=Math.pow(10,d),k=Math.floor(v*m+0.5),ip=Math.floor(k/m),fp=""+(k%m);while(fp.length<d)fp="0"+fp;var g="",ds=""+ip;for(var i=ds.length;i>0;i-=3){g=ds.slice(Math.max(0,i-3),i)+(g?",":"")+g;}return (neg&&k>0?"-":"")+p+g+(d>0?"."+fp:"")+s;}'
     'var els={},nl=root.querySelectorAll("[data-mt-id]");'
     'for(var i=0;i<nl.length;i++){var el=nl[i],x0=parseFloat(el.getAttribute("data-mt-x")),y0=parseFloat(el.getAttribute("data-mt-y"));els[el.getAttribute("data-mt-id")]={e:el,x0:isNaN(x0)?0:x0,y0:isNaN(y0)?0:y0,nums:el.querySelectorAll("[data-mt-num]")};}'
-    'function ap(g,t){var o=els[g.i];if(!o)return;var v={};for(var k in g.p)v[k]=at(g.p[k],t);var e=o.e,tr="";'
+    'var LZ={};function lz(id,cl){var c=document.getElementById("mlz%%UID%%-"+id);if(!c)return "";var tx=c.querySelector("text");if(!tx)return "";if(!LZ[id])LZ[id]=lzo(tx);var o=LZ[id],k=0.9*Math.pow(90,cl*cl*cl);tx.setAttribute("transform","translate("+o[0].toFixed(1)+" "+o[1].toFixed(1)+") scale("+k.toFixed(4)+") translate("+(-o[0]).toFixed(1)+" "+(-o[1]).toFixed(1)+")");return "url(#mlz%%UID%%-"+id+")";}function lzo(tx){var q=4,w=Math.ceil(C.W/q),h=Math.ceil(C.H/q),cv=document.createElement("canvas");cv.width=w;cv.height=h;var x=cv.getContext("2d");if(!x)return[C.W/2,C.H/2];x.font=(tx.getAttribute("font-weight")||"900")+" "+(parseFloat(tx.getAttribute("font-size"))/q)+"px "+tx.getAttribute("font-family");x.textAlign="center";x.textBaseline="middle";x.fillText(tx.textContent,w/2,h/2);var d=x.getImageData(0,0,w,h).data,best=null,bd=1e18,yy,xx,a,b2,ok;for(yy=3;yy<h-3;yy++)for(xx=3;xx<w-3;xx++){if(d[(yy*w+xx)*4+3]<200)continue;ok=true;for(a=-3;a<=3&&ok;a++)for(b2=-3;b2<=3;b2++)if(d[((yy+a)*w+xx+b2)*4+3]<200){ok=false;break;}if(!ok)continue;var dd=(xx-w/2)*(xx-w/2)+(yy-h/2)*(yy-h/2);if(dd<bd){bd=dd;best=[xx*q+q/2,yy*q+q/2];}}return best||[C.W/2,C.H/2];}if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){LZ={};});function ap(g,t){var o=els[g.i];if(!o)return;var v={};for(var k in g.p)v[k]=at(g.p[k],t);var e=o.e,tr="";'
     'if(v.x!==undefined||v.y!==undefined){tr+="translate("+((v.x===undefined?0:v.x-o.x0)*C.W/100).toFixed(2)+"px,"+((v.y===undefined?0:v.y-o.y0)*C.H/100).toFixed(2)+"px) ";}'
     'if(v.rx!==undefined)tr+="rotateX("+v.rx.toFixed(2)+"deg) ";if(v.ry!==undefined)tr+="rotateY("+v.ry.toFixed(2)+"deg) ";if(v.rotate!==undefined)tr+="rotate("+v.rotate.toFixed(2)+"deg) ";if(v.scale!==undefined)tr+="scale("+Math.max(0,v.scale).toFixed(4)+")";'
     'if(tr)e.style.transform=tr;'
     'if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);'
     'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";'
-    'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999||cs===5){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}'
+    'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999||cs===5){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else if(cs===9)cpp=lz(g.i,cl);else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}'
     'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}'
     'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}'
     'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}'
@@ -26320,7 +26320,7 @@ _MO_FX_ORDER = ['fade', 'rise', 'drop', 'slide-left', 'slide-right', 'scale', 'b
 _MO_SANS = 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif'
 _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]}
 _MO_PROPS = {'x': [-200, 300], 'y': [-200, 300], 'opacity': [0, 1], 'scale': [0, 6], 'rotate': [-360, 360], 'rx': [-80, 80],
-             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 8]}
+             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 9]}
 _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs']
 _MO_CAM = {'x': [-100, 200], 'y': [-100, 200], 'zoom': [0.25, 6], 'rx': [-80, 80], 'ry': [-80, 80], 'rz': [-180, 180], 'z': [-1500, 1500]}
 _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz', 'z']
@@ -27046,9 +27046,12 @@ def _mo_timeline(b: dict) -> str:
     if len(tracks) > 40:
         st['dropped'] += len(tracks) - 40
         tracks = tracks[:40]
+    st['W'], st['H'], st['uid'] = W, H, uid
     tg = tg + _mo_stitch(b, ids, bpm, dur_n, st)  # scene hand-overs first, so a track you write on the same layer wins
     if st.get('rib'):
         world += st['rib']
+    if st.get('lz'):
+        world += st['lz']
     for tr in tracks:
         tid = _mo_id(tr.get('target')) if isinstance(tr, dict) else ''
         if not tid or not ids.get(tid) or not isinstance(tr.get('keys'), list):
@@ -27760,9 +27763,9 @@ def _render_motion_mask(b: dict) -> str:
             + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' if mask else '') + '">' + inner + '</div>')
 
 
-_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1}
-_MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'ribbon': {'clip': 0, 'cs': 6}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
-_MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'ribbon': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
+_MO_STITCH = {'letter': 1, 'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1}
+_MO_STITCH_IN = {'letter': {'clip': 0, 'cs': 9}, 'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'ribbon': {'clip': 0, 'cs': 6}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
+_MO_STITCH_OUT = {'letter': {'opacity': 0}, 'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'ribbon': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
 _MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0, 'clip': 1}
 
 
@@ -27804,7 +27807,7 @@ def _mo_stitch(b, ids, bpm, dur, st):
         if t is None:
             st['dropped'] += 1
             continue
-        sc.append({'id': sid, 't': t, 'i': i, 'fx': s['transition'] if isinstance(s.get('transition'), str) and s['transition'] in _MO_STITCH else '', 'pb': _mo_portal(s.get('portal'))})
+        sc.append({'id': sid, 't': t, 'i': i, 'fx': s['transition'] if isinstance(s.get('transition'), str) and s['transition'] in _MO_STITCH else '', 'pb': _mo_portal(s.get('portal')), 'wd': _cv_str(s.get('word'), 12), 'wf': s['word_font'] if isinstance(s.get('word_font'), str) else ''})
     sc.sort(key=lambda e: (e['t'], e['i']))
     dfx = b['stitch'] if isinstance(b.get('stitch'), str) and b['stitch'] in _MO_STITCH else 'dissolve'
     ov, out = float(_ff_num(b.get('overlap'), 0.6, 0, 3, 2)), []
@@ -27821,6 +27824,16 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 st['rib'] = st.get('rib', '') + ('<div class="mt-el" data-mt-id="' + rid + '" data-mt-x="0" data-mt-y="0" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:50;opacity:0;pointer-events:none;background:linear-gradient(100deg,var(--mt-acc,#38bdf8),color-mix(in srgb,var(--mt-acc,#38bdf8) 50%,#ffffff));"></div>')
                 rj = _mo_track_js([{'t': 0, 'opacity': 0, 'clip': 0, 'cs': 5}, {'t': cur['t'], 'opacity': 1, 'clip': 0, 'cs': 5, 'ease': 'hold'}, {'t': cur['t'] + ov, 'opacity': 1, 'clip': 1, 'cs': 5, 'ease': 'expo-out'}, {'t': cur['t'] + ov + 0.02, 'opacity': 0, 'ease': 'hold'}], _MO_PROPS, _MO_PROP_ORDER, dur, bpm, 'standard', st)
                 out.append('{i:"' + rid + '",p:{' + rj + '}}')
+        if fin == 'letter' and not cur['wd']:
+            fin = 'iris'
+        if fin == 'letter' and cur['t'] > 0:  # the new scene is seen through a word that grows until a letter fills the frame (clip shape 9)
+            lzv = cur['wf'] if cur['wf'] in _MO_VFONTS else ''
+            lz_stack = _MO_VFONTS[lzv]['stack'] if lzv else _ff_pick(cur['wf'], _FF_FONTS, 'display')
+            lz_n = max(1, len(cur['wd']))
+            lz_fs = math.floor(min(st['H'] * 0.62, st['W'] * 0.84 / (lz_n * 0.6)))
+            st['lz'] = st.get('lz', '') + (_mo_vf_face(lzv) if lzv else '') + ('<svg aria-hidden="true" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;"><defs><clipPath id="mlz' + st['uid'] + '-' + cur['id']
+                + '" clipPathUnits="userSpaceOnUse"><text x="' + str(math.floor(st['W'] / 2)) + '" y="' + str(math.floor(st['H'] / 2)) + '" text-anchor="middle" dominant-baseline="central" font-family="' + lz_stack
+                + '" font-weight="900" font-size="' + str(lz_fs) + '">' + _cv_esc(cur['wd']) + '</text></clipPath></defs></svg>')
         if fout == 'portal' and not nxt['pb']:
             fout = 'dissolve'
         if cur['t'] > 0:
@@ -27837,7 +27850,7 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 frm = _MO_STITCH_IN[fin]
                 _mo_stitch_key(keys, 0, frm)
                 _mo_stitch_key(keys, cur['t'], frm)
-                _mo_stitch_key(keys, cur['t'] + ov, _MO_REST, 'expo-out')
+                _mo_stitch_key(keys, cur['t'] + (max(ov, 1.4) if fin == 'letter' else ov), _MO_REST, 'linear' if fin == 'letter' else 'expo-out')
         if nxt:
             if fout == 'cut':
                 _mo_stitch_key(keys, nxt['t'], {'opacity': 0}, 'hold')
@@ -27847,9 +27860,9 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 _mo_stitch_key(keys, nxt['t'], {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1})
                 _mo_stitch_key(keys, nxt['t'] + ov, {'x': -(Q['x'] - 50) * kq, 'y': -(Q['y'] - 50) * kq, 'scale': kq}, 'quart-in-out')
                 _mo_stitch_key(keys, nxt['t'] + ov + 0.02, {'opacity': 0}, 'hold')
-            elif fout in ('wipe', 'iris', 'clock', 'slice', 'ribbon'):  # the old scene stays until the new one has covered it
+            elif fout in ('wipe', 'iris', 'clock', 'slice', 'ribbon', 'letter'):  # the old scene stays until the new one has covered it
                 _mo_stitch_key(keys, nxt['t'], _MO_REST)
-                _mo_stitch_key(keys, nxt['t'] + ov, {'opacity': 0}, 'hold')
+                _mo_stitch_key(keys, nxt['t'] + (max(ov, 1.4) if fout == 'letter' else ov), {'opacity': 0}, 'hold')
             else:
                 _mo_stitch_key(keys, nxt['t'], _MO_REST)
                 _mo_stitch_key(keys, nxt['t'] + ov, _MO_STITCH_OUT[fout], 'accelerate')
