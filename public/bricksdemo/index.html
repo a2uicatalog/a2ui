@@ -1083,8 +1083,9 @@ a{color:inherit}
       if(SHOW_STUDS)stud(out,xa+0.5,T,za+0.5,c,a);
     }
   }
-  var BASE='#3f9a55',MARGIN=2;
+  var BASE='#3f9a55',MARGIN=2,NOBASE=false;   // NOBASE / BASE are set per kit by createBrickBuild's `base` option (film shell)
   function genBase(M,occ,out){
+    if(NOBASE)return;
     var x0=-MARGIN,x1=M.W+MARGIN,z0=-MARGIN,z1=M.D+MARGIN,x,z;
     for(z=z0;z<z1;z++)for(x=x0;x<x1;x++){
       if(occ(x,0,z))continue;
@@ -1171,7 +1172,7 @@ a{color:inherit}
     '  gl_FragColor=e-e.yzww*vec4(1.0/255.0,1.0/255.0,1.0/255.0,0.0);',
     '}'].join('\n');
   function glFS(deriv){return (deriv?'#extension GL_OES_standard_derivatives : enable\n#define DERIV 1\n':'')+GL_PREC+[
-    'uniform sampler2D uSM;uniform vec2 uTx;uniform vec3 uEye;uniform vec3 uLd;uniform float uKind;uniform float uShadow;',
+    'uniform sampler2D uSM;uniform vec2 uTx;uniform vec3 uEye;uniform vec3 uLd;uniform float uKind;uniform float uShadow;uniform float uLook;',
     'varying vec3 vW;varying vec3 vN;varying vec3 vC;varying vec3 vQ;varying vec3 vS;varying vec4 vLS;varying float vA;varying float vH;',
     'float unpack(vec4 c){return dot(c,vec4(1.0,1.0/255.0,1.0/65025.0,1.0/16581375.0));}',
     'float shadowF(float ndl){',
@@ -1216,6 +1217,17 @@ a{color:inherit}
     '  float spec=pow(max(dot(N,H),0.0),64.0)*0.5;',
     '  float fres=0.04+0.96*pow(1.0-max(dot(N,V),0.0),5.0);',
     '  vec3 env=mix(vec3(0.22,0.23,0.25),vec3(1.05,1.08,1.12),smoothstep(-0.3,0.9,R.y));',
+    // Studio look (motion_bricks, 2026-10-03): a product shot instead of an instruction render -- no outlines; edges catch light as
+    // small bevels; reflections of a softbox studio; a tight clearcoat highlight over a broad sheen; wrap lighting lifts the shade side.
+    '  if(uLook>0.5){',
+    '    vec3 hm=mix(vec3(0.09,0.09,0.1),vec3(0.42,0.44,0.5),N.y*0.5+0.5);',
+    '    float wrap=clamp((dot(N,uLd)+0.35)/1.35,0.0,1.0);',
+    '    float sp1=pow(max(dot(N,H),0.0),140.0)*1.1,sp2=pow(max(dot(N,H),0.0),18.0)*0.12;',
+    '    vec3 sbx=vec3(0.06)+vec3(1.6)*smoothstep(0.55,0.75,R.y)*smoothstep(1.0,0.85,R.y)+vec3(0.9)*smoothstep(0.75,0.55,abs(R.x+0.45))*smoothstep(-0.1,0.3,R.y)*smoothstep(0.6,0.3,R.y);',
+    '    float seam=smoothstep(0.0,0.018,edge),bev=smoothstep(0.012,0.03,edge)*(1.0-smoothstep(0.03,0.075,edge));',
+    '    vec3 c2=vC*(hm*ao*0.9+vec3(1.45,1.41,1.33)*wrap*mix(0.35,1.0,sh))+vec3((sp1+sp2)*mix(0.15,1.0,sh))+sbx*fres*0.55*ao+vec3(0.3)*bev*(0.4+0.6*max(dot(N,V),0.0));c2*=mix(0.32,1.0,seam);',
+    '    gl_FragColor=vec4(pow(aces(c2*0.85),vec3(1.0/2.2)),1.0);return;',
+    '  }',
     '  vec3 col=vC*(hemi*ao+vec3(1.9,1.83,1.7)*ndl*sh)+vec3(spec*sh)+env*fres*0.4*ao;',
     '  if(vH>0.5)col=col*1.1+0.02;',
     '  col=pow(aces(col),vec3(1.0/2.2));',
@@ -1306,7 +1318,7 @@ a{color:inherit}
     function setModel(M){
       model=M;var B=M.bricks,n=B.length,i,b,c,x,z,sb=new Float32Array((n+1)*9);
       for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);sb.set([b.x,PL+b.y*BH,b.z,b.w,b.h*BH,b.d,c[0],c[1],c[2]],i*9);}
-      c=linRGB(BASE);sb.set([-MARGIN,0,-MARGIN,M.W+2*MARGIN,PL,M.D+2*MARGIN,c[0],c[1],c[2]],n*9);
+      c=linRGB(BASE);sb.set(NOBASE?[0,-1,0,0,0,0,c[0],c[1],c[2]]:[-MARGIN,0,-MARGIN,M.W+2*MARGIN,PL,M.D+2*MARGIN,c[0],c[1],c[2]],n*9);
       nBox=n+1;
       var occ=new Uint8Array(M.W*M.D*(M.L+1));
       B.forEach(function(b){for(var y=b.y;y<b.y+b.h;y++)for(var zz=b.z;zz<b.z+b.d;zz++)for(var xx=b.x;xx<b.x+b.w;xx++)occ[(y*M.D+zz)*M.W+xx]=1;});
@@ -1317,7 +1329,7 @@ a{color:inherit}
         for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);var ty=b.y+b.h;
           for(z=b.z;z<b.z+b.d;z++)for(x=b.x;x<b.x+b.w;x++)add(i,x,PL+ty*BH,z,c,cov(x,ty,z));}
         c=linRGB(BASE);
-        for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
+        if(!NOBASE)for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
       }
       var all=open.slice(0,STUD_CAP).concat(hidden.slice(0,Math.max(0,STUD_CAP-open.length)));
       nStud=all.length;var ss=new Float32Array(nStud*9);studOf=new Int32Array(nStud);
@@ -1388,7 +1400,7 @@ a{color:inherit}
       gl.uniformMatrix4fv(prog.u.uVP,false,VP);
       gl.uniformMatrix4fv(prog.u.uL,false,lightVP);
       gl.uniform3f(prog.u.uEye,c.eye[0],c.eye[1],c.eye[2]);gl.uniform3f(prog.u.uLd,LD[0],LD[1],LD[2]);
-      gl.uniform1f(prog.u.uShadow,shadowOK?1:0);gl.uniform2f(prog.u.uTx,1/smSize,1/smSize);
+      gl.uniform1f(prog.u.uShadow,shadowOK?1:0);gl.uniform2f(prog.u.uTx,1/smSize,1/smSize);if(prog.u.uLook)gl.uniform1f(prog.u.uLook,c.look==='studio'?1:0);
       gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,smTex);gl.uniform1i(prog.u.uSM,0);
       both(prog);
       bothParts(prog);
@@ -1626,6 +1638,8 @@ a{color:inherit}
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
     var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0;
     var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,onInspect=null,raf=0;
+    if(o.clock==='film'){az=(o.azDeg||0)*Math.PI/180;if(o.elDeg!==undefined)el=o.elDeg*Math.PI/180;}
+    if(o.base==='none')NOBASE=true;else if(typeof o.base==='string'&&/^#[0-9a-fA-F]{6}$/.test(o.base))BASE=o.base;
 
     function occ(x,y,z){
       if(x<0||z<0||y<0||x>=M.W||z>=M.D||y>=M.L)return 0;
@@ -1853,7 +1867,7 @@ a{color:inherit}
         setCamera();
         var R=usingParts?0.5*Math.hypot(PM.W+2*MARGIN,PM.D+2*MARGIN,PM.ySpan*1.1)
                          :0.5*Math.hypot(M.W+2*MARGIN,M.D+2*MARGIN,(PL+M.L*BH)*1.1);
-        gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg});
+        gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg,look:o.look});
         return;
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -1882,6 +1896,7 @@ a{color:inherit}
       setCamera();
       var i,j;
       /* shadows: brick boxes projected along the light onto the baseplate, filled once so overlaps do not double up */
+      if(!NOBASE){
       ctx.save();
       ctx.beginPath();
       var bx0=-MARGIN,bx1=M.W+MARGIN,bz0=-MARGIN,bz1=M.D+MARGIN;
@@ -1900,6 +1915,7 @@ a{color:inherit}
       }
       ctx.fillStyle='rgba(10,20,30,0.26)';ctx.fill();
       ctx.restore();
+      }
 
       /* collect faces: cached static geometry + bricks currently in motion */
       dyn.length=0;
@@ -1919,7 +1935,14 @@ a{color:inherit}
       raf=requestAnimationFrame(loop);
       if(!visible)return;
       var dt=Math.min(0.05,(now-last)/1000);last=now;
-      if(!reduced){
+      if(o.clock==='film'){
+        // Film clock (motion_bricks, 2026-10-03): the build follows the inherited --p (0 = nothing placed, 1 = every brick settled)
+        // and the turntable follows --s (turns per unit), so a motion_timeline track drives both and seek(t) shows exactly that frame.
+        var cs=getComputedStyle(canvas),pv=cs.getPropertyValue('--p').trim(),sv=cs.getPropertyValue('--s').trim();
+        var fp=pv===''?1:Math.max(0,Math.min(1,parseFloat(pv)||0)),fs=sv===''?0:(parseFloat(sv)||0);
+        var nt=fp*tBuild,na=(o.azDeg||0)*Math.PI/180+fs*(o.turns||0)*2*Math.PI;
+        if(nt!==tNow||na!==az){tNow=nt;az=na;dirtyView=true;}
+      }else if(!reduced){
         if(o.mode!=='steps'){tNow+=dt*o.speed;if(tNow>=tCycle)tNow-=tCycle;}
         if(o.orbit&&!dragging)az+=dt*0.22*o.speed;
         dirtyView=true;

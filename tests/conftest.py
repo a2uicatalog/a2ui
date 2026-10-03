@@ -104,7 +104,8 @@ def pytest_ignore_collect(collection_path, config):
     for a in config.args:  # named explicitly: always run
         if Path(a.split("::")[0]).resolve() == collection_path.resolve():
             return None
-    _SCOPE_SKIPPED.append((skips[rel], rel))
+    if (skips[rel], rel) not in _SCOPE_SKIPPED:
+        _SCOPE_SKIPPED.append((skips[rel], rel))
     return True
 
 
