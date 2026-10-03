@@ -289,7 +289,7 @@ _RENDERERS['motion_bricks'] = function(b) {
   var ang = _ffNum(b.angle, 24, -360, 360, 1), el = _ffNum(b.elevation, 26, 7, 75, 1), turns = _ffNum(b.turns, 1, -8, 8, 2);
   var ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), fill = b.fill === true, uid = Math.random().toString(36).substr(2, 6);
   var label = _moStr(b.label, 80) || (text ? 'Brick lettering: ' + text : (bricks ? 'Brick model' : 'Brick model: ' + shape));
-  var cfg = '{"shape":' + _jsJson(shape) + ',"bricks":' + _jsJson(bricks) + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _jsJson(b.base === 'none' ? 'none' : (_ffHex(b.base, '') || null)) + '}';
+  var cfg = '{"shape":' + _jsJson(shape) + ',"bricks":' + _jsJson(bricks) + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _jsJson(b.base === 'none' ? 'none' : (_ffHex(b.base, '') || null)) + ',"look":"' + (b.look === 'instructions' ? 'instructions' : 'studio') + '"}';
   return '<div id="mt-' + uid + '" style="position:relative;width:100%;' + (fill ? 'height:100%;' : 'aspect-ratio:' + ratio + ';') + '"><canvas role="img" aria-label="' + _esc(label) + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
     + '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';var K=(' + _brickKit.toString() + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();<\/script>';
 };

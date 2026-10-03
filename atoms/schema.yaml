@@ -11279,6 +11279,7 @@ blocks:
     palette: 'array of "#rrggbb" (optional). Colours for lettering (cycled per letter) and for integer colour indexes in bricks.'
     depth: 'integer (optional). Lettering depth in studs, 1-4. Default 2.'
     base: '"none" | "#rrggbb" (optional). Baseplate: "none" for floating bricks (no plate, no plate shadow), or a colour. Default the classic green plate.'
+    look: '"studio" | "instructions" (optional, default "studio"). studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines).'
     angle: 'number (optional). Starting turn in degrees, -360 to 360. Default 24.'
     elevation: 'number (optional). Camera elevation in degrees, 7-75. Default 26.'
     turns: 'number (optional). Full turns per unit of --s, -8 to 8. Default 1.'

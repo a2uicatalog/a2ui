@@ -28707,7 +28707,7 @@ def _render_motion_bricks(b: dict) -> str:
     ratio, fill, uid = _ff_pick(b.get('ratio'), _MO_RATIO, '16:9'), b.get('fill') is True, _wa_uid(b)[:6]
     label = _cv_str(b.get('label'), 80) or (('Brick lettering: ' + text) if text else ('Brick model' if bricks else 'Brick model: ' + shape))
     cfg = ('{"shape":' + _js_json(shape, ensure_ascii=False) + ',"bricks":' + _js_json(bricks, separators=(",", ":"), ensure_ascii=False)
-           + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _js_json('none' if b.get('base') == 'none' else (_ff_hex(b.get('base'), '') or None), ensure_ascii=False) + '}')
+           + ',"speed":1,"orbit":false,"bg":null,"mode":"animate","step":1,"clock":"film","azDeg":' + ang + ',"elDeg":' + el + ',"turns":' + turns + ',"base":' + _js_json('none' if b.get('base') == 'none' else (_ff_hex(b.get('base'), '') or None), ensure_ascii=False) + ',"look":"' + ('instructions' if b.get('look') == 'instructions' else 'studio') + '"}')
     return ('<div id="mt-' + uid + '" style="position:relative;width:100%;' + ('height:100%;' if fill else 'aspect-ratio:' + ratio + ';') + '"><canvas role="img" aria-label="' + _cv_esc(label)
             + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
             + '<script>(function(){' + _brick_material_profile_src() + 'var K=(' + _brick_fn_src("_brickKit") + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();</script>')

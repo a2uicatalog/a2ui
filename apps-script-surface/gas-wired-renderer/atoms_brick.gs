@@ -1016,7 +1016,7 @@ function _brickKit(materialProfile) {
     '  gl_FragColor=e-e.yzww*vec4(1.0/255.0,1.0/255.0,1.0/255.0,0.0);',
     '}'].join('\n');
   function glFS(deriv){return (deriv?'#extension GL_OES_standard_derivatives : enable\n#define DERIV 1\n':'')+GL_PREC+[
-    'uniform sampler2D uSM;uniform vec2 uTx;uniform vec3 uEye;uniform vec3 uLd;uniform float uKind;uniform float uShadow;',
+    'uniform sampler2D uSM;uniform vec2 uTx;uniform vec3 uEye;uniform vec3 uLd;uniform float uKind;uniform float uShadow;uniform float uLook;',
     'varying vec3 vW;varying vec3 vN;varying vec3 vC;varying vec3 vQ;varying vec3 vS;varying vec4 vLS;varying float vA;varying float vH;',
     'float unpack(vec4 c){return dot(c,vec4(1.0,1.0/255.0,1.0/65025.0,1.0/16581375.0));}',
     'float shadowF(float ndl){',
@@ -1061,6 +1061,17 @@ function _brickKit(materialProfile) {
     '  float spec=pow(max(dot(N,H),0.0),64.0)*0.5;',
     '  float fres=0.04+0.96*pow(1.0-max(dot(N,V),0.0),5.0);',
     '  vec3 env=mix(vec3(0.22,0.23,0.25),vec3(1.05,1.08,1.12),smoothstep(-0.3,0.9,R.y));',
+    // Studio look (motion_bricks, 2026-10-03): a product shot instead of an instruction render -- no outlines; edges catch light as
+    // small bevels; reflections of a softbox studio; a tight clearcoat highlight over a broad sheen; wrap lighting lifts the shade side.
+    '  if(uLook>0.5){',
+    '    vec3 hm=mix(vec3(0.09,0.09,0.1),vec3(0.42,0.44,0.5),N.y*0.5+0.5);',
+    '    float wrap=clamp((dot(N,uLd)+0.35)/1.35,0.0,1.0);',
+    '    float sp1=pow(max(dot(N,H),0.0),140.0)*1.1,sp2=pow(max(dot(N,H),0.0),18.0)*0.12;',
+    '    vec3 sbx=vec3(0.06)+vec3(1.6)*smoothstep(0.55,0.75,R.y)*smoothstep(1.0,0.85,R.y)+vec3(0.9)*smoothstep(0.75,0.55,abs(R.x+0.45))*smoothstep(-0.1,0.3,R.y)*smoothstep(0.6,0.3,R.y);',
+    '    float seam=smoothstep(0.0,0.018,edge),bev=smoothstep(0.012,0.03,edge)*(1.0-smoothstep(0.03,0.075,edge));',
+    '    vec3 c2=vC*(hm*ao*0.9+vec3(1.45,1.41,1.33)*wrap*mix(0.35,1.0,sh))+vec3((sp1+sp2)*mix(0.15,1.0,sh))+sbx*fres*0.55*ao+vec3(0.3)*bev*(0.4+0.6*max(dot(N,V),0.0));c2*=mix(0.32,1.0,seam);',
+    '    gl_FragColor=vec4(pow(aces(c2*0.85),vec3(1.0/2.2)),1.0);return;',
+    '  }',
     '  vec3 col=vC*(hemi*ao+vec3(1.9,1.83,1.7)*ndl*sh)+vec3(spec*sh)+env*fres*0.4*ao;',
     '  if(vH>0.5)col=col*1.1+0.02;',
     '  col=pow(aces(col),vec3(1.0/2.2));',
@@ -1233,7 +1244,7 @@ function _brickKit(materialProfile) {
       gl.uniformMatrix4fv(prog.u.uVP,false,VP);
       gl.uniformMatrix4fv(prog.u.uL,false,lightVP);
       gl.uniform3f(prog.u.uEye,c.eye[0],c.eye[1],c.eye[2]);gl.uniform3f(prog.u.uLd,LD[0],LD[1],LD[2]);
-      gl.uniform1f(prog.u.uShadow,shadowOK?1:0);gl.uniform2f(prog.u.uTx,1/smSize,1/smSize);
+      gl.uniform1f(prog.u.uShadow,shadowOK?1:0);gl.uniform2f(prog.u.uTx,1/smSize,1/smSize);if(prog.u.uLook)gl.uniform1f(prog.u.uLook,c.look==='studio'?1:0);
       gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,smTex);gl.uniform1i(prog.u.uSM,0);
       both(prog);
       bothParts(prog);
@@ -1700,7 +1711,7 @@ function _brickKit(materialProfile) {
         setCamera();
         var R=usingParts?0.5*Math.hypot(PM.W+2*MARGIN,PM.D+2*MARGIN,PM.ySpan*1.1)
                          :0.5*Math.hypot(M.W+2*MARGIN,M.D+2*MARGIN,(PL+M.L*BH)*1.1);
-        gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg});
+        gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg,look:o.look});
         return;
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
