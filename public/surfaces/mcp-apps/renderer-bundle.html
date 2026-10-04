@@ -26099,7 +26099,10 @@ _RENDERERS['motion_timeline'] = function(b) {
   // Stage element wrappers sit above nested atoms and would swallow pointer/wheel events meant for
   // an embedded canvas (e.g. brick_build_3d's own drag-orbit and scroll-zoom). Let events pass through
   // the wrappers, and re-enable them on canvases so nested interactive atoms still receive them.
-  return '<style>.asw-page{max-width:none!important;padding:0!important;margin:0!important;}'
+  // Dark stage all the way out: the host page background and any nested brick card otherwise
+  // show as a white bleed around the cinematic frame.
+  return '<style>html,body{background:#07111f!important}[style*="radial-gradient(120% 90%"]{background:#07111f!important;}'
+    + '.asw-page{max-width:none!important;padding:0!important;margin:0!important;background:#07111f!important}'
     + '.mt-el{pointer-events:none}.mt-el canvas{pointer-events:auto}</style>' + out;
 };
 
