@@ -1,11 +1,15 @@
 package ai.a2uicatalog.android
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.webkit.ConsoleMessage
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.a2ui.compose.runtime.A2uiComponentProperties
@@ -17,10 +21,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -81,6 +87,28 @@ internal fun rawProps(p: A2uiComponentProperties): Map<String, Any?>? = try {
     null
 }
 
+/** A value the A2UI data model must resolve: a path binding or a function call. */
+private fun isBinding(v: Any?): Boolean = v is Map<*, *> && ("path" in v || "call" in v)
+
+/**
+ * One atom as a renderer block with its data bindings resolved. The web renderer knows
+ * nothing of the surface's data model, so a field like `value: {path: "/sales"}` is
+ * resolved here through bind(), which also recomposes (and repaints) when the agent
+ * updates that path. Literal fields pass through unchanged. Null if raw props are
+ * unreadable, so callers can fall back.
+ */
+@Composable
+internal fun A2uiComponentScope.resolvedBlock(type: String, props: A2uiComponentProperties): JSONObject? {
+    val raw = rawProps(props) ?: return null
+    val block = JSONObject().put("type", type)
+    raw.forEach { (k, v) ->
+        if (k == "id" || k == "component") return@forEach
+        val value = if (isBinding(v)) key(k) { props.bind(remember(k) { A2uiProperty.dynamicValue(k) }) } else v
+        block.put(k, JSONObject.wrap(value))
+    }
+    return block
+}
+
 /** One atom as a legacy renderer block: {"type": name, ...fields}. */
 internal fun atomBlock(type: String, raw: Map<String, Any?>): JSONObject {
     val block = JSONObject().put("type", type)
@@ -99,28 +127,40 @@ internal fun bridgePayload(blocks: List<JSONObject>, theme: String): String =
 internal class AtomBridgeComponent(private val spec: AtomSpec) : A2uiComponent {
     override val name = spec.name
     override val description = "${spec.name} (${spec.pack}), drawn by the a2uicatalog web renderer"
-    override val properties = spec.fields.map { A2uiProperty.any(it) }
+    // Dynamic, so a field may be a data binding ({path} or {call}) and not only a literal.
+    override val properties = spec.fields.map { A2uiProperty.dynamicValue(it) }
 
     @Composable
     override fun A2uiComponentScope.Content(properties: A2uiComponentProperties, modifier: Modifier) {
-        val block = rawProps(properties)?.let { atomBlock(spec.name, it) }
+        val block = resolvedBlock(spec.name, properties)
             ?: JSONObject().put("type", spec.name).also { b ->
                 // Fallback if the alpha's internals move: only the schema's declared fields.
                 this@AtomBridgeComponent.properties.forEach { p ->
-                    if (p in properties) b.put(p.key, JSONObject.wrap(properties[p]))
+                    if (p in properties) key(p.key) { b.put(p.key, JSONObject.wrap(properties.bind(p))) }
                 }
             }
-        RendererWebView(bridgePayload(listOf(block), LocalSurfaceTheme.current), modifier)
+        RendererWebView(bridgePayload(listOf(block), LocalSurfaceTheme.current), modifier,
+            onAction = { dispatchAction(it) })
     }
 }
 
 /**
  * A WebView holding our renderer bundle, painted with [payloadJson] (a legacy payload or
  * a v1.0 createSurface envelope; paint() accepts both). Sizes itself to its content.
+ *
+ * [onAction] receives each agent action an atom raises (a wired tool call or a message for
+ * the conversation) as an A2UI action map, `{event: {name, context}}`, the same shape a
+ * native Button passes to dispatchAction. Links open in the browser, never in the frame.
  */
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun RendererWebView(payloadJson: String, modifier: Modifier = Modifier, onError: (String) -> Unit = {}) {
+fun RendererWebView(
+    payloadJson: String,
+    modifier: Modifier = Modifier,
+    onError: (String) -> Unit = {},
+    onAction: (Map<String, Any?>) -> Unit = {},
+) {
+    val currentOnAction by rememberUpdatedState(onAction)
     // Start tall, then shrink to the reported height. Films autoplay from an IntersectionObserver
     // that fires once on first paint; at 48dp only ~1px of the stage showed, the 25% threshold was
     // missed and the observer never fired again when the WebView grew (seen on a Pixel 7 Pro).
@@ -148,8 +188,27 @@ fun RendererWebView(payloadJson: String, modifier: Modifier = Modifier, onError:
                         Log.w(TAG, "paint error: $msg")
                         post { onError(msg) }
                     }
+                    @JavascriptInterface fun onAction(json: String) {
+                        Log.i(TAG, "action $json")
+                        val action = try { actionMap(JSONObject(json)) } catch (e: Exception) {
+                            Log.w(TAG, "bad action from renderer: $json", e); return
+                        }
+                        post { currentOnAction(action) }
+                    }
                 }, "AndroidHost")
                 webViewClient = object : WebViewClient() {
+                    // A tapped link would otherwise load the whole site inside this atom's frame.
+                    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                        if (!request.isForMainFrame) return false
+                        val uri = request.url
+                        if (uri.scheme !in setOf("http", "https", "mailto", "tel")) return true
+                        try {
+                            view.context.startActivity(Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                        } catch (e: ActivityNotFoundException) {
+                            Log.w(TAG, "no app to open $uri")
+                        }
+                        return true
+                    }
                     override fun onPageFinished(view: WebView, url: String?) {
                         // Paint once per real load. Android's WebView also calls this for
                         // in-page navigations (hash changes, history.pushState); re-painting
@@ -182,8 +241,42 @@ fun RendererWebView(payloadJson: String, modifier: Modifier = Modifier, onError:
 /** What a bridge WebView should show, and whether its page has finished its one real load. */
 private class BridgeState(var payload: String, var loaded: Boolean = false)
 
+/**
+ * Turns the renderer's {name, context} into an A2UI action, {event: {name, context}}, with
+ * the context as plain Kotlin maps and lists so dispatchAction can serialise it.
+ */
+internal fun actionMap(o: JSONObject): Map<String, Any?> {
+    val name = o.optString("name").ifEmpty { "action" }
+    val context = o.optJSONObject("context")?.let { jsonToKotlin(it) } ?: emptyMap<String, Any?>()
+    return mapOf("event" to mapOf("name" to name, "context" to context))
+}
+
+private fun jsonToKotlin(v: Any?): Any? = when (v) {
+    is JSONObject -> v.keys().asSequence().associateWith { jsonToKotlin(v.opt(it)) }
+    is JSONArray -> (0 until v.length()).map { jsonToKotlin(v.opt(it)) }
+    JSONObject.NULL -> null
+    else -> v
+}
+
+// The renderer's own host bridge posts JSON-RPC to window.parent, which in a WebView is the
+// page itself, so nothing would answer and a wired button would hang until it timed out.
+// This one hands each action to the app (dispatchAction -> the agent) and reports it sent.
+private const val ACTION_SHIM = """
+window._A2UI_HOST_BRIDGE = {
+  callTool: function (name, args) {
+    AndroidHost.onAction(JSON.stringify({ name: String(name), context: args || {} }));
+    return Promise.resolve({ structuredContent: { ok: true, sent_to_agent: true, tool: String(name) } });
+  },
+  sendMessage: function (text, role) {
+    AndroidHost.onAction(JSON.stringify({ name: 'host:message', context: { text: String(text || ''), role: role || 'user' } }));
+    return Promise.resolve({});
+  }
+};
+"""
+
 private fun paintScript(payload: String) = """
 (function(){
+  $ACTION_SHIM
   try { window._A2UI_PAINT($payload); }
   catch (e) { AndroidHost.onError(String(e && e.stack || e)); }
   // Measure the painted content, not the document: documentElement.scrollHeight is never

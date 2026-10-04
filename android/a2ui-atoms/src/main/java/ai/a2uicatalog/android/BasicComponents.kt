@@ -150,9 +150,9 @@ object DefaultColumn : A2uiBasicCatalogV1.Column {
                 val run = mutableListOf<JSONObject>()
                 while (j < children.size) {
                     val s = states[j]
-                    val raw = (s as? A2uiComponentState.Success)?.component
-                        ?.takeIf { it.type in BridgedTypes.names }?.properties?.let { rawProps(it) } ?: break
-                    run += atomBlock(s.component.type, raw)
+                    val comp = (s as? A2uiComponentState.Success)?.component
+                        ?.takeIf { it.type in BridgedTypes.names } ?: break
+                    run += key(children[j].id) { resolvedBlock(comp.type, comp.properties) } ?: break
                     j++
                 }
                 if (run.size >= 2) {
@@ -164,7 +164,8 @@ object DefaultColumn : A2uiBasicCatalogV1.Column {
                         if (groupFailed) {
                             Column { for (k in start until j) Child(children[k]) }
                         } else {
-                            RendererWebView(bridgePayload(run, theme), onError = { groupFailed = true })
+                            RendererWebView(bridgePayload(run, theme), onError = { groupFailed = true },
+                                onAction = { dispatchAction(it) })
                         }
                     }
                     i = j
