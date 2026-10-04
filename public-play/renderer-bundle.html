@@ -26096,7 +26096,11 @@ _RENDERERS['motion_timeline'] = function(b) {
   // 860px asw-page reading column (same established pattern as atoms_airspace/atc).
   var out;
   try { out = _moTimeline(b); } finally { _moTlDepth--; }
-  return '<style>.asw-page{max-width:none!important;padding:0!important;margin:0!important;}</style>' + out;
+  // Stage element wrappers sit above nested atoms and would swallow pointer/wheel events meant for
+  // an embedded canvas (e.g. brick_build_3d's own drag-orbit and scroll-zoom). Let events pass through
+  // the wrappers, and re-enable them on canvases so nested interactive atoms still receive them.
+  return '<style>.asw-page{max-width:none!important;padding:0!important;margin:0!important;}'
+    + '.mt-el{pointer-events:none}.mt-el canvas{pointer-events:auto}</style>' + out;
 };
 
 // ─── topic-free primitives (added after the first composition outside the SaaS demo) ──
