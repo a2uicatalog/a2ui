@@ -4,7 +4,7 @@ Dark panel with three independently-animating radial gradient blobs that drift a
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

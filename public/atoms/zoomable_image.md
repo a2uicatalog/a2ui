@@ -4,7 +4,7 @@ Renders an image that magnifies when hovered over.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -171,13 +171,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span><span class="badge bd">android ⚠</span>
   </div>
 
   
 <div class="section">
   <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>live data flows via the declared data proxy (atoms/data-sources.yaml); until the proxy answers, the feed stays silent</td></tr></tbody></table>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>live data flows via the declared data proxy (atoms/data-sources.yaml); until the proxy answers, the feed stays silent</td></tr><tr><td>android</td><td>live data flows via the declared data proxy (atoms/data-sources.yaml); until the proxy answers, the feed stays silent</td></tr></tbody></table>
 </div>
 
   
@@ -209,7 +209,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "url": "https://a2uicatalog.ai/atoms/metar_feed",
   "capabilities": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
   ],
   "description": "METAR weather for an ICAO station via aviationweather.gov. Fetches server-side on render (cached), refreshes client-side every refresh seconds. Publishes {wind, temp, qnh, raw} to the named feed. Visual atoms bind to it by name and receive updates without a page reload.",
   "representativeQueries": [

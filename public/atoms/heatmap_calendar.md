@@ -4,7 +4,7 @@ IBM Carbon-inspired calendar heatmap showing activity density by date across one
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Wraps child blocks with entrance animations triggered on load. animation choices
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-meet-stage, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

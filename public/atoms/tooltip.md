@@ -4,7 +4,7 @@ Renders a small, informational popup that appears when a user hovers
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

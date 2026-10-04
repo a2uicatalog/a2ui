@@ -4,7 +4,7 @@ Interactive SVG European airspace map — country outlines, airport pins, simula
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

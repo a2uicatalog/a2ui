@@ -4,7 +4,7 @@ Action items table with owner, due date, and status. For retros, meeting notes, 
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

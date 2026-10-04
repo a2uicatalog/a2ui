@@ -4,7 +4,7 @@ One band of a layer_stack — a badge, the layer name, and either a single field
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

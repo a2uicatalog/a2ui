@@ -4,7 +4,7 @@ Standalone labelled text input field — text, email, password, number, or url. 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

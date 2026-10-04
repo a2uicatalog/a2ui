@@ -4,7 +4,7 @@ Cyan glitch-effect headline — periodic RGB-split animation
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

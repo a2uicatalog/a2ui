@@ -4,7 +4,7 @@ The catalogue's motion vocabulary, drawn: every named easing curve with a dot ri
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

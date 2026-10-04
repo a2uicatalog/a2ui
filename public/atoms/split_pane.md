@@ -4,7 +4,7 @@ Two-panel split layout with distinct background colors per pane. Each pane rende
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

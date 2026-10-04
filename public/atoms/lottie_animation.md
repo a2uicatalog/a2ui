@@ -4,7 +4,7 @@ Renders an active vector illustration display controlled via Lottie runtime rule
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

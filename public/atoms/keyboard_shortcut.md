@@ -4,7 +4,7 @@ Renders inline text visual tags mimicking keyboard keys to highlight shortcuts o
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

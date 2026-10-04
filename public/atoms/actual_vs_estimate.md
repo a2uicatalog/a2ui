@@ -6,7 +6,7 @@ The contract runs in two directions, which is the point. Upward it constrains wh
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

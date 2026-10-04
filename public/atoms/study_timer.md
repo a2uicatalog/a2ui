@@ -4,7 +4,7 @@ Pomodoro-style focus/break countdown timer. Configurable focus and break duratio
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

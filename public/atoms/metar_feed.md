@@ -4,7 +4,7 @@ METAR weather for an ICAO station via aviationweather.gov. Fetches server-side o
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

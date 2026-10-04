@@ -4,7 +4,7 @@ Decodes the current page ?p= URL and displays the JSON schema that built this pa
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A card that tilts in 3D perspective as the cursor moves across it, with a radial
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

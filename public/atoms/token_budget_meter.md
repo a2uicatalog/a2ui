@@ -4,7 +4,7 @@ Visual context-window usage meter — shows tokens consumed versus the model's t
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

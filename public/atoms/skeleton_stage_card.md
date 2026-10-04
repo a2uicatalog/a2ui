@@ -4,7 +4,7 @@ Dark-themed shimmer skeleton loader for stage use while a playbook is processing
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

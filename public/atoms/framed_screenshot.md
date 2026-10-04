@@ -4,7 +4,7 @@ Renders an image within a decorative frame, simulating a device (e.g., browser, 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

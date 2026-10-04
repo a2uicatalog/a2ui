@@ -4,7 +4,7 @@ Asymmetric CSS grid of feature tiles. First tile typically spans multiple column
 
 ## Surfaces
 
-web, pdf, google-apps-script-web, mcp-apps
+web, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

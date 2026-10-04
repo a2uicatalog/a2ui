@@ -4,7 +4,7 @@ Displays a highlighted summary box containing critical bullet points from an art
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps, claude-code
+web, google-apps-script-web, mcp-apps, claude-code, android
 
 ## Fields
 

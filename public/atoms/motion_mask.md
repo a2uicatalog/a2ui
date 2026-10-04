@@ -4,7 +4,7 @@ Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly b
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

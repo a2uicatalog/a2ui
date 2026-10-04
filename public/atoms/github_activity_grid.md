@@ -4,7 +4,7 @@ Renders a high-fidelity SVG representation of a GitHub-style contribution activi
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

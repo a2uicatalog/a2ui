@@ -4,7 +4,7 @@ Labelled group of checkboxes for multi-option selection. Each checkbox has a nam
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

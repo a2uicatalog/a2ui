@@ -173,7 +173,7 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">mcp-apps</span>
+    <span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
@@ -206,7 +206,8 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/preview_frame",
   "capabilities": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
   ],
   "description": "An iframe whose `src` is driven by a wire, so picking a value elsewhere on the page re-navigates it CLIENT-SIDE \u2014 no server round trip, no paint_result, nothing else on the page repainted.\nA DATA atom, same spirit as sortable_list: it renders whatever src it is given and reacts to whatever is wired into it; it has no opinion on what the iframe shows. Meant to sit next to a picker (menu/select) and a StringTemplate primitive that turns the picked value into a URL \u2014 e.g. a \"preview this before you commit it\" panel, where committing is a SEPARATE, ordinary action.\nSame-origin only in practice: nothing here relaxes sandboxing. A cross-origin src is subject to the embedded page's own frame-ancestors / X-Frame-Options exactly as any other iframe.",
   "representativeQueries": [

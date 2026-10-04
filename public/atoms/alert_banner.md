@@ -4,7 +4,7 @@ A prominent banner displaying a message, often with an icon and an optional acti
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

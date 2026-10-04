@@ -4,7 +4,7 @@ Renders a prominent banner highlighting a key social proof metric or achievement
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Renders a callout box identifying a feature or code path as experimental or unst
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

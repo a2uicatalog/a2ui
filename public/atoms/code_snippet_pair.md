@@ -4,7 +4,7 @@ Renders two distinct code snippets side-by-side or stacked, without
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

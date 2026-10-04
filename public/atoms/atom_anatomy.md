@@ -4,7 +4,7 @@ Side-by-side panel showing a rendered atom alongside its raw JSON schema
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

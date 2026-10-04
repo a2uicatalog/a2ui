@@ -4,7 +4,7 @@ Declarative labelled layers for a layered architecture — a protocol stack, a r
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

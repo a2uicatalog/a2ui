@@ -8,7 +8,7 @@ Use it only where order is AUTHORED. Where order is COMPUTED — a job list rank
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Structured free-text reflection textarea with a submit button. Saves the respons
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

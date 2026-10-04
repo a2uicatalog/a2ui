@@ -4,7 +4,7 @@ A single line of text that sweeps in from left using a clip-path animation — d
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

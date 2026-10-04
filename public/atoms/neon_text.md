@@ -4,7 +4,7 @@ Neon-coloured glowing text, ideal for dark technical pages
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

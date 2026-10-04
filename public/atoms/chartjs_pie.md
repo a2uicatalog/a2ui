@@ -4,7 +4,7 @@ Multi-slice pie or donut chart rendered as inline SVG — category proportions w
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

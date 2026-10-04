@@ -4,7 +4,7 @@ Renders a SaaS subscription or customer cohort retention triangular matrix with 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

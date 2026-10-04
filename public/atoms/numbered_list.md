@@ -4,7 +4,7 @@ Numbered list with large decorative number backgrounds ("large" style), circular
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

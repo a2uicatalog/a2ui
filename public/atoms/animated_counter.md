@@ -4,7 +4,7 @@ CSS @property counter animation that counts up from zero to target values withou
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

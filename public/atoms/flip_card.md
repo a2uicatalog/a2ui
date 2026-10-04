@@ -4,7 +4,7 @@ Renders a card with a front and back side that flips on interaction.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

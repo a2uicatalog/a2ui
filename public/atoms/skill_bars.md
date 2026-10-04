@@ -4,7 +4,7 @@ List of labeled horizontal progress bars — each with a fill percentage, option
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

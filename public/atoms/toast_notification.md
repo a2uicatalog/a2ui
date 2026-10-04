@@ -4,7 +4,7 @@ A fixed-position slide-in notification toast that appears from a corner of the v
 
 ## Surfaces
 
-web, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

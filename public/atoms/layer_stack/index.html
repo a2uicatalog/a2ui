@@ -171,13 +171,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span><span class="badge bd">android ⚠</span>
   </div>
 
   
 <div class="section">
   <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle is CSP-clean (resourceDomains []) and /api/render sends no font-src — the faces are blocked and the Georgia/system-mono fallback stack renders instead. Layout, palette and bands are unaffected; only the typeface changes. Pass use_plex_fonts false to opt out explicitly.</td></tr></tbody></table>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle is CSP-clean (resourceDomains []) and /api/render sends no font-src — the faces are blocked and the Georgia/system-mono fallback stack renders instead. Layout, palette and bands are unaffected; only the typeface changes. Pass use_plex_fonts false to opt out explicitly.</td></tr><tr><td>android</td><td>IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle is CSP-clean (resourceDomains []) and /api/render sends no font-src — the faces are blocked and the Georgia/system-mono fallback stack renders instead. Layout, palette and bands are unaffected; only the typeface changes. Pass use_plex_fonts false to opt out explicitly.</td></tr></tbody></table>
 </div>
 
   
@@ -211,7 +211,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "capabilities": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
   ],
   "description": "Declarative labelled layers for a layered architecture \u2014 a protocol stack, a request path, any \"what lives at which level\" picture. Each layer is a band carrying a mono technical fact (`field`) beside a plain-language gloss (`note`) \u2014 primitive_plate's labelling pairing, without its image substrate: a primitive_plate pin annotates a REAL capture and must never annotate a hand-drawn illustration, and an abstract stack has no capture to pin. Two things concept_ladder cannot do: declare `columns` and each layer renders its `cells` side by side, so ONE stack carries a per-layer comparison of two systems; and set a layer or cell to `status: absent` and it renders a visibly hollow, dashed band, so a level a system does NOT define reads as a stated absence rather than an omission from the diagram. Shares article_journey / concept_ladder's palette token system and IBM Plex fonts so the explainer atoms read as one design system. renderers/web_article.py is the reference implementation; apps-script-surface/gas-wired-renderer/atoms_layers.gs is the port that carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the Worker's /api/render all compile from the .gs sources).",
   "representativeQueries": [

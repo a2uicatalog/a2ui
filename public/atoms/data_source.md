@@ -4,7 +4,7 @@ Generic HTTP GET data feed. Fetches on server-side render (GAS surface via UrlFe
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

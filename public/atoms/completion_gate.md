@@ -4,7 +4,7 @@ Renders a locked placeholder card until the specified module id is marked comple
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Animated isobaric atmospheric contour wave field — fluid procedural sine/cosin
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

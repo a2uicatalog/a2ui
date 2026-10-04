@@ -4,7 +4,7 @@ Displays a copyable single-line command-line prompt for terminal execution.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

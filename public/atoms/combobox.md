@@ -4,7 +4,7 @@ Searchable filterable dropdown that narrows its option list as the user types. R
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

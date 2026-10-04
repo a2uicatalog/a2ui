@@ -4,7 +4,7 @@ Native MathML equation typeset with the CSS `math` generic font family (STIX / L
 
 ## Surfaces
 
-web, google-apps-script-web, google-meet-stage, mcp-apps
+web, google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

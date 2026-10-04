@@ -4,7 +4,7 @@ A single composite SVG canvas built from an ORDERED list of validated SVG elemen
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

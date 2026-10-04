@@ -4,7 +4,7 @@ Agentic typesetting: the agent decides how much each WORD weighs. A headline whe
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
 
 ## Fields
 

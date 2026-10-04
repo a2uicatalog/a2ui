@@ -4,7 +4,7 @@ Keyboard-driven command palette overlay for quick navigation and action executio
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

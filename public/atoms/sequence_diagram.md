@@ -4,7 +4,7 @@ Multi-actor message sequence diagram — participant boxes with dashed lifelines
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

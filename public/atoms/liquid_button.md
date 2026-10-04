@@ -4,7 +4,7 @@ Button that morphs between circular and rounded-rectangle on hover
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Styled multi-option vote selector with three visual variants — pill (rounded f
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

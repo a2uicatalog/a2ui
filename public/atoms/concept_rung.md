@@ -4,7 +4,7 @@ One depth level of a concept_ladder — a kind chip (DEPTH N or WORKED EXAMPLE),
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

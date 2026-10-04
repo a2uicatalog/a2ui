@@ -4,7 +4,7 @@ Horizontal swipeable carousel of recently modified Drive files. Each card shows 
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

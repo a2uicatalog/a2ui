@@ -4,7 +4,7 @@ A single Material Symbol icon from Google Fonts CDN. Browse 2500+ icon names at 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

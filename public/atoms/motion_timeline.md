@@ -4,7 +4,7 @@ A stage of child atoms choreographed on ONE clock, the way a product or launch v
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

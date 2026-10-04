@@ -4,7 +4,7 @@ Time-slotted schedule view for a day or event. Each slot has a time, title, opti
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

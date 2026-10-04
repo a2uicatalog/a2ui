@@ -4,7 +4,7 @@ Visual timeline of service uptime over a rolling window with per-day status bloc
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

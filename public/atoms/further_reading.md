@@ -4,7 +4,7 @@ Displays a curated list of links and references for extending understanding beyo
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

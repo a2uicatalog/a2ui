@@ -4,7 +4,7 @@ Displays a scrollable monospace block containing raw system or compilation log s
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

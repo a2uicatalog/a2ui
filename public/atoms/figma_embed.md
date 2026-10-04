@@ -4,7 +4,7 @@ Renders a real-time collaborative preview referencing explicit Figma design canv
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

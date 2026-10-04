@@ -4,7 +4,7 @@ Rich body text passage with clickable highlighted terms that reveal inline expla
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

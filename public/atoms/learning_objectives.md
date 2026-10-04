@@ -4,7 +4,7 @@ Displays a checklist-style panel outlining competencies a reader will gain from 
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

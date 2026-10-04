@@ -4,7 +4,7 @@ Three bouncing dots inside a chat bubble that signals an agent or user is compos
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

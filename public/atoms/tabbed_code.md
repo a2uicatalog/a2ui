@@ -4,7 +4,7 @@ Renders multiple code snippets organized inside an interactive, multi-tab contai
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

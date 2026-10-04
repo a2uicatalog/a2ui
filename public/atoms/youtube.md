@@ -4,7 +4,7 @@ Responsive 16:9 embedded YouTube video
 
 ## Surfaces
 
-web, google-meet-stage, mcp-apps
+web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

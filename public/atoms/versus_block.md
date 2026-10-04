@@ -4,7 +4,7 @@ Renders a block explicitly comparing two entities with a prominent
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

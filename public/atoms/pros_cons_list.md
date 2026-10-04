@@ -4,7 +4,7 @@ Renders a two-column list itemizing advantages and disadvantages for a single su
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

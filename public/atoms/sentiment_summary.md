@@ -4,7 +4,7 @@ Renders an emotional summary and sentiment tracker for a call or meeting, showin
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

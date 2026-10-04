@@ -2098,7 +2098,17 @@ SURFACE_NAMES = {
     "pdf":                          "PDF",
     "mcp-apps":                     "MCP Apps",
     "claude-code":                  "Claude Code",
+    "android":                      "Android",
 }
+
+# Short setup note for the android surface page (same single `hero` slot).
+ANDROID_NOTE_HTML = """
+<div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:14px;color:var(--muted);margin:0 0 20px">
+<strong style="color:var(--text)">Android, through Google's A2UI renderer.</strong> Google's <code>androidx.a2ui</code> library renders A2UI natively in Jetpack Compose. Add the <code>a2ui-atoms</code> library and an Android app can show every atom listed here: Basic Catalog components draw in Compose, and the rest draw with this catalogue's own renderer inside the app. Apps without the library still get something useful: the catalogue's emitter reads which catalogues an app supports and sends a plain Basic Catalog version instead of a surface the app can't draw.
+<br><br><code>val catalog = A2uiCatalogue.catalog(context)</code>
+<br><br>Build it from source for now; a published package is coming. <a href="https://github.com/a2uicatalog/a2ui/tree/main/android">Source and README</a> &middot; tested on a Pixel 7 Pro with <code>androidx.a2ui</code> 1.0.0-alpha01.
+</div>
+"""
 
 # Short install note for the claude-code surface page, the only other surface
 # with a hand-authored lead (same single `hero` slot as MCP_APPS_HERO_HTML).
@@ -2837,7 +2847,8 @@ def generate_surface_page(surface, atoms):
     hero    = (MCP_APPS_HERO_HTML.replace("__BUNDLE_HASH__", _bundle_hash())
                .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
                if surface == "mcp-apps" else
-               CLAUDE_CODE_NOTE_HTML if surface == "claude-code" else "")
+               CLAUDE_CODE_NOTE_HTML if surface == "claude-code" else
+               ANDROID_NOTE_HTML if surface == "android" else "")
     # The same iso_fireworks_panel that runs inside the sandboxed MCP Apps
     # view, now rendered by the PAGE itself — a fixed right-half overlay over
     # the viewport rather than the iframe. Dogfooding: the page about atoms

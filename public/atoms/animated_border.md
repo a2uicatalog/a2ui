@@ -4,7 +4,7 @@ Card or section with a rotating conic gradient border. Child blocks or content i
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-meet-stage, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

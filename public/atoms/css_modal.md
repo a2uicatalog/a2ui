@@ -4,7 +4,7 @@ Renders a modal dialog that appears on click and can be dismissed, controlled pu
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

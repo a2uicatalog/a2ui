@@ -4,7 +4,7 @@ Tiles that fly out from the centre onto an ellipse as p goes 0 to 1, then swing 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Renders a semi-circular radial gauge track with high contrast status quadrants, 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

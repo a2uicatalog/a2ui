@@ -4,7 +4,7 @@ Horizontal strip of numbered next steps with optional links
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

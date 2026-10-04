@@ -4,7 +4,7 @@ Monospace copyable text block — ideal for sharing Gemini prompts or code
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

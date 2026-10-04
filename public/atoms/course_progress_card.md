@@ -4,7 +4,7 @@ Overall course completion card showing a list of modules with individual progres
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

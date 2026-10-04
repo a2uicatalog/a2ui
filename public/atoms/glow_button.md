@@ -4,7 +4,7 @@ Button or anchor that uses CSS box-shadow to signal state. Three named states â€
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

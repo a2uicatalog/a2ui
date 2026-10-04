@@ -4,7 +4,7 @@ Full-viewport Toulouse TMA airspace radar display — canvas radar with animated
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

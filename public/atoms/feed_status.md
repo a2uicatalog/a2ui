@@ -4,7 +4,7 @@ Live-feed status pill — shows LIVE (n) or SIM based on data published to a nam
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

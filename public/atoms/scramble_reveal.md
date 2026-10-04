@@ -4,7 +4,7 @@ Text that decrypts/un-scrambles character-by-character on scroll — alias for e
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Displays a fully rendered standalone publication card containing Twitter status 
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

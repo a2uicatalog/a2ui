@@ -4,7 +4,7 @@ Text that appears to scramble through random alphanumeric characters before lock
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

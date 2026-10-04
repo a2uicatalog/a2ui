@@ -4,7 +4,7 @@ Horizontal strip of pill buttons that smooth-scroll to other blocks on the page 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

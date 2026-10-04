@@ -4,7 +4,7 @@ A visually rich highlighted box with gradient, solid, or outline style. Richer t
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

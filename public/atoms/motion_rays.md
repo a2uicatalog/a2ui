@@ -4,7 +4,7 @@ A sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns i
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

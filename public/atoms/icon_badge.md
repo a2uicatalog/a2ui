@@ -4,7 +4,7 @@ Material Symbol icon inside a coloured circular badge. Good for stat rows and fe
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

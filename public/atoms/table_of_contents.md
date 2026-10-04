@@ -4,7 +4,7 @@ Renders an active list directory of navigation links targeting main content sect
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

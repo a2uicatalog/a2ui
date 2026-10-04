@@ -4,7 +4,7 @@ Ranked learner leaderboard by score. On GAS reads live from the course progress 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

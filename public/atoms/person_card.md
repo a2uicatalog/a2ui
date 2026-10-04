@@ -4,7 +4,7 @@ Individual person card with name, role, optional photo, bio, tags, and contact l
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

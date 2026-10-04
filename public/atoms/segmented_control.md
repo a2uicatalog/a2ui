@@ -4,7 +4,7 @@ Renders a group of mutually exclusive buttons for selection, styled
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

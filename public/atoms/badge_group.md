@@ -4,7 +4,7 @@ Group of coloured status badges with optional pulse animation — green/cyan/blu
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

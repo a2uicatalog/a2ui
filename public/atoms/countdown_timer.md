@@ -4,7 +4,7 @@ Flip-clock style countdown display showing hours, minutes, and seconds in indivi
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

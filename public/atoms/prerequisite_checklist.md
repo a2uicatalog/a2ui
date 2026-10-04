@@ -4,7 +4,7 @@ Renders a callout box highlighting required tools, knowledge, or setups needed b
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

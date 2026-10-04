@@ -4,7 +4,7 @@ Renders a clickable link to an audio file, often with an audio icon.
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

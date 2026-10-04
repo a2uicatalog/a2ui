@@ -4,7 +4,7 @@ Card with a solid colored header section (title, subtitle, icon) and a white bod
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

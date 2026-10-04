@@ -4,7 +4,7 @@ Instructor-facing table showing all enrolled learners with per-module completion
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

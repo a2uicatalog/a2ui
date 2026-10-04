@@ -4,7 +4,7 @@ Renders a short, impactful quote from a customer review, often accompanied
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

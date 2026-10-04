@@ -4,7 +4,7 @@ A layered-depth concept explainer — an opening hook line, a hero "mental model
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

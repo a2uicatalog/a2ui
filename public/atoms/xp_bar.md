@@ -4,7 +4,7 @@ Experience points or gamification progress bar showing current XP, level label, 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

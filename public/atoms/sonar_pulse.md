@@ -4,7 +4,7 @@ A visual attention primitive that emits three concentric ring pulses outward fro
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

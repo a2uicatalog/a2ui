@@ -4,7 +4,7 @@ Styled pull-quote with optional attribution line
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

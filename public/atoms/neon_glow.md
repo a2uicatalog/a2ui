@@ -4,7 +4,7 @@ Pulsing neon-glow text on a near-black background
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

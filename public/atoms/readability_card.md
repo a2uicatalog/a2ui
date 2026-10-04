@@ -4,7 +4,7 @@ Prose metrics as a typographic card: the Flesch reading-ease score set huge, its
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
 
 ## Fields
 

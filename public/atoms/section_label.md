@@ -4,7 +4,7 @@ Uppercase section marker with a short glowing accent line — use between conten
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

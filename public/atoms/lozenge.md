@@ -4,7 +4,7 @@ Atlassian Design System semantic status pill with six strictly defined appearanc
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

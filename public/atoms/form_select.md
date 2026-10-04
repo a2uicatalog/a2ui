@@ -4,7 +4,7 @@ Labelled dropdown select with a list of value/label options. Supports required v
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

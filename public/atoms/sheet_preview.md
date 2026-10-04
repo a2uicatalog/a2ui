@@ -4,7 +4,7 @@ Live read-only preview of a specified range in a Google Sheet. Renders as an HTM
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Animated SVG wave as a decorative section separator.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-meet-stage, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

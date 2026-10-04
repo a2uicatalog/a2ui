@@ -4,7 +4,7 @@ Single flashcard with front/back flip animation and a post-flip confidence ratin
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

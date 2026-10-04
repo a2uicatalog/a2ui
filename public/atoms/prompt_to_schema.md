@@ -4,7 +4,7 @@ Three-panel flow diagram: natural language prompt → generated JSON schema → 
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

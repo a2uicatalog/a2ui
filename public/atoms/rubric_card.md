@@ -4,7 +4,7 @@ Assessment rubric table. Rows are assessment criteria, columns are performance l
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

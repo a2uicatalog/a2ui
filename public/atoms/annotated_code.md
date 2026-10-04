@@ -4,7 +4,7 @@ Code block with numbered yellow callout bubbles on specific lines, with an expla
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

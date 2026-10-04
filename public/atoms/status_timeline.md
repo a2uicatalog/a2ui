@@ -4,7 +4,7 @@ Vertical timeline with status dots (done/active/pending/error/warning)
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

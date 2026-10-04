@@ -4,7 +4,7 @@ A card with CSS perspective and a mousemove JavaScript handler that rotates the 
 
 ## Surfaces
 
-web, google-apps-script-side-panel, mcp-apps
+web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

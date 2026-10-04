@@ -4,7 +4,7 @@ Renders a static or interactive command-line interface terminal window showing i
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

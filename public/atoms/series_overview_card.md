@@ -4,7 +4,7 @@ Renders a navigation box indexing all parts within a multi-part article series.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

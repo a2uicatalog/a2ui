@@ -4,7 +4,7 @@ Numbered sequential steps with blue circle indicators
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, claude-code
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, claude-code, android
 
 ## Fields
 

@@ -13,7 +13,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -27,7 +28,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -41,7 +43,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -55,7 +58,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -67,7 +71,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -79,7 +84,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -90,7 +96,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -103,7 +110,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -115,7 +123,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -124,7 +133,8 @@
    "surfaces": [
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -136,7 +146,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -147,7 +158,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -158,7 +170,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -167,7 +180,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -179,7 +193,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -192,7 +207,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -204,7 +220,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -216,7 +233,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -229,7 +247,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -239,7 +258,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -250,7 +270,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -260,7 +281,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -271,7 +293,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -280,7 +303,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -290,7 +314,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -300,7 +325,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -311,7 +337,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -321,7 +348,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -329,7 +357,8 @@
    "compact": "drag-to-reorder list emitting {id, order} on drop",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -337,7 +366,8 @@
    "compact": "clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -345,14 +375,16 @@
    "compact": "full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
    "type": "preview_frame",
    "compact": "iframe whose src is wired to another node's value, so picking updates it with no repaint",
    "surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -361,7 +393,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -371,7 +404,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -382,7 +416,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -392,7 +427,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -402,7 +438,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -412,7 +449,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -422,7 +460,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -432,7 +471,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -442,7 +482,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -452,7 +493,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -465,7 +507,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -475,7 +518,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -485,7 +529,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -498,7 +543,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -508,7 +554,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -518,7 +565,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -529,7 +577,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -539,7 +588,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -551,7 +601,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -562,7 +613,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -575,7 +627,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -588,7 +641,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -599,7 +653,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -612,7 +667,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -622,7 +678,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -632,7 +689,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -642,7 +700,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -652,7 +711,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -662,7 +722,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -672,7 +733,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -685,7 +747,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -695,7 +758,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -708,7 +772,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -718,7 +783,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -728,7 +794,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -739,7 +806,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -749,7 +817,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -759,7 +828,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -772,7 +842,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -782,7 +853,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -792,7 +864,8 @@
     "web",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -802,7 +875,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -812,7 +886,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -822,7 +897,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -832,7 +908,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -842,7 +919,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -852,7 +930,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -863,7 +942,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -874,7 +954,8 @@
     "google-meet-stage",
     "google-chat",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -885,7 +966,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -898,7 +980,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -909,7 +992,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -922,7 +1006,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -933,7 +1018,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -944,7 +1030,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -955,7 +1042,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -965,7 +1053,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -978,7 +1067,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -989,7 +1079,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -999,7 +1090,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1009,7 +1101,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1019,7 +1112,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1029,7 +1123,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1039,7 +1134,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1049,7 +1145,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1059,7 +1156,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1069,7 +1167,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1079,7 +1178,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1089,7 +1189,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1100,7 +1201,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1111,7 +1213,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1122,7 +1225,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1133,7 +1237,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1144,7 +1249,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1155,7 +1261,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1166,7 +1273,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1177,7 +1285,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1188,7 +1297,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1197,7 +1307,8 @@
    "surfaces": [
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1206,7 +1317,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1215,7 +1327,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1224,7 +1337,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1233,7 +1347,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1242,7 +1357,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1251,7 +1367,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1260,7 +1377,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1269,7 +1387,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1278,7 +1397,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1287,7 +1407,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1296,7 +1417,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1305,7 +1427,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1314,7 +1437,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1323,7 +1447,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1332,7 +1457,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1342,7 +1468,8 @@
     "web",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -1351,7 +1478,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1360,7 +1488,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1369,7 +1498,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1378,7 +1508,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1387,7 +1518,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1396,7 +1528,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1405,7 +1538,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1414,7 +1548,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1423,7 +1558,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1432,7 +1568,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1441,7 +1578,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1450,7 +1588,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1459,7 +1598,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1468,7 +1608,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1477,7 +1618,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1486,7 +1628,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1495,7 +1638,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1504,7 +1648,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1513,7 +1658,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1522,7 +1668,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1533,7 +1680,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1544,7 +1692,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1555,7 +1704,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1566,7 +1716,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1577,7 +1728,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1588,7 +1740,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1599,7 +1752,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1610,7 +1764,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ]
   },
   {
@@ -1619,7 +1774,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1628,7 +1784,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1637,7 +1794,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1646,7 +1804,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1655,7 +1814,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1664,7 +1824,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1673,7 +1834,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1682,7 +1844,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1690,7 +1853,8 @@
    "compact": "embed interactive CodePen workspace development environments",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1698,7 +1862,8 @@
    "compact": "embed dynamic StackBlitz live IDE code sandboxes",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1706,7 +1871,8 @@
    "compact": "embed version-controlled GitHub Gist source code snippets",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1714,7 +1880,8 @@
    "compact": "embed live public Twitter status updates and media",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1722,7 +1889,8 @@
    "compact": "embed interactive Google Slides presentation slide decks",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1730,7 +1898,8 @@
    "compact": "render lightweight high-performance vector Lottie animations",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1738,7 +1907,8 @@
    "compact": "embed collaborative live Figma design file prototype previews",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1748,7 +1918,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1756,7 +1927,8 @@
    "compact": "embed interactive live demo sandbox iframe",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1766,7 +1938,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1775,7 +1948,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1784,7 +1958,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1793,7 +1968,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "aliases": [
     "data_table"
@@ -1806,7 +1982,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1816,7 +1993,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1826,7 +2004,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1836,7 +2015,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1845,7 +2025,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1855,7 +2036,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1864,7 +2046,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1874,7 +2057,8 @@
     "web",
     "email",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1883,7 +2067,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1892,7 +2077,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1901,7 +2087,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1910,7 +2097,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1920,7 +2108,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1930,7 +2119,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1940,7 +2130,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1950,7 +2141,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1960,7 +2152,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1977,7 +2170,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1987,7 +2181,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -1997,7 +2192,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2007,7 +2203,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2017,7 +2214,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "aliases": [
     "text_input"
@@ -2030,7 +2228,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2040,7 +2239,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2050,7 +2250,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2060,7 +2261,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2070,7 +2272,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2080,7 +2283,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2090,7 +2294,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2100,7 +2305,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2110,7 +2316,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2120,7 +2327,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2133,7 +2341,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2144,7 +2353,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2157,7 +2367,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2170,7 +2381,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2183,7 +2395,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2196,7 +2409,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2209,7 +2423,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2222,7 +2437,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2232,7 +2448,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2244,7 +2461,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2254,7 +2472,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2266,7 +2485,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2277,7 +2497,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2290,7 +2511,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2302,7 +2524,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2313,7 +2536,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2325,7 +2549,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2336,7 +2561,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2348,7 +2574,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2360,7 +2587,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2372,7 +2600,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2384,7 +2613,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2395,7 +2625,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2407,7 +2638,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2418,7 +2650,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2430,7 +2663,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2441,7 +2675,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2451,7 +2686,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2461,7 +2697,8 @@
     "web",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2470,7 +2707,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2480,7 +2718,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2489,7 +2728,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2499,7 +2739,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2509,7 +2750,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2518,7 +2760,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2528,7 +2771,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2538,7 +2782,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2547,7 +2792,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2557,7 +2803,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2567,7 +2814,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2577,7 +2825,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2586,7 +2835,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2597,7 +2847,8 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -2607,7 +2858,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2617,7 +2869,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2626,7 +2879,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2636,7 +2890,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2645,14 +2900,16 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
    "type": "filterable_list",
    "compact": "list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts",
    "surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2662,7 +2919,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2672,7 +2930,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2681,7 +2940,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2691,7 +2951,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2701,7 +2962,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2711,7 +2973,8 @@
     "web",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2722,7 +2985,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2731,7 +2995,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2741,7 +3006,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2751,7 +3017,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2761,7 +3028,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2771,7 +3039,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2781,7 +3050,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2791,7 +3061,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2802,7 +3073,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2812,7 +3084,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2822,7 +3095,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2832,7 +3106,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2842,7 +3117,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2852,7 +3128,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2862,7 +3139,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2872,7 +3150,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2882,7 +3161,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2892,7 +3172,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2902,7 +3183,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2912,7 +3194,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2922,7 +3205,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2932,7 +3216,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2942,7 +3227,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2952,7 +3238,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2962,7 +3249,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2972,7 +3260,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2982,7 +3271,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -2992,7 +3282,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3002,7 +3293,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3012,7 +3304,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3022,7 +3315,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3032,7 +3326,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3042,7 +3337,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3052,7 +3348,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3062,7 +3359,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3072,7 +3370,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3082,7 +3381,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3092,7 +3392,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3102,7 +3403,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3112,7 +3414,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3122,7 +3425,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3132,7 +3436,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3142,7 +3447,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3153,7 +3459,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3163,7 +3470,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3173,7 +3481,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3183,7 +3492,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3193,7 +3503,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3204,7 +3515,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3214,7 +3526,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3224,7 +3537,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3235,7 +3549,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3246,7 +3561,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3256,7 +3572,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3266,7 +3583,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3277,7 +3595,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3287,7 +3606,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3297,7 +3617,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3306,7 +3627,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3316,7 +3638,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3326,7 +3649,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3336,7 +3660,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3345,7 +3670,8 @@
    "surfaces": [
     "web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3354,7 +3680,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3363,7 +3690,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3372,7 +3700,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3382,7 +3711,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3394,7 +3724,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3405,7 +3736,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3415,7 +3747,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3424,7 +3757,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3435,7 +3769,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3446,7 +3781,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3454,7 +3790,8 @@
    "compact": "live list of Drive folder files",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3462,7 +3799,8 @@
    "compact": "live read-only Google Sheet range preview",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3470,7 +3808,8 @@
    "compact": "list of recent Gmail messages matching query",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3478,7 +3817,8 @@
    "compact": "list of upcoming calendar events",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3486,7 +3826,8 @@
    "compact": "personalised greeting with active user email",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3494,7 +3835,8 @@
    "compact": "button to trigger server-side Apps Script function",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3502,7 +3844,8 @@
    "compact": "today's calendar events from the user's default calendar",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3510,7 +3853,8 @@
    "compact": "aggregate stats from a sheet range displayed as stat badges",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3519,7 +3863,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3528,7 +3873,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3537,7 +3883,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3545,7 +3892,8 @@
    "compact": "inline form that appends a row to a Google Sheet on submit",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3554,7 +3902,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3564,7 +3913,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3574,7 +3924,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3584,7 +3935,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3594,7 +3946,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3604,7 +3957,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3614,7 +3968,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3638,7 +3993,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3648,7 +4004,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3658,7 +4015,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3668,7 +4026,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3678,7 +4037,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3688,7 +4048,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3698,7 +4059,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3708,7 +4070,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3718,7 +4081,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3728,7 +4092,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3738,7 +4103,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3746,7 +4112,8 @@
    "compact": "isometric 3D canvas of A321neo takeoff from LFBO — animated roll, rotation, gear-up, climb; HUD with airline/runway",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3754,7 +4121,8 @@
    "compact": "isometric 3D canvas of Ariane 6 rocket launch from Kourou — animated liftoff and ascent; mission HUD",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3762,7 +4130,8 @@
    "compact": "isometric 3D canvas of H160 helicopter hover — rotor animation, downwash, HUD",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3770,7 +4139,8 @@
    "compact": "tabbed isometric fleet demo — A321neo takeoff + Ariane 6 launch + H160 hover with tab switcher",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3779,7 +4149,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3787,7 +4158,8 @@
    "compact": "generic HTTP feed — server-side initial fetch, client-side refresh via surface transport",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3802,7 +4174,8 @@
    "compact": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3818,7 +4191,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3827,7 +4201,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3836,7 +4211,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3845,7 +4221,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3854,7 +4231,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3864,7 +4242,8 @@
     "web",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ]
   },
   {
@@ -3873,7 +4252,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3882,7 +4262,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3891,7 +4272,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3900,7 +4282,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3910,7 +4293,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3919,7 +4303,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3927,7 +4312,8 @@
    "compact": "Gemini token usage trace card",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3935,7 +4321,8 @@
    "compact": "inline Gemini prompt input widget",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3944,7 +4331,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3953,7 +4341,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3962,7 +4351,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3971,7 +4361,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3980,7 +4371,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3988,7 +4380,8 @@
    "compact": "neon-glow coloured text",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -3997,7 +4390,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4006,7 +4400,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4014,7 +4409,8 @@
    "compact": "animated aurora/ambient gradient background",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4023,7 +4419,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4031,7 +4428,8 @@
    "compact": "character-scramble text reveal on scroll",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4040,7 +4438,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4049,7 +4448,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4058,7 +4458,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4067,7 +4468,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4076,7 +4478,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4085,7 +4488,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4093,7 +4497,8 @@
    "compact": "pulsing neon-glow text on dark card",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4101,7 +4506,8 @@
    "compact": "magnetic cursor-following button",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4109,7 +4515,8 @@
    "compact": "click-to-trigger confetti button",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4119,7 +4526,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4129,7 +4537,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4138,7 +4547,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4147,7 +4557,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4156,7 +4567,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4165,7 +4577,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4173,7 +4586,8 @@
    "compact": "multi-actor sequence diagram — arrows, notes, alt/opt/loop frames",
    "surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4181,7 +4595,8 @@
    "compact": "animated chat conversation thread",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4190,7 +4605,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4199,7 +4615,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4207,7 +4624,8 @@
    "compact": "animated terminal boot sequence",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4216,7 +4634,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4225,7 +4644,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4234,7 +4654,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4243,7 +4664,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4252,7 +4674,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4261,7 +4684,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4270,7 +4694,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4279,7 +4704,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4288,7 +4714,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4297,7 +4724,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4305,7 +4733,8 @@
    "compact": "status-dot vertical timeline",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4313,7 +4742,8 @@
    "compact": "row of animated stat counters",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4322,7 +4752,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4331,7 +4762,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4340,7 +4772,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4348,7 +4781,8 @@
    "compact": "interactive word cloud with optional live Sheet feed",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4356,7 +4790,8 @@
    "compact": "multi-question interactive quiz",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4365,7 +4800,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4373,7 +4809,8 @@
    "compact": "dark-theme interactive Mercator map with node pins and links",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4381,7 +4818,8 @@
    "compact": "animated atmospheric contour wave field",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4389,7 +4827,8 @@
    "compact": "three-engine multi-surface demo atom",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4397,7 +4836,8 @@
    "compact": "interactive European airspace map with airports and flights",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4405,7 +4845,8 @@
    "compact": "live/sim status pill for a named data feed",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4413,7 +4854,8 @@
    "compact": "multi-slide fullscreen presentation playbook",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4422,7 +4864,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4430,7 +4873,8 @@
    "compact": "self-reveal: shows this page's own JSON schema",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4439,7 +4883,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4452,7 +4897,8 @@
     "pdf",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4461,7 +4907,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4470,7 +4917,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4478,7 +4926,8 @@
    "compact": "copyable monospace prompt/code block",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4487,7 +4936,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4496,7 +4946,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4505,7 +4956,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4513,7 +4965,8 @@
    "compact": "old-vs-new stack comparison animation",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4521,7 +4974,8 @@
    "compact": "live audience voting with real-time bar chart results",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4529,7 +4983,8 @@
    "compact": "emoji reaction buttons with raining particles",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4537,7 +4992,8 @@
    "compact": "raise-hand button with live participant count",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4546,7 +5002,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4554,7 +5011,8 @@
    "compact": "live page-load stopwatch",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4562,7 +5020,8 @@
    "compact": "embedded live atom JSON editor with preview",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4571,7 +5030,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4580,7 +5040,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4589,7 +5050,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4598,7 +5060,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4607,7 +5070,8 @@
    "surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4617,7 +5081,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4627,7 +5092,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4637,7 +5103,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4647,7 +5114,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4657,7 +5125,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4667,7 +5136,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4677,7 +5147,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4687,7 +5158,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4697,7 +5169,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4707,7 +5180,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4717,7 +5191,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4727,7 +5202,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4737,7 +5213,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4747,7 +5224,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4757,7 +5235,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4767,7 +5246,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4777,7 +5257,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4787,7 +5268,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4797,7 +5279,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4807,7 +5290,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4817,7 +5301,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4827,7 +5312,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4837,7 +5323,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4847,7 +5334,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4857,7 +5345,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4868,7 +5357,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4879,7 +5369,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4890,7 +5381,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4901,7 +5393,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4912,7 +5405,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4922,7 +5416,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4933,7 +5428,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4944,7 +5440,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4955,7 +5452,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4966,7 +5464,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4977,7 +5476,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4988,7 +5488,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -4999,7 +5500,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5010,7 +5512,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5021,7 +5524,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5032,7 +5536,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5043,7 +5548,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5054,7 +5560,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5064,7 +5571,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5074,7 +5582,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5084,7 +5593,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5095,7 +5605,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5106,7 +5617,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5114,7 +5626,8 @@
    "compact": "deck navigation shell with subjects and slides",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5122,7 +5635,8 @@
    "compact": "anchor pill buttons scrolling to page sections",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5130,7 +5644,8 @@
    "compact": "copyable command with completion checkbox",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5138,7 +5653,8 @@
    "compact": "multi-line text input area",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5146,7 +5662,8 @@
    "compact": "flip-card deck of question answer pairs",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5154,7 +5671,8 @@
    "compact": "dated vertical revision timeline",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5162,7 +5680,8 @@
    "compact": "current user identity chip",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5170,7 +5689,8 @@
    "compact": "floating light dark theme switch",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5178,7 +5698,8 @@
    "compact": "large icon+title tile, whole tile clickable, for an app/tool selector grid",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5186,7 +5707,8 @@
    "compact": "selectable card grid for a small, explained set of options",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5194,7 +5716,8 @@
    "compact": "default-pill plus free-text override for a config question",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5202,7 +5725,8 @@
    "compact": "pill tabs that show/hide sibling layout elements",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5210,14 +5734,16 @@
    "compact": "chromeless secondary text action, for use beside one primary button",
    "surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
    "type": "gdm_rocket_panel",
    "compact": "isometric rocket launch canvas animation, fixed half-viewport overlay",
    "surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5227,7 +5753,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5237,7 +5764,8 @@
     "web",
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5281,7 +5809,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5290,7 +5819,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5299,7 +5829,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5308,7 +5839,8 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
@@ -5317,21 +5849,24 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
    "type": "scene_stage",
    "compact": "animated looping SVG scene of a place (53 ready presets) from verified clipart",
    "surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   {
    "type": "clipart",
    "compact": "one verified vector clipart image by id",
    "surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   }
  ]

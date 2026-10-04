@@ -4,7 +4,7 @@ A stat number that counts up from zero to the target value using a cubic ease fu
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

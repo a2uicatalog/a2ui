@@ -4,7 +4,7 @@ A row of tappable suggestion chips placed at the end of a response or slide, pro
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

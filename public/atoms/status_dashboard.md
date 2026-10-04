@@ -4,7 +4,7 @@ Compact grid showing live operational status of multiple services with color ind
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A dark overlay with a soft-edged circular cutout that follows the cursor — tor
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A button that triggers window.print() to print or save the current page as PDF.
 
 ## Surfaces
 
-web, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft a
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

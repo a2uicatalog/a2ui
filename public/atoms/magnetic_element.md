@@ -4,7 +4,7 @@ Wraps content that drifts toward the cursor when it enters the activation radius
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Aggregate star-rating histogram showing the percentage breakdown per star level 
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

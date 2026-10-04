@@ -4,7 +4,7 @@ Renders a specialised inline element displaying technical term definitions on ho
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

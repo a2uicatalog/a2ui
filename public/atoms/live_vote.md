@@ -4,7 +4,7 @@ Live audience voting: buttons to vote, bar chart results, optional Google Sheets
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

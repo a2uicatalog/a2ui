@@ -4,7 +4,7 @@ Guided step-by-step onboarding flow for first-time learners. Each step has a lab
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

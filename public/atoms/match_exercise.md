@@ -4,7 +4,7 @@ Click-to-pair matching exercise. Two columns of items are shown — left (terms)
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

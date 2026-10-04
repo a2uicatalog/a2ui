@@ -4,7 +4,7 @@ Renders a Day-of-Week vs. Hour-of-Day bubble grid (punch card) of repository or 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

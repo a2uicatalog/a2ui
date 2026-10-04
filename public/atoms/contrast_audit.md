@@ -4,7 +4,7 @@ WCAG 2.1 contrast audit with the maths baked in: for each foreground/background 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
 
 ## Fields
 

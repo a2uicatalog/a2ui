@@ -4,7 +4,7 @@ Full-viewport isometric 3D canvas animation of an H160 helicopter hovering over 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

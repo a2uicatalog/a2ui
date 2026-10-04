@@ -4,7 +4,7 @@ Displays a row of quick-action buttons enabling readers to share the post to ext
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

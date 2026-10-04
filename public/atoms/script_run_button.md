@@ -4,7 +4,7 @@ Interactive button that executes a custom Google Apps Script server function whe
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

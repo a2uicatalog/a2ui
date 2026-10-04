@@ -4,7 +4,7 @@ Multi-level horizontal navigation bar with a brand/logo slot, top-level nav item
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

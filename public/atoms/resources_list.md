@@ -4,7 +4,7 @@ Renders a clean inventory list of downloadable assets or reference files with me
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Small badge overlaid on an icon or element to indicate unread count or alert sta
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

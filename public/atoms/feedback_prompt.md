@@ -4,7 +4,7 @@ In-context feedback collection widget for rating content or AI response quality.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

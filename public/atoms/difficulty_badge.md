@@ -4,7 +4,7 @@ Displays a small visual marker representing the technical complexity level of an
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A UI pattern displayed when there is no data to show, often with an image, messa
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

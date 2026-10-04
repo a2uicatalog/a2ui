@@ -4,7 +4,7 @@ Renders an interactive bar chart using Chart.js with configurable datasets.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

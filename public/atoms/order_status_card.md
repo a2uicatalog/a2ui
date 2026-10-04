@@ -4,7 +4,7 @@ Shopify Polaris-style order summary card showing order number, date, fulfilment 
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Renders a list of items with actionable checkboxes for readers to track task pro
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

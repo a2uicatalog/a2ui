@@ -4,7 +4,7 @@ Renders a horizontal visual bar tracking the reader's scroll completion depth wi
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

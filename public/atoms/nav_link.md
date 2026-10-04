@@ -4,7 +4,7 @@ Single CTA button or link that navigates to a named A2UI page. Automatically app
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

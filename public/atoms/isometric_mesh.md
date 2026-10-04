@@ -4,7 +4,7 @@ Rotating 3D isometric height-field mesh. Default surface is a 16×16 Gaussian hi
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

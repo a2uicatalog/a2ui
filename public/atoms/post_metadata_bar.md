@@ -4,7 +4,7 @@ Displays article metadata — author, publish date, read time, and optional tags
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -171,13 +171,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span><span class="badge bd">android ⚠</span>
   </div>
 
   
 <div class="section">
   <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Prints the CSS gradient fallback; no shader</td></tr><tr><td>google-chat</td><td>Inline CSS functions and custom properties are not supported</td></tr><tr><td>mcp-apps</td><td>Hosts that strip scripts show the CSS gradient fallback</td></tr></tbody></table>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Prints the CSS gradient fallback; no shader</td></tr><tr><td>google-chat</td><td>Inline CSS functions and custom properties are not supported</td></tr><tr><td>mcp-apps</td><td>Hosts that strip scripts show the CSS gradient fallback</td></tr><tr><td>android</td><td>Hosts that strip scripts show the CSS gradient fallback</td></tr></tbody></table>
 </div>
 
   
@@ -211,7 +211,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
   ],
   "description": "A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.",
   "representativeQueries": [

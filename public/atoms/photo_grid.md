@@ -7,7 +7,7 @@ Reuses data_table's onRowClick contract exactly — same data-row-json attribute
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

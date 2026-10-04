@@ -4,7 +4,7 @@ Blocks that enter one after another: a stagger, set once. Every child gets the s
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

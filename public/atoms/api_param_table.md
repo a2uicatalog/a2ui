@@ -4,7 +4,7 @@ Renders a structured documentation table outlining parameter fields, data types,
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

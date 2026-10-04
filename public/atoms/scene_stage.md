@@ -4,7 +4,7 @@ An animated, looping pan/zoom SVG scene composed from a provenance-verified prop
 
 ## Surfaces
 
-mcp-apps
+mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Pill tabs that switch which ONE of several sibling atoms is visible, e.g. "how w
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

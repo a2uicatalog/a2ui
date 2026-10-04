@@ -6,7 +6,7 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
 
 ## Surfaces
 
-mcp-apps
+mcp-apps, android
 
 ## Fields
 

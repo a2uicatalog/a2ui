@@ -4,7 +4,7 @@ Horizontal swipeable carousel of Gmail inbox threads. Each card shows a coloured
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

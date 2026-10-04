@@ -4,7 +4,7 @@ List of items each with a colored icon circle, label, and text. More visual than
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

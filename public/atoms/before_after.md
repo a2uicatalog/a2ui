@@ -4,7 +4,7 @@ Side-by-side code comparison — red/green panels showing old vs new
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

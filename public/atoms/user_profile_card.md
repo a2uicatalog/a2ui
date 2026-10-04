@@ -4,7 +4,7 @@ Personalised profile card showing the active user's avatar initial, display name
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

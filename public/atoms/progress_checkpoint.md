@@ -4,7 +4,7 @@ Displays an indicator showing the reader's current location within a multi-step 
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

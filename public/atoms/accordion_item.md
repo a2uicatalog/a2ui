@@ -4,7 +4,7 @@ Renders a single section of content that can be expanded or collapsed
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

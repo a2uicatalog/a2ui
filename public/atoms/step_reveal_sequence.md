@@ -4,7 +4,7 @@ Tab-style step-by-step content with radio-button navigation
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

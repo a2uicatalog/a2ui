@@ -4,7 +4,7 @@ One-time password entry field. Renders N individual digit boxes (default 6) with
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

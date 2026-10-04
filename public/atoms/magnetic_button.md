@@ -4,7 +4,7 @@ Button that follows the cursor magnetically on hover
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Slot-machine style digit-by-digit flip animation where each digit column indepen
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Renders a numbered list of footnotes at the bottom of an article or section.
 
 ## Surfaces
 
-web, email, google-apps-script-web, mcp-apps
+web, email, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

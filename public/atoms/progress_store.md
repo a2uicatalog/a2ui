@@ -4,7 +4,7 @@ Invisible state connector atom — no visual output. Initialises window._A2UI_ST
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Multiple-choice or true/false question card with CSS checkbox trick for answer r
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

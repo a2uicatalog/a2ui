@@ -4,7 +4,7 @@ Words appear one by one with a fade-up animation that auto-plays on page load â€
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Responsive grid of files and subfolders inside a Drive folder. Subfolders appear
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

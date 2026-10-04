@@ -4,7 +4,7 @@ CSS-animated celebration overlay triggered by a named effect type. confetti fire
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

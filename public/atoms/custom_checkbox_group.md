@@ -4,7 +4,7 @@ Renders a group of custom-styled checkboxes allowing multiple selections.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Displays an inline styled snippet view of remote code from GitHub Gists.
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

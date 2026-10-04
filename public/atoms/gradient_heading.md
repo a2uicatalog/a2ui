@@ -4,7 +4,7 @@ Gradient-fill standalone heading using CSS background-clip text. Simpler than da
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

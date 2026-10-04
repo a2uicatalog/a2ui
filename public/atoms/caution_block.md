@@ -4,7 +4,7 @@ Renders a high-visibility callout box warning readers about potential pitfalls o
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

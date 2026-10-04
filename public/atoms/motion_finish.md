@@ -4,7 +4,7 @@ A finishing layer for the whole frame, like a colourist: film grain (fixed seede
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

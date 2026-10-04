@@ -4,7 +4,7 @@ Renders a single timeline entry documenting additions, fixes, or modifications i
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

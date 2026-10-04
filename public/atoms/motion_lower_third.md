@@ -4,7 +4,7 @@ A lower third: an accent bar draws, the name slides out of it behind a clip, and
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

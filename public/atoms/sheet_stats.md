@@ -4,7 +4,7 @@ Aggregate statistics (sum, average, count, min, max) computed from a Google Shee
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Two-column layout — a large glowing stat number on the left (with neon text-sh
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

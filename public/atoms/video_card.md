@@ -4,7 +4,7 @@ Renders a card with a video thumbnail, title, and description, linking
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

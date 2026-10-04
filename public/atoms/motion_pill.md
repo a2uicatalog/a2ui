@@ -4,7 +4,7 @@ A rounded call-to-action chip: "Comment *Motion* under this post". The words bet
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

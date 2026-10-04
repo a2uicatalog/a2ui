@@ -4,7 +4,7 @@ A navigation aid indicating the user's current location within a hierarchical
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

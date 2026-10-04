@@ -4,7 +4,7 @@ Displays a nested, expandable visual explorer for structural JSON data objects.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

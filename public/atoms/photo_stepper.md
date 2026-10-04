@@ -7,7 +7,7 @@ Reuses photo_grid's click contract exactly for the vote button (same data-row-js
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Text hyperlink styled as a button
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

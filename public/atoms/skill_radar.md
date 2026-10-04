@@ -4,7 +4,7 @@ SVG spider/radar chart plotting learner competency levels across multiple skill 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

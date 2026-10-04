@@ -4,7 +4,7 @@ Row of filter/tag chips, optionally scrollable. Chips can link to URLs and have 
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

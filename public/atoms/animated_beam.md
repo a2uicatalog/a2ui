@@ -4,7 +4,7 @@ Inline SVG panel showing two labelled endpoint nodes connected by a path with a 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

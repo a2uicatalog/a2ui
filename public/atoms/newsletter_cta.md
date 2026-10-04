@@ -4,7 +4,7 @@ Displays an input block encouraging readers to subscribe to an email update list
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

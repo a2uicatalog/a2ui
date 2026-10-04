@@ -4,7 +4,7 @@ Full-screen deck navigation container: subjects as a coloured nav rail, each hol
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

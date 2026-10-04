@@ -4,7 +4,7 @@ Displays the estimated duration required to fully read or complete an article.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

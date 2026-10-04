@@ -4,7 +4,7 @@ CSS-only tabbed panels — ideal for multi-language code examples
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

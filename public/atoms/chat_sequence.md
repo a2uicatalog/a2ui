@@ -4,7 +4,7 @@ Animated conversation thread with user/assistant bubbles
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A chain of fading dots that follow the cursor using worm-chain physics — each 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

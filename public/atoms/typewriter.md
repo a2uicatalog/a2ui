@@ -4,7 +4,7 @@ Text that reveals itself character-by-character using a CSS steps() width animat
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Vertical dated timeline of events for study/revision pages.
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

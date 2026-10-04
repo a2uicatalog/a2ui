@@ -4,7 +4,7 @@ A heads-up display that fills its placed box: corner brackets, a timecode that c
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

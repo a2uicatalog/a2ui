@@ -4,7 +4,7 @@ Interactive poll with a question and vote-count bar for each option.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

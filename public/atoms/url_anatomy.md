@@ -4,7 +4,7 @@ Visually annotates the current renderer URL, highlighting the GAS endpoint, ?p= 
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A structured card displaying an AI agent tool invocation — in-flight, complete
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

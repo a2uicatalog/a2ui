@@ -4,7 +4,7 @@ Inline button or link with a diagonal shimmer sweep animation driven by CSS back
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

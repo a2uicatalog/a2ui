@@ -4,7 +4,7 @@ Interactive word cloud — static words or live Google Sheets feed with submit i
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

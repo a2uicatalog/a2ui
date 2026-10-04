@@ -4,7 +4,7 @@ Renders a single key metric with a surrounding donut chart indicating
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

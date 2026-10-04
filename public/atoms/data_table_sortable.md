@@ -4,7 +4,7 @@ Renders a data table with client-side column sorting and optional pagination.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

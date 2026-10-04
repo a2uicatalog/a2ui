@@ -4,7 +4,7 @@ Horizontal step progress indicator with numbered circles and connecting lines. C
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

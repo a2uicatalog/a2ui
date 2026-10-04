@@ -171,13 +171,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span><span class="badge bd">android ⚠</span>
   </div>
 
   
 <div class="section">
   <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle is CSP-clean (resourceDomains []) and /api/render sends no font-src — the faces are blocked and the Georgia/system-mono fallback stack renders instead. Layout, palette and rail are unaffected; only the typeface changes. Pass use_plex_fonts false to opt out explicitly.</td></tr></tbody></table>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle is CSP-clean (resourceDomains []) and /api/render sends no font-src — the faces are blocked and the Georgia/system-mono fallback stack renders instead. Layout, palette and rail are unaffected; only the typeface changes. Pass use_plex_fonts false to opt out explicitly.</td></tr><tr><td>android</td><td>IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle is CSP-clean (resourceDomains []) and /api/render sends no font-src — the faces are blocked and the Georgia/system-mono fallback stack renders instead. Layout, palette and rail are unaffected; only the typeface changes. Pass use_plex_fonts false to opt out explicitly.</td></tr></tbody></table>
 </div>
 
   
@@ -252,7 +252,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "capabilities": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
   ],
   "description": "A layered-depth concept explainer \u2014 an opening hook line, a hero \"mental model\" card carrying the one-line analogy, then depth rungs down a connected rail, each rung one level deeper into the concept, terminating in a worked-example rung. Shares article_journey's warm palette token system (paper/ink/accent/mono-* etc. via the palette field) and IBM Plex fonts so the article atoms read as one design system. renderers/web_article.py is the reference implementation; apps-script-surface/gas-wired-renderer/atoms_concept.gs is the port that carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the Worker's /api/render all compile from the .gs sources), verified at parity against the reference.",
   "representativeQueries": [

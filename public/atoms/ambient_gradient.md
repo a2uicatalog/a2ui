@@ -4,7 +4,7 @@ Full-screen animated aurora background — alias for aurora_background
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

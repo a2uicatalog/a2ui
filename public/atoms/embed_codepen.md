@@ -4,7 +4,7 @@ Renders an embedded interactive CodePen sandbox workspace within the document.
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

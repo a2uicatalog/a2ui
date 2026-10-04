@@ -4,7 +4,7 @@ A horizontal navigation component displaying a set of clickable tabs.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

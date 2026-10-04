@@ -4,7 +4,7 @@ Countdown timer showing days/hours/minutes/seconds to a target date — alias fo
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

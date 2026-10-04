@@ -4,7 +4,7 @@ Renders a banner encouraging readers to connect with official social channels.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

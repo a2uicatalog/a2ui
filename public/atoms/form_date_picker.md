@@ -4,7 +4,7 @@ Date picker input supporting single-date selection or a date-range (start + end)
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

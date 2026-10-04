@@ -4,7 +4,7 @@ Structured enterprise case study card. Sections for situation narrative, key dat
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

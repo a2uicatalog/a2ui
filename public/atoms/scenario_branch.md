@@ -4,7 +4,7 @@ Narrative branching learning atom. Presents a real-world situation with 2-4 labe
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

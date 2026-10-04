@@ -4,7 +4,7 @@ Compact grid of multiple labeled sparklines for at-a-glance multi-metric compari
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

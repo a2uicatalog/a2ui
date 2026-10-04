@@ -4,7 +4,7 @@ Incomplete tasks displayed as an interactive checkbox list. On GAS uses the Task
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

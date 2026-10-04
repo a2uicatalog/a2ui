@@ -4,7 +4,7 @@ Interactive Mercator projection map with draggable pan, node pins, and animated 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Auto-detecting media embed that accepts a raw URL and builds the correct iframe 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

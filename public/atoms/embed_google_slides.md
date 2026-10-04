@@ -4,7 +4,7 @@ Renders an interactive presentation iframe viewer loading Google Slides resource
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

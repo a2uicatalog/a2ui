@@ -4,7 +4,7 @@ An SVG path that animates drawing itself from start to end using the stroke-dash
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

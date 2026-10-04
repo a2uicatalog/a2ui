@@ -4,7 +4,7 @@ Highlighted alert box — info, warning, tip, or danger
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, claude-code
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, claude-code, android
 
 ## Fields
 

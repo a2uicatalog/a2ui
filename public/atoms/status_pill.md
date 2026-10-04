@@ -4,7 +4,7 @@ A small, colored label or "pill" used to display a concise status for an item.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

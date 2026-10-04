@@ -4,7 +4,7 @@ A modular type scale, computed and shown as a specimen sheet. Declare a base siz
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Inline form that appends a timestamped row to a Google Sheet on submit. Calls go
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

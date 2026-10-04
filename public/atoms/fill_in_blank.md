@@ -4,7 +4,7 @@ Cloze-test exercise where one or more blanks in a sentence or paragraph are repl
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

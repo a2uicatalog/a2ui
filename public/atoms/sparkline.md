@@ -4,7 +4,7 @@ Renders a small, simple line chart without axes or coordinates, showing
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

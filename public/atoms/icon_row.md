@@ -4,7 +4,7 @@ Horizontal strip of Material Symbol icon + label pairs. Good for feature/capabil
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

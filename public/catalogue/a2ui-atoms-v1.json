@@ -49,7 +49,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Italic series link and/or transparency note shown at the top A phrase like 'show whether content was recently updated or is no longer supported' usually means badge, changelog_entry, or deprecation_notice, not this -- intro is a fixed series-link note at the top of an article.",
    "x-intent-phrases": [
@@ -90,7 +91,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "One or more prose paragraphs",
    "x-intent-phrases": [
@@ -131,7 +133,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "H2 section title",
    "x-intent-phrases": [
@@ -172,7 +175,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "H3 subsection title",
    "x-intent-phrases": [
@@ -215,7 +219,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Pull quote or blockquote",
    "x-intent-phrases": [
@@ -258,7 +263,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Fenced code block",
    "x-intent-phrases": [
@@ -296,7 +302,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline left-to-right flow (e.g. build pipeline steps)",
    "x-intent-phrases": [
@@ -336,7 +343,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Unordered list with optional bold lead-in per item",
    "x-intent-phrases": [
@@ -371,7 +379,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visual section break",
    "x-intent-phrases": [
@@ -411,7 +420,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Responsive 16:9 embedded YouTube video",
    "x-intent-phrases": [
@@ -462,7 +472,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Single image with caption, hosted at a public URL",
    "x-intent-phrases": [
@@ -504,7 +515,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Two images side by side with individual captions",
    "x-intent-phrases": [
@@ -546,7 +558,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "SVG architecture diagram hosted at a public URL",
    "x-intent-phrases": [
@@ -590,7 +603,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "GitHub repo card — fetches live star/fork/language/push data from GitHub API at render time and embeds as self-contained HTML",
    "x-intent-phrases": [
@@ -629,7 +643,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Formatted GitHub repo link list at end of article",
    "x-intent-phrases": [
@@ -673,7 +688,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Final paragraph + optional hashtags",
    "x-intent-phrases": [
@@ -719,7 +735,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Highlighted alert box — info, warning, tip, or danger A one-off confirmation that an action just succeeded, or a live warning that needs a response (e.g. 'saved', 'entry recorded', 'someone else is editing this'), is usually toast_notification, inline_feedback_message, inline_alert, or action_required_card instead -- callout is for a persistent note inside the page's own content, not a moment-in-time reaction to what the user just did.",
    "x-intent-phrases": [
@@ -760,7 +777,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Numbered sequential steps with blue circle indicators",
    "x-intent-phrases": [
@@ -812,7 +830,8 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "HTML table with styled headers, alternating rows, horizontal scroll",
    "x-intent-phrases": [
@@ -859,7 +878,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CSS-only tabbed panels — ideal for multi-language code examples",
    "x-intent-phrases": [
@@ -902,7 +922,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Key-value table for env vars, config options, API fields",
    "x-intent-phrases": [
@@ -960,7 +981,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Side-by-side code comparison — red/green panels showing old vs new",
    "x-intent-phrases": [
@@ -1026,7 +1048,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full API/function reference block — name, description, parameters table, return value, and example.",
    "x-intent-phrases": [
@@ -1069,7 +1092,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Responsive image grid with CSS-only lightbox on click",
    "x-intent-phrases": [
@@ -1116,7 +1140,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Two YouTube videos side by side with optional labels",
    "x-intent-phrases": [
@@ -1161,7 +1186,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CSS-only sliding carousel with dot indicators and prev/next arrows",
    "x-intent-phrases": [
@@ -1207,7 +1233,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Vertical timeline with dot connectors, date badges, tag pills",
    "x-intent-phrases": [
@@ -1256,7 +1283,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Code block with numbered yellow callout bubbles on specific lines, with an explanation list below.",
    "x-intent-phrases": [
@@ -1300,7 +1328,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Drag to reorder a list, emitting the new position as one event. A DATA atom, not a domain one: it renders whatever {id, label} pairs it is given and emits a position, so the same atom serves form fiel",
    "x-intent-phrases": [
@@ -1340,7 +1369,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A clickable image grid: every tile is both a photo and a row. Built to close a real gap — data_table has no way to show what a row IS, only what it says about itself, so a photo-driven decision (which",
    "x-intent-phrases": [
@@ -1384,7 +1414,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A full-viewport, one-photo-at-a-time lightbox with prev/next and a vote button per slide — the sibling photo_grid does not cover: reviewing options ONE AT A TIME with full attention, immersively, rath",
    "x-intent-phrases": [
@@ -1430,7 +1461,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "An iframe whose `src` is driven by a wire, so picking a value elsewhere on the page re-navigates it CLIENT-SIDE — no server round trip, no paint_result, nothing else on the page repainted. A DATA atom",
    "x-intent-phrases": [
@@ -1505,7 +1537,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A quantity carrying BOTH what is known and what is projected, each labelled, neither omittable. A data atom rather than a domain one: cost is only the first instance. The same shape holds for effort (",
    "x-intent-phrases": [
@@ -1558,7 +1591,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Glowing neon stat card — large value with label and optional delta",
    "x-intent-phrases": [
@@ -1615,7 +1649,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Horizontal bar showing how much of a task, list or goal is complete, as a filled share of the total (for example 6 of 10 done). Animated CSS fill with a soft glow.",
    "x-intent-phrases": [
@@ -1657,7 +1692,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Group of coloured status badges with optional pulse animation — green/cyan/blue/yellow/red/purple/grey",
    "x-intent-phrases": [
@@ -1710,7 +1746,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a small, simple line chart without axes or coordinates, showing",
    "x-intent-phrases": [
@@ -1763,7 +1800,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a graphical representation of data where individual values",
    "x-intent-phrases": [
@@ -1816,7 +1854,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a Day-of-Week vs. Hour-of-Day bubble grid (punch card) of repository or commit activity, where bubble size is proportional to activity.",
    "x-intent-phrases": [
@@ -1861,7 +1900,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a flow diagram (Sankey flow) where left-hand source nodes connect to right-hand target nodes via beautiful, curved gradient Bezier bands.",
    "x-intent-phrases": [
@@ -1910,7 +1950,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a SaaS subscription or customer cohort retention triangular matrix with color-coded continuous gradients.",
    "x-intent-phrases": [
@@ -1967,7 +2008,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a single key metric with a surrounding donut chart indicating",
    "x-intent-phrases": [
@@ -2027,7 +2069,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a key performance indicator with its current value and a numerical",
    "x-intent-phrases": [
@@ -2068,7 +2111,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a premium, glassmorphic checklist and action item tracker with status checkboxes, priorities, assignees, and due dates.",
    "x-intent-phrases": [
@@ -2120,7 +2164,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an emotional summary and sentiment tracker for a call or meeting, showing positive/negative/neutral mix, sentiment index progress arc, and emotional journey area timeline.",
    "x-intent-phrases": [
@@ -2172,7 +2217,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a simple visual indicator (e.g., arrow, icon) representing",
    "x-intent-phrases": [
@@ -2209,7 +2255,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A navigation aid indicating the user's current location within a hierarchical",
    "x-intent-phrases": [
@@ -2258,7 +2305,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A control for navigating through a series of pages or results.",
    "x-intent-phrases": [
@@ -2308,7 +2356,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Vertical step sequence where completed steps show an animated SVG checkmark draw, the active step pulses with a sonar-style glow ring, and pending steps are muted. State is driven by active_index — a",
    "x-intent-phrases": [
@@ -2345,7 +2394,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A horizontal navigation component displaying a set of clickable tabs.",
    "x-intent-phrases": [
@@ -2384,7 +2434,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A list of links that navigate to specific sections within the current",
    "x-intent-phrases": [
@@ -2422,7 +2473,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a list of questions and answers, where answers are hidden until",
    "x-intent-phrases": [
@@ -2472,7 +2524,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a term with its definition, often with an optional link for more details.",
    "x-intent-phrases": [
@@ -2520,7 +2573,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a numbered footnote reference and its corresponding text, typically",
    "x-intent-phrases": [
@@ -2568,7 +2622,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a blockquote with an associated avatar and attribution.",
    "x-intent-phrases": [
@@ -2618,7 +2673,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a prominent, large statistic or number, often with a brief",
    "x-intent-phrases": [
@@ -2659,7 +2715,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a single section of content that can be expanded or collapsed",
    "x-intent-phrases": [
@@ -2700,7 +2757,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a small, informational popup that appears when a user hovers",
    "x-intent-phrases": [
@@ -2749,7 +2807,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a rich content card that appears when a user hovers over a specified trigger element. A phrase like 'show a customer's account details and order history' as a persistent, always-visible panel usually means user_profile_card, order_status_card, or key_value, not this -- hover_card only appears on mouse hover. If the request does not explicitly say the content should appear ONLY on mouseover, it is NOT this -- a persistently visible summary belongs on user_profile_card, order_status_card, key_value, or entity_list instead.",
    "x-intent-phrases": [
@@ -2794,7 +2853,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a standalone section of content that can be toggled between",
    "x-intent-phrases": [
@@ -2843,7 +2903,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript.",
    "x-intent-phrases": [
@@ -2892,7 +2953,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an embedded audio player for a given URL.",
    "x-intent-phrases": [
@@ -2940,7 +3002,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a clickable link to an audio file, often with an audio icon.",
    "x-intent-phrases": [
@@ -2989,7 +3052,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an image thumbnail of a PDF document with a link to the full",
    "x-intent-phrases": [
@@ -3037,7 +3101,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon.",
    "x-intent-phrases": [
@@ -3086,7 +3151,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a static image thumbnail for a video, with a play icon overlay",
    "x-intent-phrases": [
@@ -3139,7 +3205,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a card with a video thumbnail, title, and description, linking",
    "x-intent-phrases": [
@@ -3197,7 +3264,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Unified diff view computed server-side via Python difflib. Added lines have a green left border and fade-in background; removed lines have red. Unchanged context lines are neutral. Optional line numbe",
    "x-intent-phrases": [
@@ -3250,7 +3318,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders two distinct code snippets side-by-side or stacked, without",
    "x-intent-phrases": [
@@ -3299,7 +3368,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an image within a decorative frame, simulating a device (e.g., browser, phone).",
    "x-intent-phrases": [
@@ -3351,7 +3421,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a single image with a descriptive caption below it.",
    "x-intent-phrases": [
@@ -3404,7 +3475,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A prominent banner displaying a message, often with an icon and an optional action.",
    "x-intent-phrases": [
@@ -3451,7 +3523,8 @@
     "web",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A fixed-position slide-in notification toast that appears from a corner of the viewport, holds for 3.5 seconds, then slides back out — all via CSS keyframes. Renders a viewport placeholder in the arti",
    "x-intent-phrases": [
@@ -3496,7 +3569,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A placeholder UI that shows the grey outline of content while it's loading.",
    "x-intent-phrases": [
@@ -3549,7 +3623,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action.",
    "x-intent-phrases": [
@@ -3590,7 +3665,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A simple rotating loading animation shown while content loads or a request is being processed.",
    "x-intent-phrases": [
@@ -3635,7 +3711,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A small, colored label or \"pill\" used to display a concise status for an item.",
    "x-intent-phrases": [
@@ -3680,7 +3757,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A small, contextual message displayed inline with content, often used",
    "x-intent-phrases": [
@@ -3725,7 +3803,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A row of stars showing a rating out of a maximum, optionally marked as interactive.",
    "x-intent-phrases": [
@@ -3774,7 +3853,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Circular gauge showing how much of a whole is complete, as a filled arc with the percentage in the centre. SVG that animates from zero when it appears.",
    "x-intent-phrases": [
@@ -3830,7 +3910,8 @@
     "google-meet-stage",
     "google-chat",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A card highlighting an important status or issue that requires immediate user attention or approval before proceeding.",
    "x-intent-phrases": [
@@ -3872,7 +3953,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a table comparing features across multiple products or versions.",
    "x-intent-phrases": [
@@ -3940,7 +4022,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a single pricing plan with its name, price, key features, and an optional call to action.",
    "x-intent-phrases": [
@@ -3978,7 +4061,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a collection of pricing tier cards, typically for comparing",
    "x-intent-phrases": [
@@ -4026,7 +4110,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a two-column list itemizing advantages and disadvantages for a single subject.",
    "x-intent-phrases": [
@@ -4072,7 +4157,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a detailed comparison of two items, displaying their attributes",
    "x-intent-phrases": [
@@ -4114,7 +4200,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a table detailing technical specifications or features for a single product.",
    "x-intent-phrases": [
@@ -4158,7 +4245,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.",
    "x-intent-phrases": [
@@ -4219,7 +4307,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a block explicitly comparing two entities with a prominent",
    "x-intent-phrases": [
@@ -4259,7 +4348,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a comparison of multiple items based on star ratings or numerical",
    "x-intent-phrases": [
@@ -4301,7 +4391,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a list of capabilities, indicating which items possess each",
    "x-intent-phrases": [
@@ -4346,7 +4437,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a visual on/off switch.",
    "x-intent-phrases": [
@@ -4391,7 +4483,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a block of text that can be expanded or collapsed to reveal",
    "x-intent-phrases": [
@@ -4436,7 +4529,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a card with a front and back side that flips on interaction.",
    "x-intent-phrases": [
@@ -4481,7 +4575,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an image with interactive points that reveal information when clicked.",
    "x-intent-phrases": [
@@ -4522,7 +4617,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a menu that appears when a trigger element is hovered or focused.",
    "x-intent-phrases": [
@@ -4567,7 +4663,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an interactive star rating component for user input.",
    "x-intent-phrases": [
@@ -4612,7 +4709,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a group of mutually exclusive buttons for selection, styled",
    "x-intent-phrases": [
@@ -4657,7 +4755,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an image that magnifies when hovered over.",
    "x-intent-phrases": [
@@ -4702,7 +4801,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a group of custom-styled checkboxes allowing multiple selections.",
    "x-intent-phrases": [
@@ -4747,7 +4847,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a panel that slides into view from the side of the screen on activation.",
    "x-intent-phrases": [
@@ -4801,7 +4902,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a single customer testimonial with text, author details, and an optional avatar.",
    "x-intent-phrases": [
@@ -4847,7 +4949,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a visual representation of a star rating, optionally with a total review count.",
    "x-intent-phrases": [
@@ -4893,7 +4996,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a stack or row of small user avatars, often indicating a group",
    "x-intent-phrases": [
@@ -4935,7 +5039,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a list of individuals who have contributed to a project or community, with their avatars and roles.",
    "x-intent-phrases": [
@@ -4977,7 +5082,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a grid or row of logos from featured customers or partners.",
    "x-intent-phrases": [
@@ -5027,7 +5133,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a prominent banner highlighting a key social proof metric or achievement.",
    "x-intent-phrases": [
@@ -5081,7 +5188,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a card showcasing a mention or feature in a media publication.",
    "x-intent-phrases": [
@@ -5135,7 +5243,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.",
    "x-intent-phrases": [
@@ -5189,7 +5298,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a short, impactful quote from a customer review, often accompanied",
    "x-intent-phrases": [
@@ -5233,7 +5343,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an embedded snippet of a social media post, such as a tweet",
    "x-intent-phrases": [
@@ -5277,7 +5388,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a static or interactive command-line interface terminal window showing input commands and output logs.",
    "x-intent-phrases": [
@@ -5313,7 +5425,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a hierarchical layout displaying directory structures, folders, and individual files for software projects.",
    "x-intent-phrases": [
@@ -5349,7 +5462,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders multiple code snippets organized inside an interactive, multi-tab container component.",
    "x-intent-phrases": [
@@ -5398,7 +5512,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a formatted API request block displaying the HTTP method badge, URL endpoint, headers, and body.",
    "x-intent-phrases": [
@@ -5434,7 +5549,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a clear configuration list detailing system environment variable keys, descriptions, and default values.",
    "x-intent-phrases": [
@@ -5474,7 +5590,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a callout box highlighting required tools, knowledge, or setups needed before starting a guide.",
    "x-intent-phrases": [
@@ -5514,7 +5631,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders inline text visual tags mimicking keyboard keys to highlight shortcuts or hotkey combinations.",
    "x-intent-phrases": [
@@ -5551,7 +5669,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a structured documentation table outlining parameter fields, data types, requirements, and fallback options.",
    "x-intent-phrases": [
@@ -5591,7 +5710,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a small visual tag showing software release or dependency version numbers.",
    "x-intent-phrases": [
@@ -5631,7 +5751,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a prominent warning banner indicating a feature or API is no longer supported.",
    "x-intent-phrases": [
@@ -5667,7 +5788,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a callout box identifying a feature or code path as experimental or unstable.",
    "x-intent-phrases": [
@@ -5703,7 +5825,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a copyable single-line command-line prompt for terminal execution.",
    "x-intent-phrases": [
@@ -5739,7 +5862,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a discrete interactive button that copies associated text or code to the clipboard.",
    "x-intent-phrases": [
@@ -5775,7 +5899,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a scrollable monospace block containing raw system or compilation log strings.",
    "x-intent-phrases": [
@@ -5811,7 +5936,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a nested, expandable visual explorer for structural JSON data objects.",
    "x-intent-phrases": [
@@ -5848,7 +5974,8 @@
     "web",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Displays a highlighted summary box containing critical bullet points from an article.",
    "x-intent-phrases": [
@@ -5884,7 +6011,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a condensed overview panel summarising article content at a glance.",
    "x-intent-phrases": [
@@ -5920,7 +6048,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a checklist-style panel outlining competencies a reader will gain from the content.",
    "x-intent-phrases": [
@@ -5964,7 +6093,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a single timeline entry documenting additions, fixes, or modifications in a software release.",
    "x-intent-phrases": [
@@ -6012,7 +6142,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a grouped publication document containing categorised changes for a version launch.",
    "x-intent-phrases": [
@@ -6048,7 +6179,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a curated list of links and references for extending understanding beyond the article.",
    "x-intent-phrases": [
@@ -6084,7 +6216,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a clean inventory list of downloadable assets or reference files with metadata.",
    "x-intent-phrases": [
@@ -6124,7 +6257,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays an off-axis callout block containing peripheral thoughts, caveats, or fun facts.",
    "x-intent-phrases": [
@@ -6160,7 +6294,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a small visual marker representing the technical complexity level of an article.",
    "x-intent-phrases": [
@@ -6196,7 +6331,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a high-visibility callout box warning readers about potential pitfalls or destructive actions.",
    "x-intent-phrases": [
@@ -6232,7 +6368,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a list of items with actionable checkboxes for readers to track task progress.",
    "x-intent-phrases": [
@@ -6272,7 +6409,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a specialised inline element displaying technical term definitions on hover.",
    "x-intent-phrases": [
@@ -6308,7 +6446,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays the estimated duration required to fully read or complete an article.",
    "x-intent-phrases": [
@@ -6348,7 +6487,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays an indicator showing the reader's current location within a multi-step sequence.",
    "x-intent-phrases": [
@@ -6388,7 +6528,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a row of quick-action buttons enabling readers to share the post to external networks.",
    "x-intent-phrases": [
@@ -6428,7 +6569,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays an input block encouraging readers to subscribe to an email update list.",
    "x-intent-phrases": [
@@ -6476,7 +6618,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a profile section containing the creator's avatar, bio, and links.",
    "x-intent-phrases": [
@@ -6512,7 +6655,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a curated grid of preview cards for complementary reading material.",
    "x-intent-phrases": [
@@ -6552,7 +6696,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a navigation box indexing all parts within a multi-part article series.",
    "x-intent-phrases": [
@@ -6588,7 +6733,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays an interactive set of emoji elements collecting emotional sentiment feedback from readers.",
    "x-intent-phrases": [
@@ -6652,7 +6798,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a styled LinkedIn post image preview (conviction card, stat card, or carousel slide). Screenshot at 1.91:1 ratio for social sharing.",
    "x-intent-phrases": [
@@ -6710,7 +6857,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "Agentic typesetting: the agent decides how much each WORD weighs. A headline where every word carries an emphasis 1-5 that sets its size, weight and opacity, with the heaviest words in the accent colo",
    "x-intent-phrases": [
@@ -6774,7 +6922,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, t",
    "x-intent-phrases": [
@@ -6844,7 +6993,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "Show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a source per line (linked when a URL is given), a dashed tear line, a CONFIDENCE tota",
    "x-intent-phrases": [
@@ -6905,7 +7055,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "A belief change as a typographic object: \"I used to think\" in muted serif italic, struck through by a line that draws itself, then \"Now I think\" in heavy display type landing beneath it, and an option",
    "x-intent-phrases": [
@@ -6971,7 +7122,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "A modular type scale, computed and shown as a specimen sheet. Declare a base size and a musical ratio (minor second through golden ratio) and the atom calculates every step -- px and rem to the hundre",
    "x-intent-phrases": [
@@ -7028,7 +7180,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "Prose metrics as a typographic card: the Flesch reading-ease score set huge, its plain-language grade, and a stat row -- words, sentences, minutes to read at a declared words-per-minute, words per sen",
    "x-intent-phrases": [
@@ -7083,7 +7236,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "An editorial paragraph with an initial letter set four ways: dropped (the classic, sunk across 2-4 lines), raised (standing on the baseline), boxed (reversed out of an accent block), or ornament (ital",
    "x-intent-phrases": [
@@ -7138,7 +7292,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps",
-    "pdf"
+    "pdf",
+    "android"
    ],
    "x-routing-text": "WCAG 2.1 contrast audit with the maths baked in: for each foreground/background pair the renderer computes the relative luminance and contrast ratio, shows a live sample swatch, and badges AA (4.5:1),",
    "x-intent-phrases": [
@@ -7178,7 +7333,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a visually distinct callout showcasing a key phrase designed for social clipping.",
    "x-intent-phrases": [
@@ -7218,7 +7374,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a banner encouraging readers to connect with official social channels.",
    "x-intent-phrases": [
@@ -7258,7 +7415,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a single button allowing a user to subscribe directly to a profile.",
    "x-intent-phrases": [
@@ -7294,7 +7452,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a horizontal visual bar tracking the reader's scroll completion depth within the article.",
    "x-intent-phrases": [
@@ -7330,7 +7489,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an active list directory of navigation links targeting main content sections.",
    "x-intent-phrases": [
@@ -7374,7 +7534,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a prominent visual header displaying title, metadata, and background cover imagery.",
    "x-intent-phrases": [
@@ -7410,7 +7571,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an interactive button providing smooth automated viewport reset to page top.",
    "x-intent-phrases": [
@@ -7450,7 +7612,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an organized multi-part sequence navigation panel mapping serial publication installments.",
    "x-intent-phrases": [
@@ -7489,7 +7652,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an embedded interactive CodePen sandbox workspace within the document.",
    "x-intent-phrases": [
@@ -7524,7 +7688,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an integrated live development engine frame executing StackBlitz workspace code.",
    "x-intent-phrases": [
@@ -7559,7 +7724,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays an inline styled snippet view of remote code from GitHub Gists.",
    "x-intent-phrases": [
@@ -7594,7 +7760,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a fully rendered standalone publication card containing Twitter status data.",
    "x-intent-phrases": [
@@ -7629,7 +7796,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an interactive presentation iframe viewer loading Google Slides resources.",
    "x-intent-phrases": [
@@ -7668,7 +7836,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an active vector illustration display controlled via Lottie runtime rules.",
    "x-intent-phrases": [
@@ -7703,7 +7872,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a real-time collaborative preview referencing explicit Figma design canvas artboards.",
    "x-intent-phrases": [
@@ -7740,7 +7910,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays a grid of color swatches with labels and hex values for design system palettes.",
    "x-intent-phrases": [
@@ -7779,7 +7950,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Embeds a live interactive demo or sandbox within the article.",
    "x-intent-phrases": [
@@ -7816,7 +7988,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Side-by-side performance benchmark visualization comparing multiple implementations.",
    "x-intent-phrases": [
@@ -7856,7 +8029,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an interactive bar chart using Chart.js with configurable datasets. A phrase like 'how much you could save', describing one comparison figure rather than a full dataset, usually means actual_vs_estimate, metric_comparison_card, or stat_card, not this -- chartjs_bar is for a chart with several data points. If the request describes a single number or one comparison rather than a visual chart with axes and multiple data points, it is NOT this -- chartjs_bar needs an explicit request for a bar chart or graph.",
    "x-intent-phrases": [
@@ -7898,7 +8072,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an interactive line chart using Chart.js for time-series or trend data.",
    "x-intent-phrases": [
@@ -7948,7 +8123,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-aliases": [
     "data_table"
@@ -8003,7 +8179,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card comparing a current metric value against a previous period with delta indicator.",
    "x-intent-phrases": [
@@ -8040,7 +8217,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Compact grid of multiple labeled sparklines for at-a-glance multi-metric comparison.",
    "x-intent-phrases": [
@@ -8081,7 +8259,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Compact grid showing live operational status of multiple services with color indicators.",
    "x-intent-phrases": [
@@ -8118,7 +8297,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visual timeline of service uptime over a rolling window with per-day status blocks.",
    "x-intent-phrases": [
@@ -8154,7 +8334,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Keyboard-driven command palette overlay for quick navigation and action execution. Not for simple navigation to another page or view (use nav_link, cta_button, or pagination) - for a searchable list of commands or actions.",
    "x-intent-phrases": [
@@ -8199,7 +8380,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Styled card displaying a single search result with title, snippet, and URL.",
    "x-intent-phrases": [
@@ -8243,7 +8425,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays article metadata — author, publish date, read time, and optional tags — in a compact bar.",
    "x-intent-phrases": [
@@ -8280,7 +8463,8 @@
     "web",
     "email",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a numbered list of footnotes at the bottom of an article or section.",
    "x-intent-phrases": [
@@ -8320,7 +8504,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Small badge overlaid on an icon or element to indicate unread count or alert state. A phrase like 'how many are left in a queue or sequence' usually means progress_bar, progress_circle, or step_progress, not this -- notification_badge is an unread-count marker overlaid on an icon.",
    "x-intent-phrases": [
@@ -8356,7 +8541,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Nested tree list where parent items expand to reveal children on click.",
    "x-intent-phrases": [
@@ -8396,7 +8582,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive poll with a question and vote-count bar for each option.",
    "x-intent-phrases": [
@@ -8436,7 +8623,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline abbreviation with a tooltip revealing the full expanded form on hover.",
    "x-intent-phrases": [
@@ -8477,7 +8665,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline code or text element with a one-click copy button that provides feedback on success.",
    "x-intent-phrases": [
@@ -8520,7 +8709,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a premium pipeline conversion funnel with tapered glowing step bars, percentage conversion rates, and leakage drop-off markers.",
    "x-intent-phrases": [
@@ -8573,7 +8763,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a semi-circular radial gauge track with high contrast status quadrants, a glowing needle tick, and a prominent central KPI readout.",
    "x-intent-phrases": [
@@ -8650,7 +8841,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Coursed block/brick wall elevation — draws courses bottom-up from wall-shape inputs (dimensions, per-block dimensions, course/per-course counts, bond pattern), with a running-bond half-unit stagger on",
    "x-intent-phrases": [
@@ -8695,7 +8887,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders cumulative layered area chart trends utilizing overlapping translucent gradient fills and glowing series borders.",
    "x-intent-phrases": [
@@ -8784,7 +8977,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a coordinate scatter grid representing discrete data points intersected by a prominent glowing linear regression line.",
    "x-intent-phrases": [
@@ -8833,7 +9027,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a premium, aesthetic call emotion summary and theme board showing detected sentiments, dominant moods with color codings, active themes, and word weightings.",
    "x-intent-phrases": [
@@ -8886,7 +9081,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a high-fidelity SVG representation of a GitHub-style contribution activity calendar with colored commitment density blocks, total contributions, and streak statistics.",
    "x-intent-phrases": [
@@ -8936,7 +9132,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Form container with labelled field controls and explicit submit/cancel buttons. Fields are expressed as a list of {label, type, name, placeholder, options, rules} entries.",
    "x-intent-phrases": [
@@ -8995,7 +9192,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-aliases": [
     "text_input"
@@ -9052,7 +9250,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Labelled dropdown select with a list of value/label options. Supports required validation and an optional placeholder prompt.",
    "x-intent-phrases": [
@@ -9109,7 +9308,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Labelled group of radio buttons for single-option selection. Each option has a value, visible label, and optional description.",
    "x-intent-phrases": [
@@ -9158,7 +9358,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Labelled group of checkboxes for multi-option selection. Each checkbox has a name, visible label, optional description, and optional default checked state.",
    "x-intent-phrases": [
@@ -9203,7 +9404,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Group of named toggle switches — on/off controls with optional labels and descriptions. Suitable for settings panels, notification preferences, and feature flags.",
    "x-intent-phrases": [
@@ -9268,7 +9470,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Numeric range slider with a min, max, and optional step. Supports continuous (smooth) and discrete (stepped) variants. Renders a labelled track with a draggable thumb.",
    "x-intent-phrases": [
@@ -9322,7 +9525,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Date picker input supporting single-date selection or a date-range (start + end). Renders a calendar popover. Use inside a form or standalone.",
    "x-intent-phrases": [
@@ -9371,7 +9575,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Modal dialog overlay with a title, configurable size, and arbitrary content children. Opened programmatically or via a trigger button. Closes on X, Escape, or backdrop click.",
    "x-intent-phrases": [
@@ -9412,7 +9617,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A row of tappable suggestion chips placed at the end of a response or slide, prompting the user with pre-written follow-up questions or actions. Each chip fires its text as a new user message when cli",
    "x-intent-phrases": [
@@ -9469,7 +9675,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card-style option selector where each option renders as a full card with icon, title, and description. The entire card is the click target — richer than radio buttons. Inspired by Vercel Geist Choiceb",
    "x-intent-phrases": [
@@ -9518,7 +9725,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "In-context feedback collection widget for rating content or AI response quality. Supports thumbs up/down or 1–5 star ratings with optional follow-up text. Inspired by Vercel Geist Feedback pattern.",
    "x-intent-phrases": [
@@ -9558,7 +9766,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "List of named resources — each row shows an avatar or icon, a title, a subtitle, a status badge, and optional trailing metadata. Covers project lists, deployment rosters, and team member panels. Inspi",
    "x-intent-phrases": [
@@ -9611,7 +9820,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Displays an LLM prompt with interpolation slots highlighted in a distinct colour. Includes an optional copy-to-clipboard button. Ideal for AI documentation, tutorials, and prompt engineering articles.",
    "x-intent-phrases": [
@@ -9671,7 +9881,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "AI model specification card showing model name, provider, context window, pricing tier, and a row of capability badges. First-class atom for AI-native content and agent documentation.",
    "x-intent-phrases": [
@@ -9727,7 +9938,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a prompt-response pair as two chat bubbles — a user bubble on the right and an AI response bubble on the left. Ideal for showing LLM examples, chatbot flows, and agent interaction patterns in",
    "x-intent-phrases": [
@@ -9771,7 +9983,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Keyboard shortcut cheat-sheet grid. Multiple shortcuts displayed in a compact two-column layout, each showing the key combination and its action label. Distinct from keyboard_shortcut which shows a si",
    "x-intent-phrases": [
@@ -9823,7 +10036,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Aggregate star-rating histogram showing the percentage breakdown per star level (5★ through 1★). Distinct from rating_stars which shows a single score — this shows the full distribution with bar lengt",
    "x-intent-phrases": [
@@ -9867,7 +10081,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Quarter-based product roadmap showing milestones across Q1–Q4 or custom periods. Each period contains a list of items with a status indicator (done, in-progress, planned). Useful for product announcem",
    "x-intent-phrases": [
@@ -9911,7 +10126,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Persistent notification inbox showing a list of notification items, each with an icon or emoji, a title, a body snippet, a timestamp, and an optional unread indicator dot. Distinct from toast_notifica",
    "x-intent-phrases": [
@@ -9960,7 +10176,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Compact inline-level alert embedded within content flow — an icon and short message that appears beside labels, form fields, or within paragraphs without disrupting layout. Distinct from alert_banner",
    "x-intent-phrases": [
@@ -10003,7 +10220,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal wrapping block of plain content tags — feature labels, category chips, or keyword pills. Neutral styling. Distinct from badge_group which carries semantic status colour. Adapted from the Ta",
    "x-intent-phrases": [
@@ -10052,7 +10270,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CSS-only variant picker — each option is a selectable card with a label and optional description, rendered as hidden radio inputs with label:has(input:checked) styling. Used for product size, colour,",
    "x-intent-phrases": [
@@ -10095,7 +10314,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or re",
    "x-intent-phrases": [
@@ -10153,7 +10373,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Multi-slice pie or donut chart rendered as inline SVG — category proportions with a colour-coded legend. Distinct from donut_stat which shows a single metric as a CSS ring. Adapted from the PieChart/S",
    "x-intent-phrases": [
@@ -10201,7 +10422,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Compact tinted note or tip block used inline within cards, forms, or panels. Lighter than callout — no left-border accent, no icon; just a soft colour-tinted background with a small bold title above b",
    "x-intent-phrases": [
@@ -10244,7 +10466,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline-numbered RAG source reference card — shows a citation number, source title, optional excerpt, and optional URL. Designed to accompany AI-generated content that cites retrieved documents. Pairs",
    "x-intent-phrases": [
@@ -10290,7 +10513,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Side-by-side comparison of outputs from multiple language models for the same prompt — model name, output text, and optional latency/cost/token metadata per column. Designed for model evaluation, A/B",
    "x-intent-phrases": [
@@ -10341,7 +10565,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal confidence or probability bar — shows a percentage value with a label and colour-coded fill indicating certainty level. Used for classification confidence, sentiment strength, retrieval rel",
    "x-intent-phrases": [
@@ -10407,7 +10632,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visual context-window usage meter — shows tokens consumed versus the model's total context limit, with a colour-coded fill that shifts amber then red as capacity is approached. Designed for AI agent d",
    "x-intent-phrases": [
@@ -10474,7 +10700,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Shopify Polaris-style product card showing optional image, title, vendor, SKU, price with optional compare-at strike-through, status badge, and tag chips. Adapted from Polaris ResourceItem + Thumbnail",
    "x-intent-phrases": [
@@ -10533,7 +10760,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Shopify Polaris-style order summary card showing order number, date, fulfilment status badge, customer name, line item list, and total. Status is colour-coded — fulfilled (green), unfulfilled (amber),",
    "x-intent-phrases": [
@@ -10576,7 +10804,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Shopify Polaris-style inventory management table showing SKU, product name, available quantity, committed quantity, and warehouse location per row. Rows with available stock below the optional thresho",
    "x-intent-phrases": [
@@ -10643,7 +10872,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Atlassian Design System Jira issue card showing issue key, type icon (bug/story/task/epic/subtask), one-line summary, status lozenge, priority indicator, assignee, optional description, and label chip",
    "x-intent-phrases": [
@@ -10685,7 +10915,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Atlassian Design System Jira-style sprint board rendered as kanban columns. Each column has a name, ticket-count badge, and compact issue cards (key, summary, type icon, priority dot). Distinct from p",
    "x-intent-phrases": [
@@ -10732,7 +10963,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Atlassian Design System semantic status pill with six strictly defined appearance variants — default (grey), success (green), removed (red), inprogress (blue), moved (yellow), new (teal). Uppercase ro",
    "x-intent-phrases": [
@@ -10786,7 +11018,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "IBM Carbon Design System enterprise data grid with typed columns (string/number/status/tag), optional row-selection checkboxes, sortable column indicators, zebra-stripe rows, and optional pagination f",
    "x-intent-phrases": [
@@ -10834,7 +11067,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "IBM Carbon Design System hierarchical tree for displaying recursive data structures — organisational charts, category hierarchies, nested permission models, BOM trees. More semantically general than f A phrase like 'switch between separate facilities or locations' usually means combobox, tab_group, segmented_control, or form_select, not this -- tree_view is for a nested hierarchical structure like an org chart, not a flat set of options to switch between."
   },
@@ -10883,7 +11117,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "IBM Carbon-inspired calendar heatmap showing activity density by date across one or more calendar months. Data is a list of date-value pairs; cells are coloured by intensity across a configurable colo",
    "x-intent-phrases": [
@@ -10941,7 +11176,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Searchable filterable dropdown that narrows its option list as the user types. Renders with a search icon, chevron, and an open option list for article preview. Native <datalist> enables browser-level",
    "x-intent-phrases": [
@@ -10990,7 +11226,8 @@
     "web",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A responsive CSS grid of feature tiles, each with an icon, title, and description paragraph. Supports 2 or 3 columns and optional per-tile badges. The canonical Tailwind UI marketing feature section p",
    "x-intent-phrases": [
@@ -11038,7 +11275,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Multi-level horizontal navigation bar with a brand/logo slot, top-level nav items, optional dropdown submenus, and a right-aligned CTA button. First item with children renders its submenu panel open f A phrase like 'take the user directly to one specific button or section' usually means cta_button, link_button, or anchor_list, not this -- navigation_menu is a full site-wide bar with menus.",
    "x-intent-phrases": [
@@ -11091,7 +11329,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Tag/chip style multi-value selector. Displays selected values as removable chips above a filtered option list. Shadcn multi-select pattern.",
    "x-intent-phrases": [
@@ -11135,7 +11374,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "One-time password entry field. Renders N individual digit boxes (default 6) with filled/unfilled visual state. Shadcn InputOTP pattern.",
    "x-intent-phrases": [
@@ -11193,7 +11433,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "List of labeled horizontal progress bars — each with a fill percentage, optional sublabel, and per-bar color. Use for competency profiles, CV pages, feature comparison.",
    "x-intent-phrases": [
@@ -11239,7 +11480,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal strip of stats each with a large emoji icon above the number and a label below. More visual than metric_row — use when icons reinforce meaning.",
    "x-intent-phrases": [
@@ -11296,7 +11538,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders child atom blocks inside a colored background container. Use to visually group content with tint, solid, or dark style.",
    "x-intent-phrases": [
@@ -11350,7 +11593,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visual cloud of tags with variable font size based on weight. Heavier tags appear larger. Use for skill tags, topic clouds, keyword displays.",
    "x-intent-phrases": [
@@ -11397,7 +11641,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal row of numbered steps showing how far someone has got through a sequence, with a tick on each completed step. Suits a wizard, onboarding, or a fixed set of items worked through in order.",
    "x-intent-phrases": [
@@ -11438,7 +11683,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Two-panel split layout with distinct background colors per pane. Each pane renders atom blocks independently. Unlike columns, each side has its own background.",
    "x-intent-phrases": [
@@ -11508,7 +11754,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-width light/pastel gradient hero with badge, large title, subtitle, and optional CTA. Pure CSS — no images. Works on all surfaces. Use when dark_hero is too heavy.",
    "x-intent-phrases": [
@@ -11558,7 +11805,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "List of items each with a colored icon circle, label, and text. More visual than bullet_list. Use for feature lists, how-it-works, benefits.",
    "x-intent-phrases": [
@@ -11611,7 +11859,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A visually rich highlighted box with gradient, solid, or outline style. Richer than callout — no severity system, pure design focus.",
    "x-intent-phrases": [
@@ -11668,7 +11917,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card with a solid colored header section (title, subtitle, icon) and a white body that renders atom blocks. Clean, elegant container for any content.",
    "x-intent-phrases": [
@@ -11715,7 +11965,8 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Horizontal strip of static metrics — value, label, optional prefix/suffix and trend indicator. Cleaner than animated_counter for non-animated use.",
    "x-intent-phrases": [
@@ -11770,7 +12021,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Numbered list with large decorative number backgrounds (\"large\" style), circular number badges (\"badge\" style), or bordered cards with a ghost-number, title, tag pills and body text (\"cards\" style, ad",
    "x-intent-phrases": [
@@ -11836,7 +12088,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-width app-style page header with title, subtitle, icon, accent color, and optional tag badge. Sets the visual tone of a pop-up app or brief. Use as the first block of any page.",
    "x-intent-phrases": [
@@ -11888,7 +12141,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Styled back navigation button. Links to a URL, a named page slug, or browser history. Three visual styles.",
    "x-intent-phrases": [
@@ -11933,7 +12187,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Labeled or plain section divider. Supports solid, dashed, or dotted line styles. With a label, renders text centered in the line (Notion-style).",
    "x-intent-phrases": [
@@ -11982,7 +12237,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Row of filter/tag chips, optionally scrollable. Chips can link to URLs and have active state.",
    "x-intent-phrases": [
@@ -12041,7 +12297,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A list of items, each with a title, an optional detail line and a status or category, above a row of chips (All plus one per status, with counts) that actually filter it. Tapping a chip shows only the matching rows and updates the count. Self-contained, so it works without any other atom.",
    "x-intent-phrases": [
@@ -12091,7 +12348,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Generic multi-column layout container. Each column holds an array of atom blocks rendered inline. 2–6 columns; collapses to single column on mobile.",
    "x-intent-phrases": [
@@ -12157,7 +12415,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Individual person card with name, role, optional photo, bio, tags, and contact links. Use inside a columns atom to build team rosters.",
    "x-intent-phrases": [
@@ -12206,7 +12465,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Time-slotted schedule view for a day or event. Each slot has a time, title, optional speaker, location, type badge, and description.",
    "x-intent-phrases": [
@@ -12248,7 +12508,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Structured risk callout list with severity levels, description, and mitigation. For meeting prep, project status, incident reports.",
    "x-intent-phrases": [
@@ -12290,7 +12551,8 @@
     "web",
     "google-apps-script-web",
     "pdf",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Action items table with owner, due date, and status. For retros, meeting notes, sprint planning, incident reports.",
    "x-intent-phrases": [
@@ -12337,7 +12599,8 @@
     "web",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Asymmetric CSS grid of feature tiles. First tile typically spans multiple columns for visual emphasis. Supports per-tile icons, titles, descriptions, and accent colors. MagicUI/shadcn bento pattern.",
    "x-intent-phrases": [
@@ -12391,7 +12654,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-width call-to-action banner with headline, body text, a primary button, and an optional secondary ghost button. Renders on a solid color background. Tailwind UI CTA section pattern. A phrase like 'let the user save progress and continue to the next step' usually means cta_button, form, or link_button, not this -- cta_section is a full promotional banner block, not an inline in-flow action.",
    "x-intent-phrases": [
@@ -12431,7 +12695,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional pr Not for a plain data summary (use stat_card or metric_row, which are cleaner for non-animated totals) - for a celebratory or attention-grabbing count-up moment.",
    "x-intent-phrases": [
@@ -12477,7 +12742,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Auto-detecting media embed that accepts a raw URL and builds the correct iframe for YouTube, Loom, Google Slides, or Vimeo. Displays a labelled card shell with a skeleton shimmer while loading. Design",
    "x-intent-phrases": [
@@ -12526,7 +12792,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Comparative progress-bar display for real-time vote/response data. Accepts an items array of label+value pairs and renders normalised horizontal bars with optional value labels. Designed for stage-fir",
    "x-intent-phrases": [
@@ -12575,7 +12842,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Styled multi-option vote selector with three visual variants — pill (rounded filled), neon (dark with cyan glow), and default (flat bordered). Encodes the Cyberpunk Maverick voting pattern as a schema",
    "x-intent-phrases": [
@@ -12625,7 +12893,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CSS-animated celebration overlay triggered by a named effect type. confetti fires falling coloured rectangles via keyframe animation. trophy bounces a large emoji with a scale-in animation. pulse radi",
    "x-intent-phrases": [
@@ -12670,7 +12939,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dark-themed shimmer skeleton loader for stage use while a playbook is processing. Four variants — card (avatar + text lines), list (avatar rows), media (image header + caption), chat (alternating mess",
    "x-intent-phrases": [
@@ -12725,7 +12995,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Infinite horizontally-scrolling strip of text labels or logo+text items, driven by a CSS @keyframes animation with no JavaScript. Ideal for customer logo rows, tech-stack badges, testimonial tickers,",
    "x-intent-phrases": [
@@ -12786,7 +13057,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text that animates itself character by character using a CSS steps() width animation on a monospace element. A blinking cursor is included by default. Useful for hero hooks, slide reveals, and LLM dem",
    "x-intent-phrases": [
@@ -12846,7 +13118,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card with a continuously rotating gradient border, created by a spinning conic-gradient pseudo-element — no JavaScript. Two accent colours blend through the border. Inner content area has a solid back",
    "x-intent-phrases": [
@@ -12902,7 +13175,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dark panel with three independently-animating radial gradient blobs that drift and scale using CSS @keyframes — creating an aurora borealis effect with no JavaScript. Supports optional title and body",
    "x-intent-phrases": [
@@ -12980,7 +13254,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-bleed animated hero background: hundreds of luminous streams ride a slowly evolving noise vector field on a dark canvas, leave additive long-exposure light trails, and converge on a soft glowing",
    "x-intent-phrases": [
@@ -13045,7 +13320,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Agentic typeface: the words an agent supplies assemble out of thousands of coloured particles that fly in from random positions and settle into the letterforms; the pointer scatters them and they refo",
    "x-intent-phrases": [
@@ -13120,7 +13396,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Agentic typeface: the words an agent supplies are rendered as flowing light -- luminous streams ride a noise field inside the letterforms only (particles spawn on the glyph mask and respawn when they",
    "x-intent-phrases": [
@@ -13185,7 +13462,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Agentic typeface: the words an agent supplies are set glyph by glyph on canvas and every letter breathes on its own noise track -- drifting, tilting and scaling a little, so the headline feels alive r",
    "x-intent-phrases": [
@@ -13267,7 +13545,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, whe",
    "x-intent-phrases": [
@@ -13344,7 +13623,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "The canvas hero that works on a white page. A grid of dots whose size follows a travelling wave -- organic noise, a ripple spreading from a focus point, or a diagonal sweep -- like print halftone brou",
    "x-intent-phrases": [
@@ -13418,7 +13698,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "The A2UI pitch, drawn: small packets stream from an agent node on the left down curved lanes into a surface node on the right, leaving light trails; every arrival makes the surface flash and unfolds a",
    "x-intent-phrases": [
@@ -13496,7 +13777,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-bleed animated hero background: light streaks travel along fixed radial lanes through a vanishing point (right, centre or left), converging into it by default (signals arriving) or, in \"out\" mode",
    "x-intent-phrases": [
@@ -13568,7 +13850,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-bleed animated hero background: a handful of soft colour blobs, laid out over the panel with an even (Vogel-disk) spread, drift and breathe forever on the same value-noise field that drives flow_",
    "x-intent-phrases": [
@@ -13643,7 +13926,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-bleed animated hero background: a live terrain flyover drawn as receding ridgelines. Rows of noise-shaped hills scroll toward the viewer while their heights keep evolving on the same value-noise",
    "x-intent-phrases": [
@@ -13720,7 +14004,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A system map that moves: up to three tilted orbit rings around a centre node, where each ring is a TIER of agent-supplied labelled items (for example tools / data / surfaces) and every item is a satel",
    "x-intent-phrases": [
@@ -13827,7 +14112,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A stage of child atoms choreographed on one clock like a product or launch video: tracks animate children by id (opacity, position, scale, tilt, blur, wipe, progress, caption step), a camera pans zooms and tilts, easing is a named token or four cubic-bezier numbers, keys can sit on a BPM beat grid. Scrubbable, loopable, frame-exact.",
    "x-intent-phrases": [
@@ -13886,7 +14172,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Blocks that enter one after another with a set stagger: the same entrance effect, ease and duration for every child, offset per child, on load or when scrolled into view.",
    "x-intent-phrases": [
@@ -13928,7 +14215,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Reference card for the catalogue's motion vocabulary: named easing curves (expo-out, standard, emphasized, quart-in-out, overshoot...) each drawn as a dot riding the curve with its cubic-bezier and its use, duration tokens, and entrance effects.",
    "x-intent-phrases": [
@@ -13965,7 +14253,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_text": {
@@ -14073,7 +14362,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_shape": {
@@ -14136,7 +14426,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_counter": {
@@ -14211,7 +14502,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_pill": {
@@ -14266,7 +14558,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_checklist": {
@@ -14312,7 +14605,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_orbit": {
@@ -14373,7 +14667,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_code": {
@@ -14415,7 +14710,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_mark": {
@@ -14452,7 +14748,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_browser": {
@@ -14517,7 +14814,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_sketch": {
@@ -14560,7 +14858,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_leader": {
@@ -14636,7 +14935,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_mask": {
@@ -14670,7 +14970,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_rays": {
@@ -14719,7 +15020,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_hud": {
@@ -14772,7 +15074,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_lower_third": {
@@ -14820,7 +15123,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_finish": {
@@ -14877,7 +15181,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "motion_shader": {
@@ -14947,7 +15252,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ]
   },
   "dot_grid_background": {
@@ -15002,7 +15308,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Panel with a CSS repeating dot, grid, or cross background pattern using background-image with radial-gradient or linear-gradient. No SVG, no JavaScript. Useful as a texture layer behind content in dar",
    "x-intent-phrases": [
@@ -15061,7 +15368,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline button or link with a diagonal shimmer sweep animation driven by CSS background-position keyframes. The shimmer accent colour sweeps across the button on a loop. No JavaScript. Use for primary",
    "x-intent-phrases": [
@@ -15110,7 +15418,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Two to four cards stacked with CSS transform rotate and translateY, creating a fanned deck effect. The front card shows full title and body; back cards are progressively rotated and faded. No JavaScri",
    "x-intent-phrases": [
@@ -15166,7 +15475,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dark panel with CSS-animated diagonal streaks that fall across the surface like a meteor shower. Each meteor is a rotated span with a linear-gradient tail, animated with staggered delays — no JavaScri",
    "x-intent-phrases": [
@@ -15229,7 +15539,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Container that animates from blurred and transparent to fully visible on mount. Uses CSS @keyframes with filter:blur() and opacity together — no JavaScript. Configurable delay, duration, and direction",
    "x-intent-phrases": [
@@ -15289,7 +15600,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Button or anchor that uses CSS box-shadow to signal state. Three named states — disabled (grey), ready (brand), fired (success pulse) — each with a distinct glow colour and optional pulse animation. S",
    "x-intent-phrases": [
@@ -15353,7 +15665,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline SVG panel showing two labelled endpoint nodes connected by a path with a pulsing light dot that travels along it, animating via CSS stroke-dashoffset. No JavaScript, no mousemove. Visualises da",
    "x-intent-phrases": [
@@ -15421,7 +15734,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text that appears to scramble through random alphanumeric characters before locking into the final readable string. Implemented entirely in CSS using a steps() @keyframes animation cycling through ser",
    "x-intent-phrases": [
@@ -15482,7 +15796,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline overflow-hidden container that cycles through a list of words using a CSS steps() translateY animation. The agent provides the word array; the component handles all timing and looping. Useful f",
    "x-intent-phrases": [
@@ -15534,7 +15849,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A visual attention primitive that emits three concentric ring pulses outward from a centre point using staggered CSS @keyframes. Each ring animates independently with a 1-second delay offset, creating",
    "x-intent-phrases": [
@@ -15594,7 +15910,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text that reveals itself character-by-character using a CSS steps() width animation on an overflow-hidden monospace container, with an optional blinking cursor. No JavaScript required.",
    "x-intent-phrases": [
@@ -15651,7 +15968,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Slot-machine style digit-by-digit flip animation where each digit column independently scrolls to its target value using staggered CSS translateY keyframes. Distinct from animated_counter which counts",
    "x-intent-phrases": [
@@ -15692,7 +16010,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Three bouncing dots inside a chat bubble that signals an agent or user is composing a response. Each dot animates with a staggered delay using CSS @keyframes translateY, creating a continuous wave eff",
    "x-intent-phrases": [
@@ -15748,7 +16067,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Flip-clock style countdown display showing hours, minutes, and seconds in individual digit tiles. Renders a static snapshot of the target time — pair with a dataModelUpdate SSE stream to tick the valu",
    "x-intent-phrases": [
@@ -15809,7 +16129,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Heading text rendered with an animated shifting gradient fill using CSS background-clip:text and a background-position keyframe. The gradient flows continuously between the from/to colours, creating a",
    "x-intent-phrases": [
@@ -15864,7 +16185,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Content block that starts invisible and fades + slides into view when scrolled into the viewport, using an IntersectionObserver with a CSS class toggle. Requires a small inline script — degrades grace",
    "x-intent-phrases": [
@@ -15921,7 +16243,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text that begins as a stream of random alphanumeric characters and progressively resolves left-to-right into the final string using CSS @keyframes content with steps(). Pure CSS — no JavaScript. Each",
    "x-intent-phrases": [
@@ -15973,7 +16296,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "An SVG path that animates drawing itself from start to end using the stroke-dasharray / stroke-dashoffset CSS technique. The agent selects a named shape (arrow, check, circle, zigzag, infinity) or sup",
    "x-intent-phrases": [
@@ -16019,7 +16343,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A single composite SVG canvas built from an ORDERED list of validated SVG elements, for an agent to progressively draw one coherent picture across multiple real updates (e.g. one A2A message per shape",
    "x-intent-phrases": [
@@ -16075,7 +16400,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A card with CSS perspective and a mousemove JavaScript handler that rotates the card along both axes in response to cursor position, creating a 3D parallax tilt effect. Text layers use translateZ to c",
    "x-intent-phrases": [
@@ -16126,7 +16452,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Multiple-choice or true/false question card with CSS checkbox trick for answer reveal. Correct option is highlighted green on selection, wrong options dim. No JavaScript required — pure CSS :checked s",
    "x-intent-phrases": [
@@ -16174,7 +16501,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Cloze-test exercise where one or more blanks in a sentence or paragraph are replaced by inline input fields. On submission a minimal inline script compares trimmed lowercase input against accepted ans",
    "x-intent-phrases": [
@@ -16214,7 +16542,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Click-to-pair matching exercise. Two columns of items are shown — left (terms) and right (definitions). Learner clicks a term then a definition to form a pair. Matched pairs lock and highlight green;",
    "x-intent-phrases": [
@@ -16259,7 +16588,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A \"Show hint\" disclosure button that expands to reveal help text. Built on the HTML details/summary element — no JavaScript required. The summary label toggles between \"Show hint\" and \"Hide hint\". Sty",
    "x-intent-phrases": [
@@ -16321,7 +16651,8 @@
     "email",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Unlockable achievement or completion badge displayed as a circular icon with a title, description, and optional unlock date. Locked state shows a greyscale padlock overlay. Suitable for course complet",
    "x-intent-phrases": [
@@ -16384,7 +16715,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "End-of-exercise or end-of-module score card showing correct answers, total questions, percentage, and optional time taken. Animates the score fraction on render using a CSS counter. Includes a context",
    "x-intent-phrases": [
@@ -16438,7 +16770,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Experience points or gamification progress bar showing current XP, level label, and XP needed to reach the next level. The fill animates from the previous value to the current value on render via CSS",
    "x-intent-phrases": [
@@ -16498,7 +16831,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Previous/next lesson navigation bar with the current lesson title centred and module context shown above. Each side shows the adjacent lesson title and a directional arrow. Optionally shows a completi",
    "x-intent-phrases": [
@@ -16544,7 +16878,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Overall course completion card showing a list of modules with individual progress bars and a top-level aggregate progress ring. Each module row shows its title, lesson count, and percentage complete.",
    "x-intent-phrases": [
@@ -16594,7 +16929,8 @@
     "google-meet-stage",
     "pdf",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline passage of text with a coloured highlight background and an optional margin annotation note. The annotation appears as a side-note pill on hover (CSS :hover) or as a visible aside on smaller vi",
    "x-intent-phrases": [
@@ -16633,7 +16969,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Live list of files in a Google Drive folder rendered with icons and download links. Works on Google Apps Script only.",
    "x-intent-phrases": [
@@ -16676,7 +17013,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Live read-only preview of a specified range in a Google Sheet. Renders as an HTML table. Works on Google Apps Script only.",
    "x-intent-phrases": [
@@ -16715,7 +17053,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Summary list of recent emails in the user's Gmail matching a search query. Works on Google Apps Script only.",
    "x-intent-phrases": [
@@ -16750,7 +17089,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "List of upcoming events from the user's primary calendar. Works on Google Apps Script only.",
    "x-intent-phrases": [
@@ -16785,7 +17125,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Personalised greeting showing the active user's Google account email. Works on Google Apps Script only.",
    "x-intent-phrases": [
@@ -16828,7 +17169,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive button that executes a custom Google Apps Script server function when clicked, showing a loading spinner and returning/displaying the function result. Works on Google Apps Script only.",
    "x-intent-phrases": [
@@ -16867,7 +17209,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Today's events from the user's default Google Calendar, displayed as a compact timeline with time and location. Automatically shows today's date in the header.",
    "x-intent-phrases": [
@@ -16922,7 +17265,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Aggregate statistics (sum, average, count, min, max) computed from a Google Sheet range and displayed as a row of stat badges. Ideal for dashboards.",
    "x-intent-phrases": [
@@ -16974,7 +17318,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Unread message count badges for one or more Gmail labels, shown as a pill row. Zero counts are displayed in grey; non-zero in the accent colour.",
    "x-intent-phrases": [
@@ -17022,7 +17367,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Personalised profile card showing the active user's avatar initial, display name (derived from email), email address, and Workspace domain. On GAS uses Session.getActiveUser(); on other surfaces rende",
    "x-intent-phrases": [
@@ -17074,7 +17420,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Google Drive storage quota displayed as a labelled progress bar — used GB, total GB, and percentage. Bar colour shifts to amber above 70% and red above 90%. On GAS uses DriveApp; elsewhere pass used_g",
    "x-intent-phrases": [
@@ -17129,7 +17476,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline form that appends a timestamped row to a Google Sheet on submit. Calls google.script.run.a2uiSheetAppend server-side. Each field renders as a labelled input or textarea.",
    "x-intent-phrases": [
@@ -17181,7 +17529,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Incomplete tasks displayed as an interactive checkbox list. On GAS uses the Tasks API for live data; on other surfaces renders from an items[] array or the Google Tasks REST API.",
    "x-intent-phrases": [
@@ -17234,7 +17583,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Ambient radial gradient orb that smoothly lerp-follows the cursor across the page using requestAnimationFrame. Uses CSS mix-blend-mode:screen for a light-leak feel. Page-scoped and double-init guarded",
    "x-intent-phrases": [
@@ -17283,7 +17633,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A chain of fading dots that follow the cursor using worm-chain physics — each dot lerps toward the one ahead of it, creating a fluid trailing effect.",
    "x-intent-phrases": [
@@ -17336,7 +17687,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "On every click anywhere on the page, coloured particles burst outward from the click point with random velocities and simulated gravity, then fade out.",
    "x-intent-phrases": [
@@ -17385,7 +17737,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A dark overlay with a soft-edged circular cutout that follows the cursor — torch or spotlight effect. Best used as a standalone page effect or dramatic opening slide.",
    "x-intent-phrases": [
@@ -17438,7 +17791,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Wraps content that drifts toward the cursor when it enters the activation radius, then springs back with a cubic-bezier overshoot when the cursor leaves.",
    "x-intent-phrases": [
@@ -17495,7 +17849,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A card that tilts in 3D perspective as the cursor moves across it, with a radial glare highlight that tracks cursor position. Uses CSS preserve-3d and dynamic box-shadow.",
    "x-intent-phrases": [
@@ -17656,7 +18011,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Gradient-fill standalone heading using CSS background-clip text. Simpler than dark_hero — just the text, no padding or CTA. Use inside content flow between other atoms.",
    "x-intent-phrases": [
@@ -17709,7 +18065,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Large typographic quote with a decorative quotation mark at 5rem, quote body in italic, and optional attribution line. Dark-native, great for Meet Stage title slides.",
    "x-intent-phrases": [
@@ -17770,7 +18127,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Two-column layout — a large glowing stat number on the left (with neon text-shadow) and heading + body text on the right. Classic keynote layout, great for Meet Stage.",
    "x-intent-phrases": [
@@ -17831,7 +18189,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Words appear one by one with a fade-up animation that auto-plays on page load — no user interaction required. Great for Meet Stage title slides and reveal moments.",
    "x-intent-phrases": [
@@ -17876,7 +18235,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Uppercase section marker with a short glowing accent line — use between content sections on dark pages to create visual rhythm.",
    "x-intent-phrases": [
@@ -17937,7 +18297,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A stat number that counts up from zero to the target value using a cubic ease function on page load. Auto-plays — no user interaction required.",
    "x-intent-phrases": [
@@ -17990,7 +18351,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline prose sentence where specific words are highlighted in an accent colour. Mark words with **double asterisks** in the text field — highlighted words are wrapped in a styled span.",
    "x-intent-phrases": [
@@ -18047,7 +18409,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A single line of text that sweeps in from left using a clip-path animation — dramatic and instant. Auto-plays on load, no click required. Great for Meet Stage opening slides.",
    "x-intent-phrases": [
@@ -18108,7 +18471,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-viewport animated particle network — dots connected by proximity lines that fade with distance. Mouse/pointer repulses particles. Zero external dependencies, pure requestAnimationFrame loop.",
    "x-intent-phrases": [
@@ -18165,7 +18529,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive mass-spring physics simulation — nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked ini",
    "x-intent-phrases": [
@@ -18226,7 +18591,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Rotating 3D isometric height-field mesh. Default surface is a 16×16 Gaussian hill pre-computed server-side. Drag to rotate manually; auto-rotates until first touch. Height colour interpolates from dee",
    "x-intent-phrases": [
@@ -18269,7 +18635,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-viewport isometric 3D canvas animation of an A321neo (or other narrowbody) departing from Toulouse Blagnac (LFBO). Shows rolling takeoff run, rotation, gear retraction, and climb-out against a ni",
    "x-intent-phrases": [
@@ -18308,7 +18675,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-viewport isometric 3D canvas animation of an Ariane 6 rocket launch from Kourou ELA-4. Shows pad, ignition, liftoff, and ascent trajectory. HUD overlay with mission data.",
    "x-intent-phrases": [
@@ -18347,7 +18715,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-viewport isometric 3D canvas animation of an H160 helicopter hovering over a helipad. Rotor blur, downwash ripple, and HUD overlay with livery accent colour.",
    "x-intent-phrases": [
@@ -18394,7 +18763,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-viewport tabbed showcase of all three isometric aviation animations — A321neo takeoff, Ariane 6 launch, and H160 hover — in a single atom with tab switcher. Use this for a full aviation/aerospace",
    "x-intent-phrases": [
@@ -18486,7 +18856,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-viewport Toulouse TMA airspace radar display — canvas radar with animated simulated flights, rotating sweep, VOR beacons, and approach paths. HTML/CSS overlay for crisp chyron title, weather pane",
    "x-intent-phrases": [
@@ -18542,7 +18913,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Generic HTTP GET data feed. Fetches on server-side render (GAS surface via UrlFetchApp) then refreshes client-side via google.script.run.fetchDataSource(). Publishes to window.A2UI_DATA[name] and call",
    "x-intent-phrases": [
@@ -18651,7 +19023,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "METAR weather for an ICAO station via aviationweather.gov. Fetches server-side on render (cached), refreshes client-side every refresh seconds. Publishes {wind, temp, qnh, raw} to the named feed. Visu",
    "x-intent-phrases": [
@@ -18741,7 +19114,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Prose paragraph block (alias for body, google-apps-script-web only)",
    "x-intent-phrases": [
@@ -18777,7 +19151,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Plain text block rendered as a paragraph",
    "x-intent-phrases": [
@@ -18817,7 +19192,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Styled pull-quote with optional attribution line",
    "x-intent-phrases": [
@@ -18853,7 +19229,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Vertical whitespace gap between atoms",
    "x-intent-phrases": [
@@ -18893,7 +19270,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Small inline tag/label chip",
    "x-intent-phrases": [
@@ -18934,7 +19312,8 @@
     "web",
     "google-apps-script-web",
     "mcp-apps",
-    "claude-code"
+    "claude-code",
+    "android"
    ],
    "x-routing-text": "Inline badge pill with accent colour",
    "x-intent-phrases": [
@@ -18970,7 +19349,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Monospace inline code span",
    "x-intent-phrases": [
@@ -19010,7 +19390,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Syntax-highlighted code block",
    "x-intent-phrases": [
@@ -19054,7 +19435,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text hyperlink styled as a button",
    "x-intent-phrases": [
@@ -19102,7 +19484,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-width call-to-action button linking to a URL",
    "x-intent-phrases": [
@@ -19156,7 +19539,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Single CTA button or link that navigates to a named A2UI page. Automatically appends &from=<current_slug> so the destination page's back button returns here. Style variants — primary (filled indigo),",
    "x-intent-phrases": [
@@ -19196,7 +19580,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Simple card with title and body text",
    "x-intent-phrases": [
@@ -19249,7 +19634,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Token usage and model trace card — shows Gemini call stats inline on a page",
    "x-intent-phrases": [
@@ -19292,7 +19678,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Inline Gemini prompt input that calls the GAS callGemini() function from within a rendered page",
    "x-intent-phrases": [
@@ -19352,7 +19739,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-width dark hero banner with gradient background, badge, headline, and CTA button",
    "x-intent-phrases": [
@@ -19412,7 +19800,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Single large stat with neon glow effect on dark background",
    "x-intent-phrases": [
@@ -19472,7 +19861,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Frosted-glass card with backdrop-filter blur. Use for dark-theme highlight boxes, callouts, or content wrappers. Content is raw HTML string.",
    "x-intent-phrases": [
@@ -19532,7 +19922,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card with an animated gradient border stroke on dark background",
    "x-intent-phrases": [
@@ -19580,7 +19971,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Decorative blurred colour orbs that float in a dark background area",
    "x-intent-phrases": [
@@ -19635,7 +20027,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Neon-coloured glowing text, ideal for dark technical pages",
    "x-intent-phrases": [
@@ -19679,7 +20072,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Responsive feature grid on dark background — icon, title, description per cell",
    "x-intent-phrases": [
@@ -19723,7 +20117,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Thin horizontal rule for dark theme pages",
    "x-intent-phrases": [
@@ -19762,7 +20157,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-screen animated aurora background — alias for aurora_background",
    "x-intent-phrases": [
@@ -19802,7 +20198,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Stacked layered cards with parallax depth — alias for card_stack",
    "x-intent-phrases": [
@@ -19841,7 +20238,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text that decrypts/un-scrambles character-by-character on scroll — alias for encrypted_reveal",
    "x-intent-phrases": [
@@ -19889,7 +20287,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Content that animates in from a direction when scrolled into view — alias for reveal_on_scroll",
    "x-intent-phrases": [
@@ -19949,7 +20348,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated dashed beam connecting two labelled nodes — alias for animated_beam. Two shapes — a single from/to/label pair (original), or a multi-node nodes/connectors chain (added 2026-07-24, e.g. an ide",
    "x-intent-phrases": [
@@ -20009,7 +20409,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated counter that counts up from start to a target value — alias for animated_counter",
    "x-intent-phrases": [
@@ -20049,7 +20450,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Countdown timer showing days/hours/minutes/seconds to a target date — alias for countdown_timer",
    "x-intent-phrases": [
@@ -20101,7 +20503,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dot-grid repeating pattern background — alias for dot_grid_background",
    "x-intent-phrases": [
@@ -20141,7 +20544,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Cyan glitch-effect headline — periodic RGB-split animation",
    "x-intent-phrases": [
@@ -20184,7 +20588,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Pulsing neon-glow text on a near-black background",
    "x-intent-phrases": [
@@ -20223,7 +20628,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Button that follows the cursor magnetically on hover",
    "x-intent-phrases": [
@@ -20262,7 +20668,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Button that triggers confetti explosion when clicked",
    "x-intent-phrases": [
@@ -20328,7 +20735,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a slow noise field, drawn additively so they glow where they overlap; the pointer nudges them aside.",
    "x-intent-phrases": [
@@ -20391,7 +20799,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Depth-layered background on canvas: three layers of soft colour orbs, large and faint at the back, small and sharp at the front, each layer shifting with the pointer by an amount proportional to its d",
    "x-intent-phrases": [
@@ -20431,7 +20840,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Thin fixed progress bar at the top of the viewport showing scroll position",
    "x-intent-phrases": [
@@ -20475,7 +20885,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Live ticking clock on a dark card, updates every second",
    "x-intent-phrases": [
@@ -20515,7 +20926,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive collapsible decision tree with nested branches",
    "x-intent-phrases": [
@@ -20551,7 +20963,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Tab-style step-by-step content with radio-button navigation",
    "x-intent-phrases": [
@@ -20603,7 +21016,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Multi-actor message sequence diagram — participant boxes with dashed lifelines, per-message arrow rows in order, note bands, and labelled alt/opt/loop/par frames. Feature-parity with the mermaid seque",
    "x-intent-phrases": [
@@ -20638,7 +21052,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated conversation thread with user/assistant bubbles",
    "x-intent-phrases": [
@@ -20678,7 +21093,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Glossary list where hovering a term shows its definition as a tooltip",
    "x-intent-phrases": [
@@ -20718,7 +21134,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Blurred background with a clear focused panel in the centre — spotlight effect",
    "x-intent-phrases": [
@@ -20761,7 +21178,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dark terminal window that types out boot/log lines one by one",
    "x-intent-phrases": [
@@ -20805,7 +21223,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "List of items that animate in with a staggered delay — supports icons and descriptions",
    "x-intent-phrases": [
@@ -20845,7 +21264,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Button that morphs between circular and rounded-rectangle on hover",
    "x-intent-phrases": [
@@ -20893,7 +21313,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Text with an animated highlight sweep underline that plays on load",
    "x-intent-phrases": [
@@ -20945,7 +21366,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated progress bar that counts from 0 to a value when scrolled into view",
    "x-intent-phrases": [
@@ -20997,7 +21419,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Large centred number or word that pops in with a spring scale animation A phrase like 'confirm an entry was just saved' usually means inline_feedback_message or toast_notification, not this -- big_reveal is a large decorative number or word popping in, not a confirmation message."
   },
@@ -21044,7 +21467,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Headline where each word flies in with a staggered animation",
    "x-intent-phrases": [
@@ -21092,7 +21516,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Headline that sweeps in from left using clip-path mask animation",
    "x-intent-phrases": [
@@ -21140,7 +21565,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Content hidden behind two coloured panels that slide apart to reveal it",
    "x-intent-phrases": [
@@ -21188,7 +21614,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dark card with radial mesh/blob gradient background — vivid multi-colour",
    "x-intent-phrases": [
@@ -21240,7 +21667,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card with animated diagonal stripe background pattern",
    "x-intent-phrases": [
@@ -21279,7 +21707,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Vertical timeline with status dots (done/active/pending/error/warning)",
    "x-intent-phrases": [
@@ -21314,7 +21743,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Row of animated counting stats separated by dividers A phrase like 'how many items remain in a queue' or 'items left to review' usually means progress_bar, progress_circle, or step_progress, not this -- counter_group is a row of SEPARATE animated totals side by side, not a single remaining-count indicator."
   },
@@ -21357,7 +21787,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated orbiting node diagram — central node with satellite labels on a dashed orbit ring",
    "x-intent-phrases": [
@@ -21405,7 +21836,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Dark card with subtle SVG film-grain noise texture overlay",
    "x-intent-phrases": [
@@ -21449,7 +21881,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Draggable before/after slider revealing two text panels side by side",
    "x-intent-phrases": [
@@ -21508,7 +21941,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive word cloud — static words or live Google Sheets feed with submit input",
    "x-intent-phrases": [
@@ -21563,7 +21997,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Multi-question quiz with multiple-choice options, per-question explanations, pass score, and result screen",
    "x-intent-phrases": [
@@ -21623,7 +22058,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Spinning interactive 3-D wireframe or earth globe rendered on HTML5 canvas — draggable with inertia",
    "x-intent-phrases": [
@@ -21674,7 +22110,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive Mercator projection map with draggable pan, node pins, and animated link vectors — dark radar aesthetic",
    "x-intent-phrases": [
@@ -21721,7 +22158,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated isobaric atmospheric contour wave field — fluid procedural sine/cosine curves on dark background",
    "x-intent-phrases": [
@@ -21760,7 +22198,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "One data pool rendered simultaneously across three surface engines: spatial map (desktop), phone frame card list (mobile), circular focus face (IoT/watch)",
    "x-intent-phrases": [
@@ -21807,7 +22246,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Interactive SVG European airspace map — country outlines, airport pins, simulated flight tracks, click-to-open TMA playbook",
    "x-intent-phrases": [
@@ -21850,7 +22290,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Live-feed status pill — shows LIVE (n) or SIM based on data published to a named feed",
    "x-intent-phrases": [
@@ -21893,7 +22334,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-screen multi-slide presentation deck — each slide is its own atom block array, with shared data feeds and slide navigation",
    "x-intent-phrases": [
@@ -21941,7 +22383,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Game-style \"NEW SURFACE UNLOCKED\" achievement notification card",
    "x-intent-phrases": [
@@ -21980,7 +22423,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Decodes the current page ?p= URL and displays the JSON schema that built this page",
    "x-intent-phrases": [
@@ -22016,7 +22460,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visually annotates the current renderer URL, highlighting the GAS endpoint, ?p= parameter, and encoded payload",
    "x-intent-phrases": [
@@ -22072,7 +22517,8 @@
     "pdf",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Self-contained QR code for a given URL (or the current page URL on JS-capable surfaces) — computed via the vendored QR-Code-generator library (Project Nayuki, MIT) and rendered as inline SVG, zero net",
    "x-intent-phrases": [
@@ -22124,7 +22570,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Bold single-insight pull-quote card designed to be screenshotted",
    "x-intent-phrases": [
@@ -22164,7 +22611,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal strip of numbered next steps with optional links",
    "x-intent-phrases": [
@@ -22207,7 +22655,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Monospace copyable text block — ideal for sharing Gemini prompts or code",
    "x-intent-phrases": [
@@ -22251,7 +22700,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Side-by-side panel showing a rendered atom alongside its raw JSON schema",
    "x-intent-phrases": [
@@ -22295,7 +22745,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Simple stat grid showing custom key/value pairs — used to show renderer capabilities",
    "x-intent-phrases": [
@@ -22347,7 +22798,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Three-panel flow diagram: natural language prompt → generated JSON schema → rendered page",
    "x-intent-phrases": [
@@ -22402,7 +22854,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated comparison: old approach items cross out one by one, then new approach slides in",
    "x-intent-phrases": [
@@ -22457,7 +22910,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Live audience voting: buttons to vote, bar chart results, optional Google Sheets backend",
    "x-intent-phrases": [
@@ -22508,7 +22962,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Emoji reaction buttons — tapping rains the emoji down the screen, with optional Sheet-backed totals",
    "x-intent-phrases": [
@@ -22563,7 +23018,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Audience raise-hand button with live count — optional Google Sheets backend",
    "x-intent-phrases": [
@@ -22607,7 +23063,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visual diagram showing the A2UI surfaces — schema feeds into each render target",
    "x-intent-phrases": [
@@ -22650,7 +23107,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Stopwatch that starts ticking on load and freezes when the page finishes loading — shows real page load time",
    "x-intent-phrases": [
@@ -22693,7 +23151,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Embedded mini schema editor with a textarea for typing a single atom JSON block and a live rendered preview below",
    "x-intent-phrases": [
@@ -22745,7 +23204,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal swipeable carousel of Gmail inbox threads. Each card shows a coloured sender avatar, name, subject (bold if unread), snippet and timestamp. Clicking opens the thread in Gmail. On GAS uses G",
    "x-intent-phrases": [
@@ -22797,7 +23257,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal swipeable carousel of recently modified Drive files. Each card shows a coloured file-type badge (DOC/XLS/PPT/PDF), name, relative modified time, and owner. On GAS searches files modified in",
    "x-intent-phrases": [
@@ -22849,7 +23310,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Responsive grid of files and subfolders inside a Drive folder. Subfolders appear first, each item shows a coloured file-type badge and name, clicking opens in Drive. On GAS uses DriveApp with folder_i",
    "x-intent-phrases": [
@@ -22903,7 +23365,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Single Drive file card — coloured file-type badge (DOC/XLS/PPT/PDF), file name, optional description, and an \"Open →\" button. Works on any surface using static name/mime/url fields. On GAS, file_id tr",
    "x-intent-phrases": [
@@ -22940,7 +23403,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Invisible state connector atom — no visual output. Initialises window._A2UI_STORE and dispatches \"a2ui:store\" CustomEvent. On GAS reads initial state from a Google Sheet at render time and writes back",
    "x-intent-phrases": [
@@ -22986,7 +23450,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Visual curriculum grid showing all modules in a course. Each card displays module icon, title, description, duration, and a live status badge (locked/Start/Done) driven by progress_store. Locked modul",
    "x-intent-phrases": [
@@ -23038,7 +23503,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Lightweight inline comprehension pulse — a single multiple-choice question with instant feedback and no score impact. Correct answer turns green with explanation; wrong answer turns red with explanati",
    "x-intent-phrases": [
@@ -23107,7 +23573,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "End-of-quiz result screen showing score percentage, pass/fail badge, time taken, per-question dot breakdown (green tick / red cross), and navigation buttons. Automatically writes the score to progress",
    "x-intent-phrases": [
@@ -23158,7 +23625,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Narrative branching learning atom. Presents a real-world situation with 2-4 labelled choices. Each choice reveals a consequence with good/neutral/bad outcome styling (green/amber/red). Includes a \"try",
    "x-intent-phrases": [
@@ -23204,7 +23672,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Renders a locked placeholder card until the specified module id is marked complete in progress_store. Once complete, the gate disappears to reveal content below it. Use to sequence content and prevent",
    "x-intent-phrases": [
@@ -23262,7 +23731,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Completion certificate card — earner name, course title, issuer, and date with a gradient border and trophy icon. Locked behind a requires check against progress_store; becomes visible when the course",
    "x-intent-phrases": [
@@ -23308,7 +23778,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "SVG spider/radar chart plotting learner competency levels across multiple skill dimensions. Optional before values render as a dashed polygon overlay for before/after growth comparison. Values are 0-1",
    "x-intent-phrases": [
@@ -23354,7 +23825,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Achievement badge wall — all course badges displayed in a grid. Earned badges glow with indigo highlight and full colour emoji; locked badges are greyed and dimmed. Each badge checks its required_id a",
    "x-intent-phrases": [
@@ -23400,7 +23872,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Path chooser presented at course entry. Shows 2-4 role or level path cards (icon, title, description, duration). Learner clicks to select — selection is stored in progress_store via setPath() and opti",
    "x-intent-phrases": [
@@ -23447,7 +23920,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "YouTube video with interactive quiz questions injected at specified timestamps. Video pauses at each checkpoint and the learner must answer before playback resumes. Correct/wrong feedback shown with e",
    "x-intent-phrases": [
@@ -23497,7 +23971,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Instructor-facing table showing all enrolled learners with per-module completion ticks and average quiz scores. On GAS reads live from the course progress Sheet via a2uiCohortRead. On web renders from",
    "x-intent-phrases": [
@@ -23547,7 +24022,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Structured free-text reflection textarea with a submit button. Saves the response to progress_store under the key \"reflect:<prompt_id>\". On GAS this persists to the learner's progress Sheet. Restores",
    "x-intent-phrases": [
@@ -23590,7 +24066,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Rich body text passage with clickable highlighted terms that reveal inline explanations in a panel below. No state required. Ideal for glossary enrichment, technical definitions, or legal clause annot",
    "x-intent-phrases": [
@@ -23636,7 +24113,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Guided step-by-step onboarding flow for first-time learners. Each step has a label, description, optional action URL (navigated to on completion), and a \"Mark complete\" button. Completed steps persist",
    "x-intent-phrases": [
@@ -23695,7 +24173,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Structured enterprise case study card. Sections for situation narrative, key data points (label/value/note), numbered analysis questions, and an optional model answer reveal. No state required. The mo",
    "x-intent-phrases": [
@@ -23744,7 +24223,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Pomodoro-style focus/break countdown timer. Configurable focus and break durations. Animated SVG progress ring. Counts completed sessions. Session-scoped only — no persistence to progress_store.",
    "x-intent-phrases": [
@@ -23794,7 +24274,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Assessment rubric table. Rows are assessment criteria, columns are performance levels (e.g. Beginning/Developing/Proficient/Exemplary). Descriptor text in each cell describes that level for that crite",
    "x-intent-phrases": [
@@ -23845,7 +24326,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Single flashcard with front/back flip animation and a post-flip confidence rating (1-5 with emoji). Writes {rating, next_days, rated_at} to progress_store under \"srs:<card_id>\". Next-review hint compu",
    "x-intent-phrases": [
@@ -23899,7 +24381,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Ranked learner leaderboard by score. On GAS reads live from the course progress Sheet via a2uiCohortRead, extracts scores for score_key, and ranks descending. On web renders from static items[]. Top 3",
    "x-intent-phrases": [
@@ -23957,7 +24440,8 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal or vertical navigation bar linking to other named A2UI pages. Generates correct ?nav=<slug>&from=<current_slug> URLs at runtime using window._A2UI_NAV — no deployment URL needs to be hard-c",
    "x-intent-phrases": [
@@ -24010,7 +24494,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Sets page-level CSS custom properties (accent colours, block gap) for consistent theming across all atoms. Use as the first block in any payload.",
    "x-intent-phrases": [
@@ -24061,7 +24546,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A button that triggers window.print() to print or save the current page as PDF.",
    "x-intent-phrases": [
@@ -24114,7 +24600,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Embeds a Google Drive image by file ID or share URL, converting it to the correct export URL that works inside GAS iframes.",
    "x-intent-phrases": [
@@ -24161,7 +24648,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Embeds a Google Maps location search in an iframe. Suitable for event location, office address, field ops context.",
    "x-intent-phrases": [
@@ -24215,7 +24703,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A form that submits data to a named Google Sheet tab via google.script.run. Requires the GAS project to be bound to a Spreadsheet.",
    "x-intent-phrases": [
@@ -24266,7 +24755,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Wraps child blocks with entrance animations triggered on load. animation choices: fade_up, fade_in, slide_left, slide_right, scale_in, stagger.",
    "x-intent-phrases": [
@@ -24315,7 +24805,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CSS shimmer loading placeholder. skeleton_type choices: text, card, avatar_row, image, list, table.",
    "x-intent-phrases": [
@@ -24377,7 +24868,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Infinite horizontal scrolling ticker. Items can be text strings, logos (image_url), or icon+label chips.",
    "x-intent-phrases": [
@@ -24426,7 +24918,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Pulsing status or attention indicator dot. Inline or block display.",
    "x-intent-phrases": [
@@ -24472,7 +24965,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Three-dot pulsing loader. Use during async content load or as a status indicator.",
    "x-intent-phrases": [
@@ -24530,7 +25024,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Circular progress ring showing how much of a whole is complete, as a filled SVG arc that animates from zero to the value on load.",
    "x-intent-phrases": [
@@ -24585,7 +25080,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "JS confetti celebration effect. trigger load fires immediately, trigger button shows a clickable button.",
    "x-intent-phrases": [
@@ -24641,7 +25137,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "CTA button with a CSS ripple click effect. Optionally links to a URL.",
    "x-intent-phrases": [
@@ -24693,7 +25190,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Animated SVG wave as a decorative section separator.",
    "x-intent-phrases": [
@@ -24746,7 +25244,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "An emoji or icon that bobs up and down continuously. Great for CTAs and achievement moments.",
    "x-intent-phrases": [
@@ -24805,7 +25304,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Headline text with an animated shimmer/gloss sweep across a gradient. Use for hero taglines.",
    "x-intent-phrases": [
@@ -24866,7 +25366,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Slot-machine style digit reveal. Each digit flips in from above on load. A phrase like 'confirm an action just succeeded' usually means inline_feedback_message or toast_notification, not this -- number_flip is a decorative animated digit reveal, not a confirmation message.",
    "x-intent-phrases": [
@@ -24911,7 +25412,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A content card where a radial gradient spotlight follows the cursor. Child blocks or content field.",
    "x-intent-phrases": [
@@ -24971,7 +25473,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Card or section with a rotating conic gradient border. Child blocks or content inside.",
    "x-intent-phrases": [
@@ -25018,7 +25521,8 @@
     "google-meet-stage",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Circular SVG countdown that depletes as seconds tick down.",
    "x-intent-phrases": [
@@ -25079,7 +25583,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A single Material Symbol icon from Google Fonts CDN. Browse 2500+ icon names at fonts.google.com/icons.",
    "x-intent-phrases": [
@@ -25141,7 +25646,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Material Symbol icon inside a coloured circular badge. Good for stat rows and feature lists.",
    "x-intent-phrases": [
@@ -25194,7 +25700,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal strip of Material Symbol icon + label pairs. Good for feature/capability lists.",
    "x-intent-phrases": [
@@ -25240,7 +25747,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A single Google Workspace product logo from Google's official CDN (fonts.gstatic.com). Falls back to coloured letter badge for unknown apps.",
    "x-intent-phrases": [
@@ -25295,7 +25803,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal strip of Google Workspace product logos. Greyscale by default, restores colour on hover.",
    "x-intent-phrases": [
@@ -25347,7 +25856,8 @@
     "web",
     "google-apps-script-web",
     "google-apps-script-side-panel",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Grid of Google Workspace product logos with labels. Good for \"Integrations\" or \"Works with\" sections.",
    "x-intent-phrases": [
@@ -25404,7 +25914,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Feature grid using Material Symbol icons — better than emoji for Workspace UI contexts.",
    "x-intent-phrases": [
@@ -25457,7 +25968,8 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Checklist where each item has a Material Symbol icon (not just a check mark). Good for capability or requirements lists.",
    "x-intent-phrases": [
@@ -25506,7 +26018,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads. A phrase like 'switch between options within one view' usually means tab_group or segmented_control, and 'review something already completed' usually means status_timeline, not this -- hub is full-screen navigation between entirely separate subject decks.",
    "x-intent-phrases": [
@@ -25542,7 +26055,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id. Not for switching between separate views, pages or date ranges (use pagination, tab_bar, or nav_link) - only for scrolling to a section already on this same page. A phrase like 'jump to my workout' or 'jump to the next task' is usually a simple link to a DIFFERENT place, not this: pick cta_button, link_button, or nav_link unless the destination is a section further down THIS SAME page.",
    "x-intent-phrases": [
@@ -25586,7 +26100,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).",
    "x-intent-phrases": [
@@ -25633,7 +26148,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Multi-line text input. Wire onChange to a ValueStore setValue to capture typed content.",
    "x-intent-phrases": [
@@ -25681,7 +26197,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Tap-to-flip study cards cycling through question/answer pairs.",
    "x-intent-phrases": [
@@ -25725,7 +26242,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Vertical dated timeline of events for study/revision pages.",
    "x-intent-phrases": [
@@ -25764,7 +26282,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Chip showing the accessing user's identity (avatar/initial, optional name).",
    "x-intent-phrases": [
@@ -25823,7 +26342,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Floating light/dark theme switch persisted per visitor.",
    "x-intent-phrases": [
@@ -25875,7 +26395,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Large icon+title tile, the WHOLE tile clickable — for a small set of primary choices (an app/tool selector), not a data-dense card. Bigger visual weight than a plain button. The wired dialect has no n",
    "x-intent-phrases": [
@@ -25928,7 +26449,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Grid of selectable cards for a config question with a small fixed set of options, each worth a short explanation — unlike a dropdown, which hides the explanation until opened. Not driven by the standa",
    "x-intent-phrases": [
@@ -25976,7 +26498,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "One filled pill (\"use my saved default\") beside a free-text field, for a config question that almost always wants the same answer but sometimes needs a one-off override. The pill and the field write t",
    "x-intent-phrases": [
@@ -26021,7 +26544,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Pill tabs that switch which ONE of several sibling atoms is visible, e.g. \"how will you give me the source — a URL, a file, or pasted text\" — rather than showing every input area stacked and unlabelle",
    "x-intent-phrases": [
@@ -26057,7 +26581,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A secondary action with no button chrome — centered, small, muted, underlined text — so a screen's ONE primary action (a full-chrome button) stays visually singular. Still a real button underneath, so",
    "x-intent-phrases": [
@@ -26099,7 +26624,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Fixed-position canvas launch animation -- an isometric rocket climbing through exhaust trail and sparks to a HUD telemetry readout. Overlays one half of the viewport (position:fixed, non-interactive).",
    "x-intent-phrases": [
@@ -26144,7 +26670,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Tabbed panels where each pane holds real nested atom blocks — the generic multi-section single-page container (\"several distinct views of one payload\") without needing named-page infrastructure. Unlik Not for a photo gallery or a spec/detail listing on one page (use gallery, info_card, or product_spec_table) - for splitting genuinely separate sections of content.",
    "x-intent-phrases": [
@@ -26197,7 +26724,8 @@
     "web",
     "google-apps-script-web",
     "google-meet-stage",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Native MathML equation typeset with the CSS `math` generic font family (STIX / Latin Modern Math) — no JavaScript, no external library. The agent emits standard MathML; the surface draws it. Great for",
    "x-intent-phrases": [
@@ -26524,7 +27052,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A layered-depth concept explainer — an opening hook line, a hero \"mental model\" card carrying the one-line analogy, then depth rungs down a connected rail, each rung one level deeper into the concept,",
    "x-intent-phrases": [
@@ -26588,7 +27117,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "One depth level of a concept_ladder — a kind chip (DEPTH N or WORKED EXAMPLE), title, body copy, an optional terminal-styled code block with caption, and an optional terminal-styled takeaway line. Rea",
    "x-intent-phrases": [
@@ -26673,7 +27203,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "Declarative labelled layers for a layered architecture — a protocol stack, a request path, any \"what lives at which level\" picture. Each layer is a band carrying a mono technical fact (`field`) beside",
    "x-intent-phrases": [
@@ -26734,7 +27265,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "One band of a layer_stack — a badge, the layer name, and either a single field/note pane or one pane per column via `cells`. Reads its colour tokens from the CSS custom properties an enclosing layer_s",
    "x-intent-phrases": [
@@ -26791,7 +27323,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "A structured card displaying an AI agent tool invocation — in-flight, completed, or failed. Shows the tool name, execution status badge (running, success, error, pending), elapsed latency, formatted i",
    "x-intent-phrases": [
@@ -26878,7 +27411,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "An animated, looping pan/zoom SVG scene composed from a provenance-verified prop kit (original MIT artwork, each asset pinned by sha256 and restricted to an allowlist of SVG elements). Give a preset a",
    "x-intent-phrases": [
@@ -26935,7 +27469,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "mcp-apps"
+    "mcp-apps",
+    "android"
    ],
    "x-routing-text": "One piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for example a person in a hard hat), scale and flip. Themeable colours, original MIT art",
    "x-intent-phrases": [

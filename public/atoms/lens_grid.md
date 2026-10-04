@@ -4,7 +4,7 @@ Grid of selectable cards for a config question with a small fixed set of options
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

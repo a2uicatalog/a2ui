@@ -4,7 +4,7 @@ Renders a prominent visual header displaying title, metadata, and background cov
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

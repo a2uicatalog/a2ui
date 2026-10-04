@@ -4,7 +4,7 @@ Visual curriculum grid showing all modules in a course. Each card displays modul
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

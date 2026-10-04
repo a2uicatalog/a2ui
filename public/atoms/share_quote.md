@@ -4,7 +4,7 @@ Displays a visually distinct callout showcasing a key phrase designed for social
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

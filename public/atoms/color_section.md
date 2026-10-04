@@ -4,7 +4,7 @@ Renders child atom blocks inside a colored background container. Use to visually
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

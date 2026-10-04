@@ -4,7 +4,7 @@ Large icon+title tile, the WHOLE tile clickable — for a small set of primary c
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

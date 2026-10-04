@@ -4,7 +4,7 @@ Group of named toggle switches — on/off controls with optional labels and desc
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

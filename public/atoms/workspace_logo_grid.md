@@ -4,7 +4,7 @@ Grid of Google Workspace product logos with labels. Good for "Integrations" or "
 
 ## Surfaces
 
-web, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

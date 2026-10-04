@@ -4,7 +4,7 @@ Displays a curated grid of preview cards for complementary reading material.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

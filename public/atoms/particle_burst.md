@@ -4,7 +4,7 @@ On every click anywhere on the page, coloured particles burst outward from the c
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Achievement badge wall — all course badges displayed in a grid. Earned badges 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

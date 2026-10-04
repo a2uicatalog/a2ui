@@ -4,7 +4,7 @@ List of upcoming events from the user's primary calendar. Works on Google Apps S
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

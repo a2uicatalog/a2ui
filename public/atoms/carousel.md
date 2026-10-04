@@ -4,7 +4,7 @@ CSS-only sliding carousel with dot indicators and prev/next arrows
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

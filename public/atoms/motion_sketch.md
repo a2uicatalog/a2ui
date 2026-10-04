@@ -4,7 +4,7 @@ Strokes that draw themselves one after another as p goes 0 to 1, like an agent s
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

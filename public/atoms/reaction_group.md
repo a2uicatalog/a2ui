@@ -4,7 +4,7 @@ Displays an interactive set of emoji elements collecting emotional sentiment fee
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

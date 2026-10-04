@@ -4,7 +4,7 @@ Single Drive file card — coloured file-type badge (DOC/XLS/PPT/PDF), file name
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Renders cumulative layered area chart trends utilizing overlapping translucent g
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

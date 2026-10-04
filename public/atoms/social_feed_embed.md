@@ -4,7 +4,7 @@ Renders an embedded snippet of a social media post, such as a tweet
 
 ## Surfaces
 
-web, google-meet-stage, mcp-apps
+web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

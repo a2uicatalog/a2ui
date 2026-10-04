@@ -4,7 +4,7 @@ Renders a panel that slides into view from the side of the screen on activation.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

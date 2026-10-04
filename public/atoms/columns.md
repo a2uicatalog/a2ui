@@ -4,7 +4,7 @@ Generic multi-column layout container. Each column holds an array of atom blocks
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

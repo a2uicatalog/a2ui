@@ -4,7 +4,7 @@ The canvas hero that works on a white page. A grid of dots whose size follows a 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

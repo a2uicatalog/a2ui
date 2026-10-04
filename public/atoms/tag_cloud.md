@@ -4,7 +4,7 @@ Visual cloud of tags with variable font size based on weight. Heavier tags appea
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

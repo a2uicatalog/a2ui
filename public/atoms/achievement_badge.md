@@ -4,7 +4,7 @@ Unlockable achievement or completion badge displayed as a circular icon with a t
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -35,6 +35,7 @@ SURFACES = [
     ("google-chat", "chat"),
     ("mcp-apps", "mcp-apps"),
     ("claude-code", "claude-code"),
+    ("android", "android"),
     ("email", "email"),
     ("pdf", "pdf"),
 ]

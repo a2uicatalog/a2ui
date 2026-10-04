@@ -4,7 +4,7 @@ Large typographic quote with a decorative quotation mark at 5rem, quote body in 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

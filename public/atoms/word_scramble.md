@@ -4,7 +4,7 @@ Text that begins as a stream of random alphanumeric characters and progressively
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

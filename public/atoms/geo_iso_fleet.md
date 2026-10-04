@@ -4,7 +4,7 @@ Full-viewport tabbed showcase of all three isometric aviation animations — A32
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A row of stars showing a rating out of a maximum, optionally marked as interacti
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Button that triggers confetti explosion when clicked
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

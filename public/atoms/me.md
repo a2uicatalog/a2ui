@@ -4,7 +4,7 @@ Chip showing the accessing user's identity (avatar/initial, optional name).
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

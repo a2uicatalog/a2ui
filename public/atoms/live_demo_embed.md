@@ -4,7 +4,7 @@ Embeds a live interactive demo or sandbox within the article.
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

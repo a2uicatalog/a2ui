@@ -4,7 +4,7 @@ Path chooser presented at course entry. Shows 2-4 role or level path cards (icon
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

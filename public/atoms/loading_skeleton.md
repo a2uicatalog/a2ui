@@ -4,7 +4,7 @@ A placeholder UI that shows the structure of content while it's loading, indicat
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

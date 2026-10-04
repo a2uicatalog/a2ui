@@ -4,7 +4,7 @@ Renders an integrated live development engine frame executing StackBlitz workspa
 
 ## Surfaces
 
-web, mcp-apps
+web, mcp-apps, android
 
 ## Fields
 

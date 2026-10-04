@@ -4,7 +4,7 @@ Renders a condensed overview panel summarising article content at a glance.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

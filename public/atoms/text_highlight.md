@@ -4,7 +4,7 @@ Inline prose sentence where specific words are highlighted in an accent colour. 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

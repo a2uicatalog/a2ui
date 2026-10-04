@@ -4,7 +4,7 @@ Renders a hierarchical layout displaying directory structures, folders, and indi
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

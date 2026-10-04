@@ -4,7 +4,7 @@ Summary list of recent emails in the user's Gmail matching a search query. Works
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

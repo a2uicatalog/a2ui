@@ -4,7 +4,7 @@ Renders an interactive line chart using Chart.js for time-series or trend data.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

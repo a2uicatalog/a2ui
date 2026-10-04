@@ -4,7 +4,7 @@ CSS-only variant picker — each option is a selectable card with a label and op
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

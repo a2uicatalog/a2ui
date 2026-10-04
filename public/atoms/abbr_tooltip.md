@@ -4,7 +4,7 @@ Inline abbreviation with a tooltip revealing the full expanded form on hover.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

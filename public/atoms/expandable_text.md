@@ -4,7 +4,7 @@ Renders a block of text that can be expanded or collapsed to reveal
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Renders a static image thumbnail for a video, with a play icon overlay
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

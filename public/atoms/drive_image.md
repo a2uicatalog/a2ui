@@ -4,7 +4,7 @@ Embeds a Google Drive image by file ID or share URL, converting it to the correc
 
 ## Surfaces
 
-web, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Structured risk callout list with severity levels, description, and mitigation. 
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

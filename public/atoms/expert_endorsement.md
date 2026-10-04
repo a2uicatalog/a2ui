@@ -4,7 +4,7 @@ Renders an endorsement from an industry expert, including their quote, photo, na
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

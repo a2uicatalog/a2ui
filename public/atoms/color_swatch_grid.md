@@ -4,7 +4,7 @@ Displays a grid of color swatches with labels and hex values for design system p
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

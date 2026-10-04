@@ -4,7 +4,7 @@ Dark terminal window that types out boot/log lines one by one
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Embeds a Google Maps location search in an iframe. Suitable for event location, 
 
 ## Surfaces
 
-web, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

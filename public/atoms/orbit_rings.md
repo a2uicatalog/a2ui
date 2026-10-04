@@ -4,7 +4,7 @@ A system map that moves: up to three tilted orbit rings around a centre node, wh
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

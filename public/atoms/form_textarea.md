@@ -4,7 +4,7 @@ Multi-line text input. Wire onChange to a ValueStore setValue to capture typed c
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

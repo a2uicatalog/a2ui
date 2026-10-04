@@ -4,7 +4,7 @@ Renders a premium pipeline conversion funnel with tapered glowing step bars, per
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

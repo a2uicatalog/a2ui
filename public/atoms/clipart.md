@@ -4,7 +4,7 @@ One piece of verified vector clipart from the scene kit, by id, drawn at its own
 
 ## Surfaces
 
-mcp-apps
+mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Terminal-styled command with copy button and a done-checkbox. Wire done/setDone 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

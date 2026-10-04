@@ -4,7 +4,7 @@ Renders a comparison of multiple items based on star ratings or numerical
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

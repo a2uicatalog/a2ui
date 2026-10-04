@@ -4,7 +4,7 @@ Horizontal or vertical navigation bar linking to other named A2UI pages. Generat
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

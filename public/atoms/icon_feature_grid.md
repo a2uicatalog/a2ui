@@ -4,7 +4,7 @@ Feature grid using Material Symbol icons — better than emoji for Workspace UI 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

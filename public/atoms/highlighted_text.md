@@ -4,7 +4,7 @@ Inline passage of text with a coloured highlight background and an optional marg
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

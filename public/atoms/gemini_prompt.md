@@ -4,7 +4,7 @@ Inline Gemini prompt input that calls the GAS callGemini() function from within 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

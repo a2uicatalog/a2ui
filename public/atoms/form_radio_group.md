@@ -4,7 +4,7 @@ Labelled group of radio buttons for single-option selection. Each option has a v
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

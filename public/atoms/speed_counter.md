@@ -4,7 +4,7 @@ Stopwatch that starts ticking on load and freezes when the page finishes loading
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Content block that starts invisible and fades + slides into view when scrolled i
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

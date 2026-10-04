@@ -4,7 +4,7 @@ Renders a menu that appears when a trigger element is hovered or focused.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

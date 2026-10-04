@@ -4,7 +4,7 @@ GitHub repo card — fetches live star/fork/language/push data from GitHub API a
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

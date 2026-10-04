@@ -4,7 +4,7 @@ Styled back navigation button. Links to a URL, a named page slug, or browser his
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

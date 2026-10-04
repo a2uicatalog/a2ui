@@ -4,7 +4,7 @@ End-of-quiz result screen showing score percentage, pass/fail badge, time taken,
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

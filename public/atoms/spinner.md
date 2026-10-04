@@ -4,7 +4,7 @@ A simple rotating animation indicating that content is loading or an operation i
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

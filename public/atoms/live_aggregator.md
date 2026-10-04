@@ -4,7 +4,7 @@ Comparative progress-bar display for real-time vote/response data. Accepts an it
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

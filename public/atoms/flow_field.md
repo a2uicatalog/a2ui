@@ -4,7 +4,7 @@ Full-bleed animated hero background: hundreds of luminous streams ride a slowly 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

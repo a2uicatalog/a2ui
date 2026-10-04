@@ -4,7 +4,7 @@ Labeled or plain section divider. Supports solid, dashed, or dotted line styles.
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps
+web, google-apps-script-web, pdf, mcp-apps, android
 
 ## Fields
 

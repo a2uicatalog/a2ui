@@ -4,7 +4,7 @@ Lightweight inline comprehension pulse — a single multiple-choice question wit
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

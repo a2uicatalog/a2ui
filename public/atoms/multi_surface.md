@@ -4,7 +4,7 @@ One data pool rendered simultaneously across three surface engines: spatial map 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

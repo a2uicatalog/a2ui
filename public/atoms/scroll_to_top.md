@@ -4,7 +4,7 @@ Renders an interactive button providing smooth automated viewport reset to page 
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

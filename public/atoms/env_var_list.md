@@ -4,7 +4,7 @@ Renders a clear configuration list detailing system environment variable keys, d
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

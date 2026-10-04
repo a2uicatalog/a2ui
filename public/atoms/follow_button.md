@@ -4,7 +4,7 @@ Displays a single button allowing a user to subscribe directly to a profile.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Embedded mini schema editor with a textarea for typing a single atom JSON block 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ A card highlighting an important status or issue that requires immediate user at
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-chat, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

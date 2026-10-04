@@ -4,7 +4,7 @@ Self-contained QR code for a given URL (or the current page URL on JS-capable su
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, google-apps-script-side-panel, mcp-apps
+web, google-meet-stage, email, pdf, google-apps-script-web, google-apps-script-side-panel, mcp-apps, android
 
 ## Fields
 

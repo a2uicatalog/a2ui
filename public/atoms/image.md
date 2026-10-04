@@ -4,7 +4,7 @@ Single image with caption, hosted at a public URL
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

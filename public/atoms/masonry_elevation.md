@@ -4,7 +4,7 @@ Coursed block/brick wall elevation — draws courses bottom-up from wall-shape i
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

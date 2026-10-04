@@ -4,7 +4,7 @@ A list of items, each with a title, an optional detail line and a status or cate
 
 ## Surfaces
 
-mcp-apps
+mcp-apps, android
 
 ## Fields
 

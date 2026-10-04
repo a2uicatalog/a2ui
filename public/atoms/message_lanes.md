@@ -4,7 +4,7 @@ The A2UI pitch, drawn: small packets stream from an agent node on the left down 
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

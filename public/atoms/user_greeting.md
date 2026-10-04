@@ -4,7 +4,7 @@ Personalised greeting showing the active user's Google account email. Works on G
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Displays a grouped publication document containing categorised changes for a ver
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

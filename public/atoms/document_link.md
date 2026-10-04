@@ -4,7 +4,7 @@ Renders a clickable link to a document (e.g., PDF, DOCX), often with a document 
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

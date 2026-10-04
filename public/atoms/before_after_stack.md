@@ -4,7 +4,7 @@ Animated comparison: old approach items cross out one by one, then new approach 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

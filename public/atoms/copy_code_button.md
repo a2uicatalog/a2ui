@@ -4,7 +4,7 @@ Renders a discrete interactive button that copies associated text or code to the
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

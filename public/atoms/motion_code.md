@@ -4,7 +4,7 @@ A code window that types itself in as p goes 0 to 1: monospace lines revealed le
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

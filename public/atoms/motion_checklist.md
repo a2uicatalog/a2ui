@@ -4,7 +4,7 @@ A card of items that tick off one after another as p goes 0 to 1: each row brigh
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

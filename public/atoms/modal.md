@@ -4,7 +4,7 @@ Modal dialog overlay with a title, configurable size, and arbitrary content chil
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

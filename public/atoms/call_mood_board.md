@@ -4,7 +4,7 @@ Renders a premium, aesthetic call emotion summary and theme board showing detect
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

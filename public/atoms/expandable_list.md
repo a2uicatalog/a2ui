@@ -4,7 +4,7 @@ Nested tree list where parent items expand to reveal children on click.
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

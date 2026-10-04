@@ -4,7 +4,7 @@ Agentic typeface: the words an agent supplies assemble out of thousands of colou
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

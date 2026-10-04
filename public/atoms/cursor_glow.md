@@ -4,7 +4,7 @@ Ambient radial gradient orb that smoothly lerp-follows the cursor across the pag
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

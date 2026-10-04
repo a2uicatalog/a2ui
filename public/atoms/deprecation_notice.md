@@ -4,7 +4,7 @@ Displays a prominent warning banner indicating a feature or API is no longer sup
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

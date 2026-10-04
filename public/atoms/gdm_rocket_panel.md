@@ -4,7 +4,7 @@ Fixed-position canvas launch animation -- an isometric rocket climbing through e
 
 ## Surfaces
 
-mcp-apps
+mcp-apps, android
 
 ## Fields
 

@@ -171,13 +171,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span><span class="badge bd">android ⚠</span>
   </div>
 
   
 <div class="section">
   <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>Inherits layer_stack's blocked IBM Plex faces under the MCP Apps CSP — falls back to the system mono/serif stack. Structure unaffected.</td></tr></tbody></table>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>Inherits layer_stack's blocked IBM Plex faces under the MCP Apps CSP — falls back to the system mono/serif stack. Structure unaffected.</td></tr><tr><td>android</td><td>Inherits layer_stack's blocked IBM Plex faces under the MCP Apps CSP — falls back to the system mono/serif stack. Structure unaffected.</td></tr></tbody></table>
 </div>
 
   
@@ -211,7 +211,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "capabilities": [
     "web",
     "google-apps-script-web",
-    "mcp-apps"
+    "mcp-apps",
+    "android"
   ],
   "description": "One band of a layer_stack \u2014 a badge, the layer name, and either a single field/note pane or one pane per column via `cells`. Reads its colour tokens from the CSS custom properties an enclosing layer_stack sets and renders with sane fallback colours standalone. Rarely authored outside layer_stack.layers, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.",
   "representativeQueries": [

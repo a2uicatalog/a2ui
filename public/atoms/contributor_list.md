@@ -4,7 +4,7 @@ Renders a list of individuals who have contributed to a project or community, wi
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

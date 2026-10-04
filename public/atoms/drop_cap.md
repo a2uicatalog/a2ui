@@ -4,7 +4,7 @@ An editorial paragraph with an initial letter set four ways: dropped (the classi
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
 
 ## Fields
 

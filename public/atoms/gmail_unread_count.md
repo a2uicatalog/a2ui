@@ -4,7 +4,7 @@ Unread message count badges for one or more Gmail labels, shown as a pill row. Z
 
 ## Surfaces
 
-google-apps-script-web, google-meet-stage, mcp-apps
+google-apps-script-web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Displays a small visual tag showing software release or dependency version numbe
 
 ## Surfaces
 
-web, google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

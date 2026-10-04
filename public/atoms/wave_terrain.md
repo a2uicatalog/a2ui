@@ -4,7 +4,7 @@ Full-bleed animated hero background: a live terrain flyover drawn as receding ri
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ Interactive mass-spring physics simulation — nodes repel each other (Coulomb) 
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 

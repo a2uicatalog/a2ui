@@ -4,7 +4,7 @@ Styled card displaying a single search result with title, snippet, and URL.
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

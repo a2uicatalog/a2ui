@@ -4,7 +4,7 @@ Today's events from the user's default Google Calendar, displayed as a compact t
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

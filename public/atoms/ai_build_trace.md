@@ -4,7 +4,7 @@ Token usage and model trace card — shows Gemini call stats inline on a page
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -4,7 +4,7 @@ The catalogue browser, as a shot: a search box that types its query, filter chip
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps
+web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

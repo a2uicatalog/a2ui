@@ -4,7 +4,7 @@ Multi-question quiz with multiple-choice options, per-question explanations, pas
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

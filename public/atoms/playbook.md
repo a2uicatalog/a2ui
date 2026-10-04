@@ -4,7 +4,7 @@ Full-screen multi-slide presentation deck — each slide is its own atom block a
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+google-apps-script-web, mcp-apps, android
 
 ## Fields
 

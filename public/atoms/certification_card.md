@@ -4,7 +4,7 @@ Completion certificate card — earner name, course title, issuer, and date with
 
 ## Surfaces
 
-google-apps-script-web, web, google-meet-stage, mcp-apps
+google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
 ## Fields
 
