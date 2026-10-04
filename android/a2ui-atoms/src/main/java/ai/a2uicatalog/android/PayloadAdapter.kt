@@ -11,7 +11,7 @@ import org.json.JSONObject
  *     (its own source carries a TODO to move to v1.0).
  *  2. We put components inside createSurface; v0.9 expects them in a separate
  *     updateComponents message and silently skips unknown fields, so ours would vanish.
- *  3. The engine throws on any component type its catalogue doesn't register, so any
+ *  3. The engine throws on any component type its catalog doesn't register, so any
  *     type we can't draw is rewritten to a visible placeholder instead of crashing.
  *
  * Also accepts our legacy {"title","theme","blocks":[...]} payload, flat blocks only.

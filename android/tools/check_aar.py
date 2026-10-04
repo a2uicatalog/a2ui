@@ -6,7 +6,7 @@ Fails unless the AAR:
     unregistered type, so a missing atom is a crash on a device, not a cosmetic gap);
   * carries a renderer-bundle.html byte-identical to public/surfaces/mcp-apps/
     renderer-bundle.html (the web and Android surfaces must run the same renderer);
-  * contains the public entry point, ai.a2uicatalog.android.A2uiCatalogue.
+  * contains the public entry point, ai.a2uicatalog.android.A2uiAtomicCatalog.
 
 Usage: python3 android/tools/check_aar.py [path/to/a2ui-atoms-release.aar]
 """
@@ -50,8 +50,8 @@ def main(aar_path: Path) -> int:
         problems.append("renderer-bundle.html differs from public/surfaces/mcp-apps/renderer-bundle.html "
                         f"(aar {hashlib.sha256(bundle).hexdigest()[:12]}, web {hashlib.sha256(web).hexdigest()[:12]})")
 
-    if "ai/a2uicatalog/android/A2uiCatalogue.class" not in classes:
-        problems.append("public entry point ai.a2uicatalog.android.A2uiCatalogue missing from classes.jar")
+    if "ai/a2uicatalog/android/A2uiAtomicCatalog.class" not in classes:
+        problems.append("public entry point ai.a2uicatalog.android.A2uiAtomicCatalog missing from classes.jar")
 
     if problems:
         for p in problems:

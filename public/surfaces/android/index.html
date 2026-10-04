@@ -163,8 +163,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <h1>Android</h1>
   
 <div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:14px;color:var(--muted);margin:0 0 20px">
-<strong style="color:var(--text)">Android, through Google's A2UI renderer.</strong> Google's <code>androidx.a2ui</code> library renders A2UI natively in Jetpack Compose. Add the <code>a2ui-atoms</code> library and an Android app can show every atom listed here: Basic Catalog components draw in Compose, and the rest draw with this catalogue's own renderer inside the app. Apps without the library still get something useful: the catalogue's emitter reads which catalogues an app supports and sends a plain Basic Catalog version instead of a surface the app can't draw.
-<br><br><code>val catalog = A2uiCatalogue.catalog(context)</code>
+<strong style="color:var(--text)">Android, through Google's A2UI renderer.</strong> Google's <code>androidx.a2ui</code> library renders A2UI natively in Jetpack Compose. Add the <code>a2ui-atoms</code> library and an Android app can show every atom listed here: Basic Catalog components draw in Compose, and the rest draw with this catalog's own renderer inside the app. Apps without the library still get something useful: the catalog's emitter reads which catalogs an app supports and sends a plain Basic Catalog version instead of a surface the app can't draw.
+<br><br><code>val catalog = A2uiAtomicCatalog.catalog(context)</code>
 <br><br>Build it from source for now; a published package is coming. <a href="https://github.com/a2uicatalog/a2ui/tree/main/android">Source and README</a> &middot; tested on a Pixel 7 Pro with <code>androidx.a2ui</code> 1.0.0-alpha01.
 </div>
 
@@ -3339,7 +3339,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of columns"><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;align-items:flex-start;margin:1.5rem 0;"><div style="min-width:0;"><p><strong>Public</strong> — 473 stable atoms, no auth required.</p></div><div style="min-width:0;"><p><strong>Full</strong> — 508 atoms, gated behind Cloudflare Access.</p></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of columns"><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;align-items:flex-start;margin:1.5rem 0;"><div style="min-width:0;"><p><strong>Public</strong> — every stable atom, no auth required.</p></div><div style="min-width:0;"><p><strong>Full</strong> — stable and preview atoms, gated behind Cloudflare Access.</p></div></div></div>
 </div>
 </div>
 <div class="surface-atom">

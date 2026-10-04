@@ -28,7 +28,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.json.JSONArray
 import org.json.JSONObject
 
-/** Our catalogue id: what every surface our emitter produces declares. */
+/** Our catalog id: what every surface our emitter produces declares. */
 private const val TAG = "A2uiBridge"
 
 const val CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
@@ -63,7 +63,7 @@ val LocalSurfaceTheme = compositionLocalOf { "light" }
  * Registered once per atom name, all sharing this one class. Rebuilds the atom as a
  * legacy block ({"type": name, ...fields}) and hands it to our web renderer.
  */
-/** Type names drawn by the bridge, filled by [A2uiCatalogue.catalog]; Columns group them. */
+/** Type names drawn by the bridge, filled by [A2uiAtomicCatalog.catalog]; Columns group them. */
 internal object BridgedTypes {
     @Volatile var names: Set<String> = emptySet()
 }
