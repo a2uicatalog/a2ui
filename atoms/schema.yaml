@@ -6402,7 +6402,6 @@ blocks:
     works_on:
     - web
     - mcp-apps
-    - android
     incompatible_on:
     - surface: google-apps-script-web
       reason: no wired renderer yet — use form_input (label + required) on GAS surfaces
@@ -15189,7 +15188,6 @@ blocks:
     - google-apps-script-web
     - google-chat
     - mcp-apps
-    - android
   children:
     messages:
       shape: wrapper_list
@@ -19703,7 +19701,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     title: string (optional). Heading above the list.
     items: 'array (required). Each item {label, verdict, note}. label: string
@@ -19724,7 +19721,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     constraint: string (required). The hard constraint, stated plainly.
     breaks: string (required). Why the naive approach fails against it.
@@ -19745,7 +19741,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     headline: string (required). The one-line diagnosis.
     detail: string (required). Supporting explanation.
@@ -19767,7 +19762,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     title: string (optional). Heading above the list.
     pairs: 'array (required). Each item {wrong, right}. wrong: string
@@ -19790,7 +19784,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     name: string (required). The demo/agent's name.
     description: string (required). One or two sentences on what it does.
@@ -19810,7 +19803,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     title: string (optional). Heading above the panel.
     groups: 'array (required). Each item {heading, items}. heading: string
@@ -19830,7 +19822,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     step_number: number (required). 1-based position in the trace.
     title: string (required). Short label for this hop.
@@ -19852,7 +19843,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     value: string (required). The number/figure, e.g. "534".
     label: string (required). The noun it modifies, e.g. "typed atoms".
@@ -19871,7 +19861,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     number: number (required). 1-based chapter number.
     headline: string (required). The chapter's title.
@@ -19895,7 +19884,6 @@ blocks:
     - web
     - google-apps-script-web
     - mcp-apps
-    - android
   fields:
     label: string (required). The link's visible text.
     url: url (required). The destination.
