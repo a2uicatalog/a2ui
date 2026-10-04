@@ -151,11 +151,18 @@ fun RendererWebView(payloadJson: String, modifier: Modifier = Modifier, onError:
                 }, "AndroidHost")
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String?) {
+                        // Paint once per real load. Android's WebView also calls this for
+                        // in-page navigations (hash changes, history.pushState); re-painting
+                        // then let an atom that updates its hash re-trigger itself forever
+                        // (seen on a Pixel 7 Pro: 150 repaints in 20 s, desktop Chrome: none).
+                        val state = view.tag as? BridgeState ?: return
+                        if (state.loaded) return
+                        state.loaded = true
                         Log.i(TAG, "page loaded, painting")
-                        (view.tag as? String)?.let { view.evaluateJavascript(paintScript(it), null) }
+                        view.evaluateJavascript(paintScript(state.payload), null)
                     }
                 }
-                tag = payloadJson
+                tag = BridgeState(payloadJson)
                 // Base URL = the live site, so relative fetches (e.g. brick part shapes) resolve.
                 loadDataWithBaseURL("https://a2uicatalog.ai/", Atoms.rendererBundle(ctx),
                     "text/html", "utf-8", null)
@@ -164,12 +171,16 @@ fun RendererWebView(payloadJson: String, modifier: Modifier = Modifier, onError:
         update = { wv ->
             if (painted != payloadJson) {
                 painted = payloadJson
-                wv.tag = payloadJson
-                if (wv.progress == 100) wv.evaluateJavascript(paintScript(payloadJson), null)
+                val state = wv.tag as? BridgeState
+                state?.payload = payloadJson
+                if (state?.loaded == true) wv.evaluateJavascript(paintScript(payloadJson), null)
             }
         },
     )
 }
+
+/** What a bridge WebView should show, and whether its page has finished its one real load. */
+private class BridgeState(var payload: String, var loaded: Boolean = false)
 
 private fun paintScript(payload: String) = """
 (function(){

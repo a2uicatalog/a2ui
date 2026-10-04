@@ -156,7 +156,17 @@ object DefaultColumn : A2uiBasicCatalogV1.Column {
                     j++
                 }
                 if (run.size >= 2) {
-                    key(children[i].id) { RendererWebView(bridgePayload(run, theme)) }
+                    val start = i
+                    key(children[start].id) {
+                        // If painting the run together ever throws, one bad atom would blank
+                        // the whole run: fall back to one WebView per atom so only it suffers.
+                        var groupFailed by remember(children[start].id, run.size) { mutableStateOf(false) }
+                        if (groupFailed) {
+                            Column { for (k in start until j) Child(children[k]) }
+                        } else {
+                            RendererWebView(bridgePayload(run, theme), onError = { groupFailed = true })
+                        }
+                    }
                     i = j
                 } else {
                     key(children[i].id) { Child(children[i]) }
