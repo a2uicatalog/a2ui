@@ -2124,7 +2124,10 @@ window.addEventListener('message', function(e) {
         if (!panel) {
           panel = document.createElement('div');
           panel.id = 'mt-delta-panel';
-          panel.style.cssText = 'position:absolute;top:14px;right:14px;max-width:46%;background:rgba(7,17,31,0.82);border:1px solid #ffd50066;border-radius:8px;padding:8px 10px;font:11px/1.45 ui-monospace,monospace;color:#ffd500;pointer-events:none;';
+          // Solid background (not translucent): this sits over the HUD's own
+          // "REAL BUILD" label + corner bracket, which bled through as faint
+          // artifacts at low opacity (found live 2026-10-04).
+          panel.style.cssText = 'position:absolute;top:44px;right:14px;max-width:46%;background:#07111f;border:1px solid #ffd50066;border-radius:8px;padding:8px 10px;font:11px/1.45 ui-monospace,monospace;color:#ffd500;pointer-events:none;';
           hud.appendChild(panel);
         }
         var v = cmd.value, path = String(v.path || '/bricks/.../c').slice(0, 60);
