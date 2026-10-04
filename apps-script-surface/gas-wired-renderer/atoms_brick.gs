@@ -2092,6 +2092,7 @@ function _brickKit(materialProfile) {
     return {
       setShape:function(s){userAz=0;userEl=0;userZoom=1;o.bricks=null;load(s);},
       resetView:function(){userAz=0;userEl=0;userZoom=1;dirtyView=true;},
+      recolor:function(hex,idxs){var m=usingParts?null:M;if(!m||!m.bricks)return;var pick={};(idxs||m.bricks.map(function(_,i){return i;})).forEach(function(i){pick[i]=1;});m.bricks.forEach(function(b,i){if(pick[i])b.c=hex;});o.bricks=m.bricks;var t=tNow;load(o.shape);tNow=t;},
       setBricks:function(list){o.bricks=list;load(o.shape);},
       setMode:function(m){o.mode=m;dirtyView=true;},
       setStep:function(n){o.step=n;dirtyView=true;},
@@ -2462,6 +2463,7 @@ _RENDERERS['brick_build_3d'] = function(b) {
       'else if(d.action==="play"){__atom.setMode("animate");__atom.set("speed",1);}' +
       'else if(d.action==="step"){__atom.set("speed",0);__atom.setMode("steps");__atom.setStep(+d.value||0);}' +
       'else if(d.action==="replay")__atom.replay();' +
-      'else if(d.action==="resetView")__atom.resetView();});' +
+      'else if(d.action==="resetView")__atom.resetView();' +
+      'else if(d.action==="recolor"&&d.value&&Array.isArray(d.value.idxs)&&/^#[0-9a-fA-F]{6}$/.test(d.value.to))__atom.recolor(d.value.to,d.value.idxs.filter(function(i){return Number.isInteger(i)&&i>=0;}));});' +
       '})();</script>';
 };
