@@ -1,0 +1,779 @@
+{
+ "accordion_item": [
+  "header"
+ ],
+ "adsb_feed": [
+  "lat_max",
+  "lat_min",
+  "lon_max",
+  "lon_min"
+ ],
+ "ambient_gradient": [
+  "text",
+  "title"
+ ],
+ "anchor_list": [
+  "anchors"
+ ],
+ "animated_beam": [
+  "active",
+  "body",
+  "curved",
+  "from_label",
+  "speed",
+  "to_label"
+ ],
+ "animated_border_card": [
+  "accent",
+  "accent2",
+  "background",
+  "border_width",
+  "speed"
+ ],
+ "animated_counter": [
+  "counters"
+ ],
+ "api_reference": [
+  "deprecated"
+ ],
+ "article_series_nav": [
+  "current_part",
+  "series_id"
+ ],
+ "audio_link": [
+  "audio_url",
+  "icon_type"
+ ],
+ "audio_player": [
+  "audio_url",
+  "autoplay",
+  "loop"
+ ],
+ "aurora_background": [
+  "background",
+  "body",
+  "colors",
+  "opacity",
+  "speed"
+ ],
+ "benchmark_comparison": [
+  "items"
+ ],
+ "bento_grid": [
+  "columns",
+  "heading",
+  "tiles"
+ ],
+ "bezier_easing": [
+  "theme"
+ ],
+ "blur_fade_in": [
+  "background",
+  "blur",
+  "children",
+  "direction",
+  "speed"
+ ],
+ "call_mood_board": [
+  "summary"
+ ],
+ "callout": [
+  "kind",
+  "title"
+ ],
+ "canvas_plexus": [
+  "repulse_radius"
+ ],
+ "card_stack": [
+  "background",
+  "border_color",
+  "height"
+ ],
+ "chartjs_pie": [
+  "colors",
+  "show_labels",
+  "show_legend",
+  "variant"
+ ],
+ "choicebox_group": [
+  "accent",
+  "items",
+  "multiple",
+  "submit_label"
+ ],
+ "clipart": [
+  "alt",
+  "asset",
+  "label"
+ ],
+ "code_diff": [
+  "context_lines"
+ ],
+ "code_snippet_pair": [
+  "left_code",
+  "left_label",
+  "right_code",
+  "right_label"
+ ],
+ "cohort_retention": [
+  "color_scale",
+  "periods"
+ ],
+ "collapsible_panel": [
+  "initial_state",
+  "toggle_label"
+ ],
+ "combobox": [
+  "rules"
+ ],
+ "comparison_grid": [
+  "features",
+  "products"
+ ],
+ "concept_ladder": [
+  "palette",
+  "source",
+  "theme"
+ ],
+ "confidence_bar": [
+  "items"
+ ],
+ "conversation_snippet": [
+  "accent"
+ ],
+ "countdown_timer": [
+  "accent",
+  "hours",
+  "minutes",
+  "seconds",
+  "variant"
+ ],
+ "css_modal": [
+  "close_button_label",
+  "modal_body",
+  "modal_title"
+ ],
+ "css_slide_panel": [
+  "panel_content",
+  "slide_from_side"
+ ],
+ "cta_button": [
+  "color"
+ ],
+ "cta_section": [
+  "background",
+  "body",
+  "heading",
+  "primary_cta",
+  "secondary_cta"
+ ],
+ "data_grid": [
+  "pagination",
+  "selectable"
+ ],
+ "data_table_sortable": [
+  "headers"
+ ],
+ "deadline_ticker": [
+  "label",
+  "target_date"
+ ],
+ "demo_chart": [
+  "accent"
+ ],
+ "demo_progress": [
+  "accent"
+ ],
+ "demo_toggle_grid": [
+  "accent"
+ ],
+ "depth_stack": [
+  "cards",
+  "count"
+ ],
+ "donut_stat": [
+  "max_value"
+ ],
+ "dot_grid_background": [
+  "background",
+  "body",
+  "dot_color",
+  "dot_size",
+  "spacing",
+  "variant"
+ ],
+ "drive_folder_contents": [
+  "auth_token",
+  "items"
+ ],
+ "drive_recent_files": [
+  "auth_token",
+  "items"
+ ],
+ "drive_storage_usage": [
+  "auth_token",
+  "total_gb",
+  "used_gb"
+ ],
+ "embed_codepen": [
+  "pen_id",
+  "user_handle"
+ ],
+ "embed_gist": [
+  "gist_id"
+ ],
+ "embed_google_slides": [
+  "presentation_id"
+ ],
+ "embed_tweet": [
+  "tweet_id"
+ ],
+ "empty_state": [
+  "action_url",
+  "image_url"
+ ],
+ "encrypted_reveal": [
+  "background",
+  "color",
+  "delay",
+  "frames",
+  "scramble_color",
+  "size",
+  "speed",
+  "weight"
+ ],
+ "feature_grid": [
+  "columns",
+  "heading"
+ ],
+ "feature_matrix": [
+  "product_names"
+ ],
+ "feedback_prompt": [
+  "action_url",
+  "placeholder",
+  "question",
+  "style"
+ ],
+ "figma_embed": [
+  "embed_url"
+ ],
+ "fill_in_blank": [
+  "answers",
+  "case_sensitive"
+ ],
+ "flip_card": [
+  "back_content",
+  "front_content",
+  "trigger_on_hover"
+ ],
+ "footnote": [
+  "number"
+ ],
+ "form": [
+  "cancel_label",
+  "fields",
+  "title"
+ ],
+ "form_checkbox_group": [
+  "items",
+  "rules"
+ ],
+ "form_date_picker": [
+  "mode",
+  "placeholder",
+  "rules"
+ ],
+ "form_input": [
+  "rules"
+ ],
+ "form_radio_group": [
+  "rules",
+  "wired"
+ ],
+ "form_select": [
+  "rules"
+ ],
+ "form_slider": [
+  "default_value",
+  "rules",
+  "variant"
+ ],
+ "form_switch_group": [
+  "items"
+ ],
+ "framed_screenshot": [
+  "alt_text",
+  "device_type"
+ ],
+ "github_activity_grid": [
+  "activity",
+  "streak_days",
+  "total_contributions",
+  "username"
+ ],
+ "glossary_term": [
+  "link_text",
+  "link_url"
+ ],
+ "glow_button": [
+  "color_fired",
+  "color_ready",
+  "description",
+  "href",
+  "size",
+  "state"
+ ],
+ "gmail_inbox": [
+  "auth_token",
+  "items"
+ ],
+ "gmail_unread_count": [
+  "auth_token",
+  "counts"
+ ],
+ "gradient_text": [
+  "duration",
+  "from",
+  "to",
+  "via",
+  "weight"
+ ],
+ "great_circle": [
+  "theme"
+ ],
+ "heatmap": [
+  "color_scale",
+  "labels_x",
+  "labels_y",
+  "unit"
+ ],
+ "heatmap_calendar": [
+  "unit"
+ ],
+ "highlighted_text": [
+  "annotation_color"
+ ],
+ "hover_card": [
+  "card_content",
+  "card_image_url",
+  "card_title",
+  "trigger_element"
+ ],
+ "image": [
+  "width"
+ ],
+ "image_pair": [
+  "left",
+  "right"
+ ],
+ "inline_alert": [
+  "detail"
+ ],
+ "inline_feedback_message": [
+  "icon"
+ ],
+ "isometric_mesh": [
+  "colour_high",
+  "colour_low",
+  "grid",
+  "height_scale"
+ ],
+ "jira_ticket": [
+  "description",
+  "issue_type",
+  "priority"
+ ],
+ "key_value": [
+  "title"
+ ],
+ "layer_stack": [
+  "palette",
+  "source",
+  "theme"
+ ],
+ "lens_freeform": [
+  "off_template"
+ ],
+ "light_type": [
+  "background",
+  "colors",
+  "font",
+  "interactive",
+  "text",
+  "weight"
+ ],
+ "linkedin_post_image": [
+  "body",
+  "title",
+  "value"
+ ],
+ "live_metric": [
+  "decimals",
+  "duration",
+  "label",
+  "prefix",
+  "start",
+  "suffix",
+  "value"
+ ],
+ "living_type": [
+  "background",
+  "colors",
+  "font",
+  "interactive",
+  "text",
+  "weight"
+ ],
+ "llm_comparison_table": [
+  "prompt",
+  "show_meta"
+ ],
+ "loading_skeleton": [
+  "has_image",
+  "shape"
+ ],
+ "lottie_animation": [
+  "loop",
+  "src_url"
+ ],
+ "lozenge": [
+  "appearance",
+  "items"
+ ],
+ "markdown_block": [
+  "variant"
+ ],
+ "marquee_strip": [
+  "direction",
+  "gap",
+  "pause_on_hover"
+ ],
+ "metric_delta": [
+  "previous_period_label",
+  "unit"
+ ],
+ "modal": [
+  "children",
+  "size"
+ ],
+ "motion_timeline": [
+  "accent",
+  "aspect",
+  "autoplay",
+  "backdrop",
+  "background",
+  "blocks",
+  "bpm",
+  "camera",
+  "controls",
+  "duration",
+  "ease",
+  "loop",
+  "morphs",
+  "overlap",
+  "poster",
+  "scenes",
+  "stitch",
+  "theme",
+  "title",
+  "tracks"
+ ],
+ "motion_tokens": [
+  "theme"
+ ],
+ "multi_select_input": [
+  "placeholder"
+ ],
+ "navigation_menu": [
+  "brand",
+  "brand_url",
+  "cta"
+ ],
+ "notification_stack": [
+  "items"
+ ],
+ "number_odometer": [
+  "accent",
+  "color",
+  "duration",
+  "label",
+  "size",
+  "value"
+ ],
+ "option_plan_builder": [
+  "total_expr"
+ ],
+ "pagination": [
+  "base_url",
+  "page_param"
+ ],
+ "parallax_card": [
+  "accent",
+  "background",
+  "badge",
+  "body",
+  "depth"
+ ],
+ "particle_type": [
+  "background",
+  "colors",
+  "font",
+  "interactive",
+  "text",
+  "weight"
+ ],
+ "pattern_background": [
+  "bg",
+  "color",
+  "size",
+  "text",
+  "title"
+ ],
+ "pdf_preview": [
+  "alt_text",
+  "pdf_url",
+  "thumbnail_url"
+ ],
+ "photo_upload": [
+  "wired"
+ ],
+ "pricing_tier_card": [
+  "call_to_action_label",
+  "call_to_action_url",
+  "currency",
+  "frequency",
+  "is_highlighted",
+  "plan_name"
+ ],
+ "primitive_plate": [
+  "equivalent_in"
+ ],
+ "product_thumbnail": [
+  "tags"
+ ],
+ "progress_circle": [
+  "size"
+ ],
+ "prompt_template": [
+  "accent",
+  "copyable",
+  "label"
+ ],
+ "pull_stat": [
+  "color",
+  "unit"
+ ],
+ "quiz_question": [
+  "style"
+ ],
+ "rating_stars": [
+  "is_interactive"
+ ],
+ "rating_summary_bar": [
+  "accent",
+  "average",
+  "breakdown",
+  "total"
+ ],
+ "reveal_on_scroll": [
+  "accent",
+  "background",
+  "body",
+  "duration"
+ ],
+ "roadmap_card": [
+  "periods"
+ ],
+ "scene_stage": [
+  "accent",
+  "actors",
+  "actors_add",
+  "backdrop",
+  "camera",
+  "ground",
+  "motion",
+  "preset",
+  "scenery",
+  "scenery_add",
+  "seed",
+  "stage",
+  "theme",
+  "title"
+ ],
+ "scramble_reveal": [
+  "text",
+  "title"
+ ],
+ "scroll_to_top": [
+  "behavior"
+ ],
+ "scroll_trigger": [
+  "delay",
+  "direction",
+  "text",
+  "title"
+ ],
+ "sentiment_summary": [
+  "emotional_journey",
+  "themes"
+ ],
+ "shimmer_button": [
+  "accent",
+  "background",
+  "description",
+  "href",
+  "size",
+  "speed"
+ ],
+ "shortcut_legend": [
+  "items",
+  "title"
+ ],
+ "side_by_side_spec": [
+  "item_a_name",
+  "item_b_name"
+ ],
+ "skeleton": [
+  "skeleton_type"
+ ],
+ "skeleton_stage_card": [
+  "count",
+  "lines",
+  "variant"
+ ],
+ "social_feed_embed": [
+  "embed_code",
+  "platform",
+  "post_url"
+ ],
+ "sonar_pulse": [
+  "active",
+  "body",
+  "size",
+  "variant"
+ ],
+ "source_citation": [
+  "heading",
+  "sources"
+ ],
+ "sparkline": [
+  "height",
+  "width"
+ ],
+ "spring_nodes": [
+  "rest_length"
+ ],
+ "sprint_board": [
+  "sprint_name"
+ ],
+ "status_pill": [
+  "color",
+  "icon"
+ ],
+ "steps": [
+  "items"
+ ],
+ "sun_path": [
+  "theme"
+ ],
+ "svg_path_draw": [
+  "duration",
+  "shape",
+  "width"
+ ],
+ "tabs": [
+  "accent"
+ ],
+ "task_list": [
+  "tasks",
+  "title"
+ ],
+ "tasks_today": [
+  "auth_token"
+ ],
+ "toast_notification": [
+  "position",
+  "title",
+  "variant"
+ ],
+ "token_budget_meter": [
+  "animate",
+  "critical_at",
+  "duration",
+  "label",
+  "model",
+  "warn_at"
+ ],
+ "tonal_scale": [
+  "theme"
+ ],
+ "typewriter": [
+  "background",
+  "color",
+  "cursor",
+  "size",
+  "speed",
+  "text",
+  "weight"
+ ],
+ "typewriter_text": [
+  "color",
+  "cursor",
+  "delay",
+  "size",
+  "weight"
+ ],
+ "typing_indicator": [
+  "name",
+  "variant"
+ ],
+ "uptime_timeline": [
+  "uptime"
+ ],
+ "user_profile_card": [
+  "email",
+  "name"
+ ],
+ "variant_selector": [
+  "default_value",
+  "items",
+  "name"
+ ],
+ "versus_block": [
+  "comparison_points",
+  "entity_a_description",
+  "entity_a_image_url",
+  "entity_a_name",
+  "entity_b_description",
+  "entity_b_image_url",
+  "entity_b_name"
+ ],
+ "video_card": [
+  "alt_text"
+ ],
+ "video_pair": [
+  "caption"
+ ],
+ "vote_button_group": [
+  "allow_multi",
+  "style",
+  "title"
+ ],
+ "word_flip": [
+  "size",
+  "speed",
+  "weight"
+ ],
+ "word_scramble": [
+  "color",
+  "duration",
+  "scramble_color",
+  "size",
+  "text",
+  "weight"
+ ],
+ "xp_bar": [
+  "show_flash"
+ ]
+}

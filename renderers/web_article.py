@@ -11752,7 +11752,17 @@ def _render_alert_banner(b: dict) -> str:
     return (f'<div style="border-left:4px solid {col};background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:12px 16px;'
             f'border-radius:0 8px 8px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;">'
             f'<span style="font-size:1.1rem;">{_cv_esc(ico)}</span>'
-            f'<div style="font-weight:500;">{_md_inline(b.get("text",""))}</div></div>')
+            f'<div style="font-weight:500;">{_md_inline(b.get("text",""))}{_alert_banner_action(b, col)}</div></div>')
+
+
+def _alert_banner_action(b: dict, col: str) -> str:
+    """action_label + action_url (schema fields) as a link button; only when both are set and safe."""
+    label, url = b.get('action_label'), b.get('action_url')
+    if not (label and url and _md_url_ok(str(url))):
+        return ''
+    return (f'<div style="margin-top:8px;"><a href="{_esc(str(url))}" target="_blank" rel="noopener" '
+            f'style="display:inline-block;padding:5px 12px;border-radius:6px;border:1px solid {col};'
+            f'color:{col};font-size:0.82rem;font-weight:600;text-decoration:none;">{_esc(str(label))}</a></div>')
 
 _RENDERERS['alert_banner'] = _render_alert_banner
 
@@ -12514,9 +12524,12 @@ _RENDERERS['divider'] = _render_divider
 
 
 def _render_document_link(b: dict) -> str:
-    url = b.get('url', '#')
-    title = b.get('title') or b.get('label', 'Document')
-    ext = url.rsplit('.', 1)[-1].upper() if '.' in url else 'DOC'
+    # Schema fields are document_url / label / icon_type; url and title are older aliases.
+    url = b.get('document_url') or b.get('url') or '#'
+    if not _md_url_ok(url):
+        url = '#'
+    title = b.get('label') or b.get('title') or 'Document'
+    ext = (b.get('icon_type') or (url.rsplit('.', 1)[-1] if '.' in url.rsplit('/', 1)[-1] else 'DOC')).upper()
     icons = {'PDF': '📄', 'DOCX': '📝', 'XLSX': '📊', 'PPTX': '📊', 'ZIP': '📦'}
     icon = b.get('icon') or icons.get(ext, '📄')
     return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '

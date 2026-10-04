@@ -1286,7 +1286,14 @@ _RENDERERS['alert_banner'] = function(b) {
   
   return '<div class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
          '<span class="asw-callout-icon">' + (b.icon || icons[variant]) + '</span>' +
-         '<div class="asw-callout-content" style="font-weight:500;">' + _markdownToHtml(b.text) + '</div>' +
+         '<div class="asw-callout-content" style="font-weight:500;">' + _markdownToHtml(b.text) +
+         // action_label + action_url (schema fields): a link button, opened outside the
+         // surface. Only drawn when both are set and the URL is safe.
+         (b.action_label && b.action_url ?
+           '<div style="margin-top:8px;"><a href="' + _safeUrl(b.action_url) + '" target="_blank" rel="noopener" ' +
+           'style="display:inline-block;padding:5px 12px;border-radius:6px;border:1px solid ' + colors[variant] + ';' +
+           'color:' + colors[variant] + ';font-size:0.82rem;font-weight:600;text-decoration:none;">' + _esc(b.action_label) + '</a></div>' : '') +
+         '</div>' +
          '</div>';
 };
 
@@ -3613,10 +3620,13 @@ _RENDERERS['pdf_preview'] = function(b) {
 };
 
 _RENDERERS['document_link'] = function(b) {
-  var url = b.url || '';
-  var title = b.title || b.label || 'Document';
-  var type = (b.type || 'doc').toUpperCase();
-  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:#9ca3af;">[' + _esc(type) + ']</span></a>';
+  // Schema fields are document_url / label / icon_type; url and title are older aliases.
+  // (b.type is the block discriminator, "document_link", never the file type.)
+  var url = b.document_url || b.url || '';
+  var title = b.label || b.title || 'Document';
+  var ext = /\.([a-z0-9]{2,5})(?:[?#]|$)/i.exec(url);
+  var type = (b.icon_type || (ext && ext[1]) || 'doc').toUpperCase();
+  return '<a href="' + _safeUrl(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:#9ca3af;">[' + _esc(type) + ']</span></a>';
 };
 
 _RENDERERS['code_snippet_pair'] = function(b) {
