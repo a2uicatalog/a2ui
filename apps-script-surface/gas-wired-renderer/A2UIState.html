@@ -2104,12 +2104,35 @@ window.addEventListener('message', function(e) {
     var setPlaying = function(want) {
       if (btn && (root.getAttribute('data-pl') === '1') !== want) btn.click();
     };
+    if (cmd.action === 'resetView') {
+      var oldPanel = root.querySelector('#mt-delta-panel');
+      if (oldPanel) oldPanel.parentNode.removeChild(oldPanel);
+    }
     if (cmd.action === 'pause') setPlaying(false);
     else if (cmd.action === 'play') setPlaying(true);
     else if ((cmd.action === 'step' || cmd.action === 'replay') && rng) {
       rng.value = cmd.action === 'replay' ? 0 : Math.round((+cmd.value || 0) * 10);
       rng.dispatchEvent(new Event('input'));
       if (cmd.action === 'replay') setPlaying(true);
+    } else if (cmd.action === 'patch' && cmd.value) {
+      // A readable JSON Patch (RFC 6902) summary of the host's last change,
+      // shown over the frame instead of baked into bricks -- created lazily
+      // so it never appears before a real change has been made.
+      var hud = root.querySelector('.mt-hud');
+      if (hud) {
+        var panel = hud.querySelector('#mt-delta-panel');
+        if (!panel) {
+          panel = document.createElement('div');
+          panel.id = 'mt-delta-panel';
+          panel.style.cssText = 'position:absolute;top:14px;right:14px;max-width:46%;background:rgba(7,17,31,0.82);border:1px solid #ffd50066;border-radius:8px;padding:8px 10px;font:11px/1.45 ui-monospace,monospace;color:#ffd500;pointer-events:none;';
+          hud.appendChild(panel);
+        }
+        var v = cmd.value, path = String(v.path || '/bricks/.../c').slice(0, 60);
+        panel.innerHTML = '<div style="color:#64748b;font-size:9px;letter-spacing:.05em;margin-bottom:3px;">AG-UI STATE_DELTA</div>' +
+          '<div>' + (v.op || 'replace') + ' <span style="color:#fff8e0">' + path + '</span></div>' +
+          (v.count > 1 ? '<div style="color:#94a3b8;">&times;' + v.count + ' bricks</div>' : '') +
+          (v.value ? '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><span style="width:10px;height:10px;border-radius:2px;background:' + v.value + ';display:inline-block;"></span>' + v.value + '</div>' : '');
+      }
     }
   }
   var frames = document.querySelectorAll('iframe');
