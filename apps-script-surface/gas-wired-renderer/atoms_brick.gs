@@ -1694,7 +1694,7 @@ function _brickKit(materialProfile) {
     var M,bricks,N,st,OX,OY,OZ,AL,grid,statics,hl=[],dyn=[],vis=[];
     var PM;   // parts-mode stats, parallels M for the bricks path: {W,D,L,steps}, in engine units
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
-    var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0,filmP=1;
+    var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,userZoom=1,dragging=false,lastX=0,lastY=0,filmP=1;
     var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,onInspect=null,raf=0;
     // Pre-existing gap, found live debugging motion_bricks `motion` on this machine (headless SwiftShader loses
     // the first WebGL context -- see briefs/opus-lego-rotation-capability.md): glRenderer's own contextrestored
@@ -1910,7 +1910,10 @@ function _brickKit(materialProfile) {
       if(usingParts){bw=PM.W+2*MARGIN;bd=PM.D+2*MARGIN;hh=PM.ySpan;tx=PM.cx;tz=PM.cz;ty=PM.cy;}
       else{bw=M.W+2*MARGIN;bd=M.D+2*MARGIN;hh=PL+M.L*BH;tx=M.W/2;tz=M.D/2;ty=hh*0.42;}
       var R=0.5*Math.hypot(bw,bd,hh*1.1);
-      dist=R*6;foc=0.46*Math.min(W,H*1.25)*dist/R;     // long lens: close to the isometric look of instruction renders
+      dist=R*6;foc=0.46*Math.min(W,H*1.25)*dist/R*userZoom;     // long lens: close to the isometric look of instruction renders
+      // userZoom scales focal length only, not dist -- a real camera zoom (narrower
+      // field of view), not a dolly move. dist is untouched so d=dist-z2 in proj()
+      // keeps the same relative depth ordering/parallax regardless of zoom level.
       scx=W/2;scy=H*0.5;
       camx=tx+dist*ce*sa;camy=ty+dist*se;camz=tz+dist*ce*ca;
     }
@@ -2063,13 +2066,31 @@ function _brickKit(materialProfile) {
     });
     canvas.addEventListener('pointerup',function(e){dragging=false;if(!downMoved)inspectAt(e.clientX,e.clientY);});
     canvas.addEventListener('pointercancel',function(){dragging=false;});
+    // Scroll-wheel zoom (2026-10-04): the base engine had drag-to-orbit but no
+    // zoom at all -- confirmed absent everywhere brick_build_3d renders,
+    // including production MCP Apps. {passive:false} + preventDefault so wheeling
+    // over the canvas zooms instead of scrolling the host page. Multiplicative
+    // step (not additive) so it feels consistent whether already zoomed in or
+    // out. Clamped 0.5-2.5, NOT a wider range: confirmed live (real wheel
+    // events + real pixel sampling, not assumed) that beyond roughly +-3x from
+    // 1.0 in EITHER direction the view goes fully blank -- something else
+    // computed from R (shadow-map framing is the likely culprit, not chased
+    // further here) doesn't account for userZoom and clips/culls the whole
+    // scene once the projected size diverges enough from the un-zoomed
+    // framing it was sized for. 0.5-2.5 stayed well inside the confirmed-safe
+    // region in that same test.
+    canvas.addEventListener('wheel',function(e){
+      e.preventDefault();
+      userZoom=Math.max(0.5,Math.min(2.5,userZoom*(e.deltaY<0?1.1:1/1.1)));
+      dirtyView=true;
+    },{passive:false});
     if('ResizeObserver' in window)new ResizeObserver(resize).observe(canvas);else window.addEventListener('resize',resize);
     if('IntersectionObserver' in window)new IntersectionObserver(function(e){visible=e[0].isIntersecting;}).observe(canvas);
 
     load(o.shape);resize();
     raf=requestAnimationFrame(loop);
     return {
-      setShape:function(s){userAz=0;userEl=0;o.bricks=null;load(s);},
+      setShape:function(s){userAz=0;userEl=0;userZoom=1;o.bricks=null;load(s);},
       setBricks:function(list){o.bricks=list;load(o.shape);},
       setMode:function(m){o.mode=m;dirtyView=true;},
       setStep:function(n){o.step=n;dirtyView=true;},
