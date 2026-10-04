@@ -632,7 +632,11 @@ _RENDERERS['motion_timeline'] = function(b) {
   // A timeline inside a timeline would share ids and clocks: refuse, and say so.
   if (_moTlDepth > 0) return '<!-- a2ui: motion_timeline cannot nest inside another motion_timeline -->';
   _moTlDepth++;
-  try { return _moTimeline(b); } finally { _moTlDepth--; }
+  // A cinematic stage is full-bleed, not article text: break out of the host's
+  // 860px asw-page reading column (same established pattern as atoms_airspace/atc).
+  var out;
+  try { out = _moTimeline(b); } finally { _moTlDepth--; }
+  return '<style>.asw-page{max-width:none!important;padding:0!important;margin:0!important;}</style>' + out;
 };
 
 // ─── topic-free primitives (added after the first composition outside the SaaS demo) ──
