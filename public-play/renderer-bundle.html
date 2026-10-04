@@ -36710,9 +36710,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.addEventListener('message', function(e) {
   if (e.source !== window.parent || !e.data || e.data.a2uiControl !== 1) return;
+  var cmd = e.data, root = document.querySelector('.mt-root');
+  if (root) {
+    var btn = root.querySelector('.mt-play'), rng = root.querySelector('.mt-rng');
+    var setPlaying = function(want) {
+      if (btn && (root.getAttribute('data-pl') === '1') !== want) btn.click();
+    };
+    if (cmd.action === 'pause') setPlaying(false);
+    else if (cmd.action === 'play') setPlaying(true);
+    else if ((cmd.action === 'step' || cmd.action === 'replay') && rng) {
+      rng.value = cmd.action === 'replay' ? 0 : Math.round((+cmd.value || 0) * 10);
+      rng.dispatchEvent(new Event('input'));
+      if (cmd.action === 'replay') setPlaying(true);
+    }
+  }
   var frames = document.querySelectorAll('iframe');
   for (var i = 0; i < frames.length; i++) {
-    if (frames[i].contentWindow) frames[i].contentWindow.postMessage(e.data, '*');
+    if (frames[i].contentWindow) frames[i].contentWindow.postMessage(cmd, '*');
   }
 });
 
