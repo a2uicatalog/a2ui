@@ -1,6 +1,6 @@
 # Api Reference
 
-Full API/function reference block — name, description, parameters table,
+Full API/function reference block — name, description, parameters table, return value, and example.
 
 ## Surfaces
 

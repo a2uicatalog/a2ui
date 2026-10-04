@@ -265,7 +265,7 @@
   },
   {
    "type": "api_reference",
-   "compact": "API endpoint method parameters and response docs returns, example",
+   "compact": "API endpoint method parameters and response docs",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -316,7 +316,7 @@
   },
   {
    "type": "annotated_code",
-   "compact": "code block with numbered callout bubbles on specific lines explanation list below",
+   "compact": "code block with numbered callout bubbles on specific lines",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -534,7 +534,7 @@
   },
   {
    "type": "tab_bar",
-   "compact": "horizontal tab navigation bar typically leading to different sections or pages.",
+   "compact": "horizontal tab navigation bar",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -567,7 +567,7 @@
   },
   {
    "type": "glossary_term",
-   "compact": "definition term with explanation more details.",
+   "compact": "definition term with explanation",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -637,7 +637,7 @@
   },
   {
    "type": "hover_card",
-   "compact": "rich hover card revealed on mouse over specified trigger element, using only CSS.",
+   "compact": "rich card revealed when hovering a trigger",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -657,7 +657,7 @@
   },
   {
    "type": "css_modal",
-   "compact": "pure-CSS modal dialog triggered by checkbox controlled purely by CSS without JavaScript.",
+   "compact": "pure-CSS modal dialog triggered by checkbox",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -700,7 +700,7 @@
   },
   {
    "type": "document_link",
-   "compact": "styled link to a downloadable document a document icon.",
+   "compact": "styled link to a downloadable document",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -754,7 +754,7 @@
   },
   {
    "type": "framed_screenshot",
-   "compact": "device-framed screenshot with optional caption browser, phone).",
+   "compact": "device-framed screenshot with optional caption",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -777,7 +777,7 @@
   },
   {
    "type": "alert_banner",
-   "compact": "full-width status alert strip optional action.",
+   "compact": "full-width status alert strip",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -797,7 +797,7 @@
   },
   {
    "type": "loading_skeleton",
-   "compact": "animated placeholder skeleton while content loads indicating active data fetching.",
+   "compact": "animated placeholder skeleton while content loads",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -807,7 +807,7 @@
   },
   {
    "type": "empty_state",
-   "compact": "zero-data empty state with icon and call to action image, message, and an optional call to action.",
+   "compact": "zero-data empty state with icon and call to action",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -817,7 +817,7 @@
   },
   {
    "type": "spinner",
-   "compact": "loading spinner indicator operation is in progress.",
+   "compact": "loading spinner indicator",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -827,7 +827,7 @@
   },
   {
    "type": "status_pill",
-   "compact": "coloured status pill badge an item.",
+   "compact": "coloured status pill badge",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -847,7 +847,7 @@
   },
   {
    "type": "rating_stars",
-   "compact": "star rating display stars, or displaying a static rating.",
+   "compact": "star rating display",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -890,7 +890,7 @@
   },
   {
    "type": "pricing_tier_card",
-   "compact": "single pricing plan card with features list an optional call to action.",
+   "compact": "single pricing plan card with features list",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -914,7 +914,7 @@
   },
   {
    "type": "pros_cons_list",
-   "compact": "two-column pros and cons comparison a single subject.",
+   "compact": "two-column pros and cons comparison",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -938,7 +938,7 @@
   },
   {
    "type": "product_spec_table",
-   "compact": "product specifications in a clean table a single product.",
+   "compact": "product specifications in a clean table",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -949,7 +949,7 @@
   },
   {
    "type": "comparison_grid",
-   "compact": "multi-item attribute comparison grid often using icons or checkmarks to indicate presence.",
+   "compact": "multi-item attribute comparison grid",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1024,7 +1024,7 @@
   },
   {
    "type": "image_hotspots",
-   "compact": "image with clickable annotated hotspot overlays hover.",
+   "compact": "image with clickable annotated hotspot overlays",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1084,7 +1084,7 @@
   },
   {
    "type": "css_slide_panel",
-   "compact": "CSS-only slide-in panel drawer activation.",
+   "compact": "CSS-only slide-in panel drawer",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1094,7 +1094,7 @@
   },
   {
    "type": "testimonial_card",
-   "compact": "customer testimonial with photo name and quote an optional avatar.",
+   "compact": "customer testimonial with photo name and quote",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1105,7 +1105,7 @@
   },
   {
    "type": "star_rating_display",
-   "compact": "read-only star rating with score and count total review count.",
+   "compact": "read-only star rating with score and count",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1127,7 +1127,7 @@
   },
   {
    "type": "contributor_list",
-   "compact": "list of contributors with avatar and role community, with their",
+   "compact": "list of contributors with avatar and role",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1149,7 +1149,7 @@
   },
   {
    "type": "social_proof_banner",
-   "compact": "social proof strip with stats and logos achievement.",
+   "compact": "social proof strip with stats and logos",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -1171,7 +1171,7 @@
   },
   {
    "type": "expert_endorsement",
-   "compact": "expert quote with credentials and photo name, and credentials.",
+   "compact": "expert quote with credentials and photo",
    "surfaces": [
     "web",
     "google-meet-stage",

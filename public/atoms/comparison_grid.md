@@ -1,6 +1,6 @@
 # Comparison Grid
 
-Renders a grid comparing multiple products or services with features,
+Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.
 
 ## Surfaces
 

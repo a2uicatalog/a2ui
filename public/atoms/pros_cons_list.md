@@ -1,6 +1,6 @@
 # Pros Cons List
 
-Renders a two-column list itemizing advantages and disadvantages for
+Renders a two-column list itemizing advantages and disadvantages for a single subject.
 
 ## Surfaces
 

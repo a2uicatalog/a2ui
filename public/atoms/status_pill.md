@@ -1,6 +1,6 @@
 # Status Pill
 
-A small, colored label or "pill" used to display a concise status for
+A small, colored label or "pill" used to display a concise status for an item.
 
 ## Surfaces
 

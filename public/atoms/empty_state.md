@@ -1,6 +1,6 @@
 # Empty State
 
-A UI pattern displayed when there is no data to show, often with an
+A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action.
 
 ## Surfaces
 

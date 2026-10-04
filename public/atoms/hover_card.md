@@ -1,6 +1,6 @@
 # Hover Card
 
-Renders a rich content card that appears when a user hovers over a
+Renders a rich content card that appears when a user hovers over a specified trigger element.
 
 ## Surfaces
 

@@ -1,6 +1,6 @@
 # Star Rating Display
 
-Renders a visual representation of a star rating, optionally with a
+Renders a visual representation of a star rating, optionally with a total review count.
 
 ## Surfaces
 

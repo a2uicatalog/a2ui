@@ -7,6 +7,7 @@ Run:
   python3 scripts/generate_atom_pages.py
 """
 import base64
+import html
 import json
 import os
 import re
@@ -1065,6 +1066,21 @@ def render_page_md(atom):
     return "\n".join(lines) + "\n"
 
 
+def meta_description(text, limit=160):
+    """Search-snippet text: whole sentences up to `limit` chars, else cut at a
+    word boundary with an ellipsis. Attribute-escaped."""
+    text = " ".join(text.split())
+    if len(text) > limit:
+        sentences = re.split(r"(?<=[.!?])\s+", text)
+        out = ""
+        for sent in sentences:
+            if len(out) + len(sent) + 1 > limit:
+                break
+            out = f"{out} {sent}".strip()
+        text = out or text[:limit - 1].rsplit(" ", 1)[0].rstrip(",;:—- ") + "…"
+    return html.escape(text, quote=True)
+
+
 def render_page(atom):
     atom_type    = atom.get("type", "")
     desc         = atom.get("description", "")
@@ -1088,7 +1104,8 @@ def render_page(atom):
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
-  <meta name="description" content="{desc or compact}">
+  <meta name="description" content="{meta_description(desc or compact)}">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/{atom_type}/">
   <link rel="alternate" type="text/markdown" href="/atoms/{atom_type}.md">
   <script type="application/ld+json">
   {{

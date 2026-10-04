@@ -1,6 +1,6 @@
 # Contributor List
 
-Renders a list of individuals who have contributed to a project or
+Renders a list of individuals who have contributed to a project or community, with their avatars and roles.
 
 ## Surfaces
 

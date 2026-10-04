@@ -8,7 +8,8 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Agent Sketchpad — A2UI Atomic Catalog</title>
-  <meta name="description" content="A single composite SVG canvas built from an ORDERED list of validated SVG elements, for an agent to progressively draw one coherent picture across multiple real updates (e.g. one A2A message per shape) rather than svg_path_draw's one-shot single shape. Every re-render draws all elements except the last as already-complete (no animation); only the LAST element in the list gets the real stroke-dasharray/stroke-dashoffset draw-in animation -- a stateless rule that works under this catalogue's full-rerender model without any incremental DOM patching. Redesigned 2026-08-24 from a path-only shape to a general SVG-primitive one (with fill), to match what a real freeform tool-calling loop actually produces (see streaming-testbench's demos/sketch/sketch_agent.py, the origin of this atom's validation approach) -- works anywhere svg_path_draw does.">
+  <meta name="description" content="A single composite SVG canvas built from an ORDERED list of validated SVG elements, for an agent to progressively draw one coherent picture across multiple…">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/agent_sketchpad/">
   <link rel="alternate" type="text/markdown" href="/atoms/agent_sketchpad.md">
   <script type="application/ld+json">
   {

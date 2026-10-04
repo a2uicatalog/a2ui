@@ -1,6 +1,6 @@
 # Spinner
 
-A simple rotating animation indicating that content is loading or an
+A simple rotating animation indicating that content is loading or an operation is in progress.
 
 ## Surfaces
 

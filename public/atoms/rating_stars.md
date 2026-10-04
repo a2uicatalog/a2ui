@@ -1,6 +1,6 @@
 # Rating Stars
 
-A visual component allowing users to rate an item using a series of
+A row of stars showing a rating out of a maximum, optionally marked as interactive.
 
 ## Surfaces
 

@@ -1,6 +1,6 @@
 # Product Spec Table
 
-Renders a table detailing technical specifications or features for
+Renders a table detailing technical specifications or features for a single product.
 
 ## Surfaces
 

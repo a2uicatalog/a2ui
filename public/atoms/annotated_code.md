@@ -1,6 +1,6 @@
 # Annotated Code
 
-Code block with numbered yellow callout bubbles on specific lines,
+Code block with numbered yellow callout bubbles on specific lines, with an explanation list below.
 
 ## Surfaces
 

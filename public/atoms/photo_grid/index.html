@@ -8,10 +8,8 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Photo Grid — A2UI Atomic Catalog</title>
-  <meta name="description" content="A clickable image grid: every tile is both a photo and a row.
-Built to close a real gap — data_table has no way to show what a row IS, only what it says about itself, so a photo-driven decision (which wallpaper, which chair) forced a text table plus a separate "View photo" link plus a separate select-then-tap-a-button flow before an action could fire. This atom is the shape that removes all three: the thing you look at and the thing you click are the same element.
-Reuses data_table's onRowClick contract exactly — same data-row-json attribute, same _a2uiBindRowClicks binder, same array-wire form for "select AND immediately run an action" in one tap (shipped 2026-08-04 for onRowClick, inherited here for free rather than rebuilt). A DATA atom, not a domain one, same reasoning sortable_list gives for its own genericness: it renders whatever {id, url, ...} objects it is given and fires whatever the caller wired onRowClick to, so the same atom serves a voting board, a photo picker, or a product chooser without a second named atom per use case.
-`badge` and `active` exist because a click-driven UI still has to show its OWN state back — a starred tile that does not visibly read as starred after the tap is a button that looks like it did nothing. Both are plain strings/booleans the caller derives server-side (a star count, a "you picked this" flag); the atom does not compute either.">
+  <meta name="description" content="A clickable image grid: every tile is both a photo and a row.">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/photo_grid/">
   <link rel="alternate" type="text/markdown" href="/atoms/photo_grid.md">
   <script type="application/ld+json">
   {

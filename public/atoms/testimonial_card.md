@@ -1,6 +1,6 @@
 # Testimonial Card
 
-Renders a single customer testimonial with text, author details, and
+Renders a single customer testimonial with text, author details, and an optional avatar.
 
 ## Surfaces
 

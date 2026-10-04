@@ -1,6 +1,6 @@
 # Expert Endorsement
 
-Renders an endorsement from an industry expert, including their quote,
+Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.
 
 ## Surfaces
 

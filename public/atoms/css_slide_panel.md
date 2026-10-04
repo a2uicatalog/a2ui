@@ -1,6 +1,6 @@
 # Css Slide Panel
 
-Renders a panel that slides into view from the side of the screen on
+Renders a panel that slides into view from the side of the screen on activation.
 
 ## Surfaces
 

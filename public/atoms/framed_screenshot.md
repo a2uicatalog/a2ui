@@ -1,6 +1,6 @@
 # Framed Screenshot
 
-Renders an image within a decorative frame, simulating a device (e.g.,
+Renders an image within a decorative frame, simulating a device (e.g., browser, phone).
 
 ## Surfaces
 

@@ -1,6 +1,6 @@
 # Css Modal
 
-Renders a modal dialog that appears on click and can be dismissed,
+Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript.
 
 ## Surfaces
 

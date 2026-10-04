@@ -1,6 +1,6 @@
 # Loading Skeleton
 
-A placeholder UI that shows the structure of content while it's loading,
+A placeholder UI that shows the structure of content while it's loading, indicating active data fetching.
 
 ## Surfaces
 

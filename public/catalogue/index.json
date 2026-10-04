@@ -22,7 +22,7 @@
         },
         {
           "type": "alert_banner",
-          "description": "full-width status alert strip optional action."
+          "description": "full-width status alert strip"
         },
         {
           "type": "back_button",
@@ -142,7 +142,7 @@
         },
         {
           "type": "empty_state",
-          "description": "zero-data empty state with icon and call to action image, message, and an optional call to action."
+          "description": "zero-data empty state with icon and call to action"
         },
         {
           "type": "file_tree",
@@ -409,7 +409,7 @@
         },
         {
           "type": "spinner",
-          "description": "loading spinner indicator operation is in progress."
+          "description": "loading spinner indicator"
         },
         {
           "type": "split_pane",
@@ -431,7 +431,7 @@
         },
         {
           "type": "status_pill",
-          "description": "coloured status pill badge an item."
+          "description": "coloured status pill badge"
         },
         {
           "type": "step_progress",
@@ -455,7 +455,7 @@
         },
         {
           "type": "tab_bar",
-          "description": "horizontal tab navigation bar typically leading to different sections or pages."
+          "description": "horizontal tab navigation bar"
         },
         {
           "type": "tab_group",
@@ -701,7 +701,7 @@
         },
         {
           "type": "annotated_code",
-          "description": "code block with numbered callout bubbles on specific lines explanation list below"
+          "description": "code block with numbered callout bubbles on specific lines"
         },
         {
           "type": "annotation_highlight",
@@ -773,11 +773,11 @@
         },
         {
           "type": "css_modal",
-          "description": "pure-CSS modal dialog triggered by checkbox controlled purely by CSS without JavaScript."
+          "description": "pure-CSS modal dialog triggered by checkbox"
         },
         {
           "type": "css_slide_panel",
-          "description": "CSS-only slide-in panel drawer activation."
+          "description": "CSS-only slide-in panel drawer"
         },
         {
           "type": "custom_checkbox_group",
@@ -797,7 +797,7 @@
         },
         {
           "type": "document_link",
-          "description": "styled link to a downloadable document a document icon."
+          "description": "styled link to a downloadable document"
         },
         {
           "type": "expandable_list",
@@ -833,7 +833,7 @@
         },
         {
           "type": "hover_card",
-          "description": "rich hover card revealed on mouse over specified trigger element, using only CSS."
+          "description": "rich card revealed when hovering a trigger"
         },
         {
           "type": "icon_badge",
@@ -853,7 +853,7 @@
         },
         {
           "type": "image_hotspots",
-          "description": "image with clickable annotated hotspot overlays hover."
+          "description": "image with clickable annotated hotspot overlays"
         },
         {
           "type": "image_pair",
@@ -1069,7 +1069,7 @@
         },
         {
           "type": "glossary_term",
-          "description": "definition term with explanation more details."
+          "description": "definition term with explanation"
         },
         {
           "type": "intro",
@@ -1354,7 +1354,7 @@
         },
         {
           "type": "loading_skeleton",
-          "description": "animated placeholder skeleton while content loads indicating active data fetching."
+          "description": "animated placeholder skeleton while content loads"
         },
         {
           "type": "magnetic_button",
@@ -1714,7 +1714,7 @@
         },
         {
           "type": "framed_screenshot",
-          "description": "device-framed screenshot with optional caption browser, phone)."
+          "description": "device-framed screenshot with optional caption"
         },
         {
           "type": "live_demo_embed",
@@ -2131,11 +2131,11 @@
         },
         {
           "type": "comparison_grid",
-          "description": "multi-item attribute comparison grid often using icons or checkmarks to indicate presence."
+          "description": "multi-item attribute comparison grid"
         },
         {
           "type": "contributor_list",
-          "description": "list of contributors with avatar and role community, with their"
+          "description": "list of contributors with avatar and role"
         },
         {
           "type": "cta_section",
@@ -2155,7 +2155,7 @@
         },
         {
           "type": "expert_endorsement",
-          "description": "expert quote with credentials and photo name, and credentials."
+          "description": "expert quote with credentials and photo"
         },
         {
           "type": "feature_grid",
@@ -2206,7 +2206,7 @@
         },
         {
           "type": "pricing_tier_card",
-          "description": "single pricing plan card with features list an optional call to action."
+          "description": "single pricing plan card with features list"
         },
         {
           "type": "pricing_tier_group",
@@ -2214,7 +2214,7 @@
         },
         {
           "type": "pros_cons_list",
-          "description": "two-column pros and cons comparison a single subject."
+          "description": "two-column pros and cons comparison"
         },
         {
           "type": "rating_comparison",
@@ -2222,7 +2222,7 @@
         },
         {
           "type": "rating_stars",
-          "description": "star rating display stars, or displaying a static rating."
+          "description": "star rating display"
         },
         {
           "type": "rating_summary_bar",
@@ -2234,11 +2234,11 @@
         },
         {
           "type": "social_proof_banner",
-          "description": "social proof strip with stats and logos achievement."
+          "description": "social proof strip with stats and logos"
         },
         {
           "type": "star_rating_display",
-          "description": "read-only star rating with score and count total review count."
+          "description": "read-only star rating with score and count"
         },
         {
           "type": "star_rating_input",
@@ -2246,7 +2246,7 @@
         },
         {
           "type": "testimonial_card",
-          "description": "customer testimonial with photo name and quote an optional avatar."
+          "description": "customer testimonial with photo name and quote"
         },
         {
           "type": "versus_block",
@@ -2347,7 +2347,7 @@
         },
         {
           "type": "api_reference",
-          "description": "API endpoint method parameters and response docs returns, example"
+          "description": "API endpoint method parameters and response docs"
         },
         {
           "type": "changelog_entry",
@@ -2462,7 +2462,7 @@
         },
         {
           "type": "product_spec_table",
-          "description": "product specifications in a clean table a single product."
+          "description": "product specifications in a clean table"
         },
         {
           "type": "product_thumbnail",

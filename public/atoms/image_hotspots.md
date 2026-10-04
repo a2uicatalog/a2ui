@@ -1,6 +1,6 @@
 # Image Hotspots
 
-Renders an image with interactive points that display information on
+Renders an image with interactive points that reveal information when clicked.
 
 ## Surfaces
 

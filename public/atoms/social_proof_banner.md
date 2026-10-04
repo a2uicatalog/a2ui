@@ -1,6 +1,6 @@
 # Social Proof Banner
 
-Renders a prominent banner highlighting a key social proof metric or
+Renders a prominent banner highlighting a key social proof metric or achievement.
 
 ## Surfaces
 

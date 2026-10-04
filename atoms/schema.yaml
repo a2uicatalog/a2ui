@@ -590,9 +590,9 @@ blocks:
     caption: string (optional)
   source: *id001
 - type: api_reference
-  description: Full API/function reference block — name, description, parameters table,
-  compact_description: API endpoint method parameters and response docs returns, example
-  routing_text: "Full API/function reference block — name, description, parameters table,"
+  description: "Full API/function reference block — name, description, parameters table, return value, and example."
+  compact_description: "API endpoint method parameters and response docs"
+  routing_text: "Full API/function reference block — name, description, parameters table, return value, and example."
   intent_phrases:
   - "I need to show users how to use my custom code functions."
   - "Help me document all the different settings my tool offers."
@@ -755,10 +755,9 @@ blocks:
       tag: string (optional)
   source: *id001
 - type: annotated_code
-  description: Code block with numbered yellow callout bubbles on specific lines,
-  compact_description: code block with numbered callout bubbles on specific lines
-    explanation list below
-  routing_text: "Code block with numbered yellow callout bubbles on specific lines,"
+  description: "Code block with numbered yellow callout bubbles on specific lines, with an explanation list below."
+  compact_description: "code block with numbered callout bubbles on specific lines"
+  routing_text: "Code block with numbered yellow callout bubbles on specific lines, with an explanation list below."
   intent_phrases:
   - "I need to highlight key code snippets in my tutorial with extra explanations."
   - "Show users exactly which lines of code are important for this feature."
@@ -1710,14 +1709,13 @@ blocks:
     color: string (optional). Accent colour for completed/active states. Default "#38bdf8".
     label: string (optional). Heading above the step list.
 - type: tab_bar
-  description: A horizontal navigation component displaying a set of clickable tabs,
-  compact_description: horizontal tab navigation bar typically leading to different
-    sections or pages.
+  description: "A horizontal navigation component displaying a set of clickable tabs."
+  compact_description: "horizontal tab navigation bar"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "A horizontal navigation component displaying a set of clickable tabs,"
+  routing_text: "A horizontal navigation component displaying a set of clickable tabs."
   intent_phrases:
   - "I need a way to switch between different sections of my settings page easily."
   - "Users should be able to jump between product categories on the shop page."
@@ -1797,13 +1795,13 @@ blocks:
   fields:
     items: list of objects, each with 'question' (string) and 'answer' (string)
 - type: glossary_term
-  description: Renders a term with its definition, often with an optional link for
-  compact_description: definition term with explanation more details.
+  description: "Renders a term with its definition, often with an optional link for more details."
+  compact_description: "definition term with explanation"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a term with its definition, often with an optional link for"
+  routing_text: "Renders a term with its definition, often with an optional link for more details."
   intent_phrases:
   - "I need to show users what a specific word means right on the page."
   - "Can I display a technical term and its explanation where it's used?"
@@ -1972,14 +1970,13 @@ blocks:
     trigger_text: string The text or element that, when hovered, reveals the tooltip.
     tooltip_content: string The content displayed within the tooltip.
 - type: hover_card
-  description: Renders a rich content card that appears when a user hovers over a
-  compact_description: rich hover card revealed on mouse over specified trigger element,
-    using only CSS.
+  description: "Renders a rich content card that appears when a user hovers over a specified trigger element."
+  compact_description: "rich card revealed when hovering a trigger"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a rich content card that appears when a user hovers over a A phrase like 'show a customer's account details and order history' as a persistent, always-visible panel usually means user_profile_card, order_status_card, or key_value, not this -- hover_card only appears on mouse hover. If the request does not explicitly say the content should appear ONLY on mouseover, it is NOT this -- a persistently visible summary belongs on user_profile_card, order_status_card, key_value, or entity_list instead."
+  routing_text: "Renders a rich content card that appears when a user hovers over a specified trigger element. A phrase like 'show a customer's account details and order history' as a persistent, always-visible panel usually means user_profile_card, order_status_card, or key_value, not this -- hover_card only appears on mouse hover. If the request does not explicitly say the content should appear ONLY on mouseover, it is NOT this -- a persistently visible summary belongs on user_profile_card, order_status_card, key_value, or entity_list instead."
   intent_phrases:
   - "I need to show product details without taking up screen space until someone is interested."
   - "Users should see extra info about a contact when they point at their name."
@@ -2043,11 +2040,10 @@ blocks:
       or "collapsed").
     content: string The main content to be shown or hidden.
 - type: css_modal
-  description: Renders a modal dialog that appears on click and can be dismissed,
-  compact_description: pure-CSS modal dialog triggered by checkbox controlled purely
-    by CSS without JavaScript.
+  description: "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript."
+  compact_description: "pure-CSS modal dialog triggered by checkbox"
   source: *id003
-  routing_text: "Renders a modal dialog that appears on click and can be dismissed,"
+  routing_text: "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript."
   intent_phrases:
   - "I need to show a pop-up message to confirm deleting something."
   - "Users need to enter extra details in a separate box without leaving the page."
@@ -2159,13 +2155,13 @@ blocks:
     title: string
     alt_text: string
 - type: document_link
-  description: Renders a clickable link to a document (e.g., PDF, DOCX), often with
-  compact_description: styled link to a downloadable document a document icon.
+  description: "Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon."
+  compact_description: "styled link to a downloadable document"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a clickable link to a document (e.g., PDF, DOCX), often with"
+  routing_text: "Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon."
   intent_phrases:
   - "I need a way for users to download our terms and conditions."
   - "Show them how to get the user manual for the product."
@@ -2317,13 +2313,13 @@ blocks:
     left_label: string
     right_label: string
 - type: framed_screenshot
-  description: Renders an image within a decorative frame, simulating a device (e.g.,
-  compact_description: device-framed screenshot with optional caption browser, phone).
+  description: "Renders an image within a decorative frame, simulating a device (e.g., browser, phone)."
+  compact_description: "device-framed screenshot with optional caption"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders an image within a decorative frame, simulating a device (e.g.,"
+  routing_text: "Renders an image within a decorative frame, simulating a device (e.g., browser, phone)."
   intent_phrases:
   - "I need to show users how our new app feature looks on a phone screen."
   - "Can we display product mockups as if they're on a computer monitor?"
@@ -2374,10 +2370,10 @@ blocks:
     caption: string
     link_url: string
 - type: alert_banner
-  description: A prominent banner displaying a message, often with an icon and an
-  compact_description: full-width status alert strip optional action.
+  description: "A prominent banner displaying a message, often with an icon and an optional action."
+  compact_description: "full-width status alert strip"
   source: *id003
-  routing_text: "A prominent banner displaying a message, often with an icon and an"
+  routing_text: "A prominent banner displaying a message, often with an icon and an optional action."
   intent_phrases:
   - "I need a way to tell users their login session expired and they need to re-enter their password."
   - "We need to show a big, unmissable message that the service will be down for maintenance soon."
@@ -2444,11 +2440,10 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: loading_skeleton
-  description: A placeholder UI that shows the structure of content while it's loading,
-  compact_description: animated placeholder skeleton while content loads indicating
-    active data fetching.
+  description: "A placeholder UI that shows the structure of content while it's loading, indicating active data fetching."
+  compact_description: "animated placeholder skeleton while content loads"
   source: *id003
-  routing_text: "A placeholder UI that shows the structure of content while it's loading,"
+  routing_text: "A placeholder UI that shows the grey outline of content while it's loading."
   intent_phrases:
   - "Show something while the page data is fetching."
   - "I need a temporary layout before the actual content appears."
@@ -2472,14 +2467,13 @@ blocks:
     lines: integer The number of lines of text to simulate in the skeleton.
     has_image: boolean Indicates if the skeleton should include an image placeholder.
 - type: empty_state
-  description: A UI pattern displayed when there is no data to show, often with an
-  compact_description: zero-data empty state with icon and call to action image, message,
-    and an optional call to action.
+  description: "A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action."
+  compact_description: "zero-data empty state with icon and call to action"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "A UI pattern displayed when there is no data to show, often with an"
+  routing_text: "A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action."
   intent_phrases:
   - "I need a friendly message for when users haven't saved anything yet."
   - "Show something nice when there are no items in their shopping cart."
@@ -2504,10 +2498,10 @@ blocks:
     action_label: string Optional text for a call to action button.
     action_url: string Optional URL for the call to action button.
 - type: spinner
-  description: A simple rotating animation indicating that content is loading or an
-  compact_description: loading spinner indicator operation is in progress.
+  description: "A simple rotating animation indicating that content is loading or an operation is in progress."
+  compact_description: "loading spinner indicator"
   source: *id003
-  routing_text: "A simple rotating animation indicating that content is loading or an"
+  routing_text: "A simple rotating loading animation shown while content loads or a request is being processed."
   intent_phrases:
   - "I need to show something is happening while the data loads."
   - "Let people know the app is thinking before showing results."
@@ -2528,10 +2522,10 @@ blocks:
     size: string The size of the spinner (e.g., "small", "medium", "large").
     color: string The color of the spinner (e.g., "primary", "gray").
 - type: status_pill
-  description: A small, colored label or "pill" used to display a concise status for
-  compact_description: coloured status pill badge an item.
+  description: "A small, colored label or \"pill\" used to display a concise status for an item."
+  compact_description: "coloured status pill badge"
   source: *id003
-  routing_text: "A small, colored label or \"pill\" used to display a concise status for"
+  routing_text: "A small, colored label or \"pill\" used to display a concise status for an item."
   intent_phrases:
   - "I need a way to quickly show if a task is done or still pending."
   - "Can I get a little colored tag to tell users if their order shipped or not?"
@@ -2583,10 +2577,10 @@ blocks:
     type: string The type of feedback (e.g., "success", "error", "warning", "info").
     icon: string Optional icon to display next to the message.
 - type: rating_stars
-  description: A visual component allowing users to rate an item using a series of
-  compact_description: star rating display stars, or displaying a static rating.
+  description: "A row of stars showing a rating out of a maximum, optionally marked as interactive."
+  compact_description: "star rating display"
   source: *id003
-  routing_text: "A visual component allowing users to rate an item using a series of"
+  routing_text: "A row of stars showing a rating out of a maximum, optionally marked as interactive."
   intent_phrases:
   - "I need a way for people to show how much they liked my product."
   - "Users should be able to give quick feedback on how good this article was."
@@ -2702,14 +2696,13 @@ blocks:
     product_names: array
     features: array
 - type: pricing_tier_card
-  description: Renders a single pricing plan with its name, price, key features, and
-  compact_description: single pricing plan card with features list an optional call
-    to action.
+  description: "Renders a single pricing plan with its name, price, key features, and an optional call to action."
+  compact_description: "single pricing plan card with features list"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a single pricing plan with its name, price, key features, and"
+  routing_text: "Renders a single pricing plan with its name, price, key features, and an optional call to action."
   intent_phrases:
   - "I need to show customers different subscription options clearly."
   - "We need a way to display our service levels and what's included."
@@ -2760,13 +2753,13 @@ blocks:
   fields:
     tiers: array
 - type: pros_cons_list
-  description: Renders a two-column list itemizing advantages and disadvantages for
-  compact_description: two-column pros and cons comparison a single subject.
+  description: "Renders a two-column list itemizing advantages and disadvantages for a single subject."
+  compact_description: "two-column pros and cons comparison"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a two-column list itemizing advantages and disadvantages for"
+  routing_text: "Renders a two-column list itemizing advantages and disadvantages for a single subject."
   intent_phrases:
   - "I need to show users the good and bad points of a product before they buy."
   - "Can we display the upsides and downsides of a new feature clearly?"
@@ -2815,13 +2808,13 @@ blocks:
     item_b_name: string
     specs: array
 - type: product_spec_table
-  description: Renders a table detailing technical specifications or features for
-  compact_description: product specifications in a clean table a single product.
+  description: "Renders a table detailing technical specifications or features for a single product."
+  compact_description: "product specifications in a clean table"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a table detailing technical specifications or features for"
+  routing_text: "Renders a table detailing technical specifications or features for a single product."
   intent_phrases:
   - "I need to show the dimensions and weight of items clearly."
   - "Users should be able to compare key features side-by-side."
@@ -2845,14 +2838,13 @@ blocks:
     product_name: string
     specs: array
 - type: comparison_grid
-  description: Renders a grid comparing multiple products or services with features,
-  compact_description: multi-item attribute comparison grid often using icons or checkmarks
-    to indicate presence.
+  description: "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence."
+  compact_description: "multi-item attribute comparison grid"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a grid comparing multiple products or services with features,"
+  routing_text: "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence."
   intent_phrases:
   - "I need to show how our pricing tiers stack up against each other."
   - "Help me easily contrast the benefits of our different subscription plans."
@@ -3048,10 +3040,10 @@ blocks:
     back_content: string
     trigger_on_hover: boolean
 - type: image_hotspots
-  description: Renders an image with interactive points that display information on
-  compact_description: image with clickable annotated hotspot overlays hover.
+  description: "Renders an image with interactive points that reveal information when clicked."
+  compact_description: "image with clickable annotated hotspot overlays"
   source: *id003
-  routing_text: "Renders an image with interactive points that display information on"
+  routing_text: "Renders an image with interactive points that reveal information when clicked."
   intent_phrases:
   - "I need to show people where to find specific features on a product screenshot."
   - "Can I let users click on parts of a diagram to get more details?"
@@ -3221,10 +3213,10 @@ blocks:
     options: list of objects with label, value, is_checked
     name: string
 - type: css_slide_panel
-  description: Renders a panel that slides into view from the side of the screen on
-  compact_description: CSS-only slide-in panel drawer activation.
+  description: "Renders a panel that slides into view from the side of the screen on activation."
+  compact_description: "CSS-only slide-in panel drawer"
   source: *id003
-  routing_text: "Renders a panel that slides into view from the side of the screen on"
+  routing_text: "Renders a panel that slides into view from the side of the screen on activation."
   intent_phrases:
   - "I need a place for settings that pops out without taking over the whole screen."
   - "When a user clicks an item, I want a detail view to appear from the edge."
@@ -3250,14 +3242,13 @@ blocks:
     panel_content: string
     slide_from_side: string
 - type: testimonial_card
-  description: Renders a single customer testimonial with text, author details, and
-  compact_description: customer testimonial with photo name and quote an optional
-    avatar.
+  description: "Renders a single customer testimonial with text, author details, and an optional avatar."
+  compact_description: "customer testimonial with photo name and quote"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a single customer testimonial with text, author details, and"
+  routing_text: "Renders a single customer testimonial with text, author details, and an optional avatar."
   intent_phrases:
   - "Show me what happy customers are saying about our service."
   - "I need a way to highlight positive feedback on our product page."
@@ -3283,10 +3274,10 @@ blocks:
     author_avatar_url: string
     rating: integer
 - type: star_rating_display
-  description: Renders a visual representation of a star rating, optionally with a
-  compact_description: read-only star rating with score and count total review count.
+  description: "Renders a visual representation of a star rating, optionally with a total review count."
+  compact_description: "read-only star rating with score and count"
   source: *id003
-  routing_text: "Renders a visual representation of a star rating, optionally with a"
+  routing_text: "Renders a visual representation of a star rating, optionally with a total review count."
   intent_phrases:
   - "I need to show how good a product is with little stars."
   - "How would I display the average customer score for this item?"
@@ -3337,13 +3328,13 @@ blocks:
     total_count: integer
     label: string
 - type: contributor_list
-  description: Renders a list of individuals who have contributed to a project or
-  compact_description: list of contributors with avatar and role community, with their
+  description: "Renders a list of individuals who have contributed to a project or community, with their avatars and roles."
+  compact_description: "list of contributors with avatar and role"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders a list of individuals who have contributed to a project or"
+  routing_text: "Renders a list of individuals who have contributed to a project or community, with their avatars and roles."
   intent_phrases:
   - "I need to show everyone who worked on this feature."
   - "How can I credit all the people who helped build this section?"
@@ -3394,10 +3385,10 @@ blocks:
     logos: list
     title: string
 - type: social_proof_banner
-  description: Renders a prominent banner highlighting a key social proof metric or
-  compact_description: social proof strip with stats and logos achievement.
+  description: "Renders a prominent banner highlighting a key social proof metric or achievement."
+  compact_description: "social proof strip with stats and logos"
   source: *id003
-  routing_text: "Renders a prominent banner highlighting a key social proof metric or"
+  routing_text: "Renders a prominent banner highlighting a key social proof metric or achievement."
   intent_phrases:
   - "Show users how many people are already using this feature."
   - "Let visitors know how popular this product is with others."
@@ -3454,13 +3445,13 @@ blocks:
     article_url: string
     date: string
 - type: expert_endorsement
-  description: Renders an endorsement from an industry expert, including their quote,
-  compact_description: expert quote with credentials and photo name, and credentials.
+  description: "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials."
+  compact_description: "expert quote with credentials and photo"
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
-  routing_text: "Renders an endorsement from an industry expert, including their quote,"
+  routing_text: "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials."
   intent_phrases:
   - "Show me what a respected leader in my field thinks about this."
   - "I need to display a strong testimonial from a recognized professional."

@@ -1,6 +1,6 @@
 # Pricing Tier Card
 
-Renders a single pricing plan with its name, price, key features, and
+Renders a single pricing plan with its name, price, key features, and an optional call to action.
 
 ## Surfaces
 

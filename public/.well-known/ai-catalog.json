@@ -510,10 +510,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Full API/function reference block \u2014 name, description, parameters table,",
+      "description": "Full API/function reference block \u2014 name, description, parameters table, return value, and example.",
       "representativeQueries": [
-        "show a API endpoint method parameters and response docs returns, example",
-        "full api/function reference block \u2014 name, description, parameters table,",
+        "show a API endpoint method parameters and response docs",
+        "full api/function reference block \u2014 name, description, parameters table, return value, and example",
         "render a api reference"
       ]
     },
@@ -600,10 +600,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Code block with numbered yellow callout bubbles on specific lines,",
+      "description": "Code block with numbered yellow callout bubbles on specific lines, with an explanation list below.",
       "representativeQueries": [
-        "show a code block with numbered callout bubbles on specific lines explanation list below",
-        "code block with numbered yellow callout bubbles on specific lines,",
+        "show a code block with numbered callout bubbles on specific lines",
+        "code block with numbered yellow callout bubbles on specific lines, with an explanation list below",
         "render a annotated code"
       ]
     },
@@ -994,10 +994,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A horizontal navigation component displaying a set of clickable tabs,",
+      "description": "A horizontal navigation component displaying a set of clickable tabs.",
       "representativeQueries": [
-        "show a horizontal tab navigation bar typically leading to different sections or pages",
-        "a horizontal navigation component displaying a set of clickable tabs,",
+        "show a horizontal tab navigation bar",
+        "a horizontal navigation component displaying a set of clickable tabs",
         "render a tab bar"
       ]
     },
@@ -1054,10 +1054,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a term with its definition, often with an optional link for",
+      "description": "Renders a term with its definition, often with an optional link for more details.",
       "representativeQueries": [
-        "show a definition term with explanation more details",
-        "renders a term with its definition, often with an optional link for",
+        "show a definition term with explanation",
+        "renders a term with its definition, often with an optional link for more details",
         "render a glossary term"
       ]
     },
@@ -1169,10 +1169,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a rich content card that appears when a user hovers over a",
+      "description": "Renders a rich content card that appears when a user hovers over a specified trigger element.",
       "representativeQueries": [
-        "show a rich hover card revealed on mouse over specified trigger element, using only CSS",
-        "renders a rich content card that appears when a user hovers over a",
+        "show a rich card revealed when hovering a trigger",
+        "renders a rich content card that appears when a user hovers over a specified trigger element",
         "render a hover card"
       ]
     },
@@ -1205,10 +1205,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a modal dialog that appears on click and can be dismissed,",
+      "description": "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript.",
       "representativeQueries": [
-        "show a pure-CSS modal dialog triggered by checkbox controlled purely by CSS without JavaScript",
-        "renders a modal dialog that appears on click and can be dismissed,",
+        "show a pure-CSS modal dialog triggered by checkbox",
+        "renders a modal dialog that appears on click and can be dismissed, controlled purely by css without javascript",
         "render a css modal"
       ]
     },
@@ -1283,10 +1283,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a clickable link to a document (e.g., PDF, DOCX), often with",
+      "description": "Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon.",
       "representativeQueries": [
-        "show a styled link to a downloadable document a document icon",
-        "renders a clickable link to a document (e.g., pdf, docx), often with",
+        "show a styled link to a downloadable document",
+        "renders a clickable link to a document (e.g., pdf, docx), often with a document icon",
         "render a document link"
       ]
     },
@@ -1374,10 +1374,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders an image within a decorative frame, simulating a device (e.g.,",
+      "description": "Renders an image within a decorative frame, simulating a device (e.g., browser, phone).",
       "representativeQueries": [
-        "show a device-framed screenshot with optional caption browser, phone)",
-        "renders an image within a decorative frame, simulating a device (e.g.,",
+        "show a device-framed screenshot with optional caption",
+        "renders an image within a decorative frame, simulating a device (e.g., browser, phone)",
         "render a framed screenshot"
       ]
     },
@@ -1413,10 +1413,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A prominent banner displaying a message, often with an icon and an",
+      "description": "A prominent banner displaying a message, often with an icon and an optional action.",
       "representativeQueries": [
-        "show a full-width status alert strip optional action",
-        "a prominent banner displaying a message, often with an icon and an",
+        "show a full-width status alert strip",
+        "a prominent banner displaying a message, often with an icon and an optional action",
         "render a alert banner"
       ]
     },
@@ -1449,10 +1449,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A placeholder UI that shows the structure of content while it's loading,",
+      "description": "A placeholder UI that shows the structure of content while it's loading, indicating active data fetching.",
       "representativeQueries": [
-        "show a animated placeholder skeleton while content loads indicating active data fetching",
-        "a placeholder ui that shows the structure of content while it's loading,",
+        "show a animated placeholder skeleton while content loads",
+        "a placeholder ui that shows the structure of content while it's loading, indicating active data fetching",
         "render a loading skeleton"
       ]
     },
@@ -1467,10 +1467,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A UI pattern displayed when there is no data to show, often with an",
+      "description": "A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action.",
       "representativeQueries": [
-        "show a zero-data empty state with icon and call to action image, message, and an optional call to action",
-        "a ui pattern displayed when there is no data to show, often with an",
+        "show a zero-data empty state with icon and call to action",
+        "a ui pattern displayed when there is no data to show, often with an image, message, and an optional call to action",
         "render a empty state"
       ]
     },
@@ -1485,10 +1485,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A simple rotating animation indicating that content is loading or an",
+      "description": "A simple rotating animation indicating that content is loading or an operation is in progress.",
       "representativeQueries": [
-        "show a loading spinner indicator operation is in progress",
-        "a simple rotating animation indicating that content is loading or an",
+        "show a loading spinner indicator",
+        "a simple rotating animation indicating that content is loading or an operation is in progress",
         "render a spinner"
       ]
     },
@@ -1503,10 +1503,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A small, colored label or \"pill\" used to display a concise status for",
+      "description": "A small, colored label or \"pill\" used to display a concise status for an item.",
       "representativeQueries": [
-        "show a coloured status pill badge an item",
-        "a small, colored label or \"pill\" used to display a concise status for",
+        "show a coloured status pill badge",
+        "a small, colored label or \"pill\" used to display a concise status for an item",
         "render a status pill"
       ]
     },
@@ -1539,10 +1539,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A visual component allowing users to rate an item using a series of",
+      "description": "A row of stars showing a rating out of a maximum, optionally marked as interactive.",
       "representativeQueries": [
-        "show a star rating display stars, or displaying a static rating",
-        "a visual component allowing users to rate an item using a series of",
+        "show a star rating display",
+        "a row of stars showing a rating out of a maximum, optionally marked as interactive",
         "render a rating stars"
       ]
     },
@@ -1617,10 +1617,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a single pricing plan with its name, price, key features, and",
+      "description": "Renders a single pricing plan with its name, price, key features, and an optional call to action.",
       "representativeQueries": [
-        "show a single pricing plan card with features list an optional call to action",
-        "renders a single pricing plan with its name, price, key features, and",
+        "show a single pricing plan card with features list",
+        "renders a single pricing plan with its name, price, key features, and an optional call to action",
         "render a pricing tier card"
       ]
     },
@@ -1657,10 +1657,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a two-column list itemizing advantages and disadvantages for",
+      "description": "Renders a two-column list itemizing advantages and disadvantages for a single subject.",
       "representativeQueries": [
-        "show a two-column pros and cons comparison a single subject",
-        "renders a two-column list itemizing advantages and disadvantages for",
+        "show a two-column pros and cons comparison",
+        "renders a two-column list itemizing advantages and disadvantages for a single subject",
         "render a pros cons list"
       ]
     },
@@ -1695,10 +1695,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a table detailing technical specifications or features for",
+      "description": "Renders a table detailing technical specifications or features for a single product.",
       "representativeQueries": [
-        "show a product specifications in a clean table a single product",
-        "renders a table detailing technical specifications or features for",
+        "show a product specifications in a clean table",
+        "renders a table detailing technical specifications or features for a single product",
         "render a product spec table"
       ]
     },
@@ -1714,10 +1714,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a grid comparing multiple products or services with features,",
+      "description": "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.",
       "representativeQueries": [
-        "show a multi-item attribute comparison grid often using icons or checkmarks to indicate presence",
-        "renders a grid comparing multiple products or services with features,",
+        "show a multi-item attribute comparison grid",
+        "renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate",
         "render a comparison grid"
       ]
     },
@@ -1844,10 +1844,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders an image with interactive points that display information on",
+      "description": "Renders an image with interactive points that reveal information when clicked.",
       "representativeQueries": [
-        "show a image with clickable annotated hotspot overlays hover",
-        "renders an image with interactive points that display information on",
+        "show a image with clickable annotated hotspot overlays",
+        "renders an image with interactive points that reveal information when clicked",
         "render a image hotspots"
       ]
     },
@@ -1952,10 +1952,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a panel that slides into view from the side of the screen on",
+      "description": "Renders a panel that slides into view from the side of the screen on activation.",
       "representativeQueries": [
-        "show a CSS-only slide-in panel drawer activation",
-        "renders a panel that slides into view from the side of the screen on",
+        "show a CSS-only slide-in panel drawer",
+        "renders a panel that slides into view from the side of the screen on activation",
         "render a css slide panel"
       ]
     },
@@ -1971,10 +1971,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a single customer testimonial with text, author details, and",
+      "description": "Renders a single customer testimonial with text, author details, and an optional avatar.",
       "representativeQueries": [
-        "show a customer testimonial with photo name and quote an optional avatar",
-        "renders a single customer testimonial with text, author details, and",
+        "show a customer testimonial with photo name and quote",
+        "renders a single customer testimonial with text, author details, and an optional avatar",
         "render a testimonial card"
       ]
     },
@@ -1990,10 +1990,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a visual representation of a star rating, optionally with a",
+      "description": "Renders a visual representation of a star rating, optionally with a total review count.",
       "representativeQueries": [
-        "show a read-only star rating with score and count total review count",
-        "renders a visual representation of a star rating, optionally with a",
+        "show a read-only star rating with score and count",
+        "renders a visual representation of a star rating, optionally with a total review count",
         "render a star rating display"
       ]
     },
@@ -2028,10 +2028,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a list of individuals who have contributed to a project or",
+      "description": "Renders a list of individuals who have contributed to a project or community, with their avatars and roles.",
       "representativeQueries": [
-        "show a list of contributors with avatar and role community, with their",
-        "renders a list of individuals who have contributed to a project or",
+        "show a list of contributors with avatar and role",
+        "renders a list of individuals who have contributed to a project or community, with their avatars and roles",
         "render a contributor list"
       ]
     },
@@ -2066,10 +2066,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders a prominent banner highlighting a key social proof metric or",
+      "description": "Renders a prominent banner highlighting a key social proof metric or achievement.",
       "representativeQueries": [
-        "show a social proof strip with stats and logos achievement",
-        "renders a prominent banner highlighting a key social proof metric or",
+        "show a social proof strip with stats and logos",
+        "renders a prominent banner highlighting a key social proof metric or achievement",
         "render a social proof banner"
       ]
     },
@@ -2104,10 +2104,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Renders an endorsement from an industry expert, including their quote,",
+      "description": "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.",
       "representativeQueries": [
-        "show a expert quote with credentials and photo name, and credentials",
-        "renders an endorsement from an industry expert, including their quote,",
+        "show a expert quote with credentials and photo",
+        "renders an endorsement from an industry expert, including their quote, photo, name, and credentials",
         "render a expert endorsement"
       ]
     },

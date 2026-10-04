@@ -1,6 +1,6 @@
 # Tab Bar
 
-A horizontal navigation component displaying a set of clickable tabs,
+A horizontal navigation component displaying a set of clickable tabs.
 
 ## Surfaces
 

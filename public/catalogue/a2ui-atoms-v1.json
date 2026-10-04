@@ -971,7 +971,7 @@
   },
   "api_reference": {
    "type": "object",
-   "description": "Full API/function reference block — name, description, parameters table,",
+   "description": "Full API/function reference block — name, description, parameters table, return value, and example.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -1028,7 +1028,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Full API/function reference block — name, description, parameters table,",
+   "x-routing-text": "Full API/function reference block — name, description, parameters table, return value, and example.",
    "x-intent-phrases": [
     "I need to show users how to use my custom code functions.",
     "Help me document all the different settings my tool offers.",
@@ -1218,7 +1218,7 @@
   },
   "annotated_code": {
    "type": "object",
-   "description": "Code block with numbered yellow callout bubbles on specific lines,",
+   "description": "Code block with numbered yellow callout bubbles on specific lines, with an explanation list below.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -1258,7 +1258,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Code block with numbered yellow callout bubbles on specific lines,",
+   "x-routing-text": "Code block with numbered yellow callout bubbles on specific lines, with an explanation list below.",
    "x-intent-phrases": [
     "I need to highlight key code snippets in my tutorial with extra explanations.",
     "Show users exactly which lines of code are important for this feature.",
@@ -2319,7 +2319,7 @@
   },
   "tab_bar": {
    "type": "object",
-   "description": "A horizontal navigation component displaying a set of clickable tabs,",
+   "description": "A horizontal navigation component displaying a set of clickable tabs.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -2347,7 +2347,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A horizontal navigation component displaying a set of clickable tabs,",
+   "x-routing-text": "A horizontal navigation component displaying a set of clickable tabs.",
    "x-intent-phrases": [
     "I need a way to switch between different sections of my settings page easily.",
     "Users should be able to jump between product categories on the shop page.",
@@ -2433,7 +2433,7 @@
   },
   "glossary_term": {
    "type": "object",
-   "description": "Renders a term with its definition, often with an optional link for",
+   "description": "Renders a term with its definition, often with an optional link for more details.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -2474,7 +2474,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a term with its definition, often with an optional link for",
+   "x-routing-text": "Renders a term with its definition, often with an optional link for more details.",
    "x-intent-phrases": [
     "I need to show users what a specific word means right on the page.",
     "Can I display a technical term and its explanation where it's used?",
@@ -2711,7 +2711,7 @@
   },
   "hover_card": {
    "type": "object",
-   "description": "Renders a rich content card that appears when a user hovers over a",
+   "description": "Renders a rich content card that appears when a user hovers over a specified trigger element.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -2751,7 +2751,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a rich content card that appears when a user hovers over a A phrase like 'show a customer's account details and order history' as a persistent, always-visible panel usually means user_profile_card, order_status_card, or key_value, not this -- hover_card only appears on mouse hover. If the request does not explicitly say the content should appear ONLY on mouseover, it is NOT this -- a persistently visible summary belongs on user_profile_card, order_status_card, key_value, or entity_list instead.",
+   "x-routing-text": "Renders a rich content card that appears when a user hovers over a specified trigger element. A phrase like 'show a customer's account details and order history' as a persistent, always-visible panel usually means user_profile_card, order_status_card, or key_value, not this -- hover_card only appears on mouse hover. If the request does not explicitly say the content should appear ONLY on mouseover, it is NOT this -- a persistently visible summary belongs on user_profile_card, order_status_card, key_value, or entity_list instead.",
    "x-intent-phrases": [
     "I need to show product details without taking up screen space until someone is interested.",
     "Users should see extra info about a contact when they point at their name.",
@@ -2805,7 +2805,7 @@
   },
   "css_modal": {
    "type": "object",
-   "description": "Renders a modal dialog that appears on click and can be dismissed,",
+   "description": "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -2845,7 +2845,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a modal dialog that appears on click and can be dismissed,",
+   "x-routing-text": "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript.",
    "x-intent-phrases": [
     "I need to show a pop-up message to confirm deleting something.",
     "Users need to enter extra details in a separate box without leaving the page.",
@@ -3000,7 +3000,7 @@
   },
   "document_link": {
    "type": "object",
-   "description": "Renders a clickable link to a document (e.g., PDF, DOCX), often with",
+   "description": "Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3039,7 +3039,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a clickable link to a document (e.g., PDF, DOCX), often with",
+   "x-routing-text": "Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon.",
    "x-intent-phrases": [
     "I need a way for users to download our terms and conditions.",
     "Show them how to get the user manual for the product.",
@@ -3261,7 +3261,7 @@
   },
   "framed_screenshot": {
    "type": "object",
-   "description": "Renders an image within a decorative frame, simulating a device (e.g.,",
+   "description": "Renders an image within a decorative frame, simulating a device (e.g., browser, phone).",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3301,7 +3301,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders an image within a decorative frame, simulating a device (e.g.,",
+   "x-routing-text": "Renders an image within a decorative frame, simulating a device (e.g., browser, phone).",
    "x-intent-phrases": [
     "I need to show users how our new app feature looks on a phone screen.",
     "Can we display product mockups as if they're on a computer monitor?",
@@ -3362,7 +3362,7 @@
   },
   "alert_banner": {
    "type": "object",
-   "description": "A prominent banner displaying a message, often with an icon and an",
+   "description": "A prominent banner displaying a message, often with an icon and an optional action.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3406,7 +3406,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A prominent banner displaying a message, often with an icon and an",
+   "x-routing-text": "A prominent banner displaying a message, often with an icon and an optional action.",
    "x-intent-phrases": [
     "I need a way to tell users their login session expired and they need to re-enter their password.",
     "We need to show a big, unmissable message that the service will be down for maintenance soon.",
@@ -3462,7 +3462,7 @@
   },
   "loading_skeleton": {
    "type": "object",
-   "description": "A placeholder UI that shows the structure of content while it's loading,",
+   "description": "A placeholder UI that shows the structure of content while it's loading, indicating active data fetching.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3498,7 +3498,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A placeholder UI that shows the structure of content while it's loading,",
+   "x-routing-text": "A placeholder UI that shows the grey outline of content while it's loading.",
    "x-intent-phrases": [
     "Show something while the page data is fetching.",
     "I need a temporary layout before the actual content appears.",
@@ -3507,7 +3507,7 @@
   },
   "empty_state": {
    "type": "object",
-   "description": "A UI pattern displayed when there is no data to show, often with an",
+   "description": "A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3551,7 +3551,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A UI pattern displayed when there is no data to show, often with an",
+   "x-routing-text": "A UI pattern displayed when there is no data to show, often with an image, message, and an optional call to action.",
    "x-intent-phrases": [
     "I need a friendly message for when users haven't saved anything yet.",
     "Show something nice when there are no items in their shopping cart.",
@@ -3560,7 +3560,7 @@
   },
   "spinner": {
    "type": "object",
-   "description": "A simple rotating animation indicating that content is loading or an",
+   "description": "A simple rotating animation indicating that content is loading or an operation is in progress.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3592,7 +3592,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A simple rotating animation indicating that content is loading or an",
+   "x-routing-text": "A simple rotating loading animation shown while content loads or a request is being processed.",
    "x-intent-phrases": [
     "I need to show something is happening while the data loads.",
     "Let people know the app is thinking before showing results.",
@@ -3601,7 +3601,7 @@
   },
   "status_pill": {
    "type": "object",
-   "description": "A small, colored label or \"pill\" used to display a concise status for",
+   "description": "A small, colored label or \"pill\" used to display a concise status for an item.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3637,7 +3637,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A small, colored label or \"pill\" used to display a concise status for",
+   "x-routing-text": "A small, colored label or \"pill\" used to display a concise status for an item.",
    "x-intent-phrases": [
     "I need a way to quickly show if a task is done or still pending.",
     "Can I get a little colored tag to tell users if their order shipped or not?",
@@ -3691,7 +3691,7 @@
   },
   "rating_stars": {
    "type": "object",
-   "description": "A visual component allowing users to rate an item using a series of",
+   "description": "A row of stars showing a rating out of a maximum, optionally marked as interactive.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3727,7 +3727,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "A visual component allowing users to rate an item using a series of",
+   "x-routing-text": "A row of stars showing a rating out of a maximum, optionally marked as interactive.",
    "x-intent-phrases": [
     "I need a way for people to show how much they liked my product.",
     "Users should be able to give quick feedback on how good this article was.",
@@ -3883,7 +3883,7 @@
   },
   "pricing_tier_card": {
    "type": "object",
-   "description": "Renders a single pricing plan with its name, price, key features, and",
+   "description": "Renders a single pricing plan with its name, price, key features, and an optional call to action.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -3942,7 +3942,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a single pricing plan with its name, price, key features, and",
+   "x-routing-text": "Renders a single pricing plan with its name, price, key features, and an optional call to action.",
    "x-intent-phrases": [
     "I need to show customers different subscription options clearly.",
     "We need a way to display our service levels and what's included.",
@@ -3989,7 +3989,7 @@
   },
   "pros_cons_list": {
    "type": "object",
-   "description": "Renders a two-column list itemizing advantages and disadvantages for",
+   "description": "Renders a two-column list itemizing advantages and disadvantages for a single subject.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4028,7 +4028,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a two-column list itemizing advantages and disadvantages for",
+   "x-routing-text": "Renders a two-column list itemizing advantages and disadvantages for a single subject.",
    "x-intent-phrases": [
     "I need to show users the good and bad points of a product before they buy.",
     "Can we display the upsides and downsides of a new feature clearly?",
@@ -4083,7 +4083,7 @@
   },
   "product_spec_table": {
    "type": "object",
-   "description": "Renders a table detailing technical specifications or features for",
+   "description": "Renders a table detailing technical specifications or features for a single product.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4116,7 +4116,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a table detailing technical specifications or features for",
+   "x-routing-text": "Renders a table detailing technical specifications or features for a single product.",
    "x-intent-phrases": [
     "I need to show the dimensions and weight of items clearly.",
     "Users should be able to compare key features side-by-side.",
@@ -4127,7 +4127,7 @@
   },
   "comparison_grid": {
    "type": "object",
-   "description": "Renders a grid comparing multiple products or services with features,",
+   "description": "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4160,7 +4160,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a grid comparing multiple products or services with features,",
+   "x-routing-text": "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.",
    "x-intent-phrases": [
     "I need to show how our pricing tiers stack up against each other.",
     "Help me easily contrast the benefits of our different subscription plans.",
@@ -4447,7 +4447,7 @@
   },
   "image_hotspots": {
    "type": "object",
-   "description": "Renders an image with interactive points that display information on",
+   "description": "Renders an image with interactive points that reveal information when clicked.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4483,7 +4483,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders an image with interactive points that display information on",
+   "x-routing-text": "Renders an image with interactive points that reveal information when clicked.",
    "x-intent-phrases": [
     "I need to show people where to find specific features on a product screenshot.",
     "Can I let users click on parts of a diagram to get more details?",
@@ -4713,7 +4713,7 @@
   },
   "css_slide_panel": {
    "type": "object",
-   "description": "Renders a panel that slides into view from the side of the screen on",
+   "description": "Renders a panel that slides into view from the side of the screen on activation.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4749,7 +4749,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a panel that slides into view from the side of the screen on",
+   "x-routing-text": "Renders a panel that slides into view from the side of the screen on activation.",
    "x-intent-phrases": [
     "I need a place for settings that pops out without taking over the whole screen.",
     "When a user clicks an item, I want a detail view to appear from the edge.",
@@ -4758,7 +4758,7 @@
   },
   "testimonial_card": {
    "type": "object",
-   "description": "Renders a single customer testimonial with text, author details, and",
+   "description": "Renders a single customer testimonial with text, author details, and an optional avatar.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4803,7 +4803,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a single customer testimonial with text, author details, and",
+   "x-routing-text": "Renders a single customer testimonial with text, author details, and an optional avatar.",
    "x-intent-phrases": [
     "Show me what happy customers are saying about our service.",
     "I need a way to highlight positive feedback on our product page.",
@@ -4812,7 +4812,7 @@
   },
   "star_rating_display": {
    "type": "object",
-   "description": "Renders a visual representation of a star rating, optionally with a",
+   "description": "Renders a visual representation of a star rating, optionally with a total review count.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4849,7 +4849,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a visual representation of a star rating, optionally with a",
+   "x-routing-text": "Renders a visual representation of a star rating, optionally with a total review count.",
    "x-intent-phrases": [
     "I need to show how good a product is with little stars.",
     "How would I display the average customer score for this item?",
@@ -4904,7 +4904,7 @@
   },
   "contributor_list": {
    "type": "object",
-   "description": "Renders a list of individuals who have contributed to a project or",
+   "description": "Renders a list of individuals who have contributed to a project or community, with their avatars and roles.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -4937,7 +4937,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a list of individuals who have contributed to a project or",
+   "x-routing-text": "Renders a list of individuals who have contributed to a project or community, with their avatars and roles.",
    "x-intent-phrases": [
     "I need to show everyone who worked on this feature.",
     "How can I credit all the people who helped build this section?",
@@ -4988,7 +4988,7 @@
   },
   "social_proof_banner": {
    "type": "object",
-   "description": "Renders a prominent banner highlighting a key social proof metric or",
+   "description": "Renders a prominent banner highlighting a key social proof metric or achievement.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -5029,7 +5029,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders a prominent banner highlighting a key social proof metric or",
+   "x-routing-text": "Renders a prominent banner highlighting a key social proof metric or achievement.",
    "x-intent-phrases": [
     "Show users how many people are already using this feature.",
     "Let visitors know how popular this product is with others.",
@@ -5092,7 +5092,7 @@
   },
   "expert_endorsement": {
    "type": "object",
-   "description": "Renders an endorsement from an industry expert, including their quote,",
+   "description": "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -5137,7 +5137,7 @@
     "google-apps-script-web",
     "mcp-apps"
    ],
-   "x-routing-text": "Renders an endorsement from an industry expert, including their quote,",
+   "x-routing-text": "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.",
    "x-intent-phrases": [
     "Show me what a respected leader in my field thinks about this.",
     "I need to display a strong testimonial from a recognized professional.",

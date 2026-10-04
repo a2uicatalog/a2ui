@@ -403,12 +403,12 @@ does not exist.
 - `tabs` — tabbed content panels
 - `key_value` — label and value pairs in a compact grid
 - `before_after` — side-by-side code or content before and after comparison approach
-- `api_reference` — API endpoint method parameters and response docs returns, example
+- `api_reference` — API endpoint method parameters and response docs
 - `gallery` — scrollable image gallery grid
 - `video_pair` — two videos side by side
 - `carousel` — horizontally scrollable card carousel
 - `timeline` — chronological event timeline
-- `annotated_code` — code block with numbered callout bubbles on specific lines explanation list below
+- `annotated_code` — code block with numbered callout bubbles on specific lines
 - `sortable_list` — drag-to-reorder list emitting {id, order} on drop
 - `photo_grid` — clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state
 - `photo_stepper` — full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos
@@ -430,66 +430,66 @@ does not exist.
 - `breadcrumb` — navigation breadcrumb trail structure.
 - `pagination` — page number controls
 - `stepper` — CSS animated vertical step sequence with checkmark draw and active pulse
-- `tab_bar` — horizontal tab navigation bar typically leading to different sections or pages.
+- `tab_bar` — horizontal tab navigation bar
 - `anchor_list` — in-page anchor navigation links document or to external URLs.
 - `faq_accordion` — collapsible FAQ question and answer list the question is clicked.
-- `glossary_term` — definition term with explanation more details.
+- `glossary_term` — definition term with explanation
 - `footnote` — numbered footnote reference at the bottom of a section or page.
 - `blockquote_with_avatar` — testimonial quote with avatar and attribution
 - `pull_stat` — large display number pulled from prose for emphasis descriptive label.
 - `accordion_item` — single collapsible section with toggle by clicking its header, using only CSS.
 - `tooltip` — hover tooltip on a trigger element over a specified trigger element, using only CSS.
-- `hover_card` — rich hover card revealed on mouse over specified trigger element, using only CSS.
+- `hover_card` — rich card revealed when hovering a trigger
 - `collapsible_panel` — expandable content panel with header toggle visible and hidden states by clicking a control, using only CSS.
-- `css_modal` — pure-CSS modal dialog triggered by checkbox controlled purely by CSS without JavaScript.
+- `css_modal` — pure-CSS modal dialog triggered by checkbox
 - `audio_player` — inline audio player with controls
 - `audio_link` — styled link to an audio file
 - `pdf_preview` — embedded PDF preview panel PDF.
-- `document_link` — styled link to a downloadable document a document icon.
+- `document_link` — styled link to a downloadable document
 - `video_thumbnail` — clickable video thumbnail with play button and a link to the video source.
 - `video_card` — video with title description and metadata to the video source.
 - `code_diff` — server-side unified diff view with green additions and red removals
 - `code_snippet_pair` — two code blocks side by side without diff highlighting diff highlighting.
-- `framed_screenshot` — device-framed screenshot with optional caption browser, phone).
+- `framed_screenshot` — device-framed screenshot with optional caption
 - `image_with_caption` — image with styled caption below
-- `alert_banner` — full-width status alert strip optional action.
+- `alert_banner` — full-width status alert strip
 - `toast_notification` — CSS slide-in/out fixed-position notification toast
-- `loading_skeleton` — animated placeholder skeleton while content loads indicating active data fetching.
-- `empty_state` — zero-data empty state with icon and call to action image, message, and an optional call to action.
-- `spinner` — loading spinner indicator operation is in progress.
-- `status_pill` — coloured status pill badge an item.
+- `loading_skeleton` — animated placeholder skeleton while content loads
+- `empty_state` — zero-data empty state with icon and call to action
+- `spinner` — loading spinner indicator
+- `status_pill` — coloured status pill badge
 - `inline_feedback_message` — inline success error or warning message for validation feedback or hints.
-- `rating_stars` — star rating display stars, or displaying a static rating.
+- `rating_stars` — star rating display
 - `progress_circle` — CSS stroke-dashoffset animated SVG progress arc with centre percentage
 - `action_required_card` — prominent card prompting a required user action or approval
 - `feature_matrix` — features versus plans comparison matrix
-- `pricing_tier_card` — single pricing plan card with features list an optional call to action.
+- `pricing_tier_card` — single pricing plan card with features list
 - `pricing_tier_group` — side-by-side pricing plan comparison different subscription plans.
-- `pros_cons_list` — two-column pros and cons comparison a single subject.
+- `pros_cons_list` — two-column pros and cons comparison
 - `side_by_side_spec` — two items compared spec by spec and values side-by-side.
-- `product_spec_table` — product specifications in a clean table a single product.
-- `comparison_grid` — multi-item attribute comparison grid often using icons or checkmarks to indicate presence.
+- `product_spec_table` — product specifications in a clean table
+- `comparison_grid` — multi-item attribute comparison grid
 - `versus_block` — head-to-head two-option versus card "VS" separator.
 - `rating_comparison` — multiple items rated across dimensions scores.
 - `capability_checklist` — feature capability tick list per tier capability using checkmarks
 - `toggle_switch` — CSS toggle switch input
 - `expandable_text` — truncated text with read more expand toggle more content.
 - `flip_card` — card that flips on hover to reveal back content
-- `image_hotspots` — image with clickable annotated hotspot overlays hover.
+- `image_hotspots` — image with clickable annotated hotspot overlays
 - `css_dropdown_menu` — pure-CSS dropdown navigation menu
 - `star_rating_input` — interactive star rating input
 - `segmented_control` — mutually exclusive option selector strip as a single control.
 - `zoomable_image` — image with click-to-zoom lightbox
 - `custom_checkbox_group` — styled checkbox group input
-- `css_slide_panel` — CSS-only slide-in panel drawer activation.
-- `testimonial_card` — customer testimonial with photo name and quote an optional avatar.
-- `star_rating_display` — read-only star rating with score and count total review count.
+- `css_slide_panel` — CSS-only slide-in panel drawer
+- `testimonial_card` — customer testimonial with photo name and quote
+- `star_rating_display` — read-only star rating with score and count
 - `avatar_group` — stacked user avatar group with overflow count or community.
-- `contributor_list` — list of contributors with avatar and role community, with their
+- `contributor_list` — list of contributors with avatar and role
 - `customer_logo_grid` — grid of customer or partner logos
-- `social_proof_banner` — social proof strip with stats and logos achievement.
+- `social_proof_banner` — social proof strip with stats and logos
 - `media_mention_card` — press or media mention with logo and quote
-- `expert_endorsement` — expert quote with credentials and photo name, and credentials.
+- `expert_endorsement` — expert quote with credentials and photo
 - `review_callout` — highlighted customer review excerpt by a star rating.
 - `social_feed_embed` — embedded social media post or feed or Instagram post.
 - `terminal_block` — display terminal commands and code output in a simulated console window

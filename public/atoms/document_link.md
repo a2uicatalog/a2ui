@@ -1,6 +1,6 @@
 # Document Link
 
-Renders a clickable link to a document (e.g., PDF, DOCX), often with
+Renders a clickable link to a document (e.g., PDF, DOCX), often with a document icon.
 
 ## Surfaces
 

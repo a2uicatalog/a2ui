@@ -1,6 +1,6 @@
 # Glossary Term
 
-Renders a term with its definition, often with an optional link for
+Renders a term with its definition, often with an optional link for more details.
 
 ## Surfaces
 

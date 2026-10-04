@@ -1,6 +1,6 @@
 # Alert Banner
 
-A prominent banner displaying a message, often with an icon and an
+A prominent banner displaying a message, often with an icon and an optional action.
 
 ## Surfaces
 
