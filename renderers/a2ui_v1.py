@@ -43,7 +43,13 @@ broader reactive-binding graph is not. See DEFERRED_CONTAINERS.
 Reference: https://a2ui.org/specification/v1.0-a2ui/
 """
 import uuid
+import re
 from typing import List, Dict, Any, Optional, Tuple
+
+try:
+    from renderers.a2ui_capabilities import BASIC_COMPONENTS, ClientCapabilities
+except ImportError:                                    # direct-script use, as catalog_map below
+    from a2ui_capabilities import BASIC_COMPONENTS, ClientCapabilities
 
 A2UI_VERSION = "v1.0"
 # catalogId MUST be a resolvable URI (Google's basic catalog uses its full URL) — a
@@ -522,12 +528,19 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
 
 # ── public API ─────────────────────────────────────────────────────────────────
 def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
-                 catalog_id: str = DEFAULT_CATALOG_ID) -> Dict[str, Any]:
+                 catalog_id: str = DEFAULT_CATALOG_ID,
+                 capabilities: Optional[ClientCapabilities] = None) -> Dict[str, Any]:
     """Convert a catalogue *blocks*-dialect payload
     ({title?, theme?, blocks:[...]}) into an A2UI v1.0 `createSurface` message.
 
     Top-level blocks are gathered under a single root `Column` (A2UI renders a
-    surface from a component tree; the flat list carries parent→child refs)."""
+    surface from a component tree; the flat list carries parent→child refs).
+
+    `capabilities` (renderers.a2ui_capabilities.parse_client_capabilities) is
+    what the renderer said it can draw. None, or a renderer that supports
+    `catalog_id`, gets the full surface. A renderer that supports only the Basic
+    Catalog gets a degraded one: no component type it didn't declare, since
+    androidx.a2ui throws on unregistered types (see _degrade_to_basic)."""
     if not isinstance(payload, dict):
         raise TypeError("payload must be a dict (blocks dialect)")
     blocks = payload.get("blocks")
@@ -567,6 +580,16 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         from catalog_map import required_catalogs
     surface_ext["catalogs"] = required_catalogs(payload.get("blocks", []))
 
+    if capabilities is not None and not capabilities.supports(catalog_id):
+        basic_id = capabilities.basic_catalog_id
+        if basic_id is None:
+            raise ValueError(
+                "renderer declared no catalogue this emitter can target: "
+                f"{list(capabilities.supported_catalog_ids)!r} (need {catalog_id!r} or a Basic Catalog)")
+        components, degraded = _degrade_to_basic(components)
+        catalog_id = basic_id
+        surface_ext["degraded"] = degraded
+
     surface: Dict[str, Any] = {
         "surfaceId": surface_id or _slugify(payload.get("title", "surface")),
         "catalogId": catalog_id,
@@ -576,6 +599,116 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         surface["metadata"] = {"extensions": {"a2uicatalog_surface": surface_ext}}
 
     return {"version": A2UI_VERSION, "createSurface": surface}
+
+
+# Fields an atom's readable text usually lives in, most descriptive first.
+_FALLBACK_TEXT_KEYS = ("title", "heading", "text", "label", "caption", "content", "value", "name")
+
+
+def _fallback_text(c: Dict[str, Any]) -> str:
+    for k in _FALLBACK_TEXT_KEYS:
+        v = c.get(k)
+        if isinstance(v, str) and v.strip():
+            return v.strip()[:280]
+    return ""
+
+
+def _refs(c: Dict[str, Any]) -> List[str]:
+    """Component ids this Basic Catalog component points at."""
+    out: List[str] = []
+    ch = c.get("children")
+    if isinstance(ch, list):
+        out += [x for x in ch if isinstance(x, str)]
+    if isinstance(c.get("child"), str):
+        out.append(c["child"])
+    for t in c.get("tabs") or []:
+        if isinstance(t, dict) and isinstance(t.get("child"), str):
+            out.append(t["child"])
+    return out
+
+
+def _degrade_to_basic(components: List[Dict[str, Any]]):
+    """Rewrite a surface so it uses Basic Catalog components only.
+
+    Each component of another type becomes a Text holding its best readable text
+    (Curtis's call, 2026-10-04: degrade, don't silently drop). One with no text
+    is removed and its parent's `children` pruned; where the parent needs exactly
+    one child (Card/Button `child`, a tab) it becomes an empty Text instead, since
+    that field is required. Components no longer reachable from root (the inner
+    parts of a replaced composite) are dropped. Returns (components, report)."""
+    by_id = {c["id"]: c for c in components}
+    single_refs = set()
+    for c in components:
+        if c.get("component") in BASIC_COMPONENTS:
+            if isinstance(c.get("child"), str):
+                single_refs.add(c["child"])
+            for t in c.get("tabs") or []:
+                if isinstance(t, dict) and isinstance(t.get("child"), str):
+                    single_refs.add(t["child"])
+
+    report: List[Dict[str, Any]] = []
+    dropped = set()
+    for cid, c in list(by_id.items()):
+        ctype = c.get("component")
+        if ctype in BASIC_COMPONENTS:
+            continue
+        text = _fallback_text(c)
+        if text or cid in single_refs:
+            by_id[cid] = {"id": cid, "component": "Text", "text": text}
+            report.append({"id": cid, "type": ctype, "as": "Text"})
+        else:
+            dropped.add(cid)
+            report.append({"id": cid, "type": ctype, "as": "dropped"})
+    for cid in dropped:
+        del by_id[cid]
+    for c in by_id.values():
+        if isinstance(c.get("children"), list):
+            c["children"] = [x for x in c["children"] if x not in dropped]
+
+    reachable, stack = set(), ["root"]
+    while stack:
+        cid = stack.pop()
+        if cid in reachable or cid not in by_id:
+            continue
+        reachable.add(cid)
+        stack += _refs(by_id[cid])
+    kept = [by_id[c["id"]] for c in components if c["id"] in reachable]
+    return kept, report
+
+
+_MD_HEADING = re.compile(r"^(#{1,5})\s+(.*)$", re.S)
+
+
+def _v09_text(c: Dict[str, Any]) -> Dict[str, Any]:
+    """v1.0 Text headings are markdown ("# H"): its `variant` enum is only
+    caption|body. v0.9 (androidx.a2ui) still has h1-h5, and its hosts are not
+    required to parse markdown, so give a v0.9 heading the variant instead."""
+    if c.get("component") != "Text" or "variant" in c or not isinstance(c.get("text"), str):
+        return c
+    m = _MD_HEADING.match(c["text"])
+    if not m:
+        return c
+    return dict(c, text=m.group(2), variant=f"h{len(m.group(1))}")
+
+
+def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabilities] = None,
+                  surface_id: Optional[str] = None,
+                  catalog_id: str = DEFAULT_CATALOG_ID) -> List[Dict[str, Any]]:
+    """The message stream for a renderer: emit_surface() plus the version it speaks.
+
+    v1.0 (or no capabilities): one createSurface carrying its components.
+    v0.9 (androidx.a2ui 1.0.0-alpha01, whose parser rejects "v1.0"): createSurface
+    without components, then updateComponents; v0.9 skips an unknown `components`
+    field, so leaving them on createSurface would render nothing."""
+    msg = emit_surface(payload, surface_id=surface_id, catalog_id=catalog_id, capabilities=capabilities)
+    if capabilities is None or capabilities.version != "v0.9":
+        return [msg]
+    create = dict(msg["createSurface"])
+    components = [_v09_text(c) for c in create.pop("components")]
+    return [
+        {"version": "v0.9", "createSurface": create},
+        {"version": "v0.9", "updateComponents": {"surfaceId": create["surfaceId"], "components": components}},
+    ]
 
 
 # 2026-08-24: action_response() removed. The real spec has NO "actionResponse"
