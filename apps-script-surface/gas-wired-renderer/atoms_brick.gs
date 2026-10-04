@@ -2398,6 +2398,7 @@ function _brickMount(K, cfg, U) {
     drawChecks();
     drawParts();
   });
+  return atom;
 }
 
 _RENDERERS['brick_build_3d'] = function(b) {
