@@ -403,7 +403,7 @@ def _at(block: dict, t: float) -> str:
     with tempfile.TemporaryDirectory() as td:
         f = Path(td) / "p.html"
         f.write_text(html)
-        out = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=1500",
+        out = subprocess.run([CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=1500",
                               "--dump-dom", f"file://{f}#t={t}"], capture_output=True, text=True, timeout=90).stdout
     assert "mt-root" in out, out[:300]
     return out
@@ -562,7 +562,7 @@ def _probe(block: dict, t: float, js: str):
     with tempfile.TemporaryDirectory() as td:
         f = Path(td) / "p.html"
         f.write_text(html)
-        out = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=1500",
+        out = subprocess.run([CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=1500",
                               "--dump-dom", f"file://{f}#t={t}"], capture_output=True, text=True, timeout=90).stdout
     m = re.search(r"data-probe='([^']*)'|data-probe=\"([^\"]*)\"", out)
     assert m, out[:400]
