@@ -55,5 +55,5 @@ Gradle composite build.
   instead of one per atom); a lone bridged atom gets its own.
 - `ops.py run android-build` builds the AAR and verifies it: its atoms must equal
   `atoms/schema.yaml` and its renderer bundle must be byte-identical to the web one.
-- Tested on a Pixel 7 Pro (Android 16) with samples covering Basic Catalog, bridged
+- Tested on a Pixel 7 Pro (Android 17) with samples covering Basic Catalog, bridged
   atoms, WebGL brick models, films and stock-client surfaces.
