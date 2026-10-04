@@ -415,3 +415,22 @@ def test_motion_timeline_passes_through_whole():
     assert films[0]["scenes"] == film["scenes"]
     assert not any(c.get("component") in ("motion_layer", "motion_text") for c in by_id.values()), \
         "no stage part may leak out as a top-level component"
+
+
+def test_code_tabs_emit_real_tabs_and_do_not_crash():
+    """`tabs` is code tabs: tabs[].{label, language, content} with content a STRING.
+    The old mapping iterated that string as blocks and crashed, and emitted Tabs
+    with a non-spec `children` list that dropped the labels (found by the
+    2026-10-04 whole-catalogue sweep)."""
+    p = {"blocks": [{"type": "tabs", "tabs": [
+        {"label": "Python", "language": "python", "content": "print('hi')"},
+        {"label": "Notes", "blocks": [{"type": "body", "text": "plain pane"}]}]}]}
+    cs, by_id = _assert_valid_surface(emit_surface(p))
+    tabs = next(c for c in by_id.values() if c["component"] == "Tabs")
+    assert "children" not in tabs
+    assert [t["title"] for t in tabs["tabs"]] == ["Python", "Notes"]
+    py_pane = by_id[tabs["tabs"][0]["child"]]
+    code = by_id[py_pane["children"][0]]
+    assert code["component"] == "code_block" and code["content"] == "print('hi')" and code["language"] == "python"
+    notes_pane = by_id[tabs["tabs"][1]["child"]]
+    assert by_id[notes_pane["children"][0]]["text"] == "plain pane"

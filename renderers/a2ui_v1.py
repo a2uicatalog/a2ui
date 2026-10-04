@@ -241,12 +241,6 @@ def _child_blocklists(b: Dict[str, Any]) -> Optional[Tuple[str, List[Dict[str, A
         # _emit_block's Card special-case below, not the generic
         # children-list path every other container here uses.
         return ("Card", lead + kids)
-    if t == "tabs":
-        # each tab's content flattened under a Column; Tabs holds the columns
-        cols = []
-        for tab in b.get("tabs", []):
-            cols.append({"type": "color_section", "blocks": tab.get("blocks", tab.get("content", []))})
-        return ("Tabs", cols)
     if t == "modal":
         return ("Modal", b.get("children", b.get("blocks", [])))
     if t == "split_pane":
@@ -308,14 +302,44 @@ def _emit_content_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, A
     """content_tabs (tabs[].{label, blocks}) -> real A2UI Tabs — the DIRECT
     standard mapping: per-tab labels as `tabs: [{label, child}]`, one Column
     child per pane (spec's own Tabs contract, same shape _emit_hub composes
-    two levels of). Unlike legacy `tabs` (code panes forced through
-    color_section Columns with labels dropped), content_tabs is label-lossless.
+    two levels of). `tabs` (code tabs) now uses the same shape, see _emit_tabs.
     Lossiness: `accent` and `default_index` only (no Tabs equivalent)."""
     out_tabs: List[Dict[str, Any]] = []
     for tab in b.get("tabs", []):
         pane_blocks = _bracket_rows(tab.get("blocks", []))
         children = [_emit_block(sb, components, ids) for sb in pane_blocks]
         col_id = ids.take({"type": "content_tab_pane"})
+        components.append({"id": col_id, "component": "Column", "children": children})
+        out_tabs.append({"title": tab.get("label", ""), "child": col_id})
+    components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
+    return cid
+
+
+def _emit_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids: _IdGen) -> str:
+    """tabs -> real A2UI Tabs, same shape as content_tabs: `tabs: [{title, child}]`.
+
+    The `tabs` atom is code tabs (tabs[].{label, language, content}, content a
+    string). The old mapping forced every pane through a color_section Column
+    built from `tab.get("blocks", tab.get("content"))`: it dropped the labels,
+    emitted Tabs with a non-spec `children` list, and, because content is a
+    string, iterated its characters and crashed (found 2026-10-04 by a
+    whole-catalogue sweep). A pane is now the tab's own blocks when it has
+    them, else a code_block carrying its language and content."""
+    out_tabs: List[Dict[str, Any]] = []
+    for tab in b.get("tabs", []):
+        if not isinstance(tab, dict):
+            continue
+        if isinstance(tab.get("blocks"), list):
+            pane_blocks = [x for x in tab["blocks"] if isinstance(x, dict)]
+        elif isinstance(tab.get("content"), str):
+            code = {"type": "code_block", "content": tab["content"]}
+            if tab.get("language"):
+                code["language"] = tab["language"]
+            pane_blocks = [code]
+        else:
+            pane_blocks = []
+        children = [_emit_block(sb, components, ids) for sb in _bracket_rows(pane_blocks)]
+        col_id = ids.take({"type": "tab_pane"})
         components.append({"id": col_id, "component": "Column", "children": children})
         out_tabs.append({"title": tab.get("label", ""), "child": col_id})
     components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
@@ -440,6 +464,8 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
         return _emit_hub(b, cid, components, ids)
     if b.get("type") == "content_tabs":
         return _emit_content_tabs(b, cid, components, ids)
+    if b.get("type") == "tabs":
+        return _emit_tabs(b, cid, components, ids)
 
     btype = b.get("type")
     if btype not in _EXPLICITLY_HANDLED_TYPES and btype in _atom_children_schema():
