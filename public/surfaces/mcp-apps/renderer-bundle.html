@@ -11866,7 +11866,7 @@ function _brickKit(materialProfile) {
       }else if(!reduced){
         if(o.mode!=='steps'){tNow+=dt*o.speed;if(tNow>=tCycle)tNow-=tCycle;}
         if(o.orbit&&!dragging)az+=dt*0.22*o.speed;
-        dirtyView=true;
+        if(o.speed!==0)dirtyView=true;   // paused (speed 0): stop repainting, drag/zoom/API set dirtyView themselves
       }
       if(dirtyView){dirtyView=false;if(!motionCfg)status(tNow);draw();frames++;}
       // Runs even when the frame above was skipped (dirtyView false) -- a prefers-reduced-motion user never sets
