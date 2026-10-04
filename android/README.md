@@ -51,7 +51,9 @@ Gradle composite build.
 ## Status and limits
 
 - Version 0.1.0, not published. Publishing needs explicit opt-in.
-- Each bridged atom has its own WebView, which is fine on a Pixel 7 Pro. A shared
-  WebView per surface for low-end devices is still to do.
+- Consecutive bridged atoms in a Column share one WebView (one renderer load per run
+  instead of one per atom); a lone bridged atom gets its own.
+- `ops.py run android-build` builds the AAR and verifies it: its atoms must equal
+  `atoms/schema.yaml` and its renderer bundle must be byte-identical to the web one.
 - Tested on a Pixel 7 Pro (Android 16) with samples covering Basic Catalog, bridged
   atoms, WebGL brick models, films and stock-client surfaces.

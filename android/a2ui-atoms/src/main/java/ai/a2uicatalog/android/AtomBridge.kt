@@ -63,6 +63,39 @@ val LocalSurfaceTheme = compositionLocalOf { "light" }
  * Registered once per atom name, all sharing this one class. Rebuilds the atom as a
  * legacy block ({"type": name, ...fields}) and hands it to our web renderer.
  */
+/** Type names drawn by the bridge, filled by [A2uiCatalogue.catalog]; Columns group them. */
+internal object BridgedTypes {
+    @Volatile var names: Set<String> = emptySet()
+}
+
+/**
+ * Every field the agent sent, not just the ones schema.yaml declares. The alpha keeps
+ * them in an internal `raw` map; reading it by reflection keeps unknown-to-schema fields
+ * from being silently dropped. Null if the alpha's internals move.
+ */
+@Suppress("UNCHECKED_CAST")
+internal fun rawProps(p: A2uiComponentProperties): Map<String, Any?>? = try {
+    A2uiComponentProperties::class.java.getDeclaredField("raw")
+        .apply { isAccessible = true }.get(p) as? Map<String, Any?>
+} catch (e: Exception) {
+    null
+}
+
+/** One atom as a legacy renderer block: {"type": name, ...fields}. */
+internal fun atomBlock(type: String, raw: Map<String, Any?>): JSONObject {
+    val block = JSONObject().put("type", type)
+    raw.forEach { (k, v) -> if (k != "id" && k != "component") block.put(k, JSONObject.wrap(v)) }
+    return block
+}
+
+/** A payload painting [blocks] in one renderer WebView. */
+internal fun bridgePayload(blocks: List<JSONObject>, theme: String): String =
+    JSONObject().put("theme", theme).put("blocks", JSONArray(blocks)).toString()
+
+/**
+ * Registered once per atom name, all sharing this one class. Draws a single atom; a
+ * Column draws runs of consecutive bridged atoms together instead (see DefaultColumn).
+ */
 internal class AtomBridgeComponent(private val spec: AtomSpec) : A2uiComponent {
     override val name = spec.name
     override val description = "${spec.name} (${spec.pack}), drawn by the a2uicatalog web renderer"
@@ -70,29 +103,14 @@ internal class AtomBridgeComponent(private val spec: AtomSpec) : A2uiComponent {
 
     @Composable
     override fun A2uiComponentScope.Content(properties: A2uiComponentProperties, modifier: Modifier) {
-        val block = JSONObject().put("type", spec.name)
-        rawProps(properties)?.forEach { (k, v) ->
-            if (k != "id" && k != "component") block.put(k, JSONObject.wrap(v))
-        } ?: this@AtomBridgeComponent.properties.forEach { p ->
-            // Fallback if the alpha's internals move: only the schema's declared fields.
-            if (p in properties) block.put(p.key, JSONObject.wrap(properties[p]))
-        }
-        val payload = JSONObject().put("theme", LocalSurfaceTheme.current)
-            .put("blocks", JSONArray().put(block))
-        RendererWebView(payload.toString(), modifier)
-    }
-
-    /**
-     * Every field the agent sent, not just the ones schema.yaml declares. The alpha keeps
-     * them in an internal `raw` map; reading it by reflection keeps unknown-to-schema
-     * fields from being silently dropped.
-     */
-    @Suppress("UNCHECKED_CAST")
-    private fun rawProps(p: A2uiComponentProperties): Map<String, Any?>? = try {
-        A2uiComponentProperties::class.java.getDeclaredField("raw")
-            .apply { isAccessible = true }.get(p) as? Map<String, Any?>
-    } catch (e: Exception) {
-        null
+        val block = rawProps(properties)?.let { atomBlock(spec.name, it) }
+            ?: JSONObject().put("type", spec.name).also { b ->
+                // Fallback if the alpha's internals move: only the schema's declared fields.
+                this@AtomBridgeComponent.properties.forEach { p ->
+                    if (p in properties) b.put(p.key, JSONObject.wrap(properties[p]))
+                }
+            }
+        RendererWebView(bridgePayload(listOf(block), LocalSurfaceTheme.current), modifier)
     }
 }
 

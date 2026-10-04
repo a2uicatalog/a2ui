@@ -32,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
+import org.json.JSONObject
 
 /*
  * Google's Basic Catalog V1 in this alpha ships property definitions and parsing only:
@@ -138,7 +140,29 @@ object DefaultColumn : A2uiBasicCatalogV1.Column {
         }
         Column(modifier.fillMaxWidth(), verticalArrangement = arrangementV(justify.value),
             horizontalAlignment = h) {
-            children.forEach { Child(it) }
+            // Consecutive bridged atoms share ONE WebView (one renderer load instead of one
+            // per atom), which matters on low-end phones; everything else draws as before.
+            val states = children.map { observeA2uiComponentState(it) }
+            val theme = LocalSurfaceTheme.current
+            var i = 0
+            while (i < children.size) {
+                var j = i
+                val run = mutableListOf<JSONObject>()
+                while (j < children.size) {
+                    val s = states[j]
+                    val raw = (s as? A2uiComponentState.Success)?.component
+                        ?.takeIf { it.type in BridgedTypes.names }?.properties?.let { rawProps(it) } ?: break
+                    run += atomBlock(s.component.type, raw)
+                    j++
+                }
+                if (run.size >= 2) {
+                    key(children[i].id) { RendererWebView(bridgePayload(run, theme)) }
+                    i = j
+                } else {
+                    key(children[i].id) { Child(children[i]) }
+                    i++
+                }
+            }
         }
     }
 }

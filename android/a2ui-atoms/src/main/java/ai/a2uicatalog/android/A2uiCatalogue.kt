@@ -31,6 +31,7 @@ object A2uiCatalogue {
         val basic = basicComponents.filter { it.name != PayloadAdapter.UNKNOWN }
         val taken = basic.map { it.name }.toSet()
         val bridged = Atoms.specs(context).filter { it.name !in taken }.map { AtomBridgeComponent(it) }
+        BridgedTypes.names = BridgedTypes.names + bridged.map { it.name }
         return A2uiCatalog(catalogId = CATALOG_ID, components = basic + UnknownPlaceholder + bridged)
     }
 
