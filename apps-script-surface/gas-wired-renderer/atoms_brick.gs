@@ -2091,6 +2091,7 @@ function _brickKit(materialProfile) {
     raf=requestAnimationFrame(loop);
     return {
       setShape:function(s){userAz=0;userEl=0;userZoom=1;o.bricks=null;load(s);},
+      resetView:function(){userAz=0;userEl=0;userZoom=1;dirtyView=true;},
       setBricks:function(list){o.bricks=list;load(o.shape);},
       setMode:function(m){o.mode=m;dirtyView=true;},
       setStep:function(n){o.step=n;dirtyView=true;},
@@ -2452,6 +2453,14 @@ _RENDERERS['brick_build_3d'] = function(b) {
     // functions' own text exists -- _brickKit's `materialProfile||LEGO_MATERIAL_PROFILE` default otherwise
     // throws ReferenceError there, even though it resolves fine in atoms_brick.gs's own top-level scope
     // (found live 2026-09-29: broke every render on the public design page).
-    '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';(' +
-      _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");})();</script>';
+    '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';var __atom = (' +
+      _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");' +
+      // Host control bridge: the MCP Apps host posts {a2uiControl:1, action, value} through the view.
+      'window.addEventListener("message",function(e){var d=e.data;if(!d||d.a2uiControl!==1)return;' +
+      'if(d.action==="pause")__atom.set("speed",0);' +
+      'else if(d.action==="play"){__atom.setMode("animate");__atom.set("speed",1);}' +
+      'else if(d.action==="step"){__atom.set("speed",0);__atom.setMode("steps");__atom.setStep(+d.value||0);}' +
+      'else if(d.action==="replay")__atom.replay();' +
+      'else if(d.action==="resetView")__atom.resetView();});' +
+      '})();</script>';
 };
