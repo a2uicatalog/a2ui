@@ -906,7 +906,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'if(al.n){ctx.fillStyle="rgba(255,255,255,0.65)";ctx.font="9px \'Courier New\'";ctx.textAlign="left";ctx.fillText(al.n,_cx+8,_cy+32);}' +
             // FL + speed
             'ctx.fillStyle="rgba(0,242,255,0.8)";ctx.font="10px \'Courier New\'";' +
-            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  ▸  "+_E(f.spd||0)+"kt",_cx+8,_cy+48);' +
+            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  ▸  "+String(f.spd||0)+"kt",_cx+8,_cy+48);' +
             // status bar
             'ctx.fillStyle="#00ff41";ctx.font="bold 8px \'Courier New\'";' +
             'ctx.fillText(f.status||"",_cx+8,_cy+64);' +
@@ -916,7 +916,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'ctx.fillStyle=f.col;ctx.font="9px \'Courier New\'";ctx.textAlign="left";' +
             'ctx.fillText(f.c,lx,ly);' +
             'ctx.fillStyle="rgba(255,255,255,0.45)";ctx.font="8px \'Courier New\'";' +
-            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  "+_E(f.spd||0)+"kt",lx,ly+10);' +
+            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  "+String(f.spd||0)+"kt",lx,ly+10);' +
             'if(al.n){ctx.fillStyle="rgba(255,255,255,0.3)";ctx.font="7.5px \'Courier New\'";ctx.fillText(al.n,lx,ly+20);}' +
           '}' +
         '});' +

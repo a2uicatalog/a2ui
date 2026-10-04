@@ -2487,7 +2487,7 @@ _RENDERERS['animated_beam'] = function(b) {
     + '<div style="flex:1;position:relative;height:32px;">'
     + '<svg width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
     + '<line x1="0" y1="16" x2="100%" y2="16" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-dasharray="7 5" style="animation:beam-' + uid + ' 0.7s linear infinite;"/>'
-    + '<polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '" transform="translate(100%,16)"/>'
+    + '<svg x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
     + '</svg>'
     + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:#6b7280;white-space:nowrap;">' + _esc(label) + '</div>' : '')
     + '</div>'

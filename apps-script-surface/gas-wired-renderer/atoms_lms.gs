@@ -18,7 +18,7 @@ _RENDERERS['progress_store'] = function(b) {
     '<script>(function(){' +
       'var cid="' + cid + '";' +
       'var d=' + initial + ';' +
-      'var isGAS=typeof google!=="undefined"&&google.script&&google.script.run;' +
+      'var isGAS=typeof google!=="undefined"&&google.script&&google.script.run&&!google.script.__polyfill;' +
       'if(!isGAS){try{var ls=localStorage.getItem("a2ui:"+cid);if(ls)d=JSON.parse(ls);}catch(e){}}' +
       'function _save(cb){' +
         'if(isGAS){google.script.run.withSuccessHandler(cb||function(){}).a2uiProgressWrite(cid,d);}' +

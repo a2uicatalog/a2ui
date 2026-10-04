@@ -23,7 +23,26 @@
       var err = this._err;
       setTimeout(function() { if (err) err(new Error('Firestore not available locally')); }, 0);
     };
-    window.google = { script: { run: new RunChain() } };
+    // Any OTHER server function (a2uiProgressWrite, getFlightsLFBO, ...) exists only in a
+    // deployed Apps Script project. Without this, calling one threw "is not a function"
+    // wherever this polyfill runs outside gas-fakes too: the MCP Apps bundle and the
+    // Android bridge (found by a whole-catalogue sweep on a Pixel, 2026-10-04). Now it
+    // calls the atom's failure handler instead, and marks itself so atoms can tell a
+    // real Apps Script host from this stand-in (google.script.__polyfill).
+    var chain = new RunChain();
+    var run = (typeof Proxy === 'function') ? new Proxy(chain, {
+      get: function(t, name) {
+        if (name === 'withSuccessHandler' || name === 'withFailureHandler') {
+          return function(fn) { t[name](fn); return run; };
+        }
+        if (name in t) return t[name];
+        return function() {
+          var err = t._err;
+          setTimeout(function() { if (err) err(new Error(String(name) + ' needs an Apps Script deployment')); }, 0);
+        };
+      }
+    }) : chain;
+    window.google = { script: { run: run, __polyfill: true } };
   })();
 
   // ── Theme Management ──

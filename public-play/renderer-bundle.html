@@ -7394,7 +7394,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'if(al.n){ctx.fillStyle="rgba(255,255,255,0.65)";ctx.font="9px \'Courier New\'";ctx.textAlign="left";ctx.fillText(al.n,_cx+8,_cy+32);}' +
             // FL + speed
             'ctx.fillStyle="rgba(0,242,255,0.8)";ctx.font="10px \'Courier New\'";' +
-            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  ▸  "+_E(f.spd||0)+"kt",_cx+8,_cy+48);' +
+            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  ▸  "+String(f.spd||0)+"kt",_cx+8,_cy+48);' +
             // status bar
             'ctx.fillStyle="#00ff41";ctx.font="bold 8px \'Courier New\'";' +
             'ctx.fillText(f.status||"",_cx+8,_cy+64);' +
@@ -7404,7 +7404,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
             'ctx.fillStyle=f.col;ctx.font="9px \'Courier New\'";ctx.textAlign="left";' +
             'ctx.fillText(f.c,lx,ly);' +
             'ctx.fillStyle="rgba(255,255,255,0.45)";ctx.font="8px \'Courier New\'";' +
-            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  "+_E(f.spd||0)+"kt",lx,ly+10);' +
+            'ctx.fillText("FL"+Math.round((f.alt||0)/100)+"  "+String(f.spd||0)+"kt",lx,ly+10);' +
             'if(al.n){ctx.fillStyle="rgba(255,255,255,0.3)";ctx.font="7.5px \'Courier New\'";ctx.fillText(al.n,lx,ly+20);}' +
           '}' +
         '});' +
@@ -18559,7 +18559,7 @@ _RENDERERS['animated_beam'] = function(b) {
     + '<div style="flex:1;position:relative;height:32px;">'
     + '<svg width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
     + '<line x1="0" y1="16" x2="100%" y2="16" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-dasharray="7 5" style="animation:beam-' + uid + ' 0.7s linear infinite;"/>'
-    + '<polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '" transform="translate(100%,16)"/>'
+    + '<svg x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
     + '</svg>'
     + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:#6b7280;white-space:nowrap;">' + _esc(label) + '</div>' : '')
     + '</div>'
@@ -24101,7 +24101,7 @@ _RENDERERS['progress_store'] = function(b) {
     '<script>(function(){' +
       'var cid="' + cid + '";' +
       'var d=' + initial + ';' +
-      'var isGAS=typeof google!=="undefined"&&google.script&&google.script.run;' +
+      'var isGAS=typeof google!=="undefined"&&google.script&&google.script.run&&!google.script.__polyfill;' +
       'if(!isGAS){try{var ls=localStorage.getItem("a2ui:"+cid);if(ls)d=JSON.parse(ls);}catch(e){}}' +
       'function _save(cb){' +
         'if(isGAS){google.script.run.withSuccessHandler(cb||function(){}).a2uiProgressWrite(cid,d);}' +
@@ -34353,7 +34353,26 @@ var qrcodegen;
       var err = this._err;
       setTimeout(function() { if (err) err(new Error('Firestore not available locally')); }, 0);
     };
-    window.google = { script: { run: new RunChain() } };
+    // Any OTHER server function (a2uiProgressWrite, getFlightsLFBO, ...) exists only in a
+    // deployed Apps Script project. Without this, calling one threw "is not a function"
+    // wherever this polyfill runs outside gas-fakes too: the MCP Apps bundle and the
+    // Android bridge (found by a whole-catalogue sweep on a Pixel, 2026-10-04). Now it
+    // calls the atom's failure handler instead, and marks itself so atoms can tell a
+    // real Apps Script host from this stand-in (google.script.__polyfill).
+    var chain = new RunChain();
+    var run = (typeof Proxy === 'function') ? new Proxy(chain, {
+      get: function(t, name) {
+        if (name === 'withSuccessHandler' || name === 'withFailureHandler') {
+          return function(fn) { t[name](fn); return run; };
+        }
+        if (name in t) return t[name];
+        return function() {
+          var err = t._err;
+          setTimeout(function() { if (err) err(new Error(String(name) + ' needs an Apps Script deployment')); }, 0);
+        };
+      }
+    }) : chain;
+    window.google = { script: { run: run, __polyfill: true } };
   })();
 
   // ── Theme Management ──
