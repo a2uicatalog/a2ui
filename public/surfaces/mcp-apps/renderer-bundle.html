@@ -11941,8 +11941,8 @@ function _brickKit(materialProfile) {
     raf=requestAnimationFrame(loop);
     return {
       setShape:function(s){userAz=0;userEl=0;userZoom=1;o.bricks=null;load(s);},
-      resetView:function(){userAz=0;userEl=0;userZoom=1;dirtyView=true;},
-      recolor:function(hex,idxs){var m=usingParts?null:M;if(!m||!m.bricks)return;var pick={};(idxs||m.bricks.map(function(_,i){return i;})).forEach(function(i){pick[i]=1;});m.bricks.forEach(function(b,i){if(pick[i])b.c=hex;});o.bricks=m.bricks;var t=tNow;load(o.shape);tNow=t;},
+      resetView:function(){userAz=0;userEl=0;userZoom=1;dirtyView=true;if(!usingParts&&M&&o.origColours){var t=tNow;M.bricks.forEach(function(b,i){b.c=o.origColours[i];});o.bricks=M.bricks;load(o.shape);tNow=t;}},
+      recolor:function(hex,idxs){var m=usingParts?null:M;if(!m||!m.bricks)return;if(!o.origColours)o.origColours=m.bricks.map(function(b){return b.c;});var pick={};(idxs||m.bricks.map(function(_,i){return i;})).forEach(function(i){pick[i]=1;});m.bricks.forEach(function(b,i){if(pick[i])b.c=hex;});o.bricks=m.bricks;var t=tNow;load(o.shape);tNow=t;},
       setBricks:function(list){o.bricks=list;load(o.shape);},
       setMode:function(m){o.mode=m;dirtyView=true;},
       setStep:function(n){o.step=n;dirtyView=true;},
