@@ -2209,7 +2209,8 @@ function _brickMount(K, cfg, U) {
     return e;
   }
   var atom = K.create(cv, {shape: cfg.shape, bricks: cfg.bricks, partsModel: cfg.partsModel, speed: cfg.speed,
-                           orbit: cfg.orbit, bg: cfg.bg, mode: cfg.mode, step: cfg.step});
+                           orbit: cfg.orbit, bg: cfg.bg, mode: cfg.mode, step: cfg.step,
+                           look: cfg.look, base: cfg.base});
   var mode = cfg.mode, report = null, last = null, range = null, info = null, btns = {};
   var COL = {pass: '#1e7a45', warn: '#9a6700', fail: '#c4161a'};
 
@@ -2400,7 +2401,14 @@ _RENDERERS['brick_build_3d'] = function(b) {
     bg:    typeof b.bg === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.bg) ? b.bg : null,
     scrubber: b.scrubber !== false, checks: b.checks !== false, parts: b.parts === true,
     models: partsModel ? [] : models, picker: partsModel ? false : (b.picker === false ? false : (b.picker === true || models.length > 0)),
-    start: partsModel ? -1 : start, partsModel: partsModel
+    start: partsModel ? -1 : start, partsModel: partsModel,
+    // "studio" product-shot shading vs the default "instructions" booklet-render style, and an
+    // optional baseplate override -- the engine already reads both (confirmed live via the
+    // bricksdemo/studio page's own direct K.create call: {look:'studio', base:null, ...}), this
+    // atom's own _brickMount wrapper just never forwarded them. Same field names/semantics as the
+    // sibling motion_bricks atom, which already declares both.
+    look: b.look === 'studio' ? 'studio' : 'instructions',
+    base: b.base === 'none' ? 'none' : (typeof b.base === 'string' && /^#[0-9a-fA-F]{6}$/.test(b.base) ? b.base : null)
   };
   var uid  = 'brk' + Math.random().toString(36).substr(2, 6);
   var json = _jsJson(cfg);

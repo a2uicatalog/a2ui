@@ -13442,6 +13442,16 @@ blocks:
     model: string (optional). Name of the entry in models to show first. Ignored when bricks is set.
     picker: boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set
       true to get a dropdown of the six built-in shapes alone.
+    partsModel: array (optional). Real LEGO parts, same format as spec/brick-parts-v0.1.md's partsModel —
+      [partId, x, y, z, rotation, colour] tuples (a real LDraw part id, stud-unit position, a 0-23 rotation index,
+      an LDraw colour code). Takes precedence over bricks/shape when present, same "explicit wins" rule as bricks
+      vs. shape. Up to 3000 parts.
+    look: '"studio" | "instructions" (optional, default "instructions"). instructions: the original
+      building-instructions style (glossy plastic, dark outline on every part edge). studio: a product-shot style
+      — no outlines, edges catch light instead (same visual treatment as the sibling motion_bricks atom, default
+      there).'
+    base: '"none" | "#rrggbb" (optional). Baseplate: "none" for floating bricks (no plate, no plate shadow), or a
+      colour. Default the classic green plate.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

@@ -18728,6 +18728,11 @@ def _render_brick_build_3d(b: dict) -> str:
         "picker": False if parts_model else (False if b.get("picker") is False else (b.get("picker") is True or len(models) > 0)),
         "start": -1 if parts_model else start,
         "partsModel": parts_model,
+        # "studio" product-shot shading vs the default "instructions" booklet-render style, plus an
+        # optional baseplate override. Mirrors atoms_brick.gs's cfg exactly (same field names/semantics
+        # as the sibling motion_bricks atom, which already declares both).
+        "look": "studio" if b.get("look") == "studio" else "instructions",
+        "base": "none" if b.get("base") == "none" else (b.get("base") if isinstance(b.get("base"), str) and _BRICK_HEXBG.match(b.get("base") or "") and len(b.get("base")) == 7 else None),
     }
     uid = "brk" + _wa_uid(b)[:6]
     payload = _js_json(cfg, separators=(",", ":"), ensure_ascii=False).replace("<", "\\u003c")
