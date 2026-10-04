@@ -394,3 +394,24 @@ def test_childlist_v1_course_fixture():
     assert timelines[0]["title"] == "Course milestones"
     assert timelines[0]["events"] == payload["blocks"][-1]["events"], \
         "events must pass through as literal data, not get resolved as ChildList refs"
+
+
+def test_motion_timeline_passes_through_whole():
+    """A film is ONE stage: its blocks are placed in percent of a fixed-aspect
+    stage on one clock. Splitting it into a Column of scenes (the generic
+    `blocks` container path) lost the timing and laid every stage part out at
+    stage size in the page, so on a 380px phone the parts ran off the edge
+    (found on a Pixel 7 Pro via androidx.a2ui, 2026-10-04)."""
+    film = {"type": "motion_timeline", "duration": 4, "aspect": "16:9",
+            "scenes": [{"layer": "s1", "t": 0}],
+            "blocks": [{"type": "motion_layer", "id": "s1",
+                        "blocks": [{"type": "motion_text", "text": "Hi", "size": 64}]}]}
+    msg = emit_surface({"blocks": [film]})
+    cs, by_id = _assert_valid_surface(msg)
+
+    films = [c for c in by_id.values() if c.get("component") == "motion_timeline"]
+    assert len(films) == 1, "the film must stay one component"
+    assert films[0]["blocks"] == film["blocks"], "stage contents travel inline, untouched"
+    assert films[0]["scenes"] == film["scenes"]
+    assert not any(c.get("component") in ("motion_layer", "motion_text") for c in by_id.values()), \
+        "no stage part may leak out as a top-level component"

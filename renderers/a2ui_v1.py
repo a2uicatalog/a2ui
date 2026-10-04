@@ -53,9 +53,16 @@ DEFAULT_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
 
 # Container atom types this cut does NOT yet transform to A2UI primitives; they
 # pass through as extension components (renderable only by a host carrying the
-# catalog). Named so the gap is explicit, not silent. (Empty as of B1 — hub and
-# split_pane are now handled; kept as an extension point for the next gap.)
-DEFERRED_CONTAINERS: set = set()
+# catalog). Named so the gap is explicit, not silent. (hub and split_pane were
+# handled in B1.)
+#
+# motion_timeline (2026-10-04): a film is ONE stage. Its blocks are placed in
+# percent of a fixed-aspect stage and driven by one clock, so splitting it into
+# a Column of scenes lost the timing AND laid every stage part out at stage size
+# in the page flow — on a 380px phone the headline and the demo_* parts ran off
+# the edge in every host (found on a Pixel 7 Pro via androidx.a2ui). Passed
+# through whole, the host's renderer scales the stage to fit.
+DEFERRED_CONTAINERS: set = {"motion_timeline"}
 
 
 # ── ID minting ────────────────────────────────────────────────────────────────
