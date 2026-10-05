@@ -38,7 +38,15 @@ v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
   `1.0.0-alpha01`). AndroidX alphas promise no binary compatibility: with `1.5.0-alpha29`
   Google's Slider fails at runtime with `NoSuchMethodError`. If your app needs a newer
   `material3`, pass `defaultBasicComponents` instead.
-- **Every stable catalog atom** is registered and draws through a WebView bridge running
+- **Some catalog atoms draw natively in Compose** (from 0.3.0): `concept_ladder` and
+  `concept_rung` (a layered reading: attribution, hero model, rung rail, verbatim-quote
+  blocks), with the same design tokens as the web renderer (`palette`, `fonts`, `theme`).
+  The ladder's `rungs` are component ids, resolved through the engine like a Column's
+  children. `theme_toggle` draws nothing on Android, where the app's theme applies.
+  They are `nativeAtomComponents`; to draw them on the bridge instead, use
+  `A2uiAtomicCatalog.catalog(context, A2uiAtomicCatalog.materialBasicComponents(), nativeAtoms = emptyList())`. Compose and a
+  browser lay text out differently, so they match the web design closely, not pixel for pixel.
+- **Every other stable catalog atom** is registered and draws through a WebView bridge running
   the catalog's own web renderer. `androidx.a2ui` throws on any unregistered
   component type, so nothing may be missing.
 - **Films** (`motion_timeline`) arrive as one component and play as one stage.

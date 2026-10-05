@@ -14,9 +14,10 @@ import androidx.compose.material3.a2ui.catalog.MaterialA2uiBasicCatalogV1Default
  * ```
  *
  * Every atom in the catalog's schema is registered (androidx.a2ui throws on an
- * unregistered type, so nothing may be missing). Each draws through one WebView bridge
- * running the catalog's own web renderer, bundled in this library from the same
- * commit. Basic Catalog components draw natively in Compose with Google's own
+ * unregistered type, so nothing may be missing). Atoms ported to Compose draw natively
+ * ([nativeAtomComponents]: concept_ladder, concept_rung, theme_toggle); every other atom
+ * draws through one WebView bridge running the catalog's own web renderer, bundled in
+ * this library from the same commit. Basic Catalog components draw natively in Compose with Google's own
  * Material 3 implementation (androidx.compose.material3:material3-a2ui) by default;
  * pass [defaultBasicComponents] for ours, or your own for your design system. Agents that read the renderer's capabilities send this catalog only to
  * apps that registered it; apps without it get Basic Catalog surfaces.
@@ -29,12 +30,21 @@ object A2uiAtomicCatalog {
      * The catalog: [basicComponents] (Basic Catalog V1, drawn in Compose) plus every
      * atom on the bridge, plus a placeholder for types [adapt] could not map.
      */
-    fun catalog(context: Context, basicComponents: List<A2uiComponent> = materialBasicComponents()): A2uiCatalog {
+    fun catalog(context: Context, basicComponents: List<A2uiComponent> = materialBasicComponents()): A2uiCatalog =
+        catalog(context, basicComponents, nativeAtomComponents)
+
+    /**
+     * As [catalog], choosing which atoms draw natively in Compose ([nativeAtomComponents] by default; pass an empty
+     * list to draw them on the WebView bridge). A separate overload, not a new default parameter, so code compiled
+     * against 0.2.0's two-argument catalog() keeps linking (binary compatibility).
+     */
+    fun catalog(context: Context, basicComponents: List<A2uiComponent>, nativeAtoms: List<A2uiComponent>): A2uiCatalog {
         val basic = basicComponents.filter { it.name != PayloadAdapter.UNKNOWN }
-        val taken = basic.map { it.name }.toSet()
+        val native = nativeAtoms.filter { n -> basic.none { it.name == n.name } }
+        val taken = (basic + native).map { it.name }.toSet()
         val bridged = Atoms.specs(context).filter { it.name !in taken }.map { AtomBridgeComponent(it) }
         BridgedTypes.names = BridgedTypes.names + bridged.map { it.name }
-        return A2uiCatalog(catalogId = CATALOG_ID, components = basic + UnknownPlaceholder + bridged)
+        return A2uiCatalog(catalogId = CATALOG_ID, components = basic + native + UnknownPlaceholder + bridged)
     }
 
     /**
