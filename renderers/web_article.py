@@ -23684,6 +23684,45 @@ _RENDERERS['article_journey'] = _render_article_journey
 # article atoms read as one design system. Web is the reference
 # implementation; no atom.gs port yet (schema declares works_on: web only).
 
+# DESIGN TOKENS (2026-10-05), twin of atoms_concept.gs: the concept family takes the a2uicatalog brand by default
+# (article_journey keeps its paper palette). Colour = the 14-token `palette`; type = `fonts: {body, heading, label}`,
+# each "sans" | "serif" | "mono". Both become CSS custom properties on the ladder; a nested rung inherits them.
+_CONCEPT_PALETTE_LIGHT = {
+    'paper': '#F6F9FD', 'paper_raised': '#FFFFFF', 'ink': '#141B24', 'ink_soft': '#515963',
+    'line': '#DDE3EC', 'accent': '#6267E7', 'accent_soft': '#E6E8FF', 'blocked': '#C5221F',
+    'blocked_soft': '#FCE8E6', 'cleared': '#188038', 'cleared_soft': '#E6F4EA',
+    'mono_bg': '#1E2733', 'mono_fg': '#EAEFF5', 'mono_accent': '#8D98FF',
+}
+_CONCEPT_PALETTE_DARK = {
+    'paper': '#1E2733', 'paper_raised': '#2D3642', 'ink': '#EAEFF5', 'ink_soft': '#9CA5B1',
+    'line': '#3A4554', 'accent': '#8D98FF', 'accent_soft': '#3A4160', 'blocked': '#FF8A80',
+    'blocked_soft': '#4A2A2A', 'cleared': '#81C995', 'cleared_soft': '#23382A',
+    'mono_bg': '#141B24', 'mono_fg': '#EAEFF5', 'mono_accent': '#2AC4CE',
+}
+_CONCEPT_SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif"
+_CONCEPT_FONT_STACKS = {'sans': _CONCEPT_SANS, 'serif': _JOURNEY_SERIF, 'mono': _JOURNEY_MONO}
+_CONCEPT_FONT_DEFAULTS = {'body': 'sans', 'heading': 'sans', 'label': 'mono'}
+_CF_BODY = f'var(--font-body,{_CONCEPT_SANS})'
+_CF_HEAD = f'var(--font-heading,{_CONCEPT_SANS})'
+_CF_LABEL = f'var(--font-label,{_JOURNEY_MONO})'
+
+
+def _concept_tokens(b: dict) -> tuple:
+    """The ladder's tokens as one CSS custom-property string, and whether any font role uses Plex."""
+    pal = dict(_CONCEPT_PALETTE_DARK if b.get('theme') == 'dark' else _CONCEPT_PALETTE_LIGHT)
+    for k, v in (b.get('palette') or {}).items():
+        if k in pal and v:
+            pal[k] = v
+    out = ';'.join(f'--{k.replace("_", "-")}:{v}' for k, v in pal.items())
+    fonts = b.get('fonts') if isinstance(b.get('fonts'), dict) else {}
+    uses = set()
+    for role, default in _CONCEPT_FONT_DEFAULTS.items():
+        pick = fonts.get(role) if fonts.get(role) in _CONCEPT_FONT_STACKS else default
+        uses.add(pick)
+        out += f';--font-{role}:{_CONCEPT_FONT_STACKS[pick]}'
+    return out, bool(uses & {'serif', 'mono'})
+
+
 def _journey_source_bar(b: dict) -> str:
     """Attribution bar for an atom that analyses SOMEONE ELSE'S work.
 
@@ -23729,21 +23768,34 @@ def _journey_source_bar(b: dict) -> str:
             steered_html = (
                 '<div style="margin-top:0.7rem;padding-top:0.6rem;'
                 'border-top:1px solid var(--line);">'
-                f'<div style="font-family:{_JOURNEY_MONO};font-size:0.62rem;font-weight:700;'
+                f'<div style="font-family:{_CF_LABEL};font-size:0.62rem;font-weight:700;'
                 'letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);'
                 'margin-bottom:0.3rem;">Reading steered by</div>'
                 + items + '</div>'
             )
+    # WHO READ IT, twin of atoms_concept.gs's _journeySourceBar: a verified reading (we called the model) states
+    # the model; a self-report says so; an absent one says it was not recorded rather than omitting the line.
+    analysed = src.get('analysed_by') or b.get('analysed_by')
+    analysed_ok = src.get('analysed_verified') or b.get('analysed_verified')
+    analysed_html = (
+        f'<div style="margin-top:0.55rem;font-family:{_CF_LABEL};font-size:0.62rem;'
+        'letter-spacing:0.06em;color:var(--ink-soft);">'
+        + (('Analysed by ' + _esc(str(analysed))
+            + ('' if analysed_ok else ' <span style="opacity:0.75;">(self-reported)</span>'))
+           if analysed else 'Analysing model not recorded')
+        + '</div>'
+    )
     return (
         '<div style="background:var(--paper-raised);border:1px solid var(--line);'
         'border-left:3px solid var(--accent);border-radius:8px;'
         'padding:0.75rem 1rem;margin-bottom:1.5rem;">'
-        f'<div style="font-family:{_JOURNEY_MONO};font-size:0.66rem;font-weight:700;'
+        f'<div style="font-family:{_CF_LABEL};font-size:0.66rem;font-weight:700;'
         'letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);'
         f'margin-bottom:0.35rem;">{label}</div>'
         + (f'<div style="font-size:1.02rem;line-height:1.35;color:var(--ink);'
            f'max-width:54ch;">{title_html}</div>' if title else '')
-        + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.74rem;'
+        + analysed_html
+        + (f'<div style="font-family:{_CF_LABEL};font-size:0.74rem;'
            f'color:var(--ink-soft);margin-top:0.3rem;">{meta}</div>' if meta else '')
         + steered_html
         + '</div>'
@@ -23754,50 +23806,50 @@ def _render_concept_rung(b: dict) -> str:
     kind = b.get('kind', 'depth')
     kind = kind if kind in ('depth', 'example') else 'depth'
     if kind == 'example':
-        chip_bg = f'var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]})'
-        chip_fg = f'var(--mono-accent,{_JOURNEY_PALETTE_LIGHT["mono_accent"]})'
+        chip_bg = f'var(--mono-bg,{_CONCEPT_PALETTE_LIGHT["mono_bg"]})'
+        chip_fg = f'var(--mono-accent,{_CONCEPT_PALETTE_LIGHT["mono_accent"]})'
         default_label = 'WORKED EXAMPLE'
     else:
-        chip_bg = f'var(--accent-soft,{_JOURNEY_PALETTE_LIGHT["accent_soft"]})'
-        chip_fg = f'var(--accent,{_JOURNEY_PALETTE_LIGHT["accent"]})'
+        chip_bg = f'var(--accent-soft,{_CONCEPT_PALETTE_LIGHT["accent_soft"]})'
+        chip_fg = f'var(--accent,{_CONCEPT_PALETTE_LIGHT["accent"]})'
         default_label = f'DEPTH {_cv_esc(b.get("badge", ""))}'.strip()
     label = _esc(b.get('label') or default_label)
     title = _mdcode(b.get('title', ''))
     paras = [p.strip() for p in (b.get('body') or '').split('\n\n') if p.strip()]
     body_html = ''.join(
         f'<p style="margin:0 0 0.9rem;max-width:60ch;line-height:1.6;'
-        f'color:var(--ink,{_JOURNEY_PALETTE_LIGHT["ink"]});">{_mdcode(p)}</p>'
+        f'color:var(--ink,{_CONCEPT_PALETTE_LIGHT["ink"]});">{_mdcode(p)}</p>'
         for p in paras
     )
     code_html = ''
     if b.get('code'):
         code_html = (
-            f'<pre style="margin:0 0 0.9rem;background:var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]});'
-            f'color:var(--mono-fg,{_JOURNEY_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
+            f'<pre style="margin:0 0 0.9rem;background:var(--mono-bg,{_CONCEPT_PALETTE_LIGHT["mono_bg"]});'
+            f'color:var(--mono-fg,{_CONCEPT_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
             'font-size:0.82rem;line-height:1.55;padding:0.95rem 1.1rem;border-radius:8px;'
             f'overflow-x:auto;max-width:100%;">{_esc(b["code"])}</pre>'
         )
         if b.get('code_caption'):
             code_html += (
-                f'<p style="font-style:italic;font-size:0.85rem;color:var(--ink-soft,{_JOURNEY_PALETTE_LIGHT["ink_soft"]});'
+                f'<p style="font-style:italic;font-size:0.85rem;color:var(--ink-soft,{_CONCEPT_PALETTE_LIGHT["ink_soft"]});'
                 f'margin:-0.4rem 0 0.9rem;">{_mdcode(b["code_caption"])}</p>'
             )
     takeaway_html = ''
     if b.get('takeaway'):
         takeaway_html = (
-            f'<blockquote style="margin:0;background:var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]});'
-            f'color:var(--mono-fg,{_JOURNEY_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
+            f'<blockquote style="margin:0;background:var(--mono-bg,{_CONCEPT_PALETTE_LIGHT["mono_bg"]});'
+            f'color:var(--mono-fg,{_CONCEPT_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
             'font-size:0.86rem;line-height:1.6;padding:0.9rem 1.05rem;border-radius:8px;max-width:58ch;">'
-            f'<span style="color:var(--mono-accent,{_JOURNEY_PALETTE_LIGHT["mono_accent"]});font-weight:600;'
+            f'<span style="color:var(--mono-accent,{_CONCEPT_PALETTE_LIGHT["mono_accent"]});font-weight:600;'
             f'margin-right:0.5em;">&gt;</span>{_mdcode(b["takeaway"])}</blockquote>'
         )
     return (
-        '<div style="padding-bottom:1.6rem;">'
-        f'<div style="margin-bottom:0.5rem;"><span style="font-family:{_JOURNEY_MONO};font-weight:700;'
+        f'<div style="padding-bottom:1.6rem;font-family:{_CF_BODY};min-width:0;">'
+        f'<div style="margin-bottom:0.5rem;"><span style="font-family:{_CF_LABEL};font-weight:700;'
         f'font-size:0.72rem;letter-spacing:0.07em;padding:0.18em 0.6em;border-radius:4px;'
         f'background:{chip_bg};color:{chip_fg};">{label}</span></div>'
-        + (f'<h3 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:1.08rem;line-height:1.32;'
-           f'margin:0 0 0.55rem;color:var(--ink,{_JOURNEY_PALETTE_LIGHT["ink"]});">{title}</h3>' if title else '')
+        + (f'<h3 style="font-family:{_CF_HEAD};font-weight:700;font-size:1.12rem;letter-spacing:-0.01em;line-height:1.3;'
+           f'margin:0 0 0.55rem;color:var(--ink,{_CONCEPT_PALETTE_LIGHT["ink"]});">{title}</h3>' if title else '')
         + body_html + code_html + takeaway_html
         + '</div>'
     )
@@ -23806,8 +23858,7 @@ _RENDERERS['concept_rung'] = _render_concept_rung
 
 
 def _render_concept_ladder(b: dict) -> str:
-    pal = _journey_palette(b)
-    css_vars = ';'.join(f'--{k.replace("_", "-")}:{v}' for k, v in pal.items())
+    css_vars, uses_plex = _concept_tokens(b)
     rungs = b.get('rungs') or []
     eyebrow = _esc(b.get('eyebrow', ''))
     title = _esc(b.get('title', ''))
@@ -23828,7 +23879,7 @@ def _render_concept_ladder(b: dict) -> str:
         model_html = (
             '<div style="background:var(--paper-raised);border:1px solid var(--line);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'padding:1.1rem 1.3rem;margin-bottom:1.8rem;">'
-            f'<div style="font-family:{_JOURNEY_MONO};font-size:0.7rem;font-weight:700;letter-spacing:0.09em;'
+            f'<div style="font-family:{_CF_LABEL};font-size:0.7rem;font-weight:700;letter-spacing:0.09em;'
             'text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">The model</div>'
             f'<p style="font-style:italic;font-size:1.12rem;line-height:1.5;margin:0;max-width:52ch;'
             f'color:var(--ink);">{model}</p>'
@@ -23852,34 +23903,35 @@ def _render_concept_ladder(b: dict) -> str:
         card_html = fn(rung)
         component_id = _esc(rung.get('id') or f'rung-{i + 1}')
         rows.append(
-            f'<div data-component-id="{component_id}" style="display:grid;grid-template-columns:2.4rem 1fr;gap:1rem;'
+            f'<div data-component-id="{component_id}" style="display:grid;grid-template-columns:2.4rem minmax(0,1fr);gap:1rem;'
             'scroll-margin-top:1.5rem;">'
             '<div style="display:flex;flex-direction:column;align-items:center;">'
             f'<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
-            f'justify-content:center;font-family:{_JOURNEY_MONO};font-weight:600;font-size:0.85rem;'
+            f'justify-content:center;font-family:{_CF_LABEL};font-weight:600;font-size:0.85rem;'
             f'flex-shrink:0;background:{node_bg};color:{node_fg};">{_esc(rung.get("badge", str(i + 1)))}</div>'
             + connector +
             '</div>'
-            f'<div>{card_html}</div>'
+            f'<div style="min-width:0;">{card_html}</div>'
             '</div>'
         )
 
-    font_css = _journey_font_css() if b.get('use_plex_fonts', True) else ''
+    # Plex is only fetched when a font role actually uses it.
+    font_css = _journey_font_css() if (b.get('use_plex_fonts', True) and uses_plex) else ''
 
     return (
         font_css
-        + f'<div style="{css_vars};font-family:{_JOURNEY_SERIF};background:var(--paper);color:var(--ink);'
+        + f'<div style="{css_vars};font-family:var(--font-body);background:var(--paper);color:var(--ink);'
         'padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;border:1px solid var(--line);">'
         # Attribution before everything, headline included: the first glance has
         # to land on "this is a reading of X", never on a headline that could
         # pass for — or stand in for — the original piece.
         + _journey_source_bar(b)
-        + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
+        + (f'<div style="font-family:{_CF_LABEL};font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
            'text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:0.6em;'
            f'margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;background:var(--accent);'
            f'display:inline-block;"></span>{eyebrow}</div>' if eyebrow else '')
-        + (f'<h2 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:clamp(1.4rem,3.6vw,1.9rem);'
-           f'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">{title}</h2>' if title else '')
+        + (f'<h2 style="font-family:{_CF_HEAD};font-weight:800;letter-spacing:-0.02em;font-size:clamp(1.5rem,3.8vw,2.1rem);'
+           f'line-height:1.15;margin:0 0 0.7rem;color:var(--ink);">{title}</h2>' if title else '')
         + (f'<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
            f'margin:0 0 1.4rem;">{dek}</p>' if dek else '')
         + hook_html

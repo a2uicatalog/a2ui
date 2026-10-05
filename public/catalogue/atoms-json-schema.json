@@ -75862,9 +75862,32 @@
           "theme": {
             "type": "string",
             "enum": [
-              "string . 'light'",
-              "'dark' \u2014 selects the base palette before any per-token overrides."
+              "selectsthebasepalette(thea2uicatalogbrand",
+              "lightordark)beforeanyper-tokenoverrides"
             ]
+          },
+          "fonts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "heading": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "body",
+                "heading",
+                "label"
+              ]
+            }
           },
           "palette": {
             "type": "string"

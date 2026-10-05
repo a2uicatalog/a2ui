@@ -19915,6 +19915,52 @@ _RENDERERS['match_schedule'] = function(b) {
 // /api/render (gen_worker_renderers.py). Python-only meant emit_runbook_surface
 // could return a URL that rendered nothing.
 
+// DESIGN TOKENS (2026-10-05): the concept family takes the a2uicatalog brand by default, the same ink, accents and
+// panels as the site (public/index.html :root) and the films, instead of article_journey's paper palette. Colour stays
+// the 14-token `palette` (unchanged keys, so stored readings and overrides keep working); TYPE is now a token too:
+// `fonts: {body, heading, label}`, each "sans" | "serif" | "mono" (enum only, never raw CSS). Both arrive as CSS custom
+// properties on the ladder, so a nested concept_rung inherits them and a standalone one falls back to the defaults.
+var _CONCEPT_PALETTE_LIGHT = {
+  paper: '#F6F9FD', paper_raised: '#FFFFFF', ink: '#141B24', ink_soft: '#515963',
+  line: '#DDE3EC', accent: '#6267E7', accent_soft: '#E6E8FF', blocked: '#C5221F',
+  blocked_soft: '#FCE8E6', cleared: '#188038', cleared_soft: '#E6F4EA',
+  mono_bg: '#1E2733', mono_fg: '#EAEFF5', mono_accent: '#8D98FF'
+};
+var _CONCEPT_PALETTE_DARK = {
+  paper: '#1E2733', paper_raised: '#2D3642', ink: '#EAEFF5', ink_soft: '#9CA5B1',
+  line: '#3A4554', accent: '#8D98FF', accent_soft: '#3A4160', blocked: '#FF8A80',
+  blocked_soft: '#4A2A2A', cleared: '#81C995', cleared_soft: '#23382A',
+  mono_bg: '#141B24', mono_fg: '#EAEFF5', mono_accent: '#2AC4CE'
+};
+// Literal stacks, not references to atom.gs's _JOURNEY_MONO/_SERIF: these are evaluated at load, and file load order
+// is not something this file should depend on (the same strings as atom.gs).
+var _CONCEPT_SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
+var _CONCEPT_MONO = "'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace";
+var _CONCEPT_SERIF = "'IBM Plex Serif',Georgia,'Iowan Old Style','Times New Roman',serif";
+var _CONCEPT_FONT_STACKS = {sans: _CONCEPT_SANS, serif: _CONCEPT_SERIF, mono: _CONCEPT_MONO};
+var _CONCEPT_FONT_DEFAULTS = {body: 'sans', heading: 'sans', label: 'mono'};
+var _CF_BODY = 'var(--font-body,' + _CONCEPT_SANS + ')';
+var _CF_HEAD = 'var(--font-heading,' + _CONCEPT_SANS + ')';
+var _CF_LABEL = 'var(--font-label,' + _CONCEPT_MONO + ')';
+
+// The ladder's tokens as one CSS custom-property string: palette (theme base, then the payload's overrides for known
+// keys) and the three font roles (enum-checked; anything else keeps the default).
+function _conceptTokens(theme, palette, fonts) {
+  var src = (theme === 'dark') ? _CONCEPT_PALETTE_DARK : _CONCEPT_PALETTE_LIGHT, pal = {}, k;
+  for (k in src) pal[k] = src[k];
+  var ov = palette || {};
+  for (k in ov) if (pal.hasOwnProperty(k) && ov[k]) pal[k] = ov[k];
+  var out = '';
+  for (k in pal) out += (out ? ';' : '') + '--' + k.replace(/_/g, '-') + ':' + pal[k];
+  var f = fonts || {}, uses = {};
+  for (k in _CONCEPT_FONT_DEFAULTS) {
+    var pick = _CONCEPT_FONT_STACKS.hasOwnProperty(f[k]) ? f[k] : _CONCEPT_FONT_DEFAULTS[k];
+    uses[pick] = 1;
+    out += ';--font-' + k + ':' + _CONCEPT_FONT_STACKS[pick];
+  }
+  return {css: out, plex: !!(uses.serif || uses.mono)};
+}
+
 // Attribution bar for a ladder that analyses someone else's work. Renders above
 // the eyebrow and headline so the first glance reads "a piece ABOUT that piece",
 // never a standalone article that could stand in for the original. `steered_by`
@@ -19954,7 +20000,7 @@ function _journeySourceBar(b) {
     if (items) {
       steeredHtml =
         '<div style="margin-top:0.7rem;padding-top:0.6rem;border-top:1px solid var(--line,' + pal.line + ');">'
-        + '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.62rem;font-weight:700;'
+        + '<div style="font-family:' + _CF_LABEL + ';font-size:0.62rem;font-weight:700;'
         + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft,' + pal.ink_soft + ');'
         + 'margin-bottom:0.3rem;">Reading steered by</div>' + items + '</div>';
     }
@@ -19977,7 +20023,7 @@ function _journeySourceBar(b) {
   var analysed = src.analysed_by || b.analysed_by;
   var analysedOk = src.analysed_verified || b.analysed_verified;
   var analysedHtml =
-    '<div style="margin-top:0.55rem;font-family:' + _JOURNEY_MONO + ';font-size:0.62rem;'
+    '<div style="margin-top:0.55rem;font-family:' + _CF_LABEL + ';font-size:0.62rem;'
     + 'letter-spacing:0.06em;color:var(--ink-soft,' + pal.ink_soft + ');">'
     + (analysed
         ? 'Analysed by ' + _esc(String(analysed))
@@ -19989,20 +20035,20 @@ function _journeySourceBar(b) {
     + 'border:1px solid var(--line,' + pal.line + ');'
     + 'border-left:3px solid var(--accent,' + pal.accent + ');border-radius:8px;'
     + 'padding:0.75rem 1rem;margin-bottom:1.5rem;">'
-    + '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.66rem;font-weight:700;'
+    + '<div style="font-family:' + _CF_LABEL + ';font-size:0.66rem;font-weight:700;'
     + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--accent,' + pal.accent + ');'
     + 'margin-bottom:0.35rem;">' + label + '</div>'
     + (title ? '<div style="font-size:1.02rem;line-height:1.35;color:var(--ink,' + pal.ink + ');'
        + 'max-width:54ch;">' + titleHtml + '</div>' : '')
     + analysedHtml
-    + (meta ? '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.74rem;'
+    + (meta ? '<div style="font-family:' + _CF_LABEL + ';font-size:0.74rem;'
        + 'color:var(--ink-soft,' + pal.ink_soft + ');margin-top:0.3rem;">' + meta + '</div>' : '')
     + steeredHtml
     + '</div>';
 }
 
 _RENDERERS['concept_rung'] = function(b) {
-  var pal = _JOURNEY_PALETTE_LIGHT;
+  var pal = _CONCEPT_PALETTE_LIGHT;
   var kind = b.kind === 'example' ? 'example' : 'depth';
   var chipBg, chipFg, defaultLabel;
   if (kind === 'example') {
@@ -20048,23 +20094,18 @@ _RENDERERS['concept_rung'] = function(b) {
       + 'margin-right:0.5em;">&gt;</span>' + _journeyMdCode(b.takeaway) + '</blockquote>';
   }
 
-  return '<div style="padding-bottom:1.6rem;">'
-    + '<div style="margin-bottom:0.5rem;"><span style="font-family:' + _JOURNEY_MONO + ';font-weight:700;'
+  return '<div style="padding-bottom:1.6rem;font-family:' + _CF_BODY + ';min-width:0;">'
+    + '<div style="margin-bottom:0.5rem;"><span style="font-family:' + _CF_LABEL + ';font-weight:700;'
     + 'font-size:0.72rem;letter-spacing:0.07em;padding:0.18em 0.6em;border-radius:4px;'
     + 'background:' + chipBg + ';color:' + chipFg + ';">' + label + '</span></div>'
-    + (title ? '<h3 style="font-family:' + _JOURNEY_MONO + ';font-weight:600;font-size:1.08rem;'
-       + 'line-height:1.32;margin:0 0 0.55rem;color:var(--ink,' + pal.ink + ');">' + title + '</h3>' : '')
+    + (title ? '<h3 style="font-family:' + _CF_HEAD + ';font-weight:700;font-size:1.12rem;letter-spacing:-0.01em;'
+       + 'line-height:1.3;margin:0 0 0.55rem;color:var(--ink,' + pal.ink + ');">' + title + '</h3>' : '')
     + bodyHtml + codeHtml + takeawayHtml
     + '</div>';
 };
 
 _RENDERERS['concept_ladder'] = function(b) {
-  var pal = _journeyPalette(b);
-  var cssVars = '';
-  for (var k in pal) {
-    if (!pal.hasOwnProperty(k)) continue;
-    cssVars += (cssVars ? ';' : '') + '--' + k.replace(/_/g, '-') + ':' + pal[k];
-  }
+  var tok = _conceptTokens(b.theme, b.palette, b.fonts), cssVars = tok.css;
   var rungs = b.rungs || [];
   var eyebrow = _esc(b.eyebrow || '');
   var title = _esc(b.title || '');
@@ -20083,7 +20124,7 @@ _RENDERERS['concept_ladder'] = function(b) {
   if (model) {
     modelHtml = '<div style="background:var(--paper-raised);border:1px solid var(--line);'
       + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:1.1rem 1.3rem;margin-bottom:1.8rem;">'
-      + '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.7rem;font-weight:700;'
+      + '<div style="font-family:' + _CF_LABEL + ';font-size:0.7rem;font-weight:700;'
       + 'letter-spacing:0.09em;text-transform:uppercase;color:var(--accent);'
       + 'margin-bottom:0.5rem;">The model</div>'
       + '<p style="font-style:italic;font-size:1.12rem;line-height:1.5;margin:0;max-width:52ch;'
@@ -20111,18 +20152,19 @@ _RENDERERS['concept_ladder'] = function(b) {
     var componentId = _esc(rung.id || ('rung-' + (i + 1)));
     var badge = _esc(rung.badge === undefined || rung.badge === null ? String(i + 1) : rung.badge);
     rows += '<div data-component-id="' + componentId + '" style="display:grid;'
-      + 'grid-template-columns:2.4rem 1fr;gap:1rem;scroll-margin-top:1.5rem;">'
+      + 'grid-template-columns:2.4rem minmax(0,1fr);gap:1rem;scroll-margin-top:1.5rem;">'
       + '<div style="display:flex;flex-direction:column;align-items:center;">'
       + '<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
-      + 'justify-content:center;font-family:' + _JOURNEY_MONO + ';font-weight:600;font-size:0.85rem;'
+      + 'justify-content:center;font-family:' + _CF_LABEL + ';font-weight:600;font-size:0.85rem;'
       + 'flex-shrink:0;background:' + nodeBg + ';color:' + nodeFg + ';">' + badge + '</div>'
       + connector
       + '</div>'
-      + '<div>' + cardHtml + '</div>'
+      + '<div style="min-width:0;">' + cardHtml + '</div>'
       + '</div>';
   }
 
-  var fontCss = (b.use_plex_fonts !== false) ? _journeyFontCss() : '';
+  // Plex is only fetched when a font role actually uses it.
+  var fontCss = (b.use_plex_fonts !== false && tok.plex) ? _journeyFontCss() : '';
 
   // DECLARED fullscreen, same contract airspace_command_deck uses and the wired
   // renderer honours: the artifact escapes .asw-page's 860px column when the
@@ -20142,17 +20184,17 @@ _RENDERERS['concept_ladder'] = function(b) {
     : '';
 
   return fsCss + fontCss
-    + '<div style="' + cssVars + ';font-family:' + _JOURNEY_SERIF + ';background:var(--paper);'
+    + '<div style="' + cssVars + ';font-family:var(--font-body);background:var(--paper);'
     + 'color:var(--ink);padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;'
     + 'border:1px solid var(--line);">'
     // Attribution before everything, headline included — see _journeySourceBar.
     + _journeySourceBar(b)
-    + (eyebrow ? '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.72rem;font-weight:600;'
+    + (eyebrow ? '<div style="font-family:' + _CF_LABEL + ';font-size:0.72rem;font-weight:600;'
        + 'letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-soft);display:flex;'
        + 'align-items:center;gap:0.6em;margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;'
        + 'background:var(--accent);display:inline-block;"></span>' + eyebrow + '</div>' : '')
-    + (title ? '<h2 style="font-family:' + _JOURNEY_MONO + ';font-weight:600;'
-       + 'font-size:clamp(1.4rem,3.6vw,1.9rem);line-height:1.2;margin:0 0 0.7rem;'
+    + (title ? '<h2 style="font-family:' + _CF_HEAD + ';font-weight:800;letter-spacing:-0.02em;'
+       + 'font-size:clamp(1.5rem,3.8vw,2.1rem);line-height:1.15;margin:0 0 0.7rem;'
        + 'color:var(--ink);">' + title + '</h2>' : '')
     + (dek ? '<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
        + 'margin:0 0 1.4rem;">' + dek + '</p>' : '')
