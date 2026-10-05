@@ -133,6 +133,10 @@
       "description": "Permanently remove one or more of the reader's saved readings from their History. Takes an array so the Workspace's multi-select can delete a batch in one call rather than one round trip per row. Ids that don't exist (or belong to someone else's history) are silently skipped — the response's `deleted` count says how many rows actually…"
     },
     {
+      "name": "read_article",
+      "description": "Have the catalog's own model (Gemini) read an article through the article_playbook runbook and KEEP the reading in the signed-in reader's history, in one call. For a client with no model of its own (the Android analyser app), or when the reader asks for a Gemini reading. If you can read the article yourself, prefer emit_runbook_surface +…"
+    },
+    {
       "name": "unlink_slack_account",
       "description": "Revoke one or more Slack accounts' link to this reader's store, from the Workspace side (the reverse of the Slack-side `/a2ui unlink` command — see slack-compiler/DESIGN-identity.md, \"many Slack -> one sub\"). Removes that account's ability to post via render_reading_to_slack or resolve to this reader; everything else about the reader's…"
     },
@@ -149,5 +153,5 @@
       "description": "CALL THIS FIRST, before any other a2ui-catalog tool, once per session. Declares your own model identity so this response can hand you capability-matched guidance up front — some models need simpler, judgment-free tools; skipping this just means you default to the full toolkit, including tools that require sizing/pagination judgment…"
     }
   ],
-  "toolAvailabilityNotes": "All 34 tools listed are served to most callers. Callers that declare their model via identify_model as 'haiku' are instead served a curated 10-of-34 subset (judgment-heavy tools like sizing/pagination removed) — currently excluded for that tier: amiga, delete_reading, describe_playbook, diagram_studio, distill_document, emit_deployment, export_reading, get_profile, list_readings, make_surface_url, open_workspace, preview_url, publish_url, render_ping, render_reading_to_slack, save_profile, save_reading, sketch_agent_poll, sketch_agent_start, unlink_slack_account, unpublish_url, wall_calc, wasm_spike, whoami. Call identify_model first to get the tool set your model can reliably use."
+  "toolAvailabilityNotes": "All 35 tools listed are served to most callers. Callers that declare their model via identify_model as 'haiku' are instead served a curated 10-of-35 subset (judgment-heavy tools like sizing/pagination removed) — currently excluded for that tier: amiga, delete_reading, describe_playbook, diagram_studio, distill_document, emit_deployment, export_reading, get_profile, list_readings, make_surface_url, open_workspace, preview_url, publish_url, read_article, render_ping, render_reading_to_slack, save_profile, save_reading, sketch_agent_poll, sketch_agent_start, unlink_slack_account, unpublish_url, wall_calc, wasm_spike, whoami. Call identify_model first to get the tool set your model can reliably use."
 }
