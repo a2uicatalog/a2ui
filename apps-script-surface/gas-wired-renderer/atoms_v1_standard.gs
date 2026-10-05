@@ -159,9 +159,12 @@ _RENDERERS['DateTimeInput'] = function(b) {
 // such surface (one per surface), so GAS pages and the MCP Apps bundle run the identical code.
 var _A2UI_V1_RUNTIME = function(root, model, sid) {
   function keys(p) { return String(p).split('/').slice(1).map(function(s) { return s.replace(/~1/g, '/').replace(/~0/g, '~'); }); }
-  function get(p) { var o = model, k = keys(p); for (var i = 0; i < k.length; i++) { if (o == null) return undefined; o = o[k[i]]; } return o; }
+  // On a streamed surface the live data model is the surface store's (atoms_v1_decode.gs), so what
+  // the user has typed survives the agent sending more components; otherwise the embedded copy.
+  function live() { var st = window._A2UI_SURFACES && window._A2UI_SURFACES[sid]; return st && st.dataModel ? st.dataModel : model; }
+  function get(p) { var o = live(), k = keys(p); for (var i = 0; i < k.length; i++) { if (o == null) return undefined; o = o[k[i]]; } return o; }
   function set(p, v) {
-    var k = keys(p), o = model;
+    var k = keys(p), o = live();
     for (var i = 0; i < k.length - 1; i++) { if (o[k[i]] == null || typeof o[k[i]] !== 'object') o[k[i]] = {}; o = o[k[i]]; }
     if (k.length) o[k[k.length - 1]] = v;
   }
@@ -200,7 +203,33 @@ var _A2UI_V1_RUNTIME = function(root, model, sid) {
     if (a.userMessage !== undefined) msg.action.userMessage = String(resolve(a.userMessage));
     root.dispatchEvent(new CustomEvent('a2ui:action', {bubbles: true, detail: msg}));
     try { if (window.parent && window.parent !== window) window.parent.postMessage({a2uiClientMessage: msg}, '*'); } catch (x) {}
+    // In an MCP Apps host the agent that drew the form is in the conversation: hand the action back as a
+    // user message (ui/message via the bundle's host bridge), so the model sees the answer and carries on.
+    var bridge = window._A2UI_HOST_BRIDGE;
+    if (bridge && typeof bridge.sendMessage === 'function' && btn.getAttribute('data-a2ui-sent') !== '1') {
+      btn.setAttribute('data-a2ui-sent', '1'); btn.disabled = true;
+      bridge.sendMessage(chatText(msg.action)).then(function() { status(btn, 'Sent', false); },
+        function(err) { btn.removeAttribute('data-a2ui-sent'); btn.disabled = false; status(btn, (err && err.message) || 'Not sent', true); });
+    }
   });
+  // The spec's userMessage when the agent gave one; otherwise "Book: name Grace · agree yes · ..."
+  function chatText(act) {
+    if (act.userMessage) return act.userMessage;
+    function show(v) {
+      if (v === true) return 'yes'; if (v === false) return 'no';
+      if (v == null || v === '') return '(blank)';
+      if (Array.isArray(v)) return v.length ? v.map(show).join(', ') : '(none)';
+      return typeof v === 'object' ? JSON.stringify(v) : String(v);
+    }
+    var parts = Object.keys(act.context || {}).map(function(k) { return k + ' ' + show(act.context[k]); });
+    var name = String(act.name || 'action');
+    return name.charAt(0).toUpperCase() + name.slice(1) + (parts.length ? ': ' + parts.join(' \u00b7 ') : '');
+  }
+  function status(btn, text, bad) {
+    var s = btn.nextElementSibling && btn.nextElementSibling.className === 'a2ui-status' ? btn.nextElementSibling : null;
+    if (!s) { s = document.createElement('span'); s.className = 'a2ui-status'; btn.parentNode.insertBefore(s, btn.nextSibling); }
+    s.textContent = text; s.style.cssText = 'margin-left:10px;font-size:.85rem;color:' + (bad ? '#b00020' : 'var(--muted,#6b7280)') + ';';
+  }
 };
 
 _RENDERERS['A2uiSurfaceRuntime'] = function(b) {

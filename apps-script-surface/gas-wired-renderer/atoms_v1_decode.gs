@@ -75,6 +75,53 @@ function _a2uiResolveDynamic(val, model, scope) {
   return res;
 }
 
+// ── A2UI v1.0 message streams (2026-10-05) ──────────────────────────────────────────────
+// v1.0 lets an agent build a surface over several messages: createSurface, then any number of
+// updateComponents / updateDataModel, then maybe deleteSurface. Until now this renderer only
+// accepted ONE createSurface carrying everything, so a streaming agent drew only its first
+// message. _a2uiAcceptV1 takes one message, a list (agent_to_renderer_list) or {messages:[...]},
+// applies it to a per-surface store with A2uiUpdates (the parity-tested port of
+// renderers/a2ui_v1_updates.py, loaded client-side on both bundle pages) and returns the legacy
+// {title, theme, blocks} for the surface the messages touched last. Client-side only: GAS ?p=
+// pages are one static payload and keep using _rehydrateV1Surface directly. v1.0 only: v0.9 is
+// something we emit as a downgrade, never accept (Curtis, 2026-10-05).
+var _A2UI_SURFACES = (typeof window !== 'undefined') ? (window._A2UI_SURFACES = window._A2UI_SURFACES || {}) : {};
+
+function _a2uiIsV1Message(m) {
+  return !!m && typeof m === 'object' && m.version === 'v1.0' &&
+    !!(m.createSurface || m.updateComponents || m.updateDataModel || m.deleteSurface);
+}
+
+function _a2uiAcceptV1(payload) {
+  var list = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.messages) ? payload.messages : [payload]);
+  if (!list.length || !list.every(_a2uiIsV1Message)) return null;
+  var U = (typeof A2uiUpdates !== 'undefined') ? A2uiUpdates : null;
+  if (!U) {                                    // no applier loaded: only a lone createSurface is drawable
+    return list.length === 1 && list[0].createSurface ? _rehydrateV1Surface(list[0].createSurface) : null;
+  }
+  var last = null;
+  list.forEach(function(m) {
+    if (m.createSurface) {
+      var st = U.stateFromCreate(m);
+      st.metadata = m.createSurface.metadata;
+      _A2UI_SURFACES[st.surfaceId] = st;
+      last = st.surfaceId;
+      return;
+    }
+    var inner = m.updateComponents || m.updateDataModel || m.deleteSurface;
+    var st2 = _A2UI_SURFACES[inner.surfaceId];
+    if (!st2) return;                          // an update for a surface never created: spec error, ignore
+    U.applyUpdate(st2, m);
+    last = inner.surfaceId;
+  });
+  var s = last != null ? _A2UI_SURFACES[last] : null;
+  if (!s) return {blocks: []};
+  if (s.deleted) { delete _A2UI_SURFACES[last]; return {blocks: []}; }
+  var comps = Object.keys(s.components).map(function(k) { return s.components[k]; });
+  return _rehydrateV1Surface({surfaceId: s.surfaceId, catalogId: s.catalogId, components: comps,
+                              dataModel: s.dataModel, metadata: s.metadata});
+}
+
 // Basic Catalog inputs: a bound `value` makes the surface interactive (needs the runtime).
 var _A2UI_INPUTS = {TextField: 1, CheckBox: 1, ChoicePicker: 1, Slider: 1, DateTimeInput: 1};
 

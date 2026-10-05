@@ -284,3 +284,127 @@ setTimeout(function(){var p=document.createElement('pre');p.id='hits';p.textCont
                             "--dump-dom", page.as_uri()], capture_output=True, text=True, timeout=90)
     m = re.search(r'<pre id="hits">(\d+)</pre>', p.stdout)
     assert m and m.group(1) == "0", f"hostile payload executed: {m.group(1) if m else p.stdout[-400:]}"
+
+
+# ── in an MCP Apps host the action goes back into the conversation (ui/message via the host bridge)
+def _run_with_bridge(core_js, surface, bridge_js, clicks=1):
+    html = _render(core_js, surface)
+    driver = """<script>
+var sent = [];
+""" + bridge_js + """
+window.addEventListener('load', function () {
+  var n = document.querySelector('[data-a2ui-bind="/form/name"]');
+  if (n) { n.value = 'Grace'; n.dispatchEvent(new Event('input', {bubbles: true})); }
+  var b = document.querySelector('[data-a2ui-action]');
+  for (var i = 0; i < """ + str(clicks) + """; i++) b.click();
+  setTimeout(function () {
+    var s = document.querySelector('.a2ui-status');
+    var pre = document.createElement('pre'); pre.id = 'out';
+    pre.textContent = JSON.stringify({sent: sent, status: s ? s.textContent : null, disabled: b.disabled});
+    document.body.appendChild(pre);
+  }, 200);
+});
+</script>"""
+    with tempfile.TemporaryDirectory() as td:
+        page = Path(td) / "p.html"
+        page.write_text("<!doctype html><html><head>" + driver + "</head><body>" + html + "</body></html>")
+        p = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", "--virtual-time-budget=3000",
+                            "--dump-dom", page.as_uri()], capture_output=True, text=True, timeout=90)
+    m = re.search(r'<pre id="out">(.*?)</pre>', p.stdout, re.S)
+    assert m, p.stdout[-600:]
+    return json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
+
+
+OK_BRIDGE = "window._A2UI_HOST_BRIDGE = {sendMessage: function (t) { sent.push(t); return Promise.resolve({}); }};"
+NO_BRIDGE = "window._A2UI_HOST_BRIDGE = {sendMessage: function (t) { sent.push(t); return Promise.reject(new Error('Message sending denied')); }};"
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium")
+def test_action_is_sent_to_the_conversation_once(core_js):
+    out = _run_with_bridge(core_js, FORM, OK_BRIDGE, clicks=2)
+    assert len(out["sent"]) == 1, out                       # a double tap sends once
+    assert out["sent"][0].startswith("Book: who Grace") and "agree no" in out["sent"][0] and "source test" in out["sent"][0]
+    assert out["status"] == "Sent" and out["disabled"] is True
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium")
+def test_user_message_wins_and_a_refusal_is_shown(core_js):
+    surface = json.loads(json.dumps(FORM))
+    go = next(c for c in surface["components"] if c["id"] == "go")
+    go["action"]["event"]["userMessage"] = "Please book it"
+    out = _run_with_bridge(core_js, surface, NO_BRIDGE)
+    assert out["sent"] == ["Please book it"]
+    assert out["status"] == "Message sending denied" and out["disabled"] is False   # host's words, button usable again
+
+
+# ── v1.0 streams: createSurface, then updateComponents / updateDataModel redraw the same surface ──
+UPDATES_JS = re.search(r"<script>\n(.*?)</script>", (GAS / "A2uiUpdates.html").read_text(), re.S).group(1)
+
+
+def _stream(core_js, deliveries):
+    """Feed each delivery to _a2uiAcceptV1 in turn (as successive tool results would); returns the
+    rendered html after each (null when the delivery isn't accepted)."""
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core_js + "\n" + UPDATES_JS + f"""
+var out = {json.dumps(deliveries)}.map(function (p) {{
+  var r = _a2uiAcceptV1(p); return r === null ? null : renderAtoms(r.blocks, {{}});
+}});
+out.push(JSON.stringify(window._A2UI_SURFACES));
+console.log(JSON.stringify(out));""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
+        assert p.returncode == 0, p.stderr[-1500:]
+        return json.loads(p.stdout.strip().split("\n")[-1])
+
+
+def _m(kind, body):
+    return {"version": "v1.0", kind: body}
+
+
+CREATE = _m("createSurface", {"surfaceId": "s1", "catalogId": "x", "dataModel": {"who": "Ada"},
+                              "components": [{"id": "root", "component": "Column", "children": ["hello"]},
+                                             {"id": "hello", "component": "Text", "text": {"path": "/who"}}]})
+MORE = _m("updateComponents", {"surfaceId": "s1", "components": [
+    {"id": "root", "component": "Column", "children": ["hello", "later"]},
+    {"id": "later", "component": "Text", "text": "arrived in a second message"}]})
+DATA = _m("updateDataModel", {"surfaceId": "s1", "path": "/who", "value": "Grace"})
+
+
+def test_stream_builds_one_surface_over_several_messages(core_js):
+    first, second, third, _ = _stream(core_js, [CREATE, MORE, DATA])
+    assert "Ada" in first and "arrived in a second message" not in first
+    assert "Ada" in second and "arrived in a second message" in second
+    assert "Grace" in third and "arrived in a second message" in third
+
+
+def test_a_list_of_messages_in_one_delivery(core_js):
+    (html, _) = _stream(core_js, [[CREATE, MORE, DATA]])
+    assert "Grace" in html and "arrived in a second message" in html
+    (html2, _) = _stream(core_js, [{"messages": [CREATE, MORE]}])
+    assert "arrived in a second message" in html2
+
+
+def test_delete_and_strays_and_v09(core_js):
+    gone, stray, v09, store = _stream(core_js, [[CREATE, _m("deleteSurface", {"surfaceId": "s1"})],
+                                                _m("updateComponents", {"surfaceId": "nope", "components": []}),
+                                                dict(CREATE, version="v0.9")])
+    assert gone == "" and stray == "" and v09 is None
+    assert json.loads(store) == {}
+
+
+def test_typed_values_survive_more_components(core_js):
+    form = _m("createSurface", {"surfaceId": "f", "catalogId": "x", "dataModel": {"name": ""},
+                                "components": [{"id": "root", "component": "Column", "children": ["n"]},
+                                               {"id": "n", "component": "TextField", "label": "Name", "value": {"path": "/name"}}]})
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core_js + "\n" + UPDATES_JS + f"""
+_a2uiAcceptV1({json.dumps(form)});
+window._A2UI_SURFACES.f.dataModel.name = 'Typed by the user';   // what the runtime's live() writes
+var r = _a2uiAcceptV1({json.dumps(_m("updateComponents", {"surfaceId": "f", "components": [
+    {"id": "root", "component": "Column", "children": ["n", "x"]}, {"id": "x", "component": "Text", "text": "more"}]}))});
+console.log(JSON.stringify(renderAtoms(r.blocks, {{}})));""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
+        assert p.returncode == 0, p.stderr[-1500:]
+        html = json.loads(p.stdout.strip().split("\n")[-1])
+    assert 'value="Typed by the user"' in html and "more" in html

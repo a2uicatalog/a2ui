@@ -324,9 +324,10 @@ HANDSHAKE = """
     // A2UI v1.0 envelope -> legacy dialect via the SAME decoder GAS uses
     // (atoms_v1_decode.gs, concatenated into this bundle). Template variant,
     // dataModel bindings and @index all resolve before renderAtoms sees it.
-    if (payload && !Array.isArray(payload) && payload.version === 'v1.0' && payload.createSurface) {
-      payload = _rehydrateV1Surface(payload.createSurface);
-    }
+    // v1.0: one message, a list, or {messages}; later updateComponents/updateDataModel redraw the
+    // same surface (atoms_v1_decode.gs _a2uiAcceptV1).
+    var _v1 = _a2uiAcceptV1(payload);
+    if (_v1) payload = _v1;
     var root = document.getElementById('a2ui-root');
     // theme:"terminal" is the brand skin (AtomStyles.html) and is DARK PLUS a
     // token repaint -- it sets both classes, so anything keying off the dark
@@ -779,9 +780,10 @@ HTTP_BOOT = """
   var SURFACE_URL = window._A2UI_SURFACE_URL || '/a2ui/surface';
 
   function paint(payload) {
-    if (payload && !Array.isArray(payload) && payload.version === 'v1.0' && payload.createSurface) {
-      payload = _rehydrateV1Surface(payload.createSurface);
-    }
+    // v1.0: one message, a list, or {messages}; later updateComponents/updateDataModel redraw the
+    // same surface (atoms_v1_decode.gs _a2uiAcceptV1).
+    var _v1 = _a2uiAcceptV1(payload);
+    if (_v1) payload = _v1;
     var root = document.getElementById('a2ui-root');
     var _terminal = payload.theme === 'terminal';
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
