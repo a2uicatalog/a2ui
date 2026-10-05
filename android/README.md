@@ -4,10 +4,25 @@ The a2uicatalog atom catalog for Google's A2UI Compose renderer
 (`androidx.a2ui` 1.0.0-alpha01). Add one dependency and an agent can use every atom in
 the catalog on Android.
 
+## Install
+
+Published on Maven Central. Needs `androidx.a2ui` 1.0.0-alpha01 (Kotlin 2.2.20, Compose 1.13).
+
+```kotlin
+dependencies {
+    implementation("ai.a2uicatalog:atomic-catalog:0.1.0")
+}
+```
+
+## Use
+
 ```kotlin
 val catalog = A2uiAtomicCatalog.catalog(context)
 val processor = A2uiMessageProcessor(listOf(catalog))
 ```
+
+Spec versions: renders A2UI **v0.9 / v0.9.1** messages (what `androidx.a2ui` accepts).
+v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
 
 ## How it draws
 
@@ -53,7 +68,7 @@ Gradle composite build.
 - Release builds (the published AAR) register stable atoms only; preview atoms stay in
   the repo. Debug builds register every atom, so the viewer can test previews.
 
-- Version 0.1.0, not published. Publishing needs explicit opt-in.
+- Version 0.1.0, published on Maven Central (`ai.a2uicatalog:atomic-catalog`).
 - Consecutive bridged atoms in a Column share one WebView (one renderer load per run
   instead of one per atom); a lone bridged atom gets its own.
 - `ops.py run android-build` builds the AAR and verifies it: its atoms must equal
