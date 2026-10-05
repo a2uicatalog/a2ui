@@ -28665,6 +28665,149 @@ def _render_motion_shader(b: dict) -> str:
             + '<script>' + _MO_SHADER_JS.replace('%%UID%%', uid, 1).replace('%%CFG%%', cfg, 1) + '</script></div>')
 
 
+# Twin of atoms_motion.gs motion_arch (2026-10-05): an architecture diagram that draws itself on the film clock. Every
+# number goes through _ff_num so the two renderers print identical markup.
+_MO_ARCH_KIND = {'device': '▮', 'app': '◰', 'server': '≣', 'tool': '⚙', 'model': '✦', 'store': '◆', 'surface': '▣', 'user': '●'}
+_MO_ARCH_STYLE = {'solid': 1, 'dashed': 1}
+
+
+def _mo_arch_n(x):
+    return _ff_num(x, 0, -100000, 100000, 1)
+
+
+def _mo_arch_t(v, d):
+    return _ff_num(v, d, 0, 1, 3)
+
+
+def _mo_arch_d(v, d):
+    return _ff_num(v, d, 0.01, 1, 3)
+
+
+def _render_motion_arch(b: dict) -> str:
+    W, H, size = _ff_int(b.get('w'), 1000, 200, 2000), _ff_int(b.get('h'), 560, 120, 2000), _ff_int(b.get('size'), 17, 8, 40)
+    acc, acc2, ink = _mo_ink(b, 'accent', 'var(--mt-acc,#8d98ff)'), _mo_ink(b, 'accent2', '#2ac4ce'), _mo_ink(b, 'color', 'var(--mt-ink,#eaeff5)')
+    mute, fill, paper = _mo_ink(b, 'mute', '#9ca5b1'), _mo_ink(b, 'fill', '#2d3642'), _mo_ink(b, 'background', '#1e2733')
+    tints = {'device': acc, 'app': acc, 'surface': acc, 'server': acc2, 'tool': acc2, 'model': '#f0b45a', 'store': '#81c995', 'user': ink}
+    label = _cv_str(b.get('label'), 80) or 'Architecture diagram'
+
+    def win(at, dur):
+        return '--u:clamp(0,calc((var(--p,1) - ' + at + ')/' + dur + '),1);'
+    out = ''
+    groups = b.get('groups') if isinstance(b.get('groups'), list) else []
+    for i, g in enumerate(groups[:4]):
+        g = g if isinstance(g, dict) else {}
+        gx, gy = float(_ff_num(g.get('x'), 0, 0, 100, 2)) * W / 100, float(_ff_num(g.get('y'), 0, 0, 100, 2)) * H / 100
+        gw, gh = float(_ff_num(g.get('w'), 30, 1, 100, 2)) * W / 100, float(_ff_num(g.get('h'), 30, 1, 100, 2)) * H / 100
+        out += ('<g style="' + win(_mo_arch_t(g.get('at'), 0), _mo_arch_d(g.get('dur'), 0.1)) + 'opacity:var(--u);">'
+                + '<rect x="' + _mo_arch_n(gx) + '" y="' + _mo_arch_n(gy) + '" width="' + _mo_arch_n(gw) + '" height="' + _mo_arch_n(gh) + '" rx="18" style="fill:none;stroke:' + mute + ';stroke-opacity:0.45;stroke-width:1.5;stroke-dasharray:7 7;"/>'
+                + '<text x="' + _mo_arch_n(gx + 16) + '" y="' + _mo_arch_n(gy + 24) + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 5) + 'px;font-weight:700;letter-spacing:0.12em;fill:' + mute + ';">' + _cv_esc(_cv_str(g.get('label'), 40).upper()) + '</text></g>')
+    nodes = b.get('nodes') if isinstance(b.get('nodes'), list) else []
+    box = {}
+    for i, n in enumerate(nodes[:12]):
+        n = n if isinstance(n, dict) else {}
+        nid, kind = _mo_id(n.get('id')) or ('n' + str(i)), _mo_own(_MO_ARCH_KIND, n.get('kind'), 'server')
+        cx, cy = float(_ff_num(n.get('x'), 50, 0, 100, 2)) * W / 100, float(_ff_num(n.get('y'), 50, 0, 100, 2)) * H / 100
+        nw, nh = float(_ff_num(n.get('w'), 20, 4, 100, 2)) * W / 100, float(_ff_num(n.get('h'), 15, 4, 100, 2)) * H / 100
+        box[nid] = [cx, cy, nw / 2, nh / 2]
+        tint, sub = tints[kind], _cv_str(n.get('sub'), 40)
+        ix = -nw / 2 + nh * 0.42
+        tx = ix + nh * 0.34
+        out += ('<g style="' + win(_mo_arch_t(n.get('at'), i * 0.05), _mo_arch_d(n.get('dur'), 0.08)) + 'opacity:var(--u);transform:translate(' + _mo_arch_n(cx) + 'px,' + _mo_arch_n(cy) + 'px) scale(calc(0.86 + 0.14*var(--u)));">'
+                + '<rect x="' + _mo_arch_n(-nw / 2) + '" y="' + _mo_arch_n(-nh / 2) + '" width="' + _mo_arch_n(nw) + '" height="' + _mo_arch_n(nh) + '" rx="14" style="fill:' + fill + ';stroke:' + tint + ';stroke-width:1.6;"/>'
+                + '<circle cx="' + _mo_arch_n(ix) + '" cy="0" r="' + _mo_arch_n(nh * 0.24) + '" style="fill:' + tint + ';fill-opacity:0.18;"/>'
+                + '<text x="' + _mo_arch_n(ix) + '" y="' + _mo_arch_n(size * 0.36) + '" text-anchor="middle" style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;fill:' + tint + ';">' + _MO_ARCH_KIND[kind] + '</text>'
+                + '<text x="' + _mo_arch_n(tx) + '" y="' + _mo_arch_n(-3 if sub else size * 0.36) + '" style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:700;fill:' + ink + ';">' + _cv_esc(_cv_str(n.get('label'), 40)) + '</text>'
+                + ('<text x="' + _mo_arch_n(tx) + '" y="' + _mo_arch_n(size * 1.05) + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 5) + 'px;fill:' + mute + ';">' + _cv_esc(sub) + '</text>' if sub else '')
+                + '</g>')
+
+    def rim(bx, dx, dy):
+        t = min(1e9 if dx == 0 else bx[2] / abs(dx), 1e9 if dy == 0 else bx[3] / abs(dy))
+        return [bx[0] + dx * t, bx[1] + dy * t]
+    edges = b.get('edges') if isinstance(b.get('edges'), list) else []
+    curves = []
+    for i, e in enumerate(edges[:16]):
+        e = e if isinstance(e, dict) else {}
+        f, t2 = box.get(_mo_id(e.get('from'))), box.get(_mo_id(e.get('to')))
+        curves.append(None)
+        if not f or not t2 or f is t2:
+            continue
+        dx, dy = t2[0] - f[0], t2[1] - f[1]
+        ln = math.sqrt(dx * dx + dy * dy)
+        bend = float(_ff_num(e.get('curve'), 0, -100, 100, 0)) / 100
+        a, z = rim(f, dx, dy), rim(t2, -dx, -dy)
+        mx, my = (a[0] + z[0]) / 2, (a[1] + z[1]) / 2
+        c = [mx - dy / ln * bend * ln * 0.5, my + dx / ln * bend * ln * 0.5]
+        P = [[float(_mo_arch_n(a[0])), float(_mo_arch_n(a[1]))], [float(_mo_arch_n(c[0])), float(_mo_arch_n(c[1]))], [float(_mo_arch_n(z[0])), float(_mo_arch_n(z[1]))]]
+        curves[i] = P
+        col, dashed, both = _mo_ink(e, 'color', acc2), _mo_own(_MO_ARCH_STYLE, e.get('style'), 'solid') == 'dashed', e.get('both') is True
+        at, dur = _mo_arch_t(e.get('at'), 0.3 + i * 0.05), _mo_arch_d(e.get('dur'), 0.1)
+        d = ('M' + _mo_arch_n(P[0][0]) + ' ' + _mo_arch_n(P[0][1]) + ' Q' + _mo_arch_n(P[1][0]) + ' ' + _mo_arch_n(P[1][1]) + ' '
+             + _mo_arch_n(P[2][0]) + ' ' + _mo_arch_n(P[2][1]))
+
+        def head(tip, frm, col=col):
+            hx, hy = tip[0] - frm[0], tip[1] - frm[1]
+            hl = math.sqrt(hx * hx + hy * hy) or 1
+            ux, uy = hx / hl, hy / hl
+            return ('<path d="M' + _mo_arch_n(tip[0] - ux * 11 - uy * 6) + ' ' + _mo_arch_n(tip[1] - uy * 11 + ux * 6) + ' L' + _mo_arch_n(tip[0]) + ' ' + _mo_arch_n(tip[1])
+                    + ' L' + _mo_arch_n(tip[0] - ux * 11 + uy * 6) + ' ' + _mo_arch_n(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col
+                    + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>')
+        el = _cv_str(e.get('label'), 48)
+        lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0]
+        ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10
+        out += ('<g style="' + win(at, dur) + '">'
+                + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'
+                + ('stroke-dasharray:0.012 0.012;opacity:var(--u);' if dashed else 'stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));') + '"/>'
+                + head(P[2], P[1]) + (head(P[0], P[1]) if both else '')
+                + ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
+                   + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _cv_esc(el) + '</text>'
+                   if el else '')
+                + '</g>')
+    msgs = b.get('messages') if isinstance(b.get('messages'), list) else []
+    for i, m in enumerate(msgs[:12]):
+        m = m if isinstance(m, dict) else {}
+        k = _ff_int(m.get('edge'), -1, -1, 15)
+        Q = curves[k] if 0 <= k < len(curves) else None
+        if not Q:
+            continue
+        if m.get('back') is True:
+            Q = [Q[2], Q[1], Q[0]]
+        txt = _cv_str(m.get('text'), 40) or 'payload'
+        cw, mc = len(txt) * (size - 4) * 0.62 + 22, _mo_ink(m, 'color', acc)
+        u, v = 'var(--u)', '(1 - var(--u))'
+        X = ('calc((' + _mo_arch_n(Q[0][0]) + '*' + v + '*' + v + ' + ' + _mo_arch_n(2 * Q[1][0]) + '*' + v + '*' + u + ' + ' + _mo_arch_n(Q[2][0]) + '*' + u + '*' + u + ')*1px)')
+        Y = ('calc((' + _mo_arch_n(Q[0][1]) + '*' + v + '*' + v + ' + ' + _mo_arch_n(2 * Q[1][1]) + '*' + v + '*' + u + ' + ' + _mo_arch_n(Q[2][1]) + '*' + u + '*' + u + ')*1px)')
+        out += ('<g style="' + win(_mo_arch_t(m.get('at'), 0.6 + i * 0.08), _mo_arch_d(m.get('dur'), 0.12)) + 'transform:translate(' + X + ',' + Y + ');opacity:clamp(0,min(calc(var(--u)*10),calc((1 - var(--u))*10)),1);">'
+                + '<rect x="' + _mo_arch_n(-cw / 2) + '" y="-14" width="' + _mo_arch_n(cw) + '" height="28" rx="14" style="fill:' + mc + ';"/>'
+                + '<text x="0" y="5" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4) + 'px;font-weight:700;fill:#141b24;">' + _cv_esc(txt) + '</text></g>')
+    return '<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" role="img" aria-label="' + _cv_esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + '</svg>'
+
+
+# Twin of atoms_motion.gs motion_video (2026-10-05): a video on the film clock; the JS template is byte-shared.
+_MO_VIDEO_OK = re.compile(r'^(https://[^\s"\'<>\\`]{1,500}|/(?!/)[^\s"\'<>\\`]{1,500})$')
+_MO_VIDEO_RATIO = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '3:4': '3/4', '9:16': '9/16', '9:19.5': '9/19.5'}
+_MO_VIDEO_FIT = {'cover': 1, 'contain': 1}
+_MO_VIDEO_JS = '(function(){var r=document.getElementById("mt-%%UID%%");if(!r)return;var C=%%CFG%%,v=r.querySelector("video");if(!v)return;v.muted=true;var lt=-1,sk=0;v.addEventListener("seeked",function(){sk=0;});function fr(){requestAnimationFrame(fr);var pv=getComputedStyle(r).getPropertyValue("--p").trim();if(pv===""){if(v.paused&&!C.still){var pp=v.play();if(pp&&pp.catch)pp.catch(function(){});}return;}if(!v.paused)v.pause();var p=parseFloat(pv);if(isNaN(p))return;p=Math.max(0,Math.min(1,p));var end=C.to>C.from?C.to:(v.duration||0);var t=C.from+p*Math.max(0,end-C.from);if(v.duration&&t>v.duration-0.04)t=Math.max(0,v.duration-0.04);var now=performance.now();if(sk&&now-sk<600)return;if(Math.abs(t-lt)<0.02)return;lt=t;sk=now;try{v.currentTime=t;}catch(e){sk=0;}}fr();})();'
+
+
+def _mo_vid(v):
+    return v.strip() if isinstance(v, str) and _MO_VIDEO_OK.match(v.strip()) else ''
+
+
+def _render_motion_video(b: dict) -> str:
+    uid, url, poster = _wa_uid(b)[:6], _mo_vid(b.get('url')), _mo_vid(b.get('poster'))
+    ratio, fit, rad = _ff_pick(b.get('ratio'), _MO_VIDEO_RATIO, '16:9'), _mo_own(_MO_VIDEO_FIT, b.get('fit'), 'cover'), _ff_int(b.get('radius'), 12, 0, 60)
+    frm, to, still = _ff_num(b.get('from'), 0, 0, 3600, 2), _ff_num(b.get('to'), 0, 0, 3600, 2), b.get('still') is True
+    label = _cv_str(b.get('label'), 80) or 'Video'
+    cfg = '{from:' + frm + ',to:' + to + ',still:' + ('true' if still else 'false') + '}'
+    box = ('<div id="mt-' + uid + '" role="img" aria-label="' + _cv_esc(label) + '" style="position:relative;width:100%;aspect-ratio:' + ratio
+           + ';overflow:hidden;border-radius:' + str(rad) + 'px;background:#0b0f19;">')
+    if not url:
+        return box + '<div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(135deg,var(--mt-acc,#38bdf8),#0b0712);opacity:0.5;"></div></div>'
+    return (box + '<video muted playsinline loop preload="auto" src="' + _cv_esc(url) + '"' + (' poster="' + _cv_esc(poster) + '"' if poster else '')
+            + ' style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:' + fit + ';display:block;"></video>'
+            + '<script>' + _MO_VIDEO_JS.replace('%%UID%%', uid, 1).replace('%%CFG%%', cfg, 1) + '</script></div>')
+
+
 
 # ─── studio pack (2026-10-03): twin of apps-script-surface/gas-wired-renderer/atoms_studio.gs. The WebGL drivers are NOT copied:
 # their source is read out of that file (what Function.prototype.toString returns in GAS), so the browser code exists once.
@@ -28843,7 +28986,7 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
                          ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso),
                          ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph),
-                         ('motion_shader', _render_motion_shader), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks)):
+                         ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

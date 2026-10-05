@@ -44,7 +44,8 @@ REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # b
 REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batch 7, 2026-10-02
 REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-10-02
 STUDIO = ["motion_object3d", "motion_bricks"]  # studio pack (atoms_studio.gs), 2026-10-03
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + DEMO_ATOMS
+VIDEO = ["motion_video", "motion_arch"]  # a video on the film clock, for screen recordings in motion_device, 2026-10-05
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -244,6 +245,20 @@ PAYLOADS = {
                      {"shapes": ["nope", "constructor", 5, None, "circle"], "fill": "red;x", "rotate": "x"}, {"shapes": "no"}, {"shapes": ["hexagon", "diamond", "triangle", "blob", "star"]}],
     "motion_shader": [{}, {"kind": "aurora", "color1": "#001020", "color2": "#38bdf8", "color3": "#7c5cff", "scale": 5, "span": 40, "speed": 2, "still": True, "ratio": "1:1", "radius": 20, "label": "Sky <b>"},
                       {"fill": True}, {"kind": "silk", "color1": "#1a0b14", "color2": "#c2185b", "color3": "#ffd6e8", "scale": 1.4}, {"kind": "toString", "color1": "red", "color2": "url(x)", "scale": "x", "span": 1e9, "label": "</script><script>alert(1)</script>"}],
+    "motion_arch": [{}, {"label": "Android <b>", "size": 18, "accent": "#8d98ff", "accent2": "#2ac4ce", "color": "#eaeff5", "fill": "#2d3642",
+                     "groups": [{"label": "Your phone", "x": 2, "y": 5, "w": 30, "h": 90, "at": 0.05}],
+                     "nodes": [{"id": "app", "kind": "device", "label": "Analyser", "sub": "Compose", "x": 16, "y": 30}, {"id": "mcp", "kind": "server", "label": "MCP worker", "sub": "read_article", "x": 55, "y": 30, "at": 0.2},
+                               {"id": "llm", "kind": "model", "label": "Gemini", "x": 85, "y": 30}, {"id": "db", "kind": "store", "label": "Store", "x": 55, "y": 75, "w": 18, "h": 14}],
+                     "edges": [{"from": "app", "to": "mcp", "label": "tools/call", "curve": 20}, {"from": "mcp", "to": "llm", "style": "dashed", "both": True},
+                               {"from": "mcp", "to": "db", "label": "save"}, {"from": "app", "to": "app"}],
+                     "messages": [{"edge": 0, "text": "{url, lens}"}, {"edge": 0, "text": "A2UI payload", "back": True, "at": 0.8, "dur": 0.15, "color": "#2ac4ce"}, {"edge": 3}, {"edge": 99}]},
+                    {"nodes": "x", "edges": [{"from": "nope"}], "messages": [{"edge": "0"}], "w": 99999, "h": -5, "size": 999, "accent": "red;x"},
+                    {"nodes": [{"id": "A b", "kind": "constructor", "x": "1e9", "y": None, "label": "</text><script>alert(1)</script>", "sub": ["x"]},
+                               {"id": "b", "kind": "toString", "x": -5, "w": 0}], "edges": [{"from": "n0", "to": "b", "label": [], "curve": "x", "at": 7, "dur": 0}],
+                     "messages": [{"edge": 0, "text": "<img onerror=x>", "back": "yes"}], "groups": [5, {"label": {"a": 1}}]}],
+    "motion_video": [{}, {"url": "/media/run.mp4", "poster": "https://example.com/p.jpg", "from": 2.5, "to": 61, "ratio": "9:19.5", "fit": "contain", "radius": 30, "still": True, "label": "Run <b>"},
+                     {"url": "javascript:alert(1)", "poster": "data:image/png;base64,AAAA", "from": "x", "to": -5, "ratio": "toString", "fit": "constructor", "radius": 9999},
+                     {"url": "https://x.y/a.mp4\" onerror=\"alert(1)", "from": 1e9}, {"url": "//evil.example/a.mp4"}, {"url": 5, "label": "</script><script>alert(1)</script>"}],
     "motion_object3d": [{}, {"shapes": ["cube", "knot"], "material": "gold", "turns": 2, "angle": 30, "tilt": -20, "size": 1.3, "span": 40, "still": True, "ratio": "1:1", "radius": 18},
                         {"shapes": ["blob", "text"], "text": "A2UI", "material": "iridescent", "typeface": "serif", "depth": 0.4, "backdrop": "#101018", "floor": False, "label": "Hero <b>"},
                         {"shapes": ["text"], "text": "D\u00e9clar\u00e9 \u2028x", "material": "glass", "color": "#C4ECFF", "accent": "#ff9a3d", "accent2": "#8a6cff", "fill": True},
@@ -500,7 +515,8 @@ def test_overshoot_curves_never_push_opacity_outside_zero_to_one():
 PROMOTED = {"motion_timeline", "motion_group", "motion_tokens", "motion_layer", "motion_text", "motion_shape", "motion_counter", "motion_mark", "motion_browser",
             "motion_orbit", "motion_code", "motion_checklist", "motion_pill", "motion_sketch", "motion_leader", "motion_mask",
             "motion_rays", "motion_hud", "motion_lower_third", "motion_shader", "motion_finish",
-            "motion_envelope"}  # 2026-10-05: the What-is-A2UI pillar film is built on it
+            "motion_envelope",  # 2026-10-05: the What-is-A2UI pillar film is built on it
+            "motion_video", "motion_arch"}  # 2026-10-05 (Curtis): the A2UI-on-Android and architecture films are built on them
 
 
 def test_every_motion_atom_is_declared_with_the_right_stage():
@@ -786,6 +802,18 @@ def test_roll_scrolls_each_digit_to_its_value_and_prism_turns():
                 [{"target": "t", "keys": [{"t": 0, "p": 1}, {"t": 0, "step": 0}, {"t": 4, "step": 1}]}])
     tj = "var e=document.querySelector('[data-mt-id=t] [style*=preserve-3d]');return getComputedStyle(e).transform;"
     assert _probe(pr, 0, tj) != _probe(pr, 2, tj)
+
+
+def test_video_template_is_byte_identical_and_takes_only_numbers(core_js):
+    g = _node(core_js, "console.log(JSON.stringify(_MO_VIDEO_JS));")
+    assert g == wa._MO_VIDEO_JS
+    html = _py({"type": "motion_video", "url": "/m/a.mp4", "from": "1; alert(1)", "to": "</script>", "label": "</script><script>alert(1)</script>"})
+    script = html[html.index("<script>") + 8:html.index("</script>")]
+    cfg = re.search(r"var C=(\{.*?\}),v=", script).group(1)
+    assert re.fullmatch(r"\{from:[0-9.]+,to:[0-9.]+,still:(true|false)\}", cfg), cfg
+    assert "alert" not in script
+    for bad in ("javascript:alert(1)", "//evil.example/a.mp4", "data:video/mp4;base64,AA", "https://x.y/a.mp4\" onerror=\"x"):
+        assert "<video" not in _py({"type": "motion_video", "url": bad}), bad
 
 
 def test_shader_template_is_byte_identical_and_takes_only_numbers(core_js):

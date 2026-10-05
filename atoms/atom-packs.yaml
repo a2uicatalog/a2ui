@@ -361,6 +361,8 @@ a2ui-effects-v1:
 - motion_particles
 - motion_morph
 - motion_shader
+- motion_video
+- motion_arch
 - motion_object3d
 - motion_bricks
 - motion_timeline

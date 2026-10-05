@@ -11533,6 +11533,74 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_arch
+  description: An architecture diagram that draws itself on the film clock. Nodes (device, app, server, tool,
+    model, store, surface, user) pop in, edges draw box edge to box edge with arrowheads and labels, and
+    messages, the payloads that actually move, ride the edges as chips (back true for the reply). Each
+    element has a window [at, at + dur] of the progress p a motion_timeline track drives; standalone it is
+    the finished diagram. Pure SVG and CSS, no script.
+  compact_description: architecture diagram that draws itself, with payloads moving along its edges
+  surfaces:
+    works_on: [web, google-meet-stage, google-apps-script-web, mcp-apps, android]
+    degraded_on:
+    - surface: pdf
+      note: Prints the finished diagram; messages in flight are not shown
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, calc() transforms and inline SVG styling are not supported in email clients
+  fields:
+    nodes: 'array (max 12) of {id, kind?, label, sub?, x, y, w?, h?, at?, dur?}. id ^[a-z][a-z0-9_-]{0,31}$. kind
+      "device" | "app" | "server" | "tool" | "model" | "store" | "surface" | "user" (default "server") sets the glyph
+      and tint. x, y are the centre in percent of the frame; w, h percent (default 20 and 15). at, dur are the
+      appearance window in p (0-1).'
+    edges: 'array (max 16) of {from, to, label?, style?, both?, curve?, color?, at?, dur?}. from and to are node ids.
+      style "solid" (draws on) | "dashed" (fades in). both adds a second arrowhead. curve -100 to 100 bends it.'
+    messages: 'array (max 12) of {edge, text, back?, color?, at?, dur?}. edge is an index into edges; text (max 40)
+      is the payload chip; back true sends it from the edge''s end to its start.'
+    groups: 'array (max 4) of {label, x, y, w, h, at?, dur?}: dashed boundaries in percent of the frame.'
+    w: integer (optional). ViewBox width, 200-2000. Default 1000.
+    h: integer (optional). ViewBox height, 120-2000. Default 560.
+    size: integer (optional). Label px, 8-40. Default 17.
+    accent: '"#rrggbb" (optional). Device, app and surface nodes, and messages. Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Server and tool nodes, and edges. Default "#2ac4ce".'
+    color: '"#rrggbb" (optional). Label ink. Default the stage ink.'
+    mute: '"#rrggbb" (optional). Sub-labels and group frames. Default "#9ca5b1".'
+    fill: '"#rrggbb" (optional). Node fill. Default "#2d3642".'
+    background: '"#rrggbb" (optional). Halo behind edge labels; match the stage. Default "#1e2733".'
+    label: string (optional, max 80). Accessible name. Default "Architecture diagram".
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_video
+  description: A muted video on the film clock. Inside a motion_timeline a track
+    drives its progress p from 0 to 1 and the video seeks to from + p * (to -
+    from), so scrubbing and frame export are exact; standalone it plays muted and
+    loops. Made for screen recordings inside motion_device, with the motion
+    design around them. Encode with short keyframe intervals for smooth seeking.
+  compact_description: muted video whose frame follows the film clock
+  surfaces:
+    works_on: [web, google-meet-stage, google-apps-script-web, mcp-apps, android]
+    degraded_on:
+    - surface: pdf
+      note: Prints the poster, or an empty frame without one; no motion
+    incompatible_on:
+    - surface: email
+      reason: Video, inline script and CSS custom properties are not supported in email clients
+  fields:
+    url: string. https URL or a /-rooted path to an mp4 or webm (no data URLs). Otherwise a placeholder shows.
+    poster: string (optional). https URL or /-rooted image path shown before the first frame.
+    from: number (optional). Seconds into the video at p = 0, 0-3600. Default 0.
+    to: number (optional). Seconds at p = 1, 0-3600. Default the end of the video.
+    ratio: '"16:9" | "4:3" | "1:1" | "3:4" | "9:16" | "9:19.5" (optional, default "16:9"). 9:19.5 is a modern phone screen.'
+    fit: '"cover" | "contain" (optional, default "cover")'
+    radius: integer (optional). Corner px, 0-60. Default 12.
+    still: bool (optional). Standalone, hold the first frame instead of playing. Default false.
+    label: string (optional, max 80). Accessible name. Default "Video".
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: motion_shader
   description: 'A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft aurora bands (kind aurora) or folded satin with a moving sheen (kind silk) in three colours. Seekable: shader time follows the film, read from the second dial (--s) every frame, so a step track drives it and seeking shows exactly that frame (span = shader seconds per unit of --s); standalone it runs on its own clock, or holds still with still true or under reduced motion. The shader and its driver are fixed in the renderer and the config is numbers only, so nothing in the payload becomes code. Its own CSS gradient of the same colours is the fallback when WebGL is missing, the shader fails, the page prints or the host strips scripts. p fades it in. Preview: a spike to judge whether WebGL earns a place.'
   compact_description: seekable WebGL liquid or aurora background with a CSS gradient fallback

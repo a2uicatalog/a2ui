@@ -43037,6 +43037,480 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "motion_arch"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "sub": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                },
+                "h": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                },
+                "dur": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "x",
+                "y"
+              ]
+            }
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "style": {
+                  "type": "string"
+                },
+                "both": {
+                  "type": "string"
+                },
+                "curve": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                },
+                "dur": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "from",
+                "to"
+              ]
+            }
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "edge": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "back": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                },
+                "dur": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "edge",
+                "text"
+              ]
+            }
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                },
+                "h": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                },
+                "dur": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "x",
+                "y",
+                "w",
+                "h"
+              ]
+            }
+          },
+          "w": {
+            "type": "integer"
+          },
+          "h": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "accent": {
+            "type": "string"
+          },
+          "accent2": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "color": {
+            "type": "string"
+          },
+          "mute": {
+            "type": "string"
+          },
+          "fill": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "background": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "motion_video"
+          },
+          "url": {
+            "type": "string",
+            "enum": [
+              "string. https URL",
+              "a /-rooted path to an mp4",
+              "webm . Otherwise a placeholder shows."
+            ]
+          },
+          "poster": {
+            "type": "string",
+            "enum": [
+              "string . https URL",
+              "/-rooted image path shown before the first frame."
+            ]
+          },
+          "from": {
+            "type": "integer"
+          },
+          "to": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "4:3",
+              "1:1",
+              "3:4",
+              "9:16",
+              "9:19.5\" (optional, default \"16:9\"). 9:19.5 is a modern phone screen."
+            ]
+          },
+          "fit": {
+            "type": "string",
+            "enum": [
+              "cover",
+              "contain\" (optional, default \"cover\")"
+            ]
+          },
+          "radius": {
+            "type": "integer"
+          },
+          "still": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "motion_shader"
           },
           "kind": {

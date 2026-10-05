@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 546,
+ "atomCount": 548,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -3443,6 +3443,28 @@
   {
    "type": "motion_finish",
    "compact": "film grain, vignette, light leaks and glass sheen over the frame",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "motion_arch",
+   "compact": "architecture diagram that draws itself, with payloads moving along its edges",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "motion_video",
+   "compact": "muted video whose frame follows the film clock",
    "surfaces": [
     "web",
     "google-meet-stage",

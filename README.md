@@ -9,7 +9,7 @@
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
 <!-- readme-badges:start -->
-[![Atoms](https://img.shields.io/badge/atoms-546-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
+[![Atoms](https://img.shields.io/badge/atoms-548-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
 [![Surfaces](https://img.shields.io/badge/surfaces-11-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
 [![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
 [![ARD](https://img.shields.io/badge/ARD-ard.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ard.json)
@@ -174,7 +174,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-546 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+548 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | claude-code | android | email | pdf | Source · license |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -477,6 +477,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `modal` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | — | [OpenUI / Thesys](https://github.com/thesysdev/openui) · MIT |
 | `model_card` | ✅ | ✅ | — | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `module_map` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `motion_arch` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_browser` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_checklist` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_code` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -499,6 +500,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `motion_text` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_timeline` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_tokens` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `motion_video` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `multi_doc_ai_brief` | — | ✅ | — | — | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `multi_select_input` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | [shadcn/ui](https://github.com/shadcn-ui/ui) · MIT |
 | `multi_surface` | — | ✅ | — | — | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |

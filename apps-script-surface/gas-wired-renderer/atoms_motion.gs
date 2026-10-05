@@ -1814,3 +1814,116 @@ _RENDERERS['motion_shader'] = function(b) {
     + '<style>@media print{#mt-' + uid + ' canvas{display:none}}</style><canvas aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas>'
     + '<script>' + _MO_SHADER_JS.replace('%%UID%%', function() { return uid; }).replace('%%CFG%%', function() { return cfg; }) + '<\/script></div>';
 };
+
+// An architecture diagram that draws itself on the film clock (2026-10-05): nodes (device, app, server, tool, model, store,
+// surface, user) pop in, edges draw with their arrowheads, and messages (the payloads that actually move) ride the edges as
+// chips. Everything is keyed off progress p: each element has a window [at, at + dur] of p. Pure SVG + CSS, no script: a
+// message's position is its edge's quadratic curve evaluated in calc(), so no motion-path support is needed. Standalone (p
+// unset = 1) it is the finished diagram, messages delivered. Node coordinates are percent of the frame; edges are computed
+// box edge to box edge. Byte-identical twin in renderers/web_article.py.
+var _MO_ARCH_KIND = {device: '▮', app: '◰', server: '≣', tool: '⚙', model: '✦', store: '◆', surface: '▣', user: '●'};
+var _MO_ARCH_STYLE = {solid: 1, dashed: 1};
+function _moArchN(x) { return _ffNum(x, 0, -100000, 100000, 1); }
+function _moArchT(v, d) { return _ffNum(v, d, 0, 1, 3); }
+function _moArchD(v, d) { return _ffNum(v, d, 0.01, 1, 3); }
+_RENDERERS['motion_arch'] = function(b) {
+  var W = _ffInt(b.w, 1000, 200, 2000), H = _ffInt(b.h, 560, 120, 2000), size = _ffInt(b.size, 17, 8, 40);
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#8d98ff)'), acc2 = _moInk(b, 'accent2', '#2ac4ce'), ink = _moInk(b, 'color', 'var(--mt-ink,#eaeff5)');
+  var mute = _moInk(b, 'mute', '#9ca5b1'), fill = _moInk(b, 'fill', '#2d3642'), paper = _moInk(b, 'background', '#1e2733');
+  var tints = {device: acc, app: acc, surface: acc, server: acc2, tool: acc2, model: '#f0b45a', store: '#81c995', user: ink};
+  var label = _moStr(b.label, 80) || 'Architecture diagram';
+  function win(at, dur) { return '--u:clamp(0,calc((var(--p,1) - ' + at + ')/' + dur + '),1);'; }
+  var out = '', i;
+  // groups: dashed boundaries with a corner label
+  var groups = Array.isArray(b.groups) ? b.groups.slice(0, 4) : [];
+  for (i = 0; i < groups.length; i++) {
+    var g = groups[i] && typeof groups[i] === 'object' ? groups[i] : {};
+    var gx = _ffNum(g.x, 0, 0, 100, 2) * W / 100, gy = _ffNum(g.y, 0, 0, 100, 2) * H / 100, gw = _ffNum(g.w, 30, 1, 100, 2) * W / 100, gh = _ffNum(g.h, 30, 1, 100, 2) * H / 100;
+    out += '<g style="' + win(_moArchT(g.at, 0), _moArchD(g.dur, 0.1)) + 'opacity:var(--u);">'
+      + '<rect x="' + _moArchN(gx) + '" y="' + _moArchN(gy) + '" width="' + _moArchN(gw) + '" height="' + _moArchN(gh) + '" rx="18" style="fill:none;stroke:' + mute + ';stroke-opacity:0.45;stroke-width:1.5;stroke-dasharray:7 7;"/>'
+      + '<text x="' + _moArchN(gx + 16) + '" y="' + _moArchN(gy + 24) + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 5) + 'px;font-weight:700;letter-spacing:0.12em;fill:' + mute + ';">' + _esc(_moStr(g.label, 40).toUpperCase()) + '</text></g>';
+  }
+  // nodes
+  var nodes = Array.isArray(b.nodes) ? b.nodes.slice(0, 12) : [], box = {};
+  for (i = 0; i < nodes.length; i++) {
+    var n = nodes[i] && typeof nodes[i] === 'object' ? nodes[i] : {}, id = _moId(n.id) || ('n' + i), kind = _moOwn(_MO_ARCH_KIND, n.kind, 'server');
+    var cx = _ffNum(n.x, 50, 0, 100, 2) * W / 100, cy = _ffNum(n.y, 50, 0, 100, 2) * H / 100, nw = _ffNum(n.w, 20, 4, 100, 2) * W / 100, nh = _ffNum(n.h, 15, 4, 100, 2) * H / 100;
+    box[id] = [cx, cy, nw / 2, nh / 2];
+    var tint = tints[kind], sub = _moStr(n.sub, 40), ix = -nw / 2 + nh * 0.42, tx = ix + nh * 0.34;
+    out += '<g style="' + win(_moArchT(n.at, i * 0.05), _moArchD(n.dur, 0.08)) + 'opacity:var(--u);transform:translate(' + _moArchN(cx) + 'px,' + _moArchN(cy) + 'px) scale(calc(0.86 + 0.14*var(--u)));">'
+      + '<rect x="' + _moArchN(-nw / 2) + '" y="' + _moArchN(-nh / 2) + '" width="' + _moArchN(nw) + '" height="' + _moArchN(nh) + '" rx="14" style="fill:' + fill + ';stroke:' + tint + ';stroke-width:1.6;"/>'
+      + '<circle cx="' + _moArchN(ix) + '" cy="0" r="' + _moArchN(nh * 0.24) + '" style="fill:' + tint + ';fill-opacity:0.18;"/>'
+      + '<text x="' + _moArchN(ix) + '" y="' + _moArchN(size * 0.36) + '" text-anchor="middle" style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;fill:' + tint + ';">' + _MO_ARCH_KIND[kind] + '</text>'
+      + '<text x="' + _moArchN(tx) + '" y="' + _moArchN(sub ? -3 : size * 0.36) + '" style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:700;fill:' + ink + ';">' + _esc(_moStr(n.label, 40)) + '</text>'
+      + (sub ? '<text x="' + _moArchN(tx) + '" y="' + _moArchN(size * 1.05) + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 5) + 'px;fill:' + mute + ';">' + _esc(sub) + '</text>' : '')
+      + '</g>';
+  }
+  // edges: box edge to box edge, a quadratic curve bent along the normal
+  function rim(bx, dx, dy) {
+    var t = Math.min(dx === 0 ? 1e9 : bx[2] / Math.abs(dx), dy === 0 ? 1e9 : bx[3] / Math.abs(dy));
+    return [bx[0] + dx * t, bx[1] + dy * t];
+  }
+  var edges = Array.isArray(b.edges) ? b.edges.slice(0, 16) : [], curves = [];
+  for (i = 0; i < edges.length; i++) {
+    var e = edges[i] && typeof edges[i] === 'object' ? edges[i] : {}, f = box[_moId(e.from)], t2 = box[_moId(e.to)];
+    curves.push(null);
+    if (!f || !t2 || f === t2) continue;
+    var dx = t2[0] - f[0], dy = t2[1] - f[1], len = Math.sqrt(dx * dx + dy * dy), bend = _ffNum(e.curve, 0, -100, 100, 0) / 100;
+    var a = rim(f, dx, dy), z = rim(t2, -dx, -dy), mx = (a[0] + z[0]) / 2, my = (a[1] + z[1]) / 2;
+    var c = [mx - dy / len * bend * len * 0.5, my + dx / len * bend * len * 0.5];
+    var P = [[parseFloat(_moArchN(a[0])), parseFloat(_moArchN(a[1]))], [parseFloat(_moArchN(c[0])), parseFloat(_moArchN(c[1]))], [parseFloat(_moArchN(z[0])), parseFloat(_moArchN(z[1]))]];
+    curves[i] = P;
+    var col = _moInk(e, 'color', acc2), dashed = _moOwn(_MO_ARCH_STYLE, e.style, 'solid') === 'dashed', both = e.both === true;
+    var at = _moArchT(e.at, 0.3 + i * 0.05), dur = _moArchD(e.dur, 0.1);
+    var d = 'M' + _moArchN(P[0][0]) + ' ' + _moArchN(P[0][1]) + ' Q' + _moArchN(P[1][0]) + ' ' + _moArchN(P[1][1]) + ' ' + _moArchN(P[2][0]) + ' ' + _moArchN(P[2][1]);
+    function head(tip, from) {
+      var hx = tip[0] - from[0], hy = tip[1] - from[1], hl = Math.sqrt(hx * hx + hy * hy) || 1, ux = hx / hl, uy = hy / hl;
+      return '<path d="M' + _moArchN(tip[0] - ux * 11 - uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 + ux * 6) + ' L' + _moArchN(tip[0]) + ' ' + _moArchN(tip[1]) + ' L' + _moArchN(tip[0] - ux * 11 + uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>';
+    }
+    var el = _moStr(e.label, 48);
+    var lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0], ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
+    out += '<g style="' + win(at, dur) + '">'
+      + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'
+      + (dashed ? 'stroke-dasharray:0.012 0.012;opacity:var(--u);' : 'stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));') + '"/>'
+      + head(P[2], P[1]) + (both ? head(P[0], P[1]) : '')
+      + (el ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _esc(el) + '</text>' : '')
+      + '</g>';
+  }
+  // messages: payload chips riding an edge's curve (back: the reply, end to start)
+  var msgs = Array.isArray(b.messages) ? b.messages.slice(0, 12) : [];
+  for (i = 0; i < msgs.length; i++) {
+    var m = msgs[i] && typeof msgs[i] === 'object' ? msgs[i] : {}, k = _ffInt(m.edge, -1, -1, 15), Q = k >= 0 ? curves[k] : null;
+    if (!Q) continue;
+    if (m.back === true) Q = [Q[2], Q[1], Q[0]];
+    var txt = _moStr(m.text, 40) || 'payload', cw = txt.length * (size - 4) * 0.62 + 22, mc = _moInk(m, 'color', acc);
+    var u = 'var(--u)', v = '(1 - var(--u))';
+    var X = 'calc((' + _moArchN(Q[0][0]) + '*' + v + '*' + v + ' + ' + _moArchN(2 * Q[1][0]) + '*' + v + '*' + u + ' + ' + _moArchN(Q[2][0]) + '*' + u + '*' + u + ')*1px)';
+    var Y = 'calc((' + _moArchN(Q[0][1]) + '*' + v + '*' + v + ' + ' + _moArchN(2 * Q[1][1]) + '*' + v + '*' + u + ' + ' + _moArchN(Q[2][1]) + '*' + u + '*' + u + ')*1px)';
+    out += '<g style="' + win(_moArchT(m.at, 0.6 + i * 0.08), _moArchD(m.dur, 0.12)) + 'transform:translate(' + X + ',' + Y + ');opacity:clamp(0,min(calc(var(--u)*10),calc((1 - var(--u))*10)),1);">'
+      + '<rect x="' + _moArchN(-cw / 2) + '" y="-14" width="' + _moArchN(cw) + '" height="28" rx="14" style="fill:' + mc + ';"/>'
+      + '<text x="0" y="5" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;font-weight:700;fill:#141b24;">' + _esc(txt) + '</text></g>';
+  }
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + '</svg>';
+};
+
+// A video on the film clock (2026-10-05, for a screen recording inside motion_device): inside a motion_timeline a track drives
+// its progress p 0..1 and the video SEEKS to from + p*(to - from), so scrubbing and frame export are exact (encode with short
+// keyframe intervals for smooth seeking); with no p set (standalone) it plays muted and loops. Muted always, no controls, no
+// audio. url and poster: https or a /-rooted path only (the motion_image rule without data:). One JS template, byte-shared
+// with renderers/web_article.py; config is clamped numbers and enums.
+var _MO_VIDEO_OK = /^(https:\/\/[^\s"'<>\\`]{1,500}|\/(?!\/)[^\s"'<>\\`]{1,500})$/;
+var _MO_VIDEO_RATIO = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '3:4': '3/4', '9:16': '9/16', '9:19.5': '9/19.5'};
+var _MO_VIDEO_FIT = {cover: 1, contain: 1};
+var _MO_VIDEO_JS = '(function(){var r=document.getElementById("mt-%%UID%%");if(!r)return;var C=%%CFG%%,v=r.querySelector("video");if(!v)return;v.muted=true;var lt=-1,sk=0;v.addEventListener("seeked",function(){sk=0;});function fr(){requestAnimationFrame(fr);var pv=getComputedStyle(r).getPropertyValue("--p").trim();if(pv===""){if(v.paused&&!C.still){var pp=v.play();if(pp&&pp.catch)pp.catch(function(){});}return;}if(!v.paused)v.pause();var p=parseFloat(pv);if(isNaN(p))return;p=Math.max(0,Math.min(1,p));var end=C.to>C.from?C.to:(v.duration||0);var t=C.from+p*Math.max(0,end-C.from);if(v.duration&&t>v.duration-0.04)t=Math.max(0,v.duration-0.04);var now=performance.now();if(sk&&now-sk<600)return;if(Math.abs(t-lt)<0.02)return;lt=t;sk=now;try{v.currentTime=t;}catch(e){sk=0;}}fr();})();';
+function _moVid(v) { return (typeof v === 'string' && _MO_VIDEO_OK.test(v.trim())) ? v.trim() : ''; }
+_RENDERERS['motion_video'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6), url = _moVid(b.url), poster = _moVid(b.poster);
+  var ratio = _ffPick(b.ratio, _MO_VIDEO_RATIO, '16:9'), fit = _moOwn(_MO_VIDEO_FIT, b.fit, 'cover'), rad = _ffInt(b.radius, 12, 0, 60);
+  var from = _ffNum(b.from, 0, 0, 3600, 2), to = _ffNum(b.to, 0, 0, 3600, 2), still = b.still === true, label = _moStr(b.label, 80) || 'Video';
+  var cfg = '{from:' + from + ',to:' + to + ',still:' + (still ? 'true' : 'false') + '}';
+  var box = '<div id="mt-' + uid + '" role="img" aria-label="' + _esc(label) + '" style="position:relative;width:100%;aspect-ratio:' + ratio + ';overflow:hidden;border-radius:' + rad + 'px;background:#0b0f19;">';
+  if (!url) return box + '<div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(135deg,var(--mt-acc,#38bdf8),#0b0712);opacity:0.5;"></div></div>';
+  return box + '<video muted playsinline loop preload="auto" src="' + _esc(url) + '"' + (poster ? ' poster="' + _esc(poster) + '"' : '')
+    + ' style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:' + fit + ';display:block;"></video>'
+    + '<script>' + _MO_VIDEO_JS.replace('%%UID%%', function() { return uid; }).replace('%%CFG%%', function() { return cfg; }) + '<\/script></div>';
+};

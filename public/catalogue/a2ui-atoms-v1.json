@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (546 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (548 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -15229,6 +15229,146 @@
       "sheen": {
        "description": "bool (optional). A diagonal highlight band sweeping across with p. Default false.",
        "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  "motion_arch": {
+   "type": "object",
+   "description": "An architecture diagram that draws itself on the film clock. Nodes (device, app, server, tool, model, store, surface, user) pop in, edges draw box edge to box edge with arrowheads and labels, and messages, the payloads that actually move, ride the edges as chips (back true for the reply). Each element has a window [at, at + dur] of the progress p a motion_timeline track drives; standalone it is the finished diagram. Pure SVG and CSS, no script.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_arch"
+      },
+      "nodes": {
+       "description": "array (max 12) of {id, kind?, label, sub?, x, y, w?, h?, at?, dur?}. id ^[a-z][a-z0-9_-]{0,31}$. kind \"device\" | \"app\" | \"server\" | \"tool\" | \"model\" | \"store\" | \"surface\" | \"user\" (default \"server\") sets the glyph and tint. x, y are the centre in percent of the frame; w, h percent (default 20 and 15). at, dur are the appearance window in p (0-1).",
+       "type": "array"
+      },
+      "edges": {
+       "description": "array (max 16) of {from, to, label?, style?, both?, curve?, color?, at?, dur?}. from and to are node ids. style \"solid\" (draws on) | \"dashed\" (fades in). both adds a second arrowhead. curve -100 to 100 bends it.",
+       "type": "array"
+      },
+      "messages": {
+       "description": "array (max 12) of {edge, text, back?, color?, at?, dur?}. edge is an index into edges; text (max 40) is the payload chip; back true sends it from the edge's end to its start.",
+       "type": "array"
+      },
+      "groups": {
+       "description": "array (max 4) of {label, x, y, w, h, at?, dur?}: dashed boundaries in percent of the frame.",
+       "type": "array"
+      },
+      "w": {
+       "description": "integer (optional). ViewBox width, 200-2000. Default 1000.",
+       "type": "number"
+      },
+      "h": {
+       "description": "integer (optional). ViewBox height, 120-2000. Default 560.",
+       "type": "number"
+      },
+      "size": {
+       "description": "integer (optional). Label px, 8-40. Default 17.",
+       "type": "number"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Device, app and surface nodes, and messages. Default the stage accent."
+      },
+      "accent2": {
+       "description": "\"#rrggbb\" (optional). Server and tool nodes, and edges. Default \"#2ac4ce\"."
+      },
+      "color": {
+       "description": "\"#rrggbb\" (optional). Label ink. Default the stage ink."
+      },
+      "mute": {
+       "description": "\"#rrggbb\" (optional). Sub-labels and group frames. Default \"#9ca5b1\"."
+      },
+      "fill": {
+       "description": "\"#rrggbb\" (optional). Node fill. Default \"#2d3642\"."
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Halo behind edge labels; match the stage. Default \"#1e2733\"."
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 80). Accessible name. Default \"Architecture diagram\"."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  "motion_video": {
+   "type": "object",
+   "description": "A muted video on the film clock. Inside a motion_timeline a track drives its progress p from 0 to 1 and the video seeks to from + p * (to - from), so scrubbing and frame export are exact; standalone it plays muted and loops. Made for screen recordings inside motion_device, with the motion design around them. Encode with short keyframe intervals for smooth seeking.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "motion_video"
+      },
+      "url": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string. https URL or a /-rooted path to an mp4 or webm (no data URLs). Otherwise a placeholder shows."
+      },
+      "poster": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). https URL or /-rooted image path shown before the first frame."
+      },
+      "from": {
+       "description": "number (optional). Seconds into the video at p = 0, 0-3600. Default 0.",
+       "type": "number"
+      },
+      "to": {
+       "description": "number (optional). Seconds at p = 1, 0-3600. Default the end of the video.",
+       "type": "number"
+      },
+      "ratio": {
+       "description": "\"16:9\" | \"4:3\" | \"1:1\" | \"3:4\" | \"9:16\" | \"9:19.5\" (optional, default \"16:9\"). 9:19.5 is a modern phone screen."
+      },
+      "fit": {
+       "description": "\"cover\" | \"contain\" (optional, default \"cover\")"
+      },
+      "radius": {
+       "description": "integer (optional). Corner px, 0-60. Default 12.",
+       "type": "number"
+      },
+      "still": {
+       "description": "bool (optional). Standalone, hold the first frame instead of playing. Default false.",
+       "type": "boolean"
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 80). Accessible name. Default \"Video\"."
       }
      },
      "required": [

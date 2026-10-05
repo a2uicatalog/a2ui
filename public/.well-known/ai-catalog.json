@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 546 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 548 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -5958,6 +5958,44 @@
         "show a film grain, vignette, light leaks and glass sheen over the frame",
         "a finishing layer for the whole frame, like a colourist: film grain (fixed seeded noise, drifting with --s), a",
         "render a motion finish"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_arch",
+      "displayName": "Motion Arch",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_arch",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "An architecture diagram that draws itself on the film clock. Nodes (device, app, server, tool, model, store, surface, user) pop in, edges draw box edge to box edge with arrowheads and labels, and messages, the payloads that actually move, ride the edges as chips (back true for the reply). Each element has a window [at, at + dur] of the progress p a motion_timeline track drives; standalone it is the finished diagram. Pure SVG and CSS, no script.",
+      "representativeQueries": [
+        "show a architecture diagram that draws itself, with payloads moving along its edges",
+        "an architecture diagram that draws itself on the film clock. nodes (device, app, server, tool, model, store, surface,",
+        "render a motion arch"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_video",
+      "displayName": "Motion Video",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_video",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A muted video on the film clock. Inside a motion_timeline a track drives its progress p from 0 to 1 and the video seeks to from + p * (to - from), so scrubbing and frame export are exact; standalone it plays muted and loops. Made for screen recordings inside motion_device, with the motion design around them. Encode with short keyframe intervals for smooth seeking.",
+      "representativeQueries": [
+        "show a muted video whose frame follows the film clock",
+        "a muted video on the film clock. inside a motion_timeline a track drives its progress p from 0 to 1 and the video",
+        "render a motion video"
       ]
     },
     {
