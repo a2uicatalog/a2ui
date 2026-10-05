@@ -75,7 +75,10 @@ dependencies {
     api("androidx.a2ui:a2ui-model:$a2ui")
 
     implementation("androidx.compose.foundation:foundation:1.13.0-alpha03")
-    implementation("androidx.compose.material3:material3:1.5.0-alpha29")
+    // material3 pinned to the version material3-a2ui requires ([1.5.0-alpha28], AndroidX group alignment)
+    implementation("androidx.compose.material3:material3:1.5.0-alpha28")
+    // Google's own Material 3 Basic Catalog for androidx.a2ui: the library's default basic components
+    api("androidx.compose.material3:material3-a2ui:$a2ui")
 }
 
 // Maven Central (namespace ai.a2uicatalog, verified by a DNS TXT record on a2uicatalog.ai).

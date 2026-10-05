@@ -50,8 +50,10 @@ import java.net.URL
 import org.json.JSONObject
 
 /*
- * Google's Basic Catalog V1 in this alpha ships property definitions and parsing only:
- * every host supplies the drawing code (TypedContent) itself. These are the seven display
+ * androidx.a2ui's Basic Catalog V1 is definitions and parsing; Google draws it in Material 3
+ * in a separate artifact, material3-a2ui, which the library uses by default
+ * (A2uiAtomicCatalog.materialBasicComponents). These are the library's OWN implementations,
+ * kept as defaultBasicComponents and used for Image/Video/AudioPlayer. These are the seven display
  * components the viewer draws (the five inputs are in InputComponents.kt); any other Basic Catalog type is replaced with a placeholder by
  * PayloadAdapter, because the engine throws on unregistered types.
  */

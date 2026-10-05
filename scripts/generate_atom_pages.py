@@ -2136,8 +2136,8 @@ SURFACE_SEO = {
     "android": (
         "A2UI on Android: Jetpack Compose components for androidx.a2ui — A2UI Atomic Catalog",
         "Show agent UIs in Android apps: the atomic-catalog library adds {n} A2UI components to "
-        "Google's androidx.a2ui Jetpack Compose renderer, which ships none of its own. "
-        "Basic Catalog components draw natively in Compose."),
+        "Google's androidx.a2ui Jetpack Compose renderer, on top of the 18 Basic Catalog "
+        "components Google draws in Material 3."),
 }
 
 # Short setup note for the android surface page (same single `hero` slot).

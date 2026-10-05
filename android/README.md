@@ -26,14 +26,18 @@ v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
 
 ## How it draws
 
-- **All 18 Basic Catalog components** draw natively in Compose with Material 3: Text,
-  Image, Icon, Column, Row, List, Card, Tabs, Modal, Divider, Button, the five inputs
-  (TextField, CheckBox, ChoicePicker, Slider, DateTimeInput) and Video/AudioPlayer, which
-  open in the device's own player. `androidx.a2ui` ships their definitions but no drawing
-  code, so the library includes `defaultBasicComponents`. The engine binds each input's
-  value to the data model, so a Button's action sends what the user entered. Pass your own
-  list to `A2uiAtomicCatalog.catalog(context, basicComponents = ...)` to use your design
-  system.
+- **All 18 Basic Catalog components** draw natively in Compose. By default the library
+  uses Google's own Material 3 versions from `androidx.compose.material3:material3-a2ui`
+  (`A2uiAtomicCatalog.materialBasicComponents()`), except Image, Video and AudioPlayer:
+  Google's take a media renderer from the app, so the library brings its own (Video and
+  AudioPlayer open in the device's player). `defaultBasicComponents` is the library's own
+  full set of 18, matching the web renderer's look. The engine binds each input's value to
+  the data model, so a Button's action sends what the user entered. Pass your own list to
+  `A2uiAtomicCatalog.catalog(context, basicComponents = ...)` to use your design system.
+- **Keep `material3` at the version `material3-a2ui` pins** (`1.5.0-alpha28` for
+  `1.0.0-alpha01`). AndroidX alphas promise no binary compatibility: with `1.5.0-alpha29`
+  Google's Slider fails at runtime with `NoSuchMethodError`. If your app needs a newer
+  `material3`, pass `defaultBasicComponents` instead.
 - **Every stable catalog atom** is registered and draws through a WebView bridge running
   the catalog's own web renderer. `androidx.a2ui` throws on any unregistered
   component type, so nothing may be missing.

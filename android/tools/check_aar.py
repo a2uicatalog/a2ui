@@ -24,6 +24,28 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_AAR = ROOT / "android" / "a2ui-atoms" / "build" / "outputs" / "aar" / "a2ui-atoms-release.aar"
 
 
+def material3_alignment() -> list:
+    """material3-a2ui pins material3 to one version; AndroidX alphas promise no binary compatibility,
+    so a different material3 (1.5.0-alpha29 vs the pinned alpha28) crashed Google's Slider at runtime
+    with NoSuchMethodError (2026-10-05). Reads the pin from material3-a2ui's own POM in the Gradle
+    cache the build just used."""
+    import re
+    gradle = (Path(__file__).resolve().parent.parent / "a2ui-atoms" / "build.gradle.kts").read_text()
+    m3 = re.search(r'"androidx\.compose\.material3:material3:([^"]+)"', gradle)
+    a2 = re.search(r'val a2ui = "([^"]+)"', gradle)
+    if not (m3 and a2) or "material3-a2ui" not in gradle:
+        return []
+    poms = list((Path.home() / ".gradle" / "caches").glob(
+        f"modules-2/files-2.1/androidx.compose.material3/material3-a2ui/{a2.group(1)}/*/material3-a2ui-{a2.group(1)}.pom"))
+    if not poms:
+        return [f"material3-a2ui {a2.group(1)} POM not in the Gradle cache; cannot check material3 alignment"]
+    pin = re.search(r"<artifactId>material3</artifactId>\s*<version>\[?([^\]<]+)\]?</version>", poms[0].read_text())
+    if pin and pin.group(1) != m3.group(1):
+        return [f"material3 {m3.group(1)} but material3-a2ui {a2.group(1)} pins {pin.group(1)}: Google's components "
+                f"can fail at runtime (NoSuchMethodError); align material3 to {pin.group(1)}"]
+    return []
+
+
 def main(aar_path: Path) -> int:
     if not aar_path.exists():
         print(f"❌ no AAR at {aar_path}: run the android-build step first", file=sys.stderr)
@@ -57,12 +79,15 @@ def main(aar_path: Path) -> int:
     if "ai/a2uicatalog/android/A2uiAtomicCatalog.class" not in classes:
         problems.append("public entry point ai.a2uicatalog.android.A2uiAtomicCatalog missing from classes.jar")
 
+    problems += material3_alignment()
+
     if problems:
         for p in problems:
             print(f"❌ {p}", file=sys.stderr)
         return 1
     print(f"✅ {aar_path.name}: {len(schema_atoms)} atoms match schema.yaml's stable atoms, renderer bundle "
-          f"byte-identical to the web bundle ({hashlib.sha256(web).hexdigest()[:12]}), entry point present")
+          f"byte-identical to the web bundle ({hashlib.sha256(web).hexdigest()[:12]}), entry point present, "
+          f"material3 aligned with material3-a2ui")
     return 0
 
 
