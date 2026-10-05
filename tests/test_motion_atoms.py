@@ -37,7 +37,7 @@ DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_ch
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
 REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch", "motion_leader", "motion_path", "motion_mask"]  # from the studied reference film, 2026-10-01
-REEL3 = ["motion_device", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
+REEL3 = ["motion_device", "motion_envelope", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
 REEL4 = ["motion_marquee", "motion_bounce", "motion_scatter", "motion_contours", "motion_rail"]  # fourth batch, 2026-10-01
 REEL5 = ["motion_image", "motion_chart", "motion_lower_third", "motion_wave", "motion_repeat"]  # batch 5, 2026-10-02
 REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # batch 6, 2026-10-02
@@ -203,6 +203,10 @@ PAYLOADS = {
                      {"d": "M 0 0\" onload=\"alert(1)", "nodes": ["junk", None, [], {}, {"x": "9", "y": "x", "at": 7, "label": "<script>"}], "marker": False}, {"d": 5, "nodes": [{"x": 1, "y": 1}] * 12, "w": 9999}],
     "motion_device": [{}, {"kind": "laptop", "width": 640, "scroll": 400, "label": "Site <b>", "fill": "#101820", "accent": "#ff6a2b", "blocks": [{"type": "motion_pill", "text": "Hello"}, {"type": "motion_counter", "to": 5}]},
                       {"kind": "tablet", "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"kind": "toString", "width": 99999, "scroll": "x", "fill": "url(x)", "blocks": "no"}],
+    "motion_envelope": [{}, {"mode": "seal", "width": 520, "to": "ui://jobs/board", "stamp": "tool result", "label": "Letter <b>", "fill": "#3a4558", "accent": "#ff6a2b", "color": "#eaeff5",
+                          "blocks": [{"type": "motion_code", "lines": ["{ }"]}, {"type": "motion_pill", "text": "x", "id": "kid"}]},
+                        {"mode": "toString", "width": 99999, "to": "</div><script>alert(1)</script>", "stamp": "x" * 90, "fill": "url(x)", "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "y"}] * 9},
+                        {"mode": "open", "width": "x", "blocks": "no", "to": 5, "stamp": None}],
     "motion_rays": [{}, {"kind": "speed", "count": 12, "thickness": 0.3, "strength": 0.6, "accent": "#ff6a2b"}, {"kind": "burst", "count": 7, "thickness": 0.77, "spin": -90, "strength": 1},
                     {"kind": "__proto__", "count": 9999, "thickness": "x", "spin": "9;}", "strength": 99, "accent": "url(javascript:alert(1))"}, {"count": 3, "thickness": 0}],
     "motion_hud": [{}, {"seconds": 36, "label": "REC <b>", "size": 18, "corners": False, "accent": "#ff3d3d", "color": "#ffffff"}, {"bar": False, "seconds": 99999, "size": 1}, {"seconds": "x", "label": "x" * 80, "corners": "no"}],
@@ -495,7 +499,8 @@ def test_overshoot_curves_never_push_opacity_outside_zero_to_one():
 # and motion_path stay preview: nothing published uses them yet, and a stable atom's field names are a public contract.
 PROMOTED = {"motion_timeline", "motion_group", "motion_tokens", "motion_layer", "motion_text", "motion_shape", "motion_counter", "motion_mark", "motion_browser",
             "motion_orbit", "motion_code", "motion_checklist", "motion_pill", "motion_sketch", "motion_leader", "motion_mask",
-            "motion_rays", "motion_hud", "motion_lower_third", "motion_shader", "motion_finish"}
+            "motion_rays", "motion_hud", "motion_lower_third", "motion_shader", "motion_finish",
+            "motion_envelope"}  # 2026-10-05: the What-is-A2UI pillar film is built on it
 
 
 def test_every_motion_atom_is_declared_with_the_right_stage():

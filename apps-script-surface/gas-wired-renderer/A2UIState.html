@@ -2096,7 +2096,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window._a2uiBootWiredSurface(window.__A2UI_SCHEMA__);
 });
 
-window.addEventListener('message', function(e) {
+// Guarded: the Node test harnesses load this file with a bare `window` (no addEventListener).
+if (typeof window.addEventListener === 'function') window.addEventListener('message', function(e) {
   if (e.source !== window.parent || !e.data || e.data.a2uiControl !== 1) return;
   var cmd = e.data, root = document.querySelector('.mt-root');
   if (root) {

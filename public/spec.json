@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 545,
+ "atomCount": 546,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -12837,6 +12837,52 @@
    "fields": {
     "shape": "\"blob\" | \"circle\" | \"diagonal\" | \"rounded\" | \"bars\" (optional, default \"blob\")",
     "blocks": "array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "motion_envelope",
+   "description": "An envelope that carries a letter. Children are ordinary atoms shown on the letter card. With mode open, the flap flips up and the letter rises out as p goes 0 to 1; with mode seal, the letter drops in, the flap closes and the stamp lands. Optional address line (to) and stamp text. Plain HTML and CSS, no script; standalone it renders the finished state (open: letter out; seal: sealed and stamped). Use inside a motion_timeline to show a message being packed or delivered, e.g. an A2UI payload wrapped as an MCP tool result.",
+   "compact_description": "envelope that opens to reveal (or seals in) a letter of atoms, with address and stamp",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline CSS functions and custom properties are not supported"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "mode": "\"open\" | \"seal\" (optional, default \"open\")",
+    "width": "integer (optional). Envelope width px, 80-900; height is 5/8 of it. Default 360.",
+    "blocks": "array (max 3) of atom blocks shown on the letter. They render finished (they do not follow the envelope's p).",
+    "to": "string (optional, max 60). Address line on the front, e.g. \"ui://jobs/board\".",
+    "stamp": "string (optional, max 24). Stamp text, e.g. \"tool result\". In seal mode it lands at the end.",
+    "label": "string (optional, max 40). Accessible name. Default \"Envelope\".",
+    "fill": "\"#rrggbb\" (optional). Envelope colour. Default a tint of the stage background.",
+    "accent": "\"#rrggbb\" (optional). Fold edges and stamp. Default the stage accent.",
+    "color": "\"#rrggbb\" (optional). Address text. Default the stage ink."
    },
    "source": {
     "name": "a2uicatalog",

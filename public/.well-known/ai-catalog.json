@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 545 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 546 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -5863,6 +5863,25 @@
         "show a reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
         "reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a",
         "render a motion mask"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_envelope",
+      "displayName": "Motion Envelope",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_envelope",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "An envelope that carries a letter. Children are ordinary atoms shown on the letter card. With mode open, the flap flips up and the letter rises out as p goes 0 to 1; with mode seal, the letter drops in, the flap closes and the stamp lands. Optional address line (to) and stamp text. Plain HTML and CSS, no script; standalone it renders the finished state (open: letter out; seal: sealed and stamped). Use inside a motion_timeline to show a message being packed or delivered, e.g. an A2UI payload wrapped as an MCP tool result.",
+      "representativeQueries": [
+        "show a envelope that opens to reveal (or seals in) a letter of atoms, with address and stamp",
+        "an envelope that carries a letter. children are ordinary atoms shown on the letter card. with mode open, the flap",
+        "render a motion envelope"
       ]
     },
     {

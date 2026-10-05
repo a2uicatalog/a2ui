@@ -333,6 +333,7 @@ a2ui-effects-v1:
 - motion_path
 - motion_mask
 - motion_device
+- motion_envelope
 - motion_rays
 - motion_hud
 - motion_cells

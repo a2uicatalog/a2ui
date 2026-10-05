@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 545 atoms.** One line each:
+1. **Compact index — all 546 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 545 atoms)
+### Compact index (all 546 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -683,6 +683,7 @@ does not exist.
 - `motion_sketch` — strokes that draw themselves in turn, like an agent sketching
 - `motion_leader` — callout line with a start dot, arrowhead and label that draws itself
 - `motion_mask` — reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars
+- `motion_envelope` — envelope that opens to reveal (or seals in) a letter of atoms, with address and stamp
 - `motion_rays` — sunburst or speed-line background that fans in and turns
 - `motion_hud` — viewfinder HUD with corner brackets, counting timecode and progress bar
 - `motion_lower_third` — name and role lower third that draws and slides in

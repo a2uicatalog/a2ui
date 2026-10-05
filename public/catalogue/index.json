@@ -1164,7 +1164,7 @@
       "title": "Motion & decorative",
       "alwaysResolved": false,
       "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), ready-made animated scenes of places and single verified clipart images from a provenance-checked kit (scene_stage, clipart: hospital helipad, data centre, wind farm and 42 more places; props by id, never SVG), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
-      "atomCount": 123,
+      "atomCount": 124,
       "atoms": [
         {
           "type": "agent_sketchpad",
@@ -1399,6 +1399,10 @@
         {
           "type": "motion_counter",
           "description": "big counting number with an optional caption"
+        },
+        {
+          "type": "motion_envelope",
+          "description": "envelope that opens to reveal (or seals in) a letter of atoms, with address and stamp"
         },
         {
           "type": "motion_finish",

@@ -26950,6 +26950,7 @@ def _mo_placed(blk, seen, ids, st):
 
 
 _mo_tl_depth = [0]
+_mo_tl_bg = ['#07111f']  # the last stage colour, so the page around a film matches it (light films stay light)
 
 
 def _mo_depth(blk, wrap):
@@ -27044,6 +27045,7 @@ def _mo_timeline(b: dict) -> str:
     bg = _ff_hex(b.get('background'), '')
     backdrop = 'flat' if b.get('backdrop') == 'flat' else ('grid' if b.get('backdrop') == 'grid' else 'glow')
     st_bg = bg or th['bg']
+    _mo_tl_bg[0] = st_bg
     title = _cv_str(b.get('title'), 80) or 'Motion sequence'
     st, seen, ids, world, hud = {'dropped': 0, 'keys': 0}, {}, {}, '', ''
     blocks = b.get('blocks') if isinstance(b.get('blocks'), list) else []
@@ -27123,9 +27125,15 @@ def _render_motion_timeline(b: dict) -> str:
         return '<!-- a2ui: motion_timeline cannot nest inside another motion_timeline -->'
     _mo_tl_depth[0] += 1
     try:
-        return _mo_timeline(b)
+        out = _mo_timeline(b)
     finally:
         _mo_tl_depth[0] -= 1
+    # Twin of the GAS wrapper (it had drifted GAS-only, 2026-10-04): break out of the host's 860px asw-page column, let
+    # pointer/wheel events through the stage wrappers to nested canvases, and carry the film's stage colour out to the page.
+    pg = _mo_tl_bg[0]
+    return ('<style>html,body{background:' + pg + '!important}[style*="radial-gradient(120% 90%"]{background:' + pg + '!important;}'
+            + '.asw-page{max-width:none!important;padding:0!important;margin:0!important;background:' + pg + '!important}'
+            + '.mt-el{pointer-events:none}.mt-el canvas{pointer-events:auto}</style>' + out)
 
 
 for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens', _render_motion_tokens), ('motion_timeline', _render_motion_timeline),
@@ -27941,6 +27949,34 @@ def _render_motion_device(b: dict) -> str:
             + notch + '<div style="position:relative;width:100%;height:100%;overflow:hidden;border-radius:' + str(max(2, rad - bz)) + 'px;background:var(--mt-bg,#0f1420);color:var(--mt-ink,#f1f5f9);">'
             + '<div style="transform:translateY(calc(var(--s,0)*-' + str(scroll) + 'px));">' + inner + '</div></div></div>' + base + '</div>')
 
+_MO_ENVELOPE = {'open': 1, 'seal': 1}
+
+
+def _render_motion_envelope(b: dict) -> str:
+    mode = _mo_own(_MO_ENVELOPE, b.get('mode'), 'open')
+    seal, w = mode == 'seal', _ff_int(b.get('width'), 360, 80, 900)
+    h = int(math.floor(w * 5 / 8))
+    fill, acc, color = _mo_ink(b, 'fill', 'color-mix(in srgb,var(--mt-bg,#0f1420) 78%,var(--mt-ink,#f1f5f9))'), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)')
+    to, stamp, label, mono = _cv_str(b.get('to'), 60), _cv_str(b.get('stamp'), 24), _cv_str(b.get('label'), 40) or 'Envelope', _ff_pick('mono', _FF_FONTS, 'mono')
+    inner = ''.join(_mo_child(blk) for blk in (b['blocks'][:3] if isinstance(b.get('blocks'), list) else []))
+    rad, lp, lt, lh = max(4, int(math.floor(w * 0.03))), int(math.floor(w * 0.07)), int(math.floor(h * 0.08)), int(math.floor(h * 0.86))
+    rise, fh, fs = int(math.floor(h * 0.55)), int(math.floor(h * 0.6)), max(10, int(math.floor(w * 0.045)))
+    f = 'calc(1 - clamp(0,calc(var(--p,1)*2 - 1),1))' if seal else 'clamp(0,calc(var(--p,1)*2),1)'
+    r = 'calc(1 - clamp(0,calc(var(--p,1)*2),1))' if seal else 'clamp(0,calc(var(--p,1)*2 - 1),1)'
+    s = 'clamp(0,calc(var(--p,1)*5 - 4),1)' if seal else '1'
+    back, box = 'color-mix(in srgb,' + fill + ' 80%,#000)', 'position:absolute;left:0;top:0;width:100%;height:100%;border-radius:' + str(rad) + 'px;'
+    return ('<div role="group" aria-label="' + _cv_esc(label) + '" style="--ev-f:' + f + ';--ev-r:' + r + ';--ev-s:' + s + ';position:relative;width:' + str(w) + 'px;padding-top:' + str(0 if seal else fh) + 'px;">'
+            + '<div style="position:relative;width:' + str(w) + 'px;height:' + str(h) + 'px;">'
+            + '<div aria-hidden="true" style="' + box + 'background:' + back + ';"></div>'
+            + '<div aria-hidden="true" style="position:absolute;left:0;bottom:100%;width:100%;height:' + str(fh) + 'px;background:' + back + ';clip-path:polygon(0 100%,50% 0,100% 100%);transform-origin:50% 100%;transform:scaleY(clamp(0,calc(var(--ev-f)*2 - 1),1));"></div>'
+            + '<div style="--p:1;position:absolute;left:' + str(lp) + 'px;top:' + str(lt) + 'px;width:' + str(w - 2 * lp) + 'px;height:' + str(lh) + 'px;box-sizing:border-box;padding:0.6em;overflow:hidden;border-radius:' + str(max(3, rad - 2)) + 'px;background:color-mix(in srgb,' + fill + ' 82%,var(--mt-ink,#f1f5f9));color:var(--mt-ink,#f1f5f9);border:1px solid ' + _MO_MIX_LINE + ';transform:translateY(calc(var(--ev-r)*-' + str(rise) + 'px));">' + inner + '</div>'
+            + '<div aria-hidden="true" style="' + box + 'background:color-mix(in srgb,' + acc + ' 55%,' + fill + ');clip-path:polygon(0 0,50% 46%,100% 0,100% 100%,0 100%);"></div>'
+            + '<div aria-hidden="true" style="' + box + 'background:' + fill + ';clip-path:polygon(0 0,50% 50%,100% 0,100% 100%,0 100%);"></div>'
+            + '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:' + str(fh) + 'px;filter:drop-shadow(0 3px 0 color-mix(in srgb,' + acc + ' 55%,transparent));"><div style="width:100%;height:100%;background:color-mix(in srgb,' + fill + ' 90%,var(--mt-ink,#f1f5f9));clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transform:scaleY(clamp(0,calc(1 - var(--ev-f)*2),1));"></div></div>'
+            + (('<div style="position:absolute;left:8%;bottom:10%;max-width:55%;font-family:' + mono + ';font-size:' + str(fs) + 'px;font-weight:700;color:' + color + ';opacity:var(--ev-s);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _cv_esc(to) + '</div>') if to else '')
+            + (('<div style="position:absolute;right:6%;bottom:10%;padding:0.25em 0.6em;border:2px solid ' + acc + ';border-radius:6px;font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:' + acc + ';opacity:var(--ev-s);transform:rotate(-8deg) scale(calc(1.8 - 0.8*var(--ev-s)));">' + _cv_esc(stamp) + '</div>') if stamp else '')
+            + '</div></div>')
+
 
 def _render_motion_rays(b: dict) -> str:
     kind, n, th, spin = _mo_own(_MO_RAYS, b.get('kind'), 'burst'), _ff_int(b.get('count'), 24, 4, 64), float(_ff_num(b.get('thickness'), 0.5, 0.1, 0.9, 2)), _ff_int(b.get('spin'), 45, -360, 360)
@@ -28462,7 +28498,7 @@ _MO_SHAPES = {
     'plus': [620,60,620,133,620,207,620,280,620,353,667,380,740,380,813,380,887,380,940,400,940,473,940,547,940,620,867,620,793,620,720,620,647,620,620,667,620,740,620,813,620,887,600,940,527,940,453,940,380,940,380,867,380,793,380,720,380,647,333,620,260,620,187,620,113,620,60,600,60,527,60,453,60,380,133,380,207,380,280,380,353,380,380,333,380,260,380,187,380,113,400,60,473,60,547,60],
     'arrow': [560,140,602,180,644,219,686,259,727,299,769,338,811,378,853,418,895,457,937,497,902,536,860,576,818,616,776,655,734,695,692,735,650,774,609,814,567,854,560,812,560,754,560,696,560,639,521,620,463,620,406,620,348,620,291,620,233,620,175,620,118,620,60,620,60,562,60,505,60,447,60,389,108,380,166,380,224,380,281,380,339,380,396,380,454,380,512,380,560,371,560,313,560,255,560,198]
 }
-_MO_FONT = {" ": [0,0,0,0,0,0,0], "!": [4,4,4,4,4,0,4], "'": [4,4,8,0,0,0,0], ",": [0,0,0,0,12,4,8], "-": [0,0,0,31,0,0,0], ".": [0,0,0,0,0,12,12], "0": [14,17,19,21,25,17,14], "1": [4,12,4,4,4,4,14], "2": [14,17,1,2,4,8,31], "3": [31,2,4,2,1,17,14], "4": [2,6,10,18,31,2,2], "5": [31,16,30,1,1,17,14], "6": [6,8,16,30,17,17,14], "7": [31,1,2,4,8,8,8], "8": [14,17,17,14,17,17,14], "9": [14,17,17,15,1,2,12], ":": [0,12,12,0,12,12,0], "?": [14,17,1,2,4,0,4], "A": [14,17,17,31,17,17,17], "B": [30,17,17,30,17,17,30], "C": [14,17,16,16,16,17,14], "D": [30,17,17,17,17,17,30], "E": [31,16,16,30,16,16,31], "F": [31,16,16,30,16,16,16], "G": [14,17,16,23,17,17,15], "H": [17,17,17,31,17,17,17], "I": [14,4,4,4,4,4,14], "J": [7,2,2,2,2,18,12], "K": [17,18,20,24,20,18,17], "L": [16,16,16,16,16,16,31], "M": [17,27,21,21,17,17,17], "N": [17,17,25,21,19,17,17], "O": [14,17,17,17,17,17,14], "P": [30,17,17,30,16,16,16], "Q": [14,17,17,17,21,18,13], "R": [30,17,17,30,20,18,17], "S": [15,16,16,14,1,1,30], "T": [31,4,4,4,4,4,4], "U": [17,17,17,17,17,17,14], "V": [17,17,17,17,17,10,4], "W": [17,17,17,21,21,21,10], "X": [17,17,10,4,10,17,17], "Y": [17,17,10,4,4,4,4], "Z": [31,1,2,4,8,16,31]}
+_MO_FONT = {" ": [0,0,0,0,0,0,0], "!": [4,4,4,4,4,0,4], "'": [4,4,8,0,0,0,0], ",": [0,0,0,0,12,4,8], "-": [0,0,0,31,0,0,0], "_": [0,0,0,0,0,0,31], "/": [1,2,4,4,8,16,16], ".": [0,0,0,0,0,12,12], "0": [14,17,19,21,25,17,14], "1": [4,12,4,4,4,4,14], "2": [14,17,1,2,4,8,31], "3": [31,2,4,2,1,17,14], "4": [2,6,10,18,31,2,2], "5": [31,16,30,1,1,17,14], "6": [6,8,16,30,17,17,14], "7": [31,1,2,4,8,8,8], "8": [14,17,17,14,17,17,14], "9": [14,17,17,15,1,2,12], ":": [0,12,12,0,12,12,0], "?": [14,17,1,2,4,0,4], "A": [14,17,17,31,17,17,17], "B": [30,17,17,30,17,17,30], "C": [14,17,16,16,16,17,14], "D": [30,17,17,17,17,17,30], "E": [31,16,16,30,16,16,31], "F": [31,16,16,30,16,16,16], "G": [14,17,16,23,17,17,15], "H": [17,17,17,31,17,17,17], "I": [14,4,4,4,4,4,14], "J": [7,2,2,2,2,18,12], "K": [17,18,20,24,20,18,17], "L": [16,16,16,16,16,16,31], "M": [17,27,21,21,17,17,17], "N": [17,17,25,21,19,17,17], "O": [14,17,17,17,17,17,14], "P": [30,17,17,30,16,16,16], "Q": [14,17,17,17,21,18,13], "R": [30,17,17,30,20,18,17], "S": [15,16,16,14,1,1,30], "T": [31,4,4,4,4,4,4], "U": [17,17,17,17,17,17,14], "V": [17,17,17,17,17,10,4], "W": [17,17,17,21,21,21,10], "X": [17,17,10,4,10,17,17], "Y": [17,17,10,4,4,4,4], "Z": [31,1,2,4,8,16,31]}
 
 
 def _mo_t10(v):
@@ -28736,7 +28772,7 @@ def _render_motion_bricks(b: dict) -> str:
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
-                         ('motion_device', _render_motion_device), ('motion_rays', _render_motion_rays), ('motion_hud', _render_motion_hud),
+                         ('motion_device', _render_motion_device), ('motion_envelope', _render_motion_envelope), ('motion_rays', _render_motion_rays), ('motion_hud', _render_motion_hud),
                          ('motion_cells', _render_motion_cells), ('motion_stack3d', _render_motion_stack3d), ('motion_shake', _render_motion_shake), ('motion_flash', _render_motion_flash),
                          ('motion_marquee', _render_motion_marquee), ('motion_bounce', _render_motion_bounce), ('motion_scatter', _render_motion_scatter),
                          ('motion_contours', _render_motion_contours), ('motion_rail', _render_motion_rail),

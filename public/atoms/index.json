@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 545,
+ "atomCount": 546,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -3388,6 +3388,17 @@
   {
    "type": "motion_mask",
    "compact": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "motion_envelope",
+   "compact": "envelope that opens to reveal (or seals in) a letter of atoms, with address and stamp",
    "surfaces": [
     "web",
     "google-meet-stage",

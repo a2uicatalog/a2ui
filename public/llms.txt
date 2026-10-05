@@ -1,6 +1,6 @@
 # A2UI Catalog (the A2UI Atomic Catalog)
 
-> Open-source, typed UI vocabulary (545 atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, MCP Apps and Android apps — from one JSON schema payload, instead of generating HTML.
+> Open-source, typed UI vocabulary (546 atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, MCP Apps and Android apps — from one JSON schema payload, instead of generating HTML.
 
 ## Integrate & Developer Resources
 

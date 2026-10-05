@@ -569,6 +569,7 @@ function _moMorphs(b, blocks, ids, bpm, dur, st) {
   return res;
 }
 var _moTlDepth = 0;
+var _moTlBg = '#07111f'; // the last stage colour, so the page around a film matches it (light films stay light)
 function _moTimeline(b) {
   var uid = Math.random().toString(36).substr(2, 6), th = _ffTheme(b), acc = _ffHex(b.accent, '#38bdf8');
   var asp = _ffPick(b.aspect, _MO_ASPECT, '16:9'), W = asp[0], H = asp[1];
@@ -578,6 +579,7 @@ function _moTimeline(b) {
   var poster = _ffNum(b.poster, durN * 0.6, 0, durN, 2);
   var bg = _ffHex(b.background, ''), backdrop = b.backdrop === 'flat' ? 'flat' : (b.backdrop === 'grid' ? 'grid' : 'glow');
   var stBg = bg || th.bg;
+  _moTlBg = stBg;
   var title = _moStr(b.title, 80) || 'Motion sequence';
   var st = {dropped: 0, keys: 0}, seen = {}, ids = {}, world = '', hud = '', blocks = Array.isArray(b.blocks) ? b.blocks : [];
   if (blocks.length > 24) { st.dropped += blocks.length - 24; blocks = blocks.slice(0, 24); }
@@ -639,10 +641,11 @@ _RENDERERS['motion_timeline'] = function(b) {
   // Stage element wrappers sit above nested atoms and would swallow pointer/wheel events meant for
   // an embedded canvas (e.g. brick_build_3d's own drag-orbit and scroll-zoom). Let events pass through
   // the wrappers, and re-enable them on canvases so nested interactive atoms still receive them.
-  // Dark stage all the way out: the host page background and any nested brick card otherwise
-  // show as a white bleed around the cinematic frame.
-  return '<style>html,body{background:#07111f!important}[style*="radial-gradient(120% 90%"]{background:#07111f!important;}'
-    + '.asw-page{max-width:none!important;padding:0!important;margin:0!important;background:#07111f!important}'
+  // The stage colour all the way out: the host page background and any nested brick card otherwise
+  // show as a white bleed around the cinematic frame. It is the film's own stage colour, so a light film stays light.
+  var pg = _moTlBg;
+  return '<style>html,body{background:' + pg + '!important}[style*="radial-gradient(120% 90%"]{background:' + pg + '!important;}'
+    + '.asw-page{max-width:none!important;padding:0!important;margin:0!important;background:' + pg + '!important}'
     + '.mt-el{pointer-events:none}.mt-el canvas{pointer-events:auto}</style>' + out;
 };
 
@@ -1279,6 +1282,33 @@ _RENDERERS['motion_device'] = function(b) {
     + '<div style="transform:translateY(calc(var(--s,0)*-' + scroll + 'px));">' + inner + '</div></div></div>' + base + '</div>';
 };
 
+
+// An envelope for a letter: its children sit on a card that rises out as the flap opens (mode open), or drops in as the flap
+// closes and the stamp lands (mode seal). p drives both. Plain HTML and CSS, no script; standalone it renders the finished state.
+var _MO_ENVELOPE = {open: 1, seal: 1};
+_RENDERERS['motion_envelope'] = function(b) {
+  var mode = _moOwn(_MO_ENVELOPE, b.mode, 'open'), seal = mode === 'seal', w = _ffInt(b.width, 360, 80, 900), h = Math.floor(w * 5 / 8);
+  var fill = _moInk(b, 'fill', 'color-mix(in srgb,var(--mt-bg,#0f1420) 78%,var(--mt-ink,#f1f5f9))'), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)');
+  var to = _moStr(b.to, 60), stamp = _moStr(b.stamp, 24), label = _moStr(b.label, 40) || 'Envelope', mono = _ffPick('mono', _FF_FONTS, 'mono');
+  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 3) : [], inner = '', i;
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  var rad = Math.max(4, Math.floor(w * 0.03)), lp = Math.floor(w * 0.07), lt = Math.floor(h * 0.08), lh = Math.floor(h * 0.86), rise = Math.floor(h * 0.55), fh = Math.floor(h * 0.6), fs = Math.max(10, Math.floor(w * 0.045));
+  var f = seal ? 'calc(1 - clamp(0,calc(var(--p,1)*2 - 1),1))' : 'clamp(0,calc(var(--p,1)*2),1)';
+  var r = seal ? 'calc(1 - clamp(0,calc(var(--p,1)*2),1))' : 'clamp(0,calc(var(--p,1)*2 - 1),1)';
+  var s = seal ? 'clamp(0,calc(var(--p,1)*5 - 4),1)' : '1';
+  var back = 'color-mix(in srgb,' + fill + ' 80%,#000)', box = 'position:absolute;left:0;top:0;width:100%;height:100%;border-radius:' + rad + 'px;';
+  return '<div role="group" aria-label="' + _esc(label) + '" style="--ev-f:' + f + ';--ev-r:' + r + ';--ev-s:' + s + ';position:relative;width:' + w + 'px;padding-top:' + (seal ? 0 : fh) + 'px;">'
+    + '<div style="position:relative;width:' + w + 'px;height:' + h + 'px;">'
+    + '<div aria-hidden="true" style="' + box + 'background:' + back + ';"></div>'
+    + '<div aria-hidden="true" style="position:absolute;left:0;bottom:100%;width:100%;height:' + fh + 'px;background:' + back + ';clip-path:polygon(0 100%,50% 0,100% 100%);transform-origin:50% 100%;transform:scaleY(clamp(0,calc(var(--ev-f)*2 - 1),1));"></div>'
+    + '<div style="--p:1;position:absolute;left:' + lp + 'px;top:' + lt + 'px;width:' + (w - 2 * lp) + 'px;height:' + lh + 'px;box-sizing:border-box;padding:0.6em;overflow:hidden;border-radius:' + Math.max(3, rad - 2) + 'px;background:color-mix(in srgb,' + fill + ' 82%,var(--mt-ink,#f1f5f9));color:var(--mt-ink,#f1f5f9);border:1px solid ' + _MO_MIX_LINE + ';transform:translateY(calc(var(--ev-r)*-' + rise + 'px));">' + inner + '</div>'
+    + '<div aria-hidden="true" style="' + box + 'background:color-mix(in srgb,' + acc + ' 55%,' + fill + ');clip-path:polygon(0 0,50% 46%,100% 0,100% 100%,0 100%);"></div>'
+    + '<div aria-hidden="true" style="' + box + 'background:' + fill + ';clip-path:polygon(0 0,50% 50%,100% 0,100% 100%,0 100%);"></div>'
+    + '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:' + fh + 'px;filter:drop-shadow(0 3px 0 color-mix(in srgb,' + acc + ' 55%,transparent));"><div style="width:100%;height:100%;background:color-mix(in srgb,' + fill + ' 90%,var(--mt-ink,#f1f5f9));clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transform:scaleY(clamp(0,calc(1 - var(--ev-f)*2),1));"></div></div>'
+    + (to ? '<div style="position:absolute;left:8%;bottom:10%;max-width:55%;font-family:' + mono + ';font-size:' + fs + 'px;font-weight:700;color:' + color + ';opacity:var(--ev-s);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(to) + '</div>' : '')
+    + (stamp ? '<div style="position:absolute;right:6%;bottom:10%;padding:0.25em 0.6em;border:2px solid ' + acc + ';border-radius:6px;font-family:' + _MO_SANS + ';font-size:' + fs + 'px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:' + acc + ';opacity:var(--ev-s);transform:rotate(-8deg) scale(calc(1.8 - 0.8*var(--ev-s)));">' + _esc(stamp) + '</div>' : '')
+    + '</div></div>';
+};
 
 // A sunburst that fans out behind a hero (burst), or streaks that sweep across the frame (speed). --s turns or slides it.
 _RENDERERS['motion_rays'] = function(b) {
