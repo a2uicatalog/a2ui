@@ -530,7 +530,7 @@ def _components():
 
 LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 
-> Open-source, typed UI vocabulary ({n_atoms} atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, and MCP Apps — from one JSON schema payload, instead of generating HTML.
+> Open-source, typed UI vocabulary ({n_atoms} atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, MCP Apps and Android apps — from one JSON schema payload, instead of generating HTML.
 
 ## Integrate & Developer Resources
 
@@ -556,6 +556,7 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [Agent discovery document]({base}/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
 - [MCP Apps playground]({base}/surfaces/mcp-apps): Renders atoms live inside MCP Apps-capable hosts (e.g. claude.ai); paste a payload or open a `#p=` link.
 - [Claude Code surface]({base}/surfaces/claude-code): The `a2ui-claude-code` plugin (a Claude Code mod, source `claude-code-surface/` in the GitHub repository) draws atoms natively in Claude Code panes: `/a2ui <payload.json>`, a2uicatalog MCP payloads, animated script progress bars and a long-job dashboard.
+- [Android surface]({base}/surfaces/android/): Atoms on Android through Google's `androidx.a2ui` Jetpack Compose renderer. The `atomic-catalog` library (`ai.a2uicatalog:atomic-catalog`, source `android/` in the GitHub repository) registers every atom: Basic Catalog components draw natively in Compose, the rest through the catalog's own renderer in a WebView. Agents that read the app's `a2uiClientCapabilities` send a Basic-Catalog-only version to apps without the library, so a stock app never receives a type it can't draw.
 - [Self-host the renderer]({base}/renderer): Deploy your own Apps Script renderer in 4 commands — own the URL, no shared-demo rate limit.
 
 ## When to use this
