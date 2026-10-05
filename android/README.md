@@ -15,7 +15,7 @@ val processor = A2uiMessageProcessor(listOf(catalog))
   natively in Compose. `androidx.a2ui` ships their definitions but no drawing code, so
   the library includes `defaultBasicComponents`. Pass your own to
   `A2uiAtomicCatalog.catalog(context, basicComponents = ...)` to use your design system.
-- **Every catalog atom** is registered and draws through a WebView bridge running
+- **Every stable catalog atom** is registered and draws through a WebView bridge running
   the catalog's own web renderer. `androidx.a2ui` throws on any unregistered
   component type, so nothing may be missing.
 - **Films** (`motion_timeline`) arrive as one component and play as one stage.
@@ -49,6 +49,9 @@ The demo and test app (`a2ui-private/android-viewer`) uses this library through 
 Gradle composite build.
 
 ## Status and limits
+
+- Release builds (the published AAR) register stable atoms only; preview atoms stay in
+  the repo. Debug builds register every atom, so the viewer can test previews.
 
 - Version 0.1.0, not published. Publishing needs explicit opt-in.
 - Consecutive bridged atoms in a Column share one WebView (one renderer load per run
