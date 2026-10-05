@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the a2ui-atoms library's assets into OUT_DIR (run by Gradle, generateA2uiAssets).
+"""Write the atomic-catalog library's assets into OUT_DIR (run by Gradle, generateA2uiAssets).
 
   atoms.json            the atoms in atoms/schema.yaml: name, pack, field keys. The
                         library registers each one, because androidx.a2ui throws on an
@@ -41,7 +41,7 @@ def main(out_dir: str, stable_only: bool = False) -> None:
     shutil.copyfile(ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html",
                     out / "renderer-bundle.html")
     kind = "stable" if stable_only else "all"
-    print(f"a2ui-atoms assets: {len(atoms)} atoms ({kind}), renderer bundle -> {out}")
+    print(f"atomic-catalog assets: {len(atoms)} atoms ({kind}), renderer bundle -> {out}")
 
 
 if __name__ == "__main__":

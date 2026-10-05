@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify a built a2ui-atoms AAR against this checkout (android-build's verify step).
+"""Verify a built atomic-catalog AAR against this checkout (android-build's verify step).
 
 Fails unless the AAR:
   * registers exactly the STABLE atoms in atoms/schema.yaml. A missing one would throw on a

@@ -86,7 +86,7 @@ dependencies {
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
-    coordinates("ai.a2uicatalog", "a2ui-atoms", version.toString())
+    coordinates("ai.a2uicatalog", "atomic-catalog", version.toString())
     pom {
         name.set("A2UI Atomic Catalog for Android")
         description.set(

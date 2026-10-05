@@ -1,4 +1,4 @@
-# a2ui-atoms for Android
+# atomic-catalog for Android (ai.a2uicatalog:atomic-catalog)
 
 The a2uicatalog atom catalog for Google's A2UI Compose renderer
 (`androidx.a2ui` 1.0.0-alpha01). Add one dependency and an agent can use every atom in

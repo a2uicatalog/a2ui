@@ -163,7 +163,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <h1>Android</h1>
   
 <div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:14px;color:var(--muted);margin:0 0 20px">
-<strong style="color:var(--text)">Android, through Google's A2UI renderer.</strong> Google's <code>androidx.a2ui</code> library renders A2UI natively in Jetpack Compose. Add the <code>a2ui-atoms</code> library and an Android app can show every atom listed here: Basic Catalog components draw in Compose, and the rest draw with this catalog's own renderer inside the app. Apps without the library still get something useful: the catalog's emitter reads which catalogs an app supports and sends a plain Basic Catalog version instead of a surface the app can't draw.
+<strong style="color:var(--text)">Android, through Google's A2UI renderer.</strong> Google's <code>androidx.a2ui</code> library renders A2UI natively in Jetpack Compose. Add the <code>atomic-catalog</code> library and an Android app can show every atom listed here: Basic Catalog components draw in Compose, and the rest draw with this catalog's own renderer inside the app. Apps without the library still get something useful: the catalog's emitter reads which catalogs an app supports and sends a plain Basic Catalog version instead of a surface the app can't draw.
 <br><br><code>val catalog = A2uiAtomicCatalog.catalog(context)</code>
 <br><br>Build it from source for now; a published package is coming. <a href="https://github.com/a2uicatalog/a2ui/tree/main/android">Source and README</a> &middot; tested on a Pixel 7 Pro with <code>androidx.a2ui</code> 1.0.0-alpha01.
 </div>
