@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ai.a2uicatalog"
-version = "0.1.0"
+version = "0.2.0"
 
 android {
     namespace = "ai.a2uicatalog.android"
@@ -50,6 +50,7 @@ fun GenerateA2uiAssets.configureSources(stable: Boolean) {
         repo.file("atoms/schema.yaml"),
         repo.file("atoms/atom-packs.yaml"),
         repo.file("public/surfaces/mcp-apps/renderer-bundle.html"),
+        repo.file("atoms/basic-catalog-icons.json"),   // copied into the AAR as basic-icons.json
         rootProject.layout.projectDirectory.file("tools/gen_android_assets.py"),
     )
     script.set(rootProject.layout.projectDirectory.file("tools/gen_android_assets.py").asFile.path)

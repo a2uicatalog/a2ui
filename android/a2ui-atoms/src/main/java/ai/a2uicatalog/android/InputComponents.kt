@@ -151,7 +151,9 @@ object DefaultSlider : A2uiBasicCatalogV1.Slider {
         enabled: Boolean, accessibility: AccessibilityAttributes?, checks: List<CheckRule>, modifier: Modifier,
     ) {
         val lo = minOf(min, max)
-        val hi = maxOf(min, max)
+        // Compose's Slider needs a non-empty range; a payload with min == max gets a fixed, disabled slider.
+        val flat = !(maxOf(min, max) > lo)
+        val hi = if (flat) lo + 1f else maxOf(min, max)
         Column(modifier.fillMaxWidth()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(label ?: "", style = MaterialTheme.typography.labelLarge)
@@ -159,7 +161,7 @@ object DefaultSlider : A2uiBasicCatalogV1.Slider {
                     style = MaterialTheme.typography.labelLarge)
             }
             Slider(value = value.coerceIn(lo, hi), onValueChange = onValueChange,
-                valueRange = lo..hi, enabled = enabled)
+                valueRange = lo..hi, enabled = enabled && !flat)
         }
     }
 }
@@ -209,7 +211,9 @@ object DefaultDateTimeInput : A2uiBasicCatalogV1.DateTimeInput {
                 confirmButton = {
                     TextButton(onClick = {
                         val base = pickedDay ?: value?.let { LocalDate.ofInstant(Instant.ofEpochMilli(it), ZoneOffset.UTC)
-                            .atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() } ?: 0L
+                            .atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() }
+                            // time-only input with no value yet: today, not 1970
+                            ?: LocalDate.now(ZoneOffset.UTC).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
                         onValueChange?.invoke(clamp(base + (state.hour * 60L + state.minute) * 60_000L, min, max))
                         step = 0
                     }) { Text("OK") }
