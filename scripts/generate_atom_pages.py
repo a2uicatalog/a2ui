@@ -1089,6 +1089,34 @@ def render_page(atom):
     preview  = live_preview(atom)
     templates = templates_selector(atom)
     _surfaces = atom.get("surfaces", {}).get("works_on", [])
+    # Second JSON-LD block (2026-10-05 SEO pass): the page as a TechArticle about the
+    # atom, and the atom itself as a DefinedTerm in the catalog's vocabulary. Not
+    # Product/SoftwareApplication: an atom is neither bought nor installed, and
+    # Product markup on non-purchasable things is ignored or penalised.
+    _atom_url = f"https://a2uicatalog.ai/atoms/{atom_type}/"
+    _fields = atom.get("fields") or {}
+    _atom_ld = json.dumps({
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "TechArticle", "@id": _atom_url + "#page", "url": _atom_url,
+             "headline": f"{display_name}: A2UI atom",
+             "description": meta_description(desc or compact),
+             "about": {"@id": _atom_url + "#atom"},
+             "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"},
+             "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"},
+            {"@type": "DefinedTerm", "@id": _atom_url + "#atom", "name": display_name,
+             "termCode": atom_type, "description": compact or meta_description(desc),
+             "url": _atom_url,
+             "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms",
+                                  "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"},
+             "additionalProperty": [
+                 {"@type": "PropertyValue", "name": "works on", "value": ", ".join(_surfaces)},
+                 {"@type": "PropertyValue", "name": "fields", "value": ", ".join(sorted(_fields)) if isinstance(_fields, dict) else ""},
+                 {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"},
+                 {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"},
+                 {"@type": "PropertyValue", "name": "markdown", "value": f"https://a2uicatalog.ai/atoms/{atom_type}.md"},
+             ]},
+        ]}, ensure_ascii=False).replace("</", "<\\/")
     _gas_only = _surfaces == ["google-apps-script-web"]
     try_btn  = (
         f'<a class="try-btn" href="{make_renderer_url(atom)}" target="_blank" rel="noopener">Try it live →</a>'
@@ -1118,6 +1146,7 @@ def render_page(atom):
     ]
   }}
   </script>
+  <script type="application/ld+json">{_atom_ld}</script>
   {SITE_HEAD_JS}
   {PAGE_CSS}
 </head>
