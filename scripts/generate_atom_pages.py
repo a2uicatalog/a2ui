@@ -2044,7 +2044,7 @@ def generate_index(atoms):
     </a>
     <h1><span class="grad">A2UI</span> Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
-    <p class="sub">A growing catalog of typed UI atoms — and the patterns you compose from them — that AI agents build real interfaces with, instead of generating raw HTML. Renders natively on the web, in chat, and inside MCP hosts.</p>
+    <p class="sub">A growing catalog of typed UI atoms — and the patterns you compose from them — that AI agents build real interfaces with, instead of generating raw HTML. Renders on the web, inside MCP hosts, in Google Workspace and on Android.</p>
     <p class="sub">{atom_count_rounded} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
     <div class="hero-stats">
       <div><b>{atom_count_rounded}</b>atoms</div>
