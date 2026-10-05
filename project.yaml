@@ -81,6 +81,7 @@ policy:
     - public/versioning/**
     - public/pricing/**
     - public/about/**
+    - public/what-is-a2ui/**   # pillar guide page, published on Curtis's go-ahead 2026-10-05
     - public/contact/**
     - public/privacy/**
     - public/_headers
@@ -451,6 +452,13 @@ generators:
       0/2, and the markdown-fallback checks — /agents.md is served as real
       text/markdown via public/_headers. Atom counts are read from spec.json,
       never written as literals.
+  gen_pillar_pages:
+    script: scripts/gen_pillar_pages.py
+    source: content/<slug>.md (+ content/<slug>.film.json, built by a2ui-private motion-demos/protocol-film/build_protocol.mjs)
+    outputs: [public/what-is-a2ui/]
+    publish: ci (deploy.yml on push -> Cloudflare). Evergreen guide pages that answer one
+      search question each ("What is A2UI?"), on-brand site pages rather than dated blog
+      posts. Article + BreadcrumbList + FAQPage structured data; film spliced at <!-- FILM -->.
   gen_server_card:
     script: scripts/gen_server_card.py
     source: ../a2ui-private/mcp-worker/src/tools.js — mcpTools(null), the

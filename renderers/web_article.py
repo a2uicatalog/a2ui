@@ -27131,7 +27131,8 @@ def _render_motion_timeline(b: dict) -> str:
     # Twin of the GAS wrapper (it had drifted GAS-only, 2026-10-04): break out of the host's 860px asw-page column, let
     # pointer/wheel events through the stage wrappers to nested canvases, and carry the film's stage colour out to the page.
     pg = _mo_tl_bg[0]
-    return ('<style>html,body{background:' + pg + '!important}[style*="radial-gradient(120% 90%"]{background:' + pg + '!important;}'
+    # Scoped to the Apps Script host page (.asw-page): an article-embedded film must not repaint the page (it did, 2026-10-05).
+    return ('<style>html:has(.asw-page),html:has(.asw-page) body{background:' + pg + '!important}.asw-page [style*="radial-gradient(120% 90%"]{background:' + pg + '!important;}'
             + '.asw-page{max-width:none!important;padding:0!important;margin:0!important;background:' + pg + '!important}'
             + '.mt-el{pointer-events:none}.mt-el canvas{pointer-events:auto}</style>' + out)
 

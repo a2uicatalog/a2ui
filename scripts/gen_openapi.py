@@ -532,6 +532,10 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 
 > Open-source, typed UI vocabulary ({n_atoms} atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, MCP Apps and Android apps — from one JSON schema payload, instead of generating HTML.
 
+## Start here
+
+- [What is A2UI?]({base}/what-is-a2ui/): Plain-English guide to the A2UI protocol: how agents send UI as JSON, how it travels over MCP, AG-UI and A2A, where it renders, and how it differs from generated HTML. Includes a 26-second explainer film.
+
 ## Integrate & Developer Resources
 
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.

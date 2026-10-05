@@ -502,6 +502,7 @@ def site_header(active=""):
     return f"""<header class="site-header"><div class="hdr-in">
     <a class="wordmark" href="/">{BRAND_LOGO_HTML}</a>
     <nav class="site-nav">
+      <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
       <a href="/"{cur('atoms')}>Atoms</a>
       {'<a href="/templates"' + cur('templates') + '>Templates</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
@@ -2036,10 +2037,9 @@ def generate_index(atoms):
   <main class="wrap">
   <header class="hero">
     <div class="halo"></div>
-    <a class="announce" href="/blog/006-mcp-apps-inside-chatgpt/">
+    <a class="announce" href="/what-is-a2ui/">
       <span class="announce-tag">NEW</span>
-      <span class="announce-text">Now rendering inside ChatGPT as well as Claude — add
-        <code>a2uicatalog.ai/mcp</code> as a connector</span>
+      <span class="announce-text">What is A2UI? A plain-English guide, with a 26-second film</span>
       <span class="announce-go" aria-hidden="true">&rarr;</span>
     </a>
     <h1><span class="grad">A2UI</span> Atomic Catalog</h1>

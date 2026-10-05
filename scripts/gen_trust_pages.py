@@ -393,7 +393,8 @@ npx @a2uicatalog/mcp</code></pre>
 <p>The A2UI Atomic Catalog is an open-source, typed UI vocabulary — <strong>{n} atoms</strong> —
 that AI agents use to produce real rendered interfaces instead of generating HTML. An agent
 names a component (<code>stat_card</code>, <code>gauge_sla</code>, <code>stepper</code>) and
-passes data; a renderer that already knows that component draws it.</p>
+passes data; a renderer that already knows that component draws it.
+New to the protocol itself? Start with <a href="/what-is-a2ui/">What is A2UI?</a></p>
 
 <h2>Why a vocabulary instead of generated markup</h2>
 <p>A model writing HTML has to be correct every time, and its failure mode is markup that is

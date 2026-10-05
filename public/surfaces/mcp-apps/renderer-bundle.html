@@ -26125,8 +26125,10 @@ _RENDERERS['motion_timeline'] = function(b) {
   // the wrappers, and re-enable them on canvases so nested interactive atoms still receive them.
   // The stage colour all the way out: the host page background and any nested brick card otherwise
   // show as a white bleed around the cinematic frame. It is the film's own stage colour, so a light film stays light.
+  // Scoped to the Apps Script host page (.asw-page) with :has(): a film EMBEDDED in an article (blog, pillar pages)
+  // must not repaint the page around it (it did, live, 2026-10-05).
   var pg = _moTlBg;
-  return '<style>html,body{background:' + pg + '!important}[style*="radial-gradient(120% 90%"]{background:' + pg + '!important;}'
+  return '<style>html:has(.asw-page),html:has(.asw-page) body{background:' + pg + '!important}.asw-page [style*="radial-gradient(120% 90%"]{background:' + pg + '!important;}'
     + '.asw-page{max-width:none!important;padding:0!important;margin:0!important;background:' + pg + '!important}'
     + '.mt-el{pointer-events:none}.mt-el canvas{pointer-events:auto}</style>' + out;
 };

@@ -1,0 +1,1656 @@
+{
+ "blocks": [
+  {
+   "type": "motion_timeline",
+   "title": "How agent UI protocols nest",
+   "aspect": "16:9",
+   "duration": 26.6,
+   "ease": "standard",
+   "loop": false,
+   "accent": "#8d98ff",
+   "background": "#1e2733",
+   "backdrop": "flat",
+   "theme": "dark",
+   "controls": true,
+   "poster": 26.1,
+   "stitch": "push",
+   "overlap": 0.6,
+   "scenes": [
+    {
+     "layer": "s1",
+     "t": 0
+    },
+    {
+     "layer": "s2",
+     "t": 4.6
+    },
+    {
+     "layer": "s3",
+     "t": 10.2
+    },
+    {
+     "layer": "s4",
+     "t": 15.2,
+     "transition": "zoom-through"
+    },
+    {
+     "layer": "s6",
+     "t": 22.4
+    }
+   ],
+   "blocks": [
+    {
+     "type": "motion_layer",
+     "id": "s1",
+     "place": {
+      "z": 2
+     },
+     "blocks": [
+      {
+       "type": "motion_text",
+       "id": "e1",
+       "text": "1 · THE LETTER",
+       "place": {
+        "x": 6,
+        "y": 10,
+        "w": 60
+       },
+       "size": 20,
+       "weight": "bold",
+       "tracking": 0.16,
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "h1",
+       "text": "*A2UI*\nis the letter.",
+       "place": {
+        "x": 6,
+        "y": 18,
+        "w": 42
+       },
+       "font": "sans",
+       "weight": "black",
+       "reveal": "mask",
+       "line_height": 0.98,
+       "tracking": -0.035,
+       "color": "#eaeff5",
+       "accent": "#8d98ff",
+       "size": 84
+      },
+      {
+       "type": "motion_text",
+       "id": "b1",
+       "text": "Declarative JSON: it names\ncomponents from a catalog,\nwith their data.",
+       "place": {
+        "x": 6,
+        "y": 50,
+        "w": 40
+       },
+       "size": 28,
+       "weight": "regular",
+       "reveal": "fade",
+       "mode": "lines",
+       "color": "#9ca5b1",
+       "line_height": 1.3
+      },
+      {
+       "type": "motion_code",
+       "id": "letter",
+       "file": "letter.a2ui.json",
+       "size": 15,
+       "accent": "#8d98ff",
+       "lines": [
+        "{ \"version\": \"v1.0\",",
+        "  \"createSurface\": { \"surfaceId\": \"jobs\",",
+        "    \"catalogId\": \"…/a2ui-atoms-v1.json\",",
+        "    \"components\": [",
+        "      { \"id\": \"a\", \"component\": \"stat_card\",",
+        "        \"label\": \"Open jobs\", \"value\": \"12\" },",
+        "      { \"id\": \"b\", \"component\": \"motion_chart\",",
+        "        \"kind\": \"bars\", \"data\": [4, 7, 5, 9] },",
+        "      { \"id\": \"c\", \"component\": \"motion_checklist\",",
+        "        \"items\": [\"Quote\", \"Book\", \"Pay\"] },",
+        "      { \"id\": \"root\", \"component\": \"Column\",",
+        "        \"children\": [\"a\", \"b\", \"c\"] } ] } }"
+       ],
+       "place": {
+        "x": 48,
+        "y": 12,
+        "w": 47
+       }
+      },
+      {
+       "type": "motion_shape",
+       "id": "r1",
+       "shape": "line",
+       "place": {
+        "x": 6,
+        "y": 79.4,
+        "w": 8,
+        "h": 1
+       },
+       "thickness": 4,
+       "fill": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "c1",
+       "text": "A2UI is the letter: it names components\nand never carries code.",
+       "place": {
+        "x": 6,
+        "y": 82,
+        "w": 88
+       },
+       "size": 30,
+       "weight": "bold",
+       "reveal": "rise",
+       "mode": "words",
+       "overlap": 4,
+       "line_height": 1.2,
+       "color": "#eaeff5",
+       "accent": "#8d98ff"
+      }
+     ]
+    },
+    {
+     "type": "motion_layer",
+     "id": "s2",
+     "place": {
+      "z": 2
+     },
+     "blocks": [
+      {
+       "type": "motion_text",
+       "id": "e2",
+       "text": "2 · THE ENVELOPE",
+       "place": {
+        "x": 6,
+        "y": 9,
+        "w": 60
+       },
+       "size": 20,
+       "weight": "bold",
+       "tracking": 0.16,
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "h2",
+       "text": "*Each pipe* has its own envelope.",
+       "place": {
+        "x": 6,
+        "y": 14,
+        "w": 88
+       },
+       "font": "sans",
+       "weight": "black",
+       "reveal": "mask",
+       "line_height": 0.98,
+       "tracking": -0.035,
+       "color": "#eaeff5",
+       "accent": "#8d98ff",
+       "size": 60
+      },
+      {
+       "type": "motion_envelope",
+       "id": "env2a",
+       "mode": "seal",
+       "width": 307,
+       "fill": "#3a4558",
+       "accent": "#8d98ff",
+       "stamp": "tool result",
+       "blocks": [
+        {
+         "type": "motion_pill",
+         "text": "*A2UI*",
+         "size": 16,
+         "accent": "#8d98ff",
+         "color": "#eaeff5",
+         "fill": "#2d3642"
+        }
+       ],
+       "label": "A2UI letter in an MCP envelope",
+       "place": {
+        "x": 8,
+        "y": 41,
+        "w": 24,
+        "z": 3
+       }
+      },
+      {
+       "type": "motion_envelope",
+       "id": "env2b",
+       "mode": "seal",
+       "width": 307,
+       "fill": "#3a4558",
+       "accent": "#8d98ff",
+       "stamp": "activity snapshot",
+       "blocks": [
+        {
+         "type": "motion_pill",
+         "text": "*A2UI*",
+         "size": 16,
+         "accent": "#8d98ff",
+         "color": "#eaeff5",
+         "fill": "#2d3642"
+        }
+       ],
+       "label": "A2UI letter in an AG-UI envelope",
+       "place": {
+        "x": 38,
+        "y": 41,
+        "w": 24,
+        "z": 3
+       }
+      },
+      {
+       "type": "motion_envelope",
+       "id": "env2c",
+       "mode": "seal",
+       "width": 307,
+       "fill": "#3a4558",
+       "accent": "#8d98ff",
+       "stamp": "data part",
+       "blocks": [
+        {
+         "type": "motion_pill",
+         "text": "*A2UI*",
+         "size": 16,
+         "accent": "#8d98ff",
+         "color": "#eaeff5",
+         "fill": "#2d3642"
+        }
+       ],
+       "label": "A2UI letter in an A2A envelope",
+       "place": {
+        "x": 68,
+        "y": 41,
+        "w": 24,
+        "z": 3
+       }
+      },
+      {
+       "type": "motion_text",
+       "id": "nenv2a",
+       "text": "MCP",
+       "place": {
+        "x": 8,
+        "y": 69.66666666666666,
+        "w": 24
+       },
+       "size": 30,
+       "weight": "black",
+       "reveal": "fade",
+       "color": "#8d98ff",
+       "align": "middle"
+      },
+      {
+       "type": "motion_text",
+       "id": "nenv2b",
+       "text": "AG-UI",
+       "place": {
+        "x": 38,
+        "y": 69.66666666666666,
+        "w": 24
+       },
+       "size": 30,
+       "weight": "black",
+       "reveal": "fade",
+       "color": "#8d98ff",
+       "align": "middle"
+      },
+      {
+       "type": "motion_text",
+       "id": "nenv2c",
+       "text": "A2A",
+       "place": {
+        "x": 68,
+        "y": 69.66666666666666,
+        "w": 24
+       },
+       "size": 30,
+       "weight": "black",
+       "reveal": "fade",
+       "color": "#8d98ff",
+       "align": "middle"
+      },
+      {
+       "type": "motion_shape",
+       "id": "r2",
+       "shape": "line",
+       "place": {
+        "x": 6,
+        "y": 79.4,
+        "w": 8,
+        "h": 1
+       },
+       "thickness": 4,
+       "fill": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "c2",
+       "text": "The letter inside never changes.",
+       "place": {
+        "x": 6,
+        "y": 82,
+        "w": 88
+       },
+       "size": 30,
+       "weight": "bold",
+       "reveal": "rise",
+       "mode": "words",
+       "overlap": 4,
+       "line_height": 1.2,
+       "color": "#eaeff5",
+       "accent": "#8d98ff"
+      }
+     ]
+    },
+    {
+     "type": "motion_layer",
+     "id": "s3",
+     "place": {
+      "z": 2
+     },
+     "blocks": [
+      {
+       "type": "motion_text",
+       "id": "e3",
+       "text": "3 · THE PIPE",
+       "place": {
+        "x": 6,
+        "y": 8,
+        "w": 60
+       },
+       "size": 20,
+       "weight": "bold",
+       "tracking": 0.16,
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "h3",
+       "text": "Then it *travels.*",
+       "place": {
+        "x": 6,
+        "y": 12,
+        "w": 60
+       },
+       "font": "sans",
+       "weight": "black",
+       "reveal": "mask",
+       "line_height": 0.98,
+       "tracking": -0.035,
+       "color": "#eaeff5",
+       "accent": "#8d98ff",
+       "size": 56
+      },
+      {
+       "type": "motion_path",
+       "id": "pmcp",
+       "d": "M 0 250 C 260 40 740 40 1000 250",
+       "w": 1000,
+       "h": 500,
+       "width": 10,
+       "color": "#2ac4ce",
+       "label_color": "#eaeff5",
+       "label": "pmcp",
+       "place": {
+        "x": 15,
+        "y": 26,
+        "w": 70,
+        "z": 2
+       }
+      },
+      {
+       "type": "motion_path",
+       "id": "pagui",
+       "d": "M 0 250 L 1000 250",
+       "w": 1000,
+       "h": 500,
+       "width": 16,
+       "color": "#8d98ff",
+       "label_color": "#eaeff5",
+       "label": "pagui",
+       "place": {
+        "x": 15,
+        "y": 26,
+        "w": 70,
+        "z": 2
+       }
+      },
+      {
+       "type": "motion_path",
+       "id": "pa2a",
+       "d": "M 0 250 C 260 460 740 460 1000 250",
+       "w": 1000,
+       "h": 500,
+       "width": 10,
+       "color": "#2ac4ce",
+       "label_color": "#eaeff5",
+       "label": "pa2a",
+       "place": {
+        "x": 15,
+        "y": 26,
+        "w": 70,
+        "z": 2
+       }
+      },
+      {
+       "type": "motion_text",
+       "id": "lagui",
+       "text": "AG-UI · e.g. CopilotKit",
+       "place": {
+        "x": 29,
+        "y": 49.11,
+        "w": 42
+       },
+       "size": 22,
+       "weight": "bold",
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#8d98ff",
+       "align": "middle",
+       "line_height": 1.2
+      },
+      {
+       "type": "motion_text",
+       "id": "lmcp",
+       "text": "MCP · Claude, ChatGPT",
+       "place": {
+        "x": 29,
+        "y": 30.509999999999998,
+        "w": 42
+       },
+       "size": 22,
+       "weight": "bold",
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#eaeff5",
+       "align": "middle",
+       "line_height": 1.2
+      },
+      {
+       "type": "motion_text",
+       "id": "la2a",
+       "text": "A2A · agent to agent",
+       "place": {
+        "x": 29,
+        "y": 79.21,
+        "w": 42
+       },
+       "size": 22,
+       "weight": "bold",
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#eaeff5",
+       "align": "middle",
+       "line_height": 1.2
+      },
+      {
+       "type": "motion_pill",
+       "id": "nagent",
+       "text": "agent",
+       "size": 26,
+       "accent": "#8d98ff",
+       "color": "#eaeff5",
+       "fill": "#2d3642",
+       "align": "middle",
+       "place": {
+        "x": 2,
+        "y": 53.61,
+        "w": 12,
+        "z": 5
+       }
+      },
+      {
+       "type": "motion_pill",
+       "id": "nhost",
+       "text": "host",
+       "size": 26,
+       "accent": "#8d98ff",
+       "color": "#eaeff5",
+       "fill": "#2d3642",
+       "align": "middle",
+       "place": {
+        "x": 87,
+        "y": 53.61,
+        "w": 11,
+        "z": 5
+       }
+      },
+      {
+       "type": "motion_envelope",
+       "id": "env3",
+       "mode": "seal",
+       "width": 90,
+       "fill": "#3a4558",
+       "accent": "#8d98ff",
+       "blocks": [],
+       "label": "A2UI letter in an envelope",
+       "place": {
+        "x": 15,
+        "y": 53.221111111111114,
+        "w": 7,
+        "z": 6
+       }
+      },
+      {
+       "type": "motion_shape",
+       "id": "r3",
+       "shape": "line",
+       "place": {
+        "x": 6,
+        "y": 79.4,
+        "w": 8,
+        "h": 1
+       },
+       "thickness": 4,
+       "fill": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "c3",
+       "text": "Any pipe will carry it.",
+       "place": {
+        "x": 6,
+        "y": 82,
+        "w": 88
+       },
+       "size": 30,
+       "weight": "bold",
+       "reveal": "rise",
+       "mode": "words",
+       "overlap": 4,
+       "line_height": 1.2,
+       "color": "#eaeff5",
+       "accent": "#8d98ff"
+      }
+     ]
+    },
+    {
+     "type": "motion_layer",
+     "id": "s4",
+     "place": {
+      "z": 2
+     },
+     "blocks": [
+      {
+       "type": "motion_text",
+       "id": "e4",
+       "text": "4 · THE LAST HOP",
+       "place": {
+        "x": 6,
+        "y": 7,
+        "w": 60
+       },
+       "size": 20,
+       "weight": "bold",
+       "tracking": 0.16,
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "h4",
+       "text": "The *surface* is the last hop.",
+       "place": {
+        "x": 6,
+        "y": 11,
+        "w": 88
+       },
+       "font": "sans",
+       "weight": "black",
+       "reveal": "mask",
+       "line_height": 0.98,
+       "tracking": -0.035,
+       "color": "#eaeff5",
+       "accent": "#8d98ff",
+       "size": 50
+      },
+      {
+       "type": "demo_window",
+       "id": "hcl",
+       "title": "Claude · ChatGPT",
+       "nav": [
+        "Chat"
+       ],
+       "tone": "dark",
+       "accent": "#8d98ff",
+       "height": 300,
+       "blocks": [
+        {
+         "type": "stat_card",
+         "label": "Open jobs",
+         "value": "12",
+         "accent": "#8d98ff"
+        },
+        {
+         "type": "motion_chart",
+         "kind": "bars",
+         "data": [
+          4,
+          7,
+          5,
+          9
+         ],
+         "height": 110,
+         "size": 14,
+         "accent": "#8d98ff",
+         "accent2": "#2ac4ce",
+         "label": "Jobs per day"
+        },
+        {
+         "type": "motion_checklist",
+         "items": [
+          "Quote",
+          "Book",
+          "Pay"
+         ],
+         "size": 15,
+         "accent": "#2ac4ce"
+        }
+       ],
+       "place": {
+        "x": 2.5,
+        "y": 24,
+        "w": 45.31,
+        "h": 66.67,
+        "origin": "tl"
+       }
+      },
+      {
+       "type": "demo_window",
+       "id": "hgp",
+       "title": "CopilotKit",
+       "nav": [
+        "Chat"
+       ],
+       "tone": "dark",
+       "accent": "#8d98ff",
+       "height": 300,
+       "blocks": [
+        {
+         "type": "stat_card",
+         "label": "Open jobs",
+         "value": "12",
+         "accent": "#8d98ff"
+        },
+        {
+         "type": "motion_chart",
+         "kind": "bars",
+         "data": [
+          4,
+          7,
+          5,
+          9
+         ],
+         "height": 110,
+         "size": 14,
+         "accent": "#8d98ff",
+         "accent2": "#2ac4ce",
+         "label": "Jobs per day"
+        },
+        {
+         "type": "motion_checklist",
+         "items": [
+          "Quote",
+          "Book",
+          "Pay"
+         ],
+         "size": 15,
+         "accent": "#2ac4ce"
+        }
+       ],
+       "place": {
+        "x": 26.7,
+        "y": 24,
+        "w": 45.31,
+        "h": 66.67,
+        "origin": "tl"
+       }
+      },
+      {
+       "type": "demo_window",
+       "id": "hck",
+       "title": "Google Workspace",
+       "nav": [
+        "Chat"
+       ],
+       "tone": "dark",
+       "accent": "#8d98ff",
+       "height": 300,
+       "blocks": [
+        {
+         "type": "stat_card",
+         "label": "Open jobs",
+         "value": "12",
+         "accent": "#8d98ff"
+        },
+        {
+         "type": "motion_chart",
+         "kind": "bars",
+         "data": [
+          4,
+          7,
+          5,
+          9
+         ],
+         "height": 110,
+         "size": 14,
+         "accent": "#8d98ff",
+         "accent2": "#2ac4ce",
+         "label": "Jobs per day"
+        },
+        {
+         "type": "motion_checklist",
+         "items": [
+          "Quote",
+          "Book",
+          "Pay"
+         ],
+         "size": 15,
+         "accent": "#2ac4ce"
+        }
+       ],
+       "place": {
+        "x": 50.9,
+        "y": 24,
+        "w": 45.31,
+        "h": 66.67,
+        "origin": "tl"
+       }
+      },
+      {
+       "type": "motion_device",
+       "id": "android",
+       "kind": "phone",
+       "width": 190,
+       "label": "Android phone",
+       "accent": "#8d98ff",
+       "blocks": [
+        {
+         "type": "stat_card",
+         "label": "Open jobs",
+         "value": "12",
+         "accent": "#8d98ff"
+        },
+        {
+         "type": "motion_chart",
+         "kind": "bars",
+         "data": [
+          4,
+          7,
+          5,
+          9
+         ],
+         "height": 80,
+         "size": 12,
+         "accent": "#8d98ff",
+         "accent2": "#2ac4ce",
+         "label": "Jobs per day"
+        },
+        {
+         "type": "motion_checklist",
+         "items": [
+          "Quote",
+          "Book",
+          "Pay"
+         ],
+         "size": 13,
+         "accent": "#2ac4ce"
+        }
+       ],
+       "place": {
+        "x": 77.6,
+        "y": 17,
+        "w": 14.84
+       }
+      },
+      {
+       "type": "motion_text",
+       "id": "lcl",
+       "text": "*MCP Apps*\nsandboxed view",
+       "place": {
+        "x": 2.5,
+        "y": 58.53,
+        "w": 22.66
+       },
+       "size": 19,
+       "weight": "bold",
+       "reveal": "fade",
+       "color": "#9ca5b1",
+       "accent": "#eaeff5",
+       "align": "middle",
+       "line_height": 1.25
+      },
+      {
+       "type": "motion_text",
+       "id": "lgp",
+       "text": "*Web app*\nReact renderer",
+       "place": {
+        "x": 26.7,
+        "y": 58.53,
+        "w": 22.66
+       },
+       "size": 19,
+       "weight": "bold",
+       "reveal": "fade",
+       "color": "#9ca5b1",
+       "accent": "#eaeff5",
+       "align": "middle",
+       "line_height": 1.25
+      },
+      {
+       "type": "motion_text",
+       "id": "lck",
+       "text": "*Google Workspace*\nApps Script web app",
+       "place": {
+        "x": 50.9,
+        "y": 58.53,
+        "w": 22.66
+       },
+       "size": 19,
+       "weight": "bold",
+       "reveal": "fade",
+       "color": "#9ca5b1",
+       "accent": "#eaeff5",
+       "align": "middle",
+       "line_height": 1.25
+      },
+      {
+       "type": "motion_text",
+       "id": "ln4",
+       "text": "*Android*\nandroidx.a2ui",
+       "place": {
+        "x": 75.6,
+        "y": 73.71000000000001,
+        "w": 18.84
+       },
+       "size": 19,
+       "weight": "bold",
+       "reveal": "fade",
+       "color": "#9ca5b1",
+       "accent": "#eaeff5",
+       "align": "middle",
+       "line_height": 1.25
+      },
+      {
+       "type": "motion_layer",
+       "id": "envs",
+       "place": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 100,
+        "z": 6
+       },
+       "blocks": [
+        {
+         "type": "motion_envelope",
+         "id": "m0",
+         "mode": "open",
+         "width": 102,
+         "fill": "#3a4558",
+         "accent": "#8d98ff",
+         "blocks": [],
+         "label": "A2UI letter in an envelope",
+         "place": {
+          "x": 9.83,
+          "y": 29.11,
+          "w": 8
+         }
+        },
+        {
+         "type": "motion_envelope",
+         "id": "m1",
+         "mode": "open",
+         "width": 102,
+         "fill": "#3a4558",
+         "accent": "#8d98ff",
+         "blocks": [],
+         "label": "A2UI letter in an envelope",
+         "place": {
+          "x": 34.03,
+          "y": 29.11,
+          "w": 8
+         }
+        },
+        {
+         "type": "motion_envelope",
+         "id": "m2",
+         "mode": "open",
+         "width": 102,
+         "fill": "#3a4558",
+         "accent": "#8d98ff",
+         "blocks": [],
+         "label": "A2UI letter in an envelope",
+         "place": {
+          "x": 58.23,
+          "y": 29.11,
+          "w": 8
+         }
+        },
+        {
+         "type": "motion_envelope",
+         "id": "m3",
+         "mode": "open",
+         "width": 102,
+         "fill": "#3a4558",
+         "accent": "#8d98ff",
+         "blocks": [],
+         "label": "A2UI letter in an envelope",
+         "place": {
+          "x": 81.02,
+          "y": 33.3,
+          "w": 8
+         }
+        }
+       ]
+      },
+      {
+       "type": "motion_shape",
+       "id": "r4",
+       "shape": "line",
+       "place": {
+        "x": 6,
+        "y": 79.4,
+        "w": 8,
+        "h": 1
+       },
+       "thickness": 4,
+       "fill": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "c4",
+       "text": "Each surface's renderer draws the letter in its own style.",
+       "place": {
+        "x": 6,
+        "y": 82,
+        "w": 88
+       },
+       "size": 30,
+       "weight": "bold",
+       "reveal": "rise",
+       "mode": "words",
+       "overlap": 4,
+       "line_height": 1.2,
+       "color": "#eaeff5",
+       "accent": "#8d98ff"
+      }
+     ]
+    },
+    {
+     "type": "motion_layer",
+     "id": "s6",
+     "place": {
+      "z": 2
+     },
+     "blocks": [
+      {
+       "type": "motion_text",
+       "id": "e6",
+       "text": "WHERE THE COMPONENTS COME FROM",
+       "place": {
+        "x": 6,
+        "y": 10,
+        "w": 90
+       },
+       "size": 20,
+       "weight": "bold",
+       "tracking": 0.16,
+       "reveal": "fade",
+       "mode": "words",
+       "color": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "h6",
+       "text": "*a2ui*catalog.ai",
+       "place": {
+        "x": 6,
+        "y": 22,
+        "w": 88
+       },
+       "font": "sans",
+       "weight": "black",
+       "reveal": "mask",
+       "line_height": 0.98,
+       "tracking": -0.035,
+       "color": "#eaeff5",
+       "accent": "#8d98ff",
+       "size": 120
+      },
+      {
+       "type": "motion_text",
+       "id": "b6",
+       "text": "The components a letter can name, and the renderers\nthat draw them on each surface.",
+       "place": {
+        "x": 6,
+        "y": 42,
+        "w": 88
+       },
+       "size": 32,
+       "weight": "regular",
+       "reveal": "fade",
+       "mode": "lines",
+       "color": "#9ca5b1",
+       "line_height": 1.3
+      },
+      {
+       "type": "motion_layer",
+       "id": "pl6",
+       "place": {
+        "x": 6,
+        "y": 60,
+        "w": 88,
+        "h": 10
+       },
+       "blocks": [
+        {
+         "type": "motion_pill",
+         "id": "p6a",
+         "text": "*500+* components",
+         "icon": "◆",
+         "size": 26,
+         "accent": "#8d98ff",
+         "color": "#eaeff5",
+         "fill": "#2d3642",
+         "place": {
+          "x": 0,
+          "y": 0,
+          "w": 28
+         }
+        },
+        {
+         "type": "motion_pill",
+         "id": "p6b",
+         "text": "Web · MCP Apps · Google Workspace · Android",
+         "icon": "▣",
+         "size": 26,
+         "accent": "#8d98ff",
+         "color": "#eaeff5",
+         "fill": "#2d3642",
+         "place": {
+          "x": 31,
+          "y": 0,
+          "w": 66
+         }
+        }
+       ]
+      },
+      {
+       "type": "motion_shape",
+       "id": "r6",
+       "shape": "line",
+       "place": {
+        "x": 6,
+        "y": 79.4,
+        "w": 8,
+        "h": 1
+       },
+       "thickness": 4,
+       "fill": "#2ac4ce"
+      },
+      {
+       "type": "motion_text",
+       "id": "c6",
+       "text": "Write the letter once. Every surface can draw it.",
+       "place": {
+        "x": 6,
+        "y": 82,
+        "w": 88
+       },
+       "size": 30,
+       "weight": "bold",
+       "reveal": "rise",
+       "mode": "words",
+       "overlap": 4,
+       "line_height": 1.2,
+       "color": "#eaeff5",
+       "accent": "#8d98ff"
+      }
+     ]
+    }
+   ],
+   "tracks": [
+    {
+     "target": "h1",
+     "keys": [
+      {
+       "t": 0.2,
+       "p": 0
+      },
+      {
+       "t": 1.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "b1",
+     "keys": [
+      {
+       "t": 1,
+       "p": 0
+      },
+      {
+       "t": 2,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "letter",
+     "keys": [
+      {
+       "t": 0.5,
+       "p": 0,
+       "opacity": 0,
+       "y": 16
+      },
+      {
+       "t": 1,
+       "opacity": 1,
+       "y": 12,
+       "ease": "expo-out"
+      },
+      {
+       "t": 2.8,
+       "p": 1,
+       "ease": "standard"
+      },
+      {
+       "t": 3.6,
+       "scale": 1,
+       "rx": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 4.4,
+       "scale": 0.42,
+       "rx": 64,
+       "y": 30,
+       "ease": "quart-in-out"
+      }
+     ]
+    },
+    {
+     "target": "c1",
+     "keys": [
+      {
+       "t": 1.4,
+       "p": 0
+      },
+      {
+       "t": 2.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "h2",
+     "keys": [
+      {
+       "t": 4.8,
+       "p": 0
+      },
+      {
+       "t": 6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "env2a",
+     "keys": [
+      {
+       "t": 5.2,
+       "p": 0,
+       "opacity": 0
+      },
+      {
+       "t": 5.5,
+       "opacity": 1
+      },
+      {
+       "t": 5.6,
+       "p": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 7,
+       "p": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "env2b",
+     "keys": [
+      {
+       "t": 6.5,
+       "p": 0,
+       "opacity": 0
+      },
+      {
+       "t": 6.8,
+       "opacity": 1
+      },
+      {
+       "t": 6.9,
+       "p": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 8.3,
+       "p": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "env2c",
+     "keys": [
+      {
+       "t": 7.8,
+       "p": 0,
+       "opacity": 0
+      },
+      {
+       "t": 8.1,
+       "opacity": 1
+      },
+      {
+       "t": 8.2,
+       "p": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.6,
+       "p": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "c2",
+     "keys": [
+      {
+       "t": 8.4,
+       "p": 0
+      },
+      {
+       "t": 9.5,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "h3",
+     "keys": [
+      {
+       "t": 10.4,
+       "p": 0
+      },
+      {
+       "t": 11.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "pagui",
+     "keys": [
+      {
+       "t": 10.6,
+       "p": 0
+      },
+      {
+       "t": 12.6,
+       "p": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "env3",
+     "keys": [
+      {
+       "t": 10.6,
+       "x": 15,
+       "y": 53.221111111111114,
+       "opacity": 0
+      },
+      {
+       "t": 10.8,
+       "opacity": 1
+      },
+      {
+       "t": 12.6,
+       "x": 78,
+       "y": 53.221111111111114,
+       "ease": "standard"
+      },
+      {
+       "t": 12.8,
+       "opacity": 1
+      },
+      {
+       "t": 13.1,
+       "opacity": 0
+      }
+     ]
+    },
+    {
+     "target": "lagui",
+     "keys": [
+      {
+       "t": 10.8,
+       "p": 0
+      },
+      {
+       "t": 11.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "pmcp",
+     "keys": [
+      {
+       "t": 12.8,
+       "p": 0
+      },
+      {
+       "t": 14.2,
+       "p": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "pa2a",
+     "keys": [
+      {
+       "t": 13,
+       "p": 0
+      },
+      {
+       "t": 14.4,
+       "p": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "lmcp",
+     "keys": [
+      {
+       "t": 12.9,
+       "p": 0
+      },
+      {
+       "t": 13.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "la2a",
+     "keys": [
+      {
+       "t": 13.1,
+       "p": 0
+      },
+      {
+       "t": 13.8,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "nagent",
+     "keys": [
+      {
+       "t": 10.3,
+       "p": 0
+      },
+      {
+       "t": 10.8,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "nhost",
+     "keys": [
+      {
+       "t": 10.4,
+       "p": 0
+      },
+      {
+       "t": 10.9,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "c3",
+     "keys": [
+      {
+       "t": 13.2,
+       "p": 0
+      },
+      {
+       "t": 14.2,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "h4",
+     "keys": [
+      {
+       "t": 15.4,
+       "p": 0
+      },
+      {
+       "t": 16.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "envs",
+     "keys": [
+      {
+       "t": 15.8,
+       "opacity": 0,
+       "y": -6,
+       "p": 0
+      },
+      {
+       "t": 16.5,
+       "opacity": 1,
+       "y": 0,
+       "p": 0,
+       "ease": "expo-out"
+      },
+      {
+       "t": 17.3,
+       "p": 1,
+       "ease": "standard"
+      },
+      {
+       "t": 17.6,
+       "opacity": 1
+      },
+      {
+       "t": 18.1,
+       "opacity": 0,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "hcl",
+     "keys": [
+      {
+       "t": 17.4,
+       "opacity": 0,
+       "scale": 0.47
+      },
+      {
+       "t": 18,
+       "opacity": 1,
+       "scale": 0.5,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "hgp",
+     "keys": [
+      {
+       "t": 17.55,
+       "opacity": 0,
+       "scale": 0.47
+      },
+      {
+       "t": 18.15,
+       "opacity": 1,
+       "scale": 0.5,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "hck",
+     "keys": [
+      {
+       "t": 17.7,
+       "opacity": 0,
+       "scale": 0.47
+      },
+      {
+       "t": 18.3,
+       "opacity": 1,
+       "scale": 0.5,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "android",
+     "keys": [
+      {
+       "t": 17.7,
+       "p": 0
+      },
+      {
+       "t": 18.4,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "c4",
+     "keys": [
+      {
+       "t": 18.4,
+       "p": 0
+      },
+      {
+       "t": 19.6,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "h6",
+     "keys": [
+      {
+       "t": 22.6,
+       "p": 0
+      },
+      {
+       "t": 23.8,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "b6",
+     "keys": [
+      {
+       "t": 23.3,
+       "p": 0
+      },
+      {
+       "t": 24.2,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "pl6",
+     "keys": [
+      {
+       "t": 23.8,
+       "opacity": 0,
+       "y": 63
+      },
+      {
+       "t": 24.4,
+       "opacity": 1,
+       "y": 60,
+       "ease": "expo-out"
+      }
+     ]
+    },
+    {
+     "target": "c6",
+     "keys": [
+      {
+       "t": 24.2,
+       "p": 0
+      },
+      {
+       "t": 25.4,
+       "p": 1,
+       "ease": "expo-out"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
