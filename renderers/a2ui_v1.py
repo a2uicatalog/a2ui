@@ -606,13 +606,14 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         from catalog_map import required_catalogs
     surface_ext["catalogs"] = required_catalogs(payload.get("blocks", []))
 
+    data_model: Dict[str, Any] = {}               # filled only when form atoms become Basic Catalog inputs
     if capabilities is not None and not capabilities.supports(catalog_id):
         basic_id = capabilities.basic_catalog_id
         if basic_id is None:
             raise ValueError(
                 "renderer declared no catalogue this emitter can target: "
                 f"{list(capabilities.supported_catalog_ids)!r} (need {catalog_id!r} or a Basic Catalog)")
-        components, degraded = _degrade_to_basic(components)
+        components, degraded = _degrade_to_basic(components, data_model)
         catalog_id = basic_id
         surface_ext["degraded"] = degraded
 
@@ -621,6 +622,8 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         "catalogId": catalog_id,
         "components": components,
     }
+    if data_model:
+        surface["dataModel"] = data_model            # the inputs' initial values
     if surface_ext:
         surface["metadata"] = {"extensions": {"a2uicatalog_surface": surface_ext}}
 
@@ -653,10 +656,126 @@ def _refs(c: Dict[str, Any]) -> List[str]:
     return out
 
 
-def _degrade_to_basic(components: List[Dict[str, Any]]):
+# ── form atoms -> Basic Catalog inputs (2026-10-05) ─────────────────────────────────
+# A basic-only renderer used to get every form atom as a Text: a form you could read but not
+# fill. These map each one to the spec's own input, its `value` bound to a data-model path
+# (seeded with the atom's default), so the renderer's engine holds what the user enters and a
+# Button's event context can send it. Field-level `rules` don't map (no Basic Catalog
+# equivalent beyond TextField's validationRegexp), so they're dropped and reported.
+
+def _ptr_seg(s: Any) -> str:
+    return str(s).replace("~", "~0").replace("/", "~1")
+
+
+def _options(items: Any, label_key: str = "label") -> List[Dict[str, str]]:
+    out = []
+    for o in items if isinstance(items, list) else []:
+        if isinstance(o, dict):
+            v = o.get("value", o.get("name"))
+            if v is None:
+                continue
+            out.append({"label": str(o.get(label_key) or o.get("label") or v), "value": str(v)})
+        elif isinstance(o, (str, int, float)):
+            out.append({"label": str(o), "value": str(o)})
+    return out
+
+
+_TEXT_VARIANT = {"password": "obscured", "number": "number", "textarea": "longText"}
+
+
+def _basic_input(cid: str, ftype: str, f: Dict[str, Any], path: str):
+    """One form field (form_* atom, or a `form` atom's field entry) -> (Basic Catalog component, initial value).
+    None when the type has no input equivalent."""
+    label = str(f.get("label") or f.get("name") or "")
+    bind = {"path": path}
+    if ftype in ("form_input", "form_textarea", "text", "email", "url", "password", "number", "textarea"):
+        sub = f.get("type") if ftype == "form_input" else ftype
+        variant = "longText" if ftype == "form_textarea" else _TEXT_VARIANT.get(str(sub), "shortText")
+        c = {"id": cid, "component": "TextField", "label": label, "value": bind, "variant": variant}
+        if f.get("placeholder"):
+            c["placeholder"] = str(f["placeholder"])
+        init = f.get("value", f.get("default_value", ""))
+        return c, "" if init is None else (init if variant == "number" and isinstance(init, (int, float)) else str(init))
+    if ftype in ("form_select", "form_radio_group", "select", "radio"):
+        default = f.get("default_value", f.get("selected_value"))
+        return ({"id": cid, "component": "ChoicePicker", "label": label, "variant": "mutuallyExclusive",
+                 "options": _options(f.get("options")), "value": bind},
+                [str(default)] if default not in (None, "") else [])
+    if ftype in ("form_checkbox_group", "form_switch_group", "checkbox") and (f.get("items") or f.get("options")):
+        entries = f.get("items") or f.get("options")
+        on = [str(o.get("name", o.get("value"))) for o in entries if isinstance(o, dict) and o.get("default_checked")]
+        return ({"id": cid, "component": "ChoicePicker", "label": label, "variant": "multipleSelection",
+                 "options": _options(entries), "value": bind}, on)
+    if ftype in ("toggle_switch", "checkbox", "switch"):
+        return ({"id": cid, "component": "CheckBox", "label": label, "value": bind},
+                bool(f.get("is_checked", f.get("default_value", False))))
+    if ftype in ("form_slider", "slider"):
+        lo = f.get("min", 0) if isinstance(f.get("min", 0), (int, float)) else 0
+        hi = f.get("max", 100) if isinstance(f.get("max", 100), (int, float)) else 100
+        c = {"id": cid, "component": "Slider", "label": label, "min": lo, "max": hi, "value": bind}
+        step = f.get("step")
+        if isinstance(step, (int, float)) and step > 0 and (hi - lo) / step == int((hi - lo) / step):
+            c["steps"] = int((hi - lo) / step)
+        d = f.get("default_value")
+        return c, d if isinstance(d, (int, float)) else lo
+    if ftype in ("form_date_picker", "date"):
+        mode = str(f.get("mode") or "")
+        return ({"id": cid, "component": "DateTimeInput", "label": label, "value": bind,
+                 "enableDate": mode != "time", "enableTime": mode in ("time", "datetime")}, "")
+    return None
+
+
+def _set_ptr(model: Dict[str, Any], path: str, value: Any) -> None:
+    keys = [k.replace("~1", "/").replace("~0", "~") for k in path.split("/")[1:]]
+    o = model
+    for k in keys[:-1]:
+        o = o.setdefault(k, {})
+    o[keys[-1]] = value
+
+
+def _form_to_basic(c: Dict[str, Any], data_model: Dict[str, Any]):
+    """A form atom -> (replacement component, extra components) in Basic Catalog terms, or None."""
+    cid, ctype = c["id"], c.get("component")
+    if ctype == "form":
+        kids, extra, ctx = [], [], {}
+        if c.get("title"):
+            extra.append({"id": f"{cid}-title", "component": "Text", "text": f"## {c['title']}"})
+            kids.append(f"{cid}-title")
+        for i, f in enumerate(c.get("fields") or []):
+            if not isinstance(f, dict):
+                continue
+            name = str(f.get("name") or f"field{i}")
+            path = f"/{_ptr_seg(cid)}/{_ptr_seg(name)}"
+            got = _basic_input(f"{cid}-f{i}", str(f.get("type") or "text"), f, path)
+            if got is None:
+                continue
+            comp, init = got
+            _set_ptr(data_model, path, init)
+            extra.append(comp)
+            kids.append(comp["id"])
+            ctx[name] = {"path": path}
+        extra.append({"id": f"{cid}-submit-t", "component": "Text", "text": str(c.get("submit_label") or "Submit")})
+        extra.append({"id": f"{cid}-submit", "component": "Button", "variant": "primary", "child": f"{cid}-submit-t",
+                      "action": {"event": {"name": "submit", "context": dict(ctx, form=cid)}}})
+        kids.append(f"{cid}-submit")
+        return {"id": cid, "component": "Column", "children": kids}, extra
+    if not str(ctype).startswith("form_") and ctype != "toggle_switch":
+        return None
+    path = f"/{_ptr_seg(c.get('name') or cid)}"
+    got = _basic_input(cid, ctype, c, path)
+    if got is None:
+        return None
+    comp, init = got
+    _set_ptr(data_model, path, init)
+    return comp, []
+
+
+def _degrade_to_basic(components: List[Dict[str, Any]], data_model: Optional[Dict[str, Any]] = None):
     """Rewrite a surface so it uses Basic Catalog components only.
 
-    Each component of another type becomes a Text holding its best readable text
+    Form atoms (form, form_input, form_select, ...) become the spec's input components with
+    their values bound into `data_model` (filled in place when given). Each other component
+    of another type becomes a Text holding its best readable text
     (Curtis's call, 2026-10-04: degrade, don't silently drop). One with no text
     is removed and its parent's `children` pruned; where the parent needs exactly
     one child (Card/Button `child`, a tab) it becomes an empty Text instead, since
@@ -674,9 +793,19 @@ def _degrade_to_basic(components: List[Dict[str, Any]]):
 
     report: List[Dict[str, Any]] = []
     dropped = set()
+    model = data_model if data_model is not None else {}
+    extra: List[Dict[str, Any]] = []
     for cid, c in list(by_id.items()):
         ctype = c.get("component")
         if ctype in BASIC_COMPONENTS:
+            continue
+        as_input = _form_to_basic(c, model)
+        if as_input is not None:
+            by_id[cid], more = as_input
+            for m in more:
+                by_id[m["id"]] = m
+            extra += more
+            report.append({"id": cid, "type": ctype, "as": by_id[cid]["component"]})
             continue
         text = _fallback_text(c)
         if text or cid in single_refs:
@@ -699,6 +828,7 @@ def _degrade_to_basic(components: List[Dict[str, Any]]):
         reachable.add(cid)
         stack += _refs(by_id[cid])
     kept = [by_id[c["id"]] for c in components if c["id"] in reachable]
+    kept += [by_id[m["id"]] for m in extra if m["id"] in reachable and m["id"] in by_id]
     return kept, report
 
 
@@ -731,10 +861,16 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
         return [msg]
     create = dict(msg["createSurface"])
     components = [_v09_text(c) for c in create.pop("components")]
-    return [
-        {"version": "v0.9", "createSurface": create},
-        {"version": "v0.9", "updateComponents": {"surfaceId": create["surfaceId"], "components": components}},
-    ]
+    data_model = create.pop("dataModel", None)        # v0.9 sets data with its own message, not in createSurface
+    # v0.9's createSurface is closed (surfaceId, catalogId, theme): metadata.extensions arrived in v1.0, so
+    # a v0.9 message carrying it is invalid v0.9 (androidx's alpha parser happens to tolerate it). Checked
+    # against the vendored v0.9 spec, tests/fixtures/a2ui_v0_9_spec (2026-10-05).
+    create.pop("metadata", None)
+    out = [{"version": "v0.9", "createSurface": create}]
+    if data_model:                                   # before the components, so input bindings resolve at once
+        out.append({"version": "v0.9", "updateDataModel": {"surfaceId": create["surfaceId"], "path": "/", "value": data_model}})
+    out.append({"version": "v0.9", "updateComponents": {"surfaceId": create["surfaceId"], "components": components}})
+    return out
 
 
 # 2026-08-24: action_response() removed. The real spec has NO "actionResponse"

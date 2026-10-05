@@ -10,6 +10,8 @@
                         the app safely through A2uiAtomicCatalog.adapt()'s placeholder.
   renderer-bundle.html  public/surfaces/mcp-apps/renderer-bundle.html, byte for byte.
                         The bridge paints atoms into it via window._A2UI_PAINT.
+  basic-icons.json      atoms/basic-catalog-icons.json: path data for the Basic Catalog
+                        Icon's built-in names (shared with the web renderer).
 
 Both come from the checkout the library is built from, so the AAR always matches the
 catalogue and renderer of that commit.
@@ -40,6 +42,8 @@ def main(out_dir: str, stable_only: bool = False) -> None:
     (out / "atoms.json").write_text(json.dumps(atoms, separators=(",", ":")))
     shutil.copyfile(ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html",
                     out / "renderer-bundle.html")
+    # the Basic Catalog Icon's 59 built-in names, the same table the web renderer uses
+    shutil.copyfile(ROOT / "atoms" / "basic-catalog-icons.json", out / "basic-icons.json")
     kind = "stable" if stable_only else "all"
     print(f"atomic-catalog assets: {len(atoms)} atoms ({kind}), renderer bundle -> {out}")
 

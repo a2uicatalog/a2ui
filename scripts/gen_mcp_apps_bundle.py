@@ -662,7 +662,7 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
     # atom->catalog gate) and the v1.0 decode shim (pure functions, no DOM).
     # atoms_scene_data.gs: the scene kit's generated data constant (props + layouts), read lazily by atoms_scene.gs.
     # atoms_tokens.gs: GENERATED palette design-token logic (gen_design_tokens.py); `palette` in atom.gs calls _tokenCss().
-    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_wired_expand.gs", "atoms_wired_render.gs", "atoms_scene_data.gs", "atoms_tokens.gs"}
+    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_v1_icons.gs", "atoms_wired_expand.gs", "atoms_wired_render.gs", "atoms_scene_data.gs", "atoms_tokens.gs"}
     for f in renderer_files():
         src = f.read_text()
         if f.name not in NON_RENDERER_GS:

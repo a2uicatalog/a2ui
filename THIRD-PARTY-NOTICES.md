@@ -35,6 +35,19 @@ just looks plainer.
 
 ---
 
+## Material Symbols (Google)
+
+- **Project:** Material Symbols / Material Design Icons — SVG path data for 59 icons
+- **Website:** https://github.com/google/material-design-icons
+- **License:** Apache License 2.0
+- **Copyright:** Copyright Google LLC
+- **Vendored as:** `atoms/basic-catalog-icons.json` (path data only, outlined style, 24px;
+  `symbol` records which file each of the A2UI Basic Catalog Icon's built-in names uses),
+  regenerated into `apps-script-surface/gas-wired-renderer/atoms_v1_icons.gs` by
+  `scripts/gen_basic_icons.py` and copied into the Android library's assets.
+
+---
+
 ## PDF.js (Mozilla)
 
 - **Project:** PDF.js — client-side PDF rendering and text extraction

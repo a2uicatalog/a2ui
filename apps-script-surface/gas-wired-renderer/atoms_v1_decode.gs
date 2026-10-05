@@ -75,7 +75,26 @@ function _a2uiResolveDynamic(val, model, scope) {
   return res;
 }
 
+// Basic Catalog inputs: a bound `value` makes the surface interactive (needs the runtime).
+var _A2UI_INPUTS = {TextField: 1, CheckBox: 1, ChoicePicker: 1, Slider: 1, DateTimeInput: 1};
+
+// An event's context with every {path} made absolute (Child Scope applied), literals untouched.
+function _a2uiAbsEvent(ev, scope) {
+  function abs(v) {
+    if (Array.isArray(v)) return v.map(abs);
+    if (v && typeof v === 'object') {
+      if (Object.keys(v).length === 1 && typeof v.path === 'string') return {path: _a2uiResolvePath(v.path, scope)};
+      var o = {}; for (var k in v) o[k] = abs(v[k]); return o;
+    }
+    return v;
+  }
+  var out = {name: ev.name, context: abs(ev.context || {})};
+  if (ev.userMessage !== undefined) out.userMessage = abs(ev.userMessage);
+  return out;
+}
+
 function _rehydrateV1Surface(surface) {
+  var interactive = false;
   var byId = {};
   (surface.components || []).forEach(function(c) { byId[c.id] = c; });
   var model = surface.dataModel || {};
@@ -101,6 +120,23 @@ function _rehydrateV1Surface(surface) {
     // Legacy dialect keys blocks by `type`; ~11 inline recursion sites read
     // `.type` only (found live 2026-07-09) — stamp it once here.
     if (!node.type && typeof node.component === 'string') node.type = node.component;
+    // Interactive Basic Catalog components (2026-10-05): keep each {path} binding's ABSOLUTE
+    // pointer (inputs write edits back to it) and an event action with its context paths made
+    // absolute (the runtime resolves them against the live model at click time).
+    node._a2uiId = id;
+    for (var bk in src) {
+      var bv = src[bk];
+      if (bv && typeof bv === 'object' && !Array.isArray(bv) && Object.keys(bv).length === 1 && typeof bv.path === 'string') {
+        (node._a2uiBind = node._a2uiBind || {})[bk] = _a2uiResolvePath(bv.path, scope);
+        if (_A2UI_INPUTS[src.component]) interactive = true;
+      }
+    }
+    if (src.action && src.action.event && typeof src.action.event.name === 'string' && src.action.event.name !== 'openUrl') {
+      // a JSON STRING, not an object: the payload guard checks CSS-named keys (size, color...) and would
+      // strip an agent's context key called `size` whose value is a {path} binding (found 2026-10-05)
+      node._a2uiAction = JSON.stringify(_a2uiAbsEvent(src.action.event, scope));
+      interactive = true;
+    }
 
     var ch = src.children;
     if (Array.isArray(ch) && ch.every(function(x) { return typeof x === 'string'; })) {
@@ -140,7 +176,7 @@ function _rehydrateV1Surface(surface) {
     // ComponentId-typed properties (split_pane leftId etc.): a string (or
     // uniform string array) naming known component(s) resolves in place.
     for (var field in node) {
-      if (field === 'blocks' || field === 'tabs') continue;
+      if (field === 'blocks' || field === 'tabs' || field.indexOf('_a2ui') === 0) continue;
       var val = node[field];
       if (typeof val === 'string' && byId[val]) {
         node[field] = resolveNode(val, childSeen, scope);
@@ -154,6 +190,10 @@ function _rehydrateV1Surface(surface) {
   var root = byId['root'];
   var rootNode = root ? resolveNode('root', {}, null) : null;
   var rootChildren = (rootNode && rootNode.blocks) ? rootNode.blocks : [];
+  if (interactive) {
+    rootChildren = rootChildren.concat([{type: 'A2uiSurfaceRuntime', component: 'A2uiSurfaceRuntime',
+      surfaceId: surface.surfaceId || '', model: JSON.parse(JSON.stringify(model))}]);
+  }
   // 2026-08-24: real v1.0 has no `surfaceProperties` field at all --
   // renderers/a2ui_v1.py's own fix moved title/theme/catalogs to
   // metadata.extensions.a2uicatalog_surface, the real spec's own

@@ -26,10 +26,14 @@ v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
 
 ## How it draws
 
-- **Basic Catalog components** (Text, Column, Row, Card, Button, Divider, Image) draw
-  natively in Compose. `androidx.a2ui` ships their definitions but no drawing code, so
-  the library includes `defaultBasicComponents`. Pass your own to
-  `A2uiAtomicCatalog.catalog(context, basicComponents = ...)` to use your design system.
+- **All 18 Basic Catalog components** draw natively in Compose with Material 3: Text,
+  Image, Icon, Column, Row, List, Card, Tabs, Modal, Divider, Button, the five inputs
+  (TextField, CheckBox, ChoicePicker, Slider, DateTimeInput) and Video/AudioPlayer, which
+  open in the device's own player. `androidx.a2ui` ships their definitions but no drawing
+  code, so the library includes `defaultBasicComponents`. The engine binds each input's
+  value to the data model, so a Button's action sends what the user entered. Pass your own
+  list to `A2uiAtomicCatalog.catalog(context, basicComponents = ...)` to use your design
+  system.
 - **Every stable catalog atom** is registered and draws through a WebView bridge running
   the catalog's own web renderer. `androidx.a2ui` throws on any unregistered
   component type, so nothing may be missing.

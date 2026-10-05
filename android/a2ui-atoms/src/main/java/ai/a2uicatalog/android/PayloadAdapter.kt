@@ -59,6 +59,11 @@ object PayloadAdapter {
                     out += JSONObject().put("createSurface", JSONObject()
                         .put("surfaceId", cs.getString("surfaceId"))
                         .put("catalogId", cs.getString("catalogId")))
+                    // v0.9 sets data with its own message; send it before the components so input bindings resolve
+                    cs.optJSONObject("dataModel")?.takeIf { it.length() > 0 }?.let { dm ->
+                        out += JSONObject().put("updateDataModel", JSONObject()
+                            .put("surfaceId", cs.getString("surfaceId")).put("path", "/").put("value", dm))
+                    }
                     out += JSONObject().put("updateComponents", JSONObject()
                         .put("surfaceId", cs.getString("surfaceId"))
                         .put("components", comps))

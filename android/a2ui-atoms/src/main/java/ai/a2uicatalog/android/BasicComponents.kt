@@ -51,8 +51,8 @@ import org.json.JSONObject
 
 /*
  * Google's Basic Catalog V1 in this alpha ships property definitions and parsing only:
- * every host supplies the drawing code (TypedContent) itself. These are the seven the
- * viewer draws; any other Basic Catalog type is replaced with a placeholder by
+ * every host supplies the drawing code (TypedContent) itself. These are the seven display
+ * components the viewer draws (the five inputs are in InputComponents.kt); any other Basic Catalog type is replaced with a placeholder by
  * PayloadAdapter, because the engine throws on unregistered types.
  */
 
@@ -279,4 +279,6 @@ object UnknownPlaceholder : androidx.a2ui.compose.ui.A2uiComponent {
 }
 
 val defaultBasicComponents: List<androidx.a2ui.compose.ui.A2uiComponent> =
-    listOf(DefaultText, DefaultColumn, DefaultRow, DefaultCard, DefaultButton, DefaultDivider, DefaultImage, UnknownPlaceholder)
+    listOf(DefaultText, DefaultColumn, DefaultRow, DefaultCard, DefaultButton, DefaultDivider, DefaultImage,
+        DefaultTextField, DefaultCheckBox, DefaultChoicePicker, DefaultSlider, DefaultDateTimeInput,
+        DefaultIcon, DefaultVideo, DefaultAudioPlayer, DefaultList, DefaultTabs, DefaultModal, UnknownPlaceholder)
