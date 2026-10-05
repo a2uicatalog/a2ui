@@ -7,8 +7,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "public" / "bricksdemo" / "ldraw_colours_full.json"
+
+# The generator reads the real LDConfig.ldr from the fetched LDraw library, which a clean checkout (CI) lacks.
+from scripts.ldraw.resolve import LD  # noqa: E402
+pytestmark = pytest.mark.skipif(not (Path(LD) / "LDConfig.ldr").exists(),
+                                reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 
 
 def _generate():

@@ -21,6 +21,7 @@ ROOT = Path(__file__).parent.parent
 # via curtiskrygier/repo-improvement-agent's own daily agent: that path
 # doesn't exist at all in the cloud-executed harness, only locally.
 AMERICANO_WIRED_JSON = ROOT.parent / "a2ui-private" / "tests" / "americano_wired.json"
+needs_private = pytest.mark.skipif(not AMERICANO_WIRED_JSON.exists(), reason="a2ui-private sibling repo not present")
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import gen_mcp_apps_bundle as gen  # noqa: E402
@@ -135,6 +136,7 @@ def test_play_host_injects_session_token():
     assert "[#&]t=" in seg and "session" in seg
 
 
+@needs_private
 def test_americano_payload_rehydrates_names():
     payload = json.loads(AMERICANO_WIRED_JSON.read_text())
     binders = [s for s in payload["wired_templates"]["state"]
@@ -212,6 +214,7 @@ def test_bundle_carries_wired_path(core_js):
     assert "'tools/call'" in bundle or '"tools/call"' in bundle
 
 
+@needs_private
 def test_americano_renders_through_extracted_loop(core_js):
     """Acceptance: the real americano payload's expanded layout renders via
     the SAME loop GAS uses, inside the bundle core, headlessly."""

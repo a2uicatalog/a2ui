@@ -18763,9 +18763,18 @@ def _render_brick_build_3d(b: dict) -> str:
         '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>'
         '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>'
         '</div>'
-        '<script>(function(){' + _brick_material_profile_src() + '('
+        '<script>(function(){' + _brick_material_profile_src() + 'var __atom = ('
         + _brick_fn_src("_brickMount") + ')((' + _brick_fn_src("_brickKit") + ')(),'
-        + payload + ',"' + uid + '");})();</script>'
+        + payload + ',"' + uid + '");'
+        # Host control bridge, twin of atoms_brick.gs: the MCP Apps host posts {a2uiControl:1, action, value}.
+        'window.addEventListener("message",function(e){var d=e.data;if(!d||d.a2uiControl!==1)return;'
+        'if(d.action==="pause")__atom.set("speed",0);'
+        'else if(d.action==="play"){__atom.setMode("animate");__atom.set("speed",1);}'
+        'else if(d.action==="step"){__atom.set("speed",0);__atom.setMode("steps");__atom.setStep(+d.value||0);}'
+        'else if(d.action==="replay")__atom.replay();'
+        'else if(d.action==="resetView")__atom.resetView();'
+        'else if(d.action==="recolor"&&d.value&&Array.isArray(d.value.idxs)&&/^#[0-9a-fA-F]{6}$/.test(d.value.to))__atom.recolor(d.value.to,d.value.idxs.filter(function(i){return Number.isInteger(i)&&i>=0;}));});'
+        '})();</script>'
     )
 _RENDERERS["brick_build_3d"] = _render_brick_build_3d
 

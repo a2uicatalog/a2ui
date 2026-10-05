@@ -12,9 +12,12 @@ Verifies:
   5. bottom_y() correctly calculates floor elevation for both integer and 9-tuple rotation representations.
   6. Parity invariant: len(to_parts_model(leaves)) == coverage(leaves)['renderable'].
 """
+import os
+
 import pytest
 
 from renderers.brick_parts_validate import PART_ROT
+from scripts.ldraw.resolve import LD
 from scripts.ldraw.omr_import import (
     baked_ids,
     coverage,
@@ -29,6 +32,8 @@ M_ROT_Y_60 = (0.5, 0.0, 0.866025, 0.0, 1.0, 0.0, -0.866025, 0.0, 0.5)
 M_HINGE_29 = (-0.868, 0.0, 0.496, 0.0, 1.0, 0.0, -0.496, 0.0, -0.868)
 
 
+@pytest.mark.skipif(not os.path.isdir(os.path.join(LD, "p")),
+                    reason="LDraw library not fetched (scripts/ldraw/fetch_library.py): primitives are read from it")
 def test_flatten_excludes_root_level_primitives_not_just_prefixed_ones():
     """Real bug found 2026-09-29 investigating the coverage stat's 'missing' report: flatten()'s old filter
     (`not ref.startswith(('s/', '48/', '8/'))`) only excluded primitives referenced via a subdirectory

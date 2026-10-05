@@ -15,6 +15,13 @@ import yaml
 ROOT = Path(__file__).parent.parent
 MANIFEST = yaml.safe_load((ROOT / "project.yaml").read_text())
 GENERATORS = MANIFEST.get("generators", {})
+# Entries that live in the a2ui-private sibling repo can only be dereferenced when it is checked out beside
+# this one (locally yes; a clean CI checkout of this public repo no).
+HAVE_PRIVATE = (ROOT.parent / "a2ui-private").is_dir()
+
+
+def _checkable(path):
+    return HAVE_PRIVATE or not path.startswith("../a2ui-private/")
 
 
 def _generator_scripts():
@@ -40,7 +47,7 @@ def test_every_generator_script_is_registered():
 
 
 def test_registered_scripts_exist():
-    gone = [n for n, g in GENERATORS.items() if not (ROOT / g["script"]).exists()]
+    gone = [n for n, g in GENERATORS.items() if _checkable(g["script"]) and not (ROOT / g["script"]).exists()]
     assert not gone, f"registered generator script(s) missing from disk: {gone}"
 
 
@@ -72,7 +79,7 @@ def test_declared_outputs_exist():
     dead = []
     for name, g in GENERATORS.items():
         for out in g.get("outputs", []):
-            if out.startswith(_LOCAL_BUILD_ONLY_PREFIXES):
+            if out.startswith(_LOCAL_BUILD_ONLY_PREFIXES) or not _checkable(out):
                 continue
             p = ROOT / out
             if out.endswith("/"):
