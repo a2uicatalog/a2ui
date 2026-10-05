@@ -101,7 +101,7 @@
      "name": "How is A2UI different from AG-UI?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "AG-UI is a transport: it connects an agent backend to a frontend with real-time state sync. A2UI is the UI format that travels over it. a2ui.org's summary is the clearest: \"use AG-UI as the pipe, A2UI as the content.\""
+      "text": "A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the interaction between an agent and an app: messages, tool calls, state and user actions. A2UI often travels over AG-UI; as a2ui.org puts it, \"use AG-UI as the pipe, A2UI as the content.\""
      }
     }
    ]
@@ -317,7 +317,7 @@ server at <code>a2uicatalog.ai/mcp</code>, or read its machine-readable vocabula
 </tr>
 <tr>
 <td>MCP Apps hosts</td>
-<td>Claude, ChatGPT and other hosts that display MCP Apps views</td>
+<td>Claude, ChatGPT, <a href="/blog/011-gemini-enterprise-mcp-apps-setup/">Gemini Enterprise</a> and other hosts that display MCP Apps views</td>
 </tr>
 <tr>
 <td>Android</td>
@@ -344,6 +344,15 @@ sends component blueprints and leaves styling and rendering to the host. The two
 well: the catalog's renderer runs inside an MCP Apps view, so one A2UI payload reaches
 every MCP Apps host. There's more on this in
 <a href="/blog/007-mcp-apps-portability/">MCP Apps isn't A2UI's competitor</a>.</p>
+<h2 id="a2ui-and-ag-ui">A2UI and AG-UI</h2>
+<p>The names give it away. A2UI is about the user <strong>interface</strong>: which components to show and
+what data they hold. AG-UI, the <a href="https://docs.ag-ui.com/introduction">Agent–User Interaction protocol</a>,
+is about the <strong>interaction</strong>: the live connection between an agent backend and an app, carrying
+messages, tool calls, state updates and the user's actions as a stream of events.</p>
+<p>They stack rather than compete. An A2UI surface can travel inside an AG-UI stream; CopilotKit,
+for example, sends it as an <code>ActivitySnapshot</code> event. As a2ui.org puts it, "use AG-UI as the
+pipe, A2UI as the content." The film above shows the same thing: AG-UI is one of the pipes,
+and the A2UI letter rides inside it.</p>
 <h2 id="get-started">Get started</h2>
 <ol>
 <li><strong>Browse</strong> the <a href="/">catalog</a> and open any atom to see its fields and a live preview.</li>
@@ -369,9 +378,9 @@ models produce valid payloads.</p>
 <p><strong>Is it free?</strong>
 Yes. The protocol is Apache 2.0, and the A2UI Atomic Catalog is MIT-licensed.</p>
 <p><strong>How is A2UI different from AG-UI?</strong>
-AG-UI is a transport: it connects an agent backend to a frontend with real-time state sync.
-A2UI is the UI format that travels over it. a2ui.org's summary is the clearest: "use AG-UI
-as the pipe, A2UI as the content."</p>
+A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the
+interaction between an agent and an app: messages, tool calls, state and user actions. A2UI
+often travels over AG-UI; as a2ui.org puts it, "use AG-UI as the pipe, A2UI as the content."</p>
 </article>
 <p class="pillar-foot">Independent, unofficial catalog: not affiliated with, endorsed by, or sponsored by Google or Anthropic.
 A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</p>
