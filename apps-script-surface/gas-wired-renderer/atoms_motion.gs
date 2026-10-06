@@ -463,6 +463,12 @@ var _MO_TIMELINE_JS =
   'var hm=/t=([0-9.]+)/.exec(location.hash||""),want=C.auto&&!RM&&!hm;' +
   'seek(hm?parseFloat(hm[1]):(RM||!C.auto)?C.poster:0);' +
   'window.__a2uiMotion=window.__a2uiMotion||{};window.__a2uiMotion["%%UID%%"]={seek:seek,play:play,pause:pause,dur:C.dur};' +
+  // Export hook (2026-10-06): a host page that defines window.A2UIExport = {kinds: [...], run(root, kind, progress)} gets
+  // one button per kind in the control bar, and the host does the work (capture, encode, save). Without it nothing is added.
+  'function xb(){var X=window.A2UIExport;if(!X||!btn||!X.kinds||root.querySelector(".mt-xp"))return;for(var i=0;i<X.kinds.length;i++)xk(X,String(X.kinds[i]));}' +
+  'function xk(X,k){var L=k.toUpperCase(),b=document.createElement("button");b.type="button";b.className="mt-xp";b.textContent=L;b.setAttribute("aria-label","Export "+L);b.setAttribute("style",btn.getAttribute("style").replace("width:32px;","").replace("border-radius:50%","border-radius:999px").replace("padding:0;","padding:0 10px;")+"font-size:0.7rem;font-weight:700;letter-spacing:0.04em;");' +
+  'b.addEventListener("click",function(){if(b.disabled)return;b.disabled=true;manual=true;pause();var done=function(){b.disabled=false;b.textContent=L;};Promise.resolve().then(function(){return X.run(root,k,function(d,n){b.textContent=L+" "+Math.round(100*d/(n||1))+"%";});}).then(done,function(e){done();if(window.console)console.warn("a2ui export failed",e);});});btn.parentNode.appendChild(b);}' +
+  'xb();window.addEventListener("a2ui-export-ready",xb);' +
   'if(want){if(window.IntersectionObserver){new IntersectionObserver(function(a){if(a[0].isIntersecting){if(!manual)play();}else if(pl){pause();}},{threshold:0.25}).observe(root);}else{play();}}' +
   '})();';
 

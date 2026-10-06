@@ -50,6 +50,11 @@ v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
   the catalog's own web renderer. `androidx.a2ui` throws on any unregistered
   component type, so nothing may be missing.
 - **Films** (`motion_timeline`) arrive as one component and play as one stage.
+- **Host extras for bridged atoms:** provide `LocalBridgeExtras` (a `BridgeExtras(script, objects)`)
+  around the surface to add JavaScript interfaces and a script that runs before each paint in every
+  bridge WebView. A film whose page defines `window.A2UIExport = {kinds, run(root, kind, progress)}`
+  shows one export button per kind on its control bar; the app supplies the exporter and decides
+  where the file goes (a WebView cannot download a `blob:` URL itself).
 - **Bridged atom fields can be data bindings** (`{"path": "/film/blocks"}`), including
   whole lists, and repaint when the bound data changes, so inputs bound to the same data
   model edit an atom live. A ChoicePicker stores its selection as a list (`["grid"]`); for

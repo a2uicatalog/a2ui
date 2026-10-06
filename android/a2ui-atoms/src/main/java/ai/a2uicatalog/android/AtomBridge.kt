@@ -74,6 +74,17 @@ internal object Atoms {
 val LocalSurfaceTheme = compositionLocalOf { "light" }
 
 /**
+ * What a host app adds to every bridge WebView: [objects] are exposed to the page as JavaScript
+ * interfaces (name -> object with @JavascriptInterface methods), and [script] runs once the page
+ * has loaded, before the first paint. Lets an app offer page features the library does not ship,
+ * such as a film exporter (`window.A2UIExport`, which a motion_timeline turns into buttons) and
+ * somewhere to save its output. Provide it with CompositionLocalProvider around the surface.
+ */
+class BridgeExtras(val script: String = "", val objects: Map<String, Any> = emptyMap())
+
+val LocalBridgeExtras = compositionLocalOf { BridgeExtras() }
+
+/**
  * Registered once per atom name, all sharing this one class. Rebuilds the atom as a
  * legacy block ({"type": name, ...fields}) and hands it to our web renderer.
  */
@@ -178,6 +189,7 @@ fun RendererWebView(
     onAction: (Map<String, Any?>) -> Unit = {},
 ) {
     val currentOnAction by rememberUpdatedState(onAction)
+    val extras = LocalBridgeExtras.current
     // Start tall, then shrink to the reported height. Films autoplay from an IntersectionObserver
     // that fires once on first paint; at 48dp only ~1px of the stage showed, the 25% threshold was
     // missed and the observer never fired again when the WebView grew (seen on a Pixel 7 Pro).
@@ -213,6 +225,7 @@ fun RendererWebView(
                         post { currentOnAction(action) }
                     }
                 }, "AndroidHost")
+                extras.objects.forEach { (name, obj) -> addJavascriptInterface(obj, name) }
                 webViewClient = object : WebViewClient() {
                     // A tapped link would otherwise load the whole site inside this atom's frame.
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
@@ -235,6 +248,7 @@ fun RendererWebView(
                         if (state.loaded) return
                         state.loaded = true
                         Log.i(TAG, "page loaded, painting")
+                        if (extras.script.isNotEmpty()) view.evaluateJavascript(extras.script, null)
                         view.evaluateJavascript(paintScript(state.payload), null)
                     }
                 }
