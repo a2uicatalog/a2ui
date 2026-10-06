@@ -45,3 +45,24 @@ def test_every_mcp_apps_atom_has_a_renderer_in_the_bundle(atoms):
     have = _bundle_renderers()
     missing = sorted(t for t, a in atoms.items() if "mcp-apps" in _works_on(a) and t not in have)
     assert not missing, f"tagged mcp-apps but the bundle cannot draw them: {missing}"
+
+
+def _scalar_fields():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("gen_android_assets", ROOT / "android" / "tools" / "gen_android_assets.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.scalar_fields
+
+
+def test_picker_unwrap_only_touches_single_string_fields(atoms):
+    """The bridge turns a ChoicePicker's ["grid"] into "grid" for the fields atoms.json lists as
+    scalars (2026-10-06 studio spike: a bound backdrop picker silently did nothing). A list field
+    must never be listed, or a one-entry list (one block, one item) would be flattened."""
+    scalar_fields = _scalar_fields()
+    film = scalar_fields(atoms["motion_timeline"]["fields"])
+    assert {"backdrop", "theme", "accent", "aspect"} <= set(film)
+    assert not {"blocks", "tracks", "scenes", "ease"} & set(film)
+    wrong = sorted(f"{t}.{f}" for t, a in atoms.items() if isinstance(a.get("fields"), dict)
+                   for f in scalar_fields(a["fields"]) if str(a["fields"][f]).lstrip().startswith(("array", "[", "{", "list")))
+    assert not wrong, f"list or object fields classed as single strings: {wrong}"

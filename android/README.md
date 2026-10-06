@@ -50,6 +50,11 @@ v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
   the catalog's own web renderer. `androidx.a2ui` throws on any unregistered
   component type, so nothing may be missing.
 - **Films** (`motion_timeline`) arrive as one component and play as one stage.
+- **Bridged atom fields can be data bindings** (`{"path": "/film/blocks"}`), including
+  whole lists, and repaint when the bound data changes, so inputs bound to the same data
+  model edit an atom live. A ChoicePicker stores its selection as a list (`["grid"]`); for
+  fields that take one string (text or an enum, marked `scalars` in `atoms.json`) the
+  bridge passes the single value (`"grid"`), and list fields are left alone.
 
 The atom list (`atoms.json`) and the renderer (`renderer-bundle.html`) are generated
 at build time from this checkout's `atoms/schema.yaml` and

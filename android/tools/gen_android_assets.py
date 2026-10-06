@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Write the atomic-catalog library's assets into OUT_DIR (run by Gradle, generateA2uiAssets).
 
-  atoms.json            the atoms in atoms/schema.yaml: name, pack, field keys. The
+  atoms.json            the atoms in atoms/schema.yaml: name, pack, field keys, and which
+                        fields take a single string (see scalar_fields). The
                         library registers each one, because androidx.a2ui throws on an
                         unregistered type. With --stable-only (release builds, the ones
                         that get published) preview atoms are left out: preview atoms are
@@ -26,6 +27,22 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]          # a2ui-catalogue/
 
 
+def scalar_fields(fields: dict) -> list:
+    """The fields that take one string: free text or one value of an enum, read from the schema's
+    description of each ("string ...", or a quoted choice like '"glow" | "grid"'). A ChoicePicker bound
+    to one of these writes a one-item list (["grid"]); the bridge unwraps it to "grid" for these fields
+    only, so a real list field (blocks, items) holding a single entry is never flattened."""
+    out = []
+    for name, desc in fields.items():
+        d = str(desc).lstrip()
+        if not (d.startswith('"') or d.startswith("string")):
+            continue
+        if "array" in d[:40] or "[" in d[:40]:   # e.g. 'string | [x1,y1,x2,y2]': may legitimately be a list
+            continue
+        out.append(name)
+    return sorted(out)
+
+
 def main(out_dir: str, stable_only: bool = False) -> None:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -38,7 +55,8 @@ def main(out_dir: str, stable_only: bool = False) -> None:
             continue
         fields = b.get("fields") or {}
         atoms.append({"name": b["type"], "pack": pack_of.get(b["type"], "unpacked"),
-                      "fields": sorted(fields) if isinstance(fields, dict) else []})
+                      "fields": sorted(fields) if isinstance(fields, dict) else [],
+                      "scalars": scalar_fields(fields) if isinstance(fields, dict) else []})
     (out / "atoms.json").write_text(json.dumps(atoms, separators=(",", ":")))
     shutil.copyfile(ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html",
                     out / "renderer-bundle.html")
