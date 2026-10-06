@@ -246,11 +246,12 @@ object DefaultImage : A2uiBasicCatalogV1.Image {
         LaunchedEffect(url) {
             try {
                 bmp = withContext(Dispatchers.IO) {
-                    URL(url).openStream().use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
+                    if (url.startsWith("data:")) decodeDataUri(url)
+                    else URL(url).openStream().use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
                 }
-                if (bmp == null) err = "could not decode $url"
+                if (bmp == null) err = "could not decode ${shortUrl(url)}"
             } catch (e: Exception) {
-                err = "${e.javaClass.simpleName}: $url"
+                err = "${e.javaClass.simpleName}: ${shortUrl(url)}"
             }
         }
         val scale = when (fit) {
@@ -263,6 +264,20 @@ object DefaultImage : A2uiBasicCatalogV1.Image {
         err?.let { ErrorBox("Image: $it") }
     }
 }
+
+/**
+ * A data: URI image (`data:image/png;base64,...`), which java.net.URL cannot open. Lets a payload carry its
+ * own pictures, e.g. template thumbnails, with nothing hosted. Base64 only; other encodings return null.
+ */
+internal fun decodeDataUri(url: String): ImageBitmap? {
+    val comma = url.indexOf(',')
+    if (comma < 0 || !url.substring(0, comma).endsWith(";base64")) return null
+    val bytes = android.util.Base64.decode(url.substring(comma + 1), android.util.Base64.DEFAULT)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+}
+
+/** A URL for an error message: a data: URI is shortened to its media type. */
+private fun shortUrl(url: String) = if (url.startsWith("data:")) url.substringBefore(',') + ",…" else url
 
 /** Stand-in for any type the viewer can't draw; PayloadAdapter rewrites those to this. */
 object UnknownPlaceholder : androidx.a2ui.compose.ui.A2uiComponent {
