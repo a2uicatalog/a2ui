@@ -37755,6 +37755,16 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
   // (#p=, gzip + base64url); nothing is uploaded. Only inside a host iframe, and never over an exporter the page
   // already has (the Android app and the export page itself set their own before painting).
   var EXPORT_PAGE = 'https://a2uicatalog.ai/surfaces/mcp-apps/export/';
+  // A design may carry its own links (2026-10-06, Schemaestro): payload.links = { edit, export }. `edit` adds an
+  // EDIT button that opens the design where it can be edited (Schemaestro's player, which hands off to the phone
+  // app); `export` is the export page its MP4/GIF use instead of the catalog's. Https on an allowlisted host only,
+  // so a payload can never turn these buttons into a link anywhere else; anything else is ignored, never thrown.
+  var LINK_HOSTS = { 'schemaestro.com': 1, 'a2uicatalog.ai': 1 };
+  function _link(name) {
+    var l = _lastPayload && _lastPayload.links && _lastPayload.links[name];
+    if (typeof l !== 'string') return null;
+    try { var u = new URL(l); return (u.protocol === 'https:' && LINK_HOSTS[u.hostname]) ? l : null; } catch (e) { return null; }
+  }
   function _gzipB64u(text) {
     var gz = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
     return new Response(gz).arrayBuffer().then(function (buf) {
@@ -37774,19 +37784,30 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     });
   }
   if (window.parent !== window && !window.A2UIExport && typeof CompressionStream !== 'undefined') {
+    function _open(url) {
+      return _openLink(url).catch(function (e) {
+        // a host that refuses or ignores ui/open-link: try a popup (allowed by some sandboxes). Without
+        // 'noopener' so a blocked popup is detectable (null); the opener link is cut by hand instead.
+        var w = window.open(url, '_blank');
+        if (!w) throw e;
+        try { w.opener = null; } catch (x) {}
+      });
+    }
     window.A2UIExport = {
-      kinds: ['mp4', 'gif'],
+      // Read when the film paints (after _lastPayload is set), so EDIT appears only for a design that has a link.
+      get kinds() { return (_link('edit') ? ['edit'] : []).concat(['mp4', 'gif']); },
       run: function (root, kind) {
         if (!_lastPayload) return Promise.reject(new Error('no film to export'));
-        return _gzipB64u(JSON.stringify(_lastPayload)).then(function (enc) {
-          var url = EXPORT_PAGE + '#p=' + enc + '&k=' + kind;
-          return _openLink(url).catch(function (e) {
-            // a host that refuses or ignores ui/open-link: try a popup (allowed by some sandboxes). Without
-            // 'noopener' so a blocked popup is detectable (null); the opener link is cut by hand instead.
-            var w = window.open(url, '_blank');
-            if (!w) throw e;
-            try { w.opener = null; } catch (x) {}
-          });
+        if (kind === 'edit') {
+          var edit = _link('edit');
+          return edit ? _open(edit) : Promise.reject(new Error('this design has no edit link'));
+        }
+        // The film goes with its export link but not its edit link, which already holds the whole design.
+        var sent = {}, k;
+        for (k in _lastPayload) if (Object.prototype.hasOwnProperty.call(_lastPayload, k)) sent[k] = _lastPayload[k];
+        if (sent.links) sent.links = _link('export') ? { 'export': _link('export') } : undefined;
+        return _gzipB64u(JSON.stringify(sent)).then(function (enc) {
+          return _open((_link('export') || EXPORT_PAGE) + '#p=' + enc + '&k=' + kind);
         });
       }
     };

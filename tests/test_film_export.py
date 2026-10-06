@@ -51,3 +51,17 @@ def test_vendored_exporter_and_its_licences():
     for name in ("gifenc", "mp4-muxer", "webm-muxer"):
         assert f"## {name} " in lic and "MIT" in lic
     assert "public/vendors/client-export/client_export.min.js" in (ROOT / "THIRD-PARTY-NOTICES.md").read_text()
+
+
+def test_a_design_carries_its_own_edit_and_export_links_on_allowlisted_hosts_only():
+    """payload.links (2026-10-06, Schemaestro): `edit` adds an EDIT button that opens the design where it is
+    edited; `export` replaces the catalog's export page. Both https on LINK_HOSTS only, so a payload can never
+    point these buttons anywhere else. The browser end to end (EDIT opens the link, GIF goes to the design's
+    export page without the edit link, an off-allowlist link adds no button, no links = view/127) ran headless
+    in the real playground host when this shipped."""
+    js = bundle.HANDSHAKE
+    assert "var LINK_HOSTS = { 'schemaestro.com': 1, 'a2uicatalog.ai': 1 };" in js
+    assert "u.protocol === 'https:' && LINK_HOSTS[u.hostname]" in js
+    assert "get kinds() { return (_link('edit') ? ['edit'] : []).concat(['mp4', 'gif']); }" in js
+    assert "(_link('export') || EXPORT_PAGE) + '#p=' + enc" in js       # the catalog page stays the fallback
+    assert "sent.links = _link('export') ? { 'export': _link('export') } : undefined;" in js   # no edit link inside
