@@ -54,8 +54,8 @@
     return lib().then(function (CE) {
       var f = CE.findFilm(root.ownerDocument, root);
       function onP(d, n) { if (progress) progress(d, n); say(name + ' ' + Math.round(100 * d / (n || 1)) + '%' + (document.hidden ? ' (paused: tab hidden)' : '')); }
-      return kind === 'gif' ? CE.exportGif(f, { fps: 10, scale: 0.5, onProgress: onP })
-        : CE.exportVideo(f, { fps: 24, scale: 0.75, onProgress: onP }).then(function (r) { return r.blob; });
+      return kind === 'gif' ? CE.exportGif(f, { onProgress: onP })
+        : CE.exportVideo(f, { onProgress: onP }).then(function (r) { return r.blob; });
     }).then(function (blob) {
       var ext = blob.type.indexOf('gif') >= 0 ? 'gif' : (blob.type.indexOf('webm') >= 0 ? 'webm' : 'mp4');
       var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = slug(title) + '.' + ext;
