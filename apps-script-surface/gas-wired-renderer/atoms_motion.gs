@@ -224,6 +224,9 @@ function _moV(name, dflt) { return 'var(--dw-' + name + ',' + dflt + ')'; }
 function _moAcc(b) { var h = _ffHex(b.accent, ''); return h || _moV('acc', '#2563eb'); }
 function _moAccRgb(b) { var h = _ffHex(b.accent, ''); return h ? _ffRgb(h) : _moV('accrgb', '37,99,235'); }
 function _moStr(v, max) { return _cvStr(v, max); }
+// A number's prefix or suffix (" min", "$ "): unlike _moStr it keeps leading and trailing spaces, which are meaningful there
+// ("20 min" must not become "20min"). Control characters become spaces so nothing can break the line or the data attribute.
+function _moAff(v, max) { return (typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '')).replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, max); }
 // Final-state number text, integer maths so both renderers agree on the spelling.
 function _moFmt(v, dec, pre, suf) {
   var x = typeof v === 'number' ? v : parseFloat(v);
@@ -850,7 +853,7 @@ _RENDERERS['motion_shape'] = function(b) {
 
 // A big number that counts from `from` to `to` as --p goes 0..1, with an optional caption.
 _RENDERERS['motion_counter'] = function(b) {
-  var dec = _ffInt(b.decimals, 0, 0, 3), to = _moNum(b.to, 100), from = _moNum(b.from, 0), pre = _moStr(b.prefix, 4), suf = _moStr(b.suffix, 8);
+  var dec = _ffInt(b.decimals, 0, 0, 3), to = _moNum(b.to, 100), from = _moNum(b.from, 0), pre = _moAff(b.prefix, 4), suf = _moAff(b.suffix, 8);
   var size = _ffInt(b.size, 96, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), font = _ffPick(b.font, _FF_FONTS, 'display');
   var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), label = _moStr(b.label, 40);
   var lsize = _ffInt(b.label_size, Math.max(11, Math.floor(size / 5)), 8, 80), shown;
@@ -1691,16 +1694,17 @@ _RENDERERS['motion_goo'] = function(b) {
 };
 
 // A finishing layer for the whole frame: film grain, a vignette, drifting light leaks and a glass sheen. Place it last, full size;
-// it never takes clicks. p fades it in, --s drifts the grain and the leaks.
+// it never takes clicks. p fades it in, --s drifts the grain and the leaks. The grain layer is oversized by its own drift and the
+// layer clips (2026-10-06): sliding a full-size layer 60px left and 40px down exposed a hard strip at the right and top of the frame.
 _RENDERERS['motion_finish'] = function(b) {
   var gr = _ffPick(b.grain_size, _MO_GRAIN, 'medium'), gs = b.grain === false ? 0 : _ffNum(b.grain_amount, 0.12, 0, 0.5, 2), vg = b.vignette === false ? 0 : _ffNum(b.vignette_amount, 0.55, 0, 1, 2);
   var lk = b.leak === false ? '' : _moOwn(_MO_LEAK, b.leak, 'warm'), sh = b.sheen === true, ls = _ffNum(b.leak_amount, 0.35, 0, 1, 2), L = lk ? _MO_LEAK[lk] : null, out = '';
   var fade = 'clamp(0,calc(var(--p,1)*4),1)';
-  if (gs > 0) out += '<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:calc(' + gs + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + gr + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>';
+  if (gs > 0) out += '<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:-40px;width:calc(100% + 60px);height:calc(100% + 40px);mix-blend-mode:overlay;opacity:calc(' + gs + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + gr + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>';
   if (L) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:screen;opacity:calc(' + ls + '*' + fade + ');background:radial-gradient(ellipse 45% 70% at calc(10% + var(--s,0)*30%) 20%,' + L[0] + ',transparent 70%),radial-gradient(ellipse 40% 60% at calc(95% - var(--s,0)*25%) 90%,' + L[1] + ',transparent 70%);"></div>';
   if (vg > 0) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:' + fade + ';background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,' + vg + ') 100%);"></div>';
   if (sh) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;"><div style="position:absolute;top:-20%;bottom:-20%;width:22%;left:calc(-30% + clamp(0,var(--p,1),1)*150%);background:linear-gradient(100deg,transparent,rgba(255,255,255,0.22),transparent);transform:skewX(-18deg);"></div></div>';
-  return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;pointer-events:none;">' + out + '</div>';
+  return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;overflow:hidden;pointer-events:none;">' + out + '</div>';
 };
 
 // Page assembly: child atoms start scattered and tilted and land in a bento grid, one after another as p goes 0 to 1.

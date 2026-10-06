@@ -27476,9 +27476,15 @@ def _render_motion_shape(b: dict) -> str:
             + ('filter:blur(' + str(blur) + 'px);' if blur else '') + '"></div>')
 
 
+def _mo_aff(v, mx):
+    # A number's prefix or suffix: keeps leading and trailing spaces (" min"), unlike _cv_str. Twin of _moAff in atoms_motion.gs.
+    s = v if isinstance(v, str) else (str(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else '')
+    return re.sub(r'[\u0000-\u001f\u007f]', ' ', s)[:mx]
+
+
 def _render_motion_counter(b: dict) -> str:
     dec, to, frm = _ff_int(b.get('decimals'), 0, 0, 3), _mo_num(b.get('to'), 100), _mo_num(b.get('from'), 0)
-    pre, suf = _cv_str(b.get('prefix'), 4), _cv_str(b.get('suffix'), 8)
+    pre, suf = _mo_aff(b.get('prefix'), 4), _mo_aff(b.get('suffix'), 8)
     size, weight, font = _ff_int(b.get('size'), 96, 10, 400), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), _ff_pick(b.get('font'), _FF_FONTS, 'display')
     color, align, label = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), _cv_str(b.get('label'), 40)
     lsize = _ff_int(b.get('label_size'), max(11, size // 5), 8, 80)
@@ -28512,14 +28518,14 @@ def _render_motion_finish(b: dict) -> str:
     sh, ls, L, out = b.get('sheen') is True, _ff_num(b.get('leak_amount'), 0.35, 0, 1, 2), (_MO_LEAK[lk] if lk else None), ''
     fade = 'clamp(0,calc(var(--p,1)*4),1)'
     if float(gs) > 0:
-        out += ('<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:calc(' + str(gs) + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + str(gr) + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>')
+        out += ('<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:-40px;width:calc(100% + 60px);height:calc(100% + 40px);mix-blend-mode:overlay;opacity:calc(' + str(gs) + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + str(gr) + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>')
     if L:
         out += ('<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:screen;opacity:calc(' + ls + '*' + fade + ');background:radial-gradient(ellipse 45% 70% at calc(10% + var(--s,0)*30%) 20%,' + L[0] + ',transparent 70%),radial-gradient(ellipse 40% 60% at calc(95% - var(--s,0)*25%) 90%,' + L[1] + ',transparent 70%);"></div>')
     if float(vg) > 0:
         out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:' + fade + ';background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,' + str(vg) + ') 100%);"></div>'
     if sh:
         out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;"><div style="position:absolute;top:-20%;bottom:-20%;width:22%;left:calc(-30% + clamp(0,var(--p,1),1)*150%);background:linear-gradient(100deg,transparent,rgba(255,255,255,0.22),transparent);transform:skewX(-18deg);"></div></div>'
-    return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;pointer-events:none;">' + out + '</div>'
+    return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;overflow:hidden;pointer-events:none;">' + out + '</div>'
 
 
 def _render_motion_assemble(b: dict) -> str:

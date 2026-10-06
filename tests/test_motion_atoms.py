@@ -172,7 +172,7 @@ PAYLOADS = {
     "motion_shape": [{}, {"shape": "circle", "fill": "#FF0000", "fill2": "#0000ff", "angle": 135, "blur": 150, "draw": "fade", "w": 400, "h": 300},
                      {"shape": "ring", "thickness": 10, "fill": "#ffb347", "fill2": "#ff3d81"}, {"shape": "ring", "draw": "scale"}, {"shape": "line", "thickness": 4, "draw": "grow-y"},
                      {"shape": "rect", "radius": 80, "draw": "sweep", "fill": "url(javascript:alert(1))"}, {"shape": "<x>", "draw": "none", "w": "9", "h": True}],
-    "motion_counter": [{}, {"to": 1207.5, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "roll": True, "size": 120}, {"to": -45, "roll": True}, {"to": "abc", "roll": True, "label": "x <b>"}, {"to": 98765432101, "roll": "yes"}, {"to": 1207, "from": 100, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "size": 200, "label": "artists <b>", "label_size": 20, "align": "middle", "color": "#ffb347"},
+    "motion_counter": [{}, {"to": 20, "suffix": " min"}, {"to": 3, "suffix": " days", "roll": True}, {"to": 5, "prefix": "$ ", "suffix": " m "}, {"to": 1, "suffix": "\n x\t"}, {"to": 1207.5, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "roll": True, "size": 120}, {"to": -45, "roll": True}, {"to": "abc", "roll": True, "label": "x <b>"}, {"to": 98765432101, "roll": "yes"}, {"to": 1207, "from": 100, "decimals": 1, "prefix": "\u20ac", "suffix": "M", "size": 200, "label": "artists <b>", "label_size": 20, "align": "middle", "color": "#ffb347"},
                        {"to": "abc"}, {"to": -5.5, "from": "x", "decimals": 9, "font": "mono", "weight": "regular"}],
     "motion_pill": [{}, {"text": "Comment *Motion* under this post", "icon": "\u2191", "size": 40, "align": "middle", "accent": "#ff6a2b", "color": "#fff6e8", "fill": "#1a1020"},
                     {"text": "a ** b <i>*x", "align": "end"}, {"text": 5, "icon": "\"><b>", "size": 9999, "align": "toString"}],
@@ -279,6 +279,32 @@ PAYLOADS = {
     "demo_panel": [{}, {"tone": "dark", "accent": "#38bdf8", "avatar": "SKX", "title": "Sam", "sub": "Head of Sales", "badge": "Prospect", "rows": [{"label": "Team", "value": "40"}, "x"]}],
 }
 CASES = [(a, b) for a, bs in PAYLOADS.items() for b in bs]
+
+
+def test_counter_keeps_the_space_in_a_prefix_or_suffix():
+    """2026-10-06: "20 min" drew as "20min" because the suffix went through _cvStr, which trims. The studio hands the
+    renderer the suffix with its space (" min"); a number's affix keeps its spaces and loses control characters."""
+    out = wa._RENDERERS['motion_counter']({"to": 20, "suffix": " min"})
+    assert "20 min" in out and "20min" not in out
+    out = wa._RENDERERS['motion_counter']({"to": 5, "prefix": "$ ", "suffix": " m "})
+    assert "$ 5 m " in out
+    out = wa._RENDERERS['motion_counter']({"to": 1, "suffix": "\n x\t"})
+    assert "\n" not in out and "\t" not in out   # control characters become spaces, never raw line breaks or tabs
+
+
+def test_finish_grain_is_oversized_by_its_own_drift_and_the_layer_clips():
+    """2026-10-06: the film grain drifts 60px left and 40px down as --s goes 0 to 1. A full-size layer slid off the frame
+    and exposed a hard strip at the right and top of every template with the finish layer. The layer is now drawn 60px
+    wider and 40px taller, starting 40px above the frame, inside a clipping root."""
+    out = wa._RENDERERS['motion_finish']({})
+    assert "left:0;top:-40px;width:calc(100% + 60px);height:calc(100% + 40px)" in out
+    assert "translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px))" in out
+    assert out.rstrip().endswith("</div>") and "overflow:hidden;pointer-events:none" in out
+    # the oversize must cover the drift in both directions: the extra width equals the x drift, the extra height the y drift
+    drift = re.search(r"translate\(calc\(var\(--s,0\)\*-(\d+)px\),calc\(var\(--s,0\)\*(\d+)px\)\)", out)
+    extra = re.search(r"top:-(\d+)px;width:calc\(100% \+ (\d+)px\);height:calc\(100% \+ (\d+)px\)", out)
+    dx, dy = int(drift.group(1)), int(drift.group(2))
+    assert int(extra.group(2)) >= dx and int(extra.group(1)) >= dy and int(extra.group(3)) >= dy
 
 
 def test_every_motion_atom_has_a_parity_case():
