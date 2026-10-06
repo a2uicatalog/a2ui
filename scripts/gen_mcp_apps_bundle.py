@@ -213,6 +213,7 @@ HANDSHAKE = """
   // same deep-navigation shape as hub, just with nav pill buttons instead of
   // subject tabs. Same reasoning applies identically.
   var _hostContext = {};
+  var _lastPayload = null;   // the last tool result painted: what a film's export buttons send to the export page
   var _fsReqSeq = 0;
 
   // 2026-08-01: playbook/hub slide containers default to min-height:100vh.
@@ -408,6 +409,7 @@ HANDSHAKE = """
 
     if (msg.method === 'ui/notifications/tool-result') {
       var result = msg.params || {};
+      _lastPayload = result.structuredContent || null;
       paint(result.structuredContent || {});
       reportSize();
       _maybeRequestFullscreen(result.structuredContent || {});
@@ -514,6 +516,50 @@ HANDSHAKE = """
       });
     }
   };
+  // Film export from inside a host (2026-10-06). The host's sandbox has no allow-downloads (MCP Apps spec: the
+  // view iframe gets allow-scripts + allow-same-origin), so a film cannot save a file here. Its MP4/GIF buttons
+  // (the motion_timeline export hook) instead ask the host to open the film on a2uicatalog.ai's export page
+  // (ui/open-link), where the visitor's own browser encodes and downloads it. The film travels in the link
+  // (#p=, gzip + base64url); nothing is uploaded. Only inside a host iframe, and never over an exporter the page
+  // already has (the Android app and the export page itself set their own before painting).
+  var EXPORT_PAGE = 'https://a2uicatalog.ai/surfaces/mcp-apps/export/';
+  function _gzipB64u(text) {
+    var gz = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
+    return new Response(gz).arrayBuffer().then(function (buf) {
+      var bytes = new Uint8Array(buf), bin = '';
+      for (var i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      return btoa(bin).split('+').join('-').split('/').join('_').replace(/=+$/, '');
+    });
+  }
+  function _openLink(url) {
+    return new Promise(function (resolve, reject) {
+      var id = 'ol-' + Math.random().toString(36).slice(2);
+      _pending[id] = { resolve: resolve, reject: reject };
+      setTimeout(function () {
+        if (_pending[id]) { delete _pending[id]; reject(new Error('host did not answer ui/open-link')); }
+      }, 30000);
+      post({ jsonrpc: '2.0', id: id, method: 'ui/open-link', params: { url: url } });
+    });
+  }
+  if (window.parent !== window && !window.A2UIExport && typeof CompressionStream !== 'undefined') {
+    window.A2UIExport = {
+      kinds: ['mp4', 'gif'],
+      run: function (root, kind) {
+        if (!_lastPayload) return Promise.reject(new Error('no film to export'));
+        return _gzipB64u(JSON.stringify(_lastPayload)).then(function (enc) {
+          var url = EXPORT_PAGE + '#p=' + enc + '&k=' + kind;
+          return _openLink(url).catch(function (e) {
+            // a host that refuses or ignores ui/open-link: try a popup (allowed by some sandboxes). Without
+            // 'noopener' so a blocked popup is detectable (null); the opener link is cut by hand instead.
+            var w = window.open(url, '_blank');
+            if (!w) throw e;
+            try { w.opener = null; } catch (x) {}
+          });
+        });
+      }
+    };
+  }
+
   window.addEventListener('message', function (ev) {
     var msg = ev.data;
     if (!msg || msg.jsonrpc !== '2.0' || !_pending[msg.id]) return;

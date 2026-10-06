@@ -2705,6 +2705,20 @@ MCP_APPS_HOST_JS = r"""
       return;
     }
 
+    // ui/open-link (spec: View asks the host to open a URL). Films use it to reach the export page,
+    // because this host's sandbox, like Claude's, has no allow-downloads. https only.
+    if (msg.method === 'ui/open-link' && msg.id !== undefined) {
+      var link = msg.params && msg.params.url;
+      if (typeof link !== 'string' || !/^https:\/\//.test(link)) {
+        iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id,
+          error: { code: -32602, message: 'only https links can be opened' } }, '*');
+        return;
+      }
+      window.open(link, '_blank', 'noopener');   // returns null with noopener, so there is nothing to check
+      iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id, result: {} }, '*');
+      return;
+    }
+
     // View->host tools/call (wired-transport v0.1): forward to /mcp (same
     // origin) and reply with the matching JSON-RPC id. Only app-callable
     // tools pass — the spec's host-side visibility enforcement.
@@ -3018,6 +3032,101 @@ document.addEventListener('click', function (e) {{
 {_cursor_glow_html()}
 </body>
 </html>"""
+
+
+# Film export page (2026-10-06). A host's sandbox (Claude, ChatGPT, this site's own playground) has no
+# allow-downloads, so a film's MP4/GIF buttons in a host ask it to open THIS page (ui/open-link) with the film in
+# the fragment (#p=, gzip + base64url; &k=mp4|gif starts that export). Here the film is painted into the
+# same-origin renderer bundle, the exporter (/vendors/client-export/, lazy-loaded) runs in the visitor's own
+# browser, and the file downloads normally. Nothing is uploaded or stored.
+MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Export film · A2UI Catalog</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #0b0d12; color: #eef1f7; font: 15px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.1rem; margin: 4px 0 2px; } h1 span { color: #8d98ff; }
+  #st { color: #97a0b2; min-height: 1.5em; margin: 0 0 12px; } #st.err { color: #ff6b81; }
+  iframe { width: 100%; height: 80vh; border: 0; display: block; background: transparent; }
+  footer { color: #97a0b2; font-size: .8rem; margin-top: 10px; } a { color: #8d98ff; }
+</style>
+</head>
+<body>
+<main>
+  <h1>A2UI <span>film export</span></h1>
+  <p id="st">Loading the film…</p>
+  <iframe id="view" src="/surfaces/mcp-apps/renderer-bundle.html" title="Film"></iframe>
+  <footer>Encoded in this browser; nothing is uploaded. <a href="https://a2uicatalog.ai/">a2uicatalog.ai</a></footer>
+</main>
+<script>
+(function () {
+  var st = document.getElementById('st'), fr = document.getElementById('view');
+  function say(t, err) { st.textContent = t; st.className = err ? 'err' : ''; }
+  var h = location.hash.slice(1), p = (h.match(/(?:^|&)p=([^&]+)/) || [])[1], k = (h.match(/(?:^|&)k=(mp4|gif)(?:&|$)/) || [])[1];
+  if (!p) { say('There is no film in this link.', 1); return; }
+  function unb64u(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
+    var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a;
+  }
+  var payloadP = new Response(new Blob([unb64u(p)]).stream().pipeThrough(new DecompressionStream('gzip'))).text().then(JSON.parse);
+  var libP = null;
+  function lib() {
+    return libP || (libP = new Promise(function (res, rej) {
+      var s = document.createElement('script'); s.src = '/vendors/client-export/client_export.min.js';
+      s.onload = function () { res(window.ClientExport); }; s.onerror = function () { libP = null; rej(new Error('could not load the exporter')); };
+      document.head.appendChild(s);
+    }));
+  }
+  function slug(t) { return String(t || 'film').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'film'; }
+  var title = 'film', busy = false;
+  // window.A2UIExport for the painted film: its MP4/GIF buttons call this. Capture runs on animation frames,
+  // which stop while the tab is hidden, so the export waits until the visitor comes back (and says so).
+  function run(root, kind, progress) {
+    if (busy) return Promise.reject(new Error('already exporting'));
+    busy = true;
+    var name = kind === 'gif' ? 'GIF' : 'Video', lock = null;
+    try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (l) { lock = l; }, function () {}); } catch (e) {}
+    say(name + ': rendering frames, keep this tab open…');
+    return lib().then(function (CE) {
+      var f = CE.findFilm(root.ownerDocument, root);
+      function onP(d, n) { if (progress) progress(d, n); say(name + ' ' + Math.round(100 * d / (n || 1)) + '%' + (document.hidden ? ' (paused: tab hidden)' : '')); }
+      return kind === 'gif' ? CE.exportGif(f, { fps: 10, scale: 0.5, onProgress: onP })
+        : CE.exportVideo(f, { fps: 24, scale: 0.75, onProgress: onP }).then(function (r) { return r.blob; });
+    }).then(function (blob) {
+      var ext = blob.type.indexOf('gif') >= 0 ? 'gif' : (blob.type.indexOf('webm') >= 0 ? 'webm' : 'mp4');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = slug(title) + '.' + ext;
+      document.body.appendChild(a); a.click(); a.remove();
+      say('Saved ' + a.download + '. Press MP4 or GIF under the film for another.');
+    }, function (e) { say('Export failed: ' + (e && e.message || e), 1); throw e; })
+      .finally(function () { busy = false; if (lock) lock.release().catch(function () {}); });
+  }
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== fr.contentWindow) return;
+    var m = ev.data;
+    if (m && m.method === 'ui/notifications/size-changed' && m.params && m.params.height) fr.style.height = Math.ceil(m.params.height) + 'px';
+  });
+  fr.addEventListener('load', function () {
+    payloadP.then(function (payload) {
+      title = payload.title || 'film';
+      var w = fr.contentWindow;
+      w.A2UIExport = { kinds: ['mp4', 'gif'], run: run };   // before painting: the film reads it when it starts
+      w._A2UI_PAINT(payload);
+      var root = w.document.querySelector('.mt-root');
+      if (!root) { say('This link has no film to export.', 1); return; }
+      say(k ? 'Starting the ' + k.toUpperCase() + ' export…' : 'Press MP4 or GIF under the film.');
+      if (k) setTimeout(function () { run(root, k).catch(function () {}); }, 600);
+    }).catch(function (e) { say('Could not read the film in this link: ' + (e && e.message || e), 1); });
+  });
+})();
+</script>
+</body>
+</html>
+"""
 
 
 def _bundle_hash():
@@ -3832,6 +3941,10 @@ def main():
             .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
             .replace("__MCP_GLOW__", _cursor_glow_html()))
         print(f"✓ full-screen playground → {play_dir}/index.html")
+        export_dir = surfaces_dir / "mcp-apps" / "export"
+        export_dir.mkdir(parents=True, exist_ok=True)
+        (export_dir / "index.html").write_text(MCP_APPS_EXPORT_HTML)
+        print(f"✓ film export page → {export_dir}/index.html")
 
     print(f"✓ {count} atom pages → {OUTPUT_DIR}")
     print(f"✓ {len(surface_map)} surface pages → {surfaces_dir}")
