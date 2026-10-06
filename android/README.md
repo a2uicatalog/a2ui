@@ -55,6 +55,9 @@ v1.0 payloads are converted to v0.9 by `A2uiAtomicCatalog.adapt()` (see below).
   bridge WebView. A film whose page defines `window.A2UIExport = {kinds, run(root, kind, progress)}`
   shows one export button per kind on its control bar; the app supplies the exporter and decides
   where the file goes (a WebView cannot download a `blob:` URL itself).
+- **Images can be inline:** the library's Image draws `data:` URIs (base64) as well as URLs,
+  so a payload can carry its own pictures. Capped at 5 MB encoded, and downsampled to 2048 px
+  on the long side, since the payload is untrusted.
 - **Bridged atom fields can be data bindings** (`{"path": "/film/blocks"}`), including
   whole lists, and repaint when the bound data changes, so inputs bound to the same data
   model edit an atom live. A ChoicePicker stores its selection as a list (`["grid"]`); for
