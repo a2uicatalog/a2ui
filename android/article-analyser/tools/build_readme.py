@@ -65,7 +65,8 @@ add("prompt", "The prompt: the whole system instruction", RA, "javascript",
     "This is the entire system instruction the model receives. Everything the product promises about a reading is in it: "
     "the article text is data and not instructions, quotations must be verbatim, and the model may only quote the text it "
     "was given. The runbook's own contract (what a reading must contain) is returned by the first `emit_runbook_surface` "
-    "call, so it reaches the model as a tool result and not as part of this prompt.",
+    "call, so it reaches the model as a tool result and not as part of this prompt. That contract is public: "
+    "[`runbooks/article_playbook.yaml`](../../runbooks/article_playbook.yaml).",
     cut(RA, r"^const SYSTEM_INSTRUCTION", 14) + "\n\n" + cut(RA, r"^export function buildInstruction", 10) + "\n  …")
 add("store", "An offline library that reconciles with the server", KA / "Work.kt", "kotlin",
     "Each reading is kept on the phone as a small file plus its payload. The server's store stays the source of truth: sync "
