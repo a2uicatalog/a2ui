@@ -20,8 +20,8 @@ import kotlin.coroutines.resumeWithException
  * AppAuth's default and the server should require it for this client. The endpoints, client id and scheme come from
  * BuildConfig (set in gradle.properties; see the README). Tokens: 1 h access, 30-day refresh, refreshed by [freshToken] when needed.
  *
- * The AuthState lives in app-private SharedPreferences: a sideloaded personal app on one phone. A Play build would
- * move it to Keystore-backed storage.
+ * The AuthState (including the long-lived refresh token) lives in app-private SharedPreferences. That is acceptable for a
+ * sideloaded personal app on one phone, and not for anything distributed: move it to Keystore-backed storage first.
  */
 object Auth {
     val CLIENT_ID = BuildConfig.CLIENT_ID

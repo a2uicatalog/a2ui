@@ -20,7 +20,8 @@ import java.util.concurrent.TimeUnit
 
 private const val TAG = "A2uiAnalyser"
 
-/** The phone reads the page itself: its own network, so pages the reader is signed into work too. */
+/** The phone reads the page itself, on its own network. It is a plain request with no browser cookies, so articles
+ *  behind a login or paywall are not readable this way; a page too thin to quote falls back to the server's fetch. */
 object Article {
     suspend fun text(url: String): Pair<String, String>? = withContext(Dispatchers.IO) {
         runCatching {

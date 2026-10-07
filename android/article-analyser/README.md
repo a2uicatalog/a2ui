@@ -1,6 +1,6 @@
 # Article analyser (Android)
 
-**Share a link, get a reading that works offline.** The app takes an article from the Android share sheet, a server-side model reads it into a *concept ladder*, and the phone draws that ladder natively and keeps it for offline use. The phone plays the part Claude or Gemini Enterprise plays in an MCP App.
+**Share a link, get a reading that works offline.** The app takes an article from the Android share sheet, a server-side model reads it into a *concept ladder*, and the phone draws that ladder natively and keeps it for offline use. In an MCP App the host (Claude, ChatGPT or Gemini Enterprise) runs an MCP client for its model. Here the phone app is the MCP client itself, with no model of its own, and it draws the result.
 
 ![Sharing an article from the browser to the article analyser on a Pixel 7 Pro: the share sheet asks for a lens (Explain, Apply, Challenge or Situate) and an optional note, then Read it](docs/share-sheet.jpg)
 
@@ -62,7 +62,7 @@ Any shared link lands in the app, with a lens picker (explain, apply, challenge,
 <a id="fetch"></a>
 ### The phone reads the page itself
 
-The article is fetched from the phone's own network, so pages the reader is signed into work. If the page is too thin to quote from, the phone sends only the URL and the server fetches it instead.
+The article is fetched by the phone itself, on its own network. It is a plain request with no browser cookies, so articles behind a login or paywall are not readable this way. If the page is too thin to quote from, the phone sends only the URL and the server fetches it instead.
 
 `android/article-analyser/app/src/main/java/ai/a2uicatalog/analyser/Work.kt`
 
@@ -120,9 +120,9 @@ class ReadWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
 ```
 
 <a id="mcp"></a>
-### The phone is the MCP host
+### The phone is the MCP client
 
-This is the part Claude or Gemini Enterprise plays in an MCP App, moved onto the phone. There is no model on this side: a plain JSON-RPC `tools/call` with an OAuth bearer token. A tool refusal is a `ToolError`, which retrying will not fix. Sign-in is a public PKCE client in `Auth.kt`.
+In an MCP App the host (Claude, ChatGPT or Gemini Enterprise) runs an MCP client for its model. Here the phone app is the client itself, and it also draws the result. There is no model on this side: a plain JSON-RPC `tools/call` with an OAuth bearer token. A tool refusal is a `ToolError`, which retrying will not fix. Sign-in is a public PKCE client in `Auth.kt`.
 
 `android/article-analyser/app/src/main/java/ai/a2uicatalog/analyser/Mcp.kt`
 
@@ -421,7 +421,7 @@ analyser.clientId=your-client-id
 analyser.redirectScheme=com.example.analyser   # the custom scheme your OAuth client registered
 ```
 
-The app builds against the atoms library one directory up (`android/a2ui-atoms`) as a Gradle composite build, so it always uses that source.
+The app builds against the atoms library one directory up (`android/a2ui-atoms`) as a Gradle composite build, so it always uses that source. `app/build.gradle.kts` still names the Maven coordinate `ai.a2uicatalog:atomic-catalog` (published on Maven Central); the composite build in `settings.gradle.kts` substitutes the local source for it. Delete the `includeBuild` block to use the published artifact instead.
 
 ```bash
 cd android/article-analyser
@@ -438,6 +438,15 @@ cd android/article-analyser
   - `list_readings` takes `{runbook, limit}` and returns `{readings: [{id, source_url, title, lens, payload_p, stamped_at}]}`, where `payload_p` is the payload as gzip then base64url.
   - `delete_reading` takes `{ids}`.
 - **A durable store per signed-in reader,** so a reading made in one place shows up in the others.
+
+## Security notes
+
+This is reference code from a personal, sideloaded app. Before you distribute anything built from it:
+
+- **Tokens:** the sign-in state, including the long-lived refresh token, is kept in app-private `SharedPreferences`. Move it to Keystore-backed storage first.
+- **Fetching:** the phone sends no browser cookies, so login-gated articles are not read. On the server, `read-article.js` guards its own fetch with a blocklist of private hosts, re-checked after redirects. A blocklist is a first line only; for production, fetch from isolated egress or against an allowlist.
+- **Prompt injection:** the system prompt tells the model the article text is data, and with phone-supplied text the model can call only the stamping tool. Neither is a verified guarantee, and the prompt's rule that quotations are verbatim is not checked in code.
+- **Sync:** a sync asks the server for up to 100 readings and only mirrors deletions when the list came back whole, so with 100 or more readings, deletions made elsewhere are not applied on the phone.
 
 ## Regenerate
 

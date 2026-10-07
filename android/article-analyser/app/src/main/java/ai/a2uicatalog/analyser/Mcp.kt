@@ -12,8 +12,9 @@ import java.util.zip.GZIPInputStream
 
 /**
  * Your MCP server, called directly as an MCP client: JSON-RPC tools/call on the authenticated endpoint.
- * The phone is the host here, the part Claude or Gemini Enterprise plays in an MCP App, so there is no model in
- * the loop on this side: read_article runs Gemini server-side and keeps the reading in this reader's store.
+ * The phone app is the MCP client here. In an MCP App the host (Claude, ChatGPT or Gemini Enterprise) runs a client for
+ * its model; this app has no model, so it calls the tool directly and draws the result itself. read_article runs
+ * Gemini server-side and keeps the reading in this reader's store.
  */
 object Mcp {
     private val ENDPOINT = BuildConfig.MCP_URL
