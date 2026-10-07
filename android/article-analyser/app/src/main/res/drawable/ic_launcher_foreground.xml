@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The A2UI Catalog mark, same geometry as the motion_mark atom (atoms_motion.gs). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="25.2" android:translateY="25.2" android:scaleX="2.4" android:scaleY="2.4">
+        <group android:rotation="-32" android:pivotX="12" android:pivotY="12">
+            <path android:pathData="M2,12 a10,4.4 0 1,0 20,0 a10,4.4 0 1,0 -20,0" android:strokeColor="#FF8D98FF" android:strokeWidth="1.5" android:strokeAlpha="1.0" android:fillColor="#00000000"/>
+        </group>
+        <group android:rotation="32" android:pivotX="12" android:pivotY="12">
+            <path android:pathData="M2,12 a10,4.4 0 1,0 20,0 a10,4.4 0 1,0 -20,0" android:strokeColor="#FF2AC4CE" android:strokeWidth="1.5" android:strokeAlpha="1.0" android:fillColor="#00000000"/>
+        </group>
+        <group android:rotation="90" android:pivotX="12" android:pivotY="12">
+            <path android:pathData="M2,12 a10,4.4 0 1,0 20,0 a10,4.4 0 1,0 -20,0" android:strokeColor="#FF8D98FF" android:strokeWidth="1.1" android:strokeAlpha="0.35" android:fillColor="#00000000"/>
+        </group>
+        <path android:pathData="M9.3,12 a2.7,2.7 0 1,0 5.4,0 a2.7,2.7 0 1,0 -5.4,0" android:fillColor="#FF8D98FF"/>
+        <path android:pathData="M1.958,15.977 a1.25,1.25 0 1,0 2.5,0 a1.25,1.25 0 1,0 -2.5,0" android:fillColor="#FF2AC4CE"/>
+    </group>
+</vector>
