@@ -174,7 +174,7 @@ export async function fetchUrlSafely(rawUrl, fetchImpl = fetch) {
   const t = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
   try {
     const resp = await fetchImpl(u.toString(), { redirect: 'follow', signal: ctl.signal,
-      headers: { 'user-agent': 'a2uicatalog-read-article/1.0 (+https://a2uicatalog.ai/)' } });
+      headers: { 'user-agent': 'a2uicatalog-read-article/1.0 (+https://your-server.example/)' } });
     if (!resp.ok) throw new Error('fetch failed: HTTP ' + resp.status);
     const finalHost = new URL(resp.url || u.toString()).hostname;
     if (isPrivateHost(finalHost)) throw new Error('redirected to a refused host: ' + finalHost);
@@ -275,7 +275,7 @@ export async function runPlaybookLoop(a, deps) {
 // passed in so this module has no import cycle with tools.js.
 export async function mcpReadArticle(env, rawArgs, { stampFn, saveFn, fetchImpl = fetch } = {}) {
   const store = profileStore(env, env && env.__IDENTITY__);
-  if (!store) return { ok: false, error: 'read_article needs a signed-in reader (the authenticated /mcp-auth endpoint)' };
+  if (!store) return { ok: false, error: 'read_article needs a signed-in reader (the authenticated MCP endpoint)' };
   if (!env.VERTEX_EXPRESS_API_KEY) {
     return { ok: false, error: 'VERTEX_EXPRESS_API_KEY is not set on this worker' };
   }

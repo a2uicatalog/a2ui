@@ -13,11 +13,20 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1"
-        // AppAuth's redirect receiver: matches the a2ui-android client's registered redirect_uri
-        // (mcp-worker/src/oauth.js HARDCODED_CLIENTS), ai.a2uicatalog.android:/oauth2redirect.
-        manifestPlaceholders["appAuthRedirectScheme"] = "ai.a2uicatalog.android"
+        // Your server's details. The defaults are placeholders: set the real values in ~/.gradle/gradle.properties or
+        // with -P flags, never in this file (see "Configure" in the README).
+        fun prop(name: String, default: String) = (project.findProperty(name) as String?) ?: default
+        buildConfigField("String", "MCP_URL", "\"${prop("analyser.mcpUrl", "https://your-server.example/mcp")}\"")
+        buildConfigField("String", "AUTH_URL", "\"${prop("analyser.authUrl", "https://your-server.example/oauth/authorize")}\"")
+        buildConfigField("String", "TOKEN_URL", "\"${prop("analyser.tokenUrl", "https://your-server.example/oauth/token")}\"")
+        buildConfigField("String", "CLIENT_ID", "\"${prop("analyser.clientId", "your-client-id")}\"")
+        // AppAuth's redirect receiver: the custom scheme your OAuth client registered as its redirect_uri
+        // (<scheme>:/oauth2redirect).
+        val redirectScheme = prop("analyser.redirectScheme", "com.example.analyser")
+        buildConfigField("String", "REDIRECT_SCHEME", "\"$redirectScheme\"")
+        manifestPlaceholders["appAuthRedirectScheme"] = redirectScheme
     }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

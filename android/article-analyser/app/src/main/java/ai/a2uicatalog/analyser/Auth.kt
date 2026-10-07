@@ -15,20 +15,20 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
- * Sign-in against the catalog's own OAuth server (mcp-worker/src/oauth.js): a public PKCE client, `a2ui-android`,
- * redirecting to ai.a2uicatalog.android:/oauth2redirect. AppAuth opens a Custom Tab, where Cloudflare Access does
- * the Google sign-in and the worker shows its consent page; PKCE (S256) is AppAuth's default, and the server
- * requires it for this client. Tokens: 1 h access, 30-day refresh, refreshed by [freshToken] when needed.
+ * Sign-in against your MCP server's OAuth endpoints: a public PKCE client (no client secret in the app) redirecting
+ * to `<scheme>:/oauth2redirect`. AppAuth opens a Custom Tab where the server signs the reader in; PKCE (S256) is
+ * AppAuth's default and the server should require it for this client. The endpoints, client id and scheme come from
+ * BuildConfig (set in gradle.properties; see the README). Tokens: 1 h access, 30-day refresh, refreshed by [freshToken] when needed.
  *
  * The AuthState lives in app-private SharedPreferences: a sideloaded personal app on one phone. A Play build would
  * move it to Keystore-backed storage.
  */
 object Auth {
-    const val CLIENT_ID = "a2ui-android"
-    private val REDIRECT = Uri.parse("ai.a2uicatalog.android:/oauth2redirect")
+    val CLIENT_ID = BuildConfig.CLIENT_ID
+    private val REDIRECT = Uri.parse(BuildConfig.REDIRECT_SCHEME + ":/oauth2redirect")
     private val CONFIG = AuthorizationServiceConfiguration(
-        Uri.parse("https://a2uicatalog.ai/mcp-oauth/authorize"),
-        Uri.parse("https://a2uicatalog.ai/mcp-oauth/token"),
+        Uri.parse(BuildConfig.AUTH_URL),
+        Uri.parse(BuildConfig.TOKEN_URL),
     )
     private const val PREFS = "auth"
     private const val KEY = "state"

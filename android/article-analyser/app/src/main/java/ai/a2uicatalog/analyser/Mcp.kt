@@ -11,12 +11,12 @@ import java.net.URL
 import java.util.zip.GZIPInputStream
 
 /**
- * The catalog's MCP server, called directly as an MCP client: JSON-RPC tools/call on the authenticated endpoint.
+ * Your MCP server, called directly as an MCP client: JSON-RPC tools/call on the authenticated endpoint.
  * The phone is the host here, the part Claude or Gemini Enterprise plays in an MCP App, so there is no model in
  * the loop on this side: read_article runs Gemini server-side and keeps the reading in this reader's store.
  */
 object Mcp {
-    private const val ENDPOINT = "https://a2uicatalog.ai/mcp-auth"
+    private val ENDPOINT = BuildConfig.MCP_URL
 
     /** A tool-level refusal (bad input, daily cap, the model gave up): retrying the same call won't help. */
     class ToolError(message: String) : Exception(message)

@@ -407,7 +407,17 @@ fun BrandTheme(content: @Composable () -> Unit) = MaterialTheme(colorScheme = sc
 | `docs/` | The architecture diagram and the animated film |
 | `tools/` | The scripts that regenerate the film and this README |
 
-## Build
+## Configure and build
+
+The app talks to an MCP server you run, so the server details are build properties with placeholder defaults. Put your own in `~/.gradle/gradle.properties` (or pass `-P`), not in the repo:
+
+```properties
+analyser.mcpUrl=https://your-server.example/mcp
+analyser.authUrl=https://your-server.example/oauth/authorize
+analyser.tokenUrl=https://your-server.example/oauth/token
+analyser.clientId=your-client-id
+analyser.redirectScheme=com.example.analyser   # the custom scheme your OAuth client registered
+```
 
 The app builds against the atoms library one directory up (`android/a2ui-atoms`) as a Gradle composite build, so it always uses that source.
 
@@ -416,7 +426,16 @@ cd android/article-analyser
 ./gradlew :app:assembleDebug
 ```
 
-Reading an article needs a signed-in account on the catalog's server. Sign-in is OAuth with PKCE in a Custom Tab, using the public client `a2ui-android`; there is no client secret in the app.
+## What your server needs to provide
+
+`server/read-article.js` shows the interesting half. To point the app at your own server, it needs:
+
+- **Sign-in:** OAuth authorization code with PKCE (S256) for a public client with no secret, redirecting to `<scheme>:/oauth2redirect`. Access tokens are refreshed with a refresh token.
+- **An MCP endpoint** (JSON-RPC over HTTP, `tools/call`, bearer token) with three tools:
+  - `read_article` takes `{url, text?, source_title?, lens?, concerns?}` and returns `structuredContent` of `{payload, reading_id, analysed_by, retrieval}`, where `payload` is an A2UI surface containing a `concept_ladder`. It can take 20 to 60 seconds.
+  - `list_readings` takes `{runbook, limit}` and returns `{readings: [{id, source_url, title, lens, payload_p, stamped_at}]}`, where `payload_p` is the payload as gzip then base64url.
+  - `delete_reading` takes `{ids}`.
+- **A durable store per signed-in reader,** so a reading made in one place shows up in the others.
 
 ## Regenerate
 
