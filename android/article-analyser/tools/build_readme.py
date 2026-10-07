@@ -94,7 +94,7 @@ add("catalog", "Native atoms beside Google's Material 3 components", AT / "A2uiA
     cut(AT / "A2uiAtomicCatalog.kt", r"fun catalog\(context: Context, basicComponents: List<A2uiComponent>, nativeAtoms", 7)
     + "\n    }\n\n" + cut(AT / "A2uiAtomicCatalog.kt", r"fun materialBasicComponents", 5))
 add("render", "Drawing a stored reading, with a fallback so it never goes blank", KA / "MainActivity.kt", "kotlin",
-    "The stored payload goes through Google's `androidx.a2ui` engine with the catalog. If the engine cannot take a payload, "
+    "The stored payload (A2UI v1.0) is converted to the v0.9 the alpha engine accepts by `adapt()`, then goes through Google's `androidx.a2ui` engine with the catalog. If the engine cannot take a payload, "
     "the catalog's bundled web renderer paints it instead. The app's own colours come from one Material colour scheme, so "
     "Google's components pick them up without any change to the catalog.",
     cut(KA / "MainActivity.kt", r"private fun NativeReading", 12) + "\n    …\n\n" + cut(KA / "Brand.kt", r"^private val scheme", 8)
@@ -114,7 +114,8 @@ out = ["# Article analyser (Android)", "",
        "[`docs/architecture-film.html`](docs/architecture-film.html) is the same diagram as a 24-second animation, drawn with the "
        "catalog's own `motion_arch` atom. Download it and open it in a browser.", "",
        "The reading travels as an A2UI payload (gzip then base64url, the same form as a `?p=` link), so the phone, Claude and "
-       "the web player all open the same document.", "", "## The path", ""]
+       "the web player all open the same document. Readings are stamped A2UI v1.0, but Google's `androidx.a2ui` alpha only accepts v0.9 "
+       "and v0.9.1, so the app converts each reading with `A2uiAtomicCatalog.adapt()` before drawing it.", "", "## The path", ""]
 n = 0
 for lane, items in STEPS:
     out.append(f"**{lane}**")

@@ -6,7 +6,7 @@
 
 [`docs/architecture-film.html`](docs/architecture-film.html) is the same diagram as a 24-second animation, drawn with the catalog's own `motion_arch` atom. Download it and open it in a browser.
 
-The reading travels as an A2UI payload (gzip then base64url, the same form as a `?p=` link), so the phone, Claude and the web player all open the same document.
+The reading travels as an A2UI payload (gzip then base64url, the same form as a `?p=` link), so the phone, Claude and the web player all open the same document. Readings are stamped A2UI v1.0, but Google's `androidx.a2ui` alpha only accepts v0.9 and v0.9.1, so the app converts each reading with `A2uiAtomicCatalog.adapt()` before drawing it.
 
 ## The path
 
@@ -364,7 +364,7 @@ The Basic Catalog (the root Column, text, buttons) draws with Google's own Mater
 <a id="render"></a>
 ### Drawing a stored reading, with a fallback so it never goes blank
 
-The stored payload goes through Google's `androidx.a2ui` engine with the catalog. If the engine cannot take a payload, the catalog's bundled web renderer paints it instead. The app's own colours come from one Material colour scheme, so Google's components pick them up without any change to the catalog.
+The stored payload (A2UI v1.0) is converted to the v0.9 the alpha engine accepts by `adapt()`, then goes through Google's `androidx.a2ui` engine with the catalog. If the engine cannot take a payload, the catalog's bundled web renderer paints it instead. The app's own colours come from one Material colour scheme, so Google's components pick them up without any change to the catalog.
 
 `android/article-analyser/app/src/main/java/ai/a2uicatalog/analyser/MainActivity.kt`
 
