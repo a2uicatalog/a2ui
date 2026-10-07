@@ -122,7 +122,7 @@ class ReadWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
 <a id="mcp"></a>
 ### The phone is the MCP client
 
-In an MCP App the host (Claude, ChatGPT or Gemini Enterprise) runs an MCP client for its model. Here the phone app is the client itself, and it also draws the result. There is no model on this side: a plain JSON-RPC `tools/call` with an OAuth bearer token. A tool refusal is a `ToolError`, which retrying will not fix. Sign-in is a public PKCE client in `Auth.kt`.
+In an MCP App the host (Claude, ChatGPT or Gemini Enterprise) runs an MCP client for its model. Here the phone app is the client itself, and it also draws the result. There is no model on this side: a plain JSON-RPC `tools/call` with an OAuth bearer token. It is a minimal client: it sends `tools/call` directly, without the `initialize` handshake or `tools/list`, which this server accepts. A tool refusal is a `ToolError`, which retrying will not fix. Sign-in is a public PKCE client in `Auth.kt`.
 
 `android/article-analyser/app/src/main/java/ai/a2uicatalog/analyser/Mcp.kt`
 
@@ -421,7 +421,7 @@ analyser.clientId=your-client-id
 analyser.redirectScheme=com.example.analyser   # the custom scheme your OAuth client registered
 ```
 
-The app builds against the atoms library one directory up (`android/a2ui-atoms`) as a Gradle composite build, so it always uses that source. `app/build.gradle.kts` still names the Maven coordinate `ai.a2uicatalog:atomic-catalog` (published on Maven Central); the composite build in `settings.gradle.kts` substitutes the local source for it. Delete the `includeBuild` block to use the published artifact instead.
+The app builds against the atoms library one directory up (`android/a2ui-atoms`) as a Gradle composite build, so it always uses that source. `app/build.gradle.kts` still names the Maven coordinate `ai.a2uicatalog:atomic-catalog` (published on Maven Central, 0.3.0 is the first version with the native concept ladder); the composite build in `settings.gradle.kts` substitutes the local source for it. Delete the `includeBuild` block to use the published artifact instead.
 
 ```bash
 cd android/article-analyser
@@ -445,7 +445,7 @@ This is reference code from a personal, sideloaded app. Before you distribute an
 
 - **Tokens:** the sign-in state, including the long-lived refresh token, is kept in app-private `SharedPreferences`. Move it to Keystore-backed storage first.
 - **Fetching:** the phone sends no browser cookies, so login-gated articles are not read. On the server, `read-article.js` guards its own fetch with a blocklist of private hosts, re-checked after redirects. A blocklist is a first line only; for production, fetch from isolated egress or against an allowlist.
-- **Prompt injection:** the system prompt tells the model the article text is data, and with phone-supplied text the model can call only the stamping tool. Neither is a verified guarantee, and the prompt's rule that quotations are verbatim is not checked in code.
+- **Prompt injection:** the system prompt tells the model the article text is data, and with phone-supplied text the model can call only the stamping tool. Neither is a verified guarantee: a malicious article can still shape the content of the reading it produces, and the rule that quotations are verbatim is not checked in code.
 - **Sync:** a sync asks the server for up to 100 readings and only mirrors deletions when the list came back whole, so with 100 or more readings, deletions made elsewhere are not applied on the phone.
 
 ## Regenerate

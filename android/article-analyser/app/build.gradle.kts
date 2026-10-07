@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation("ai.a2uicatalog:atomic-catalog:0.1.0")   // the reading view: RendererWebView, offline bundle
+    implementation("ai.a2uicatalog:atomic-catalog:0.3.0")   // the reading view: RendererWebView, offline bundle
 
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.compose.foundation:foundation:1.13.0-alpha03")
