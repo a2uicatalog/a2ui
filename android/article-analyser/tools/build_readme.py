@@ -109,6 +109,8 @@ out = ["# Article analyser (Android)", "",
        "**Share a link, get a reading that works offline.** The app takes an article from the Android share sheet, a "
        "server-side model reads it into a *concept ladder*, and the phone draws that ladder natively and keeps it for offline "
        "use. The phone plays the part Claude or Gemini Enterprise plays in an MCP App.", "",
+       "![Sharing an article from the browser to the article analyser on a Pixel 7 Pro: the share sheet asks for a lens "
+       "(Explain, Apply, Challenge or Situate) and an optional note, then Read it](docs/share-sheet.jpg)", "",
        "![The article analyser's architecture: share sheet, fetch and queue, read_article, Gemini, store, offline library, "
        "native reader](docs/architecture.png)", "",
        "[`docs/architecture-film.html`](docs/architecture-film.html) is the same diagram as a 24-second animation, drawn with the "
