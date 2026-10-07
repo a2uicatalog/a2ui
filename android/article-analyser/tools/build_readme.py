@@ -37,17 +37,17 @@ add("share", "The share sheet is the front door", KA / "ShareActivity.kt", "kotl
     "The sheet only queues the work and closes, so it takes a second even with no signal. The manifest entry "
     "(`app/src/main/AndroidManifest.xml`) is what puts the app in the share sheet.",
     cut(KA / "ShareActivity.kt", r"val shared = intent", 9) + "\n        …\n\n" + cut(KA / "ShareActivity.kt", r"val r = Store.add", 2))
-add("fetch", "The phone reads the page itself", KA / "Work.kt", "kotlin",
-    "The article is fetched by the phone itself, on its own network. It is a plain request with no browser cookies, so articles "
-    "behind a login or paywall are not readable this way. If the page is too thin to quote from, the phone sends only the URL "
-    "and the server fetches it instead.",
-    cut(KA / "Work.kt", r"^object Article", 13))
 add("queue", "A queued job that survives the app closing", KA / "Work.kt", "kotlin",
     "WorkManager runs the read once there is a network and retries with backoff. One case is handled on purpose: if the "
     "phone times out, the server is still reading and will save the reading, so the worker marks it for the next sync "
     "instead of retrying and reading the article twice.",
     cut(KA / "Work.kt", r"^class ReadWorker", 12) + "\n        …\n" + cut(KA / "Work.kt", r"catch \(e: SocketTimeoutException\)", 5)
     + "\n        …\n\n" + cut(KA / "Work.kt", r"fun enqueue", 8))
+add("fetch", "The phone reads the page itself", KA / "Work.kt", "kotlin",
+    "When the queued job runs, the phone fetches the article itself, on its own network. It is a plain request with no browser cookies, so articles "
+    "behind a login or paywall are not readable this way. If the page is too thin to quote from, the phone sends only the URL "
+    "and the server fetches it instead.",
+    cut(KA / "Work.kt", r"^object Article", 13))
 add("mcp", "The phone is the MCP client", KA / "Mcp.kt", "kotlin",
     "In an MCP App the host (Claude, ChatGPT or Gemini Enterprise) runs an MCP client for its model. Here the phone app is the "
     "client itself, and it also draws the result. There is no model on this side: a plain JSON-RPC `tools/call` with an OAuth bearer token. "
@@ -102,7 +102,7 @@ add("render", "Drawing a stored reading, with a fallback so it never goes blank"
     cut(KA / "MainActivity.kt", r"private fun NativeReading", 12) + "\n    …\n\n" + cut(KA / "Brand.kt", r"^private val scheme", 8)
     + "\n    …\n)\n\n@Composable\n" + cut(KA / "Brand.kt", r"^fun BrandTheme", 1))
 
-STEPS = [("On the phone", [("share", "Share sheet"), ("fetch", "Fetch the page"), ("queue", "Queue"), ("mcp", "MCP call")]),
+STEPS = [("On the phone", [("share", "Share sheet"), ("queue", "Queue"), ("fetch", "Fetch the page"), ("mcp", "MCP call")]),
          ("On the server", [("tool", "`read_article`"), ("prompt", "The prompt")]),
          ("Back on the phone", [("store", "Offline library"), ("web", "Concept ladder on the web"), ("native", "Native ladder"),
                                 ("catalog", "Material 3 beside native atoms"), ("render", "Draw it, with a fallback")])]
@@ -176,6 +176,8 @@ out += ["## What is in this folder", "",
         "- **Fetching:** the phone sends no browser cookies, so login-gated articles are not read. On the server, "
         "`read-article.js` guards its own fetch with a blocklist of private hosts, re-checked after redirects. A blocklist is a "
         "first line only; for production, fetch from isolated egress or against an allowlist.",
+        "- **Local-network fetch:** the phone requests whatever link is shared, without checking whether it points at a private-network "
+        "address. That is acceptable for a personal app; filter such addresses before you distribute one.",
         "- **Prompt injection:** the system prompt tells the model the article text is data, and with phone-supplied text the "
         "model can call only the stamping tool. Neither is a verified guarantee: a malicious article can still shape the content of "
         "the reading it produces, and the rule that quotations are verbatim is not checked in code.",

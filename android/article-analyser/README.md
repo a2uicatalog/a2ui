@@ -15,8 +15,8 @@ The reading travels as an A2UI payload (gzip then base64url, the same form as a 
 **On the phone**
 
 1. [Share sheet](#share)
-2. [Fetch the page](#fetch)
-3. [Queue](#queue)
+2. [Queue](#queue)
+3. [Fetch the page](#fetch)
 4. [MCP call](#mcp)
 
 **On the server**
@@ -59,28 +59,6 @@ Any shared link lands in the app, with a lens picker (explain, apply, challenge,
                     ReadWorker.enqueue(this@ShareActivity, r.id)
 ```
 
-<a id="fetch"></a>
-### The phone reads the page itself
-
-The article is fetched by the phone itself, on its own network. It is a plain request with no browser cookies, so articles behind a login or paywall are not readable this way. If the page is too thin to quote from, the phone sends only the URL and the server fetches it instead.
-
-`android/article-analyser/app/src/main/java/ai/a2uicatalog/analyser/Work.kt`
-
-```kotlin
-object Article {
-    suspend fun text(url: String): Pair<String, String>? = withContext(Dispatchers.IO) {
-        runCatching {
-            val doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Android) A2UIAnalyser/0.1").timeout(15_000)
-                .followRedirects(true).get()
-            doc.select("script,style,nav,header,footer,aside,form,noscript").remove()
-            val root = doc.selectFirst("article") ?: doc.selectFirst("main") ?: doc.body()
-            val text = root.select("h1,h2,h3,p,li,blockquote").joinToString("\n\n") { it.text() }.trim()
-            if (text.length < 400) null else doc.title() to text   // too thin to quote from: let the server fetch
-        }.onFailure { Log.w(TAG, "fetch failed for $url", it) }.getOrNull()
-    }
-}
-```
-
 <a id="queue"></a>
 ### A queued job that survives the app closing
 
@@ -117,6 +95,28 @@ class ReadWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 .build()
             WorkManager.getInstance(ctx).enqueueUniqueWork("read-$id", ExistingWorkPolicy.KEEP, req)
         }
+```
+
+<a id="fetch"></a>
+### The phone reads the page itself
+
+When the queued job runs, the phone fetches the article itself, on its own network. It is a plain request with no browser cookies, so articles behind a login or paywall are not readable this way. If the page is too thin to quote from, the phone sends only the URL and the server fetches it instead.
+
+`android/article-analyser/app/src/main/java/ai/a2uicatalog/analyser/Work.kt`
+
+```kotlin
+object Article {
+    suspend fun text(url: String): Pair<String, String>? = withContext(Dispatchers.IO) {
+        runCatching {
+            val doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Android) A2UIAnalyser/0.1").timeout(15_000)
+                .followRedirects(true).get()
+            doc.select("script,style,nav,header,footer,aside,form,noscript").remove()
+            val root = doc.selectFirst("article") ?: doc.selectFirst("main") ?: doc.body()
+            val text = root.select("h1,h2,h3,p,li,blockquote").joinToString("\n\n") { it.text() }.trim()
+            if (text.length < 400) null else doc.title() to text   // too thin to quote from: let the server fetch
+        }.onFailure { Log.w(TAG, "fetch failed for $url", it) }.getOrNull()
+    }
+}
 ```
 
 <a id="mcp"></a>
@@ -445,6 +445,7 @@ This is reference code from a personal, sideloaded app. Before you distribute an
 
 - **Tokens:** the sign-in state, including the long-lived refresh token, is kept in app-private `SharedPreferences`. Move it to Keystore-backed storage first.
 - **Fetching:** the phone sends no browser cookies, so login-gated articles are not read. On the server, `read-article.js` guards its own fetch with a blocklist of private hosts, re-checked after redirects. A blocklist is a first line only; for production, fetch from isolated egress or against an allowlist.
+- **Local-network fetch:** the phone requests whatever link is shared, without checking whether it points at a private-network address. That is acceptable for a personal app; filter such addresses before you distribute one.
 - **Prompt injection:** the system prompt tells the model the article text is data, and with phone-supplied text the model can call only the stamping tool. Neither is a verified guarantee: a malicious article can still shape the content of the reading it produces, and the rule that quotations are verbatim is not checked in code.
 - **Sync:** a sync asks the server for up to 100 readings and only mirrors deletions when the list came back whole, so with 100 or more readings, deletions made elsewhere are not applied on the phone.
 
