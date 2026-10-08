@@ -317,6 +317,11 @@ answer in the user's profile (the catalogue already has `get_profile` and `save_
 be an A2UI surface: a small choice group whose value is a wired variable feeding the compile step, so the clarifier dogfoods the catalogue.
 Blueprints (section 13) declare which variables they need and which of those are worth asking about (target, audience, length, brand).
 
+**First recorded preference (2026-10-08).** Shown the same slide built for `any` (three-line headline, safe against a missing font) and for `google-slides`
+(two lines, tighter), the user preferred the two-line Slides layout, since Google Slides is the destination that matters to them. That is exactly what the
+clarifier's "remember the answer in the profile" is for: this user's `target` would be `google-slides` from the first question on, and `any` stays the
+default only for people who have not said.
+
 **Cost to watch.** Every target multiplies the certification matrix (section 7). Keep the list short: `any`, `google-slides`, `powerpoint`,
 and add others only when someone needs them.
 
