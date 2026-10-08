@@ -272,3 +272,24 @@ right tool for HTML we author for slides, not for converting existing atoms. 28 
 - A slide mode for atoms should simplify their CSS (no shadows or gradients on cards) so more of the card is a native shape, not
   a picture.
 - Template layouts stay hand-built from XML via python-pptx (sections 2 to 7); the converter does not replace them.
+
+## 16. Calibration: layout maths and a measured preview (2026-10-08)
+
+Found while building the CTA spike (`docs/proposals/spike-cta-deck/`). Two kinds of calibration, both cheap and both worth keeping.
+
+**Layout maths, not hand positions.** Positions come from measured text, so a change in copy re-flows the slide:
+- A column is stacked from measured heights (lines x size x line height, plus fixed gaps) and centred in the free area, so top and
+  bottom margins match.
+- A card is sized from its contents (padding, picture, gap, caption, padding) and centred on the column it sits beside. Hand-placing it
+  left an empty band, which is what prompted this.
+- `fit_text` searches size and box width for the largest size where the real wrap and the fallback-font wrap give the same number of
+  lines and the last line is not a stub. One bug found on the way: scoring the wrap at the safety-reduced width optimised the wrong
+  wrap. Score the nominal wrap; only require the fallback wrap to stay within the box.
+- The lint reports margins, the card's offset from its column, orphans and overlaps.
+
+**Calibrating the preview against a real render.** `calibrate_preview.py` takes the PPTX and a screenshot of how Slides drew it,
+aligns the screenshot to the slide, and prints per shape where the ink landed against where the preview put it. First measurement
+(one screenshot, the CTA slide): shapes within 1 px, text within about 4 px (0.04 in, under 1% of the slide width). The sign
+differs by kind of text (the 44 pt title sits about 2 px lower in the real render, the 22 pt wordmark about 2 px higher), so no
+single global constant fixes it. Use a tolerance budget of about 0.06 in for balance checks, judge relative layout with the preview,
+and confirm final output against real renders. More screenshots would let per-style constants (line height by role) be fitted.
