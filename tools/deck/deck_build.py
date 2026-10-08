@@ -42,6 +42,8 @@ LAYOUTS = {
                                           'items': dict(kind='list', required=True, min=1, max=6, item_max=110)}),
     'stats':   dict(film='stats', fields={'kicker': dict(kind='text', max=40),
                                           'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40)}),
+    'table':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'headers': dict(kind='list', required=True, min=2, max=6, item_max=30),
+                                       'rows': dict(kind='rows', required=True, min=1, max=8, cell_max=60)}),
     'media':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'media': dict(kind='file', required=True, exts=('.gif', '.png', '.jpg', '.jpeg'), max_mb=8),
                                        'alt': dict(kind='text', required=True, max=250), 'caption': dict(kind='text', max=90)}),
     'quote':   dict(film='quote', fields={'quote': dict(kind='text', required=True, max=240), 'name': dict(kind='text', max=40), 'role': dict(kind='text', max=60)}),
@@ -88,6 +90,8 @@ def parse_xml(src, errs):
             elif ch.tag == 'stat': f.setdefault('stats', []).append((oneline(ch.get('value')), oneline(ch.get('label'))))
             elif ch.tag == 'button':
                 n = 'b2' if 'b1' in f else 'b1'; f[n] = oneline(ch.text); f['l' + n[1]] = oneline(ch.get('href'))
+            elif ch.tag == 'column': f.setdefault('headers', []).append(oneline(ch.text))
+            elif ch.tag == 'row': f.setdefault('rows', []).append([oneline(c.text) for c in ch])
             elif ch.tag == 'media': f['media'] = oneline(ch.get('src'))
             elif ch.tag == 'footer': f['foot'] = oneline(ch.text)
             else: f[ch.tag] = oneline(ch.text)
@@ -144,6 +148,14 @@ def validate(deck, errs, warns, skip_film_only=False):
                 if not v:
                     if d.get('required'): err(errs, at, 'required', f'slide {at} ({lay}): {name} is required', field=name)
                 elif len(plain(v)) > d['max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name} is {len(plain(v))} characters, the limit is {d["max"]}', field=name)
+            elif d['kind'] == 'rows':
+                v = v or []; ncol = len(sc['f'].get('headers') or [])
+                if len(v) < d['min']: err(errs, at, 'count', f'slide {at} ({lay}): {name} needs at least {d["min"]} row, has {len(v)}', field=name)
+                elif len(v) > d['max']: err(errs, at, 'count', f'slide {at} ({lay}): {name} has {len(v)} rows, the limit is {d["max"]}', field=name)
+                for j, row in enumerate(v, 1):
+                    if len(row) != ncol: err(errs, at, 'count', f'slide {at} ({lay}): {name}[{j}] has {len(row)} cells, the table has {ncol} columns', field=name)
+                    for c in row:
+                        if len(plain(c)) > d['cell_max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] cell is {len(plain(c))} characters, the limit is {d["cell_max"]}', field=name); break
             elif d['kind'] == 'file':
                 if not v: err(errs, at, 'required', f'slide {at} ({lay}): {name} is required', field=name)
                 else:
@@ -349,7 +361,34 @@ def lay_media(sl, f, at, errs):
     if cap: sl.text(sl.tb(MX, y_img + h + 0.1, CONTENT_W, ch, 'Caption'), [(plain(cap), None)], k.FLOOR_PT, False, k.BRAND['muted'], PP_ALIGN.CENTER)
     sl.media = dict(file=str(p), frames=frames, px=[iw, ih], note='animated: thumbnails and previews show the first frame only' if frames > 1 else None)
 
-LAYOUT_FN = {'title': lay_title, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
+def lay_table(sl, f, at, errs):
+    from pptx.util import Emu
+    hr = heading_fit(f['heading'], (40, 36, 32), CONTENT_W, 2, at, 'heading', errs)
+    if not hr: return
+    hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15
+    hd, rows = f['headers'], f['rows']; n = len(hd); cpad = 0.15; pt = 20
+    need = [max(k.width_pt(plain(r[j]), pt, False) for r in rows + [hd]) / k.SAFETY / 72 + 2 * cpad for j in range(n)]
+    need = [max(need[j], k.width_pt(plain(hd[j]), pt, True) / k.SAFETY / 72 + 2 * cpad) for j in range(n)]
+    if sum(need) > CONTENT_W:
+        err(errs, at, 'does-not-fit', f'slide {at}: the table needs {sum(need):.1f} in of width at {pt} pt, the slide has {CONTENT_W:.1f}; shorten the cells or use fewer columns', field='rows'); return
+    extra = (CONTENT_W - sum(need)) / n; cw = [x + extra for x in need]; rh = 0.55
+    y = top + hh + 0.4
+    if y + rh * (len(rows) + 1) > H_IN - 0.5: err(errs, at, 'does-not-fit', f'slide {at}: {len(rows)} rows do not fit under the heading; the limit here is {int((H_IN - 0.5 - y) / rh) - 1}', field='rows'); return
+    sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
+    gf = sl.s.shapes.add_table(len(rows) + 1, n, Inches(MX), Inches(y), Inches(CONTENT_W), Inches(rh * (len(rows) + 1))); gf.name = 'Table'
+    tbl = gf.table; tblPr = tbl._tbl.tblPr; [tblPr.attrib.pop(a, None) for a in ('firstRow', 'bandRow')]
+    for j, w in enumerate(cw): tbl.columns[j].width = Inches(w)
+    for i in range(len(rows) + 1):
+        tbl.rows[i].height = Inches(rh)
+        for j in range(n):
+            c = tbl.cell(i, j); txt = plain(hd[j] if i == 0 else rows[i - 1][j]); c.fill.solid()
+            c.fill.fore_color.rgb = k.rgb(k.BRAND['surface'] if i == 0 else (k.BRAND['bg'] if i % 2 else k.BRAND['bg']))
+            c.margin_left = c.margin_right = Inches(cpad); c.vertical_anchor = MSO_ANCHOR.MIDDLE
+            p = c.text_frame.paragraphs[0]; r = p.add_run(); r.text = txt; r.font.size = Pt(pt); r.font.bold = i == 0; r.font.name = k.FONT
+            r.font.color.rgb = k.rgb(k.BRAND['accent2'] if i == 0 else k.BRAND['text']); r.font.language_id = MSO_LANGUAGE_ID.ENGLISH_US
+    gf._element.nvGraphicFramePr.cNvPr.set('descr', f"Table: {', '.join(plain(h) for h in hd)}; {len(rows)} rows")
+
+LAYOUT_FN = {'title': lay_title, 'table': lay_table, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
 
 MEDIA = {}
 def build(deck, out, errs):

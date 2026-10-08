@@ -38,6 +38,8 @@ SURFACES = [
     ("android", "android"),
     ("email", "email"),
     ("pdf", "pdf"),
+    ("slides", "slides"),
+    ("pptx", "pptx"),
 ]
 
 

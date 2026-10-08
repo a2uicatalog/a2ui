@@ -47,7 +47,7 @@ def test_xml_entities_are_refused():
     assert errs_of('<!DOCTYPE d [<!ENTITY x "y">]><deck><slide layout="title"><headline>&x;</headline></slide></deck>')[0]['code'] == 'xml'
 
 def test_schema_lists_layouts():
-    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
+    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'table', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
 
 def test_quote_too_long_and_missing():
     e = errs_of('<deck><slide layout="quote"><quote>' + 'x' * 241 + '</quote></slide></deck>'); assert 'limit is 240' in e[0]['message']

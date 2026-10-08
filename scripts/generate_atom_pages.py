@@ -2135,6 +2135,8 @@ SURFACE_NAMES = {
     "mcp-apps":                     "MCP Apps",
     "claude-code":                  "Claude Code",
     "android":                      "Android",
+    "slides":                       "Google Slides",
+    "pptx":                         "PowerPoint (PPTX)",
 }
 
 # Search titles/descriptions for surface pages that need more than the default

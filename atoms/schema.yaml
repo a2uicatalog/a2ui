@@ -45,6 +45,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
   fields:
     text: string
   source: *id001
@@ -67,6 +69,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
   fields:
     text: string
   source: *id001
@@ -89,6 +93,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
   fields:
     text: string
   source: *id001
@@ -109,6 +115,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: blockquote styling stripped — renders as plain text
@@ -158,6 +166,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: monospace background stripped — use bullet_list instead
@@ -184,6 +194,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     items:
     - label: string (optional)
@@ -422,6 +434,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     text: string
     tags: list[string] (optional)
@@ -445,6 +459,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: border-left and background colour stripped — use bold text prefix instead
@@ -472,6 +488,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: custom list styling stripped — use bullet_list with manual numbering
@@ -506,6 +524,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: HTML tables not supported in Chat cards — use bullet_list or key_value
@@ -566,6 +586,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: table layout stripped — use bullet_list with bold keys instead
@@ -1543,6 +1565,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     label: string (descriptive label for the metric, e.g., 'Sales')
     current_value: string (the current formatted value, e.g., '$12,345')
@@ -1919,6 +1943,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a simple blockquote with text attribution; avatar image is
@@ -1954,6 +1980,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     value: string (the prominent number/statistic, e.g., "99%", "1.2M")
     label: string (descriptive text for the stat, e.g., "customer satisfaction")
@@ -3450,6 +3478,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and author name; avatar and complex styling are
@@ -3595,6 +3625,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and icon; banner styling and rich layout are not
@@ -3660,6 +3692,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and expert name; avatar and rich formatting are
@@ -3693,6 +3727,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and author name; star rating may be shown as emojis
@@ -7325,6 +7361,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     variant: string. Display variant — "info", "success", "warning", "neutral".
     title: string. Short bold label (e.g. "Tip", "Note", "Good to know").
@@ -7998,6 +8036,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     cols: integer (optional, default 4)
     accent: string (optional, default hex)
@@ -8142,6 +8182,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (required, alias heading)
     subtitle: string (optional, alias subtext)
@@ -8173,6 +8215,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional)
     accent: string (optional, default hex for all items)
@@ -8200,6 +8244,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional)
     text: string (optional, markdown — renderer degrades to empty; provide title and/or text)
@@ -8259,6 +8305,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
   fields:
     cols: integer (optional, default 4)
     accent: string (optional, default hex for all metrics)
@@ -8288,6 +8336,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional). Ignored by the "cards" style.
     accent: string (optional, hex, default "#4f46e5")
@@ -8319,6 +8369,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (required, markdown)
     subtitle: string (optional, markdown)
@@ -8576,6 +8628,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional)
     items: array (required). Array of {action, owner?, due?, status? ("open"|"in_progress"|"done")}
@@ -8636,6 +8690,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-meet-stage
       note: Background color may not render in all stage environments
