@@ -23461,7 +23461,7 @@ def _qr_svg(data: str, px: int) -> str:
         for y in range(n) for x in range(n) if qr.get_module(x, y)
     )
     return (f'<svg viewBox="0 0 {dim} {dim}" width="{px}" height="{px}" '
-            f'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
+            f'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="{_esc("QR code for " + data)}">'
             f'<rect width="{dim}" height="{dim}" fill="#fff"/>'
             f'<path d="{path}" fill="#000"/>'
             f'</svg>')
@@ -23497,6 +23497,7 @@ def _qr_interactive_script(uid: str, size: int) -> str:
         + f'wrap.innerHTML=\'<svg viewBox="0 0 \'+dim+\' \'+dim+\'" width="{size}" height="{size}" '
         + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
         + "<rect width=\"'+dim+'\" height=\"'+dim+'\" fill=\"#fff\"/><path d=\"'+d+'\" fill=\"#000\"/></svg>';"
+        + "var sv=wrap.firstChild;if(sv&&sv.setAttribute)sv.setAttribute('aria-label','QR code for '+text);"
         + "}"
         + "input.addEventListener('input',function(){render(input.value.trim());});"
         + "render(input.value.trim());"

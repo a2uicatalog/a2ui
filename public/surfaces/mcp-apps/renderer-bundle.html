@@ -21218,7 +21218,8 @@ _RENDERERS['url_anatomy'] = function(b) {
 // per page as a shared partial, not re-emitted per atom instance). Replaces
 // the old chart.googleapis.com dependency (a deprecated Google endpoint,
 // and never worked offline/in email regardless).
-function _a2uiQrSvg(qr, size) {
+// `name` is the SVG's accessible name: a QR code is an image, so a screen reader needs to be told what it opens (WCAG 1.1.1).
+function _a2uiQrSvg(qr, size, name) {
   var n = qr.size, border = 4, dim = n + border * 2, d = '';
   for (var y = 0; y < n; y++) {
     for (var x = 0; x < n; x++) {
@@ -21226,7 +21227,7 @@ function _a2uiQrSvg(qr, size) {
     }
   }
   return '<svg viewBox="0 0 ' + dim + ' ' + dim + '" width="' + size + '" height="' + size + '" '
-    + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
+    + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="' + _esc(name || 'QR code') + '">'
     + '<rect width="' + dim + '" height="' + dim + '" fill="#fff"/>'
     + '<path d="' + d + '" fill="#000"/></svg>';
 }
@@ -21244,7 +21245,7 @@ _RENDERERS['schema_qr'] = function(b) {
   // current page URL (the one context where that's meaningful), needs a
   // tiny one-shot script. Interactive: always needs the script (live input).
   var staticSvg = (!isInteractive && url && typeof qrcodegen !== 'undefined')
-    ? _a2uiQrSvg(qrcodegen.QrCode.encodeText(url, qrcodegen.QrCode.Ecc.MEDIUM), size)
+    ? _a2uiQrSvg(qrcodegen.QrCode.encodeText(url, qrcodegen.QrCode.Ecc.MEDIUM), size, 'QR code for ' + url)
     : '';
   var needsScript = isInteractive || !url;
 
@@ -21267,6 +21268,7 @@ _RENDERERS['schema_qr'] = function(b) {
       + 'wrap.innerHTML=\'<svg viewBox="0 0 \'+dim+\' \'+dim+\'" width="' + size + '" height="' + size + '" '
       + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
       + '<rect width="\'+dim+\'" height="\'+dim+\'" fill="#fff"/><path d="\'+d+\'" fill="#000"/></svg>\';'
+      + 'var sv=wrap.firstChild;if(sv&&sv.setAttribute)sv.setAttribute("aria-label","QR code for "+text);'
       + '}'
       + (isInteractive
           ? 'var input=document.getElementById("qr-in-' + uid + '");'

@@ -44,9 +44,9 @@ reduced-motion rule in their own markup, and 15 canvas atoms have no text altern
 | | atoms with an axe violation | failing contrast nodes |
 |---|---|---|
 | light page, before the host-token and muted fixes | 172 | not recorded |
-| light page, now (baseline.json) | 137 | 265 |
+| light page, now (baseline.json) | 132 | 259 |
 | dark page, before | 245 | not recorded |
-| dark page, now (baseline-dark.json) | 196 | 373 |
+| dark page, now (baseline-dark.json) | 192 | 372 |
 
 1. **Default accent.** `#6366f1` is 4.46:1 on white, a hair under the 4.5:1 AA threshold: white text on it and indigo
    text on white both failed. Now `#4f46e5` (6.3:1) in every renderer default and in the documented schema defaults.
@@ -71,6 +71,13 @@ of its own lost contrast. The right grey depends on the surface behind it.
 its own explicit text colours, light surface or dark. Four atoms with their own light card (`big_reveal`,
 `chat_sequence`, `share_quote`, `star_rating_display`) regressed under the theme-aware token on a dark host and were
 restored. Only an atom that inherits the host's surface should inherit the host's text colour.
+
+**Two later harness findings (2026-10-08).** (1) Animated atoms flipped between pass and fail from run to run because axe sampled contrast mid-animation
+(`big_reveal`, `kinetic_headline`, `gmail_unread_count`); the audit now freezes animations at their end state, so the numbers are deterministic. That also
+surfaced two real end-state findings on the dark page that the unfrozen runs had missed (`chat_sequence`, `gmail_unread_count`, one more node each), which are
+now in the baseline. (2) `schema_qr` was flagged for `svg-img-alt` (an SVG marked as an image with no name). It now carries `aria-label="QR code for <url>"` in
+both renderers (set with `setAttribute` in the live variant), tested in `tests/test_schema_qr_name.py`, and is clean in both baselines. The PPTX spike found it:
+a slide needs alt text for the same shape.
 
 ## Cross-check with two more engines (2026-10-08)
 
