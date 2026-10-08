@@ -45,7 +45,7 @@ needed for "loading -> loaded", "closed -> open" (when the open state is a wired
 
 | Gap | Why it is a gap |
 |---|---|
-| Exit motion | `visible=false` sets `display:none` at once, so there is nothing to animate out. |
+| Exit motion | Built 2026-10-08 (see point 2 below). It was: `visible=false` set `display:none` at once. |
 | Crossfade between two blocks | Two atoms with complementary `visible` wires swap instantly. The incoming one animates in; the outgoing one just disappears. |
 | A wired `menu` open state | `menu` is CSS-only `<details>`. It has no output wire, so a state node cannot know it opened. |
 | `menu` action items | v1 has links only. The agreed route is `onRowClick` emitting the item object (see below). |
@@ -55,12 +55,20 @@ needed for "loading -> loaded", "closed -> open" (when the open state is a wired
 
 1. **Do not add `motion_transition` or `motion_presence` as atoms.** Enter is covered by section 3.
    Exit is an engine behaviour, not an atom.
-2. **Exit, if wanted, is one small change in `setProp`:** on `visible=false`, if the element has
-   `data-a2ui-exit`, add a class that plays a leave animation (duration from the motion tokens,
-   scaled by `--a2ui-motion-duration-scale`, skipped under `prefers-reduced-motion`) and set
-   `display:none` on `animationend` or after the token duration. Opt-in per element, so nothing
-   existing changes. It needs the same change in the engine copies that carry `setProp` (the
-   wired renderer, the MCP Apps bundle and the Worker's compiled copy are generated from one source).
+2. **Exit is built (2026-10-08) as an engine behaviour.** A wired layout element takes
+   `exit: "fade"` or `{effect, ease, duration, delay}`, the same shape and the same nine effects
+   as the generic `enter` (`_MO_FX`), run backwards. `atoms_wired_render.gs` writes `data-mo-exit`
+   plus `--mo-exit-dur/-ease/-delay` on the element wrapper; `_a2uiSetVisible` in `A2UIState.html`
+   (called by `setProp` for the `visible` wire) adds `.mo-leave`, then sets `display:none` on
+   `animationend` (with a timer backstop). Values are clamped and tokenised (duration token or
+   0-8000 ms, ease token or four numbers, delay 0-20000 ms), the duration scales with
+   `--a2ui-motion-duration-scale`, reduced motion hides at once, and showing again cancels a leave
+   in progress. No `exit` means the old instant hide, so nothing existing changes.
+   Example: `{"atom": "stat_card", "id": "panel", "wire": {"visible": "#open.value"},
+   "exit": {"effect": "drop", "duration": "quick", "ease": "accelerate"}}`.
+   Tests: `tests/test_wired_exit.py` (renderer output, clamping, hostile values, and the real
+   engine function in Chromium). Not yet in `spec/a2ui-state-v1.md`: editing the spec triggers the
+   prompt-update process, so that is a separate step.
 3. **`menu` actions use `onRowClick`.** An action item gets `data-row-json` and the same click
    binding `data_table` and `photo_grid` use (`_a2uiBindRowClicks`), so the wire receives the item
    object. This needs a small script for wired menus only. A plain menu stays CSS-only.
@@ -77,6 +85,5 @@ needed for "loading -> loaded", "closed -> open" (when the open state is a wired
 
 ## 7. Decisions for Curtis
 
-- Is opt-in exit motion (point 2) worth an engine change across the three engine copies, or is
-  enter-only enough for now?
+- Decided: exit motion goes ahead, with granular per-element control.
 - Should `menu` actions (point 3) wait for a concrete wired use case, or be built next?

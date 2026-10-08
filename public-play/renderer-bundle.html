@@ -25805,6 +25805,28 @@ function _moEnterSpec(e) {
     view: e.on === 'view'
   };
 }
+// ─── exit: the generic leave, any wired element ─────────────────────────────
+// exit = "fade" | {effect, ease, duration, delay}. The same shape as `enter`, and the same effect
+// names (_MO_FX), so one vocabulary covers both directions. The keyframes are the enter keyframes
+// run backwards. An element with no exit hides instantly, exactly as before.
+function _moExitKf(kf) {
+  var m = /^from\{([^}]*)\}to\{([^}]*)\}$/.exec(kf);
+  if (m) return 'from{' + m[2] + '}to{' + m[1] + '}';
+  return kf.replace(/^from\{/, 'to{');
+}
+function _moExitSpec(e) {
+  if (typeof e === 'string') e = {effect: e};
+  if (!e || typeof e !== 'object') return null;
+  var name = (typeof e.effect === 'string' && Object.prototype.hasOwnProperty.call(_MO_FX, e.effect)) ? e.effect : 'fade';
+  var fx = _MO_FX[name];
+  return {
+    name: name,
+    kf: '@keyframes moo-' + name + '{' + _moExitKf(fx.kf) + '}',
+    ease: _moEaseCss(e.ease, 'accelerate'),
+    dur: _moDur(e.duration, _MO_DUR.quick),
+    delay: _ffInt(e.delay, 0, 0, 20000)
+  };
+}
 var _MO_VIEW_JS =
   '(function(){var e=document.getElementById("mo-%%UID%%");if(!e)return;' +
   'if(!window.IntersectionObserver)return;e.classList.add("mo-arm");' +
@@ -32985,6 +33007,7 @@ function _a2uiRenderWiredLayout(payload) {
   var layout     = payload.layout || [];
   var primitives = payload.state_primitives || [];
   var content    = '';
+  var exitKfSeen = [], exitCssNeeded = false;
 
   // DECLARED fullscreen, same contract the canvas atoms use (height:
   // 'fullscreen' on airspace_command_deck — the payload shape Curtis confirmed
@@ -33095,12 +33118,27 @@ function _a2uiRenderWiredLayout(payload) {
       var emptyAttr = block.emptyMessage
         ? ' data-a2ui-empty="' + String(block.emptyMessage).replace(/"/g, '&quot;') + '"'
         : '';
-      content += '<div id="a2ui-' + el.id + '"' + stepAttr + combinedStyle + colsAttr + emptyAttr + '>' + atomHtml + '</div>';
+      var exitSpec = _moExitSpec(el.exit), exitAttr = '';
+      if (exitSpec) {
+        exitAttr = ' data-mo-exit="' + exitSpec.name + '" style="' + (stepStyle + csStyle).replace(/"/g, "'") +
+          '--mo-exit-dur:calc(' + exitSpec.dur + 'ms * var(--a2ui-motion-duration-scale,1));--mo-exit-ease:' + exitSpec.ease +
+          ';--mo-exit-delay:' + exitSpec.delay + 'ms;"';
+        combinedStyle = '';
+        if (exitKfSeen.indexOf(exitSpec.name) < 0) { exitKfSeen.push(exitSpec.name); content = '<style>' + exitSpec.kf + '</style>' + content; }
+        exitCssNeeded = true;
+      }
+      content += '<div id="a2ui-' + el.id + '"' + stepAttr + combinedStyle + exitAttr + colsAttr + emptyAttr + '>' + atomHtml + '</div>';
     } else {
       content += atomHtml;
     }
   });
 
+  if (exitCssNeeded) {
+    // One rule drives every effect: the keyframes are named per effect and picked by data-mo-exit.
+    var exitRules = '';
+    exitKfSeen.forEach(function(n) { exitRules += '.mo-leave[data-mo-exit=' + n + ']{animation:moo-' + n + ' var(--mo-exit-dur) var(--mo-exit-ease) var(--mo-exit-delay) both}'; });
+    content = '<style>' + exitRules + '@media (prefers-reduced-motion:reduce){.mo-leave{animation:none!important}}@media print{.mo-leave{animation:none!important}}</style>' + content;
+  }
   return fsBreakout + content;
 }
 
@@ -35609,6 +35647,31 @@ A2UIStateEngine.prototype.trigger = function(nodeId, inputName, value) {
   handler(value);
 };
 
+// visible wire -> show / hide, with an optional leave animation. An element opts in with
+// data-mo-exit (written by the wired renderer from the layout element's `exit`); without it this
+// is the old instant display toggle. Showing again cancels a leave in progress, and showing an
+// element replays its `enter` for free (a display flip restarts CSS animations). A user who asks
+// for reduced motion gets the instant hide.
+function _a2uiSetVisible(el, show) {
+  if (el._moLeaveT) { clearTimeout(el._moLeaveT); el._moLeaveT = null; }
+  el.classList.remove('mo-leave');
+  if (show) { el.style.display = ''; return; }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!el.getAttribute('data-mo-exit') || reduce || el.style.display === 'none') { el.style.display = 'none'; return; }
+  el.classList.add('mo-leave');
+  var cs = window.getComputedStyle(el);
+  var ms = (parseFloat(cs.animationDuration) || 0) * 1000 + (parseFloat(cs.animationDelay) || 0) * 1000;
+  var done = function() {
+    if (el._moLeaveT) { clearTimeout(el._moLeaveT); el._moLeaveT = null; }
+    el.removeEventListener('animationend', onEnd);
+    el.classList.remove('mo-leave');
+    el.style.display = 'none';
+  };
+  var onEnd = function(e) { if (e.target === el) done(); };
+  el.addEventListener('animationend', onEnd);
+  el._moLeaveT = setTimeout(done, ms + 50);   // backstop: animationend does not fire if the tab is hidden
+}
+
 A2UIStateEngine.prototype.compileWires = function(layoutEl, domBridge) {
   if (!layoutEl.wire || !layoutEl.id) return;
   var self = this;
@@ -36346,7 +36409,7 @@ var _a2uiBridge = {
     if (!el) { console.warn('[A2UI] DOM element not found: a2ui-' + id); return; }
 
     if (prop === 'visible') {
-      el.style.display = val ? '' : 'none';
+      _a2uiSetVisible(el, !!val);
     } else if (prop === 'text') {
       var spans = el.querySelectorAll('span');
       var textSpan = spans.length >= 2 ? spans[spans.length - 1] : spans[0];

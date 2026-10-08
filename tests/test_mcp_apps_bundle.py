@@ -410,7 +410,11 @@ def test_bundle_size_guard(bundle):
     # Ceiling raised 3.5 -> 3.6 MB on 2026-10-03, with Curtis's go-ahead, for the motion_bricks
     # GPU per-brick flight-motion capability (atoms_brick.gs growth, bricks + real LDraw parts).
     # Delta checked, not accidental: bundle hit 3,514,012 bytes, ~14 KB over the old 3.5 MB ceiling.
-    assert len(bundle) < 3_600_000, f"bundle ballooned to {len(bundle)} bytes"
+    # Ceiling raised 3.6 -> 3.65 MB on 2026-10-08, with Curtis's go-ahead, for three known additions:
+    # the preview `menu` atom (+12.7 KB: triggers, submenu, spring rules, contextual script), the command_palette
+    # renderer fix (+0.5 KB), and the wired `exit` leave animation (+3.6 KB). Delta checked, not accidental:
+    # the bundle went 3,584,402 -> 3,601,154 characters, 1.2 KB over the old ceiling.
+    assert len(bundle) < 3_650_000, f"bundle ballooned to {len(bundle)} bytes"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
 
 

@@ -32,6 +32,7 @@ function _a2uiRenderWiredLayout(payload) {
   var layout     = payload.layout || [];
   var primitives = payload.state_primitives || [];
   var content    = '';
+  var exitKfSeen = [], exitCssNeeded = false;
 
   // DECLARED fullscreen, same contract the canvas atoms use (height:
   // 'fullscreen' on airspace_command_deck — the payload shape Curtis confirmed
@@ -142,11 +143,26 @@ function _a2uiRenderWiredLayout(payload) {
       var emptyAttr = block.emptyMessage
         ? ' data-a2ui-empty="' + String(block.emptyMessage).replace(/"/g, '&quot;') + '"'
         : '';
-      content += '<div id="a2ui-' + el.id + '"' + stepAttr + combinedStyle + colsAttr + emptyAttr + '>' + atomHtml + '</div>';
+      var exitSpec = _moExitSpec(el.exit), exitAttr = '';
+      if (exitSpec) {
+        exitAttr = ' data-mo-exit="' + exitSpec.name + '" style="' + (stepStyle + csStyle).replace(/"/g, "'") +
+          '--mo-exit-dur:calc(' + exitSpec.dur + 'ms * var(--a2ui-motion-duration-scale,1));--mo-exit-ease:' + exitSpec.ease +
+          ';--mo-exit-delay:' + exitSpec.delay + 'ms;"';
+        combinedStyle = '';
+        if (exitKfSeen.indexOf(exitSpec.name) < 0) { exitKfSeen.push(exitSpec.name); content = '<style>' + exitSpec.kf + '</style>' + content; }
+        exitCssNeeded = true;
+      }
+      content += '<div id="a2ui-' + el.id + '"' + stepAttr + combinedStyle + exitAttr + colsAttr + emptyAttr + '>' + atomHtml + '</div>';
     } else {
       content += atomHtml;
     }
   });
 
+  if (exitCssNeeded) {
+    // One rule drives every effect: the keyframes are named per effect and picked by data-mo-exit.
+    var exitRules = '';
+    exitKfSeen.forEach(function(n) { exitRules += '.mo-leave[data-mo-exit=' + n + ']{animation:moo-' + n + ' var(--mo-exit-dur) var(--mo-exit-ease) var(--mo-exit-delay) both}'; });
+    content = '<style>' + exitRules + '@media (prefers-reduced-motion:reduce){.mo-leave{animation:none!important}}@media print{.mo-leave{animation:none!important}}</style>' + content;
+  }
   return fsBreakout + content;
 }

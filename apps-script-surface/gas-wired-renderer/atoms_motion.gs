@@ -131,6 +131,28 @@ function _moEnterSpec(e) {
     view: e.on === 'view'
   };
 }
+// ─── exit: the generic leave, any wired element ─────────────────────────────
+// exit = "fade" | {effect, ease, duration, delay}. The same shape as `enter`, and the same effect
+// names (_MO_FX), so one vocabulary covers both directions. The keyframes are the enter keyframes
+// run backwards. An element with no exit hides instantly, exactly as before.
+function _moExitKf(kf) {
+  var m = /^from\{([^}]*)\}to\{([^}]*)\}$/.exec(kf);
+  if (m) return 'from{' + m[2] + '}to{' + m[1] + '}';
+  return kf.replace(/^from\{/, 'to{');
+}
+function _moExitSpec(e) {
+  if (typeof e === 'string') e = {effect: e};
+  if (!e || typeof e !== 'object') return null;
+  var name = (typeof e.effect === 'string' && Object.prototype.hasOwnProperty.call(_MO_FX, e.effect)) ? e.effect : 'fade';
+  var fx = _MO_FX[name];
+  return {
+    name: name,
+    kf: '@keyframes moo-' + name + '{' + _moExitKf(fx.kf) + '}',
+    ease: _moEaseCss(e.ease, 'accelerate'),
+    dur: _moDur(e.duration, _MO_DUR.quick),
+    delay: _ffInt(e.delay, 0, 0, 20000)
+  };
+}
 var _MO_VIEW_JS =
   '(function(){var e=document.getElementById("mo-%%UID%%");if(!e)return;' +
   'if(!window.IntersectionObserver)return;e.classList.add("mo-arm");' +

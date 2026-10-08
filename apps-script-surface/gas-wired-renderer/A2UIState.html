@@ -318,6 +318,31 @@ A2UIStateEngine.prototype.trigger = function(nodeId, inputName, value) {
   handler(value);
 };
 
+// visible wire -> show / hide, with an optional leave animation. An element opts in with
+// data-mo-exit (written by the wired renderer from the layout element's `exit`); without it this
+// is the old instant display toggle. Showing again cancels a leave in progress, and showing an
+// element replays its `enter` for free (a display flip restarts CSS animations). A user who asks
+// for reduced motion gets the instant hide.
+function _a2uiSetVisible(el, show) {
+  if (el._moLeaveT) { clearTimeout(el._moLeaveT); el._moLeaveT = null; }
+  el.classList.remove('mo-leave');
+  if (show) { el.style.display = ''; return; }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!el.getAttribute('data-mo-exit') || reduce || el.style.display === 'none') { el.style.display = 'none'; return; }
+  el.classList.add('mo-leave');
+  var cs = window.getComputedStyle(el);
+  var ms = (parseFloat(cs.animationDuration) || 0) * 1000 + (parseFloat(cs.animationDelay) || 0) * 1000;
+  var done = function() {
+    if (el._moLeaveT) { clearTimeout(el._moLeaveT); el._moLeaveT = null; }
+    el.removeEventListener('animationend', onEnd);
+    el.classList.remove('mo-leave');
+    el.style.display = 'none';
+  };
+  var onEnd = function(e) { if (e.target === el) done(); };
+  el.addEventListener('animationend', onEnd);
+  el._moLeaveT = setTimeout(done, ms + 50);   // backstop: animationend does not fire if the tab is hidden
+}
+
 A2UIStateEngine.prototype.compileWires = function(layoutEl, domBridge) {
   if (!layoutEl.wire || !layoutEl.id) return;
   var self = this;
@@ -1055,7 +1080,7 @@ var _a2uiBridge = {
     if (!el) { console.warn('[A2UI] DOM element not found: a2ui-' + id); return; }
 
     if (prop === 'visible') {
-      el.style.display = val ? '' : 'none';
+      _a2uiSetVisible(el, !!val);
     } else if (prop === 'text') {
       var spans = el.querySelectorAll('span');
       var textSpan = spans.length >= 2 ? spans[spans.length - 1] : spans[0];
