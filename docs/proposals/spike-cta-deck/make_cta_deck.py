@@ -108,7 +108,18 @@ def build(out):
                                           'Point at the button or the QR code, both open a2uicatalog.ai.')
     cp = prs.core_properties; cp.title = 'A2UI Catalog: call to action (test deck)'; cp.author = 'A2UI Catalog'; cp.language = 'en-US'
     cp.created = cp.modified = __import__('datetime').datetime(2026, 10, 8, 8, 0, 0)         # fixed, so the same input gives the same file
-    prs.save(out); return fits
+    prs.save(out); normalise_zip(out); return fits
+
+def normalise_zip(path):
+    """python-pptx stamps every zip entry with the build time, so two identical decks differ in bytes. Rewrite the archive with fixed
+    timestamps and a stable entry order (names are already deterministic) so the same input gives the same file."""
+    import zipfile, os
+    with zipfile.ZipFile(path) as zin: items = [(i.filename, zin.read(i.filename)) for i in zin.infolist()]
+    with zipfile.ZipFile(path + '.tmp', 'w', zipfile.ZIP_DEFLATED) as zout:
+        for name, data in items:
+            zi = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED; zi.external_attr = 0o644 << 16
+            zout.writestr(zi, data)
+    os.replace(path + '.tmp', path)
 
 def lint(path, fits):
     prs = Presentation(path); W, H = prs.slide_width, prs.slide_height; sl = prs.slides[0]; probs = []
@@ -145,7 +156,8 @@ def preview(path, out):
         if sh.shape_type == 13:
             from io import BytesIO; im.paste(Image.open(BytesIO(sh.image.blob)).convert('RGB').resize((int(x1 - x0), int(y1 - y0))), (int(x0), int(y0))); continue
         if sh.shape_type == 1 and sh.fill.type == 1:
-            fc = tuple(sh.fill.fore_color.rgb); d.rounded_rectangle([x0, y0, x1, y1], radius=14, fill=fc, outline=tuple(sh.line.color.rgb) if sh.line.fill.type == 1 else None, width=1)
+            rad = (sh.adjustments[0] if len(sh.adjustments) else 0) * min(x1 - x0, y1 - y0)      # the shape's own corner setting (PowerPoint's default is 1/6 of the short side)
+            fc = tuple(sh.fill.fore_color.rgb); d.rounded_rectangle([x0, y0, x1, y1], radius=rad, fill=fc, outline=tuple(sh.line.color.rgb) if sh.line.fill.type == 1 else None, width=1)
         if sh.has_text_frame and sh.text_frame.text.strip():
             tf = sh.text_frame; ins = px(tf.margin_left); box_w = (x1 - x0) - 2 * ins; y = y0 + px(tf.margin_top)
             runs = [(r.text, r.font.size.pt, bool(r.font.bold), tuple(r.font.color.rgb)) for p in tf.paragraphs for r in p.runs]
