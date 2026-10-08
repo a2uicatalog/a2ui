@@ -72,6 +72,39 @@ its own explicit text colours, light surface or dark. Four atoms with their own 
 `chat_sequence`, `share_quote`, `star_rating_display`) regressed under the theme-aware token on a dark host and were
 restored. Only an atom that inherits the host's surface should inherit the host's text colour.
 
+## Cross-check with two more engines (2026-10-08)
+
+One engine is one opinion, so the same rendered atoms (same host stylesheet, light and dark page) were also run through
+HTML_CodeSniffer 2.5.1 (Squiz) and IBM Equal Access 4.0.34 (`a2ui-private/a11y/crosscheck.mjs`, compared by
+`crosscheck_report.py`). None of the three is the W3C's own; each maps its rules to WCAG success criteria.
+
+| light page, atoms flagged | axe | HTMLCS | IBM | flagged by 2 or more | by all 3 | by only 1 |
+|---|---|---|---|---|---|---|
+| contrast | 120 | 110 | 134 | 129 | 77 | 29 |
+| accessible name / label | 17 | 22 | 54 | 19 | 12 | 43 |
+| other | 3 | 3 | 13 | 2 | 0 | 15 |
+| any finding | 137 | 132 | 176 | | 93 | |
+
+On the dark page contrast agrees even more (axe 181, HTMLCS 182, IBM 198; 150 flagged by all three).
+
+**What it tells us.** The three engines independently land on the same picture: contrast is the dominant finding, in
+roughly 130 atoms on the light page, so the baseline is not an artefact of one engine. They disagree most on names and
+"other", and the disagreement is informative, not noise. Checked by hand, IBM's extra findings include real keyboard
+problems that axe does not report:
+
+- `gmail_inbox`, `annotation_highlight` (and 6 more atoms, rule `aria_eventhandler_role_valid`): `<span onclick>` with
+  no role, no tab stop and no key handler, so a keyboard user cannot operate them (WCAG 2.1.1).
+- `carousel` (and tab-style atoms using the same trick, rule `label_ref_valid`): the CSS radio-button technique sets
+  `input[type=radio]{display:none}`, so the inputs cannot receive focus and keyboard users cannot switch slides or tabs.
+- 27 atoms with an SVG that has no accessible name (`svg_graphics_labelled`). Many are decorative and only need
+  `aria-hidden="true"`; the rest need a label.
+
+HTMLCS adds little beyond axe except confirming the form-label gaps (16 atoms) and iframe titles.
+
+**Next:** add the IBM engine to the ratchet for the classes axe misses (event handlers on non-interactive elements,
+unnamed SVGs, hidden-input widgets), and fix those atoms. A hand pass with a keyboard and TalkBack is still the only
+way to know how they actually behave.
+
 ## Next, in the order I would do it
 
 1. A theme-aware default accent. Atoms build tints by appending hex alpha (`color + '18'`), so a `var()` default breaks
