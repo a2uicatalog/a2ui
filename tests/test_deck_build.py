@@ -9,6 +9,7 @@ import deck_build as db
 XML = '''<deck title="T" target="google-slides">
 <slide layout="title"><eyebrow>Hi</eyebrow><headline>Meet *Studio*</headline><sub>Films and decks</sub><notes>n</notes></slide>
 <slide layout="bullets"><heading>Steps</heading><item>One</item><item>Two</item><notes>n</notes></slide>
+<slide layout="quote"><quote>The best interface is the one the agent *can build*.</quote><name>Ada</name><role>First programmer</role><notes>n</notes></slide>
 <slide layout="stats"><kicker>Numbers</kicker><stat value="9" label="a"/><stat value="98%" label="b"/><notes>n</notes></slide>
 </deck>'''
 
@@ -17,7 +18,7 @@ def errs_of(src, **kw): return db.run(src, **kw)['errors']
 def test_valid_deck_builds_clean_and_reproducibly(tmp_path):
     a, b = tmp_path / 'a.pptx', tmp_path / 'b.pptx'
     ra, rb = db.run(XML, str(a)), db.run(XML, str(b))
-    assert ra['ok'] and not ra['errors'] and ra['lint'] == [] and ra['slides'] == 3
+    assert ra['ok'] and not ra['errors'] and ra['lint'] == [] and ra['slides'] == 4
     assert a.read_bytes() == b.read_bytes() and ra['sha256'] == rb['sha256']
 
 def test_exact_messages():
@@ -29,9 +30,9 @@ def test_exact_messages():
 
 def test_film_json_scenes_and_film_only():
     films = json.dumps({'scenes': [{'type': 'title', 'headline': 'Hi'}, {'type': 'steps', 'heading': 'H', 'steps': 'a\nb'},
-                                   {'type': 'stats', 'stats': '9 | a\n10 | b'}, {'type': 'chart'}]})
+                                   {'type': 'stats', 'stats': '9 | a\n10 | b'}, {'type': 'chart'}, {'type': 'quote', 'quote': 'q', 'name': 'n'}]})
     e = errs_of(films); assert 'film-only' in e[0]['message']
-    r = db.run(films, skip_film_only=True); assert not r['errors'] and r['slides'] == 3
+    r = db.run(films, skip_film_only=True); assert not r['errors'] and r['slides'] == 4
     assert any(w['code'] == 'film-only' for w in r['warnings'])
 
 def test_overlong_value_is_an_error_not_a_bad_slide():
@@ -46,4 +47,8 @@ def test_xml_entities_are_refused():
     assert errs_of('<!DOCTYPE d [<!ENTITY x "y">]><deck><slide layout="title"><headline>&x;</headline></slide></deck>')[0]['code'] == 'xml'
 
 def test_schema_lists_layouts():
-    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'cta'} and 'chart' in s['film_only']
+    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'quote', 'cta'} and 'chart' in s['film_only']
+
+def test_quote_too_long_and_missing():
+    e = errs_of('<deck><slide layout="quote"><quote>' + 'x' * 241 + '</quote></slide></deck>'); assert 'limit is 240' in e[0]['message']
+    assert 'quote is required' in errs_of('<deck><slide layout="quote"><name>n</name></slide></deck>')[0]['message']

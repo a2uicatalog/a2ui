@@ -14,6 +14,7 @@ XML:  <deck title="..." target="google-slides">
         <slide layout="title"><eyebrow>..</eyebrow><headline>..</headline><sub>..</sub><notes>..</notes></slide>
         <slide layout="bullets"><heading>..</heading><item>..</item>...</slide>
         <slide layout="stats"><kicker>..</kicker><stat value="540+" label="atoms"/>...</slide>
+        <slide layout="quote"><quote>..</quote><name>..</name><role>..</role></slide>
         <slide layout="cta"><headline>..</headline><button href="https://..">Label</button><footer>..</footer></slide>
       </deck>
 JSON: {"title": "...", "target": "...", "scenes": [{"type": "title", "eyebrow": "...", ...}]}   (film-style: "stats": "v | l\\n..", "steps": "a\\nb")
@@ -40,11 +41,12 @@ LAYOUTS = {
                                           'items': dict(kind='list', required=True, min=1, max=6, item_max=110)}),
     'stats':   dict(film='stats', fields={'kicker': dict(kind='text', max=40),
                                           'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40)}),
+    'quote':   dict(film='quote', fields={'quote': dict(kind='text', required=True, max=240), 'name': dict(kind='text', max=40), 'role': dict(kind='text', max=60)}),
     'cta':     dict(film='cta', fields={'headline': dict(kind='text', required=True, max=70), 'b1': dict(kind='text', required=True, max=40),
                                         'l1': dict(kind='url'), 'b2': dict(kind='text', max=40), 'l2': dict(kind='url'), 'foot': dict(kind='text', max=60)}),
 }
 ALIASES = {'steps': 'bullets', 'big-stat': 'stats', 'numbers': 'stats'}
-FILM_ONLY = {'chart', 'chat', 'word', 'morph', 'device', 'captions', 'image', 'quote'}
+FILM_ONLY = {'chart', 'chat', 'word', 'morph', 'device', 'captions', 'image'}
 NOTES_MAX = 1200
 
 def schema():
@@ -103,7 +105,10 @@ def parse_json(src, errs):
     return deck
 
 def load(path_or_text, errs):
-    src = Path(path_or_text).read_text() if len(path_or_text) < 500 and Path(path_or_text).exists() else path_or_text
+    src = path_or_text
+    if not src.lstrip().startswith(('<', '{', '[')):                         # otherwise it is a path
+        try: src = Path(path_or_text).read_text()
+        except OSError: pass
     return parse_xml(src, errs) if src.lstrip().startswith('<') else parse_json(src, errs)
 
 # ---- validation: every error names the slide, the field and the limit ----
@@ -277,7 +282,19 @@ def lay_cta(sl, f, at, errs):
         sl.alt(pic, f.get('alt') or f'QR code that opens {f["l1"]}')
         sl.text(sl.tb(cx + (3.5 - g2['qr']) / 2, g2['cap_top'], g2['qr'], g2['cap_h'], 'QR caption'), [('Scan to open', None)], k.FLOOR_PT, True, k.BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
 
-LAYOUT_FN = {'title': lay_title, 'bullets': lay_bullets, 'stats': lay_stats, 'cta': lay_cta}
+def lay_quote(sl, f, at, errs):
+    qr = k.fit_text(plain(f['quote']), (54, 50, 46, 42, 38, 34), True, 6.0, CONTENT_W - 1.0, max_lines=5)
+    if not qr: err(errs, at, 'does-not-fit', f'slide {at}: quote does not fit in 5 lines at 34 pt; shorten it', field='quote'); return
+    qp, qw, ql = qr; pad = 0.08; qh = len(ql) * qp * LH / 72 + 2 * pad
+    ah = (0.5 if f.get('name') else 0) + (0.45 if f.get('role') else 0); g = 0.5
+    total = qh + (g + ah if ah else 0); y = center_y(total); x = MX + 0.6
+    sl.wordmark()
+    bar = sl.box(MSO_SHAPE.RECTANGLE, MX, y, 0.12, total, k.BRAND['accent'], None, 'Accent bar'); sl.decorative(bar)
+    t = sl.title('Quote', x, y, qw, qh); sl.text(t, sl.accent_runs(f['quote'], k.BRAND['text']), qp, True, k.BRAND['text']); y += qh + g
+    if f.get('name'): sl.text(sl.tb(x, y, 8, 0.5, 'Name'), [(plain(f['name']), None)], 26, True, k.BRAND['accent2']); y += 0.5
+    if f.get('role'): sl.text(sl.tb(x, y, 8, 0.45, 'Role'), [(plain(f['role']), None)], k.FLOOR_PT + 2, False, k.BRAND['muted'])
+
+LAYOUT_FN = {'title': lay_title, 'bullets': lay_bullets, 'stats': lay_stats, 'quote': lay_quote, 'cta': lay_cta}
 
 def build(deck, out, errs):
     k.set_target(deck['target'] or 'any')

@@ -11,7 +11,7 @@ import deck_build as db
 
 INPUT = {'type': 'string', 'description': 'the deck: XML (<deck><slide layout=...>) or JSON {"scenes":[...]} using the film scene fields'}
 TOOLS = [
-    dict(name='deck_schema', description='List the slide layouts (title, bullets, stats, cta), their fields and limits, the targets and the film-only scenes.',
+    dict(name='deck_schema', description='List the slide layouts (title, bullets, stats, quote, cta), their fields and limits, the targets and the film-only scenes.',
          inputSchema=dict(type='object', properties={})),
     dict(name='deck_validate', description='Check a deck without building it. Returns ok, errors (slide, field, exact message) and warnings.',
          inputSchema=dict(type='object', required=['deck'], properties=dict(deck=INPUT, skip_film_only=dict(type='boolean')))),
