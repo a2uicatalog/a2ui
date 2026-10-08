@@ -4,7 +4,7 @@ Side-by-side comparison of outputs from multiple language models for the same pr
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

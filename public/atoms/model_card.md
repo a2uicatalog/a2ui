@@ -4,7 +4,7 @@ AI model specification card showing model name, provider, context window, pricin
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

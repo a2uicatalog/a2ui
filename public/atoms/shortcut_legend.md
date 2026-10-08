@@ -4,7 +4,7 @@ Keyboard shortcut cheat-sheet grid. Multiple shortcuts displayed in a compact tw
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

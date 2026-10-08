@@ -4,7 +4,7 @@ Fenced code block
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, claude-code, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, claude-code, android, slides, pptx
 
 ## Fields
 

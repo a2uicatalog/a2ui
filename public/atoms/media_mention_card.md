@@ -4,7 +4,7 @@ Renders a card showcasing a mention or feature in a media publication.
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

@@ -4,7 +4,7 @@ Atlassian Design System Jira issue card showing issue key, type icon (bug/story/
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

@@ -77,7 +77,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Italic series link and/or transparency note shown at the top",
       "representativeQueries": [
@@ -194,7 +196,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Fenced code block",
       "representativeQueries": [
@@ -379,7 +383,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Formatted GitHub repo link list at end of article",
       "representativeQueries": [
@@ -629,7 +635,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Vertical timeline with dot connectors, date badges, tag pills",
       "representativeQueries": [
@@ -989,7 +997,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a simple visual indicator (e.g., arrow, icon) representing",
       "representativeQueries": [
@@ -1087,7 +1097,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "A list of links that navigate to specific sections within the current",
       "representativeQueries": [
@@ -1107,7 +1119,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a list of questions and answers, where answers are hidden until",
       "representativeQueries": [
@@ -1129,7 +1143,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a term with its definition, often with an optional link for more details.",
       "representativeQueries": [
@@ -1151,7 +1167,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a numbered footnote reference and its corresponding text, typically",
       "representativeQueries": [
@@ -1704,7 +1722,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a table comparing features across multiple products or versions.",
       "representativeQueries": [
@@ -1726,7 +1746,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a single pricing plan with its name, price, key features, and an optional call to action.",
       "representativeQueries": [
@@ -1746,7 +1768,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a collection of pricing tier cards, typically for comparing",
       "representativeQueries": [
@@ -1768,7 +1792,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a two-column list itemizing advantages and disadvantages for a single subject.",
       "representativeQueries": [
@@ -1788,7 +1814,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a detailed comparison of two items, displaying their attributes",
       "representativeQueries": [
@@ -1808,7 +1836,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a table detailing technical specifications or features for a single product.",
       "representativeQueries": [
@@ -1828,7 +1858,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.",
       "representativeQueries": [
@@ -1869,7 +1901,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a comparison of multiple items based on star ratings or numerical",
       "representativeQueries": [
@@ -1889,7 +1923,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a list of capabilities, indicating which items possess each",
       "representativeQueries": [
@@ -2121,7 +2157,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a visual representation of a star rating, optionally with a total review count.",
       "representativeQueries": [
@@ -2161,7 +2199,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a list of individuals who have contributed to a project or community, with their avatars and roles.",
       "representativeQueries": [
@@ -2223,7 +2263,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a card showcasing a mention or feature in a media publication.",
       "representativeQueries": [
@@ -2974,7 +3016,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "pdf",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening and opacity rising with confidence -- under a thin confidence rail. Optional \"because\" (the reason) and \"unless\" (what would change the agent's mind, the line most opinion cards forget). A small slider lets the reader drag the confidence and watch the claim reset, which makes the mapping legible and honest. Same integer arithmetic on the server and in the slider script.",
       "representativeQueries": [
@@ -2994,7 +3038,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "pdf",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a source per line (linked when a URL is given), a dashed tear line, a CONFIDENCE total, a barcode derived deterministically from the claim, and a perforated bottom edge. Built for the \"no unsourced stats\" rule and for AG-UI-style runs where evidence arrives one tool result at a time: resend the FULL items list on every update and only the LAST line prints in (same stateless rule as agent_sketchpad). Always paper-white, so it reads as an object on any ground. Capped at 24 items.",
       "representativeQueries": [
@@ -3014,7 +3060,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "pdf",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "A belief change as a typographic object: \"I used to think\" in muted serif italic, struck through by a line that draws itself, then \"Now I think\" in heavy display type landing beneath it, and an optional \"since\" line naming what changed it. The most honest opinion format there is, and the most shared. For an agent it records a revision after new evidence rather than pretending it always knew. Light or dark.",
       "representativeQueries": [
@@ -4105,7 +4153,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "List of named resources \u2014 each row shows an avatar or icon, a title, a subtitle, a status badge, and optional trailing metadata. Covers project lists, deployment rosters, and team member panels. Inspired by Vercel Geist Entity component.",
       "representativeQueries": [
@@ -4125,7 +4175,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Displays an LLM prompt with interpolation slots highlighted in a distinct colour. Includes an optional copy-to-clipboard button. Ideal for AI documentation, tutorials, and prompt engineering articles.",
       "representativeQueries": [
@@ -4147,7 +4199,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "AI model specification card showing model name, provider, context window, pricing tier, and a row of capability badges. First-class atom for AI-native content and agent documentation.",
       "representativeQueries": [
@@ -4169,7 +4223,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a prompt-response pair as two chat bubbles \u2014 a user bubble on the right and an AI response bubble on the left. Ideal for showing LLM examples, chatbot flows, and agent interaction patterns in documentation.",
       "representativeQueries": [
@@ -4191,7 +4247,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Keyboard shortcut cheat-sheet grid. Multiple shortcuts displayed in a compact two-column layout, each showing the key combination and its action label. Distinct from keyboard_shortcut which shows a single combination inline.",
       "representativeQueries": [
@@ -4213,7 +4271,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Aggregate star-rating histogram showing the percentage breakdown per star level (5\u2605 through 1\u2605). Distinct from rating_stars which shows a single score \u2014 this shows the full distribution with bar lengths proportional to vote share.",
       "representativeQueries": [
@@ -4235,7 +4295,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Quarter-based product roadmap showing milestones across Q1\u2013Q4 or custom periods. Each period contains a list of items with a status indicator (done, in-progress, planned). Useful for product announcements and release planning slides.",
       "representativeQueries": [
@@ -4257,7 +4319,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Persistent notification inbox showing a list of notification items, each with an icon or emoji, a title, a body snippet, a timestamp, and an optional unread indicator dot. Distinct from toast_notification which is a transient single pop-up \u2014 the stack is a persistent grouped list.",
       "representativeQueries": [
@@ -4297,7 +4361,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Horizontal wrapping block of plain content tags \u2014 feature labels, category chips, or keyword pills. Neutral styling. Distinct from badge_group which carries semantic status colour. Adapted from the TagBlock pattern in OpenUI OUI benchmark samples.",
       "representativeQueries": [
@@ -4337,7 +4403,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML \u2014 bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or retrieved as Markdown and needs faithful rendering without mapping to individual atoms. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.",
       "representativeQueries": [
@@ -4402,7 +4470,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Inline-numbered RAG source reference card \u2014 shows a citation number, source title, optional excerpt, and optional URL. Designed to accompany AI-generated content that cites retrieved documents. Pairs with in-body superscript references [1], [2] etc. Original a2ui-catalogue atom.",
       "representativeQueries": [
@@ -4422,7 +4492,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Side-by-side comparison of outputs from multiple language models for the same prompt \u2014 model name, output text, and optional latency/cost/token metadata per column. Designed for model evaluation, A/B testing, and capability demonstrations. Original a2ui-catalogue atom.",
       "representativeQueries": [
@@ -4443,7 +4515,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Horizontal confidence or probability bar \u2014 shows a percentage value with a label and colour-coded fill indicating certainty level. Used for classification confidence, sentiment strength, retrieval relevance scores, or any normalised probability output. Original a2ui-catalogue atom.",
       "representativeQueries": [
@@ -4484,7 +4558,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Shopify Polaris-style product card showing optional image, title, vendor, SKU, price with optional compare-at strike-through, status badge, and tag chips. Adapted from Polaris ResourceItem + Thumbnail patterns.",
       "representativeQueries": [
@@ -4505,7 +4581,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Shopify Polaris-style order summary card showing order number, date, fulfilment status badge, customer name, line item list, and total. Status is colour-coded \u2014 fulfilled (green), unfulfilled (amber), partial (blue), cancelled (red), refunded (grey). Adapted from Polaris Card + Badge patterns.",
       "representativeQueries": [
@@ -4526,7 +4604,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Shopify Polaris-style inventory management table showing SKU, product name, available quantity, committed quantity, and warehouse location per row. Rows with available stock below the optional threshold are highlighted amber as a low-stock warning. Adapted from Polaris DataTable patterns.",
       "representativeQueries": [
@@ -4547,7 +4627,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Atlassian Design System Jira issue card showing issue key, type icon (bug/story/task/epic/subtask), one-line summary, status lozenge, priority indicator, assignee, optional description, and label chips. Adapted from Atlassian Design System Card + Lozenge patterns.",
       "representativeQueries": [
@@ -4567,7 +4649,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Atlassian Design System Jira-style sprint board rendered as kanban columns. Each column has a name, ticket-count badge, and compact issue cards (key, summary, type icon, priority dot). Distinct from prerequisite_checklist which is a linear checklist. Adapted from Atlassian Design System Board patterns.",
       "representativeQueries": [
@@ -4608,7 +4692,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "IBM Carbon Design System enterprise data grid with typed columns (string/number/status/tag), optional row-selection checkboxes, sortable column indicators, zebra-stripe rows, and optional pagination footer. More capable than table and data_table_sortable for enterprise data-dense layouts. Adapted from IBM Carbon DataTable patterns.",
       "representativeQueries": [
@@ -4687,7 +4773,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "A responsive CSS grid of feature tiles, each with an icon, title, and description paragraph. Supports 2 or 3 columns and optional per-tile badges. The canonical Tailwind UI marketing feature section pattern.",
       "representativeQueries": [
@@ -4761,7 +4849,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "List of labeled horizontal progress bars \u2014 each with a fill percentage, optional sublabel, and per-bar color. Use for competency profiles, CV pages, feature comparison.",
       "representativeQueries": [
@@ -4838,7 +4928,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Horizontal step progress indicator with numbered circles and connecting lines. Completed steps show a tick. Use at the top of wizard or onboarding flows.",
       "representativeQueries": [
@@ -5110,7 +5202,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Individual person card with name, role, optional photo, bio, tags, and contact links. Use inside a columns atom to build team rosters.",
       "representativeQueries": [
@@ -5147,7 +5241,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Structured risk callout list with severity levels, description, and mitigation. For meeting prep, project status, incident reports.",
       "representativeQueries": [
@@ -5187,7 +5283,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Asymmetric CSS grid of feature tiles. First tile typically spans multiple columns for visual emphasis. Supports per-tile icons, titles, descriptions, and accent colors. MagicUI/shadcn bento pattern.",
       "representativeQueries": [
@@ -6561,7 +6659,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "End-of-exercise or end-of-module score card showing correct answers, total questions, percentage, and optional time taken. Animates the score fraction on render using a CSS counter. Includes a contextual pass/fail or grade label and an optional retry/continue CTA row.",
       "representativeQueries": [
@@ -6638,7 +6738,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Inline passage of text with a coloured highlight background and an optional margin annotation note. The annotation appears as a side-note pill on hover (CSS :hover) or as a visible aside on smaller viewports. Useful for reading comprehension exercises, exam technique callouts, and annotated source analysis.",
       "representativeQueries": [

@@ -4,7 +4,7 @@ Displays an LLM prompt with interpolation slots highlighted in a distinct colour
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

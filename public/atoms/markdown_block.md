@@ -4,7 +4,7 @@ Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

@@ -14,7 +14,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -93,7 +95,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -206,7 +210,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -360,7 +366,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -568,7 +576,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -626,7 +636,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -638,7 +650,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -652,7 +666,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -666,7 +682,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -995,7 +1013,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1009,7 +1029,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1021,7 +1043,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1035,7 +1059,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1047,7 +1073,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1059,7 +1087,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1071,7 +1101,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1096,7 +1128,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1108,7 +1142,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1244,7 +1280,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1268,7 +1306,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1306,7 +1346,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1729,7 +1771,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "pdf",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1741,7 +1785,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "pdf",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -1753,7 +1799,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "pdf",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2378,7 +2426,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2390,7 +2440,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2404,7 +2456,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2418,7 +2472,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2432,7 +2488,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2446,7 +2504,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2460,7 +2520,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2474,7 +2536,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2498,7 +2562,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2522,7 +2588,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2563,7 +2631,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2575,7 +2645,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2588,7 +2660,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2613,7 +2687,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2626,7 +2702,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2639,7 +2717,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2652,7 +2732,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2664,7 +2746,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2689,7 +2773,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2736,7 +2822,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2778,7 +2866,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2823,7 +2913,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -2983,7 +3075,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -3004,7 +3098,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -3028,7 +3124,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -3826,7 +3924,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {
@@ -3871,7 +3971,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ]
   },
   {

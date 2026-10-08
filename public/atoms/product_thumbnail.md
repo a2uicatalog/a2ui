@@ -4,7 +4,7 @@ Shopify Polaris-style product card showing optional image, title, vendor, SKU, p
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

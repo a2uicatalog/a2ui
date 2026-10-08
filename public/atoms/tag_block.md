@@ -4,7 +4,7 @@ Horizontal wrapping block of plain content tags — feature labels, category chi
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

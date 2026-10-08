@@ -4,7 +4,7 @@ Renders a table detailing technical specifications or features for a single prod
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

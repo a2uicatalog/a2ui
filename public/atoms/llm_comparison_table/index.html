@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/llm_comparison_table/#page", "url": "https://a2uicatalog.ai/atoms/llm_comparison_table/", "headline": "Llm Comparison Table: A2UI atom", "description": "Side-by-side comparison of outputs from multiple language models for the same prompt — model name, output text, and optional latency/cost/token metadata per…", "about": {"@id": "https://a2uicatalog.ai/atoms/llm_comparison_table/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/llm_comparison_table/#atom", "name": "Llm Comparison Table", "termCode": "llm_comparison_table", "description": "side-by-side multi-model output comparison table", "url": "https://a2uicatalog.ai/atoms/llm_comparison_table/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "models, prompt, show_meta"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/llm_comparison_table.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/llm_comparison_table/#page", "url": "https://a2uicatalog.ai/atoms/llm_comparison_table/", "headline": "Llm Comparison Table: A2UI atom", "description": "Side-by-side comparison of outputs from multiple language models for the same prompt — model name, output text, and optional latency/cost/token metadata per…", "about": {"@id": "https://a2uicatalog.ai/atoms/llm_comparison_table/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/llm_comparison_table/#atom", "name": "Llm Comparison Table", "termCode": "llm_comparison_table", "description": "side-by-side multi-model output comparison table", "url": "https://a2uicatalog.ai/atoms/llm_comparison_table/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "models, prompt, show_meta"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/llm_comparison_table.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,7 +173,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span><span class="badge bs">slides</span><span class="badge bs">pptx</span>
   </div>
 
   
@@ -225,7 +225,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
   ],
   "description": "Side-by-side comparison of outputs from multiple language models for the same prompt \u2014 model name, output text, and optional latency/cost/token metadata per column. Designed for model evaluation, A/B testing, and capability demonstrations. Original a2ui-catalogue atom.",
   "representativeQueries": [

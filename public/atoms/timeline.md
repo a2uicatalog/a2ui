@@ -4,7 +4,7 @@ Vertical timeline with dot connectors, date badges, tag pills
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

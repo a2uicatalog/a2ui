@@ -4,7 +4,7 @@ Horizontal confidence or probability bar — shows a percentage value with a lab
 
 ## Surfaces
 
-web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

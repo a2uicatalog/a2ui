@@ -4,7 +4,7 @@ Show your receipts: a claim printed at the top of a till receipt, then the evide
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android, slides, pptx
 
 ## Fields
 

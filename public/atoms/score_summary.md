@@ -4,7 +4,7 @@ End-of-exercise or end-of-module score card showing correct answers, total quest
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

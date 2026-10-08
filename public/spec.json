@@ -22,7 +22,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -196,7 +198,9 @@
      "google-apps-script-web",
      "mcp-apps",
      "claude-code",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -572,7 +576,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -1154,7 +1160,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -2047,7 +2055,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -2255,7 +2265,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -2290,7 +2302,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -2331,7 +2345,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -2365,7 +2381,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -3530,7 +3548,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -3574,7 +3594,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -3610,7 +3632,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -3651,7 +3675,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -3682,7 +3708,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -3725,7 +3753,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -3769,7 +3799,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -3855,7 +3887,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -3884,7 +3918,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -4420,7 +4456,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -4502,7 +4540,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -4626,7 +4666,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -6284,7 +6326,9 @@
      "google-apps-script-web",
      "mcp-apps",
      "pdf",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -6332,7 +6376,9 @@
      "google-apps-script-web",
      "mcp-apps",
      "pdf",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -6381,7 +6427,9 @@
      "google-apps-script-web",
      "mcp-apps",
      "pdf",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -8925,7 +8973,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -8960,7 +9010,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9004,7 +9056,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -9043,7 +9097,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -9078,7 +9134,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -9113,7 +9171,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -9150,7 +9210,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -9185,7 +9247,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -9264,7 +9328,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9350,7 +9416,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9471,7 +9539,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9510,7 +9580,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9555,7 +9627,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9640,7 +9714,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9683,7 +9759,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9724,7 +9802,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9761,7 +9841,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9803,7 +9885,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -9881,7 +9965,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -10052,7 +10138,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -10246,7 +10334,9 @@
      "google-apps-script-web",
      "pdf",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -10375,7 +10465,9 @@
      "google-apps-script-web",
      "pdf",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -10829,7 +10921,9 @@
      "google-apps-script-web",
      "pdf",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -10894,7 +10988,9 @@
      "google-apps-script-web",
      "pdf",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ]
    },
    "fields": {
@@ -10956,7 +11052,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -14564,7 +14662,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {
@@ -14749,7 +14849,9 @@
      "pdf",
      "google-apps-script-web",
      "mcp-apps",
-     "android"
+     "android",
+     "slides",
+     "pptx"
     ],
     "degraded_on": [
      {

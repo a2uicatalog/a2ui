@@ -4,7 +4,7 @@ IBM Carbon Design System enterprise data grid with typed columns (string/number/
 
 ## Surfaces
 
-web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

@@ -4,7 +4,7 @@ A belief change as a typographic object: "I used to think" in muted serif italic
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android, slides, pptx
 
 ## Fields
 

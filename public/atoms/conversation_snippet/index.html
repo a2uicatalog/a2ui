@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/conversation_snippet/#page", "url": "https://a2uicatalog.ai/atoms/conversation_snippet/", "headline": "Conversation Snippet: A2UI atom", "description": "Renders a prompt-response pair as two chat bubbles — a user bubble on the right and an AI response bubble on the left.", "about": {"@id": "https://a2uicatalog.ai/atoms/conversation_snippet/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/conversation_snippet/#atom", "name": "Conversation Snippet", "termCode": "conversation_snippet", "description": "user prompt and AI response as chat bubbles", "url": "https://a2uicatalog.ai/atoms/conversation_snippet/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "accent, ai_label, response, user, user_label"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/conversation_snippet.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/conversation_snippet/#page", "url": "https://a2uicatalog.ai/atoms/conversation_snippet/", "headline": "Conversation Snippet: A2UI atom", "description": "Renders a prompt-response pair as two chat bubbles — a user bubble on the right and an AI response bubble on the left.", "about": {"@id": "https://a2uicatalog.ai/atoms/conversation_snippet/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/conversation_snippet/#atom", "name": "Conversation Snippet", "termCode": "conversation_snippet", "description": "user prompt and AI response as chat bubbles", "url": "https://a2uicatalog.ai/atoms/conversation_snippet/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "accent, ai_label, response, user, user_label"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/conversation_snippet.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,7 +173,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-chat</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-chat</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span><span class="badge bs">slides</span><span class="badge bs">pptx</span>
   </div>
 
   
@@ -215,7 +215,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
   ],
   "description": "Renders a prompt-response pair as two chat bubbles \u2014 a user bubble on the right and an AI response bubble on the left. Ideal for showing LLM examples, chatbot flows, and agent interaction patterns in documentation.",
   "representativeQueries": [

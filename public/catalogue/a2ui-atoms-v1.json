@@ -50,7 +50,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Italic series link and/or transparency note shown at the top A phrase like 'show whether content was recently updated or is no longer supported' usually means badge, changelog_entry, or deprecation_notice, not this -- intro is a fixed series-link note at the top of an article.",
    "x-intent-phrases": [
@@ -272,7 +274,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Fenced code block",
    "x-intent-phrases": [
@@ -656,7 +660,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Formatted GitHub repo link list at end of article",
    "x-intent-phrases": [
@@ -1256,7 +1262,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Vertical timeline with dot connectors, date badges, tag pills",
    "x-intent-phrases": [
@@ -2242,7 +2250,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a simple visual indicator (e.g., arrow, icon) representing",
    "x-intent-phrases": [
@@ -2459,7 +2469,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "A list of links that navigate to specific sections within the current",
    "x-intent-phrases": [
@@ -2498,7 +2510,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a list of questions and answers, where answers are hidden until",
    "x-intent-phrases": [
@@ -2549,7 +2563,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a term with its definition, often with an optional link for more details.",
    "x-intent-phrases": [
@@ -2598,7 +2614,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a numbered footnote reference and its corresponding text, typically",
    "x-intent-phrases": [
@@ -3982,7 +4000,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a table comparing features across multiple products or versions.",
    "x-intent-phrases": [
@@ -4051,7 +4071,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a single pricing plan with its name, price, key features, and an optional call to action.",
    "x-intent-phrases": [
@@ -4090,7 +4112,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a collection of pricing tier cards, typically for comparing",
    "x-intent-phrases": [
@@ -4139,7 +4163,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a two-column list itemizing advantages and disadvantages for a single subject.",
    "x-intent-phrases": [
@@ -4186,7 +4212,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a detailed comparison of two items, displaying their attributes",
    "x-intent-phrases": [
@@ -4229,7 +4257,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a table detailing technical specifications or features for a single product.",
    "x-intent-phrases": [
@@ -4274,7 +4304,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a grid comparing multiple products or services with features, often using icons or checkmarks to indicate presence.",
    "x-intent-phrases": [
@@ -4377,7 +4409,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a comparison of multiple items based on star ratings or numerical",
    "x-intent-phrases": [
@@ -4420,7 +4454,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a list of capabilities, indicating which items possess each",
    "x-intent-phrases": [
@@ -4980,7 +5016,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a visual representation of a star rating, optionally with a total review count.",
    "x-intent-phrases": [
@@ -5070,7 +5108,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a list of individuals who have contributed to a project or community, with their avatars and roles.",
    "x-intent-phrases": [
@@ -5221,7 +5261,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a card showcasing a mention or feature in a media publication.",
    "x-intent-phrases": [
@@ -6959,7 +7001,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "pdf",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, t",
    "x-intent-phrases": [
@@ -7030,7 +7074,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "pdf",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a source per line (linked when a URL is given), a dashed tear line, a CONFIDENCE tota",
    "x-intent-phrases": [
@@ -7092,7 +7138,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "pdf",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "A belief change as a typographic object: \"I used to think\" in muted serif italic, struck through by a line that draws itself, then \"Now I think\" in heavy display type landing beneath it, and an option",
    "x-intent-phrases": [
@@ -9803,7 +9851,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "List of named resources — each row shows an avatar or icon, a title, a subtitle, a status badge, and optional trailing metadata. Covers project lists, deployment rosters, and team member panels. Inspi",
    "x-intent-phrases": [
@@ -9857,7 +9907,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Displays an LLM prompt with interpolation slots highlighted in a distinct colour. Includes an optional copy-to-clipboard button. Ideal for AI documentation, tutorials, and prompt engineering articles.",
    "x-intent-phrases": [
@@ -9918,7 +9970,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "AI model specification card showing model name, provider, context window, pricing tier, and a row of capability badges. First-class atom for AI-native content and agent documentation.",
    "x-intent-phrases": [
@@ -9975,7 +10029,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a prompt-response pair as two chat bubbles — a user bubble on the right and an AI response bubble on the left. Ideal for showing LLM examples, chatbot flows, and agent interaction patterns in",
    "x-intent-phrases": [
@@ -10020,7 +10076,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Keyboard shortcut cheat-sheet grid. Multiple shortcuts displayed in a compact two-column layout, each showing the key combination and its action label. Distinct from keyboard_shortcut which shows a si",
    "x-intent-phrases": [
@@ -10073,7 +10131,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Aggregate star-rating histogram showing the percentage breakdown per star level (5★ through 1★). Distinct from rating_stars which shows a single score — this shows the full distribution with bar lengt",
    "x-intent-phrases": [
@@ -10118,7 +10178,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Quarter-based product roadmap showing milestones across Q1–Q4 or custom periods. Each period contains a list of items with a status indicator (done, in-progress, planned). Useful for product announcem",
    "x-intent-phrases": [
@@ -10163,7 +10225,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Persistent notification inbox showing a list of notification items, each with an icon or emoji, a title, a body snippet, a timestamp, and an optional unread indicator dot. Distinct from toast_notifica",
    "x-intent-phrases": [
@@ -10257,7 +10321,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Horizontal wrapping block of plain content tags — feature labels, category chips, or keyword pills. Neutral styling. Distinct from badge_group which carries semantic status colour. Adapted from the Ta",
    "x-intent-phrases": [
@@ -10351,7 +10417,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or re",
    "x-intent-phrases": [
@@ -10505,7 +10573,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Inline-numbered RAG source reference card — shows a citation number, source title, optional excerpt, and optional URL. Designed to accompany AI-generated content that cites retrieved documents. Pairs",
    "x-intent-phrases": [
@@ -10552,7 +10622,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Side-by-side comparison of outputs from multiple language models for the same prompt — model name, output text, and optional latency/cost/token metadata per column. Designed for model evaluation, A/B",
    "x-intent-phrases": [
@@ -10604,7 +10676,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Horizontal confidence or probability bar — shows a percentage value with a label and colour-coded fill indicating certainty level. Used for classification confidence, sentiment strength, retrieval rel",
    "x-intent-phrases": [
@@ -10739,7 +10813,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Shopify Polaris-style product card showing optional image, title, vendor, SKU, price with optional compare-at strike-through, status badge, and tag chips. Adapted from Polaris ResourceItem + Thumbnail",
    "x-intent-phrases": [
@@ -10799,7 +10875,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Shopify Polaris-style order summary card showing order number, date, fulfilment status badge, customer name, line item list, and total. Status is colour-coded — fulfilled (green), unfulfilled (amber),",
    "x-intent-phrases": [
@@ -10843,7 +10921,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Shopify Polaris-style inventory management table showing SKU, product name, available quantity, committed quantity, and warehouse location per row. Rows with available stock below the optional thresho",
    "x-intent-phrases": [
@@ -10911,7 +10991,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Atlassian Design System Jira issue card showing issue key, type icon (bug/story/task/epic/subtask), one-line summary, status lozenge, priority indicator, assignee, optional description, and label chip",
    "x-intent-phrases": [
@@ -10954,7 +11036,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Atlassian Design System Jira-style sprint board rendered as kanban columns. Each column has a name, ticket-count badge, and compact issue cards (key, summary, type icon, priority dot). Distinct from p",
    "x-intent-phrases": [
@@ -11057,7 +11141,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "IBM Carbon Design System enterprise data grid with typed columns (string/number/status/tag), optional row-selection checkboxes, sortable column indicators, zebra-stripe rows, and optional pagination f",
    "x-intent-phrases": [
@@ -11265,7 +11351,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "A responsive CSS grid of feature tiles, each with an icon, title, and description paragraph. Supports 2 or 3 columns and optional per-tile badges. The canonical Tailwind UI marketing feature section p",
    "x-intent-phrases": [
@@ -11472,7 +11560,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "List of labeled horizontal progress bars — each with a fill percentage, optional sublabel, and per-bar color. Use for competency profiles, CV pages, feature comparison.",
    "x-intent-phrases": [
@@ -11682,7 +11772,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Horizontal row of numbered steps showing how far someone has got through a sequence, with a tick on each completed step. Suits a wizard, onboarding, or a fixed set of items worked through in order.",
    "x-intent-phrases": [
@@ -12468,7 +12560,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Individual person card with name, role, optional photo, bio, tags, and contact links. Use inside a columns atom to build team rosters.",
    "x-intent-phrases": [
@@ -12561,7 +12655,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Structured risk callout list with severity levels, description, and mitigation. For meeting prep, project status, incident reports.",
    "x-intent-phrases": [
@@ -12654,7 +12750,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Asymmetric CSS grid of feature tiles. First tile typically spans multiple columns for visual emphasis. Supports per-tile icons, titles, descriptions, and accent colors. MagicUI/shadcn bento pattern.",
    "x-intent-phrases": [
@@ -16972,7 +17070,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "End-of-exercise or end-of-module score card showing correct answers, total questions, percentage, and optional time taken. Animates the score fraction on render using a CSS counter. Includes a context",
    "x-intent-phrases": [
@@ -17186,7 +17286,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Inline passage of text with a coloured highlight background and an optional margin annotation note. The annotation appears as a side-note pill on hover (CSS :hover) or as a visible aside on smaller vi",
    "x-intent-phrases": [

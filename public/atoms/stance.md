@@ -4,7 +4,7 @@ A claim whose typography IS its calibration. The agent states a claim and a conf
 
 ## Surfaces
 
-web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android
+web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android, slides, pptx
 
 ## Fields
 

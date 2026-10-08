@@ -4,7 +4,7 @@ Renders a term with its definition, often with an optional link for more details
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

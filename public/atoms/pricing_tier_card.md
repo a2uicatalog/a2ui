@@ -4,7 +4,7 @@ Renders a single pricing plan with its name, price, key features, and an optiona
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

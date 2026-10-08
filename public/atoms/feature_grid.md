@@ -4,7 +4,7 @@ A responsive CSS grid of feature tiles, each with an icon, title, and descriptio
 
 ## Surfaces
 
-web, pdf, google-apps-script-web, mcp-apps, android
+web, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 
