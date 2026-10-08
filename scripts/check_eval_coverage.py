@@ -79,6 +79,12 @@ KNOWN_UNCOVERED_BASELINE = frozenset({
     # Added 2026-09-22 promoting calibration_plot in this same commit -- remove
     # after this push deploys and atom-multirep-onboard is rerun to cover it.
     "calibration_plot",
+    # motion_arch and motion_video were promoted to stable in 4d0e0df7 (already on
+    # origin/main) -- this is the first repo-publish run since then to actually chain
+    # check_eval_coverage.py against them. Added 2026-10-08. Remove after
+    # atom-multirep-onboard is rerun to cover them.
+    "motion_arch",
+    "motion_video",
 })
 
 
