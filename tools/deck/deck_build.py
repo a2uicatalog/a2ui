@@ -357,7 +357,7 @@ def lay_media(sl, f, at, errs):
     p = (BASE / f['media']) if not Path(f['media']).is_absolute() else Path(f['media'])
     with PI.open(p) as im: iw, ih = im.size; frames = getattr(im, 'n_frames', 1)
     cap = f.get('caption'); ch = 0.5 if cap else 0
-    y_img = top + hh + 0.3; avail_h = H_IN - 0.55 - ch - y_img; w = min(CONTENT_W, avail_h * iw / ih); h = w * ih / iw
+    y_img = top + hh + 0.3; avail_h = H_IN - 0.55 - ch - y_img; w = min(CONTENT_W, avail_h * iw / ih, iw / 96 * 1.5); h = w * ih / iw     # never enlarge a small picture more than 1.5x (it would blur)
     sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
     pic = sl.s.shapes.add_picture(str(p), Inches(MX + (CONTENT_W - w) / 2), Inches(y_img), Inches(w), Inches(h)); pic.name = 'Media' + (' (animated GIF)' if frames > 1 else '')
     pic._element.nvPicPr.cNvPr.set('descr', f['alt'])

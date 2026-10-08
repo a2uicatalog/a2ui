@@ -90,14 +90,29 @@ def merge_stats(scenes):
         else: out.append(sc)
     return out
 
-def convert(payload):
+def picture_scene(b, heading, pics_dir, idx):
+    """No native recipe: draw the atom with the catalogue's own renderer and put the picture on a media slide (not editable; alt text from the atom's own text)."""
+    import atom_image
+    Path(pics_dir).mkdir(parents=True, exist_ok=True); png = Path(pics_dir) / f"{idx:03d}-{b['type']}.png"
+    markup, _ = atom_image.render(b, str(png))
+    alt = atom_image.alt_text(markup) or f"{b['type'].replace('_', ' ')} atom"
+    title = (heading or b['type'].replace('_', ' ').capitalize())[:70]
+    return [dict(type='media', f=dict(heading=title, media=str(png), alt=f"{b['type'].replace('_', ' ')}: {alt}"[:250]))]
+
+def convert(payload, pictures=None):
     """-> (scenes, report). The report lists every block: converted (to how many slides), ignored, or unsupported (no recipe)."""
     blocks = payload.get('blocks') if isinstance(payload, dict) else payload
     scenes, rep, heading = [], dict(converted=[], ignored=[], unsupported=[]), None
     for i, b in enumerate(blocks or []):
         t = b.get('type') if isinstance(b, dict) else None
         if t in IGNORED: rep['ignored'].append(dict(block=i, type=t)); continue
-        if t not in RECIPES: rep['unsupported'].append(dict(block=i, type=t, reason='no slide recipe for this atom')); continue
+        if t not in RECIPES:
+            if not pictures or not t: rep['unsupported'].append(dict(block=i, type=t, reason='no slide recipe for this atom')); continue
+            try: out = picture_scene(b, heading, pictures, i); mode = 'picture'
+            except (SystemExit, Exception) as e: rep['unsupported'].append(dict(block=i, type=t, reason=f'picture fallback failed: {e}')); continue
+            heading = None
+            for sc in out: sc['src'] = dict(block=i, type=t)
+            scenes += out; rep['converted'].append(dict(block=i, type=t, slides=len(out), mode=mode)); continue
         try: out = RECIPES[t](b, heading)
         except Exception as e: rep['unsupported'].append(dict(block=i, type=t, reason=f'recipe failed: {e}')); continue
         if out == 'PENDING': heading = s(b.get('text')); continue
@@ -109,8 +124,8 @@ def convert(payload):
     if heading: scenes.append(dict(type='title', f=dict(headline=heading), src=dict(block=len(blocks or []), type='heading'))); rep['converted'].append(dict(block='trailing', type='heading', slides=1))
     return scenes, rep
 
-def run(payload, out=None, target=None, preview_dir=None, title=''):
-    scenes, rep = convert(payload)
+def run(payload, out=None, target=None, preview_dir=None, title='', pictures=None):
+    scenes, rep = convert(payload, pictures)
     deck = json.dumps(dict(title=title or (payload.get('title') if isinstance(payload, dict) else '') or 'Deck', target=target, scenes=[{k: v for k, v in sc.items() if k != 'src'} for sc in scenes]))
     r = db.run(deck, out, target, False, preview_dir)
     for e in r['errors']:                                                # map a deck error back to the block that caused it
@@ -119,8 +134,8 @@ def run(payload, out=None, target=None, preview_dir=None, title=''):
     return r
 
 def main(argv):
-    ap = argparse.ArgumentParser(); ap.add_argument('payload'); ap.add_argument('-o', '--out'); ap.add_argument('--target'); ap.add_argument('--report'); ap.add_argument('--preview')
-    a = ap.parse_args(argv); r = run(json.loads(Path(a.payload).read_text()), a.out, a.target, a.preview)
+    ap = argparse.ArgumentParser(); ap.add_argument('payload'); ap.add_argument('-o', '--out'); ap.add_argument('--target'); ap.add_argument('--report'); ap.add_argument('--preview'); ap.add_argument('--pictures', metavar='DIR', help='draw atoms that have no native recipe as pictures into DIR (needs chromium)')
+    a = ap.parse_args(argv); r = run(json.loads(Path(a.payload).read_text()), a.out, a.target, a.preview, '', a.pictures)
     if a.report: Path(a.report).write_text(json.dumps(r, indent=1))
     for e in r['errors']: print('ERROR  ', e['message'], e.get('block', ''))
     for u in r['unsupported']: print('skipped', f"block {u['block']} ({u['type']}): {u['reason']}")

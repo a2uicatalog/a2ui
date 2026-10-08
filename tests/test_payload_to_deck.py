@@ -66,3 +66,13 @@ def test_no_silent_truncation_in_recipes():
     import re as _re
     src = (ROOT / 'tools/deck/recipes_more.py').read_text()
     assert "[:60]" not in src and "[:6]" not in src, 'a recipe slices content; split it over slides instead'
+
+
+def test_picture_fallback_for_atoms_without_a_recipe(tmp_path):
+    import shutil
+    if not (shutil.which('chromium') or shutil.which('chromium-browser') or shutil.which('google-chrome')): pytest.skip('no chromium')
+    blocks = [{'type': 'status_pill', 'label': 'Live', 'status': 'success'}, {'type': 'made_up_atom', 'x': 1}]
+    assert [u['type'] for u in p.run({'blocks': blocks})['unsupported']] == ['status_pill', 'made_up_atom']          # off by default: reported, not guessed
+    r = p.run({'blocks': blocks}, str(tmp_path / 'o.pptx'), 'google-slides', None, '', str(tmp_path / 'pics'))
+    assert r['ok'] and r['slides'] == 1 and [u['type'] for u in r['unsupported']] == ['made_up_atom']              # a blank render is refused, not shipped
+    assert r['conversion']['converted'][0]['mode'] == 'picture' and (tmp_path / 'pics' / '000-status_pill.png').exists()

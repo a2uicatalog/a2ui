@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """atom_image: draw one A2UI atom with the catalogue's own renderer and screenshot it to a cropped PNG, for a slide that has no native recipe for the atom.
 
-  python atom_image.py block.json out.png [--light]      (needs node for the renderer, chromium on PATH or CHROMIUM=..., and pillow)
+  python atom_image.py block.json out.png [--dark]      (needs node for the renderer, chromium on PATH or CHROMIUM=..., and pillow)
 
-The page uses the real host stylesheet (the first <style> of the MCP Apps bundle) and the dark theme the decks use. Nothing is fetched: external requests are not made, so an
+The page uses the real host stylesheet (the first <style> of the MCP Apps bundle) on a white ground: atoms are drawn for a light page, and a white picture sits on the dark slide like the QR card. Nothing is fetched: external requests are not made, so an
 atom that needs the network (a remote image, a live API) draws as it would offline. The result is a picture, not editable shapes; `alt_text()` gives the text it should carry."""
 import sys, json, re, os, subprocess, tempfile, html as htmlmod
 from pathlib import Path
@@ -25,7 +25,7 @@ def chromium():
         if c and subprocess.run(['which', c], capture_output=True).returncode == 0: return c
     raise SystemExit('chromium not found: set CHROMIUM=/path/to/chromium')
 
-def render(block, out_png, dark=True, width=1100, scale=2):
+def render(block, out_png, dark=False, width=1100, scale=2):
     """-> (markup, (w, h) in CSS px). Writes out_png. Raises SystemExit if the page is blank."""
     markup = k.catalogue_atom_html(block)
     if isinstance(markup, list): markup = ''.join(markup)
@@ -47,5 +47,5 @@ def render(block, out_png, dark=True, width=1100, scale=2):
 if __name__ == '__main__':
     a = [x for x in sys.argv[1:] if not x.startswith('--')]
     if len(a) != 2: raise SystemExit(__doc__)
-    mk, size = render(json.loads(Path(a[0]).read_text()), a[1], dark='--light' not in sys.argv)
+    mk, size = render(json.loads(Path(a[0]).read_text()), a[1], dark='--dark' in sys.argv)
     print(a[1], size, '| alt:', alt_text(mk)[:100])
