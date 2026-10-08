@@ -1099,6 +1099,26 @@ function _esc(str) {
     .replace(/'/g, '&#39;');
 }
 
+// ── Href Scheme Guard ─────────────────────────────────────────────────────────
+// Every atom whose schema documents an href field promises the same contract (see motion_pill
+// in atoms/schema.yaml): "https, mailto or a relative path; anything else is dropped." Tab/
+// newline/CR are stripped FIRST -- browsers strip them before scheme-sniffing a URL (the
+// WHATWG URL spec's "remove all ASCII tab or newline" step), so "java\tscript:alert(1)" would
+// still execute on click even though the literal substring "javascript:" never appears;
+// checking the scheme after that strip closes the obfuscation, not just the literal string.
+// Returns the cleaned value, or '' if its scheme isn't allowed -- a bare "label:rest" is
+// parsed as a URI scheme even without "//", so this rejects by SHAPE, not a fixed deny-list;
+// only https:, mailto:, or a scheme-less value (relative path, or starting with "/", "?", "#")
+// passes.
+var _HREF_SAFE_SCHEMES = {https: 1, mailto: 1};
+function _hrefIsSafe(value) {
+  var v = String(value === undefined || value === null ? '' : value).replace(/[\t\n\r]/g, '').trim();
+  if (!v) return '';
+  var m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
+  if (!m) return v; // no scheme at all: relative path or /, ?, # prefixed
+  return _HREF_SAFE_SCHEMES[m[1].toLowerCase()] ? v : '';
+}
+
 // Script-safe JSON (2026-10-01): JSON.stringify, with < > & ' U+2028 U+2029 written as \u escapes. Still valid JSON that parses to the SAME
 // value, but it can no longer close a <script>, open a tag, or end a single-quoted attribute. Every server-side JSON.stringify in the
 // renderer files goes through this (rewritten mechanically; client code inside string literals is untouched). Python twin: _js_json.
@@ -24402,6 +24422,7 @@ _RENDERERS['module_map'] = function(b) {
   var fromSlug = (typeof _CURRENT_NAV_SLUG !== 'undefined' && _CURRENT_NAV_SLUG) ? _CURRENT_NAV_SLUG : '';
   var modsJson = _jsJson(modules.map(function(m, i) {
     var url = '#';
+    var safeUrl = typeof m.url === 'string' ? _hrefIsSafe(m.url) : '';
     if (m.page && m.page.length) {
       try {
         var pg = _jsJson({ title: m.title || ('Module ' + (i+1)), theme: 'dark', blocks: m.page });
@@ -24409,9 +24430,9 @@ _RENDERERS['module_map'] = function(b) {
           Utilities.gzip(Utilities.newBlob(pg, 'application/json')).getBytes()
         ).replace(/=+$/, '');
         url = base + '?p=' + enc + (fromSlug ? '&from=' + fromSlug : '');
-      } catch(e) { url = m.url || '#'; }
-    } else if (m.url) {
-      var resolvedUrl = (m.url.charAt(0) === '?' && base) ? base + m.url : m.url;
+      } catch(e) { url = safeUrl || '#'; }
+    } else if (safeUrl) {
+      var resolvedUrl = (safeUrl.charAt(0) === '?' && base) ? base + safeUrl : safeUrl;
       // Stamp &from= so back buttons work when hub was referenced by url field rather than page array
       url = (fromSlug && resolvedUrl.indexOf('from=') === -1)
         ? resolvedUrl + (resolvedUrl.indexOf('?') !== -1 ? '&' : '?') + 'from=' + fromSlug
@@ -24897,7 +24918,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
 
   var lpsBase = _getWebAppUrl();
   var pathsJson = _jsJson(paths.map(function(p) {
-    var purl = p.url || '';
+    var purl = typeof p.url === 'string' ? _hrefIsSafe(p.url) : '';
     if (purl && purl.charAt(0) === '?' && lpsBase) purl = lpsBase + purl;
     return { id: p.id || p.label, url: purl, accent: p.accent || '#4f46e5' };
   }));
@@ -25348,7 +25369,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   var accent = b.accent || '#4f46e5';
 
   var ids     = _jsJson(steps.map(function(s, i) { return s.id || ('step' + i); }));
-  var urls    = _jsJson(steps.map(function(s) { return s.action_url || ''; }));
+  var urls    = _jsJson(steps.map(function(s) { return typeof s.action_url === 'string' ? _hrefIsSafe(s.action_url) : ''; }));
 
   var stepHtml = '';
   for (var i = 0; i < steps.length; i++) {
@@ -26653,7 +26674,7 @@ _RENDERERS['motion_pill'] = function(b) {
   var text = _moStr(b.text, 60) || 'Label', size = _ffInt(b.size, 28, 10, 120), icon = _moStr(b.icon, 2);
   var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), fill = _moInk(b, 'fill', '');
   var align = _ffPick(b.align, _MO_ALIGN, 'start'), jc = align === 'right' ? 'flex-end' : (align === 'center' ? 'center' : 'flex-start');
-  var href = typeof b.href === 'string' ? b.href.trim() : '', tag = href ? 'a' : 'div';
+  var href = typeof b.href === 'string' ? _hrefIsSafe(b.href) : '', tag = href ? 'a' : 'div';
   return '<div style="display:flex;justify-content:' + jc + ';width:100%;">'
     + '<' + tag + (href ? ' href="' + _esc(href) + '"' : '') + ' style="' + (href ? 'text-decoration:none;cursor:pointer;pointer-events:auto;' : '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill || _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
     + _moSr(_moPlain(text))
