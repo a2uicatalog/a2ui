@@ -23,7 +23,21 @@ URL = 'https://a2uicatalog.ai'
 FONT = 'Roboto'            # brand stack; in Google Slides. Falls back on machines without it (see the fit margin)
 FONT_FILES = {False: '/usr/share/fonts/chromeos/roboto/Roboto-Regular.ttf', True: '/usr/share/fonts/chromeos/roboto/Roboto-Bold.ttf'}
 FLOOR_PT = 18
-SAFETY = 0.88              # use at most 88% of a box's measured capacity so a wider fallback font still fits
+# The target is a variable, not a constant. A target profile is data: what the destination can do and how much margin a layout needs there.
+#   safety = the share of a box's measured width the layout may use, so a font substituted by the destination (wider) still fits.
+#   google-slides: Roboto exists there, so almost no margin (3% covers the import's slightly different text widths, measured at about 0.5%).
+#   powerpoint / any: Roboto may be missing on the machine that opens the file, so keep a 12% margin.
+TARGETS = {
+    'google-slides': dict(safety=0.97, note='fonts: Google Fonts; opened via Drive import'),
+    'powerpoint':    dict(safety=0.88, note='fonts: assume Office-safe fallback'),
+    'any':           dict(safety=0.88, note='unknown destination: the safe layout'),
+}
+TARGET = 'any'
+SAFETY = TARGETS[TARGET]['safety']
+def set_target(name):
+    global TARGET, SAFETY
+    if name not in TARGETS: raise SystemExit(f'unknown target {name!r}; choose one of {sorted(TARGETS)}')
+    TARGET, SAFETY = name, TARGETS[name]['safety']
 
 # ---- brand colours: oklch -> sRGB (atoms/brand-tokens.yaml, dark theme) ----
 def oklch(L, C, h):
@@ -159,7 +173,7 @@ def build(out):
     card._element.nvSpPr.cNvPr.set('descr', '')                      # decorative card behind the QR code
     s.notes_slide.notes_text_frame.text = ('Call to action. Say the one thing: the agent describes the interface, the catalogue draws it. '
                                           'Point at the button or the QR code, both open a2uicatalog.ai.')
-    cp = prs.core_properties; cp.title = 'A2UI Catalog: call to action (test deck)'; cp.author = 'A2UI Catalog'; cp.language = 'en-US'
+    cp = prs.core_properties; cp.title = 'A2UI Catalog: call to action (test deck)'; cp.keywords = 'target=' + TARGET; cp.author = 'A2UI Catalog'; cp.language = 'en-US'
     cp.created = cp.modified = __import__('datetime').datetime(2026, 10, 8, 8, 0, 0)         # fixed, so the same input gives the same file
     prs.save(out); normalise_zip(out); return fits
 
@@ -245,6 +259,9 @@ def preview(path, out):
     im.save(out)
 
 if __name__ == '__main__':
+    if '--target' in sys.argv:
+        i = sys.argv.index('--target'); set_target(sys.argv[i + 1]); del sys.argv[i:i + 2]
+    print('target:', TARGET, '-', TARGETS[TARGET]['note'], f'(safety {SAFETY})')
     out = sys.argv[1]; fits = build(out); probs, cr, margins = lint(out, fits)
     print('text fit:'); [print(f'  {n:34s} {l} line(s), needs {need} pt of {have} pt  {"ok" if ok else "OVERFLOW"}') for n, l, need, have, ok in fits]
     print('contrast:'); [print(f'  {n:34s} {v}:1') for n, v in cr]
