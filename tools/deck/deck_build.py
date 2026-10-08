@@ -21,7 +21,7 @@ Needs python-pptx, pillow, defusedxml; the cta layout also needs node and this r
 import sys, json, re, argparse
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import make_cta_deck as k
+import deck_kit as k
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE

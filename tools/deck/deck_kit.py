@@ -6,7 +6,7 @@ brand colours taken from atoms/brand-tokens.yaml (dark theme, oklch converted to
 and a text-fit check that uses real font metrics. It then READS THE FILE BACK to lint it and to draw a rough preview PNG,
 because this machine has no PowerPoint or LibreOffice. The preview is our own approximation, not how PowerPoint or Slides draw it.
 
-  python make_cta_deck.py <out.pptx> [<preview.png>]        (needs python-pptx, pillow, node, and this repo's renderer)
+  python deck_kit.py <out.pptx> [<preview.png>]        (needs python-pptx, pillow, node, and this repo's renderer)
 """
 import sys, math, re
 from pathlib import Path
@@ -18,7 +18,7 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.lang import MSO_LANGUAGE_ID
 import json, subprocess, tempfile
 from PIL import Image, ImageDraw, ImageFont
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[2]
 
 def catalogue_atom_html(block):
     """Render one catalogue atom with the catalogue's own JavaScript renderer (the one MCP Apps and Android use). This is the bridge that makes

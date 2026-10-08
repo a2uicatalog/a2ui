@@ -3,7 +3,7 @@ import json, sys
 from pathlib import Path
 import pytest
 pytest.importorskip('pptx'); pytest.importorskip('defusedxml')
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'docs/proposals/spike-cta-deck'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools/deck'))
 import deck_build as db
 
 XML = '''<deck title="T" target="google-slides">

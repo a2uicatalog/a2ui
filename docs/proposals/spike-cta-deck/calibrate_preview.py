@@ -8,10 +8,11 @@ local preview put it, and prints the offsets in preview pixels (100 px per inch)
 Reading it: a few pixels either way is noise; a consistent sign for one kind of shape is a calibration constant worth applying (for
 example a line-height factor); a big offset on one shape is a layout bug the preview hid. Collect several screenshots before trusting a constant."""
 import sys, importlib.util
+from pathlib import Path
 import numpy as np
 from PIL import Image
 from pptx import Presentation
-here = importlib.util.spec_from_file_location('deck', __file__.replace('calibrate_preview.py', 'make_cta_deck.py')); deck = importlib.util.module_from_spec(here); here.loader.exec_module(deck)
+here = importlib.util.spec_from_file_location('deck', str(Path(__file__).resolve().parents[3] / 'tools/deck/deck_kit.py')); deck = importlib.util.module_from_spec(here); here.loader.exec_module(deck)
 
 def main(pptx, shot_path):
     deck.preview(pptx, '/tmp/_cal_prev.png'); prev = Image.open('/tmp/_cal_prev.png').convert('RGB'); shot = Image.open(shot_path).convert('RGB')
