@@ -358,6 +358,42 @@ See `vendors/extendlabs-ui/MANIFEST.md` for the full component review and
 
 ---
 
+## Deck tools: python-pptx and its dependencies (`tools/deck/`)
+
+- **Used by:** `tools/deck/` (the typed-scene-list and A2UI-payload to PPTX converter). Installed with `pip`, never vendored or
+  redistributed here: the packages are listed in `requirements.txt` and fetched by the user.
+- **python-pptx** (Steve Canny and contributors): MIT License. https://github.com/scanny/python-pptx
+- **lxml**: BSD-3-Clause. https://github.com/lxml/lxml
+- **Pillow** (Jeffrey A. Clark and contributors): the PIL Software License (HPND), a permissive licence. https://github.com/python-pillow/Pillow
+- **XlsxWriter** (John McNamara; a python-pptx dependency): BSD-2-Clause. https://github.com/jmcnamara/XlsxWriter
+- **defusedxml** (Christian Heimes): Python Software Foundation License. Reads the XML deck language and refuses entities.
+- **Roboto** (Google): Apache License 2.0. Not vendored and not embedded in generated decks, which only name the font. `tools/deck` reads a
+  local copy of the font file to measure text widths when fitting a layout.
+- **PPTX format**: the open ECMA-376 / ISO 29500 standard. "PowerPoint" and "Google Slides" are named only to say which programs open the files.
+- Parts of the recipe library in `tools/deck/recipes_more.py` were drafted by Gemini 2.5 Pro from each atom's field description and then
+  reviewed and tested here.
+
+---
+
+## Diagram Studio view (`public/surfaces/diagram-studio/`, vendored wholesale, unmodified except where noted)
+
+The full per-file notice is `public/surfaces/diagram-studio/NOTICE.md`. In short:
+
+- **draw.io** (JGraph): Apache License 2.0, with the mxGraph viewer it embeds. The viewer has one change (its start-up call that
+  fetched MathJax from diagrams.net is replaced by a hook); the self-hosted editor is an unmodified, trimmed copy. The names "draw.io" and
+  "diagrams.net" and their logos are trademarks and are not licensed by Apache 2.0: this catalog says "draw.io-compatible" and uses no branding.
+- **draw.io icon sets and stencil libraries** (shipped inside the editor as `js/stencils.min.js` and `images/`): the upstream `LICENSE` files in
+  the stencil, shape and image folders add a restriction. These sets, and anything derived from them, **may not be used as software assets in, distributed
+  for use with, or incorporated into Atlassian products or products distributed through the Atlassian marketplace or plugin ecosystem
+  without explicit written permission**. Diagrams and exported images that people make with the editor are not affected. Do not package this
+  view, or the stencil bundle, into an Atlassian app.
+- Not shipped here, and so not covered by a licence in this repository: draw.io's `templates/` folder (CC BY 4.0) and its `libavoid-js`
+  routing library (LGPL 2.1). If either is ever added to what is served, its licence text and attribution (and, for LGPL, a link to its source and
+  a replaceable build) must be added at the same time.
+- **Mermaid**: MIT License. **D2** and **@d2lang/d2**: Mozilla Public License 2.0, source at the upstream repository, build unmodified.
+
+---
+
 ## MIT License
 
 The MIT License applies to seven vendor projects listed above (QR-Code-

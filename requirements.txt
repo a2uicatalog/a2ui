@@ -69,3 +69,5 @@ numpy
 # same SVG->PNG rasterization and now declare it properly instead of letting a second undeclared user accrue --
 # same silent-drift class requirements.txt's own header comment already documents for Pillow/defusedxml.
 cairosvg
+# tools/deck (the PPTX builder): only needed to run it, not the site or the catalog build. See THIRD-PARTY-NOTICES.md.
+python-pptx
