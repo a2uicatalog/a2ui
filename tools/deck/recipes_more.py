@@ -544,7 +544,8 @@ def r_source_citation(b, h):
             num_prefix = f"{num}. " if num else ""
             meta = ', '.join(filter(None, [author, date]))
             meta_suffix = f" ({meta})" if meta else ""
-            items.append(f"{num_prefix}{title}{meta_suffix}")
+            url = http(src.get('url'))
+            items.append(f"{num_prefix}{title}{meta_suffix}" + (f": {url}" if url else ""))
 
     pages = chunks([i for i in items if i], 6)
     out = []
