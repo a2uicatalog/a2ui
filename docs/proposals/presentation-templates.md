@@ -319,3 +319,20 @@ Blueprints (section 13) declare which variables they need and which of those are
 
 **Cost to watch.** Every target multiplies the certification matrix (section 7). Keep the list short: `any`, `google-slides`, `powerpoint`,
 and add others only when someone needs them.
+
+## 18. The catalogue as the source: the QR code is now the `schema_qr` atom (2026-10-08)
+
+The first spike drew its QR code with a separate Python library, which bypassed the catalogue. It now renders the catalogue's own `schema_qr`
+atom with the catalogue's JavaScript renderer, and a small **recipe** turns the atom's output into PPTX. This is the first concrete instance of
+"PPTX as a surface" (section 14) and the shape every atom recipe would take: `render atom -> parse its HTML or SVG -> emit native shapes`.
+
+- `schema_qr` renders an SVG with a `viewBox` and one `<path>` of unit squares (`M x,y h1 v1 h-1 z`). The recipe reads the grid size and the dark
+  cells, merges horizontal runs, and emits **one native freeform vector shape** (835 path commands): crisp at any size, recolourable, editable,
+  with alt text. The file stays small (36 KB for the whole slide).
+- **Checked with an independent decoder.** OpenCV decodes the rendered card to `https://a2uicatalog.ai`, so the data survived atom, recipe, shape
+  and drawing. (It does not prove how PowerPoint or Slides draw the freeform; that still needs a real render.)
+- **Finding for the atom itself:** the same SVG has `role="img"` and no accessible name (the axe ratchet flagged `schema_qr` for `svg-img-alt`).
+  A PPTX surface forces the question, because the slide needs alt text from somewhere: the atom should expose an accessible name (a `label`
+  field, defaulting to "QR code for <url>") so every surface can carry it.
+- The recipe also shows what an atom must offer to be a PPTX source: a render that is **structured** (an SVG path, not a canvas), **deterministic**
+  (same input, same output), and **named** (an accessible name). Those three properties are a useful checklist when deciding which atoms get recipes.

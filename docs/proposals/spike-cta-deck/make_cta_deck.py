@@ -6,7 +6,7 @@ brand colours taken from atoms/brand-tokens.yaml (dark theme, oklch converted to
 and a text-fit check that uses real font metrics. It then READS THE FILE BACK to lint it and to draw a rough preview PNG,
 because this machine has no PowerPoint or LibreOffice. The preview is our own approximation, not how PowerPoint or Slides draw it.
 
-  python make_cta_deck.py <out.pptx> [<preview.png>]        (needs python-pptx, qrcode, pillow)
+  python make_cta_deck.py <out.pptx> [<preview.png>]        (needs python-pptx, pillow, node, and this repo's renderer)
 """
 import sys, math, re
 from pathlib import Path
@@ -16,8 +16,41 @@ from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.lang import MSO_LANGUAGE_ID
-import qrcode
+import json, subprocess, tempfile
 from PIL import Image, ImageDraw, ImageFont
+REPO = Path(__file__).resolve().parents[3]
+
+def catalogue_atom_html(block):
+    """Render one catalogue atom with the catalogue's own JavaScript renderer (the one MCP Apps and Android use). This is the bridge that makes
+    the catalogue a source for slides: an atom renders to HTML/SVG, and a PPTX recipe turns that into native shapes."""
+    sys.path[:0] = [str(REPO / 'scripts')]
+    import gen_mcp_apps_bundle as gen
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", gen.build_bundle(), re.S) if "a2ui-core" in b[:300]][0]
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / 'r.js'
+        d.write_text("global.window = global;\n" + core + f"\nconsole.log(JSON.stringify(renderAtoms([{json.dumps(block)}], {{}})));")
+        out = subprocess.run(['node', str(d)], capture_output=True, text=True, timeout=120)
+        if out.returncode: raise SystemExit('catalogue render failed: ' + out.stderr[-400:])
+    return json.loads(out.stdout)
+
+def qr_from_atom(url):
+    """Recipe for the schema_qr atom: its SVG is a viewBox and one path of unit squares (M x,y h1 v1 h-1 z). Return the grid size and dark cells."""
+    h = catalogue_atom_html({'type': 'schema_qr', 'url': url})
+    vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', h); path = re.search(r'<path d="([^"]+)"', h)
+    if not vb or not path: raise SystemExit('schema_qr output changed shape; update the recipe')
+    cells = {(int(x), int(y)) for x, y in re.findall(r'M(\d+),(\d+)h1v1h-1z', path.group(1))}
+    return int(vb.group(1)), cells
+
+def runs(cells):
+    """Merge horizontally adjacent dark cells into one rectangle each (about a third as many contours)."""
+    out = []
+    for y in sorted({c[1] for c in cells}):
+        xs = sorted(x for x, yy in cells if yy == y); start = prev = xs[0]
+        for x in xs[1:]:
+            if x != prev + 1: out.append((start, y, prev - start + 1)); start = x
+            prev = x
+        out.append((start, y, prev - start + 1))
+    return out
 
 URL = 'https://a2uicatalog.ai'
 FONT = 'Roboto'            # brand stack; in Google Slides. Falls back on machines without it (see the fit margin)
@@ -165,10 +198,15 @@ def build(out):
     text(tb(4.95, y_btn + (btn_h - 0.5) / 2, 3.6, 0.5, 'Address'), [('a2uicatalog.ai', None)], 22, True, BRAND['accent2'], anchor=MSO_ANCHOR.MIDDLE)
     g = card_geometry(y0, y0 + col_h)                                                   # centred on the column from headline top to button bottom
     card = box(MSO_SHAPE.ROUNDED_RECTANGLE, 9.05, g['top'], 3.5, g['h'], BRAND['qr_bg'], None, 'QR card')
-    qr = qrcode.QRCode(border=1, box_size=12, error_correction=qrcode.constants.ERROR_CORRECT_M); qr.add_data(URL); qr.make(fit=True)
-    img = qr.make_image(fill_color=BRAND['qr_ink'], back_color=BRAND['qr_bg']).convert('RGB'); img.save('/tmp/_cta_qr.png')
-    pic = s.shapes.add_picture('/tmp/_cta_qr.png', Inches(9.05 + (3.5 - g['qr']) / 2), Inches(g['qr_top']), Inches(g['qr']), Inches(g['qr'])); pic.name = 'QR code'
-    pic._element.nvPicPr.cNvPr.set('descr', 'QR code that opens a2uicatalog.ai')
+    n, cells = qr_from_atom(URL)                                    # the catalogue's own QR atom, not a separate library
+    qx, qy, qs = Inches(9.05 + (3.5 - g['qr']) / 2), Inches(g['qr_top']), Inches(g['qr'])
+    rects = runs(cells); fb = s.shapes.build_freeform(rects[0][0], rects[0][1], scale=qs / n)
+    for i, (x, y, w) in enumerate(rects):
+        if i: fb.move_to(x, y)
+        fb.add_line_segments([(x + w, y), (x + w, y + 1), (x, y + 1)], close=True)
+    pic = fb.convert_to_shape(qx, qy); pic.name = 'QR code (schema_qr atom)'
+    pic.fill.solid(); pic.fill.fore_color.rgb = rgb(BRAND['qr_ink']); pic.line.fill.background(); pic.shadow.inherit = False
+    pic._element.nvSpPr.cNvPr.set('descr', 'QR code that opens a2uicatalog.ai')
     text(tb(9.05 + (3.5 - g['qr']) / 2, g['cap_top'], g['qr'], g['cap_h'], 'QR caption'), [('Scan to open', None)], FLOOR_PT, True, BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
     card._element.nvSpPr.cNvPr.set('descr', '')                      # decorative card behind the QR code
     s.notes_slide.notes_text_frame.text = ('Call to action. Say the one thing: the agent describes the interface, the catalogue draws it. '
@@ -198,6 +236,7 @@ def lint(path, fits):
                 for r in p.runs:
                     if r.font.size and r.font.size.pt < FLOOR_PT: probs.append(f'{sh.name}: {r.font.size.pt} pt is under the {FLOOR_PT} pt floor')
         if sh.shape_type == 13 and not sh._element.nvPicPr.cNvPr.get('descr'): probs.append(f'{sh.name}: picture without alt text')
+        if sh.shape_type == 5 and not sh._element.nvSpPr.cNvPr.get('descr'): probs.append(f'{sh.name}: vector shape without alt text')
     shapes = [sh for sh in sl.shapes]
     rect = lambda sh: (sh.left, sh.top, sh.left + sh.width, sh.top + sh.height)
     inside = lambda a, b: a[0] >= b[0] and a[1] >= b[1] and a[2] <= b[2] and a[3] <= b[3]
@@ -236,6 +275,20 @@ def preview(path, out):
         x0, y0, x1, y1 = px(sh.left), px(sh.top), px(sh.left + sh.width), px(sh.top + sh.height)
         if sh.shape_type == 13:
             from io import BytesIO; im.paste(Image.open(BytesIO(sh.image.blob)).convert('RGB').resize((int(x1 - x0), int(y1 - y0))), (int(x0), int(y0))); continue
+        if sh.shape_type == 5:                                              # a freeform: read its path and draw the polygons
+            ns = {'a': 'http://schemas.openxmlformats.org/drawingml/2006/main'}; pth = sh._element.xpath('.//a:custGeom//a:path')[0]
+            pw, ph = int(pth.get('w')), int(pth.get('h')); fc = tuple(sh.fill.fore_color.rgb); poly = []
+            for el in pth:
+                tag = el.tag.split('}')[1]
+                pt = el.find('a:pt', ns)
+                if tag == 'moveTo':
+                    if len(poly) > 2: d.polygon(poly, fill=fc)
+                    poly = [(x0 + int(pt.get('x')) / pw * (x1 - x0), y0 + int(pt.get('y')) / ph * (y1 - y0))]
+                elif tag == 'lnTo': poly.append((x0 + int(pt.get('x')) / pw * (x1 - x0), y0 + int(pt.get('y')) / ph * (y1 - y0)))
+                elif tag == 'close':
+                    if len(poly) > 2: d.polygon(poly, fill=fc)
+                    poly = []
+            continue
         if sh.shape_type == 1 and sh.fill.type == 1:
             rad = (sh.adjustments[0] if len(sh.adjustments) else 0) * min(x1 - x0, y1 - y0)      # the shape's own corner setting (PowerPoint's default is 1/6 of the short side)
             fc = tuple(sh.fill.fore_color.rgb); d.rounded_rectangle([x0, y0, x1, y1], radius=rad, fill=fc, outline=tuple(sh.line.color.rgb) if sh.line.fill.type == 1 else None, width=1)
