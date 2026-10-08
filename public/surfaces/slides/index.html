@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>A2UI on Google Slides: 79 components — A2UI Atomic Catalog</title>
+  <meta name="description" content="The 79 A2UI Atomic Catalog components that render on Google Slides, each with a live preview, so an AI agent can show real UI there instead of generating HTML.">
+  <link rel="canonical" href="https://a2uicatalog.ai/surfaces/slides/">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "CollectionPage", "@id": "https://a2uicatalog.ai/surfaces/slides/", "url": "https://a2uicatalog.ai/surfaces/slides/", "name": "A2UI on Google Slides: 79 components — A2UI Atomic Catalog", "description": "The 79 A2UI Atomic Catalog components that render on Google Slides, each with a live preview, so an AI agent can show real UI there instead of generating HTML.", "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "numberOfItems": 79}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Google Slides", "item": "https://a2uicatalog.ai/surfaces/slides/"}]}]}</script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>/*brand-tokens:8925e7c1*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(58% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+  --negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);--accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+  --negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);--shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2);text-decoration:none}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:var(--warn)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+  <style>
+  .surface-atom{border-bottom:1px solid var(--border);padding:28px 0}
+  .surface-atom:last-child{border-bottom:none}
+  .sa-name{font-size:1.1rem;font-weight:700;color:var(--text);text-decoration:none}
+  .sa-name:hover{color:var(--accent)}
+  .sa-desc{font-size:14px;color:var(--muted);margin:4px 0 12px}
+  .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+  .preview-box *{max-width:100%}
+  </style>
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / surfaces / slides
+  </nav>
+
+  <h1>Google Slides</h1>
+  
+<div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:14px;color:var(--muted);margin:0 0 20px">
+<strong style="color:var(--text)">Slides, from a payload.</strong> <code>tools/deck/payload_to_deck.py</code> turns an A2UI payload into a PPTX that opens in Google Slides: one recipe per atom, a text-fit check with real font metrics, and a report of any atom it could not convert. The previews below are the web rendering; the slide layout is the deck's own, not a pixel copy. Files are checked by converting them in Google Slides and reading back the result; they have not been tested in desktop PowerPoint.
+</div>
+
+  <p class="desc">79 catalog atoms also render on this surface</p>
+
+  
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/intro">Intro</a>
+    <p class="sa-desc">series link or transparency note at article top</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of intro"><p><em>In <a href="https://example.com" target="_blank" rel="noopener noreferrer">Series label</a>, I covered the background. This article picks up from there.</em></p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/body">Body</a>
+    <p class="sa-desc">prose paragraph block</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of body"><p>This is a body paragraph. It supports <strong>bold</strong>, <em>italic</em>, and <code>inline code</code> via lightweight markdown.</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/heading">Heading</a>
+    <p class="sa-desc">H2 section title</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of heading"><h2>Section Heading</h2></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/subheading">Subheading</a>
+    <p class="sa-desc">H3 subsection title</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of subheading"><h3 style="margin:1.5rem 0 0.5rem;">Subheading text</h3></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/quote">Quote</a>
+    <p class="sa-desc">pull quote or blockquote with attribution</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of quote"><blockquote><p>The vocabulary IS the discovery layer.</p><footer>— A2UI</footer></blockquote></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/code">Code</a>
+    <p class="sa-desc">syntax-highlighted fenced code block</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of code"><pre><code class="language-json">{
+  "type": "stat_card",
+  "value": "1B+",
+  "label": "daily executions"
+}</code></pre></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pipeline">Pipeline</a>
+    <p class="sa-desc">left-to-right step flow diagram</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of pipeline"><p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);"><code>schema.yaml</code> ──► <code>generate.py</code> ──► <code>public/</code> ──► <code>Cloudflare Edge</code></p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/bullet_list">Bullet List</a>
+    <p class="sa-desc">unordered list with optional bold label per item</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of bullet_list"><ul><li>First item in the list</li><li><strong>Labelled item</strong> with supporting description</li><li>Third item</li></ul></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/repo_links">Repo Links</a>
+    <p class="sa-desc">styled GitHub repo link list</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of repo_links"><div style="margin:1rem 0;"><a href="https://github.com/a2uicatalog/a2ui" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;color:#374151;font-size:0.84rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:4px;">🐙 GitHub</a></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/closing">Closing</a>
+    <p class="sa-desc">article closing paragraph with hashtags</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of closing"><p>A concise description of the content.</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/callout">Callout</a>
+    <p class="sa-desc">coloured tip info warning or danger highlight box</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of callout"><div style="background:#e8f0fe;border-left:4px solid #1a73e8;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.5rem 0;"><strong style="color:#1a73e8;">ℹ️ </strong><span style="color:#3c4043;line-height:1.6;"></span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/steps">Steps</a>
+    <p class="sa-desc">numbered step-by-step instruction sequence</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of steps"><ol style="list-style:none;padding:0;margin:1.5rem 0;"></ol></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/table">Table</a>
+    <p class="sa-desc">data table with header row on mobile</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of table"><div style="border:1px solid var(--a2ui-border,#eaeaea);border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#8f8f8f);text-align:left;">Example fields</caption><thead><tr><th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;text-transform:uppercase;color:var(--a2ui-muted,#666666);background:var(--a2ui-surface-muted,#fafafa);">Field</th><th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;text-transform:uppercase;color:var(--a2ui-muted,#666666);background:var(--a2ui-surface-muted,#fafafa);">Type</th><th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;text-transform:uppercase;color:var(--a2ui-muted,#666666);background:var(--a2ui-surface-muted,#fafafa);">Required</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">value</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">string</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">yes</td></tr><tr style="background:#f9fafb;"><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">label</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">string</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">yes</td></tr><tr style="background:#fff;"><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">trend</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">string</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);">no</td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/key_value">Key Value</a>
+    <p class="sa-desc">label and value pairs in a compact grid</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of key_value"><div style="overflow-x:auto;margin:1.2rem 0;"><table style="border-collapse:collapse;width:100%;background:#fafafa;border-radius:8px;overflow:hidden;"><tbody></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/timeline">Timeline</a>
+    <p class="sa-desc">chronological event timeline</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of timeline"><div style="margin:1.5rem 0;"><div style="position:relative;padding-left:40px;margin-bottom:20px;"><div style="position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">●</div><div style="position:absolute;left:12px;top:26px;width:2px;background:#4f46e544;height:calc(100% + 8px);"></div><div style=font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);margin-bottom:2px;>2024</div><div style="font-weight:700;color:var(--a2ui-text,#171717);font-size:0.9rem;">A2UI v1</div></div><div style="position:relative;padding-left:40px;margin-bottom:20px;"><div style="position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">●</div><div style="position:absolute;left:12px;top:26px;width:2px;background:#4f46e544;height:calc(100% + 8px);"></div><div style=font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);margin-bottom:2px;>2025</div><div style="font-weight:700;color:var(--a2ui-text,#171717);font-size:0.9rem;">467 atoms</div></div><div style="position:relative;padding-left:40px;margin-bottom:20px;"><div style="position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">●</div><div style="position:absolute;left:12px;top:26px;width:2px;background:#4f46e544;height:calc(100% + 8px);"></div><div style=font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);margin-bottom:2px;>2026</div><div style="font-weight:700;color:var(--a2ui-text,#171717);font-size:0.9rem;">ARD catalog</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/metric_delta">Metric Delta</a>
+    <p class="sa-desc">big number metric with directional change indicator or percentage</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of metric_delta"><div style="display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));"><div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;">Metric Delta</div><div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);margin:4px 0;">Current value</div><span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:#d1fae5;color:#10b981;font-size:.8rem;font-weight:600;">↑ Delta value</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/trend_indicator">Trend Indicator</a>
+    <p class="sa-desc">compact inline value with mini trend bar the direction of a</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of trend_indicator"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:#d1fae5;font-size:.82rem;font-weight:600;color:#10b981;">↑ Trend Indicator</span></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/anchor_list">Anchor List</a>
+    <p class="sa-desc">in-page anchor navigation links document or to external URLs.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of anchor_list"><ul style="list-style:none;padding:12px 16px;margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);"></ul></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/faq_accordion">Faq Accordion</a>
+    <p class="sa-desc">collapsible FAQ question and answer list the question is clicked.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of faq_accordion"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;"><details style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);"><summary style="padding:12px 16px;font-weight:600;cursor:pointer;font-size:0.88rem;color:#111827;list-style:none;">❓ Item 1</summary><div style="padding:10px 16px 14px;font-size:0.86rem;color:#374151;background:#fafafa;"></div></details><details style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);"><summary style="padding:12px 16px;font-weight:600;cursor:pointer;font-size:0.88rem;color:#111827;list-style:none;">❓ Item 2</summary><div style="padding:10px 16px 14px;font-size:0.86rem;color:#374151;background:#fafafa;"></div></details></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/glossary_term">Glossary Term</a>
+    <p class="sa-desc">definition term with explanation</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of glossary_term"><div style="border-bottom:1px solid #f3f4f6;padding:10px 0;"><dt style="font-weight:700;color:#111827;font-size:0.9rem;">API</dt><dd style="margin:4px 0 0;font-size:0.86rem;color:#374151;">Application Programming Interface</dd></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/footnote">Footnote</a>
+    <p class="sa-desc">numbered footnote reference at the bottom of a section or page.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of footnote"><div id="fn1" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;font-size:0.82rem;color:var(--muted,#5f6368);display:flex;gap:8px;align-items:flex-start;"><span style="font-weight:700;flex-shrink:0;">[1]</span><span>A concise description of the content.</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/blockquote_with_avatar">Blockquote With Avatar</a>
+    <p class="sa-desc">testimonial quote with avatar and attribution</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of blockquote_with_avatar"><blockquote style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;background:#f9fafb;border-radius:0 10px 10px 0;"><p style="margin:0 0 12px;font-style:italic;color:#374151;">"The vocabulary IS the discovery layer."</p><div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">A</div><div><div style="font-size:0.87rem;font-weight:700;color:#111827;">Author Name</div></div></div></blockquote></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pull_stat">Pull Stat</a>
+    <p class="sa-desc">large display number pulled from prose for emphasis descriptive label.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of pull_stat"><div style="text-align:center;padding:24px;border:2px solid #4f46e522;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#4f46e508;margin:1.5rem 0;"><div style="font-size:2.5rem;font-weight:900;color:#4f46e5;">1</div><div style="font-size:0.9rem;color:#374151;font-weight:600;margin-top:4px;">Pull Stat</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/feature_matrix">Feature Matrix</a>
+    <p class="sa-desc">features versus plans comparison matrix</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pricing_tier_card">Pricing Tier Card</a>
+    <p class="sa-desc">single pricing plan card with features list</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_card"><div style="position:relative;flex:1;min-width:180px;border:2px solid #b5432f;border-radius:12px;padding:18px 18px 20px;background:#fdf3f0;font-family:system-ui,sans-serif;"><div style="position:absolute;top:-10px;left:16px;background:#b5432f;color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;border-radius:20px;text-transform:uppercase;">Popular</div><div style="font-weight:700;font-size:0.95rem;">Plan name</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">USD$29/mo<span style="font-size:0.75rem;font-weight:600;color:#9a9284;">/monthly</span></div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"><li style="margin-bottom:6px;">Core feature</li><li style="margin-bottom:6px;">Advanced analytics</li><li style="margin-bottom:6px;">API access</li></ul><a href="https://example.com" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:14px;padding:9px 14px;border-radius:8px;background:#b5432f;color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;">Call to action label</a></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pricing_tier_group">Pricing Tier Group</a>
+    <p class="sa-desc">side-by-side pricing plan comparison different subscription plans.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_group"><div style="display:flex;gap:12px;flex-wrap:wrap;margin:1rem 0;"><div style="position:relative;flex:1;min-width:180px;border:1px solid #e2e2e2;border-radius:12px;padding:18px 18px 20px;background:#fff;font-family:system-ui,sans-serif;"><div style="font-weight:700;font-size:0.95rem;">Starter</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">$$9/mo</div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"></ul></div><div style="position:relative;flex:1;min-width:180px;border:1px solid #e2e2e2;border-radius:12px;padding:18px 18px 20px;background:#fff;font-family:system-ui,sans-serif;"><div style="font-weight:700;font-size:0.95rem;">Pro</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">$$29/mo</div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"></ul></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pros_cons_list">Pros Cons List</a>
+    <p class="sa-desc">two-column pros and cons comparison</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of pros_cons_list"><div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;"><div style="font-size:16px;font-weight:700;color:#111827;padding:14px 16px;border-bottom:1px solid #e5e7eb;background:#f9fafb;">Example subject matter</div><div style="display:grid;grid-template-columns:1fr 1fr;"><div style="padding:16px;border-right:1px solid #e5e7eb;background:#f0fdf4;"><div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;color:#16a34a;">Pros</div><ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;color:#374151;"><li style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:#16a34a;flex-shrink:0;">✓</span><span>Scalable architecture</span></li><li style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:#16a34a;flex-shrink:0;">✓</span><span>Clean API design</span></li><li style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:#16a34a;flex-shrink:0;">✓</span><span>Excellent documentation</span></li></ul></div><div style="padding:16px;background:#fff5f5;"><div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;color:#dc2626;">Cons</div><ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;color:#374151;"><li style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:#dc2626;flex-shrink:0;">✗</span><span>Steeper learning curve</span></li><li style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:#dc2626;flex-shrink:0;">✗</span><span>Limited third-party plugins</span></li></ul></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/side_by_side_spec">Side By Side Spec</a>
+    <p class="sa-desc">two items compared spec by spec and values side-by-side.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of side_by_side_spec"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ side_by_side_spec ]</em></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/product_spec_table">Product Spec Table</a>
+    <p class="sa-desc">product specifications in a clean table</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of product_spec_table"><div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:10px;border-radius:var(--a2ui-radius,10px);overflow:hidden;"><div style="font-size:15px;font-weight:700;color:#111827;background:#f9fafb;padding:12px 16px;border-bottom:1px solid #e5e7eb;">Product name</div><table style="width:100%;border-collapse:collapse;font-size:14px;"><tbody><tr><td style="padding:10px 16px;color:var(--muted,#5f6368);font-weight:600;width:40%;border-bottom:1px solid #f3f4f6;vertical-align:top;">Weight</td><td style="padding:10px 16px;color:#111827;border-bottom:1px solid #f3f4f6;vertical-align:top;">1.2 kg</td></tr><tr><td style="padding:10px 16px;color:var(--muted,#5f6368);font-weight:600;width:40%;border-bottom:1px solid #f3f4f6;vertical-align:top;">Dimensions</td><td style="padding:10px 16px;color:#111827;border-bottom:1px solid #f3f4f6;vertical-align:top;">20×15 cm</td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/comparison_grid">Comparison Grid</a>
+    <p class="sa-desc">multi-item attribute comparison grid</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of comparison_grid"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ comparison_grid ]</em></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/rating_comparison">Rating Comparison</a>
+    <p class="sa-desc">multiple items rated across dimensions scores.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of rating_comparison"><div style="margin:1.5rem 0;"><div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-bottom:4px;"><span style="font-weight:600;">Item 1</span><span style="color:var(--muted,#5f6368);">0.0/5</span></div><div style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="height:100%;width:0.0%;background:#4f46e5;border-radius:100px;"></div></div></div><div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-bottom:4px;"><span style="font-weight:600;">Item 2</span><span style="color:var(--muted,#5f6368);">0.0/5</span></div><div style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="height:100%;width:0.0%;background:#4f46e5;border-radius:100px;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/capability_checklist">Capability Checklist</a>
+    <p class="sa-desc">feature capability tick list per tier capability using checkmarks</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of capability_checklist"><div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;margin:1rem 0;"><ul style="list-style:none;padding:0;margin:0;"><li style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.88rem;"><span>⬜</span><span style="color:#374151;">First item</span></li><li style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.88rem;"><span>⬜</span><span style="color:#374151;">Second item</span></li></ul></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/testimonial_card">Testimonial Card</a>
+    <p class="sa-desc">customer testimonial with photo name and quote</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of testimonial_card"><div style="margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;"><div style="margin-bottom:12px;"><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span></div><blockquote style="margin:0 0 16px;font-size:0.93rem;color:#374151;line-height:1.65;font-style:italic;">&ldquo;The catalog cut our build time in half.&rdquo;</blockquote><div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">A</div><div><div style="font-size:0.87rem;font-weight:700;color:#111827;">Ada L.</div><div style="font-size:0.78rem;color:var(--muted,#5f6368);">Platform Lead</div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/star_rating_display">Star Rating Display</a>
+    <p class="sa-desc">read-only star rating with score and count</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of star_rating_display"><div style="display:flex;align-items:center;gap:8px;"><span><span style="color:#f59e0b;font-size:1.1rem;">★</span><span style="color:#f59e0b;font-size:1.1rem;">★</span><span style="color:#f59e0b;font-size:1.1rem;">★</span><span style="color:#f59e0b;font-size:1.1rem;">★</span><span style="color:#f59e0b;font-size:1.1rem;">★</span></span><span style="font-weight:700;color:#111827;">75.0</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/contributor_list">Contributor List</a>
+    <p class="sa-desc">list of contributors with avatar and role</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of contributor_list"><div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;"><div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">Contributor List</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;"><a href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:8px;text-decoration:none;border-radius:8px;"><div style="width:36px;height:36px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#1a73e8;">A</div><div><div style="font-weight:600;color:#111827;font-size:0.88rem;">Alice</div><div style=font-size:0.76rem;color:var(--muted,#5f6368);>Developer</div></div></a><a href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:8px;text-decoration:none;border-radius:8px;"><div style="width:36px;height:36px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#1a73e8;">B</div><div><div style="font-weight:600;color:#111827;font-size:0.88rem;">Bob</div><div style=font-size:0.76rem;color:var(--muted,#5f6368);>Designer</div></div></a></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/social_proof_banner">Social Proof Banner</a>
+    <p class="sa-desc">social proof strip with stats and logos</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of social_proof_banner"><a href="https://example.com" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:block;margin:1rem 0;width:fit-content;"><span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);font-size:0.84rem;width:fit-content;"><img src="https://example.com" style="width:20px;height:20px;object-fit:contain;"><span style=font-weight:700;>Metric value</span><span style="color:#374151;">Metric label</span></span></a></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/media_mention_card">Media Mention Card</a>
+    <p class="sa-desc">press or media mention with logo and quote</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of media_mention_card"><div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><a href="https://example.com" target="_blank" rel="noopener" style="text-decoration:none;"><img src="https://example.com" alt="Publication name" style="max-height:28px;object-fit:contain;"></a><span style=font-size:0.78rem;color:var(--muted,#5f6368);>2026-06-28</span></div><p style="font-style:italic;font-size:0.9rem;color:#374151;margin:0;line-height:1.6;">"Main headline text here"</p></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/expert_endorsement">Expert Endorsement</a>
+    <p class="sa-desc">expert quote with credentials and photo</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of expert_endorsement"><div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);"><p style="font-style:italic;color:#374151;font-size:0.95rem;margin:0 0 14px;line-height:1.65;">"The vocabulary IS the discovery layer."</p><div style="display:flex;align-items:center;gap:12px;"><img src="https://example.com" alt="Expert name" style="width:48px;height:48px;border-radius:50%;object-fit:cover;"><div><div style="font-weight:700;color:#111827;">Expert name</div><div style=font-size:0.82rem;color:var(--muted,#5f6368);>Expert title</div><div style=font-size:0.78rem;color:var(--muted,#5f6368);>Expert organization</div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/review_callout">Review Callout</a>
+    <p class="sa-desc">highlighted customer review excerpt by a star rating.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of review_callout"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;"><div style="font-size:.75rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;margin-bottom:8px;">Product name</div><div style="margin-bottom:10px;"><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span><span style="color:#fbbf24;">★</span></div><blockquote style="margin:0;font-size:.9rem;line-height:1.6;font-style:italic;">"Review text"</blockquote><div style="margin-top:10px;font-size:.8rem;font-weight:600;color:var(--muted,#5f6368);">— Author Name</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/stance">Stance</a>
+    <p class="sa-desc">claim set in type whose weight, size and tracking encode the stated confidence</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of stance"><div style="margin:1rem 0;border-radius:16px;padding:32px 36px;background:#0b0d12;color:#f1f5f9;border:1px solid #1f2430;"><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">stance</div><div id="st-t-f3dabe" style="font-family:system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif;font-weight:600;font-size:2.20rem;letter-spacing:0.00em;opacity:0.80;line-height:1.12;transition:font-size 0.25s,letter-spacing 0.25s,opacity 0.25s,font-weight 0.25s;">Claim</div><div style="margin-top:18px;height:3px;background:#1f2430;border-radius:2px;overflow:hidden;"><div id="st-r-f3dabe" style="height:100%;width:50%;background:#38bdf8;transition:width 0.25s;"></div></div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.72rem;color:#94a3b8;"><span id="st-l-f3dabe">confidence 50%</span><label style="display:flex;align-items:center;gap:8px;"><span>try it</span><input id="st-s-f3dabe" type="range" min="0" max="100" value="50" aria-label="confidence" style="width:120px;accent-color:#38bdf8;"></label></div><script>(function(){var s=document.getElementById("st-s-f3dabe"),t=document.getElementById("st-t-f3dabe"),r=document.getElementById("st-r-f3dabe"),l=document.getElementById("st-l-f3dabe");if(!s||!t)return;function pad(n){return n<10?"0"+n:""+n;}function ap(p){var w=300+Math.floor((p*6+50)/100)*100,sh=140+Math.floor(p*16/10),ls=2-Math.floor(p*5/100),op=60+Math.floor(p*4/10);t.style.fontWeight=w;t.style.fontSize=Math.floor(sh/100)+"."+pad(sh%100)+"rem";t.style.letterSpacing=(ls<0?"-0."+pad(-ls):"0."+pad(ls))+"em";t.style.opacity=op>=100?"1":"0."+pad(op);if(r)r.style.width=p+"%";if(l)l.textContent="confidence "+p+"%";}s.addEventListener("input",function(){ap(parseInt(s.value,10)||0);});})();</script></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/receipt">Receipt</a>
+    <p class="sa-desc">claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of receipt"><style>@keyframes rc-25e61b{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}</style><div style="margin:1rem auto;max-width:420px;background:#fdfdfb;color:#1e293b;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.82rem;line-height:1.45;padding:26px 24px 22px;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,0.18);position:relative;"><div style="font-size:0.72rem;letter-spacing:0.16em;text-align:center;color:#475569;">EVIDENCE RECEIPT</div><div style="margin:16px 0 12px;font-family:system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif;font-weight:900;font-size:clamp(1.25rem,2.8vw,1.8rem);line-height:1.15;letter-spacing:-0.02em;color:#0f172a;">1</div><div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div><div style="color:var(--muted,#5f6368);padding:5px 0;">(no evidence yet)</div><div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div><div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;"><span>CONFIDENCE</span><span style="color:#4338ca;">0 ITEMS</span></div><div style="margin:16px auto 6px;max-width:260px;"><svg viewBox="0 0 168 30" width="100%" height="30" preserveAspectRatio="none" fill="#0f172a" aria-hidden="true"><rect x="0" y="0" width="1" height="30"/><rect x="2" y="0" width="2" height="30"/><rect x="6" y="0" width="2" height="30"/><rect x="10" y="0" width="2" height="30"/><rect x="13" y="0" width="1" height="30"/><rect x="15" y="0" width="2" height="30"/><rect x="19" y="0" width="2" height="30"/><rect x="23" y="0" width="3" height="30"/><rect x="27" y="0" width="1" height="30"/><rect x="30" y="0" width="2" height="30"/><rect x="33" y="0" width="2" height="30"/><rect x="37" y="0" width="1" height="30"/><rect x="40" y="0" width="3" height="30"/><rect x="45" y="0" width="2" height="30"/><rect x="48" y="0" width="1" height="30"/><rect x="50" y="0" width="1" height="30"/><rect x="52" y="0" width="3" height="30"/><rect x="56" y="0" width="1" height="30"/><rect x="59" y="0" width="3" height="30"/><rect x="63" y="0" width="3" height="30"/><rect x="68" y="0" width="2" height="30"/><rect x="72" y="0" width="3" height="30"/><rect x="77" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/><rect x="82" y="0" width="3" height="30"/><rect x="87" y="0" width="3" height="30"/><rect x="91" y="0" width="2" height="30"/><rect x="95" y="0" width="1" height="30"/><rect x="97" y="0" width="3" height="30"/><rect x="102" y="0" width="3" height="30"/><rect x="107" y="0" width="3" height="30"/><rect x="111" y="0" width="3" height="30"/><rect x="116" y="0" width="1" height="30"/><rect x="119" y="0" width="2" height="30"/><rect x="123" y="0" width="1" height="30"/><rect x="125" y="0" width="2" height="30"/><rect x="128" y="0" width="2" height="30"/><rect x="131" y="0" width="3" height="30"/><rect x="135" y="0" width="2" height="30"/><rect x="139" y="0" width="2" height="30"/><rect x="142" y="0" width="1" height="30"/><rect x="144" y="0" width="2" height="30"/><rect x="147" y="0" width="1" height="30"/><rect x="150" y="0" width="3" height="30"/><rect x="155" y="0" width="1" height="30"/><rect x="157" y="0" width="2" height="30"/><rect x="161" y="0" width="3" height="30"/><rect x="166" y="0" width="1" height="30"/></svg></div><div style="font-size:0.68rem;text-align:center;color:var(--muted,#5f6368);">Sources listed. No unsourced stats.</div><div style="position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(-45deg,transparent 7px,#fdfdfb 0) 0 0/14px 10px repeat-x,linear-gradient(45deg,transparent 7px,#fdfdfb 0) 7px 0/14px 10px repeat-x;"></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/changed_mind">Changed Mind</a>
+    <p class="sa-desc">struck-through old belief, new belief lands beneath; optional what-changed-it line</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of changed_mind"><style>@keyframes cm-s-004b64{from{transform:scaleX(0);}to{transform:scaleX(1);}}@keyframes cm-a-004b64{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}</style><div style="margin:1rem 0;border-radius:16px;padding:32px 36px;background:#0b0d12;color:#f1f5f9;border:1px solid #1f2430;"><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;">I used to think</div><div style="position:relative;display:inline-block;margin:8px 0 22px;font-family:Georgia,Times New Roman,serif;font-style:italic;font-size:clamp(1.1rem,2.4vw,1.5rem);line-height:1.3;color:#94a3b8;">// example code<span style="position:absolute;left:0;right:0;top:55%;height:2px;background:#94a3b8;transform-origin:left center;animation:cm-s-004b64 0.5s ease-out 0.5s both;"></span></div><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#38bdf8;">Now I think</div><div style="margin-top:8px;font-family:system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif;font-weight:900;font-size:clamp(1.5rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;animation:cm-a-004b64 0.6s cubic-bezier(0.2,0.8,0.2,1) 1.1s both;">// example code</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/entity_list">Entity List</a>
+    <p class="sa-desc">named resource rows with avatar, status badge, and meta</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of entity_list"><div style="margin:1rem 0;"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;"><div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:700;color:#7c3aed;flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:0.88rem;font-weight:600;color:var(--a2ui-text,#171717);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;"><div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:700;color:#7c3aed;flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:0.88rem;font-weight:600;color:var(--a2ui-text,#171717);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/prompt_template">Prompt Template</a>
+    <p class="sa-desc">LLM prompt with highlighted {variable} slots and copy button</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of prompt_template"><div style="margin:1rem 0;"><div style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f9fafb;border-bottom:1px solid #e0e0e0;"><span style="font-size:0.72rem;color:var(--muted,#5f6368);font-family:monospace;">prompt template</span><button onclick="navigator.clipboard.writeText(document.getElementById('pt_9fcdb4-src').innerText)" style="padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);font-size:0.75rem;color:#5f6368;cursor:pointer;flex-shrink:0;">Copy</button></div><pre id="pt_9fcdb4-src" style="margin:0;padding:14px 16px;font-size:0.84rem;font-family:monospace;line-height:1.6;color:#374151;background:#fff;white-space:pre-wrap;word-break:break-word;">Hello, <span style="background:rgba(124,58,237,0.1);color:#7c3aed;font-weight:600;border-radius:3px;padding:0 3px;">{{name}</span>}!</pre></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/model_card">Model Card</a>
+    <p class="sa-desc">AI model spec card with context window, pricing, and capability badges</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of model_card"><div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);"><div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">Model Card</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;"><span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:rgba(124,58,237,0.08);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);font-weight:500;">Vision</span><span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:rgba(124,58,237,0.08);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);font-weight:500;">Code execution</span><span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:rgba(124,58,237,0.08);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);font-weight:500;">Web search</span></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/conversation_snippet">Conversation Snippet</a>
+    <p class="sa-desc">user prompt and AI response as chat bubbles</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of conversation_snippet"><div style="margin:1rem 0;display:flex;flex-direction:column;gap:12px;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span style="font-size:0.7rem;font-weight:600;color:#1a73e8;padding:0 4px;">You</span><div style="max-width:80%;padding:10px 14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid rgba(26,115,232,0.25);background:rgba(26,115,232,0.1);font-size:0.86rem;color:#374151;line-height:1.5;white-space:pre-wrap;">How does this work?</div></div><div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;"><span style="font-size:0.7rem;font-weight:600;color:#6b7280;padding:0 4px;">Assistant</span><div style="max-width:80%;padding:10px 14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #e5e7eb;background:#f9fafb;font-size:0.86rem;color:#374151;line-height:1.5;white-space:pre-wrap;">Here&#39;s a clear explanation of how it works.</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/shortcut_legend">Shortcut Legend</a>
+    <p class="sa-desc">keyboard shortcut cheat-sheet grid with key combos and labels</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of shortcut_legend"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f4f6;"><span style="font-size:0.82rem;color:#374151;"></span><div style="display:flex;gap:3px;align-items:center;"></div></div><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f4f6;"><span style="font-size:0.82rem;color:#374151;"></span><div style="display:flex;gap:3px;align-items:center;"></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/rating_summary_bar">Rating Summary Bar</a>
+    <p class="sa-desc">star rating histogram with percentage bars per star level</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of rating_summary_bar"><div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;"><span style="font-size:2rem;font-weight:700;color:#111827;">75.0</span><span style="font-size:0.85rem;color:var(--muted,#5f6368);">/ 5 · 5 ratings</span></div><div style="display:flex;flex-direction:column;gap:6px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">5</span><span style="font-size:0.82rem;color:#f59e0b;">★</span><div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;"><div style="width:100%;height:100%;border-radius:100px;background:#f59e0b;"></div></div><span style="font-size:0.75rem;color:var(--muted,#5f6368);width:3ch;text-align:right;">960%</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">4</span><span style="font-size:0.82rem;color:#f59e0b;">★</span><div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;"><div style="width:62%;height:100%;border-radius:100px;background:#f59e0b;"></div></div><span style="font-size:0.75rem;color:var(--muted,#5f6368);width:3ch;text-align:right;">600%</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">3</span><span style="font-size:0.82rem;color:#f59e0b;">★</span><div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;"><div style="width:25%;height:100%;border-radius:100px;background:#f59e0b;"></div></div><span style="font-size:0.75rem;color:var(--muted,#5f6368);width:3ch;text-align:right;">240%</span></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/roadmap_card">Roadmap Card</a>
+    <p class="sa-desc">quarter-based product roadmap with status-tagged milestones</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/notification_stack">Notification Stack</a>
+    <p class="sa-desc">persistent notification inbox list with unread indicators</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of notification_stack"><div style="margin:1rem 0;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;"></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tag_block">Tag Block</a>
+    <p class="sa-desc">horizontal wrap of neutral content chip labels</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of tag_block"><div style="display:flex;flex-wrap:wrap;gap:6px;margin:0.75rem 0;"><span style="display:inline-block;padding:3px 10px;border-radius:9999px;background:#f3f4f6;border:1px solid #d1d5db;color:#374151;font-size:0.78rem;font-weight:500;white-space:nowrap;">typescript</span><span style="display:inline-block;padding:3px 10px;border-radius:9999px;background:#f3f4f6;border:1px solid #d1d5db;color:#374151;font-size:0.78rem;font-weight:500;white-space:nowrap;">react</span><span style="display:inline-block;padding:3px 10px;border-radius:9999px;background:#f3f4f6;border:1px solid #d1d5db;color:#374151;font-size:0.78rem;font-weight:500;white-space:nowrap;">a2ui</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/markdown_block">Markdown Block</a>
+    <p class="sa-desc">GFM markdown string rendered to HTML inline</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of markdown_block"><div class="markdown-content">A concise description of the content.</div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/text_callout">Text Callout</a>
+    <p class="sa-desc">lightweight tinted inline tip or note block no icon</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of text_callout"><div style="margin:0.5rem 0;padding:8px 12px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#f9fafb;border:1px solid #e5e7eb;"><div style="font-size:0.78rem;font-weight:700;color:#374151;margin-bottom:2px;">Text Callout</div><div style="font-size:0.8rem;color:#4b5563;line-height:1.5;">A concise description of the content.</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/source_citation">Source Citation</a>
+    <p class="sa-desc">numbered RAG source card with title excerpt and URL</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/llm_comparison_table">Llm Comparison Table</a>
+    <p class="sa-desc">side-by-side multi-model output comparison table</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of llm_comparison_table"><div style="margin:1rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><thead><tr style="background:#f9fafb;"><th style="width:50%;padding:8px 10px;text-align:left;border-bottom:2px solid #4f85f6;font-size:0.8rem;font-weight:700;color:#4f85f6;">GPT-4</th><th style="width:50%;padding:8px 10px;text-align:left;border-bottom:2px solid #f06292;font-size:0.8rem;font-weight:700;color:#f06292;">Claude Sonnet</th></tr></thead><tbody><tr><td style="width:50%;padding:8px 10px;vertical-align:top;border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;line-height:1.55;"></td><td style="width:50%;padding:8px 10px;vertical-align:top;border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;line-height:1.55;"></td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/confidence_bar">Confidence Bar</a>
+    <p class="sa-desc">labelled probability bar with colour-coded confidence fill</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of confidence_bar"><div style="margin:0.75rem 0;"><div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;"><span>Confidence Bar</span><span style="font-weight:700;color:#22c55e;">75%</span></div><div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;"><div style="width:75.0%;height:100%;background:#22c55e;border-radius:4px;transition:width .4s;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/product_thumbnail">Product Thumbnail</a>
+    <p class="sa-desc">product card with image, price, status badge, and tags</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of product_thumbnail"><a href="#" style="display:block;text-decoration:none;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;max-width:180px;margin:1rem 0;"><div style="position:relative;"><div style=background:#f3f4f6;aspect-ratio:1;></div></div><div style="padding:8px 10px;"><div style="font-size:0.84rem;font-weight:600;color:#111827;">Product Thumbnail</div><div style=font-size:0.88rem;font-weight:800;color:#7c3aed;margin-top:2px;>$29/mo</div></div></a></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/order_status_card">Order Status Card</a>
+    <p class="sa-desc">e-commerce order card with status badge and line item list</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of order_status_card"><div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e1e3e5;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:16px;font-weight:700;color:#202223;">Order number</span><div style="display:flex;align-items:center;gap:10px;"><span style="background:#fff3cd;color:#856404;font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;">Active</span></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/inventory_table">Inventory Table</a>
+    <p class="sa-desc">inventory table with SKU, stock levels, and low-stock row highlight</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of inventory_table"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:400px;"><thead><tr><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:var(--muted,#5f6368);background:#f9fafb;text-transform:uppercase;">Name</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:var(--muted,#5f6368);background:#f9fafb;text-transform:uppercase;">SKU</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:var(--muted,#5f6368);background:#f9fafb;text-transform:uppercase;">Stock</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:var(--muted,#5f6368);background:#f9fafb;text-transform:uppercase;">Price</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:var(--muted,#5f6368);background:#f9fafb;text-transform:uppercase;">Status</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;border-top:1px solid #f3f4f6;"><span style="color:#9ca3af;font-size:0.78rem;font-weight:700;">—</span></td></tr><tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;border-top:1px solid #f3f4f6;"><span style="color:#9ca3af;font-size:0.78rem;font-weight:700;">—</span></td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/jira_ticket">Jira Ticket</a>
+    <p class="sa-desc">Jira issue card with type icon, status lozenge, priority, and assignee</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of jira_ticket"><div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:15px;">✓</span><span style="font-size:12px;font-weight:600;color:#0052cc;">example-id</span><span style="margin-left:auto;background:#dfe1e6;color:#42526e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;">To Do</span></div><div style="font-size:15px;font-weight:500;color:#172b4d;margin-bottom:10px;line-height:1.4;">A concise description of the content.</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:12px;color:#5e6c84;">🟡 Medium</span></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/sprint_board">Sprint Board</a>
+    <p class="sa-desc">kanban sprint board with named columns and compact issue cards</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of sprint_board"><div style="font-family:-apple-system,sans-serif;"><div style="display:flex;gap:10px;overflow-x:auto;"><div style="background:#f4f5f7;border-radius:3px;padding:10px;flex:1;min-width:160px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">To Do</span><span style="background:#dfe1e6;color:#172b4d;font-size:11px;font-weight:600;padding:1px 6px;border-radius:20px;">0</span></div></div><div style="background:#f4f5f7;border-radius:3px;padding:10px;flex:1;min-width:160px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">In Progress</span><span style="background:#dfe1e6;color:#172b4d;font-size:11px;font-weight:600;padding:1px 6px;border-radius:20px;">0</span></div></div><div style="background:#f4f5f7;border-radius:3px;padding:10px;flex:1;min-width:160px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">Done</span><span style="background:#dfe1e6;color:#172b4d;font-size:11px;font-weight:600;padding:1px 6px;border-radius:20px;">0</span></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/data_grid">Data Grid</a>
+    <p class="sa-desc">enterprise data grid with typed columns, row selection, and</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of data_grid"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;"><div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">Deployments</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f9fafb;"><th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">Name</th><th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">Status</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">web</td><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">live</td></tr><tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">meet</td><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">beta</td></tr></tbody></table></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/feature_grid">Feature Grid</a>
+    <p class="sa-desc">icon + title + description feature grid — Tailwind UI pattern</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of feature_grid"><div style="margin:1.5rem 0;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px 24px;"></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/skill_bars">Skill Bars</a>
+    <p class="sa-desc">labeled horizontal progress bars list — percent fill, per-bar color</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of skill_bars"><div style="margin:1rem 0;"><div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;font-weight:600;color:#374151;">Python</span><span style="font-size:12px;color:var(--muted,#5f6368);">85%</span></div><div style="height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;"><div style="height:100%;width:85%;background:#4f46e5;border-radius:99px;"></div></div></div><div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;font-weight:600;color:#374151;">JavaScript</span><span style="font-size:12px;color:var(--muted,#5f6368);">70%</span></div><div style="height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;"><div style="height:100%;width:70%;background:#4f46e5;border-radius:99px;"></div></div></div><div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;font-weight:600;color:#374151;">TypeScript</span><span style="font-size:12px;color:var(--muted,#5f6368);">65%</span></div><div style="height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;"><div style="height:100%;width:65%;background:#4f46e5;border-radius:99px;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_stat_row">Icon Stat Row</a>
+    <p class="sa-desc">icon + big number + label stat strip — more visual than metric_row</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of icon_stat_row"><div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:8px;margin:1.5rem 0;"><div style="text-align:center;padding:10px;"><div style="font-size:1.4rem;">📊</div><div style="font-size:1.1rem;font-weight:800;color:#111827;">1.2M</div><div style="font-size:0.78rem;color:var(--muted,#5f6368);">Views</div></div><div style="text-align:center;padding:10px;"><div style="font-size:1.4rem;">📊</div><div style="font-size:1.1rem;font-weight:800;color:#111827;">42K</div><div style="font-size:0.78rem;color:var(--muted,#5f6368);">Clicks</div></div><div style="text-align:center;padding:10px;"><div style="font-size:1.4rem;">📊</div><div style="font-size:1.1rem;font-weight:800;color:#111827;">3.5%</div><div style="font-size:0.78rem;color:var(--muted,#5f6368);">CTR</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/step_progress">Step Progress</a>
+    <p class="sa-desc">horizontal step progress — numbered circles, connecting lines, current step highlighted</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of step_progress"><div style="display:flex;align-items:flex-start;gap:0;margin:1.5rem 0;padding:0 8px;"><div style="display:flex;flex-direction:column;align-items:center;flex:1 1 0;"><div style="display:flex;align-items:center;width:100%;"><div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">✓</div><div style="flex:1;height:2px;background:#4f46e5;margin-top:-1px;"></div></div><div style="margin-top:6px;font-size:11px;font-weight:500;color:#374151;text-align:center;width:100%;">Step one</div></div><div style="display:flex;flex-direction:column;align-items:center;flex:1 1 0;"><div style="display:flex;align-items:center;width:100%;"><div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">2</div></div><div style="margin-top:6px;font-size:11px;font-weight:700;color:#111827;text-align:center;width:100%;">Step two</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/gradient_hero">Gradient Hero</a>
+    <p class="sa-desc">light gradient hero — badge, large title, subtitle, CTA button</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of gradient_hero"><div style="padding:48px 32px;border-radius:16px;background:linear-gradient(135deg,#4f46e522 0%,#8b5cf618 60%,#fff8 100%);margin:0 0 1.5rem;text-align:left;"><div style="font-size:36px;font-weight:900;line-height:1.15;color:#111827;margin-bottom:12px;letter-spacing:-0.02em;">Gradient Hero</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_list">Icon List</a>
+    <p class="sa-desc">icon-circle list — emoji/icon per item, label + text, color per item</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of icon_list"><div style="margin:1rem 0;"></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/highlight_box">Highlight Box</a>
+    <p class="sa-desc">highlight box — gradient/solid/outline style, icon, title, text</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of highlight_box"><div style="background:linear-gradient(135deg,#4f46e518 0%,#4f46e508 100%);border:1px solid #4f46e530;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 28px;margin:1.5rem 0;"><div style="font-size:14px;color:#374151;line-height:1.65;"></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/metric_row">Metric Row</a>
+    <p class="sa-desc">horizontal metric strip — value, label, prefix/suffix, trend up/down</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of metric_row"><div style="display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);"><div style="text-align:center;padding:16px 8px;"><div style="font-size:32px;font-weight:900;color:#4f46e5;line-height:1;margin-bottom:4px;">$1.2M<span style="font-size:16px;color:#16a34a;margin-left:4px;">↑</span></div><div style="font-size:12px;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.04em;">Revenue</div></div><div style="text-align:center;padding:16px 8px;border-left:1px solid #e5e7eb;"><div style="font-size:32px;font-weight:900;color:#4f46e5;line-height:1;margin-bottom:4px;">42K<span style="font-size:16px;color:#16a34a;margin-left:4px;">↑</span></div><div style="font-size:12px;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.04em;">Users</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/numbered_list">Numbered List</a>
+    <p class="sa-desc">decorative numbered list — large background numbers, circular badges, or bordered stage cards</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of numbered_list"><div style="margin:1rem 0;"></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/page_header">Page Header</a>
+    <p class="sa-desc">app-style page header — title, subtitle, icon, accent, tag badge</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of page_header"><div style="padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:linear-gradient(135deg,#4f46e518 0%,#fff 60%);border-bottom:3px solid #4f46e5;"><div style="font-size:28px;font-weight:800;color:#111827;line-height:1.2;margin-bottom:6px;">Page Header</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/person_card">Person Card</a>
+    <p class="sa-desc">person card — name, role, photo, bio, tags, email, linkedin</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of person_card"><div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);"><div style="flex:0 0 56px;height:56px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;overflow:hidden;"><span style="font-size:22px;font-weight:700;color:#fff;">P</span></div><div style="flex:1;min-width:0;"><div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;">Person Card</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/risk_flag">Risk Flag</a>
+    <p class="sa-desc">risk list — critical/high/medium/low with title, description, mitigation</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of risk_flag"><div style="border-left:4px solid #eab308;background:#fefce8;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="background:#eab308;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">Medium</span><span style="font-size:14px;font-weight:600;color:#111827;"></span></div></div><div style="border-left:4px solid #eab308;background:#fefce8;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="background:#eab308;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">Medium</span><span style="font-size:14px;font-weight:600;color:#111827;"></span></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/action_items">Action Items</a>
+    <p class="sa-desc">action items table — action, owner, due date, status</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of action_items"><div style="margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;"><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f3f4f6;"><th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted,#5f6368);">Action</th><th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted,#5f6368);">Owner</th><th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted,#5f6368);">Due</th><th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted,#5f6368);">Status</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:10px 14px;font-size:13px;"></td><td style="padding:10px 14px;font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;">—</td><td style="padding:10px 14px;font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;">—</td><td style="padding:10px 14px;text-align:center;"><span style="font-size:12px;color:#9ca3af;background:#fff;border-radius:99px;padding:2px 10px;font-weight:600;">⭕ open</span></td></tr><tr style="background:#f9fafb;"><td style="padding:10px 14px;font-size:13px;"></td><td style="padding:10px 14px;font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;">—</td><td style="padding:10px 14px;font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;">—</td><td style="padding:10px 14px;text-align:center;"><span style="font-size:12px;color:#9ca3af;background:#fff;border-radius:99px;padding:2px 10px;font-weight:600;">⭕ open</span></td></tr></tbody></table></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/bento_grid">Bento Grid</a>
+    <p class="sa-desc">asymmetric bento-box feature tile grid — MagicUI/shadcn pattern</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of bento_grid"><div style="margin:1.5rem 0;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;"></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/cta_section">Cta Section</a>
+    <p class="sa-desc">full-width CTA banner with headline and buttons — Tailwind UI pattern</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/score_summary">Score Summary</a>
+    <p class="sa-desc">end-of-exercise score card with correct/total, percentage, grade, and CTA</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of score_summary"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;text-align:center;"><div style="font-size:2.8rem;font-weight:800;color:#f87171;">20%</div><div style="font-weight:700;color:#f87171;margin-bottom:4px;">Failed</div><div style="color:#6b7280;font-size:0.85rem;">1 / 5 correct</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/highlighted_text">Highlighted Text</a>
+    <p class="sa-desc">highlighted text passage with optional hover margin annotation note</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of highlighted_text"><mark style="background:#fef08a;padding:1px 3px;border-radius:3px;">A concise description of the content.</mark></div>
+</div>
+</div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

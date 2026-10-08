@@ -449,7 +449,7 @@
             {
               "type": "motion_text",
               "id": "h4s",
-              "text": "WEB · MEET · CHAT · MCP APPS · APPS SCRIPT · ANDROID",
+              "text": "WEB · MEET · CHAT · MCP APPS · APPS SCRIPT\nANDROID · GOOGLE SLIDES · PPTX",
               "place": {
                 "x": 8,
                 "y": 33,
@@ -485,7 +485,9 @@
                 "Chat",
                 "MCP",
                 "Script",
-                "Android"
+                "Android",
+                "Slides",
+                "PPTX"
               ],
               "size": 84,
               "rx": 38,
