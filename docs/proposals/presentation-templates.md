@@ -186,6 +186,7 @@ pictures. Plan around the safe core: shapes, text, tables, pictures, connectors.
    a blind visual score of the compiled deck.
 2. **Capacity oracle vs reality:** does a slot's Chromium-measured capacity hold in Slides? Measure the gap to set the margin.
 3. **Reproducibility:** compile the same XML twice on two machines and compare bytes.
+4. **Blueprint vs free-written XML** (section 13): same briefs, compare validity, repair rounds and a blind visual score.
 
 ## 12. Open questions for Curtis
 
@@ -195,3 +196,38 @@ pictures. Plan around the safe core: shapes, text, tables, pictures, connectors.
   I would keep it a domain layer that compiles to blocks.
 - Which output matters most first: PPTX to Slides, or the shareable web deck?
 - Which brand templates, and are their fonts available as Google Fonts?
+
+## 13. Blueprints: reach for a preset instead of writing from scratch
+
+Added after discussion. A **blueprint** is a catalogue entry for a kind of brief (pitch, quarterly review, training, incident
+review, launch): an ordered skeleton of slide layouts as deck XML, with optional and repeatable sections and a prompt per slot.
+The flow becomes brief, then retrieval of a blueprint (the repo already matches a need to an atom semantically; the same
+machinery applies), then the model fills the slots under the capacity limits and may add or drop slides within the blueprint's
+rules. Gains: a quality floor, brand safety, much less variance, and the same runbook pattern the repo already uses. Cost:
+rigidity. Test it in section 11 against free-written XML (add it as experiment 4).
+
+## 14. PPTX as a surface for the existing catalogue
+
+The slide atoms are new atoms, but the existing static catalogue could also gain a `pptx` surface, using the current
+`works_on` / `degraded_on` / `incompatible_on` fields and the generated compatibility matrix.
+
+Measured on 2026-10-08 from the 650 example payloads rendered by the JS renderer: **390 (60%) render as pure static HTML and CSS**
+(no script, canvas, form control, media or animation); **257** of those also avoid features that convert poorly to native shapes
+(SVG, gradients, shadows, transforms, filters). The rest are ruled out by motion (149), script (131), form controls (94), canvas
+(35) and media (6); an atom can have several. This is a heuristic upper bound: "static" does not mean "makes sense on a slide"
+(an audio player is static HTML), so the real set is a curated one to two hundred.
+
+Getting from an atom to PPTX shapes goes through an intermediate **scene** of paint primitives (box, text, image, line, table,
+chart) with absolute geometry, which fits because both a slide and an mxGraph diagram are fixed canvases. The scene serialises
+to mxGraph XML (editable in draw.io) or to native PPTX. Three ways to produce the scene for an atom, used together:
+
+1. **Snapshot** (picture with alt text): works for every atom, not editable. `degraded_on` pptx.
+2. **Generic converter:** render the atom in headless Chromium at the slot width and walk computed boxes, backgrounds, borders,
+   radii and text runs into shapes. The browser resolves flex and grid layout. Limits: gradients, shadows, SVG, transforms;
+   PowerPoint reflows text slightly differently from the browser. Aimed at the easy 257. Fidelity is tested like everything
+   else (section 7). **(verify)** that open-source HTML-to-PPTX converters exist and how good they are before writing our own.
+3. **Per-atom recipes:** hand-written, semantic, best quality. For the slide atoms and a handful of heavily used ones.
+
+First experiment: 10 easy atoms (`bullet_list`, `blockquote`, `stat_card`, `key_value`, `timeline`, `callout`, `table`, `steps`,
+`pros_cons_list`, `before_after`) through the generic converter, compared with the browser render by geometry and by the PPTX
+lint. Charts map better to native PPTX charts than to shapes, so the chart atoms get recipes, not the converter.
