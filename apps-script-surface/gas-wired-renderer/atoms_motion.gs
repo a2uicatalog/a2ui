@@ -943,7 +943,7 @@ _RENDERERS['motion_pill'] = function(b) {
   var text = _moStr(b.text, 60) || 'Label', size = _ffInt(b.size, 28, 10, 120), icon = _moStr(b.icon, 2);
   var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), fill = _moInk(b, 'fill', '');
   var align = _ffPick(b.align, _MO_ALIGN, 'start'), jc = align === 'right' ? 'flex-end' : (align === 'center' ? 'center' : 'flex-start');
-  var href = typeof b.href === 'string' ? b.href.trim() : '', tag = href ? 'a' : 'div';
+  var href = typeof b.href === 'string' ? _hrefIsSafe(b.href) : '', tag = href ? 'a' : 'div';
   return '<div style="display:flex;justify-content:' + jc + ';width:100%;">'
     + '<' + tag + (href ? ' href="' + _esc(href) + '"' : '') + ' style="' + (href ? 'text-decoration:none;cursor:pointer;pointer-events:auto;' : '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill || _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
     + _moSr(_moPlain(text))

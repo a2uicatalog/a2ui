@@ -81,6 +81,7 @@ _RENDERERS['module_map'] = function(b) {
   var fromSlug = (typeof _CURRENT_NAV_SLUG !== 'undefined' && _CURRENT_NAV_SLUG) ? _CURRENT_NAV_SLUG : '';
   var modsJson = _jsJson(modules.map(function(m, i) {
     var url = '#';
+    var safeUrl = typeof m.url === 'string' ? _hrefIsSafe(m.url) : '';
     if (m.page && m.page.length) {
       try {
         var pg = _jsJson({ title: m.title || ('Module ' + (i+1)), theme: 'dark', blocks: m.page });
@@ -88,9 +89,9 @@ _RENDERERS['module_map'] = function(b) {
           Utilities.gzip(Utilities.newBlob(pg, 'application/json')).getBytes()
         ).replace(/=+$/, '');
         url = base + '?p=' + enc + (fromSlug ? '&from=' + fromSlug : '');
-      } catch(e) { url = m.url || '#'; }
-    } else if (m.url) {
-      var resolvedUrl = (m.url.charAt(0) === '?' && base) ? base + m.url : m.url;
+      } catch(e) { url = safeUrl || '#'; }
+    } else if (safeUrl) {
+      var resolvedUrl = (safeUrl.charAt(0) === '?' && base) ? base + safeUrl : safeUrl;
       // Stamp &from= so back buttons work when hub was referenced by url field rather than page array
       url = (fromSlug && resolvedUrl.indexOf('from=') === -1)
         ? resolvedUrl + (resolvedUrl.indexOf('?') !== -1 ? '&' : '?') + 'from=' + fromSlug
@@ -576,7 +577,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
 
   var lpsBase = _getWebAppUrl();
   var pathsJson = _jsJson(paths.map(function(p) {
-    var purl = p.url || '';
+    var purl = typeof p.url === 'string' ? _hrefIsSafe(p.url) : '';
     if (purl && purl.charAt(0) === '?' && lpsBase) purl = lpsBase + purl;
     return { id: p.id || p.label, url: purl, accent: p.accent || '#4f46e5' };
   }));

@@ -301,7 +301,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   var accent = b.accent || '#4f46e5';
 
   var ids     = _jsJson(steps.map(function(s, i) { return s.id || ('step' + i); }));
-  var urls    = _jsJson(steps.map(function(s) { return s.action_url || ''; }));
+  var urls    = _jsJson(steps.map(function(s) { return typeof s.action_url === 'string' ? _hrefIsSafe(s.action_url) : ''; }));
 
   var stepHtml = '';
   for (var i = 0; i < steps.length; i++) {

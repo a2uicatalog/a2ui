@@ -98,6 +98,26 @@ function _esc(str) {
     .replace(/'/g, '&#39;');
 }
 
+// ── Href Scheme Guard ─────────────────────────────────────────────────────────
+// Every atom whose schema documents an href field promises the same contract (see motion_pill
+// in atoms/schema.yaml): "https, mailto or a relative path; anything else is dropped." Tab/
+// newline/CR are stripped FIRST -- browsers strip them before scheme-sniffing a URL (the
+// WHATWG URL spec's "remove all ASCII tab or newline" step), so "java\tscript:alert(1)" would
+// still execute on click even though the literal substring "javascript:" never appears;
+// checking the scheme after that strip closes the obfuscation, not just the literal string.
+// Returns the cleaned value, or '' if its scheme isn't allowed -- a bare "label:rest" is
+// parsed as a URI scheme even without "//", so this rejects by SHAPE, not a fixed deny-list;
+// only https:, mailto:, or a scheme-less value (relative path, or starting with "/", "?", "#")
+// passes.
+var _HREF_SAFE_SCHEMES = {https: 1, mailto: 1};
+function _hrefIsSafe(value) {
+  var v = String(value === undefined || value === null ? '' : value).replace(/[\t\n\r]/g, '').trim();
+  if (!v) return '';
+  var m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
+  if (!m) return v; // no scheme at all: relative path or /, ?, # prefixed
+  return _HREF_SAFE_SCHEMES[m[1].toLowerCase()] ? v : '';
+}
+
 // Script-safe JSON (2026-10-01): JSON.stringify, with < > & ' U+2028 U+2029 written as \u escapes. Still valid JSON that parses to the SAME
 // value, but it can no longer close a <script>, open a tag, or end a single-quoted attribute. Every server-side JSON.stringify in the
 // renderer files goes through this (rewritten mechanically; client code inside string literals is untouched). Python twin: _js_json.

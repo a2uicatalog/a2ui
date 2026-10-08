@@ -15,8 +15,36 @@ from markdown.treeprocessors import Treeprocessor as _MdTree
 
 
 def _md_url_ok(v):
-    m = re.match(r'^[ \t\n\r\f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):', v)
+    # Strip ASCII tab/newline/CR before scheme-sniffing, matching what a browser does before
+    # navigating a URL (WHATWG URL spec's "remove all ASCII tab or newline" step) -- otherwise
+    # "java\tscript:alert(1)" slips past (no match => treated as scheme-less) even though a
+    # browser still runs it as javascript: once it strips the tab itself.
+    v = re.sub(r'[\t\n\r]', '', v)
+    m = re.match(r'^[ \f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):', v)
     return not m or m.group(1).lower() in ('http', 'https', 'mailto', 'tel')
+
+
+def _safe_href(v, schemes=('http', 'https', 'mailto', 'tel')):
+    """Guard for every atom that builds <a href=...> straight from a payload field (not
+    through _SafeMarkdown's _MdSafeUrls, which only covers markdown-rendered text). Returns
+    v (tab/newline/CR stripped, same reasoning as _md_url_ok above) if its scheme -- if any --
+    is in `schemes`, else ''. Mirrors the GAS twin's _hrefIsSafe."""
+    if not isinstance(v, str):
+        return ''
+    v = re.sub(r'[\t\n\r]', '', v).strip()
+    if not v:
+        return ''
+    m = re.match(r'^([a-zA-Z][a-zA-Z0-9+.-]*):', v)
+    if not m:
+        return v
+    return v if m.group(1).lower() in schemes else ''
+
+
+def _href_is_safe_motion_pill(v):
+    """motion_pill's schema promises: "https, mailto or a relative path; anything else is
+    dropped." Narrower than _safe_href's default set (no bare http:, no tel:) -- kept as its
+    own call so tightening/loosening one contract never silently changes the other."""
+    return _safe_href(v, schemes=('https', 'mailto'))
 
 
 class _MdSafeUrls(_MdTree):
@@ -20761,7 +20789,7 @@ def _render_module_map(b: dict) -> str:
         name = _esc(m.get('name', ''))
         desc = _esc(m.get('description', ''))
         icon = _esc(m.get('icon', '📚'))
-        url = m.get('url', '#')
+        url = _safe_href(m.get('url', '#')) or '#'
         cards += (
             f'<a href="{_esc(url)}" style="text-decoration:none;">'
             f'<div style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;'
@@ -20787,7 +20815,7 @@ def _render_nav_bar(b: dict) -> str:
     position = 'position:sticky;top:0;z-index:100;' if sticky else ''
     label_html = f'<span style="font-weight:700;font-size:0.9rem;margin-right:16px;">{label}</span>' if label else ''
     link_items = ''.join(
-        f'<a href="{_esc(l.get("url","#"))}" style="padding:6px 12px;border-radius:6px;font-size:0.85rem;'
+        f'<a href="{_esc(_safe_href(l.get("url","#")) or "#")}" style="padding:6px 12px;border-radius:6px;font-size:0.85rem;'
         f'text-decoration:none;{"background:" + _esc(accent) + ";color:#fff;" if l.get("active") else "color:#374151;"}">'
         f'{_esc(l.get("label",""))}</a>'
         for l in links
@@ -20802,7 +20830,7 @@ _RENDERERS["nav_bar"] = _render_nav_bar
 
 def _render_nav_link(b: dict) -> str:
     label = _esc(b.get('label', 'Continue →'))
-    url = _esc(b.get('url') or b.get('nav_slug') or '#')
+    url = _esc(_safe_href(b.get('url') or b.get('nav_slug') or '#') or '#')
     icon = _esc(b.get('icon', ''))
     style = b.get('style', 'primary')
     align = b.get('align', 'left')
@@ -20833,7 +20861,7 @@ def _render_onboarding_stepper(b: dict) -> str:
         desc = _esc(s.get('description', ''))
         done = bool(s.get('completed'))
         icon = '✅' if done else str(i + 1)
-        url = s.get('action_url', '')
+        url = _safe_href(s.get('action_url', ''))
         action = (f'<a href="{_esc(url)}" style="margin-top:6px;font-size:0.78rem;color:{_esc(accent)};'
                   f'font-weight:600;text-decoration:none;">Start →</a>') if url and not done else ''
         connector = (f'<div style="width:1px;height:24px;background:#e5e7eb;margin-left:15px;"></div>'
@@ -27774,7 +27802,7 @@ def _render_motion_pill(b: dict) -> str:
     acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'fill', '')
     align = _ff_pick(b.get('align'), _MO_ALIGN, 'start')
     jc = 'flex-end' if align == 'right' else ('center' if align == 'center' else 'flex-start')
-    href = b.get('href').strip() if isinstance(b.get('href'), str) else ''
+    href = _href_is_safe_motion_pill(b.get('href'))
     tag = 'a' if href else 'div'
     return ('<div style="display:flex;justify-content:' + jc + ';width:100%;">'
             + '<' + tag + (' href="' + _cv_esc(href) + '"' if href else '') + ' style="' + ('text-decoration:none;cursor:pointer;pointer-events:auto;' if href else '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
