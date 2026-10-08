@@ -231,3 +231,44 @@ to mxGraph XML (editable in draw.io) or to native PPTX. Three ways to produce th
 First experiment: 10 easy atoms (`bullet_list`, `blockquote`, `stat_card`, `key_value`, `timeline`, `callout`, `table`, `steps`,
 `pros_cons_list`, `before_after`) through the generic converter, compared with the browser render by geometry and by the PPTX
 lint. Charts map better to native PPTX charts than to shapes, so the chart atoms get recipes, not the converter.
+
+## 15. Findings: trying an HTML-to-PPTX converter on real atoms (2026-10-08)
+
+Tested `dom-to-pptx` 2.1.2 (MIT, browser-only DOM walker that places shapes absolutely) on 15 static atoms rendered through the
+JS renderer in the real host stylesheet in headless Chromium, inspecting each PPTX with python-pptx. Structure only: nothing
+was opened in PowerPoint or Slides, so how it looks is unverified. Also read the documentation of the stricter `html2pptx` (the
+pptxgenjs-based converter in the PPTX skill family) and counted how our atoms fare against its rules.
+
+**Measured**
+- **A converter instance hangs if a page is reused.** The first conversion worked and the next 8 all timed out. A fresh page per
+  conversion fixed all 15. No built-in timeout, so wrap every call in one.
+- **15 of 15 converted, mostly to native editable shapes.** Text intact in 12 exactly; one real loss (`table` dropped its caption,
+  two words); two only looked lossy (an arrow or a row of stars split into separate runs).
+- **Card chrome is rasterised.** In 7 of 15, a full-width RGBA picture (for example 1184 px wide) sits behind the text, standing
+  in for the card's border, radius, accent bar or shadow. The text is editable, the card is not: it will not recolour with a
+  theme, it is fixed at one resolution, and it has no alt text unless we mark it decorative.
+- **Text is far too small for a slide.** Body text came out at about 6 to 10 pt. Atoms are designed at web density; the converter
+  expects a 1920x1080 reference. A slide mode must render at slide scale, and the lint needs a font floor.
+- **Font names pass through as CSS.** We got `Google Sans` (exists only in Google's apps), the generic `monospace` as a font name
+  (not a real PPTX font) and `Arial`. A mapping table to the vendored Google Fonts is needed.
+- **HTML tables become native PPTX tables**, which is good.
+- Files are small (about 40 to 70 KB each).
+
+**From the documentation (not tested here)**
+- `dom-to-pptx`: build the HTML at 1920x1080; images and web fonts need CORS; SVG is rasterised unless `svgAsVector` is set;
+  animation and transition utility classes exist; browser only; bundle is about 3.7 MB.
+- Strict `html2pptx`: all text must be inside `p`, `h1`-`h6`, `ul` or `ol` or it silently disappears; no `br`; no gradients (they
+  must be pre-rendered as PNG); no backgrounds, borders or shadows on text elements; web-safe fonts only; minimum 11 pt; content
+  overflow is a blocking error; SVG and icons must be PNG.
+
+**Our atoms against the strict converter.** Of 298 static atoms that contain text, **270 (90%)** have at least one text node
+outside `p`/`h1`-`h6`/`ul`/`ol` (1,277 of 1,416 text nodes), so the strict converter would drop most of their text. It is the
+right tool for HTML we author for slides, not for converting existing atoms. 28 static atoms use CSS gradients and 34 inline SVG.
+
+**What this changes**
+- The generic DOM walker is a usable starting point for the "easy 257" tier, but only behind a wrapper: a fresh browser page per
+  atom, a timeout, slide-scale rendering, a font map, and a python-pptx pass that sets alt text and marks backing pictures
+  decorative, sets reading order, enforces the font floor and repairs known losses (table captions).
+- A slide mode for atoms should simplify their CSS (no shadows or gradients on cards) so more of the card is a native shape, not
+  a picture.
+- Template layouts stay hand-built from XML via python-pptx (sections 2 to 7); the converter does not replace them.
