@@ -336,3 +336,38 @@ atom with the catalogue's JavaScript renderer, and a small **recipe** turns the 
   field, defaulting to "QR code for <url>") so every surface can carry it.
 - The recipe also shows what an atom must offer to be a PPTX source: a render that is **structured** (an SVG path, not a canvas), **deterministic**
   (same input, same output), and **named** (an accessible name). Those three properties are a useful checklist when deciding which atoms get recipes.
+
+## 19. Google Slides: automated verification, and the import route against native creation (2026-10-08)
+
+**Setup that worked, and what did not.** A service account `slides-verifier` in the project, impersonated from the owner's gcloud account (no key file). The
+Slides and Drive APIs had to be enabled. A service account has **no Drive storage**: a plain upload failed with `storageQuotaExceeded` and
+`presentations.create` was refused (403), so every file has to live in a **Shared Drive with the service account as Content manager**. A Content manager
+can trash files but not delete them for good (a permanent delete answers with a misleading 404), so test files go to the drive's trash. IAM changes
+took a minute or two to take effect, and a Drive share took several minutes to become visible to the service account. `verify_slides.py` uploads a PPTX
+with conversion, reads back what Google parsed, fetches a PNG of every slide (Google's own render) and cleans up; `build_native_slides.py` builds the same
+slide with the Slides API from the PPTX's own shapes.
+
+**What the import check showed (CTA slide, Slides target).** Google read every font as Roboto (no substitution), kept the title placeholder, the button's link,
+the QR code's alt text and the speaker notes, and its render matched the local preview (shapes within 1 px, text within about 5 px). The QR code in
+Google's own render decodes to the right URL. So the local preview is trustworthy for layout, and the thumbnails make the check automatic.
+
+**Import against native creation, same slide, compared on the thumbnails and the parsed data:**
+
+| | PPTX uploaded and converted | Native, Slides API `batchUpdate` |
+|---|---|---|
+| looks | the reference | near-identical (mean pixel difference 6/255, mostly the 0.75 rescale) |
+| slide size | 13.333 x 7.5 in kept | fixed 10 x 5.625 in (the API cannot change it), so everything is scaled 0.75, fonts included |
+| text insets | kept as set (0) | cannot be set; unfilled text boxes are grown and shifted to compensate |
+| the QR code | one native vector shape | no custom geometry in the API: 166 small rectangles in a group (179 page elements in all, against 11) |
+| alt text on the QR code | on the shape | refused on a group ("not allowed on group"), so it sits on an extra invisible shape |
+| title placeholder, link, notes, fonts | all kept | all set directly and kept |
+| needs a Shared Drive | yes | yes |
+
+**Verdict: for a deck designed from scratch, the PPTX import is the more capable route.** Native creation produced no visible gain and costs fidelity. Its
+real strengths are different jobs, not shown by this slide: editing a deck that already exists (`replaceAllText`, adding slides in place), filling a
+real company template from Drive (its masters and layouts are the brand), data-bound content, and no file round-trip. So: PPTX for generation, native API
+for template filling and in-place edits. Both read the same intermediate representation (the PPTX), which is the argument for keeping it as the IR.
+
+**Two harness fixes found on the way (private a11y harness):** animated atoms flipped between pass and fail because axe sampled contrast mid-animation;
+the audit now freezes animations at their end state. And `schema_qr` gained an accessible name (`aria-label="QR code for <url>"`), found because the PPTX
+slide needed alt text for the same shape.
