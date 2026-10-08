@@ -43,9 +43,9 @@ reduced-motion rule in their own markup, and 15 canvas atoms have no text altern
 
 | | atoms with an axe violation | failing contrast nodes |
 |---|---|---|
-| light page, before the host-token and muted fixes | 172 | |
+| light page, before the host-token and muted fixes | 172 | not recorded |
 | light page, now (baseline.json) | 137 | 265 |
-| dark page, before | 245 | |
+| dark page, before | 245 | not recorded |
 | dark page, now (baseline-dark.json) | 196 | 373 |
 
 1. **Default accent.** `#6366f1` is 4.46:1 on white, a hair under the 4.5:1 AA threshold: white text on it and indigo
