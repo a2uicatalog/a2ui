@@ -14,6 +14,7 @@ XML:  <deck title="..." target="google-slides">
         <slide layout="title"><eyebrow>..</eyebrow><headline>..</headline><sub>..</sub><notes>..</notes></slide>
         <slide layout="bullets"><heading>..</heading><item>..</item>...</slide>
         <slide layout="stats"><kicker>..</kicker><stat value="540+" label="atoms"/>...</slide>
+        <slide layout="media"><heading>..</heading><media src="loop.gif"/><alt>..</alt><caption>..</caption></slide>
         <slide layout="quote"><quote>..</quote><name>..</name><role>..</role></slide>
         <slide layout="cta"><headline>..</headline><button href="https://..">Label</button><footer>..</footer></slide>
       </deck>
@@ -41,6 +42,8 @@ LAYOUTS = {
                                           'items': dict(kind='list', required=True, min=1, max=6, item_max=110)}),
     'stats':   dict(film='stats', fields={'kicker': dict(kind='text', max=40),
                                           'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40)}),
+    'media':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'media': dict(kind='file', required=True, exts=('.gif', '.png', '.jpg', '.jpeg'), max_mb=8),
+                                       'alt': dict(kind='text', required=True, max=250), 'caption': dict(kind='text', max=90)}),
     'quote':   dict(film='quote', fields={'quote': dict(kind='text', required=True, max=240), 'name': dict(kind='text', max=40), 'role': dict(kind='text', max=60)}),
     'cta':     dict(film='cta', fields={'headline': dict(kind='text', required=True, max=70), 'b1': dict(kind='text', required=True, max=40),
                                         'l1': dict(kind='url'), 'b2': dict(kind='text', max=40), 'l2': dict(kind='url'), 'foot': dict(kind='text', max=60)}),
@@ -48,6 +51,7 @@ LAYOUTS = {
 ALIASES = {'steps': 'bullets', 'big-stat': 'stats', 'numbers': 'stats'}
 FILM_ONLY = {'chart', 'chat', 'word', 'morph', 'device', 'captions', 'image'}
 NOTES_MAX = 1200
+BASE = Path('.')                                                      # media paths in a deck resolve against this (the deck file's folder when built from a file)
 
 def schema():
     return {'slide': dict(width_in=W_IN, height_in=H_IN), 'targets': sorted(k.TARGETS), 'aliases': ALIASES, 'film_only': sorted(FILM_ONLY),
@@ -83,6 +87,7 @@ def parse_xml(src, errs):
             elif ch.tag == 'stat': f.setdefault('stats', []).append((oneline(ch.get('value')), oneline(ch.get('label'))))
             elif ch.tag == 'button':
                 n = 'b2' if 'b1' in f else 'b1'; f[n] = oneline(ch.text); f['l' + n[1]] = oneline(ch.get('href'))
+            elif ch.tag == 'media': f['media'] = oneline(ch.get('src'))
             elif ch.tag == 'footer': f['foot'] = oneline(ch.text)
             else: f[ch.tag] = oneline(ch.text)
         deck['scenes'].append(dict(layout=sl.get('layout', ''), f=f, notes=notes, at=i))
@@ -131,6 +136,13 @@ def validate(deck, errs, warns, skip_film_only=False):
                 if not v:
                     if d.get('required'): err(errs, at, 'required', f'slide {at} ({lay}): {name} is required', field=name)
                 elif len(plain(v)) > d['max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name} is {len(plain(v))} characters, the limit is {d["max"]}', field=name)
+            elif d['kind'] == 'file':
+                if not v: err(errs, at, 'required', f'slide {at} ({lay}): {name} is required', field=name)
+                else:
+                    p = (BASE / v) if not Path(v).is_absolute() else Path(v)
+                    if not p.is_file(): err(errs, at, 'file', f'slide {at} ({lay}): {name} file not found: {v}', field=name)
+                    elif p.suffix.lower() not in d['exts']: err(errs, at, 'file', f'slide {at} ({lay}): {name} must be one of {list(d["exts"])}, got {p.suffix}', field=name)
+                    elif p.stat().st_size > d['max_mb'] * 1_000_000: err(errs, at, 'too-long', f'slide {at} ({lay}): {name} is {p.stat().st_size / 1e6:.1f} MB, the limit is {d["max_mb"]} MB', field=name)
             elif d['kind'] == 'url':
                 if v and not re.match(r'^https?://[^\s]+$', v): err(errs, at, 'url', f'slide {at} ({lay}): {name} must be an http(s) URL, got {v!r}', field=name)
             elif d['kind'] == 'list':
@@ -314,9 +326,26 @@ def lay_quote(sl, f, at, errs):
         lk = sl.tb(W_IN - MX - 4.2, H_IN - 0.55 - 0.45, 4.2, 0.45, 'Live link'); sl.text(lk, [('Open this quote live', None)], k.FLOOR_PT, True, k.BRAND['accent2'], PP_ALIGN.RIGHT)
         lk.click_action.hyperlink.address = f['_live']                   # a shape link: a text-run link is recoloured blue and underlined by Slides
 
-LAYOUT_FN = {'title': lay_title, 'bullets': lay_bullets, 'stats': lay_stats, 'quote': lay_quote, 'cta': lay_cta}
+def lay_media(sl, f, at, errs):
+    from PIL import Image as PI
+    hr = heading_fit(f['heading'], (40, 36, 32), CONTENT_W, 2, at, 'heading', errs)
+    if not hr: return
+    hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15
+    p = (BASE / f['media']) if not Path(f['media']).is_absolute() else Path(f['media'])
+    with PI.open(p) as im: iw, ih = im.size; frames = getattr(im, 'n_frames', 1)
+    cap = f.get('caption'); ch = 0.5 if cap else 0
+    y_img = top + hh + 0.3; avail_h = H_IN - 0.55 - ch - y_img; w = min(CONTENT_W, avail_h * iw / ih); h = w * ih / iw
+    sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
+    pic = sl.s.shapes.add_picture(str(p), Inches(MX + (CONTENT_W - w) / 2), Inches(y_img), Inches(w), Inches(h)); pic.name = 'Media' + (' (animated GIF)' if frames > 1 else '')
+    pic._element.nvPicPr.cNvPr.set('descr', f['alt'])
+    if cap: sl.text(sl.tb(MX, y_img + h + 0.1, CONTENT_W, ch, 'Caption'), [(plain(cap), None)], k.FLOOR_PT, False, k.BRAND['muted'], PP_ALIGN.CENTER)
+    sl.media = dict(file=str(p), frames=frames, px=[iw, ih], note='animated: thumbnails and previews show the first frame only' if frames > 1 else None)
 
+LAYOUT_FN = {'title': lay_title, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
+
+MEDIA = {}
 def build(deck, out, errs):
+    MEDIA.clear()
     k.set_target(deck['target'] or 'any')
     prs = Presentation(); prs.slide_width, prs.slide_height = Inches(W_IN), Inches(H_IN); fits = []
     for sc in deck['scenes']:
@@ -325,6 +354,7 @@ def build(deck, out, errs):
         if len(errs) > n0: continue
         note = sc['notes'] + (f" Live version: {sc['f']['_live']}" if sc['f'].get('_live') else '')
         if note.strip(): sl.s.notes_slide.notes_text_frame.text = note.strip()
+        if getattr(sl, 'media', None): MEDIA[sc['at']] = sl.media
         fits += [(f'slide {sc["at"]}: {n}', *rest) for n, *rest in sl.fits]
     if errs: return None
     cp = prs.core_properties; cp.title = deck['title'] or 'Untitled deck'; cp.keywords = 'target=' + k.TARGET; cp.author = 'A2UI Catalog'; cp.language = 'en-US'
@@ -346,6 +376,7 @@ def lint(path, fits, deck):
                     for r in p.runs:
                         if r.font.size and r.font.size.pt < k.FLOOR_PT: probs.append(f'slide {i}: {sh.name} is {r.font.size.pt} pt, under the {k.FLOOR_PT} pt floor')
             if sh.has_text_frame and any(r.hyperlink.address for p in sh.text_frame.paragraphs for r in p.runs): probs.append(f'slide {i}: {sh.name} has a text-run link; Slides draws those in its default blue, which fails contrast on a dark slide (use a shape link)')
+            if sh.shape_type == 13 and not sh._element.nvPicPr.cNvPr.get('descr'): probs.append(f'slide {i}: {sh.name} is a picture without alt text')
             if sh.shape_type == 5 and not sh._element.nvSpPr.cNvPr.get('descr'): probs.append(f'slide {i}: {sh.name} is a vector shape without alt text')
         for a_i, a in enumerate(shapes):
             for b in shapes[a_i + 1:]:
@@ -367,6 +398,8 @@ def lint(path, fits, deck):
 
 def run(src, out=None, target=None, skip_film_only=False, preview_dir=None, link_payloads=False):
     """The one entry point (the CLI and the MCP wrapper both call it). Returns a report dict; the PPTX is written to `out` when there are no errors."""
+    global BASE
+    if not src.lstrip().startswith(('<', '{', '[')) and Path(src).is_file(): BASE = Path(src).resolve().parent
     errs, warns = [], []; deck = load(src, errs); deck = validate(deck, errs, warns, skip_film_only)
     rep = dict(ok=False, errors=errs, warnings=warns)
     if deck is None: return rep
@@ -384,7 +417,7 @@ def run(src, out=None, target=None, skip_film_only=False, preview_dir=None, link
     if errs or not out: rep['ok'] = not errs; return rep
     fits = build(deck, out, errs)
     if errs: return rep
-    rep['lint'] = lint(out, fits, deck); rep['ok'] = not rep['lint']; rep['file'] = str(out)
+    rep['lint'] = lint(out, fits, deck); rep['media'] = dict(MEDIA); rep['ok'] = not rep['lint']; rep['file'] = str(out)
     import hashlib; rep['sha256'] = hashlib.sha256(Path(out).read_bytes()).hexdigest()
     if preview_dir:
         Path(preview_dir).mkdir(parents=True, exist_ok=True)

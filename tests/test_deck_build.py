@@ -47,7 +47,7 @@ def test_xml_entities_are_refused():
     assert errs_of('<!DOCTYPE d [<!ENTITY x "y">]><deck><slide layout="title"><headline>&x;</headline></slide></deck>')[0]['code'] == 'xml'
 
 def test_schema_lists_layouts():
-    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'quote', 'cta'} and 'chart' in s['film_only']
+    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
 
 def test_quote_too_long_and_missing():
     e = errs_of('<deck><slide layout="quote"><quote>' + 'x' * 241 + '</quote></slide></deck>'); assert 'limit is 240' in e[0]['message']
@@ -63,3 +63,16 @@ def test_quote_payload_twin_and_live_link(tmp_path):
     sh = [s for s in Presentation(str(out)).slides[0].shapes if s.name == 'Live link'][0]
     assert sh.click_action.hyperlink.address == r['live_urls'][1]
     assert db.run(x, str(tmp_path / 'p.pptx'))['payloads'] and 'live_urls' not in db.run(x)
+
+def test_media_layout_animated_gif(tmp_path):
+    from PIL import Image
+    fr = [Image.new('RGB', (160, 90), (i * 40, 30, 60)) for i in range(4)]
+    fr[0].save(tmp_path / 'a.gif', save_all=True, append_images=fr[1:], duration=100, loop=0)
+    x = tmp_path / 'd.xml'
+    x.write_text('<deck target="google-slides"><slide layout="media"><heading>Loop</heading><media src="a.gif"/><alt>Four coloured frames</alt><notes>n</notes></slide></deck>')
+    r = db.run(str(x), str(tmp_path / 'o.pptx'))                                   # media paths resolve against the deck file's folder
+    assert r['ok'] and r['lint'] == [] and r['media'][1]['frames'] == 4
+    noalt = tmp_path / 'n.xml'; noalt.write_text(x.read_text().replace('<alt>Four coloured frames</alt>', ''))
+    assert 'alt is required' in db.run(str(noalt))['errors'][0]['message']
+    e = db.run('<deck><slide layout="media"><heading>h</heading><media src="nope.gif"/><alt>a</alt></slide></deck>')['errors']
+    assert 'file not found: nope.gif' in e[0]['message']
