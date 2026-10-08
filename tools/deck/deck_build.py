@@ -156,6 +156,23 @@ def validate(deck, errs, warns, skip_film_only=False):
     deck['scenes'] = keep
     return deck
 
+# ---- the same scene as an A2UI payload (the live twin of a slide) ----
+def payload_for(sc):
+    """The catalogue payload that says the same thing as a slide, or None for layouts with no single-atom equivalent. A quote slide is the `quote` atom."""
+    f = sc['f']
+    if sc['layout'] == 'quote':
+        who = ', '.join(x for x in (plain(f.get('name', '')), plain(f.get('role', ''))) if x)
+        return {'blocks': [dict(type='quote', text=plain(f['quote']), **({'attribution': who} if who else {}))]}
+    return None
+
+def live_url(payload):
+    """A preview URL for a payload, made by the repo's own make_url (never hand-built). It points at the public renderer, so it is opt-in."""
+    sys.path.insert(0, str(k.REPO / 'scripts'))
+    import make_url
+    url, _, _ = make_url.make_url(payload, 'gem')
+    if make_url.followed_length(url) > make_url.URL_LIMIT: return None
+    return url
+
 # ---- building ----
 class Slide:
     """One slide under construction. Text sizes come from fit_text with the target's safety margin, so a substituted font cannot change the line count."""
@@ -293,6 +310,9 @@ def lay_quote(sl, f, at, errs):
     t = sl.title('Quote', x, y, qw, qh); sl.text(t, sl.accent_runs(f['quote'], k.BRAND['text']), qp, True, k.BRAND['text']); y += qh + g
     if f.get('name'): sl.text(sl.tb(x, y, 8, 0.5, 'Name'), [(plain(f['name']), None)], 26, True, k.BRAND['accent2']); y += 0.5
     if f.get('role'): sl.text(sl.tb(x, y, 8, 0.45, 'Role'), [(plain(f['role']), None)], k.FLOOR_PT + 2, False, k.BRAND['muted'])
+    if f.get('_live'):                                                       # the same quote as a live A2UI surface
+        lk = sl.tb(W_IN - MX - 4.2, H_IN - 0.55 - 0.45, 4.2, 0.45, 'Live link'); sl.text(lk, [('Open this quote live', None)], k.FLOOR_PT, True, k.BRAND['accent2'], PP_ALIGN.RIGHT)
+        lk.click_action.hyperlink.address = f['_live']                   # a shape link: a text-run link is recoloured blue and underlined by Slides
 
 LAYOUT_FN = {'title': lay_title, 'bullets': lay_bullets, 'stats': lay_stats, 'quote': lay_quote, 'cta': lay_cta}
 
@@ -303,7 +323,8 @@ def build(deck, out, errs):
         sl = Slide(prs, None); n0 = len(errs)
         LAYOUT_FN[sc['layout']](sl, sc['f'], sc['at'], errs)
         if len(errs) > n0: continue
-        if sc['notes']: sl.s.notes_slide.notes_text_frame.text = sc['notes']
+        note = sc['notes'] + (f" Live version: {sc['f']['_live']}" if sc['f'].get('_live') else '')
+        if note.strip(): sl.s.notes_slide.notes_text_frame.text = note.strip()
         fits += [(f'slide {sc["at"]}: {n}', *rest) for n, *rest in sl.fits]
     if errs: return None
     cp = prs.core_properties; cp.title = deck['title'] or 'Untitled deck'; cp.keywords = 'target=' + k.TARGET; cp.author = 'A2UI Catalog'; cp.language = 'en-US'
@@ -324,6 +345,7 @@ def lint(path, fits, deck):
                 for p in sh.text_frame.paragraphs:
                     for r in p.runs:
                         if r.font.size and r.font.size.pt < k.FLOOR_PT: probs.append(f'slide {i}: {sh.name} is {r.font.size.pt} pt, under the {k.FLOOR_PT} pt floor')
+            if sh.has_text_frame and any(r.hyperlink.address for p in sh.text_frame.paragraphs for r in p.runs): probs.append(f'slide {i}: {sh.name} has a text-run link; Slides draws those in its default blue, which fails contrast on a dark slide (use a shape link)')
             if sh.shape_type == 5 and not sh._element.nvSpPr.cNvPr.get('descr'): probs.append(f'slide {i}: {sh.name} is a vector shape without alt text')
         for a_i, a in enumerate(shapes):
             for b in shapes[a_i + 1:]:
@@ -343,7 +365,7 @@ def lint(path, fits, deck):
     probs += [f'{n}: text needs {need} pt of height, box has {have}' for n, _, need, have, ok in fits if not ok]
     return sorted(set(probs))
 
-def run(src, out=None, target=None, skip_film_only=False, preview_dir=None):
+def run(src, out=None, target=None, skip_film_only=False, preview_dir=None, link_payloads=False):
     """The one entry point (the CLI and the MCP wrapper both call it). Returns a report dict; the PPTX is written to `out` when there are no errors."""
     errs, warns = [], []; deck = load(src, errs); deck = validate(deck, errs, warns, skip_film_only)
     rep = dict(ok=False, errors=errs, warnings=warns)
@@ -351,6 +373,14 @@ def run(src, out=None, target=None, skip_film_only=False, preview_dir=None):
     if target: deck['target'] = target
     if not deck['target']: warns.append(dict(slide=None, code='target', message="no target given; using 'any' (the safe layout with a 12% fallback-font margin). Say google-slides for the tighter layout"))
     rep['target'] = deck['target'] or 'any'; rep['slides'] = len(deck['scenes'])
+    rep['payloads'] = {} if errs else {sc['at']: p for sc in deck['scenes'] if (p := payload_for(sc))}
+    if link_payloads and not errs:
+        for sc in deck['scenes']:
+            p = rep['payloads'].get(sc['at'])
+            if not p: continue
+            u = live_url(p)
+            if u: sc['f']['_live'] = u; rep.setdefault('live_urls', {})[sc['at']] = u
+            else: warns.append(dict(slide=sc['at'], code='live-too-long', message=f"slide {sc['at']}: the payload is too long for a URL; no live link added"))
     if errs or not out: rep['ok'] = not errs; return rep
     fits = build(deck, out, errs)
     if errs: return rep
@@ -365,10 +395,10 @@ def run(src, out=None, target=None, skip_film_only=False, preview_dir=None):
 def main(argv):
     ap = argparse.ArgumentParser(prog='deck_build', description=__doc__.split('\n')[0]); sub = ap.add_subparsers(dest='cmd', required=True)
     sub.add_parser('schema'); v = sub.add_parser('validate'); v.add_argument('input'); v.add_argument('--skip-film-only', action='store_true')
-    b = sub.add_parser('build'); b.add_argument('input'); b.add_argument('-o', '--out', required=True); b.add_argument('--target'); b.add_argument('--report'); b.add_argument('--preview'); b.add_argument('--skip-film-only', action='store_true')
+    b = sub.add_parser('build'); b.add_argument('input'); b.add_argument('-o', '--out', required=True); b.add_argument('--target'); b.add_argument('--report'); b.add_argument('--preview'); b.add_argument('--skip-film-only', action='store_true'); b.add_argument('--link-payloads', action='store_true', help='add an Open-live link to slides that have an A2UI payload twin (uses the public renderer)')
     a = ap.parse_args(argv)
     if a.cmd == 'schema': print(json.dumps(schema(), indent=1)); return 0
-    rep = run(a.input, getattr(a, 'out', None), getattr(a, 'target', None), a.skip_film_only, getattr(a, 'preview', None))
+    rep = run(a.input, getattr(a, 'out', None), getattr(a, 'target', None), a.skip_film_only, getattr(a, 'preview', None), getattr(a, 'link_payloads', False))
     if getattr(a, 'report', None): Path(a.report).write_text(json.dumps(rep, indent=1))
     for e in rep['errors']: print('ERROR  ', e['message'])
     for w in rep['warnings']: print('warning', w['message'])

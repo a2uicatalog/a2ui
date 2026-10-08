@@ -52,3 +52,14 @@ def test_schema_lists_layouts():
 def test_quote_too_long_and_missing():
     e = errs_of('<deck><slide layout="quote"><quote>' + 'x' * 241 + '</quote></slide></deck>'); assert 'limit is 240' in e[0]['message']
     assert 'quote is required' in errs_of('<deck><slide layout="quote"><name>n</name></slide></deck>')[0]['message']
+
+def test_quote_payload_twin_and_live_link(tmp_path):
+    x = '<deck target="google-slides"><slide layout="quote"><quote>Hi *there*</quote><name>Ada</name><role>R</role><notes>n</notes></slide></deck>'
+    r = db.run(x)
+    assert r['payloads'][1] == {'blocks': [{'type': 'quote', 'text': 'Hi there', 'attribution': 'Ada, R'}]}
+    out = tmp_path / 'q.pptx'; r = db.run(x, str(out), link_payloads=True)
+    assert r['ok'] and r['lint'] == [] and r['live_urls'][1].startswith('https://')
+    from pptx import Presentation
+    sh = [s for s in Presentation(str(out)).slides[0].shapes if s.name == 'Live link'][0]
+    assert sh.click_action.hyperlink.address == r['live_urls'][1]
+    assert db.run(x, str(tmp_path / 'p.pptx'))['payloads'] and 'live_urls' not in db.run(x)

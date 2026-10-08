@@ -387,3 +387,9 @@ slide needed alt text for the same shape.
 - Errors name the slide and field, e.g. `slide 1 (bullets): items has 7 entries, the limit is 6`. Text that cannot fit at the target's safety margin is an error, not a bad slide.
 - No target given: `any` plus a warning telling the caller to say `google-slides` for the tight layout.
 - `tools/deck/deck_mcp.py` is a stdio MCP wrapper (`deck_schema`, `deck_validate`, `deck_build`) over the same function. Tests: `tests/test_deck_build.py`.
+
+### 20.1 Quote layout, payload twin, and GIFs (2026-10-08)
+
+- `quote` layout (film fields `quote`, `name`, `role`). A quote slide has a payload twin: the catalogue's `quote` atom (`text`, `attribution`), returned in the report as `payloads`. `--link-payloads` adds an "Open this quote live" link (shape link, plus the URL in the speaker notes), made by `scripts/make_url.py`. It points at the public renderer, so it is opt-in.
+- Slides recolours text-run hyperlinks to its default blue with an underline (fails contrast on the dark theme); links must be shape links. Lint now flags run links.
+- Animated GIFs survive PowerPoint -> Google Slides conversion (tested: 8 frames in, 8 frames out, still a GIF). Slide thumbnails show the first frame only. Not yet a layout: a `media` field is the next step.

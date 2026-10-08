@@ -18,7 +18,7 @@ TOOLS = [
     dict(name='deck_build', description='Build a PPTX from a deck. Same input, same bytes. Set target to google-slides for the tight layout; omitted means the safe "any" layout.',
          inputSchema=dict(type='object', required=['deck'], properties=dict(deck=INPUT, target=dict(type='string', enum=sorted(db.k.TARGETS)), skip_film_only=dict(type='boolean'),
                                                                         out_dir=dict(type='string', description='where to write deck.pptx and slide previews; default a temp dir'),
-                                                                        return_base64=dict(type='boolean')))),
+                                                                        return_base64=dict(type='boolean'), link_payloads=dict(type='boolean', description='add an Open-live link on slides that have an A2UI payload twin (public renderer; opt-in)')))),
 ]
 
 def call(name, a):
@@ -26,7 +26,7 @@ def call(name, a):
     if name == 'deck_validate': return db.run(a['deck'], skip_film_only=bool(a.get('skip_film_only')))
     if name == 'deck_build':
         d = Path(a.get('out_dir') or tempfile.mkdtemp(prefix='deck-')); d.mkdir(parents=True, exist_ok=True)
-        rep = db.run(a['deck'], str(d / 'deck.pptx'), a.get('target'), bool(a.get('skip_film_only')), str(d / 'preview'))
+        rep = db.run(a['deck'], str(d / 'deck.pptx'), a.get('target'), bool(a.get('skip_film_only')), str(d / 'preview'), bool(a.get('link_payloads')))
         if a.get('return_base64') and 'file' in rep: rep['base64'] = base64.b64encode(Path(rep['file']).read_bytes()).decode()
         return rep
     raise KeyError(name)
