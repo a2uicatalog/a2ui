@@ -64,6 +64,13 @@ except Exception as e:
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
 _EXAMPLE_BLOCKS = {
+    # The Python renderer used to draw a hardcoded "Command 1 / Command 2" for this atom whatever the payload said; it now
+    # reads the payload, so the page needs real commands (the documented `text` and `shortcut`, plus `group`).
+    "command_palette": {"type": "command_palette",
+                        "commands": [{"text": "New post", "shortcut": "⌘N", "group": "Create"},
+                                     {"text": "New video", "group": "Create"},
+                                     {"text": "Templates", "group": "Navigate"},
+                                     {"text": "My projects", "shortcut": "⌘P", "group": "Navigate"}]},
     # `items` is a structured array the generic generator can't infer from its
     # prose field description; without this the GAS renderer's items.some() throws.
     "status_dashboard": {"type": "status_dashboard", "title": "System Status",

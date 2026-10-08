@@ -4154,7 +4154,48 @@ def _render_uptime_timeline(b: dict) -> str:
             f'</div>')
 
 def _render_command_palette(b: dict) -> str:
-    return '<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#1f2937;color:#e5e7eb;"><div style="font-size:0.75rem;margin-bottom:6px;">⌘K to open</div><div style="font-size:0.8rem;padding:6px;background:#111827;border-radius:4px;margin-bottom:4px;">▶ Command 1</div><div style="font-size:0.8rem;padding:6px;background:#374151;border-radius:4px;">Command 2</div></div>'
+    """Twin of _RENDERERS['command_palette'] in atoms_charts.gs. This used to be a hardcoded
+    stub that drew "Command 1 / Command 2" for every payload. `text` is the documented command
+    field; `name` is what the GAS renderer first read, so both work. `group` is an alias of
+    `category`. The class CSS lives in the GAS/MCP Apps stylesheet, so it is inlined here."""
+    commands = b.get('commands') if isinstance(b.get('commands'), list) else []
+    placeholder = b.get('placeholder') or 'Search commands…'
+    uid = _wa_uid(b)
+    groups, order = {}, []
+    for cmd in commands:
+        if not isinstance(cmd, dict):
+            continue
+        cat = cmd.get('group') or cmd.get('category') or 'General'
+        if cat not in groups:
+            groups[cat] = []
+            order.append(cat)
+        groups[cat].append(cmd)
+    h = '<div class="a2ui-cmd-palette" id="cp-' + uid + '">'
+    h += '<div class="a2ui-cmd-search-wrap">'
+    h += ('<svg class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">'
+          '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>')
+    h += ('<input class="a2ui-cmd-input" type="text" placeholder="' + _cv_esc(placeholder) + '"'
+          ' oninput="(function(v){var items=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-item\');var cats=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-cat\');'
+          'items.forEach(function(el){var t=el.textContent.toLowerCase();el.style.display=t.indexOf(v.toLowerCase())>-1?\'\':\'none\';});'
+          'cats.forEach(function(cat){var anyVis=false;var next=cat.nextElementSibling;while(next&&!next.classList.contains(\'a2ui-cmd-cat\')){if(next.classList.contains(\'a2ui-cmd-item\')&&next.style.display!==\'none\')anyVis=true;next=next.nextElementSibling;}cat.style.display=anyVis?\'\':\'none\';});'
+          '})(this.value)"/>')
+    h += '</div><div class="a2ui-cmd-list">'
+    for cat in order:
+        h += '<div class="a2ui-cmd-cat">' + _cv_esc(cat) + '</div>'
+        for cmd in groups[cat]:
+            icon = cmd.get('icon')
+            glyph = ''.join(list(str(icon).strip())[:4]) if icon not in (None, '') else ''
+            h += '<div class="a2ui-cmd-item"' + (' data-id="' + _cv_esc(cmd.get('id')) + '"' if cmd.get('id') else '') + '>'
+            if glyph:
+                h += '<span aria-hidden="true">' + _cv_esc(glyph) + '</span>'
+            h += '<span class="a2ui-cmd-name">' + _cv_esc(cmd.get('text') or cmd.get('name') or '') + '</span>'
+            if cmd.get('description'):
+                h += '<span class="a2ui-cmd-desc">' + _cv_esc(cmd['description']) + '</span>'
+            if cmd.get('shortcut'):
+                h += '<kbd class="a2ui-cmd-shortcut">' + _cv_esc(cmd['shortcut']) + '</kbd>'
+            h += '</div>'
+    h += '</div></div>'
+    return '<style>.a2ui-cmd-palette{border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.07);max-width:560px}.a2ui-cmd-search-wrap{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #f1f5f9}.a2ui-cmd-search-icon{flex-shrink:0}.a2ui-cmd-input{flex:1;border:none;outline:none;font-size:14px;color:#1e293b;background:transparent;font-family:inherit}.a2ui-cmd-list{max-height:320px;overflow-y:auto}.a2ui-cmd-cat{padding:6px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;background:#f8fafc;border-bottom:1px solid #f1f5f9}.a2ui-cmd-item{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid #f8fafc;cursor:default}.a2ui-cmd-item:hover{background:#f0f9ff}.a2ui-cmd-name{font-size:13px;font-weight:500;color:#1e293b;flex-shrink:0}.a2ui-cmd-desc{font-size:12px;color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a2ui-cmd-shortcut{font-size:11px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:4px;padding:1px 5px;font-family:monospace;flex-shrink:0}</style>' + h
 
 def _render_search_result_card(b: dict) -> str:
     # This never read `b` at all -- every render showed the same hardcoded placeholder

@@ -17093,7 +17093,8 @@ _RENDERERS['command_palette'] = function(b) {
   var groups = {};
   var order  = [];
   commands.forEach(function(cmd) {
-    var cat = cmd.category || 'General';
+    if (!cmd || typeof cmd !== 'object') return;
+    var cat = cmd.group || cmd.category || 'General';
     if (!groups[cat]) { groups[cat] = []; order.push(cat); }
     groups[cat].push(cmd);
   });
@@ -17112,8 +17113,11 @@ _RENDERERS['command_palette'] = function(b) {
   order.forEach(function(cat) {
     html += '<div class="a2ui-cmd-cat">' + _esc(cat) + '</div>';
     groups[cat].forEach(function(cmd) {
-      html += '<div class="a2ui-cmd-item">';
-      html += '<span class="a2ui-cmd-name">' + _esc(cmd.name || '') + '</span>';
+      // `text` is the documented field (schema: {text, shortcut}); `name` is what this renderer read first, so both work.
+      var glyph = Array.from(String(cmd.icon === undefined || cmd.icon === null ? '' : cmd.icon).trim()).slice(0, 4).join('');
+      html += '<div class="a2ui-cmd-item"' + (cmd.id ? ' data-id="' + _esc(cmd.id) + '"' : '') + '>';
+      if (glyph) html += '<span aria-hidden="true">' + _esc(glyph) + '</span>';
+      html += '<span class="a2ui-cmd-name">' + _esc(cmd.text || cmd.name || '') + '</span>';
       if (cmd.description) html += '<span class="a2ui-cmd-desc">' + _esc(cmd.description) + '</span>';
       if (cmd.shortcut) html += '<kbd class="a2ui-cmd-shortcut">' + _esc(cmd.shortcut) + '</kbd>';
       html += '</div>';
