@@ -26593,14 +26593,14 @@ _MO_SPRING = {
 }
 _MO_FX = {
     'fade': {'kf': 'from{opacity:0}', 'e': 'expo-out', 'd': 560},
-    'rise': {'kf': 'from{opacity:0;transform:translateY(24px)}', 'e': 'expo-out', 'd': 560},
-    'drop': {'kf': 'from{opacity:0;transform:translateY(-24px)}', 'e': 'expo-out', 'd': 560},
-    'slide-left': {'kf': 'from{opacity:0;transform:translateX(-32px)}', 'e': 'expo-out', 'd': 560},
-    'slide-right': {'kf': 'from{opacity:0;transform:translateX(32px)}', 'e': 'expo-out', 'd': 560},
-    'scale': {'kf': 'from{opacity:0;transform:scale(0.92)}', 'e': 'quint-out', 'd': 560},
-    'blur': {'kf': 'from{opacity:0;filter:blur(12px);transform:translateY(8px)}', 'e': 'expo-out', 'd': 560},
+    'rise': {'kf': 'from{opacity:0;transform:translateY(calc(24px * var(--mo-k,1)))}', 'e': 'expo-out', 'd': 560},
+    'drop': {'kf': 'from{opacity:0;transform:translateY(calc(-24px * var(--mo-k,1)))}', 'e': 'expo-out', 'd': 560},
+    'slide-left': {'kf': 'from{opacity:0;transform:translateX(calc(-32px * var(--mo-k,1)))}', 'e': 'expo-out', 'd': 560},
+    'slide-right': {'kf': 'from{opacity:0;transform:translateX(calc(32px * var(--mo-k,1)))}', 'e': 'expo-out', 'd': 560},
+    'scale': {'kf': 'from{opacity:0;transform:scale(calc(1 - 0.08 * var(--mo-k,1)))}', 'e': 'quint-out', 'd': 560},
+    'blur': {'kf': 'from{opacity:0;filter:blur(calc(12px * var(--mo-k,1)));transform:translateY(calc(8px * var(--mo-k,1)))}', 'e': 'expo-out', 'd': 560},
     'wipe': {'kf': 'from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}', 'e': 'quart-in-out', 'd': 720},
-    'pop': {'kf': 'from{opacity:0;transform:scale(0.6)}', 'e': 'overshoot', 'd': 480},
+    'pop': {'kf': 'from{opacity:0;transform:scale(calc(1 - 0.4 * var(--mo-k,1)))}', 'e': 'overshoot', 'd': 480},
 }
 _MO_FX_ORDER = ['fade', 'rise', 'drop', 'slide-left', 'slide-right', 'scale', 'blur', 'wipe', 'pop']
 _MO_SANS = 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif'
@@ -26661,14 +26661,20 @@ def _mo_enter_spec(e):
         'ease': _mo_ease_css(e.get('ease'), fx['e']),
         'dur': _mo_dur(e.get('duration'), fx['d']),
         'delay': _ff_int(e.get('delay'), 0, 0, 20000),
+        'int': _ff_num(e.get('intensity'), 1, 0, 2, 2),
         'view': e.get('on') == 'view',
     }
+
+
+def _mo_k(int_):
+    # twin of _moK in atoms_motion.gs: the element's own intensity times the page-wide intensity_scale
+    return '--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * ' + str(int_) + ');'
 
 
 def _mo_enter_wrap(s, html, extra_delay=0, seed=None):
     uid = _wa_uid(seed if seed is not None else s)[:6] if s['view'] else ''
     return ('<style>' + s['kf'] + '@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style>'
-            + '<div class="mo-x"' + (' id="mo-' + uid + '"' if uid else '') + ' style="animation:moe-' + s['name'] + ' ' + str(s['dur']) + 'ms ' + s['ease'] + ' ' + str(s['delay'] + (extra_delay or 0)) + 'ms both;">' + html + '</div>'
+            + '<div class="mo-x"' + (' id="mo-' + uid + '"' if uid else '') + ' style="animation:moe-' + s['name'] + ' calc(' + str(s['dur']) + 'ms * var(--a2ui-motion-duration-scale,1)) ' + s['ease'] + ' calc(' + str(s['delay']) + 'ms + ' + str(extra_delay or 0) + 'ms * var(--a2ui-motion-stagger-scale,1)) both;' + _mo_k(s['int']) + '">' + html + '</div>'
             + ('<script>' + _MO_VIEW_JS.replace('%%UID%%', uid) + '</script>' if uid else ''))
 
 
@@ -26847,7 +26853,7 @@ def _mo_child(blk):
 
 def _render_motion_group(b: dict) -> str:
     blocks = b.get('blocks') if isinstance(b.get('blocks'), list) else []
-    s = _mo_enter_spec({'effect': b.get('effect'), 'ease': b.get('ease'), 'duration': b.get('duration'), 'delay': b.get('delay'), 'on': b.get('on')})
+    s = _mo_enter_spec({'effect': b.get('effect'), 'ease': b.get('ease'), 'duration': b.get('duration'), 'delay': b.get('delay'), 'intensity': b.get('intensity'), 'on': b.get('on')})
     stagger = _ff_int(b.get('stagger'), 80, 0, 1000)
     n = min(len(blocks), 40)
     out = [_mo_enter_wrap(s, _mo_child(blocks[i]), i * stagger, [b.get('id'), i]) for i in range(n)]

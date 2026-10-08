@@ -87,3 +87,31 @@ needed for "loading -> loaded", "closed -> open" (when the open state is a wired
 
 - Decided: exit motion goes ahead, with granular per-element control.
 - Should `menu` actions (point 3) wait for a concrete wired use case, or be built next?
+
+## 8. Global motion control (built 2026-10-08)
+
+One `palette` block sets the feel of every motion on a surface; each element can still override.
+
+| Control | Where | Effect |
+|---|---|---|
+| `duration_scale` 0.25-3 | `palette` | Multiplies every duration (`enter`, `motion_group`, wired `exit`, the `menu` panel). 2 = twice as slow. |
+| `stagger_scale` 0-3 | `palette` | Multiplies the gap between staggered items (`motion_group`'s `stagger`). 0 = everything together. |
+| `intensity_scale` 0-2 | `palette` | Multiplies travel distance, scale change and blur radius. 0 = fade only, no movement. |
+| `intensity` 0-2 | `enter`, `exit`, `motion_group` | The element's own amount. Multiplies with `intensity_scale`. |
+| `duration`, `ease`, `delay`, `effect` | `enter`, `exit`, `motion_group` | Per element, as before (tokens or clamped numbers). |
+
+How it is wired: every effect keyframe reads `var(--mo-k,1)`, and each animated element sets
+`--mo-k` to `intensity_scale x its own intensity` right beside its `animation`; durations are
+`calc(Nms * var(--a2ui-motion-duration-scale,1))`; a delay is
+`calc(delay + stagger * var(--a2ui-motion-stagger-scale,1))`. With no `palette` every variable falls
+back to 1, so a surface without one plays exactly what it did before (the markup changed, the
+computed values did not).
+
+Verified in Chromium (`tests/test_motion_scales.py`): `duration_scale: 2` turned 0.4 s into 0.8 s;
+`stagger_scale: 0.5` turned delays 0.1/0.3/0.5 s into 0.1/0.2/0.3 s; `intensity_scale: 0.5` turned a
+24 px rise into 12 px; an element `intensity` of 1.5 under a 0.5 page scale gave 18 px.
+
+Not covered, by design: film-clock atoms (`motion_timeline` and its children) own their own clock
+and ignore these. `fade` and `wipe` have no distance, so `intensity` does not change them.
+`intensity`, `stagger_scale` and the other palette fields are documented here and under `menu`'s
+notes, not in the public `palette` or `motion_group` field lists (the preview boundary).

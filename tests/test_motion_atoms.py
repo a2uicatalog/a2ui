@@ -354,8 +354,10 @@ def test_enter_is_inert_without_enter(core_js):
 def test_enter_wraps_any_atom_and_nested_atoms(core_js):
     blk = {"type": "demo_kpis", "items": [{"label": "a", "value": 1}], "enter": {"effect": "blur", "ease": "quint-out", "duration": "slow", "delay": 120}}
     html = _gas_batch(core_js, [blk])[0]
-    assert "@keyframes moe-blur{from{opacity:0;filter:blur(12px)" in html
-    assert "animation:moe-blur 640ms cubic-bezier(0.22,1,0.36,1) 120ms both" in html
+    assert "@keyframes moe-blur{from{opacity:0;filter:blur(calc(12px * var(--mo-k,1)))" in html
+    assert ("animation:moe-blur calc(640ms * var(--a2ui-motion-duration-scale,1)) cubic-bezier(0.22,1,0.36,1) "
+            "calc(120ms + 0ms * var(--a2ui-motion-stagger-scale,1)) both;"
+            "--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * 1);") in html
     assert _norm(html) == _norm(_py(blk))
     nested = {"type": "demo_page", "blocks": [{"type": "demo_orb", "enter": "pop"}]}
     assert "moe-pop" in _gas_batch(core_js, [nested])[0] and "moe-pop" in _py(nested)
@@ -374,7 +376,7 @@ def test_enter_hostile_values_never_become_markup():
     assert "alert" not in html and "<b>" not in html
     # "9;}" is no longer read leniently as 9: the payload guard drops a duration that is not a plain number, so the default applies.
     # The bad effect/ease fall back to the defaults too. Nothing hostile reaches the CSS.
-    assert re.search(r"animation:moe-rise [0-9]+ms cubic-bezier\(0\.16,1,0\.3,1\) 0ms both", html) and "9;}" not in html
+    assert re.search(r"animation:moe-rise calc\([0-9]+ms \* var\(--a2ui-motion-duration-scale,1\)\) cubic-bezier\(0\.16,1,0\.3,1\) calc\(0ms \+ 0ms", html) and "9;}" not in html
 
 
 # ─── hostile input on the timeline ──────────────────────────────────────────

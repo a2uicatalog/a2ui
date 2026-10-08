@@ -80,14 +80,14 @@ var _MO_SPRING = {
 };
 var _MO_FX = {
   'fade': {kf: 'from{opacity:0}', e: 'expo-out', d: 560},
-  'rise': {kf: 'from{opacity:0;transform:translateY(24px)}', e: 'expo-out', d: 560},
-  'drop': {kf: 'from{opacity:0;transform:translateY(-24px)}', e: 'expo-out', d: 560},
-  'slide-left': {kf: 'from{opacity:0;transform:translateX(-32px)}', e: 'expo-out', d: 560},
-  'slide-right': {kf: 'from{opacity:0;transform:translateX(32px)}', e: 'expo-out', d: 560},
-  'scale': {kf: 'from{opacity:0;transform:scale(0.92)}', e: 'quint-out', d: 560},
-  'blur': {kf: 'from{opacity:0;filter:blur(12px);transform:translateY(8px)}', e: 'expo-out', d: 560},
+  'rise': {kf: 'from{opacity:0;transform:translateY(calc(24px * var(--mo-k,1)))}', e: 'expo-out', d: 560},
+  'drop': {kf: 'from{opacity:0;transform:translateY(calc(-24px * var(--mo-k,1)))}', e: 'expo-out', d: 560},
+  'slide-left': {kf: 'from{opacity:0;transform:translateX(calc(-32px * var(--mo-k,1)))}', e: 'expo-out', d: 560},
+  'slide-right': {kf: 'from{opacity:0;transform:translateX(calc(32px * var(--mo-k,1)))}', e: 'expo-out', d: 560},
+  'scale': {kf: 'from{opacity:0;transform:scale(calc(1 - 0.08 * var(--mo-k,1)))}', e: 'quint-out', d: 560},
+  'blur': {kf: 'from{opacity:0;filter:blur(calc(12px * var(--mo-k,1)));transform:translateY(calc(8px * var(--mo-k,1)))}', e: 'expo-out', d: 560},
   'wipe': {kf: 'from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}', e: 'quart-in-out', d: 720},
-  'pop': {kf: 'from{opacity:0;transform:scale(0.6)}', e: 'overshoot', d: 480}
+  'pop': {kf: 'from{opacity:0;transform:scale(calc(1 - 0.4 * var(--mo-k,1)))}', e: 'overshoot', d: 480}
 };
 var _MO_FX_ORDER = ['fade', 'rise', 'drop', 'slide-left', 'slide-right', 'scale', 'blur', 'wipe', 'pop'];
 
@@ -128,6 +128,7 @@ function _moEnterSpec(e) {
     ease: _moEaseCss(e.ease, fx.e),
     dur: _moDur(e.duration, fx.d),
     delay: _ffInt(e.delay, 0, 0, 20000),
+    int: _ffNum(e.intensity, 1, 0, 2, 2),
     view: e.on === 'view'
   };
 }
@@ -150,7 +151,8 @@ function _moExitSpec(e) {
     kf: '@keyframes moo-' + name + '{' + _moExitKf(fx.kf) + '}',
     ease: _moEaseCss(e.ease, 'accelerate'),
     dur: _moDur(e.duration, _MO_DUR.quick),
-    delay: _ffInt(e.delay, 0, 0, 20000)
+    delay: _ffInt(e.delay, 0, 0, 20000),
+    int: _ffNum(e.intensity, 1, 0, 2, 2)
   };
 }
 var _MO_VIEW_JS =
@@ -158,10 +160,14 @@ var _MO_VIEW_JS =
   'if(!window.IntersectionObserver)return;e.classList.add("mo-arm");' +
   'var o=new IntersectionObserver(function(a){if(a[0].isIntersecting){e.classList.remove("mo-arm");o.disconnect();}},{threshold:0.15});o.observe(e);' +
   '})();';
+// The one place the intensity of a motion is spelled: the element's own `intensity` (0-2) times the page-wide
+// intensity_scale from `palette`. Every effect keyframe reads it as var(--mo-k), so a distance, a scale or a blur
+// radius shrinks to nothing at 0 and doubles at 2. Written beside the animation, never inherited from far away.
+function _moK(int) { return '--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * ' + int + ');'; }
 function _moEnterWrap(s, html, extraDelay) {
   var uid = s.view ? Math.random().toString(36).substr(2, 6) : '';
   return '<style>' + s.kf + '@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style>'
-    + '<div class="mo-x"' + (uid ? ' id="mo-' + uid + '"' : '') + ' style="animation:moe-' + s.name + ' ' + s.dur + 'ms ' + s.ease + ' ' + (s.delay + (extraDelay || 0)) + 'ms both;">' + html + '</div>'
+    + '<div class="mo-x"' + (uid ? ' id="mo-' + uid + '"' : '') + ' style="animation:moe-' + s.name + ' calc(' + s.dur + 'ms * var(--a2ui-motion-duration-scale,1)) ' + s.ease + ' calc(' + s.delay + 'ms + ' + (extraDelay || 0) + 'ms * var(--a2ui-motion-stagger-scale,1)) both;' + _moK(s.int) + '">' + html + '</div>'
     + (uid ? '<script>' + _MO_VIEW_JS.replace(/%%UID%%/g, uid) + '<\/script>' : '');
 }
 function _moEnter(b, html) {
@@ -202,7 +208,7 @@ function _moChild(blk) {
 // ─── motion_group: staggered entrance for a list of blocks ─────────────────
 _RENDERERS['motion_group'] = function(b) {
   var blocks = Array.isArray(b.blocks) ? b.blocks : [];
-  var s = _moEnterSpec({effect: b.effect, ease: b.ease, duration: b.duration, delay: b.delay, on: b.on});
+  var s = _moEnterSpec({effect: b.effect, ease: b.ease, duration: b.duration, delay: b.delay, intensity: b.intensity, on: b.on});
   var stagger = _ffInt(b.stagger, 80, 0, 1000), out = [], n = Math.min(blocks.length, 40);
   for (var i = 0; i < n; i++) out.push(_moEnterWrap(s, _moChild(blocks[i]), i * stagger));
   var note = blocks.length > n ? '<!-- a2ui: motion_group showed ' + n + ' of ' + blocks.length + ' blocks (max 40) -->' : '';

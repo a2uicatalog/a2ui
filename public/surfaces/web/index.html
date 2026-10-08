@@ -3623,7 +3623,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of motion_group"><style>@keyframes moe-rise{from{opacity:0;transform:translateY(24px)}}@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style><div class="mo-x" style="animation:moe-rise 560ms cubic-bezier(0.16,1,0.3,1) 0ms both;"><p>Example content.</p></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of motion_group"><style>@keyframes moe-rise{from{opacity:0;transform:translateY(calc(24px * var(--mo-k,1)))}}@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style><div class="mo-x" style="animation:moe-rise calc(560ms * var(--a2ui-motion-duration-scale,1)) cubic-bezier(0.16,1,0.3,1) calc(0ms + 0ms * var(--a2ui-motion-stagger-scale,1)) both;--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * 1);"><p>Example content.</p></div></div>
 </div>
 </div>
 <div class="surface-atom">

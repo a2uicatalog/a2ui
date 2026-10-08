@@ -27,7 +27,7 @@ ENGINE = ROOT / "apps-script-surface" / "gas-wired-renderer" / "A2UIState.html"
 
 LAYOUT = [
     {"atom": "stat_card", "id": "a", "props": {"label": "A", "value": "1"}, "wire": {"visible": "#s.value"},
-     "exit": {"effect": "rise", "duration": 200, "ease": "standard", "delay": 10}},
+     "exit": {"effect": "rise", "duration": 200, "ease": "standard", "delay": 10, "intensity": 0.5}},
     {"atom": "stat_card", "id": "b", "props": {"label": "B", "value": "2"}, "exit": "rise"},
     {"atom": "stat_card", "id": "c", "props": {"label": "C", "value": "3"}},
     {"atom": "stat_card", "id": "d", "props": {"label": "D", "value": "4"}, "exit": {"effect": "nope", "duration": 99999999, "ease": [9, 9, 9, 9], "delay": -5}},
@@ -65,6 +65,7 @@ def test_exit_is_written_on_the_wrapper_with_granular_values(html):
     assert "--mo-exit-dur:calc(200ms * var(--a2ui-motion-duration-scale,1))" in w
     assert "--mo-exit-ease:cubic-bezier(0.4,0,0.2,1)" in w          # the `standard` token
     assert "--mo-exit-delay:10ms" in w
+    assert "--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * 0.5);" in w     # element intensity x the page-wide scale
 
 
 def test_string_form_uses_the_leave_defaults(html):
@@ -73,6 +74,7 @@ def test_string_form_uses_the_leave_defaults(html):
     assert "calc(240ms *" in w                                       # quick
     assert "--mo-exit-ease:cubic-bezier(0.4,0,1,1)" in w             # accelerate
     assert "--mo-exit-delay:0ms" in w
+    assert "* 1);" in w                                              # intensity defaults to 1
 
 
 def test_no_exit_means_no_attribute_and_no_leave_css_for_that_element(html):
@@ -99,7 +101,7 @@ def test_each_effect_keyframes_and_the_leave_rule_are_emitted_once(html):
     assert html.count("@keyframes moo-rise{") == 1
     assert ".mo-leave[data-mo-exit=rise]{animation:moo-rise var(--mo-exit-dur) var(--mo-exit-ease) var(--mo-exit-delay) both}" in html
     assert "prefers-reduced-motion:reduce){.mo-leave{animation:none!important}" in html
-    assert "@keyframes moo-rise{to{opacity:0;transform:translateY(24px)}}" in html     # the enter keyframes, reversed
+    assert "@keyframes moo-rise{to{opacity:0;transform:translateY(calc(24px * var(--mo-k,1)))}}" in html     # the enter keyframes, reversed
 
 
 def test_wipe_exit_reverses_both_halves(core_js):

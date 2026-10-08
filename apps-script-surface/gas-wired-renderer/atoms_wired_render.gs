@@ -147,7 +147,7 @@ function _a2uiRenderWiredLayout(payload) {
       if (exitSpec) {
         exitAttr = ' data-mo-exit="' + exitSpec.name + '" style="' + (stepStyle + csStyle).replace(/"/g, "'") +
           '--mo-exit-dur:calc(' + exitSpec.dur + 'ms * var(--a2ui-motion-duration-scale,1));--mo-exit-ease:' + exitSpec.ease +
-          ';--mo-exit-delay:' + exitSpec.delay + 'ms;"';
+          ';--mo-exit-delay:' + exitSpec.delay + 'ms;' + _moK(exitSpec.int) + '"';
         combinedStyle = '';
         if (exitKfSeen.indexOf(exitSpec.name) < 0) { exitKfSeen.push(exitSpec.name); content = '<style>' + exitSpec.kf + '</style>' + content; }
         exitCssNeeded = true;
