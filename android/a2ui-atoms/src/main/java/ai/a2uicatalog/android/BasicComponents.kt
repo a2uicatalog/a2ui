@@ -246,11 +246,12 @@ object DefaultImage : A2uiBasicCatalogV1.Image {
         LaunchedEffect(url) {
             try {
                 bmp = withContext(Dispatchers.IO) {
-                    URL(url).openStream().use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
+                    if (url.startsWith("data:")) decodeDataUri(url)
+                    else URL(url).openStream().use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
                 }
-                if (bmp == null) err = "could not decode $url"
+                if (bmp == null) err = "could not decode ${shortUrl(url)}"
             } catch (e: Exception) {
-                err = "${e.javaClass.simpleName}: $url"
+                err = "${e.message?.takeIf { e is IllegalArgumentException } ?: e.javaClass.simpleName}: ${shortUrl(url)}"
             }
         }
         val scale = when (fit) {
@@ -263,6 +264,34 @@ object DefaultImage : A2uiBasicCatalogV1.Image {
         err?.let { ErrorBox("Image: $it") }
     }
 }
+
+/** Largest data: URI accepted, in characters of base64 (about 3.75 MB of image). */
+internal const val MAX_DATA_URI_CHARS = 5_000_000
+/** Longest side a decoded image keeps; bigger ones are downsampled while decoding. */
+internal const val MAX_IMAGE_SIDE = 2048
+
+/**
+ * A data: URI image (`data:image/png;base64,...`), which java.net.URL cannot open. Lets a payload carry its
+ * own pictures, e.g. template thumbnails, with nothing hosted. Base64 only; other encodings return null.
+ * The payload is untrusted, so it is capped twice: its encoded length, and the decoded size in pixels
+ * (a small file can still declare a huge image), downsampled by powers of two to MAX_IMAGE_SIDE.
+ */
+internal fun decodeDataUri(url: String): ImageBitmap? {
+    require(url.length <= MAX_DATA_URI_CHARS) { "data: image over ${MAX_DATA_URI_CHARS / 1_000_000} MB" }
+    val comma = url.indexOf(',')
+    if (comma < 0 || !url.substring(0, comma).endsWith(";base64")) return null
+    val bytes = android.util.Base64.decode(url.substring(comma + 1), android.util.Base64.DEFAULT)
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+    var sample = 1
+    while (maxOf(bounds.outWidth, bounds.outHeight) / sample > MAX_IMAGE_SIDE) sample *= 2
+    val opts = BitmapFactory.Options().apply { inSampleSize = sample }
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)?.asImageBitmap()
+}
+
+/** A URL for an error message: a data: URI is shortened to its media type. */
+private fun shortUrl(url: String) = if (url.startsWith("data:")) url.substringBefore(',') + ",…" else url
 
 /** Stand-in for any type the viewer can't draw; PayloadAdapter rewrites those to this. */
 object UnknownPlaceholder : androidx.a2ui.compose.ui.A2uiComponent {

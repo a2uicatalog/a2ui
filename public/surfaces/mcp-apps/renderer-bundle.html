@@ -25748,6 +25748,9 @@ function _moV(name, dflt) { return 'var(--dw-' + name + ',' + dflt + ')'; }
 function _moAcc(b) { var h = _ffHex(b.accent, ''); return h || _moV('acc', '#2563eb'); }
 function _moAccRgb(b) { var h = _ffHex(b.accent, ''); return h ? _ffRgb(h) : _moV('accrgb', '37,99,235'); }
 function _moStr(v, max) { return _cvStr(v, max); }
+// A number's prefix or suffix (" min", "$ "): unlike _moStr it keeps leading and trailing spaces, which are meaningful there
+// ("20 min" must not become "20min"). Control characters become spaces so nothing can break the line or the data attribute.
+function _moAff(v, max) { return (typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '')).replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, max); }
 // Final-state number text, integer maths so both renderers agree on the spelling.
 function _moFmt(v, dec, pre, suf) {
   var x = typeof v === 'number' ? v : parseFloat(v);
@@ -25987,6 +25990,12 @@ var _MO_TIMELINE_JS =
   'var hm=/t=([0-9.]+)/.exec(location.hash||""),want=C.auto&&!RM&&!hm;' +
   'seek(hm?parseFloat(hm[1]):(RM||!C.auto)?C.poster:0);' +
   'window.__a2uiMotion=window.__a2uiMotion||{};window.__a2uiMotion["%%UID%%"]={seek:seek,play:play,pause:pause,dur:C.dur};' +
+  // Export hook (2026-10-06): a host page that defines window.A2UIExport = {kinds: [...], run(root, kind, progress)} gets
+  // one button per kind in the control bar, and the host does the work (capture, encode, save). Without it nothing is added.
+  'function xb(){var X=window.A2UIExport;if(!X||!btn||!X.kinds||root.querySelector(".mt-xp"))return;for(var i=0;i<X.kinds.length;i++)xk(X,String(X.kinds[i]));}' +
+  'function xk(X,k){var L=k.toUpperCase(),b=document.createElement("button");b.type="button";b.className="mt-xp";b.textContent=L;b.setAttribute("aria-label","Export "+L);b.setAttribute("style",btn.getAttribute("style").replace("width:32px;","").replace("border-radius:50%","border-radius:999px").replace("padding:0;","padding:0 10px;")+"font-size:0.7rem;font-weight:700;letter-spacing:0.04em;");' +
+  'b.addEventListener("click",function(){if(b.disabled)return;b.disabled=true;manual=true;pause();var done=function(){b.disabled=false;b.textContent=L;};Promise.resolve().then(function(){return X.run(root,k,function(d,n){b.textContent=L+" "+Math.round(100*d/(n||1))+"%";});}).then(done,function(e){done();if(window.console)console.warn("a2ui export failed",e);});});btn.parentNode.appendChild(b);}' +
+  'xb();window.addEventListener("a2ui-export-ready",xb);' +
   'if(want){if(window.IntersectionObserver){new IntersectionObserver(function(a){if(a[0].isIntersecting){if(!manual)play();}else if(pl){pause();}},{threshold:0.25}).observe(root);}else{play();}}' +
   '})();';
 
@@ -26368,7 +26377,7 @@ _RENDERERS['motion_shape'] = function(b) {
 
 // A big number that counts from `from` to `to` as --p goes 0..1, with an optional caption.
 _RENDERERS['motion_counter'] = function(b) {
-  var dec = _ffInt(b.decimals, 0, 0, 3), to = _moNum(b.to, 100), from = _moNum(b.from, 0), pre = _moStr(b.prefix, 4), suf = _moStr(b.suffix, 8);
+  var dec = _ffInt(b.decimals, 0, 0, 3), to = _moNum(b.to, 100), from = _moNum(b.from, 0), pre = _moAff(b.prefix, 4), suf = _moAff(b.suffix, 8);
   var size = _ffInt(b.size, 96, 10, 400), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), font = _ffPick(b.font, _FF_FONTS, 'display');
   var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), label = _moStr(b.label, 40);
   var lsize = _ffInt(b.label_size, Math.max(11, Math.floor(size / 5)), 8, 80), shown;
@@ -27209,16 +27218,17 @@ _RENDERERS['motion_goo'] = function(b) {
 };
 
 // A finishing layer for the whole frame: film grain, a vignette, drifting light leaks and a glass sheen. Place it last, full size;
-// it never takes clicks. p fades it in, --s drifts the grain and the leaks.
+// it never takes clicks. p fades it in, --s drifts the grain and the leaks. The grain layer is oversized by its own drift and the
+// layer clips (2026-10-06): sliding a full-size layer 60px left and 40px down exposed a hard strip at the right and top of the frame.
 _RENDERERS['motion_finish'] = function(b) {
   var gr = _ffPick(b.grain_size, _MO_GRAIN, 'medium'), gs = b.grain === false ? 0 : _ffNum(b.grain_amount, 0.12, 0, 0.5, 2), vg = b.vignette === false ? 0 : _ffNum(b.vignette_amount, 0.55, 0, 1, 2);
   var lk = b.leak === false ? '' : _moOwn(_MO_LEAK, b.leak, 'warm'), sh = b.sheen === true, ls = _ffNum(b.leak_amount, 0.35, 0, 1, 2), L = lk ? _MO_LEAK[lk] : null, out = '';
   var fade = 'clamp(0,calc(var(--p,1)*4),1)';
-  if (gs > 0) out += '<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:calc(' + gs + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + gr + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>';
+  if (gs > 0) out += '<svg aria-hidden="true" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;left:0;top:-40px;width:calc(100% + 60px);height:calc(100% + 40px);mix-blend-mode:overlay;opacity:calc(' + gs + '*' + fade + '*1.7);transform:translate(calc(var(--s,0)*-60px),calc(var(--s,0)*40px));"><filter id="mtgr"><feTurbulence type="fractalNoise" baseFrequency="' + gr + '" numOctaves="2" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect x="-30%" y="-30%" width="170%" height="170%" filter="url(#mtgr)"/></svg>';
   if (L) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;mix-blend-mode:screen;opacity:calc(' + ls + '*' + fade + ');background:radial-gradient(ellipse 45% 70% at calc(10% + var(--s,0)*30%) 20%,' + L[0] + ',transparent 70%),radial-gradient(ellipse 40% 60% at calc(95% - var(--s,0)*25%) 90%,' + L[1] + ',transparent 70%);"></div>';
   if (vg > 0) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:' + fade + ';background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,' + vg + ') 100%);"></div>';
   if (sh) out += '<div aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;"><div style="position:absolute;top:-20%;bottom:-20%;width:22%;left:calc(-30% + clamp(0,var(--p,1),1)*150%);background:linear-gradient(100deg,transparent,rgba(255,255,255,0.22),transparent);transform:skewX(-18deg);"></div></div>';
-  return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;pointer-events:none;">' + out + '</div>';
+  return '<div aria-hidden="true" style="position:relative;width:100%;height:100%;overflow:hidden;pointer-events:none;">' + out + '</div>';
 };
 
 // Page assembly: child atoms start scattered and tilted and land in a bento grid, one after another as p goes 0 to 1.
@@ -37439,6 +37449,7 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
   // same deep-navigation shape as hub, just with nav pill buttons instead of
   // subject tabs. Same reasoning applies identically.
   var _hostContext = {};
+  var _lastPayload = null;   // the last tool result painted: what a film's export buttons send to the export page
   var _fsReqSeq = 0;
 
   // 2026-08-01: playbook/hub slide containers default to min-height:100vh.
@@ -37634,6 +37645,7 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
 
     if (msg.method === 'ui/notifications/tool-result') {
       var result = msg.params || {};
+      _lastPayload = result.structuredContent || null;
       paint(result.structuredContent || {});
       reportSize();
       _maybeRequestFullscreen(result.structuredContent || {});
@@ -37740,6 +37752,71 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
       });
     }
   };
+  // Film export from inside a host (2026-10-06). The host's sandbox has no allow-downloads (MCP Apps spec: the
+  // view iframe gets allow-scripts + allow-same-origin), so a film cannot save a file here. Its MP4/GIF buttons
+  // (the motion_timeline export hook) instead ask the host to open the film on a2uicatalog.ai's export page
+  // (ui/open-link), where the visitor's own browser encodes and downloads it. The film travels in the link
+  // (#p=, gzip + base64url); nothing is uploaded. Only inside a host iframe, and never over an exporter the page
+  // already has (the Android app and the export page itself set their own before painting).
+  var EXPORT_PAGE = 'https://a2uicatalog.ai/surfaces/mcp-apps/export/';
+  // A design may carry its own links (2026-10-06, Schemaestro): payload.links = { edit, export }. `edit` adds an
+  // EDIT button that opens the design where it can be edited (Schemaestro's player, which hands off to the phone
+  // app); `export` is the export page its MP4/GIF use instead of the catalog's. Https on an allowlisted host only,
+  // so a payload can never turn these buttons into a link anywhere else; anything else is ignored, never thrown.
+  var LINK_HOSTS = { 'schemaestro.com': 1, 'a2uicatalog.ai': 1 };
+  function _link(name) {
+    var l = _lastPayload && _lastPayload.links && _lastPayload.links[name];
+    if (typeof l !== 'string') return null;
+    try { var u = new URL(l); return (u.protocol === 'https:' && LINK_HOSTS[u.hostname]) ? l : null; } catch (e) { return null; }
+  }
+  function _gzipB64u(text) {
+    var gz = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
+    return new Response(gz).arrayBuffer().then(function (buf) {
+      var bytes = new Uint8Array(buf), bin = '';
+      for (var i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      return btoa(bin).split('+').join('-').split('/').join('_').replace(/=+$/, '');
+    });
+  }
+  function _openLink(url) {
+    return new Promise(function (resolve, reject) {
+      var id = 'ol-' + Math.random().toString(36).slice(2);
+      _pending[id] = { resolve: resolve, reject: reject };
+      setTimeout(function () {
+        if (_pending[id]) { delete _pending[id]; reject(new Error('host did not answer ui/open-link')); }
+      }, 30000);
+      post({ jsonrpc: '2.0', id: id, method: 'ui/open-link', params: { url: url } });
+    });
+  }
+  if (window.parent !== window && !window.A2UIExport && typeof CompressionStream !== 'undefined') {
+    function _open(url) {
+      return _openLink(url).catch(function (e) {
+        // a host that refuses or ignores ui/open-link: try a popup (allowed by some sandboxes). Without
+        // 'noopener' so a blocked popup is detectable (null); the opener link is cut by hand instead.
+        var w = window.open(url, '_blank');
+        if (!w) throw e;
+        try { w.opener = null; } catch (x) {}
+      });
+    }
+    window.A2UIExport = {
+      // Read when the film paints (after _lastPayload is set), so EDIT appears only for a design that has a link.
+      get kinds() { return (_link('edit') ? ['edit'] : []).concat(['mp4', 'gif']); },
+      run: function (root, kind) {
+        if (!_lastPayload) return Promise.reject(new Error('no film to export'));
+        if (kind === 'edit') {
+          var edit = _link('edit');
+          return edit ? _open(edit) : Promise.reject(new Error('this design has no edit link'));
+        }
+        // The film goes with its export link but not its edit link, which already holds the whole design.
+        var sent = {}, k;
+        for (k in _lastPayload) if (Object.prototype.hasOwnProperty.call(_lastPayload, k)) sent[k] = _lastPayload[k];
+        if (sent.links) sent.links = _link('export') ? { 'export': _link('export') } : undefined;
+        return _gzipB64u(JSON.stringify(sent)).then(function (enc) {
+          return _open((_link('export') || EXPORT_PAGE) + '#p=' + enc + '&k=' + kind);
+        });
+      }
+    };
+  }
+
   window.addEventListener('message', function (ev) {
     var msg = ev.data;
     if (!msg || msg.jsonrpc !== '2.0' || !_pending[msg.id]) return;

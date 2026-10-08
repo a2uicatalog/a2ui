@@ -42,7 +42,9 @@ const val CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
 /** Google's Basic Catalog id in androidx.a2ui 1.0.0-alpha01 (v0.9). */
 const val BASIC_CATALOG_V09 = "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json"
 
-internal class AtomSpec(val name: String, val pack: String, val fields: List<String>)
+/** [scalars]: the fields that take one string (free text or an enum value), from the schema. */
+internal class AtomSpec(val name: String, val pack: String, val fields: List<String>,
+                        val scalars: Set<String> = emptySet())
 
 internal object Atoms {
     @Volatile private var cached: List<AtomSpec>? = null
@@ -53,9 +55,15 @@ internal object Atoms {
         List(a.length()) { i ->
             val o = a.getJSONObject(i)
             val f = o.getJSONArray("fields")
-            AtomSpec(o.getString("name"), o.getString("pack"), List(f.length()) { f.getString(it) })
-        }.also { cached = it }
+            val s = o.optJSONArray("scalars") ?: JSONArray()
+            AtomSpec(o.getString("name"), o.getString("pack"), List(f.length()) { f.getString(it) },
+                List(s.length()) { s.getString(it) }.toSet())
+        }.also { list -> cached = list; scalars = list.associate { it.name to it.scalars } }
     }
+
+    /** Single-string fields per atom type; empty until [specs] has loaded. */
+    @Volatile var scalars: Map<String, Set<String>> = emptyMap()
+        private set
 
     fun rendererBundle(ctx: Context): String = bundle
         ?: ctx.assets.open("renderer-bundle.html").bufferedReader().readText().also { bundle = it }
@@ -64,6 +72,17 @@ internal object Atoms {
 
 /** The surface theme from our payload metadata, read by every bridged atom. */
 val LocalSurfaceTheme = compositionLocalOf { "light" }
+
+/**
+ * What a host app adds to every bridge WebView: [objects] are exposed to the page as JavaScript
+ * interfaces (name -> object with @JavascriptInterface methods), and [script] runs once the page
+ * has loaded, before the first paint. Lets an app offer page features the library does not ship,
+ * such as a film exporter (`window.A2UIExport`, which a motion_timeline turns into buttons) and
+ * somewhere to save its output. Provide it with CompositionLocalProvider around the surface.
+ */
+class BridgeExtras(val script: String = "", val objects: Map<String, Any> = emptyMap())
+
+val LocalBridgeExtras = compositionLocalOf { BridgeExtras() }
 
 /**
  * Registered once per atom name, all sharing this one class. Rebuilds the atom as a
@@ -91,6 +110,15 @@ internal fun rawProps(p: A2uiComponentProperties): Map<String, Any?>? = try {
 private fun isBinding(v: Any?): Boolean = v is Map<*, *> && ("path" in v || "call" in v)
 
 /**
+ * A bound value as the web renderer expects it. A ChoicePicker writes its selection as a list
+ * even in single-choice mode (["grid"]), and a field like motion_timeline's `backdrop` wants
+ * "grid": unwrapped only for the fields the schema says take one string, so a list field
+ * (blocks, items) holding a single entry stays a list.
+ */
+internal fun forField(type: String, field: String, v: Any?): Any? =
+    if (v is List<*> && v.size == 1 && v[0] is String && field in (Atoms.scalars[type] ?: emptySet())) v[0] else v
+
+/**
  * One atom as a renderer block with its data bindings resolved. The web renderer knows
  * nothing of the surface's data model, so a field like `value: {path: "/sales"}` is
  * resolved here through bind(), which also recomposes (and repaints) when the agent
@@ -103,7 +131,7 @@ internal fun A2uiComponentScope.resolvedBlock(type: String, props: A2uiComponent
     val block = JSONObject().put("type", type)
     raw.forEach { (k, v) ->
         if (k == "id" || k == "component") return@forEach
-        val value = if (isBinding(v)) key(k) { props.bind(remember(k) { A2uiProperty.dynamicValue(k) }) } else v
+        val value = if (isBinding(v)) forField(type, k, key(k) { props.bind(remember(k) { A2uiProperty.dynamicValue(k) }) }) else v
         block.put(k, JSONObject.wrap(value))
     }
     return block
@@ -136,7 +164,7 @@ internal class AtomBridgeComponent(private val spec: AtomSpec) : A2uiComponent {
             ?: JSONObject().put("type", spec.name).also { b ->
                 // Fallback if the alpha's internals move: only the schema's declared fields.
                 this@AtomBridgeComponent.properties.forEach { p ->
-                    if (p in properties) key(p.key) { b.put(p.key, JSONObject.wrap(properties.bind(p))) }
+                    if (p in properties) key(p.key) { b.put(p.key, JSONObject.wrap(forField(spec.name, p.key, properties.bind(p)))) }
                 }
             }
         RendererWebView(bridgePayload(listOf(block), LocalSurfaceTheme.current), modifier,
@@ -161,6 +189,7 @@ fun RendererWebView(
     onAction: (Map<String, Any?>) -> Unit = {},
 ) {
     val currentOnAction by rememberUpdatedState(onAction)
+    val extras = LocalBridgeExtras.current
     // Start tall, then shrink to the reported height. Films autoplay from an IntersectionObserver
     // that fires once on first paint; at 48dp only ~1px of the stage showed, the 25% threshold was
     // missed and the observer never fired again when the WebView grew (seen on a Pixel 7 Pro).
@@ -196,6 +225,7 @@ fun RendererWebView(
                         post { currentOnAction(action) }
                     }
                 }, "AndroidHost")
+                extras.objects.forEach { (name, obj) -> addJavascriptInterface(obj, name) }
                 webViewClient = object : WebViewClient() {
                     // A tapped link would otherwise load the whole site inside this atom's frame.
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
@@ -218,6 +248,7 @@ fun RendererWebView(
                         if (state.loaded) return
                         state.loaded = true
                         Log.i(TAG, "page loaded, painting")
+                        if (extras.script.isNotEmpty()) view.evaluateJavascript(extras.script, null)
                         view.evaluateJavascript(paintScript(state.payload), null)
                     }
                 }
