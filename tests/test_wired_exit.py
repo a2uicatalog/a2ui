@@ -33,6 +33,7 @@ LAYOUT = [
     {"atom": "stat_card", "id": "d", "props": {"label": "D", "value": "4"}, "exit": {"effect": "nope", "duration": 99999999, "ease": [9, 9, 9, 9], "delay": -5}},
     {"atom": "stat_card", "id": "e", "props": {"label": "E", "value": "5"}, "exit": {"effect": "wipe\"><script>1</script>", "ease": "x\";}", "duration": "quick"}},
     {"atom": "stat_card", "id": "f", "props": {"label": "F", "value": "6"}, "exit": 5},
+    {"atom": "stat_card", "id": "g", "props": {"label": "G", "value": "7"}, "exit": {"effect": "drop", "ease": "heavy"}},
 ]
 
 
@@ -119,12 +120,12 @@ def _engine_fn():
     return src[i:j]
 
 
-def _run_page(body_js, extra_args=()):
+def _run_page(body_js, extra_args=(), root_style=""):
     assert CHROMIUM
     with tempfile.TemporaryDirectory() as td:
         page = Path(td) / "p.html"
         page.write_text(f"""<!doctype html><meta charset=utf-8>
-<style>@keyframes moo-fade{{to{{opacity:0}}}}.mo-leave[data-mo-exit=fade]{{animation:moo-fade var(--mo-exit-dur) var(--mo-exit-ease) var(--mo-exit-delay) both}}</style>
+<style>{root_style}@keyframes moo-fade{{to{{opacity:0}}}}.mo-leave[data-mo-exit=fade]{{animation:moo-fade var(--mo-exit-dur) var(--mo-exit-ease) var(--mo-exit-delay) both}}</style>
 <div id="a2ui-x" data-mo-exit="fade" style="--mo-exit-dur:calc(200ms * var(--a2ui-motion-duration-scale,1));--mo-exit-ease:linear;--mo-exit-delay:0ms">x</div>
 <div id="a2ui-y">y</div><script>{_engine_fn()}
 var x=document.getElementById("a2ui-x"),y=document.getElementById("a2ui-y"),log=[];
@@ -171,4 +172,28 @@ document.title=log.join(" ");""")
 def test_reduced_motion_hides_instantly():
     log = _run_page("""
 _a2uiSetVisible(x,false);snap("rm");document.title=log.join(" ");""", extra_args=("--force-prefers-reduced-motion",))
+    assert log == "rm:none/false", log
+
+
+def test_a_spring_exit_brings_its_curve_through_a_supports_guarded_variable(html):
+    w = _wrapper(html, "g")
+    assert 'data-mo-spring="1"' in w and "--mo-exit-lin:linear(0, " in w
+    assert "--mo-exit-ease:cubic-bezier(0.34,1.56,0.64,1)" in w and "calc(640ms *" in w   # heavy: fallback bezier, natural 640 ms
+    assert "@supports (animation-timing-function:linear(0,1)){.mo-leave[data-mo-spring]{animation-timing-function:var(--mo-exit-lin)}}" in html
+    assert "--mo-exit-lin" not in _wrapper(html, "a")                      # a plain ease carries no spring variable
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium for the in-browser engine test")
+def test_reduced_motion_with_the_fade_policy_still_plays_the_leave():
+    log = _run_page("""
+_a2uiSetVisible(x,false);snap("t0");
+setTimeout(function(){snap("end");document.title=log.join(" ")},500);""",
+                    extra_args=("--force-prefers-reduced-motion",), root_style=":root{--a2ui-reduced-motion:fade}")
+    assert log.startswith("t0:/true") and "end:none/false" in log, log      # leave played, then hidden
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium for the in-browser engine test")
+def test_reduced_motion_without_the_policy_is_still_instant():
+    log = _run_page("""_a2uiSetVisible(x,false);snap("rm");document.title=log.join(" ");""",
+                    extra_args=("--force-prefers-reduced-motion",), root_style=":root{--a2ui-reduced-motion:other}")
     assert log == "rm:none/false", log

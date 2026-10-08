@@ -32,7 +32,7 @@ function _a2uiRenderWiredLayout(payload) {
   var layout     = payload.layout || [];
   var primitives = payload.state_primitives || [];
   var content    = '';
-  var exitKfSeen = [], exitCssNeeded = false;
+  var exitKfSeen = [], exitCssNeeded = false, exitSpringSeen = false;
 
   // DECLARED fullscreen, same contract the canvas atoms use (height:
   // 'fullscreen' on airspace_command_deck — the payload shape Curtis confirmed
@@ -145,12 +145,13 @@ function _a2uiRenderWiredLayout(payload) {
         : '';
       var exitSpec = _moExitSpec(el.exit), exitAttr = '';
       if (exitSpec) {
-        exitAttr = ' data-mo-exit="' + exitSpec.name + '" style="' + (stepStyle + csStyle).replace(/"/g, "'") +
+        exitAttr = ' data-mo-exit="' + exitSpec.name + '"' + (exitSpec.lin ? ' data-mo-spring="1"' : '') + ' style="' + (stepStyle + csStyle).replace(/"/g, "'") +
           '--mo-exit-dur:calc(' + exitSpec.dur + 'ms * var(--a2ui-motion-duration-scale,1));--mo-exit-ease:' + exitSpec.ease +
-          ';--mo-exit-delay:' + exitSpec.delay + 'ms;' + _moK(exitSpec.int) + '"';
+          ';--mo-exit-delay:' + exitSpec.delay + 'ms;' + (exitSpec.lin ? '--mo-exit-lin:' + exitSpec.lin + ';' : '') + _moK(exitSpec.int) + '"';
         combinedStyle = '';
         if (exitKfSeen.indexOf(exitSpec.name) < 0) { exitKfSeen.push(exitSpec.name); content = '<style>' + exitSpec.kf + '</style>' + content; }
         exitCssNeeded = true;
+        if (exitSpec.lin) exitSpringSeen = true;
       }
       content += '<div id="a2ui-' + el.id + '"' + stepAttr + combinedStyle + exitAttr + colsAttr + emptyAttr + '>' + atomHtml + '</div>';
     } else {
@@ -162,6 +163,9 @@ function _a2uiRenderWiredLayout(payload) {
     // One rule drives every effect: the keyframes are named per effect and picked by data-mo-exit.
     var exitRules = '';
     exitKfSeen.forEach(function(n) { exitRules += '.mo-leave[data-mo-exit=' + n + ']{animation:moo-' + n + ' var(--mo-exit-dur) var(--mo-exit-ease) var(--mo-exit-delay) both}'; });
+    // A spring's linear() easing arrives through its own variable, behind @supports: a variable holding an
+    // unparseable easing would make the whole animation invalid at computed time, with no fallback.
+    if (exitSpringSeen) exitRules += '@supports (animation-timing-function:linear(0,1)){.mo-leave[data-mo-spring]{animation-timing-function:var(--mo-exit-lin)}}';
     content = '<style>' + exitRules + '@media (prefers-reduced-motion:reduce){.mo-leave{animation:none!important}}@media print{.mo-leave{animation:none!important}}</style>' + content;
   }
   return fsBreakout + content;

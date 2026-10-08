@@ -58,8 +58,16 @@ CONTEXTUAL = {"type": "menu", "trigger": {"kind": "contextual", "label": "Row"},
 ALIGN_END = {"type": "menu", "align": "end", "trigger": {"label": "More"}, "items": [{"label": "A", "url": "/a"}]}
 SPLIT_START = {"type": "menu", "align": "start", "trigger": {"kind": "split", "label": "P", "url": "/p"}, "items": [{"label": "A", "url": "/a"}]}
 ALIGN_JUNK = {"type": "menu", "align": "left\" x", "trigger": {"label": "More"}, "items": [{"label": "A", "url": "/a"}]}
+ACTIONS = {"type": "menu", "trigger": {"label": "Do"}, "items": [
+    {"type": "action", "id": "publish", "label": "Publish", "icon": "▶", "shortcut": "⌘P"},
+    {"type": "action", "label": "No id here", "danger": True},
+    {"type": "action", "id": "locked", "label": "Locked", "disabled": True},
+    {"type": "submenu", "label": "More", "items": [{"type": "action", "id": "deep", "label": "Deep"}, {"label": "Plain", "url": "/p"}]},
+    {"type": "checkbox", "label": "Check"}, {"type": "radio", "label": "Radio"}]}
+ACTION_HOSTILE = {"type": "menu", "trigger": {"label": "x"}, "items": [
+    {"type": "action", "id": "a\"><img src=x onerror=alert(1)>", "label": "<script>alert(1)</script>\" onclick=\"x"}]}
 EMPTY = {"type": "menu"}
-JUNK = {"type": "menu", "trigger": "nope", "items": [None, 5, "x", {"type": "action", "label": "Act"},
+JUNK = {"type": "menu", "trigger": "nope", "items": [None, 5, "x", {"type": "bogus", "label": "Act"},
                                                     {"type": "checkbox", "label": "Chk"},
                                                     {"label": ""}, {"type": "heading"}]}
 HOSTILE = {
@@ -77,7 +85,7 @@ HOSTILE = {
     ],
 }
 ALL = {"full": FULL, "icon": ICON, "split": SPLIT, "split_no_url": SPLIT_NO_URL,
-       "contextual": CONTEXTUAL, "align_end": ALIGN_END, "split_start": SPLIT_START, "align_junk": ALIGN_JUNK, "empty": EMPTY, "junk": JUNK, "hostile": HOSTILE}
+       "actions": ACTIONS, "action_hostile": ACTION_HOSTILE, "contextual": CONTEXTUAL, "align_end": ALIGN_END, "split_start": SPLIT_START, "align_junk": ALIGN_JUNK, "empty": EMPTY, "junk": JUNK, "hostile": HOSTILE}
 
 
 @pytest.fixture(scope="module")
@@ -203,9 +211,9 @@ def test_contextual_opens_on_contextmenu_and_still_works_as_a_button(html):
 
 def test_only_contextual_ships_a_script(html):
     for name in ALL:
-        if name == "contextual":
+        if name in ("contextual", "actions", "action_hostile"):    # these ship a script by design
             continue
-        assert "<script" not in html(name).lower() or name == "hostile"
+        assert "<script" not in html(name).lower() or name in ("hostile", "actions", "action_hostile")
     assert "<script" not in html("hostile").lower().replace("&lt;script&gt;", "")
 
 
@@ -249,9 +257,30 @@ def _MENU_SPRING_RULES(h):
     return re.findall(r"\[data-spring=\w+\][^}]*\}", h)
 
 
-def test_v1_has_no_action_checkbox_or_radio(html):
-    h = html("junk")
-    assert "Act" not in h and "Chk" not in h
+def test_checkbox_and_radio_items_are_still_dropped(html):
+    h = html("actions")
+    assert "Check" not in h and "Radio" not in h              # object-valued state events are not designed yet
+
+
+def test_action_item_is_a_button_carrying_the_row_object(html):
+    h = html("actions")
+    row = '{&quot;id&quot;:&quot;publish&quot;,&quot;label&quot;:&quot;Publish&quot;,&quot;type&quot;:&quot;action&quot;,&quot;danger&quot;:false}'
+    assert f'<button type="button" role="menuitem" data-row-json="{row}"' in h
+    assert "&quot;id&quot;:&quot;No id here&quot;" in h and "&quot;danger&quot;:true" in h      # id falls back to the label
+    assert "&quot;id&quot;:&quot;deep&quot;" in h                                               # inside a submenu too
+
+
+def test_disabled_action_is_not_a_button_and_a_menu_without_actions_has_no_script(html):
+    assert "locked" not in html("actions")
+    assert 'data-actions="1"' in html("actions") and 'data-actions' not in html("full")
+    assert "<script" not in html("full").lower() and "data-row-json" not in html("full")
+
+
+def test_action_hostile_values_do_not_become_markup(html):
+    h = html("action_hostile")
+    p = _Audit(); p.feed(h)
+    assert [b for b in p.bad if b != "script"] == [], p.bad       # the one allowed script is the close-on-action script
+    assert h.lower().count("<script") == 1 and "alert(1)</script>" not in h
 
 
 def test_empty_and_junk_payloads_still_render(html):
@@ -262,8 +291,10 @@ def test_empty_and_junk_payloads_still_render(html):
 def test_plain_payload_carries_no_wire_or_script(html):
     for name in ALL:
         h = html(name)
-        assert "<script" not in h.lower() or name in ("hostile", "contextual")
-        assert "data-row-json" not in h and "onclick" not in h.lower()
+        assert "<script" not in h.lower() or name in ("hostile", "contextual", "actions", "action_hostile")
+        assert ("data-row-json" in h) == (name in ("actions", "action_hostile"))     # only action items carry the row object
+        p = _Audit(); p.feed(h)
+        assert not [b for b in p.bad if b.startswith("on")], (name, p.bad)         # no event-handler attribute, ever
 
 
 class _Audit(HTMLParser):
@@ -296,7 +327,7 @@ def test_schema_declares_menu_as_a_preview_with_surface_metadata():
     m = next(a for a in atoms if a["type"] == "menu")
     assert m.get("stage") == "preview"
     assert {"trigger", "items"} <= set(m["fields"])
-    assert "wire" not in m  # v1 is wire-free by contract
+    assert set(m["wire"]) == {"onRowClick"}  # the one existing output wire, nothing invented
     assert {i["surface"] for i in m["surfaces"]["incompatible_on"]} >= {"google-chat", "email", "pdf"}
 
 
@@ -363,3 +394,35 @@ def test_menu_animation_reads_the_scales_and_respects_reduced_motion(html):
 def test_a_surface_without_a_palette_is_unchanged_by_the_scales(py_html):
     # the fallbacks are 1, so a missing variable means the default 240 ms / 6 px
     assert "--a2ui-motion" not in _RENDERERS["palette"]({"type": "palette"})
+
+
+# ---- the real wired binder, in a browser: an action click reaches the wire with the item object, and closes the menu ----
+import shutil  # noqa: E402
+
+CHROMIUM = shutil.which("chromium") or shutil.which("chromium-browser") or shutil.which("google-chrome")
+ENGINE = ROOT / "apps-script-surface" / "gas-wired-renderer" / "A2UIState.html"
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium for the in-browser engine test")
+def test_browser_action_click_reaches_the_onrowclick_wire_and_a_link_does_not():
+    src = ENGINE.read_text()
+    binder = src[src.index("function _a2uiBindRowClicks"):src.index("// ─── Boot")]
+    menu_html = _render_menu({"type": "menu", "trigger": {"label": "Do"}, "items": [
+        {"type": "action", "id": "publish", "label": "Publish"}, {"label": "Go", "url": "#go"}]})
+    with tempfile.TemporaryDirectory() as td:
+        page = Path(td) / "p.html"
+        page.write_text(f"""<!doctype html><meta charset=utf-8><div id="a2ui-m">{menu_html}</div><script>
+window.__A2UI_SCHEMA__={{layout:[{{id:"m",wire:{{onRowClick:"#sel.setValue"}}}}]}};
+var got=[];window._a2uiEngine={{bindOutput:function(w,v){{got.push(w+"="+JSON.stringify(v));}}}};
+{binder}
+_a2uiBindRowClicks(document.getElementById("a2ui-m"));
+var d=document.querySelector("details");d.open=true;
+document.querySelector("a[role=menuitem]").click();var afterLink=got.length+"/"+d.open;
+document.querySelector("button[role=menuitem]").click();
+document.title=afterLink+" "+got.join(",")+" open="+d.open;</script>""")
+        o = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", f"--user-data-dir={td}/prof",
+                            "--virtual-time-budget=1000", "--dump-dom", f"file://{page}"], capture_output=True, text=True, timeout=60).stdout
+    t = re.search(r"<title>([^<]*)</title>", o).group(1)
+    assert t.startswith("0/true "), t                                   # a link click emitted nothing and left the menu open
+    assert '#sel.setValue={"id":"publish","label":"Publish","type":"action","danger":false}' in t, t
+    assert t.endswith("open=false"), t                                  # the action closed the menu

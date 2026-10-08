@@ -3194,8 +3194,9 @@ blocks:
     menu_items: list of objects with label, url
 - type: menu
   # Renderer in atom.gs (GAS + the MCP Apps bundle) and renderers/web_article.py.
-  # CSS-only (<details>/<summary>, no script, no wire), so a plain non-wired
-  # payload works everywhere the markup does. Preview: repo-only until promoted.
+  # CSS-only (<details>/<summary>), so a plain non-wired payload works
+  # everywhere the markup does; scripts ship only for the contextual trigger and
+  # for action items (closing the menu after a click). Preview: repo-only.
   stage: preview
   description: 'A menu of links behind one trigger: a button, an icon, or a split
     button. Items are links, separators, headings and submenus, each with an
@@ -3203,10 +3204,10 @@ blocks:
     styling.
 
     This is the general menu; css_dropdown_menu stays as the simple label+url
-    case. v1 carries LINKS only. An item that raises an event (action, checkbox,
-    radio) is deliberately absent until the event contract is settled: the
-    intended route is the existing onRowClick wire, emitting the item object,
-    not a new action vocabulary.
+    case. Link items navigate. Action items raise an event through the existing
+    onRowClick wire, emitting the item object, not a new action vocabulary.
+    Checkbox and radio items are not built yet (they need an object-valued
+    state event).
 
     Not a selection control (use form_select or combobox), not site navigation
     (use navigation_menu), not a command list (use command_palette).'
@@ -3245,8 +3246,9 @@ blocks:
       and closes on an outside click or Escape. It still opens on a plain tap, and without
       script it behaves as a button. It is the only trigger that ships a script.'
     items: 'array (required). Each item is an object with `type` one of link
-      (default), separator, heading, submenu. Fields, where they apply: `id`
-      (carried for the future event contract, not used by v1), `label`,
+      (default), action, separator, heading, submenu. Fields, where they apply:
+      `id` (the action identity sent in the event, 80 characters at most;
+      defaults to the label), `label`,
       `description` (second line), `icon` (short glyph), `shortcut` (hint text,
       not bound to a key), `badge` (short pill text), `disabled` (boolean; a
       disabled link is not a link), `danger` (boolean; destructive styling),
@@ -3261,6 +3263,12 @@ blocks:
       up with: start (panel extends right, the default) or end (panel extends
       left, for a trigger near the right edge). A split trigger defaults to end,
       so the panel hangs from the arrow. Anything else is ignored.'
+  wire:
+    onRowClick: 'Fires when an action item is clicked, with the item object
+      {id, label, type: "action", danger} (id is the item''s id, or its label when
+      it has none). The same contract as data_table and photo_grid. The menu
+      closes after the click. Link items navigate and emit nothing. Without a
+      wire an action item is inert.'
   notes: 'Items open with a click or tap and close on a second click on the
     trigger. There is no outside-click dismissal in v1 (no script), and the
     open panel is not keyboard-navigable beyond ordinary tab order. Submenus

@@ -2013,7 +2013,7 @@ function _menuItem(it, depth) {
     return '<div role="presentation" style="padding:8px 14px 4px;font-size:0.72rem;font-weight:700;letter-spacing:0.04em;' +
       'text-transform:uppercase;color:var(--text-muted,#6b7280);">' + _esc(label) + '</div>';
   }
-  if (type !== 'link' && type !== 'submenu') return '';
+  if (type !== 'link' && type !== 'submenu' && type !== 'action') return '';
   if (type === 'submenu' && depth > 0) return '';
   if (!label) return '';
   var danger = it.danger === true;
@@ -2040,6 +2040,13 @@ function _menuItem(it, depth) {
   if (disabled) {
     return '<span role="menuitem" aria-disabled="true" style="' + _MENU_ROW + 'color:' + color + ';opacity:0.45;cursor:not-allowed;">' + inner + '</span>';
   }
+  if (type === 'action') {
+    // An action raises an event, never navigates. The wire (onRowClick) receives this exact object, the same
+    // contract data_table and photo_grid use; without a wire the button is inert. id falls back to the label.
+    var row = JSON.stringify({id: _menuStr(it.id, 80) || label, label: label, type: 'action', danger: danger});
+    return '<button type="button" role="menuitem" data-row-json="' + _esc(row) + '" style="' + _MENU_ROW +
+      'width:100%;box-sizing:border-box;background:none;border:0;font:inherit;font-size:0.87rem;cursor:pointer;color:' + color + ';">' + inner + '</button>';
+  }
   var url = _menuUrl(it.url);
   return '<a role="menuitem" href="' + _esc(url) + '"' +
     (url.charAt(0) === '#' ? '' : ' target="_blank" rel="noopener noreferrer"') +
@@ -2058,6 +2065,7 @@ function _menuSpringCss() {
   }
   return out;
 }
+var _MENU_ACTION_JS = '(function(){var ws=document.querySelectorAll("[data-a2ui-menu][data-actions]:not([data-bound-a])");for(var i=0;i<ws.length;i++){(function(w){w.setAttribute("data-bound-a","1");w.addEventListener("click",function(e){var b=e.target.closest?e.target.closest("button[data-row-json]"):null;if(!b)return;var ds=w.querySelectorAll("details");for(var j=0;j<ds.length;j++)ds[j].open=false;});})(ws[i]);}})();';
 var _MENU_CONTEXT_JS = '(function(){var els=document.querySelectorAll("[data-a2ui-menu=contextual]:not([data-bound])");for(var i=0;i<els.length;i++){(function(w){w.setAttribute("data-bound","1");var d=w.querySelector("details"),s=d.querySelector("summary"),p=d.querySelector("[role=menu]"),base=p.getAttribute("style");s.addEventListener("contextmenu",function(e){e.preventDefault();d.open=true;p.style.position="fixed";p.style.left=e.clientX+"px";p.style.top=e.clientY+"px";p.style.right="auto";var r=p.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;if(r.right>vw)p.style.left=Math.max(0,vw-r.width-4)+"px";if(r.bottom>vh)p.style.top=Math.max(0,e.clientY-r.height)+"px";});d.addEventListener("toggle",function(){if(!d.open)p.setAttribute("style",base);});document.addEventListener("click",function(e){if(d.open&&!w.contains(e.target))d.open=false;});document.addEventListener("keydown",function(e){if(e.key==="Escape")d.open=false;});})(els[i]);}})();';
 _RENDERERS['menu'] = function(b) {
   var t = (b.trigger && typeof b.trigger === 'object') ? b.trigger : {};
@@ -2069,6 +2077,15 @@ _RENDERERS['menu'] = function(b) {
   var spring = (typeof _MO_SPRING !== 'undefined' && typeof b.spring === 'string' && Object.prototype.hasOwnProperty.call(_MO_SPRING, b.spring)) ? b.spring : '';
   var sattr = spring ? ' data-spring="' + spring + '"' : '';
   var items = Array.isArray(b.items) ? b.items.slice(0, 50) : [];
+  var hasAction = false;
+  items.forEach(function(it) {
+    if (it && it.type === 'action' && it.disabled !== true && _menuStr(it.label, 120)) hasAction = true;
+    if (it && it.type === 'submenu' && Array.isArray(it.items)) it.items.slice(0, 50).forEach(function(k) {
+      if (k && k.type === 'action' && k.disabled !== true && _menuStr(k.label, 120)) hasAction = true;
+    });
+  });
+  var aattr = hasAction ? ' data-actions="1"' : '';
+  var ascript = hasAction ? '<script>' + _MENU_ACTION_JS + '</script>' : '';
   var end = b.align === 'end' || (b.align !== 'start' && kind === 'split');
   var panel = '<div role="menu" style="position:absolute;top:calc(100% + 4px);' + (end ? 'right:0;' : 'left:0;') +
     'z-index:20;min-width:200px;max-width:min(320px,90vw);background:var(--surface,#fff);border:1px solid var(--border,#dadce0);' +
@@ -2087,7 +2104,7 @@ _RENDERERS['menu'] = function(b) {
       ' style="' + _menuTrigStyle('6px 0 0 6px', _MENU_SPLIT_H) + '">' + _esc(label || 'Open') + '</a>' +
       '<details style="position:relative;"><summary aria-haspopup="menu" aria-label="' + _esc(label ? label + ' options' : 'More options') +
       '" style="' + _menuTrigStyle('0 6px 6px 0', _MENU_SPLIT_H) + 'border-left:0;">' + _MENU_CHEVRON + '</summary>' + panel + '</details></div>';
-    return '<div data-a2ui-menu="split"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + '</div>';
+    return '<div data-a2ui-menu="split"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + ascript + '</div>';
   }
   var iconOnly = kind === 'icon' && icon;
   var trig = iconOnly
@@ -2096,8 +2113,8 @@ _RENDERERS['menu'] = function(b) {
   body = '<details style="position:relative;display:inline-block;"><summary aria-haspopup="menu"' +
     (iconOnly ? ' aria-label="' + _esc(label || 'Menu') + '"' : '') +
     ' style="' + _menuTrigStyle('6px', kind === 'contextual' ? '-webkit-touch-callout:none;-webkit-user-select:none;' : '') + '">' + trig + '</summary>' + panel + '</details>';
-  return '<div data-a2ui-menu="' + kind + '"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
-    (kind === 'contextual' ? '<script>' + _MENU_CONTEXT_JS + '</script>' : '') + '</div>';
+  return '<div data-a2ui-menu="' + kind + '"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
+    ascript + (kind === 'contextual' ? '<script>' + _MENU_CONTEXT_JS + '</script>' : '') + '</div>';
 };
 
 _RENDERERS['version_badge'] = function(b) {
@@ -4580,12 +4597,28 @@ _RENDERERS['split_pane'] = function(b) {
 // stagger_scale scales the gap between staggered items. Clamped, then written as at most two decimals
 // by integer maths so GAS and the Python twin print the same digits. A film-clock atom owns its own
 // duration, so these do not reach motion_timeline. Python twin: _motion_scale_css in web_article.py.
+// motion_preset names a starting feel for the three scales; any explicit scale beats it (the same rule the design
+// tokens follow). calm: slower, shorter reach, looser stagger. expressive: bigger reach, wider stagger.
+var _MOTION_PRESETS = {
+  calm: {duration: 1.3, intensity: 0.6, stagger: 1.25},
+  standard: {duration: 1, intensity: 1, stagger: 1},
+  expressive: {duration: 1.1, intensity: 1.5, stagger: 1.3}
+};
+// reduced_motion: "fade" keeps a plain short fade for a viewer who asked for reduced motion, instead of removing
+// every animation. The default ("respect", or anything else) is the old behaviour: animation off. An author can
+// never turn motion ON for a viewer whose device asks for less.
+function _motionPolicyVar(b) { return b.reduced_motion === 'fade' ? '--a2ui-reduced-motion:fade;' : ''; }
+function _motionPolicyRules(b) {
+  return b.reduced_motion === 'fade' ? '@keyframes a2ui-rm-in{from{opacity:0}}@keyframes a2ui-rm-out{to{opacity:0}}@media (prefers-reduced-motion:reduce){:root .mo-x{animation:a2ui-rm-in calc(200ms * var(--a2ui-motion-duration-scale,1)) ease both!important}:root .mo-leave[data-mo-exit]{animation:a2ui-rm-out var(--mo-exit-dur,200ms) ease both!important}:root [data-a2ui-menu] details[open]>[role=menu]{animation:a2ui-rm-in calc(160ms * var(--a2ui-motion-duration-scale,1)) ease both!important}}' : '';
+}
 function _motionScaleCss(b) {
   var spec = [['duration_scale', 'duration', 0.25, 3], ['intensity_scale', 'intensity', 0, 2], ['stagger_scale', 'stagger', 0, 3]];
+  var pre = (typeof b.motion_preset === 'string' && Object.prototype.hasOwnProperty.call(_MOTION_PRESETS, b.motion_preset)) ? _MOTION_PRESETS[b.motion_preset] : null;
   var out = '';
   for (var i = 0; i < spec.length; i++) {
     var v = b[spec[i][0]];
     if (typeof v === 'string' && /^[0-9]+(\.[0-9]+)?$/.test(v.trim())) v = parseFloat(v);
+    if ((typeof v !== 'number' || !isFinite(v)) && pre) v = pre[spec[i][1]];
     if (typeof v !== 'number' || !isFinite(v)) continue;
     var n = Math.floor(Math.min(spec[i][3], Math.max(spec[i][2], v)) * 100 + 0.5);
     var whole = Math.floor(n / 100), frac = n % 100;
@@ -4607,8 +4640,9 @@ _RENDERERS['palette'] = function(b) {
   if (bg)    extra += '--bg:'   + _esc(bg)   + ';';
   if (muted) extra += '--muted:' + _esc(muted) + ';';
   extra += _tokenCss(b);
-  extra += _motionScaleCss({duration_scale: b.duration_scale, intensity_scale: b.intensity_scale, stagger_scale: b.stagger_scale});
-  return '<style>:root{--a2ui-accent:' + _esc(accent) + ';--a2ui-accent2:' + _esc(accent2) + ';--a2ui-block-gap:' + _esc(gap) + ';' + extra + '}</style>';
+  extra += _motionScaleCss({duration_scale: b.duration_scale, intensity_scale: b.intensity_scale, stagger_scale: b.stagger_scale, motion_preset: b.motion_preset});
+  extra += _motionPolicyVar({reduced_motion: b.reduced_motion});
+  return '<style>:root{--a2ui-accent:' + _esc(accent) + ';--a2ui-accent2:' + _esc(accent2) + ';--a2ui-block-gap:' + _esc(gap) + ';' + extra + '}' + _motionPolicyRules({reduced_motion: b.reduced_motion}) + '</style>';
 };
 
 // Wrap innerHtml in a <div style="..."> using a CLOSED-ENUM chrome recipe (see

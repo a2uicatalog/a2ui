@@ -110,6 +110,11 @@ function _moEaseJs(v, dflt) {
   if (v === 'linear') return '0';
   return '[' + _moEaseArr(v, dflt).join(',') + ']';
 }
+// A spring preset name (gentle | snappy | heavy) is accepted anywhere an ease is: it brings its own natural
+// duration (used when none is given) and a linear() curve, with a cubic-bezier for a browser that lacks linear().
+function _moSpring(v) {
+  return (typeof v === 'string' && Object.prototype.hasOwnProperty.call(_MO_SPRING, v)) ? _MO_SPRING[v] : null;
+}
 function _moDur(v, dflt) {
   if (typeof v === 'string' && Object.prototype.hasOwnProperty.call(_MO_DUR, v)) return _MO_DUR[v];
   return _ffInt(v, dflt, 0, 8000);
@@ -121,12 +126,13 @@ function _moEnterSpec(e) {
   if (typeof e === 'string') e = {effect: e};
   if (!e || typeof e !== 'object') return null;
   var name = (typeof e.effect === 'string' && Object.prototype.hasOwnProperty.call(_MO_FX, e.effect)) ? e.effect : 'rise';
-  var fx = _MO_FX[name];
+  var fx = _MO_FX[name], sp = _moSpring(e.ease);
   return {
     name: name,
     kf: '@keyframes moe-' + name + '{' + fx.kf + '}',
-    ease: _moEaseCss(e.ease, fx.e),
-    dur: _moDur(e.duration, fx.d),
+    ease: _moEaseCss(sp ? sp.fb : e.ease, fx.e),
+    lin: sp ? sp.lin : '',
+    dur: _moDur(e.duration, sp ? sp.ms : fx.d),
     delay: _ffInt(e.delay, 0, 0, 20000),
     int: _ffNum(e.intensity, 1, 0, 2, 2),
     view: e.on === 'view'
@@ -145,12 +151,13 @@ function _moExitSpec(e) {
   if (typeof e === 'string') e = {effect: e};
   if (!e || typeof e !== 'object') return null;
   var name = (typeof e.effect === 'string' && Object.prototype.hasOwnProperty.call(_MO_FX, e.effect)) ? e.effect : 'fade';
-  var fx = _MO_FX[name];
+  var fx = _MO_FX[name], sp = _moSpring(e.ease);
   return {
     name: name,
     kf: '@keyframes moo-' + name + '{' + _moExitKf(fx.kf) + '}',
-    ease: _moEaseCss(e.ease, 'accelerate'),
-    dur: _moDur(e.duration, _MO_DUR.quick),
+    ease: _moEaseCss(sp ? sp.fb : e.ease, 'accelerate'),
+    lin: sp ? sp.lin : '',
+    dur: _moDur(e.duration, sp ? sp.ms : _MO_DUR.quick),
     delay: _ffInt(e.delay, 0, 0, 20000),
     int: _ffNum(e.intensity, 1, 0, 2, 2)
   };
@@ -164,10 +171,17 @@ var _MO_VIEW_JS =
 // intensity_scale from `palette`. Every effect keyframe reads it as var(--mo-k), so a distance, a scale or a blur
 // radius shrinks to nothing at 0 and doubles at 2. Written beside the animation, never inherited from far away.
 function _moK(int) { return '--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * ' + int + ');'; }
+// The animation shorthand for an enter. A spring writes it twice: the cubic-bezier fallback first, then the
+// linear() curve, so a browser that cannot parse linear() drops the second declaration and keeps the first.
+function _moAnim(s, extraDelay) {
+  var head = 'animation:moe-' + s.name + ' calc(' + s.dur + 'ms * var(--a2ui-motion-duration-scale,1)) ';
+  var tail = ' calc(' + s.delay + 'ms + ' + (extraDelay || 0) + 'ms * var(--a2ui-motion-stagger-scale,1)) both;';
+  return head + s.ease + tail + (s.lin ? head + s.lin + tail : '');
+}
 function _moEnterWrap(s, html, extraDelay) {
   var uid = s.view ? Math.random().toString(36).substr(2, 6) : '';
   return '<style>' + s.kf + '@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style>'
-    + '<div class="mo-x"' + (uid ? ' id="mo-' + uid + '"' : '') + ' style="animation:moe-' + s.name + ' calc(' + s.dur + 'ms * var(--a2ui-motion-duration-scale,1)) ' + s.ease + ' calc(' + s.delay + 'ms + ' + (extraDelay || 0) + 'ms * var(--a2ui-motion-stagger-scale,1)) both;' + _moK(s.int) + '">' + html + '</div>'
+    + '<div class="mo-x"' + (uid ? ' id="mo-' + uid + '"' : '') + ' style="' + _moAnim(s, extraDelay) + _moK(s.int) + '">' + html + '</div>'
     + (uid ? '<script>' + _MO_VIEW_JS.replace(/%%UID%%/g, uid) + '<\/script>' : '');
 }
 function _moEnter(b, html) {

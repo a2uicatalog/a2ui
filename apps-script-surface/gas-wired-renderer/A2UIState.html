@@ -328,6 +328,8 @@ function _a2uiSetVisible(el, show) {
   el.classList.remove('mo-leave');
   if (show) { el.style.display = ''; return; }
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // a palette with reduced_motion:"fade" keeps a short fade for viewers who asked for less motion
+  if (reduce && window.getComputedStyle(document.documentElement).getPropertyValue('--a2ui-reduced-motion').trim() === 'fade') reduce = false;
   if (!el.getAttribute('data-mo-exit') || reduce || el.style.display === 'none') { el.style.display = 'none'; return; }
   el.classList.add('mo-leave');
   var cs = window.getComputedStyle(el);

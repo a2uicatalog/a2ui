@@ -11185,14 +11185,33 @@ def _card_chrome(inner_html: str, recipe: str, extra_style: str = "") -> str:
     doesn't have."""
     return f'<div style="{extra_style}{_CHROME_STYLES[recipe]}">{inner_html}</div>'
 
+_MOTION_PRESETS = {
+    'calm': {'duration': 1.3, 'intensity': 0.6, 'stagger': 1.25},
+    'standard': {'duration': 1, 'intensity': 1, 'stagger': 1},
+    'expressive': {'duration': 1.1, 'intensity': 1.5, 'stagger': 1.3},
+}
+_MOTION_RM_RULES = '@keyframes a2ui-rm-in{from{opacity:0}}@keyframes a2ui-rm-out{to{opacity:0}}@media (prefers-reduced-motion:reduce){:root .mo-x{animation:a2ui-rm-in calc(200ms * var(--a2ui-motion-duration-scale,1)) ease both!important}:root .mo-leave[data-mo-exit]{animation:a2ui-rm-out var(--mo-exit-dur,200ms) ease both!important}:root [data-a2ui-menu] details[open]>[role=menu]{animation:a2ui-rm-in calc(160ms * var(--a2ui-motion-duration-scale,1)) ease both!important}}'
+
+
+def _motion_policy_var(b: dict) -> str:
+    return '--a2ui-reduced-motion:fade;' if b.get('reduced_motion') == 'fade' else ''
+
+
+def _motion_policy_rules(b: dict) -> str:
+    return _MOTION_RM_RULES if b.get('reduced_motion') == 'fade' else ''
+
+
 def _motion_scale_css(b: dict) -> str:
     """Motion policy v0: see _motionScaleCss in atom.gs (the byte-for-byte twin)."""
     out = ''
+    pre = _MOTION_PRESETS.get(b.get('motion_preset')) if isinstance(b.get('motion_preset'), str) else None
     for field, name, lo, hi in (('duration_scale', 'duration', 0.25, 3), ('intensity_scale', 'intensity', 0, 2),
                                 ('stagger_scale', 'stagger', 0, 3)):
         v = b.get(field)
         if isinstance(v, str) and re.match(r'^[0-9]+(\.[0-9]+)?$', v.strip()):
             v = float(v.strip())
+        if (isinstance(v, bool) or not isinstance(v, (int, float)) or v != v or abs(v) == float('inf')) and pre:
+            v = pre[name]
         if isinstance(v, bool) or not isinstance(v, (int, float)) or v != v or abs(v) == float('inf'):
             continue
         n = int(min(hi, max(lo, v)) * 100 + 0.5)
@@ -11212,7 +11231,8 @@ def _render_palette(b: dict) -> str:
     if b.get("muted_color"):extra += f"--muted:{_cv_esc(b['muted_color'])};"
     extra += _token_css(b)
     extra += _motion_scale_css(b)
-    return f"<style>:root{{--a2ui-accent:{_cv_esc(accent)};--a2ui-accent2:{_cv_esc(accent2)};--a2ui-block-gap:{_cv_esc(gap)};{extra}}}</style>"
+    extra += _motion_policy_var(b)
+    return f"<style>:root{{--a2ui-accent:{_cv_esc(accent)};--a2ui-accent2:{_cv_esc(accent2)};--a2ui-block-gap:{_cv_esc(gap)};{extra}}}{_motion_policy_rules(b)}</style>"
 
 _RENDERERS["palette"] = _render_palette
 
@@ -16391,7 +16411,7 @@ def _menu_item(it, depth):
             return ''
         return ('<div role="presentation" style="padding:8px 14px 4px;font-size:0.72rem;font-weight:700;letter-spacing:0.04em;'
                 'text-transform:uppercase;color:var(--text-muted,#6b7280);">' + _cv_esc(label) + '</div>')
-    if typ not in ('link', 'submenu'):
+    if typ not in ('link', 'submenu', 'action'):
         return ''
     if typ == 'submenu' and depth > 0:
         return ''
@@ -16420,6 +16440,11 @@ def _menu_item(it, depth):
     if disabled:
         return ('<span role="menuitem" aria-disabled="true" style="' + _MENU_ROW + 'color:' + color +
                 ';opacity:0.45;cursor:not-allowed;">' + inner + '</span>')
+    if typ == 'action':
+        row = _json.dumps({'id': _menu_str(it.get('id'), 80) or label, 'label': label, 'type': 'action', 'danger': danger},
+                         separators=(',', ':'), ensure_ascii=False)
+        return ('<button type="button" role="menuitem" data-row-json="' + _cv_esc(row) + '" style="' + _MENU_ROW +
+                'width:100%;box-sizing:border-box;background:none;border:0;font:inherit;font-size:0.87rem;cursor:pointer;color:' + color + ';">' + inner + '</button>')
     url = _menu_url(it.get('url'))
     return ('<a role="menuitem" href="' + _cv_esc(url) + '"' +
             ('' if url[:1] == '#' else ' target="_blank" rel="noopener noreferrer"') +
@@ -16435,6 +16460,7 @@ def _menu_spring_css():
     return out
 
 
+_MENU_ACTION_JS = '(function(){var ws=document.querySelectorAll("[data-a2ui-menu][data-actions]:not([data-bound-a])");for(var i=0;i<ws.length;i++){(function(w){w.setAttribute("data-bound-a","1");w.addEventListener("click",function(e){var b=e.target.closest?e.target.closest("button[data-row-json]"):null;if(!b)return;var ds=w.querySelectorAll("details");for(var j=0;j<ds.length;j++)ds[j].open=false;});})(ws[i]);}})();'
 _MENU_CONTEXT_JS = '(function(){var els=document.querySelectorAll("[data-a2ui-menu=contextual]:not([data-bound])");for(var i=0;i<els.length;i++){(function(w){w.setAttribute("data-bound","1");var d=w.querySelector("details"),s=d.querySelector("summary"),p=d.querySelector("[role=menu]"),base=p.getAttribute("style");s.addEventListener("contextmenu",function(e){e.preventDefault();d.open=true;p.style.position="fixed";p.style.left=e.clientX+"px";p.style.top=e.clientY+"px";p.style.right="auto";var r=p.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;if(r.right>vw)p.style.left=Math.max(0,vw-r.width-4)+"px";if(r.bottom>vh)p.style.top=Math.max(0,e.clientY-r.height)+"px";});d.addEventListener("toggle",function(){if(!d.open)p.setAttribute("style",base);});document.addEventListener("click",function(e){if(d.open&&!w.contains(e.target))d.open=false;});document.addEventListener("keydown",function(e){if(e.key==="Escape")d.open=false;});})(els[i]);}})();'
 
 
@@ -16449,6 +16475,13 @@ def _render_menu(b: dict) -> str:
     spring = b.get('spring') if isinstance(b.get('spring'), str) and b.get('spring') in _MO_SPRING else ''
     sattr = ' data-spring="' + spring + '"' if spring else ''
     items = b.get('items') if isinstance(b.get('items'), list) else []
+
+    def _is_action(k):
+        return isinstance(k, dict) and k.get('type') == 'action' and k.get('disabled') is not True and bool(_menu_str(k.get('label'), 120))
+    has_action = any(_is_action(it) or (isinstance(it, dict) and it.get('type') == 'submenu' and isinstance(it.get('items'), list)
+                                        and any(_is_action(k) for k in it['items'][:50])) for it in items[:50])
+    aattr = ' data-actions="1"' if has_action else ''
+    ascript = '<script>' + _MENU_ACTION_JS + '</script>' if has_action else ''
     end = b.get('align') == 'end' or (b.get('align') != 'start' and kind == 'split')
     panel = ('<div role="menu" style="position:absolute;top:calc(100% + 4px);' + ('right:0;' if end else 'left:0;') +
              'z-index:20;min-width:200px;max-width:min(320px,90vw);background:var(--surface,#fff);border:1px solid var(--border,#dadce0);'
@@ -16467,7 +16500,7 @@ def _render_menu(b: dict) -> str:
                 '<details style="position:relative;"><summary aria-haspopup="menu" aria-label="' +
                 _cv_esc(label + ' options' if label else 'More options') +
                 '" style="' + _menu_trig_style('0 6px 6px 0', _MENU_SPLIT_H) + 'border-left:0;">' + _MENU_CHEVRON + '</summary>' + panel + '</details></div>')
-        return '<div data-a2ui-menu="split"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + '</div>'
+        return '<div data-a2ui-menu="split"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + ascript + '</div>'
     icon_only = kind == 'icon' and icon
     if icon_only:
         trig = '<span aria-hidden="true">' + _cv_esc(icon) + '</span>'
@@ -16476,8 +16509,8 @@ def _render_menu(b: dict) -> str:
     body = ('<details style="position:relative;display:inline-block;"><summary aria-haspopup="menu"' +
             (' aria-label="' + _cv_esc(label or 'Menu') + '"' if icon_only else '') +
             ' style="' + _menu_trig_style('6px', '-webkit-touch-callout:none;-webkit-user-select:none;' if kind == 'contextual' else '') + '">' + trig + '</summary>' + panel + '</details>')
-    return ('<div data-a2ui-menu="' + kind + '"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
-            ('<script>' + _MENU_CONTEXT_JS + '</script>' if kind == 'contextual' else '') + '</div>')
+    return ('<div data-a2ui-menu="' + kind + '"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
+            ascript + ('<script>' + _MENU_CONTEXT_JS + '</script>' if kind == 'contextual' else '') + '</div>')
 
 
 _RENDERERS["menu"] = _render_menu
@@ -26655,11 +26688,13 @@ def _mo_enter_spec(e):
         return None
     name = e.get('effect') if isinstance(e.get('effect'), str) and e.get('effect') in _MO_FX else 'rise'
     fx = _MO_FX[name]
+    sp = _MO_SPRING.get(e.get('ease')) if isinstance(e.get('ease'), str) else None
     return {
         'name': name,
         'kf': '@keyframes moe-' + _cv_esc(name) + '{' + fx['kf'] + '}',
-        'ease': _mo_ease_css(e.get('ease'), fx['e']),
-        'dur': _mo_dur(e.get('duration'), fx['d']),
+        'ease': _mo_ease_css(sp['fb'] if sp else e.get('ease'), fx['e']),
+        'lin': sp['lin'] if sp else '',
+        'dur': _mo_dur(e.get('duration'), sp['ms'] if sp else fx['d']),
         'delay': _ff_int(e.get('delay'), 0, 0, 20000),
         'int': _ff_num(e.get('intensity'), 1, 0, 2, 2),
         'view': e.get('on') == 'view',
@@ -26671,10 +26706,17 @@ def _mo_k(int_):
     return '--mo-k:calc(var(--a2ui-motion-intensity-scale,1) * ' + str(int_) + ');'
 
 
+def _mo_anim(s, extra_delay=0):
+    # twin of _moAnim: a spring writes the shorthand twice, cubic-bezier fallback first, then linear()
+    head = 'animation:moe-' + s['name'] + ' calc(' + str(s['dur']) + 'ms * var(--a2ui-motion-duration-scale,1)) '
+    tail = ' calc(' + str(s['delay']) + 'ms + ' + str(extra_delay or 0) + 'ms * var(--a2ui-motion-stagger-scale,1)) both;'
+    return head + s['ease'] + tail + (head + s['lin'] + tail if s['lin'] else '')
+
+
 def _mo_enter_wrap(s, html, extra_delay=0, seed=None):
     uid = _wa_uid(seed if seed is not None else s)[:6] if s['view'] else ''
     return ('<style>' + s['kf'] + '@media (prefers-reduced-motion:reduce){.mo-x{animation:none!important}}@media print{.mo-x{animation:none!important}}.mo-arm{animation-play-state:paused!important}</style>'
-            + '<div class="mo-x"' + (' id="mo-' + uid + '"' if uid else '') + ' style="animation:moe-' + s['name'] + ' calc(' + str(s['dur']) + 'ms * var(--a2ui-motion-duration-scale,1)) ' + s['ease'] + ' calc(' + str(s['delay']) + 'ms + ' + str(extra_delay or 0) + 'ms * var(--a2ui-motion-stagger-scale,1)) both;' + _mo_k(s['int']) + '">' + html + '</div>'
+            + '<div class="mo-x"' + (' id="mo-' + uid + '"' if uid else '') + ' style="' + _mo_anim(s, extra_delay) + _mo_k(s['int']) + '">' + html + '</div>'
             + ('<script>' + _MO_VIEW_JS.replace('%%UID%%', uid) + '</script>' if uid else ''))
 
 

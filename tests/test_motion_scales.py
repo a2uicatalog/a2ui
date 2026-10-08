@@ -31,6 +31,13 @@ CASES = {
     "group": {"type": "motion_group", "effect": "slide-left", "duration": "quick", "delay": 40, "stagger": 100,
               "intensity": 1.5, "blocks": [KID, KID, KID]},
     "group_plain": {"type": "motion_group", "blocks": [KID, KID]},
+    "pal_calm": {"type": "palette", "motion_preset": "calm"},
+    "pal_override": {"type": "palette", "motion_preset": "expressive", "intensity_scale": 0.5},
+    "pal_junk": {"type": "palette", "motion_preset": "wild\"}", "reduced_motion": "never"},
+    "pal_fade": {"type": "palette", "reduced_motion": "fade"},
+    "enter_spring": {"type": "stat_card", "label": "a", "value": "1", "enter": {"effect": "rise", "ease": "snappy"}},
+    "enter_spring_dur": {"type": "stat_card", "label": "a", "value": "1", "enter": {"effect": "rise", "ease": "heavy", "duration": 900}},
+    "group_spring": {"type": "motion_group", "effect": "scale", "ease": "gentle", "blocks": [KID, KID]},
 }
 
 
@@ -172,3 +179,92 @@ def test_browser_zero_stagger_and_zero_intensity_collapse_the_choreography():
 def test_browser_element_intensity_multiplies_with_the_page_scale():
     rows = _browser({"intensity_scale": 0.5}, dict(GROUP3, intensity=1.5))
     assert rows[0][2] == "matrix(1, 0, 0, 1, 0, 18)"                 # 24 x 0.5 x 1.5
+
+
+# ---- springs are accepted wherever an ease is ----
+
+def _anims(h):
+    return re.findall(r"animation:moe-[a-z-]+ calc\((\d+)ms \* var\(--a2ui-motion-duration-scale,1\)\) (cubic-bezier\([^)]*\)|linear\([^)]*\)) ", h)
+
+
+def test_a_spring_ease_writes_a_fallback_then_the_linear_curve(html):
+    a = _anims(html("enter_spring"))
+    assert len(a) == 2, a
+    assert a[0][1] == "cubic-bezier(0.34,1.56,0.64,1)" and a[1][1].startswith("linear(0, ")
+    assert a[0][0] == a[1][0] == "420"                    # snappy brings its own natural duration
+
+
+def test_an_explicit_duration_beats_the_springs_natural_one(html):
+    assert {d for d, _ in _anims(html("enter_spring_dur"))} == {"900"}
+
+
+def test_motion_group_takes_a_spring_ease(html):
+    h = html("group_spring")
+    assert h.count("linear(0, ") == 2 and "cubic-bezier(0,0,0.2,1)" in h and "480" in h
+
+
+def test_a_plain_ease_still_writes_one_declaration(html):
+    assert len(_anims(html("enter_default"))) == 1
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium for the in-browser check")
+def test_browser_plays_the_spring_curve_and_keeps_the_fallback_declared():
+    assert CHROMIUM
+    page_html = _RENDERERS["motion_group"]({"type": "motion_group", "ease": "snappy", "blocks": [KID]})
+    with tempfile.TemporaryDirectory() as td:
+        page = Path(td) / "p.html"
+        page.write_text(f"<!doctype html><meta charset=utf-8>{page_html}<script>var e=document.querySelector('.mo-x');"
+                        "document.title=getComputedStyle(e).animationTimingFunction.slice(0,7)+'|'+getComputedStyle(e).animationDuration;</script>")
+        o = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", f"--user-data-dir={td}/prof",
+                            "--virtual-time-budget=1000", "--dump-dom", f"file://{page}"], capture_output=True, text=True, timeout=60).stdout
+    assert "<title>linear(|0.42s</title>" in o, o[-300:]       # this browser supports linear(), so the second declaration won
+
+
+# ---- presets and the reduced-motion policy ----
+
+def test_presets_set_the_three_scales_and_explicit_values_beat_them(html):
+    calm = html("pal_calm")
+    assert "--a2ui-motion-duration-scale:1.3;" in calm and "--a2ui-motion-intensity-scale:0.6;" in calm
+    assert "--a2ui-motion-stagger-scale:1.25;" in calm
+    over = html("pal_override")
+    assert "--a2ui-motion-intensity-scale:0.5;" in over            # explicit
+    assert "--a2ui-motion-duration-scale:1.1;" in over and "--a2ui-motion-stagger-scale:1.3;" in over   # the rest from expressive
+
+
+def test_unknown_preset_or_policy_changes_nothing(html):
+    h = html("pal_junk")
+    assert "--a2ui-motion" not in h and "--a2ui-reduced-motion" not in h and "a2ui-rm-in" not in h
+    assert "wild" not in h
+
+
+def test_fade_policy_is_written_as_a_variable_and_a_reduce_only_block(html):
+    h = html("pal_fade")
+    assert "--a2ui-reduced-motion:fade;" in h
+    block = h.split("@media (prefers-reduced-motion:reduce){", 1)[1]
+    assert ":root .mo-x{animation:a2ui-rm-in" in block and ":root .mo-leave[data-mo-exit]{animation:a2ui-rm-out" in block
+    assert h.index("prefers-reduced-motion") > h.index("--a2ui-reduced-motion")   # nothing applies outside the media query
+
+
+def _reduced_probe(palette: dict):
+    assert CHROMIUM
+    page_html = _RENDERERS["palette"](dict(palette, type="palette")) + _RENDERERS["motion_group"]({"type": "motion_group", "blocks": [KID]})
+    with tempfile.TemporaryDirectory() as td:
+        page = Path(td) / "p.html"
+        page.write_text(f"<!doctype html><meta charset=utf-8>{page_html}<script>var e=document.querySelector('.mo-x');"
+                        "document.title=getComputedStyle(e).animationName;</script>")
+        res = {}
+        for label, args in (("reduce", ["--force-prefers-reduced-motion"]), ("normal", [])):
+            o = subprocess.run([CHROMIUM, "--headless=new", "--no-sandbox", "--disable-gpu", f"--user-data-dir={td}/p{label}",
+                                "--virtual-time-budget=1000", "--dump-dom", *args, f"file://{page}"], capture_output=True, text=True, timeout=60).stdout
+            res[label] = re.search(r"<title>([^<]*)</title>", o).group(1)
+    return res
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium for the in-browser check")
+def test_browser_reduced_motion_removes_animation_by_default():
+    assert _reduced_probe({}) == {"reduce": "none", "normal": "moe-rise"}
+
+
+@pytest.mark.skipif(not CHROMIUM, reason="no Chromium for the in-browser check")
+def test_browser_fade_policy_keeps_a_fade_only_for_viewers_who_asked_for_less():
+    assert _reduced_probe({"reduced_motion": "fade"}) == {"reduce": "a2ui-rm-in", "normal": "moe-rise"}   # normal viewers are untouched

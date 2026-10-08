@@ -69,7 +69,7 @@ needed for "loading -> loaded", "closed -> open" (when the open state is a wired
    Tests: `tests/test_wired_exit.py` (renderer output, clamping, hostile values, and the real
    engine function in Chromium). Not yet in `spec/a2ui-state-v1.md`: editing the spec triggers the
    prompt-update process, so that is a separate step.
-3. **`menu` actions use `onRowClick`.** An action item gets `data-row-json` and the same click
+3. **`menu` actions use `onRowClick`. Built 2026-10-08, see section 9.** An action item gets `data-row-json` and the same click
    binding `data_table` and `photo_grid` use (`_a2uiBindRowClicks`), so the wire receives the item
    object. This needs a small script for wired menus only. A plain menu stays CSS-only.
 4. **A wired open state is optional.** It would be a second output wire (`onToggle` already exists
@@ -115,3 +115,35 @@ Not covered, by design: film-clock atoms (`motion_timeline` and its children) ow
 and ignore these. `fade` and `wipe` have no distance, so `intensity` does not change them.
 `intensity`, `stagger_scale` and the other palette fields are documented here and under `menu`'s
 notes, not in the public `palette` or `motion_group` field lists (the preview boundary).
+
+## 9. Springs, presets, the reduced-motion policy, and menu actions (built 2026-10-08)
+
+**Springs wherever an ease is.** `ease` on `enter`, `exit` and `motion_group` now accepts `gentle`,
+`snappy` and `heavy` (the `_MO_SPRING` table). A spring brings its own natural duration (480 / 420 /
+640 ms), used when no `duration` is given. For `enter` the animation shorthand is written twice,
+cubic-bezier fallback first and `linear()` second, so a browser without `linear()` keeps the first.
+For a wired `exit` the `linear()` curve travels in `--mo-exit-lin` behind `@supports`, because a
+variable holding an unparseable easing would make the whole animation invalid with no fallback.
+Chromium plays it: computed timing function `linear(...)`, duration 0.42 s for `snappy`.
+
+**Presets.** `palette` takes `motion_preset: calm | standard | expressive`, which sets the three scales
+at once (calm 1.3 / 0.6 / 1.25 and expressive 1.1 / 1.5 / 1.3 for duration / intensity / stagger).
+Any explicit scale beats the preset, the same rule the design tokens follow. Unknown names do nothing.
+(The existing `palette` `preset` field is the design-token preset, so this one is `motion_preset`.)
+
+**Reduced motion as a policy.** The OS setting is always respected; an author can never turn motion
+on for a viewer whose device asks for less. What an author can choose: `reduced_motion: "fade"` keeps
+a plain short fade (enter, exit, the menu panel) for those viewers instead of removing every
+animation. Default is the old behaviour, animation off. It is written as `--a2ui-reduced-motion:fade`
+plus a block that applies only inside `@media (prefers-reduced-motion: reduce)`; the engine reads the
+variable, so a wired exit still plays its fade-out for those viewers. Checked in Chromium both ways
+(`tests/test_motion_scales.py`, `tests/test_wired_exit.py`).
+
+**`menu` actions.** An item with `type: "action"` is a `<button role="menuitem">` carrying
+`data-row-json` = `{id, label, type: "action", danger}`, the same contract `data_table` and
+`photo_grid` use, so the existing `onRowClick` wire receives it with no new event vocabulary.
+`id` defaults to the label. The menu closes after the click through a small delegated script that
+ships only when the menu has an action. Link items still navigate and emit nothing; without a wire an
+action is inert. Checkbox and radio items are still not built: they need an object-valued state event.
+Verified with the real `_a2uiBindRowClicks` in Chromium: a link click emitted nothing, an action
+click delivered the exact object to the wire and closed the menu.
