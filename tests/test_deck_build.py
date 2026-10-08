@@ -76,3 +76,17 @@ def test_media_layout_animated_gif(tmp_path):
     assert 'alt is required' in db.run(str(noalt))['errors'][0]['message']
     e = db.run('<deck><slide layout="media"><heading>h</heading><media src="nope.gif"/><alt>a</alt></slide></deck>')['errors']
     assert 'file not found: nope.gif' in e[0]['message']
+
+def test_studio_state_becomes_a_deck():
+    st = {'name': 'Data story', 'st': {'title': 'Data story', 'preset': 'ocean', 'scenes': [
+        {'type': 'title', 'transition': 'dissolve', 'dur': 4.5, 'f': {'eyebrow': 'Q4 REVIEW', 'headline': 'A year\nin *numbers.*', 'sub': ''}},
+        {'type': 'chart', 'transition': 'push', 'dur': 5, 'f': {'kind': 'bars'}},
+        {'type': 'stats', 'transition': 'slice', 'dur': 5, 'f': {'roll': 'roll', 'kicker': 'BY THE NUMBERS', 'stats': '£2.4M | revenue\n31% | growth\n4,800 | customers'}},
+        {'type': 'steps', 'transition': 'wipe', 'dur': 5, 'f': {'heading': 'What\n*comes next.*', 'steps': 'Hire\nExpand\nLaunch EU'}}]}}
+    r = db.run(json.dumps(st), skip_film_only=True)
+    assert not r['errors'] and r['slides'] == 3 and any(w['code'] == 'film-only' for w in r['warnings'])
+
+
+def test_device_scene_becomes_bullets_with_warning():
+    r = db.run(json.dumps({'scenes': [{'type': 'device', 'f': {'heading': 'Built for *every screen*', 'items': 'Plan\nBuild'}}]}))
+    assert not r['errors'] and r['slides'] == 1 and any(w['code'] == 'film-alias' for w in r['warnings'])

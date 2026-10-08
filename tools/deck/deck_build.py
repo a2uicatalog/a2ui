@@ -48,8 +48,9 @@ LAYOUTS = {
     'cta':     dict(film='cta', fields={'headline': dict(kind='text', required=True, max=70), 'b1': dict(kind='text', required=True, max=40),
                                         'l1': dict(kind='url'), 'b2': dict(kind='text', max=40), 'l2': dict(kind='url'), 'foot': dict(kind='text', max=60)}),
 }
-ALIASES = {'steps': 'bullets', 'big-stat': 'stats', 'numbers': 'stats'}
-FILM_ONLY = {'chart', 'chat', 'word', 'morph', 'device', 'captions', 'image'}
+ALIASES = {'steps': 'bullets', 'device': 'bullets', 'big-stat': 'stats', 'numbers': 'stats'}
+FILM_FIELDS = {'roll'}                                                  # film-only options on scenes that do have a slide layout: ignored with a warning
+FILM_ONLY = {'chart', 'chat', 'word', 'morph', 'captions', 'image'}
 NOTES_MAX = 1200
 BASE = Path('.')                                                      # media paths in a deck resolve against this (the deck file's folder when built from a file)
 
@@ -96,12 +97,17 @@ def parse_xml(src, errs):
 def parse_json(src, errs):
     try: d = json.loads(src)
     except Exception as e: err(errs, None, 'json', f'not valid JSON: {e}'); return None
-    sc = d.get('scenes') if isinstance(d, dict) else d
+    sc = (d.get('scenes') or (d.get('st') or {}).get('scenes')) if isinstance(d, dict) else d
     if not isinstance(sc, list): err(errs, None, 'json', 'expected {"scenes": [...]} or a list of scenes'); return None
-    deck = dict(title=(d.get('title', '') if isinstance(d, dict) else ''), target=(d.get('target') if isinstance(d, dict) else None), scenes=[])
+    st = d.get('st') if isinstance(d, dict) and isinstance(d.get('st'), dict) else d    # a studio template/state nests the film under `st`
+    sc = st.get('scenes') if isinstance(st, dict) else sc
+    deck = dict(title=(st.get('title', '') if isinstance(st, dict) else ''), target=(st.get('target') if isinstance(st, dict) else None), scenes=[])
     for i, s in enumerate(sc, 1):
         if not isinstance(s, dict): err(errs, i, 'scene', 'a scene must be an object'); continue
-        s = dict(s); typ = s.pop('type', s.pop('layout', '')); notes = oneline(s.pop('notes', ''))
+        s = dict(s)
+        if isinstance(s.get('f'), dict):                                   # a studio scene: {type, transition, dur, f:{fields}}; timing and transitions are film-only
+            s = {**s.pop('f'), **{kk: s[kk] for kk in ('type', 'layout', 'notes') if kk in s}}
+        typ = s.pop('type', s.pop('layout', '')); notes = oneline(s.pop('notes', ''))
         if 'steps' in s and 'items' not in s: s['items'] = s.pop('steps')
         if 'heading' not in s and typ == 'steps' and 'headline' in s: s['heading'] = s.pop('headline')
         if isinstance(s.get('items'), str): s['items'] = lines(s['items'])
@@ -127,7 +133,9 @@ def validate(deck, errs, warns, skip_film_only=False):
             if lay in FILM_ONLY and skip_film_only: warns.append(dict(slide=at, code='film-only', message=f'scene {at} ({lay}) is film-only and has no slide layout; left out')); continue
             hint = 'it is a film-only scene; pass --skip-film-only to leave such scenes out' if lay in FILM_ONLY else f'choose one of {sorted(LAYOUTS)}'
             err(errs, at, 'layout', f'slide {at}: unknown layout {sc["layout"]!r}; {hint}'); continue
+        if sc['layout'] == 'device': warns.append(dict(slide=at, code='film-alias', message=f'slide {at}: the film device scene is shown as a bullets slide (the phone mock-up is film-only)'))
         sc['layout'] = lay; spec = LAYOUTS[lay]['fields']
+        for name in [n for n in sc['f'] if n in FILM_FIELDS and n not in spec]: sc['f'].pop(name); warns.append(dict(slide=at, code='film-field', message=f'slide {at} ({lay}): film-only option {name!r} ignored'))
         for name in sc['f']:
             if name not in spec and name != 'alt': err(errs, at, 'field', f'slide {at} ({lay}): unknown field {name!r}; fields are {sorted(spec)}', field=name)
         for name, d in spec.items():
