@@ -2158,6 +2158,14 @@ ANDROID_NOTE_HTML = """
 </div>
 """
 
+
+# Honest scope for the slide surfaces: what was actually checked (same single `hero` slot).
+SLIDES_NOTE_HTML = """
+<div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:14px;color:var(--muted);margin:0 0 20px">
+<strong style="color:var(--text)">Slides, from a payload.</strong> <code>tools/deck/payload_to_deck.py</code> turns an A2UI payload into a PPTX that opens in Google Slides: one recipe per atom, a text-fit check with real font metrics, and a report of any atom it could not convert. The previews below are the web rendering; the slide layout is the deck's own, not a pixel copy. Files are checked by converting them in Google Slides and reading back the result; they have not been tested in desktop PowerPoint.
+</div>
+"""
+
 # Short install note for the claude-code surface page, the only other surface
 # with a hand-authored lead (same single `hero` slot as MCP_APPS_HERO_HTML).
 CLAUDE_CODE_NOTE_HTML = """
@@ -2924,7 +2932,8 @@ def generate_surface_page(surface, atoms):
                .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
                if surface == "mcp-apps" else
                CLAUDE_CODE_NOTE_HTML if surface == "claude-code" else
-               ANDROID_NOTE_HTML if surface == "android" else "")
+               ANDROID_NOTE_HTML if surface == "android" else
+               SLIDES_NOTE_HTML if surface in ("slides", "pptx") else "")
     # The same iso_fireworks_panel that runs inside the sandboxed MCP Apps
     # view, now rendered by the PAGE itself — a fixed right-half overlay over
     # the viewport rather than the iframe. Dogfooding: the page about atoms
