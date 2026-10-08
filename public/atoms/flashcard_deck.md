@@ -11,7 +11,7 @@ google-apps-script-web, mcp-apps, android
 | Field | Type |
 |---|---|
 | cards | array (required) of {front, back} |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | label_front | string (optional, default "QUESTION") |
 | label_back | string (optional, default "ANSWER") |
 

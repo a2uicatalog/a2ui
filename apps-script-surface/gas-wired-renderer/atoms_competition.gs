@@ -18,7 +18,7 @@ _RENDERERS['content_tabs'] = function(b) {
   var tabList = b.tabs || [];
   if (!tabList.length) return '';
   var uid    = 'ct' + Math.random().toString(36).substr(2, 6);
-  var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
   var open   = Math.min(Math.max(b.default_index || 0, 0), tabList.length - 1);
 
   // Underline-style tabs (2026-07-24, grounded in Material/Primer/Radix):
@@ -141,7 +141,7 @@ _RENDERERS['standings_table'] = function(b) {
           'var rs=lead?"background:rgba(99,102,241,0.08);font-weight:700;":"";' +
           'var label=nameOf[s.n]?nameOf[s.n]:("Player "+s.n);' +
           'return "<tr style=\\""+rs+"\\">"+' +
-            '"<td style=\\""+TD+NUM+(lead?"color:var(--a2ui-accent,#6366f1);":"")+"\\">"+(i+1)+"</td>"+' +
+            '"<td style=\\""+TD+NUM+(lead?"color:var(--a2ui-accent,#4f46e5);":"")+"\\">"+(i+1)+"</td>"+' +
             '"<td style=\\""+TD+"\\">"+esc(label)+"</td>"+' +
             '"<td style=\\""+TD+NUM+"\\">"+s.played+"</td>"+' +
             '"<td style=\\""+TD+NUM+"font-weight:700;\\">"+s.pts+"</td>"+' +
@@ -178,7 +178,7 @@ _RENDERERS['standings_table'] = function(b) {
     var lead = r.highlight === 'leader';
     var rowStyle = lead ? 'background:rgba(99,102,241,0.08);font-weight:700;' : '';
     return '<tr style="' + rowStyle + '">' +
-      '<td style="' + td + num + (lead ? 'color:var(--a2ui-accent,#6366f1);' : '') + '">' + (i + 1) + '</td>' +
+      '<td style="' + td + num + (lead ? 'color:var(--a2ui-accent,#4f46e5);' : '') + '">' + (i + 1) + '</td>' +
       '<td style="' + td + '">' + _esc(r.name || '') + '</td>' +
       (showPlayed ? '<td style="' + td + num + '">' + (r.played !== undefined ? _esc(r.played) : '') + '</td>' : '') +
       '<td style="' + td + num + 'font-weight:700;">' + _esc(r.primary !== undefined ? r.primary : '') + '</td>' +
@@ -223,7 +223,7 @@ _RENDERERS['match_schedule'] = function(b) {
           '</div></div>';
       }).join('');
       return '<div style="margin:1rem 0;">' +
-        '<div style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#6366f1);">' + label + '</div>' +
+        '<div style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#4f46e5);">' + label + '</div>' +
         items + '</div>';
     }).join('');
     return '<div style="margin:1.2rem 0;">' + cards + '</div>';

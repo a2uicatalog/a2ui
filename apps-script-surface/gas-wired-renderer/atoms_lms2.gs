@@ -149,7 +149,7 @@ _RENDERERS['cohort_progress_board'] = function(b) {
     return '<tr>' +
       '<td style="' + tdS + '">' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
-          '<div style="width:28px;height:28px;border-radius:50%;background:#6366f1;flex-shrink:0;' +
+          '<div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;flex-shrink:0;' +
             'display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:#fff;">' + init + '</div>' +
           '<span style="font-size:0.75rem;color:#e2e8f0;">' + _esc(name) + '</span>' +
         '</div>' +
@@ -166,7 +166,7 @@ _RENDERERS['cohort_progress_board'] = function(b) {
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
-      '<span style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;">👥 ' + _esc(title) + '</span>' +
+      '<span style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);">👥 ' + _esc(title) + '</span>' +
       '<div style="margin-left:auto;display:flex;gap:16px;">' +
         '<div style="text-align:center;"><div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;">' + rows.length + '</div><div style="font-size:0.58rem;color:#475569;">Enrolled</div></div>' +
         '<div style="text-align:center;"><div style="font-size:1.1rem;font-weight:800;color:#34d399;">' + active + '</div><div style="font-size:0.58rem;color:#475569;">Active</div></div>' +
@@ -193,7 +193,7 @@ _RENDERERS['reflection_prompt'] = function(b) {
   var prompt = b.prompt      || 'What was the most important thing you learned?';
   var pid    = b.prompt_id   || 'reflection';
   var ph     = b.placeholder || 'Write your reflection here…';
-  var accent = b.accent      || '#6366f1';
+  var accent = b.accent      || '#4f46e5';
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
@@ -271,7 +271,7 @@ _RENDERERS['annotation_highlight'] = function(b) {
     '<div id="' + uid + 'panel" style="display:none;margin-top:12px;padding:14px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);">' +
       '<div id="' + uid + 'pt" style="font-size:0.7rem;font-weight:700;margin-bottom:5px;"></div>' +
-      '<div id="' + uid + 'pe" style="font-size:0.78rem;color:#94a3b8;line-height:1.6;"></div>' +
+      '<div id="' + uid + 'pe" style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.6;"></div>' +
     '</div>' +
     '<script>(function(){' +
       'var ns=' + notesJson + ';var cur=-1;' +
@@ -298,7 +298,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   var uid    = 'obs' + Math.random().toString(36).substr(2, 6);
   var title  = b.title  || 'Get Started';
   var steps  = b.steps  || [];
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
 
   var ids     = _jsJson(steps.map(function(s, i) { return s.id || ('step' + i); }));
   var urls    = _jsJson(steps.map(function(s) { return s.action_url || ''; }));
@@ -317,10 +317,10 @@ _RENDERERS['onboarding_stepper'] = function(b) {
         '</div>' +
         '<div style="flex:1;min-width:0;">' +
           '<div style="font-size:0.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">' + _esc(s.label || '') + '</div>' +
-          (s.description ? '<div style="font-size:0.72rem;color:#64748b;line-height:1.5;margin-bottom:10px;">' + _esc(s.description) + '</div>' : '') +
+          (s.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;margin-bottom:10px;">' + _esc(s.description) + '</div>' : '') +
           '<button id="' + uid + 'b' + i + '" onclick="' + uid + 'done(' + i + ')" ' +
             'style="padding:7px 16px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);' +
-              'background:rgba(255,255,255,0.04);color:#94a3b8;font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.2s;">' +
+              'background:rgba(255,255,255,0.04);color:var(--muted,#5f6368);font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.2s;">' +
             _esc(s.action_label || 'Mark complete') + '</button>' +
         '</div>' +
       '</div>';
@@ -329,7 +329,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;">🚀 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);">🚀 ' + _esc(title) + '</div>' +
     '<div id="' + uid + 'pg" style="font-size:0.68rem;color:#334155;margin-bottom:16px;margin-top:3px;">0 / ' + steps.length + ' complete</div>' +
     stepHtml +
     '<script>(function(){' +
@@ -383,7 +383,7 @@ _RENDERERS['case_study_card'] = function(b) {
   for (var i = 0; i < questions.length; i++) {
     qHtml += '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
       '<span style="color:' + _esc(accent) + ';font-weight:700;font-size:0.78rem;flex-shrink:0;">' + (i + 1) + '.</span>' +
-      '<div style="font-size:0.78rem;color:#94a3b8;line-height:1.5;">' + _esc(questions[i]) + '</div>' +
+      '<div style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(questions[i]) + '</div>' +
     '</div>';
   }
 
@@ -413,10 +413,10 @@ _RENDERERS['case_study_card'] = function(b) {
     (answer ?
       '<div style="padding:16px 20px;">' +
         '<button onclick="var r=document.getElementById(\'' + uid + 'ans\');var b=document.getElementById(\'' + uid + 'revbtn\');r.style.display=r.style.display===\'none\'?\'block\':\'none\';b.textContent=r.style.display===\'none\'?\'Show model answer ▾\':\'Hide answer ▴\';" ' +
-          'id="' + uid + 'revbtn" style="font-size:0.72rem;font-weight:600;color:#64748b;background:none;border:none;cursor:pointer;padding:0;">Show model answer ▾</button>' +
+          'id="' + uid + 'revbtn" style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);background:none;border:none;cursor:pointer;padding:0;">Show model answer ▾</button>' +
         '<div id="' + uid + 'ans" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;' +
           'background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">' +
-          '<div style="font-size:0.72rem;color:#94a3b8;line-height:1.6;">' + _esc(answer) + '</div>' +
+          '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.6;">' + _esc(answer) + '</div>' +
         '</div>' +
       '</div>' : '') +
     '</div>'
@@ -430,13 +430,13 @@ _RENDERERS['study_timer'] = function(b) {
   var uid    = 'stmr' + Math.random().toString(36).substr(2, 6);
   var focus  = parseInt(b.focus_mins  || 25);
   var brk    = parseInt(b.break_mins  || 5);
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var label  = b.label  || 'Study Timer';
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);">' +
-    '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;margin-bottom:16px;">⏱ ' + _esc(label) + '</div>' +
+    '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:16px;">⏱ ' + _esc(label) + '</div>' +
     // Mode label
     '<div id="' + uid + 'mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">Focus</div>' +
     // Timer display
@@ -455,7 +455,7 @@ _RENDERERS['study_timer'] = function(b) {
       '<button id="' + uid + 'start" onclick="' + uid + 'toggle()" ' +
         'style="padding:10px 28px;border-radius:99px;background:' + _esc(accent) + ';color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;min-width:100px;">Start</button>' +
       '<button onclick="' + uid + 'reset()" ' +
-        'style="padding:10px 18px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#64748b;font-size:0.8rem;font-weight:600;cursor:pointer;">Reset</button>' +
+        'style="padding:10px 18px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;cursor:pointer;">Reset</button>' +
     '</div>' +
     '<div id="' + uid + 'sessions" style="font-size:0.62rem;color:#334155;margin-top:12px;">0 sessions completed</div>' +
     '<script>(function(){' +
@@ -490,7 +490,7 @@ _RENDERERS['rubric_card'] = function(b) {
   var title    = b.title    || 'Assessment Rubric';
   var levels   = b.levels   || ['Beginning', 'Developing', 'Proficient', 'Exemplary'];
   var criteria = b.criteria || [];
-  var accent   = b.accent   || '#6366f1';
+  var accent   = b.accent   || '#4f46e5';
 
   var levelCols = levels.map(function(l, i) {
     var pct = Math.round(((i + 1) / levels.length) * 100);
@@ -503,7 +503,7 @@ _RENDERERS['rubric_card'] = function(b) {
   var rows = criteria.map(function(c) {
     var desc = c.descriptors || [];
     var cells = levels.map(function(l, i) {
-      return '<td style="padding:10px 12px;font-size:0.72rem;color:#94a3b8;line-height:1.5;' +
+      return '<td style="padding:10px 12px;font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;' +
         'border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;text-align:center;">' +
         _esc(desc[i] || '—') + '</td>';
     }).join('');
@@ -516,7 +516,7 @@ _RENDERERS['rubric_card'] = function(b) {
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:12px;">📊 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:12px;">📊 ' + _esc(title) + '</div>' +
     '<div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.08);">' +
     '<table style="width:100%;border-collapse:collapse;">' +
     '<thead><tr>' +
@@ -563,7 +563,7 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
     '</div>' +
     // Confidence rating (shown after flip)
     '<div id="' + uid + 'rate" style="display:none;text-align:center;">' +
-      '<div style="font-size:0.68rem;color:#64748b;margin-bottom:10px;">How well did you know this?</div>' +
+      '<div style="font-size:0.68rem;color:var(--muted,#5f6368);margin-bottom:10px;">How well did you know this?</div>' +
       '<div style="display:flex;justify-content:center;gap:8px;">' +
         [1,2,3,4,5].map(function(n) {
           var labels = ['','Forgot','Hard','Okay','Good','Easy'];
@@ -574,11 +574,11 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
             ' onmouseover="this.style.borderColor=\'' + cols[n] + '44\';this.style.background=\'' + cols[n] + '11\'"' +
             ' onmouseout="if(!this.disabled){this.style.borderColor=\'rgba(255,255,255,0.08)\';this.style.background=\'rgba(255,255,255,0.03)\'}">' +
             '<span style="font-size:1rem;">' + ['','😰','😕','😐','🙂','😄'][n] + '</span>' +
-            '<span style="font-size:0.6rem;color:#64748b;">' + labels[n] + '</span>' +
+            '<span style="font-size:0.6rem;color:var(--muted,#5f6368);">' + labels[n] + '</span>' +
           '</button>';
         }).join('') +
       '</div>' +
-      '<div id="' + uid + 'next" style="display:none;margin-top:12px;font-size:0.72rem;color:#64748b;"></div>' +
+      '<div id="' + uid + 'next" style="display:none;margin-top:12px;font-size:0.72rem;color:var(--muted,#5f6368);"></div>' +
     '</div>' +
     '<script>(function(){' +
       'var flipped=false;var rated=false;' +
@@ -653,7 +653,7 @@ _RENDERERS['leaderboard_card'] = function(b) {
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
     items +
     '</div>'
   );

@@ -11505,7 +11505,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "style": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -11622,7 +11622,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "steps": {
        "description": "array (required). Array of {label or title}",
@@ -11720,7 +11720,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "accent2": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -11842,7 +11842,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "style": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -11896,7 +11896,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "header_theme": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -11995,7 +11995,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "theme": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -12062,7 +12062,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "theme": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -12129,7 +12129,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       }
      },
      "required": [
@@ -12401,7 +12401,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       }
      },
      "required": [
@@ -12448,7 +12448,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "slots": {
        "description": "array (required). Array of {time, title, speaker?, location?, type? (\"break\"|\"keynote\"|\"workshop\"|\"panel\"|\"social\"), description?}",
@@ -13507,7 +13507,7 @@
        "description": "\"small\" | \"normal\" | \"large\"  (optional, default \"normal\"). Mark diameter relative to the panel."
       },
       "colors": {
-       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#6366f1\",\"#a855f7\",\"#22d3ee\"]. First colour is the orbits and nucleus, second the electron, all of them the streams.",
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#4f46e5\",\"#a855f7\",\"#22d3ee\"]. First colour is the orbits and nucleus, second the electron, all of them the streams.",
        "type": "array"
       },
       "background": {
@@ -16775,7 +16775,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). Left-border and icon colour. Default \"#6366f1\"."
+       "description": "string (optional). Left-border and icon colour. Default \"#4f46e5\"."
       }
      },
      "required": [
@@ -16952,7 +16952,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). Bar fill colour. Default \"#6366f1\"."
+       "description": "string (optional). Bar fill colour. Default \"#4f46e5\"."
       },
       "show_flash": {
        "description": "boolean (optional, default true). Trigger level-up flash when xp_current >= xp_next.",
@@ -17064,7 +17064,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). Progress fill colour. Default \"#6366f1\"."
+       "description": "string (optional). Progress fill colour. Default \"#4f46e5\"."
       }
      },
      "required": [
@@ -21024,7 +21024,7 @@
       },
       "color": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default #6366f1)"
+       "description": "string (optional, hex, default #4f46e5)"
       },
       "height": {
        "description": "number (optional, px, default 3)",
@@ -21188,7 +21188,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "theme": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -22226,7 +22226,7 @@
       },
       "color": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex accent, default #6366f1)"
+       "description": "string (optional, hex accent, default #4f46e5)"
       },
       "speed": {
        "description": "number (optional, auto-spin speed, default 0.006)",
@@ -26377,7 +26377,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, hex, default \"#6366f1\")"
+       "description": "string (optional, hex, default \"#4f46e5\")"
       },
       "label_front": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",

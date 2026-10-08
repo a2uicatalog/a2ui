@@ -11,7 +11,7 @@ web, google-apps-script-web, pdf, mcp-apps, android
 | Field | Type |
 |---|---|
 | current | integer (required, 1-based index of active step) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | steps | array (required). Array of {label or title} |
 
 ## Example payload

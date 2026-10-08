@@ -64,7 +64,7 @@ _RENDERERS['module_map'] = function(b) {
           '<span style="font-size:1.4rem;flex-shrink:0;">' + _esc(m.icon || '📚') + '</span>' +
           '<div style="font-size:0.88rem;font-weight:700;color:#f1f5f9;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
         '</div>' +
-        (m.description ? '<div style="font-size:0.72rem;color:#64748b;line-height:1.5;">' + _esc(m.description) + '</div>' : '') +
+        (m.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(m.description) + '</div>' : '') +
         '<div style="display:flex;gap:12px;margin-top:auto;">' +
           (m.duration ? '<span style="font-size:0.6rem;color:#475569;">⏱ ' + _esc(m.duration) + '</span>' : '') +
           (m.lessons  ? '<span style="font-size:0.6rem;color:#475569;">' + m.lessons + ' lessons</span>' : '') +
@@ -101,7 +101,7 @@ _RENDERERS['module_map'] = function(b) {
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:16px;">📋 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:16px;">📋 ' + _esc(title) + '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:12px;">' + cards + '</div>' +
     '<script>(function(){' +
       'var uid="' + uid + '";' +
@@ -173,7 +173,7 @@ _RENDERERS['knowledge_check'] = function(b) {
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.14);">' +
-    '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6366f1;margin-bottom:10px;">💡 Knowledge Check</div>' +
+    '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4f46e5;margin-bottom:10px;">💡 Knowledge Check</div>' +
     '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;line-height:1.5;margin-bottom:14px;">' + _esc(question) + '</div>' +
     '<div id="' + uid + 'opts">' + opts + '</div>' +
     '<div id="' + uid + 'fb" style="display:none;margin-top:10px;padding:12px 14px;border-radius:9px;font-size:0.75rem;line-height:1.5;"></div>' +
@@ -231,7 +231,7 @@ _RENDERERS['quiz_result_summary'] = function(b) {
   }
 
   var btns = '';
-  if (retryUrl) btns += '<a href="' + _esc(retryUrl) + '" target="_top" style="padding:10px 22px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:0.8rem;font-weight:600;text-decoration:none;">↩ Retry</a>';
+  if (retryUrl) btns += '<a href="' + _esc(retryUrl) + '" target="_top" style="padding:10px 22px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;text-decoration:none;">↩ Retry</a>';
   if (nextUrl)  btns += '<a href="' + _esc(nextUrl)  + '" target="_top" style="padding:10px 22px;border-radius:9px;background:' + col + ';color:#0f172a;font-size:0.8rem;font-weight:700;text-decoration:none;">Continue →</a>';
 
   return (
@@ -239,18 +239,18 @@ _RENDERERS['quiz_result_summary'] = function(b) {
     '<div style="text-align:center;margin-bottom:24px;">' +
       '<div style="font-size:2.8rem;margin-bottom:10px;">' + (passed ? '🎉' : '📚') + '</div>' +
       '<div style="font-size:1.5rem;font-weight:800;color:' + col + ';">' + (passed ? 'Passed!' : 'Keep Going') + '</div>' +
-      '<div style="font-size:0.72rem;color:#64748b;margin-top:5px;">' +
+      '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:5px;">' +
         (passed ? 'Well done — you cleared the pass mark.' : 'You need ' + passMark + '% to pass. Review the material and retry.') +
       '</div>' +
     '</div>' +
     '<div style="display:flex;justify-content:center;align-items:center;gap:32px;margin-bottom:24px;flex-wrap:wrap;">' +
       '<div style="text-align:center;">' +
         '<div style="font-size:3.2rem;font-weight:900;color:' + col + ';line-height:1;">' + pct + '<span style="font-size:1.4rem;">%</span></div>' +
-        '<div style="font-size:0.62rem;color:#64748b;margin-top:4px;">' + score + ' / ' + total + ' correct</div>' +
+        '<div style="font-size:0.62rem;color:var(--muted,#5f6368);margin-top:4px;">' + score + ' / ' + total + ' correct</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;gap:8px;">' +
-        '<div style="font-size:0.72rem;color:#94a3b8;">⏱ Time: <strong style="color:#e2e8f0;">' + timeStr + '</strong></div>' +
-        '<div style="font-size:0.72rem;color:#94a3b8;">🎯 Pass mark: <strong style="color:#e2e8f0;">' + passMark + '%</strong></div>' +
+        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">⏱ Time: <strong style="color:#e2e8f0;">' + timeStr + '</strong></div>' +
+        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">🎯 Pass mark: <strong style="color:#e2e8f0;">' + passMark + '%</strong></div>' +
       '</div>' +
     '</div>' +
     (questions.length ?
@@ -302,7 +302,7 @@ _RENDERERS['scenario_branch'] = function(b) {
     '<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
     '<div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">🎭 Scenario</div>' +
-      (context ? '<div style="font-size:0.72rem;color:#64748b;line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '') +
+      (context ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '') +
       '<div style="font-size:0.92rem;font-weight:600;color:#f1f5f9;line-height:1.5;">' + _esc(scene) + '</div>' +
     '</div>' +
     '<div style="padding:20px 24px;">' +
@@ -326,7 +326,7 @@ _RENDERERS['scenario_branch'] = function(b) {
           'var body=\'<div style="font-size:0.82rem;color:#cbd5e1;line-height:1.6;">\'+_E(c.consequence)+\'</div>\';' +
           'var nav=c.next_url' +
             '?\'<a href="\'+(/^(https?:|\\/|\\?|#)/i.test(String(c.next_url))?_E(c.next_url):"#")+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
-            ':\'<button onclick="' + uid + 'rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:0.75rem;cursor:pointer;">↩ Try again</button>\';' +
+            ':\'<button onclick="' + uid + 'rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">↩ Try again</button>\';' +
           'res.innerHTML=hdr+body+nav;' +
         '}' +
       '};' +
@@ -372,7 +372,7 @@ _RENDERERS['certification_card'] = function(b) {
   var course = b.course  || 'Course Title';
   var issuer = b.issuer  || 'A2UI Learning';
   var req    = b.requires || '';
-  var accent = b.accent  || '#6366f1';
+  var accent = b.accent  || '#4f46e5';
   var earner = b.earner  || '';
   var date   = b.date    || new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
 
@@ -389,10 +389,10 @@ _RENDERERS['certification_card'] = function(b) {
       'border:1px solid rgba(99,102,241,0.22);box-shadow:0 0 48px rgba(99,102,241,0.07);">' +
     '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,' + _esc(accent) + ',#a78bfa);"></div>' +
     '<div style="font-size:2.8rem;margin-bottom:14px;">🏆</div>' +
-    '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#6366f1;margin-bottom:8px;">' + _esc(issuer) + '</div>' +
-    '<div style="font-size:0.72rem;color:#64748b;margin-bottom:14px;">This is to certify that</div>' +
+    '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#4f46e5;margin-bottom:8px;">' + _esc(issuer) + '</div>' +
+    '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-bottom:14px;">This is to certify that</div>' +
     '<div id="' + uid + 'nm" style="font-size:1.6rem;font-weight:800;color:#f1f5f9;margin-bottom:6px;">' + _esc(earner || 'Learner') + '</div>' +
-    '<div style="font-size:0.72rem;color:#64748b;margin-bottom:6px;">has successfully completed</div>' +
+    '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-bottom:6px;">has successfully completed</div>' +
     '<div style="font-size:1.1rem;font-weight:700;color:#e2e8f0;margin-bottom:16px;">' + _esc(course) + '</div>' +
     '<div style="font-size:0.65rem;color:#475569;">' + _esc(date) + '</div>' +
     '</div>';
@@ -428,7 +428,7 @@ _RENDERERS['certification_card'] = function(b) {
 // Optional before values overlay as a dashed polygon for growth comparison.
 _RENDERERS['skill_radar'] = function(b) {
   var title  = b.title  || 'Skill Profile';
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var skills = b.skills || [];
   var n      = Math.max(skills.length, 3);
   var SIZE   = 220;
@@ -489,13 +489,13 @@ _RENDERERS['skill_radar'] = function(b) {
 
   var legend = hasBefore ?
     '<div style="display:flex;gap:16px;justify-content:center;margin-top:6px;">' +
-      '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:#64748b;"><div style="width:18px;height:0;border-top:2px dashed rgba(255,255,255,0.3);"></div>Before</div>' +
-      '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:#64748b;"><div style="width:18px;height:2px;background:' + _esc(accent) + ';"></div>Now</div>' +
+      '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:0;border-top:2px dashed rgba(255,255,255,0.3);"></div>Before</div>' +
+      '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:2px;background:' + _esc(accent) + ';"></div>Now</div>' +
     '</div>' : '';
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;text-align:center;">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:14px;">🎯 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🎯 ' + _esc(title) + '</div>' +
     '<div style="display:flex;justify-content:center;">' + svg + '</div>' +
     legend +
     '</div>'
@@ -527,7 +527,7 @@ _RENDERERS['badge_showcase'] = function(b) {
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:8px;">' + items + '</div>' +
     '<script>(function(){' +
       'var uid="' + uid + '";var count=' + badges.length + ';' +
@@ -559,7 +559,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
   var cards = '';
   for (var i = 0; i < paths.length; i++) {
     var p  = paths[i];
-    var ac = p.accent || '#6366f1';
+    var ac = p.accent || '#4f46e5';
     cards +=
       '<div id="' + uid + 'p' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="border-radius:14px;padding:22px 18px;cursor:pointer;transition:all 0.2s;' +
@@ -569,7 +569,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
         ' onmouseout="if(!this.dataset.sel){this.style.borderColor=\'rgba(255,255,255,0.08)\';this.style.background=\'rgba(255,255,255,0.03)\'}">' +
         '<span style="font-size:2rem;">' + _esc(p.icon || '🎯') + '</span>' +
         '<div style="font-size:0.92rem;font-weight:700;color:#f1f5f9;">' + _esc(p.label || '') + '</div>' +
-        (p.description ? '<div style="font-size:0.72rem;color:#64748b;line-height:1.5;">' + _esc(p.description) + '</div>' : '') +
+        (p.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(p.description) + '</div>' : '') +
         (p.duration ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">⏱ ' + _esc(p.duration) + '</div>' : '') +
       '</div>';
   }
@@ -578,14 +578,14 @@ _RENDERERS['learning_path_selector'] = function(b) {
   var pathsJson = _jsJson(paths.map(function(p) {
     var purl = p.url || '';
     if (purl && purl.charAt(0) === '?' && lpsBase) purl = lpsBase + purl;
-    return { id: p.id || p.label, url: purl, accent: p.accent || '#6366f1' };
+    return { id: p.id || p.label, url: purl, accent: p.accent || '#4f46e5' };
   }));
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="margin-bottom:20px;">' +
       '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:6px;">' + _esc(title) + '</div>' +
-      '<div style="font-size:0.78rem;color:#64748b;">' + _esc(intro) + '</div>' +
+      '<div style="font-size:0.78rem;color:var(--muted,#5f6368);">' + _esc(intro) + '</div>' +
     '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">' + cards + '</div>' +
     '<div id="' + uid + 'msg" style="display:none;margin-top:14px;padding:12px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);font-size:0.75rem;color:#34d399;"></div>' +
@@ -616,7 +616,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
 // Schema: cards [{front, back}], accent (hex), label_front, label_back
 _RENDERERS['flashcard_deck'] = function(b) {
   var cards      = b.cards        || [];
-  var accent     = b.accent       || '#6366f1';
+  var accent     = b.accent       || '#4f46e5';
   var lblFront   = b.label_front  || 'QUESTION';
   var lblBack    = b.label_back   || 'ANSWER';
   var uid        = 'fcd' + Math.random().toString(36).substr(2, 8);

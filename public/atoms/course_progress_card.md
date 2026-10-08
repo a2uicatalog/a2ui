@@ -12,7 +12,7 @@ web, google-meet-stage, pdf, google-apps-script-web, mcp-apps, android
 |---|---|
 | course_title | string. Course name shown at the top of the card. |
 | modules | list[{title: string, lessons_total: integer, lessons_done: integer}]. |
-| accent | string (optional). Progress fill colour. Default "#6366f1". |
+| accent | string (optional). Progress fill colour. Default "#4f46e5". |
 
 ## Example payload
 

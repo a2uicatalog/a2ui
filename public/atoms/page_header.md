@@ -14,7 +14,7 @@ web, google-apps-script-web, pdf, mcp-apps, android
 | subtitle | string (optional, markdown) |
 | icon | string (optional, emoji or short text) |
 | tag | string (optional, badge label shown in accent pill) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | theme | string (optional, "light"|"dark", default "light") |
 | background | string (optional, css background override — now honoured in dark theme too, added 2026-07-24; previously silently discarded in favour of the dark default) |
 | meta | array (optional, added 2026-07-24). Array of {label, value} shown as a small monospace stat row under the header — e.g. a title-block summary line for a reference/spec page. |

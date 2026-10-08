@@ -1580,7 +1580,7 @@ function buildScene(specIn, atom) {
   function figure(svg, title, extra) {
     svg = svg.replace(' width="1280" height="720"', ' style="width:100%;height:auto;display:block"');
     return '<figure class="a2ui-scene" style="margin:1rem 0;max-width:1280px;">' + svg +
-      '<figcaption style="font-size:0.8rem;color:#64748b;margin-top:4px;">' + esc(title) + (extra || '') + '</figcaption></figure>';
+      '<figcaption style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:4px;">' + esc(title) + (extra || '') + '</figcaption></figure>';
   }
   function failure(e) {
     return '<div style="padding:12px 16px;border:1px solid #fca5a5;border-radius:8px;color:#991b1b;background:#fef2f2;font-size:0.85rem;white-space:pre-wrap;">scene_stage: ' + esc(e && e.message ? e.message : e) + '</div>';
@@ -1599,7 +1599,7 @@ function buildScene(specIn, atom) {
       var vb = r.viewBox.split(/\s+/).map(Number), w = Math.round(vb[2] * sc), flip = b.flip ? ' transform="scale(-1 1)" transform-origin="center"' : '';
       return '<figure class="a2ui-clipart" style="margin:0.5rem 0;display:inline-block;">' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + r.viewBox + '" style="width:' + w + 'px;max-width:100%;height:auto;display:block" role="img" aria-label="' + esc(b.alt || e.name) + '"><g' + flip + '>' + r.markup + '</g></svg>' +
-        (b.label ? '<figcaption style="font-size:0.8rem;color:#64748b;text-align:center;">' + esc(b.label) + '</figcaption>' : '') + '</figure>';
+        (b.label ? '<figcaption style="font-size:0.8rem;color:var(--muted,#5f6368);text-align:center;">' + esc(b.label) + '</figcaption>' : '') + '</figure>';
     } catch (err) { return failure(err); }
   }
   return { render: render, renderClipart: renderClipart, buildScene: buildScene, atom: atom, kitFor: kitFor, hasFull: hasFull, sha256Hex: sha256Hex, version: RENDERER_VERSION };

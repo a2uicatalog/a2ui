@@ -186,7 +186,7 @@ _RENDERERS['wall_elevation'] = function(b) {
   }
   if (calc.heightAdvisory) {
     advisories += '<div style="margin-top:8px;padding:6px 10px;background:var(--surface2,#f8fafc);' +
-      'border-left:3px solid var(--accent,#6366f1);border-radius:4px;font-size:0.78rem;color:var(--text);">' +
+      'border-left:3px solid var(--accent,#4f46e5);border-radius:4px;font-size:0.78rem;color:var(--text);">' +
       'Walls over ' + _WALL_ADVISORY_HEIGHT_M.toFixed(1) + ' m are often subject to local planning/building-control rules -- worth checking.</div>';
   }
 

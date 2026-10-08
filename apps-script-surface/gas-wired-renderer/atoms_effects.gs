@@ -5,13 +5,13 @@
 // ── cursor_glow ───────────────────────────────────────────────────────────────
 // Ambient radial gradient orb that smoothly follows the cursor.
 // Fields:
-//   colour  — glow colour (default #6366f1)
+//   colour  — glow colour (default #4f46e5)
 //   size    — orb diameter px (default 380)
 //   opacity — 0–1 (default 0.18)
 //   speed   — lerp factor 0–1: 0=instant, 0.05=dreamy lag (default 0.1)
 //   blend   — CSS mix-blend-mode (default 'screen')
 _RENDERERS['cursor_glow'] = function(b) {
-  var colour  = b.colour  || '#6366f1';
+  var colour  = b.colour  || '#4f46e5';
   var size    = b.size    || 380;
   var opacity = b.opacity !== undefined ? b.opacity : 0.18;
   var speed   = b.speed   !== undefined ? b.speed   : 0.1;
@@ -53,7 +53,7 @@ _RENDERERS['cursor_glow'] = function(b) {
 _RENDERERS['magnetic_element'] = function(b) {
   var radius   = b.radius   || 120;
   var strength = b.strength || 0.4;
-  var accent   = b.accent   || '#6366f1';
+  var accent   = b.accent   || '#4f46e5';
   var label    = b.label    || 'Hover me';
   var content  = b.content ? _esc(b.content) :
     '<span style="display:inline-block;padding:12px 28px;border-radius:100px;' +
@@ -97,7 +97,7 @@ _RENDERERS['magnetic_element'] = function(b) {
 //   gravity  — downward pull factor (default 1.2)
 _RENDERERS['particle_burst'] = function(b) {
   var count    = parseInt(b.count, 10) || 14;
-  var colours  = b.colours  || ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#34d399','#60a5fa'];
+  var colours  = b.colours  || ['#4f46e5','#8b5cf6','#ec4899','#f59e0b','#34d399','#60a5fa'];
   var psize    = b.size     || 8;
   var duration = b.duration || 700;
   var gravity  = b.gravity  !== undefined ? b.gravity : 1.2;
@@ -228,12 +228,12 @@ _RENDERERS['tilt_card'] = function(b) {
 // Fading dot trail that follows the cursor with a worm-like lag.
 // Fields:
 //   length   — number of trail dots (default 16)
-//   colour   — dot colour (default #6366f1)
+//   colour   — dot colour (default #4f46e5)
 //   size     — lead dot size px (default 10)
 //   speed    — lerp factor per dot (default 0.35)
 _RENDERERS['cursor_trail'] = function(b) {
   var length  = b.length || 16;
-  var colour  = b.colour || '#6366f1';
+  var colour  = b.colour || '#4f46e5';
   var size    = b.size   || 10;
   var speed   = b.speed  !== undefined ? b.speed : 0.35;
 

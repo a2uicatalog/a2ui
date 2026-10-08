@@ -17,7 +17,7 @@ web, google-apps-script-web, pdf, mcp-apps, android
 | email | string (optional) |
 | linkedin | string (optional, URL) |
 | tags | string[] (optional) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 
 ## Example payload
 

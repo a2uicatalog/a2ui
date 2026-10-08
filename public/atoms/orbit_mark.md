@@ -16,7 +16,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | align | "left" | "center" | "right"  (optional, default "left"). Where the copy sits. |
 | mark_position | "center" | "right" | "left"  (optional, default "center"). Where the mark sits; put it opposite the copy. |
 | size | "small" | "normal" | "large"  (optional, default "normal"). Mark diameter relative to the panel. |
-| colors | array of 1-4 "#rrggbb" strings (optional). Default ["#6366f1","#a855f7","#22d3ee"]. First colour is the orbits and nucleus, second the electron, all of them the streams. |
+| colors | array of 1-4 "#rrggbb" strings (optional). Default ["#4f46e5","#a855f7","#22d3ee"]. First colour is the orbits and nucleus, second the electron, all of them the streams. |
 | background | "#rrggbb" (optional). Default "#070a12". Keep it dark. |
 | density | "low" | "normal" | "high"  (optional, default "normal") |
 | speed | "slow" | "normal" | "fast"  (optional, default "normal") |

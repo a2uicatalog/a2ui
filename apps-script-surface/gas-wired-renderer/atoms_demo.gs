@@ -8,7 +8,7 @@ _RENDERERS['surface_unlocked'] = function(b) {
   var icon    = b.icon    || '⚡';
   var surface = b.surface || 'New Surface';
   var sub     = b.sub     || 'NEW SURFACE UNLOCKED';
-  var accent  = b.accent  || '#6366f1';
+  var accent  = b.accent  || '#4f46e5';
   return '<style>'
     + '@keyframes su-in-' + uid + '{0%{opacity:0;transform:translateY(-18px) scale(0.96);}100%{opacity:1;transform:none;}}'
     + '@keyframes su-glow-' + uid + '{0%,100%{box-shadow:0 0 0 0 ' + accent + '55;}60%{box-shadow:0 0 0 10px ' + accent + '00;}}'
@@ -27,7 +27,7 @@ _RENDERERS['surface_unlocked'] = function(b) {
 _RENDERERS['schema_reveal'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
   var title  = b.title || 'This page was built from this schema';
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   return '<style>'
     + '#srev-' + uid + '{background:#0f172a;border-radius:12px;overflow:hidden;margin:1rem 0;}'
     + '#srev-hd-' + uid + '{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1e293b;}'
@@ -63,7 +63,7 @@ _RENDERERS['schema_reveal'] = function(b) {
 // url_anatomy — visually dissects the shareable URL into its parts
 _RENDERERS['url_anatomy'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   return '<style>'
     + '#ua-' + uid + '{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:20px;margin:1rem 0;overflow:hidden;}'
     + '#ua-url-' + uid + '{font-family:monospace;font-size:0.78rem;word-break:break-all;color:var(--text);line-height:1.8;margin-bottom:16px;}'
@@ -171,7 +171,7 @@ _RENDERERS['schema_qr'] = function(b) {
 _RENDERERS['take_away_card'] = function(b) {
   var headline   = b.headline || b.text || b.quote || b.insight || '';
   var sub        = b.sub || b.author || b.source || '';
-  var accent     = b.accent || '#6366f1';
+  var accent     = b.accent || '#4f46e5';
   var size       = b.size || '1.9rem';
   var gradient   = b.gradient ? b.gradient : null;
   var textColor  = b.text_color || (gradient ? '#fff' : 'var(--text)');
@@ -189,7 +189,7 @@ _RENDERERS['take_away_card'] = function(b) {
 // next_step_strip — horizontal step guide with optional links
 _RENDERERS['next_step_strip'] = function(b) {
   var steps  = b.steps || [];
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
   steps.forEach(function(s, i) {
     var isLast = i === steps.length - 1;
@@ -208,7 +208,7 @@ _RENDERERS['copy_prompt'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
   var label  = b.label || 'Copy this prompt';
   var prompt = b.prompt || b.text || b.content || '';
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   return '<style>'
     + '#cp-wrap-' + uid + '{background:#0f172a;border-radius:12px;overflow:hidden;margin:1rem 0;}'
     + '#cp-hd-' + uid + '{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#1e293b;}'
@@ -231,7 +231,7 @@ _RENDERERS['copy_prompt'] = function(b) {
 _RENDERERS['atom_anatomy'] = function(b) {
   var label  = b.label || 'atom';
   var schema = b.schema || {};
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var schemaStr = _jsJson(schema, null, 2);
   var rendered  = '';
   try { rendered = renderAtoms([schema]); } catch(e) { rendered = '<em style="color:var(--muted);">Could not render preview</em>'; }
@@ -252,7 +252,7 @@ _RENDERERS['atom_anatomy'] = function(b) {
 // renderer_stats — static stats grid about the renderer/page
 _RENDERERS['renderer_stats'] = function(b) {
   var stats  = b.stats || [];
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var sub    = b.sub || '';
   var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">';
   stats.forEach(function(s) {
@@ -272,7 +272,7 @@ _RENDERERS['prompt_to_schema'] = function(b) {
   var prompt = b.prompt || 'Describe a page…';
   var schema = b.schema || '{ "blocks": [] }';
   var output = b.output || 'The rendered page';
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var labels = b.labels || ['Natural language', 'Generated schema', 'Rendered page'];
   var schemaStr = typeof schema === 'object' ? _jsJson(schema, null, 2) : String(schema);
 
@@ -308,7 +308,7 @@ _RENDERERS['before_after_stack'] = function(b) {
   var beforeItems  = b.items || b.before_items || ['Hosting','Framework','Deploy pipeline','Database','Auth','CDN','DevOps'];
   var afterLabel   = b.after_label  || 'This approach';
   var afterText    = b.result || b.after_text || 'A URL';
-  var accent       = b.accent       || '#6366f1';
+  var accent       = b.accent       || '#4f46e5';
   var delay        = parseFloat(b.delay_ms || b.delay || 400) / (b.delay_ms ? 1 : 0.001);
   if (b.delay_ms) delay = parseInt(b.delay_ms, 10);
   else delay = parseFloat(b.delay || 0.4) * 1000;
@@ -362,7 +362,7 @@ _RENDERERS['live_vote'] = function(b) {
   var sheetUrl = b.sheet_url || '';
   var writeUrl = b.write_url || '';
   var poll     = parseInt(b.poll_interval || b.poll || 5000, 10);
-  var accent   = b.accent || '#6366f1';
+  var accent   = b.accent || '#4f46e5';
   var optsJson = _jsJson(options);
 
   var optBtns = options.map(function(o) {
@@ -453,7 +453,7 @@ _RENDERERS['reaction_shower'] = function(b) {
   var writeUrl  = b.write_url || '';
   var sheetUrl  = b.sheet_url || '';
   var poll      = parseInt(b.poll_interval || b.poll || 4000, 10);
-  var accent    = b.accent || '#6366f1';
+  var accent    = b.accent || '#4f46e5';
   var countsJson = _jsJson(reactions.reduce(function(m, r) { m[r] = 0; return m; }, {}));
 
   return '<style>'
@@ -536,7 +536,7 @@ _RENDERERS['raise_hand'] = function(b) {
   var writeUrl = b.write_url || '';
   var sheetUrl = b.sheet_url || '';
   var poll     = parseInt(b.poll_interval || b.poll || 4000, 10);
-  var accent   = b.accent || '#6366f1';
+  var accent   = b.accent || '#4f46e5';
 
   return '<div style="text-align:center;padding:28px 20px;margin:1rem 0;">'
     + '<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:20px;">' + _esc(question) + '</div>'
@@ -570,10 +570,10 @@ _RENDERERS['raise_hand'] = function(b) {
 
 // surface_map — visual diagram of the A2UI surfaces
 _RENDERERS['surface_map'] = function(b) {
-  var accent  = b.accent  || '#6366f1';
+  var accent  = b.accent  || '#4f46e5';
   var title   = b.title   || 'One schema. Three surfaces.';
   var surfaces = b.surfaces || [
-    { name: 'GAS Web App',       icon: '⚡', desc: 'Live web app · GAS runtime · URL = content', color: '#6366f1' },
+    { name: 'GAS Web App',       icon: '⚡', desc: 'Live web app · GAS runtime · URL = content', color: '#4f46e5' },
     { name: 'Meet Stage',        icon: '📺', desc: 'Full-screen · Live demos · Audience view',   color: '#8b5cf6' },
     { name: 'Google Sites HTML', icon: '📄', desc: 'Blog / docs · SEO · Static publish',         color: '#3b82f6' },
     { name: 'Google Chat',       icon: '💬', desc: 'Cards · Bots · Workspace native',            color: '#06b6d4' }
@@ -621,7 +621,7 @@ _RENDERERS['speed_counter'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
   var label  = b.label  || 'Page loaded in';
   var sub    = b.sub    || '';
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   return '<div style="text-align:center;padding:28px 20px;margin:1rem 0;">'
     + '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">' + _esc(label) + '</div>'
     + '<div id="sc-' + uid + '" style="font-size:3.5rem;font-weight:900;color:' + accent + ';font-variant-numeric:tabular-nums;letter-spacing:-0.02em;line-height:1;">0.0s</div>'
@@ -643,7 +643,7 @@ _RENDERERS['speed_counter'] = function(b) {
 _RENDERERS['live_edit'] = function(b) {
   var uid         = Math.random().toString(36).substr(2, 6);
   var placeholder = b.placeholder || '{ "type": "heading", "level": 1, "text": "Hello" }';
-  var accent      = b.accent || '#6366f1';
+  var accent      = b.accent || '#4f46e5';
   var rendererUrl = b.renderer_url || '';
 
   return '<style>'

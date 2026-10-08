@@ -116,7 +116,7 @@ _RENDERERS['marquee'] = function(b) {
   var gap   = b.gap    || 48; // px gap between items
   var dir   = b.direction === 'right' ? 'reverse' : 'normal';
   var sep   = b.separator || '';
-  var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
   var bg    = b.bg || 'var(--surface,#f9fafb)';
   var pause = b.pause_on_hover !== false;
 
@@ -176,7 +176,7 @@ _RENDERERS['pulse_dot'] = function(b) {
 // Three-dot pulsing loader. Use inline or as a standalone block.
 _RENDERERS['loading_dots'] = function(b) {
   var uid   = 'ld' + Math.random().toString(36).substr(2, 5);
-  var color = b.color || b.accent || 'var(--a2ui-accent,#6366f1)';
+  var color = b.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
   var size  = b.size === 'sm' ? '6px' : b.size === 'lg' ? '12px' : '8px';
   var label = b.label ? '<span style="font-size:0.82rem;color:var(--muted,#6b7280);margin-left:10px;">' + _esc(b.label) + '</span>' : '';
 
@@ -200,7 +200,7 @@ _RENDERERS['progress_ring'] = function(b) {
   var value  = Math.min(100, Math.max(0, parseFloat(b.value || 0)));
   var size   = parseInt(b.size || 100, 10);
   var stroke = parseInt(b.stroke_width || 8, 10);
-  var color  = b.color || b.accent || 'var(--a2ui-accent,#6366f1)';
+  var color  = b.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
   var track  = b.track_color || 'var(--border,#e5e7eb)';
   var label  = b.label ? '<div style="font-size:0.78rem;color:var(--muted,#6b7280);margin-top:6px;">' + _esc(b.label) + '</div>' : '';
   var showVal = b.show_value !== false;
@@ -230,11 +230,11 @@ _RENDERERS['progress_ring'] = function(b) {
 _RENDERERS['confetti_burst'] = function(b) {
   var uid    = 'cf' + Math.random().toString(36).substr(2, 5);
   var count  = b.count || 80;
-  var colors = _jsJson(b.colors || ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9','#f472b6']);
+  var colors = _jsJson(b.colors || ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9','#f472b6']);
   var label  = _esc(b.label || '🎉 Celebrate!');
   var trigger = b.trigger || 'button';
   var dur    = b.duration || 2000;
-  var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
 
   var css = '<style>'
     + '.' + uid + '-p{position:fixed;pointer-events:none;border-radius:2px;z-index:9999;will-change:transform,opacity;}'
@@ -274,7 +274,7 @@ _RENDERERS['ripple_button'] = function(b) {
   var uid   = 'rb' + Math.random().toString(36).substr(2, 5);
   var label = _esc(b.label || 'Click me');
   var url   = b.url ? _safeUrl(b.url) : '';
-  var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
   var size  = b.size === 'sm' ? '0.8rem' : b.size === 'lg' ? '1.1rem' : '0.9rem';
   var full  = b.full_width ? 'width:100%;' : '';
   var align = b.align === 'center' ? 'center' : b.align === 'right' ? 'flex-end' : 'flex-start';
@@ -348,7 +348,7 @@ _RENDERERS['presence_surface'] = function(b) {
        + ' data-ping-ms="'     + pingMs    + '"'
        + (guardSheet ? ' data-guard-sheet="' + _esc(guardSheet) + '"' : '')
        + ' style="display:inline-flex;align-items:center;gap:8px;min-height:32px;margin:0.3rem 0;">'
-    + (label ? '<span style="font-size:0.75rem;color:#64748b;font-weight:500;">' + _esc(label) + '</span>' : '')
+    + (label ? '<span style="font-size:0.75rem;color:var(--muted,#5f6368);font-weight:500;">' + _esc(label) + '</span>' : '')
     + '<div data-psurf-avatars style="display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;padding-left:6px;min-height:28px;"></div>'
     + '</div>';
 };
@@ -372,7 +372,7 @@ _RENDERERS['me'] = function(b) {
 // Animated SVG wave section divider. flip: reverses the wave direction.
 _RENDERERS['wave_divider'] = function(b) {
   var uid    = 'wv' + Math.random().toString(36).substr(2, 5);
-  var color  = b.color || b.accent || 'var(--a2ui-accent,#6366f1)';
+  var color  = b.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
   var h      = parseInt(b.height || 60, 10);
   var speed  = b.speed || '8';
   var flip   = b.flip ? 'scale(-1,1)' : '';
@@ -420,7 +420,7 @@ _RENDERERS['shimmer_text'] = function(b) {
   var uid   = 'st' + Math.random().toString(36).substr(2, 5);
   var text  = _esc(b.text || '');
   var size  = _esc(b.size  || '2rem');
-  var from  = b.from  || '#6366f1';
+  var from  = b.from  || '#4f46e5';
   var to    = b.to    || '#8b5cf6';
   var via   = b.via   || '#ffffff';
   var speed = b.speed || '2.5';
@@ -447,7 +447,7 @@ _RENDERERS['number_flip'] = function(b) {
   var suf   = _esc(b.suffix || '');
   var label = b.label ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:4px;">' + _esc(b.label) + '</div>' : '';
   var size  = b.size || '3rem';
-  var color = b.color || b.accent || 'var(--a2ui-accent,#6366f1)';
+  var color = b.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
   var dur   = b.duration || 1200;
   var align = b.align || 'center';
 
@@ -474,7 +474,7 @@ _RENDERERS['number_flip'] = function(b) {
 // Card with a moving gradient spotlight that follows cursor position.
 _RENDERERS['spotlight_card'] = function(b) {
   var uid    = 'sp' + Math.random().toString(36).substr(2, 5);
-  var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
   var blocks = b.blocks || [];
   var content = '';
   blocks.forEach(function(blk) { var fn = _RENDERERS[blk.component||blk.type]; if(fn) content += fn(blk); });
@@ -507,7 +507,7 @@ _RENDERERS['spotlight_card'] = function(b) {
 // Card or section with an animated gradient border that rotates.
 _RENDERERS['animated_border'] = function(b) {
   var uid    = 'ab' + Math.random().toString(36).substr(2, 5);
-  var from   = b.from   || b.accent || '#6366f1';
+  var from   = b.from   || b.accent || '#4f46e5';
   var to     = b.to     || '#8b5cf6';
   var via    = b.via    || '#0ea5e9';
   var speed  = b.speed  || '3';
@@ -571,7 +571,7 @@ _RENDERERS['csv_import'] = function(b) {
       + '<input type="file" id="' + uid + '-file" accept=".csv,.txt" style="display:none;">'
     + '</label>'
     + '<button id="' + uid + '-btn" disabled style="background:#94a3b8;color:#fff;' + btnBase + 'cursor:not-allowed;">Import</button>'
-    + '<span id="' + uid + '-name" style="font-size:0.8rem;color:#64748b;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
+    + '<span id="' + uid + '-name" style="font-size:0.8rem;color:var(--muted,#5f6368);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
     + '</div>'
     + '<span id="' + uid + '-status" style="font-size:0.8rem;min-height:1.1em;"></span>'
     + '</div>';
@@ -648,7 +648,7 @@ _RENDERERS['chat_card'] = function(b) {
   var title      = _esc(b.title    || 'MIM War Room Status');
   var subtitle   = _esc(b.subtitle || '');
   var sevColors  = { P1: '#dc2626', P2: '#f97316', P3: '#eab308', P4: '#94a3b8' };
-  var stColors   = { New: '#6366f1', Claimed: '#f97316', Resolved: '#22c55e' };
+  var stColors   = { New: '#4f46e5', Claimed: '#f97316', Resolved: '#22c55e' };
   function sevIco(s) { return s==='P1'?'🔴':s==='P2'?'🟠':s==='P3'?'🟡':'⚪'; }
   function stIco(s)  { return s==='Claimed'?'🔧':s==='Resolved'?'✅':'🆕'; }
 
@@ -732,7 +732,7 @@ _RENDERERS['form_textarea'] = function(b) {
     + '<textarea id="' + uid + '" rows="' + rows + '" placeholder="' + _esc(ph) + '"'
     + ' style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;'
     + 'font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;'
-    + 'transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#6366f1\'" onblur="this.style.borderColor=\'#d1d5db\'">'
+    + 'transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#4f46e5\'" onblur="this.style.borderColor=\'#d1d5db\'">'
     + _esc(val)
     + '</textarea>'
     + '</div>';
@@ -768,7 +768,7 @@ _RENDERERS['countdown_ring'] = function(b) {
   var uid   = 'cr' + Math.random().toString(36).substr(2, 5);
   var dur   = parseInt(b.duration_sec || 60, 10);
   var size  = parseInt(b.size || 80, 10);
-  var color = b.color || b.accent || 'var(--a2ui-accent,#6366f1)';
+  var color = b.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
   var label = b.label ? '<div style="font-size:0.72rem;color:var(--muted,#6b7280);margin-top:4px;">' + _esc(b.label) + '</div>' : '';
   var r     = (size / 2) - 6;
   var circ  = 2 * Math.PI * r;

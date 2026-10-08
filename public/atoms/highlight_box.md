@@ -13,7 +13,7 @@ web, google-apps-script-web, pdf, mcp-apps, android
 | title | string (optional) |
 | text | string (optional, markdown — renderer degrades to empty; provide title and/or text) |
 | icon | string (optional, emoji) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | style | string (optional, "gradient"|"solid"|"outline", default "gradient") |
 
 ## Example payload

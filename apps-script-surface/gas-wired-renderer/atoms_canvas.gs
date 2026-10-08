@@ -7,7 +7,7 @@
 // proximity-weighted lines, repel from cursor with inverse-gravity physics.
 // Fields:
 //   count              — node count (default 80)
-//   colour             — node + line colour hex (default #6366f1)
+//   colour             — node + line colour hex (default #4f46e5)
 //   max_dist           — max distance for line draw px (default 110)
 //   speed              — base particle speed (default 0.7)
 //   dot_size           — node radius px (default 2.5)
@@ -17,7 +17,7 @@
 //   bg                 — background CSS colour (default #0a0f1d)
 _RENDERERS['canvas_plexus'] = function(b) {
   var count  = parseInt(b.count, 10) || 80;
-  var colour = b.colour   || '#6366f1';
+  var colour = b.colour   || '#4f46e5';
   var maxD   = b.max_dist || 110;
   var speed  = b.speed    !== undefined ? b.speed : 0.7;
   var dotS   = b.dot_size || 2.5;
@@ -116,7 +116,7 @@ _RENDERERS['canvas_plexus'] = function(b) {
 // Fields:
 //   nodes    — array of {id, label} objects
 //   edges    — array of {from, to, label?} using node ids
-//   colour   — accent colour for nodes (default #6366f1)
+//   colour   — accent colour for nodes (default #4f46e5)
 //   height   — canvas height px (default 340)
 //   bg       — background colour (default #0d1117)
 //   spring   — spring constant (default 0.003)
@@ -137,7 +137,7 @@ _RENDERERS['spring_nodes'] = function(b) {
     {from:'api',  to:'cache'},
     {from:'web',  to:'auth'}
   ];
-  var colour   = b.colour   || '#6366f1';
+  var colour   = b.colour   || '#4f46e5';
   var h        = b.height   || 340;
   var bg       = b.bg       || '#0d1117';
   var KS       = b.spring   !== undefined ? b.spring    : 0.003;
@@ -254,14 +254,14 @@ _RENDERERS['spring_nodes'] = function(b) {
 // Inherits the globe_3d drag model. Auto-rotates until first drag.
 // Fields:
 //   matrix  — 2D array of numbers (generates a Gaussian hill if omitted)
-//   colour  — base tint for the colour gradient (default #6366f1)
+//   colour  — base tint for the colour gradient (default #4f46e5)
 //   height  — canvas height px (default 320)
 //   bg      — background colour (default #0d1117)
 //   label   — optional title drawn top-left
 //   auto_rotate — slow auto-spin before first drag (default true)
 _RENDERERS['isometric_mesh'] = function(b) {
   var matrix     = b.matrix || null;
-  var colour     = b.colour || '#6366f1';
+  var colour     = b.colour || '#4f46e5';
   var h          = b.height || 320;
   var bg         = b.bg     || '#0d1117';
   var label      = b.label  || '';
@@ -2666,7 +2666,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
 // Draggable with inertia. Supports dot pins and great-circle arcs.
 // Fields:
 //   size   — diameter px (default 300)
-//   color  — accent hex (default #6366f1)
+//   color  — accent hex (default #4f46e5)
 //   speed  — auto-spin radians/frame (default 0.006)
 //   lines  — latitude line count (default 10)
 //   theme  — wire|earth (default wire)
@@ -2674,7 +2674,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
 //   arcs   — [{from:[lat,lon],to:[lat,lon],color?}] great-circle arcs
 _RENDERERS['globe_3d'] = function(b) {
   var size  = b.size  || 300;
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var speed = b.speed !== undefined ? b.speed : 0.006;
   var lines = parseInt(b.lines, 10) || 10;
   var theme = b.theme || 'wire';

@@ -17,7 +17,7 @@ _RENDERERS['domain_brief'] = function(b) {
   var areas       = b.areas       || [];
   var areas_label = b.areas_label || 'Périmètre';
   var context     = b.context     || '';
-  var accent      = b.accent      || '#6366f1';
+  var accent      = b.accent      || '#4f46e5';
   var uid         = 'dbr' + Math.random().toString(36).substr(2, 8);
 
   // Key facts pills
@@ -430,7 +430,7 @@ _RENDERERS['hub'] = function(b) {
   for (var si = 0; si < subjects.length; si++) {
     var subj    = subjects[si];
     var slides  = subj.slides || [];
-    var accent  = subj.color || '#6366f1';
+    var accent  = subj.color || '#4f46e5';
     colorsJs   += (si ? ',' : '') + '"' + accent + '"';
     countsJs   += (si ? ',' : '') + slides.length;
 
@@ -468,7 +468,7 @@ _RENDERERS['hub'] = function(b) {
   // Subject tabs — light mode default: dark text on light nav
   var tabsHtml = '<div style="display:flex;gap:5px;overflow-x:auto;padding:10px 12px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">';
   for (var si2 = 0; si2 < subjects.length; si2++) {
-    var ac2 = subjects[si2].color || '#6366f1';
+    var ac2 = subjects[si2].color || '#4f46e5';
     var isFirstTab = si2 === 0;
     tabsHtml +=
       '<button id="' + uid + 'T' + si2 + '" ' +
@@ -604,7 +604,7 @@ _RENDERERS['hub_rail'] = function(b) {
   for (var si = 0; si < subjects.length; si++) {
     var subj    = subjects[si];
     var slides  = subj.slides || [];
-    var accent  = subj.color || '#6366f1';
+    var accent  = subj.color || '#4f46e5';
     var isActiveSubject = si === 0;
     colorsJs   += (si ? ',' : '') + '"' + accent + '"';
     countsJs   += (si ? ',' : '') + slides.length;
@@ -751,8 +751,8 @@ _RENDERERS['catalogue_provenance'] = function(b) {
 
   var CATALOGUE_COLORS = {
     'a2media':    '#8b5cf6',
-    'a2UI':       '#6366f1',
-    'a2ui':       '#6366f1',
+    'a2UI':       '#4f46e5',
+    'a2ui':       '#4f46e5',
     'a2knowledge':'#10b981',
     'ard':        '#f59e0b'
   };
@@ -790,7 +790,7 @@ _RENDERERS['catalogue_provenance'] = function(b) {
           _esc(s.catalogue || '') +
         '</div>' +
         // What + note
-        '<div style="margin-top:2px;font-size:0.68rem;font-weight:600;color:#94a3b8;text-align:center;line-height:1.3;">' +
+        '<div style="margin-top:2px;font-size:0.68rem;font-weight:600;color:var(--muted,#5f6368);text-align:center;line-height:1.3;">' +
           _esc(s.what || '') +
         '</div>' +
       '</div>';

@@ -10,7 +10,7 @@ web, google-apps-script-web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | style | string (optional, "tint"|"solid"|"dark"|"light", default "tint") |
 | padding | string (optional, css, default "24px") |
 | grid | boolean (optional, default false, added 2026-07-24). Layers a faint 32px graph-paper grid (tinted by accent) on top of the base colour — for technical/blueprint-style sections. |

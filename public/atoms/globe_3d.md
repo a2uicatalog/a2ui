@@ -11,7 +11,7 @@ web, google-apps-script-web, mcp-apps, android
 | Field | Type |
 |---|---|
 | size | number (optional, diameter px, default 300) |
-| color | string (optional, hex accent, default #6366f1) |
+| color | string (optional, hex accent, default #4f46e5) |
 | speed | number (optional, auto-spin speed, default 0.006) |
 | lines | number (optional, latitude line count, default 10) |
 | theme | string (optional, wire|earth, default wire) |

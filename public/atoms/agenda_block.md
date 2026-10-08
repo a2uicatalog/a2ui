@@ -12,7 +12,7 @@ web, google-apps-script-web, mcp-apps, android
 |---|---|
 | title | string (optional) |
 | date | string (optional) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | slots | array (required). Array of {time, title, speaker?, location?, type? ("break"|"keynote"|"workshop"|"panel"|"social"), description?} |
 
 ## Example payload

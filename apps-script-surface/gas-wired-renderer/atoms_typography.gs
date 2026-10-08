@@ -14,7 +14,7 @@
 //   margin   — CSS margin (default 16px 0 6px)
 _RENDERERS['gradient_heading'] = function(b) {
   var text     = b.text     || 'Heading';
-  var gradient = b.gradient || 'linear-gradient(135deg,#6366f1 0%,#a78bfa 50%,#ec4899 100%)';
+  var gradient = b.gradient || 'linear-gradient(135deg,#4f46e5 0%,#a78bfa 50%,#ec4899 100%)';
   var size     = b.size     || 'clamp(1.8rem,4vw,3rem)';
   var weight   = b.weight   || 900;
   var align    = b.align    || 'left';
@@ -38,13 +38,13 @@ _RENDERERS['gradient_heading'] = function(b) {
 // Fields:
 //   text        — quote body
 //   attribution — name / source (optional)
-//   colour      — accent colour for the quote mark and attribution (default #6366f1)
+//   colour      — accent colour for the quote mark and attribution (default #4f46e5)
 //   size        — font-size for quote text (default clamp(1.4rem,3vw,2.2rem))
 //   align       — center or left (default center)
 _RENDERERS['display_quote'] = function(b) {
   var text        = b.text        || '"Something worth saying."';
   var attribution = b.attribution || '';
-  var colour      = b.colour      || '#6366f1';
+  var colour      = b.colour      || '#4f46e5';
   var size        = b.size        || 'clamp(1.4rem,3vw,2.2rem)';
   var align       = b.align       || 'center';
 
@@ -73,7 +73,7 @@ _RENDERERS['display_quote'] = function(b) {
 //   suffix      — text after value (e.g. "%", "k", "+")
 //   heading     — right-side heading
 //   body        — right-side paragraph text
-//   colour      — stat glow colour (default #6366f1)
+//   colour      — stat glow colour (default #4f46e5)
 //   flip        — put stat on right (default false)
 _RENDERERS['split_stat'] = function(b) {
   var value   = String(b.value !== undefined ? b.value : '—');
@@ -81,7 +81,7 @@ _RENDERERS['split_stat'] = function(b) {
   var suffix  = b.suffix  || '';
   var heading = b.heading || '';
   var body    = b.body    || '';
-  var colour  = b.colour  || '#6366f1';
+  var colour  = b.colour  || '#4f46e5';
   var flip    = b.flip    || false;
 
   var statHtml =
@@ -160,11 +160,11 @@ _RENDERERS['word_reveal'] = function(b) {
 // Use between content sections on dark pages.
 // Fields:
 //   text   — label text (uppercased automatically)
-//   colour — accent colour (default #6366f1)
+//   colour — accent colour (default #4f46e5)
 //   margin — vertical margin (default 24px 0 12px)
 _RENDERERS['section_label'] = function(b) {
   var text   = b.text   || 'Section';
-  var colour = b.colour || '#6366f1';
+  var colour = b.colour || '#4f46e5';
   var margin = b.margin || '24px 0 12px';
 
   return '<div style="margin:' + _esc(margin) + ';display:flex;align-items:center;gap:12px;">' +
@@ -182,7 +182,7 @@ _RENDERERS['section_label'] = function(b) {
 //   label    — descriptor below
 //   prefix   — text before number (e.g. "$")
 //   suffix   — text after number (e.g. "%", "k")
-//   colour   — glow colour (default #6366f1)
+//   colour   — glow colour (default #4f46e5)
 //   duration — count-up duration ms (default 1800)
 //   size     — font-size (default 4rem)
 _RENDERERS['count_up_stat'] = function(b) {
@@ -190,7 +190,7 @@ _RENDERERS['count_up_stat'] = function(b) {
   var label    = b.label    || '';
   var prefix   = b.prefix   || '';
   var suffix   = b.suffix   || '';
-  var colour   = b.colour   || '#6366f1';
+  var colour   = b.colour   || '#4f46e5';
   var duration = b.duration || 1800;
   var size     = b.size     || '4rem';
   var uid      = 'cu' + Math.random().toString(36).substr(2, 5);
@@ -266,7 +266,7 @@ _RENDERERS['text_highlight'] = function(b) {
 //   delay    — start delay ms (default 200)
 _RENDERERS['reveal_line'] = function(b) {
   var text     = b.text     || 'Reveal';
-  var gradient = b.gradient || 'linear-gradient(90deg,#6366f1,#a78bfa,#ec4899)';
+  var gradient = b.gradient || 'linear-gradient(90deg,#4f46e5,#a78bfa,#ec4899)';
   var size     = b.size     || 'clamp(2.5rem,6vw,4rem)';
   var weight   = b.weight   || 900;
   var dur      = (b.duration || 800);
@@ -473,7 +473,7 @@ _RENDERERS['receipt'] = function(b) {
     var x = items[j], last = printLast && j === items.length - 1;
     var srcHtml = x.source ? (x.url ? '<a href="' + _esc(x.url) + '" target="_blank" rel="noopener" style="color:' + accent + ';text-decoration:none;">' + _esc(x.source) + '</a>' : '<span style="color:#475569;">' + _esc(x.source) + '</span>') : '';
     rows += '<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;' + (last ? 'animation:rc-' + uid + ' 0.7s steps(7) both;' : '') + '">'
-      + '<span style="flex:0 0 auto;color:#94a3b8;">' + _cvPad(j + 1) + '</span>'
+      + '<span style="flex:0 0 auto;color:var(--muted,#5f6368);">' + _cvPad(j + 1) + '</span>'
       + '<span style="flex:1 1 auto;min-width:0;">' + _esc(x.text) + '</span>'
       + (srcHtml ? '<span style="flex:0 0 auto;max-width:38%;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + srcHtml + '</span>' : '')
       + '</div>';
@@ -487,14 +487,14 @@ _RENDERERS['receipt'] = function(b) {
     x0 += bw + gap;
   }
   var inner = '<div style="font-size:0.72rem;letter-spacing:0.16em;text-align:center;color:#475569;">' + _esc(merchant) + '</div>'
-    + (issued ? '<div style="font-size:0.7rem;text-align:center;color:#94a3b8;margin-top:2px;">' + _esc(issued) + '</div>' : '')
+    + (issued ? '<div style="font-size:0.7rem;text-align:center;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(issued) + '</div>' : '')
     + '<div style="margin:16px 0 12px;font-family:' + _CV_VOICES.display + ';font-weight:900;font-size:clamp(1.25rem,2.8vw,1.8rem);line-height:1.15;letter-spacing:-0.02em;color:#0f172a;">' + _esc(claim) + '</div>'
     + '<div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div>'
-    + (rows || '<div style="color:#94a3b8;padding:5px 0;">(no evidence yet)</div>')
+    + (rows || '<div style="color:var(--muted,#5f6368);padding:5px 0;">(no evidence yet)</div>')
     + '<div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div>'
     + '<div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;"><span>' + _esc(totalLabel) + '</span><span style="color:' + accent + ';">' + _esc(total) + '</span></div>'
     + '<div style="margin:16px auto 6px;max-width:260px;"><svg viewBox="0 0 ' + x0 + ' 30" width="100%" height="30" preserveAspectRatio="none" fill="#0f172a" aria-hidden="true">' + bars + '</svg></div>'
-    + '<div style="font-size:0.68rem;text-align:center;color:#94a3b8;">' + _esc(footer) + '</div>';
+    + '<div style="font-size:0.68rem;text-align:center;color:var(--muted,#5f6368);">' + _esc(footer) + '</div>';
   return '<style>@keyframes rc-' + uid + '{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}</style>'
     + '<div style="margin:1rem auto;max-width:420px;background:#fdfdfb;color:#1e293b;font-family:' + mono + ';font-size:0.82rem;line-height:1.45;padding:26px 24px 22px;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,0.18);position:relative;">'
     + inner
@@ -567,7 +567,7 @@ _RENDERERS['agent_narrator'] = function(b) {
   return '<div style="margin:1rem 0;">'
     + (title ? '<div style="font-size:1.25rem;font-weight:800;letter-spacing:-0.01em;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
     + (skipped ? '<!-- agent_narrator: ' + skipped + ' beat(s) skipped, over the 100-beat / 2000-char cap -->' : '')
-    + (out || '<p style="margin:0;color:#9ca3af;font-style:italic;">(no beats yet)</p>')
+    + (out || '<p style="margin:0;color:var(--muted,#5f6368);font-style:italic;">(no beats yet)</p>')
     + (kept.length ? '<style>@keyframes an-blink-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}</style><script>' + _AGENT_NARRATOR_JS.replace(/%%UID%%/g, uid) + (skipped ? 'console.warn("agent_narrator: ' + skipped + ' beat(s) skipped, over cap");' : '') + '<\/script>' : '')
     + '</div>';
 };

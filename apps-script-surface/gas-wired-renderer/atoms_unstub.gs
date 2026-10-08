@@ -56,7 +56,7 @@ _RENDERERS['toggle_switch'] = function(b) {
   var label   = _esc(b.label || '');
   var checked = b.is_checked ? ' checked' : '';
   var name    = _esc(b.name || uid);
-  var accent  = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent  = b.accent || 'var(--a2ui-accent,#4f46e5)';
   return '<style>'
     + '#' + uid + '-inp{display:none;}'
     + '#' + uid + '-trk{display:inline-flex;width:44px;height:24px;border-radius:12px;background:#d1d5db;cursor:pointer;align-items:center;padding:2px;transition:background 0.2s;flex-shrink:0;}'
@@ -124,7 +124,7 @@ _RENDERERS['multi_select_input'] = function(b) {
     var val = typeof o === 'object' ? String(o.value) : String(o);
     var lbl = typeof o === 'object' ? (o.label || o.value) : o;
     var on  = selected.indexOf(val) >= 0;
-    var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+    var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
     return '<label style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;border:1px solid ' + (on ? accent : 'var(--border,#e5e7eb)') + ';background:' + (on ? accent + '15' : 'var(--bg,#fff)') + ';color:' + (on ? accent : 'var(--text,#374151)') + ';">'
       + '<input type="checkbox" name="' + _esc(b.name || 'ms') + '[]" value="' + _esc(val) + '"' + (on ? ' checked' : '') + ' style="display:none;">' + _esc(String(lbl)) + '</label>';
   }).join('');
@@ -137,10 +137,10 @@ _RENDERERS['avatar_group'] = function(b) {
   var avatars = (b.avatars || []).slice(0, 6);
   var total   = b.total_count || avatars.length;
   var label   = b.label ? '<span style="font-size:0.82rem;color:var(--muted,#6b7280);margin-left:10px;">' + _esc(b.label) + '</span>' : '';
-  var surplus = total > avatars.length ? '<div style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#6b7280;margin-left:-10px;">+' + (total - avatars.length) + '</div>' : '';
+  var surplus = total > avatars.length ? '<div style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);margin-left:-10px;">+' + (total - avatars.length) + '</div>' : '';
   var imgs = avatars.map(function(a, i) {
     var initials = (a.name || '?').split(' ').map(function(w){ return w[0]; }).join('').substr(0,2).toUpperCase();
-    var colors   = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
+    var colors   = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
     var bg       = colors[i % colors.length];
     if (a.url || a.avatar_url) {
       return '<img src="' + _esc(a.url || a.avatar_url) + '" alt="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">';
@@ -153,7 +153,7 @@ _RENDERERS['avatar_group'] = function(b) {
 // ─── contributor_list ─────────────────────────────────────────────────────────
 _RENDERERS['contributor_list'] = function(b) {
   var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
-  var colors = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
+  var colors = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
   var rows = (b.contributors || []).map(function(c, i) {
     var initials = (c.name || '?').split(' ').map(function(w){ return w[0]; }).join('').substr(0,2).toUpperCase();
     var bg = c.color || colors[i % colors.length];
@@ -166,7 +166,7 @@ _RENDERERS['contributor_list'] = function(b) {
       + '<div style="flex:1;"><div style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">' + _esc(c.name || '') + meta + '</div>'
       + (c.role ? '<div style="font-size:0.78rem;color:var(--muted,#6b7280);">' + _esc(c.role) + '</div>' : '')
       + '</div>'
-      + (c.url ? '<a href="' + _safeUrl(c.url) + '" target="_top" style="font-size:0.75rem;color:var(--a2ui-accent,#6366f1);">→</a>' : '')
+      + (c.url ? '<a href="' + _safeUrl(c.url) + '" target="_top" style="font-size:0.75rem;color:var(--a2ui-accent,#4f46e5);">→</a>' : '')
       + '</div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + title + rows + '</div>';
@@ -232,7 +232,7 @@ _RENDERERS['rating_comparison'] = function(b) {
     var rating = parseFloat(item.rating || item.value || 0);
     var max    = parseFloat(item.max || b.max || 5);
     var pct    = Math.round((rating / max) * 100);
-    var accent = item.color || b.accent || 'var(--a2ui-accent,#6366f1)';
+    var accent = item.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
     var stars  = '';
     for (var i = 1; i <= max; i++) {
       stars += '<span style="color:' + (i <= Math.round(rating) ? '#fbbf24' : '#e5e7eb') + ';font-size:0.85rem;">★</span>';
@@ -272,7 +272,7 @@ _RENDERERS['call_mood_board'] = function(b) {
   var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
   var moods = (b.moods || []).map(function(m) {
     var pct = Math.min(100, m.intensity || 50);
-    var color = m.color || 'var(--a2ui-accent,#6366f1)';
+    var color = m.color || 'var(--a2ui-accent,#4f46e5)';
     return '<div style="text-align:center;min-width:80px;">'
       + '<div style="font-size:1.5rem;">' + _esc(m.icon || m.mood.charAt(0)) + '</div>'
       + '<div style="font-size:0.72rem;color:var(--muted,#6b7280);margin:4px 0;">' + _esc(m.mood || '') + '</div>'
@@ -293,7 +293,7 @@ _RENDERERS['call_mood_board'] = function(b) {
 
 // ─── social_proof_banner ──────────────────────────────────────────────────────
 _RENDERERS['social_proof_banner'] = function(b) {
-  var metric = b.metric_value ? '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#6366f1);">' + _esc(b.metric_value) + '</div><div style="font-size:0.82rem;color:var(--muted,#6b7280);">' + _esc(b.metric_label || '') + '</div>' : '';
+  var metric = b.metric_value ? '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#4f46e5);">' + _esc(b.metric_value) + '</div><div style="font-size:0.82rem;color:var(--muted,#6b7280);">' + _esc(b.metric_label || '') + '</div>' : '';
   var logos  = (b.logos || []).map(function(l) {
     return l.url
       ? '<img src="' + _esc(l.url) + '" alt="' + _esc(l.name || '') + '" style="height:32px;object-fit:contain;opacity:0.6;filter:grayscale(1);">'
@@ -316,8 +316,8 @@ _RENDERERS['expert_endorsement'] = function(b) {
   var initials = (b.expert_name || '?').split(' ').map(function(w){return w[0];}).join('').substr(0,2).toUpperCase();
   var avatar = b.expert_avatar_url
     ? '<img src="' + _esc(b.expert_avatar_url) + '" alt="' + _esc(b.expert_name||'') + '" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
-    : '<div style="width:56px;height:56px;border-radius:50%;background:var(--a2ui-accent,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;">' + initials + '</div>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border-left:4px solid var(--a2ui-accent,#6366f1);border-radius:0 10px 10px 0;background:var(--surface,#f9fafb);">'
+    : '<div style="width:56px;height:56px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;">' + initials + '</div>';
+  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border-left:4px solid var(--a2ui-accent,#4f46e5);border-radius:0 10px 10px 0;background:var(--surface,#f9fafb);">'
     + '<blockquote style="margin:0 0 16px 0;font-size:0.9rem;line-height:1.7;color:var(--text,#374151);font-style:italic;">"' + _esc(b.quote || '') + '"</blockquote>'
     + '<div style="display:flex;align-items:center;gap:12px;">' + avatar
     + '<div><div style="font-weight:700;font-size:0.875rem;color:var(--text,#111827);">' + _esc(b.expert_name || '') + '</div>'
@@ -422,7 +422,7 @@ _RENDERERS['media_stream_card'] = function(b) {
 
 // ─── product_thumbnail ────────────────────────────────────────────────────────
 _RENDERERS['product_thumbnail'] = function(b) {
-  var badge = b.badge ? '<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#6366f1);color:#fff;font-size:0.72rem;font-weight:700;">' + _esc(b.badge) + '</div>' : '';
+  var badge = b.badge ? '<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#4f46e5);color:#fff;font-size:0.72rem;font-weight:700;">' + _esc(b.badge) + '</div>' : '';
   var img   = b.image_url ? '<div style="position:relative;"><img src="' + _esc(b.image_url) + '" alt="' + _esc(b.title||'') + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">' + badge + '</div>' : '';
   var compare = b.compare_at_price ? '<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">' + _esc(b.compare_at_price) + '</span>' : '';
   var status = b.status ? '<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:' + (b.status === 'in_stock' ? '#d1fae5' : '#fee2e2') + ';color:' + (b.status === 'in_stock' ? '#10b981' : '#ef4444') + ';margin-left:6px;">' + _esc(b.status.replace(/_/g,' ')) + '</span>' : '';
@@ -474,7 +474,7 @@ _RENDERERS['github_repo_card'] = function(b) {
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
     + '<span style="font-size:1rem;">📦</span>'
-    + '<a href="' + _safeUrl(repoUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#6366f1);text-decoration:none;">' + _esc(repo) + '</a>'
+    + '<a href="' + _safeUrl(repoUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repo) + '</a>'
     + (b.visibility ? '<span style="font-size:0.7rem;padding:1px 6px;border:1px solid var(--border,#e5e7eb);border-radius:4px;color:var(--muted,#6b7280);">' + _esc(b.visibility) + '</span>' : '')
     + '</div>'
     + (b.description ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:10px;">' + _esc(b.description) + '</div>' : '')
@@ -513,7 +513,7 @@ _RENDERERS['gauge_sla'] = function(b) {
 _RENDERERS['sparkline'] = function(b) {
   var data   = b.data || [];
   if (!data.length) return '';
-  var color  = b.color || 'var(--a2ui-accent,#6366f1)';
+  var color  = b.color || 'var(--a2ui-accent,#4f46e5)';
   var lw     = b.line_width || 2;
   var w      = 120, h = 32;
   var min    = Math.min.apply(null, data), max = Math.max.apply(null, data);
@@ -550,7 +550,7 @@ _RENDERERS['scatter_trend'] = function(b) {
   var dots  = data.map(function(p, i) {
     var x = pad + ((( Array.isArray(p) ? p[0] : p.x) - xmin) / (xmax - xmin || 1)) * (w - pad * 2);
     var y = (h - pad) - (((Array.isArray(p) ? p[1] : p.y) - ymin) / (ymax - ymin || 1)) * (h - pad * 2);
-    var color = p.color || b.color || '#6366f1';
+    var color = p.color || b.color || '#4f46e5';
     return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4" fill="' + _esc(color) + '" fill-opacity="0.7"/>';
   }).join('');
   var svg = '<svg width="' + w + '" height="' + h + '" style="overflow:visible;">'
@@ -621,7 +621,7 @@ _RENDERERS['stacked_area'] = function(b) {
   var title   = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
   var labels  = b.labels || [];
   var series  = b.series || [];
-  var colors  = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
+  var colors  = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
   // Calculate max per column
   var totals  = labels.map(function(_, i) {
     return series.reduce(function(s, ser){ return s + (ser.data[i] || 0); }, 0);
@@ -696,7 +696,7 @@ _RENDERERS['image_hotspots'] = function(b) {
     var lbl = _esc(h.label || String(i + 1));
     var cnt = h.content ? '<div class="' + uid + '-tip" style="display:none;position:absolute;left:calc(' + x + '% + 18px);top:calc(' + y + '% - 10px);background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;font-size:0.78rem;color:#374151;min-width:120px;max-width:200px;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);">' + _esc(h.content) + '</div>' : '';
     return '<div style="position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);" onmouseenter="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'block\';" onmouseleave="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'none\';">'
-      + '<div style="width:24px;height:24px;border-radius:50%;background:var(--a2ui-accent,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,0.2);animation:pulse 2s infinite;">' + lbl + '</div>'
+      + '<div style="width:24px;height:24px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,0.2);animation:pulse 2s infinite;">' + lbl + '</div>'
       + cnt + '</div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;position:relative;display:inline-block;width:100%;">'
@@ -771,7 +771,7 @@ _RENDERERS['data_grid'] = function(b) {
 _RENDERERS['conversion_funnel'] = function(b) {
   var title  = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:14px;">' + _esc(b.title) + '</div>' : '';
   var steps  = b.steps || [];
-  var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
   var maxVal = Math.max.apply(null, steps.map(function(s){ return parseFloat(s.value||0); })) || 1;
   var html   = steps.map(function(s, i) {
     var val = parseFloat(s.value || 0);
@@ -794,7 +794,7 @@ _RENDERERS['live_aggregator'] = function(b) {
   var items   = b.items || [];
   var maxVal  = b.max_value || Math.max.apply(null, items.map(function(i){ return parseFloat(i.value||0); })) || 1;
   var showVal = b.show_values !== false;
-  var accent  = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var accent  = b.accent || 'var(--a2ui-accent,#4f46e5)';
   var bars    = items.map(function(item) {
     var val = parseFloat(item.value || 0);
     var pct = (val / maxVal * 100).toFixed(1);

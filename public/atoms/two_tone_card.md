@@ -13,7 +13,7 @@ web, google-apps-script-web, mcp-apps, android
 | title | string (required) |
 | subtitle | string (optional) |
 | icon | string (optional, emoji) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | header_theme | string (optional, "light"|"dark", default "light") |
 | blocks | array (optional, atom blocks rendered in white body) |
 

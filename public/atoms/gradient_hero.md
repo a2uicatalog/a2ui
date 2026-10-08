@@ -13,7 +13,7 @@ web, google-apps-script-web, pdf, mcp-apps, android
 | title | string (required, alias heading) |
 | subtitle | string (optional, alias subtext) |
 | badge | string (optional, label above title) |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | accent2 | string (optional, second gradient hex, default "#8b5cf6") |
 | gradient | string (optional, css gradient override) |
 | align | string (optional, "left"|"center", default "left") |

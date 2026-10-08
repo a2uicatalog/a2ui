@@ -73,7 +73,7 @@ function _mdToHtml(text) {
       if (!inList) { html += '<ul style="margin:4px 0 4px 0;padding:0;list-style:none;">'; inList = true; }
       var item = line.replace(/^[\•\-\*]\s+/, '');
       html += '<li style="display:flex;gap:8px;padding:3px 0;font-size:0.82rem;color:var(--text);">' +
-              '<span style="color:var(--accent,#6366f1);flex-shrink:0;">▸</span>' +
+              '<span style="color:var(--accent,#4f46e5);flex-shrink:0;">▸</span>' +
               '<span>' + _inlineMd(_esc(item)) + '</span></li>';
       continue;
     }
@@ -124,7 +124,7 @@ function _inlineMd(escaped) {
 _RENDERERS['doc_ai_summary'] = function(b) {
   var docId    = b.doc_id   || '';
   var prompt   = b.prompt   || 'Summarise this document. Lead with the 3 most important points as bullet points, then list any action items you can identify. Be concise.';
-  var accent   = b.accent   || 'var(--accent,#6366f1)';
+  var accent   = b.accent   || 'var(--accent,#4f46e5)';
   var maxChars = b.max_chars || 12000;
   var showMeta = b.show_meta !== false;
 
@@ -196,11 +196,11 @@ _RENDERERS['ai_build_trace'] = function(b) {
   var pctOut   = ptotal > 0 ? Math.max(0, 100 - pctIn - pctThink) : 0;
 
   var bar = '';
-  if (pctIn > 0)    bar += '<div style="width:' + pctIn    + '%;height:100%;background:#6366f1;"></div>';
+  if (pctIn > 0)    bar += '<div style="width:' + pctIn    + '%;height:100%;background:#4f46e5;"></div>';
   if (pctThink > 0) bar += '<div style="width:' + pctThink + '%;height:100%;background:#a78bfa;"></div>';
   if (pctOut > 0)   bar += '<div style="width:' + pctOut   + '%;height:100%;background:#38bdf8;"></div>';
 
-  var chips = _aiBuildChip('in', fmt(pin), '#6366f1');
+  var chips = _aiBuildChip('in', fmt(pin), '#4f46e5');
   if (pthink > 0) chips += _aiBuildChip('thinking', fmt(pthink), '#a78bfa');
   chips += _aiBuildChip('out', fmt(pout), '#38bdf8');
   chips += _aiBuildChip('total', fmt(ptotal), 'var(--muted,#94a3b8)');
@@ -210,7 +210,7 @@ _RENDERERS['ai_build_trace'] = function(b) {
 
          // Row 1: icon + model + bar legend
          '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
-         '<div style="width:24px;height:24px;background:linear-gradient(135deg,#6366f1,#38bdf8);' +
+         '<div style="width:24px;height:24px;background:linear-gradient(135deg,#4f46e5,#38bdf8);' +
          'border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">⬡</div>' +
          '<div style="font-size:0.72rem;font-weight:700;color:var(--text,#1e293b);letter-spacing:0.04em;">' + _esc(model) + '</div>' +
          '<div style="font-size:0.65rem;color:var(--muted,#94a3b8);">Built with Vertex AI</div>' +
@@ -240,7 +240,7 @@ function _aiBuildChip(label, val, color) {
 _RENDERERS['gemini_prompt'] = function(b) {
   var label  = b.label       || 'Build a page with AI';
   var hint   = b.placeholder || 'Describe the page you want to build…';
-  var accent = b.accent      || '#6366f1';
+  var accent = b.accent      || '#4f46e5';
 
   var uid = 'gp' + Math.random().toString(36).slice(2, 8);
 
@@ -248,7 +248,7 @@ _RENDERERS['gemini_prompt'] = function(b) {
          'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;margin:4px 0;">' +
 
          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">' +
-         '<div style="width:22px;height:22px;background:linear-gradient(135deg,#6366f1,#38bdf8);' +
+         '<div style="width:22px;height:22px;background:linear-gradient(135deg,#4f46e5,#38bdf8);' +
          'border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;">⬡</div>' +
          '<span style="font-size:0.82rem;font-weight:700;color:var(--text,#1e293b);letter-spacing:0.03em;">' +
          _esc(label) + '</span>' +
@@ -293,7 +293,7 @@ _RENDERERS['gemini_prompt'] = function(b) {
 _RENDERERS['multi_doc_ai_brief'] = function(b) {
   var docs          = b.docs || [];
   var defaultPrompt = b.default_prompt || 'In 2-3 sentences, summarise what this document is about and the single most important point.';
-  var accent        = b.accent || 'var(--accent,#6366f1)';
+  var accent        = b.accent || 'var(--accent,#4f46e5)';
 
   if (!docs.length) {
     return '<div class="asw-native-card"><div style="font-size:0.82rem;color:var(--muted);">No documents provided.</div></div>';
@@ -362,13 +362,13 @@ function _fetchPublishedPrompt_(url) {
 // render time so the button always carries the current published version.
 _RENDERERS['gemini_handoff'] = function(b) {
   var label  = b.label  || 'Copy prompt & open Gemini';
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var promptUrl = b.prompt_url || 'https://a2uicatalog.ai/prompts/training-md-gem.md';
   var prefix = b.prefix ||
     'With the attached document, produce a compliant training.md exactly per the specification below. Output only the file.\n\n---\n\n';
   var promptText = _fetchPublishedPrompt_(promptUrl);
   if (!promptText) {
-    return '<div style="font-size:0.8rem;color:#94a3b8;">Prompt unavailable — fetch it at ' +
+    return '<div style="font-size:0.8rem;color:var(--muted,#5f6368);">Prompt unavailable — fetch it at ' +
            _esc(promptUrl) + '</div>';
   }
   var b64 = Utilities.base64Encode(prefix + promptText, Utilities.Charset.UTF_8);
@@ -383,7 +383,7 @@ _RENDERERS['gemini_handoff'] = function(b) {
     '})(this)" style="background:' + accent + ';color:#fff;border:none;border-radius:8px;' +
     'padding:10px 20px;font-size:0.875rem;font-weight:600;cursor:pointer;">' +
     _esc(label) + '</button>' +
-    '<div style="font-size:0.75rem;color:#94a3b8;margin-top:6px;">' + _esc(hint) + '</div>' +
+    '<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:6px;">' + _esc(hint) + '</div>' +
   '</div>';
 };
 
@@ -409,7 +409,7 @@ _RENDERERS['tool_call_card'] = function(b) {
   var statusColor, statusLabel;
   if (status === 'success') { statusColor = 'var(--green)';  statusLabel = '✓ success'; }
   else if (status === 'error') { statusColor = 'var(--red)'; statusLabel = '✕ error'; }
-  else if (status === 'running') { statusColor = 'var(--accent,#6366f1)'; statusLabel = '● running'; }
+  else if (status === 'running') { statusColor = 'var(--accent,#4f46e5)'; statusLabel = '● running'; }
   else { statusColor = 'var(--muted,#94a3b8)'; statusLabel = status; }
 
   var badgeHtml = '<span style="background:' + statusColor + ';color:#fff;font-size:0.7rem;font-weight:600;' +
@@ -444,7 +444,7 @@ _RENDERERS['tool_call_card'] = function(b) {
 
   return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:var(--surface,#fff);">' +
     '<div style="display:flex;align-items:center;gap:8px;">' +
-    '<span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent,#6366f1);font-size:0.9rem;">' + toolName + '</span>' +
+    '<span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent,#4f46e5);font-size:0.9rem;">' + toolName + '</span>' +
     badgeHtml + latencyHtml + '</div>' +
     argsHtml + resultHtml + '</div>';
 };

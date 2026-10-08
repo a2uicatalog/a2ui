@@ -10,7 +10,7 @@ web, google-apps-script-web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| color | string (optional, hex, default #6366f1) |
+| color | string (optional, hex, default #4f46e5) |
 | height | number (optional, px, default 3) |
 
 ## Example payload

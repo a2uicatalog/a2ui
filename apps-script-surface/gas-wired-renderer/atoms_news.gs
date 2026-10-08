@@ -5,10 +5,10 @@
 // Ranked numbered list of news headlines with source, time, tag pill.
 // Fields:
 //   title   — section label above the list (optional)
-//   accent  — colour for rank badges and tag pills (default: #6366f1)
+//   accent  — colour for rank badges and tag pills (default: #4f46e5)
 //   items   — array of { rank?, title, source?, time?, tag?, url? }
 _RENDERERS['headline_list'] = function(b) {
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var items  = b.items  || [];
   var hdr    = b.title
     ? '<p style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#9ca3af);margin:0 0 14px">' + _esc(b.title) + '</p>'
@@ -61,10 +61,10 @@ _RENDERERS['breaking_banner'] = function(b) {
 // Two-column grid of compact story cards — good for "5 things to know" briefs.
 // Fields:
 //   title   — section heading
-//   accent  — accent colour for numbering (default: #6366f1)
+//   accent  — accent colour for numbering (default: #4f46e5)
 //   items   — array of { title, body?, tag?, source? }
 _RENDERERS['news_digest'] = function(b) {
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var items  = b.items  || [];
   var hdr    = b.title
     ? '<p style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#9ca3af);margin:0 0 14px">' + _esc(b.title) + '</p>'

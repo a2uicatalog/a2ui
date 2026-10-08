@@ -43,9 +43,9 @@ _RENDERERS['Button'] = function(b) {
   var url = ev && ev.context && ev.context.url;
   var variant = b.variant === 'borderless' ? 'borderless' : (b.variant === 'primary' ? 'primary' : 'default');
   var look = variant === 'primary'
-    ? 'background:var(--a2ui-accent,#6366f1);color:#fff;border:1px solid var(--a2ui-accent,#6366f1);'
-    : (variant === 'borderless' ? 'background:none;color:var(--a2ui-accent,#6366f1);border:1px solid transparent;'
-                                : 'background:none;color:var(--a2ui-accent,#6366f1);border:1px solid var(--a2ui-accent,#6366f1);');
+    ? 'background:var(--a2ui-accent,#4f46e5);color:#fff;border:1px solid var(--a2ui-accent,#4f46e5);'
+    : (variant === 'borderless' ? 'background:none;color:var(--a2ui-accent,#4f46e5);border:1px solid transparent;'
+                                : 'background:none;color:var(--a2ui-accent,#4f46e5);border:1px solid var(--a2ui-accent,#4f46e5);');
   var css = 'display:inline-block;padding:10px 20px;border-radius:8px;' + look + 'text-decoration:none;margin:8px 0;font:inherit;font-weight:600;cursor:pointer;';
   // openUrl (the emitter's link-button convention) and the legacy no-name shape stay plain links
   if (url && (!ev.name || ev.name === 'openUrl')) {

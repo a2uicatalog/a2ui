@@ -11,7 +11,7 @@ _RENDERERS['nav_bar'] = function(b) {
   var links  = b.links   || [];
   var label  = b.label   || '';
   var layout = b.layout  || 'horizontal';
-  var accent = b.accent  || '#6366f1';
+  var accent = b.accent  || '#4f46e5';
   var sticky = b.sticky  !== false; // default true
 
   // Server-side: build link list JSON for client resolution
@@ -101,9 +101,9 @@ _RENDERERS['nav_link'] = function(b) {
   var btnBase = 'display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;' +
     'font-size:0.82rem;font-weight:700;text-decoration:none;cursor:pointer;transition:all 0.15s;';
   var btnStyle = {
-    primary: btnBase + 'background:#6366f1;color:#fff;border:none;',
+    primary: btnBase + 'background:#4f46e5;color:#fff;border:none;',
     ghost:   btnBase + 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;',
-    text:    btnBase + 'background:none;border:none;color:#6366f1;padding:0;'
+    text:    btnBase + 'background:none;border:none;color:#4f46e5;padding:0;'
   }[style] || btnBase;
 
   return (
@@ -313,7 +313,7 @@ _RENDERERS['lens_grid'] = function(b) {
       'text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;' +
       'border:1.5px solid ' + (isSel ? '#4f46e5' : '#e2e5ea') + ';background:#fff;">' +
       '<div style="font-size:14px;font-weight:700;color:#111827;">' + _esc(o.label || '') + '</div>' +
-      (o.caption ? '<div style="font-size:12px;color:#6b7280;margin-top:2px;">' + _esc(o.caption) + '</div>' : '') +
+      (o.caption ? '<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(o.caption) + '</div>' : '') +
       '</button>';
   }).join('');
 
@@ -455,7 +455,7 @@ _RENDERERS['quiet_link'] = function(b) {
   return (
     '<div style="text-align:center;">' +
     '<button id="' + uid + '" type="button" style="background:none;border:none;' +
-    'color:#6b7280;font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;' +
+    'color:var(--muted,#5f6368);font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;' +
     'text-underline-offset:2px;padding:4px;">' + _esc(b.text || '') + '</button>' +
     '</div>'
   );

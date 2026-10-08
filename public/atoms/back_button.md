@@ -14,7 +14,7 @@ web, google-apps-script-web, mcp-apps, android
 | url | string (optional, href) |
 | nav_slug | string (optional, resolves to ?nav=<slug>) |
 | style | string (optional, "ghost"|"outline"|"text", default "ghost") |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 
 ## Example payload
 

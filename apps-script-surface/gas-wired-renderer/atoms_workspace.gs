@@ -165,7 +165,7 @@ _RENDERERS['gmail_unread_count'] = function(b) {
 // ── user_profile_card ─────────────────────────────────────────────────────────
 // Richer user card — avatar initial, name (from email), domain, locale.
 _RENDERERS['user_profile_card'] = function(b) {
-  var accent  = b.accent || 'var(--accent,#6366f1)';
+  var accent  = b.accent || 'var(--accent,#4f46e5)';
   var subtitle = b.subtitle || '';
   var email   = 'you@example.com';
   var domain  = 'example.com';
@@ -243,7 +243,7 @@ _RENDERERS['sheet_form_submit'] = function(b) {
   var title         = b.title || 'Submit to Sheet';
   var fields        = b.fields || [{ label: 'Response', name: 'response', type: 'text' }];
   var submit_label  = b.submit_label || 'Submit';
-  var accent        = b.accent || 'var(--accent,#6366f1)';
+  var accent        = b.accent || 'var(--accent,#4f46e5)';
   var uid           = Math.random().toString(36).substr(2, 6);
   var formId        = 'wsf' + uid;
 
@@ -362,12 +362,12 @@ _RENDERERS['gmail_inbox'] = function(b) {
   var uid    = 'gmbi' + Math.random().toString(36).substr(2, 6);
   var title  = b.title  || 'Inbox';
   var count  = Math.min(parseInt(b.count  || 10), 20);
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var emails = [];
   var error  = null;
 
   // ── Colour palette for sender avatars ──────────────────────────────────────
-  var PALETTE = ['#6366f1','#38bdf8','#a78bfa','#34d399','#f59e0b','#f87171','#fb923c','#4ade80'];
+  var PALETTE = ['#4f46e5','#38bdf8','#a78bfa','#34d399','#f59e0b','#f87171','#fb923c','#4ade80'];
 
   // ── Helper: parse "Name <email>" → {name, addr} ───────────────────────────
   function parseFrom(raw) {
@@ -547,7 +547,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
     'application/pdf':                           { l:'PDF',   c:'#ef4444', e:'📕' },
     'image/png':                                 { l:'IMG',   c:'#00897b', e:'🖼️' },
     'image/jpeg':                                { l:'IMG',   c:'#00897b', e:'🖼️' },
-    'video/mp4':                                 { l:'VID',   c:'#6366f1', e:'🎬' },
+    'video/mp4':                                 { l:'VID',   c:'#4f46e5', e:'🎬' },
     'application/vnd.google-apps.folder':       { l:'DIR',   c:'#f59e0b', e:'📁' }
   };
   function mimeInfo(m) { return MIME[m] || { l: 'FILE', c: '#64748b', e: '📄' }; }
@@ -730,7 +730,7 @@ _RENDERERS['drive_folder_contents'] = function(b) {
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:10px;">📁 ' + _esc(title) + '</div>' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:10px;">📁 ' + _esc(title) + '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;">' + items + '</div>' +
     '</div>'
   );
@@ -772,7 +772,7 @@ _RENDERERS['drive_file_card'] = function(b) {
     '<div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
     '<div style="flex:1;min-width:0;">' +
       '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(name) + '</div>' +
-      (desc ? '<div style="font-size:0.72rem;color:#64748b;margin-top:3px;">' + _esc(desc) + '</div>' : '') +
+      (desc ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:3px;">' + _esc(desc) + '</div>' : '') +
     '</div>' +
     '<a href="' + _esc(url) + '" target="_top" style="flex-shrink:0;padding:7px 14px;border-radius:7px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.25);color:#60a5fa;font-size:0.72rem;font-weight:600;text-decoration:none;white-space:nowrap;transition:background 0.15s;"' +
       ' onmouseover="this.style.background=\'rgba(66,133,244,0.2)\'"' +
@@ -874,7 +874,7 @@ _RENDERERS['scenario_case'] = function(b) {
         'b.style.background=\'#f8fafc\';b.style.borderColor=\'#e2e8f0\';b.style.color=\'#1e293b\';' +
       '});' +
       'btn.setAttribute(\'data-selected\',\'true\');' +
-      'btn.style.background=\'#ede9fe\';btn.style.borderColor=\'#6366f1\';btn.style.color=\'#4338ca\';' +
+      'btn.style.background=\'#ede9fe\';btn.style.borderColor=\'#4f46e5\';btn.style.color=\'#4338ca\';' +
     '})(this)';
 
     optHtml +=
@@ -905,14 +905,14 @@ _RENDERERS['scenario_case'] = function(b) {
   return '<div id="a2ui-' + _esc(id) + '" data-atom="scenario_case" data-sc-wrap style="margin:0 0 28px;font-family:system-ui,sans-serif;">' +
     '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">' +
       (domain ? '<span style="background:#ede9fe;color:#6d28d9;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;">' + _esc(domain) + '</span>' : '') +
-      (diff   ? '<span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:500;">'   + _esc(diff)   + '</span>' : '') +
+      (diff   ? '<span style="background:#f1f5f9;color:var(--muted,#5f6368);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:500;">'   + _esc(diff)   + '</span>' : '') +
     '</div>' +
-    '<div style="border-left:3px solid #6366f1;padding:14px 18px;background:#fafaf9;border-radius:0 6px 6px 0;margin-bottom:18px;">' +
+    '<div style="border-left:3px solid #4f46e5;padding:14px 18px;background:#fafaf9;border-radius:0 6px 6px 0;margin-bottom:18px;">' +
       '<p style="margin:0;font-size:14px;line-height:1.75;color:#374151;">' + _esc(scenario) + '</p>' +
     '</div>' +
     '<p style="font-size:15px;font-weight:600;color:#0f172a;margin:0 0 12px;">' + _esc(question) + '</p>' +
     optHtml +
-    '<button onclick="' + revealFn + '" style="margin-top:6px;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;">Check answer</button>' +
+    '<button onclick="' + revealFn + '" style="margin-top:6px;background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;">Check answer</button>' +
     '<div data-sc-rat style="display:none;margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;">' +
       '<p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.06em;">Rationale</p>' +
       '<p style="margin:0;font-size:14px;line-height:1.65;color:#166534;">' + _esc(rationale) + '</p>' +

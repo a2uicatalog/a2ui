@@ -11,7 +11,7 @@ web, google-apps-script-web, pdf, mcp-apps, android
 | Field | Type |
 |---|---|
 | title | string (optional). Ignored by the "cards" style. |
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | theme | string (optional, "light"|"dark", default "light"). "cards" style only. |
 | style | string (optional, "large"|"badge"|"cards", default "large") |
 | items | array (required). For "large"/"badge" style, each item is {label (optional), text (optional)}. For "cards" style, each item is {number (optional, defaults to position), title, tags (optional, array of string), text}. |

@@ -15,7 +15,7 @@ _RENDERERS['dark_hero'] = function(b) {
   var heading  = b.heading   || 'Build something beautiful';
   var subtext  = b.subtext   || '';
   var badge    = b.badge     || '';
-  var gradient = b.gradient  || 'linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#ec4899 100%)';
+  var gradient = b.gradient  || 'linear-gradient(135deg,#4f46e5 0%,#8b5cf6 50%,#ec4899 100%)';
   var ctaLabel = b.cta_label || '';
   var ctaUrl   = b.cta_url   || '#';
   var align    = b.align     || 'center';
@@ -51,7 +51,7 @@ _RENDERERS['dark_hero'] = function(b) {
 // Fields:
 //   value   — the stat value (string or number)
 //   label   — descriptor below the number
-//   colour  — glow colour (default #6366f1)
+//   colour  — glow colour (default #4f46e5)
 //   size    — font size (default 4.5rem)
 //   prefix  — text before value (e.g. "$", "~")
 //   suffix  — text after value (e.g. "%", "k", "x")
@@ -59,7 +59,7 @@ _RENDERERS['dark_hero'] = function(b) {
 _RENDERERS['glowing_stat'] = function(b) {
   var value  = String(b.value !== undefined ? b.value : '—');
   var label  = b.label  || '';
-  var colour = b.colour || '#6366f1';
+  var colour = b.colour || '#4f46e5';
   var size   = b.size   || '4.5rem';
   var prefix = b.prefix || '';
   var suffix = b.suffix || '';
@@ -137,7 +137,7 @@ _RENDERERS['glass_card'] = function(b) {
 _RENDERERS['gradient_border_card'] = function(b) {
   var content = _esc(b.content || '');
   var title   = b.title   || '';
-  var colours = b.colours || ['#6366f1','#8b5cf6','#ec4899','#f59e0b'];
+  var colours = b.colours || ['#4f46e5','#8b5cf6','#ec4899','#f59e0b'];
   var bg      = b.bg      || '#0c0e1a';
   var angle   = b.angle   !== undefined ? b.angle : 135;
   var padding = b.padding || '24px';
@@ -165,7 +165,7 @@ _RENDERERS['gradient_border_card'] = function(b) {
 //   animate — enable float animation (default true)
 _RENDERERS['floating_orbs'] = function(b) {
   var orbs    = b.orbs || [
-    { colour: '#6366f1', size: 500, x: 10,  y: 15  },
+    { colour: '#4f46e5', size: 500, x: 10,  y: 15  },
     { colour: '#8b5cf6', size: 350, x: 75,  y: 55  },
     { colour: '#ec4899', size: 280, x: 45,  y: 85  }
   ];
@@ -209,7 +209,7 @@ _RENDERERS['floating_orbs'] = function(b) {
 // Text with CSS neon glow effect via layered text-shadow.
 // Fields:
 //   text    — the text to display
-//   colour  — neon colour (default #6366f1)
+//   colour  — neon colour (default #4f46e5)
 //   size    — font size (default 2rem)
 //   weight  — font weight (default 800)
 //   align   — text-align (default center)
@@ -253,7 +253,7 @@ _RENDERERS['neon_text'] = function(b) {
 // Fields:
 //   features — array of { icon, title, description, colour? }
 //   columns  — grid columns: 2 or 3 (default 3, collapses to 1 on narrow)
-//   accent   — default icon bg gradient colour (default #6366f1)
+//   accent   — default icon bg gradient colour (default #4f46e5)
 _RENDERERS['dark_feature_grid'] = function(b) {
   var features = b.features || [
     { icon: '⚡', title: 'Fast',     description: 'Renders in under 100ms from a base64 URL.' },
@@ -261,7 +261,7 @@ _RENDERERS['dark_feature_grid'] = function(b) {
     { icon: '🎨', title: 'Flexible', description: 'Dark and light themes, any accent colour, 290+ atoms.' }
   ];
   var cols   = parseInt(b.columns, 10) || 3;
-  var accent = b.accent  || '#6366f1';
+  var accent = b.accent  || '#4f46e5';
 
   var cards = '';
   for (var i = 0; i < features.length; i++) {
@@ -292,11 +292,11 @@ _RENDERERS['dark_feature_grid'] = function(b) {
 // ── dark_divider ──────────────────────────────────────────────────────────────
 // Gradient divider line — more dramatic than a plain hr on dark backgrounds.
 // Fields:
-//   colour  — centre colour of the gradient (default #6366f1)
+//   colour  — centre colour of the gradient (default #4f46e5)
 //   margin  — vertical margin (default 32px)
 //   height  — line height px (default 1)
 _RENDERERS['dark_divider'] = function(b) {
-  var colour = b.colour || '#6366f1';
+  var colour = b.colour || '#4f46e5';
   var margin = b.margin || '32px';
   var height = b.height || 1;
 

@@ -12,7 +12,7 @@ _RENDERERS['globe_3d'] = function(b) {
 
   var size  = b.size  || 300;
 
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
 
   var speed = b.speed !== undefined ? b.speed : 0.006;
 

@@ -13,7 +13,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | level_label | string. Current level name e.g. "Level 3 — Intermediate". |
 | xp_current | integer. Current XP within the current level. |
 | xp_next | integer. XP required to reach the next level. |
-| accent | string (optional). Bar fill colour. Default "#6366f1". |
+| accent | string (optional). Bar fill colour. Default "#4f46e5". |
 | show_flash | boolean (optional, default true). Trigger level-up flash when xp_current >= xp_next. |
 
 ## Example payload

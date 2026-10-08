@@ -32,7 +32,7 @@ does not exist.
  "title": "string (required, alias heading)",
  "subtitle": "string (optional, alias subtext)",
  "badge": "string (optional, label above title)",
- "accent": "string (optional, hex, default \"#6366f1\")",
+ "accent": "string (optional, hex, default \"#4f46e5\")",
  "accent2": "string (optional, second gradient hex, default \"#8b5cf6\")",
  "gradient": "string (optional, css gradient override)",
  "align": "string (optional, \"left\"|\"center\", default \"left\")",
@@ -76,7 +76,7 @@ does not exist.
  "title": "string (required)",
  "subtitle": "string (optional)",
  "icon": "string (optional, emoji)",
- "accent": "string (optional, hex, default \"#6366f1\")",
+ "accent": "string (optional, hex, default \"#4f46e5\")",
  "header_theme": "string (optional, \"light\"|\"dark\", default \"light\")",
  "blocks": "array (optional, atom blocks rendered in white body)"
 }
@@ -86,7 +86,7 @@ does not exist.
 ```json
 {
  "current": "integer (required, 1-based index of active step)",
- "accent": "string (optional, hex, default \"#6366f1\")",
+ "accent": "string (optional, hex, default \"#4f46e5\")",
  "steps": "array (required). Array of {label or title}"
 }
 ```
@@ -113,7 +113,7 @@ does not exist.
  "title": "string (optional)",
  "text": "string (optional, markdown — renderer degrades to empty; provide title and/or text)",
  "icon": "string (optional, emoji)",
- "accent": "string (optional, hex, default \"#6366f1\")",
+ "accent": "string (optional, hex, default \"#4f46e5\")",
  "style": "string (optional, \"gradient\"|\"solid\"|\"outline\", default \"gradient\")"
 }
 ```
@@ -165,7 +165,7 @@ does not exist.
 ```json
 {
  "title": "string (optional). Ignored by the \"cards\" style.",
- "accent": "string (optional, hex, default \"#6366f1\")",
+ "accent": "string (optional, hex, default \"#4f46e5\")",
  "theme": "string (optional, \"light\"|\"dark\", default \"light\"). \"cards\" style only.",
  "style": "string (optional, \"large\"|\"badge\"|\"cards\", default \"large\")",
  "items": "array (required). For \"large\"/\"badge\" style, each item is {label (optional), text (optional)}. For \"cards\" style, each item is {number (optional, defaults to position), title, tags (optional, array of string), text}."
@@ -341,7 +341,7 @@ does not exist.
  "email": "string (optional)",
  "linkedin": "string (optional, URL)",
  "tags": "string[] (optional)",
- "accent": "string (optional, hex, default \"#6366f1\")"
+ "accent": "string (optional, hex, default \"#4f46e5\")"
 }
 ```
 

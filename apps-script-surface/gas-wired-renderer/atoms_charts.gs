@@ -7,7 +7,7 @@ function _linScale(val, domMin, domMax, rangeMin, rangeMax) {
 }
 
 // Default color palette for charts
-var _CHART_PALETTE = ['#6366f1','#22d3ee','#34d399','#fb923c','#f472b6','#a78bfa','#facc15','#818cf8','#e879f9','#2dd4bf'];
+var _CHART_PALETTE = ['#4f46e5','#22d3ee','#34d399','#fb923c','#f472b6','#a78bfa','#facc15','#818cf8','#e879f9','#2dd4bf'];
 
 // ─────────────────────────────────────────────────────────
 // 1. chartjs_bar — SVG horizontal or vertical bar chart
@@ -23,7 +23,7 @@ _RENDERERS['chartjs_bar'] = function(b) {
   var height      = parseInt(b.height) || 220;
   var width       = parseInt(b.width)  || 560;
   var showVals    = b.show_values === true || b.show_values === 'true';
-  var barColor    = b.bar_color || '#6366f1';
+  var barColor    = b.bar_color || '#4f46e5';
 
   if (!data.length) return '<div class="a2ui-chart-empty">No data</div>';
 
@@ -126,7 +126,7 @@ _RENDERERS['chartjs_line'] = function(b) {
     labels   = b.labels || datasets[0].data.map(function(_, i){ return String(i); });
   } else if (b.data) {
     labels   = b.data.map(function(d){ return d.label || ''; });
-    datasets = [{ label: title, data: b.data.map(function(d){ return parseFloat(d.value)||0; }), color: '#6366f1' }];
+    datasets = [{ label: title, data: b.data.map(function(d){ return parseFloat(d.value)||0; }), color: '#4f46e5' }];
     title    = '';
   } else {
     return '<div class="a2ui-chart-empty">No data</div>';
@@ -666,7 +666,7 @@ _RENDERERS['mini_sparkline_set'] = function(b) {
 
   sparklines.forEach(function(sp) {
     var data  = (sp.data || []).map(function(v){ return parseFloat(v)||0; });
-    var color = sp.color || '#6366f1';
+    var color = sp.color || '#4f46e5';
     var label = sp.label || '';
     var unit  = sp.unit  || '';
     var last  = data.length ? data[data.length-1] : 0;
@@ -733,7 +733,7 @@ _RENDERERS['donut_stat'] = function(b) {
   html += '<text x="' + cx + '" y="' + (cy - 4) + '" text-anchor="middle" font-size="' + Math.round(size*0.18) + '" font-weight="bold" fill="#1e293b">' + _esc(String(Math.round(value))) + '</text>';
   html += '<text x="' + cx + '" y="' + (cy + Math.round(size*0.14)) + '" text-anchor="middle" font-size="' + Math.round(size*0.1) + '" fill="#64748b">' + _esc(unit) + '</text>';
   html += '</svg>';
-  if (label) html += '<div class="a2ui-donut-label" style="margin-top:4px;font-size:13px;color:#64748b;">' + _esc(label) + '</div>';
+  if (label) html += '<div class="a2ui-donut-label" style="margin-top:4px;font-size:13px;color:var(--muted,#5f6368);">' + _esc(label) + '</div>';
   html += '</div>';
   return html;
 };
@@ -749,7 +749,7 @@ _RENDERERS['status_dashboard'] = function(b) {
     operational:  '#22c55e',
     degraded:     '#f59e0b',
     outage:       '#ef4444',
-    maintenance:  '#6366f1'
+    maintenance:  '#4f46e5'
   };
   var statusLabels = {
     operational: 'Operational',
@@ -969,7 +969,7 @@ _RENDERERS['punch_card'] = function(b) {
   if (title || subtitle) {
     header = '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">'
       + (title ? '<span style="font-size:0.85rem;font-weight:700;color:#1e293b;">' + _esc(title) + '</span>' : '<span></span>')
-      + (subtitle ? '<span style="font-size:0.72rem;color:#64748b;font-family:monospace;">' + _esc(subtitle) + '</span>' : '')
+      + (subtitle ? '<span style="font-size:0.72rem;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(subtitle) + '</span>' : '')
       + '</div>';
   }
 
@@ -1243,7 +1243,7 @@ _RENDERERS['entity_list'] = function(b) {
   var title    = b.title    || '';
 
   var typeColors = {
-    person:       '#6366f1',
+    person:       '#4f46e5',
     organization: '#22d3ee',
     location:     '#34d399',
     product:      '#fb923c',
@@ -1383,7 +1383,7 @@ _RENDERERS['task_list'] = function(b) {
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
     var dot = item.priority ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (priorityColors[item.priority] || '#9ca3af') + ';margin-right:8px;flex-shrink:0;"></span>' : '';
-    var textStyle = item.done ? 'text-decoration:line-through;color:#9ca3af;' : 'color:#111827;';
+    var textStyle = item.done ? 'text-decoration:line-through;color:var(--muted,#5f6368);' : 'color:#111827;';
     var checkIcon = item.done
       ? '<svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;"><circle cx="8" cy="8" r="7" fill="#7c3aed"/><polyline points="4,8 7,11 12,5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       : '<svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;"><circle cx="8" cy="8" r="7" fill="none" stroke="#d1d5db" stroke-width="1.5"/></svg>';
@@ -1407,7 +1407,7 @@ _RENDERERS['vote_button_group'] = function(b) {
     rows += '<label for="' + id + '" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;background:#ffffff;background:var(--a2ui-surface,#ffffff);transition:border-color 0.15s;">'
       + '<input type="radio" name="vote-' + uid + '" id="' + id + '" value="' + i + '" style="accent-color:#7c3aed;">'
       + '<span style="flex:1;font-size:0.9rem;color:#111827;font-weight:500;">' + _esc(opt.label || '') + '</span>'
-      + '<span style="font-size:0.82rem;color:#6b7280;background:#f3f4f6;padding:2px 8px;border-radius:999px;">' + (opt.votes || 0) + ' votes</span>'
+      + '<span style="font-size:0.82rem;color:var(--muted,#5f6368);background:#f3f4f6;padding:2px 8px;border-radius:999px;">' + (opt.votes || 0) + ' votes</span>'
       + '</label>';
   }
   return '<div style="margin:1rem 0;">'
@@ -1438,7 +1438,7 @@ _RENDERERS['sprint_board'] = function(b) {
         + '<div style="display:flex;align-items:flex-start;gap:8px;">'
         + '<div style="width:8px;height:8px;border-radius:50%;background:' + pcolor + ';flex-shrink:0;margin-top:5px;"></div>'
         + '<div style="flex:1;">'
-        + (item.id ? '<div style="font-size:0.72rem;color:#9ca3af;margin-bottom:3px;">' + _esc(item.id) + '</div>' : '')
+        + (item.id ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-bottom:3px;">' + _esc(item.id) + '</div>' : '')
         + '<div style="font-size:0.87rem;font-weight:600;color:#111827;">' + _esc(item.title || '') + '</div>'
         + (labelsHtml ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">' + labelsHtml + '</div>' : '')
         + '</div>'
@@ -1447,7 +1447,7 @@ _RENDERERS['sprint_board'] = function(b) {
         + '</div>';
     }
     colsHtml += '<div style="flex:1;min-width:200px;background:#f9fafb;border-radius:12px;padding:14px;">'
-      + '<div style="font-weight:700;font-size:0.85rem;color:#374151;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(col.title || '') + ' <span style="background:#e5e7eb;color:#6b7280;border-radius:999px;padding:1px 7px;font-size:0.75rem;">' + items.length + '</span></div>'
+      + '<div style="font-weight:700;font-size:0.85rem;color:#374151;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(col.title || '') + ' <span style="background:#e5e7eb;color:var(--muted,#5f6368);border-radius:999px;padding:1px 7px;font-size:0.75rem;">' + items.length + '</span></div>'
       + cardsHtml
       + '</div>';
   }
@@ -1472,11 +1472,11 @@ _RENDERERS['jira_ticket'] = function(b) {
       labelsHtml += '<span style="background:#ede9fe;color:#5b21b6;font-size:0.72rem;padding:2px 8px;border-radius:999px;">' + _esc(b.labels[l]) + '</span>';
     }
   }
-  var assigneeHtml = b.assignee ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:#6b7280;"><div style="width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + _esc(b.assignee.charAt(0).toUpperCase()) + '</div>' + _esc(b.assignee) + '</div>' : '';
+  var assigneeHtml = b.assignee ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--muted,#5f6368);"><div style="width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + _esc(b.assignee.charAt(0).toUpperCase()) + '</div>' + _esc(b.assignee) + '</div>' : '';
   return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
     + '<span style="font-size:1.2rem;background:' + bgColor + ';padding:6px;border-radius:8px;">' + icon + '</span>'
-    + '<span style="font-size:0.82rem;font-weight:700;color:#6b7280;font-family:monospace;">' + _esc(b.key || '') + '</span>'
+    + '<span style="font-size:0.82rem;font-weight:700;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(b.key || '') + '</span>'
     + '<span style="margin-left:auto;background:' + statusBg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;color:#374151;">' + _esc(status) + '</span>'
     + '</div>'
     + '<div style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:10px;">' + _esc(b.summary || '') + '</div>'
@@ -1552,12 +1552,12 @@ _RENDERERS['order_status_card'] = function(b) {
   var items = b.items || [];
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || item.title || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#6b7280;text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
+    itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || item.title || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:var(--muted,#5f6368);text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
   }
   return '<div style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
     + '<span style="font-weight:700;color:#111827;font-size:1rem;">Order ' + _esc(b.order_id || b.order_number || '') + '</span>'
-    + (b.customer || b.date ? '<span style="font-size:0.8rem;color:#6b7280;">' + _esc([b.customer, b.date].filter(Boolean).join(' · ')) + '</span>' : '')
+    + (b.customer || b.date ? '<span style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc([b.customer, b.date].filter(Boolean).join(' · ')) + '</span>' : '')
     + (cancelled ? '<span style="background:#fee2e2;color:#991b1b;font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">Cancelled</span>' : '')
     + '</div>'
     + stepperHtml
@@ -1565,7 +1565,7 @@ _RENDERERS['order_status_card'] = function(b) {
     + '<div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid #e5e7eb;margin-top:8px;font-weight:700;color:#111827;">'
     + '<span>Total</span><span>' + _esc(b.total || '') + '</span>'
     + '</div>'
-    + (b.estimated_delivery ? '<div style="margin-top:10px;font-size:0.82rem;color:#6b7280;">Estimated delivery: <strong style="color:#111827;">' + _esc(b.estimated_delivery) + '</strong></div>' : '')
+    + (b.estimated_delivery ? '<div style="margin-top:10px;font-size:0.82rem;color:var(--muted,#5f6368);">Estimated delivery: <strong style="color:#111827;">' + _esc(b.estimated_delivery) + '</strong></div>' : '')
     + '</div>';
 };
 
@@ -1612,8 +1612,8 @@ _RENDERERS['notification_stack'] = function(b) {
       + (n.title ? '<div style="font-weight:700;font-size:0.875rem;color:#111827;">' + _esc(n.title) + '</div>' : '')
       + (n.body ? '<div style="font-size:0.82rem;color:#374151;margin-top:2px;">' + _esc(n.body) + '</div>' : '')
       + '</div>'
-      + (n.time ? '<span style="font-size:0.72rem;color:#9ca3af;flex-shrink:0;">' + _esc(n.time) + '</span>' : '')
-      + '<button style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:1rem;padding:0;line-height:1;flex-shrink:0;" aria-label="Dismiss">×</button>'
+      + (n.time ? '<span style="font-size:0.72rem;color:var(--muted,#5f6368);flex-shrink:0;">' + _esc(n.time) + '</span>' : '')
+      + '<button style="background:none;border:none;cursor:pointer;color:var(--muted,#5f6368);font-size:1rem;padding:0;line-height:1;flex-shrink:0;" aria-label="Dismiss">×</button>'
       + '</div>';
   }
   html += '</div>';
@@ -1643,7 +1643,7 @@ _RENDERERS['inline_alert'] = function(b) {
   return '<div style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
     + '<span style="font-size:0.95rem;flex-shrink:0;">' + tc.icon + '</span>'
     + '<div style="flex:1;font-size:0.875rem;color:' + tc.fg + ';">' + _esc(b.message || '') + '</div>'
-    + (b.dismissible ? '<button style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:1rem;padding:0;line-height:1;" aria-label="Dismiss">×</button>' : '')
+    + (b.dismissible ? '<button style="background:none;border:none;cursor:pointer;color:var(--muted,#5f6368);font-size:1rem;padding:0;line-height:1;" aria-label="Dismiss">×</button>' : '')
     + '</div>';
 };
 
@@ -1655,7 +1655,7 @@ _RENDERERS['source_citation'] = function(b) {
       escapedAuthors.push(_esc(b.authors[i]));
     }
     authorsHtml = '<span style="font-size:0.82rem;color:#374151;">' + escapedAuthors.join(', ') + '</span>';
-    if (b.year) { authorsHtml += '<span style="font-size:0.82rem;color:#6b7280;"> (' + _esc(b.year) + ')</span>'; }
+    if (b.year) { authorsHtml += '<span style="font-size:0.82rem;color:var(--muted,#5f6368);"> (' + _esc(b.year) + ')</span>'; }
   }
   var titleHtml = b.url
     ? '<a href="' + _esc(b.url) + '" style="font-weight:600;color:#1d4ed8;text-decoration:none;font-size:0.9rem;">' + _esc(b.title || '') + '</a>'
@@ -1665,7 +1665,7 @@ _RENDERERS['source_citation'] = function(b) {
     + '<div>'
     + titleHtml
     + (authorsHtml ? '<div style="margin-top:3px;">' + authorsHtml + '</div>' : '')
-    + (b.publisher ? '<div style="font-size:0.8rem;color:#6b7280;margin-top:2px;font-style:italic;">' + _esc(b.publisher) + '</div>' : '')
+    + (b.publisher ? '<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;font-style:italic;">' + _esc(b.publisher) + '</div>' : '')
     + (b.note ? '<div style="font-size:0.8rem;color:#4b5563;margin-top:5px;background:#f3f4f6;padding:5px 8px;border-radius:6px;">' + _esc(b.note) + '</div>' : '')
     + '</div>'
     + '</div>';
@@ -1692,7 +1692,7 @@ _RENDERERS['llm_comparison_table'] = function(b) {
   return '<div style="margin:1rem 0;overflow-x:auto;">'
     + (title ? '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
     + '<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;font-size:0.875rem;">'
-    + '<thead><tr style="background:#f3f4f6;"><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Model</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">Params</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">Context</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">$/1M tokens</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">Strengths</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">Weaknesses</th></tr></thead>'
+    + '<thead><tr style="background:#f3f4f6;"><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.05em;">Model</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Params</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Context</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">$/1M tokens</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Strengths</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Weaknesses</th></tr></thead>'
     + '<tbody>' + rows + '</tbody>'
     + '</table></div>';
 };
@@ -1723,14 +1723,14 @@ _RENDERERS['token_budget_meter'] = function(b) {
   return '<div style="margin:0.75rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
     + '<span style="font-size:0.875rem;font-weight:600;color:#374151;">Token Budget</span>'
-    + '<span style="font-size:0.82rem;color:#6b7280;">' + used.toLocaleString() + ' / ' + total.toLocaleString() + ' ' + _esc(unit) + '</span>'
+    + '<span style="font-size:0.82rem;color:var(--muted,#5f6368);">' + used.toLocaleString() + ' / ' + total.toLocaleString() + ' ' + _esc(unit) + '</span>'
     + '</div>'
     + '<div style="background:#f3f4f6;border-radius:999px;height:10px;overflow:hidden;">'
     + '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:999px;transition:width 0.6s ease;"></div>'
     + '</div>'
     + '<div style="display:flex;justify-content:space-between;margin-top:5px;">'
     + '<span style="font-size:0.72rem;color:' + color + ';font-weight:600;">' + label + '</span>'
-    + '<span style="font-size:0.72rem;color:#6b7280;">' + pct + '% used</span>'
+    + '<span style="font-size:0.72rem;color:var(--muted,#5f6368);">' + pct + '% used</span>'
     + '</div>'
     + '</div>';
 };
@@ -1817,7 +1817,7 @@ _RENDERERS['shortcut_legend'] = function(b) {
     var keys = sc.keys || [];
     var keysHtml = '';
     for (var k = 0; k < keys.length; k++) {
-      if (k > 0) { keysHtml += '<span style="color:#9ca3af;font-size:0.8rem;margin:0 3px;">+</span>'; }
+      if (k > 0) { keysHtml += '<span style="color:var(--muted,#5f6368);font-size:0.8rem;margin:0 3px;">+</span>'; }
       keysHtml += '<kbd style="display:inline-block;background:#fff;border:1px solid #d1d5db;border-bottom:2px solid #9ca3af;border-radius:5px;padding:2px 7px;font-size:0.78rem;font-family:monospace;color:#111827;box-shadow:0 1px 0 rgba(0,0,0,0.1);">' + _esc(keys[k]) + '</kbd>';
     }
     rows += '<tr style="' + (i % 2 === 0 ? '' : 'background:#f9fafb;') + '">'
@@ -1827,7 +1827,7 @@ _RENDERERS['shortcut_legend'] = function(b) {
   }
   return '<div style="margin:1rem 0;overflow-x:auto;">'
     + '<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
-    + '<thead><tr style="background:#f3f4f6;"><th style="padding:9px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">Shortcut</th><th style="padding:9px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;">Description</th></tr></thead>'
+    + '<thead><tr style="background:#f3f4f6;"><th style="padding:9px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Shortcut</th><th style="padding:9px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th></tr></thead>'
     + '<tbody>' + rows + '</tbody>'
     + '</table></div>';
 };
@@ -1849,19 +1849,19 @@ _RENDERERS['rating_summary_bar'] = function(b) {
     var count = dist[String(r)] || 0;
     var pct = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
     barsHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
-      + '<span style="font-size:0.78rem;color:#6b7280;width:10px;">' + r + '</span>'
+      + '<span style="font-size:0.78rem;color:var(--muted,#5f6368);width:10px;">' + r + '</span>'
       + '<span style="color:#f59e0b;font-size:0.78rem;">★</span>'
       + '<div style="flex:1;background:#f3f4f6;border-radius:999px;height:8px;overflow:hidden;">'
       + '<div style="width:' + pct + '%;height:100%;background:#f59e0b;border-radius:999px;"></div>'
       + '</div>'
-      + '<span style="font-size:0.72rem;color:#6b7280;width:28px;text-align:right;">' + count + '</span>'
+      + '<span style="font-size:0.72rem;color:var(--muted,#5f6368);width:28px;text-align:right;">' + count + '</span>'
       + '</div>';
   }
   return '<div style="display:flex;gap:24px;align-items:flex-start;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
     + '<div style="text-align:center;min-width:80px;">'
     + '<div style="font-size:2.5rem;font-weight:800;color:#111827;line-height:1;">' + overall.toFixed(1) + '</div>'
     + '<div style="color:#f59e0b;font-size:1.1rem;letter-spacing:2px;">' + starsHtml + '</div>'
-    + '<div style="font-size:0.78rem;color:#6b7280;margin-top:4px;">' + totalReviews.toLocaleString() + ' reviews</div>'
+    + '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:4px;">' + totalReviews.toLocaleString() + ' reviews</div>'
     + '</div>'
     + '<div style="flex:1;">' + barsHtml + '</div>'
     + '</div>';
@@ -1896,7 +1896,7 @@ _RENDERERS['model_card'] = function(b) {
   if (pricing) metaItems.push(['pricing', pricing]);
   var metaHtml = metaItems.map(function(kv) {
     return '<div style="display:flex;flex-direction:column;gap:1px;">'
-      + '<span style="font-size:0.68rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">' + kv[0] + '</span>'
+      + '<span style="font-size:0.68rem;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.05em;">' + kv[0] + '</span>'
       + '<span style="font-size:0.82rem;font-weight:600;color:#374151;">' + _esc(kv[1]) + '</span></div>';
   }).join('');
   var metaWrap = metaItems.length ? '<div style="display:flex;gap:24px;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;">' + metaHtml + '</div>' : '';
@@ -1924,9 +1924,9 @@ _RENDERERS['conversation_snippet'] = function(b) {
   for (var i = 0; i < messages.length; i++) {
     var msg = messages[i];
     var role = msg.role || 'user';
-    var lbl = msg.label ? '<div style="font-size:0.7rem;color:#6b7280;text-align:' + (role === 'user' ? 'right' : 'left') + ';margin:0 4px -6px;">' + _esc(msg.label) + '</div>' : '';
+    var lbl = msg.label ? '<div style="font-size:0.7rem;color:var(--muted,#5f6368);text-align:' + (role === 'user' ? 'right' : 'left') + ';margin:0 4px -6px;">' + _esc(msg.label) + '</div>' : '';
     if (role === 'system') {
-      html += '<div style="background:#f3f4f6;border-radius:8px;padding:8px 14px;font-size:0.8rem;color:#6b7280;font-style:italic;text-align:center;">' + _esc(msg.content || '') + '</div>';
+      html += '<div style="background:#f3f4f6;border-radius:8px;padding:8px 14px;font-size:0.8rem;color:var(--muted,#5f6368);font-style:italic;text-align:center;">' + _esc(msg.content || '') + '</div>';
     } else if (role === 'user') {
       html += lbl + '<div style="display:flex;justify-content:flex-end;">'
         + '<div style="background:#ede9fe;color:#111827;border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
@@ -2006,7 +2006,7 @@ _RENDERERS['typing_indicator'] = function(b) {
     + '</style>'
     + '<div style="margin:1rem 0;display:flex;align-items:center;gap:10px;">'
     + '<div class="ti-wrap-' + uid + '"><div class="ti-dot-' + uid + '"></div><div class="ti-dot-' + uid + '"></div><div class="ti-dot-' + uid + '"></div></div>'
-    + (label ? '<span style="font-size:0.85rem;color:#6b7280;">' + _esc(label) + '</span>' : '')
+    + (label ? '<span style="font-size:0.85rem;color:var(--muted,#5f6368);">' + _esc(label) + '</span>' : '')
     + '</div>';
 };
 
@@ -2027,7 +2027,7 @@ _RENDERERS['blur_fade_in'] = function(b) {
 _RENDERERS['dot_grid_background'] = function(b) {
   var title = b.title || '';
   var text = b.text || b.content || '';
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var bg = b.bg || '#0f172a';
   return '<div style="position:relative;border-radius:16px;overflow:hidden;padding:40px 32px;margin:1rem 0;background:' + _esc(bg) + ';background-image:radial-gradient(' + _esc(color) + '33 1.5px,transparent 1.5px);background-size:22px 22px;">'
     + (title ? '<div style="position:relative;z-index:1;font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
@@ -2042,7 +2042,7 @@ _RENDERERS['animated_border_card'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
     + '.abc-' + uid + '{position:relative;border-radius:16px;padding:2px;margin:1rem 0;}'
-    + '.abc-' + uid + '::before{content:"";position:absolute;inset:-2px;border-radius:16px;background:conic-gradient(from 0deg,#6366f1,#a855f7,#ec4899,#f59e0b,#6366f1);z-index:0;animation:abc-spin-' + uid + ' 3s linear infinite;}'
+    + '.abc-' + uid + '::before{content:"";position:absolute;inset:-2px;border-radius:16px;background:conic-gradient(from 0deg,#4f46e5,#a855f7,#ec4899,#f59e0b,#4f46e5);z-index:0;animation:abc-spin-' + uid + ' 3s linear infinite;}'
     + '.abc-inner-' + uid + '{position:relative;z-index:1;background:#fff;border-radius:14px;padding:24px;}'
     + '@keyframes abc-spin-' + uid + '{to{transform:rotate(360deg);}}'
     + '</style>'
@@ -2058,7 +2058,7 @@ _RENDERERS['aurora_background'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
     + '.aur-' + uid + '{position:relative;border-radius:20px;overflow:hidden;padding:44px 36px;margin:1rem 0;background:#060617;}'
-    + '.aur-' + uid + '::before{content:"";position:absolute;width:360px;height:360px;top:-80px;left:-80px;border-radius:50%;background:radial-gradient(circle,#6366f188,#a855f744);filter:blur(60px);animation:aur-a-' + uid + ' 9s ease-in-out infinite alternate;}'
+    + '.aur-' + uid + '::before{content:"";position:absolute;width:360px;height:360px;top:-80px;left:-80px;border-radius:50%;background:radial-gradient(circle,#4f46e588,#a855f744);filter:blur(60px);animation:aur-a-' + uid + ' 9s ease-in-out infinite alternate;}'
     + '.aur-' + uid + '::after{content:"";position:absolute;width:300px;height:300px;bottom:-60px;right:-60px;border-radius:50%;background:radial-gradient(circle,#ec489944,#3b82f666);filter:blur(60px);animation:aur-a-' + uid + ' 9s ease-in-out infinite alternate-reverse;}'
     + '@keyframes aur-a-' + uid + '{from{transform:translate(0,0);}to{transform:translate(70px,50px);}}'
     + '</style>'
@@ -2080,14 +2080,14 @@ _RENDERERS['card_stack'] = function(b) {
     + '.cs-bg2-' + uid + '{position:absolute;bottom:0;left:16px;right:16px;height:56px;background:#e5e7eb;border-radius:12px;}'
     + '.cs-bg1-' + uid + '{position:absolute;bottom:8px;left:8px;right:8px;height:56px;background:#f3f4f6;border-radius:12px;}'
     + '.cs-front-' + uid + '{position:relative;z-index:2;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:22px;box-shadow:0 4px 16px rgba(0,0,0,0.07);}'
-    + '.cs-badge-' + uid + '{display:inline-block;margin-bottom:10px;background:#6366f1;color:#fff;font-size:0.72rem;font-weight:700;padding:2px 10px;border-radius:20px;}'
+    + '.cs-badge-' + uid + '{display:inline-block;margin-bottom:10px;background:#4f46e5;color:#fff;font-size:0.72rem;font-weight:700;padding:2px 10px;border-radius:20px;}'
     + '</style>'
     + '<div class="cs-' + uid + '">'
     + (count > 1 ? '<div class="cs-bg2-' + uid + '"></div><div class="cs-bg1-' + uid + '"></div>' : '')
     + '<div class="cs-front-' + uid + '">'
     + (count > 1 ? '<div class="cs-badge-' + uid + '">' + count + ' items</div>' : '')
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
-    + (text  ? '<div style="font-size:0.875rem;color:#6b7280;line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
+    + (text  ? '<div style="font-size:0.875rem;color:var(--muted,#5f6368);line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div></div>';
 };
 _RENDERERS['depth_stack'] = _RENDERERS['card_stack'];
@@ -2113,7 +2113,7 @@ _RENDERERS['glow_button'] = function(b) {
 
 _RENDERERS['gradient_text'] = function(b) {
   var text = b.text || b.label || b.title || '';
-  var grad = b.gradient || 'linear-gradient(135deg,#6366f1,#a855f7,#ec4899)';
+  var grad = b.gradient || 'linear-gradient(135deg,#4f46e5,#a855f7,#ec4899)';
   return '<div style="margin:0.5rem 0;"><span style="background:' + _esc(grad) + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;font-size:' + _esc(b.size || '1.5rem') + ';">' + _esc(text) + '</span></div>';
 };
 
@@ -2156,11 +2156,11 @@ _RENDERERS['skeleton_stage_card'] = function(b) {
 _RENDERERS['svg_path_draw'] = function(b) {
   var path  = b.path  || 'M10 50 Q 100 10 190 50 T 380 50';
   var label = b.label || b.title || '';
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
-    + (label ? '<div style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">' + _esc(label) + '</div>' : '')
+    + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
     + '<svg viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
     + '<path d="' + _esc(path) + '" stroke="' + _esc(color) + '" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:draw-' + uid + ' 2s ease-out 0.2s forwards;"/>'
     + '</svg></div>';
@@ -2297,7 +2297,7 @@ _RENDERERS['agent_sketchpad'] = function(b) {
   }
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes sketch-draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
-    + (label ? '<div style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">' + _esc(label) + '</div>' : '')
+    + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
     + '<svg viewBox="' + _esc(viewBox) + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
     + elements
     + '</svg></div>';
@@ -2334,7 +2334,7 @@ _RENDERERS['animated_counter'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   return '<div id="ac-wrap-' + uid + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;margin:1rem 0;text-align:center;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
     + '<div id="ac-' + uid + '" style="font-size:2.6rem;font-weight:800;color:#1f2937;">' + _esc(pre) + start.toFixed(dec) + _esc(suf) + '</div>'
-    + (label ? '<div style="font-size:0.85rem;color:#6b7280;margin-top:6px;font-weight:500;">' + _esc(label) + '</div>' : '')
+    + (label ? '<div style="font-size:0.85rem;color:var(--muted,#5f6368);margin-top:6px;font-weight:500;">' + _esc(label) + '</div>' : '')
     + '<script>(function(){'
     + 'var el=document.getElementById("ac-' + uid + '");'
     + 'var wrap=document.getElementById("ac-wrap-' + uid + '");'
@@ -2358,18 +2358,18 @@ _RENDERERS['countdown_timer'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   if (!target) {
     return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;text-align:center;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-      + (label ? '<div style="font-size:0.78rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⏱ ' + _esc(label) + '</div>' : '')
+      + (label ? '<div style="font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⏱ ' + _esc(label) + '</div>' : '')
       + '<div id="cd-' + uid + '" style="font-size:2.2rem;font-weight:800;color:#1f2937;font-family:monospace;">00:00:00</div>'
       + '<script>(function(){var s=0,el=document.getElementById("cd-' + uid + '");setInterval(function(){s++;var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el.textContent=[h,m,sec].map(function(n){return n<10?"0"+n:n}).join(":");},1000);})();<\/script>'
       + '</div>';
   }
   return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:22px;margin:1rem 0;background:#fff;">'
-    + (label ? '<div style="font-size:0.78rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;text-align:center;margin-bottom:16px;">' + _esc(label) + '</div>' : '')
+    + (label ? '<div style="font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.08em;text-align:center;margin-bottom:16px;">' + _esc(label) + '</div>' : '')
     + '<div style="display:flex;justify-content:center;gap:12px;">'
     + ['days','hrs','min','sec'].map(function(u) {
         return '<div style="text-align:center;min-width:60px;background:#f9fafb;border-radius:10px;padding:12px 8px;">'
           + '<div id="cd-' + uid + '-' + u + '" style="font-size:1.9rem;font-weight:800;color:#1f2937;font-family:monospace;line-height:1;">--</div>'
-          + '<div style="font-size:0.68rem;color:#9ca3af;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;">' + u + '</div>'
+          + '<div style="font-size:0.68rem;color:var(--muted,#5f6368);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;">' + u + '</div>'
           + '</div>';
       }).join('')
     + '</div>'
@@ -2415,7 +2415,7 @@ _RENDERERS['word_flip'] = function(b) {
   var prefix   = b.prefix || b.text || '';
   var suffix   = b.suffix || '';
   var interval = parseInt(b.interval || 2200, 10);
-  var color    = b.color || '#6366f1';
+  var color    = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
   var wordsJson = _jsJson(words.map(function(w) { return String(w); }));
   return '<div style="margin:1rem 0;font-size:1.3rem;font-weight:700;color:#1f2937;line-height:1.5;">'
@@ -2467,7 +2467,7 @@ _RENDERERS['scroll_trigger'] = _RENDERERS['reveal_on_scroll'];
 
 _RENDERERS['magnetic_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Click me';
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<div style="margin:1rem 0;text-align:center;">'
     + '<button id="mag-' + uid + '" style="background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:1rem;padding:14px 36px;border:none;border-radius:50px;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease;box-shadow:0 4px 24px rgba(0,0,0,0.14);">' + _esc(label) + '</button>'
@@ -2483,7 +2483,7 @@ _RENDERERS['animated_beam'] = function(b) {
   var from  = b.from  || 'Source';
   var to    = b.to    || 'Target';
   var label = b.label || b.text || '';
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>@keyframes beam-' + uid + '{to{stroke-dashoffset:-20;}}</style>'
     + '<div style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
@@ -2493,7 +2493,7 @@ _RENDERERS['animated_beam'] = function(b) {
     + '<line x1="0" y1="16" x2="100%" y2="16" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-dasharray="7 5" style="animation:beam-' + uid + ' 0.7s linear infinite;"/>'
     + '<svg x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
     + '</svg>'
-    + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:#6b7280;white-space:nowrap;">' + _esc(label) + '</div>' : '')
+    + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:var(--muted,#5f6368);white-space:nowrap;">' + _esc(label) + '</div>' : '')
     + '</div>'
     + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(to) + '</div>'
     + '</div>';
@@ -2521,7 +2521,7 @@ function _flowConnectorNode(node, color, theme) {
 }
 
 _RENDERERS['flow_connector'] = function(b) {
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var theme = b.theme;
 
   if (b.nodes && b.nodes.length) {
@@ -2581,7 +2581,7 @@ _RENDERERS['confetti_trigger'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>@keyframes cft-' + uid + '{0%{opacity:1;transform:translate(var(--tx),0) rotate(0deg);}100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(720deg);}}</style>'
     + '<div id="cft-wrap-' + uid + '" style="position:relative;overflow:hidden;border-radius:16px;padding:32px;margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);text-align:center;transition:background 0.5s;">'
-    + '<button id="cft-btn-' + uid + '" style="background:#6366f1;color:#fff;font-weight:700;padding:12px 28px;border:none;border-radius:10px;font-size:0.95rem;cursor:pointer;">' + _esc(trigger) + '</button>'
+    + '<button id="cft-btn-' + uid + '" style="background:#4f46e5;color:#fff;font-weight:700;padding:12px 28px;border:none;border-radius:10px;font-size:0.95rem;cursor:pointer;">' + _esc(trigger) + '</button>'
     + '<div id="cft-msg-' + uid + '" style="display:none;font-size:1.2rem;font-weight:700;color:#fff;">' + _esc(label) + '</div>'
     + '</div>'
     + '<script>(function(){'
@@ -2619,7 +2619,7 @@ _RENDERERS['meteor_shower'] = function(b) {
   var has = !!(title || body);
   var content = has ? '<div style="position:relative;z-index:1;">'
     + (title ? '<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
-    + (body ? '<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">' + _markdownToHtml(body) + '</div>' : '')
+    + (body ? '<div style="font-size:0.9rem;color:var(--muted,#5f6368);line-height:1.65;">' + _markdownToHtml(body) + '</div>' : '')
     + '</div>' : '';
   return '<style>@keyframes met-' + uid + '-fall{0%{opacity:0;transform:translateX(0) translateY(-80px) rotate(35deg)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateX(160px) translateY(420px) rotate(35deg)}}</style>'
     + '<div style="position:relative;overflow:hidden;border-radius:16px;background:' + bg + ';padding:' + (has ? '40px 36px' : '60px 0') + ';margin:1rem 0;min-height:' + (has ? 140 : 120) + 'px;">' + meteors + content + '</div>';
@@ -2656,7 +2656,7 @@ _RENDERERS['effect_overlay'] = function(b) {
 // ── New GAS-native atoms ─────────────────────────────────────────────────────
 
 _RENDERERS['scroll_progress'] = function(b) {
-  var color  = b.color  || '#6366f1';
+  var color  = b.color  || '#4f46e5';
   var height = parseInt(b.height || 3, 10);
   return '<style>#a2ui-sp-bar{position:fixed;top:0;left:0;width:0%;height:' + height + 'px;background:' + _esc(color) + ';z-index:9999;transition:width 0.08s linear;pointer-events:none;}</style>'
     + '<div id="a2ui-sp-bar"></div>'
@@ -2713,7 +2713,7 @@ _RENDERERS['step_reveal_sequence'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var css = '<style>';
   steps.forEach(function(_, i) {
-    css += '#srs-' + uid + '-' + i + ':checked ~ .srs-nav-' + uid + ' .srs-lbl-' + uid + ':nth-child(' + (i+1) + '){background:#6366f1;color:#fff;border-color:#6366f1;}';
+    css += '#srs-' + uid + '-' + i + ':checked ~ .srs-nav-' + uid + ' .srs-lbl-' + uid + ':nth-child(' + (i+1) + '){background:#4f46e5;color:#fff;border-color:#4f46e5;}';
     css += '#srs-' + uid + '-' + i + ':checked ~ .srs-body-' + uid + ' .srs-panel-' + uid + ':nth-child(' + (i+1) + '){display:block;}';
   });
   css += '.srs-panel-' + uid + '{display:none;padding:20px;animation:srs-in-' + uid + ' 0.3s ease;}';
@@ -2724,7 +2724,7 @@ _RENDERERS['step_reveal_sequence'] = function(b) {
   }).join('');
   var nav = '<div class="srs-nav-' + uid + '" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
     + steps.map(function(s, i) {
-        return '<label for="srs-' + uid + '-' + i + '" class="srs-lbl-' + uid + '" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:#6b7280;transition:all 0.15s;">' + (i+1) + (s.title ? '. ' + _esc(s.title) : '') + '</label>';
+        return '<label for="srs-' + uid + '-' + i + '" class="srs-lbl-' + uid + '" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:var(--muted,#5f6368);transition:all 0.15s;">' + (i+1) + (s.title ? '. ' + _esc(s.title) : '') + '</label>';
       }).join('')
     + '</div>';
   var body = '<div class="srs-body-' + uid + '">'
@@ -2749,7 +2749,7 @@ _RENDERERS['chat_sequence'] = function(b) {
     var delay  = (i * 0.28) + 's';
     html += '<div style="display:flex;flex-direction:column;align-items:' + (isUser?'flex-end':'flex-start') + ';animation:chat-in 0.4s ease ' + delay + ' both;">'
       + '<div style="font-size:0.7rem;color:#9ca3af;margin-bottom:4px;">' + _esc(msg.name || (isUser ? 'You' : 'Assistant')) + '</div>'
-      + '<div style="max-width:82%;background:' + (isUser?'#6366f1':'#fff') + ';color:' + (isUser?'#fff':'#1f2937') + ';border-radius:' + (isUser?'16px 4px 16px 16px':'4px 16px 16px 16px') + ';padding:10px 14px;font-size:0.875rem;line-height:1.55;' + (isUser?'':'box-shadow:0 1px 4px rgba(0,0,0,0.07);') + '">' + _markdownToHtml(msg.text || msg.content || '') + '</div>'
+      + '<div style="max-width:82%;background:' + (isUser?'#4f46e5':'#fff') + ';color:' + (isUser?'#fff':'#1f2937') + ';border-radius:' + (isUser?'16px 4px 16px 16px':'4px 16px 16px 16px') + ';padding:10px 14px;font-size:0.875rem;line-height:1.55;' + (isUser?'':'box-shadow:0 1px 4px rgba(0,0,0,0.07);') + '">' + _markdownToHtml(msg.text || msg.content || '') + '</div>'
       + '</div>';
   });
   return html + '</div>';
@@ -2760,7 +2760,7 @@ _RENDERERS['sequence_diagram'] = function(b) {
   // Full-width readable labels + swimlane arrow beneath; participant boxes;
   // solid=call / dashed=return (message kind:"return") per the mermaid /
   // Google-A2A convention; theme:"site" follows the host page.
-  var accent = b.accent || '#6366f1';
+  var accent = b.accent || '#4f46e5';
   var theme = b.theme;
   var t = _themeTokens(theme);
   // Participant aliases: actor is a string OR {id,label}; messages/notes may
@@ -2886,7 +2886,7 @@ _RENDERERS['sequence_diagram'] = function(b) {
 _RENDERERS['tooltip_glossary'] = function(b) {
   var terms = b.terms || b.items || [];
   var intro = b.text || b.intro || '';
-  return '<style>.tg-term{position:relative;cursor:help;color:#6366f1;font-weight:600;border-bottom:1px dashed #6366f1;}'
+  return '<style>.tg-term{position:relative;cursor:help;color:#4f46e5;font-weight:600;border-bottom:1px dashed #4f46e5;}'
     + '.tg-tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;font-size:0.78rem;padding:6px 12px;border-radius:8px;white-space:nowrap;z-index:20;box-shadow:0 4px 14px rgba(0,0,0,0.22);}'
     + '.tg-tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1f2937;}'
     + '.tg-term:hover .tg-tip{display:block;}</style>'
@@ -2907,7 +2907,7 @@ _RENDERERS['focus_lens'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
     + '.fl-wrap-' + uid + '{position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;min-height:140px;}'
-    + '.fl-bg-' + uid + '{filter:blur(4px);padding:30px;background:#f3f4f6;opacity:0.7;user-select:none;font-size:0.82rem;color:#9ca3af;line-height:1.8;}'
+    + '.fl-bg-' + uid + '{filter:blur(4px);padding:30px;background:#f3f4f6;opacity:0.7;user-select:none;font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.8;}'
     + '.fl-lens-' + uid + '{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.96);border-radius:14px;padding:22px 30px;box-shadow:0 6px 40px rgba(0,0,0,0.16);max-width:80%;text-align:center;z-index:2;}'
     + '</style>'
     + '<div class="fl-wrap-' + uid + '">'
@@ -2967,7 +2967,7 @@ _RENDERERS['stagger_list'] = function(b) {
         return '<div style="' + base + 'padding:12px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;display:flex;gap:12px;align-items:flex-start;">'
           + '<span style="font-size:1.2rem;flex-shrink:0;line-height:1.4;">' + _esc(icon) + '</span>'
           + '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(text) + '</div>'
-          + (sub ? '<div style="font-size:0.8rem;color:#6b7280;margin-top:2px;">' + _esc(sub) + '</div>' : '')
+          + (sub ? '<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(sub) + '</div>' : '')
           + '</div></div>';
       }).join('')
     + '</div>';
@@ -2975,7 +2975,7 @@ _RENDERERS['stagger_list'] = function(b) {
 
 _RENDERERS['liquid_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Action';
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
     + '.lq-' + uid + '{background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:0.95rem;padding:14px 36px;border:none;border-radius:50%;cursor:pointer;transition:border-radius 0.45s cubic-bezier(0.34,1.56,0.64,1),transform 0.2s ease,box-shadow 0.2s ease;box-shadow:0 4px 22px ' + _esc(color) + '55;}'
@@ -3003,7 +3003,7 @@ _RENDERERS['highlight_sweep'] = function(b) {
 _RENDERERS['progress_reveal'] = function(b) {
   var value  = parseFloat(b.value !== undefined ? b.value : (b.percent !== undefined ? b.percent : 0));
   var label  = b.label || b.title || '';
-  var color  = b.color || '#6366f1';
+  var color  = b.color || '#4f46e5';
   var suffix = b.suffix !== undefined ? b.suffix : '%';
   var height = parseInt(b.height || 10, 10);
   var uid = Math.random().toString(36).substr(2, 6);
@@ -3078,7 +3078,7 @@ _RENDERERS['text_reveal_mask'] = function(b) {
 _RENDERERS['split_reveal'] = function(b) {
   var title = b.title || '';
   var text  = b.text  || b.content || '';
-  var color = b.color || '#6366f1';
+  var color = b.color || '#4f46e5';
   var delay = parseFloat(b.delay !== undefined ? b.delay : 0.2);
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
@@ -3101,7 +3101,7 @@ _RENDERERS['mesh_gradient'] = function(b) {
   var title  = b.title  || '';
   var text   = b.text   || b.content || '';
   var bg     = b.bg     || '#0f0a1e';
-  var colors = b.colors || ['#f43f5e','#6366f1','#22d3ee','#f59e0b'];
+  var colors = b.colors || ['#f43f5e','#4f46e5','#22d3ee','#f59e0b'];
   var positions = ['12% 18%','82% 8%','18% 82%','78% 78%','50% 45%'];
   var gradients = colors.map(function(c, i) {
     return 'radial-gradient(ellipse 55% 45% at ' + positions[i % positions.length] + ',' + _esc(c) + '44,transparent)';
@@ -3137,7 +3137,7 @@ _RENDERERS['marquee_strip'] = function(b) {
 _RENDERERS['stripe_background'] = function(b) {
   var title  = b.title  || '';
   var text   = b.text   || b.content || '';
-  var color1 = b.color1 || '#6366f1';
+  var color1 = b.color1 || '#4f46e5';
   var color2 = b.color2 || '#4f46e5';
   var speed  = parseInt(b.speed || 5, 10);
   var uid = Math.random().toString(36).substr(2, 6);
@@ -3175,7 +3175,7 @@ _RENDERERS['status_timeline'] = function(b) {
       + '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:' + (isLast?'0':'10px') + ';">'
       + (ev.title ? '<div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(ev.title) + '</div>' : '')
       + (ev.date  ? '<div style="font-size:0.72rem;color:' + dot + ';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">' + _esc(ev.date) + '</div>' : '')
-      + (ev.text  ? '<div style="font-size:0.82rem;color:#6b7280;line-height:1.5;margin-top:5px;">' + _esc(ev.text) + '</div>' : '')
+      + (ev.text  ? '<div style="font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.5;margin-top:5px;">' + _esc(ev.text) + '</div>' : '')
       + '</div>'
       + '</div>';
   }).join('');
@@ -3194,11 +3194,11 @@ _RENDERERS['counter_group'] = function(b) {
     var pre   = stat.prefix  || '';
     var suf   = stat.suffix  || '';
     var label = stat.label   || stat.title || '';
-    var color = stat.color   || '#6366f1';
+    var color = stat.color   || '#4f46e5';
     var notLast = i < stats.length - 1;
     return '<div style="flex:1;min-width:90px;text-align:center;padding:0 16px;' + (notLast?'border-right:1px solid #eaeaea;border-right:1px solid var(--a2ui-border,#eaeaea);':'') + '">'
       + '<div id="cg-' + uid + '-' + i + '" data-e="' + val + '" data-d="' + dec + '" data-p="' + _esc(pre) + '" data-s="' + _esc(suf) + '" style="font-size:2.4rem;font-weight:800;color:' + _esc(color) + ';line-height:1;">' + _esc(pre) + '0' + _esc(suf) + '</div>'
-      + (label ? '<div style="font-size:0.78rem;color:#6b7280;font-weight:500;margin-top:6px;">' + _esc(label) + '</div>' : '')
+      + (label ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);font-weight:500;margin-top:6px;">' + _esc(label) + '</div>' : '')
       + '</div>';
   }).join('');
   return '<div id="cg-wrap-' + uid + '" style="border:1px solid #e5e7eb;border-radius:16px;padding:28px 8px;margin:1rem 0;display:flex;flex-wrap:wrap;gap:0;background:#fff;align-items:center;">'
@@ -3220,7 +3220,7 @@ _RENDERERS['counter_group'] = function(b) {
 _RENDERERS['orbit_diagram'] = function(b) {
   var center = b.center || 'Core';
   var nodes  = b.nodes  || b.items || [];
-  var color  = b.color  || '#6366f1';
+  var color  = b.color  || '#4f46e5';
   var speed  = parseInt(b.speed || 10, 10);
   var uid = Math.random().toString(36).substr(2, 6);
   var n = Math.max(nodes.length, 1);
@@ -3278,8 +3278,8 @@ _RENDERERS['comparison_morph'] = function(b) {
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
     + '<style>'
     + '.cm-after-' + uid + '{position:absolute;top:0;left:0;width:100%;height:100%;padding:22px;background:#f0fdf4;border:2px solid #86efac;border-radius:12px;clip-path:inset(0 50% 0 0);box-sizing:border-box;overflow:hidden;}'
-    + '.cm-hdl-' + uid + '{position:absolute;top:0;left:50%;transform:translateX(-50%);height:100%;width:2px;background:#6366f1;pointer-events:none;}'
-    + '.cm-hdl-' + uid + '::after{content:"\\u29FA";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#6366f1;color:#fff;font-size:0.75rem;padding:4px 8px;border-radius:20px;white-space:nowrap;}'
+    + '.cm-hdl-' + uid + '{position:absolute;top:0;left:50%;transform:translateX(-50%);height:100%;width:2px;background:#4f46e5;pointer-events:none;}'
+    + '.cm-hdl-' + uid + '::after{content:"\\u29FA";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#4f46e5;color:#fff;font-size:0.75rem;padding:4px 8px;border-radius:20px;white-space:nowrap;}'
     + '</style>'
     + '<div style="position:relative;border-radius:12px;overflow:hidden;">'
     + '<div style="padding:22px;background:#fef2f2;border:2px solid #fecaca;border-radius:12px;">'
@@ -3292,7 +3292,7 @@ _RENDERERS['comparison_morph'] = function(b) {
     + '</div>'
     + '<div class="cm-hdl-' + uid + '" id="cm-hdl-' + uid + '"></div>'
     + '</div>'
-    + '<input type="range" min="0" max="100" value="50" style="width:100%;margin-top:10px;accent-color:#6366f1;cursor:pointer;"'
+    + '<input type="range" min="0" max="100" value="50" style="width:100%;margin-top:10px;accent-color:#4f46e5;cursor:pointer;"'
     + ' oninput="(function(v){document.getElementById(\'cm-after-' + uid + '\').style.clipPath=\'inset(0 \'+(100-v)+\'% 0 0)\';document.getElementById(\'cm-hdl-' + uid + '\').style.left=v+\'%\';})(this.value)">'
     + '</div>';
 };
@@ -3301,12 +3301,12 @@ _RENDERERS['comparison_morph'] = function(b) {
 // Schema: { type:"word_cloud", words:[{text,weight}], sheet_url:"...", write_url:"...", poll:5, palette:["#..."], placeholder:"..." }
 _RENDERERS['word_cloud'] = function(b) {
   var uid         = Math.random().toString(36).substr(2, 6);
-  var palette     = b.palette || ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#14b8a6'];
+  var palette     = b.palette || ['#4f46e5','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#14b8a6'];
   var poll        = parseInt(b.poll || 5, 10) * 1000;
   var sheetUrl    = b.sheet_url || '';
   var writeUrl    = b.write_url || '';
   var ph          = b.placeholder || 'Type a word…';
-  var accent      = b.accent || '#6366f1';
+  var accent      = b.accent || '#4f46e5';
   var staticWords = b.words || [];
   var paletteJson = _jsJson(palette);
   var staticJson  = _jsJson(staticWords.map(function(w) {
@@ -3329,7 +3329,7 @@ _RENDERERS['word_cloud'] = function(b) {
     + '#wc-btn-' + uid + '{padding:11px 22px;background:#fff;color:' + accent + ';border:none;border-radius:10px;'
     + 'font-size:1rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;white-space:nowrap;}'
     + '#wc-btn-' + uid + ':hover{opacity:0.88;}'
-    + (sheetUrl ? '#wc-badge-' + uid + '{position:fixed;top:10px;right:14px;font-size:0.68rem;color:#9ca3af;z-index:9999;}' : '')
+    + (sheetUrl ? '#wc-badge-' + uid + '{position:fixed;top:10px;right:14px;font-size:0.68rem;color:var(--muted,#5f6368);z-index:9999;}' : '')
     + '</style>'
     + '<div id="wc-' + uid + '" data-static=\'' + staticJson.replace(/'/g, '&#39;') + '\' data-palette=\'' + paletteJson.replace(/'/g, '&#39;') + '\'></div>'
     + (sheetUrl ? '<div id="wc-badge-' + uid + '">● live</div>' : '')
@@ -3429,7 +3429,7 @@ _RENDERERS['word_cloud'] = function(b) {
 };
 
 // quiz_set — multi-question MCQ with score, pass/fail result, badge, and URL branching
-// Schema: { type:"quiz_set", title:"...", pass_score:70, accent:"#6366f1",
+// Schema: { type:"quiz_set", title:"...", pass_score:70, accent:"#4f46e5",
 //   questions:[{question,options:[],correct(0-idx),explanation}],
 //   on_pass:{title,message,badge,icon,url}, on_fail:{title,message,url} }
 // on_pass.url / on_fail.url: navigate to a different encoded schema URL on result — enables static branching
@@ -3438,7 +3438,7 @@ _RENDERERS['quiz_set'] = function(b) {
   var title     = b.title || 'Knowledge Check';
   var questions = b.questions || [];
   var passScore = parseInt(b.pass_score || 70, 10);
-  var accent    = b.accent || '#6366f1';
+  var accent    = b.accent || '#4f46e5';
   var onPass    = b.on_pass || {};
   var onFail    = b.on_fail || {};
   var qJson     = _jsJson(questions);
@@ -3447,10 +3447,10 @@ _RENDERERS['quiz_set'] = function(b) {
 
   return '<style>'
     + '#qs-wrap-' + uid + '{max-width:680px;margin:1.5rem auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 2px 24px rgba(0,0,0,0.07);}'
-    + '#qs-title-' + uid + '{font-size:0.7rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;}'
+    + '#qs-title-' + uid + '{font-size:0.7rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;}'
     + '#qs-prog-' + uid + '{height:5px;background:#e5e7eb;border-radius:3px;margin-bottom:22px;}'
     + '#qs-bar-' + uid + '{height:100%;background:' + accent + ';border-radius:3px;width:0%;transition:width 0.45s cubic-bezier(0.4,0,0.2,1);}'
-    + '#qs-num-' + uid + '{font-size:0.72rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}'
+    + '#qs-num-' + uid + '{font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}'
     + '#qs-q-' + uid + '{font-size:1.08rem;font-weight:700;color:#111827;line-height:1.55;margin-bottom:18px;}'
     + '.qs-o-' + uid + '{display:block;width:100%;text-align:left;padding:12px 16px;margin-bottom:8px;background:#f9fafb;border:2px solid #e5e7eb;border-radius:10px;font-size:0.95rem;cursor:pointer;transition:all 0.15s;font-family:inherit;color:#374151;}'
     + '.qs-o-' + uid + ':hover:not([disabled]){border-color:' + accent + ';background:' + accent + '0d;}'
@@ -3461,7 +3461,7 @@ _RENDERERS['quiz_set'] = function(b) {
     + '#qs-next-' + uid + ':hover{opacity:0.87;}'
     + '#qs-result-' + uid + '{display:none;text-align:center;padding:8px 0;}'
     + '.qs-ring-' + uid + '{width:112px;height:112px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;font-weight:800;}'
-    + '#qs-retry-' + uid + '{padding:9px 22px;background:transparent;color:#9ca3af;border:2px solid #e5e7eb;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;transition:all 0.2s;}'
+    + '#qs-retry-' + uid + '{padding:9px 22px;background:transparent;color:var(--muted,#5f6368);border:2px solid #e5e7eb;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;transition:all 0.2s;}'
     + '#qs-retry-' + uid + ':hover{border-color:#9ca3af;color:#374151;}'
     + '</style>'
     + '<div id="qs-wrap-' + uid + '">'
@@ -3533,7 +3533,7 @@ _RENDERERS['quiz_set'] = function(b) {
     + '  resultEl.innerHTML='
     + '    "<div class=\'qs-ring-' + uid + '\' style=\'background:"+col+"1a;color:"+col+";border:3px solid "+col+";\'>"+pct+"%</div>"'
     + '    +"<div style=\'font-size:1.22rem;font-weight:800;color:#111827;margin-bottom:6px;\'>"+_E(cfg.title||(pass?"Well done!":"Keep going!"))+"</div>"'
-    + '    +"<div style=\'font-size:0.88rem;color:#6b7280;margin-bottom:18px;\'>"+score+" of "+questions.length+" correct"+(pass?" · Pass ✓":" · "+passScore+"% needed")+"</div>"'
+    + '    +"<div style=\'font-size:0.88rem;color:var(--muted,#5f6368);margin-bottom:18px;\'>"+score+" of "+questions.length+" correct"+(pass?" · Pass ✓":" · "+passScore+"% needed")+"</div>"'
     + '    +(cfg.message?"<div style=\'font-size:0.88rem;color:#374151;padding:12px 16px;background:#f9fafb;border-radius:8px;margin-bottom:16px;\'>"+_E(cfg.message)+"</div>":"")'
     + '    +(pass&&cfg.badge?"<div style=\'display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:"+col+"1a;border:2px solid "+col+";border-radius:10px;font-weight:700;color:"+col+";font-size:0.95rem;margin-bottom:18px;\'>"+_E(cfg.icon||"🏆")+" "+_E(cfg.badge)+"</div><br>":"")'
     // branch URL button (pass or fail) — if set, show a "Continue →" button that navigates to the next schema URL

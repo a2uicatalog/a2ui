@@ -8027,7 +8027,7 @@ blocks:
     blocks:
       shape: simple
   fields:
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     style: string (optional, "tint"|"solid"|"dark"|"light", default "tint")
     padding: string (optional, css, default "24px")
     grid: boolean (optional, default false, added 2026-07-24). Layers a
@@ -8088,7 +8088,7 @@ blocks:
     - android
   fields:
     current: integer (required, 1-based index of active step)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     steps: array (required). Array of {label or title}
   source:
     name: a2uicatalog
@@ -8146,7 +8146,7 @@ blocks:
     title: string (required, alias heading)
     subtitle: string (optional, alias subtext)
     badge: string (optional, label above title)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     accent2: string (optional, second gradient hex, default "#8b5cf6")
     gradient: string (optional, css gradient override)
     align: string (optional, "left"|"center", default "left")
@@ -8204,7 +8204,7 @@ blocks:
     title: string (optional)
     text: string (optional, markdown — renderer degrades to empty; provide title and/or text)
     icon: string (optional, emoji)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     style: string (optional, "gradient"|"solid"|"outline", default "gradient")
   source:
     name: a2uicatalog
@@ -8233,7 +8233,7 @@ blocks:
     title: string (required)
     subtitle: string (optional)
     icon: string (optional, emoji)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     header_theme: string (optional, "light"|"dark", default "light")
     blocks: array (optional, atom blocks rendered in white body)
   source:
@@ -8290,7 +8290,7 @@ blocks:
     - android
   fields:
     title: string (optional). Ignored by the "cards" style.
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     theme: string (optional, "light"|"dark", default "light"). "cards" style only.
     style: string (optional, "large"|"badge"|"cards", default "large")
     items: array (required). For "large"/"badge" style, each item is
@@ -8324,7 +8324,7 @@ blocks:
     subtitle: string (optional, markdown)
     icon: string (optional, emoji or short text)
     tag: string (optional, badge label shown in accent pill)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     theme: string (optional, "light"|"dark", default "light")
     background: string (optional, css background override — now honoured in
       dark theme too, added 2026-07-24; previously silently discarded in
@@ -8357,7 +8357,7 @@ blocks:
     url: string (optional, href)
     nav_slug: string (optional, resolves to ?nav=<slug>)
     style: string (optional, "ghost"|"outline"|"text", default "ghost")
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -8502,7 +8502,7 @@ blocks:
     email: string (optional)
     linkedin: string (optional, URL)
     tags: string[] (optional)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -8526,7 +8526,7 @@ blocks:
   fields:
     title: string (optional)
     date: string (optional)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     slots: array (required). Array of {time, title, speaker?, location?, type? ("break"|"keynote"|"workshop"|"panel"|"social"),
       description?}
   source:
@@ -9268,7 +9268,7 @@ blocks:
     align: '"left" | "center" | "right"  (optional, default "left"). Where the copy sits.'
     mark_position: '"center" | "right" | "left"  (optional, default "center"). Where the mark sits; put it opposite the copy.'
     size: '"small" | "normal" | "large"  (optional, default "normal"). Mark diameter relative to the panel.'
-    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#6366f1","#a855f7","#22d3ee"]. First colour is the orbits and nucleus, second the electron, all of them the streams.
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#4f46e5","#a855f7","#22d3ee"]. First colour is the orbits and nucleus, second the electron, all of them the streams.
     background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
     density: '"low" | "normal" | "high"  (optional, default "normal")'
     speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
@@ -12845,7 +12845,7 @@ blocks:
   fields:
     hint: string. The hint text revealed on expand.
     label: string (optional). Button label. Default "Show hint".
-    accent: string (optional). Left-border and icon colour. Default "#6366f1".
+    accent: string (optional). Left-border and icon colour. Default "#4f46e5".
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -12965,7 +12965,7 @@ blocks:
     level_label: string. Current level name e.g. "Level 3 — Intermediate".
     xp_current: integer. Current XP within the current level.
     xp_next: integer. XP required to reach the next level.
-    accent: string (optional). Bar fill colour. Default "#6366f1".
+    accent: string (optional). Bar fill colour. Default "#4f46e5".
     show_flash: boolean (optional, default true). Trigger level-up flash when xp_current
       >= xp_next.
   source:
@@ -13042,7 +13042,7 @@ blocks:
   fields:
     course_title: string. Course name shown at the top of the card.
     modules: 'list[{title: string, lessons_total: integer, lessons_done: integer}].'
-    accent: string (optional). Progress fill colour. Default "#6366f1".
+    accent: string (optional). Progress fill colour. Default "#4f46e5".
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -15236,7 +15236,7 @@ blocks:
     - mcp-apps
     - android
   fields:
-    color: 'string (optional, hex, default #6366f1)'
+    color: 'string (optional, hex, default #4f46e5)'
     height: number (optional, px, default 3)
   source: *id007
 - type: live_clock
@@ -15315,7 +15315,7 @@ blocks:
     - mcp-apps
     - android
   fields:
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     theme: string (optional, "light"|"dark"|"site", default "light"). "site"
       follows the host page's light/dark theme (its CSS custom properties)
       instead of baking a fixed one — for embedding in a themed site.
@@ -15829,7 +15829,7 @@ blocks:
     - android
   fields:
     size: number (optional, diameter px, default 300)
-    color: 'string (optional, hex accent, default #6366f1)'
+    color: 'string (optional, hex accent, default #4f46e5)'
     speed: number (optional, auto-spin speed, default 0.006)
     lines: number (optional, latitude line count, default 10)
     theme: string (optional, wire|earth, default wire)
@@ -18196,7 +18196,7 @@ blocks:
     prompt_url: url (optional, published prompt to fetch; defaults to the training prompt)
     prefix: string (optional, instruction prepended to the copied prompt)
     hint: string (optional, helper line under the button)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -18234,7 +18234,7 @@ blocks:
     - android
   fields:
     cards: array (required) of {front, back}
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
     label_front: string (optional, default "QUESTION")
     label_back: string (optional, default "ANSWER")
   source:
@@ -18335,7 +18335,7 @@ blocks:
     areas: array (optional) of strings
     areas_label: string (optional, default "Périmètre")
     context: string (optional, closing paragraph)
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -18409,7 +18409,7 @@ blocks:
     title: string (optional)
     items: array (required) of {title, url (optional), source (optional), tag (optional), time
       (optional), rank (optional)}
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -18426,7 +18426,7 @@ blocks:
   fields:
     title: string (optional)
     items: array (required) of {title, body, source (optional), tag (optional)}
-    accent: string (optional, hex, default "#6366f1")
+    accent: string (optional, hex, default "#4f46e5")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

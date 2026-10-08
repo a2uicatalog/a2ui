@@ -3234,7 +3234,7 @@ function _stallPage_(slug) {
 
   blocks.push({ type: 'divider' });
   blocks.push({ type: 'subheading', text: '① Completion funnel — how far identities get' });
-  blocks.push({ type: 'conversion_funnel', title: slug + ' (' + nId + ' ' + idWord + ')', accent: '#6366f1', steps: funnelSteps });
+  blocks.push({ type: 'conversion_funnel', title: slug + ' (' + nId + ' ' + idWord + ')', accent: '#4f46e5', steps: funnelSteps });
 
   if (stall) {
     blocks.push({ type: 'body', text:

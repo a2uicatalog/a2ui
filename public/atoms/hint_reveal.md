@@ -12,7 +12,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 |---|---|
 | hint | string. The hint text revealed on expand. |
 | label | string (optional). Button label. Default "Show hint". |
-| accent | string (optional). Left-border and icon colour. Default "#6366f1". |
+| accent | string (optional). Left-border and icon colour. Default "#4f46e5". |
 
 ## Example payload
 

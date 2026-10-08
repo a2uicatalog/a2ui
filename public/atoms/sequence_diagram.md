@@ -10,7 +10,7 @@ web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| accent | string (optional, hex, default "#6366f1") |
+| accent | string (optional, hex, default "#4f46e5") |
 | theme | string (optional, "light"|"dark"|"site", default "light"). "site" follows the host page's light/dark theme (its CSS custom properties) instead of baking a fixed one — for embedding in a themed site. |
 | autonumber | boolean (optional, default false) — prefix each message with a sequential number badge (mermaid's autonumber). |
 | actors | required array of participants, left→right. Each is a plain string (used as both id and label) OR an object {id, label} for a mermaid-style alias (messages/notes may reference the short id while the box shows the friendly label). |
