@@ -1976,6 +1976,130 @@ _RENDERERS['css_dropdown_menu'] = function(b) {
     '</details></div>';
 };
 
+// menu (preview) — a menu of LINKS behind one trigger. CSS-only: <details>/<summary>,
+// no script and no wire, so a plain payload works wherever the markup does.
+// Items: link, separator, heading, submenu. Event-raising items (action, checkbox,
+// radio) are deliberately NOT here: they wait for the onRowClick contract, so this
+// atom invents no action vocabulary. `contextual` is provisional and renders as a
+// button. The Python twin in renderers/web_article.py mirrors this byte for byte
+// (tests/test_menu.py). Text is escaped by _esc, URLs go through _menuUrl, `kind` is
+// an enum, and no field reaches a style or a script.
+function _menuStr(v, mx) {
+  var s = (typeof v === 'string') ? v : ((typeof v === 'number' && isFinite(v)) ? String(v) : '');
+  return Array.from(s.trim()).slice(0, mx).join('');
+}
+function _menuUrl(u) {
+  var s = _menuStr(u, 2000);
+  return /^(https?:\/\/|mailto:|#|\/(?!\/))/.test(s) ? s : '#';
+}
+var _MENU_CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+var _MENU_ROW = 'display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:0.87rem;text-decoration:none;text-align:left;';
+// Both halves of a split trigger share one box height, so the arrow is as tall as the label however each sizes its content.
+var _MENU_SPLIT_H = 'box-sizing:border-box;height:2.5rem;line-height:1.2;';
+function _menuTrigStyle(radius, extra) {
+  return (extra || '') + 'list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;' +
+    'background:var(--surface,#fff);border:1px solid var(--border,#dadce0);border-radius:' + radius + ';' +
+    'font-size:0.88rem;font-weight:500;color:var(--text,#3c4043);text-decoration:none;user-select:none;';
+}
+function _menuItem(it, depth) {
+  if (!it || typeof it !== 'object') return '';
+  var type = it.type === undefined ? 'link' : it.type;
+  if (type === 'separator') {
+    return '<div role="separator" style="height:1px;margin:4px 0;background:var(--border,#e5e7eb);"></div>';
+  }
+  var label = _menuStr(it.label, 120);
+  if (type === 'heading') {
+    if (!label) return '';
+    return '<div role="presentation" style="padding:8px 14px 4px;font-size:0.72rem;font-weight:700;letter-spacing:0.04em;' +
+      'text-transform:uppercase;color:var(--text-muted,#6b7280);">' + _esc(label) + '</div>';
+  }
+  if (type !== 'link' && type !== 'submenu') return '';
+  if (type === 'submenu' && depth > 0) return '';
+  if (!label) return '';
+  var danger = it.danger === true;
+  var disabled = it.disabled === true;
+  var color = danger ? '#b3261e' : 'var(--text,#3c4043)';
+  var icon = _menuStr(it.icon, 4);
+  var desc = _menuStr(it.description, 200);
+  var badge = _menuStr(it.badge, 16);
+  var shortcut = _menuStr(it.shortcut, 16);
+  var inner = (icon ? '<span aria-hidden="true" style="width:1.3em;text-align:center;flex:0 0 auto;">' + _esc(icon) + '</span>' : '') +
+    '<span style="flex:1;min-width:0;"><span style="display:block;">' + _esc(label) + '</span>' +
+    (desc ? '<span style="display:block;font-size:0.76rem;color:var(--text-muted,#6b7280);">' + _esc(desc) + '</span>' : '') + '</span>' +
+    (badge ? '<span style="flex:0 0 auto;padding:1px 8px;border-radius:100px;background:var(--surface-2,#eef2ff);' +
+      'font-size:0.7rem;font-weight:600;color:var(--text-muted,#4b5563);">' + _esc(badge) + '</span>' : '') +
+    (shortcut ? '<span style="flex:0 0 auto;font-size:0.76rem;color:var(--text-muted,#6b7280);">' + _esc(shortcut) + '</span>' : '');
+  if (type === 'submenu') {
+    var kids = Array.isArray(it.items) ? it.items.slice(0, 50) : [];
+    var kidsHtml = kids.map(function(k) { return _menuItem(k, depth + 1); }).join('');
+    return '<details><summary role="menuitem" aria-haspopup="menu" style="' + _MENU_ROW + 'cursor:pointer;color:' + color + ';' +
+      (disabled ? 'opacity:0.45;pointer-events:none;' : '') + '">' + inner +
+      '<span aria-hidden="true" style="flex:0 0 auto;">›</span></summary>' +
+      '<div role="menu" style="margin-left:14px;border-left:2px solid var(--border,#e5e7eb);">' + kidsHtml + '</div></details>';
+  }
+  if (disabled) {
+    return '<span role="menuitem" aria-disabled="true" style="' + _MENU_ROW + 'color:' + color + ';opacity:0.45;cursor:not-allowed;">' + inner + '</span>';
+  }
+  var url = _menuUrl(it.url);
+  return '<a role="menuitem" href="' + _esc(url) + '"' +
+    (url.charAt(0) === '#' ? '' : ' target="_blank" rel="noopener noreferrer"') +
+    ' style="' + _MENU_ROW + 'color:' + color + ';">' + inner + '</a>';
+}
+// One rule per spring preset, keyed by the wrapper's data-spring. The animation shorthand is declared twice:
+// a browser that cannot parse linear() drops the second and keeps the cubic-bezier fallback.
+function _menuSpringCss() {
+  var out = '';
+  if (typeof _MO_SPRING === 'undefined') return out;
+  for (var k in _MO_SPRING) {
+    if (!Object.prototype.hasOwnProperty.call(_MO_SPRING, k)) continue;
+    var sp = _MO_SPRING[k];
+    var head = '[data-a2ui-menu][data-spring=' + k + '] details[open]>[role=menu]{animation:a2ui-menu-in calc(' + sp.ms + 'ms * var(--a2ui-motion-duration-scale,1)) ';
+    out += head + 'cubic-bezier(' + sp.fb.join(',') + ') both;' + head.slice(head.indexOf('animation:')) + sp.lin + ' both}';
+  }
+  return out;
+}
+var _MENU_CONTEXT_JS = '(function(){var els=document.querySelectorAll("[data-a2ui-menu=contextual]:not([data-bound])");for(var i=0;i<els.length;i++){(function(w){w.setAttribute("data-bound","1");var d=w.querySelector("details"),s=d.querySelector("summary"),p=d.querySelector("[role=menu]"),base=p.getAttribute("style");s.addEventListener("contextmenu",function(e){e.preventDefault();d.open=true;p.style.position="fixed";p.style.left=e.clientX+"px";p.style.top=e.clientY+"px";p.style.right="auto";var r=p.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;if(r.right>vw)p.style.left=Math.max(0,vw-r.width-4)+"px";if(r.bottom>vh)p.style.top=Math.max(0,e.clientY-r.height)+"px";});d.addEventListener("toggle",function(){if(!d.open)p.setAttribute("style",base);});document.addEventListener("click",function(e){if(d.open&&!w.contains(e.target))d.open=false;});document.addEventListener("keydown",function(e){if(e.key==="Escape")d.open=false;});})(els[i]);}})();';
+_RENDERERS['menu'] = function(b) {
+  var t = (b.trigger && typeof b.trigger === 'object') ? b.trigger : {};
+  var kind = (t.kind === 'icon' || t.kind === 'contextual' || t.kind === 'split') ? t.kind : 'button';
+  var label = _menuStr(t.label, 80);
+  var icon = _menuStr(t.icon, 4);
+  var primary = kind === 'split' && _menuStr(t.url, 2000) ? _menuUrl(t.url) : '';
+  if (kind === 'split' && !primary) kind = 'button';
+  var spring = (typeof _MO_SPRING !== 'undefined' && typeof b.spring === 'string' && Object.prototype.hasOwnProperty.call(_MO_SPRING, b.spring)) ? b.spring : '';
+  var sattr = spring ? ' data-spring="' + spring + '"' : '';
+  var items = Array.isArray(b.items) ? b.items.slice(0, 50) : [];
+  var end = b.align === 'end' || (b.align !== 'start' && kind === 'split');
+  var panel = '<div role="menu" style="position:absolute;top:calc(100% + 4px);' + (end ? 'right:0;' : 'left:0;') +
+    'z-index:20;min-width:200px;max-width:min(320px,90vw);background:var(--surface,#fff);border:1px solid var(--border,#dadce0);' +
+    'border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:4px 0;">' +
+    items.map(function(it) { return _menuItem(it, 0); }).join('') + '</div>';
+  var css = '<style>[data-a2ui-menu] summary{list-style:none}[data-a2ui-menu] summary::-webkit-details-marker{display:none}' +
+    '[data-a2ui-menu] [role=menuitem]:not([aria-disabled]):hover,[data-a2ui-menu] [role=menuitem]:not([aria-disabled]):focus-visible{background:var(--surface-2,#f1f3f4)}' +
+    '@keyframes a2ui-menu-in{from{opacity:0;transform:translateY(calc(-6px * var(--a2ui-motion-intensity-scale,1)))}to{opacity:1;transform:none}}' +
+    '[data-a2ui-menu] details[open]>[role=menu]{animation:a2ui-menu-in calc(240ms * var(--a2ui-motion-duration-scale,1)) cubic-bezier(0,0,0.2,1) both}' +
+    _menuSpringCss() +
+    '@media (prefers-reduced-motion:reduce){[data-a2ui-menu] [role=menu]{animation:none}}</style>';
+  var head, body;
+  if (kind === 'split') {
+    head = '<div style="display:inline-flex;align-items:stretch;">' +
+      '<a href="' + _esc(primary) + '"' + (primary.charAt(0) === '#' ? '' : ' target="_blank" rel="noopener noreferrer"') +
+      ' style="' + _menuTrigStyle('6px 0 0 6px', _MENU_SPLIT_H) + '">' + _esc(label || 'Open') + '</a>' +
+      '<details style="position:relative;"><summary aria-haspopup="menu" aria-label="' + _esc(label ? label + ' options' : 'More options') +
+      '" style="' + _menuTrigStyle('0 6px 6px 0', _MENU_SPLIT_H) + 'border-left:0;">' + _MENU_CHEVRON + '</summary>' + panel + '</details></div>';
+    return '<div data-a2ui-menu="split"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + '</div>';
+  }
+  var iconOnly = kind === 'icon' && icon;
+  var trig = iconOnly
+    ? '<span aria-hidden="true">' + _esc(icon) + '</span>'
+    : (icon ? '<span aria-hidden="true">' + _esc(icon) + '</span>' : '') + _esc(label || 'Menu') + _MENU_CHEVRON;
+  body = '<details style="position:relative;display:inline-block;"><summary aria-haspopup="menu"' +
+    (iconOnly ? ' aria-label="' + _esc(label || 'Menu') + '"' : '') +
+    ' style="' + _menuTrigStyle('6px', kind === 'contextual' ? '-webkit-touch-callout:none;-webkit-user-select:none;' : '') + '">' + trig + '</summary>' + panel + '</details>';
+  return '<div data-a2ui-menu="' + kind + '"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
+    (kind === 'contextual' ? '<script>' + _MENU_CONTEXT_JS + '</script>' : '') + '</div>';
+};
+
 _RENDERERS['version_badge'] = function(b) {
   var v = b.version || '';
   var status = b.status || 'stable';
@@ -4450,6 +4574,27 @@ _RENDERERS['split_pane'] = function(b) {
 
 
 // ─── palette ─────────────────────────────────────────────────────────────────
+// Motion policy, v0: three numeric scales on the palette block become :root variables that motion
+// consumers read with a fallback of 1 (so a surface without a palette is unchanged). duration_scale
+// 0.75 runs animations 25% faster, 1.5 is 50% slower; intensity_scale scales travel distance;
+// stagger_scale scales the gap between staggered items. Clamped, then written as at most two decimals
+// by integer maths so GAS and the Python twin print the same digits. A film-clock atom owns its own
+// duration, so these do not reach motion_timeline. Python twin: _motion_scale_css in web_article.py.
+function _motionScaleCss(b) {
+  var spec = [['duration_scale', 'duration', 0.25, 3], ['intensity_scale', 'intensity', 0, 2], ['stagger_scale', 'stagger', 0, 3]];
+  var out = '';
+  for (var i = 0; i < spec.length; i++) {
+    var v = b[spec[i][0]];
+    if (typeof v === 'string' && /^[0-9]+(\.[0-9]+)?$/.test(v.trim())) v = parseFloat(v);
+    if (typeof v !== 'number' || !isFinite(v)) continue;
+    var n = Math.floor(Math.min(spec[i][3], Math.max(spec[i][2], v)) * 100 + 0.5);
+    var whole = Math.floor(n / 100), frac = n % 100;
+    var txt = String(whole) + (frac ? '.' + (frac < 10 ? '0' : '') + String(frac).replace(/0$/, '') : '');
+    out += '--a2ui-motion-' + spec[i][1] + '-scale:' + txt + ';';
+  }
+  return out;
+}
+
 _RENDERERS['palette'] = function(b) {
   var accent  = b.accent  || '#6366f1';
   var accent2 = b.accent2 || b.accent || '#8b5cf6';
@@ -4462,6 +4607,7 @@ _RENDERERS['palette'] = function(b) {
   if (bg)    extra += '--bg:'   + _esc(bg)   + ';';
   if (muted) extra += '--muted:' + _esc(muted) + ';';
   extra += _tokenCss(b);
+  extra += _motionScaleCss({duration_scale: b.duration_scale, intensity_scale: b.intensity_scale, stagger_scale: b.stagger_scale});
   return '<style>:root{--a2ui-accent:' + _esc(accent) + ';--a2ui-accent2:' + _esc(accent2) + ';--a2ui-block-gap:' + _esc(gap) + ';' + extra + '}</style>';
 };
 

@@ -68,6 +68,16 @@ var _MO_EASE_NOTE = {
   'linear': 'progress bars and loops only'
 };
 var _MO_DUR = {instant: 120, quick: 240, base: 400, slow: 640, cinematic: 1000};
+// Spring presets: a damped spring's step response sampled into a CSS linear() easing (no script, the same
+// curve in every renderer). zeta is the damping ratio and the curve settles over its duration (ms is the
+// default). `fb` is the cubic-bezier a browser without linear() uses. Kept OUT of _MO_EASE on purpose:
+// that table is four-number curves read numerically by the film clock; a spring is CSS-animation only.
+// tests/test_menu.py recomputes every table from the damping ratios below.
+var _MO_SPRING = {
+  'gentle': {ms: 480, fb: [0, 0, 0.2, 1], lin: 'linear(0, 0.019, 0.069, 0.138, 0.219, 0.306, 0.393, 0.478, 0.558, 0.631, 0.697, 0.756, 0.807, 0.85, 0.887, 0.917, 0.942, 0.962, 0.978, 0.99, 0.999, 1.006, 1.01, 1.013, 1.015, 1.015, 1.015, 1.014, 1.013, 1.012, 1.011, 1.01, 1)'},
+  'snappy': {ms: 420, fb: [0.34, 1.56, 0.64, 1], lin: 'linear(0, 0.04, 0.143, 0.282, 0.437, 0.591, 0.734, 0.856, 0.955, 1.03, 1.081, 1.111, 1.125, 1.125, 1.115, 1.1, 1.081, 1.061, 1.042, 1.026, 1.011, 1.001, 0.993, 0.988, 0.985, 0.984, 0.985, 0.986, 0.989, 0.991, 0.994, 0.996, 1)'},
+  'heavy': {ms: 640, fb: [0.34, 1.56, 0.64, 1], lin: 'linear(0, 0.099, 0.338, 0.634, 0.915, 1.132, 1.264, 1.309, 1.284, 1.212, 1.121, 1.034, 0.964, 0.921, 0.905, 0.911, 0.932, 0.96, 0.987, 1.009, 1.024, 1.029, 1.028, 1.022, 1.013, 1.005, 0.998, 0.993, 0.991, 0.991, 0.993, 0.996, 1)'}
+};
 var _MO_FX = {
   'fade': {kf: 'from{opacity:0}', e: 'expo-out', d: 560},
   'rise': {kf: 'from{opacity:0;transform:translateY(24px)}', e: 'expo-out', d: 560},

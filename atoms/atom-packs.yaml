@@ -195,6 +195,7 @@ a2ui-display-v1:
 - copy_code_button
 - counter_group
 - css_dropdown_menu
+- menu
 - css_modal
 - css_slide_panel
 - custom_checkbox_group

@@ -3192,6 +3192,86 @@ blocks:
   fields:
     trigger_text: string
     menu_items: list of objects with label, url
+- type: menu
+  # Renderer in atom.gs (GAS + the MCP Apps bundle) and renderers/web_article.py.
+  # CSS-only (<details>/<summary>, no script, no wire), so a plain non-wired
+  # payload works everywhere the markup does. Preview: repo-only until promoted.
+  stage: preview
+  description: 'A menu of links behind one trigger: a button, an icon, or a split
+    button. Items are links, separators, headings and submenus, each with an
+    optional description, icon, shortcut hint, badge, disabled state and danger
+    styling.
+
+    This is the general menu; css_dropdown_menu stays as the simple label+url
+    case. v1 carries LINKS only. An item that raises an event (action, checkbox,
+    radio) is deliberately absent until the event contract is settled: the
+    intended route is the existing onRowClick wire, emitting the item object,
+    not a new action vocabulary.
+
+    Not a selection control (use form_select or combobox), not site navigation
+    (use navigation_menu), not a command list (use command_palette).'
+  compact_description: menu of links with icons, headings, separators and submenus
+  routing_text: "A menu of links behind one trigger: a button, an icon, or a split button. Items are links, separators, headings and submenus, each with an optional description, icon, shortcut hint, badge, disabled state and danger styling. Not a selection control, not site navigation, not a command list."
+  intent_phrases:
+  - "I need a dropdown of options with icons and a divider before the destructive one."
+  - "Add a three-dot menu to this row with edit, share and delete."
+  - "I want a Publish button with extra choices like schedule or save as draft tucked behind an arrow."
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    - android
+    degraded_on:
+    - surface: google-meet-stage
+      note: Meet captures keyboard and pointer input for the stage, so a menu may not open.
+    incompatible_on:
+    - surface: google-chat
+      reason: Chat has no menu or disclosure widget.
+    - surface: email
+      reason: Disclosure widgets are not interactive in email.
+    - surface: pdf
+      reason: Static only.
+  fields:
+    trigger: 'object (required). {kind, label, icon?, url?}. `kind` is one of
+      button (default), icon, contextual, split. `label` is the button text, or
+      the accessible name of an icon trigger. `icon` is a short glyph (an emoji
+      or symbol, 4 characters at most); an icon trigger shows it in place of the
+      label. `url` is the primary action of a split trigger (the part that is
+      not the arrow); a split trigger without a url renders as a plain button.
+      `contextual` is a target you right-click (web) or long-press (Android, where the
+      browser fires `contextmenu`; checked in Chrome 154 on a Pixel 7 Pro, not yet in the
+      viewer app''s own WebView): the panel opens at the pointer, kept inside the viewport,
+      and closes on an outside click or Escape. It still opens on a plain tap, and without
+      script it behaves as a button. It is the only trigger that ships a script.'
+    items: 'array (required). Each item is an object with `type` one of link
+      (default), separator, heading, submenu. Fields, where they apply: `id`
+      (carried for the future event contract, not used by v1), `label`,
+      `description` (second line), `icon` (short glyph), `shortcut` (hint text,
+      not bound to a key), `badge` (short pill text), `disabled` (boolean; a
+      disabled link is not a link), `danger` (boolean; destructive styling),
+      `url` (a link''s destination; http, https, mailto, #anchor or a / path
+      only), `items` (a submenu''s children, one level deep: a submenu inside a
+      submenu is dropped).'
+    spring: 'string (optional). Open animation feel: gentle, snappy or heavy, each a
+      damped spring sampled into a CSS linear() easing (default: a plain decelerate fade-rise).
+      A browser without linear() falls back to a cubic-bezier. Durations are 480, 420 and
+      640 ms, scaled by the palette duration_scale. Anything else is ignored.'
+    align: 'string (optional). Which edge of the trigger the open panel lines
+      up with: start (panel extends right, the default) or end (panel extends
+      left, for a trigger near the right edge). A split trigger defaults to end,
+      so the panel hangs from the arrow. Anything else is ignored.'
+  notes: 'Items open with a click or tap and close on a second click on the
+    trigger. There is no outside-click dismissal in v1 (no script), and the
+    open panel is not keyboard-navigable beyond ordinary tab order. Submenus
+    expand in place rather than as flyouts, so they work on touch. The open panel
+    fades and rises over 240 ms (the quick duration token, decelerate easing); a
+    palette block can scale that (preview, so not in the palette field list:
+    duration_scale 0.25 to 3 and intensity_scale 0 to 2 set --a2ui-motion-duration-scale
+    and --a2ui-motion-intensity-scale; stagger_scale 0 to 3 sets
+    --a2ui-motion-stagger-scale, which nothing reads yet), and prefers-reduced-motion
+    turns it off.'
+  source: *id001
 - type: star_rating_input
   description: Renders an interactive star rating component for user input.
   compact_description: interactive star rating input

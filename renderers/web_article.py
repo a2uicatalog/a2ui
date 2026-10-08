@@ -11144,6 +11144,23 @@ def _card_chrome(inner_html: str, recipe: str, extra_style: str = "") -> str:
     doesn't have."""
     return f'<div style="{extra_style}{_CHROME_STYLES[recipe]}">{inner_html}</div>'
 
+def _motion_scale_css(b: dict) -> str:
+    """Motion policy v0: see _motionScaleCss in atom.gs (the byte-for-byte twin)."""
+    out = ''
+    for field, name, lo, hi in (('duration_scale', 'duration', 0.25, 3), ('intensity_scale', 'intensity', 0, 2),
+                                ('stagger_scale', 'stagger', 0, 3)):
+        v = b.get(field)
+        if isinstance(v, str) and re.match(r'^[0-9]+(\.[0-9]+)?$', v.strip()):
+            v = float(v.strip())
+        if isinstance(v, bool) or not isinstance(v, (int, float)) or v != v or abs(v) == float('inf'):
+            continue
+        n = int(min(hi, max(lo, v)) * 100 + 0.5)
+        whole, frac = n // 100, n % 100
+        txt = str(whole) + (('.' + ('0' if frac < 10 else '') + str(frac).rstrip('0')) if frac else '')
+        out += '--a2ui-motion-' + name + '-scale:' + txt + ';'
+    return out
+
+
 def _render_palette(b: dict) -> str:
     accent  = b.get("accent", "#6366f1")
     accent2 = b.get("accent2", b.get("accent", "#8b5cf6"))
@@ -11153,6 +11170,7 @@ def _render_palette(b: dict) -> str:
     if b.get("bg_color"):   extra += f"--bg:{_cv_esc(b['bg_color'])};"
     if b.get("muted_color"):extra += f"--muted:{_cv_esc(b['muted_color'])};"
     extra += _token_css(b)
+    extra += _motion_scale_css(b)
     return f"<style>:root{{--a2ui-accent:{_cv_esc(accent)};--a2ui-accent2:{_cv_esc(accent2)};--a2ui-block-gap:{_cv_esc(gap)};{extra}}}</style>"
 
 _RENDERERS["palette"] = _render_palette
@@ -16286,6 +16304,142 @@ _RENDERERS["expandable_text"] = _render_expandable_text
 _RENDERERS["flip_card"] = _render_flip_card
 _RENDERERS["image_hotspots"] = _render_image_hotspots
 _RENDERERS["css_dropdown_menu"] = _render_css_dropdown_menu
+
+
+# menu (preview): the Python twin of _RENDERERS['menu'] in atom.gs. Keep them byte for
+# byte (tests/test_menu.py renders both and compares). CSS-only <details>, links only.
+_MENU_CHEVRON = ('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+                 'stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>')
+_MENU_ROW = ('display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:0.87rem;'
+             'text-decoration:none;text-align:left;')
+
+
+def _menu_str(v, mx):
+    if isinstance(v, str):
+        s = v
+    elif isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf'):
+        s = str(int(v)) if float(v).is_integer() else str(v)
+    else:
+        s = ''
+    return s.strip()[:mx]
+
+
+def _menu_url(u):
+    s = _menu_str(u, 2000)
+    return s if re.match(r'(https?://|mailto:|#|/(?!/))', s) else '#'
+
+
+_MENU_SPLIT_H = 'box-sizing:border-box;height:2.5rem;line-height:1.2;'
+
+
+def _menu_trig_style(radius, extra=''):
+    return (extra + 'list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;'
+            'background:var(--surface,#fff);border:1px solid var(--border,#dadce0);border-radius:' + radius + ';'
+            'font-size:0.88rem;font-weight:500;color:var(--text,#3c4043);text-decoration:none;user-select:none;')
+
+
+def _menu_item(it, depth):
+    if not isinstance(it, dict):
+        return ''
+    typ = 'link' if 'type' not in it else it.get('type')
+    if typ == 'separator':
+        return '<div role="separator" style="height:1px;margin:4px 0;background:var(--border,#e5e7eb);"></div>'
+    label = _menu_str(it.get('label'), 120)
+    if typ == 'heading':
+        if not label:
+            return ''
+        return ('<div role="presentation" style="padding:8px 14px 4px;font-size:0.72rem;font-weight:700;letter-spacing:0.04em;'
+                'text-transform:uppercase;color:var(--text-muted,#6b7280);">' + _cv_esc(label) + '</div>')
+    if typ not in ('link', 'submenu'):
+        return ''
+    if typ == 'submenu' and depth > 0:
+        return ''
+    if not label:
+        return ''
+    danger = it.get('danger') is True
+    disabled = it.get('disabled') is True
+    color = '#b3261e' if danger else 'var(--text,#3c4043)'
+    icon = _menu_str(it.get('icon'), 4)
+    desc = _menu_str(it.get('description'), 200)
+    badge = _menu_str(it.get('badge'), 16)
+    shortcut = _menu_str(it.get('shortcut'), 16)
+    inner = (('<span aria-hidden="true" style="width:1.3em;text-align:center;flex:0 0 auto;">' + _cv_esc(icon) + '</span>' if icon else '') +
+             '<span style="flex:1;min-width:0;"><span style="display:block;">' + _cv_esc(label) + '</span>' +
+             ('<span style="display:block;font-size:0.76rem;color:var(--text-muted,#6b7280);">' + _cv_esc(desc) + '</span>' if desc else '') + '</span>' +
+             ('<span style="flex:0 0 auto;padding:1px 8px;border-radius:100px;background:var(--surface-2,#eef2ff);'
+              'font-size:0.7rem;font-weight:600;color:var(--text-muted,#4b5563);">' + _cv_esc(badge) + '</span>' if badge else '') +
+             ('<span style="flex:0 0 auto;font-size:0.76rem;color:var(--text-muted,#6b7280);">' + _cv_esc(shortcut) + '</span>' if shortcut else ''))
+    if typ == 'submenu':
+        kids = it.get('items') if isinstance(it.get('items'), list) else []
+        kids_html = ''.join(_menu_item(k, depth + 1) for k in kids[:50])
+        return ('<details><summary role="menuitem" aria-haspopup="menu" style="' + _MENU_ROW + 'cursor:pointer;color:' + color + ';' +
+                ('opacity:0.45;pointer-events:none;' if disabled else '') + '">' + inner +
+                '<span aria-hidden="true" style="flex:0 0 auto;">›</span></summary>'
+                '<div role="menu" style="margin-left:14px;border-left:2px solid var(--border,#e5e7eb);">' + kids_html + '</div></details>')
+    if disabled:
+        return ('<span role="menuitem" aria-disabled="true" style="' + _MENU_ROW + 'color:' + color +
+                ';opacity:0.45;cursor:not-allowed;">' + inner + '</span>')
+    url = _menu_url(it.get('url'))
+    return ('<a role="menuitem" href="' + _cv_esc(url) + '"' +
+            ('' if url[:1] == '#' else ' target="_blank" rel="noopener noreferrer"') +
+            ' style="' + _MENU_ROW + 'color:' + color + ';">' + inner + '</a>')
+
+
+def _menu_spring_css():
+    out = ''
+    for k, sp in _MO_SPRING.items():
+        head = ('[data-a2ui-menu][data-spring=' + k + '] details[open]>[role=menu]{animation:a2ui-menu-in calc('
+                + str(sp['ms']) + 'ms * var(--a2ui-motion-duration-scale,1)) ')
+        out += head + 'cubic-bezier(' + ','.join(str(x) for x in sp['fb']) + ') both;' + head[head.index('animation:'):] + sp['lin'] + ' both}'
+    return out
+
+
+_MENU_CONTEXT_JS = '(function(){var els=document.querySelectorAll("[data-a2ui-menu=contextual]:not([data-bound])");for(var i=0;i<els.length;i++){(function(w){w.setAttribute("data-bound","1");var d=w.querySelector("details"),s=d.querySelector("summary"),p=d.querySelector("[role=menu]"),base=p.getAttribute("style");s.addEventListener("contextmenu",function(e){e.preventDefault();d.open=true;p.style.position="fixed";p.style.left=e.clientX+"px";p.style.top=e.clientY+"px";p.style.right="auto";var r=p.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;if(r.right>vw)p.style.left=Math.max(0,vw-r.width-4)+"px";if(r.bottom>vh)p.style.top=Math.max(0,e.clientY-r.height)+"px";});d.addEventListener("toggle",function(){if(!d.open)p.setAttribute("style",base);});document.addEventListener("click",function(e){if(d.open&&!w.contains(e.target))d.open=false;});document.addEventListener("keydown",function(e){if(e.key==="Escape")d.open=false;});})(els[i]);}})();'
+
+
+def _render_menu(b: dict) -> str:
+    t = b.get('trigger') if isinstance(b.get('trigger'), dict) else {}
+    kind = t.get('kind') if t.get('kind') in ('icon', 'contextual', 'split') else 'button'
+    label = _menu_str(t.get('label'), 80)
+    icon = _menu_str(t.get('icon'), 4)
+    primary = _menu_url(t.get('url')) if kind == 'split' and _menu_str(t.get('url'), 2000) else ''
+    if kind == 'split' and not primary:
+        kind = 'button'
+    spring = b.get('spring') if isinstance(b.get('spring'), str) and b.get('spring') in _MO_SPRING else ''
+    sattr = ' data-spring="' + spring + '"' if spring else ''
+    items = b.get('items') if isinstance(b.get('items'), list) else []
+    end = b.get('align') == 'end' or (b.get('align') != 'start' and kind == 'split')
+    panel = ('<div role="menu" style="position:absolute;top:calc(100% + 4px);' + ('right:0;' if end else 'left:0;') +
+             'z-index:20;min-width:200px;max-width:min(320px,90vw);background:var(--surface,#fff);border:1px solid var(--border,#dadce0);'
+             'border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:4px 0;">' +
+             ''.join(_menu_item(it, 0) for it in items[:50]) + '</div>')
+    css = ('<style>[data-a2ui-menu] summary{list-style:none}[data-a2ui-menu] summary::-webkit-details-marker{display:none}'
+           '[data-a2ui-menu] [role=menuitem]:not([aria-disabled]):hover,[data-a2ui-menu] [role=menuitem]:not([aria-disabled]):focus-visible{background:var(--surface-2,#f1f3f4)}'
+           '@keyframes a2ui-menu-in{from{opacity:0;transform:translateY(calc(-6px * var(--a2ui-motion-intensity-scale,1)))}to{opacity:1;transform:none}}'
+           '[data-a2ui-menu] details[open]>[role=menu]{animation:a2ui-menu-in calc(240ms * var(--a2ui-motion-duration-scale,1)) cubic-bezier(0,0,0.2,1) both}'
+           + _menu_spring_css() +
+           '@media (prefers-reduced-motion:reduce){[data-a2ui-menu] [role=menu]{animation:none}}</style>')
+    if kind == 'split':
+        head = ('<div style="display:inline-flex;align-items:stretch;">'
+                '<a href="' + _cv_esc(primary) + '"' + ('' if primary[:1] == '#' else ' target="_blank" rel="noopener noreferrer"') +
+                ' style="' + _menu_trig_style('6px 0 0 6px', _MENU_SPLIT_H) + '">' + _cv_esc(label or 'Open') + '</a>'
+                '<details style="position:relative;"><summary aria-haspopup="menu" aria-label="' +
+                _cv_esc(label + ' options' if label else 'More options') +
+                '" style="' + _menu_trig_style('0 6px 6px 0', _MENU_SPLIT_H) + 'border-left:0;">' + _MENU_CHEVRON + '</summary>' + panel + '</details></div>')
+        return '<div data-a2ui-menu="split"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + '</div>'
+    icon_only = kind == 'icon' and icon
+    if icon_only:
+        trig = '<span aria-hidden="true">' + _cv_esc(icon) + '</span>'
+    else:
+        trig = (('<span aria-hidden="true">' + _cv_esc(icon) + '</span>' if icon else '') + _cv_esc(label or 'Menu') + _MENU_CHEVRON)
+    body = ('<details style="position:relative;display:inline-block;"><summary aria-haspopup="menu"' +
+            (' aria-label="' + _cv_esc(label or 'Menu') + '"' if icon_only else '') +
+            ' style="' + _menu_trig_style('6px', '-webkit-touch-callout:none;-webkit-user-select:none;' if kind == 'contextual' else '') + '">' + trig + '</summary>' + panel + '</details>')
+    return ('<div data-a2ui-menu="' + kind + '"' + sattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
+            ('<script>' + _MENU_CONTEXT_JS + '</script>' if kind == 'contextual' else '') + '</div>')
+
+
+_RENDERERS["menu"] = _render_menu
 _RENDERERS["star_rating_input"] = _render_star_rating_input
 _RENDERERS["segmented_control"] = _render_segmented_control
 _RENDERERS["zoomable_image"] = _render_zoomable_image
@@ -26390,6 +26544,12 @@ _MO_EASE_NOTE = {
     'linear': 'progress bars and loops only',
 }
 _MO_DUR = {'instant': 120, 'quick': 240, 'base': 400, 'slow': 640, 'cinematic': 1000}
+# Spring presets (see the GAS twin in atoms_motion.gs): damped-spring step response as a CSS linear() easing.
+_MO_SPRING = {
+    'gentle': {'ms': 480, 'fb': [0, 0, 0.2, 1], 'lin': 'linear(0, 0.019, 0.069, 0.138, 0.219, 0.306, 0.393, 0.478, 0.558, 0.631, 0.697, 0.756, 0.807, 0.85, 0.887, 0.917, 0.942, 0.962, 0.978, 0.99, 0.999, 1.006, 1.01, 1.013, 1.015, 1.015, 1.015, 1.014, 1.013, 1.012, 1.011, 1.01, 1)'},
+    'snappy': {'ms': 420, 'fb': [0.34, 1.56, 0.64, 1], 'lin': 'linear(0, 0.04, 0.143, 0.282, 0.437, 0.591, 0.734, 0.856, 0.955, 1.03, 1.081, 1.111, 1.125, 1.125, 1.115, 1.1, 1.081, 1.061, 1.042, 1.026, 1.011, 1.001, 0.993, 0.988, 0.985, 0.984, 0.985, 0.986, 0.989, 0.991, 0.994, 0.996, 1)'},
+    'heavy': {'ms': 640, 'fb': [0.34, 1.56, 0.64, 1], 'lin': 'linear(0, 0.099, 0.338, 0.634, 0.915, 1.132, 1.264, 1.309, 1.284, 1.212, 1.121, 1.034, 0.964, 0.921, 0.905, 0.911, 0.932, 0.96, 0.987, 1.009, 1.024, 1.029, 1.028, 1.022, 1.013, 1.005, 0.998, 0.993, 0.991, 0.991, 0.993, 0.996, 1)'}
+}
 _MO_FX = {
     'fade': {'kf': 'from{opacity:0}', 'e': 'expo-out', 'd': 560},
     'rise': {'kf': 'from{opacity:0;transform:translateY(24px)}', 'e': 'expo-out', 'd': 560},
