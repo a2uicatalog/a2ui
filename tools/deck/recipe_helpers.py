@@ -1,7 +1,8 @@
 """Small helpers shared by the atom recipes (payload_to_deck.py and recipes_more.py)."""
 import re
 
-def s(v): return re.sub(r'\s+', ' ', ', '.join(s(x) for x in v) if isinstance(v, (list, tuple)) else str(v if v is not None else '')).strip()     # a list reads as comma-separated text, not a Python repr
+def _num(v): return str(int(v)) if isinstance(v, float) and v.is_integer() and abs(v) < 1e15 else v          # 100.0 reads as 100 (JSON has one number type)
+def s(v): v = _num(v); return re.sub(r'\s+', ' ', ', '.join(s(x) for x in v) if isinstance(v, (list, tuple)) else str(v if v is not None else '')).strip()     # a list reads as comma-separated text, not a Python repr
 def chunks(xs, n): return [xs[i:i + n] for i in range(0, len(xs), n)] or [[]]
 def sentences(t): return [x.strip() for x in re.split(r'(?<=[.!?])\s+', s(t)) if x.strip()]
 def http(u): return s(u) if re.match(r'^https?://\S+$', s(u)) else ''
