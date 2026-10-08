@@ -4,7 +4,7 @@ Full-width app-style page header with title, subtitle, icon, accent color, and o
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps, android
+web, google-apps-script-web, pdf, mcp-apps, android, slides, pptx
 
 ## Fields
 

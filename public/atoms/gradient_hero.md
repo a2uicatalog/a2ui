@@ -4,7 +4,7 @@ Full-width light/pastel gradient hero with badge, large title, subtitle, and opt
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps, android
+web, google-apps-script-web, pdf, mcp-apps, android, slides, pptx
 
 ## Fields
 

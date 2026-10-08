@@ -4,7 +4,7 @@ Full-width call-to-action banner with headline, body text, a primary button, and
 
 ## Surfaces
 
-web, email, pdf, google-apps-script-web, mcp-apps, android
+web, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

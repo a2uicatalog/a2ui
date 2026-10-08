@@ -4,7 +4,7 @@ Renders a prominent, large statistic or number, often with a brief
 
 ## Surfaces
 
-web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android
+web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx
 
 ## Fields
 

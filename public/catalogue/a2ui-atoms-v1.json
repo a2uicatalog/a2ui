@@ -92,7 +92,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "One or more prose paragraphs",
    "x-intent-phrases": [
@@ -134,7 +136,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "H2 section title",
    "x-intent-phrases": [
@@ -176,7 +180,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "H3 subsection title",
    "x-intent-phrases": [
@@ -220,7 +226,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Pull quote or blockquote",
    "x-intent-phrases": [
@@ -303,7 +311,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Inline left-to-right flow (e.g. build pipeline steps)",
    "x-intent-phrases": [
@@ -344,7 +354,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Unordered list with optional bold lead-in per item",
    "x-intent-phrases": [
@@ -689,7 +701,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Final paragraph + optional hashtags",
    "x-intent-phrases": [
@@ -736,7 +750,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Highlighted alert box — info, warning, tip, or danger A one-off confirmation that an action just succeeded, or a live warning that needs a response (e.g. 'saved', 'entry recorded', 'someone else is editing this'), is usually toast_notification, inline_feedback_message, inline_alert, or action_required_card instead -- callout is for a persistent note inside the page's own content, not a moment-in-time reaction to what the user just did.",
    "x-intent-phrases": [
@@ -778,7 +794,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Numbered sequential steps with blue circle indicators",
    "x-intent-phrases": [
@@ -831,7 +849,9 @@
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "HTML table with styled headers, alternating rows, horizontal scroll",
    "x-intent-phrases": [
@@ -923,7 +943,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Key-value table for env vars, config options, API fields",
    "x-intent-phrases": [
@@ -2070,7 +2092,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a key performance indicator with its current value and a numerical",
    "x-intent-phrases": [
@@ -2623,7 +2647,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a blockquote with an associated avatar and attribution.",
    "x-intent-phrases": [
@@ -2674,7 +2700,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a prominent, large statistic or number, often with a brief",
    "x-intent-phrases": [
@@ -4903,7 +4931,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a single customer testimonial with text, author details, and an optional avatar.",
    "x-intent-phrases": [
@@ -5134,7 +5164,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a prominent banner highlighting a key social proof metric or achievement.",
    "x-intent-phrases": [
@@ -5244,7 +5276,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.",
    "x-intent-phrases": [
@@ -5299,7 +5333,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Renders a short, impactful quote from a customer review, often accompanied",
    "x-intent-phrases": [
@@ -10423,7 +10459,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Compact tinted note or tip block used inline within cards, forms, or panels. Lighter than callout — no left-border accent, no icon; just a soft colour-tinted background with a small bold title above b",
    "x-intent-phrases": [
@@ -11481,7 +11519,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Horizontal strip of stats each with a large emoji icon above the number and a label below. More visual than metric_row — use when icons reinforce meaning.",
    "x-intent-phrases": [
@@ -11755,7 +11795,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Full-width light/pastel gradient hero with badge, large title, subtitle, and optional CTA. Pure CSS — no images. Works on all surfaces. Use when dark_hero is too heavy.",
    "x-intent-phrases": [
@@ -11806,7 +11848,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "List of items each with a colored icon circle, label, and text. More visual than bullet_list. Use for feature lists, how-it-works, benefits.",
    "x-intent-phrases": [
@@ -11860,7 +11904,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "A visually rich highlighted box with gradient, solid, or outline style. Richer than callout — no severity system, pure design focus.",
    "x-intent-phrases": [
@@ -11966,7 +12012,9 @@
     "pdf",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Horizontal strip of static metrics — value, label, optional prefix/suffix and trend indicator. Cleaner than animated_counter for non-animated use.",
    "x-intent-phrases": [
@@ -12022,7 +12070,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Numbered list with large decorative number backgrounds (\"large\" style), circular number badges (\"badge\" style), or bordered cards with a ghost-number, title, tag pills and body text (\"cards\" style, ad",
    "x-intent-phrases": [
@@ -12089,7 +12139,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Full-width app-style page header with title, subtitle, icon, accent color, and optional tag badge. Sets the visual tone of a pop-up app or brief. Use as the first block of any page.",
    "x-intent-phrases": [
@@ -12552,7 +12604,9 @@
     "google-apps-script-web",
     "pdf",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Action items table with owner, due date, and status. For retros, meeting notes, sprint planning, incident reports.",
    "x-intent-phrases": [
@@ -12655,7 +12709,9 @@
     "pdf",
     "google-apps-script-web",
     "mcp-apps",
-    "android"
+    "android",
+    "slides",
+    "pptx"
    ],
    "x-routing-text": "Full-width call-to-action banner with headline, body text, a primary button, and an optional secondary ghost button. Renders on a solid color background. Tailwind UI CTA section pattern. A phrase like 'let the user save progress and continue to the next step' usually means cta_button, form, or link_button, not this -- cta_section is a full promotional banner block, not an inline in-flow action.",
    "x-intent-phrases": [

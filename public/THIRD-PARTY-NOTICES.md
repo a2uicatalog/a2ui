@@ -48,6 +48,19 @@ just looks plainer.
 
 ---
 
+## gifenc, mp4-muxer, webm-muxer (film export)
+
+- **Projects:** gifenc 1.0.3 (Matt DesLauriers, https://github.com/mattdesl/gifenc);
+  mp4-muxer 5.2.2 and webm-muxer 5.1.4 (Vanilagy, https://github.com/Vanilagy/mp4-muxer,
+  https://github.com/Vanilagy/webm-muxer)
+- **License:** MIT License (all three)
+- **Vendored as:** bundled into `public/vendors/client-export/client_export.min.js` (minified,
+  unmodified), with each project's licence text in `public/vendors/client-export/LICENSES.md`
+- **Used by:** the film export page (`/surfaces/mcp-apps/export/`), which encodes a
+  `motion_timeline` to GIF, MP4 or WebM in the visitor's browser. Loaded only when an export starts.
+
+---
+
 ## PDF.js (Mozilla)
 
 - **Project:** PDF.js — client-side PDF rendering and text extraction

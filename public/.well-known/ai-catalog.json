@@ -100,7 +100,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "One or more prose paragraphs",
       "representativeQueries": [
@@ -123,7 +125,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "H2 section title",
       "representativeQueries": [
@@ -145,7 +149,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "H3 subsection title",
       "representativeQueries": [
@@ -165,7 +171,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Pull quote or blockquote",
       "representativeQueries": [
@@ -206,7 +214,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Inline left-to-right flow (e.g. build pipeline steps)",
       "representativeQueries": [
@@ -228,7 +238,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Unordered list with optional bold lead-in per item",
       "representativeQueries": [
@@ -389,7 +401,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Final paragraph + optional hashtags",
       "representativeQueries": [
@@ -410,7 +424,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Highlighted alert box \u2014 info, warning, tip, or danger",
       "representativeQueries": [
@@ -431,7 +447,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Numbered sequential steps with blue circle indicators",
       "representativeQueries": [
@@ -453,7 +471,9 @@
         "google-apps-script-web",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "HTML table with styled headers, alternating rows, horizontal scroll",
       "representativeQueries": [
@@ -492,7 +512,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Key-value table for env vars, config options, API fields",
       "representativeQueries": [
@@ -905,7 +927,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a key performance indicator with its current value and a numerical",
       "representativeQueries": [
@@ -1147,7 +1171,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a blockquote with an associated avatar and attribution.",
       "representativeQueries": [
@@ -1169,7 +1195,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a prominent, large statistic or number, often with a brief",
       "representativeQueries": [
@@ -2071,7 +2099,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a single customer testimonial with text, author details, and an optional avatar.",
       "representativeQueries": [
@@ -2171,7 +2201,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a prominent banner highlighting a key social proof metric or achievement.",
       "representativeQueries": [
@@ -2211,7 +2243,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders an endorsement from an industry expert, including their quote, photo, name, and credentials.",
       "representativeQueries": [
@@ -2231,7 +2265,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Renders a short, impactful quote from a customer review, often accompanied",
       "representativeQueries": [
@@ -4343,7 +4379,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Compact tinted note or tip block used inline within cards, forms, or panels. Lighter than callout \u2014 no left-border accent, no icon; just a soft colour-tinted background with a small bold title above body text. Adapted from the TextCallout pattern in OpenUI OUI benchmark samples.",
       "representativeQueries": [
@@ -4742,7 +4780,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Horizontal strip of stats each with a large emoji icon above the number and a label below. More visual than metric_row \u2014 use when icons reinforce meaning.",
       "representativeQueries": [
@@ -4835,7 +4875,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Full-width light/pastel gradient hero with badge, large title, subtitle, and optional CTA. Pure CSS \u2014 no images. Works on all surfaces. Use when dark_hero is too heavy.",
       "representativeQueries": [
@@ -4854,7 +4896,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "List of items each with a colored icon circle, label, and text. More visual than bullet_list. Use for feature lists, how-it-works, benefits.",
       "representativeQueries": [
@@ -4873,7 +4917,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "A visually rich highlighted box with gradient, solid, or outline style. Richer than callout \u2014 no severity system, pure design focus.",
       "representativeQueries": [
@@ -4911,7 +4957,9 @@
         "pdf",
         "mcp-apps",
         "claude-code",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Horizontal strip of static metrics \u2014 value, label, optional prefix/suffix and trend indicator. Cleaner than animated_counter for non-animated use.",
       "representativeQueries": [
@@ -4930,7 +4978,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Numbered list with large decorative number backgrounds (\"large\" style), circular number badges (\"badge\" style), or bordered cards with a ghost-number, title, tag pills and body text (\"cards\" style, added 2026-07-24 for stage-by-stage architecture breakdowns). More visual than steps.",
       "representativeQueries": [
@@ -4949,7 +4999,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Full-width app-style page header with title, subtitle, icon, accent color, and optional tag badge. Sets the visual tone of a pop-up app or brief. Use as the first block of any page.",
       "representativeQueries": [
@@ -5114,7 +5166,9 @@
         "google-apps-script-web",
         "pdf",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Action items table with owner, due date, and status. For retros, meeting notes, sprint planning, incident reports.",
       "representativeQueries": [
@@ -5153,7 +5207,9 @@
         "pdf",
         "google-apps-script-web",
         "mcp-apps",
-        "android"
+        "android",
+        "slides",
+        "pptx"
       ],
       "description": "Full-width call-to-action banner with headline, body text, a primary button, and an optional secondary ghost button. Renders on a solid color background. Tailwind UI CTA section pattern.",
       "representativeQueries": [

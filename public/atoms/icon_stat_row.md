@@ -4,7 +4,7 @@ Horizontal strip of stats each with a large emoji icon above the number and a la
 
 ## Surfaces
 
-web, google-apps-script-web, pdf, mcp-apps, android
+web, google-apps-script-web, pdf, mcp-apps, android, slides, pptx
 
 ## Fields
 

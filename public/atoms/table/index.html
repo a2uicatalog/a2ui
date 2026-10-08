@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/table/#page", "url": "https://a2uicatalog.ai/atoms/table/", "headline": "Table: A2UI atom", "description": "HTML table with styled headers, alternating rows, horizontal scroll", "about": {"@id": "https://a2uicatalog.ai/atoms/table/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/table/#atom", "name": "Table", "termCode": "table", "description": "data table with header row on mobile", "url": "https://a2uicatalog.ai/atoms/table/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, claude-code, android"}, {"@type": "PropertyValue", "name": "fields", "value": "caption, col_widths, headers, rows"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/table.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/table/#page", "url": "https://a2uicatalog.ai/atoms/table/", "headline": "Table: A2UI atom", "description": "HTML table with styled headers, alternating rows, horizontal scroll", "about": {"@id": "https://a2uicatalog.ai/atoms/table/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/table/#atom", "name": "Table", "termCode": "table", "description": "data table with header row on mobile", "url": "https://a2uicatalog.ai/atoms/table/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, claude-code, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "caption, col_widths, headers, rows"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/table.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,7 +173,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">claude-code</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">claude-code</span><span class="badge bs">android</span><span class="badge bs">slides</span><span class="badge bs">pptx</span>
   </div>
 
   
@@ -234,7 +234,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     "google-apps-script-web",
     "mcp-apps",
     "claude-code",
-    "android"
+    "android",
+    "slides",
+    "pptx"
   ],
   "description": "HTML table with styled headers, alternating rows, horizontal scroll",
   "representativeQueries": [
