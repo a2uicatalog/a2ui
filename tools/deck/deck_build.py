@@ -332,10 +332,13 @@ def lay_cta(sl, f, at, errs):
         sl.text(sl.tb(cx + (3.5 - g2['qr']) / 2, g2['cap_top'], g2['qr'], g2['cap_h'], 'QR caption'), [('Scan to open', None)], k.FLOOR_PT, True, k.BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
 
 def lay_quote(sl, f, at, errs):
-    qr = k.fit_text(plain(f['quote']), (54, 50, 46, 42, 38, 34), True, 6.0, CONTENT_W - 1.0, max_lines=5)
-    if not qr: err(errs, at, 'does-not-fit', f'slide {at}: quote does not fit in 5 lines at 34 pt; shorten it', field='quote'); return
-    qp, qw, ql = qr; pad = 0.08; qh = len(ql) * qp * LH / 72 + 2 * pad
-    ah = (0.5 if f.get('name') else 0) + (0.45 if f.get('role') else 0); g = 0.5
+    pad = 0.08; g = 0.5; ah = (0.5 if f.get('name') else 0) + (0.45 if f.get('role') else 0); room = (H_IN - 0.55) - 1.15
+    for pts in ((54, 50, 46, 42, 38, 34), (32, 30, 28, 26, 24)):            # the whole block (quote, gap, attribution) must fit between the wordmark and the bottom margin
+        qr = k.fit_text(plain(f['quote']), pts, True, 6.0, CONTENT_W - 1.0, max_lines=7 if pts[0] < 40 else 5)
+        if qr and len(qr[2]) * qr[0] * LH / 72 + 2 * pad + (g + ah if ah else 0) <= room: break
+        qr = None
+    if not qr: err(errs, at, 'does-not-fit', f'slide {at}: quote and attribution do not fit on the slide even at 24 pt; shorten the quote', field='quote'); return
+    qp, qw, ql = qr; qh = len(ql) * qp * LH / 72 + 2 * pad
     total = qh + (g + ah if ah else 0); y = center_y(total); x = MX + 0.6
     sl.wordmark()
     bar = sl.box(MSO_SHAPE.RECTANGLE, MX, y, 0.12, total, k.BRAND['accent'], None, 'Accent bar'); sl.decorative(bar)
