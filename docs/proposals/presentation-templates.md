@@ -1,0 +1,197 @@
+# Presentation templates: an authored deck, compiled by code, checked by arithmetic
+
+Draft 2026-10-08. A proposal, not built. Nothing here has been run yet; items marked **(verify)** are things I believe about
+python-pptx, Google Slides' PowerPoint import or draw.io and must be confirmed in the spike.
+
+## 1. The idea in one paragraph
+
+A model writes a deck as small, semantic XML (slide roles and their content, no coordinates). Code compiles that XML into a
+block tree and from there into PPTX (editable, opens in Google Slides), a web deck (the existing `playbook`), and optionally a
+film. Layouts come from a small set of certified templates. Every template slot declares how much it can hold, so whether a
+deck fits is arithmetic done at compile time, not something discovered by looking at a render. The only nondeterministic step is
+the model writing the XML; everything after it is deterministic, offline and reproducible.
+
+Non-goals: round-tripping edits made in PowerPoint back into XML; mapping the 650 UI atoms to PPTX; animation fidelity in
+Slides; replacing the existing Slides artifact type.
+
+## 2. Pipeline
+
+1. **Author.** Model writes deck XML (or a person does). The catalogue's schema text for the slide atoms (slots, capacities)
+   is what the model sees, so it writes to fit.
+2. **Validate and repair.** Schema check, then capacity check. Errors are exact and addressed to the model
+   ("slide 4, `headline`: 72 characters, this slot holds 48"). A bounded repair loop, then fail loudly.
+3. **Compile.** XML to block tree to targets. Pure code, pinned dependencies, vendored fonts.
+4. **Lint.** Read the generated PPTX back and check it against the template (section 7).
+5. **Verify (optional, test content).** Upload to a Google account, convert to Slides, fetch a PNG per slide (section 8).
+
+Steps 2 to 4 need no model and no network. The XML is the reviewable source: it diffs in git and a person can approve it before
+the deterministic stamp produces the file. This is the same shape as the repo's existing runbook flow (approved markdown
+stamped through a schema into an envelope).
+
+Reproducibility: the same XML + template version + compiler version should give the same bytes. PPTX carries creation
+timestamps and zip ordering, so the compiler normalises both; the XML hash, template version and compiler version are written
+into the file's custom properties for provenance. Golden-file tests compare hashes. **(verify)** python-pptx can set these
+without post-processing.
+
+Declared as a process (`deck-build`: validate, compile, lint, optional verify) in the repo's process system, not improvised.
+
+## 3. Deck XML (illustrative)
+
+```xml
+<deck template="studio-light" lang="en">
+  <meta title="Q3 results" author="Finance" />
+  <slide layout="title">
+    <headline>Q3 results</headline>
+    <subhead>Where we are and what changes next</subhead>
+  </slide>
+  <slide layout="big-stat">
+    <headline>Revenue grew faster than cost</headline>
+    <stat value="42%" label="year on year" />
+    <notes>Say the cost figure out loud before the chart.</notes>
+  </slide>
+  <slide layout="bullets">
+    <headline>Three changes</headline>
+    <item>Pricing moves to annual by default</item>
+    <item>Support hours extend to weekends</item>
+    <item>The old dashboard is retired in March</item>
+  </slide>
+  <slide layout="diagram">
+    <headline>How a request flows</headline>
+    <diagram alt="A client calls the API, which reads from the database">
+      <node id="c" shape="box">Client</node>
+      <node id="a" shape="box">API</node>
+      <node id="d" shape="store">Database</node>
+      <edge from="c" to="a" label="HTTPS" />
+      <edge from="a" to="d" />
+    </diagram>
+  </slide>
+</deck>
+```
+
+Why XML here: closing tags make long nested output self-delimiting, partial output parses while streaming, and mixed content
+(text with inline emphasis) is natural. The claim that XML beats JSON for this is unproven: run the small test in section 11
+before committing the authoring format. The block tree underneath is the same either way.
+
+## 4. Slide atoms (v0)
+
+A new catalogue partition (`a2ui-slides-v1`), each atom a layout with typed slots, in the existing atom schema shape
+(type, fields, surfaces, required-name rules). `surfaces` gains `pptx`, `google-slides`, `web`, `film`.
+
+| Atom | Slots | Capacity (illustrative; measured in section 5) |
+|---|---|---|
+| `title` | headline, subhead | headline up to about 60 chars over 2 lines |
+| `section` | headline | up to about 40 chars |
+| `big-stat` | headline, stat value, stat label | value up to 7 chars; label up to 30 |
+| `bullets` | headline, 2 to 5 items | item up to about 90 chars |
+| `two-up` | headline, left, right (text or image) | each up to about 220 chars |
+| `quote` | quote, attribution | quote up to about 180 chars |
+| `timeline` | headline, 3 to 6 steps | label up to 24 chars, detail up to 70 |
+| `comparison` | headline, 2 to 4 columns, up to 6 rows | cell up to 40 chars |
+| `diagram` | headline, diagram | up to 12 nodes (section 6) |
+| `image-full` | image, caption | `alt` required |
+| `closing` | headline, contact lines | headline up to 50 chars |
+
+Every slide can carry `notes`. A deck has a title, a language and an author.
+
+## 5. Capacity: fit as arithmetic
+
+Each slot declares geometry (from the template master), a font and size range, and a **capacity** derived from them: characters
+per line, lines, items. How the numbers are produced:
+
+- **Oracle.** For each slot, render the real font at the real slot size in headless Chromium and binary-search how much text
+  fits; record the result in the template's metadata. No LibreOffice needed.
+- **Safety margin.** PowerPoint's and Slides' text layout differ a little from Chromium's, so the stated capacity is about
+  90% of the measured one.
+- **Fonts.** Google Fonts only, vendored, so measurement is reproducible and Slides does not substitute. Embedded fonts are not
+  supported on import **(verify)**.
+- **Overflow policy, in order:** shrink the font within the slot's allowed range; split the slide (bullets and timelines only);
+  otherwise return the exact error to the model. Never rely on PowerPoint's own shrink-on-overflow, which Slides does not
+  honour reliably **(verify)**.
+- **The same numbers go into the atom's schema text**, so the model writes to fit in the first place. This is the payload-guard
+  idea (declare limits in the schema, enforce in code) applied to layout.
+
+Later, optionally: a small grid solver that places several blocks on one slide by their declared minimum and maximum spans.
+
+## 6. The diagram primitive
+
+A guardrailed subset, in the spirit of the sketchpad's allowed-SVG validation: node shapes from an enum, colours from theme
+tokens (never literals, which also keeps contrast checkable), edge and arrow styles from enums, groups, required text. Arbitrary
+draw.io XML (mxGraph) can be imported into the subset with a report of what was dropped.
+
+One block, three outputs: draw.io XML (the fully editable source), native PPTX shapes, and SVG. Layout is done by an engine
+(the diagram tooling already supports Mermaid and D2 for this), not by the model, which places boxes badly. Edge routing is
+the hard part for native shapes, because draw.io computes routes at render time; the first version places the SVG as a picture
+(with alt text and the `.drawio` attached) and the native conversion follows with a fidelity test. A text alternative
+("Client connects to API. API connects to Database.") is generated from the graph.
+
+The draw.io build vendored in this repo has no PPTX export (it exports VSDX, PDF, PNG, SVG, HTML and XML), so the native path
+is our own conversion. There may be a working converter already; see open questions.
+
+## 7. Templates and how each is certified
+
+A template is a `.pptx` master with named layouts and placeholders, plus theme tokens (palette, fonts) mirrored in the web CSS
+under the same layout names, so the same deck renders consistently in both. Template data lives in files, so new ones can be
+added without code.
+
+**Certification, once per template version.** Generate worst-case fixtures from the capacity model for every layout in every
+theme: slots filled to capacity, minimum content, a long unbroken word or number, accented characters. With 11 layouts, 3 themes
+and 3 fixtures that is about 100 slides, a handful of small decks. Each goes through the lint, then Google Slides (section 8).
+Results are recorded in the template's metadata, with reference thumbnails.
+
+**The lint** reads the PPTX back (python-pptx) and checks: every slot's text within capacity; nothing outside the slide;
+no overlaps; font size above a floor (proposed 18 pt body, 12 pt notes); required alt text present; a unique slide title; reading
+order matches the visual order; language set; shapes match the template's declared geometry.
+
+**Why this is the whole point:** because the template was proven at its capacity limits, any content inside those limits is safe
+by construction, so each real deck needs only the cheap lint, in CI, in milliseconds.
+
+Re-certify when the template, a font, a capacity number or the compiler changes, and on a schedule, because Google changes its
+import over time.
+
+## 8. Google Slides verification, and the PNGs
+
+Google Slides is the real compatibility bar, since a PPTX has to open there. Approach, without a Google OAuth client: an Apps
+Script the user deploys under their own account that (1) takes a PPTX, (2) converts it to a Slides file through Drive,
+(3) requests a thumbnail for every slide, (4) returns the PNGs. It sends the test deck to the user's own Google account, which is
+fine for test content; anything private is the user's call.
+
+**Reading the PNGs.** The thumbnails are images a model can read. Claude reviews each against a checklist (text clipped or
+overflowing a box, overlap, low contrast, wrong reading order, a missing or odd font, empty placeholders) and reports. That is a
+second opinion alongside the deterministic lint. It is not the gate: a model's visual review can miss things, so a person signs
+off when certifying a template, and the thumbnails are kept as references so a later run that differs visibly gets flagged.
+
+Known loss on import, to confirm on a real file **(verify)**: animations and transitions, some fonts, charts that may arrive as
+pictures. Plan around the safe core: shapes, text, tables, pictures, connectors.
+
+## 9. Accessibility from day one
+
+- Alt text required on every image and diagram; the schema marks it as the accessible name and the compiler refuses without it.
+- A unique title per slide, a reading order, language set, notes available.
+- Colour only from theme tokens that pass AA on their backgrounds (the contrast rules and harness from `docs/accessibility.md`
+  apply to the web target as is).
+- Font floor in the lint; no information carried by colour alone in the diagram primitive.
+- Decorative shapes marked as such.
+
+## 10. Phases
+
+- **Phase 0, spike (about a week):** 4 layouts (`title`, `bullets`, `big-stat`, `diagram` as a picture), 1 template, XML to
+  PPTX, the capacity oracle for those layouts, the PPTX lint, the Apps Script verifier returning PNGs. Success: a generated deck
+  opens cleanly in Slides, the lint catches a deliberately overlong slide, and the same XML gives the same file twice.
+- **Phase 1:** the rest of the v0 layouts, 3 themes, the certification suite, the web (`playbook`) renderer from the same tree.
+- **Phase 2:** native diagram conversion with a fidelity test; optional film output; template authoring guide.
+
+## 11. Experiments to run first
+
+1. **XML vs JSON authoring:** 10 deck briefs through 2 or 3 models in each format; compare validity rate, repair rounds, and
+   a blind visual score of the compiled deck.
+2. **Capacity oracle vs reality:** does a slot's Chromium-measured capacity hold in Slides? Measure the gap to set the margin.
+3. **Reproducibility:** compile the same XML twice on two machines and compare bytes.
+
+## 12. Open questions for Curtis
+
+- How did the mxGraph-to-PPTX conversion work today (script, converter, or a model-written one)? If a script exists it is the
+  starting point for the diagram path.
+- Is the deck language its own domain contract (like the runbook one), or should it also be accepted as an A2UI input dialect?
+  I would keep it a domain layer that compiles to blocks.
+- Which output matters most first: PPTX to Slides, or the shareable web deck?
+- Which brand templates, and are their fonts available as Google Fonts?
