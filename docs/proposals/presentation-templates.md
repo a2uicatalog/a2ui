@@ -376,3 +376,14 @@ for template filling and in-place edits. Both read the same intermediate represe
 **Two harness fixes found on the way (private a11y harness):** animated atoms flipped between pass and fail because axe sampled contrast mid-animation;
 the audit now freezes animations at their end state. And `schema_qr` gained an accessible name (`aria-label="QR code for <url>"`), found because the PPTX
 slide needed alt text for the same shape.
+
+## 20. deck_build: the mechanical core (2026-10-08)
+
+`docs/proposals/spike-cta-deck/deck_build.py` takes a typed scene list (XML, or the film-style JSON that `make_film`/`compose_design` use) and returns a PPTX plus a report of exact errors. No model is involved; the same input gives the same bytes.
+
+- Commands: `schema`, `validate`, `build -o out.pptx [--target google-slides] [--report r.json] [--preview dir] [--skip-film-only]`.
+- Four layouts: `title`, `bullets` (film `steps`), `stats` (film `stats`), `cta`. Layouts are a data table (field, required, limits) that both `schema` and the validator read.
+- Field names match the film scenes (eyebrow, headline, sub, kicker, `value | label`, steps, b1/l1, foot; `*word*` accents), so one scene list can drive a film and a deck. Film-only scenes (chart, chat, word, morph, device, captions, image, quote) are an error, or a warning with `--skip-film-only`.
+- Errors name the slide and field, e.g. `slide 1 (bullets): items has 7 entries, the limit is 6`. Text that cannot fit at the target's safety margin is an error, not a bad slide.
+- No target given: `any` plus a warning telling the caller to say `google-slides` for the tight layout.
+- `deck_mcp.py` is a stdio MCP wrapper (`deck_schema`, `deck_validate`, `deck_build`) over the same function. Tests: `tests/test_deck_build.py`.

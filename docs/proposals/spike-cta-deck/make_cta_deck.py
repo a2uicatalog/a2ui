@@ -266,8 +266,8 @@ def lint(path, fits):
     cr = [(n, round(contrast(a, b), 2)) for n, a, b in pairs]; probs += [f'contrast {n}: {v}:1 is under 4.5' for n, v in cr if v < 4.5]
     return probs, cr, margins
 
-def preview(path, out):
-    prs = Presentation(path); sl = prs.slides[0]; S = 100 / 914400 * 12700 / 12700   # 1 inch = 100 px
+def preview(path, out, index=0):
+    prs = Presentation(path); sl = prs.slides[index]; S = 100 / 914400 * 12700 / 12700   # 1 inch = 100 px
     W, H = int(prs.slide_width / 914400 * 100), int(prs.slide_height / 914400 * 100)
     im = Image.new('RGB', (W, H), BRAND['bg']); d = ImageDraw.Draw(im)
     px = lambda e: e / 914400 * 100
