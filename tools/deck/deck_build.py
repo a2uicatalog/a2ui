@@ -36,17 +36,17 @@ CONTENT_W = W_IN - 2 * MX
 
 # ---- the layouts, as data: field -> kind, whether required, limits. The validator and `schema` both read this table. ----
 LAYOUTS = {
-    'title':   dict(film='title', fields={'eyebrow': dict(kind='text', max=40), 'headline': dict(kind='text', required=True, max=90),
+    'title':   dict(film='title', fields={'eyebrow': dict(kind='text', max=60), 'headline': dict(kind='text', required=True, max=90),
                                           'sub': dict(kind='text', max=160)}),
     'bullets': dict(film='steps', fields={'heading': dict(kind='text', required=True, max=70),
-                                          'items': dict(kind='list', required=True, min=1, max=6, item_max=110)}),
+                                          'items': dict(kind='list', required=True, min=1, max=6, item_max=240)}),
     'stats':   dict(film='stats', fields={'kicker': dict(kind='text', max=40),
                                           'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40)}),
     'table':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'headers': dict(kind='list', required=True, min=2, max=6, item_max=30),
-                                       'rows': dict(kind='rows', required=True, min=1, max=8, cell_max=60)}),
+                                       'rows': dict(kind='rows', required=True, min=1, max=8, cell_max=200)}),
     'media':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'media': dict(kind='file', required=True, exts=('.gif', '.png', '.jpg', '.jpeg'), max_mb=8),
                                        'alt': dict(kind='text', required=True, max=250), 'caption': dict(kind='text', max=90)}),
-    'quote':   dict(film='quote', fields={'quote': dict(kind='text', required=True, max=240), 'name': dict(kind='text', max=40), 'role': dict(kind='text', max=60)}),
+    'quote':   dict(film='quote', fields={'quote': dict(kind='text', required=True, max=240), 'name': dict(kind='text', max=60), 'role': dict(kind='text', max=100)}),
     'cta':     dict(film='cta', fields={'headline': dict(kind='text', required=True, max=70), 'b1': dict(kind='text', required=True, max=40),
                                         'l1': dict(kind='url'), 'b2': dict(kind='text', max=40), 'l2': dict(kind='url'), 'foot': dict(kind='text', max=60)}),
 }
@@ -265,7 +265,7 @@ def lay_bullets(sl, f, at, errs):
     for pt in (28, 26, 24, 22, 20):                                         # the largest item size at which the whole list fits
         rows = []
         for it in f['items']:
-            r = k.fit_text(plain(it), (pt,), False, 4.0, CONTENT_W - 0.6, max_lines=2)
+            r = k.fit_text(plain(it), (pt,), False, 4.0, CONTENT_W - 0.6, max_lines=3)
             if not r: rows = None; break
             rows.append(r)
         if rows is None: continue
@@ -370,19 +370,26 @@ def lay_table(sl, f, at, errs):
     if not hr: return
     hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15
     hd, rows = f['headers'], f['rows']; n = len(hd); cpad = 0.15; pt = 20
-    need = [max(k.width_pt(plain(r[j]), pt, False) for r in rows + [hd]) / k.SAFETY / 72 + 2 * cpad for j in range(n)]
-    need = [max(need[j], k.width_pt(plain(hd[j]), pt, True) / k.SAFETY / 72 + 2 * cpad) for j in range(n)]
-    if sum(need) > CONTENT_W:
-        err(errs, at, 'does-not-fit', f'slide {at}: the table needs {sum(need):.1f} in of width at {pt} pt, the slide has {CONTENT_W:.1f}; shorten the cells or use fewer columns', field='rows'); return
-    extra = (CONTENT_W - sum(need)) / n; cw = [x + extra for x in need]; rh = 0.55
-    y = top + hh + 0.4
-    if y + rh * (len(rows) + 1) > H_IN - 0.5: err(errs, at, 'does-not-fit', f'slide {at}: {len(rows)} rows do not fit under the heading; the limit here is {int((H_IN - 0.5 - y) / rh) - 1}', field='rows'); return
+    y = top + hh + 0.4; room = H_IN - 0.5 - y
+    # column widths: share the width in proportion to each column's longest unbroken word and its average text, then wrap cells inside them
+    def cell_lines(txt, w, bold=False): return max(1, len(k.wrap(plain(txt), pt, bold, (w - 2 * cpad) * 72 * k.SAFETY)))
+    minw = [max(k.width_pt(wd, pt, bold) for t, bold in [(hd[j], True)] + [(r[j], False) for r in rows] for wd in (plain(t).split() or ['']) ) / k.SAFETY / 72 + 2 * cpad for j in range(n)]
+    want = [max(k.width_pt(plain(t), pt, False) for t in [hd[j]] + [r[j] for r in rows]) / k.SAFETY / 72 + 2 * cpad for j in range(n)]
+    if sum(minw) > CONTENT_W: err(errs, at, 'does-not-fit', f'slide {at}: a table word is too wide: the columns need {sum(minw):.1f} in of width at {pt} pt, the slide has {CONTENT_W:.1f}; use fewer columns', field='rows'); return
+    cw = list(minw); spare = CONTENT_W - sum(cw)
+    while spare > 0.01:                                                  # give spare width to the columns that would otherwise wrap most
+        j = max(range(n), key=lambda j: (want[j] - cw[j]) / want[j] if want[j] > cw[j] else -1)
+        if want[j] <= cw[j] + 0.01: break
+        step = min(spare, want[j] - cw[j]); cw[j] += step; spare -= step
+    if spare > 0.01: cw = [w + spare / n for w in cw]
+    heights = [max(cell_lines(hd[j], cw[j], True) for j in range(n)) * pt * LH / 72 + 0.2] + [max(cell_lines(r[j], cw[j]) for j in range(n)) * pt * LH / 72 + 0.2 for r in rows]
+    if sum(heights) > room: err(errs, at, 'does-not-fit', f'slide {at}: the table needs {sum(heights):.1f} in of height, the slide has {room:.1f}; use fewer or shorter rows', field='rows'); return
     sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
-    gf = sl.s.shapes.add_table(len(rows) + 1, n, Inches(MX), Inches(y), Inches(CONTENT_W), Inches(rh * (len(rows) + 1))); gf.name = 'Table'
+    gf = sl.s.shapes.add_table(len(rows) + 1, n, Inches(MX), Inches(y), Inches(CONTENT_W), Inches(sum(heights))); gf.name = 'Table'
     tbl = gf.table; tblPr = tbl._tbl.tblPr; [tblPr.attrib.pop(a, None) for a in ('firstRow', 'bandRow')]
     for j, w in enumerate(cw): tbl.columns[j].width = Inches(w)
     for i in range(len(rows) + 1):
-        tbl.rows[i].height = Inches(rh)
+        tbl.rows[i].height = Inches(heights[i])
         for j in range(n):
             c = tbl.cell(i, j); txt = plain(hd[j] if i == 0 else rows[i - 1][j]); c.fill.solid()
             c.fill.fore_color.rgb = k.rgb(k.BRAND['surface'] if i == 0 else (k.BRAND['bg'] if i % 2 else k.BRAND['bg']))

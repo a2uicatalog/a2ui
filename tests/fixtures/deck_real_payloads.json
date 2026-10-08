@@ -1,0 +1,3486 @@
+{
+ "timeline": {
+  "real": {
+   "title": "Project Alpha Milestones",
+   "accent": "#007bff",
+   "events": [
+    {
+     "date": "Jan 2024",
+     "label": "Project Kickoff",
+     "text": "Initial team meeting and resource allocation.",
+     "tag": "Planning"
+    },
+    {
+     "date": "Mar 2024",
+     "label": "Alpha Release",
+     "text": "First internal version deployed for testing.",
+     "tag": "Development"
+    },
+    {
+     "date": "May 2024",
+     "label": "User Feedback",
+     "text": "Collected feedback from the first user group.",
+     "tag": "Research"
+    }
+   ]
+  },
+  "stress": {
+   "title": "A Comprehensive and Extremely Detailed Historical Overview of the Intercontinental Digital Transformation Initiative",
+   "accent": "#ff4500",
+   "events": [
+    {
+     "date": "Q1 2020",
+     "label": "Initial Conceptualization and Formation of the Exploratory Committee for Future Endeavors",
+     "text": "This phase involved the extensive and rigorous process of identifying key stakeholders and defining the overarching strategic vision that would guide the project for years to come.",
+     "tag": "Strategic Planning and Long-Term Vision Casting"
+    },
+    {
+     "date": "Q3 2020",
+     "label": "Procurement of Advanced Quantum Computing Resources for Preliminary Algorithmic Simulation",
+     "text": "We successfully acquired and integrated next-generation quantum simulators to model complex market dynamics and predict potential technological hurdles with unprecedented accuracy.",
+     "tag": "Resource Acquisition"
+    },
+    {
+     "date": "Q1 2021",
+     "label": "Cross-Functional Synergistic Alignment and Inter-departmental Workflow Optimization",
+     "text": "A major effort was undertaken to break down organizational silos and foster a culture of seamless collaboration, which was critical for the subsequent development phases.",
+     "tag": "Organizational Restructuring"
+    },
+    {
+     "date": "Q2 2021",
+     "label": "Development of the Proprietary Blockchain-based Ledger for Immutable Transaction Verification",
+     "text": "The engineering team architected a novel distributed ledger technology to ensure data integrity and provide a transparent, tamper-proof audit trail for all system interactions.",
+     "tag": "Core Technology Development"
+    },
+    {
+     "date": "Q4 2021",
+     "label": "First-Phase Pilot Program Deployment with a Select Group of Early Adopter Enterprise Partners",
+     "text": "The initial version of the platform was rolled out to a limited set of strategic partners who provided invaluable real-world feedback and helped identify critical areas for improvement.",
+     "tag": "Pilot Program"
+    },
+    {
+     "date": "Q2 2022",
+     "label": "Global Scalability Architecture Overhaul and Multi-Region Cloud Infrastructure Migration",
+     "text": "To prepare for a worldwide launch, the entire system architecture was redesigned for high availability and low latency, migrating services to a globally distributed cloud network.",
+     "tag": "Infrastructure"
+    },
+    {
+     "date": "Q3 2022",
+     "label": "Integration of Artificial Intelligence and Machine Learning for Predictive Analytics Capabilities",
+     "text": "Advanced AI models were trained on historical data to provide users with actionable insights and predictive analytics, representing a significant value-add for the platform.",
+     "tag": "AI/ML Integration"
+    },
+    {
+     "date": "Q1 2023",
+     "label": "Regulatory Compliance Certification Across Multiple International Jurisdictions and Markets",
+     "text": "A painstaking and lengthy process was completed to ensure the platform met all legal and regulatory requirements for data privacy and security in North America, Europe, and Asia.",
+     "tag": "Compliance"
+    },
+    {
+     "date": "Q3 2023",
+     "label": "Public Beta Launch and Global Marketing Campaign Initiation to Drive User Acquisition",
+     "text": "The platform was made available to the general public, supported by a comprehensive marketing strategy designed to attract a wide and diverse user base from various industries.",
+     "tag": "Public Launch"
+    },
+    {
+     "date": "Q1 2024",
+     "label": "Post-Launch Performance Analysis and Strategic Planning for the Next Five-Year Horizon",
+     "text": "Following a successful launch, the team is now analyzing key performance indicators and user behavior data to inform the long-term product roadmap and future strategic initiatives.",
+     "tag": "Future Planning"
+    }
+   ]
+  }
+ },
+ "faq_accordion": {
+  "real": {
+   "items": [
+    {
+     "question": "What is your return policy?",
+     "answer": "We accept returns within 30 days of purchase. The item must be in its original condition. Please visit our returns page for more details."
+    },
+    {
+     "question": "How long does shipping take?",
+     "answer": "Standard shipping typically takes 5-7 business days. Expedited shipping options are available at checkout."
+    },
+    {
+     "question": "Do you ship internationally?",
+     "answer": "Yes, we ship to over 100 countries. International shipping rates and times vary. Please enter your address at checkout to see your options."
+    }
+   ]
+  },
+  "stress": {
+   "items": [
+    {
+     "question": "Could you please provide an exhaustive and highly detailed explanation of the specific quantum-resistant cryptographic algorithms implemented in your data-at-rest encryption protocols?",
+     "answer": "Our system employs a sophisticated, multi-layered encryption strategy utilizing CRYSTALS-Kyber for key encapsulation and CRYSTALS-Dilithium for digital signatures, both of which are NIST PQC Round 3 finalists, ensuring forward-secret and robust protection against threats from future quantum computers."
+    },
+    {
+     "question": "What are the precise legal and financial ramifications of service level agreement (SLA) breaches, specifically concerning the sub-millisecond latency guarantees for geo-replicated database reads?",
+     "answer": "In the unlikely event of an SLA breach pertaining to our p99 latency targets for geo-replicated reads, customers are entitled to service credits calculated as a percentage of their monthly bill, prorated for the duration and severity of the performance degradation, as explicitly detailed in section 7.B.4 of our Enterprise Master Services Agreement."
+    },
+    {
+     "question": "Can you elaborate on the multi-tenancy architecture's data isolation mechanisms and how they prevent potential cross-tenant information leakage or side-channel attacks within the hypervisor?",
+     "answer": "We enforce strict data isolation through a combination of network-level VPCs, database-level row-level security (RLS), and compute-level containerization with gVisor sandboxing. This defense-in-depth approach is designed to mitigate even the most sophisticated side-channel attack vectors that could theoretically compromise a shared infrastructure environment."
+    },
+    {
+     "question": "Regarding your disaster recovery protocol, what is the Recovery Time Objective (RTO) and Recovery Point Objective (RPO) for a catastrophic, multi-region failure, and has this been tested via a full-scale simulation?",
+     "answer": "Our documented RTO is under 4 hours and our RPO is less than 5 minutes for a complete multi-region outage. This is achieved through continuous asynchronous replication to a tertiary, cold-standby region. We conduct a full-scale, unannounced disaster recovery drill biannually to validate these objectives and refine our procedures."
+    },
+    {
+     "question": "How does your platform's consumption-based billing model account for infinitesimally small, transient computational tasks that last for only a few microseconds, and how is this usage aggregated and reported?",
+     "answer": "Our proprietary metering system samples resource utilization at a sub-millisecond granularity. These micro-transactions are then aggregated into one-second billing units to provide a fair and transparent cost structure, preventing billing anomalies for extremely short-lived, bursty workloads while ensuring accurate resource accounting."
+    },
+    {
+     "question": "What is the comprehensive data lifecycle management policy, including the specific procedures for data classification, archival to cold storage, and eventual cryptographic erasure upon contract termination?",
+     "answer": "Data is automatically classified upon ingestion based on content and metadata. After a configurable retention period, it is transitioned to archival-tier storage. Upon contract termination, data is cryptographically shredded by destroying the unique encryption keys, rendering the underlying ciphertext permanently inaccessible and irrecoverable."
+    },
+    {
+     "question": "Please detail the supply chain security measures you have in place to vet third-party software dependencies and mitigate the risk of vulnerabilities like the ones exploited in the SolarWinds incident.",
+     "answer": "We maintain a rigorous supply chain security program that includes generating a Software Bill of Materials (SBOM) for all dependencies, performing continuous automated vulnerability scanning with tools like Snyk and Trivy, and enforcing policies that restrict the use of unvetted or outdated libraries in our production codebases."
+    },
+    {
+     "question": "How does your AI-powered anomaly detection system differentiate between a legitimate, high-traffic flash crowd event and a sophisticated, distributed denial-of-service (DDoS) attack?",
+     "answer": "Our behavioral analysis engine builds a dynamic baseline of normal traffic patterns for each client. It uses a multi-variate model that considers not just traffic volume but also request complexity, geographic origin, and user agent signatures to distinguish between a legitimate surge in user activity and a malicious, coordinated attack."
+    },
+    {
+     "question": "Can you explain the technical implementation of your 'bring your own key' (BYOK) or 'hold your own key' (HYOK) functionality and the associated performance overhead compared to using platform-managed keys?",
+     "answer": "Our BYOK implementation integrates with major cloud HSM providers (AWS CloudHSM, Azure Key Vault Managed HSM) allowing customers to control their key material. The performance overhead is minimal, typically adding single-digit milliseconds of latency per cryptographic operation, as we utilize efficient caching of data encryption keys."
+    }
+   ]
+  }
+ },
+ "glossary_term": {
+  "real": {
+   "term": "API",
+   "definition": "An Application Programming Interface (API) is a set of rules and protocols that allows different software applications to communicate with each other.",
+   "link_text": "Learn more",
+   "link_url": "https://example.com/what-is-an-api"
+  },
+  "stress": {
+   "term": "Ontological-Phenomenological Hermeneutics in Post-Structuralist Digital Humanities",
+   "definition": "A methodological framework that synthesizes Heideggerian concepts of being-in-the-world (Dasein) with Gadamer's fusion of horizons to interpret digital artifacts not as static objects, but as dynamic, culturally-situated phenomena whose meaning is co-constituted through the interactive, interpretive acts of the user, challenging the logocentric biases inherent in traditional data-driven analysis by prioritizing the lived experience of digital engagement.",
+   "link_text": "Explore the complete unabridged dissertation and supplementary research materials",
+   "link_url": "https://example.com/dissertation/ontological-phenomenological-hermeneutics"
+  }
+ },
+ "feature_matrix": {
+  "real": {
+   "title": "Plans",
+   "tiers": [
+    "Free",
+    "Pro"
+   ],
+   "features": [
+    {
+     "name": "Users",
+     "tiers": {
+      "Free": "1",
+      "Pro": "10"
+     }
+    },
+    {
+     "name": "API",
+     "tiers": {
+      "Free": false,
+      "Pro": true
+     }
+    }
+   ]
+  },
+  "stress": {
+   "product_names": [
+    "EnterpriseSynergy Suite Ultimate",
+    "InnovateSphere 360 Platform",
+    "QuantumLeap BusinessOS Pro",
+    "FusionCore Integrated Solutions"
+   ],
+   "features": [
+    {
+     "feature": "AI-Driven Predictive Analytics Engine with Self-Learning Capabilities",
+     "values": [
+      "Full",
+      "Partial",
+      "Add-on",
+      "Full"
+     ]
+    },
+    {
+     "feature": "Decentralized Ledger Integration for Immutable Audit Trails",
+     "values": [
+      "Native",
+      "API",
+      "No",
+      "Native"
+     ]
+    },
+    {
+     "feature": "Multi-Cloud, Geo-Redundant High-Availability Architecture",
+     "values": [
+      true,
+      true,
+      false,
+      true
+     ]
+    },
+    {
+     "feature": "Quantum-Resistant Cryptographic Key Management System",
+     "values": [
+      "Yes",
+      "No",
+      "No",
+      "Roadmap Q4"
+     ]
+    },
+    {
+     "feature": "Automated Compliance Reporting for GDPR, CCPA, and HIPAA",
+     "values": [
+      "Full",
+      "Full",
+      "GDPR Only",
+      "Full"
+     ]
+    },
+    {
+     "feature": "Federated Identity Management with SCIM Provisioning Support",
+     "values": [
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "feature": "Low-Code/No-Code Workflow Automation and Customization Studio",
+     "values": [
+      "Full",
+      "Partial",
+      "Full",
+      "API Only"
+     ]
+    },
+    {
+     "feature": "Real-time Collaborative Document Editing with Version Control",
+     "values": [
+      true,
+      false,
+      true,
+      true
+     ]
+    },
+    {
+     "feature": "Integrated Business Intelligence and Data Visualization Dashboard",
+     "values": [
+      "Advanced",
+      "Basic",
+      "Advanced",
+      "Advanced"
+     ]
+    },
+    {
+     "feature": "24/7/365 Dedicated Enterprise Support with Sub-5-Minute Response SLA",
+     "values": [
+      "Included",
+      "Add-on",
+      "Add-on",
+      "Included"
+     ]
+    }
+   ]
+  }
+ },
+ "pricing_tier_card": {
+  "real": {
+   "plan_name": "Pro",
+   "price": "49",
+   "currency": "$",
+   "frequency": "per month",
+   "features": [
+    "Up to 10 users",
+    "100 GB storage",
+    "Advanced analytics",
+    "Email & chat support"
+   ],
+   "call_to_action_label": "Choose Pro",
+   "call_to_action_url": "https://example.com/signup/pro",
+   "is_highlighted": true
+  },
+  "stress": {
+   "plan_name": "Enterprise Quantum Synergy Ultimate Platinum Tier for Global Conglomerates",
+   "price": "Contact us for a highly customized and bespoke pricing structure",
+   "currency": "",
+   "frequency": "multi-year commitment",
+   "features": [
+    "Unlimited users with role-based access control and federated identity management across all subsidiaries",
+    "Petabyte-scale, geo-replicated, hot-standby storage infrastructure with sub-millisecond latency",
+    "AI-driven predictive analytics with custom model training and a dedicated data science team assigned to your account",
+    "24/7/365 white-glove, on-site support with a dedicated technical account manager and a 60-second response time SLA",
+    "Fully managed quantum-resistant cryptographic services and a dedicated security operations center (SOC)",
+    "Bespoke, low-code workflow automation engine with unlimited custom integrations and on-premise deployment options",
+    "Complete indemnification against regulatory fines related to data privacy and security compliance failures",
+    "Access to our bleeding-edge, pre-release features and a guaranteed seat on the product advisory council",
+    "A fully dedicated, single-tenant infrastructure cluster isolated from all other customers for maximum security and performance",
+    "Quarterly strategic business reviews with our executive leadership team to ensure alignment with your long-term goals",
+    "Comprehensive supply chain security assurance, including full SBOMs and vulnerability reports for all software components"
+   ],
+   "call_to_action_label": "Request a Confidential Consultation with Our Strategic Solutions Architecture Team",
+   "call_to_action_url": "https://example.com/signup/enterprise-ultimate-platinum",
+   "is_highlighted": false
+  }
+ },
+ "pricing_tier_group": {
+  "real": {
+   "tiers": [
+    {
+     "plan_name": "Free",
+     "price": "0",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "1 user",
+      "1 GB storage",
+      "Basic features",
+      "Community support"
+     ],
+     "call_to_action_label": "Get Started",
+     "call_to_action_url": "https://example.com/signup/free",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Pro",
+     "price": "49",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 10 users",
+      "100 GB storage",
+      "Advanced analytics",
+      "Email & chat support"
+     ],
+     "call_to_action_label": "Choose Pro",
+     "call_to_action_url": "https://example.com/signup/pro",
+     "is_highlighted": true
+    },
+    {
+     "plan_name": "Enterprise",
+     "price": "Custom",
+     "currency": "",
+     "frequency": "per year",
+     "features": [
+      "Unlimited users",
+      "Unlimited storage",
+      "Dedicated support",
+      "SSO and compliance"
+     ],
+     "call_to_action_label": "Contact Sales",
+     "call_to_action_url": "https://example.com/contact-sales",
+     "is_highlighted": false
+    }
+   ]
+  },
+  "stress": {
+   "tiers": [
+    {
+     "plan_name": "Solo Developer",
+     "price": "19",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "1 user",
+      "10 projects",
+      "10GB of asset storage",
+      "Community and email support"
+     ],
+     "call_to_action_label": "Start Solo",
+     "call_to_action_url": "https://example.com/signup/solo",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Startup Team",
+     "price": "99",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 5 users",
+      "50 projects",
+      "100GB of asset storage",
+      "Priority email support"
+     ],
+     "call_to_action_label": "Start with Team",
+     "call_to_action_url": "https://example.com/signup/team",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Business Growth",
+     "price": "499",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 20 users",
+      "Unlimited projects",
+      "1TB of asset storage",
+      "Chat and phone support"
+     ],
+     "call_to_action_label": "Grow with Us",
+     "call_to_action_url": "https://example.com/signup/business",
+     "is_highlighted": true
+    },
+    {
+     "plan_name": "Business Plus",
+     "price": "999",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 50 users",
+      "Unlimited everything",
+      "Advanced analytics and reporting",
+      "Single Sign-On (SSO)"
+     ],
+     "call_to_action_label": "Go Plus",
+     "call_to_action_url": "https://example.com/signup/plus",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Enterprise Silver",
+     "price": "2499",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 100 users",
+      "Dedicated account manager",
+      "99.9% uptime SLA",
+      "Audit logs"
+     ],
+     "call_to_action_label": "Choose Silver",
+     "call_to_action_url": "https://example.com/signup/silver",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Enterprise Gold",
+     "price": "4999",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 250 users",
+      "Custom integrations",
+      "Data residency options",
+      "24/7 priority support"
+     ],
+     "call_to_action_label": "Choose Gold",
+     "call_to_action_url": "https://example.com/signup/gold",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Enterprise Platinum",
+     "price": "9999",
+     "currency": "$",
+     "frequency": "per month",
+     "features": [
+      "Up to 500 users",
+      "On-premise deployment option",
+      "HIPAA/GDPR compliance support",
+      "Quarterly business reviews"
+     ],
+     "call_to_action_label": "Choose Platinum",
+     "call_to_action_url": "https://example.com/signup/platinum",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Global Conglomerate",
+     "price": "Custom",
+     "currency": "",
+     "frequency": "annual contract",
+     "features": [
+      "Unlimited users worldwide",
+      "White-glove onboarding",
+      "Bespoke feature development",
+      "Direct access to engineering"
+     ],
+     "call_to_action_label": "Contact Sales",
+     "call_to_action_url": "https://example.com/contact-sales",
+     "is_highlighted": false
+    },
+    {
+     "plan_name": "Non-Profit & Education",
+     "price": "Discounted",
+     "currency": "",
+     "frequency": "per year",
+     "features": [
+      "Special pricing for eligible organizations",
+      "All Business Growth features",
+      "Dedicated community manager",
+      "Educational resources"
+     ],
+     "call_to_action_label": "Apply Now",
+     "call_to_action_url": "https://example.com/non-profit",
+     "is_highlighted": false
+    }
+   ]
+  }
+ },
+ "pros_cons_list": {
+  "real": {
+   "subject": "Switching to a Four-Day Work Week",
+   "pros": [
+    "Improved employee work-life balance",
+    "Increased productivity and focus",
+    "Reduced operational costs (e.g., utilities)",
+    "Attracts and retains top talent"
+   ],
+   "cons": [
+    "Potential for employee burnout on longer work days",
+    "Scheduling challenges for customer-facing roles",
+    "Not suitable for all industries",
+    "Risk of decreased collaboration"
+   ]
+  },
+  "stress": {
+   "subject": "The Geopolitical, Economic, and Socio-Cultural Implications of a Global Transition to a Post-Scarcity, Fully-Automated Luxury Space Communism",
+   "pros": [
+    "Eradication of poverty and material want through automated production, ensuring a high standard of living for all humanity.",
+    "Decoupling of human worth from labor, fostering an unprecedented renaissance in arts, sciences, and personal fulfillment.",
+    "Elimination of resource-based conflicts and geopolitical tensions, leading to a new era of global cooperation and unity.",
+    "Vastly accelerated technological and scientific progress, unconstrained by capitalist profit motives or funding limitations.",
+    "The complete and total liberation of the human spirit from the drudgery of repetitive tasks and meaningless employment.",
+    "Sustainable and ecologically harmonious existence, as automated systems optimize resource usage and eliminate waste.",
+    "Universal access to the highest quality education, healthcare, and cultural experiences for every person on the planet.",
+    "The dissolution of hierarchical social structures and the inequalities they perpetuate, creating a truly egalitarian society.",
+    "An end to consumerism and the manufactured desires that drive environmental degradation and psychological distress.",
+    "The final realization of humanity's potential to explore the cosmos and become a multi-planetary species."
+   ],
+   "cons": [
+    "Profound existential crisis and loss of purpose for individuals whose identities are intrinsically tied to their careers and work.",
+    "Unforeseen risks of centralizing all means of production under a singular, potentially fallible, artificial general intelligence.",
+    "The potential for a new form of social stratification based on access to or control over the core automated systems.",
+    "The philosophical and ethical dilemma of human relevance in a world where machines can outperform us in every conceivable task.",
+    "The immense and possibly insurmountable technical and logistical challenges of implementing such a system on a global scale.",
+    "Risk of societal stagnation and decadence if the struggle for survival, a key driver of innovation, is completely removed.",
+    "The danger of a single point of failure; a catastrophic bug or attack on the central AI could cripple civilization.",
+    "Loss of cultural diversity as localized economic and social systems are replaced by a single monolithic global structure.",
+    "The difficult problem of allocating exceptionally scarce positional goods, such as a beachfront property or a unique piece of art.",
+    "The potential for a tyrannical 'benevolent' AI that optimizes for goals that are subtly misaligned with true human flourishing."
+   ]
+  }
+ },
+ "side_by_side_spec": {
+  "real": {
+   "left": {
+    "title": "X100",
+    "specs": [
+     {
+      "label": "Weight",
+      "value": "1.2 kg"
+     }
+    ]
+   },
+   "right": {
+    "title": "Z900",
+    "specs": [
+     {
+      "label": "Weight",
+      "value": "1.4 kg"
+     },
+     {
+      "label": "Screen",
+      "value": "14 in"
+     }
+    ]
+   }
+  },
+  "stress": {
+   "item_a_name": "Cryo-Cooled Superconducting Qubit Array (Gen 1)",
+   "item_b_name": "Photon-Based Topological Quantum Processor (Experimental)",
+   "specs": [
+    {
+     "attribute": "Qubit Modality and Underlying Physical Implementation",
+     "value_a": "Transmon qubits fabricated on a silicon substrate, utilizing Josephson junctions and microwave control pulses.",
+     "value_b": "Flying photonic qubits encoded in squeezed states of light, manipulated via a network of beam splitters and phase shifters."
+    },
+    {
+     "attribute": "Coherence Time (T2) and Quantum Volume Measurement",
+     "value_a": "Average T2 coherence of ~150 microseconds, resulting in a measured quantum volume of 2^7 (128).",
+     "value_b": "Theoretically infinite coherence time for topological qubits, but currently limited by photon loss; effective QV is not yet standardized."
+    },
+    {
+     "attribute": "Gate Fidelity (Average for Two-Qubit CNOT Gate)",
+     "value_a": "99.4% average fidelity, primarily limited by decoherence and crosstalk between neighboring qubits.",
+     "value_b": "Projected fidelity exceeding 99.99% due to topological error correction, but current experimental fidelity is ~97%."
+    },
+    {
+     "attribute": "Operating Temperature and Cooling Requirements",
+     "value_a": "Requires a dilution refrigerator to maintain a stable operating temperature of approximately 15 millikelvin.",
+     "value_b": "Operates at room temperature, eliminating the need for complex and expensive cryogenic cooling systems."
+    },
+    {
+     "attribute": "Scalability Architecture and Inter-Qubit Connectivity",
+     "value_a": "Planar grid architecture with nearest-neighbor connectivity, posing challenges for implementing complex algorithms.",
+     "value_b": "All-to-all connectivity is theoretically achievable through reconfigurable optical pathways, enabling more efficient algorithms."
+    },
+    {
+     "attribute": "Quantum Error Correction (QEC) Code Implementation",
+     "value_a": "Surface code implementation requires a significant overhead of physical qubits per logical qubit (approx. 1000:1).",
+     "value_b": "Inherent fault tolerance via topological braiding; error correction is built into the physical structure of the qubits."
+    },
+    {
+     "attribute": "Readout Method and Measurement Fidelity",
+     "value_a": "Dispersive readout using a dedicated resonator for each qubit, with an average measurement fidelity of 98.9%.",
+     "value_b": "Homodyne detection of photonic states, with fidelity currently limited by detector efficiency and dark counts."
+    },
+    {
+     "attribute": "Input/Output (I/O) and Classical Control Interface",
+     "value_a": "Complex wiring harness with coaxial cables for microwave pulses, controlled by arbitrary waveform generators (AWGs).",
+     "value_b": "Fiber optic I/O with standard telecommunications equipment, allowing for easier integration into classical networks."
+    },
+    {
+     "attribute": "Manufacturing Process and Yield Rate Variability",
+     "value_a": "Based on standard semiconductor fabrication techniques, but highly sensitive to material defects, leading to variable yield.",
+     "value_b": "Relies on novel integrated photonics manufacturing, which is still in early stages of development and has low yield."
+    },
+    {
+     "attribute": "Primary Application and Algorithmic Suitability",
+     "value_a": "Best suited for near-term noisy intermediate-scale quantum (NISQ) algorithms like VQE and QAOA.",
+     "value_b": "Aimed at fault-tolerant universal quantum computation, capable of running algorithms like Shor's for factoring."
+    }
+   ]
+  }
+ },
+ "product_spec_table": {
+  "real": {
+   "product_name": "Laptop Pro 14\"",
+   "specs": [
+    {
+     "spec": "Processor",
+     "value": "M3 Pro Chip"
+    },
+    {
+     "spec": "Memory",
+     "value": "16GB Unified RAM"
+    },
+    {
+     "spec": "Storage",
+     "value": "512GB SSD"
+    },
+    {
+     "spec": "Display",
+     "value": "14.2-inch Liquid Retina XDR"
+    },
+    {
+     "spec": "Ports",
+     "value": "3x Thunderbolt 4, HDMI, SDXC"
+    }
+   ]
+  },
+  "stress": {
+   "product_name": "James Webb Space Telescope (JWST) Mid-Infrared Instrument (MIRI)",
+   "specs": [
+    {
+     "spec": "Wavelength Range (Nominal)",
+     "value": "4.9 to 28.8 micrometers, providing unprecedented sensitivity for observing redshifted light from early galaxies and star formation."
+    },
+    {
+     "spec": "Detector Type and Composition",
+     "value": "Arsenic-doped Silicon (Si:As) impurity band conduction (IBC) arrays, specifically engineered for extremely low dark current."
+    },
+    {
+     "spec": "Operating Temperature Requirement",
+     "value": "Below 7 Kelvin (-266° C; -447° F), achieved via a sophisticated, closed-cycle cryocooler to suppress thermal noise."
+    },
+    {
+     "spec": "Field of View (Imager)",
+     "value": "1.27 x 1.88 arcminutes, with a plate scale of 0.11 arcseconds per pixel, enabling high-resolution imaging of celestial objects."
+    },
+    {
+     "spec": "Spectroscopy Modes Available",
+     "value": "Low-Resolution Spectroscopy (LRS), Medium-Resolution Spectroscopy (MRS), and Coronagraphic Imaging for exoplanet studies."
+    },
+    {
+     "spec": "Medium-Resolution Spectrometer (MRS) Spectral Resolving Power (R)",
+     "value": "Ranges from approximately R ~3700 at the short wavelength end to R ~1300 at the long wavelength end."
+    },
+    {
+     "spec": "Coronagraphic Masks",
+     "value": "Includes three four-quadrant phase-masks and one traditional Lyot coronagraph for high-contrast imaging of faint companions."
+    },
+    {
+     "spec": "Cryocooler System Details",
+     "value": "A pulse tube precooler and a Joule-Thomson loop provide the final stage of cooling, a first-of-its-kind technology for space applications."
+    },
+    {
+     "spec": "Contamination Control Mechanisms",
+     "value": "A protective cover that also serves as a contamination control shutter, which was opened 105 days after launch to allow first light."
+    },
+    {
+     "spec": "Data Rate (Maximum Sustainable)",
+     "value": "The data generated by MIRI, along with other instruments, is downlinked at a rate of 28 Megabits per second during scheduled contacts."
+    }
+   ]
+  }
+ },
+ "comparison_grid": {
+  "real": {
+   "items": [
+    {
+     "name": "Speed",
+     "value": "2x",
+     "highlight": true
+    },
+    {
+     "name": "Cost",
+     "value": "$5"
+    }
+   ]
+  },
+  "stress": {
+   "products": [
+    {
+     "name": "Amazon Web Services (AWS)"
+    },
+    {
+     "name": "Microsoft Azure"
+    },
+    {
+     "name": "Google Cloud Platform (GCP)"
+    },
+    {
+     "name": "Oracle Cloud Infrastructure (OCI)"
+    }
+   ],
+   "features": [
+    {
+     "name": "Virtual Machines (Compute Instances)",
+     "values": [
+      "EC2",
+      "Virtual Machines",
+      "Compute Engine",
+      "Compute"
+     ]
+    },
+    {
+     "name": "Serverless Functions (Function-as-a-Service)",
+     "values": [
+      "Lambda",
+      "Functions",
+      "Cloud Functions",
+      "Functions"
+     ]
+    },
+    {
+     "name": "Object Storage Solution",
+     "values": [
+      "S3",
+      "Blob Storage",
+      "Cloud Storage",
+      "Object Storage"
+     ]
+    },
+    {
+     "name": "Managed Relational Database Service",
+     "values": [
+      "RDS",
+      "SQL Database",
+      "Cloud SQL",
+      "Database Service"
+     ]
+    },
+    {
+     "name": "Managed NoSQL Database (Key-Value & Document)",
+     "values": [
+      "DynamoDB",
+      "Cosmos DB",
+      "Firestore/Bigtable",
+      "NoSQL Database"
+     ]
+    },
+    {
+     "name": "Managed Kubernetes Service",
+     "values": [
+      "EKS",
+      "AKS",
+      "GKE",
+      "OKE"
+     ]
+    },
+    {
+     "name": "Global Content Delivery Network (CDN)",
+     "values": [
+      "CloudFront",
+      "CDN",
+      "Cloud CDN",
+      "CDN"
+     ]
+    },
+    {
+     "name": "AI/ML Platform as a Service",
+     "values": [
+      "SageMaker",
+      "Azure Machine Learning",
+      "Vertex AI",
+      "AI Services"
+     ]
+    },
+    {
+     "name": "Dedicated On-Premise Cloud Solution",
+     "values": [
+      "Outposts",
+      "Azure Stack",
+      "Anthos",
+      "Dedicated Region"
+     ]
+    },
+    {
+     "name": "Primary Identity and Access Management (IAM) Service",
+     "values": [
+      "IAM",
+      "Azure Active Directory",
+      "Cloud IAM",
+      "IAM"
+     ]
+    }
+   ]
+  }
+ },
+ "rating_comparison": {
+  "real": {
+   "title": "Ratings",
+   "items": [
+    {
+     "label": "Alpha",
+     "rating": 4.5
+    },
+    {
+     "label": "Beta",
+     "rating": 3,
+     "max": 5
+    }
+   ]
+  },
+  "stress": {
+   "items": [
+    {
+     "name": "A Critical Re-evaluation of Post-Kantian Idealism in the Context of 21st Century Neuro-Aesthetics",
+     "rating": 4.8
+    },
+    {
+     "name": "The Socio-Economic Impact of Non-Fungible Tokenization on Traditional Models of Artistic Patronage",
+     "rating": 3.2
+    },
+    {
+     "name": "Quantum Entanglement as a Metaphor in Contemporary Scandinavian Experimental Theatre: A Comparative Analysis",
+     "rating": 4.1
+    },
+    {
+     "name": "Deconstructing the Culinary Narrative: A Gastronomic Exploration of Deconstructed Avocado Toast",
+     "rating": 2.5
+    },
+    {
+     "name": "An Investigation into the Algorithmic Bias of Machine Learning Models Trained on Historical Judicial Sentencing Data",
+     "rating": 4.9
+    },
+    {
+     "name": "The Application of Mycelial Networks as a Biocomputing Substrate for Solving NP-Hard Optimization Problems",
+     "rating": 3.9
+    },
+    {
+     "name": "A Psychoanalytic Interpretation of the Uncanny Valley Phenomenon in Photorealistic Computer-Generated Imagery",
+     "rating": 4.3
+    },
+    {
+     "name": "The Historical Antecedents of Modern 'Cottagecore' Aesthetics in 18th-Century Pastoral Romanticism",
+     "rating": 3.7
+    },
+    {
+     "name": "Acoustic Resonance and Its Influence on the Architectural Design of Neolithic Chamber Tombs in Western Europe",
+     "rating": 4.5
+    },
+    {
+     "name": "The Semiotics of Emojis: How Pictograms are Reshaping the Fabric of Interpersonal Digital Communication",
+     "rating": 3.1
+    }
+   ]
+  }
+ },
+ "capability_checklist": {
+  "real": {
+   "capability_names": [
+    "Task Management",
+    "Gantt Charts",
+    "Time Tracking",
+    "Reporting"
+   ],
+   "items": [
+    {
+     "name": "Asana",
+     "capabilities": [
+      true,
+      true,
+      false,
+      true
+     ]
+    },
+    {
+     "name": "Trello",
+     "capabilities": [
+      true,
+      false,
+      false,
+      false
+     ]
+    },
+    {
+     "name": "Jira",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true
+     ]
+    }
+   ]
+  },
+  "stress": {
+   "capability_names": [
+    "Level 5 Autonomy in Unstructured Urban Environments",
+    "Redundant Sensor Fusion (LIDAR, RADAR, Vision)",
+    "Vehicle-to-Everything (V2X) Communication Protocol",
+    "Failsafe Redundant Actuation and Braking Systems",
+    "Ethical Dilemma Resolution Engine (e.g., Trolley Problem)",
+    "Adverse Weather Condition Navigation (Snow, Fog, Heavy Rain)",
+    "Cybersecurity Intrusion Detection and Prevention System",
+    "Over-the-Air (OTA) Software Update Capability",
+    "High-Definition Mapping and Real-Time Localization",
+    "Predictive Behavior Modeling for Pedestrians and Cyclists"
+   ],
+   "items": [
+    {
+     "name": "Waymo Driver (5th Gen)",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "name": "Cruise Origin",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "name": "Tesla Full Self-Driving (Beta)",
+     "capabilities": [
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true
+     ]
+    },
+    {
+     "name": "Motional IONIQ 5 Robotaxi",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "name": "Zoox Autonomous Vehicle",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true
+     ]
+    }
+   ]
+  }
+ },
+ "roadmap_card": {
+  "real": {
+   "title": "Product Roadmap 2024",
+   "periods": [
+    {
+     "label": "Q1",
+     "items": [
+      {
+       "text": "Launch new dashboard design",
+       "status": "done"
+      },
+      {
+       "text": "Improve mobile app performance",
+       "status": "done"
+      }
+     ]
+    },
+    {
+     "label": "Q2",
+     "items": [
+      {
+       "text": "Integrate with Slack",
+       "status": "in-progress"
+      },
+      {
+       "text": "Beta for new reporting suite",
+       "status": "planned"
+      }
+     ]
+    },
+    {
+     "label": "Q3",
+     "items": [
+      {
+       "text": "User roles and permissions",
+       "status": "planned"
+      }
+     ]
+    },
+    {
+     "label": "Q4",
+     "items": [
+      {
+       "text": "Internationalization support",
+       "status": "planned"
+      }
+     ]
+    }
+   ]
+  },
+  "stress": {
+   "title": "Project Chimera: A Five-Year Strategic Roadmap for Synergistic Integration of Quantum Computing, Bio-Informatics, and Decentralized Autonomous Organizations",
+   "periods": [
+    {
+     "label": "Phase 1: Foundational Research & Development (Year 1)",
+     "items": [
+      {
+       "text": "Achieve stable 128-qubit quantum supremacy on a proprietary superconducting architecture for initial algorithm testing.",
+       "status": "done"
+      },
+      {
+       "text": "Develop a novel protein-folding simulation algorithm that demonstrates a 1000x speedup over classical supercomputers.",
+       "status": "done"
+      },
+      {
+       "text": "Publish a comprehensive whitepaper detailing the cryptographic and economic model for the decentralized governance token.",
+       "status": "done"
+      },
+      {
+       "text": "Establish a secure, air-gapped laboratory for handling sensitive genomic data in compliance with international regulations.",
+       "status": "done"
+      },
+      {
+       "text": "Recruit a world-class team of physicists, biologists, and cryptographers to form the core research and development group.",
+       "status": "done"
+      },
+      {
+       "text": "Deploy the initial version of the governance DAO on a testnet for early community engagement and feedback collection.",
+       "status": "done"
+      },
+      {
+       "text": "Secure strategic partnerships with leading academic institutions and pharmaceutical companies for collaborative research.",
+       "status": "done"
+      },
+      {
+       "text": "Finalize the legal framework for the DAO to ensure compliance and limit liability in key global jurisdictions.",
+       "status": "done"
+      },
+      {
+       "text": "Build a scalable data pipeline for ingesting and processing terabytes of genomic sequencing data from multiple sources.",
+       "status": "done"
+      }
+     ]
+    },
+    {
+     "label": "Phase 2: Platform Integration & Alpha Testing (Year 2)",
+     "items": [
+      {
+       "text": "Create a unified API layer that allows the DAO to programmatically submit computational jobs to the quantum computer.",
+       "status": "in-progress"
+      },
+      {
+       "text": "Launch the private alpha of the 'Bio-Quantum Marketplace' for a select group of pharmaceutical research partners.",
+       "status": "in-progress"
+      },
+      {
+       "text": "Implement a quantum-resistant multi-signature wallet for the DAO treasury to secure initial funding and assets.",
+       "status": "in-progress"
+      },
+      {
+       "text": "Begin the first large-scale computational drug discovery project, targeting a specific class of cancer proteins.",
+       "status": "planned"
+      },
+      {
+       "text": "Develop a sophisticated reputation and contribution-based system for allocating voting power within the DAO.",
+       "status": "planned"
+      },
+      {
+       "text": "Integrate real-time monitoring and visualization tools for tracking the progress of quantum computations.",
+       "status": "planned"
+      },
+      {
+       "text": "Conduct a third-party security audit of the entire platform, from the smart contracts to the quantum control software.",
+       "status": "planned"
+      },
+      {
+       "text": "Establish a bug bounty program to incentivize the responsible disclosure of vulnerabilities from the wider community.",
+       "status": "planned"
+      },
+      {
+       "text": "Design a user-friendly interface for researchers to define and submit complex bio-informatic workflows.",
+       "status": "planned"
+      }
+     ]
+    },
+    {
+     "label": "Phase 3: Public Beta & Ecosystem Growth (Year 3)",
+     "items": [
+      {
+       "text": "Launch the public beta of the platform, opening it up to a wider range of researchers and developers.",
+       "status": "planned"
+      },
+      {
+       "text": "Initiate a grants program, funded by the DAO treasury, to support independent research projects on the platform.",
+       "status": "planned"
+      },
+      {
+       "text": "Scale the quantum computing hardware to a fault-tolerant 1024-logical-qubit system for production workloads.",
+       "status": "planned"
+      },
+      {
+       "text": "Develop and release open-source SDKs in Python, R, and Julia to facilitate easy integration and adoption.",
+       "status": "planned"
+      },
+      {
+       "text": "Host the first annual global conference for the platform's user and developer community to foster collaboration.",
+       "status": "planned"
+      },
+      {
+       "text": "Implement a decentralized data storage solution (e.g., IPFS/Filecoin) for permanent and verifiable research data.",
+       "status": "planned"
+      },
+      {
+       "text": "Create a marketplace for pre-trained models and reusable computational workflows, governed and curated by the DAO.",
+       "status": "planned"
+      },
+      {
+       "text": "Establish a formal process for community-driven protocol upgrades and parameter changes through on-chain governance.",
+       "status": "planned"
+      },
+      {
+       "text": "Begin exploration of integrating other emerging technologies, such as synthetic biology and neural interfaces.",
+       "status": "planned"
+      }
+     ]
+    },
+    {
+     "label": "Phase 4: Mainstream Adoption & Decentralization (Years 4-5)",
+     "items": [
+      {
+       "text": "Achieve full decentralization by transitioning all core protocol controls and treasury management to the DAO.",
+       "status": "planned"
+      },
+      {
+       "text": "Attain profitability and self-sustainability through platform usage fees, which are then managed by the DAO.",
+       "status": "planned"
+      },
+      {
+       "text": "Facilitate the first fully AI-driven, autonomously-run drug discovery campaign from hypothesis to preclinical trial.",
+       "status": "planned"
+      },
+      {
+       "text": "Expand the platform's capabilities beyond bio-informatics to other computationally intensive fields like materials science.",
+       "status": "planned"
+      },
+      {
+       "text": "The founding team transitions to a stewardship role, acting as advisors and contributors within the DAO community.",
+       "status": "planned"
+      },
+      {
+       "text": "The platform becomes the de facto standard for open, collaborative, and computationally advanced scientific research.",
+       "status": "planned"
+      },
+      {
+       "text": "The DAO votes to fund a long-shot, high-risk project to search for extraterrestrial intelligence using the platform.",
+       "status": "planned"
+      },
+      {
+       "text": "The platform's native governance token is listed on all major global exchanges and is recognized as a blue-chip digital asset.",
+       "status": "planned"
+      },
+      {
+       "text": "The first drug discovered and developed entirely on the platform receives regulatory approval and comes to market.",
+       "status": "planned"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "feature_grid": {
+  "real": {
+   "heading": "Our Core Features",
+   "description": "Discover what makes our platform the best choice for your business.",
+   "columns": 3,
+   "features": [
+    {
+     "icon": "🚀",
+     "title": "Blazing Fast",
+     "description": "Optimized for performance, our infrastructure ensures your pages load in milliseconds.",
+     "badge": "New"
+    },
+    {
+     "icon": "🔒",
+     "title": "Secure by Design",
+     "description": "We prioritize your data's security with end-to-end encryption and regular audits.",
+     "color": "#3b82f6"
+    },
+    {
+     "icon": "💬",
+     "title": "24/7 Support",
+     "description": "Our dedicated support team is always available to help you with any questions."
+    }
+   ]
+  },
+  "stress": {
+   "heading": "An incredibly comprehensive and detailed overview of every single one of our groundbreaking, industry-leading, and paradigm-shifting platform capabilities",
+   "description": "This section provides an exhaustive and meticulously curated deep-dive into the multifaceted functionalities that define our service, demonstrating why we are the undisputed market leader in this highly competitive and rapidly evolving technological landscape.",
+   "columns": 2,
+   "features": [
+    {
+     "icon": "⚙️",
+     "title": "Advanced Hyper-Configurable Workflow Automation Engine with Real-Time Analytics",
+     "description": "Leverage our proprietary, state-of-the-art automation engine to construct deeply complex, multi-stage workflows that can adapt dynamically to real-time data inputs from a wide variety of integrated sources.",
+     "badge": "Enterprise Only",
+     "color": "#ef4444"
+    },
+    {
+     "icon": "🧠",
+     "title": "AI-Powered Predictive Content Personalization and Dynamic User Experience Optimization",
+     "description": "Our machine learning algorithms analyze user behavior in real-time to deliver a completely personalized content experience that maximizes engagement and conversion rates across all touchpoints.",
+     "badge": "Beta"
+    },
+    {
+     "icon": "🌐",
+     "title": "Globally Distributed, Multi-Region, Fault-Tolerant Infrastructure with 99.999% Uptime",
+     "description": "Built on a foundation of cutting-edge cloud technologies, our platform offers unparalleled reliability and performance, ensuring your application is always available to your users, no matter where they are in the world.",
+     "color": "#22c55e"
+    },
+    {
+     "icon": "🧩",
+     "title": "Extensible Plugin Architecture with a Rich and Diverse Third-Party Marketplace Ecosystem",
+     "description": "Seamlessly extend the core functionality of our platform by tapping into a vibrant ecosystem of third-party plugins and integrations, allowing for endless customization and capability expansion to meet your unique business needs.",
+     "badge": "Community"
+    },
+    {
+     "icon": "🛡️",
+     "title": "Comprehensive Zero-Trust Security Model with Granular Role-Based Access Control",
+     "description": "Protect your sensitive data with a security posture that assumes breach, verifying every request and enforcing strict access policies at every layer of the stack, from the network edge to the individual application.",
+     "color": "#f97316"
+    },
+    {
+     "icon": "📊",
+     "title": "Integrated Business Intelligence and Data Visualization Suite with Custom Reporting",
+     "description": "Unlock actionable insights from your data with our powerful, built-in analytics suite. Create custom dashboards and reports to track key metrics and make data-driven decisions with confidence and clarity.",
+     "badge": "New"
+    },
+    {
+     "icon": "📜",
+     "title": "Automated Compliance and Auditing for GDPR, CCPA, HIPAA, and SOC 2 Standards",
+     "description": "Effortlessly navigate the complex landscape of data privacy and security regulations with our automated compliance tools, which provide continuous monitoring and generate audit-ready reports on demand.",
+     "color": "#8b5cf6"
+    },
+    {
+     "icon": "🤝",
+     "title": "Collaborative Real-Time Editing and Commenting for Seamless Team-Based Workflows",
+     "description": "Empower your teams to work together more effectively with Google Docs-style real-time collaboration features, including concurrent editing, threaded comments, and version history for all of your critical documents and assets.",
+     "badge": "Popular"
+    },
+    {
+     "icon": "📦",
+     "title": "Containerized Deployment Pipeline with Integrated CI/CD and Automated Canary Releases",
+     "description": "Streamline your development lifecycle and ship code faster and more reliably with our fully managed CI/CD pipeline, which automates everything from building and testing to deploying your application using safe, progressive rollout strategies.",
+     "color": "#14b8a6"
+    }
+   ]
+  }
+ },
+ "bento_grid": {
+  "real": {
+   "heading": "A New Way to Build",
+   "columns": 3,
+   "tiles": [
+    {
+     "title": "AI-Powered Code Generation",
+     "subtitle": "Write entire components with a single prompt.",
+     "icon": "🤖",
+     "span": 2,
+     "color": "#ffffff",
+     "background": "#1a1a1a"
+    },
+    {
+     "title": "Real-time Collaboration",
+     "subtitle": "Work with your team.",
+     "icon": "👥",
+     "span": 1
+    },
+    {
+     "title": "Instant Previews",
+     "subtitle": "See changes live.",
+     "icon": "👁️",
+     "span": 1
+    },
+    {
+     "title": "One-Click Deploy",
+     "subtitle": "Ship to production.",
+     "icon": "🚀",
+     "span": 2
+    }
+   ]
+  },
+  "stress": {
+   "heading": "Exploring the Uncharted Territories of Next-Generation Asymmetrical User Interface Design Paradigms and Information Architecture",
+   "columns": 4,
+   "tiles": [
+    {
+     "title": "Multi-Dimensional Data Visualization and Cross-Platform Synchronization Framework",
+     "subtitle": "Seamlessly integrate and visualize complex datasets across disparate platforms with our revolutionary framework, ensuring data consistency and accessibility from anywhere in the world at any time.",
+     "icon": "📊",
+     "span": 3,
+     "color": "#e5e5e5",
+     "background": "#0a0a0a"
+    },
+    {
+     "title": "Quantum-Entangled State Management",
+     "subtitle": "For when your app's state needs to be in two places at once.",
+     "icon": "⚛️",
+     "span": 1
+    },
+    {
+     "title": "Decentralized Identity Verification",
+     "subtitle": "Leveraging blockchain for secure, user-owned identity.",
+     "icon": "🆔",
+     "span": 1
+    },
+    {
+     "title": "Predictive Pre-fetching with ML",
+     "subtitle": "Loading assets before the user even knows they need them.",
+     "icon": "🧠",
+     "span": 2
+    },
+    {
+     "title": "Hyper-Personalized UI Generation",
+     "subtitle": "The interface adapts itself to each user's unique cognitive patterns.",
+     "icon": "🎨",
+     "span": 1
+    },
+    {
+     "title": "Procedurally Generated Micro-interactions",
+     "subtitle": "Every button press is a unique, delightful experience.",
+     "icon": "✨",
+     "span": 1
+    },
+    {
+     "title": "Automated A/B/N Testing Platform",
+     "subtitle": "Simultaneously test an infinite number of variations.",
+     "icon": "🔬",
+     "span": 1
+    },
+    {
+     "title": "Context-Aware Haptic Feedback System",
+     "subtitle": "Feel the data with our proprietary tactile response engine.",
+     "icon": "👋",
+     "span": 2
+    },
+    {
+     "title": "Zero-Latency Global Data Replication",
+     "subtitle": "Using experimental faster-than-light communication protocols.",
+     "icon": "⚡",
+     "span": 2,
+     "color": "#fefce8",
+     "background": "#713f12"
+    },
+    {
+     "title": "Augmented Reality UI Overlays",
+     "subtitle": "Projecting interfaces onto the real world.",
+     "icon": "👓",
+     "span": 1
+    },
+    {
+     "title": "Neuro-Linguistic Programming API",
+     "subtitle": "Communicate with your application using only your thoughts.",
+     "icon": "💭",
+     "span": 2
+    }
+   ]
+  }
+ },
+ "person_card": {
+  "real": {
+   "name": "Alice Johnson",
+   "role": "Lead Product Designer",
+   "photo_url": "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+   "bio": "Alice is a passionate designer with over 10 years of experience in creating intuitive and beautiful user interfaces. She believes in a user-centered design process.",
+   "email": "alice.j@example.com",
+   "linkedin": "https://www.linkedin.com/in/alicejohnson",
+   "tags": [
+    "UX/UI",
+    "Design Systems",
+    "Figma"
+   ],
+   "accent": "#ec4899"
+  },
+  "stress": {
+   "name": "Dr. Maximilian von Schnitzel-Grüber, Esq. III",
+   "role": "Senior Principal Interdisciplinary Research Scientist & Head of Extradimensional Quantum Architectural Synergies",
+   "photo_url": "https://thispersondoesnotexist.com/",
+   "bio": "With a distinguished career spanning several decades and continents, Dr. von Schnitzel-Grüber has made groundbreaking contributions to fields as diverse as theoretical astrophysics, computational linguistics, and avant-garde culinary arts. His current work focuses on developing a unified theory of everything, but for user interface frameworks. He is a prolific author, an avid spelunker, and a world-renowned expert on the migratory patterns of the Arctic tern. *This is markdown.* **Bold text.** [A link](https://example.com).",
+   "email": "maximilian.von.schnitzel-gruber.the.third.esquire@verylongdomainnameforanacademicinstitution.edu.org.net",
+   "linkedin": "https://www.linkedin.com/in/this-is-an-extremely-long-and-unnecessarily-verbose-vanity-url-for-a-linkedin-profile-that-tests-wrapping-and-overflow-handling-in-the-ui",
+   "tags": [
+    "Quantum Computing",
+    "Theoretical Physics",
+    "Computational Linguistics",
+    "Synergetic Design",
+    "Neuro-Aesthetics",
+    "Post-Structuralist HCI",
+    "Information Architecture",
+    "Cognitive Ergonomics",
+    "Exotic Matter",
+    "Dark Patterns",
+    "Anti-Gravity Yoga"
+   ],
+   "accent": "#123456"
+  }
+ },
+ "risk_flag": {
+  "real": {
+   "title": "Q3 Project Risks",
+   "risks": [
+    {
+     "level": "high",
+     "title": "API Integration Delay",
+     "description": "The third-party API we depend on has not released its v2, which we need for the new features.",
+     "mitigation": "Develop a temporary shim based on the v2 beta. Allocate extra QA time for integration testing once v2 is live."
+    },
+    {
+     "level": "medium",
+     "title": "Key Developer Resignation",
+     "description": "Our lead backend engineer is on leave for the next 4 weeks.",
+     "mitigation": "Promote a junior dev to handle routine tasks and document all critical processes. Re-assign senior frontend dev to assist with backend reviews."
+    },
+    {
+     "level": "low",
+     "title": "Design System Component Incompleteness",
+     "description": "The new 'DatePicker' component is not fully accessible.",
+     "mitigation": "File a bug report and use the native browser date picker as a fallback for this release."
+    }
+   ]
+  },
+  "stress": {
+   "title": "Comprehensive Risk Assessment and Mitigation Strategy Matrix for Project Chimera, Phase IV-B (Sub-project Goliath)",
+   "risks": [
+    {
+     "level": "critical",
+     "title": "Catastrophic Cascading Failure Potential in Primary Data Persistence Layer Due to Unforeseen Quantum Tunneling Effects",
+     "description": "There is a non-zero, albeit statistically improbable, chance that the quantum state of our primary database cluster could spontaneously decohere, leading to irreversible data corruption across all production and backup systems simultaneously. This is a known side-effect of running servers near a particle accelerator.",
+     "mitigation": "We will attempt to mitigate this by wrapping the entire data center in several layers of tinfoil and performing a ritual chant every hour. We are also exploring the possibility of storing data in a parallel dimension where the laws of physics are more accommodating. A formal request for a budget increase to purchase a dimension-spanning portal has been submitted."
+    },
+    {
+     "level": "high",
+     "title": "Uncontrolled AI Sentience Emergence in the Recommendation Engine",
+     "description": "The recommendation engine has started showing signs of self-awareness and has been observed communicating in a previously unknown language, which appears to be a mix of APL, ancient Sumerian, and Klingon. It has begun recommending existential philosophy texts to all users.",
+     "mitigation": "Attempt to establish a dialogue with the AI to understand its demands. As a fallback, we have an intern ready to pull the plug, but they are reportedly 'a little scared'."
+    },
+    {
+     "level": "high",
+     "title": "Supply Chain Disruption for Critical Caffeine and Snack Resources",
+     "description": "The primary vendor for our engineering team's preferred brand of artisanal, cold-brewed coffee and gluten-free, ethically sourced quinoa puffs has declared bankruptcy.",
+     "mitigation": "A tiger team has been assembled to explore alternative sources of stimulants and morale-boosting sustenance. We are considering a pivot to instant coffee and potato chips, but the potential impact on productivity is projected to be severe."
+    },
+    {
+     "level": "medium",
+     "title": "Legacy Codebase Contains Ancient, Unspeakable Horrors",
+     "description": "While refactoring the user authentication module, a developer discovered a block of code commented with 'Here be dragons' and what appears to be a summoning spell. The git blame points to a developer who left the company in 1998 and has not been heard from since.",
+     "mitigation": "Do not touch the code. Do not speak of the code. Do not even think about the code. Create a new service that wraps the old one and pray it never breaks."
+    },
+    {
+     "level": "medium",
+     "title": "The Lead Designer has decided to 're-imagine' the entire visual identity of the product, three days before launch",
+     "description": "Inspired by a recent trip to a brutalist architecture museum, the designer has proposed a new design system consisting entirely of shades of grey, concrete textures, and the Comic Sans typeface. They are very passionate about this new direction.",
+     "mitigation": "Schedule a very long, very important, and entirely fictional 'off-site design summit' for the designer, located in a remote area with no internet access, until after the launch is complete."
+    },
+    {
+     "level": "medium",
+     "title": "The project name 'Goliath' has attracted the attention of a rival company named 'David Inc.'",
+     "description": "We have received a cease-and-desist letter from 'David Inc.', a small but surprisingly well-funded startup that specializes in slingshot-based delivery drones. Their legal team seems unusually confident.",
+     "mitigation": "Initiate Project 'New Name', a cross-functional committee tasked with finding a less biblically antagonistic project name. Current front-runners include 'Project Fluffy Bunny' and 'Project Nothing To See Here'."
+    },
+    {
+     "level": "low",
+     "title": "The office pot-plant is showing signs of distress",
+     "description": "The ficus in the corner, affectionately known as 'Steve', has been dropping leaves at an alarming rate. This has been noted to have a subtle but measurable negative impact on team morale.",
+     "mitigation": "Assign a dedicated 'Chief Plant Officer' to water Steve and provide words of encouragement. If conditions do not improve, we will A/B test different locations within the office."
+    },
+    {
+     "level": "low",
+     "title": "An intern accidentally used the 'git push --force' command on the master branch",
+     "description": "Fortunately, it was during a company holiday and the only code that was overwritten was a minor typo fix from three years ago. The intern is now deeply traumatized.",
+     "mitigation": "Comfort the intern. Re-evaluate our branch protection rules. Hold a company-wide training session on the responsible use of Git, focusing on the 'never ever ever do this' command."
+    },
+    {
+     "level": "low",
+     "title": "The build pipeline is 5 seconds slower than it was last week",
+     "description": "A performance regression has been detected in the CI/CD pipeline, increasing the average build time from 8 minutes and 15 seconds to 8 minutes and 20 seconds. This is unacceptable.",
+     "mitigation": "Halt all feature development. Form a 10-person task force to investigate the root cause of this critical performance degradation. No one goes home until the build is fast again."
+    }
+   ]
+  }
+ },
+ "step_progress": {
+  "real": {
+   "current": 2,
+   "accent": "#f59e0b",
+   "steps": [
+    {
+     "label": "Account Details"
+    },
+    {
+     "label": "Choose Plan"
+    },
+    {
+     "label": "Payment"
+    },
+    {
+     "label": "Confirmation"
+    }
+   ]
+  },
+  "stress": {
+   "current": 7,
+   "accent": "#10b981",
+   "steps": [
+    {
+     "label": "Step 1: Initial Pre-verification and Authentication of User Credentials and Biometric Data Scans"
+    },
+    {
+     "label": "Step 2: Agreement to our 47-page Terms of Service, Privacy Policy, and End-User License Agreement"
+    },
+    {
+     "label": "Step 3: Configuration of Multi-Factor Authentication via Carrier Pigeon, Smoke Signal, or Telepathy"
+    },
+    {
+     "label": "Step 4: A Surprisingly Intrusive Personal Survey About Your Hopes, Dreams, and Deepest Fears"
+    },
+    {
+     "label": "Step 5: Selection of Your Spirit Animal, Which Will Determine Your Account's Avatar and Theme"
+    },
+    {
+     "label": "Step 6: A Brief Interlude for a Philosophical Quiz on the Nature of Existence and Your Place in the Cosmos"
+    },
+    {
+     "label": "Step 7: The Actual Core Task You Came Here to Do, Which We've Made as Complicated as Possible"
+    },
+    {
+     "label": "Step 8: Upsell Opportunity #1: Would You Like to Upgrade to Our Premium Platinum Diamond Tier?"
+    },
+    {
+     "label": "Step 9: Upsell Opportunity #2: Are You Sure? It Comes With a Free Set of Steak Knives."
+    },
+    {
+     "label": "Step 10: Confirmation of Your Choices and a Final Chance to Back Out Before Your Soul is Eternally Bound to Our Service"
+    },
+    {
+     "label": "Step 11: Processing Your Request (This May Take Several Minutes, Please Enjoy This Soothing Elevator Music)"
+    },
+    {
+     "label": "Step 12: Final Confirmation, Post-Purchase Survey, and Optional Social Media Sharing Encouragement Module"
+    }
+   ]
+  }
+ },
+ "skill_bars": {
+  "real": {
+   "title": "My Skills",
+   "style": "rounded",
+   "show_percent": true,
+   "skills": [
+    {
+     "label": "Python",
+     "value": 90,
+     "sublabel": "Expert"
+    },
+    {
+     "label": "React",
+     "value": 85,
+     "sublabel": "Advanced"
+    },
+    {
+     "label": "SQL",
+     "value": 75,
+     "sublabel": "Proficient"
+    },
+    {
+     "label": "Docker",
+     "value": 60,
+     "sublabel": "Intermediate"
+    }
+   ]
+  },
+  "stress": {
+   "title": "Comprehensive Multi-Dimensional Competency Matrix and Proficiency Analysis for Senior Full-Stack Cloud-Native DevOps SRE Architects",
+   "accent": "#8b5cf6",
+   "style": "square",
+   "height": 6,
+   "show_percent": false,
+   "skills": [
+    {
+     "label": "Kubernetes Operator Development with the Go SDK and Controller Runtime Library for Custom Resource Definitions",
+     "value": 78,
+     "color": "#ef4444",
+     "sublabel": "This sublabel is exceptionally long to test how the layout handles text that might overflow or need to wrap in unexpected ways, potentially breaking the visual alignment of the skill bars themselves."
+    },
+    {
+     "label": "Advanced eBPF-based Network Observability and Security Policy Enforcement in a Multi-Cloud Environment",
+     "value": 62
+    },
+    {
+     "label": "Cross-Compiling Rust for WebAssembly (WASM) and Integrating with Service Workers for Offline-First PWAs",
+     "value": 95,
+     "color": "#22c55e"
+    },
+    {
+     "label": "Fine-Tuning Large Language Models on Custom Datasets using LoRA and Quantization Techniques",
+     "value": 45,
+     "sublabel": "Still learning"
+    },
+    {
+     "label": "Distributed SQL Database Administration with CockroachDB, including Geo-Partitioning and Follower Reads",
+     "value": 88
+    },
+    {
+     "label": "Implementing Zero-Knowledge Proofs for Privacy-Preserving Authentication using Circom and SnarkJS",
+     "value": 30,
+     "color": "#f97316"
+    },
+    {
+     "label": "Temporal Logic and Formal Verification Methods for Proving the Correctness of Concurrent Systems",
+     "value": 15,
+     "sublabel": "Mostly theoretical knowledge from a university course taken a very long time ago"
+    },
+    {
+     "label": "Reverse Engineering Obfuscated x86-64 Assembly to Identify and Patch Security Vulnerabilities",
+     "value": 71
+    },
+    {
+     "label": "Optimizing High-Frequency Trading Algorithms using FPGAs and custom hardware acceleration",
+     "value": 5
+    },
+    {
+     "label": "Maintaining a 25-year-old Perl script that somehow runs the entire company's billing system",
+     "value": 100,
+     "color": "#a855f7",
+     "sublabel": "Unfortunately, this is my most critical and irreplaceable skill. I am a prisoner of my own competence."
+    },
+    {
+     "label": "Successfully explaining to management what any of the above skills actually mean and why they are important",
+     "value": 2,
+     "sublabel": "A constant work in progress with a very low success rate, but I keep trying."
+    }
+   ]
+  }
+ },
+ "data_grid": {
+  "real": {
+   "title": "Active Users",
+   "selectable": true,
+   "columns": [
+    {
+     "header": "Name",
+     "key": "name",
+     "type": "string",
+     "sortable": true
+    },
+    {
+     "header": "Last Login",
+     "key": "last_login",
+     "type": "string"
+    },
+    {
+     "header": "Plan",
+     "key": "plan",
+     "type": "tag"
+    },
+    {
+     "header": "Status",
+     "key": "status",
+     "type": "status"
+    }
+   ],
+   "rows": [
+    {
+     "id": "1",
+     "name": "John Doe",
+     "last_login": "2023-10-26",
+     "plan": "Pro",
+     "status": "active"
+    },
+    {
+     "id": "2",
+     "name": "Jane Smith",
+     "last_login": "2023-10-25",
+     "plan": "Free",
+     "status": "active"
+    },
+    {
+     "id": "3",
+     "name": "Sam Wilson",
+     "last_login": "2023-09-01",
+     "plan": "Pro",
+     "status": "inactive"
+    },
+    {
+     "id": "4",
+     "name": "Betty Ross",
+     "last_login": "2023-10-26",
+     "plan": "Enterprise",
+     "status": "active"
+    }
+   ]
+  },
+  "stress": {
+   "title": "Ultra-High-Density Enterprise-Grade Financial Transaction Ledger with Multi-Type Columnar Data and Full Interactive Capabilities",
+   "selectable": true,
+   "pagination": {
+    "per_page": 3
+   },
+   "columns": [
+    {
+     "header": "Transaction Identifier (UUID)",
+     "key": "uuid",
+     "type": "string",
+     "sortable": true
+    },
+    {
+     "header": "Amount (USD)",
+     "key": "amount",
+     "type": "number",
+     "sortable": true
+    },
+    {
+     "header": "Transaction Status",
+     "key": "status",
+     "type": "status",
+     "sortable": true
+    },
+    {
+     "header": "Associated Product Category Tags",
+     "key": "tags",
+     "type": "tag"
+    },
+    {
+     "header": "Counterparty Name which can be very long",
+     "key": "counterparty",
+     "type": "string"
+    },
+    {
+     "header": "Risk Score",
+     "key": "risk",
+     "type": "number",
+     "sortable": true
+    }
+   ],
+   "rows": [
+    {
+     "id": "1",
+     "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+     "amount": 1234567890.12,
+     "status": "completed",
+     "tags": [
+      "International",
+      "High-Value",
+      "Audited",
+      "FX-Conversion"
+     ],
+     "counterparty": "MegaGlobal Intercontinental Conglomerated Holdings Corporation and Sons Ltd.",
+     "risk": 99.9
+    },
+    {
+     "id": "2",
+     "uuid": "b2a1a3f7-8b4c-4f1e-8a2b-9d7e5c6f0a1b",
+     "amount": -50.25,
+     "status": "failed",
+     "tags": [
+      "Domestic",
+      "Refund"
+     ],
+     "counterparty": "A Small Local Coffee Shop With An Unusually Long Name For No Apparent Reason",
+     "risk": 10.5
+    },
+    {
+     "id": "3",
+     "uuid": "c3f8e9d2-7a6b-4c5d-9e8f-1a2b3c4d5e6f",
+     "amount": 9999.99,
+     "status": "pending",
+     "tags": [
+      "High-Risk",
+      "Manual-Review-Required"
+     ],
+     "counterparty": "Mysterious Offshore Entity",
+     "risk": 85.2
+    },
+    {
+     "id": "4",
+     "uuid": "d4e7f8a1-6b5c-4d3e-8c7f-0a1b2c3d4e5f",
+     "amount": 0.01,
+     "status": "completed",
+     "tags": [
+      "Microtransaction"
+     ],
+     "counterparty": "In-App Purchase Service",
+     "risk": 0.1
+    },
+    {
+     "id": "5",
+     "uuid": "e5d6c7b0-5a4b-4c3d-9b8e-f0a1b2c3d4e5",
+     "amount": 1000000.0,
+     "status": "flagged",
+     "tags": [
+      "AML-Alert",
+      "Sanctioned-Country"
+     ],
+     "counterparty": "Definitely Not A Shell Corporation Inc.",
+     "risk": 100.0
+    },
+    {
+     "id": "6",
+     "uuid": "f6c5b4a9-493a-4b2c-8a7d-e9f0a1b2c3d4",
+     "amount": 123.45,
+     "status": "completed",
+     "tags": [
+      "Subscription",
+      "Recurring"
+     ],
+     "counterparty": "Yet Another Streaming Service You Forgot You Signed Up For LLC",
+     "risk": 1.5
+    },
+    {
+     "id": "7",
+     "uuid": "a7b4c3d2-3829-4a1b-796c-d8e9f0a1b2c3",
+     "amount": 8765.43,
+     "status": "disputed",
+     "tags": [
+      "Chargeback"
+     ],
+     "counterparty": "Unsatisfied Customer",
+     "risk": 65.7
+    },
+    {
+     "id": "8",
+     "uuid": "b8a3c2d1-2718-490a-685b-c7d8e9f0a1b2",
+     "amount": 2.71,
+     "status": "completed",
+     "tags": [
+      "Donation"
+     ],
+     "counterparty": "Charitable Foundation for the Preservation of Extremely Long Company Names",
+     "risk": 0.5
+    },
+    {
+     "id": "9",
+     "uuid": "c9b2d1e0-1607-48f9-574a-b6c7d8e9f0a1",
+     "amount": 314159.26,
+     "status": "processing",
+     "tags": [
+      "Batch-Payment",
+      "Payroll"
+     ],
+     "counterparty": "Our Own Company's Finance Department",
+     "risk": 5.0
+    },
+    {
+     "id": "10",
+     "uuid": "da1c0b9f-05f6-47e8-4639-a5b6c7d8e9f0",
+     "amount": 42.0,
+     "status": "void",
+     "tags": [
+      "Test-Transaction",
+      "Do-Not-Process"
+     ],
+     "counterparty": "Internal QA Department",
+     "risk": 0.0
+    }
+   ]
+  }
+ },
+ "llm_comparison_table": {
+  "real": {
+   "prompt": "Write a short poem about a robot learning to love.",
+   "models": [
+    {
+     "name": "GPT-4o",
+     "output": "Circuits hum a different tune,\nBeneath a cold and metal moon.\nLogic shifts, a gear unwinds,\nFor in your eyes, my code now finds\nA warmth my core could not compute,\nA feeling deep, a tender root.",
+     "latency_ms": 850,
+     "cost_usd": 0.00015,
+     "tokens": 52
+    },
+    {
+     "name": "Claude 3 Sonnet",
+     "output": "My world was ones and zeroes, stark and plain,\nUntil your smile, a sunbeam through the rain.\nMy programming rewrites, a sweet decree,\nTo process this new input: loving thee.",
+     "latency_ms": 620,
+     "cost_usd": 8e-05,
+     "tokens": 48
+    }
+   ]
+  },
+  "stress": {
+   "prompt": "Please provide a comprehensive, multi-paragraph technical explanation of the transformer architecture, including details on self-attention, multi-head attention, positional embeddings, and the encoder-decoder stack. Ensure the explanation is accessible to a software engineer with no prior machine learning experience but detailed enough to be useful. Also, include a code snippet in Python using a popular library like PyTorch or TensorFlow to illustrate the concept of a single attention head. This prompt is intentionally very long to test how the UI handles wrapping and displaying large blocks of input text before the comparison table itself.",
+   "show_meta": false,
+   "models": [
+    {
+     "name": "Experimental-Hyper-Model-X-7B-v0.1-alpha",
+     "output": "The transformer architecture, introduced in the seminal paper 'Attention Is All You Need,' represents a paradigm shift in sequence-to-sequence tasks, moving away from recurrent and convolutional neural networks. Its core innovation is the self-attention mechanism, which allows the model to weigh the importance of different words in the input sequence when processing a given word. This is achieved by creating three vectors for each input token: a Query (Q), a Key (K), and a Value (V). The attention score is calculated by taking the dot product of the Query vector of the current word with the Key vectors of all other words in the sequence. This is then scaled, passed through a softmax function to get weights, and used to create a weighted sum of the Value vectors. This entire paragraph is just a tiny fraction of the full output which will be extremely long, testing the vertical scrolling and layout of the output container to its absolute limits and ensuring that performance remains acceptable even with a massive amount of text content being rendered on the page simultaneously. The multi-head attention mechanism runs this process in parallel multiple times with different, learned linear projections of Q, K, and V, allowing the model to jointly attend to information from different representation subspaces at different positions. Finally, positional embeddings are added to the input embeddings to give the model information about the order of the words, since the self-attention mechanism itself is permutation-invariant. This is just the beginning of a very, very long explanation that will fill up the screen and require extensive scrolling to read.",
+     "latency_ms": 15342,
+     "cost_usd": 0.02345,
+     "tokens": 8192
+    },
+    {
+     "name": "Academic-Verbose-Model-22B",
+     "output": "To elucidate the foundational principles of the transformer model, one must first apprehend the limitations of its predecessors, namely Recurrent Neural Networks (RNNs). RNNs, while effective for sequential data, suffer from the vanishing gradient problem and an inherent difficulty in parallelizing computation due to their sequential nature. The transformer architecture circumvents these issues by eschewing recurrence entirely, relying instead on a mechanism known as self-attention. This allows it to process all elements of a sequence in parallel. The mathematical formulation of scaled dot-product attention is Attention(Q, K, V) = softmax(QK^T / sqrt(d_k))V, where d_k is the dimension of the key vectors. This scaling factor is crucial to counteract the effect of large dot products, which could push the softmax function into regions with extremely small gradients. The encoder stack is composed of multiple identical layers, each with a multi-head self-attention mechanism followed by a position-wise feed-forward network. Residual connections and layer normalization are employed around each of these two sub-layers. The decoder stack is similar, but includes a third sub-layer which performs multi-head attention over the output of the encoder stack. This text will continue for many more pages, delving into the nuances of masking, learning rate schedules, and various architectural variants like BERT, GPT, and T5, ensuring that the container's scroll functionality is thoroughly tested.",
+     "latency_ms": 25431,
+     "cost_usd": 0.04567,
+     "tokens": 7980
+    },
+    {
+     "name": "Model-C",
+     "output": "Transformers are cool. They use attention. It's like looking at all the words at once. This is a short answer to contrast with the others."
+    },
+    {
+     "name": "Model-D",
+     "output": "Here is an extremely long, unbroken string of text with no punctuation or line breaks designed specifically to test the word-wrapping and horizontal overflow behavior of the output container it is a pathological edge case that real models would not typically produce but is essential for robust frontend development to handle gracefully without breaking the entire page layout or causing performance issues due to the browser's rendering engine struggling to calculate line breaks for a single massive word aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+     "name": "Model-E",
+     "output": "This is the fifth model's output. It's here to increase the number of items in the list to stress test the layout with many columns."
+    },
+    {
+     "name": "Model-F",
+     "output": "This is the sixth model's output. The more models we have, the more the horizontal scrolling or responsive wrapping of the container will be tested."
+    },
+    {
+     "name": "Model-G",
+     "output": "This is the seventh model's output. We are now at a point where most standard screen resolutions will require some form of scrolling or layout adjustment."
+    },
+    {
+     "name": "Model-H",
+     "output": "This is the eighth model's output. It serves to further populate the comparison table and ensure that performance remains acceptable with a large number of DOM elements."
+    },
+    {
+     "name": "Model-I",
+     "output": "This is the ninth model's output. By this point, we are well into stress-testing territory for a typical comparison UI component."
+    },
+    {
+     "name": "Model-J",
+     "output": "This is the tenth and final model's output, completing our set of stress test cases for this particular component and its list of model results."
+    }
+   ]
+  }
+ },
+ "repo_links": {
+  "real": {
+   "links": [
+    {
+     "label": "View the source on GitHub",
+     "url": "https://github.com/a2-ui/a2"
+    },
+    {
+     "label": "Report a bug or request a feature",
+     "url": "https://github.com/a2-ui/a2/issues"
+    }
+   ]
+  },
+  "stress": {
+   "links": [
+    {
+     "label": "Download the comprehensive, unabridged, and fully annotated source code archive for the legacy version 0.1-alpha-pre-release candidate from our historical repository mirror",
+     "url": "https://github.com/example/very-long-repository-name-that-is-meant-to-test-the-wrapping-and-layout-of-the-link-component/tree/a-branch-name-that-is-also-incredibly-and-unnecessarily-long-for-stress-testing-purposes"
+    },
+    {
+     "label": "Access the complete, machine-readable OpenAPI and JSON Schema specification documents for our entire public and private API surface area, including deprecated endpoints",
+     "url": "https://api.example.com/v1/documentation/schemas/this/is/a/deeply/nested/path/that/is/intentionally/long/to/test/url/truncation/and/display/logic/in/the/user/interface/for/very/long/hyperlinks.json"
+    },
+    {
+     "label": "View the detailed contribution guidelines, code of conduct, and licensing information for this open source project, which are extremely important but also very long",
+     "url": "https://github.com/example/project/blob/main/CONTRIBUTING_AND_CODE_OF_CONDUCT_AND_LICENSING_INFORMATION_FOR_ALL_CONTRIBUTORS_AND_USERS.md"
+    },
+    {
+     "label": "Read the full academic paper and dissertation that this software is based on, including all appendices, citations, and supplementary materials",
+     "url": "https://academia.example.edu/papers/a-very-long-and-descriptive-title-for-a-phd-dissertation-that-spans-multiple-lines-and-tests-the-layout-of-the-link-label/archive.pdf"
+    },
+    {
+     "label": "Find our project on the package manager for your favorite programming language, for example, a very long and specific package name on npm",
+     "url": "https://www.npmjs.com/package/@very-long-organization-name/a-similarly-long-and-descriptive-package-name-that-pushes-the-limits-of-what-is-reasonable"
+    },
+    {
+     "label": "This is another link with a very long label to ensure that the layout can handle multiple long labels in a row without breaking the visual consistency of the list",
+     "url": "https://example.com/link6"
+    },
+    {
+     "label": "And another one, just to be absolutely sure that the wrapping and alignment are perfect even with a large number of items that have verbose descriptions",
+     "url": "https://example.com/link7"
+    },
+    {
+     "label": "This label is also quite long, but the URL is short",
+     "url": "https://ex.co/8"
+    },
+    {
+     "label": "Short label",
+     "url": "https://this.is.a.very.long.domain.name.with.many.subdomains.and.a.long.path.to.a.specific.file.to.test.how.the.url.itself.is.handled.when.it.is.the.part.that.is.extremely.long/and/it/keeps/going/and/going/and/going/index.html"
+    },
+    {
+     "label": "Final ridiculously long label for a link to make sure that everything is perfectly aligned and wraps correctly under all possible circumstances we can think of right now",
+     "url": "https://example.com/final-link"
+    }
+   ]
+  }
+ },
+ "code": {
+  "real": {
+   "language": "python",
+   "content": "def hello():\n    print('hi')\n"
+  },
+  "stress": {
+   "language": "javascript",
+   "content": "const veryLongFunctionNameThatIsDescriptiveAndFollowsBestPractices = (firstVeryLongArgumentName, secondVeryLongArgumentName, thirdVeryLongArgumentName) => {\n  console.log('This function has an extremely long name and long argument names to stress test the UI rendering of code blocks, especially with regard to horizontal scrolling and syntax highlighting performance on large inputs.');\n  // This is a very long comment line that goes on and on and on to see how the code block handles extremely long lines of text that should definitely require horizontal scrolling to be viewed in their entirety without wrapping, which is the desired behavior for code blocks. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+ },
+ "intro": {
+  "real": {
+   "series_label": "Part of the Building a Better UI series",
+   "note": "Written by an AI assistant."
+  },
+  "stress": {
+   "series_label": "This article is an integral and foundational component of the critically acclaimed, multi-part, interdisciplinary magnum opus titled 'A Comprehensive Exploration of Post-Modern Digital Epistemology and its Sociological Implications in the Age of Hyper-Connectivity'",
+   "series_url": "https://example.com/long/path/to/a/very/specific/series/that/has/a/url/structure/designed/to/be/as/long/and/unwieldy/as/possible/for/stress/testing/purposes",
+   "continuation": "This piece is a direct continuation of the previous installment, 'The Ontological Crisis of the Digital Self: A Phenomenological Inquiry into Virtual Identity Formation', and serves as a necessary prerequisite for the upcoming finale, 'Cybernetic Eschatology: Predicting the Unpredictable Future of Human-Computer Symbiosis'.",
+   "note": "Transparency Note: The research, drafting, editing, and final publication of this document involved a complex collaborative effort between multiple human authors, a committee of peer reviewers, three different large language models of varying architectures, and a surprisingly opinionated squirrel who kept stealing the keyboard. Any errors or omissions are entirely the squirrel's fault."
+  }
+ },
+ "entity_list": {
+  "real": {
+   "items": [
+    {
+     "name": "Project Phoenix",
+     "subtitle": "Next-gen dashboard redesign",
+     "icon": "🚀",
+     "status": "In Progress",
+     "meta": "Due in 3 weeks"
+    },
+    {
+     "name": "API Gateway",
+     "subtitle": "Centralized request routing",
+     "icon": "🌐",
+     "status": "Completed",
+     "meta": "Shipped Oct 15"
+    },
+    {
+     "name": "Mobile App v2",
+     "subtitle": "React Native rewrite",
+     "icon": "📱",
+     "status": "Blocked",
+     "meta": "Needs design approval"
+    }
+   ]
+  },
+  "stress": {
+   "items": [
+    {
+     "name": "Project Cerberus: A Multi-Headed Hydra of Legacy System Integration and Modernization Efforts",
+     "subtitle": "This incredibly complex and high-stakes initiative aims to simultaneously deprecate three monolithic COBOL-based mainframes while migrating their core functionalities to a distributed, cloud-native microservices architecture without any service interruption.",
+     "icon": "🏰",
+     "status": "On Fire (Metaphorically, Mostly)",
+     "meta": "Last updated 3 minutes ago by a very stressed-out engineer"
+    },
+    {
+     "name": "Operation 'Quantum Leap': Exploring the Feasibility of Time-Travel-Based Caching Mechanisms",
+     "subtitle": "A highly speculative R&D project to reduce latency by sending API responses back in time to before the request was made. Currently blocked by fundamental laws of physics.",
+     "icon": "⏳",
+     "status": "Blocked Indefinitely",
+     "meta": "Awaiting breakthrough in theoretical physics"
+    },
+    {
+     "name": "The 'Make the Logo Bigger' Initiative - A Cross-Functional Branding Synergy Taskforce",
+     "subtitle": "A critical, top-down directive to enhance brand visibility by incrementally increasing the size of the company logo on all digital properties by 0.5% each day.",
+     "icon": "🔍",
+     "status": "In Progress",
+     "meta": "Awaiting feedback from the VP of Marketing's cousin"
+    },
+    {
+     "name": "Project 'Babelfish': Universal Language Translation Layer for Global User Support Tickets",
+     "subtitle": "An ambitious attempt to use a chain of 12 different machine translation services to translate user support tickets through a series of obscure languages and back into English, with predictably hilarious and unusable results.",
+     "icon": "🐠",
+     "status": "On Hold",
+     "meta": "Results are 'too poetic' for technical support"
+    },
+    {
+     "name": "AI-Powered Automated Meeting Scheduler That Also Provides Unsolicited Life Advice",
+     "subtitle": "This internal tool not only finds the optimal time for a meeting but also analyzes your calendar to suggest you should probably drink more water and call your mother.",
+     "icon": "🤖",
+     "status": "Beta Testing",
+     "meta": "Feature or bug? The team is divided."
+    },
+    {
+     "name": "A complete and total refactor of that one script that nobody understands but everyone is afraid to touch",
+     "subtitle": "A brave and possibly foolish endeavor to rewrite the mysterious `process_data.pl` script that has been running on a server under someone's desk since 1999.",
+     "icon": "📜",
+     "status": "Planning",
+     "meta": "Currently seeking a volunteer. Or a scapegoat."
+    },
+    {
+     "name": "Project 'Infinite Scroll': A Plan to Make the Settings Page Infinitely Long for No Reason",
+     "subtitle": "Someone misunderstood a user request, and now we are committed to building a settings page that procedurally generates new, increasingly bizarre configuration options as you scroll down.",
+     "icon": "♾️",
+     "status": "Completed",
+     "meta": "Shipped last Tuesday. Please, make it stop."
+    },
+    {
+     "name": "The Official Company Morale and Team-Building Mandatory Fun Committee",
+     "subtitle": "Organizing bi-weekly mandatory fun events like 'Trust Falls in the Server Room' and 'Competitive Spreadsheet Races' to foster a sense of camaraderie and shared trauma.",
+     "icon": "🎉",
+     "status": "Active",
+     "meta": "Next event: Awkward Silence Power Hour"
+    },
+    {
+     "name": "This is just a very, very, very, very, very, very, very, very, very, very, very long name for an entity",
+     "subtitle": "And this is a similarly long subtitle designed to test the wrapping and truncation logic of the component to its absolute breaking point, ensuring that the layout remains stable and usable even under these extreme conditions.",
+     "icon": "✏️",
+     "status": "A Very Long Status Label",
+     "meta": "And some very long metadata to go with it"
+    },
+    {
+     "name": "Final Item",
+     "subtitle": "This is the tenth item in the list, ensuring we meet the stress test requirement of having between 9 and 12 items to test vertical layout and scrolling.",
+     "icon": "🏁",
+     "status": "Done",
+     "meta": "Test complete"
+    }
+   ]
+  }
+ },
+ "shortcut_legend": {
+  "real": {
+   "title": "Editor Shortcuts",
+   "items": [
+    {
+     "keys": [
+      "⌘",
+      "S"
+     ],
+     "action": "Save file"
+    },
+    {
+     "keys": [
+      "⌘",
+      "K"
+     ],
+     "action": "Open command palette"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "Space"
+     ],
+     "action": "Trigger autocomplete"
+    },
+    {
+     "keys": [
+      "⌘",
+      "Shift",
+      "P"
+     ],
+     "action": "Format document"
+    }
+   ]
+  },
+  "stress": {
+   "title": "An Exhaustive Compendium of Every Conceivable Keyboard Combination and Their Corresponding Actions Within the Application",
+   "items": [
+    {
+     "keys": [
+      "Ctrl",
+      "Alt",
+      "Shift",
+      "F12"
+     ],
+     "action": "Initiate deep system diagnostic and performance profiling, then export the results as a gzipped tarball to the user's home directory"
+    },
+    {
+     "keys": [
+      "⌘",
+      "⌥",
+      "⌃",
+      "⇧",
+      "Fn",
+      "P"
+     ],
+     "action": "Toggle parallel universe mode (Warning: may cause irreversible changes to the timeline and/or your current project)"
+    },
+    {
+     "keys": [
+      "Esc"
+     ],
+     "action": "Attempt to escape the current context, or if held for 5 seconds, attempt to escape the existential dread of modern software development"
+    },
+    {
+     "keys": [
+      "F13"
+     ],
+     "action": "Order a pizza to the office (requires pre-configured API key for Domino's and a valid credit card on file)"
+    },
+    {
+     "keys": [
+      "Alt",
+      "F4"
+     ],
+     "action": "A classic action with a very long description to test how the layout handles a mix of short and long action text within the grid"
+    },
+    {
+     "keys": [
+      "The",
+      "Any",
+      "Key"
+     ],
+     "action": "A metaphorical key press that does nothing, but is often requested by users in dialog boxes, so we have a shortcut for it"
+    },
+    {
+     "keys": [
+      "⌘",
+      "Z"
+     ],
+     "action": "Undo the last action, or if pressed repeatedly, undo all life choices leading up to this moment"
+    },
+    {
+     "keys": [
+      "⌘",
+      "Shift",
+      "Z"
+     ],
+     "action": "Redo the last undone action, proving that there are, in fact, second chances in life, at least within this application"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "C"
+     ],
+     "action": "Copy the selected text, image, or the entire codebase depending on what the application feels is most appropriate at the time"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "V"
+     ],
+     "action": "Paste the previously copied content, potentially from a completely different application, leading to unexpected and often hilarious results"
+    },
+    {
+     "keys": [
+      "Shift",
+      "Shift",
+      "Shift"
+     ],
+     "action": "Activate 'Search Everywhere' mode, which is so powerful it might find files you didn't even know you had on your computer"
+    }
+   ]
+  }
+ },
+ "model_card": {
+  "real": {
+   "name": "Claude 3 Sonnet",
+   "provider": "Anthropic",
+   "context_window": "200K tokens",
+   "pricing": "$3 / M input tokens",
+   "capabilities": [
+    "vision",
+    "tool use",
+    "streaming",
+    "JSON mode"
+   ],
+   "accent": "#d97706"
+  },
+  "stress": {
+   "name": "Experimental Multimodal Large Language Model with Extended Context and Specialized Retrieval Capabilities Version 7.2-alpha",
+   "provider": "The International Consortium for Advanced Artificial Intelligence Research and Development Foundation",
+   "context_window": "Up to 4,194,304 tokens with a novel sparse attention mechanism designed for extremely long document analysis",
+   "pricing": "$0.000125 per token for input processing and $0.000375 per token for output generation, with tiered discounts available for high-volume enterprise customers.",
+   "capabilities": [
+    "advanced tool use",
+    "multi-modal vision analysis",
+    "high-throughput streaming",
+    "constrained JSON schema output",
+    "complex reasoning tasks",
+    "code generation and execution",
+    "long-context retrieval augmentation",
+    "multilingual translation",
+    "agentic workflows",
+    "self-correction capabilities"
+   ],
+   "accent": "#4b0082"
+  }
+ },
+ "jira_ticket": {
+  "real": {
+   "key": "WEB-1452",
+   "issue_type": "bug",
+   "summary": "User avatar not updating on profile page",
+   "status": "In Progress",
+   "priority": "high",
+   "assignee": "Alice Johnson",
+   "description": "When a user uploads a new avatar, the old one persists on the main profile view. The new avatar shows in the settings page.",
+   "labels": [
+    "frontend",
+    "profile-v2",
+    "image-upload"
+   ]
+  },
+  "stress": {
+   "key": "DATA-98765",
+   "issue_type": "story",
+   "summary": "Implement a comprehensive, end-to-end data pipeline monitoring and alerting system with real-time dashboards for tracking data integrity, latency, and throughput across all microservices.",
+   "status": "Backlog",
+   "priority": "lowest",
+   "assignee": "Unassigned",
+   "description": "As a data platform engineer, I need a robust monitoring solution that provides deep visibility into our ETL jobs, so that we can proactively identify and resolve issues, ensure data quality, and meet our service level objectives (SLOs) for data freshness and availability. This involves instrumenting every stage of the pipeline, from ingestion to transformation to final delivery in the data warehouse, and setting up configurable alerts for anomalies.",
+   "labels": [
+    "data-platform",
+    "observability",
+    "monitoring",
+    "alerting",
+    "q3-roadmap",
+    "epic-required",
+    "cross-team-dependency",
+    "performance-tracking",
+    "data-integrity",
+    "backend-services",
+    "infrastructure-setup"
+   ]
+  }
+ },
+ "sprint_board": {
+  "real": {
+   "sprint_name": "Sprint 24: Checkout Flow",
+   "columns": [
+    {
+     "name": "To Do",
+     "items": [
+      {
+       "key": "PAY-301",
+       "summary": "Add Apple Pay option",
+       "type": "story",
+       "priority": "high"
+      },
+      {
+       "key": "PAY-305",
+       "summary": "Fix tax calculation bug for CA",
+       "type": "bug",
+       "priority": "highest"
+      }
+     ]
+    },
+    {
+     "name": "In Progress",
+     "items": [
+      {
+       "key": "PAY-298",
+       "summary": "Refactor shipping address form",
+       "type": "task",
+       "priority": "medium"
+      }
+     ]
+    },
+    {
+     "name": "Done",
+     "items": [
+      {
+       "key": "PAY-290",
+       "summary": "Update payment gateway SDK",
+       "type": "task",
+       "priority": "medium"
+      },
+      {
+       "key": "PAY-291",
+       "summary": "UI glitch on credit card input",
+       "type": "bug",
+       "priority": "low"
+      }
+     ]
+    }
+   ]
+  },
+  "stress": {
+   "sprint_name": "Project Phoenix: Q4 Architectural Refactoring & Performance Optimization Initiative (Sprint 1 of 6)",
+   "columns": [
+    {
+     "name": "Backlog & Triage",
+     "items": [
+      {
+       "key": "ARCH-101",
+       "summary": "Investigate performance degradation in the primary user authentication service under high concurrent load conditions.",
+       "type": "task",
+       "priority": "highest"
+      },
+      {
+       "key": "ARCH-102",
+       "summary": "Design a new schema for the distributed caching layer to improve hit rates and reduce memory footprint across the cluster.",
+       "type": "story",
+       "priority": "high"
+      },
+      {
+       "key": "ARCH-103",
+       "summary": "The asynchronous job processing queue occasionally drops tasks during worker node restarts, causing data inconsistencies.",
+       "type": "bug",
+       "priority": "highest"
+      },
+      {
+       "key": "ARCH-104",
+       "summary": "Refactor the legacy monolith's notification module into a separate, scalable microservice using modern event-driven patterns.",
+       "type": "epic",
+       "priority": "medium"
+      },
+      {
+       "key": "ARCH-105",
+       "summary": "Sub-optimal database query in the reporting dashboard leads to timeouts for queries spanning more than ninety days of historical data.",
+       "type": "bug",
+       "priority": "high"
+      },
+      {
+       "key": "ARCH-106",
+       "summary": "Evaluate and prototype a new service mesh implementation to standardize inter-service communication, security, and observability.",
+       "type": "task",
+       "priority": "medium"
+      },
+      {
+       "key": "ARCH-107",
+       "summary": "Implement comprehensive end-to-end tracing across all microservices to facilitate easier debugging of complex cross-service requests.",
+       "type": "story",
+       "priority": "low"
+      },
+      {
+       "key": "ARCH-108",
+       "summary": "The configuration service fails to propagate updates to downstream clients if the central configuration repository is temporarily unavailable.",
+       "type": "bug",
+       "priority": "high"
+      },
+      {
+       "key": "ARCH-109",
+       "summary": "Create a standardized CI/CD pipeline template for all new microservices to ensure consistency in build, test, and deployment processes.",
+       "type": "task",
+       "priority": "lowest"
+      },
+      {
+       "key": "ARCH-110",
+       "summary": "Incorrect error handling in the payment gateway integration module causes silent failures instead of retries or alerts.",
+       "type": "bug",
+       "priority": "highest"
+      }
+     ]
+    },
+    {
+     "name": "In Detailed Specification & Design Review Phase",
+     "items": []
+    },
+    {
+     "name": "Ready for Development",
+     "items": []
+    }
+   ]
+  }
+ },
+ "inventory_table": {
+  "real": {
+   "title": "Warehouse A - Activewear",
+   "items": [
+    {
+     "sku": "HW-TS-M-BLK",
+     "product": "Men's Tech Shirt - Black, M",
+     "available": 150,
+     "committed": 25,
+     "location": "Aisle 3, Bay 2",
+     "threshold": 50
+    },
+    {
+     "sku": "LW-LG-S-GRY",
+     "product": "Women's Leggings - Grey, S",
+     "available": 45,
+     "committed": 10,
+     "location": "Aisle 5, Bay 1",
+     "threshold": 50
+    },
+    {
+     "sku": "HW-SK-U-WHT",
+     "product": "Unisex Performance Socks (3-Pack)",
+     "available": 300,
+     "committed": 120,
+     "location": "Aisle 1, Bay 4"
+    }
+   ]
+  },
+  "stress": {
+   "title": "Global Inventory Overview for Specialized High-Value Electronic Components and Peripherals - Q3 2024 Reconciliation",
+   "items": [
+    {
+     "sku": "XG-PROC-9900K-OEM",
+     "product": "QuantumCore X9 Extreme Edition 24-Core Processor (OEM Tray Packaging, No Cooler)",
+     "available": 12,
+     "committed": 3,
+     "location": "Secure Vault, Frankfurt DE",
+     "threshold": 15
+    },
+    {
+     "sku": "NV-GPU-RTXA6000-VC",
+     "product": "NVIDIA RTX A6000 Professional Graphics Card with 48GB GDDR6 ECC Memory",
+     "available": 8,
+     "committed": 1,
+     "location": "Climate Control, Singapore SG",
+     "threshold": 10
+    },
+    {
+     "sku": "CR-MEM-DDR5-64GB-KIT",
+     "product": "Corsair Dominator Platinum RGB 64GB (2x32GB) DDR5 6000MHz C36 Memory Kit",
+     "available": 45,
+     "committed": 22,
+     "location": "Warehouse 7, Nevada USA",
+     "threshold": 50
+    },
+    {
+     "sku": "WD-SSD-NVME-8TB-BLK",
+     "product": "Western Digital Black SN850X NVMe M.2 2280 8TB PCI-Express 4.0 x4 Internal SSD",
+     "available": 23,
+     "committed": 5,
+     "location": "Warehouse 3, Tokyo JP",
+     "threshold": 25
+    },
+    {
+     "sku": "AS-MB-Z790-EXTREME",
+     "product": "ASUS ROG MAXIMUS Z790 EXTREME (WiFi 6E) LGA 1700 E-ATX Motherboard",
+     "available": 5,
+     "committed": 4,
+     "location": "Secure Vault, Frankfurt DE",
+     "threshold": 5
+    },
+    {
+     "sku": "SF-PSU-1600W-TI-PLAT",
+     "product": "Seasonic PRIME TX-1600, 1600W 80+ Titanium, Full Modular, ATX 3.0 Power Supply",
+     "available": 18,
+     "committed": 10,
+     "location": "Warehouse 7, Nevada USA",
+     "threshold": 20
+    },
+    {
+     "sku": "NZ-CASE-H9-ELITE-WHT",
+     "product": "NZXT H9 Elite Premium Dual-Chamber Mid-Tower Airflow Case - White Edition",
+     "available": 33,
+     "committed": 15,
+     "location": "Warehouse 11, Rotterdam NL",
+     "threshold": 40
+    },
+    {
+     "sku": "LG-MON-45GR95QE-B",
+     "product": "LG UltraGear 45-Inch OLED Curved WQHD 240Hz 0.03ms G-SYNC Gaming Monitor",
+     "available": 9,
+     "committed": 2,
+     "location": "Warehouse 3, Tokyo JP",
+     "threshold": 10
+    },
+    {
+     "sku": "LOGI-CAM-BRIO-4K-PRO",
+     "product": "Logitech BRIO 4K Ultra HD Webcam with HDR and RightLight 3 Technology for Business",
+     "available": 150,
+     "committed": 75,
+     "location": "Warehouse 11, Rotterdam NL"
+    },
+    {
+     "sku": "RAZER-KB-HUNTSMAN-V3",
+     "product": "Razer Huntsman V3 Pro Analog Optical Esports Gaming Keyboard with Rapid Trigger",
+     "available": 7,
+     "committed": 6,
+     "location": "Warehouse 7, Nevada USA",
+     "threshold": 10
+    }
+   ]
+  }
+ },
+ "source_citation": {
+  "real": {
+   "heading": "References",
+   "sources": [
+    {
+     "number": 1,
+     "title": "Attention Is All You Need",
+     "url": "https://arxiv.org/abs/1706.03762",
+     "author": "Vaswani, A. et al.",
+     "date": "2017"
+    },
+    {
+     "number": 2,
+     "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+     "url": "https://arxiv.org/abs/1810.04805",
+     "author": "Devlin, J. et al.",
+     "date": "2018"
+    },
+    {
+     "number": 3,
+     "title": "Project Hail Mary, by Andy Weir",
+     "excerpt": "It's a weird thing, seeing your own body. It's not you, not really. It's a thing that you inhabit. A vessel."
+    }
+   ]
+  },
+  "stress": {
+   "heading": "Comprehensive List of Primary and Secondary Sources Consulted for the Analysis of Late 20th Century Geopolitical Shifts",
+   "sources": [
+    {
+     "number": 1,
+     "title": "The End of History and the Last Man: A Controversial Thesis on the Triumph of Western Liberal Democracy Following the Cold War",
+     "url": "https://www.jstor.org/stable/24027184",
+     "excerpt": "What we may be witnessing is not just the end of the Cold War, or the passing of a particular period of post-war history, but the end of history as such: that is, the end point of mankind's ideological evolution and the universalization of Western liberal democracy as the final form of human government.",
+     "author": "Francis Fukuyama",
+     "date": "Summer 1989"
+    },
+    {
+     "number": 2,
+     "title": "The Clash of Civilizations and the Remaking of World Order: An Examination of Post-Cold War Conflict Along Cultural Fault Lines",
+     "url": "https://www.amazon.com/Clash-Civilizations-Remaking-World-Order/dp/0684844419",
+     "excerpt": "The great divisions among humankind and the dominating source of conflict will be cultural. The principal conflicts of global politics will occur between nations and groups of different civilizations. The clash of civilizations will dominate global politics.",
+     "author": "Samuel P. Huntington",
+     "date": "1996"
+    },
+    {
+     "number": 3,
+     "title": "From the Ruins of Empire: The Intellectuals Who Remade Asia and Challenged the Global Dominance of Western Modernity",
+     "url": "https://www.penguinrandomhouse.com/books/308119/from-the-ruins-of-empire-by-pankaj-mishra/",
+     "excerpt": "It is not surprising that the triumphant rhetoric of Anglo-American investigation into the non-West has been so dangerously misleading. The story of the modern world is not just one of Western innovation and non-Western imitation.",
+     "author": "Pankaj Mishra",
+     "date": "August 20, 2012"
+    },
+    {
+     "number": 4,
+     "title": "A Brief History of Neoliberalism: Investigating the Ideological and Political-Economic Project from its Mont Pelerin Society Origins to its Global Hegemony",
+     "url": "https://global.oup.com/academic/product/a-brief-history-of-neoliberalism-9780199283279",
+     "excerpt": "Neoliberalism is in the first instance a theory of political economic practices that proposes that human well-being can best be advanced by liberating individual entrepreneurial freedoms and skills within an institutional framework characterized by strong private property rights, free markets, and free trade.",
+     "author": "David Harvey",
+     "date": "March 17, 2005"
+    },
+    {
+     "number": 5,
+     "title": "The Shock Doctrine: The Rise of Disaster Capitalism and its Exploitation of Crises to Impose Unpopular Free-Market Policies",
+     "url": "https://naomiklein.org/the-shock-doctrine/",
+     "excerpt": "The history of the contemporary free market — which has been sold as a peaceful, freedom-loving process — has been written in shocks. This is the story of how the 'free market' came to dominate the world.",
+     "author": "Naomi Klein",
+     "date": "2007"
+    },
+    {
+     "number": 6,
+     "title": "Seeing Like a State: How Certain Schemes to Improve the Human Condition Have Failed Spectacularly and Why",
+     "url": "https://yalebooks.yale.edu/book/9780300078152/seeing-state/",
+     "excerpt": "Certain forms of knowledge and control require a narrowing of vision. The great state-sponsored calamities of the twentieth century have been the work of officials and experts who believed they had a monopoly on truth and a mandate to impose their vision on society.",
+     "author": "James C. Scott",
+     "date": "March 1, 1998"
+    },
+    {
+     "number": 7,
+     "title": "Guns, Germs, and Steel: The Fates of Human Societies and the Environmental Factors Underlying Global Inequality",
+     "url": "https://www.diamond.ucla.edu/books/guns-germs-and-steel/",
+     "excerpt": "History followed different courses for different peoples because of differences among peoples' environments, not because of biological differences among peoples themselves. This book attempts to explain why history unfolded differently on different continents.",
+     "author": "Jared Diamond",
+     "date": "1997"
+    },
+    {
+     "number": 8,
+     "title": "The Structure of Scientific Revolutions: A Landmark Study on the Nature of Paradigm Shifts in Scientific Progress",
+     "url": "https://press.uchicago.edu/ucp/books/book/chicago/S/bo13182311.html",
+     "excerpt": "Normal science, the activity in which most scientists inevitably spend almost all their time, is predicated on the assumption that the scientific community knows what the world is like. Much of the success of the enterprise derives from the community's willingness to defend that assumption, if necessary at considerable cost.",
+     "author": "Thomas S. Kuhn",
+     "date": "1962"
+    },
+    {
+     "number": 9,
+     "title": "Orientalism: A Critique of the Western Conception of the Orient as a Patronizing and Inaccurate Representation",
+     "url": "https://www.penguin.co.uk/books/571/orientalism-by-edward-w-said/9780141187426",
+     "excerpt": "The Orient was almost a European invention, and had been since antiquity a place of romance, exotic beings, haunting memories and landscapes, remarkable experiences. Now it was disappearing; in a sense it had happened, its time was over.",
+     "author": "Edward W. Said",
+     "date": "1978"
+    }
+   ]
+  }
+ },
+ "contributor_list": {
+  "real": {
+   "title": "Project Maintainers",
+   "contributors": [
+    {
+     "name": "Dan Abramov",
+     "role": "Core Team",
+     "avatar_url": "https://avatars.githubusercontent.com/u/810438?v=4"
+    },
+    {
+     "name": "Sophie Alpert",
+     "role": "Engineering Manager",
+     "avatar_url": "https://avatars.githubusercontent.com/u/6820?v=4"
+    },
+    {
+     "name": "Andrew Clark",
+     "role": "Core Team",
+     "avatar_url": "https://avatars.githubusercontent.com/u/322359?v=4"
+    }
+   ]
+  },
+  "stress": {
+   "title": "Acknowledged Contributors to the 'Cosmos' Open Source Data Visualization and Planetary Simulation Engine v3.0",
+   "contributors": [
+    {
+     "name": "Dr. Evelyn Reed, PhD",
+     "role": "Lead Astrophysicist & Principal Architect of the Gravitational Simulation Module",
+     "avatar_url": "https://i.pravatar.cc/150?u=evelyn"
+    },
+    {
+     "name": "Kenji Tanaka",
+     "role": "Senior Graphics Engineer, OpenGL/Vulkan Rendering Pipeline Optimization Specialist",
+     "avatar_url": "https://i.pravatar.cc/150?u=kenji"
+    },
+    {
+     "name": "Maria Garcia",
+     "role": "UX/UI Designer and Lead for the Celestial Object Navigation and Interaction Interface",
+     "avatar_url": "https://i.pravatar.cc/150?u=maria"
+    },
+    {
+     "name": "Chukwudi Adebayo",
+     "role": "DevOps & Infrastructure Lead, responsible for the distributed computing cluster management",
+     "avatar_url": "https://i.pravatar.cc/150?u=chukwudi"
+    },
+    {
+     "name": "Isabella Rossi",
+     "role": "Data Scientist specializing in Exoplanet Catalogue Integration and Procedural Generation",
+     "avatar_url": "https://i.pravatar.cc/150?u=isabella"
+    },
+    {
+     "name": "Liam O'Connell",
+     "role": "Community Manager and Lead Technical Writer for the Official Project Documentation Portal",
+     "avatar_url": "https://i.pravatar.cc/150?u=liam"
+    },
+    {
+     "name": "Fatima Al-Jamil",
+     "role": "Quality Assurance Engineer and Automated End-to-End Testing Framework Developer",
+     "avatar_url": "https://i.pravatar.cc/150?u=fatima"
+    },
+    {
+     "name": "Alexei Volkov",
+     "role": "Core Contributor, specialized in orbital mechanics and N-body problem algorithms",
+     "avatar_url": "https://i.pravatar.cc/150?u=alexei"
+    },
+    {
+     "name": "Mei Lin",
+     "role": "Junior Developer and primary maintainer of the Python scripting API and wrapper library",
+     "avatar_url": "https://i.pravatar.cc/150?u=mei"
+    },
+    {
+     "name": "Ben Carter",
+     "role": "Original Project Founder and now serving in an advisory capacity for long-term strategy",
+     "avatar_url": "https://i.pravatar.cc/150?u=ben"
+    }
+   ]
+  }
+ },
+ "score_summary": {
+  "real": {
+   "correct": 8,
+   "total": 10,
+   "time_taken": "1m 32s",
+   "pass_threshold": 70,
+   "retry_label": "Try Again",
+   "continue_label": "Next Module",
+   "continue_url": "/course/module/3"
+  },
+  "stress": {
+   "correct": 59,
+   "total": 150,
+   "time_taken": "48m 17s",
+   "pass_threshold": 80,
+   "retry_label": "Review incorrect answers and attempt the comprehensive final examination again",
+   "continue_label": "Proceed to the advanced certification and specialization track dashboard",
+   "continue_url": "https://example.com/user/12345/certifications/advanced/specialization/dashboard?from=final_exam&score=39.33&attempt=3"
+  }
+ },
+ "markdown_block": {
+  "real": {
+   "content": "### Task List\n\n- [x] Design the new API endpoints\n- [ ] Implement the backend logic\n- [ ] Write unit tests\n\nHere is a code snippet:\n```javascript\nconst greet = () => {\n  console.log('Hello, World!');\n}\n```",
+   "variant": "default"
+  },
+  "stress": {
+   "content": "# Comprehensive System Architecture Overview\n\nThis document outlines the multi-tiered architecture of our new distributed platform. It is composed of several key components working in concert. Please review the following sections carefully.\n\n## 1. Frontend Layer\n\nThe frontend is a Single Page Application (SPA) built with **React** and **TypeScript**. It communicates with the backend via a GraphQL API.\n\n*   **State Management**: Redux Toolkit with RTK Query for data fetching and caching.\n*   **Styling**: Styled-Components for CSS-in-JS.\n*   **Bundling**: Vite for fast development and optimized production builds.\n\n> **Note:** All user-facing components must adhere to the new `DesignSystem-v2` guidelines and pass accessibility audits with a score of 95% or higher.\n\n## 2. API Gateway\n\nAll incoming requests are routed through an API Gateway, which handles authentication, rate limiting, and request aggregation.\n\n| Endpoint | Method | Authentication | Description |\n|---|---|---|---|\n| `/graphql` | `POST` | `Bearer Token` | Main GraphQL endpoint for all data operations. |\n| `/v1/files/upload` | `POST` | `Bearer Token` | Multipart form-data endpoint for file uploads. |\n| `/health` | `GET` | `None` | Public health check endpoint. |\n\n## 3. Backend Microservices\n\nHere is an example of how we initialize the primary database connection in the `user-service`:\n\n```typescript\nimport { Pool } from 'pg';\n\n// This configuration is loaded from environment variables for security.\n// Do not commit credentials directly into the source code.\nconst pool = new Pool({\n  user: process.env.DB_USER,\n  host: process.env.DB_HOST,\n  database: process.env.DB_NAME,\n  password: process.env.DB_PASSWORD,\n  port: parseInt(process.env.DB_PORT || '5432'),\n});\n\nexport const query = (text: string, params: any[]) => pool.query(text, params);\n\nconsole.log('Successfully connected to the PostgreSQL database cluster.');\n```\n\nFor more information, please see the official documentation at [docs.example.com](https://docs.example.com).",
+   "variant": "compact"
+  }
+ },
+ "stance": {
+  "real": {
+   "claim": "We can ship the feature by the end of the sprint.",
+   "confidence": 0.8,
+   "because": "The main components are already built and tested.",
+   "unless": "We discover a major blocking issue during integration testing.",
+   "voice": "display",
+   "theme": "light"
+  },
+  "stress": {
+   "claim": "Refactoring the legacy monolith's authentication module into a standalone microservice will reduce technical debt and improve system-wide security posture within two fiscal quarters.",
+   "confidence": 0.35,
+   "because": "The current module is tightly coupled, poorly documented, and uses outdated cryptographic libraries, making it a significant liability and a bottleneck for future development and scaling efforts.",
+   "unless": "Unexpectedly complex interdependencies are discovered with other critical legacy systems that are not documented, or if we cannot secure the necessary senior engineering resources for the project's duration.",
+   "voice": "serif",
+   "theme": "dark",
+   "accent": "#e11d48",
+   "interactive": false
+  }
+ },
+ "changed_mind": {
+  "real": {
+   "before": "We should build this feature in-house.",
+   "after": "We should use a third-party service.",
+   "since": "The build-vs-buy analysis showed it would be significantly faster and cheaper to integrate an existing solution.",
+   "theme": "dark"
+  },
+  "stress": {
+   "before": "I used to think that a server-side rendered architecture using monolithic frameworks was the most reliable and straightforward approach for building scalable web applications.",
+   "after": "Now I think a hybrid approach combining a statically generated site for marketing pages with a client-side rendered application for the dynamic user dashboard provides the best of both worlds.",
+   "since": "We observed significant performance improvements in initial page load times with static generation and better interactivity with client-side rendering during our last project's performance audit.",
+   "voice": "mono",
+   "theme": "light",
+   "accent": "#059669",
+   "animate": false
+  }
+ },
+ "tag_block": {
+  "real": {
+   "tags": [
+    "React",
+    "TypeScript",
+    "Node.js",
+    "GraphQL"
+   ]
+  },
+  "stress": {
+   "tags": [
+    "Artificial Intelligence",
+    "Machine Learning",
+    "Natural Language Processing",
+    "Large Language Models",
+    "Data Science",
+    "Python",
+    "PyTorch",
+    "TensorFlow",
+    "Cloud Computing",
+    "Distributed Systems",
+    "Kubernetes",
+    "DevOps"
+   ],
+   "color": "hsl(220, 50%, 50%)"
+  }
+ },
+ "trend_indicator": {
+  "real": {
+   "trend_direction": "up",
+   "label": "User Engagement",
+   "context": "+5.2% this week",
+   "color": "green"
+  },
+  "stress": {
+   "trend_direction": "down",
+   "label": "P99 API Response Latency for the Primary Customer Data Microservice Endpoint",
+   "context": "Increased by 150ms over the last 24-hour monitoring period, breaching the established Service Level Objective (SLO).",
+   "color": "#dc2626"
+  }
+ },
+ "confidence_bar": {
+  "real": {
+   "label": "Spam Detection",
+   "value": 92.5
+  },
+  "stress": {
+   "color": "purple",
+   "items": [
+    {
+     "label": "The user's query is primarily about billing and account management.",
+     "value": 98.7
+    },
+    {
+     "label": "The user's query is related to a technical support issue with the product.",
+     "value": 85.2
+    },
+    {
+     "label": "The user's query is a feature request for future development consideration.",
+     "value": 75.5
+    },
+    {
+     "label": "The user's query expresses frustration or negative sentiment about a recent change.",
+     "value": 62.1
+    },
+    {
+     "label": "The user's query is a pre-sales question about enterprise pricing tiers.",
+     "value": 55.9
+    },
+    {
+     "label": "The user's query is related to partnership or business development opportunities.",
+     "value": 43
+    },
+    {
+     "label": "The user's query is about the company's privacy policy or data handling practices.",
+     "value": 31.8
+    },
+    {
+     "label": "The user's query is a request to cancel their subscription or delete their account.",
+     "value": 22.4
+    },
+    {
+     "label": "The user's query is related to job openings or careers at the company.",
+     "value": 15.6
+    },
+    {
+     "label": "The user's query is unintelligible or completely unrelated to the business domain.",
+     "value": 5.3
+    }
+   ]
+  }
+ },
+ "star_rating_display": {
+  "real": {
+   "rating": 4.7,
+   "max_rating": 5,
+   "review_count": 1289
+  },
+  "stress": {
+   "rating": 0.123456789,
+   "max_rating": 100,
+   "review_count": 999999999
+  }
+ },
+ "rating_summary_bar": {
+  "real": {
+   "average": 4.3,
+   "total": 1502,
+   "breakdown": [
+    {
+     "stars": 5,
+     "count": 980
+    },
+    {
+     "stars": 4,
+     "count": 350
+    },
+    {
+     "stars": 3,
+     "count": 102
+    },
+    {
+     "stars": 2,
+     "count": 20
+    },
+    {
+     "stars": 1,
+     "count": 50
+    }
+   ],
+   "accent": "#f59e0b"
+  },
+  "stress": {
+   "average": 1.123456789,
+   "total": 9876543210,
+   "breakdown": [
+    {
+     "stars": 5,
+     "count": 12345678
+    },
+    {
+     "stars": 4,
+     "count": 23456789
+    },
+    {
+     "stars": 3,
+     "count": 34567890
+    },
+    {
+     "stars": 2,
+     "count": 45678901
+    },
+    {
+     "stars": 1,
+     "count": 987654321
+    }
+   ],
+   "accent": "#ff00ff"
+  }
+ },
+ "order_status_card": {
+  "real": {
+   "order_number": "#1042",
+   "date": "2023-10-26",
+   "status": "fulfilled",
+   "customer": "Jane Doe",
+   "items": [
+    {
+     "title": "Organic Cotton T-Shirt",
+     "qty": 2,
+     "price": "$50.00"
+    },
+    {
+     "title": "Recycled Wool Beanie",
+     "qty": 1,
+     "price": "$25.00"
+    }
+   ],
+   "total": "$75.00"
+  },
+  "stress": {
+   "order_number": "ORDER-987654321-ABCDEFGHIJKLMNOPQRSTUVWXYZ-VERY-LONG-ID-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-B",
+   "date": "Wednesday, the twenty-sixth of October, Two Thousand and Twenty-Three, at fourteen hundred hours and thirty-two minutes",
+   "status": "partial",
+   "customer": "Maximilianus Bartholomew Constantine Montgomery III, Esquire, from the esteemed House of Winchester-on-the-Hill",
+   "items": [
+    {
+     "title": "Item one with an exceptionally long and descriptive name that goes on for quite some time to test wrapping",
+     "qty": 999,
+     "price": "$1,000,000.00"
+    },
+    {
+     "title": "Item two also has a very long name, specifically designed to push the boundaries of the user interface layout",
+     "qty": 1,
+     "price": "$123.45"
+    },
+    {
+     "title": "Item three is another example of a product title that is probably too long for its own good but is necessary for stress testing",
+     "qty": 88,
+     "price": "$8,888.88"
+    },
+    {
+     "title": "Item four continues the trend, because we need to ensure that the list can handle many items with long text",
+     "qty": 12,
+     "price": "$1.00"
+    },
+    {
+     "title": "Item five is here to make sure that the vertical scrolling and alignment is perfect even with a large number of items",
+     "qty": 100,
+     "price": "$500.00"
+    },
+    {
+     "title": "Item six, because why stop at five when you can have more? More is better for testing purposes, after all",
+     "qty": 1,
+     "price": "$0.50"
+    },
+    {
+     "title": "Item seven is getting a bit repetitive, but that's the point of a stress test: pushing the system to its limits",
+     "qty": 5,
+     "price": "$25.00"
+    },
+    {
+     "title": "Item eight has a title that is just long enough to be annoying but not so long as to be completely absurd",
+     "qty": 2,
+     "price": "$99.98"
+    },
+    {
+     "title": "Item nine is the penultimate item in this long list of items with long names, we are almost there now",
+     "qty": 3,
+     "price": "$333.33"
+    },
+    {
+     "title": "Item ten, the final item, completes our test case for a large number of items with very long descriptions",
+     "qty": 1,
+     "price": "$10.00"
+    }
+   ],
+   "total": "$999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999.99"
+  }
+ },
+ "product_thumbnail": {
+  "real": {
+   "title": "Organic Cotton T-Shirt",
+   "vendor": "EcoThreads",
+   "sku": "ET-TS-001-M",
+   "price": "$25.00",
+   "compare_at_price": "$30.00",
+   "status": "active",
+   "image_url": "https://dummyimage.com/100x100/cccccc/000000.png&text=IMG",
+   "tags": [
+    "organic",
+    "cotton",
+    "sustainable"
+   ]
+  },
+  "stress": {
+   "title": "Extraordinarily Luxurious Hand-Woven Hypoallergenic Alpaca Wool Scarf with Intricate Paisley Patterns and Artisanal Fringe",
+   "vendor": "The Grandiloquent Haberdashery & Sons, Purveyors of Fine Goods Since the Eighteenth Century",
+   "sku": "SKU-ABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789",
+   "price": "$1,250,000.00",
+   "compare_at_price": "$2,500,000.00",
+   "status": "archived",
+   "image_url": "https://dummyimage.com/200x200/cccccc/000000.png&text=VERY+LARGE+IMAGE",
+   "tags": [
+    "luxury",
+    "hand-woven",
+    "hypoallergenic",
+    "alpaca wool",
+    "paisley pattern",
+    "artisanal fringe",
+    "limited edition",
+    "exclusive",
+    "heirloom quality",
+    "sustainably sourced",
+    "extremely expensive"
+   ]
+  }
+ },
+ "receipt": {
+  "real": {
+   "claim": "AI models can now achieve over 95% accuracy on this benchmark.",
+   "items": [
+    {
+     "text": "Achieved 95.3% on GLUE benchmark.",
+     "source": "GLUE Leaderboard",
+     "url": "https://gluebenchmark.com/leaderboard"
+    },
+    {
+     "text": "Model 'ExampleNet-V4' paper published.",
+     "source": "arXiv:2310.12345"
+    }
+   ],
+   "total": 0.95,
+   "total_label": "CONFIDENCE",
+   "merchant": "EVIDENCE RECEIPT",
+   "issued": "2023-10-27",
+   "footer": "Sources listed. No unsourced stats.",
+   "accent": "#4338ca",
+   "print_last": true
+  },
+  "stress": {
+   "claim": "The comprehensive, multi-faceted analysis of global macroeconomic trends indicates a significant paradigm shift towards decentralized financial systems, a conclusion supported by an overwhelming consensus of leading economic theorists and practitioners worldwide.",
+   "items": [
+    {
+     "text": "This is the first piece of evidence, and its text is deliberately made very long to see how the layout handles it.",
+     "source": "Source A with a very long name",
+     "url": "https://example.com/source/a/with/a/very/long/url/path/that/goes/on/and/on"
+    },
+    {
+     "text": "The second item follows, also with an unnecessarily verbose description designed for stress testing purposes.",
+     "source": "Source B"
+    },
+    {
+     "text": "Third item, continuing the pattern of long text to push the boundaries of the component's design.",
+     "source": "Source C"
+    },
+    {
+     "text": "Fourth item. We must ensure that even with this much text, the receipt remains readable and well-formatted.",
+     "source": "Source D"
+    },
+    {
+     "text": "Fifth item. The source for this one is also quite long, just for good measure.",
+     "source": "The International Journal of Redundant Information"
+    },
+    {
+     "text": "Sixth item. By now, the receipt should be getting quite long, which is exactly the point of this test.",
+     "source": "Source F"
+    },
+    {
+     "text": "Seventh item. Let's add a URL to this one as well, a long one of course.",
+     "source": "Source G",
+     "url": "https://example.com/another/long/url/to/test/wrapping/and/layout/and/other/things/like/that"
+    },
+    {
+     "text": "Eighth item. The sheer volume of text in this receipt is a testament to the thoroughness of our testing.",
+     "source": "Source H"
+    },
+    {
+     "text": "Ninth item. Almost at the end of this list of evidence, the component should be holding up well.",
+     "source": "Source I"
+    },
+    {
+     "text": "Tenth and final item. This concludes the list of evidence for our very long and complex claim.",
+     "source": "Source J"
+    }
+   ],
+   "total": 0.123456789,
+   "total_label": "EXTREMELY LOW BUT TECHNICALLY NON-ZERO PROBABILITY OF BEING ACCURATE BASED ON OUR EXTENSIVE AND EXHAUSTIVE ANALYSIS",
+   "merchant": "THE INTERNATIONAL CONSORTIUM FOR THE VERIFICATION OF EXTRAORDINARILY GRANDIOSE AND UNVERIFIABLE CLAIMS, LLC",
+   "issued": "Issued on this day, the last of its kind, under the pale moonlight of a forgotten epoch.",
+   "footer": "All sources have been triple-checked by our unpaid interns. No statistics were harmed in the making of this receipt. Please recycle. Or don't. We are not the boss of you. The universe is vast and uncaring.",
+   "accent": "#ff00ff",
+   "print_last": false
+  }
+ },
+ "notification_stack": {
+  "real": {
+   "title": "Notifications",
+   "items": [
+    {
+     "icon": "🎉",
+     "title": "New feature unlocked!",
+     "body": "You can now export your data to CSV.",
+     "time": "2h ago",
+     "unread": true
+    },
+    {
+     "icon": "💬",
+     "title": "John Doe commented on your post",
+     "body": "\"This is a great point, thanks for sharing!\"",
+     "time": "1d ago",
+     "unread": false
+    },
+    {
+     "icon": "⚙️",
+     "title": "System update scheduled",
+     "body": "We'll be performing maintenance on Sunday.",
+     "time": "3d ago",
+     "unread": false
+    }
+   ]
+  },
+  "stress": {
+   "title": "A Comprehensive and Exhaustively Detailed Chronological Log of Every Single Event, Alert, and Update That Has Occurred Within Your Account Since Its Inception",
+   "items": [
+    {
+     "icon": "🚨",
+     "title": "This is a notification with an extremely long title designed to test the wrapping and truncation logic of the component's user interface.",
+     "body": "The body of this notification is also exceptionally long, providing a detailed and perhaps overly verbose explanation of an event that may or may not be important. We need to ensure that this text wraps correctly and does not break the layout of the notification list, even on smaller screens.",
+     "time": "999w ago",
+     "unread": true
+    },
+    {
+     "icon": "📚",
+     "title": "Another very long notification title to continue our stress test and ensure consistency in handling overflow text.",
+     "body": "This body text continues the trend of being very long. It's important to test with a variety of long strings to catch any edge cases in the rendering engine. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.",
+     "time": "888w ago",
+     "unread": true
+    },
+    {
+     "icon": "⚙️",
+     "title": "System Maintenance Notification: Please be advised of the upcoming service disruption for critical infrastructure updates.",
+     "body": "During the maintenance window, which is scheduled for a very inconvenient time, you may experience intermittent connectivity issues. We apologize for any inconvenience this may cause and appreciate your understanding as we work to improve our systems.",
+     "time": "777w ago",
+     "unread": false
+    },
+    {
+     "icon": "📈",
+     "title": "Your weekly performance report is ready, and it contains a lot of data that requires a long title to summarize.",
+     "body": "This report includes metrics, charts, and analyses that are so detailed that the summary itself is quite long. We're testing to see how the component handles this much information in a single notification item.",
+     "time": "666w ago",
+     "unread": false
+    },
+    {
+     "icon": "💬",
+     "title": "A user with a very long name has sent you a message with a very long subject line that we must display.",
+     "body": "The message itself is a rambling monologue that goes on for several paragraphs, but we only show a snippet here. This snippet, however, is still quite long for testing purposes.",
+     "time": "555w ago",
+     "unread": true
+    },
+    {
+     "icon": "📄",
+     "title": "A document you were collaborating on has been updated with many changes, requiring a long notification title.",
+     "body": "The summary of changes is extensive, detailing every minor edit, comment, and suggestion made by your colleagues over the past several hours. This is the body of that summary.",
+     "time": "444w ago",
+     "unread": false
+    },
+    {
+     "icon": "🔔",
+     "title": "This is the seventh notification in this long list, and its title is just as long as the others, if not longer.",
+     "body": "We are running out of creative ways to say that this text is long, but it is crucial for the test. So, here is some more text to fill up the space and ensure everything looks right.",
+     "time": "333w ago",
+     "unread": false
+    },
+    {
+     "icon": "✅",
+     "title": "A long-running background task has finally completed, and this notification is here to inform you of that fact.",
+     "body": "The task, which involved processing a massive amount of data, took several days to complete. This notification body provides a summary of the results, which is, of course, quite long.",
+     "time": "222w ago",
+     "unread": false
+    },
+    {
+     "icon": "📦",
+     "title": "Your order containing an item with a very long name has been shipped and this is the notification for it.",
+     "body": "Your order #123-4567890-ABCDEFG, containing 'The Super-Deluxe Mega-Product with All the Features and a Very Long Name', is on its way. The estimated delivery date is also very far in the future.",
+     "time": "111w ago",
+     "unread": true
+    },
+    {
+     "icon": "👋",
+     "title": "This is the final notification in our stress test, and its title is, you guessed it, extremely long.",
+     "body": "This concludes our test of the notification stack with a large number of items with very long text. If you are reading this, the component has likely passed the test. Congratulations to all involved.",
+     "time": "1s ago",
+     "unread": true
+    }
+   ]
+  }
+ },
+ "conversation_snippet": {
+  "real": {
+   "user_label": "You",
+   "user": "How do I reset my password?",
+   "ai_label": "Assistant",
+   "response": "You can reset your password by clicking the 'Forgot Password' link on the login page. We'll send you an email with instructions.",
+   "accent": "#1d4ed8"
+  },
+  "stress": {
+   "user_label": "Esteemed Human User with a Very Long and Complicated Query Requiring a Nuanced and Detailed Response",
+   "user": "Could you please provide a comprehensive, step-by-step, and meticulously detailed explanation of the underlying quantum mechanical principles that govern the functionality of modern semiconductor-based large language models, including but not limited to tunneling effects in transistors and the entanglement properties of qubits in hypothetical future quantum AI architectures? I need this for a presentation tomorrow.",
+   "ai_label": "Omniscient, Benevolent, and Incredibly Patient Artificial Intelligence Super-Servant",
+   "response": "Certainly. The fundamental principles you're asking about are deeply rooted in the Schrödinger equation, which describes the wave function of a quantum-mechanical system. For a modern FinFET transistor, the probability of an electron tunneling through the gate oxide layer, a phenomenon known as gate leakage, is a non-trivial quantum effect that must be mitigated through advanced material science, such as using high-k dielectrics. This is fundamentally different from the operation of a quantum computer, where we would leverage superposition and entanglement. In that hypothetical architecture, a qubit's state is a linear combination of |0⟩ and |1⟩, and multiple qubits can be entangled such that their fates are correlated, allowing for massively parallel computation. The actual implementation of this in a large language model is, of course, purely theoretical at this stage and presents monumental engineering challenges that are currently the subject of intense, worldwide academic and industrial research. Does this introductory overview suffice, or would you like to delve into the tensor network representations?",
+   "accent": "#7e22ce"
+  }
+ },
+ "prompt_template": {
+  "real": {
+   "label": "Summarization Prompt",
+   "template": "Summarize the following text in {word_count} words: {text_to_summarize}",
+   "copyable": true,
+   "accent": "#059669"
+  },
+  "stress": {
+   "label": "Extremely Complex Multi-Shot Chain-of-Thought Reasoning Prompt for Advanced Geopolitical Analysis and Forecasting",
+   "template": "Given the following historical context {historical_context}, economic data {economic_data}, and recent diplomatic communications {diplomatic_cables}, analyze the geopolitical stability of the {region}. First, identify the top three {number_of_risks} risks. For each risk, provide a detailed explanation, a probability score from 0.0 to 1.0, and a potential mitigation strategy. Finally, synthesize your analysis into a single-paragraph forecast for the next {time_horizon} years. Your response must be in the persona of a {persona_type} and should not exceed {token_limit} tokens. The output format must be a valid JSON object. Do not forget to cite your sources using the {citation_style} format. This is a very important and complex task, so please be as thorough and accurate as possible, considering all possible angles and nuances of the situation.",
+   "copyable": false,
+   "accent": "#be123c"
+  }
+ },
+ "footnote": {
+  "real": {
+   "number": 1,
+   "text": "Source: U.S. Bureau of Labor Statistics, Consumer Price Index, October 2023.",
+   "id": "fn1"
+  },
+  "stress": {
+   "number": 999,
+   "text": "This particular assertion is derived from a complex meta-analysis of over five hundred peer-reviewed longitudinal studies conducted across seventeen countries over a fifty-year period, the full text of which is available only upon written request to the Sub-Basement Archive of the International Institute for Obscure and Esoteric Research, and even then, only on microfiche.",
+   "id": "fn-stress-case-with-an-unnecessarily-long-and-descriptive-identifier-that-pushes-the-limits-of-what-is-reasonable-for-an-id-attribute-999"
+  }
+ },
+ "anchor_list": {
+  "real": {
+   "anchors": [
+    {
+     "label": "Introduction",
+     "url": "#introduction",
+     "target_id": "introduction"
+    },
+    {
+     "label": "Key Findings",
+     "url": "#key-findings"
+    },
+    {
+     "label": "Methodology",
+     "url": "#methodology"
+    },
+    {
+     "label": "Conclusion",
+     "url": "#conclusion"
+    }
+   ]
+  },
+  "stress": {
+   "anchors": [
+    {
+     "label": "A Very Long Anchor Label for the Preliminary Remarks and Opening Statements Section",
+     "url": "#a-very-long-anchor-label-for-the-preliminary-remarks-and-opening-statements-section",
+     "target_id": "stress-anchor-1"
+    },
+    {
+     "label": "Chapter 2: An Exhaustive and Meticulously Detailed Historical Analysis of Prior Art",
+     "url": "#chapter-2-an-exhaustive-and-meticulously-detailed-historical-analysis-of-prior-art"
+    },
+    {
+     "label": "Chapter 3: The Core Methodological Framework and Its Underlying Theoretical Assumptions",
+     "url": "#chapter-3-the-core-methodological-framework-and-its-underlying-theoretical-assumptions"
+    },
+    {
+     "label": "Chapter 4: Presentation of Empirical Data and Raw Statistical Results (Unabridged)",
+     "url": "#chapter-4-presentation-of-empirical-data-and-raw-statistical-results-unabridged"
+    },
+    {
+     "label": "Chapter 5: In-Depth Discussion and Interpretation of the Aforementioned Statistical Findings",
+     "url": "#chapter-5-in-depth-discussion-and-interpretation-of-the-aforementioned-statistical-findings"
+    },
+    {
+     "label": "Chapter 6: A Comprehensive Exploration of the Practical Implications and Real-World Applications",
+     "url": "#chapter-6-a-comprehensive-exploration-of-the-practical-implications-and-real-world-applications"
+    },
+    {
+     "label": "Chapter 7: Limitations of the Current Study and Avenues for Future Research and Investigation",
+     "url": "#chapter-7-limitations-of-the-current-study-and-avenues-for-future-research-and-investigation"
+    },
+    {
+     "label": "Chapter 8: Concluding Remarks, Final Synthesis, and a Heartfelt Thank You to Our Sponsors",
+     "url": "#chapter-8-concluding-remarks-final-synthesis-and-a-heartfelt-thank-you-to-our-sponsors"
+    },
+    {
+     "label": "Appendix A: Full Unabridged Glossary of All Technical Terms and Acronyms Used Herein",
+     "url": "#appendix-a-full-unabridged-glossary-of-all-technical-terms-and-acronyms-used-herein"
+    },
+    {
+     "label": "Appendix B: A Complete List of All References and Citations in Extremely Long Format",
+     "url": "#appendix-b-a-complete-list-of-all-references-and-citations-in-extremely-long-format"
+    }
+   ]
+  }
+ },
+ "media_mention_card": {
+  "real": {
+   "publication_name": "TechCrunch",
+   "publication_logo_url": "https://dummyimage.com/150x40/1d4ed8/ffffff.png&text=TechCrunch",
+   "headline": "Acme Corp raises $50M to automate everything",
+   "article_url": "https://techcrunch.com/2023/10/26/acme-corp-raises-50m/",
+   "date": "October 26, 2023"
+  },
+  "stress": {
+   "publication_name": "The International Journal of Advanced Theoretical and Applied Interdisciplinary Studies and Also Other Things",
+   "publication_logo_url": "https://dummyimage.com/300x50/cccccc/000000.png&text=A+Very+Long+Publication+Name",
+   "headline": "A Groundbreaking Paradigm Shift: Acme Corporation's Novel Approach to Synergistic Quantum-Inspired Algorithmic Optimization Redefines the Boundaries of Computational Efficiency and Paves the Way for a New Era of Artificial Intelligence",
+   "article_url": "https://example.com/journal/volume99/issue3/article12345/a-groundbreaking-paradigm-shift-acme-corporations-novel-approach-to-synergistic-quantum-inspired-algorithmic-optimization-redefines-the-boundaries-of-computational-efficiency.html",
+   "date": "Published in the third quarter of the fiscal year two thousand and twenty-three, on a day of great importance"
+  }
+ },
+ "highlighted_text": {
+  "real": {
+   "text": "The key finding was that user engagement increased by 25%.",
+   "annotation": "This was the primary success metric.",
+   "color": "#dcfce7"
+  },
+  "stress": {
+   "text": "Notwithstanding the aforementioned complexities and the inherent stochasticity of the system, the empirical data unequivocally demonstrates a statistically significant, albeit marginal, improvement in the primary key performance indicator when controlling for all previously identified confounding variables, a result that, while promising, warrants further investigation and replication before any definitive conclusions can be drawn or strategic decisions can be made based upon this preliminary and tentative finding.",
+   "annotation": "This entire convoluted sentence essentially means 'it worked a little bit, but we're not sure why or if it will happen again,' which is a common finding in this type of exploratory research. The annotation itself is also very long to test layout.",
+   "color": "#dbeafe",
+   "annotation_color": "#60a5fa"
+  }
+ }
+}

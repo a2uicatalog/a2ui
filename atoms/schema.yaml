@@ -17,6 +17,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     series_label: string
     series_url: url
@@ -141,6 +143,8 @@ blocks:
     - mcp-apps
     - claude-code
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as monospace text, no syntax highlighting
@@ -408,6 +412,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: list styling stripped — renders as plain links
@@ -788,6 +794,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: flexbox layout and custom styling stripped — use bullet_list with bold
@@ -1671,6 +1679,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     trend_direction: enum (up, down, stable) - determines the icon or arrow direction
     label: string (descriptive text for the trend, e.g., 'Improving', 'Declining',
@@ -1834,6 +1844,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a list of hyperlinks. Internal document anchors are not supported;
@@ -1861,6 +1873,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a simple list of questions and answers without interactive
@@ -1892,6 +1906,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     term: string (the term itself)
     definition: string (the explanation)
@@ -1919,6 +1935,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     number: integer (the footnote number)
     text: string (the footnote content)
@@ -2796,6 +2814,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a series of lists or key-value pairs due to lack of table support.
@@ -2827,6 +2847,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     plan_name: string
     price: string
@@ -2857,6 +2879,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as stacked individual cards or sections within a single card.
@@ -2886,6 +2910,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     subject: string
     pros: array
@@ -2910,6 +2936,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as stacked lists of attributes and values for each item.
@@ -2943,6 +2971,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a list of key-value pairs.
@@ -2972,6 +3002,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a simplified list of products with their features, losing grid
@@ -3037,6 +3069,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     items: array
 - type: capability_checklist
@@ -3059,6 +3093,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a simplified list of capabilities with text indicators for
@@ -3510,6 +3546,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as text (e.g., '4.5 stars') or using emoji stars; visual styling
@@ -3569,6 +3607,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a basic text list; avatars and rich formatting are not supported.
@@ -3659,6 +3699,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and publication logo; card styling and rich layout
@@ -4855,6 +4897,8 @@ blocks:
     - mcp-apps
     - pdf
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text card; typographic weighting and animation are lost
@@ -4898,6 +4942,8 @@ blocks:
     - mcp-apps
     - pdf
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text card; typographic weighting and animation are lost
@@ -4939,6 +4985,8 @@ blocks:
     - mcp-apps
     - pdf
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text card; typographic weighting and animation are lost
@@ -6962,6 +7010,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     items:
       type: array
@@ -6985,6 +7035,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as plain code block without slot highlighting
@@ -7017,6 +7069,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     name: string. Model display name, e.g. "Claude Sonnet 4.6".
     provider: string (optional). Provider name, e.g. "Anthropic".
@@ -7049,6 +7103,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     user_label: string (optional, default "You"). Label above the user bubble.
     user: string. The user prompt text.
@@ -7076,6 +7132,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional). Heading above the grid.
     items:
@@ -7103,6 +7161,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     average: number. Overall average rating (e.g. 4.3).
     total: number. Total number of ratings.
@@ -7131,6 +7191,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional). Heading above the roadmap.
     periods:
@@ -7159,6 +7221,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional). Heading above the list, e.g. "Notifications".
     items:
@@ -7220,6 +7284,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as space-separated text labels; no chip styling
@@ -7289,6 +7355,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: some markup stripped by Chat card renderer; tables and code blocks fall
@@ -7391,6 +7459,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as plain numbered list item; no card styling or excerpt block
@@ -7420,6 +7490,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as sequential key-value blocks; side-by-side layout not supported
@@ -7455,6 +7527,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as plain percentage text e.g. Label 82%; no bar visualisation
@@ -7522,6 +7596,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as plain text with price; no image or badge styling
@@ -7558,6 +7634,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as plain order summary text; no colour or badge styling
@@ -7592,6 +7670,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as a simple text list of product names and quantities
@@ -7624,6 +7704,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: renders as plain text with key and summary; no type icon or status badge
@@ -7660,6 +7742,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: email
       note: multi-column layout collapses; renders as sequential column headings with
@@ -7733,6 +7817,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: email
       note: renders as a plain HTML table; no selection checkboxes or sort indicators
@@ -7868,6 +7954,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-meet-stage
       note: Grid collapses to single column on narrow stage panels
@@ -8008,6 +8096,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional)
     accent: string (optional, default hex for all bars)
@@ -8126,6 +8216,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     current: integer (required, 1-based index of active step)
     accent: string (optional, hex, default "#4f46e5")
@@ -8546,6 +8638,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     name: string (required)
     role: string (optional)
@@ -8602,6 +8696,8 @@ blocks:
     - pdf
     - mcp-apps
     - android
+    - slides
+    - pptx
   fields:
     title: string (optional)
     risks: array (required). Array of {level ("critical"|"high"|"medium"|"low"), title,
@@ -8654,6 +8750,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-meet-stage
       note: Grid collapses to single column on narrow panels
@@ -12966,6 +13064,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text score line — no visual card or animation
@@ -13123,6 +13223,8 @@ blocks:
     - google-apps-script-web
     - mcp-apps
     - android
+    - slides
+    - pptx
     degraded_on:
     - surface: google-chat
       note: Highlight background stripped — renders as plain text with annotation

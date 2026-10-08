@@ -31,9 +31,14 @@ SAMPLES = {
 }
 
 def test_every_recipe_has_a_sample_and_builds(tmp_path):
-    assert set(SAMPLES) == set(p.RECIPES)
-    r = p.run({'blocks': [{'type': t, **b} for t, b in SAMPLES.items()]}, str(tmp_path / 'all.pptx'), 'google-slides')     # one deck; an error names its block
-    assert r['ok'] and not r['errors'] and not r['unsupported'], (r['errors'], r.get('lint'))
+    from recipes_more import RECIPE_SAMPLES
+    allsamples = {**SAMPLES, **RECIPE_SAMPLES}
+    assert set(allsamples) == set(p.RECIPES), (sorted(set(p.RECIPES) - set(allsamples)), sorted(set(allsamples) - set(p.RECIPES)))
+    for t, b in allsamples.items():                                              # each atom alone, so a failure names the atom and a recipe cannot hide behind another
+        r = p.run({'blocks': [{'type': t, **b}]}, None, 'google-slides')
+        assert r['ok'] and not r['errors'] and not r['unsupported'] and r['slides'] >= 1, (t, r['errors'])
+    r = p.run({'blocks': [{'type': t, **b} for t, b in allsamples.items()]}, str(tmp_path / 'all.pptx'), 'google-slides')   # and all together, built and linted
+    assert r['ok'] and not r['errors'], (r['errors'], r.get('lint'))
 
 def test_unsupported_and_ignored_are_reported_not_guessed():
     r = p.run({'blocks': [{'type': 'chartjs_pie'}, {'type': 'divider'}, {'type': 'body', 'text': 'Hi.'}]})
@@ -42,3 +47,22 @@ def test_unsupported_and_ignored_are_reported_not_guessed():
 def test_long_lists_and_tables_continue_instead_of_truncating():
     r = p.run({'blocks': [{'type': 'bullet_list', 'items': [{'text': f'item {i}'} for i in range(14)]}, {'type': 'table', 'headers': ['a'], 'rows': [[str(i)] for i in range(10)]}]})
     assert r['slides'] == 5 or r['errors'], r      # 3 list slides + 2 table pages (a one-column table is rejected by deck_build, which needs 2+)
+
+
+def test_realistic_payloads_convert_for_every_new_recipe():
+    """tests/fixtures/deck_real_payloads.json: per atom, a realistic payload ("real") and a long-text, many-item one ("stress"), drafted by Gemini from the schema's field
+    descriptions independently of the recipes (item shapes for feature_matrix, comparison_grid, rating_comparison, side_by_side_spec, intro and code follow the renderer).
+    A realistic payload must build with no error; a stress payload may be refused, but only with an exact error, never an exception, a blank slide or a truncated cell."""
+    fx = json.loads((ROOT / 'tests/fixtures/deck_real_payloads.json').read_text())
+    for a, kinds in fx.items():
+        r = p.run({'blocks': [{'type': a, **kinds['real']}]}, None, 'google-slides')
+        assert r['ok'] and r['slides'] >= 1 and not r['errors'], (a, [e['message'] for e in r['errors']])
+        sc, _ = p.convert({'blocks': [{'type': a, **kinds['real']}]})
+        assert all(x['f'].get('items') != [] and x['f'].get('rows') != [] for x in sc), a
+        r = p.run({'blocks': [{'type': a, **kinds['stress']}]}, None, 'google-slides')
+        assert r['ok'] or all(e.get('message') for e in r['errors']), a
+
+def test_no_silent_truncation_in_recipes():
+    import re as _re
+    src = (ROOT / 'tools/deck/recipes_more.py').read_text()
+    assert "[:60]" not in src and "[:6]" not in src, 'a recipe slices content; split it over slides instead'

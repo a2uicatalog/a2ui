@@ -89,7 +89,10 @@ def contrast(a, b):
     x, y = sorted((lum(a), lum(b)), reverse=True); return (x + .05) / (y + .05)
 
 # ---- text measurement with the real font ----
+import functools
+@functools.lru_cache(maxsize=None)
 def font(pt, bold): return ImageFont.truetype(FONT_FILES[bold], size=int(round(pt * 10)))       # 10 px per pt, so widths are in 1/10 pt
+@functools.lru_cache(maxsize=None)
 def width_pt(text, pt, bold): return font(pt, bold).getlength(text) / 10
 def wrap(text, pt, bold, box_w_pt):
     lines, cur = [], ''
@@ -108,6 +111,7 @@ def best_width(text, pt, bold, lo, hi, step=0.05, max_lines=3):
     w = lo
     while w <= hi + 1e-9:
         lines = wrap(text, pt, bold, w * 72)
+        if max(width_pt(l, pt, bold) for l in lines) > w * 72: w += step; continue
         if len(lines) <= max_lines and len(wrap(text, pt, bold, w * 72 * SAFETY)) <= max_lines:
             widths = [width_pt(l, pt, bold) for l in lines]
             last = widths[-1] / max(widths)
@@ -124,6 +128,7 @@ def fit_text(text, pts, bold, lo, hi, step=0.05, max_lines=3, min_last=0.4):
         w = lo
         while w <= hi + 1e-9:
             n, f = wrap(text, pt, bold, w * 72), wrap(text, pt, bold, w * 72 * SAFETY)
+            if max(width_pt(l, pt, bold) for l in n + f) > w * 72: w += step; continue        # a single word wider than the box would be broken mid-word by the renderer
             if len(n) == len(f) <= max_lines:
                 ws = [width_pt(l, pt, bold) for l in n]; last = ws[-1] / max(ws) if len(n) > 1 else 1.0
                 if last >= min_last:
