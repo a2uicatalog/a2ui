@@ -1,0 +1,82 @@
+# Wire-driven state and motion: what exists, what is missing
+
+Written 2026-10-08 while building the preview `menu` atom. It answers one question that
+`menu` actions, a `motion_transition` and presence all depend on: when a wired state
+changes, how does an existing atom render differently, and what would it take to animate that?
+
+Everything below was read from the code, not assumed. File and line references are to
+`apps-script-surface/gas-wired-renderer/A2UIState.html` unless stated. The MCP Apps bundle
+and the Android WebView bridge run the same engine (the bundle is byte-identical, checked by
+`ops.py run android-build`), so what holds here holds on those surfaces.
+
+## 1. How a state change reaches an atom
+
+1. A node (ValueStore, ArrayFilter, StepNavigator ...) changes through `_set`.
+2. `compileWires` (line 321) registered a listener for every non-output wire on a layout element.
+   The listener calls `domBridge.setProp(layoutEl.id, propName, val)`.
+3. `setProp` (line 1053) finds `#a2ui-<id>` and switches on the property name.
+
+The properties `setProp` understands today include `visible`, `text`, `value`, `disabled`,
+`checked`, `rows`, `elapsed_fmt`, `sla_state`, `pct`, `flights`, `match_rows`, and a few atom
+specific ones.
+
+A payload attaches this with `{"atom": ..., "id": "x", "props": {...}, "wire": {"visible": "#node.value"}}`.
+The reverse direction (a user event writing state) is the closed `OUTPUT_WIRE_PROPS` set in
+`spec/a2ui-state-v1.md` section 2.2.1.
+
+## 2. `visible` is already generic
+
+`setProp(id, 'visible', val)` is `el.style.display = val ? '' : 'none'` on the atom's wrapper.
+It works on any atom that has an `id`, with no per-atom code. So "show this when that is true"
+exists today, for every atom, including `menu`.
+
+An earlier note in this thread said nothing wire-driven shows or hides content. That was wrong.
+
+## 3. Enter motion already comes with it
+
+An element that goes `display:none` to displayed restarts its CSS animation from time 0.
+Checked in Chromium on 2026-10-08: `getAnimations()` went 1, 0 (hidden), 1 with
+`currentTime = 0` (shown again). So any atom whose markup carries an entrance animation
+(`motion_group`, the `menu` panel) replays it when a `visible` wire turns true. Nothing new is
+needed for "loading -> loaded", "closed -> open" (when the open state is a wired boolean) or
+"empty -> populated".
+
+## 4. What is missing
+
+| Gap | Why it is a gap |
+|---|---|
+| Exit motion | `visible=false` sets `display:none` at once, so there is nothing to animate out. |
+| Crossfade between two blocks | Two atoms with complementary `visible` wires swap instantly. The incoming one animates in; the outgoing one just disappears. |
+| A wired `menu` open state | `menu` is CSS-only `<details>`. It has no output wire, so a state node cannot know it opened. |
+| `menu` action items | v1 has links only. The agreed route is `onRowClick` emitting the item object (see below). |
+| A global motion setting | Solved in preview: `palette` writes `--a2ui-motion-*-scale`. Only `menu` reads them. |
+
+## 5. Recommendation
+
+1. **Do not add `motion_transition` or `motion_presence` as atoms.** Enter is covered by section 3.
+   Exit is an engine behaviour, not an atom.
+2. **Exit, if wanted, is one small change in `setProp`:** on `visible=false`, if the element has
+   `data-a2ui-exit`, add a class that plays a leave animation (duration from the motion tokens,
+   scaled by `--a2ui-motion-duration-scale`, skipped under `prefers-reduced-motion`) and set
+   `display:none` on `animationend` or after the token duration. Opt-in per element, so nothing
+   existing changes. It needs the same change in the engine copies that carry `setProp` (the
+   wired renderer, the MCP Apps bundle and the Worker's compiled copy are generated from one source).
+3. **`menu` actions use `onRowClick`.** An action item gets `data-row-json` and the same click
+   binding `data_table` and `photo_grid` use (`_a2uiBindRowClicks`), so the wire receives the item
+   object. This needs a small script for wired menus only. A plain menu stays CSS-only.
+4. **A wired open state is optional.** It would be a second output wire (`onToggle` already exists
+   and emits a boolean), bound to the `<details>` toggle event. Add it only when a real use case
+   needs state to react to a menu opening.
+
+## 6. Still unverified
+
+- That a `visible` wire on a bridged atom behaves the same inside the Android WebView. It should,
+  since it is the same engine, but nothing has run it there.
+- Whether `a2ui_wired_surface` payloads survive `A2uiAtomicCatalog.adapt()` on Android intact.
+- Whether `display` toggling restarts animations identically in the GAS HtmlService iframe.
+
+## 7. Decisions for Curtis
+
+- Is opt-in exit motion (point 2) worth an engine change across the three engine copies, or is
+  enter-only enough for now?
+- Should `menu` actions (point 3) wait for a concrete wired use case, or be built next?
