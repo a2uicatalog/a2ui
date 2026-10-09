@@ -390,6 +390,9 @@ The full per-file notice is `public/surfaces/diagram-studio/NOTICE.md`. In short
 - **Data mined from draw.io's AWS sidebar** (`tools/diagram/styles/aws.catalogue.json` and the worker's generated `aws-catalogue.js`): service names, stencil ids,
   category colours and group style strings read from draw.io's `Sidebar-AWS4.js` (Apache License 2.0). No artwork is copied; the icons themselves are drawn by draw.io
   from its own library. "AWS-style" in this project means these conventions; it is not affiliated with or endorsed by Amazon, and AWS and the service names are trademarks of Amazon.
+- **Data mined from draw.io's Google Cloud sidebars** (`tools/diagram/styles/gcp.catalogue.json` and the worker's generated `gcp-catalogue.js`): service names and categories, the 19 core
+  products draw.io draws from a named stencil, zone fill colours and path colours, read from `Sidebar-GCPIcons.js`, `Sidebar-GCP2.js` and `Sidebar-GCP3.js` (Apache License 2.0). The
+  embedded icon artwork in those files is not copied. Google Cloud and the product names are trademarks of Google LLC; this project is not affiliated with or endorsed by Google.
 - Not shipped here, and so not covered by a licence in this repository: draw.io's `templates/` folder (CC BY 4.0) and its `libavoid-js`
   routing library (LGPL 2.1). If either is ever added to what is served, its licence text and attribution (and, for LGPL, a link to its source and
   a replaceable build) must be added at the same time.

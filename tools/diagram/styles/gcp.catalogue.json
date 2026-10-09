@@ -1,0 +1,348 @@
+{
+ "zone_style": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[1,1,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];rounded=1;absoluteArcSize=1;arcSize=2;html=1;strokeColor=none;gradientColor=none;shadow=0;dashed=0;fontSize=12;fontColor=#9E9E9E;align=left;verticalAlign=top;spacing=10;spacingTop=-4;whiteSpace=wrap;",
+ "source": "draw.io Sidebar-GCPIcons/GCP2/GCP3.js (Apache-2.0, jgraph/drawio)",
+ "categories": {
+  "AI and Machine Learning": [
+   "AI Hub",
+   "AI Platform",
+   "Advanced Solutions Lab",
+   "AutoML",
+   "AutoML Natural Language",
+   "AutoML Tables",
+   "AutoML Translation",
+   "AutoML Video Intelligence",
+   "AutoML Vision",
+   "Cloud Inference API",
+   "Cloud Jobs API",
+   "Cloud Natural Language API",
+   "Cloud TPU",
+   "Cloud Translation API",
+   "Cloud Vision API",
+   "Data Labeling",
+   "DialogFlow",
+   "Recommendations AI",
+   "Speech to Text",
+   "Text to Speech",
+   "Video Intelligence API"
+  ],
+  "API Management": [
+   "API Analytics",
+   "API Monetization",
+   "Apigee API Platform",
+   "Apigee Sense",
+   "Cloud Endpoints",
+   "Developer Portal"
+  ],
+  "Compute": [
+   "AppEngine",
+   "Cloud Functions",
+   "Cloud GPU",
+   "Cloud Run",
+   "Compute Engine",
+   "Container Optimized OS",
+   "GKE On Prem",
+   "Kubernetes Engine"
+  ],
+  "Data Analytics": [
+   "BigQuery",
+   "Cloud Composer",
+   "Cloud Data Fusion",
+   "Data Catalog",
+   "Data Lab",
+   "Data Studio",
+   "Dataflow",
+   "Dataprep",
+   "Dataproc",
+   "Genomics",
+   "Pub Sub"
+  ],
+  "Databases": [
+   "Cloud BigTable",
+   "Cloud SQL",
+   "Cloud Spanner",
+   "Datastore",
+   "Firestore",
+   "MemoryStore"
+  ],
+  "Developer Tools": [
+   "Artifact Registry",
+   "Cloud Build",
+   "Cloud Code",
+   "Cloud Code for IntelliJ",
+   "Cloud Deployment Manager",
+   "Cloud SDK",
+   "Cloud Scheduler",
+   "Cloud Source Repositories",
+   "Cloud Tasks",
+   "Cloud Test Lab",
+   "Cloud Tools for Eclipse",
+   "Container Registry",
+   "Gradle App Engine Plugin",
+   "IDE Plugins",
+   "Maven App Engine Plugin",
+   "Tools for Powershell",
+   "Tools for Visual Studio"
+  ],
+  "Hybrid And Multi Cloud": [
+   "Stackdriver",
+   "Taffic Director"
+  ],
+  "Migration": [
+   "Transfer Appliance"
+  ],
+  "Security": [
+   "BeyondCorp",
+   "Cloud IAM",
+   "Cloud Resource Manager",
+   "Cloud Security Scanner",
+   "Data Loss Prevention API",
+   "Key Access Justifications",
+   "Key Management Service",
+   "Security Command Center"
+  ],
+  "Internet of Things": [
+   "IoT Core"
+  ],
+  "Management Tools": [
+   "Anthos Service Mesh",
+   "Cloud Billing API",
+   "Cloud Console",
+   "Cloud Deployment Manager",
+   "Cloud Logging",
+   "Cloud Mobile App",
+   "Cloud Monitoring",
+   "Cloud Shell",
+   "CloudAPIs",
+   "Debugger",
+   "Error Reporting",
+   "Profiler",
+   "Stackdriver",
+   "Trace"
+  ],
+  "Networking": [
+   "Cloud CDN",
+   "Cloud DNS",
+   "Cloud External IP Addresses",
+   "Cloud Firewall Rules",
+   "Cloud Interconnect",
+   "Cloud Load Balancing",
+   "Cloud NAT",
+   "Cloud Network",
+   "Cloud Router",
+   "Cloud Routes",
+   "Cloud VPN",
+   "CloudArmor",
+   "Partner Interconnect",
+   "Premium Network Tier",
+   "Standard Network Tier",
+   "Taffic Director",
+   "Virtual Private Cloud"
+  ],
+  "Storage": [
+   "Cloud Storage",
+   "Filestore",
+   "Persistent Disk"
+  ]
+ },
+ "core_products": [
+  {
+   "stencil": "aihypercomputer",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 100.0,
+   "name": "AI Hypercomputer"
+  },
+  {
+   "stencil": "alloydb",
+   "fill": "#4285f4",
+   "w": 99.83,
+   "h": 100.0,
+   "name": "AlloyDB"
+  },
+  {
+   "stencil": "anthos",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 98.99,
+   "name": "Anthos"
+  },
+  {
+   "stencil": "apigee",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 97.48,
+   "name": "Apigee"
+  },
+  {
+   "stencil": "bigquery",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 99.68,
+   "name": "BigQuery"
+  },
+  {
+   "stencil": "cloudrun",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 99.49,
+   "name": "Cloud Run"
+  },
+  {
+   "stencil": "cloudspanner",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 91.43,
+   "name": "Spanner"
+  },
+  {
+   "stencil": "cloudsql",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 99.12,
+   "name": "Cloud SQL"
+  },
+  {
+   "stencil": "cloud_storage",
+   "fill": "#4285f4",
+   "w": 99.83,
+   "h": 100.0,
+   "name": "Cloud Storage"
+  },
+  {
+   "stencil": "computeengine",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 100.0,
+   "name": "Compute Engine"
+  },
+  {
+   "stencil": "distributedcloud",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 100.0,
+   "name": "Google Distributed Cloud"
+  },
+  {
+   "stencil": "gke",
+   "fill": "#4285f4",
+   "w": 90.73,
+   "h": 100.0,
+   "name": "GKE"
+  },
+  {
+   "stencil": "hyperdisk",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 86.6,
+   "name": "Hyperdisk"
+  },
+  {
+   "stencil": "looker",
+   "fill": "#4285f4",
+   "w": 73.24,
+   "h": 100.0,
+   "name": "Looker"
+  },
+  {
+   "stencil": "mandiant",
+   "fill": "#4285f4",
+   "w": 92.21,
+   "h": 100.0,
+   "name": "Mandiant"
+  },
+  {
+   "stencil": "securitycommandcenter",
+   "fill": "#4285f4",
+   "w": 92.2,
+   "h": 100.0,
+   "name": "Security Command Center"
+  },
+  {
+   "stencil": "secops",
+   "fill": "#4285f4",
+   "w": 92.02,
+   "h": 100.0,
+   "name": "Google Security Operations"
+  },
+  {
+   "stencil": "threatintelligence",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 100.0,
+   "name": "Google Threat Intelligence"
+  },
+  {
+   "stencil": "vertexai",
+   "fill": "#4285f4",
+   "w": 100.0,
+   "h": 98.9,
+   "name": "Vertex AI"
+  }
+ ],
+ "zones": [
+  {
+   "name": "User 1",
+   "fill": "#ffffff"
+  },
+  {
+   "name": "Infrastructure System",
+   "fill": "#F3E5F5"
+  },
+  {
+   "name": "colo / dc / on-premises",
+   "fill": "#EFEBE9"
+  },
+  {
+   "name": "System 1",
+   "fill": "#F1F8E9"
+  },
+  {
+   "name": "External SaaS Providers",
+   "fill": "#FFEBEE"
+  },
+  {
+   "name": "External Data Sources",
+   "fill": "#FFF8E1"
+  },
+  {
+   "name": "External Infrastructure 3<sup>rd</sup> Party",
+   "fill": "#E0F2F1"
+  },
+  {
+   "name": "External Infrastructure 1<sup>st</sup> Party",
+   "fill": "#E1F5FE"
+  }
+ ],
+ "paths": [
+  {
+   "name": "Primary Path",
+   "color": "#4284F3",
+   "dashed": false
+  },
+  {
+   "name": "Optional Primary Path",
+   "color": "#4284F3",
+   "dashed": true
+  },
+  {
+   "name": "Secondary Path",
+   "color": "#9E9E9E",
+   "dashed": false
+  },
+  {
+   "name": "Optional Secondary Path",
+   "color": "#9E9E9E",
+   "dashed": true
+  },
+  {
+   "name": "Success Status",
+   "color": "#34A853",
+   "dashed": false
+  },
+  {
+   "name": "Failure Status",
+   "color": "#EA4335",
+   "dashed": false
+  }
+ ]
+}
