@@ -14,9 +14,11 @@ The same converter runs on the MCP server as a JavaScript port (in the private w
 
 ## Reproducing the schema check
 
-`validate_ooxml.py` needs the ECMA-376 transitional XSDs, which are not stored in this repository. The run recorded above used `pml.xsd`, `dml-main.xsd` and
-the schemas they import, fetched from a public GitHub copy of the standard's files (`mamift/LinqToXsdCore`, folder
-`GeneratedSchemaLibraries/OfficeOpenXML-XMLSchema-Transitional`). I did not verify an official ECMA download URL. To reproduce:
+`validate_ooxml.py` needs the ECMA-376 transitional XSDs, which are not stored in this repository. The setup below fetches `pml.xsd`, `dml-main.xsd` and the
+schemas they import from a public GitHub copy (`mamift/LinqToXsdCore`, folder `GeneratedSchemaLibraries/OfficeOpenXML-XMLSchema-Transitional`) so the check
+is reproducible. That copy is not an official distribution. ECMA International publishes ECMA-376 itself, including the schema material that goes with the
+specification, but this repository does not extract or vendor XSDs from an official ECMA download. The run recorded above used the GitHub copy.
+To reproduce:
 
     mkdir -p /tmp/xsd && cd /tmp/xsd
     for f in pml dml-main dml-chart dml-chartDrawing dml-diagram dml-lockedCanvas dml-picture dml-spreadsheetDrawing dml-wordprocessingDrawing \
