@@ -76,3 +76,11 @@ def test_picture_fallback_for_atoms_without_a_recipe(tmp_path):
     r = p.run({'blocks': blocks}, str(tmp_path / 'o.pptx'), 'google-slides', None, '', str(tmp_path / 'pics'))
     assert r['ok'] and r['slides'] == 1 and [u['type'] for u in r['unsupported']] == ['made_up_atom']              # a blank render is refused, not shipped
     assert r['conversion']['converted'][0]['mode'] == 'picture' and (tmp_path / 'pics' / '000-status_pill.png').exists()
+
+
+def test_callouts_and_grids_become_cards_and_fall_back_when_too_long():
+    sc, _ = p.convert({'blocks': [{'type': 'callout', 'kind': 'warning', 'text': 'Short warning.'}]}); assert sc[0]['type'] == 'cards' and sc[0]['f']['cards'] == [('Warning', 'Short warning.')]
+    sc, _ = p.convert({'blocks': [{'type': 'callout', 'title': 'Long', 'text': 'One sentence here. ' * 20}]}); assert sc[0]['type'] == 'bullets'
+    sc, _ = p.convert({'blocks': [{'type': 'feature_grid', 'heading': 'Why', 'features': [{'title': f'F{i}', 'description': 'd'} for i in range(5)]}]})
+    assert [x['type'] for x in sc] == ['cards', 'cards'] and len(sc[0]['f']['cards']) == 3
+    sc, _ = p.convert({'blocks': [{'type': 'metric_row', 'metrics': [{'value': '1', 'label': 'a', 'sub': 'in the catalog'}]}]}); assert sc[0]['f']['stats'] == [('1', 'a', 'in the catalog')]

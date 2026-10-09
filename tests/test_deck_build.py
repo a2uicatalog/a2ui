@@ -47,7 +47,7 @@ def test_xml_entities_are_refused():
     assert errs_of('<!DOCTYPE d [<!ENTITY x "y">]><deck><slide layout="title"><headline>&x;</headline></slide></deck>')[0]['code'] == 'xml'
 
 def test_schema_lists_layouts():
-    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'table', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
+    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'cards', 'table', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
 
 def test_quote_too_long_and_missing():
     e = errs_of('<deck><slide layout="quote"><quote>' + 'x' * 241 + '</quote></slide></deck>'); assert 'limit is 240' in e[0]['message']
@@ -113,3 +113,19 @@ def test_a_list_too_long_even_for_the_tight_profile_is_still_an_exact_error(tmp_
     f = {'heading': 'H', 'items': ['x ' * 100] * 6}
     e = db.run(json.dumps({'target': 'any', 'scenes': [{'type': 'bullets', 'f': f}]}), str(tmp_path / 'x.pptx'))['errors']
     assert 'do not fit on the slide even at 18 pt' in e[0]['message'], e
+
+
+def test_stat_cards_and_idea_cards_build_clean_and_limits_are_exact(tmp_path):
+    deck = {'target': 'google-slides', 'scenes': [
+        {'type': 'stats', 'f': {'kicker': 'In numbers', 'stats': [['10', 'releases', '2.1.286 to 2.1.295'], ['1M', 'token context', 'Haiku 5.5'], ['300+', 'bug fixes']]}, 'notes': 'n'},
+        {'type': 'cards', 'f': {'heading': 'Three ideas', 'cards': [['Mods', 'Plugins change deeper behavior.'], ['Side agent', 'Flags what you might miss.'], ['Fail-closed hooks', 'A broken guard blocks the action.']]}, 'notes': 'n'}]}
+    r = db.run(json.dumps(deck), str(tmp_path / 'c.pptx')); assert r['ok'] and r['lint'] == [], (r['errors'], r['lint'])
+    e = db.run(json.dumps({'scenes': [{'type': 'cards', 'f': {'heading': 'H', 'cards': [['t' * 41, 'x']]}}]}))['errors']
+    assert e[0]['message'] == 'slide 1 (cards): cards[1] title \'' + 't' * 41 + '\' is 41 characters, the limit is 40', e[0]['message']
+    e = db.run(json.dumps({'scenes': [{'type': 'cards', 'f': {'heading': 'H', 'cards': [['t', 'x']] * 5}}]}))['errors']
+    assert e[0]['message'] == 'slide 1 (cards): cards has 5 entries, the limit is 4'
+
+def test_stat_sub_line_and_dict_forms():
+    r = db.run('<deck><slide layout="stats"><stat value="1" label="a" sub="s"/><notes>n</notes></slide></deck>'); assert not r['errors']
+    r = db.run(json.dumps({'scenes': [{'type': 'stats', 'f': {'stats': [{'value': '1', 'label': 'a', 'sub': 's'}]}}]})); assert not r['errors']
+    e = db.run(json.dumps({'scenes': [{'type': 'stats', 'f': {'stats': [['1', 'a', 's' * 41]]}}]}))['errors']; assert 'sub is 41 characters, the limit is 40' in e[0]['message']

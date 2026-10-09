@@ -41,7 +41,9 @@ LAYOUTS = {
     'bullets': dict(film='steps', fields={'heading': dict(kind='text', required=True, max=70),
                                           'items': dict(kind='list', required=True, min=1, max=6, item_max=240)}),
     'stats':   dict(film='stats', fields={'kicker': dict(kind='text', max=40),
-                                          'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40)}),
+                                          'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40, sub_max=40)}),
+    'cards':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70),
+                                       'cards': dict(kind='pairs', required=True, min=1, max=4, value_max=40, label_max=220, names=('title', 'text'))}),
     'table':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'headers': dict(kind='list', required=True, min=2, max=6, item_max=30),
                                        'rows': dict(kind='rows', required=True, min=1, max=8, cell_max=200)}),
     'media':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'media': dict(kind='file', required=True, exts=('.gif', '.png', '.jpg', '.jpeg'), max_mb=8),
@@ -87,7 +89,8 @@ def parse_xml(src, errs):
         for ch in sl:
             if ch.tag == 'notes': notes = oneline(ch.text)
             elif ch.tag == 'item': f.setdefault('items', []).append(oneline(ch.text))
-            elif ch.tag == 'stat': f.setdefault('stats', []).append((oneline(ch.get('value')), oneline(ch.get('label'))))
+            elif ch.tag == 'stat': f.setdefault('stats', []).append((oneline(ch.get('value')), oneline(ch.get('label')), oneline(ch.get('sub'))))
+            elif ch.tag == 'card': f.setdefault('cards', []).append((oneline(ch.get('title')), oneline(ch.get('text'))))
             elif ch.tag == 'button':
                 n = 'b2' if 'b1' in f else 'b1'; f[n] = oneline(ch.text); f['l' + n[1]] = oneline(ch.get('href'))
             elif ch.tag == 'column': f.setdefault('headers', []).append(oneline(ch.text))
@@ -115,7 +118,9 @@ def parse_json(src, errs):
         if 'steps' in s and 'items' not in s: s['items'] = s.pop('steps')
         if 'heading' not in s and typ == 'steps' and 'headline' in s: s['heading'] = s.pop('headline')
         if isinstance(s.get('items'), str): s['items'] = lines(s['items'])
-        if isinstance(s.get('stats'), str): s['stats'] = [tuple(x.strip() for x in l.split('|', 1)) + ('',) for l in lines(s['stats'])]; s['stats'] = [(a, b) for a, b, *_ in s['stats']]
+        for key, names in (('stats', ('value', 'label', 'sub')), ('cards', ('title', 'text'))):
+            if isinstance(s.get(key), str): s[key] = [tuple(x.strip() for x in l.split('|')) for l in lines(s[key])]
+            if isinstance(s.get(key), list): s[key] = [tuple(oneline(e.get(n)) for n in names) if isinstance(e, dict) else tuple(oneline(x) for x in e) for e in s[key]]
         deck['scenes'].append(dict(layout=typ, f={kk: (oneline(v) if isinstance(v, str) else v) for kk, v in s.items()}, notes=notes, at=i))
     return deck
 
@@ -172,13 +177,15 @@ def validate(deck, errs, warns, skip_film_only=False):
                 for j, it in enumerate(v, 1):
                     if len(plain(it)) > d['item_max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] is {len(plain(it))} characters, the limit is {d["item_max"]}', field=name)
             elif d['kind'] == 'pairs':
-                v = v or []
+                v = v or []; n1, n2 = d.get('names', ('value', 'label'))
                 if len(v) < d['min']: err(errs, at, 'count', f'slide {at} ({lay}): {name} needs at least {d["min"]} entry, has {len(v)}', field=name)
                 elif len(v) > d['max']: err(errs, at, 'count', f'slide {at} ({lay}): {name} has {len(v)} entries, the limit is {d["max"]}', field=name)
-                for j, (a, b) in enumerate(v, 1):
-                    if not a: err(errs, at, 'required', f'slide {at} ({lay}): {name}[{j}] has no value', field=name)
-                    elif len(a) > d['value_max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] value {a!r} is {len(a)} characters, the limit is {d["value_max"]}', field=name)
-                    if len(b) > d['label_max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] label is {len(b)} characters, the limit is {d["label_max"]}', field=name)
+                for j, tup in enumerate(v, 1):
+                    a, b2 = tup[0], tup[1]; c = tup[2] if len(tup) > 2 else ''
+                    if not a: err(errs, at, 'required', f'slide {at} ({lay}): {name}[{j}] has no {n1}', field=name)
+                    elif len(a) > d['value_max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] {n1} {a!r} is {len(a)} characters, the limit is {d["value_max"]}', field=name)
+                    if len(b2) > d['label_max']: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] {n2} is {len(b2)} characters, the limit is {d["label_max"]}', field=name)
+                    if len(c) > d.get('sub_max', 0) and 'sub_max' in d: err(errs, at, 'too-long', f'slide {at} ({lay}): {name}[{j}] sub is {len(c)} characters, the limit is {d["sub_max"]}', field=name)
         if lay == 'cta' and sc['f'].get('b2') and not sc['f'].get('l2'): warns.append(dict(slide=at, code='no-link', message=f'slide {at} (cta): b2 has no l2 link; the button will not open anything'))
         if lay == 'cta' and not sc['f'].get('l1'): warns.append(dict(slide=at, code='no-link', message=f'slide {at} (cta): b1 has no l1 link; the button will not open anything and the slide has no QR code'))
         if len(sc['notes']) > NOTES_MAX: err(errs, at, 'too-long', f'slide {at}: notes are {len(sc["notes"])} characters, the limit is {NOTES_MAX}', field='notes')
@@ -289,24 +296,62 @@ def lay_bullets(sl, f, at, errs):
         sl.text(sl.tb(MX + 0.5, y, r[1], ih, f'Item {i}'), sl.accent_runs(it, k.BRAND['text']), pt, False, k.BRAND['text'])
         y += ih + gap
 
+def card_cols(n):
+    """Cards share the width; one card is capped at 7.6 in and two at 5.7 in so a single tile is not a banner."""
+    gap = 0.3; cw = min((CONTENT_W - gap * (n - 1)) / n, {1: 7.6, 2: 5.7}.get(n, 3.8)); return gap, cw
+
 def lay_stats(sl, f, at, errs):
-    st = f['stats']; n = len(st); gap = 0.5; colw = (CONTENT_W - gap * (n - 1)) / n; ok = None
-    for pt in (110, 96, 80, 66, 54, 44):
-        if all(k.width_pt(v, pt, True) / k.SAFETY <= colw * 72 for v, _ in st): ok = pt; break
-    if not ok: err(errs, at, 'does-not-fit', f'slide {at}: a stat value is too wide for a column of {colw:.1f} in even at 44 pt; shorten it or use fewer stats', field='stats'); return
-    lab = []
-    for j, (v, l) in enumerate(st, 1):
-        r = k.fit_text(plain(l), (26, 24, 22, 20), False, 1.5, colw, max_lines=2) if l else None
-        if l and not r: err(errs, at, 'does-not-fit', f'slide {at}: stats[{j}] label does not fit in 2 lines in a column of {colw:.1f} in', field='stats'); return
-        lab.append(r)
-    vh = ok * LH / 72 + 0.16; lh = max((len(r[2]) * r[0] * LH / 72 + 0.16 for r in lab if r), default=0)
-    kh = 0.45; total = kh + 0.4 + vh + 0.2 + lh; y = center_y(total); sl.wordmark()
+    st = [tuple(t) + ('',) * (3 - len(t)) for t in f['stats']]; n = len(st); gap, cw = card_cols(n); pad = 0.3; inner = cw - 2 * pad; ok = None
+    for pt in (72, 66, 60, 54, 48, 44):
+        if all(k.width_pt(v, pt, True) / k.SAFETY <= inner * 72 for v, _, _ in st): ok = pt; break
+    if not ok: err(errs, at, 'does-not-fit', f'slide {at}: a stat value is too wide for a card of {inner:.1f} in even at 44 pt; shorten it or use fewer stats', field='stats'); return
+    lab, sub = [], []
+    for j, (v, l, sb) in enumerate(st, 1):
+        r = k.fit_text(plain(l), (24, 22, 20, 18), True, 1.2, inner, max_lines=3) if l else None
+        if l and not r: err(errs, at, 'does-not-fit', f'slide {at}: stats[{j}] label does not fit in 3 lines in a card of {inner:.1f} in; shorten it', field='stats'); return
+        q = k.fit_text(plain(sb), (20, 18), False, 1.2, inner, max_lines=3) if sb else None
+        if sb and not q: err(errs, at, 'does-not-fit', f'slide {at}: stats[{j}] sub does not fit in 3 lines in a card of {inner:.1f} in; shorten it', field='stats'); return
+        lab.append(r); sub.append(q)
+    vh = ok * LH / 72 + 0.1; lh = max((len(r[2]) * r[0] * LH / 72 + 0.16 for r in lab if r), default=0); sh = max((len(q[2]) * q[0] * LH / 72 + 0.16 for q in sub if q), default=0)
+    ch = pad + vh + (0.12 + lh if lh else 0) + (0.08 + sh if sh else 0) + pad
+    kh = 0.45; total = kh + 0.4 + ch; y = center_y(total); sl.wordmark()
     t = sl.title('Statistics', MX, y, 8, kh); sl.text(t, [((plain(f['kicker']) if f.get('kicker') else 'Key figures').upper(), None)], k.FLOOR_PT, True, k.BRAND['accent2']); y += kh + 0.4
-    colors = [k.BRAND['accent'], k.BRAND['accent2'], k.BRAND['text'], k.BRAND['accent']]
-    for j, ((v, l), r) in enumerate(zip(st, lab)):
-        x = MX + j * (colw + gap)
-        sl.text(sl.tb(x, y, colw, vh, f'Value {j + 1}'), [(v, None)], ok, True, colors[j])
-        if r: sl.text(sl.tb(x, y + vh + 0.2, colw, lh, f'Label {j + 1}'), [(plain(l), None)], r[0], False, k.BRAND['muted'])
+    colors = [k.BRAND['accent'], k.BRAND['accent2'], k.BRAND['accent'], k.BRAND['accent2']]
+    for j, ((v, l, sb), r, q) in enumerate(zip(st, lab, sub)):
+        x = MX + j * (cw + gap); card = sl.box(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, cw, ch, k.BRAND['surface'], k.BRAND['border'], f'Card {j + 1}'); card.adjustments[0] = 0.07; sl.decorative(card)
+        sl.text(sl.tb(x + pad, y + pad, inner, vh, f'Value {j + 1}'), [(v, None)], ok, True, colors[j]); yy = y + pad + vh + 0.12
+        if r: sl.text(sl.tb(x + pad, yy, inner, lh, f'Label {j + 1}'), [(plain(l), None)], r[0], True, k.BRAND['text']); yy += lh + 0.08
+        if q: sl.text(sl.tb(x + pad, yy, inner, sh, f'Sub {j + 1}'), [(plain(sb), None)], q[0], False, k.BRAND['muted'])
+
+CARD_PROFILES = (dict(cp=0.3, bub=0.55, titles=(26, 24, 22, 20), texts=(22, 20, 18), after_bub=0.2),
+                 dict(cp=0.22, bub=0.45, titles=(22, 20), texts=(18,), after_bub=0.12))      # the compact one is used only when the roomy one is too tall
+def lay_cards(sl, f, at, errs):
+    """Ideas as framed blocks: up to four rounded cards, each a numbered bubble, a bold title and a short text."""
+    hr = heading_fit(f['heading'], (40, 36, 32), CONTENT_W, 2, at, 'heading', errs)
+    if not hr: return
+    hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15; y0 = top + hh + 0.45
+    cd = f['cards']; n = len(cd); gap, cw = card_cols(n); chosen = None; last_err = None
+    for prof in CARD_PROFILES:
+        cp, bub = prof['cp'], prof['bub']; inner = cw - 2 * cp; tl, tx = [], []; bad = None
+        for j, (ti, te, *_) in enumerate(cd, 1):
+            r = k.fit_text(plain(ti), prof['titles'], True, 1.2, inner, max_lines=2)
+            if not r: bad = f'slide {at}: cards[{j}] title does not fit in 2 lines in a card of {inner:.1f} in'; break
+            q = k.fit_text(plain(te), prof['texts'], False, 1.2, inner, max_lines=7) if te else None
+            if te and not q: bad = f'slide {at}: cards[{j}] text does not fit in 7 lines in a card of {inner:.1f} in; shorten it'; break
+            tl.append(r); tx.append(q)
+        if bad: last_err = bad; continue
+        th = max(len(r[2]) * r[0] * LH / 72 + 0.16 for r in tl); xh = max((len(q[2]) * q[0] * LH / 72 + 0.16 for q in tx if q), default=0)
+        ch = cp + bub + prof['after_bub'] + th + (0.1 + xh if xh else 0) + cp
+        if y0 + ch <= H_IN - 0.55: chosen = (prof, tl, tx, th, xh, ch, inner); break
+        last_err = f'slide {at}: the cards need {ch:.1f} in of height, the slide has {H_IN - 0.55 - y0:.1f} in; shorten the text or use fewer cards'
+    if not chosen: err(errs, at, 'does-not-fit', last_err, field='cards'); return
+    prof, tl, tx, th, xh, ch, inner = chosen; cp, bub = prof['cp'], prof['bub']
+    sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
+    for j, ((ti, te, *_), r, q) in enumerate(zip(cd, tl, tx)):
+        x = MX + j * (cw + gap); card = sl.box(MSO_SHAPE.ROUNDED_RECTANGLE, x, y0, cw, ch, k.BRAND['surface'], k.BRAND['border'], f'Card {j + 1}'); card.adjustments[0] = 0.07; sl.decorative(card)
+        b = sl.box(MSO_SHAPE.OVAL, x + cp, y0 + cp, bub, bub, k.BRAND['accent'], None, f'Number {j + 1}'); sl.text(b, [(str(j + 1), None)], k.FLOOR_PT, True, k.BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, 0.0); sl.decorative(b)
+        yy = y0 + cp + bub + prof['after_bub']; sl.text(sl.tb(x + cp, yy, inner, th, f'Title {j + 1}'), sl.accent_runs(ti, k.BRAND['text']), r[0], True, k.BRAND['text']); yy += th + 0.1
+        if q: sl.text(sl.tb(x + cp, yy, inner, xh, f'Text {j + 1}'), [(plain(te), None)], q[0], False, k.BRAND['muted'])
 
 def lay_cta(sl, f, at, errs):
     hr = heading_fit(f['headline'], (66, 60, 54, 48, 44), 7.6 if f.get('l1') else CONTENT_W, 3, at, 'headline', errs)
@@ -407,7 +452,7 @@ def lay_table(sl, f, at, errs):
             r.font.color.rgb = k.rgb(k.BRAND['accent2'] if i == 0 else k.BRAND['text']); r.font.language_id = MSO_LANGUAGE_ID.ENGLISH_US
     gf._element.nvGraphicFramePr.cNvPr.set('descr', f"Table: {', '.join(plain(h) for h in hd)}; {len(rows)} rows")
 
-LAYOUT_FN = {'title': lay_title, 'table': lay_table, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
+LAYOUT_FN = {'title': lay_title, 'cards': lay_cards, 'table': lay_table, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
 
 MEDIA = {}
 def build(deck, out, errs):

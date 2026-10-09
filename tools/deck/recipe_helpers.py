@@ -22,4 +22,12 @@ def list_scenes(b, heading, label):
         out.append(dict(type='bullets', f=dict(heading=h + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), items=pg)))
     return out
 def r_list(label): return lambda b, h: list_scenes(b, h, label)
-def stat(v, label): return (s(v), s(label))
+def stat(v, label, sub=''): return (s(v), s(label), s(sub)) if s(sub) else (s(v), s(label))
+
+
+def cards_scenes(heading, pairs, per=3):
+    """Ideas as framed cards (title + short text), `per` to a slide. None when a title or text is too long for a card, so the caller can fall back to bullets or a table."""
+    pairs = [(s(t), s(x)) for t, x in pairs if s(t) or s(x)]
+    if not pairs or any(not t or len(t) > 40 or len(x) > 220 for t, x in pairs): return None
+    pages = chunks(pairs, per)
+    return [dict(type='cards', f=dict(heading=heading + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), cards=pg)) for n, pg in enumerate(pages)]

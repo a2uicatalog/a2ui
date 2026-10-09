@@ -1,7 +1,7 @@
 """Atom recipes drafted by Gemini (gemini-2.5-pro, 2026-10-08) from each atom's field table and example payload, then reviewed and tested here.
 Each recipe maps one atom to deck scenes; nothing here runs unless payload_to_deck.py registers it in RECIPES."""
 import re
-from recipe_helpers import s, chunks, sentences, http, item_text, list_scenes, r_list, stat
+from recipe_helpers import s, chunks, sentences, http, item_text, list_scenes, r_list, stat, cards_scenes
 
 def r_timeline(b, h):
     items = []
@@ -177,52 +177,28 @@ def r_roadmap_card(b, h):
     return out
 
 def r_feature_grid(b, h):
-    title = s(b.get('heading')) or h or 'Features'
-    out = []
+    title = s(b.get('heading')) or h or 'Features'; out = []
     desc = s(b.get('description'))
-    if desc:
-        out.append(dict(type='bullets', f=dict(heading=title, items=sentences(desc))))
-
-    features = b.get('features') or []
-    if not features:
-        return out
-
-    rows = []
-    for f in features:
-        if not isinstance(f, dict): continue
-        name = s(f.get('title'))
-        badge = s(f.get('badge'))
-        feature_name = f"{name} ({badge})" if badge else name
-        rows.append([feature_name, s(f.get('description'))])
-
-    if not rows:
-        return out
-
-    headers = ['Feature', 'Description']
+    if desc: out.append(dict(type='bullets', f=dict(heading=title, items=sentences(desc))))
+    feats = [f for f in (b.get('features') or []) if isinstance(f, dict)]
+    pairs = [((s(f.get('title')) + (f" ({s(f.get('badge'))})" if s(f.get('badge')) else '')), s(f.get('description'))) for f in feats]
+    cards = cards_scenes(title, pairs)
+    if cards: return out + cards
+    rows = [[t, x] for t, x in pairs if t or x]
     pages = chunks(rows, 8)
-    table_title = title if not desc else f"{title} (Details)"
-    for n, pg in enumerate(pages):
-        out.append(dict(type='table', f=dict(heading=table_title + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), headers=headers, rows=pg)))
-    return out
+    return out + [dict(type='table', f=dict(heading=(title if not desc else f'{title} (Details)') + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), headers=['Feature', 'Description'], rows=pg)) for n, pg in enumerate(pages)] if rows else out
 
 def r_bento_grid(b, h):
     title = s(b.get('heading')) or h or 'Overview'
-    tiles = b.get('tiles') or []
-    if not tiles:
-        return []
-
-    rows = [[s(t.get('title')), s(t.get('subtitle'))] for t in tiles if isinstance(t, dict) and (s(t.get('title')) or s(t.get('subtitle')))]
-    if not rows:
-        return []
-
-    if all(not row[1] for row in rows):
-        items = [row[0] for row in rows]
-        pages = chunks(items, 6)
+    pairs = [(s(t.get('title')), s(t.get('subtitle'))) for t in (b.get('tiles') or []) if isinstance(t, dict) and (s(t.get('title')) or s(t.get('subtitle')))]
+    if not pairs: return []
+    cards = cards_scenes(title, pairs)
+    if cards: return cards
+    if all(not x for _, x in pairs):
+        pages = chunks([t for t, _ in pairs], 6)
         return [dict(type='bullets', f=dict(heading=title + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), items=pg)) for n, pg in enumerate(pages)]
-
-    headers = ['Item', 'Details']
-    pages = chunks(rows, 8)
-    return [dict(type='table', f=dict(heading=title + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), headers=headers, rows=pg)) for n, pg in enumerate(pages)]
+    pages = chunks([[t, x] for t, x in pairs], 8)
+    return [dict(type='table', f=dict(heading=title + (f' ({n + 1}/{len(pages)})' if len(pages) > 1 else ''), headers=['Item', 'Details'], rows=pg)) for n, pg in enumerate(pages)]
 
 def r_person_card(b, h):
     name = s(b.get('name'))

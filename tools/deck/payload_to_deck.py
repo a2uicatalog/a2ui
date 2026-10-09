@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import deck_build as db
 
-from recipe_helpers import s, chunks, sentences, http, item_text, list_scenes, r_list, stat
+from recipe_helpers import s, chunks, sentences, http, item_text, list_scenes, r_list, stat, cards_scenes
 
 def r_pipeline(b, h): return [dict(type='bullets', f=dict(heading=h or 'Pipeline', items=[f'{i + 1}. {s(x)}' for i, x in enumerate(b.get('steps') or [])]))]
 def r_title(b, h): return [dict(type='title', f=dict(headline=s(b.get('title')), eyebrow=s(b.get('badge') or b.get('tag') or b.get('series_label')), sub=s(b.get('subtitle') or b.get('subtext'))))]
@@ -29,7 +29,7 @@ def r_stats(b, h):
     if b['type'] == 'pull_stat': rows = [stat(s(b.get('value')) + (s(b.get('unit')) if s(b.get('unit')) in ('%', 'x') else ''), b.get('label'))]
     elif b['type'] == 'social_proof_banner': rows = [stat(b.get('metric_value'), b.get('metric_label'))]
     elif b['type'] == 'metric_delta': rows = [stat(b.get('current_value'), b.get('label'))]
-    else: rows = [stat(s(m.get('prefix')) + s(m.get('value')) + s(m.get('suffix')), m.get('label')) for m in (b.get('metrics') or b.get('stats') or b.get('items') or [])]
+    else: rows = [stat(s(m.get('prefix')) + s(m.get('value')) + s(m.get('suffix')), m.get('label'), m.get('sub')) for m in (b.get('metrics') or b.get('stats') or b.get('items') or [])]
     return [dict(type='stats', f=dict(kicker=h or '', stats=pg)) for pg in chunks(rows, 4)]
 def r_table(b, h):
     hd = [s(x) for x in b.get('headers') or []]; rows = [[s(c) for c in r] for r in b.get('rows') or []]
@@ -38,7 +38,11 @@ def r_table(b, h):
 def r_kv(b, h):
     rows = [[s(i.get('key')), s(i.get('description'))] for i in b.get('items') or []]
     return [dict(type='table', f=dict(heading=s(b.get('title')) or h or 'Reference', headers=['Name', 'Description'], rows=pg)) for pg in chunks(rows, 8)]
-def r_callout(b, h): return [dict(type='bullets', f=dict(heading=s(b.get('title')) or h or 'Note', items=sentences(b.get('text') or b.get('description') or '')[:6]))]
+CALLOUT_LABEL = {'info': 'Note', 'warning': 'Warning', 'danger': 'Warning', 'error': 'Warning', 'success': 'Good to know', 'tip': 'Tip'}
+def r_callout(b, h):
+    text = s(b.get('text') or b.get('description') or b.get('body')); title = s(b.get('title')) or CALLOUT_LABEL.get(s(b.get('kind') or b.get('variant')).lower(), 'Note')
+    cards = cards_scenes(h or 'Note', [(title, text)]) if text else None
+    return cards or [dict(type='bullets', f=dict(heading=s(b.get('title')) or h or 'Note', items=sentences(text)))]
 def r_body(b, h): return [dict(type='bullets', f=dict(heading=h or 'Overview', items=sentences(b.get('text'))[:6]))]
 def r_heading(b, h): return 'PENDING'
 
