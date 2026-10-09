@@ -46,10 +46,17 @@ def r_callout(b, h):
 def r_body(b, h): return [dict(type='bullets', f=dict(heading=h or 'Overview', items=sentences(b.get('text'))[:6]))]
 def r_heading(b, h): return 'PENDING'
 
+def r_numbered(b, h):
+    """Four to twelve short steps are an overview of numbered bubbles; anything else is the usual list."""
+    items = [i for i in (item_text(x) for x in (b.get('items') or b.get('steps') or [])) if i]
+    if 4 <= len(items) <= 12 and all(len(re.sub(r'\*([^*]+)\*', r'\1', i)) <= 46 for i in items):
+        return [dict(type='ideas', f=dict(heading=s(b.get('title')) or h or 'Steps', items=items))]
+    return list_scenes(b, h, 'Steps')
+
 RECIPES = {
     'page_header': r_title, 'gradient_hero': r_title, 'closing': r_closing,
     'heading': r_heading, 'subheading': r_heading, 'body': r_body,
-    'bullet_list': r_list('List'), 'numbered_list': r_list('Steps'), 'steps': r_list('Steps'), 'icon_list': r_list('List'), 'action_items': r_list('Action items'), 'pipeline': r_pipeline,
+    'bullet_list': r_list('List'), 'numbered_list': r_numbered, 'steps': r_list('Steps'), 'icon_list': r_list('List'), 'action_items': r_list('Action items'), 'pipeline': r_pipeline,
     'quote': r_quote, 'blockquote_with_avatar': r_quote, 'testimonial_card': r_quote, 'expert_endorsement': r_quote, 'review_callout': r_quote,
     'pull_stat': r_stats, 'metric_row': r_stats, 'icon_stat_row': r_stats, 'social_proof_banner': r_stats, 'metric_delta': r_stats,
     'table': r_table, 'key_value': r_kv,

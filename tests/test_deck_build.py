@@ -47,7 +47,7 @@ def test_xml_entities_are_refused():
     assert errs_of('<!DOCTYPE d [<!ENTITY x "y">]><deck><slide layout="title"><headline>&x;</headline></slide></deck>')[0]['code'] == 'xml'
 
 def test_schema_lists_layouts():
-    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'cards', 'table', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
+    s = db.schema(); assert set(s['layouts']) == {'title', 'bullets', 'stats', 'cards', 'feature', 'ideas', 'table', 'media', 'quote', 'cta'} and 'chart' in s['film_only']
 
 def test_quote_too_long_and_missing():
     e = errs_of('<deck><slide layout="quote"><quote>' + 'x' * 241 + '</quote></slide></deck>'); assert 'limit is 240' in e[0]['message']
@@ -129,3 +129,25 @@ def test_stat_sub_line_and_dict_forms():
     r = db.run('<deck><slide layout="stats"><stat value="1" label="a" sub="s"/><notes>n</notes></slide></deck>'); assert not r['errors']
     r = db.run(json.dumps({'scenes': [{'type': 'stats', 'f': {'stats': [{'value': '1', 'label': 'a', 'sub': 's'}]}}]})); assert not r['errors']
     e = db.run(json.dumps({'scenes': [{'type': 'stats', 'f': {'stats': [['1', 'a', 's' * 41]]}}]}))['errors']; assert 'sub is 41 characters, the limit is 40' in e[0]['message']
+
+
+FEATURE = {'heading': 'Per-subagent effort levels', 'number': '05', 'caption': 'Shipped in', 'value': 'v2.1.292', 'sub': 'Oct 6, 2026', 'points': [
+    ['New parameter', 'The Agent tool now takes an effort level'], ['You choose', 'Claude runs a sub-agent at the effort you ask for'],
+    ['Mix and match', 'Quick low-effort lookups next to deep high-effort reasoning'], ['Visibility', 'Status line payloads now include agentType (2.1.293)']]}
+TOP10 = ['Claude Mods', "'You should know' side agent", 'Claude Haiku 5.5', '1M context on cloud providers', 'Per-subagent effort', 'Fail-closed hooks', 'Faster agents view', '/code-review --max-findings', 'Managed Agents onboarding', 'VS Code upgrades']
+
+def test_feature_card_overview_and_lone_callout_build_clean_on_every_target(tmp_path):
+    for target in ('any', 'powerpoint', 'google-slides'):
+        deck = {'target': target, 'scenes': [{'type': 'ideas', 'f': {'heading': 'The top 10 at a glance', 'items': TOP10}, 'notes': 'n'}, {'type': 'feature', 'f': FEATURE, 'notes': 'n'},
+                                              {'type': 'cards', 'f': {'heading': 'A callout', 'cards': [['Warning', 'Check the changelog.']]}, 'notes': 'n'}]}
+        r = db.run(json.dumps(deck), str(tmp_path / f'{target}.pptx')); assert r['ok'] and r['lint'] == [], (target, r['errors'], r['lint'])
+    from pptx import Presentation
+    names = [sh.name for sh in Presentation(str(tmp_path / 'any.pptx')).slides[2].shapes]
+    assert not any(n.startswith('Number') for n in names), 'a lone card has no number bubble'
+
+def test_feature_and_ideas_limits_are_exact():
+    e = db.run(json.dumps({'scenes': [{'type': 'feature', 'f': dict(FEATURE, number='1234')}]}))['errors']; assert 'number is 4 characters, the limit is 3' in e[0]['message'], e[0]['message']
+    e = db.run(json.dumps({'scenes': [{'type': 'feature', 'f': dict(FEATURE, points=FEATURE['points'] * 2)}]}))['errors']; assert 'points has 8 entries, the limit is 4' in e[0]['message']
+    e = db.run(json.dumps({'scenes': [{'type': 'ideas', 'f': {'heading': 'H', 'items': ['x'] * 13}}]}))['errors']; assert 'items has 13 entries, the limit is 12' in e[0]['message']
+    e = db.run(json.dumps({'scenes': [{'type': 'ideas', 'f': {'heading': 'H', 'items': ['only one']}}]}))['errors']; assert 'items needs at least 2 entry' in e[0]['message']
+    r = db.run('<deck><slide layout="feature"><heading>H</heading><number>01</number><point label="A" detail="b"/><notes>n</notes></slide></deck>'); assert not r['errors'], r['errors']

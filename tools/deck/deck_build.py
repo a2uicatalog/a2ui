@@ -42,6 +42,10 @@ LAYOUTS = {
                                           'items': dict(kind='list', required=True, min=1, max=6, item_max=240)}),
     'stats':   dict(film='stats', fields={'kicker': dict(kind='text', max=40),
                                           'stats': dict(kind='pairs', required=True, min=1, max=4, value_max=10, label_max=40, sub_max=40)}),
+    'feature': dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'number': dict(kind='text', required=True, max=3), 'caption': dict(kind='text', max=24),
+                                       'value': dict(kind='text', max=24), 'sub': dict(kind='text', max=30),
+                                       'points': dict(kind='pairs', required=True, min=1, max=4, value_max=28, label_max=110, names=('label', 'detail'))}),
+    'ideas':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'items': dict(kind='list', required=True, min=2, max=12, item_max=46)}),
     'cards':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70),
                                        'cards': dict(kind='pairs', required=True, min=1, max=4, value_max=40, label_max=220, names=('title', 'text'))}),
     'table':   dict(film=None, fields={'heading': dict(kind='text', required=True, max=70), 'headers': dict(kind='list', required=True, min=2, max=6, item_max=30),
@@ -90,6 +94,7 @@ def parse_xml(src, errs):
             if ch.tag == 'notes': notes = oneline(ch.text)
             elif ch.tag == 'item': f.setdefault('items', []).append(oneline(ch.text))
             elif ch.tag == 'stat': f.setdefault('stats', []).append((oneline(ch.get('value')), oneline(ch.get('label')), oneline(ch.get('sub'))))
+            elif ch.tag == 'point': f.setdefault('points', []).append((oneline(ch.get('label')), oneline(ch.get('detail'))))
             elif ch.tag == 'card': f.setdefault('cards', []).append((oneline(ch.get('title')), oneline(ch.get('text'))))
             elif ch.tag == 'button':
                 n = 'b2' if 'b1' in f else 'b1'; f[n] = oneline(ch.text); f['l' + n[1]] = oneline(ch.get('href'))
@@ -118,7 +123,7 @@ def parse_json(src, errs):
         if 'steps' in s and 'items' not in s: s['items'] = s.pop('steps')
         if 'heading' not in s and typ == 'steps' and 'headline' in s: s['heading'] = s.pop('headline')
         if isinstance(s.get('items'), str): s['items'] = lines(s['items'])
-        for key, names in (('stats', ('value', 'label', 'sub')), ('cards', ('title', 'text'))):
+        for key, names in (('stats', ('value', 'label', 'sub')), ('cards', ('title', 'text')), ('points', ('label', 'detail'))):
             if isinstance(s.get(key), str): s[key] = [tuple(x.strip() for x in l.split('|')) for l in lines(s[key])]
             if isinstance(s.get(key), list): s[key] = [tuple(oneline(e.get(n)) for n in names) if isinstance(e, dict) else tuple(oneline(x) for x in e) for e in s[key]]
         deck['scenes'].append(dict(layout=typ, f={kk: (oneline(v) if isinstance(v, str) else v) for kk, v in s.items()}, notes=notes, at=i))
@@ -341,7 +346,8 @@ def lay_cards(sl, f, at, errs):
             tl.append(r); tx.append(q)
         if bad: last_err = bad; continue
         th = max(len(r[2]) * r[0] * LH / 72 + 0.16 for r in tl); xh = max((len(q[2]) * q[0] * LH / 72 + 0.16 for q in tx if q), default=0)
-        ch = cp + bub + prof['after_bub'] + th + (0.1 + xh if xh else 0) + cp
+        bubh = bub + prof['after_bub'] if n > 1 else 0                      # a lone card (a callout) has nothing to number
+        ch = cp + bubh + th + (0.1 + xh if xh else 0) + cp
         if y0 + ch <= H_IN - 0.55: chosen = (prof, tl, tx, th, xh, ch, inner); break
         last_err = f'slide {at}: the cards need {ch:.1f} in of height, the slide has {H_IN - 0.55 - y0:.1f} in; shorten the text or use fewer cards'
     if not chosen: err(errs, at, 'does-not-fit', last_err, field='cards'); return
@@ -349,9 +355,67 @@ def lay_cards(sl, f, at, errs):
     sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
     for j, ((ti, te, *_), r, q) in enumerate(zip(cd, tl, tx)):
         x = MX + j * (cw + gap); card = sl.box(MSO_SHAPE.ROUNDED_RECTANGLE, x, y0, cw, ch, k.BRAND['surface'], k.BRAND['border'], f'Card {j + 1}'); card.adjustments[0] = 0.07; sl.decorative(card)
-        b = sl.box(MSO_SHAPE.OVAL, x + cp, y0 + cp, bub, bub, k.BRAND['accent'], None, f'Number {j + 1}'); sl.text(b, [(str(j + 1), None)], k.FLOOR_PT, True, k.BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, 0.0); sl.decorative(b)
-        yy = y0 + cp + bub + prof['after_bub']; sl.text(sl.tb(x + cp, yy, inner, th, f'Title {j + 1}'), sl.accent_runs(ti, k.BRAND['text']), r[0], True, k.BRAND['text']); yy += th + 0.1
+        if n > 1: b = sl.box(MSO_SHAPE.OVAL, x + cp, y0 + cp, bub, bub, k.BRAND['accent'], None, f'Number {j + 1}'); sl.text(b, [(str(j + 1), None)], k.FLOOR_PT, True, k.BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, 0.0); sl.decorative(b)
+        yy = y0 + cp + bubh; sl.text(sl.tb(x + cp, yy, inner, th, f'Title {j + 1}'), sl.accent_runs(ti, k.BRAND['text']), r[0], True, k.BRAND['text']); yy += th + 0.1
         if q: sl.text(sl.tb(x + cp, yy, inner, xh, f'Text {j + 1}'), [(plain(te), None)], q[0], False, k.BRAND['muted'])
+
+def lay_feature(sl, f, at, errs):
+    """One idea, framed: a dark card with the big number and where it shipped, and up to four bubbled points (a bold label and a grey detail) beside it."""
+    hr = heading_fit(f['heading'], (40, 36, 32), CONTENT_W, 2, at, 'heading', errs)
+    if not hr: return
+    hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15; y0 = top + hh + 0.45; room = H_IN - 0.55 - y0
+    cw, cp = 3.4, 0.3; inner = cw - 2 * cp; px = MX + cw + 0.6; pw = W_IN - MX - px; tw = pw - 0.5; gap = 0.22; chosen = None
+    for lpt, dpt in ((24, 20), (22, 20), (22, 18), (20, 18)):                 # the largest sizes at which every point fits
+        pts = []; bad = None
+        for j, (lb, dt, *_) in enumerate(f['points'], 1):
+            r = k.fit_text(plain(lb), (lpt,), True, 1.5, tw, max_lines=1)
+            if not r: bad = f'slide {at}: points[{j}] label does not fit on one line in {tw:.1f} in'; break
+            q = k.fit_text(plain(dt), (dpt,), False, 1.5, tw, max_lines=3) if dt else None
+            if dt and not q: bad = f'slide {at}: points[{j}] detail does not fit in 3 lines in {tw:.1f} in; shorten it'; break
+            pts.append((r, q))
+        if bad: err_msg = bad; continue
+        hts = [r[0] * LH / 72 + 0.06 + (len(q[2]) * q[0] * LH / 72 + 0.06 if q else 0) for r, q in pts]; block = sum(hts) + gap * (len(hts) - 1)
+        if block <= room: chosen = (pts, hts, block); break
+        err_msg = f'slide {at}: the points need {block:.1f} in of height, the slide has {room:.1f} in; shorten them or use fewer'
+    if not chosen: err(errs, at, 'does-not-fit', err_msg, field='points'); return
+    pts, hts, block = chosen
+    npt = next((p for p in (96, 88, 80, 72, 64) if k.width_pt(f['number'], p, True) / k.SAFETY <= inner * 72), None)
+    if not npt: err(errs, at, 'does-not-fit', f'slide {at}: number {f["number"]!r} is too wide for the card', field='number'); return
+    ch = max(block, cp + npt * LH / 72 + 0.1 + (0.5 if f.get('caption') else 0) + (0.55 if f.get('value') else 0) + (0.4 if f.get('sub') else 0) + cp)
+    ch = min(ch, room)
+    sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
+    card = sl.box(MSO_SHAPE.ROUNDED_RECTANGLE, MX, y0, cw, ch, k.BRAND['surface'], k.BRAND['border'], 'Idea card'); card.adjustments[0] = 0.05; sl.decorative(card)
+    sl.text(sl.tb(MX + cp, y0 + cp, inner, npt * LH / 72 + 0.1, 'Number'), [(f['number'], None)], npt, True, k.BRAND['accent']); yy = y0 + ch - cp
+    for name, pt, bold, col, hgt in (('Sub', k.FLOOR_PT, False, k.BRAND['muted'], 0.4), ('Value', 28, True, k.BRAND['text'], 0.55), ('Caption', k.FLOOR_PT, True, k.BRAND['accent2'], 0.5)):
+        key = {'Sub': 'sub', 'Value': 'value', 'Caption': 'caption'}[name]
+        if f.get(key): yy -= hgt; sl.text(sl.tb(MX + cp, yy, inner, hgt, name), [((plain(f[key]).upper() if name == 'Caption' else plain(f[key])), None)], pt, bold, col)
+    y = y0 + (room - block) / 2 if block < ch else y0
+    for j, ((lb, dt, *_), (r, q), hgt) in enumerate(zip(f['points'], pts, hts), 1):
+        d = sl.box(MSO_SHAPE.OVAL, px, y + (r[0] * LH / 72 + 0.06 - 0.22) / 2, 0.22, 0.22, k.BRAND['accent'], None, f'Bubble {j}'); sl.decorative(d)
+        sl.text(sl.tb(px + 0.5, y, tw, r[0] * LH / 72 + 0.06, f'Label {j}'), [(plain(lb), None)], r[0], True, k.BRAND['text']); yy2 = y + r[0] * LH / 72 + 0.06
+        if q: sl.text(sl.tb(px + 0.5, yy2, q[1], len(q[2]) * q[0] * LH / 72 + 0.06, f'Detail {j}'), [(plain(dt), None)], q[0], False, k.BRAND['muted'])
+        y += hgt + gap
+
+def lay_ideas(sl, f, at, errs):
+    """An overview: numbered bubbles with a short idea beside each, in one or two columns."""
+    hr = heading_fit(f['heading'], (44, 40, 36), CONTENT_W, 2, at, 'heading', errs)
+    if not hr: return
+    hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15; items = f['items']; n = len(items)
+    cols = 1 if n <= 5 else 2; per = -(-n // cols); colw = (CONTENT_W - 0.6) / cols if cols == 2 else 9.0; bub = 0.6; tw = colw - bub - 0.3
+    y0 = top + hh + 0.5; chosen = None; bad = None
+    for pt in (26, 24, 22, 20):                                               # one size for the whole grid: the largest at which it fits
+        rows = [k.fit_text(plain(it), (pt,), False, 2.0, tw, max_lines=2) for it in items]
+        if not all(rows): bad = f'slide {at}: an item does not fit in 2 lines in {tw:.1f} in; shorten it'; continue
+        pitch = max(0.85, max(len(r[2]) * r[0] * LH / 72 + 0.2 for r in rows))
+        if y0 + per * pitch <= H_IN - 0.45: chosen = (rows, pitch); break
+        bad = f'slide {at}: {n} items do not fit under the heading; use fewer or shorter ones'
+    if not chosen: err(errs, at, 'does-not-fit', bad, field='items'); return
+    rows, pitch = chosen
+    sl.wordmark(); t = sl.title('Heading', MX, top, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text'])
+    for j, (it, r) in enumerate(zip(items, rows)):
+        c, i = divmod(j, per); x = MX + c * (colw + 0.6); y = y0 + i * pitch
+        b = sl.box(MSO_SHAPE.OVAL, x, y, bub, bub, k.BRAND['accent'], None, f'Number {j + 1}'); sl.text(b, [(str(j + 1), None)], k.FLOOR_PT, True, k.BRAND['accent_ink'], PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, 0.0); sl.decorative(b)
+        hgt = len(r[2]) * r[0] * LH / 72 + 0.12; sl.text(sl.tb(x + bub + 0.3, y + (bub - hgt) / 2 if hgt < bub else y, r[1], hgt, f'Idea {j + 1}'), sl.accent_runs(it, k.BRAND['text']), r[0], False, k.BRAND['text'])
 
 def lay_cta(sl, f, at, errs):
     hr = heading_fit(f['headline'], (66, 60, 54, 48, 44), 7.6 if f.get('l1') else CONTENT_W, 3, at, 'headline', errs)
@@ -452,7 +516,7 @@ def lay_table(sl, f, at, errs):
             r.font.color.rgb = k.rgb(k.BRAND['accent2'] if i == 0 else k.BRAND['text']); r.font.language_id = MSO_LANGUAGE_ID.ENGLISH_US
     gf._element.nvGraphicFramePr.cNvPr.set('descr', f"Table: {', '.join(plain(h) for h in hd)}; {len(rows)} rows")
 
-LAYOUT_FN = {'title': lay_title, 'cards': lay_cards, 'table': lay_table, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
+LAYOUT_FN = {'title': lay_title, 'cards': lay_cards, 'feature': lay_feature, 'ideas': lay_ideas, 'table': lay_table, 'bullets': lay_bullets, 'stats': lay_stats, 'media': lay_media, 'quote': lay_quote, 'cta': lay_cta}
 
 MEDIA = {}
 def build(deck, out, errs):

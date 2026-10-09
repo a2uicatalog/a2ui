@@ -84,3 +84,9 @@ def test_callouts_and_grids_become_cards_and_fall_back_when_too_long():
     sc, _ = p.convert({'blocks': [{'type': 'feature_grid', 'heading': 'Why', 'features': [{'title': f'F{i}', 'description': 'd'} for i in range(5)]}]})
     assert [x['type'] for x in sc] == ['cards', 'cards'] and len(sc[0]['f']['cards']) == 3
     sc, _ = p.convert({'blocks': [{'type': 'metric_row', 'metrics': [{'value': '1', 'label': 'a', 'sub': 'in the catalog'}]}]}); assert sc[0]['f']['stats'] == [('1', 'a', 'in the catalog')]
+
+
+def test_numbered_list_of_short_steps_is_an_overview_and_others_stay_a_list():
+    sc, _ = p.convert({'blocks': [{'type': 'numbered_list', 'title': 'Build order', 'items': [{'text': t} for t in ('One', 'Two', 'Three', 'Four')]}]}); assert sc[0]['type'] == 'ideas'
+    sc, _ = p.convert({'blocks': [{'type': 'numbered_list', 'items': [{'text': 'a'}, {'text': 'b'}]}]}); assert sc[0]['type'] == 'bullets'
+    sc, _ = p.convert({'blocks': [{'type': 'numbered_list', 'items': [{'text': 'x' * 60}] * 4}]}); assert sc[0]['type'] == 'bullets'
