@@ -258,22 +258,31 @@ def lay_title(sl, f, at, errs):
     t = sl.title('Headline', MX, y, hw, hh); sl.text(t, sl.accent_runs(f['headline'], k.BRAND['text']), hp, True, k.BRAND['text']); y += hh + g
     if sr: sl.text(sl.tb(MX, y, sr[1], sh_, 'Subhead'), [(plain(f['sub']), None)], sr[0], False, k.BRAND['muted'])
 
+# Two profiles, tried in order: the roomy one every existing deck uses, then a tighter one (smaller heading, smaller gaps, sizes down to the 18 pt floor)
+# that only applies when the roomy one cannot hold the list. A slide that fits the first is laid out exactly as before.
+BULLET_PROFILES = (dict(heads=(44, 40, 36), under=0.45, gap=0.28, pts=(28, 26, 24, 22, 20)),
+                   dict(heads=(36, 32), under=0.30, gap=0.18, pts=(22, 20, 19, 18)))
 def lay_bullets(sl, f, at, errs):
-    hr = heading_fit(f['heading'], (44, 40, 36), CONTENT_W, 2, at, 'heading', errs)
-    if not hr: return
-    hp, hw, hl = hr; pad = 0.08; hh = len(hl) * hp * LH / 72 + 2 * pad; top = 1.15; bottom = H_IN - 0.55
-    for pt in (28, 26, 24, 22, 20):                                         # the largest item size at which the whole list fits
-        rows = []
-        for it in f['items']:
-            r = k.fit_text(plain(it), (pt,), False, 4.0, CONTENT_W - 0.6, max_lines=3)
-            if not r: rows = None; break
-            rows.append(r)
-        if rows is None: continue
-        gap = 0.28; total = sum(len(r[2]) * pt * LH / 72 + 2 * pad for r in rows) + gap * (len(rows) - 1)
-        if hh + 0.45 + total <= bottom - top: break
-    else: err(errs, at, 'does-not-fit', f'slide {at}: the {len(f["items"])} items do not fit on the slide at 20 pt; shorten them or split the slide', field='items'); return
+    pad = 0.08; top = 1.15; bottom = H_IN - 0.55; chosen = None; heading_ok = False
+    for prof in BULLET_PROFILES:
+        hr = k.fit_text(plain(f['heading']), prof['heads'], True, 5.0, CONTENT_W, max_lines=2)
+        if not hr: continue
+        heading_ok = True; hp, hw, hl = hr; hh = len(hl) * hp * LH / 72 + 2 * pad
+        for pt in prof['pts']:                                                # the largest item size at which the whole list fits
+            rows = []
+            for it in f['items']:
+                r = k.fit_text(plain(it), (pt,), False, 4.0, CONTENT_W - 0.6, max_lines=3)
+                if not r: rows = None; break
+                rows.append(r)
+            if rows is None: continue
+            total = sum(len(r[2]) * pt * LH / 72 + 2 * pad for r in rows) + prof['gap'] * (len(rows) - 1)
+            if hh + prof['under'] + total <= bottom - top: chosen = (prof, hp, hw, hl, hh, pt, rows); break
+        if chosen: break
+    if not heading_ok: err(errs, at, 'does-not-fit', f'slide {at}: heading does not fit in 2 lines at 36 pt or larger on this target; shorten it', field='heading'); return
+    if not chosen: err(errs, at, 'does-not-fit', f'slide {at}: the {len(f["items"])} items do not fit on the slide even at 18 pt; shorten them or split the slide', field='items'); return
+    prof, hp, hw, hl, hh, pt, rows = chosen; gap = prof['gap']
     sl.wordmark(); y = top
-    t = sl.title('Heading', MX, y, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text']); y += hh + 0.45
+    t = sl.title('Heading', MX, y, hw, hh); sl.text(t, sl.accent_runs(f['heading'], k.BRAND['text']), hp, True, k.BRAND['text']); y += hh + prof['under']
     for i, (it, r) in enumerate(zip(f['items'], rows), 1):
         ih = len(r[2]) * pt * LH / 72 + 2 * pad; dot = 0.16
         d = sl.box(MSO_SHAPE.OVAL, MX, y + (pt * LH / 72 + 2 * pad - dot) / 2, dot, dot, k.BRAND['accent'], None, f'Bullet {i}'); sl.decorative(d)

@@ -90,3 +90,26 @@ def test_studio_state_becomes_a_deck():
 def test_device_scene_becomes_bullets_with_warning():
     r = db.run(json.dumps({'scenes': [{'type': 'device', 'f': {'heading': 'Built for *every screen*', 'items': 'Plan\nBuild'}}]}))
     assert not r['errors'] and r['slides'] == 1 and any(w['code'] == 'film-alias' for w in r['warnings'])
+
+
+CLAUDE_MODS = {'heading': '1. Claude Mods: plugins that change deeper behavior', 'items': [
+    "Shipped in 2.1.287 (Oct 1): plugins can now modify Claude Code's deeper behavior, not just add commands",
+    'Mods hook events like tool.check, prompt.submit, agent.spawn and turn.step',
+    'They can draw their own UI panes, add autocomplete rows and raise native notifications ($.ui.notify)',
+    'Org-managed mods take priority, and a user mod that interferes with an org guard is unloaded']}
+
+def test_four_long_items_under_a_two_line_heading_fit_on_both_targets(tmp_path):
+    """Seen in a real agent run (2026-10-09): four items of about 100 characters under a two-line heading were refused at 20 pt on the `any` target.
+    The layout now falls back to a tighter profile (smaller heading, smaller gaps, down to the 18 pt floor) before it gives up."""
+    for target in ('any', 'powerpoint', 'google-slides'):
+        r = db.run(json.dumps({'target': target, 'scenes': [{'type': 'bullets', 'f': CLAUDE_MODS, 'notes': 'n'}]}), str(tmp_path / f'{target}.pptx'))
+        assert r['ok'] and not r['errors'] and r['lint'] == [], (target, r['errors'], r['lint'])
+
+def test_a_list_that_fits_the_roomy_profile_is_laid_out_as_before(tmp_path):
+    r = db.run(json.dumps({'target': 'google-slides', 'scenes': [{'type': 'bullets', 'f': {'heading': 'H', 'items': ['a', 'b', 'c']}, 'notes': 'n'}]}), str(tmp_path / 'x.pptx'))
+    assert r['ok']
+
+def test_a_list_too_long_even_for_the_tight_profile_is_still_an_exact_error(tmp_path):
+    f = {'heading': 'H', 'items': ['x ' * 100] * 6}
+    e = db.run(json.dumps({'target': 'any', 'scenes': [{'type': 'bullets', 'f': f}]}), str(tmp_path / 'x.pptx'))['errors']
+    assert 'do not fit on the slide even at 18 pt' in e[0]['message'], e
