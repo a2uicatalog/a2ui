@@ -387,6 +387,9 @@ The full per-file notice is `public/surfaces/diagram-studio/NOTICE.md`. In short
   for use with, or incorporated into Atlassian products or products distributed through the Atlassian marketplace or plugin ecosystem
   without explicit written permission**. Diagrams and exported images that people make with the editor are not affected. Do not package this
   view, or the stencil bundle, into an Atlassian app.
+- **Data mined from draw.io's AWS sidebar** (`tools/diagram/styles/aws.catalogue.json` and the worker's generated `aws-catalogue.js`): service names, stencil ids,
+  category colours and group style strings read from draw.io's `Sidebar-AWS4.js` (Apache License 2.0). No artwork is copied; the icons themselves are drawn by draw.io
+  from its own library. "AWS-style" in this project means these conventions; it is not affiliated with or endorsed by Amazon, and AWS and the service names are trademarks of Amazon.
 - Not shipped here, and so not covered by a licence in this repository: draw.io's `templates/` folder (CC BY 4.0) and its `libavoid-js`
   routing library (LGPL 2.1). If either is ever added to what is served, its licence text and attribution (and, for LGPL, a link to its source and
   a replaceable build) must be added at the same time.

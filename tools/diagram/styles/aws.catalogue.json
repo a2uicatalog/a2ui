@@ -1,0 +1,2429 @@
+{
+ "source": "draw.io Sidebar-AWS4.js (Apache-2.0, jgraph/drawio)",
+ "categories": {
+  "Analytics": {
+   "fill": "#8C4FFF",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "analytics",
+     "name": "Analytics",
+     "tag": "analytics",
+     "category_icon": false
+    },
+    {
+     "icon": "athena",
+     "name": "Athena",
+     "tag": "athena",
+     "category_icon": false
+    },
+    {
+     "icon": "datazone",
+     "name": "DataZone",
+     "tag": "datazone",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudsearch2",
+     "name": "CloudSearch",
+     "tag": "cloudsearch",
+     "category_icon": false
+    },
+    {
+     "icon": "elasticsearch_service",
+     "name": "OpenSearch Service",
+     "tag": "opensearch open search service elasticsearch",
+     "category_icon": false
+    },
+    {
+     "icon": "emr",
+     "name": "EMR",
+     "tag": "emr",
+     "category_icon": false
+    },
+    {
+     "icon": "finspace",
+     "name": "FinSpace",
+     "tag": "finspace",
+     "category_icon": false
+    },
+    {
+     "icon": "kinesis",
+     "name": "Kinesis",
+     "tag": "kinesis",
+     "category_icon": false
+    },
+    {
+     "icon": "kinesis_data_firehose",
+     "name": "Data Firehose",
+     "tag": "data firehose kinesis data firehose",
+     "category_icon": false
+    },
+    {
+     "icon": "kinesis_data_streams",
+     "name": "Kinesis Data Streams",
+     "tag": "kinesis data streams",
+     "category_icon": false
+    },
+    {
+     "icon": "kinesis_video_streams",
+     "name": "Kinesis Video Streams",
+     "tag": "kinesis video streams",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_service_for_apache_flink",
+     "name": "Managed Service for Apache Flink",
+     "tag": "managed service for apache flink kinesis data analytics",
+     "category_icon": false
+    },
+    {
+     "icon": "clean_rooms",
+     "name": "Clean Rooms",
+     "tag": "clean rooms",
+     "category_icon": false
+    },
+    {
+     "icon": "redshift",
+     "name": "Redshift",
+     "tag": "redshift",
+     "category_icon": false
+    },
+    {
+     "icon": "sagemaker_2",
+     "name": "SageMaker",
+     "tag": "sagemaker",
+     "category_icon": false
+    },
+    {
+     "icon": "entity_resolution",
+     "name": "Entity Resolution",
+     "tag": "entity resolution",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_streaming_for_kafka",
+     "name": "Managed Streaming for Apache Kafka",
+     "tag": "managed streaming for apache kafka msk",
+     "category_icon": false
+    },
+    {
+     "icon": "glue",
+     "name": "Glue",
+     "tag": "glue",
+     "category_icon": false
+    },
+    {
+     "icon": "glue_databrew",
+     "name": "Glue DataBrew",
+     "tag": "glue databrew",
+     "category_icon": false
+    },
+    {
+     "icon": "lake_formation",
+     "name": "Lake Formation",
+     "tag": "lake formation",
+     "category_icon": false
+    },
+    {
+     "icon": "data_exchange",
+     "name": "Data Exchange",
+     "tag": "data aexchange",
+     "category_icon": false
+    }
+   ]
+  },
+  "Application Integration": {
+   "fill": "#E7157B",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "application_integration",
+     "name": "Application Integration",
+     "tag": "application integration",
+     "category_icon": false
+    },
+    {
+     "icon": "api_gateway",
+     "name": "API Gateway",
+     "tag": "api gateway",
+     "category_icon": false
+    },
+    {
+     "icon": "mq",
+     "name": "MQ",
+     "tag": "mq",
+     "category_icon": false
+    },
+    {
+     "icon": "sns",
+     "name": "Simple Notification Service",
+     "tag": "sns simple notification service",
+     "category_icon": false
+    },
+    {
+     "icon": "sqs",
+     "name": "Simple Queue Service",
+     "tag": "sqs simple queue service",
+     "category_icon": false
+    },
+    {
+     "icon": "appsync",
+     "name": "AppSync",
+     "tag": "appsync",
+     "category_icon": false
+    },
+    {
+     "icon": "b2b_data_interchange",
+     "name": "B2B Data Interchange",
+     "tag": "b2b data interchange",
+     "category_icon": false
+    },
+    {
+     "icon": "eventbridge",
+     "name": "EventBridge",
+     "tag": "eventbridge event bridge",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_workflows_for_apache_airflow",
+     "name": "Managed Workflows for Apache Airflow",
+     "tag": "managed workflows for apache airflow",
+     "category_icon": false
+    },
+    {
+     "icon": "step_functions",
+     "name": "Step Functions",
+     "tag": "step functions",
+     "category_icon": false
+    },
+    {
+     "icon": "express_workflow",
+     "name": "Express Workflows",
+     "tag": "express workflows",
+     "category_icon": false
+    },
+    {
+     "icon": "appflow",
+     "name": "AppFlow",
+     "tag": "appflow",
+     "category_icon": false
+    }
+   ]
+  },
+  "Cloud Financial Management": {
+   "fill": "#7AA116",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "cost_management",
+     "name": "Cloud Financial Management",
+     "tag": "cost management cloud financial management",
+     "category_icon": false
+    },
+    {
+     "icon": "budgets_2",
+     "name": "Budgets",
+     "tag": "budgets",
+     "category_icon": false
+    },
+    {
+     "icon": "cost_and_usage_report",
+     "name": "Cost & Usage Report",
+     "tag": "cost and usage report",
+     "category_icon": false
+    },
+    {
+     "icon": "cost_explorer",
+     "name": "Cost Explorer",
+     "tag": "cost explorer",
+     "category_icon": false
+    },
+    {
+     "icon": "finops_agent",
+     "name": "FinOps Agent",
+     "tag": "finops agent",
+     "category_icon": false
+    },
+    {
+     "icon": "custom_billing_manager",
+     "name": "Billing Conductor",
+     "tag": "custom billing manager conductor",
+     "category_icon": false
+    },
+    {
+     "icon": "reserved_instance_reporting",
+     "name": "Reserved Instance Reporting",
+     "tag": "reserved instance reporting",
+     "category_icon": false
+    },
+    {
+     "icon": "savings_plans",
+     "name": "Savings Plans",
+     "tag": "savings plans",
+     "category_icon": false
+    }
+   ]
+  },
+  "Blockchain": {
+   "fill": "#ED7100",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "blockchain",
+     "name": "Blockchain",
+     "tag": "blockchain",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_blockchain",
+     "name": "Managed Blockchain",
+     "tag": "managed blockchain",
+     "category_icon": false
+    }
+   ]
+  },
+  "Business Applications": {
+   "fill": "#DD344C",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "business_application",
+     "name": "Business Applications",
+     "tag": "business application applications",
+     "category_icon": false
+    },
+    {
+     "icon": "chime",
+     "name": "Chime",
+     "tag": "chime",
+     "category_icon": false
+    },
+    {
+     "icon": "chime_sdk",
+     "name": "Chime SDK",
+     "tag": "chime sdk software development kit",
+     "category_icon": false
+    },
+    {
+     "icon": "connect",
+     "name": "Connect",
+     "tag": "connect",
+     "category_icon": false
+    },
+    {
+     "icon": "chime",
+     "name": "Chime Voice Connector",
+     "tag": "chime voice connector",
+     "category_icon": false
+    },
+    {
+     "icon": "pinpoint",
+     "name": "Pinpoint",
+     "tag": "pinpoint",
+     "category_icon": false
+    },
+    {
+     "icon": "pinpoint",
+     "name": "Pinpoint APIs",
+     "tag": "pinpoint api application programming interface",
+     "category_icon": false
+    },
+    {
+     "icon": "quick_suite",
+     "name": "Quick",
+     "tag": "quick suite quicksight",
+     "category_icon": false
+    },
+    {
+     "icon": "simple_email_service",
+     "name": "Simple Email Service",
+     "tag": "simple email service",
+     "category_icon": false
+    },
+    {
+     "icon": "workdocs",
+     "name": "WorkDocs SDK",
+     "tag": "workdocs sdk software development kit",
+     "category_icon": false
+    },
+    {
+     "icon": "workmail",
+     "name": "WorkMail",
+     "tag": "workmail",
+     "category_icon": false
+    },
+    {
+     "icon": "appfabric",
+     "name": "AppFabric",
+     "tag": "appfabric",
+     "category_icon": false
+    },
+    {
+     "icon": "end_user_messaging",
+     "name": "End User Messaging",
+     "tag": "end user messaging",
+     "category_icon": false
+    },
+    {
+     "icon": "supply_chain",
+     "name": "Supply Chain",
+     "tag": "supply chain",
+     "category_icon": false
+    },
+    {
+     "icon": "wickr",
+     "name": "Wickr",
+     "tag": "wickr",
+     "category_icon": false
+    }
+   ]
+  },
+  "Compute": {
+   "fill": "#ED7100",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "compute",
+     "name": "Compute",
+     "tag": "compute",
+     "category_icon": false
+    },
+    {
+     "icon": "ec2",
+     "name": "EC2",
+     "tag": "ec2",
+     "category_icon": false
+    },
+    {
+     "icon": "auto_scaling2",
+     "name": "EC2 Auto Scaling",
+     "tag": "ec2 auto scaling",
+     "category_icon": false
+    },
+    {
+     "icon": "auto_scaling3",
+     "name": "Auto Scaling",
+     "tag": "auto scaling",
+     "category_icon": false
+    },
+    {
+     "icon": "bottlerocket",
+     "name": "Bottlerocket",
+     "tag": "bottlerocket",
+     "category_icon": false
+    },
+    {
+     "icon": "lightsail",
+     "name": "Lightsail",
+     "tag": "lightsail",
+     "category_icon": false
+    },
+    {
+     "icon": "lightsail_for_research",
+     "name": "Lightsail for Research",
+     "tag": "lightsail for research",
+     "category_icon": false
+    },
+    {
+     "icon": "app_runner",
+     "name": "App Runner",
+     "tag": "app application runner",
+     "category_icon": false
+    },
+    {
+     "icon": "batch",
+     "name": "Batch",
+     "tag": "batch",
+     "category_icon": false
+    },
+    {
+     "icon": "compute_optimizer",
+     "name": "Compute Optimizer",
+     "tag": "compute optimizer",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_beanstalk",
+     "name": "Elastic Beanstalk",
+     "tag": "elastic beanstalk",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_fabric_adapter",
+     "name": "Elastic Fabric Adapter",
+     "tag": "elastic fabric adapter",
+     "category_icon": false
+    },
+    {
+     "icon": "fargate",
+     "name": "Fargate",
+     "tag": "fargate",
+     "category_icon": false
+    },
+    {
+     "icon": "ec2_image_builder",
+     "name": "EC2 Image Builder",
+     "tag": "ec2 image builder",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_vmware_service",
+     "name": "Elastic VMware Service",
+     "tag": "elastic vmware service",
+     "category_icon": false
+    },
+    {
+     "icon": "lambda",
+     "name": "Lambda",
+     "tag": "lambda",
+     "category_icon": false
+    },
+    {
+     "icon": "local_zones",
+     "name": "Local Zones",
+     "tag": "local zones",
+     "category_icon": false
+    },
+    {
+     "icon": "nice_dcv",
+     "name": "DCV",
+     "tag": "nice dcv",
+     "category_icon": false
+    },
+    {
+     "icon": "nitro_enclaves",
+     "name": "Nitro Enclaves",
+     "tag": "nitro enclaves",
+     "category_icon": false
+    },
+    {
+     "icon": "outposts",
+     "name": "Outposts rack",
+     "tag": "outposts rack",
+     "category_icon": false
+    },
+    {
+     "icon": "outposts_1u_and_2u_servers",
+     "name": "Outposts servers",
+     "tag": "outposts servers",
+     "category_icon": false
+    },
+    {
+     "icon": "parallel_cluster",
+     "name": "Parallel Cluster",
+     "tag": "parallel cluster",
+     "category_icon": false
+    },
+    {
+     "icon": "parallel_computing_service",
+     "name": "Parallel Computing Service",
+     "tag": "parallel computing service",
+     "category_icon": false
+    },
+    {
+     "icon": "serverless_application_repository",
+     "name": "Serverless Application Repository",
+     "tag": "serverless application repository",
+     "category_icon": false
+    },
+    {
+     "icon": "simspace_weaver",
+     "name": "SimSpace Weaver",
+     "tag": "simspace weaver",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_load_balancing",
+     "name": "Elastic Load Balancing",
+     "tag": "elastic load balancing",
+     "category_icon": false
+    },
+    {
+     "icon": "wavelength",
+     "name": "Wavelength",
+     "tag": "wavelength",
+     "category_icon": false
+    }
+   ]
+  },
+  "Contact Center": {
+   "fill": "#DD344C",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "contact_center",
+     "name": "Customer Experience",
+     "tag": "contact center customer experience",
+     "category_icon": false
+    },
+    {
+     "icon": "connect",
+     "name": "Connect",
+     "tag": "connect",
+     "category_icon": false
+    }
+   ]
+  },
+  "Containers": {
+   "fill": "#ED7100",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "containers",
+     "name": "Containers",
+     "tag": "",
+     "category_icon": false
+    },
+    {
+     "icon": "ecs_anywhere",
+     "name": "ECS Anywhere",
+     "tag": "ecs anywhere",
+     "category_icon": false
+    },
+    {
+     "icon": "eks_anywhere",
+     "name": "EKS Anywhere",
+     "tag": "eks anywhere",
+     "category_icon": false
+    },
+    {
+     "icon": "eks_distro",
+     "name": "EKS Distro",
+     "tag": "eks distro",
+     "category_icon": false
+    },
+    {
+     "icon": "eks",
+     "name": "Elastic Kubernetes Service",
+     "tag": "elastic container service eks for kubernetes eks cloud",
+     "category_icon": false
+    },
+    {
+     "icon": "ecr",
+     "name": "Elastic Container Registry",
+     "tag": "elastic container registry ecr",
+     "category_icon": false
+    },
+    {
+     "icon": "ecs",
+     "name": "Elastic Container Service",
+     "tag": "elastic container service ecs",
+     "category_icon": false
+    },
+    {
+     "icon": "fargate",
+     "name": "Fargate",
+     "tag": "fargate",
+     "category_icon": false
+    },
+    {
+     "icon": "red_hat_openshift",
+     "name": "Red Hat OpenShift Service on AWS",
+     "tag": "red hat openshift service on rosa",
+     "category_icon": false
+    }
+   ]
+  },
+  "Customer Enablement": {
+   "fill": "#C925D1",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "customer_enablement",
+     "name": "Customer Enablement",
+     "tag": "customer enablement",
+     "category_icon": false
+    },
+    {
+     "icon": "activate",
+     "name": "Activate",
+     "tag": "activate",
+     "category_icon": false
+    },
+    {
+     "icon": "iq",
+     "name": "IQ",
+     "tag": "iq",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_services",
+     "name": "Managed Services",
+     "tag": "managed services",
+     "category_icon": false
+    },
+    {
+     "icon": "professional_services",
+     "name": "Professional Services",
+     "tag": "professional services",
+     "category_icon": false
+    },
+    {
+     "icon": "repost",
+     "name": "rePost",
+     "tag": "repost",
+     "category_icon": false
+    },
+    {
+     "icon": "repost_private",
+     "name": "rePost Private",
+     "tag": "repost private",
+     "category_icon": false
+    },
+    {
+     "icon": "support",
+     "name": "Support",
+     "tag": "support",
+     "category_icon": false
+    },
+    {
+     "icon": "training_certification",
+     "name": "Training Certification",
+     "tag": "training certification",
+     "category_icon": false
+    }
+   ]
+  },
+  "Customer Engagement": {
+   "fill": "#3334B9",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;gradientColor=#4D72F3;gradientDirection=north;fillColor=#3334B9;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "customer_engagement",
+     "name": "Customer Engagement",
+     "tag": "customer engagement",
+     "category_icon": false
+    },
+    {
+     "icon": "connect",
+     "name": "Connect",
+     "tag": "connect",
+     "category_icon": false
+    },
+    {
+     "icon": "pinpoint",
+     "name": "Pinpoint",
+     "tag": "pinpoint",
+     "category_icon": false
+    },
+    {
+     "icon": "simple_email_service",
+     "name": "Simple Email Service",
+     "tag": "simple email service",
+     "category_icon": false
+    }
+   ]
+  },
+  "Database": {
+   "fill": "#C925D1",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "database",
+     "name": "Databases",
+     "tag": "database databases",
+     "category_icon": false
+    },
+    {
+     "icon": "aurora",
+     "name": "Aurora",
+     "tag": "aurora",
+     "category_icon": false
+    },
+    {
+     "icon": "documentdb_with_mongodb_compatibility",
+     "name": "DocumentDB",
+     "tag": "documentdb with mongodb compatibility",
+     "category_icon": false
+    },
+    {
+     "icon": "dynamodb",
+     "name": "DynamoDB",
+     "tag": "dynamodb",
+     "category_icon": false
+    },
+    {
+     "icon": "elasticache",
+     "name": "ElastiCache",
+     "tag": "elasticache",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_apache_cassandra_service",
+     "name": "Managed Apache Cassandra Service",
+     "tag": "managed apache cassandra service",
+     "category_icon": false
+    },
+    {
+     "icon": "neptune",
+     "name": "Neptune",
+     "tag": "neptune",
+     "category_icon": false
+    },
+    {
+     "icon": "rds",
+     "name": "RDS",
+     "tag": "rds",
+     "category_icon": false
+    },
+    {
+     "icon": "redshift",
+     "name": "Redshift",
+     "tag": "redshift",
+     "category_icon": false
+    },
+    {
+     "icon": "timestream",
+     "name": "Timestream",
+     "tag": "timestream",
+     "category_icon": false
+    },
+    {
+     "icon": "database_migration_service",
+     "name": "Database Migration Service",
+     "tag": "database migration service",
+     "category_icon": false
+    },
+    {
+     "icon": "oracle_database_at_aws",
+     "name": "Oracle Database at AWS",
+     "tag": "oracle database at aws",
+     "category_icon": false
+    },
+    {
+     "icon": "keyspaces",
+     "name": "Keyspaces",
+     "tag": "keyspaces",
+     "category_icon": false
+    },
+    {
+     "icon": "memorydb_for_redis",
+     "name": "MemoryDB",
+     "tag": "memorydb for redis",
+     "category_icon": false
+    }
+   ]
+  },
+  "Developer Tools": {
+   "fill": "#C925D1",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "developer_tools",
+     "name": "Developer Tools",
+     "tag": "developer tools",
+     "category_icon": false
+    },
+    {
+     "icon": "codecatalyst",
+     "name": "CodeCatalyst",
+     "tag": "codecatalyst",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud9",
+     "name": "Cloud9",
+     "tag": "cloud9",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud_control_api",
+     "name": "Cloud Control API",
+     "tag": "cloud control api application programming interface",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud_development_kit",
+     "name": "Cloud Development Kit",
+     "tag": "cloud development kit",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudshell",
+     "name": "CloudShell",
+     "tag": "cloudshell",
+     "category_icon": false
+    },
+    {
+     "icon": "codeartifact",
+     "name": "CodeArtifact",
+     "tag": "codeartifact",
+     "category_icon": false
+    },
+    {
+     "icon": "codebuild",
+     "name": "CodeBuild",
+     "tag": "codebuild",
+     "category_icon": false
+    },
+    {
+     "icon": "codecommit",
+     "name": "CodeCommit",
+     "tag": "codecommit",
+     "category_icon": false
+    },
+    {
+     "icon": "codedeploy",
+     "name": "CodeDeploy",
+     "tag": "codedeploy",
+     "category_icon": false
+    },
+    {
+     "icon": "codepipeline",
+     "name": "CodePipeline",
+     "tag": "codepipeline",
+     "category_icon": false
+    },
+    {
+     "icon": "command_line_interface",
+     "name": "Command Line Interface",
+     "tag": "command line interface",
+     "category_icon": false
+    },
+    {
+     "icon": "fault_injection_simulator",
+     "name": "Fault Injection Service",
+     "tag": "fault injection service simulator fis",
+     "category_icon": false
+    },
+    {
+     "icon": "corretto",
+     "name": "Corretto",
+     "tag": "corretto",
+     "category_icon": false
+    },
+    {
+     "icon": "application_composer",
+     "name": "Infrastructure Composer",
+     "tag": "infrastructure composer application composer",
+     "category_icon": false
+    },
+    {
+     "icon": "tools_and_sdks",
+     "name": "Tools and SDKs",
+     "tag": "tools and sdks software development kit",
+     "category_icon": false
+    },
+    {
+     "icon": "xray",
+     "name": "X-Ray",
+     "tag": "ray xray",
+     "category_icon": false
+    }
+   ]
+  },
+  "End User Computing": {
+   "fill": "#01A88D",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#01A88D;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "desktop_and_app_streaming",
+     "name": "End User Computing",
+     "tag": "desktop and app streaming end user computing",
+     "category_icon": false
+    },
+    {
+     "icon": "workspaces",
+     "name": "WorkSpaces",
+     "tag": "workspaces workspaces family",
+     "category_icon": false
+    },
+    {
+     "icon": "workspaces_thin_client",
+     "name": "WorkSpaces Thin Client",
+     "tag": "workspaces thin client",
+     "category_icon": false
+    }
+   ]
+  },
+  "Front End Web Mobile": {
+   "fill": "#DD344C",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "mobile",
+     "name": "Front-End Web & Mobile",
+     "tag": "mobile front end web",
+     "category_icon": false
+    },
+    {
+     "icon": "amplify",
+     "name": "Amplify",
+     "tag": "amplify",
+     "category_icon": false
+    },
+    {
+     "icon": "device_farm",
+     "name": "Device Farm",
+     "tag": "device farm",
+     "category_icon": false
+    },
+    {
+     "icon": "location_service",
+     "name": "Location Service",
+     "tag": "location service",
+     "category_icon": false
+    }
+   ]
+  },
+  "Games": {
+   "fill": "#8C4FFF",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "games",
+     "name": "Game Tech",
+     "tag": "game tech",
+     "category_icon": false
+    },
+    {
+     "icon": "gamelift_2",
+     "name": "GameLift Servers",
+     "tag": "gamelift servers",
+     "category_icon": false
+    },
+    {
+     "icon": "gamelift_streams",
+     "name": "GameLift Streams",
+     "tag": "gamelift streams",
+     "category_icon": false
+    },
+    {
+     "icon": "open_3d_engine_2",
+     "name": "Open 3D Engine",
+     "tag": "open 3d engine o3de lumberyard",
+     "category_icon": false
+    }
+   ]
+  },
+  "Internet Of Things": {
+   "fill": "#7AA116",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "internet_of_things",
+     "name": "Internet of Things",
+     "tag": "",
+     "category_icon": false
+    },
+    {
+     "icon": "freertos",
+     "name": "FreeRTOS",
+     "tag": "freertos",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_core",
+     "name": "Core",
+     "tag": "core",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_device_defender",
+     "name": "Device Defender",
+     "tag": "device defender",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_device_management",
+     "name": "Device Management",
+     "tag": "device management",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_events",
+     "name": "Events",
+     "tag": "events",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_expresslink",
+     "name": "ExpressLink",
+     "tag": "expresslink",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_fleetwise",
+     "name": "FleetWise",
+     "tag": "fleetwise",
+     "category_icon": false
+    },
+    {
+     "icon": "greengrass",
+     "name": "IoT Greengrass",
+     "tag": "iot greengrass",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_sitewise",
+     "name": "SiteWise",
+     "tag": "sitewise",
+     "category_icon": false
+    },
+    {
+     "icon": "iot_twinmaker",
+     "name": "TwinMaker",
+     "tag": "twinmaker",
+     "category_icon": false
+    }
+   ]
+  },
+  "Artificial Intelligence": {
+   "fill": "#01A88D",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#01A88D;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "machine_learning",
+     "name": "Artificial Intelligence",
+     "tag": "machine learning artificial intelligence ai",
+     "category_icon": false
+    },
+    {
+     "icon": "augmented_ai",
+     "name": "Augmented AI (A2I)",
+     "tag": "augmented ai a2i",
+     "category_icon": false
+    },
+    {
+     "icon": "bedrock",
+     "name": "Bedrock",
+     "tag": "bedrock",
+     "category_icon": false
+    },
+    {
+     "icon": "bedrock_agentcore",
+     "name": "Bedrock AgentCore",
+     "tag": "bedrock agentcore",
+     "category_icon": false
+    },
+    {
+     "icon": "codeguru_2",
+     "name": "CodeGuru",
+     "tag": "codeguru",
+     "category_icon": false
+    },
+    {
+     "icon": "codewhisperer",
+     "name": "CodeWhisperer",
+     "tag": "codewhisperer",
+     "category_icon": false
+    },
+    {
+     "icon": "comprehend",
+     "name": "Comprehend",
+     "tag": "comprehend",
+     "category_icon": false
+    },
+    {
+     "icon": "comprehend_medical",
+     "name": "Comprehend Medical",
+     "tag": "comprehend medical",
+     "category_icon": false
+    },
+    {
+     "icon": "devops_guru",
+     "name": "DevOps Guru",
+     "tag": "devops guru",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_inference_2",
+     "name": "Elastic Inference",
+     "tag": "elastic inference",
+     "category_icon": false
+    },
+    {
+     "icon": "forecast",
+     "name": "Forecast",
+     "tag": "forecast",
+     "category_icon": false
+    },
+    {
+     "icon": "fraud_detector",
+     "name": "Fraud Detector",
+     "tag": "fraud detector",
+     "category_icon": false
+    },
+    {
+     "icon": "healthlake",
+     "name": "HealthLake",
+     "tag": "healthlake",
+     "category_icon": false
+    },
+    {
+     "icon": "kendra",
+     "name": "Kendra",
+     "tag": "kendra",
+     "category_icon": false
+    },
+    {
+     "icon": "neuron_ml_sdk",
+     "name": "Neuron",
+     "tag": "neuron ml sdk software development kit",
+     "category_icon": false
+    },
+    {
+     "icon": "panorama",
+     "name": "Panorama",
+     "tag": "panorama",
+     "category_icon": false
+    },
+    {
+     "icon": "lex",
+     "name": "Lex",
+     "tag": "lex",
+     "category_icon": false
+    },
+    {
+     "icon": "lookout_for_equipment",
+     "name": "Lookout for Equipment",
+     "tag": "lookout for equipment",
+     "category_icon": false
+    },
+    {
+     "icon": "lookout_for_vision",
+     "name": "Lookout for Vision",
+     "tag": "lookout for vision",
+     "category_icon": false
+    },
+    {
+     "icon": "monitron",
+     "name": "Monitron",
+     "tag": "monitron",
+     "category_icon": false
+    },
+    {
+     "icon": "nova2",
+     "name": "Nova",
+     "tag": "nova",
+     "category_icon": false
+    },
+    {
+     "icon": "omics",
+     "name": "HealthOmics",
+     "tag": "healthomics health omics",
+     "category_icon": false
+    },
+    {
+     "icon": "healthscribe",
+     "name": "HealthScribe",
+     "tag": "healthscribe",
+     "category_icon": false
+    },
+    {
+     "icon": "personalize",
+     "name": "Personalize",
+     "tag": "personalize",
+     "category_icon": false
+    },
+    {
+     "icon": "polly",
+     "name": "Polly",
+     "tag": "polly",
+     "category_icon": false
+    },
+    {
+     "icon": "q",
+     "name": "Q",
+     "tag": "q",
+     "category_icon": false
+    },
+    {
+     "icon": "rekognition_2",
+     "name": "Rekognition",
+     "tag": "rekognition",
+     "category_icon": false
+    },
+    {
+     "icon": "sagemaker",
+     "name": "SageMaker AI",
+     "tag": "sagemaker ai",
+     "category_icon": false
+    },
+    {
+     "icon": "sagemaker_ground_truth",
+     "name": "SageMaker Ground Truth",
+     "tag": "sagemaker ground truth",
+     "category_icon": false
+    },
+    {
+     "icon": "sagemaker_studio_lab",
+     "name": "SageMaker Studio Lab",
+     "tag": "sagemaker studio lab",
+     "category_icon": false
+    },
+    {
+     "icon": "textract",
+     "name": "Textract",
+     "tag": "textract",
+     "category_icon": false
+    },
+    {
+     "icon": "transcribe",
+     "name": "Transcribe",
+     "tag": "transcribe",
+     "category_icon": false
+    },
+    {
+     "icon": "translate",
+     "name": "Translate",
+     "tag": "translate",
+     "category_icon": false
+    },
+    {
+     "icon": "apache_mxnet_on_aws",
+     "name": "Apache MXNet on AWS",
+     "tag": "apache mxnet on aws",
+     "category_icon": false
+    },
+    {
+     "icon": "app_studio",
+     "name": "App Studio",
+     "tag": "app application studio",
+     "category_icon": false
+    },
+    {
+     "icon": "deep_learning_amis",
+     "name": "Deep Learning AMIs",
+     "tag": "deep learning amis",
+     "category_icon": false
+    },
+    {
+     "icon": "deepracer",
+     "name": "DeepRacer",
+     "tag": "deepracer",
+     "category_icon": false
+    },
+    {
+     "icon": "healthimaging",
+     "name": "HealthImaging",
+     "tag": "healthimaging",
+     "category_icon": false
+    },
+    {
+     "icon": "tensorflow_on_aws",
+     "name": "TensorFlow on AWS",
+     "tag": "tensorflow on aws",
+     "category_icon": false
+    },
+    {
+     "icon": "torchserve",
+     "name": "PyTorch on AWS",
+     "tag": "torchserve pytorch py torch on",
+     "category_icon": false
+    },
+    {
+     "icon": "deep_learning_containers",
+     "name": "Deep Learning Containers",
+     "tag": "deep learning containers",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_inference",
+     "name": "Elemental Inference",
+     "tag": "elemental inference",
+     "category_icon": false
+    }
+   ]
+  },
+  "Management Governance": {
+   "fill": "#E7157B",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "management_and_governance",
+     "name": "Management Tools",
+     "tag": "management and governance tools",
+     "category_icon": false
+    },
+    {
+     "icon": "multicloud_and_hybrid",
+     "name": "Multicloud and Hybrid",
+     "tag": "multicloud and hybrid category",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudwatch_2",
+     "name": "CloudWatch",
+     "tag": "cloudwatch",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_service_for_grafana",
+     "name": "Managed Grafana",
+     "tag": "managed service for grafana managed grafana",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_service_for_prometheus",
+     "name": "Managed Service for Prometheus",
+     "tag": "managed service for prometheus",
+     "category_icon": false
+    },
+    {
+     "icon": "app_config",
+     "name": "App Config",
+     "tag": "app config",
+     "category_icon": false
+    },
+    {
+     "icon": "app_wizard",
+     "name": "Launch Wizard",
+     "tag": "app launch wizard",
+     "category_icon": false
+    },
+    {
+     "icon": "application_auto_scaling",
+     "name": "Application Auto Scaling",
+     "tag": "app application auto scaling",
+     "category_icon": false
+    },
+    {
+     "icon": "autoscaling",
+     "name": "Auto Scaling",
+     "tag": "auto scaling",
+     "category_icon": false
+    },
+    {
+     "icon": "backint_agent",
+     "name": "Backint Agent",
+     "tag": "backint agent",
+     "category_icon": false
+    },
+    {
+     "icon": "chatbot",
+     "name": "Chatbot",
+     "tag": "chatbot",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudformation",
+     "name": "CloudFormation",
+     "tag": "cloudformation",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudtrail",
+     "name": "CloudTrail",
+     "tag": "cloudtrail",
+     "category_icon": false
+    },
+    {
+     "icon": "codeguru",
+     "name": "CodeGuru",
+     "tag": "codeguru",
+     "category_icon": false
+    },
+    {
+     "icon": "command_line_interface",
+     "name": "Command Line Interface",
+     "tag": "command line interface",
+     "category_icon": false
+    },
+    {
+     "icon": "compute_optimizer",
+     "name": "Compute Optimizer",
+     "tag": "compute optimizer",
+     "category_icon": false
+    },
+    {
+     "icon": "config",
+     "name": "Config",
+     "tag": "config",
+     "category_icon": false
+    },
+    {
+     "icon": "control_tower",
+     "name": "Control Tower",
+     "tag": "control tower",
+     "category_icon": false
+    },
+    {
+     "icon": "devops_agent",
+     "name": "DevOps Agent",
+     "tag": "devops agent",
+     "category_icon": false
+    },
+    {
+     "icon": "distro_for_opentelemetry",
+     "name": "Distro for OpenTelemetry",
+     "tag": "distro for opentelemetry",
+     "category_icon": false
+    },
+    {
+     "icon": "fault_injection_simulator",
+     "name": "Fault Injection Service",
+     "tag": "fault injection service simulator fis",
+     "category_icon": false
+    },
+    {
+     "icon": "license_manager",
+     "name": "License Manager",
+     "tag": "license manager",
+     "category_icon": false
+    },
+    {
+     "icon": "managed_services",
+     "name": "Managed Services",
+     "tag": "managed services",
+     "category_icon": false
+    },
+    {
+     "icon": "management_console",
+     "name": "Management Console",
+     "tag": "management console",
+     "category_icon": false
+    },
+    {
+     "icon": "console_mobile_application",
+     "name": "Console Mobile Application",
+     "tag": "console mobile application app",
+     "category_icon": false
+    },
+    {
+     "icon": "organizations",
+     "name": "Organizations",
+     "tag": "organizations",
+     "category_icon": false
+    },
+    {
+     "icon": "personal_health_dashboard",
+     "name": "Health Dashboard",
+     "tag": "personal health dashboard health dashboard",
+     "category_icon": false
+    },
+    {
+     "icon": "partner_central",
+     "name": "Partner Central",
+     "tag": "partner central",
+     "category_icon": false
+    },
+    {
+     "icon": "proton",
+     "name": "Proton",
+     "tag": "proton",
+     "category_icon": false
+    },
+    {
+     "icon": "resilience_hub",
+     "name": "Resilience Hub",
+     "tag": "resilience hub",
+     "category_icon": false
+    },
+    {
+     "icon": "resource_explorer",
+     "name": "Resource Explorer",
+     "tag": "resource explorer",
+     "category_icon": false
+    },
+    {
+     "icon": "service_catalog",
+     "name": "Service Catalog",
+     "tag": "service catalog",
+     "category_icon": false
+    },
+    {
+     "icon": "service_management_connector",
+     "name": "Service Management Connector",
+     "tag": "service management connector",
+     "category_icon": false
+    },
+    {
+     "icon": "systems_manager",
+     "name": "Systems Manager",
+     "tag": "systems manager",
+     "category_icon": false
+    },
+    {
+     "icon": "telco_network_builder",
+     "name": "Telco Network Builder",
+     "tag": "telco network builder",
+     "category_icon": false
+    },
+    {
+     "icon": "systems_manager_incident_manager",
+     "name": "Systems Manager - Incident Manager",
+     "tag": "systems manager incident manager",
+     "category_icon": false
+    },
+    {
+     "icon": "trusted_advisor",
+     "name": "Trusted Advisor",
+     "tag": "trusted advisor",
+     "category_icon": false
+    },
+    {
+     "icon": "user_notifications",
+     "name": "User Notifications",
+     "tag": "user notifications",
+     "category_icon": false
+    },
+    {
+     "icon": "well_architect_tool",
+     "name": "Well-Architected Tool",
+     "tag": "well architected tool",
+     "category_icon": false
+    },
+    {
+     "icon": "sustainability",
+     "name": "Sustainability",
+     "tag": "sustainability",
+     "category_icon": false
+    }
+   ]
+  },
+  "Media Services": {
+   "fill": "#ED7100",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "media_services",
+     "name": "Media Services",
+     "tag": "media services",
+     "category_icon": false
+    },
+    {
+     "icon": "kinesis_video_streams",
+     "name": "Kinesis Video Streams",
+     "tag": "kinesis video streams",
+     "category_icon": false
+    },
+    {
+     "icon": "deadline_cloud",
+     "name": "Deadline Cloud",
+     "tag": "deadline cloud",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental",
+     "name": "Elemental Appliances & Software",
+     "tag": "elemental appliances software",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_mediaconnect",
+     "name": "Elemental MediaConnect",
+     "tag": "elemental mediaconnect",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_mediaconvert",
+     "name": "Elemental MediaConvert",
+     "tag": "elemental mediaconvert",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_medialive",
+     "name": "Elemental MediaLive",
+     "tag": "elemental medialive",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_mediapackage",
+     "name": "Elemental MediaPackage",
+     "tag": "elemental mediapackage",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_mediastore",
+     "name": "Elemental MediaStore",
+     "tag": "elemental mediastore",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_mediatailor",
+     "name": "Elemental MediaTailor",
+     "tag": "elemental mediatailor",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental",
+     "name": "Elemental Conductor",
+     "tag": "elemental conductor",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental",
+     "name": "Elemental Delta",
+     "tag": "elemental delta",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental",
+     "name": "Elemental Live",
+     "tag": "elemental live",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental",
+     "name": "Elemental Server",
+     "tag": "elemental server",
+     "category_icon": false
+    },
+    {
+     "icon": "thinkbox_deadline",
+     "name": "Thinkbox Deadline",
+     "tag": "thinkbox deadline",
+     "category_icon": false
+    },
+    {
+     "icon": "thinkbox_frost",
+     "name": "Thinkbox Frost",
+     "tag": "thinkbox frost",
+     "category_icon": false
+    },
+    {
+     "icon": "thinkbox_krakatoa",
+     "name": "Thinkbox Krakatoa",
+     "tag": "thinkbox krakatoa",
+     "category_icon": false
+    },
+    {
+     "icon": "thinkbox_stoke",
+     "name": "Thinkbox Stoke",
+     "tag": "thinkbox stoke",
+     "category_icon": false
+    },
+    {
+     "icon": "thinkbox_xmesh",
+     "name": "Thinkbox XMesh",
+     "tag": "thinkbox xmesh",
+     "category_icon": false
+    },
+    {
+     "icon": "interactive_video",
+     "name": "Interactive Video Service",
+     "tag": "interactive video service ivs",
+     "category_icon": false
+    },
+    {
+     "icon": "elemental_link",
+     "name": "Elemental Link",
+     "tag": "elemental link",
+     "category_icon": false
+    }
+   ]
+  },
+  "Migration Modernization": {
+   "fill": "#01A88D",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#01A88D;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "migration_and_transfer",
+     "name": "Migration & Modernization",
+     "tag": "migration and transfer modernization",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_vmware_service",
+     "name": "Elastic VMware Service",
+     "tag": "elastic vmware service",
+     "category_icon": false
+    },
+    {
+     "icon": "application_discovery_service",
+     "name": "Application Discovery Service",
+     "tag": "application discovery service",
+     "category_icon": false
+    },
+    {
+     "icon": "database_migration_service",
+     "name": "Database Migration Service",
+     "tag": "db database migration service",
+     "category_icon": false
+    },
+    {
+     "icon": "datasync",
+     "name": "DataSync",
+     "tag": "datasync",
+     "category_icon": false
+    },
+    {
+     "icon": "data_transfer_terminal",
+     "name": "Data Transfer Terminal",
+     "tag": "data transfer terminal",
+     "category_icon": false
+    },
+    {
+     "icon": "mainframe_modernization",
+     "name": "Mainframe Modernization",
+     "tag": "mainframe modernization",
+     "category_icon": false
+    },
+    {
+     "icon": "migration_evaluator",
+     "name": "Migration Evaluator",
+     "tag": "migration evaluator",
+     "category_icon": false
+    },
+    {
+     "icon": "snowball",
+     "name": "Snowball",
+     "tag": "snowball",
+     "category_icon": false
+    },
+    {
+     "icon": "snowball_edge",
+     "name": "Snowball Edge",
+     "tag": "snowball edge",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudendure_migration",
+     "name": "Application Migration Service",
+     "tag": "cloudendure application migration service mgn",
+     "category_icon": false
+    },
+    {
+     "icon": "transfer_family",
+     "name": "Transfer Family",
+     "tag": "transfer family transfer for sftp",
+     "category_icon": false
+    },
+    {
+     "icon": "transform",
+     "name": "Transform",
+     "tag": "transform",
+     "category_icon": false
+    }
+   ]
+  },
+  "Network Content Delivery": {
+   "fill": "#8C4FFF",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "networking_and_content_delivery",
+     "name": "Networking & Content Delivery",
+     "tag": "networking and content delivery",
+     "category_icon": false
+    },
+    {
+     "icon": "api_gateway",
+     "name": "API Gateway",
+     "tag": "api application programming interface gateway",
+     "category_icon": false
+    },
+    {
+     "icon": "application_recovery_controller",
+     "name": "Application Recovery Controller",
+     "tag": "application recovery controller route 53 application recovery controller",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud_directory",
+     "name": "Cloud Directory",
+     "tag": "cloud directory",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudfront",
+     "name": "CloudFront",
+     "tag": "cloudfront",
+     "category_icon": false
+    },
+    {
+     "icon": "route_53",
+     "name": "Route 53",
+     "tag": "route 53",
+     "category_icon": false
+    },
+    {
+     "icon": "vpc_privatelink",
+     "name": "PrivateLink",
+     "tag": "privatelink",
+     "category_icon": false
+    },
+    {
+     "icon": "vpc",
+     "name": "VPC",
+     "tag": "vpc virtual private cloud",
+     "category_icon": false
+    },
+    {
+     "icon": "vpc_lattice",
+     "name": "VPC Lattice",
+     "tag": "vpc virtual private lattice",
+     "category_icon": false
+    },
+    {
+     "icon": "app_mesh",
+     "name": "App Mesh",
+     "tag": "app application mesh",
+     "category_icon": false
+    },
+    {
+     "icon": "client_vpn",
+     "name": "Client VPN",
+     "tag": "client vpn virtual private network",
+     "category_icon": false
+    },
+    {
+     "icon": "site_to_site_vpn",
+     "name": "Site-to-Site VPN",
+     "tag": "site to site s2s vpn virtual private network",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_load_balancing",
+     "name": "Elastic Load Balancing",
+     "tag": "elastic load balancing",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud_map",
+     "name": "Cloud Map",
+     "tag": "cloud map",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud_wan",
+     "name": "Cloud WAN",
+     "tag": "cloud wan",
+     "category_icon": false
+    },
+    {
+     "icon": "direct_connect",
+     "name": "Direct Connect",
+     "tag": "direct connect",
+     "category_icon": false
+    },
+    {
+     "icon": "global_accelerator",
+     "name": "Global Accelerator",
+     "tag": "global accelerator",
+     "category_icon": false
+    },
+    {
+     "icon": "rtb_fabric",
+     "name": "RTB Fabric",
+     "tag": "rtb fabric",
+     "category_icon": false
+    },
+    {
+     "icon": "transit_gateway",
+     "name": "Transit Gateway",
+     "tag": "transit gateway",
+     "category_icon": false
+    },
+    {
+     "icon": "verified_access",
+     "name": "Verified Access",
+     "tag": "verified access",
+     "category_icon": false
+    },
+    {
+     "icon": "interconnect",
+     "name": "Interconnect",
+     "tag": "interconnect",
+     "category_icon": false
+    }
+   ]
+  },
+  "Quantum Technologies": {
+   "fill": "#ED7100",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "quantum_technologies",
+     "name": "Quantum Technologies",
+     "tag": "quantum technologies",
+     "category_icon": false
+    },
+    {
+     "icon": "braket",
+     "name": "Braket",
+     "tag": "braket",
+     "category_icon": false
+    }
+   ]
+  },
+  "Satellite": {
+   "fill": "#C925D1",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "satellite",
+     "name": "Satellite",
+     "tag": "satellite",
+     "category_icon": false
+    },
+    {
+     "icon": "ground_station",
+     "name": "Ground Station",
+     "tag": "ground station",
+     "category_icon": false
+    }
+   ]
+  },
+  "Security Identity Compliance": {
+   "fill": "#DD344C",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "security_identity_and_compliance",
+     "name": "Security & Identity",
+     "tag": "security identity and compliance",
+     "category_icon": false
+    },
+    {
+     "icon": "cloud_directory",
+     "name": "Cloud Directory",
+     "tag": "cloud directory",
+     "category_icon": false
+    },
+    {
+     "icon": "cognito",
+     "name": "Cognito",
+     "tag": "cognito",
+     "category_icon": false
+    },
+    {
+     "icon": "detective",
+     "name": "Detective",
+     "tag": "detective",
+     "category_icon": false
+    },
+    {
+     "icon": "guardduty",
+     "name": "GuardDuty",
+     "tag": "guardduty guard duty",
+     "category_icon": false
+    },
+    {
+     "icon": "inspector",
+     "name": "Inspector",
+     "tag": "inspector",
+     "category_icon": false
+    },
+    {
+     "icon": "macie",
+     "name": "Macie",
+     "tag": "macie",
+     "category_icon": false
+    },
+    {
+     "icon": "security_lake",
+     "name": "Security Lake",
+     "tag": "security lake",
+     "category_icon": false
+    },
+    {
+     "icon": "verified_permissions",
+     "name": "Verified Permissions",
+     "tag": "verified permissions",
+     "category_icon": false
+    },
+    {
+     "icon": "artifact",
+     "name": "Artifact",
+     "tag": "artifact",
+     "category_icon": false
+    },
+    {
+     "icon": "audit_manager",
+     "name": "Audit Manager",
+     "tag": "audit manager",
+     "category_icon": false
+    },
+    {
+     "icon": "certificate_manager_3",
+     "name": "Certificate Manager",
+     "tag": "certificate manager",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudhsm",
+     "name": "CloudHSM",
+     "tag": "cloudhsm cloud hsm",
+     "category_icon": false
+    },
+    {
+     "icon": "directory_service",
+     "name": "Directory Service",
+     "tag": "directory service",
+     "category_icon": false
+    },
+    {
+     "icon": "firewall_manager",
+     "name": "Firewall Manager",
+     "tag": "firewall manager",
+     "category_icon": false
+    },
+    {
+     "icon": "identity_and_access_management",
+     "name": "Identity & Access Management",
+     "tag": "identity and access management",
+     "category_icon": false
+    },
+    {
+     "icon": "key_management_service",
+     "name": "Key Management Service",
+     "tag": "key management service",
+     "category_icon": false
+    },
+    {
+     "icon": "network_firewall",
+     "name": "Network Firewall",
+     "tag": "network firewall",
+     "category_icon": false
+    },
+    {
+     "icon": "payment_cryptography",
+     "name": "Payment Cryptography",
+     "tag": "payment cryptography",
+     "category_icon": false
+    },
+    {
+     "icon": "private_certificate_authority",
+     "name": "Private Certificate Authority",
+     "tag": "private certificate authority",
+     "category_icon": false
+    },
+    {
+     "icon": "resource_access_manager",
+     "name": "Resource Access Manager",
+     "tag": "resource access manager",
+     "category_icon": false
+    },
+    {
+     "icon": "organizations",
+     "name": "Organizations",
+     "tag": "organizations",
+     "category_icon": false
+    },
+    {
+     "icon": "secrets_manager",
+     "name": "Secrets Manager",
+     "tag": "secrets manager",
+     "category_icon": false
+    },
+    {
+     "icon": "security_agent",
+     "name": "Security Agent",
+     "tag": "security agent",
+     "category_icon": false
+    },
+    {
+     "icon": "security_hub",
+     "name": "Security Hub",
+     "tag": "security hub",
+     "category_icon": false
+    },
+    {
+     "icon": "security_incident_response",
+     "name": "Security Incident Response",
+     "tag": "security incident response",
+     "category_icon": false
+    },
+    {
+     "icon": "shield",
+     "name": "Shield",
+     "tag": "shield",
+     "category_icon": false
+    },
+    {
+     "icon": "signer",
+     "name": "Signer",
+     "tag": "signer",
+     "category_icon": false
+    },
+    {
+     "icon": "single_sign_on",
+     "name": "IAM Identity Center",
+     "tag": "single sign on sso iam identity center",
+     "category_icon": false
+    },
+    {
+     "icon": "waf",
+     "name": "WAF",
+     "tag": "waf",
+     "category_icon": false
+    }
+   ]
+  },
+  "Serverless": {
+   "fill": "#8C4FFF",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "serverless",
+     "name": "Serverless",
+     "tag": "serverless",
+     "category_icon": false
+    }
+   ]
+  },
+  "Storage": {
+   "fill": "#7AA116",
+   "style_base": "sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.",
+   "services": [
+    {
+     "icon": "storage",
+     "name": "Storage",
+     "tag": "storage",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_block_store",
+     "name": "Elastic Block Store",
+     "tag": "elastic block store",
+     "category_icon": false
+    },
+    {
+     "icon": "file_cache",
+     "name": "File Cache",
+     "tag": "file cache",
+     "category_icon": false
+    },
+    {
+     "icon": "elastic_file_system",
+     "name": "Elastic File System",
+     "tag": "elastic file system",
+     "category_icon": false
+    },
+    {
+     "icon": "fsx",
+     "name": "FSx",
+     "tag": "fsx",
+     "category_icon": false
+    },
+    {
+     "icon": "fsx_for_lustre",
+     "name": "FSx for Lustre",
+     "tag": "fsx for lustre",
+     "category_icon": false
+    },
+    {
+     "icon": "fsx_for_netapp_ontap",
+     "name": "FSx for NetApp ONTAP",
+     "tag": "fsx for netapp ontap",
+     "category_icon": false
+    },
+    {
+     "icon": "fsx_for_openzfs",
+     "name": "FSx for OpenZFS",
+     "tag": "fsx for openzfs",
+     "category_icon": false
+    },
+    {
+     "icon": "fsx_for_windows_file_server",
+     "name": "FSx for Windows File Server",
+     "tag": "fsx for windows file server wfs",
+     "category_icon": false
+    },
+    {
+     "icon": "s3_on_outposts_storage",
+     "name": "S3 on Outposts",
+     "tag": "s3 on outposts storage",
+     "category_icon": false
+    },
+    {
+     "icon": "glacier",
+     "name": "S3 Glacier",
+     "tag": "s3 simple storage service glacier",
+     "category_icon": false
+    },
+    {
+     "icon": "s3",
+     "name": "Simple Storage Service (S3)",
+     "tag": "s3 simple storage service",
+     "category_icon": false
+    },
+    {
+     "icon": "backup",
+     "name": "Backup",
+     "tag": "backup",
+     "category_icon": false
+    },
+    {
+     "icon": "snowball",
+     "name": "Snowball",
+     "tag": "snowball",
+     "category_icon": false
+    },
+    {
+     "icon": "snowball_edge",
+     "name": "Snowball Edge",
+     "tag": "snowball edge",
+     "category_icon": false
+    },
+    {
+     "icon": "storage_gateway",
+     "name": "Storage Gateway",
+     "tag": "storage gateway",
+     "category_icon": false
+    },
+    {
+     "icon": "cloudendure_disaster_recovery",
+     "name": "Elastic Disaster Recovery",
+     "tag": "cloudendure elastic disaster recovery drs",
+     "category_icon": false
+    }
+   ]
+  }
+ },
+ "groups": [
+  {
+   "name": "AWS Cloud",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud_alt;strokeColor=#232F3E;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#232F3E;dashed=0;",
+   "strokeColor": "#232F3E",
+   "fillColor": "none",
+   "fontColor": "#232F3E",
+   "dashed": false
+  },
+  {
+   "name": "AWS Cloud",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud;strokeColor=#232F3E;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#232F3E;dashed=0;",
+   "strokeColor": "#232F3E",
+   "fillColor": "none",
+   "fontColor": "#232F3E",
+   "dashed": false
+  },
+  {
+   "name": "Region",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;strokeColor=#00A4A6;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;dashed=1;",
+   "strokeColor": "#00A4A6",
+   "fillColor": "none",
+   "fontColor": "#147EBA",
+   "dashed": true
+  },
+  {
+   "name": "Availability Zone",
+   "style": "fillColor=none;strokeColor=#147EBA;dashed=1;verticalAlign=top;fontStyle=0;fontColor=#147EBA;whiteSpace=wrap;html=1;",
+   "strokeColor": "#147EBA",
+   "fillColor": "none",
+   "fontColor": "#147EBA",
+   "dashed": true
+  },
+  {
+   "name": "Security group",
+   "style": "fillColor=none;strokeColor=#DD3522;verticalAlign=top;fontStyle=0;fontColor=#DD3522;whiteSpace=wrap;html=1;",
+   "strokeColor": "#DD3522",
+   "fillColor": "none",
+   "fontColor": "#DD3522",
+   "dashed": false
+  },
+  {
+   "name": "Auto Scaling group",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.groupCenter;grIcon=mxgraph.aws4.group_auto_scaling_group;grStroke=1;strokeColor=#D86613;fillColor=none;verticalAlign=top;align=center;fontColor=#D86613;dashed=1;spacingTop=25;",
+   "strokeColor": "#D86613",
+   "fillColor": "none",
+   "fontColor": "#D86613",
+   "dashed": true
+  },
+  {
+   "name": "VPC",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc2;strokeColor=#8C4FFF;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#AAB7B8;dashed=0;",
+   "strokeColor": "#8C4FFF",
+   "fillColor": "none",
+   "fontColor": "#AAB7B8",
+   "dashed": false
+  },
+  {
+   "name": "Private subnet",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;strokeColor=#00A4A6;fillColor=#E6F6F7;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;dashed=0;",
+   "strokeColor": "#00A4A6",
+   "fillColor": "#E6F6F7",
+   "fontColor": "#147EBA",
+   "dashed": false
+  },
+  {
+   "name": "Public subnet",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;strokeColor=#7AA116;fillColor=#F2F6E8;verticalAlign=top;align=left;spacingLeft=30;fontColor=#248814;dashed=0;",
+   "strokeColor": "#7AA116",
+   "fillColor": "#F2F6E8",
+   "fontColor": "#248814",
+   "dashed": false
+  },
+  {
+   "name": "Server contents",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_on_premise;strokeColor=#7D8998;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#5A6C86;dashed=0;",
+   "strokeColor": "#7D8998",
+   "fillColor": "none",
+   "fontColor": "#5A6C86",
+   "dashed": false
+  },
+  {
+   "name": "Corporate data center",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_corporate_data_center;strokeColor=#7D8998;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#5A6C86;dashed=0;",
+   "strokeColor": "#7D8998",
+   "fillColor": "none",
+   "fontColor": "#5A6C86",
+   "dashed": false
+  },
+  {
+   "name": "Elastic Beanstalk container",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_elastic_beanstalk;strokeColor=#D86613;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#D86613;dashed=0;",
+   "strokeColor": "#D86613",
+   "fillColor": "none",
+   "fontColor": "#D86613",
+   "dashed": false
+  },
+  {
+   "name": "EC2 instance contents",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ec2_instance_contents;strokeColor=#D86613;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#D86613;dashed=0;",
+   "strokeColor": "#D86613",
+   "fillColor": "none",
+   "fontColor": "#D86613",
+   "dashed": false
+  },
+  {
+   "name": "Spot Fleet",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_spot_fleet;strokeColor=#D86613;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#D86613;dashed=0;",
+   "strokeColor": "#D86613",
+   "fillColor": "none",
+   "fontColor": "#D86613",
+   "dashed": false
+  },
+  {
+   "name": "AWS Step Functions workflow",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_step_functions_workflow;strokeColor=#CD2264;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#CD2264;dashed=0;",
+   "strokeColor": "#CD2264",
+   "fillColor": "none",
+   "fontColor": "#CD2264",
+   "dashed": false
+  },
+  {
+   "name": "AWS Account",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_account;strokeColor=#CD2264;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#CD2264;dashed=0;",
+   "strokeColor": "#CD2264",
+   "fillColor": "none",
+   "fontColor": "#CD2264",
+   "dashed": false
+  },
+  {
+   "name": "AWS Iot Greengrass Deployment",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_iot_greengrass_deployment;strokeColor=#7AA116;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#3F8624;dashed=0;",
+   "strokeColor": "#7AA116",
+   "fillColor": "none",
+   "fontColor": "#3F8624",
+   "dashed": false
+  },
+  {
+   "name": "AWS Iot Greengrass",
+   "style": "points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_iot_greengrass;strokeColor=#7AA116;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#3F8624;dashed=0;",
+   "strokeColor": "#7AA116",
+   "fillColor": "none",
+   "fontColor": "#3F8624",
+   "dashed": false
+  },
+  {
+   "name": "Generic group",
+   "style": "fillColor=none;strokeColor=#5A6C86;dashed=1;verticalAlign=top;fontStyle=0;fontColor=#5A6C86;whiteSpace=wrap;html=1;",
+   "strokeColor": "#5A6C86",
+   "fillColor": "none",
+   "fontColor": "#5A6C86",
+   "dashed": true
+  },
+  {
+   "name": "Generic group",
+   "style": "fillColor=#EFF0F3;strokeColor=none;dashed=0;verticalAlign=top;fontStyle=0;fontColor=#232F3D;whiteSpace=wrap;html=1;",
+   "strokeColor": "none",
+   "fillColor": "#EFF0F3",
+   "fontColor": "#232F3D",
+   "dashed": false
+  }
+ ]
+}
