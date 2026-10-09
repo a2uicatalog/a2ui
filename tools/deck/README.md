@@ -36,7 +36,7 @@ To reproduce:
 | The package is structurally valid OOXML | ECMA-376 transitional schema check, 31 decks | "Validated against the ECMA-376 transitional schemas." |
 | It renders in LibreOffice | 5 decks rendered to PDF and looked at (Roboto installed) | "Rendered and checked in LibreOffice." |
 | It works in Google Slides | Drive conversion, Slides API read-back, thumbnails | "Checked in Google Slides." |
-| It works in desktop PowerPoint | Not tested | Do not claim it. |
+| It works in desktop PowerPoint | Four sample decks opened without problems (author, one machine, 2026-10-09; version not recorded) | "Opened in desktop PowerPoint without problems on one machine." No compatibility claim: a schema or render pass says nothing about how PowerPoint itself behaves, and Microsoft documents areas where Office differs from or extends ECMA-376. |
 
 ## Known limits
 
@@ -47,8 +47,8 @@ To reproduce:
   vector shape). If it starts to need charts, animations or themes, use python-pptx's model rather than growing it. The read-back is the contract.
 - **Which consumers have seen it.** Google Slides (checked each release). A schema check of 31 generated decks (all 10 layouts, both targets, 214+ slides)
   found no illegal parts. LibreOffice Impress rendered a sample of those decks to PDF with the layouts intact and no overflow; Roboto was installed
-  there, so that run did not exercise the wider-fallback-font margin. Desktop PowerPoint has not been used to open these files, so keep saying
-  "checked in Google Slides" until it has.
+  there, so that run did not exercise the wider-fallback-font margin. Four sample decks (the 3-slide overview, stat tiles, QR call to action and the 26-slide text-heavy deck) opened in desktop PowerPoint without
+  problems on 2026-10-09: one person, one machine, version not recorded. Keep the public wording narrow: "checked in Google Slides", plus that.
 - **Atoms with no recipe** are reported as unsupported on the MCP tools. The Python converter can draw one as a picture (`atom_image.py`); the Worker cannot.
 - **Timing.** Compile alone, measured with the JavaScript port in Node on a small laptop: about 30 ms for a 3-slide deck and 170 to 440 ms for 15 slides. Not timed on the
   deployed Worker. A request-to-checked-deck figure (the model choosing atoms, a person checking) is a different number; do not quote one for the other.
