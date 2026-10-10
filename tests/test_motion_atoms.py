@@ -55,7 +55,9 @@ def _norm(html: str) -> str:
     """Replace each element uid (random in GAS, content-derived in Python) with a stable placeholder."""
     for i, uid in enumerate(dict.fromkeys(UID_RE.findall(html))):
         html = html.replace(uid, f"UID{i}")
-    return html
+    # the GAS wrapper (_a11yFix) names or hides bare SVGs; the Python twin is compared before that step
+    html = re.sub(r'(<svg\b[^>]*?) role="img" aria-label="[^"]*"', r'\1', html)
+    return re.sub(r'(<svg\b[^>]*?) aria-hidden="true" focusable="false"', r'\1', html)
 
 
 @pytest.fixture(scope="module")

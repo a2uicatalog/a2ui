@@ -337,6 +337,10 @@ a2ui-effects-v1:
 - motion_pill
 - motion_checklist
 - motion_stepper
+- motion_lit
+- motion_arcs
+- motion_lockup
+- motion_collage
 - motion_orbit
 - motion_code
 - motion_mark

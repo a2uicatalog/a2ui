@@ -188,6 +188,18 @@ function _moEnter(b, html) {
   var s = _moEnterSpec(b.enter);
   return s ? _moEnterWrap(s, html, 0) : html;
 }
+// ─── halo: a soft bloom behind any block (2026-10-10, from a keynote demo's glowing input card) ─────────────
+// halo = "#rrggbb" | true | {color, size 0-60 px, strength 0-1}. A drop-shadow on a wrapper follows the block's own alpha, so a rounded card gets a
+// rounded bloom. It scales with --p (default 1), so inside a film the halo blooms in as the block builds; it does not pulse (an endless
+// loop is an accessibility cost, and the footage it comes from holds steady). No halo, or size 0, returns the block untouched.
+function _moHalo(spec, html) {
+  var o = typeof spec === 'string' ? {color: spec} : (spec === true ? {} : ((spec && typeof spec === 'object' && !Array.isArray(spec)) ? spec : null));
+  if (!o) return html;
+  var size = _ffInt(o.size, 18, 0, 60);
+  if (size === 0) return html;
+  var rgb = _ffRgb(_ffHex(o.color, '#5b8cff')), a = _ffNum(o.strength, 0.55, 0, 1, 2), a2 = _ffNum(parseFloat(a) * 0.5, 0.28, 0, 1, 2);
+  return '<div class="mo-halo" style="filter:drop-shadow(0 0 calc(' + size + 'px * var(--p,1)) rgba(' + rgb + ',' + a + ')) drop-shadow(0 0 calc(' + (size * 2) + 'px * var(--p,1)) rgba(' + rgb + ',' + a2 + '));">' + html + '</div>';
+}
 // Wrap every registered renderer once. Safe to call repeatedly and from any entry
 // point: a wrapped function carries _mo and is skipped. Called from renderAtoms
 // (and the Worker/bundle entry points share that function).
@@ -198,6 +210,7 @@ function _moInstall() {
     _RENDERERS[k] = (function(f) {
       var w = function(b) {
         var h = f(b);
+        if (b && typeof b === 'object' && b.halo) h = _moHalo(b.halo, h);
         return (b && typeof b === 'object' && b.enter) ? _moEnter(b, h) : h;
       };
       w._mo = true;
@@ -1876,6 +1889,10 @@ _RENDERERS['motion_iso'] = function(b) {
 // ─── batch 8 (2026-10-02, premium items 5-6): particles and shape morph. Integer geometry only, so both twins agree exactly ──────────
 // Shape outlines: 48 points each, equal-perimeter resampled, starting at the top and running clockwise, as tenths of a 0-100 box.
 var _MO_SHAPES = {
+  'panel': [500,100,567,100,635,100,702,100,770,100,837,100,904,109,938,163,940,230,940,298,940,365,940,433,940,500,940,567,940,635,940,702,940,770,938,837,904,891,837,900,770,900,702,900,635,900,567,900,500,900,433,900,365,900,298,900,230,900,163,900,96,891,62,837,60,770,60,702,60,635,60,567,60,500,60,433,60,365,60,298,60,230,62,163,96,109,163,100,230,100,298,100,365,100,433,100],
+  'notch': [500,100,567,100,633,100,700,100,766,100,833,100,898,107,938,156,940,223,940,289,940,356,940,422,940,489,940,555,940,622,940,688,940,755,940,821,918,882,855,900,789,900,722,900,656,900,589,900,523,900,456,900,390,900,323,900,257,900,190,900,124,899,70,865,60,800,60,734,60,667,60,601,60,534,60,468,60,401,80,340,142,320,209,320,275,320,342,320,380,277,380,210,386,144,434,103],
+  'step': [500,100,567,100,633,100,700,100,766,100,833,100,898,107,938,156,940,223,940,289,940,356,940,422,940,489,940,555,940,622,940,688,940,755,940,821,918,882,855,900,789,900,722,900,656,900,589,900,523,900,456,900,390,900,323,900,257,900,190,900,124,899,70,865,60,800,60,734,60,667,60,601,60,534,65,468,110,424,176,420,242,420,309,420,375,420,420,383,420,317,420,250,420,184,439,121],
+  'tab': [500,260,567,260,633,260,700,260,766,260,833,260,898,267,938,316,940,383,940,449,940,516,940,582,940,649,940,715,940,782,937,848,894,894,828,900,762,900,695,900,629,900,562,900,496,900,429,900,363,900,296,900,230,900,163,900,98,892,62,840,60,773,60,707,60,640,60,574,60,507,60,441,60,374,60,308,60,241,60,175,86,116,149,100,215,100,282,100,348,103,395,146,400,212,434,259],
   'circle': [500,40,560,44,619,56,676,75,730,102,780,135,825,175,865,220,898,270,925,324,944,381,956,440,960,500,956,560,944,619,925,676,898,730,865,780,825,825,780,865,730,898,676,925,619,944,560,956,500,960,440,956,381,944,324,925,270,898,220,865,175,825,135,780,102,730,75,676,56,619,44,560,40,500,44,440,56,381,75,324,102,270,135,220,175,175,220,135,270,102,324,75,381,56,440,44],
   'square': [500,60,573,60,647,60,720,60,793,60,867,60,940,60,940,133,940,207,940,280,940,353,940,427,940,500,940,573,940,647,940,720,940,793,940,867,940,940,867,940,793,940,720,940,647,940,573,940,500,940,427,940,353,940,280,940,207,940,133,940,60,940,60,867,60,793,60,720,60,647,60,573,60,500,60,427,60,353,60,280,60,207,60,133,60,60,133,60,207,60,280,60,353,60,427,60],
   'triangle': [500,60,527,110,554,161,581,211,608,261,635,312,662,362,689,412,716,463,743,513,770,563,797,614,824,664,851,714,878,764,905,815,932,865,900,880,843,880,786,880,728,880,671,880,614,880,557,880,500,880,443,880,386,880,329,880,272,880,214,880,157,880,100,880,68,865,95,815,122,764,149,714,176,664,203,614,230,563,257,513,284,463,311,412,338,362,365,312,392,261,419,211,446,161,473,110],
@@ -1931,7 +1948,7 @@ _RENDERERS['motion_morph'] = function(b) {
   var src = Array.isArray(b.shapes) ? b.shapes : [], sh = [], i, j;
   for (i = 0; i < src.length && sh.length < 4; i++) if (typeof src[i] === 'string' && Object.prototype.hasOwnProperty.call(_MO_SHAPES, src[i])) sh.push(src[i]);
   if (sh.length < 2) sh = ['circle', 'star'];
-  var k = sh.length, pts = [], fill = _moInk(b, 'fill', 'var(--mt-acc,#38bdf8)'), fill2 = _moInk(b, 'fill2', ''), rot = _ffInt(b.rotate, 0, -720, 720);
+  var k = sh.length, pts = [], fill = _moInk(b, 'fill', 'var(--mt-acc,#38bdf8)'), fill2 = _moInk(b, 'fill2', ''), rot = _ffInt(b.rotate, 0, -720, 720), asp = _ffNum(b.aspect, 1, 0.4, 3, 2), aspCss = asp === '1' ? '1/1' : asp;
   for (i = 0; i < 96; i += 2) {
     var x = _moT10(_MO_SHAPES[sh[0]][i]) + '%', y = _moT10(_MO_SHAPES[sh[0]][i + 1]) + '%';
     for (j = 1; j < k; j++) {
@@ -1942,7 +1959,7 @@ _RENDERERS['motion_morph'] = function(b) {
     pts.push('calc(' + x + ') calc(' + y + ')');
   }
   var gl = b.glossy === true, bg = (gl ? 'radial-gradient(circle at 32% 26%,rgba(255,255,255,0.42),rgba(255,255,255,0) 46%),radial-gradient(circle at 70% 85%,rgba(0,0,0,0.28),rgba(0,0,0,0) 55%),' : '') + (fill2 ? 'linear-gradient(135deg,' + fill + ',' + fill2 + ')' : fill), poly = 'polygon(' + pts.join(',') + ')';
-  var inner = '<div style="width:100%;aspect-ratio:1/1;background:' + bg + ';clip-path:' + poly + ';-webkit-clip-path:' + poly + ';' + (rot ? 'transform:rotate(calc(var(--s,0)*' + rot + 'deg));' : '') + '"></div>';
+  var inner = '<div style="width:100%;aspect-ratio:' + aspCss + ';background:' + bg + ';clip-path:' + poly + ';-webkit-clip-path:' + poly + ';' + (rot ? 'transform:rotate(calc(var(--s,0)*' + rot + 'deg));' : '') + '"></div>';
   return '<div role="img" aria-label="' + _esc(sh.join(' to ')) + '" style="width:100%;' + (gl ? 'filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' : '') + '">' + inner + '</div>';
 };
 

@@ -11787,7 +11787,7 @@ blocks:
     license: MIT
 - type: motion_morph
   stage: preview
-  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow) played in order. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
+  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow), plus four panel silhouettes (panel, notch, step, tab) for a large panel that reshapes between slides played in order. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
   compact_description: shape that morphs into the next shape
   surfaces:
     works_on:
@@ -11810,6 +11810,7 @@ blocks:
     fill2: '"#rrggbb" (optional). Second colour of a 135 degree gradient.'
     glossy: 'bool (optional). A specular highlight, a soft core shadow and a drop shadow, so the shape reads as a solid object. Default false.'
     rotate: 'integer (optional). Degrees turned at --s = 1, -720 to 720. Default 0.'
+    aspect: 'number (optional). Width over height of the box, 0.4 to 3. Default 1 (a square). Use 1.78 for a 16:9 panel.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -20899,3 +20900,137 @@ blocks:
       tiers and four children per node.
   notes: A screen reader hears the nesting as a list. Tiers appear top down with p.
   source: *ifg002
+# ── Motion candidates (2026-10-10, preview) ──
+- type: motion_lit
+  stage: preview
+  description: 'Ghost to lit: child blocks appear as faint outlines, then as dim content (p builds them one after another), then each
+    lights in turn as the step dial (--s) runs, with a coloured highlight travelling once around the border of the card that is lighting.
+    Measured from a keynote demo (cards ghosted over about 0.8 s, then lit at 0.5 to 1 s apart). Standalone it shows every card lit.
+    Plain HTML and CSS, no script.'
+  compact_description: cards that appear as ghosts and light up one after another with a travelling edge highlight
+  routing_text: A row, column or grid of cards that fade in as dim ghosts and then light up one at a time, with a glowing outline and
+    a highlight that travels round the lit card's border. For presenting a set of options or models in turn. Not a spotlight on one
+    chosen card (use motion_stepper), not an entrance stagger (use motion_group).
+  intent_phrases:
+  - Show four model options appearing dim and then lighting up one by one.
+  - I want cards that ghost in and then light in turn with a glowing edge.
+  - Reveal the plan's steps as faint outlines and light each as I talk about it.
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    - android
+    degraded_on:
+    - surface: pdf
+      note: Prints the finished picture; no motion
+    incompatible_on:
+    - surface: google-chat
+      reason: Inline CSS custom properties, clamp(), calc() and conic-gradient are not supported
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    blocks: array (required, 1 to 8) of any atom blocks, one per card.
+    layout: string (optional). row (default), column or grid (two columns).
+    accent: '"#rrggbb" (optional). Outline, glow and travelling highlight. Default #5b8cff.'
+    ghost: number (optional, 0 to 1). Opacity of an unlit card. Default 0.3.
+    edge: bool (optional). The travelling border highlight. Default true.
+    gap: integer (optional). Pixels between cards, 0 to 60. Default 14.
+  notes: p (0 to 1) builds the ghosts, one card after another; the step dial s (0 to 1) lights them in order, so a film can build the
+    set first and light cards later. A card with an id can be targeted by its own track. Unlit cards are dim on purpose and only while
+    the film runs; the standalone render has every card lit.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_arcs
+  stage: preview
+  description: A mark built from one to four coloured arcs. As p runs, each arc turns in from a rotation, blurred, and settles into
+    place, one after another, until the arcs close into a mark (measured about 0.7 s in the footage this is drawn from). Each arc has
+    its own radius, start angle, sweep, width, offset and colour, or a two-colour gradient along the arc. Standalone it shows the finished
+    mark. Plain SVG and CSS, no script.
+  compact_description: coloured arcs that sweep in with a blur and settle into a mark
+  routing_text: A logo-style mark assembled from partial rings of different colours that sweep in one after another and settle. For
+    an opening or a title card. Not a loading spinner and not a chart; use motion_mark for the A2UI mark.
+  intent_phrases:
+  - Build a simple logo from two coloured arcs that sweep in.
+  - I want a ring that opens into a mark as the title appears.
+  - Draw an animated mark made of partial circles.
+  surfaces: &mla001
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    - android
+    degraded_on:
+    - surface: pdf
+      note: Prints the finished picture; no motion
+    incompatible_on:
+    - surface: google-chat
+      reason: Inline CSS custom properties, clamp() and calc() are not supported
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    arcs: array (required, 1 to 4) of {color ("#rrggbb"), color2? ("#rrggbb", a gradient along the arc), r (radius, 8-48), from (start
+      angle degrees, 0-359), sweep (degrees, 20-340), width (3-24), dx and dy (offset of the arc's centre, -30 to 30), spin (degrees
+      the arc turns in from, -720 to 720), blur (px, 0-24)}. Defaults give two arcs.
+    label: string (optional, max 60). The accessible name. Default Mark.
+  notes: The arcs enter in the order given, spread across p. At p = 1 each arc rests at its own start angle. Use halo on the block for
+    a soft bloom. The same arcs can sit inside a line of text through motion_lockup.
+  source: &mla002
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_lockup
+  stage: preview
+  description: 'Type built around an inline mark, with the block staying centred. Lines are arrays of words and one optional {mark:
+    {arcs: [...]}}. The mark appears first and the words arrive in order of distance from it (about 0.35 s in the footage this is drawn
+    from); with no mark they arrive in reading order. Every line is laid out in its final place, and the block is shifted by half the
+    height of the lines that have not arrived yet, so the visible lines are always centred and the block glides up half a line as each
+    line is added, with no jump. Standalone it shows everything. Plain HTML, SVG and CSS, no script.'
+  compact_description: text that builds around an inline arc mark and stays centred as lines are added
+  routing_text: A title in which a small animated mark sits inside a line of words, such as 'The new way to cloud', or a statement that
+    gains a line at a time while staying centred. Not a general kinetic-type engine; use motion_text for that.
+  intent_phrases:
+  - Show 'The new way to cloud' with a small mark in the middle of the line.
+  - I want a headline that gains a line and stays centred.
+  - Build a title around an inline logo that appears first.
+  surfaces: *mla001
+  fields:
+    lines: 'array (required, 1 to 4) of lines; each line is an array (1 to 8) of tokens: a word (string, max 24) or {mark: {arcs: [...],
+      label?}} (one mark in the whole block, arcs as in motion_arcs). At most 24 tokens.'
+    size: integer (optional). Font px, 14 to 300. Default 72.
+    weight: string (optional). regular, bold or black. Default bold.
+    font: string (optional). One of the engine font names. Default sans.
+    color: '"#rrggbb" (optional). Text colour. Default the host text colour.'
+    align: string (optional). start, center or end. Default center.
+    line_height: number (optional). 0.9 to 2. Default 1.15.
+    settle: bool (optional). Keep the visible lines centred as lines arrive. Default true.
+  notes: The block has one accessible name made from its words, and the visual is hidden from assistive technology so words are not
+    read twice. p builds the words; no other dial is read.
+  source: *mla002
+- type: motion_collage
+  stage: preview
+  description: 'A panel whose set of tiles swaps for the next set while the panel outline changes shape. Up to 4 sets, each up to 8
+    tiles placed on a 0 to 100 grid ({x, y, w, h, fill, fill2, label, block}). The step dial s moves through the sets: the outgoing set
+    fades and blurs out first, the next set blurs in after it, and a waiting set shows as a faint ghost. Each set names a panel silhouette
+    (panel, notch, step or tab) and the outline is mixed between neighbouring sets by the same dial. The first set builds in tile by
+    tile with p. Standalone it shows the last set. Plain HTML and CSS, no script.'
+  compact_description: a panel of tiles that swaps to the next set of tiles while its outline morphs
+  routing_text: A product-style collage of tiles or cards that changes to another arrangement inside one panel, with the panel shape
+    changing too. Not a carousel; there is no interaction.
+  intent_phrases:
+  - Swap the set of cards in this panel for another set, blurred, with the outline changing.
+  - Show a collage of tiles that rearranges into a new layout.
+  - Animate a dashboard panel changing between three arrangements.
+  surfaces: *mla001
+  fields:
+    sets: 'array (required, 2 to 4) of {panel?, tiles}; panel is panel, notch, step or tab (default panel); tiles is an array (1 to 8) of
+      {x, y, w, h (0 to 100 percent of the panel), fill?, fill2?, label? (max 28), block?} where block is any atom.'
+    blur: integer (optional). Peak blur in px while a set is not shown, 0 to 30. Default 10.
+    ghost: number (optional). Opacity of a waiting set, 0 to 1. Default 0.18.
+    radius: integer (optional). Tile corner radius px, 0 to 40. Default 10.
+    aspect: number (optional). Width over height of the panel, 0.5 to 3. Default 1.78.
+    fill: '"#rrggbb" (optional). Panel colour. Default a pale rose.'
+    title: string (optional). Accessible name for the group, max 80. Default Collage.
+  notes: The tiles are hidden from assistive technology and their labels are listed once, in order, as visually hidden text. p builds the
+    first set; s moves between sets.
+  source: *mla002
