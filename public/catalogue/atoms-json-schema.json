@@ -40341,7 +40341,8 @@
               "fade",
               "blur",
               "bar",
-              "flap\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars)."
+              "flap",
+              "reel\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus."
             ]
           },
           "overlap": {
@@ -40381,6 +40382,33 @@
               "object",
               "array"
             ]
+          },
+          "accent_gradient": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "glow": {
+            "type": "integer"
+          },
+          "glow_color": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "shine": {
+            "type": "boolean"
+          },
+          "cycle": {
+            "type": "string"
           },
           "bar": {
             "type": [
@@ -40617,8 +40645,11 @@
               "scale",
               "sweep",
               "fade",
-              "none\" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only."
+              "none\" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only. pulse (ring and circle only) is a ripple: the second dial (--s) goes 0 to 1 and the form swells and fades out, invisible at both ends."
             ]
+          },
+          "lag": {
+            "type": "number"
           },
           "blur": {
             "type": "integer"
@@ -40942,6 +40973,12 @@
             "type": "string"
           },
           "fill": {
+            "type": "integer"
+          },
+          "border_gradient": {
+            "type": "integer"
+          },
+          "glow": {
             "type": "integer"
           },
           "href": {
@@ -43518,7 +43555,9 @@
             "enum": [
               "liquid",
               "aurora",
-              "silk\" (optional, default \"liquid\"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen."
+              "silk",
+              "dots",
+              "vortex\" (optional, default \"liquid\"). dots: a halftone wave, a grid of dots whose size swells and fades in waves (color1 the ground, color2 and color3 the dots). vortex: dots arranged in a spiral tunnel that recedes to the centre and turns with time. silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen."
             ]
           },
           "color1": {

@@ -14170,7 +14170,7 @@
   },
   "motion_timeline": {
    "type": "object",
-   "description": "A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:\"hud\" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours prefers-reduced-motion (holds the poster frame; controls still work).",
+   "description": "A stage of child atoms choreographed on ONE clock, the way a product or launch video is: everything on screen is a pure function of time (seek(t)), so it plays, loops, scrubs, and can be frozen on any frame (open the page with #t=3.2). Children are any atoms, placed in percent of a fixed-size stage (so the composition is identical at every width) and addressed by id; tracks animate them by opacity, x/y, scale, rotate, 3D tilt, blur, wipe, and two custom properties the demo kit listens to (p = progress, step = which caption/nav item); a camera track pans, zooms and tilts the world while layer:\"hud\" children (captions) stay put. Each key is a DESTINATION: {t, x, ease} means arrive at x at time t using ease, like GSAP .to(); before a property's first key it holds that first value, so an element can be hidden until its first key. Ease is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers; with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated: one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out, a shared motion vector between scenes, restraint over noise by default (no particle bursts, neon glows or bouncy easing on UI; the opt-in expressive options, glow, shine, trails and ripples, are for a film that wants them). Honours prefers-reduced-motion (holds the poster frame; controls still work).",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -14234,7 +14234,7 @@
       },
       "tracks": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
-       "description": "array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?, scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?}. x,y are the element's top-left in percent of the stage (for an element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom's progress (chart draw, bar growth, toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, \"hold\" (jump at the key), or four numbers."
+       "description": "array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?, scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?, a?}. x,y are the element's top-left in percent of the stage (for an element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom's progress (chart draw, bar growth, toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, \"hold\" (jump at the key), or four numbers. PATH FOLLOWING: a track may also carry path (path data in stage PERCENT, 0-100 on both axes: the motion_path grammar, M L H V C S Q T A Z, 700 characters), and keys with a (0-1, how far along it): the element's top-left rides the path, like x and y, and a track with a keys ignores its x and y. orient: true also turns the element to the path's direction (rotate keys on the same track are then ignored). trail: {n 1-6, lag 0.02-0.5 s} adds n fading copies of a top-level block (it needs a numeric place.w) that follow the same path a little later, each fainter and blurrier than the one before."
       },
       "scenes": {
        "description": "array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the next scene's start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through, blur, rise, whip, wipe, iris, clock, slice, flip, spin, portal (with `portal: {x, y, w}`), ribbon and applies to the scene it names (the hand-over INTO it); without one the timeline's `stitch` is used. Your own tracks on the same layer are applied after these and win, so a scene can still do its own entrance.",
@@ -14442,7 +14442,7 @@
        "description": "\"lines\" | \"words\" | \"chars\" | \"block\" (optional, default \"lines\"). What reveals in turn. lines never wraps; more than 120 units falls back to block."
       },
       "reveal": {
-       "description": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars)."
+       "description": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" | \"reel\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus."
       },
       "overlap": {
        "description": "integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.",
@@ -14468,6 +14468,25 @@
       },
       "accent": {
        "description": "\"#rrggbb\" (optional). Colour of words wrapped in asterisks. Default the stage accent."
+      },
+      "accent_gradient": {
+       "description": "[\"#rrggbb\", \"#rrggbb\"] (optional). Two colours that run across the accent words (the ones in asterisks) instead of the flat accent colour.",
+       "type": "array"
+      },
+      "glow": {
+       "description": "integer (optional). A soft glow behind the type, 0-40 px. Default 0 (off).",
+       "type": "number"
+      },
+      "glow_color": {
+       "description": "\"#rrggbb\" (optional). Colour of the glow. Default the accent."
+      },
+      "shine": {
+       "description": "bool (optional). A band of light that sweeps across the letters as the second dial (--s) goes 0 to 1. Default false.",
+       "type": "boolean"
+      },
+      "cycle": {
+       "description": "array (2-6) of strings, max 40 characters each (optional). Words that swap in place with a blur crossfade as the second dial (--s) goes 0 to 1, after the text (or on their own when text is empty): on your phone / the web / the terminal. Take the accent colour.",
+       "type": "array"
       },
       "bar": {
        "description": "\"#rrggbb\" (optional). Colour of the highlight bar for reveal \"bar\". Default the stage accent."
@@ -14555,7 +14574,11 @@
        "type": "number"
       },
       "draw": {
-       "description": "\"grow-x\" | \"grow-y\" | \"scale\" | \"sweep\" | \"fade\" | \"none\" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only."
+       "description": "\"grow-x\" | \"grow-y\" | \"scale\" | \"sweep\" | \"fade\" | \"none\" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only. pulse (ring and circle only) is a ripple: the second dial (--s) goes 0 to 1 and the form swells and fades out, invisible at both ends."
+      },
+      "lag": {
+       "description": "number (optional). With draw pulse, delays the ripple, 0-0.9 of the dial. Several rings with growing lag make concentric ripples. Default 0.",
+       "type": "number"
       },
       "blur": {
        "description": "integer (optional). Blur px, 0-200. A big blur on a gradient disc is an ambient glow. Default 0.",
@@ -14693,6 +14716,14 @@
       },
       "fill": {
        "description": "\"#rrggbb\" (optional). Chip fill. Default a faint tint of the stage ink."
+      },
+      "border_gradient": {
+       "description": "[\"#rrggbb\", \"#rrggbb\"] (optional). A two-colour gradient outline instead of the faint line.",
+       "type": "array"
+      },
+      "glow": {
+       "description": "integer (optional). A soft glow around the chip, 0-40 px, in the gradient colours or the accent. Default 0 (off).",
+       "type": "number"
       },
       "href": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -15553,7 +15584,7 @@
        "const": "motion_shader"
       },
       "kind": {
-       "description": "\"liquid\" | \"aurora\" | \"silk\" (optional, default \"liquid\"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen."
+       "description": "\"liquid\" | \"aurora\" | \"silk\" | \"dots\" | \"vortex\" (optional, default \"liquid\"). dots: a halftone wave, a grid of dots whose size swells and fades in waves (color1 the ground, color2 and color3 the dots). vortex: dots arranged in a spiral tunnel that recedes to the centre and turns with time. silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen."
       },
       "color1": {
        "description": "\"#rrggbb\" (optional). Deep colour. Default #0b0712."

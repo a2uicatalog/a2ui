@@ -10,7 +10,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| kind | "liquid" | "aurora" | "silk" (optional, default "liquid"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen. |
+| kind | "liquid" | "aurora" | "silk" | "dots" | "vortex" (optional, default "liquid"). dots: a halftone wave, a grid of dots whose size swells and fades in waves (color1 the ground, color2 and color3 the dots). vortex: dots arranged in a spiral tunnel that recedes to the centre and turns with time. silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen. |
 | color1 | "#rrggbb" (optional). Deep colour. Default #0b0712. |
 | color2 | "#rrggbb" (optional). Default #ff3d81. |
 | color3 | "#rrggbb" (optional). Default #ffb347. |

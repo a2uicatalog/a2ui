@@ -366,6 +366,7 @@ a2ui-effects-v1:
 - motion_arch
 - motion_object3d
 - motion_bricks
+- motion_input
 - motion_timeline
 - motion_group
 - motion_tokens

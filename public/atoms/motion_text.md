@@ -15,7 +15,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | font | "sans" | "serif" | "mono" | "display" (optional, default "sans"). display is a heavy grotesque. |
 | weight | "regular" | "bold" | "black" (optional, default "bold") |
 | mode | "lines" | "words" | "chars" | "block" (optional, default "lines"). What reveals in turn. lines never wraps; more than 120 units falls back to block. |
-| reveal | "mask" | "rise" | "drop" | "fade" | "blur" | "bar" | "flap" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). |
+| reveal | "mask" | "rise" | "drop" | "fade" | "blur" | "bar" | "flap" | "reel" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus. |
 | overlap | integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3. |
 | tracking | number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02. |
 | line_height | number (optional). 0.8-2. Default 1.05. |
@@ -23,6 +23,11 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | align | "start" | "middle" | "end" (optional, default "start") |
 | uppercase | bool (optional). Default false. |
 | accent | "#rrggbb" (optional). Colour of words wrapped in asterisks. Default the stage accent. |
+| accent_gradient | ["#rrggbb", "#rrggbb"] (optional). Two colours that run across the accent words (the ones in asterisks) instead of the flat accent colour. |
+| glow | integer (optional). A soft glow behind the type, 0-40 px. Default 0 (off). |
+| glow_color | "#rrggbb" (optional). Colour of the glow. Default the accent. |
+| shine | bool (optional). A band of light that sweeps across the letters as the second dial (--s) goes 0 to 1. Default false. |
+| cycle | array (2-6) of strings, max 40 characters each (optional). Words that swap in place with a blur crossfade as the second dial (--s) goes 0 to 1, after the text (or on their own when text is empty): on your phone / the web / the terminal. Take the accent colour. |
 | bar | "#rrggbb" (optional). Colour of the highlight bar for reveal "bar". Default the stage accent. |
 | extrude | integer (optional). Depth in px of a solid 3D extrusion behind the type, 0-30. Default 0. |
 | extrude_color | "#rrggbb" (optional). Extrusion colour. Default "#0b0b14". |

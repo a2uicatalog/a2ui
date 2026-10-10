@@ -44,8 +44,9 @@ REEL6 = ["motion_media", "motion_chat", "motion_wiggle", "motion_textpath"]  # b
 REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batch 7, 2026-10-02
 REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-10-02
 STUDIO = ["motion_object3d", "motion_bricks"]  # studio pack (atoms_studio.gs), 2026-10-03
+INPUT = ["motion_input"]  # a text field that types itself, 2026-10-09
 VIDEO = ["motion_video", "motion_arch"]  # a video on the film clock, for screen recordings in motion_device, 2026-10-05
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + DEMO_ATOMS
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + INPUT + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -116,6 +117,8 @@ MORPHED = {
 }
 
 PAYLOADS = {
+    "motion_input": [{}, {"text": "Complete the attached RFP", "chip": "Request for Proposal", "label": "Ask for approval", "tone": "dark", "accent": "#ff3355", "size": 40},
+                     {"text": "</script><script>alert(1)", "chip": "<b>x</b>", "label": "a & b", "accent": "red"}, {"text": "x" * 300, "size": "big"}],
     "motion_group": [{}, {"effect": "pop", "stagger": 40, "blocks": [{"type": "demo_orb"}, {"type": "demo_cursor", "id": "c"}]},
                      {"effect": "<bad>", "ease": "zzz", "duration": -5, "delay": 99999999, "on": "view", "blocks": [{"type": "demo_orb"}]}],
     "motion_tokens": [{}, {"show": "ease", "theme": "light", "accent": "#F97316"}, {"show": "duration"}],

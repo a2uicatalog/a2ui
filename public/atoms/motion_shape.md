@@ -16,7 +16,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | angle | integer (optional). Gradient angle in degrees, 0-360. Default 90. |
 | thickness | integer (optional). Ring and line thickness px, 1-200. Default 6. |
 | radius | integer (optional). Rect corner radius px, 0-500. Default 0. |
-| draw | "grow-x" | "grow-y" | "scale" | "sweep" | "fade" | "none" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only. |
+| draw | "grow-x" | "grow-y" | "scale" | "sweep" | "fade" | "none" (optional). Default grow-x for rect and line, scale for circle, sweep for ring. sweep is ring only. pulse (ring and circle only) is a ripple: the second dial (--s) goes 0 to 1 and the form swells and fades out, invisible at both ends. |
+| lag | number (optional). With draw pulse, delays the ripple, 0-0.9 of the dial. Several rings with growing lag make concentric ripples. Default 0. |
 | blur | integer (optional). Blur px, 0-200. A big blur on a gradient disc is an ambient glow. Default 0. |
 | w | integer (optional). Width px, 1-3000. Default 100% of the placed box. |
 | h | integer (optional). Height px, 1-3000. Default 100% of the placed box. A line is thickness tall. |

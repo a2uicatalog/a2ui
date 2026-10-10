@@ -9919,7 +9919,7 @@ blocks:
     is a token name from motion_tokens (expo-out, standard, quart-in-out, overshoot, hold...) or four cubic-bezier numbers;
     with bpm set, keys take beat instead of t so the piece sits on a grid. Style that reads as designed rather than generated:
     one orchestrated moment per scene, entrances 600 ms or less on expo-out, on-screen moves on standard, the camera on quart-in-out,
-    a shared motion vector between scenes, restraint over noise (no particle bursts, neon glows or bouncy easing on UI). Honours
+    a shared motion vector between scenes, restraint over noise by default (no particle bursts, neon glows or bouncy easing on UI; the opt-in expressive options, glow, shine, trails and ripples, are for a film that wants them). Honours
     prefers-reduced-motion (holds the poster frame; controls still work).'
   compact_description: timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a
     scrubber
@@ -9966,12 +9966,12 @@ blocks:
       track), place {x, y, w, h, z, origin} (x/y/w/h in percent of the stage; z 0-99; origin "c"|"tl"|"t"|"b"|"l"|"r" is the
       transform origin), and layer "world" (default, moves with the camera) or "hud" (stays on screen).
     tracks: 'array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?,
-      scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?}. x,y are the element''s top-left in percent of the stage (for an
+      scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?, a?}. x,y are the element''s top-left in percent of the stage (for an
       element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt
       -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom''s progress (chart draw, bar growth,
       toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects
       the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, "hold" (jump at the
-      key), or four numbers.'
+      key), or four numbers. PATH FOLLOWING: a track may also carry path (path data in stage PERCENT, 0-100 on both axes: the motion_path grammar, M L H V C S Q T A Z, 700 characters), and keys with a (0-1, how far along it): the element''s top-left rides the path, like x and y, and a track with a keys ignores its x and y. orient: true also turns the element to the path''s direction (rotate keys on the same track are then ignored). trail: {n 1-6, lag 0.02-0.5 s} adds n fading copies of a top-level block (it needs a numeric place.w) that follow the same path a little later, each fainter and blurrier than the one before.'
     scenes: 'array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a
       motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the
       next scene''s start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through,
@@ -10288,6 +10288,36 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_input
+  stage: preview
+  description: 'A text field that types itself: the line types in one character at a time as p goes 0 to 1, with a caret on the last typed character; an optional attachment chip appears first; a send button presses as the second dial (--s) goes 0 to 1, dipping and sending out a ring. Pair it with demo_cursor, whose click lands on the button. Plain HTML and CSS, no script: it moves with the --p and --s custom properties a motion_timeline sets, and standalone it renders the finished line with the caret at the end.'
+  compact_description: a text field that types itself with a caret, an attachment chip and a send button that presses
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - android
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (charts drawn, counters at their values); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported; shows nothing useful
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    text: 'string (optional, max 120). The line that types in. Default "Type here".'
+    chip: 'string (optional, max 30). An attachment chip above the line, for example a file name.'
+    label: 'string (optional, max 24). Small label beside the plus in the bottom row, for example "Ask for approval".'
+    size: 'integer (optional). Font size px, 12-80. Default 26.'
+    tone: '"light" | "dark" (optional, default "light")'
+    accent: '"#rrggbb" (optional). Caret and send button colour. Default "#2563eb".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: demo_cursor
   stage: preview
   description: 'A pointer with a name tag and a click ripple. Place it with origin "tl" so its tip is the coordinate, glide
@@ -10311,6 +10341,7 @@ blocks:
       reason: CSS custom properties, clamp() and calc() are not supported in email clients
   fields:
     label: string (optional, max 24). Name tag beside the pointer.
+    kind: '"arrow" | "hand" (optional, default "arrow"). hand is a pointing hand.'
     accent: '"#rrggbb" (optional). Tag and ripple colour. Default "#2563eb".'
   source:
     name: a2uicatalog
@@ -10467,7 +10498,7 @@ blocks:
     weight: '"regular" | "bold" | "black" (optional, default "bold")'
     mode: '"lines" | "words" | "chars" | "block" (optional, default "lines"). What reveals in turn. lines never wraps; more
       than 120 units falls back to block.'
-    reveal: '"mask" | "rise" | "drop" | "fade" | "blur" | "bar" | "flap" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars).'
+    reveal: '"mask" | "rise" | "drop" | "fade" | "blur" | "bar" | "flap" | "reel" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus.'
     overlap: integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.
     tracking: number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02.
     line_height: number (optional). 0.8-2. Default 1.05.
@@ -10475,6 +10506,11 @@ blocks:
     align: '"start" | "middle" | "end" (optional, default "start")'
     uppercase: bool (optional). Default false.
     accent: '"#rrggbb" (optional). Colour of words wrapped in asterisks. Default the stage accent.'
+    accent_gradient: '["#rrggbb", "#rrggbb"] (optional). Two colours that run across the accent words (the ones in asterisks) instead of the flat accent colour.'
+    glow: 'integer (optional). A soft glow behind the type, 0-40 px. Default 0 (off).'
+    glow_color: '"#rrggbb" (optional). Colour of the glow. Default the accent.'
+    shine: 'bool (optional). A band of light that sweeps across the letters as the second dial (--s) goes 0 to 1. Default false.'
+    cycle: 'array (2-6) of strings, max 40 characters each (optional). Words that swap in place with a blur crossfade as the second dial (--s) goes 0 to 1, after the text (or on their own when text is empty): on your phone / the web / the terminal. Take the accent colour.'
     bar: '"#rrggbb" (optional). Colour of the highlight bar for reveal "bar". Default the stage accent.'
     extrude: integer (optional). Depth in px of a solid 3D extrusion behind the type, 0-30. Default 0.
     extrude_color: '"#rrggbb" (optional). Extrusion colour. Default "#0b0b14".'
@@ -10519,7 +10555,8 @@ blocks:
     thickness: integer (optional). Ring and line thickness px, 1-200. Default 6.
     radius: integer (optional). Rect corner radius px, 0-500. Default 0.
     draw: '"grow-x" | "grow-y" | "scale" | "sweep" | "fade" | "none" (optional). Default grow-x for rect and line, scale for
-      circle, sweep for ring. sweep is ring only.'
+      circle, sweep for ring. sweep is ring only. pulse (ring and circle only) is a ripple: the second dial (--s) goes 0 to 1 and the form swells and fades out, invisible at both ends.'
+    lag: 'number (optional). With draw pulse, delays the ripple, 0-0.9 of the dial. Several rings with growing lag make concentric ripples. Default 0.'
     blur: integer (optional). Blur px, 0-200. A big blur on a gradient disc is an ambient glow. Default 0.
     w: integer (optional). Width px, 1-3000. Default 100% of the placed box.
     h: integer (optional). Height px, 1-3000. Default 100% of the placed box. A line is thickness tall.
@@ -10595,6 +10632,8 @@ blocks:
     accent: '"#rrggbb" (optional). Default the stage accent.'
     color: '"#rrggbb" (optional). Text colour. Default the stage ink.'
     fill: '"#rrggbb" (optional). Chip fill. Default a faint tint of the stage ink.'
+    border_gradient: '["#rrggbb", "#rrggbb"] (optional). A two-colour gradient outline instead of the faint line.'
+    glow: 'integer (optional). A soft glow around the chip, 0-40 px, in the gradient colours or the accent. Default 0 (off).'
     href: 'string (optional). Makes the pill a real link: https, mailto or a relative path; anything else is dropped. Default none.'
     align: '"start" | "middle" | "end" (optional, default "start")'
   source:
@@ -11115,7 +11154,7 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    mode: '"ring" | "stack" (optional, default "ring")'
+    mode: '"ring" | "stack" | "coverflow" (optional, default "ring"). coverflow lays the cards in a row: the second dial (--s) slides the focus from the first card to the last, the focused card faces front and the others turn away, fall back, dim and blur with their distance.'
     items: 'array (max 6) of strings or {title, text?, icon?}. title max 30, text max 60, icon max 2 characters.'
     w: 'integer (optional). Card width px, 80-600. Default 220.'
     h: 'integer (optional). Card height px, 60-500. Default 140.'
@@ -11866,7 +11905,7 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    kind: '"liquid" | "aurora" | "silk" (optional, default "liquid"). silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen.'
+    kind: '"liquid" | "aurora" | "silk" | "dots" | "vortex" (optional, default "liquid"). dots: a halftone wave, a grid of dots whose size swells and fades in waves (color1 the ground, color2 and color3 the dots). vortex: dots arranged in a spiral tunnel that recedes to the centre and turns with time. silk: satin folds lit from their own surface, color1 the shadowed cloth, color2 the lit cloth, color3 the sheen.'
     color1: '"#rrggbb" (optional). Deep colour. Default #0b0712.'
     color2: '"#rrggbb" (optional). Default #ff3d81.'
     color3: '"#rrggbb" (optional). Default #ffb347.'

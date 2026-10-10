@@ -26575,7 +26575,9 @@ _MO_TIMELINE_JS = (
     'function fm(v,d,p,s){var neg=v<0;v=Math.abs(v);var m=Math.pow(10,d),k=Math.floor(v*m+0.5),ip=Math.floor(k/m),fp=""+(k%m);while(fp.length<d)fp="0"+fp;var g="",ds=""+ip;for(var i=ds.length;i>0;i-=3){g=ds.slice(Math.max(0,i-3),i)+(g?",":"")+g;}return (neg&&k>0?"-":"")+p+g+(d>0?"."+fp:"")+s;}'
     'var els={},nl=root.querySelectorAll("[data-mt-id]");'
     'for(var i=0;i<nl.length;i++){var el=nl[i],x0=parseFloat(el.getAttribute("data-mt-x")),y0=parseFloat(el.getAttribute("data-mt-y"));els[el.getAttribute("data-mt-id")]={e:el,x0:isNaN(x0)?0:x0,y0:isNaN(y0)?0:y0,nums:el.querySelectorAll("[data-mt-num]")};}'
+    'var SVG0=null;function pp(g,o,a){if(!o.pa){if(!SVG0){SVG0=document.createElementNS("http://www.w3.org/2000/svg","svg");SVG0.setAttribute("width","0");SVG0.setAttribute("height","0");SVG0.setAttribute("style","position:absolute;visibility:hidden");root.appendChild(SVG0);}var s=document.createElementNS("http://www.w3.org/2000/svg","path");s.setAttribute("d",g.d);SVG0.appendChild(s);o.pa=s;o.pl=s.getTotalLength();}var L=o.pl*Math.max(0,Math.min(1,a)),p=o.pa.getPointAtLength(L),q=o.pa.getPointAtLength(Math.min(o.pl,L+0.5)),r=o.pa.getPointAtLength(Math.max(0,L-0.5));return [p.x,p.y,Math.atan2((q.y-r.y)*C.H,(q.x-r.x)*C.W)*180/Math.PI];}'
     'var LZ={};function lz(id,cl){var c=document.getElementById("mlz%%UID%%-"+id);if(!c)return "";var tx=c.querySelector("text");if(!tx)return "";if(!LZ[id])LZ[id]=lzo(tx);var o=LZ[id],k=0.9*Math.pow(90,cl*cl*cl);tx.setAttribute("transform","translate("+o[0].toFixed(1)+" "+o[1].toFixed(1)+") scale("+k.toFixed(4)+") translate("+(-o[0]).toFixed(1)+" "+(-o[1]).toFixed(1)+")");return "url(#mlz%%UID%%-"+id+")";}function lzo(tx){var q=4,w=Math.ceil(C.W/q),h=Math.ceil(C.H/q),cv=document.createElement("canvas");cv.width=w;cv.height=h;var x=cv.getContext("2d");if(!x)return[C.W/2,C.H/2];x.font=(tx.getAttribute("font-weight")||"900")+" "+(parseFloat(tx.getAttribute("font-size"))/q)+"px "+tx.getAttribute("font-family");x.textAlign="center";x.textBaseline="middle";x.fillText(tx.textContent,w/2,h/2);var d=x.getImageData(0,0,w,h).data,best=null,bd=1e18,yy,xx,a,b2,ok;for(yy=3;yy<h-3;yy++)for(xx=3;xx<w-3;xx++){if(d[(yy*w+xx)*4+3]<200)continue;ok=true;for(a=-3;a<=3&&ok;a++)for(b2=-3;b2<=3;b2++)if(d[((yy+a)*w+xx+b2)*4+3]<200){ok=false;break;}if(!ok)continue;var dd=(xx-w/2)*(xx-w/2)+(yy-h/2)*(yy-h/2);if(dd<bd){bd=dd;best=[xx*q+q/2,yy*q+q/2];}}return best||[C.W/2,C.H/2];}if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){LZ={};});function ap(g,t){var o=els[g.i];if(!o)return;var v={};for(var k in g.p)v[k]=at(g.p[k],t);var e=o.e,tr="";'
+    'if(v.a!==undefined&&g.d){var pt=pp(g,o,v.a);v.x=pt[0];v.y=pt[1];if(g.o&&v.rotate===undefined)v.rotate=pt[2];}'
     'if(v.x!==undefined||v.y!==undefined){tr+="translate("+((v.x===undefined?0:v.x-o.x0)*C.W/100).toFixed(2)+"px,"+((v.y===undefined?0:v.y-o.y0)*C.H/100).toFixed(2)+"px) ";}'
     'if(v.rx!==undefined)tr+="rotateX("+v.rx.toFixed(2)+"deg) ";if(v.ry!==undefined)tr+="rotateY("+v.ry.toFixed(2)+"deg) ";if(v.rotate!==undefined)tr+="rotate("+v.rotate.toFixed(2)+"deg) ";if(v.scale!==undefined)tr+="scale("+Math.max(0,v.scale).toFixed(4)+")";'
     'if(tr)e.style.transform=tr;'
@@ -26668,8 +26670,8 @@ _MO_FX_ORDER = ['fade', 'rise', 'drop', 'slide-left', 'slide-right', 'scale', 'b
 _MO_SANS = 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif'
 _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]}
 _MO_PROPS = {'x': [-200, 300], 'y': [-200, 300], 'opacity': [0, 1], 'scale': [0, 6], 'rotate': [-360, 360], 'rx': [-80, 80],
-             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 9]}
-_MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs']
+             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 9], 'a': [0, 1]}
+_MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs', 'a']
 _MO_CAM = {'x': [-100, 200], 'y': [-100, 200], 'zoom': [0.25, 6], 'rx': [-80, 80], 'ry': [-80, 80], 'rz': [-180, 180], 'z': [-1500, 1500]}
 _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz', 'z']
 _MO_ORIGIN = {'c': '50% 50%', 'tl': '0 0', 't': '50% 0', 'b': '50% 100%', 'l': '0 50%', 'r': '100% 50%'}
@@ -27170,10 +27172,11 @@ def _render_demo_progress(b: dict) -> str:
 
 
 def _render_demo_cursor(b: dict) -> str:
-    acc, label = _ff_hex(b.get('accent'), '#2563eb'), _cv_str(b.get('label'), 24)
+    acc, label, hand = _ff_hex(b.get('accent'), '#2563eb'), _cv_str(b.get('label'), 24), b.get('kind') == 'hand'
     return ('<div style="position:relative;width:0;height:0;font-family:' + _MO_SANS + ';">'
             + '<span style="position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:2px solid ' + acc + ';opacity:calc(var(--p,0)*(1 - var(--p,0))*4);transform:scale(calc(0.5 + var(--p,0)*1.3));"></span>'
-            + '<svg width="22" height="26" viewBox="0 0 22 26" style="position:absolute;left:0;top:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));" aria-hidden="true"><path d="M1 1L1 20L6.2 15.4L9.6 23.4L13 22L9.7 14.2L16.6 14.2Z" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+            + ('<svg width="26" height="30" viewBox="0 0 26 30" style="position:absolute;left:-10px;top:-1px;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));" aria-hidden="true"><path d="M9.5 1.4C10.3 0.6 12 0.9 12.4 2.2L12.4 11.2L13.2 10.8C14.2 10.4 15.3 10.7 15.6 11.8L15.6 12.2L16.8 11.8C17.9 11.5 18.9 12 19.1 13L19.1 13.4L20.2 13C21.3 12.8 22.4 13.4 22.4 14.6L22.4 20.5C22.4 25.2 19.4 28.4 15.2 28.4L12.6 28.4C9.8 28.4 8 27.2 6.5 25.2L2.4 19.6C1.6 18.6 1.9 17.4 2.9 16.8C3.8 16.3 4.9 16.6 5.6 17.5L7.6 20L7.6 3C7.6 2.4 8.6 1.9 9.5 1.4Z" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+               if hand else '<svg width="22" height="26" viewBox="0 0 22 26" style="position:absolute;left:0;top:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));" aria-hidden="true"><path d="M1 1L1 20L6.2 15.4L9.6 23.4L13 22L9.7 14.2L16.6 14.2Z" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" stroke-linejoin="round"/></svg>')
             + ('<span style="position:absolute;left:16px;top:22px;white-space:nowrap;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;color:#ffffff;background:' + acc + ';box-shadow:0 2px 6px rgba(0,0,0,0.25);">' + _cv_esc(label) + '</span>' if label else '')
             + '</div>')
 
@@ -27375,6 +27378,62 @@ def _mo_morphs(b, blocks, ids, bpm, dur, st):
     return html, tg
 
 
+# Path-following (2026-10-09): a track may carry `path` (path data in stage PERCENT, 0-100 on both axes, the strict motion_path grammar) and keys with
+# `a` (0-1, how far along it). The element's top-left rides the path, like x and y; `orient: true` also turns it to the path's direction. `trail`
+# {n 1-6, lag s} adds n fading copies that follow the same path a little later (top-level blocks with a numeric place.w).
+def _mo_path_of(tr, keys, st):
+    if not isinstance(tr.get('path'), str):
+        return ''
+    d = re.sub(r'[ \t\n\r]+', ' ', tr['path']).strip()
+    has = any(isinstance(k, dict) and _mo_num_ok(k.get('a')) for k in keys)
+    if not has:
+        return ''
+    if not _MO_PATH_OK.match(d):
+        st['dropped'] += 1
+        return ''
+    return d
+
+
+def _mo_trail(tr, idx, tid, keys, pth, box, bpm, dur, def_ease, st):
+    html, tg = '', []
+    T = tr.get('trail') if isinstance(tr.get('trail'), dict) else None
+    if not T:
+        return html, tg
+    n = _ff_int(T.get('n'), 3, 1, 6)
+    lag = float(_ff_num(T.get('lag'), 0.07, 0.02, 0.5, 3))
+    A = box.get(tid)
+    if not A or not A.get('b'):
+        st['dropped'] += 1
+        return html, tg
+    fx, fy = _ff_num(A['x'], 0, -100, 200, 2), _ff_num(A['y'], 0, -100, 200, 2)
+    pl = A['b'].get('place') if isinstance(A['b'].get('place'), dict) else {}
+    copy = {k: v for k, v in A['b'].items() if k not in ('id', 'place')}
+    an, t0, t1 = [], None, None
+    for kj in keys:
+        if not isinstance(kj, dict) or not _mo_num_ok(kj.get('a')):
+            continue
+        tj = _mo_at(kj, bpm, dur)
+        if tj is None:
+            continue
+        an.append({'t': tj, 'a': kj['a'], 'ease': kj.get('ease')})
+        t0 = tj if t0 is None or tj < t0 else t0
+        t1 = tj if t1 is None or tj > t1 else t1
+    if t0 is None:
+        return html, tg
+    for g in range(1, n + 1):
+        sh = g * lag
+        fade = float(_ff_num(0.5 * (1 - (g - 1) / n), 0.5, 0, 1, 3))
+        gid = 'tr' + str(idx) + 'g' + str(g)
+        gk = [{'t': 0, 'opacity': 0, 'blur': g * 1.2}, {'t': min(dur, t0 + sh), 'opacity': fade, 'ease': 'hold'}]
+        for a in an:
+            gk.append({'t': min(dur, a['t'] + sh), 'a': a['a'], 'ease': a['ease']})
+        gk += [{'t': min(dur, t1 + sh), 'opacity': fade}, {'t': min(dur, t1 + sh + 0.25), 'opacity': 0}]
+        gj = _mo_track_js(gk, _MO_PROPS, _MO_PROP_ORDER, dur, bpm, def_ease, st)
+        html += ('<div class="mt-el" data-mt-id="' + gid + '" data-mt-x="' + fx + '" data-mt-y="' + fy + '" aria-hidden="true" style="position:absolute;left:' + fx + '%;top:' + fy + '%;width:' + _ff_num(A['w'], 100, 0, 300, 2) + '%;z-index:0;transform-origin:' + _ff_pick(pl.get('origin'), _MO_ORIGIN, 'c') + ';opacity:0;pointer-events:none;">' + _mo_render(copy) + '</div>')
+        tg.append('{i:"' + gid + '",d:"' + pth + '"' + (',o:1' if tr.get('orient') is True else '') + ',p:{' + gj + '}}')
+    return html, tg
+
+
 def _mo_timeline(b: dict) -> str:
     uid = _wa_uid(b)[:6]
     th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
@@ -27417,7 +27476,8 @@ def _mo_timeline(b: dict) -> str:
         world += st['rib']
     if st.get('lz'):
         world += st['lz']
-    for tr in tracks:
+    tbox = [None]
+    for tr_i, tr in enumerate(tracks):
         tid = _mo_id(tr.get('target')) if isinstance(tr, dict) else ''
         if not tid or not ids.get(tid) or not isinstance(tr.get('keys'), list):
             st['dropped'] += 1
@@ -27427,8 +27487,15 @@ def _mo_timeline(b: dict) -> str:
             st['dropped'] += len(keys) - 48
             keys = keys[:48]
         pjs = _mo_track_js(keys, _MO_PROPS, _MO_PROP_ORDER, dur_n, bpm, def_ease, st)
+        pth = _mo_path_of(tr, keys, st)
         if pjs:
-            tg.append('{i:"' + tid + '",p:{' + pjs + '}}')
+            tg.append('{i:"' + tid + '"' + (',d:"' + pth + '"' + (',o:1' if tr.get('orient') is True else '') if pth else '') + ',p:{' + pjs + '}}')
+        if pjs and pth and tr.get('trail'):
+            if tbox[0] is None:
+                tbox[0] = _mo_boxes(blocks)
+            t_html, t_tg = _mo_trail(tr, tr_i, tid, keys, pth, tbox[0], bpm, dur_n, def_ease, st)
+            world += t_html
+            tg += t_tg
     mc_html, mc_tg = _mo_morphs(b, blocks, ids, bpm, dur_n, st)  # after your tracks: the morph owns from/to opacity during its flight
     world += mc_html
     tg += mc_tg
@@ -27490,7 +27557,7 @@ for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens
     _RENDERERS[_mo_name] = _mo_fn
 
 
-_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1}
+_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1, 'reel': 1}
 _MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'
 _MO_ALIGN = {'start': 'left', 'middle': 'center', 'end': 'right'}
 
@@ -27548,7 +27615,7 @@ def _mo_words(chs):
     return words
 
 
-def _mo_runs(chs, acc):
+def _mo_runs(chs, acc, css=''):
     html, i = '', 0
     while i < len(chs):
         j, a, t = i, chs[i][1], ''
@@ -27556,7 +27623,7 @@ def _mo_runs(chs, acc):
             t += chs[j][0]
             j += 1
         t = _cv_esc(t).replace('\n', '<br>')
-        html += ('<span style="color:' + acc + ';">' + t + '</span>') if a else t
+        html += ('<span style="' + (css or 'color:' + acc + ';') + '">' + t + '</span>') if a else t
         i = j
     return html
 
@@ -27578,8 +27645,15 @@ def _render_motion_text(b: dict) -> str:
         total += len(ln)
         if ln:
             lines.append(ln)
+    cw = []
+    for cwd0 in (b.get('cycle') if isinstance(b.get('cycle'), list) else []):
+        if len(cw) >= 6:
+            break
+        cwd = _cv_str(cwd0, 40)
+        if cwd:
+            cw.append(cwd)
     if not lines:
-        lines = ['Text']
+        lines = [] if len(cw) >= 2 else ['Text']
     size, weight, font = _ff_int(b.get('size'), 64, 10, 400), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), _ff_pick(b.get('font'), _FF_FONTS, 'sans')
     vf = b.get('font') if isinstance(b.get('font'), str) and b.get('font') in _MO_VFONTS else ''
     fvs, von = (_mo_vf_vary(vf, b.get('vary')) if vf else ''), _mo_own(_MO_VARY_ON, b.get('vary_on'), 'unit')
@@ -27602,6 +27676,14 @@ def _render_motion_text(b: dict) -> str:
     track, lh = _ff_num(b.get('tracking'), -0.02, -0.1, 0.5, 3), _ff_num(b.get('line_height'), 1.05, 0.8, 2, 2)
     color, align, upper = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), b.get('uppercase') is True
     accent = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)')
+    # expressive options (2026-10-09), all off by default: a gradient on the accent words, a glow behind the type, a light sweep, a vertical reel, a word cycle
+    ag = b.get('accent_gradient') if isinstance(b.get('accent_gradient'), list) else []
+    ag_a, ag_b = (_ff_hex(ag[0], ''), _ff_hex(ag[1], '')) if len(ag) >= 2 else ('', '')
+    acc_css = ('background:linear-gradient(90deg,' + ag_a + ',' + ag_b + ');-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;') if (ag_a and ag_b) else ''
+    glow, glow_c, shine = _ff_int(b.get('glow'), 0, 0, 40), _mo_ink(b, 'glow_color', accent), b.get('shine') is True
+
+    def runs(c):
+        return _mo_runs(c, accent, acc_css)
     bar, ext, extc = _mo_ink(b, 'bar', 'var(--mt-acc,#38bdf8)'), _ff_int(b.get('extrude'), 0, 0, 30), _mo_ink(b, 'extrude_color', '#0b0b14')
     shadow = ','.join(('0' if b.get('extrude_dir') == 'down' else str(si) + 'px') + ' ' + str(si) + 'px 0 ' + extc for si in range(1, ext + 1))
     decor, decor_c, kara = _mo_own(_MO_DECOR, b.get('decor'), ''), _mo_ink(b, 'decor_color', accent), _mo_own(_MO_KARA, b.get('karaoke'), '')
@@ -27699,28 +27781,45 @@ def _render_motion_text(b: dict) -> str:
     out = ''
     for u in units:
         if u.get('block'):
-            out += wrap_unit(_mo_runs(u['c'], accent), nxt(), True)
+            out += wrap_unit(runs(u['c']), nxt(), True)
             continue
         if u.get('brk'):
             out += '<br>'
         if u.get('sp'):
             out += ' '
         if mode == 'lines':
-            out += wrap_unit(_mo_runs(u['c'], accent), nxt(), True)
+            out += wrap_unit(runs(u['c']), nxt(), True)
             continue
         if u.get('chars'):
-            ch = ''.join(wrap_unit(_mo_runs([c], accent), nxt(), False) for c in u['c'])
+            ch = ''.join(wrap_unit(runs([c]), nxt(), False) for c in u['c'])
             out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>'
         else:
-            out += wrap_unit(_mo_runs(u['c'], accent), nxt(), False)
+            out += wrap_unit(runs(u['c']), nxt(), False)
+    if reveal == 'reel' and lines:  # lines stacked on one row: --s moves the focus down the list, the rest dim, shrink and blur with distance
+        rl, rn = '', len(lines)
+        ro = '100% 50%' if align == 'right' else ('50% 50%' if align == 'center' else '0 50%')
+        for ri in range(rn):
+            rd = 'calc(' + str(ri) + ' - var(--s,1)*' + str(rn - 1) + ')'
+            rl += ('<span style="position:absolute;left:0;top:0;width:100%;white-space:nowrap;transform-origin:' + ro + ';transform:translateY(calc(' + rd + '*' + lh + 'em)) scale(calc(1 - abs(' + rd + ')*0.07));opacity:clamp(0,calc(1 - abs(' + rd + ')*0.66),1);filter:blur(calc(abs(' + rd + ')*0.045em));">' + runs(_mo_chars(lines[ri])) + '</span>')
+        out = '<span style="display:block;position:relative;height:' + lh + 'em;opacity:clamp(0,calc(var(--p,1)*4),1);">' + rl + '</span>'
+    cycle_html = ''
+    if len(cw) >= 2:  # words that swap in place with the second dial (--s): a blur crossfade
+        cn, cj = len(cw), ''
+        for ci in range(cn):
+            cv = 'clamp(0,calc(1.5 - abs(var(--s,1)*' + str(cn - 1) + ' - ' + str(ci) + ')*3),1)'
+            cj += ('<span aria-hidden="true" style="grid-area:1/1;opacity:' + cv + ';filter:blur(calc((1 - ' + cv + ')*0.22em));transform:translateY(calc((' + str(ci) + ' - var(--s,1)*' + str(cn - 1) + ')*0.3em));white-space:nowrap;' + acc_css + '">' + _cv_esc(cw[ci]) + '</span>')
+        cycle_html = ('<span style="display:inline-grid;vertical-align:bottom;' + ('margin-left:0.3em;' if lines else '') + 'color:' + accent + ';opacity:clamp(0,calc(var(--p,1)*6),1);">' + _mo_sr(', '.join(cw)) + cj + '</span>')
+    shine_html = ''
+    if shine:  # a light band that sweeps across the glyphs as --s goes 0 to 1: a transparent copy of the text, clipped to its letters
+        shine_html = ('<span aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;display:block;pointer-events:none;text-shadow:none;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(100deg,transparent calc(var(--s,0)*170% - 60%),rgba(255,255,255,0.95) calc(var(--s,0)*170% - 32%),transparent calc(var(--s,0)*170% - 4%));-webkit-background-clip:text;background-clip:text;opacity:clamp(0,calc((var(--p,1) - 0.6)*4),1);">' + '<br>'.join(_cv_esc(_mo_plain(ln)) for ln in lines) + '</span>')
     sr_text = _mo_plain(' '.join(lines))
     flip_plain = _mo_plain(b['flip_text'][:160]).replace('\n', ' ') if flip_on and isinstance(b.get('flip_text'), str) else ''
     if flip_plain and flip_plain != sr_text:
         sr_text += ', then ' + flip_plain
     return ((_mo_vf_face(vf) if vf else '') + (_mo_vf_face(flip_face) if flip_face and flip_face != vf else '') + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
-            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
+            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + ('position:relative;' if shine else '') + (('filter:drop-shadow(0 0 ' + _ff_num(glow / 3, 0, 0, 20, 1) + 'px color-mix(in srgb,' + glow_c + ' 85%,transparent)) drop-shadow(0 0 ' + str(glow) + 'px color-mix(in srgb,' + glow_c + ' 55%,transparent));') if glow else '') + 'width:100%;">'
             + _mo_sr(sr_text)
-            + '<span aria-hidden="true" style="display:block;">' + out + prism + '</span></div>')
+            + '<span aria-hidden="true" style="display:block;">' + out + prism + cycle_html + '</span>' + shine_html + '</div>')
 
 
 def _render_motion_shape(b: dict) -> str:
@@ -27730,14 +27829,14 @@ def _render_motion_shape(b: dict) -> str:
     radius, blur = _ff_int(b.get('radius'), 0, 0, 500), _ff_int(b.get('blur'), 0, 0, 200)
     dflt = 'sweep' if shape == 'ring' else ('scale' if shape == 'circle' else 'grow-x')
     d = b.get('draw')
-    draw = d if d in ('grow-x', 'grow-y', 'scale', 'fade', 'none') or (d == 'sweep' and shape == 'ring') else dflt
+    draw = d if d in ('grow-x', 'grow-y', 'scale', 'fade', 'none') or (d == 'sweep' and shape == 'ring') or (d == 'pulse' and shape in ('ring', 'circle')) else dflt
     num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)  # noqa: E731
     wd = str(_ff_int(b.get('w'), 100, 1, 3000)) + 'px' if num(b.get('w')) else '100%'
     ht = str(_ff_int(b.get('h'), 100, 1, 3000)) + 'px' if num(b.get('h')) else '100%'
     if shape == 'line':
         ht = str(thick) + 'px'
     bg = 'linear-gradient(' + str(angle) + 'deg,' + fill + ',' + fill2 + ')' if fill2 else fill
-    origin = '50% 100%' if draw == 'grow-y' else ('50% 50%' if draw == 'scale' else '0 50%')
+    origin = '50% 100%' if draw == 'grow-y' else ('50% 50%' if draw in ('scale', 'pulse') else '0 50%')
     if shape == 'ring':
         mask = 'radial-gradient(farthest-side,transparent calc(100% - ' + str(thick) + 'px),#000 calc(100% - ' + str(thick) + 'px + 1px))'
         if draw == 'sweep':
@@ -27750,6 +27849,10 @@ def _render_motion_shape(b: dict) -> str:
     tf = ('transform:scaleX(var(--p,1));' if draw == 'grow-x' else 'transform:scaleY(var(--p,1));' if draw == 'grow-y'
           else 'transform:scale(var(--p,1));' if draw == 'scale' else '')
     op = 'opacity:var(--p,1);' if draw == 'fade' else ''
+    if draw == 'pulse':  # a ripple: --s goes 0 to 1 and the form swells and fades out; `lag` (0-0.9) delays it, so several rings make concentric ripples
+        lagp = _ff_num(b.get('lag'), 0, 0, 0.9, 2)
+        tf = '--u:clamp(0,calc((var(--s,0) - ' + lagp + ')/(1 - ' + lagp + ')),1);transform:scale(calc(0.35 + var(--u)*0.9));'
+        op = 'opacity:calc(clamp(0,calc(var(--u)*8),1)*(1 - var(--u)));'
     return ('<div aria-hidden="true" style="width:' + wd + ';height:' + ht + ';box-sizing:border-box;background:' + bg + ';' + extra + tf + op + 'transform-origin:' + origin + ';'
             + ('filter:blur(' + str(blur) + 'px);' if blur else '') + '"></div>')
 
@@ -27804,8 +27907,14 @@ def _render_motion_pill(b: dict) -> str:
     jc = 'flex-end' if align == 'right' else ('center' if align == 'center' else 'flex-start')
     href = _href_is_safe_motion_pill(b.get('href'))
     tag = 'a' if href else 'div'
+    # expressive options (2026-10-09): a gradient outline and a glow, off by default
+    bgr = b.get('border_gradient') if isinstance(b.get('border_gradient'), list) else []
+    bg_a, bg_b = (_ff_hex(bgr[0], ''), _ff_hex(bgr[1], '')) if len(bgr) >= 2 else ('', '')
+    pglow, solid = _ff_int(b.get('glow'), 0, 0, 40), fill or 'var(--mt-bg,#0b1220)'
+    look = ('border:2px solid transparent;background:linear-gradient(' + solid + ',' + solid + ') padding-box,linear-gradient(90deg,' + bg_a + ',' + bg_b + ') border-box;') if (bg_a and bg_b) else ('border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';')
+    pgl = ('box-shadow:0 0 ' + str(pglow) + 'px ' + ((bg_a + '88,0 0 ' + str(pglow * 2) + 'px ' + bg_b + '55') if (bg_a and bg_b) else ('color-mix(in srgb,' + acc + ' 60%,transparent)')) + ';') if pglow else ''
     return ('<div style="display:flex;justify-content:' + jc + ';width:100%;">'
-            + '<' + tag + (' href="' + _cv_esc(href) + '"' if href else '') + ' style="' + ('text-decoration:none;cursor:pointer;pointer-events:auto;' if href else '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
+            + '<' + tag + (' href="' + _cv_esc(href) + '"' if href else '') + ' style="' + ('text-decoration:none;cursor:pointer;pointer-events:auto;' if href else '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;' + look + pgl + 'color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
             + _mo_sr(_mo_plain(text))
             + '<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:0.55em;">' + ('<span style="color:' + acc + ';">' + _cv_esc(icon) + '</span>' if icon else '') + '<span>' + _mo_runs(_mo_chars(text), acc) + '</span></span></' + tag + '></div>')
 
@@ -28279,7 +28388,7 @@ _MO_DECOR = {'strike': 1, 'highlight': 1, 'underline': 1}
 _MO_KARA = {'pill': 1, 'color': 1}
 _MO_RAYS = {'burst': 1, 'speed': 1}
 _MO_CELLS = {'pop': 1, 'flip': 1, 'fill': 1}
-_MO_STACK = {'ring': 1, 'stack': 1}
+_MO_STACK = {'ring': 1, 'stack': 1, 'coverflow': 1}
 
 
 def _mo_round(x):
@@ -28396,14 +28505,14 @@ def _render_motion_stack3d(b: dict) -> str:
     rr = max(_mo_round(w * 0.5 / math.tan(math.pi / nn)), _mo_round(w * 0.6))
     cards, names = '', []
     for i, (t, x, ic) in enumerate(items):
-        tf = ('rotateY(' + str(_mo_round(360 * i / n)) + 'deg) translateZ(' + str(rr) + 'px) scale(calc(0.6 + 0.4*var(--u)))') if mode == 'ring' else ('translateZ(calc(' + str(i) + '*(16px + var(--s,0)*60px)))')
-        cards += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);position:absolute;left:0;top:0;width:' + str(w) + 'px;height:' + str(h) + 'px;box-sizing:border-box;padding:0.8em;border-radius:0.8em;background:' + fill + ';border:1px solid ' + _MO_MIX_LINE + ';box-shadow:inset 0 3px 0 ' + acc + ';opacity:var(--u);'
+        tf = ('rotateY(' + str(_mo_round(360 * i / n)) + 'deg) translateZ(' + str(rr) + 'px) scale(calc(0.6 + 0.4*var(--u)))') if mode == 'ring' else (('translateX(calc(var(--d)*' + str(_mo_round(w * 0.62)) + 'px)) translateZ(calc(abs(var(--d))*-220px)) rotateY(calc(clamp(-1,var(--d),1)*-50deg))') if mode == 'coverflow' else ('translateZ(calc(' + str(i) + '*(16px + var(--s,0)*60px)))'))
+        cards += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);' + (('--d:calc(' + str(i) + ' - var(--s,0)*' + str(n - 1) + ');') if mode == 'coverflow' else '') + 'position:absolute;left:0;top:0;width:' + str(w) + 'px;height:' + str(h) + 'px;box-sizing:border-box;padding:0.8em;border-radius:0.8em;background:' + fill + ';border:1px solid ' + _MO_MIX_LINE + ';box-shadow:inset 0 3px 0 ' + acc + ';' + ('opacity:calc(var(--u)*clamp(0,calc(1.1 - abs(var(--d))*0.34),1));filter:blur(calc(abs(var(--d))*1.5px));' if mode == 'coverflow' else 'opacity:var(--u);')
                   + ('backface-visibility:hidden;-webkit-backface-visibility:hidden;' if mode == 'ring' else '') + 'transform:' + tf + ';color:var(--mt-ink,#f1f5f9);font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">'
                   + ('<div aria-hidden="true" style="font-size:1.4em;">' + _cv_esc(ic) + '</div>' if ic else '') + '<div style="font-weight:700;">' + _cv_esc(t) + '</div>'
                   + ('<div style="font-size:0.8em;color:var(--mt-mute,#94a3b8);margin-top:0.3em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')
         names.append(t)
-    stage = ('transform:translateZ(-' + str(rr) + 'px) rotateY(calc(var(--s,0)*-360deg));') if mode == 'ring' else ('transform:rotateX(55deg) rotateZ(-30deg);margin-top:' + str(int(math.floor(h * 0.5))) + 'px;')
-    return ('<div role="group" aria-label="' + _cv_esc(', '.join(names)) + '" style="width:100%;height:' + str(int(math.floor(h * (2 if mode == 'stack' else 1.15)))) + 'px;perspective:1400px;">'
+    stage = ('transform:translateZ(-' + str(rr) + 'px) rotateY(calc(var(--s,0)*-360deg));') if mode == 'ring' else ('' if mode == 'coverflow' else 'transform:rotateX(55deg) rotateZ(-30deg);margin-top:' + str(int(math.floor(h * 0.5))) + 'px;')
+    return ('<div role="group" aria-label="' + _cv_esc(', '.join(names)) + '" style="width:100%;height:' + str(int(math.floor(h * (2 if mode == 'stack' else (1.3 if mode == 'coverflow' else 1.15))))) + 'px;perspective:1400px;">'
             + '<div style="position:relative;width:' + str(w) + 'px;height:' + str(h) + 'px;margin-left:auto;margin-right:auto;transform-style:preserve-3d;' + stage + '">' + cards + '</div></div>')
 
 
@@ -28935,8 +29044,8 @@ def _render_motion_morph(b: dict) -> str:
 
 
 # ─── WebGL spike (2026-10-02): see the matching block in atoms_motion.gs ──────────────────────────────────────────────────────────
-_MO_SHADER_JS = '(function(){var r=document.getElementById("mt-%%UID%%");if(!r)return;var C=%%CFG%%,cv=r.querySelector("canvas"),gl=null;try{gl=cv.getContext("webgl",{antialias:false,preserveDrawingBuffer:true});}catch(e){}if(!gl){cv.style.display="none";return;}var VS="attribute vec2 a;void main(){gl_Position=vec4(a,0.0,1.0);}";var FS="precision mediump float;uniform float t;uniform vec2 R;uniform vec3 c1;uniform vec3 c2;uniform vec3 c3;uniform float sc;uniform float k;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}float fb(vec2 p){float v=0.0;float a=0.5;for(int j=0;j<4;j++){v+=a*n(p);p*=2.02;a*=0.5;}return v;}float sk(vec2 p,float T){return sin(p.x*1.6+sin(p.y*1.1+T)*1.4+T*0.7)+0.6*sin(p.y*2.3+sin(p.x*0.9-T*0.8)*1.8)+0.12*sin((p.x+p.y)*2.6+T*1.3);}void main(){vec2 u=gl_FragCoord.xy/R;vec2 p=u*vec2(R.x/R.y,1.0)*sc;float T=t*0.35;vec2 q=vec2(fb(p+T),fb(p+vec2(5.2,1.3)-T));vec2 w=vec2(fb(p+2.2*q+vec2(1.7,9.2)+T*0.6),fb(p+2.2*q+vec2(8.3,2.8)-T*0.4));float f=fb(p+2.2*w);vec3 col=mix(c1,c2,clamp(f*f*2.2,0.0,1.0));col=mix(col,c3,clamp(length(q)*0.9-0.2,0.0,1.0));if(k>1.5){vec2 s=u*vec2(R.x/R.y,1.0)*sc*vec2(1.5,2.4);float h=sk(s,T);float hx=sk(s+vec2(0.01,0.0),T),hy=sk(s+vec2(0.0,0.01),T);vec3 n=normalize(vec3(-(hx-h)*100.0,-(hy-h)*100.0,2.6));vec3 L=normalize(vec3(-0.45,0.6,0.66));float df=max(dot(n,L),0.0);float sp=pow(max(dot(n,normalize(L+vec3(0.0,0.0,1.0))),0.0),12.0);float rim=pow(1.0-n.z,1.5);vec3 bs=mix(c1,c2,smoothstep(-1.6,1.9,h));col=bs*(0.1+1.0*df)+c3*sp*0.62+mix(c2,c3,0.5)*rim*0.3;}else if(k>0.5){float b=smoothstep(0.25,0.85,fb(vec2(u.x*3.0+T,u.y*1.3-T*0.3)+q*1.5));col=mix(c1*0.18,mix(c2,c3,u.x),b*(1.0-u.y*0.55));}gl_FragColor=vec4(col,1.0);}";function sh(ty,src){var s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);return gl.getShaderParameter(s,gl.COMPILE_STATUS)?s:null;}var pg,uT,uR,lost=false,t0=performance.now(),lt=-1,lw=0,lh=0,vis=true,red=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function init(){var vs=sh(gl.VERTEX_SHADER,VS),fs=sh(gl.FRAGMENT_SHADER,FS);if(!vs||!fs)return false;pg=gl.createProgram();gl.attachShader(pg,vs);gl.attachShader(pg,fs);gl.linkProgram(pg);if(!gl.getProgramParameter(pg,gl.LINK_STATUS))return false;gl.useProgram(pg);var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);var al=gl.getAttribLocation(pg,"a");gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);function U(nm){return gl.getUniformLocation(pg,nm);}uT=U("t");uR=U("R");gl.uniform3fv(U("c1"),C.c1);gl.uniform3fv(U("c2"),C.c2);gl.uniform3fv(U("c3"),C.c3);gl.uniform1f(U("sc"),C.sc);gl.uniform1f(U("k"),C.k);lt=-1;lw=0;lh=0;return true;}if(!init()){cv.style.display="none";return;}cv.addEventListener("webglcontextlost",function(e){e.preventDefault();lost=true;});cv.addEventListener("webglcontextrestored",function(){lost=false;if(!init())cv.style.display="none";});if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;}).observe(r);}function fr(){requestAnimationFrame(fr);if(!vis||lost)return;var d=Math.min(window.devicePixelRatio||1,1.5),w=Math.min(960,Math.round(cv.clientWidth*d)),hh=Math.round(w*cv.clientHeight/Math.max(1,cv.clientWidth));if(w<2||hh<2)return;var sv=getComputedStyle(r).getPropertyValue("--s").trim(),tt=sv!==""?parseFloat(sv)*C.span:((C.still||red)?0:(performance.now()-t0)/1000*C.speed);if(isNaN(tt))tt=0;if(tt===lt&&w===lw&&hh===lh)return;if(w!==lw||hh!==lh){cv.width=w;cv.height=hh;gl.viewport(0,0,w,hh);lw=w;lh=hh;}lt=tt;gl.uniform1f(uT,tt);gl.uniform2f(uR,w,hh);gl.drawArrays(gl.TRIANGLES,0,3);}fr();})();'
-_MO_SHADER_KIND = {'liquid': 1, 'aurora': 1, 'silk': 1}
+_MO_SHADER_JS = '(function(){var r=document.getElementById("mt-%%UID%%");if(!r)return;var C=%%CFG%%,cv=r.querySelector("canvas"),gl=null;try{gl=cv.getContext("webgl",{antialias:false,preserveDrawingBuffer:true});}catch(e){}if(!gl){cv.style.display="none";return;}var VS="attribute vec2 a;void main(){gl_Position=vec4(a,0.0,1.0);}";var FS="precision mediump float;uniform float t;uniform vec2 R;uniform vec3 c1;uniform vec3 c2;uniform vec3 c3;uniform float sc;uniform float k;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}float fb(vec2 p){float v=0.0;float a=0.5;for(int j=0;j<4;j++){v+=a*n(p);p*=2.02;a*=0.5;}return v;}float sk(vec2 p,float T){return sin(p.x*1.6+sin(p.y*1.1+T)*1.4+T*0.7)+0.6*sin(p.y*2.3+sin(p.x*0.9-T*0.8)*1.8)+0.12*sin((p.x+p.y)*2.6+T*1.3);}void main(){vec2 u=gl_FragCoord.xy/R;vec2 p=u*vec2(R.x/R.y,1.0)*sc;float T=t*0.35;vec2 q=vec2(fb(p+T),fb(p+vec2(5.2,1.3)-T));vec2 w=vec2(fb(p+2.2*q+vec2(1.7,9.2)+T*0.6),fb(p+2.2*q+vec2(8.3,2.8)-T*0.4));float f=fb(p+2.2*w);vec3 col=mix(c1,c2,clamp(f*f*2.2,0.0,1.0));col=mix(col,c3,clamp(length(q)*0.9-0.2,0.0,1.0));if(k>3.5){vec2 vc=(u-0.5)*vec2(R.x/R.y,1.0);float vr=length(vc)+0.0005;float va=atan(vc.y,vc.x)/6.2832;float vz=log(vr);float na=floor(sc*6.0+0.5)*3.0;vec2 vg=vec2((va+vz*0.12)*na,vz*na/6.2832+T*0.7);vec2 vf=fract(vg)-0.5;float vm=1.0-smoothstep(0.24,0.4,length(vf));float vfade=smoothstep(0.015,0.3,vr);col=mix(c1,mix(c2,c3,clamp(vr*1.7,0.0,1.0)),vm*vfade);}else if(k>2.5){float cn=floor(sc*7.0+0.5)*2.0;vec2 gd=u*vec2(R.x/R.y,1.0)*cn;vec2 ci=floor(gd);vec2 cf=fract(gd)-0.5;float wv=sin(ci.x*0.33+T*1.7)+sin(ci.y*0.41-T*1.3)+sin((ci.x+ci.y)*0.17+T*0.9);float rr=0.1+0.36*smoothstep(-1.9,2.4,wv);float mm=1.0-smoothstep(rr-0.05,rr+0.03,length(cf));col=mix(c1,mix(c2,c3,smoothstep(-1.0,2.2,wv)),mm);}else if(k>1.5){vec2 s=u*vec2(R.x/R.y,1.0)*sc*vec2(1.5,2.4);float h=sk(s,T);float hx=sk(s+vec2(0.01,0.0),T),hy=sk(s+vec2(0.0,0.01),T);vec3 n=normalize(vec3(-(hx-h)*100.0,-(hy-h)*100.0,2.6));vec3 L=normalize(vec3(-0.45,0.6,0.66));float df=max(dot(n,L),0.0);float sp=pow(max(dot(n,normalize(L+vec3(0.0,0.0,1.0))),0.0),12.0);float rim=pow(1.0-n.z,1.5);vec3 bs=mix(c1,c2,smoothstep(-1.6,1.9,h));col=bs*(0.1+1.0*df)+c3*sp*0.62+mix(c2,c3,0.5)*rim*0.3;}else if(k>0.5){float b=smoothstep(0.25,0.85,fb(vec2(u.x*3.0+T,u.y*1.3-T*0.3)+q*1.5));col=mix(c1*0.18,mix(c2,c3,u.x),b*(1.0-u.y*0.55));}gl_FragColor=vec4(col,1.0);}";function sh(ty,src){var s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);return gl.getShaderParameter(s,gl.COMPILE_STATUS)?s:null;}var pg,uT,uR,lost=false,t0=performance.now(),lt=-1,lw=0,lh=0,vis=true,red=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function init(){var vs=sh(gl.VERTEX_SHADER,VS),fs=sh(gl.FRAGMENT_SHADER,FS);if(!vs||!fs)return false;pg=gl.createProgram();gl.attachShader(pg,vs);gl.attachShader(pg,fs);gl.linkProgram(pg);if(!gl.getProgramParameter(pg,gl.LINK_STATUS))return false;gl.useProgram(pg);var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);var al=gl.getAttribLocation(pg,"a");gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);function U(nm){return gl.getUniformLocation(pg,nm);}uT=U("t");uR=U("R");gl.uniform3fv(U("c1"),C.c1);gl.uniform3fv(U("c2"),C.c2);gl.uniform3fv(U("c3"),C.c3);gl.uniform1f(U("sc"),C.sc);gl.uniform1f(U("k"),C.k);lt=-1;lw=0;lh=0;return true;}if(!init()){cv.style.display="none";return;}cv.addEventListener("webglcontextlost",function(e){e.preventDefault();lost=true;});cv.addEventListener("webglcontextrestored",function(){lost=false;if(!init())cv.style.display="none";});if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;}).observe(r);}function fr(){requestAnimationFrame(fr);if(!vis||lost)return;var d=Math.min(window.devicePixelRatio||1,1.5),w=Math.min(960,Math.round(cv.clientWidth*d)),hh=Math.round(w*cv.clientHeight/Math.max(1,cv.clientWidth));if(w<2||hh<2)return;var sv=getComputedStyle(r).getPropertyValue("--s").trim(),tt=sv!==""?parseFloat(sv)*C.span:((C.still||red)?0:(performance.now()-t0)/1000*C.speed);if(isNaN(tt))tt=0;if(tt===lt&&w===lw&&hh===lh)return;if(w!==lw||hh!==lh){cv.width=w;cv.height=hh;gl.viewport(0,0,w,hh);lw=w;lh=hh;}lt=tt;gl.uniform1f(uT,tt);gl.uniform2f(uR,w,hh);gl.drawArrays(gl.TRIANGLES,0,3);}fr();})();'
+_MO_SHADER_KIND = {'liquid': 1, 'aurora': 1, 'silk': 1, 'dots': 1, 'vortex': 1}
 
 
 def _mo_rgb3(h):
@@ -28949,7 +29058,7 @@ def _render_motion_shader(b: dict) -> str:
     sc, span, speed, still = _ff_num(b.get('scale'), 2, 0.5, 12, 2), _ff_num(b.get('span'), 20, 0, 600, 2), _ff_num(b.get('speed'), 1, 0, 5, 2), b.get('still') is True
     ratio, fill, rad = _ff_pick(b.get('ratio'), _MO_RATIO, '16:9'), b.get('fill') is True, _ff_int(b.get('radius'), 0, 0, 60)
     label = _cv_str(b.get('label'), 60) or 'Animated gradient background'
-    cfg = ('{c1:' + _mo_rgb3(c1) + ',c2:' + _mo_rgb3(c2) + ',c3:' + _mo_rgb3(c3) + ',sc:' + sc + ',k:' + ('1' if kind == 'aurora' else ('2' if kind == 'silk' else '0')) + ',span:' + span + ',speed:' + speed + ',still:' + ('true' if still else 'false') + '}')
+    cfg = ('{c1:' + _mo_rgb3(c1) + ',c2:' + _mo_rgb3(c2) + ',c3:' + _mo_rgb3(c3) + ',sc:' + sc + ',k:' + ('1' if kind == 'aurora' else ('2' if kind == 'silk' else ('3' if kind == 'dots' else ('4' if kind == 'vortex' else '0')))) + ',span:' + span + ',speed:' + speed + ',still:' + ('true' if still else 'false') + '}')
     return ('<div id="mt-' + uid + '" role="img" aria-label="' + _cv_esc(label) + '" style="position:relative;width:100%;' + ('height:100%;' if fill else 'aspect-ratio:' + ratio + ';') + 'overflow:hidden;border-radius:' + str(rad) + 'px;background:linear-gradient(135deg,' + c1 + ',' + c2 + ' 55%,' + c3 + ');opacity:clamp(0,calc(var(--p,1)*3),1);">'
             + '<style>@media print{#mt-' + uid + ' canvas{display:none}}</style><canvas aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas>'
             + '<script>' + _MO_SHADER_JS.replace('%%UID%%', uid, 1).replace('%%CFG%%', cfg, 1) + '</script></div>')
@@ -29264,6 +29373,28 @@ def _render_motion_bricks(b: dict) -> str:
             + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
             + '<script>(function(){' + _brick_material_profile_src() + 'var K=(' + _brick_fn_src("_brickKit") + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();</script>')
 
+# A text field that types itself (2026-10-09). The line types in as --p goes 0 to 1, one character at a time, with a caret on the last typed character;
+# an optional attachment chip shows first; a send button presses as --s goes 0 to 1 (it dips and sends a ring). Pair it with demo_cursor to click it.
+# Plain HTML and CSS, no script; standalone it renders the finished line with its caret at the end.
+def _render_motion_input(b: dict) -> str:
+    raw = _cv_str(b.get('text'), 120) or 'Type here'
+    text, chip, label, size = list(raw), _cv_str(b.get('chip'), 30), _cv_str(b.get('label'), 24), _ff_int(b.get('size'), 26, 12, 80)
+    tone, acc, n, chars = _mo_tone('dark' if b.get('tone') == 'dark' else 'light'), _ff_hex(b.get('accent'), '#2563eb'), len(text), ''
+    for i in range(n):
+        vis = 'clamp(0,calc((var(--p,1)*' + str(n) + ' - ' + str(i) + ')*50),1)'
+        cur = vis + '*(1 - clamp(0,calc((var(--p,1)*' + str(n) + ' - ' + str(i + 1) + ')*50),1))'
+        chars += '<span style="opacity:' + vis + ';box-shadow:0.09em 0 0 0 color-mix(in srgb,' + acc + ' calc(' + cur + '*100%),transparent);">' + _cv_esc(text[i]) + '</span>'
+    press = '(1 - abs(2*var(--s,0) - 1))'
+    return ('<div style="width:100%;box-sizing:border-box;border-radius:1.1em;padding:0.9em 1.1em;background:' + tone['card'] + ';border:1px solid ' + tone['line'] + ';box-shadow:0 0.6em 2em rgba(0,0,0,0.16);font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:' + tone['ink'] + ';">'
+            + _mo_sr(raw + (', attached ' + chip if chip else ''))
+            + '<div aria-hidden="true">'
+            + ('<div style="display:inline-block;padding:0.4em 0.8em;margin-bottom:0.6em;border-radius:0.6em;background:' + tone['soft'] + ';font-size:0.62em;line-height:1.3;opacity:clamp(0,calc(var(--p,1)*20),1);">' + _cv_esc(chip) + '</div>' if chip else '')
+            + '<div style="white-space:pre-wrap;line-height:1.35;min-height:1.35em;margin:0.1em 0 0.9em;">' + chars + '</div>'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;color:' + tone['mute'] + ';font-size:0.7em;"><span>+' + ('&nbsp;&nbsp;' + _cv_esc(label) if label else '') + '</span>'
+            + '<span style="display:inline-flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:50%;background:' + acc + ';color:#ffffff;font-weight:700;transform:scale(calc(1 - 0.14*' + press + '));box-shadow:0 0 0 calc(var(--s,0)*1.6em) color-mix(in srgb,' + acc + ' calc((1 - var(--s,0))*35%),transparent);">&#8593;</span></div>'
+            + '</div></div>')
+
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
@@ -29276,7 +29407,7 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
                          ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso),
                          ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph),
-                         ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks)):
+                         ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks), ('motion_input', _render_motion_input)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

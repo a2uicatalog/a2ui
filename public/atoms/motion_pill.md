@@ -16,6 +16,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | accent | "#rrggbb" (optional). Default the stage accent. |
 | color | "#rrggbb" (optional). Text colour. Default the stage ink. |
 | fill | "#rrggbb" (optional). Chip fill. Default a faint tint of the stage ink. |
+| border_gradient | ["#rrggbb", "#rrggbb"] (optional). A two-colour gradient outline instead of the faint line. |
+| glow | integer (optional). A soft glow around the chip, 0-40 px, in the gradient colours or the accent. Default 0 (off). |
 | href | string (optional). Makes the pill a real link: https, mailto or a relative path; anything else is dropped. Default none. |
 | align | "start" | "middle" | "end" (optional, default "start") |
 
