@@ -318,7 +318,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
         '<div style="flex:1;min-width:0;">' +
           '<div style="font-size:0.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">' + _esc(s.label || '') + '</div>' +
           (s.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;margin-bottom:10px;">' + _esc(s.description) + '</div>' : '') +
-          '<button id="' + uid + 'b' + i + '" onclick="' + uid + 'done(' + i + ')" ' +
+          '<button id="' + uid + 'b' + i + '" aria-label="' + _esc((s.action_label || 'Mark complete') + ': ' + (s.label || ('step ' + (i + 1)))) + '" onclick="' + uid + 'done(' + i + ')" ' +
             'style="padding:7px 16px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);' +
               'background:rgba(255,255,255,0.04);color:var(--muted,#5f6368);font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.2s;">' +
             _esc(s.action_label || 'Mark complete') + '</button>' +

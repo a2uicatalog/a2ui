@@ -1219,7 +1219,7 @@ _RENDERERS['geo_iso_takeoff'] = function(b) {
     '#' + uid + 'sel-label{font-size:7px;color:rgba(255,255,255,.4);letter-spacing:.1em;}' +
     '#' + uid + 'sel{background:#0d1220;color:#00f2ff;border:1px solid rgba(0,242,255,.25);' +
       'border-radius:4px;font-family:"Courier New",monospace;font-size:9px;padding:4px 8px;' +
-      'outline:none;cursor:pointer;font-weight:700;}' +
+      'cursor:pointer;font-weight:700;}' +
     '#' + uid + 'btn{position:absolute;bottom:28px;right:28px;z-index:20;' +
       'background:' + accent + ';color:#000;font:700 11px "Courier New",monospace;' +
       'padding:11px 22px;border-radius:4px;text-decoration:none;letter-spacing:.12em;}' +
@@ -1234,7 +1234,7 @@ _RENDERERS['geo_iso_takeoff'] = function(b) {
       '</div>' +
       '<div id="' + uid + 'sel-wrap">' +
         '<span id="' + uid + 'sel-label">LIVERY</span>' +
-        '<select id="' + uid + 'sel">' +
+        '<select id="' + uid + 'sel" aria-labelledby="' + uid + 'sel-label">' +
           '<option value="AIB"' + (airline==='AIB'?' selected':'') + '>AIRBUS FACTORY HOUSE</option>' +
           '<option value="EZY"' + (airline==='EZY'?' selected':'') + '>EASYJET ORANGE</option>' +
           '<option value="AFR"' + (airline==='AFR'?' selected':'') + '>AIR FRANCE FLAGSHIP</option>' +
@@ -2104,7 +2104,7 @@ _RENDERERS['geo_iso_heli_hover'] = function(b) {
     '#' + uid + 'sel-label{font-size:7px;color:rgba(255,255,255,.4);letter-spacing:.1em;}' +
     '#' + uid + 'sel{background:#0d1220;color:#00f2ff;border:1px solid rgba(0,242,255,.25);' +
       'border-radius:4px;font-family:"Courier New",monospace;font-size:9px;padding:4px 8px;' +
-      'outline:none;cursor:pointer;font-weight:700;}' +
+      'cursor:pointer;font-weight:700;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
       '<canvas id="' + uid + 'c"></canvas>' +
@@ -2115,7 +2115,7 @@ _RENDERERS['geo_iso_heli_hover'] = function(b) {
       '</div>' +
       '<div id="' + uid + 'sel-wrap">' +
         '<span id="' + uid + 'sel-label">LIVERY</span>' +
-        '<select id="' + uid + 'sel">' +
+        '<select id="' + uid + 'sel" aria-labelledby="' + uid + 'sel-label">' +
           '<option value="AIB"' + (livery==='AIB'?' selected':'') + '>AIRBUS FACTORY WHITE</option>' +
           '<option value="VIP"' + (livery==='VIP'?' selected':'') + '>ACH STEALTH CARBON</option>' +
           '<option value="SAR"' + (livery==='SAR'?' selected':'') + '>REGA HELI-RESCUE</option>' +
@@ -2357,7 +2357,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
     '#'+uid+'sp{position:absolute;top:18px;right:18px;z-index:20;background:rgba(2,8,20,.88);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:10px 14px;display:flex;flex-direction:column;gap:9px}'+
     '.'+uid+'row{display:flex;align-items:center;gap:8px}'+
     '.'+uid+'lbl{font-size:6px;color:rgba(255,255,255,.28);letter-spacing:.1em;min-width:54px;text-transform:uppercase}'+
-    '.'+uid+'dd{background:#0d1220;color:#00f2ff;border:1px solid rgba(0,242,255,.22);border-radius:3px;font-family:"Courier New",monospace;font-size:7px;padding:3px 7px;outline:none;cursor:pointer;font-weight:700}'+
+    '.'+uid+'dd{background:#0d1220;color:#00f2ff;border:1px solid rgba(0,242,255,.22);border-radius:3px;font-family:"Courier New",monospace;font-size:7px;padding:3px 7px;cursor:pointer;font-weight:700}'+
     '</style>'+
     '<div id="'+uid+'w">'+
       '<canvas id="'+uid+'c"></canvas>'+
@@ -2374,7 +2374,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
       '</div>'+
       '<div id="'+uid+'sp">'+
         '<div class="'+uid+'row"><span class="'+uid+'lbl">A321neo</span>'+
-          '<select class="'+uid+'dd" id="'+uid+'da">'+
+          '<select class="'+uid+'dd" id="'+uid+'da" aria-label="A321neo livery">'+
             '<option value="AIB">AIRBUS HOUSE</option>'+
             '<option value="EZY">EASYJET</option>'+
             '<option value="AFR">AIR FRANCE</option>'+
@@ -2383,13 +2383,13 @@ _RENDERERS['geo_iso_fleet'] = function(b){
             '<option value="RYR">RYANAIR</option>'+
           '</select></div>'+
         '<div class="'+uid+'row"><span class="'+uid+'lbl">Ariane 6</span>'+
-          '<select class="'+uid+'dd" id="'+uid+'dr">'+
+          '<select class="'+uid+'dd" id="'+uid+'dr" aria-label="Ariane 6 launch configuration">'+
             '<option value="ESA">ESA STANDARD</option>'+
             '<option value="ARIA">LAUNCH CONFIG</option>'+
             '<option value="DARK">STEALTH OPS</option>'+
           '</select></div>'+
         '<div class="'+uid+'row"><span class="'+uid+'lbl">H160</span>'+
-          '<select class="'+uid+'dd" id="'+uid+'dh">'+
+          '<select class="'+uid+'dd" id="'+uid+'dh" aria-label="H160 livery">'+
             '<option value="AIB">AIRBUS FACTORY</option>'+
             '<option value="VIP">ACH CORPORATE</option>'+
             '<option value="SAR">REGA RESCUE</option>'+

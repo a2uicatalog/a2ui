@@ -259,7 +259,7 @@ _RENDERERS['gemini_prompt'] = function(b) {
          '<textarea id="' + uid + 't" rows="4" placeholder="' + _esc(hint) + '"' +
          ' style="width:100%;background:rgba(255,255,255,0.6);border:1px solid rgba(99,102,241,0.2);' +
          'border-radius:8px;padding:10px 12px;font-size:0.82rem;font-family:inherit;' +
-         'color:var(--text,#1e293b);resize:vertical;outline:none;box-sizing:border-box;"></textarea>' +
+         'color:var(--text,#1e293b);resize:vertical;box-sizing:border-box;"></textarea>' +
 
          '<div style="display:flex;align-items:center;gap:10px;margin-top:10px;">' +
          '<button id="' + uid + 'b" onclick="_gpGenerate(\'' + uid + '\')"' +

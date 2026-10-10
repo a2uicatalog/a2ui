@@ -3292,7 +3292,7 @@ _RENDERERS['comparison_morph'] = function(b) {
     + '</div>'
     + '<div class="cm-hdl-' + uid + '" id="cm-hdl-' + uid + '"></div>'
     + '</div>'
-    + '<input type="range" min="0" max="100" value="50" style="width:100%;margin-top:10px;accent-color:#4f46e5;cursor:pointer;"'
+    + '<input type="range" aria-label="Compare before and after" min="0" max="100" value="50" style="width:100%;margin-top:10px;accent-color:#4f46e5;cursor:pointer;"'
     + ' oninput="(function(v){document.getElementById(\'cm-after-' + uid + '\').style.clipPath=\'inset(0 \'+(100-v)+\'% 0 0)\';document.getElementById(\'cm-hdl-' + uid + '\').style.left=v+\'%\';})(this.value)">'
     + '</div>';
 };

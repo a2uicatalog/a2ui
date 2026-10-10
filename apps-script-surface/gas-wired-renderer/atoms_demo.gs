@@ -360,7 +360,7 @@ _RENDERERS['before_after_stack'] = function(b) {
 _RENDERERS['live_vote'] = function(b) {
   var uid      = Math.random().toString(36).substr(2, 6);
   var question = b.question || 'What do you think?';
-  var options  = b.options  || ['Yes', 'No'];
+  var options  = (b.options || ['Yes', 'No']).map(function(o) { return (o && typeof o === 'object') ? String(o.label || o.text || o.name || o.value || '') : String(o); });
   var sheetUrl = b.sheet_url || '';
   var writeUrl = b.write_url || '';
   var poll     = parseInt(b.poll_interval || b.poll || 5000, 10);

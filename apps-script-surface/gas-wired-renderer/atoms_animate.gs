@@ -728,8 +728,8 @@ _RENDERERS['form_textarea'] = function(b) {
   // `value=""` attribute — `_esc` still applies since this is unescaped
   // user/model-composed text landing inside HTML.
   return '<div style="display:flex;flex-direction:column;gap:4px;width:100%;">'
-    + (label ? '<label style="font-size:0.8rem;font-weight:600;color:#374151;">' + _esc(label) + '</label>' : '')
-    + '<textarea id="' + uid + '" rows="' + rows + '" placeholder="' + _esc(ph) + '"'
+    + (label ? '<label for="' + uid + '" style="font-size:0.8rem;font-weight:600;color:#374151;">' + _esc(label) + '</label>' : '')
+    + '<textarea id="' + uid + '"' + (label ? '' : ' aria-label="' + _esc(ph || 'Text') + '"') + ' rows="' + rows + '" placeholder="' + _esc(ph) + '"'
     + ' style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;'
     + 'font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;'
     + 'transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#4f46e5\'" onblur="this.style.borderColor=\'#d1d5db\'">'

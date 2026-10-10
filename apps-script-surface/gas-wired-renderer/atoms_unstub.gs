@@ -91,7 +91,7 @@ _RENDERERS['otp_input'] = function(b) {
   var boxes = '';
   for (var i = 0; i < len; i++) {
     var digit = val.charAt(i) || '';
-    boxes += '<input id="' + uid + i + '" maxlength="1" inputmode="numeric" pattern="[0-9]" value="' + _esc(digit) + '" '
+    boxes += '<input id="' + uid + i + '" aria-label="' + _esc((b.label || 'Verification code') + ', digit ' + (i + 1) + ' of ' + len) + '" maxlength="1" inputmode="numeric" pattern="[0-9]" value="' + _esc(digit) + '" '
       + 'style="width:44px;height:52px;text-align:center;font-size:1.4rem;font-weight:700;border:2px solid var(--border,#e5e7eb);border-radius:8px;background:var(--bg,#fff);color:var(--text,#111827);font-family:inherit;" '
       + 'oninput="var n=this.nextElementSibling;if(this.value&&n&&n.tagName===\'INPUT\')n.focus();" '
       + 'onkeydown="if(event.key===\'Backspace\'&&!this.value){var p=this.previousElementSibling;if(p&&p.tagName===\'INPUT\')p.focus();}">';
@@ -102,7 +102,8 @@ _RENDERERS['otp_input'] = function(b) {
 
 // ─── combobox ─────────────────────────────────────────────────────────────────
 _RENDERERS['combobox'] = function(b) {
-  var label   = b.label ? '<label style="display:block;font-size:0.82rem;font-weight:600;color:var(--text,#111827);margin-bottom:4px;">' + _esc(b.label) + '</label>' : '';
+  var cbId    = 'cb' + Math.random().toString(36).substr(2, 6);
+  var label   = b.label ? '<label for="' + cbId + '" style="display:block;font-size:0.82rem;font-weight:600;color:var(--text,#111827);margin-bottom:4px;">' + _esc(b.label) + '</label>' : '';
   var name    = _esc(b.name || 'combobox');
   var opts    = (b.options || []).map(function(o) {
     var val = typeof o === 'object' ? o.value : o;
@@ -112,7 +113,7 @@ _RENDERERS['combobox'] = function(b) {
   }).join('');
   var placeholder = b.placeholder ? '<option value="" disabled' + (b.selected ? '' : ' selected') + '>' + _esc(b.placeholder) + '</option>' : '';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + label
-    + '<select name="' + name + '" style="width:100%;padding:8px 12px;border:1px solid var(--border,#e5e7eb);border-radius:8px;font-size:0.875rem;background:var(--bg,#fff);color:var(--text,#111827);font-family:inherit;">'
+    + '<select id="' + cbId + '"' + (b.label ? '' : ' aria-label="' + _esc(b.placeholder || b.name || 'Choose an option') + '"') + ' name="' + name + '" style="width:100%;padding:8px 12px;border:1px solid var(--border,#e5e7eb);border-radius:8px;font-size:0.875rem;background:var(--bg,#fff);color:var(--text,#111827);font-family:inherit;">'
     + placeholder + opts + '</select></div>';
 };
 

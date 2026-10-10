@@ -282,7 +282,7 @@ _RENDERERS['brevet_automatismes'] = function(b) {
           _esc(q.question || '') +
         '</span>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
-          '<input type="text" class="' + uid + 'in" data-ans="' + _esc(String(q.answer || '')) + '" ' +
+          '<input type="text" aria-label="Answer to question ' + (i+1) + '" class="' + uid + 'in" data-ans="' + _esc(String(q.answer || '')) + '" ' +
             'placeholder="?" maxlength="16" autocomplete="off" ' +
             'style="width:68px;padding:5px 8px;text-align:center;box-sizing:border-box;' +
             'background:rgba(0,0,0,0.35);border:1px solid rgba(16,185,129,0.25);' +

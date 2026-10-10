@@ -1639,8 +1639,8 @@ _RENDERERS['further_reading'] = function(b) {
   var items = links.map(function(l){
     var annotation = l.annotation ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(l.annotation) + '</div>' : '';
     return '<a href="' + _esc(l.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
-      '<span style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
-      '<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">' + _esc(l.title||'') + '</div>' + annotation + '</div></a>';
+      '<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
+      '<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
   }).join('');
   return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#374151;margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
@@ -1656,7 +1656,7 @@ _RENDERERS['resources_list'] = function(b) {
     var size = item.size ? '<span style="font-size:0.75rem;color:var(--muted);">' + _esc(item.size) + '</span>' : '';
     var type = item.type ? '<span style="font-size:0.72rem;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--muted);">' + _esc(item.type.toUpperCase()) + '</span>' : '';
     return '<a href="' + _esc(item.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);text-decoration:none;">' +
-      '<span style="font-size:0.88rem;color:var(--accent);font-weight:500;">' + _esc(item.title||'') + '</span>' +
+      '<span style="font-size:0.88rem;color:var(--accent);font-weight:500;">' + _esc(item.title||item.label||item.name||'') + '</span>' +
       '<div style="display:flex;align-items:center;gap:8px;">' + size + type + '</div></a>';
   }).join('');
   return '<div style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
@@ -1687,7 +1687,7 @@ _RENDERERS['checklist_interactive'] = function(b) {
   var lis = items.map(function(item){
     var text = typeof item === 'string' ? item : (item.text || item.label || '');
     return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
-      '<input type="checkbox" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
+      '<input type="checkbox" aria-label="' + _esc(text) + '" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
       '<span style="font-size:0.88rem;color:#374151;">' + _esc(text) + '</span></li>';
   }).join('');
   return '<ul style="list-style:none;padding:12px 18px;margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;">' + lis + '</ul>';
@@ -1793,7 +1793,7 @@ _RENDERERS['reading_progress_bar'] = function(b) {
 
 _RENDERERS['scroll_to_top'] = function(b) {
   return '<div style="margin:1rem 0;display:flex;align-items:center;gap:10px;">' +
-    '<button style="width:40px;height:40px;border-radius:50%;background:#7c3aed;color:#fff;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">↑</button>' +
+    '<button aria-label="Scroll to top" style="width:40px;height:40px;border-radius:50%;background:#7c3aed;color:#fff;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">↑</button>' +
     '<span style="font-size:0.8rem;color:var(--muted,#5f6368);">Scroll-to-top button — appears fixed bottom-right after scrolling 300px</span></div>';
 };
 
@@ -1818,9 +1818,9 @@ _RENDERERS['tabs'] = function(b) {
   var inputs = tabList.map(function(t, i){
     return '<input type="radio" id="tb' + uid + '_' + i + '" name="tab_' + uid + '" style="display:none;"' + (i===0?' checked':'') + '>';
   }).join('');
-  var labels = '<div class="tm-tab-labels-' + uid + '" style="display:flex;flex-wrap:wrap;border-bottom:2px solid #e5e7eb;margin-bottom:0;" role="tablist">' +
+  var labels = '<div class="tm-tab-labels-' + uid + '" style="display:flex;flex-wrap:wrap;border-bottom:2px solid #e5e7eb;margin-bottom:0;">' +
     tabList.map(function(t, i){
-      return '<label for="tb' + uid + '_' + i + '" class="tm-tab-lbl-' + uid + '" role="tab" aria-selected="' + (i===0?'true':'false') + '" tabindex="' + (i===0?'0':'-1') + '">' + _esc(t.label||('Tab '+(i+1))) + '</label>';
+      return '<label for="tb' + uid + '_' + i + '" class="tm-tab-lbl-' + uid + '">' + _esc(t.label||('Tab '+(i+1))) + '</label>';
     }).join('') + '</div>';
   var panels = '<div class="tm-tab-panels-' + uid + '">' +
     tabList.map(function(t, i){
@@ -2058,7 +2058,7 @@ _RENDERERS['accordion_item'] = function(b) {
   var label = b.label || b.title || '';
   var text = b.text || b.content || b.body || '';
   return '<details style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
-    '<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;color:#374151;cursor:pointer;list-style:none;">▶ ' + _esc(label) + '</summary>' +
+    '<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;color:#374151;cursor:pointer;list-style:none;"' + (label ? '' : ' aria-label="Details"') + '><span aria-hidden="true">▶</span> ' + _esc(label) + '</summary>' +
     '<div style="padding:12px 14px;font-size:0.85rem;">' + _markdownToHtml(text) + '</div></details>';
 };
 
@@ -2620,7 +2620,7 @@ _RENDERERS['copy_to_clipboard'] = function(b) {
   var val = _esc(_jsJson(String(b.value || text)));
   return '<span style="display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.85rem;color:#1f2937;">' +
     '<span>' + _esc(text) + '</span>' +
-    '<button onclick="navigator.clipboard.writeText(' + val + ');this.textContent=\'✓\';setTimeout(function(){this.textContent=\'📋\';}.bind(this),1000)" style="border:none;background:none;cursor:pointer;font-size:0.85rem;padding:0;">📋</button></span>';
+    '<button aria-label="Copy to clipboard" onclick="navigator.clipboard.writeText(' + val + ');this.textContent=\'✓\';setTimeout(function(){this.textContent=\'📋\';}.bind(this),1000)" style="border:none;background:none;cursor:pointer;font-size:0.85rem;padding:0;">📋</button></span>';
 };
 
 _RENDERERS['copy_code_button'] = function(b) {
@@ -2653,7 +2653,7 @@ _RENDERERS['star_rating_input'] = function(b) {
   var inputs = '';
   var labels = '';
   for (var i = maxS; i >= 1; i--) {
-    inputs += '<input type="radio" id="sr' + uid + '_' + i + '" name="sr' + uid + '" value="' + i + '"' + (i===initial?' checked':'') + ' style="display:none;">';
+    inputs += '<input type="radio" id="sr' + uid + '_' + i + '" name="sr' + uid + '" aria-label="' + i + ' star' + (i>1?'s':'') + '" value="' + i + '"' + (i===initial?' checked':'') + ' style="display:none;">';
     labels += '<label for="sr' + uid + '_' + i + '" title="' + i + ' star' + (i>1?'s':'') + '" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label>';
   }
   return '<style>.sr' + uid + ' input:checked~label,.sr' + uid + ' label:hover,.sr' + uid + ' label:hover~label{color:#facc15;}</style>' +
@@ -3373,6 +3373,7 @@ _RENDERERS['form_radio_group'] = function(b) {
     '.frg-group-label-' + uid + '{display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:8px;}' +
     '.frg-item-' + uid + '{margin-bottom:8px;}' +
     '.frg-input-' + uid + '{position:absolute;opacity:0;width:0;height:0;}' +
+    '.frg-input-' + uid + ':focus-visible{position:static;opacity:1;width:auto;height:auto;outline:2px solid #4f46e5;outline-offset:2px;}' +
     '.frg-label-' + uid + '{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:15px;color:#111827;user-select:none;}' +
     '.frg-dot-' + uid + '{width:18px;height:18px;border-radius:50%;border:2px solid #d1d5db;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;transition:border-color 0.15s,background 0.15s;}' +
     '.frg-input-' + uid + ':checked + .frg-label-' + uid + ' .frg-dot-' + uid + '{border-color:#7c3aed;background:#7c3aed;box-shadow:inset 0 0 0 4px #fff;}' +
@@ -3498,7 +3499,7 @@ _RENDERERS['form_slider'] = function(b) {
     (label ? '<span class="fsl-label-' + uid + '">' + _esc(label) + '</span>' : '<span></span>') +
     '<span class="fsl-value-' + uid + '" id="fsl-val-' + uid + '">' + _esc(String(value)) + _esc(unit) + '</span>' +
     '</div>' +
-    '<input type="range" class="fsl-range-' + uid + '" name="' + _esc(name) + '" min="' + _esc(String(min)) + '" max="' + _esc(String(max)) + '" step="' + _esc(String(step)) + '" value="' + _esc(String(value)) + '" oninput="document.getElementById(\'fsl-val-' + uid + '\').textContent=this.value+\'' + _esc(unit) + '\'">' +
+    '<input type="range" aria-label="' + _esc(label || name) + '" class="fsl-range-' + uid + '" name="' + _esc(name) + '" min="' + _esc(String(min)) + '" max="' + _esc(String(max)) + '" step="' + _esc(String(step)) + '" value="' + _esc(String(value)) + '" oninput="document.getElementById(\'fsl-val-' + uid + '\').textContent=this.value+\'' + _esc(unit) + '\'">' +
     '<div class="fsl-minmax-' + uid + '"><span>' + _esc(String(min)) + _esc(unit) + '</span><span>' + _esc(String(max)) + _esc(unit) + '</span></div>' +
     '</div>';
 };
@@ -3523,7 +3524,7 @@ _RENDERERS['form_date_picker'] = function(b) {
     '</style>' +
     '<div class="fdp-wrap-' + uid + '">' +
     (label ? '<label class="fdp-label-' + uid + '" for="fdp-' + uid + '">' + _esc(label) + '</label>' : '') +
-    '<input type="date" class="fdp-input-' + uid + '" id="fdp-' + uid + '" name="' + _esc(name) + '"' + valAttr + minAttr + maxAttr + '>' +
+    '<input type="date" class="fdp-input-' + uid + '" id="fdp-' + uid + '" name="' + _esc(name) + '"' + (label ? '' : ' aria-label="Date"') + valAttr + minAttr + maxAttr + '>' +
     '</div>';
 };
 
@@ -3585,7 +3586,7 @@ _RENDERERS['follow_up_chips'] = function(b) {
     if (typeof chip === 'string') {
       text = chip; action = null;
     } else {
-      text = chip.text || '';
+      text = chip.text || chip.label || '';
       action = chip.action || null;
     }
     var onclick = '';
@@ -3673,6 +3674,7 @@ _RENDERERS['feedback_prompt'] = function(b) {
       '.fp-prompt-' + uid + '{font-size:15px;font-weight:600;color:#374151;margin-bottom:10px;}' +
       '.fp-stars-' + uid + '{display:flex;flex-direction:row-reverse;gap:4px;justify-content:flex-end;}' +
       '.fp-star-input-' + uid + '{position:absolute;opacity:0;width:0;height:0;}' +
+      '.fp-star-input-' + uid + ':focus-visible{position:static;opacity:1;width:auto;height:auto;outline:2px solid #4f46e5;outline-offset:2px;}' +
       '.fp-star-label-' + uid + '{font-size:28px;color:#d1d5db;cursor:pointer;transition:color 0.1s;}' +
       '.fp-star-label-' + uid + ':hover,.fp-star-label-' + uid + ':hover ~ .fp-star-label-' + uid + '{color:#f59e0b;}' +
       '.fp-star-input-' + uid + ':checked ~ .fp-star-label-' + uid + '{color:#f59e0b;}' +
@@ -3697,6 +3699,7 @@ _RENDERERS['feedback_prompt'] = function(b) {
     '.fp-prompt-' + uid + '{font-size:15px;font-weight:600;color:#374151;margin-bottom:10px;}' +
     '.fp-thumbs-' + uid + '{display:flex;gap:12px;align-items:center;}' +
     '.fp-thumb-input-' + uid + '{position:absolute;opacity:0;width:0;height:0;}' +
+    '.fp-thumb-input-' + uid + ':focus-visible{position:static;opacity:1;width:auto;height:auto;outline:2px solid #4f46e5;outline-offset:2px;}' +
     '.fp-thumb-label-' + uid + '{font-size:26px;cursor:pointer;padding:6px 10px;border-radius:8px;border:2px solid transparent;transition:background 0.15s,border-color 0.15s;}' +
     '.fp-thumb-label-' + uid + ':hover{background:#f3f4f6;}' +
     '#' + upId + ':checked ~ .fp-thumbs-' + uid + ' .fp-thumb-up-' + uid + '{background:#dcfce7;border-color:#16a34a;}' +
@@ -3804,7 +3807,7 @@ _RENDERERS['pricing_tier_card'] = function(b) {
     (description ? '<div class="ptc-desc-' + uid + '">' + _esc(description) + '</div>' : '') +
     '<hr class="ptc-divider-' + uid + '">' +
     '<ul class="ptc-feats-' + uid + '">' + featuresHtml + '</ul>' +
-    '<button class="ptc-cta-' + uid + '">' + _esc(ctaLabel) + '</button>' +
+    '<button class="ptc-cta-' + uid + '" aria-label="' + _esc(ctaLabel + ', ' + name) + '">' + _esc(ctaLabel) + '</button>' +
     '</div>';
 };
 

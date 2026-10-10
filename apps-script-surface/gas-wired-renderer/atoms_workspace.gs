@@ -497,12 +497,12 @@ _RENDERERS['gmail_inbox'] = function(b) {
       (unreadCount > 0 ? '<span style="background:' + accentSafe + ';color:#fff;font-size:0.6rem;font-weight:700;border-radius:99px;padding:2px 7px;">' + unreadCount + ' unread</span>' : '') +
     '</div>' +
     '<div style="position:relative;padding:0 52px;box-sizing:border-box;">' +
-      '<button id="' + uid + 'prev" style="' + arw + 'left:0;" onclick="' + uid + 'nav(-1)"' +
+      '<button id="' + uid + 'prev" aria-label="Previous" style="' + arw + 'left:0;" onclick="' + uid + 'nav(-1)"' +
         ' onmouseover="this.style.background=\'rgba(30,42,70,0.95)\'" onmouseout="this.style.background=\'rgba(10,15,28,0.88)\'">‹</button>' +
       '<div id="' + uid + 'trk" style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;">' +
         cards +
       '</div>' +
-      '<button id="' + uid + 'next" style="' + arw + 'right:0;" onclick="' + uid + 'nav(1)"' +
+      '<button id="' + uid + 'next" aria-label="Next" style="' + arw + 'right:0;" onclick="' + uid + 'nav(1)"' +
         ' onmouseover="this.style.background=\'rgba(30,42,70,0.95)\'" onmouseout="this.style.background=\'rgba(10,15,28,0.88)\'">›</button>' +
     '</div>' +
     '<div style="display:flex;gap:5px;justify-content:center;align-items:center;margin-top:10px;">' + dots + '</div>' +
@@ -635,12 +635,12 @@ _RENDERERS['drive_recent_files'] = function(b) {
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:12px;">📁 ' + _esc(title) + '</div>' +
     '<div style="position:relative;padding:0 52px;box-sizing:border-box;">' +
-      '<button id="' + uid + 'prev" style="' + arw + 'left:0;" onclick="' + uid + 'nav(-1)"' +
+      '<button id="' + uid + 'prev" aria-label="Previous" style="' + arw + 'left:0;" onclick="' + uid + 'nav(-1)"' +
         ' onmouseover="this.style.background=\'rgba(30,42,70,0.95)\'" onmouseout="this.style.background=\'rgba(10,15,28,0.88)\'">‹</button>' +
       '<div id="' + uid + 'trk" style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;">' +
         cards +
       '</div>' +
-      '<button id="' + uid + 'next" style="' + arw + 'right:0;" onclick="' + uid + 'nav(1)"' +
+      '<button id="' + uid + 'next" aria-label="Next" style="' + arw + 'right:0;" onclick="' + uid + 'nav(1)"' +
         ' onmouseover="this.style.background=\'rgba(30,42,70,0.95)\'" onmouseout="this.style.background=\'rgba(10,15,28,0.88)\'">›</button>' +
     '</div>' +
     '<div style="display:flex;gap:5px;justify-content:center;align-items:center;margin-top:10px;">' + dots + '</div>' +
