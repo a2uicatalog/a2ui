@@ -29,6 +29,7 @@ function renderAtoms(blocks, opts) {
   // take a motion entrance. Idempotent; no `enter` on a block = unchanged output.
   if (typeof _moInstall === 'function') _moInstall();
   _gdInstall(); // payload guard: validates CSS/number/URL/id fields before any renderer sees them (atom.gs)
+  _a11yInstall(); // keyboard access for hidden radios/checkboxes and clickable non-controls (atom.gs)
 
   // ── pack gate ──────────────────────────────────────────────────────────────
   // A lean workbench offers only some packs; everything else degrades gracefully.
@@ -202,6 +203,54 @@ function _gdInstall() {
     _RENDERERS[k] = (function(f) {
       var w = function(b) { return f(b && typeof b === 'object' && !Array.isArray(b) ? _gdClean(b, '') : b); };
       w._gd = true;
+      w._mo = f._mo;
+      return w;
+    })(f);
+  }
+}
+
+// ── Keyboard access (WCAG 2.1.1, 2.4.7) ──────────────────────────────────────────────────────────
+// Found 2026-10-10 by the IBM Equal Access cross-check (axe misses these): the CSS radio/checkbox trick hides its input with
+// display:none, which removes it from the tab order, so a keyboard user cannot change a tab, rating or slide; and a <span onclick>
+// has no role, tab stop or key handler. This wraps every renderer once (like _moInstall / _gdInstall) and fixes the final markup,
+// so atoms written later get it too:
+//   * a hidden radio/checkbox becomes visually hidden (still focusable); while it has keyboard focus it shows as a native control,
+//     which is the focus indicator, because the label it drives sits elsewhere in the DOM.
+//   * a non-control element with onclick gets tabindex=0, role=button (not on table cells) and Enter/Space -> click.
+// No radio/checkbox and no onclick in the markup = unchanged output, byte for byte.
+var _A11Y_VH = 'position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none;';
+var _A11Y_FOCUS = '<style>[data-a2ui-vh]:focus-visible,input[type=radio]:focus-visible,input[type=checkbox]:focus-visible{position:static!important;width:auto!important;height:auto!important;opacity:1!important;pointer-events:auto!important;outline:2px solid #4f46e5!important;outline-offset:2px}</style>';
+var _A11Y_KEY = "if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}";
+function _a11yFix(h) {
+  if (typeof h !== 'string' || h.length < 20) return h;
+  var out = h, hit = false;
+  if (out.indexOf('<input') !== -1 || out.indexOf('input') !== -1) {
+    out = out.replace(/<input\b([^>]*)>/g, function(m, at) {
+      if (!/type=["']?(?:radio|checkbox)/i.test(at) || !/style="display:none;?"/.test(at)) return m;
+      hit = true;
+      return '<input' + at.replace('style="display:none;"', 'data-a2ui-vh style="' + _A11Y_VH + '"').replace('style="display:none"', 'data-a2ui-vh style="' + _A11Y_VH + '"') + '>';
+    });
+    out = out.replace(/(input(?:\[type=(?:radio|checkbox)\])?)\{display:none;?\}/g, function(m, sel) { hit = true; return sel + '{' + _A11Y_VH + '}'; });
+  }
+  if (out.indexOf('onclick=') !== -1) {
+    out = out.replace(/<(\w+)\b([^>]*\sonclick=[^>]*)>/g, function(m, tag, at) {
+      tag = tag.toLowerCase();
+      if (/^(a|button|input|select|textarea|summary|label|option|details|svg|path|circle|rect|g|line|polygon|text)$/.test(tag)) return m;
+      if (/\sonkeydown=/.test(at) || /\stabindex=/.test(at)) return m;
+      var cell = /^(th|td|tr)$/.test(tag);
+      return '<' + tag + at + ' tabindex="0"' + (cell || /\srole=/.test(at) ? '' : ' role="button"') + ' onkeydown="' + _A11Y_KEY + '">';
+    });
+  }
+  return hit ? _A11Y_FOCUS + out : out;
+}
+function _a11yInstall() {
+  for (var k in _RENDERERS) {
+    var f = _RENDERERS[k];
+    if (typeof f !== 'function' || f._a11y) continue;
+    _RENDERERS[k] = (function(f) {
+      var w = function(b) { return _a11yFix(f(b)); };
+      w._a11y = true;
+      w._gd = f._gd;
       w._mo = f._mo;
       return w;
     })(f);
