@@ -200,6 +200,23 @@ function _moHalo(spec, html) {
   var rgb = _ffRgb(_ffHex(o.color, '#5b8cff')), a = _ffNum(o.strength, 0.55, 0, 1, 2), a2 = _ffNum(parseFloat(a) * 0.5, 0.28, 0, 1, 2);
   return '<div class="mo-halo" style="filter:drop-shadow(0 0 calc(' + size + 'px * var(--p,1)) rgba(' + rgb + ',' + a + ')) drop-shadow(0 0 calc(' + (size * 2) + 'px * var(--p,1)) rgba(' + rgb + ',' + a2 + '));">' + html + '</div>';
 }
+// smear: stretch along one axis and blur as --p falls, so a block that leaves (p going 1 to 0) streaks away; p = 1 is untouched. Off unless `smear` is set.
+function _moSmear(spec, html) {
+  var o = typeof spec === 'string' ? {axis: spec} : (spec === true ? {} : ((spec && typeof spec === 'object' && !Array.isArray(spec)) ? spec : null));
+  if (!o) return html;
+  var amt = _ffNum(o.amount, 0.6, 0, 1, 2), blur = _ffInt(o.blur, 14, 0, 40);
+  if (parseFloat(amt) === 0 && blur === 0) return html;
+  var ax = o.axis === 'x' ? 'X' : 'Y', k = _ffNum(parseFloat(amt) * 3, 1.8, 0, 3, 2);
+  return '<div class="mo-smear" style="transform:scale' + ax + '(calc(1 + ' + k + '*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + blur + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>';
+}
+// tilt: the block arrives turned in 3D and blurred, and settles flat as --p reaches 1. Off unless `tilt` is set.
+function _moTilt(spec, html) {
+  var o = spec === true ? {} : ((spec && typeof spec === 'object' && !Array.isArray(spec)) ? spec : null);
+  if (!o) return html;
+  var rx = _ffInt(o.x, 50, -80, 80), ry = _ffInt(o.y, 0, -80, 80), blur = _ffInt(o.blur, 10, 0, 30);
+  if (rx === 0 && ry === 0 && blur === 0) return html;
+  return '<div class="mo-tilt" style="transform:perspective(900px) rotateX(calc(' + rx + 'deg*(1 - clamp(0,var(--p,1),1)))) rotateY(calc(' + ry + 'deg*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + blur + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>';
+}
 // Wrap every registered renderer once. Safe to call repeatedly and from any entry
 // point: a wrapped function carries _mo and is skipped. Called from renderAtoms
 // (and the Worker/bundle entry points share that function).
@@ -211,6 +228,8 @@ function _moInstall() {
       var w = function(b) {
         var h = f(b);
         if (b && typeof b === 'object' && b.halo) h = _moHalo(b.halo, h);
+        if (b && typeof b === 'object' && b.smear) h = _moSmear(b.smear, h);
+        if (b && typeof b === 'object' && b.tilt) h = _moTilt(b.tilt, h);
         return (b && typeof b === 'object' && b.enter) ? _moEnter(b, h) : h;
       };
       w._mo = true;

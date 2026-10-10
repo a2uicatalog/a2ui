@@ -26909,6 +26909,41 @@ def _mo_halo(spec, html):
     return ('<div class="mo-halo" style="filter:drop-shadow(0 0 calc(' + str(size) + 'px * var(--p,1)) rgba(' + rgb + ',' + a + ')) drop-shadow(0 0 calc(' + str(size * 2) + 'px * var(--p,1)) rgba(' + rgb + ',' + a2 + '));">' + html + '</div>')
 
 
+def _mo_smear(spec, html):
+    """Twin of atoms_motion.gs _moSmear."""
+    if isinstance(spec, str):
+        o = {'axis': spec}
+    elif spec is True:
+        o = {}
+    elif isinstance(spec, dict):
+        o = spec
+    else:
+        return html
+    amt = _ff_num(o.get('amount'), 0.6, 0, 1, 2)
+    blur = _ff_int(o.get('blur'), 14, 0, 40)
+    if float(amt) == 0 and blur == 0:
+        return html
+    ax = 'X' if o.get('axis') == 'x' else 'Y'
+    k = _ff_num(float(amt) * 3, 1.8, 0, 3, 2)
+    return ('<div class="mo-smear" style="transform:scale' + ax + '(calc(1 + ' + k + '*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + str(blur) + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>')
+
+
+def _mo_tilt(spec, html):
+    """Twin of atoms_motion.gs _moTilt."""
+    if spec is True:
+        o = {}
+    elif isinstance(spec, dict):
+        o = spec
+    else:
+        return html
+    rx = _ff_int(o.get('x'), 50, -80, 80)
+    ry = _ff_int(o.get('y'), 0, -80, 80)
+    blur = _ff_int(o.get('blur'), 10, 0, 30)
+    if rx == 0 and ry == 0 and blur == 0:
+        return html
+    return ('<div class="mo-tilt" style="transform:perspective(900px) rotateX(calc(' + str(rx) + 'deg*(1 - clamp(0,var(--p,1),1)))) rotateY(calc(' + str(ry) + 'deg*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + str(blur) + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>')
+
+
 def _mo_install():
     """Wrap every registered renderer once (idempotent): a block carrying `enter` gets the entrance wrapper,
     every other block returns exactly what it always did. Twin of atoms_motion.gs _moInstall."""
@@ -26921,6 +26956,10 @@ def _mo_install():
                 h = f(b)
                 if isinstance(b, dict) and b.get('halo'):
                     h = _mo_halo(b['halo'], h)
+                if isinstance(b, dict) and b.get('smear'):
+                    h = _mo_smear(b['smear'], h)
+                if isinstance(b, dict) and b.get('tilt'):
+                    h = _mo_tilt(b['tilt'], h)
                 return _mo_enter(b, h) if isinstance(b, dict) and b.get('enter') else h
             w._mo = True
             return w

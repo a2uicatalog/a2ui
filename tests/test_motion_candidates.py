@@ -207,3 +207,94 @@ def test_collage_swaps_sets_and_reshapes_the_panel(core_js):
     assert 0.1 < mid["o"][1] < 1 or mid["o"][0] < 0.98, mid     # mid-swap one of them is in transit
     assert z["o"][0] < 0.02 and z["o"][1] > 0.98, z             # last set shown
     assert a["c"] != z["c"], (a["c"], z["c"])                   # outline changed
+
+
+# ─── second batch: smear, tilt, bubbles, beats, pattern, dock, fit ───────────────────────────────────────────────
+FX = [dict(PILL, smear=True), dict(PILL, smear="x"), dict(PILL, smear={"axis": "x", "amount": 1, "blur": 30}), dict(PILL, smear={"amount": 0, "blur": 0}), dict(PILL, smear={"amount": "x", "blur": 999}),
+      dict(PILL, tilt=True), dict(PILL, tilt={"x": -30, "y": 40, "blur": 4}), dict(PILL, tilt={"x": 0, "y": 0, "blur": 0}), dict(PILL, tilt={"x": 999, "y": "z", "blur": -3}), dict(PILL, tilt="javascript:1"),
+      dict(PILL, halo=True, smear=True, tilt=True)]
+
+
+def test_smear_and_tilt_twins_agree(core_js):
+    got = _gas_batch(core_js, FX)
+    bad = [(str(b)[:90]) for b, g in zip(FX, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_smear_and_tilt_are_inert_when_off_and_scale_with_p():
+    plain = _norm(_py(dict(PILL)))
+    assert plain == _norm(_py(dict(PILL, smear=False, tilt=None))) == _norm(_py(dict(PILL, smear={"amount": 0, "blur": 0}, tilt={"x": 0, "y": 0, "blur": 0})))
+    h = _py(dict(PILL, smear=True, tilt=True))
+    assert h.count("mo-smear") == 1 and h.count("mo-tilt") == 1 and h.count("var(--p,1)") >= 5 and "<script" not in h.lower()
+
+
+B2 = {
+    "bubbles": {"type": "motion_bubbles", "count": 5, "seed": 3},
+    "beats": {"type": "motion_beats", "items": [{"text": "4", "bg": "#101010", "color": "#8a8aff"}, {"text": "5", "bg": "#2020c0", "color": "#ffffff", "shape": "star"}, {"text": "6", "bg": "#6a7d4a", "color": "#e6ff3a", "font": "serif"}]},
+    "pattern": {"type": "motion_pattern", "text": "Made by Google", "rows": 3, "repeat": 3},
+    "dock": {"type": "motion_dock", "items": [{"glyph": "M", "label": "Maps"}, {"glyph": "C", "label": "Chat"}, {"glyph": "31", "label": "Calendar"}]},
+    "fit": {"type": "motion_fit", "text": "Live"},
+}
+
+
+def test_batch2_render_with_one_name_and_no_script(core_js):
+    out = dict(zip(B2, _gas_batch(core_js, list(B2.values()))))
+    for k, h in out.items():
+        assert "<script" not in h.lower() and "NaN" not in h and "undefined" not in h, k
+    assert 'aria-hidden="true"' in out["bubbles"] and 'role="img"' not in out["bubbles"] and 'role="img"' in _gas_batch(core_js, [dict(B2["bubbles"], label="Bubbles")])[0]
+    assert out["beats"].count('role="img"') == 1 and 'aria-label="4, 5, 6"' in out["beats"] and out["beats"].count("<polygon") == 0 and "clip-path:polygon(" in out["beats"]
+    assert out["pattern"].count('role="img"') == 1 and 'aria-label="Made by Google"' in out["pattern"] and out["pattern"].count("Made by Google") == 10
+    assert "<ul" in out["dock"] and out["dock"].count("<li") == 3 and "Maps" in out["dock"] and out["dock"].count('aria-hidden="true"') == 4   # ring plus three glyphs
+    assert ">LIVE<" not in out["fit"] and ">Live<" in out["fit"] and "text-transform:uppercase" in out["fit"] and "aria-hidden" not in out["fit"]
+
+
+def test_batch2_options_are_closed_and_text_is_inert(core_js):
+    att = '"><img src=x onerror=alert(1)><script>alert(2)</script>'
+    hostile = [
+        {"type": "motion_bubbles", "count": att, "seed": att, "size": att, "drift": att, "color": att, "color2": att, "aspect": att, "label": att},
+        {"type": "motion_beats", "size": att, "weight": att, "transition": att, "aspect": att, "items": [{"text": att, "bg": att, "color": att, "font": att, "shape": att}, "x", 7, None]},
+        {"type": "motion_pattern", "text": att, "rows": att, "repeat": att, "angle": att, "size": att, "slide": att, "color": att, "weight": att, "font": att, "aspect": att, "label": att},
+        {"type": "motion_dock", "size": att, "fill": att, "accent": att, "items": [{"glyph": att, "label": att, "fill": att}, "x", 3]},
+        {"type": "motion_fit", "text": att, "fill": att, "upper": att, "recede": att, "color": att, "weight": att, "font": att},
+    ]
+    for h in _gas_batch(core_js, hostile):
+        assert "<script>alert(2)" not in h and "<img" not in h and "NaN" not in h, h[:200]
+    for h in _gas_batch(core_js, [{"type": t} for t in ("motion_bubbles", "motion_beats", "motion_pattern", "motion_dock", "motion_fit")]):
+        assert len(h) > 40 and "NaN" not in h
+
+
+@browser
+def test_beats_cut_on_the_step_dial_and_hold_the_last(core_js):
+    tl = _scene([dict(B2["beats"], id="bt", place={"x": 5, "y": 5, "w": 60})], [{"target": "bt", "keys": [{"t": 0, "p": 1, "step": 0}, {"t": 6, "p": 1, "step": 1}]}])
+    js = "var L=document.querySelectorAll('[data-mt-id=bt] [aria-hidden] > div');return Array.prototype.map.call(L,function(e){return +(+getComputedStyle(e).opacity).toFixed(2);});"
+    a, m1, m2, z = (_probe_gas(core_js, tl, t, js) for t in (0, 2.0, 3.0, 6))
+    assert a == [1, 0, 0] and m1 == [0, 1, 0] and m2[2] == 0 and m2[1] == 1 or m2 == [0, 0, 1], (a, m1, m2)
+    assert z == [0, 0, 1], z
+
+
+@browser
+def test_dock_ring_travels_and_icons_pop_in(core_js):
+    tl = _scene([dict(B2["dock"], id="dk", place={"x": 5, "y": 5, "w": 60})], [{"target": "dk", "keys": [{"t": 0, "p": 0, "step": 0}, {"t": 2, "p": 1, "step": 0}, {"t": 6, "p": 1, "step": 1}]}])
+    js = ("var r=document.querySelector('[data-mt-id=dk] span[aria-hidden][style*=box-shadow]');var li=document.querySelectorAll('[data-mt-id=dk] li');"
+          "return {x:new DOMMatrix(getComputedStyle(r).transform).m41,o:Array.prototype.map.call(li,function(e){return +(+getComputedStyle(e).opacity).toFixed(2);})};")
+    a, b, z = (_probe_gas(core_js, tl, t, js) for t in (0, 2, 6))
+    assert max(a["o"]) < 0.02 and all(v > 0.98 for v in b["o"]), (a, b)
+    assert abs(b["x"]) < 0.5 and abs(z["x"] - 2 * 56) < 1, (b, z)
+
+
+@browser
+def test_bubbles_grow_with_p_and_drift_with_s(core_js):
+    tl = _scene([dict(B2["bubbles"], id="bb", place={"x": 5, "y": 5, "w": 60})], [{"target": "bb", "keys": [{"t": 0, "p": 0, "step": 0}, {"t": 2, "p": 1, "step": 0}, {"t": 6, "p": 1, "step": 1}]}])
+    js = "var s=document.querySelectorAll('[data-mt-id=bb] span');return {o:+(+getComputedStyle(s[0]).opacity).toFixed(2),x:new DOMMatrix(getComputedStyle(s[0]).transform).m41};"
+    a, b, z = (_probe_gas(core_js, tl, t, js) for t in (0, 2, 6))
+    assert a["o"] < 0.02 and b["o"] > 0.6 and abs(b["x"]) < 0.5 and abs(z["x"]) > 1, (a, b, z)
+
+
+@browser
+def test_fit_fills_the_width_and_recedes_only_when_asked(core_js):
+    base = dict(B2["fit"], id="ft", place={"x": 5, "y": 20, "w": 90})
+    js = "var d=document.querySelector('[data-mt-id=ft] div[style*=container-type]');var t=d.firstElementChild;return {f:t.scrollWidth/d.clientWidth,o:+(+getComputedStyle(t).opacity).toFixed(2)};"
+    tl = lambda blk: _scene([blk], [{"target": "ft", "keys": [{"t": 0, "p": 1, "step": 0}, {"t": 4, "p": 1, "step": 1}]}])
+    plain, rec = _probe_gas(core_js, tl(base), 4, js), _probe_gas(core_js, tl(dict(base, recede=True)), 4, js)
+    assert 0.6 < plain["f"] <= 1.02 and plain["o"] > 0.98, plain
+    assert rec["o"] < 0.5, rec

@@ -21034,3 +21034,98 @@ blocks:
   notes: The tiles are hidden from assistive technology and their labels are listed once, in order, as visually hidden text. p builds the
     first set; s moves between sets.
   source: *mla002
+- type: motion_bubbles
+  stage: preview
+  description: "Translucent, slightly iridescent spheres that drift over a scene. Count, positions, sizes and drift come from a seed, so every render is identical. p grows the bubbles in one after another; s moves them along their drift. Decorative: hidden from assistive technology unless a label is given. Plain HTML and CSS, no script."
+  compact_description: "drifting glass bubbles as a decorative layer over a title or scene"
+  routing_text: "A decorative field of soft glass bubbles behind or over a title, as in a product launch film. Not data and not interactive."
+  intent_phrases:
+  - "Add soft glass bubbles drifting over this title."
+  - "Put floating iridescent bubbles in the background."
+  surfaces: *mla001
+  fields:
+    count: "integer (optional). 2 to 14. Default 7."
+    seed: "integer (optional). 0 to 999. Same seed, same layout. Default 7."
+    size: "integer (optional). Typical bubble width as a percent of the box, 4 to 40. Default 16."
+    drift: "integer (optional). How far bubbles travel with s, in percent of the box width, 0 to 60. Default 14."
+    color: "\"#rrggbb\" (optional). Default #8ad8ff."
+    color2: "\"#rrggbb\" (optional). Default #ff9be8."
+    aspect: "number (optional). 0.5 to 3. Default 1.78."
+    label: "string (optional, max 60). Gives the layer an accessible name; without it the layer is hidden from assistive technology."
+  notes: "Movement is the film dial s; there is no endless animation."
+  source: *mla002
+- type: motion_beats
+  stage: preview
+  description: "One element that is restyled on every beat: a word or number with its own colour field, typeface and optional faint shape per beat, as in a countdown title. The step dial s runs across the beats; at s = 1 the last beat is shown. transition cut switches instantly, fade overlaps by a fifth of a beat. Plain HTML and CSS, no script."
+  compact_description: "a title or number that changes colour, typeface and shape on each beat"
+  routing_text: "A countdown or sequence of single words or numbers, each on its own colour field. Not a text cycle that only swaps words; use motion_text for that."
+  intent_phrases:
+  - "Count down from 4 to 8 with a different colour and typeface each time."
+  - "Show one word per beat on changing colour backgrounds."
+  surfaces: *mla001
+  fields:
+    items: "array (required, 2 to 12) of {text (max 24), bg (\"#rrggbb\"), color (\"#rrggbb\"), font (sans, serif, mono or display), shape (optional preset: circle, star, panel, notch, step, tab and the other motion_morph names)}."
+    size: "integer (optional). Font px, 24 to 400. Default 160."
+    weight: "string (optional). regular, bold or black. Default black."
+    transition: "string (optional). cut or fade. Default cut."
+    aspect: "number (optional). 0.5 to 3. Default 1.78."
+  notes: "Accessibility: the group has one name made from the texts, and the visual is hidden from assistive technology. WCAG 2.3.1 limits flashing to three a second; with the cut transition keep beats at least a third of a second apart or choose fade. The renderer cannot know the film clock, so the author has to."
+  source: *mla002
+- type: motion_pattern
+  stage: preview
+  description: "A tilted field of repeated text that slides with the step dial. Rows alternate direction. One row with one repeat gives a single rotated word; angle 90 turns it upright. p builds the rows in order. Named as one image, hidden from assistive technology as a pattern. Plain HTML and CSS, no script."
+  compact_description: "a tilted, repeating text pattern that slides, or one rotated word"
+  routing_text: "A repeated brand word across a tilted background, or a single word turned on its side."
+  intent_phrases:
+  - "Fill the background with the brand name repeated at an angle."
+  - "Turn this word 90 degrees."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 28)."
+    rows: "integer (optional). 1 to 8. Default 5."
+    repeat: "integer (optional). Copies per row, 1 to 10. Default 6."
+    angle: "integer (optional). Degrees, -90 to 90. Default -20."
+    size: "integer (optional). Font px, 14 to 200. Default 56."
+    slide: "integer (optional). Row travel at s = 1, in percent of the row, 0 to 100. Default 24."
+    color: "\"#rrggbb\" (optional). Default the current text colour."
+    weight: "string (optional). regular, bold or black. Default bold."
+    font: "string (optional). Engine font name. Default sans."
+    aspect: "number (optional). 0.5 to 3. Default 1.78."
+    label: "string (optional, max 80). The accessible name. Default the text, once."
+  notes: "The pattern is one image with one name, so the repeated text is not read many times."
+  source: *mla002
+- type: motion_dock
+  stage: preview
+  description: "Icons in a pill with a highlight ring that travels to the active icon. A real list with a text name for each icon; the glyphs are decorative. p pops the icons in one after another; the step dial s moves the ring from the first icon to the last. Plain HTML and CSS, no script."
+  compact_description: "a pill of app icons with a travelling highlight"
+  routing_text: "A row of small round icons in a pill where the focus moves from one to the next, such as a dock or bubble bar."
+  intent_phrases:
+  - "Show five app icons in a pill and move the highlight along them."
+  - "Build a dock where the active icon changes."
+  surfaces: *mla001
+  fields:
+    items: "array (required, 2 to 7) of {glyph (max 2 characters, an emoji or letter), label (max 28), fill (\"#rrggbb\")}."
+    size: "integer (optional). Icon cell px, 24 to 120. Default 56."
+    fill: "\"#rrggbb\" (optional). Pill colour. Default #eef1f7."
+    accent: "\"#rrggbb\" (optional). Highlight ring. Default #5b8cff."
+  notes: "Each item has a visually hidden label, so the list reads by name, not by glyph. The ring is not the only signal of position: the order is the list order."
+  source: *mla002
+- type: motion_fit
+  stage: preview
+  description: "A display word that scales to fill the width of its box, as in a title card. It is real text and stays readable by assistive technology. p scales it in; with recede true, s shrinks and fades it back. Plain HTML and CSS, no script."
+  compact_description: "a display word that fills the width of its box"
+  routing_text: "A big title word or short phrase that should fill the frame width, scaling in and optionally receding."
+  intent_phrases:
+  - "Make the word LIVE fill the whole width."
+  - "Show a huge condensed title that shrinks away."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 20)."
+    fill: "number (optional). Share of the width used, 0.4 to 1. Default 0.96."
+    upper: "bool (optional). Upper case. Default true."
+    recede: "bool (optional). The step dial shrinks and fades the word. Default false, so the standalone picture is the finished title."
+    color: "\"#rrggbb\" (optional). Default the host text colour."
+    weight: "string (optional). regular, bold or black. Default black."
+    font: "string (optional). Engine font name. Default sans."
+  notes: "Sizing assumes an average letter width, so a very wide or very narrow word can fill a little more or less than the width asked for."
+  source: *mla002

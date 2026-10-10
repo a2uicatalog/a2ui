@@ -147,3 +147,90 @@ _RENDERERS['motion_collage'] = function(b) {
     '<div aria-hidden="true" style="position:absolute;inset:0;">' + layers + '</div>' +
     (plain.length ? '<ul style="' + _IF_SR + '">' + plain.map(function(p) { return '<li>' + _esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
 };
+
+// ── second batch from the keynote recordings (2026-10-10): bubbles, beats, pattern, dock, fit ───────────────────────────────────────────────
+// Accessibility rules shared by these five: decorative layers are aria-hidden; anything that carries words has one accessible name or is real text; every dial
+// defaults to the finished picture; no endless loops (movement is the film's dial, never a CSS animation); colour never carries the only meaning.
+function _bxList(v, max) { return Array.isArray(v) ? v.slice(0, max) : []; }
+function _bxSeed(seed, i, k) { var x = Math.sin((seed + 1) * 12.9898 + i * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x); }
+
+// motion_bubbles: translucent drifting spheres. Position, size and drift come from a seed, so every render is identical.
+_RENDERERS['motion_bubbles'] = function(b) {
+  var n = _ffInt(b.count, 7, 2, 14), seed = _ffInt(b.seed, 7, 0, 999), size = _ffInt(b.size, 16, 4, 40), drift = _ffInt(b.drift, 14, 0, 60), asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2);
+  var c1 = _ffHex(b.color, '#8ad8ff'), c2 = _ffHex(b.color2, '#ff9be8'), out = '', i;
+  for (i = 0; i < n; i++) {
+    var d = Math.round(size * (0.55 + _bxSeed(seed, i, 3) * 0.9) * 10) / 10, x = Math.round((4 + _bxSeed(seed, i, 1) * (92 - d * 0.56)) * 10) / 10, y = Math.round((6 + _bxSeed(seed, i, 2) * 80) * 10) / 10;
+    var dx = Math.round((_bxSeed(seed, i, 4) - 0.5) * 2 * drift * 10) / 10, dy = Math.round((_bxSeed(seed, i, 5) - 0.5) * 2 * drift * 10) / 10, hue = Math.round(_bxSeed(seed, i, 6) * 360);
+    out += '<span style="position:absolute;left:' + x + '%;top:' + y + '%;width:' + d + '%;aspect-ratio:1;border-radius:50%;box-sizing:border-box;'
+      + 'background:radial-gradient(circle at 30% 26%,rgba(255,255,255,0.9),rgba(255,255,255,0) 34%),conic-gradient(from ' + hue + 'deg,' + c1 + ',' + c2 + ',' + c1 + ');'
+      + 'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.55),inset -0.4em -0.5em 1.2em rgba(255,255,255,0.35);'
+      + '--bi:clamp(0,calc(var(--p,1)*' + (n + 2) + ' - ' + i + '),1);opacity:calc(var(--bi)*0.72);'
+      + 'transform:translate(calc(var(--s,1)*' + dx + 'cqw),calc(var(--s,1)*' + dy + 'cqw)) scale(calc(0.4 + var(--bi)*0.6));"></span>';
+  }
+  var named = typeof b.label === 'string' && b.label;
+  return '<div ' + (named ? 'role="img" aria-label="' + _esc(_moStr(b.label, 60)) + '"' : 'aria-hidden="true"') + ' style="position:relative;width:100%;aspect-ratio:' + asp + ';container-type:inline-size;overflow:hidden;pointer-events:none;">' + out + '</div>';
+};
+
+// motion_beats: one element that is restyled on every beat (the keynote countdown: a number, a colour field, a shape, a typeface, per beat).
+// Flash caution: a hard cut between very different colour fields is a flashing hazard if beats come faster than about 0.33 s; the engine cannot know the
+// film's clock, so transition "fade" is offered and the notes say so.
+var _BX_FACES = {sans: 1, serif: 1, mono: 1, display: 1};
+_RENDERERS['motion_beats'] = function(b) {
+  var src = _bxList(b.items, 12), items = [], i;
+  for (i = 0; i < src.length; i++) { var o = _clObj(src[i]); items.push({text: _moStr(o.text, 24), bg: _ffHex(o.bg, _CL_FILLS[i % 8]), color: _ffHex(o.color, '#ffffff'), font: _ffPick(o.font, _FF_FONTS, 'sans'), shape: _moOwn(_MO_SHAPES, o.shape, '')}); }
+  while (items.length < 2) items.push({text: items.length ? '' : 'A', bg: '#26346a', color: '#ffffff', font: _FF_FONTS.sans, shape: ''});
+  var N = items.length, size = _ffInt(b.size, 160, 24, 400), asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2), fade = b.transition === 'fade', w = fade ? '0.2' : '0.001', weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), layers = '';
+  var u = 'calc(var(--s,1)*' + N + ')', plain = [];
+  items.forEach(function(it, j) {
+    var inn = j === 0 ? '1' : 'clamp(0,calc((' + u + ' - ' + j + ')/' + w + '),1)', outt = j === N - 1 ? '1' : '(1 - clamp(0,calc((' + u + ' - ' + (j + 1) + ' + ' + w + ')/' + w + '),1))';
+    var blob = '';
+    if (it.shape) {
+      var pts = [], k; for (k = 0; k < 96; k += 2) pts.push(_moT10(_MO_SHAPES[it.shape][k]) + '% ' + _moT10(_MO_SHAPES[it.shape][k + 1]) + '%');
+      blob = '<span style="position:absolute;left:50%;top:50%;height:86%;aspect-ratio:1;transform:translate(-50%,-50%);background:' + it.color + ';opacity:0.18;clip-path:polygon(' + pts.join(',') + ');-webkit-clip-path:polygon(' + pts.join(',') + ');"></span>';
+    }
+    layers += '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:' + it.bg + ';color:' + it.color + ';opacity:calc(' + inn + '*' + outt + ');">' + blob
+      + '<span style="position:relative;font-family:' + it.font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1;white-space:nowrap;">' + _esc(it.text) + '</span></div>';
+    if (it.text) plain.push(it.text);
+  });
+  return '<div role="img" aria-label="' + _esc(plain.join(', ') || 'Sequence') + '" style="position:relative;width:100%;aspect-ratio:' + asp + ';overflow:hidden;opacity:clamp(0,calc(var(--p,1)*4),1);"><div aria-hidden="true" style="position:absolute;inset:0;">' + layers + '</div></div>';
+};
+
+// motion_pattern: a tilted field of repeated text that slides with the step dial; one row, one repeat gives a single rotated word.
+_RENDERERS['motion_pattern'] = function(b) {
+  var text = _moStr(b.text, 28) || 'Text', rows = _ffInt(b.rows, 5, 1, 8), rep = _ffInt(b.repeat, 6, 1, 10), ang = _ffInt(b.angle, -20, -90, 90), size = _ffInt(b.size, 56, 14, 200), slide = _ffInt(b.slide, 24, 0, 100);
+  var asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2), color = _moInk(b, 'color', 'currentColor'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans'), out = '', r, c;
+  for (r = 0; r < rows; r++) {
+    var row = '';
+    for (c = 0; c < rep; c++) row += '<span style="padding-right:0.6em;">' + _esc(text) + '</span>';
+    out += '<div style="white-space:nowrap;text-align:center;transform:translateX(calc(var(--s,1)*' + (r % 2 ? slide : -slide) + '%));opacity:clamp(0,calc(var(--p,1)*' + (rows + 1) + ' - ' + r + '),1);">' + row + '</div>';
+  }
+  var name = typeof b.label === 'string' && b.label ? _moStr(b.label, 80) : text;
+  return '<div role="img" aria-label="' + _esc(name) + '" style="position:relative;width:100%;aspect-ratio:' + asp + ';overflow:hidden;"><div aria-hidden="true" style="position:absolute;left:50%;top:50%;width:200%;transform:translate(-50%,-50%) rotate(' + ang + 'deg);'
+    + 'font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1.2;color:' + color + ';">' + out + '</div></div>';
+};
+
+// motion_dock: icons in a pill with a highlight that travels to the active one. A real list; each glyph is decorative and each item has a text name.
+_RENDERERS['motion_dock'] = function(b) {
+  var src = _bxList(b.items, 7), items = [], i;
+  for (i = 0; i < src.length; i++) { var o = _clObj(src[i]); items.push({glyph: _moStr(o.glyph, 2), label: _moStr(o.label, 28) || ('Item ' + (i + 1)), fill: _ffHex(o.fill, _CL_FILLS[i % 8])}); }
+  while (items.length < 2) items.push({glyph: '', label: 'Item ' + (items.length + 1), fill: _CL_FILLS[items.length % 8]});
+  var N = items.length, cell = _ffInt(b.size, 56, 24, 120), pad = Math.round(cell * 0.2), bg = _moInk(b, 'fill', '#eef1f7'), ring = _moInk(b, 'accent', '#5b8cff'), lis = '';
+  items.forEach(function(it, j) {
+    lis += '<li style="position:relative;width:' + cell + 'px;height:' + cell + 'px;display:flex;align-items:center;justify-content:center;--di:clamp(0,calc(var(--p,1)*' + (N + 2) + ' - ' + j + '),1);opacity:var(--di);transform:scale(calc(0.5 + var(--di)*0.5));">'
+      + '<span aria-hidden="true" style="width:72%;height:72%;border-radius:50%;background:' + it.fill + ';color:#fff;font-weight:800;font-size:' + Math.round(cell * 0.34) + 'px;display:flex;align-items:center;justify-content:center;">' + _esc(it.glyph) + '</span>'
+      + '<span style="' + _IF_SR + '">' + _esc(it.label) + '</span></li>';
+  });
+  return '<div style="display:inline-block;position:relative;padding:' + pad + 'px;border-radius:' + (cell / 2 + pad) + 'px;background:' + bg + ';">'
+    + '<span aria-hidden="true" style="position:absolute;left:' + pad + 'px;top:' + pad + 'px;width:' + cell + 'px;height:' + cell + 'px;border-radius:50%;box-shadow:0 0 0 3px ' + ring + ';background:rgba(255,255,255,0.55);'
+    + 'transform:translateX(calc(clamp(0,var(--s,1),1)*' + ((N - 1) * cell) + 'px));opacity:clamp(0,calc(var(--p,1)*3),1);"></span>'
+    + '<ul style="position:relative;display:flex;margin:0;padding:0;list-style:none;">' + lis + '</ul></div>';
+};
+
+// motion_fit: a display word that fills the width of its box. Real text, not hidden. recede (opt-in) shrinks and fades it with the step dial.
+_RENDERERS['motion_fit'] = function(b) {
+  var text = _moStr(b.text, 20) || 'Text', fill = _ffNum(b.fill, 0.96, 0.4, 1, 2), color = _moInk(b, 'color', 'var(--text,#0f172a)'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), font = _ffPick(b.font, _FF_FONTS, 'sans');
+  var upper = b.upper !== false, n = Math.max(text.length, 2), fs = Math.round(100 * parseFloat(fill) / (n * 0.62) * 100) / 100, rec = b.recede === true;
+  var tr = 'scale(calc(0.7 + clamp(0,var(--p,1),1)*0.3' + (rec ? ' - var(--s,0)*0.45' : '') + '))', op = 'clamp(0,calc(var(--p,1)*3),1)' + (rec ? '*(1 - var(--s,0)*0.7)' : '');
+  return '<div style="width:100%;container-type:inline-size;overflow:hidden;"><div style="font-family:' + font + ';font-weight:' + weight + ';font-size:' + fs + 'cqw;line-height:1;white-space:nowrap;text-align:center;color:' + color + ';'
+    + (upper ? 'text-transform:uppercase;' : '') + 'opacity:calc(' + op + ');transform:' + tr + ';">' + _esc(text) + '</div></div>';
+};
