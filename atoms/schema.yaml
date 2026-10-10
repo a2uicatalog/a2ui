@@ -11364,7 +11364,7 @@ blocks:
     license: MIT
 - type: motion_image
   stage: preview
-  description: 'An image that moves. Mode kenburns is a slow pan and zoom over the film (p), parallax stacks up to 4 layers that slide at different speeds with the second dial (--s), polaroid drops in tilted with a caption. Images must be https or site-relative (a data:image under 2 KB also passes, for tiny placeholders); anything else (or no url) shows a gradient placeholder. Plain CSS, no script; standalone it shows the finished frame. Use inside a motion_timeline. For a plain image or a click-to-zoom lightbox, use image or zoomable_image.'
+  description: 'An image that moves. Mode kenburns is a slow pan and zoom over the film (p), parallax stacks up to 4 layers that slide at different speeds with the second dial (--s), polaroid drops in tilted with a caption. Images must be https or site-relative (a data:image base64 URL of up to 200000 characters also passes); anything else (or no url) shows a gradient placeholder. Plain CSS, no script; standalone it shows the finished frame. Use inside a motion_timeline. For a plain image or a click-to-zoom lightbox, use image or zoomable_image.'
   compact_description: image with Ken Burns pan and zoom, parallax layers or a polaroid drop-in
   surfaces:
     works_on:
@@ -11382,6 +11382,7 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
+    fit: 'string (optional). cover (default, fills the frame and may crop) or contain (the whole picture is shown, bars where the shapes differ). Use contain with zoom 1 and no pan for pictures that must not be cropped.'
     url: 'string (optional). https image or site-relative path (data:image only under 2 KB). Otherwise a placeholder shows.'
     mode: '"kenburns" | "parallax" | "polaroid" (optional, default "kenburns")'
     layers: 'array (max 4) of {url, depth?} for parallax. depth 0-1 is how far the layer slides with --s. Default one layer from url.'

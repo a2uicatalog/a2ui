@@ -310,3 +310,10 @@ def test_long_data_image_urls_survive_the_url_guard_and_long_web_urls_do_not(cor
     assert wa._gd_clean(dict(blk), "") ["url"] == big and "url" not in wa._gd_clean({"type": "motion_image", "url": web}, "")
     h = _gas_batch(core_js, [blk, {"type": "motion_image", "url": web}, {"type": "motion_image", "url": "data:image/svg+xml;base64," + "A" * 5000}])
     assert "<img" in h[0] and "<img" not in h[1] and "<img" not in h[2]
+
+
+def test_motion_image_fit_contain_shows_the_whole_picture(core_js):
+    blk = {"type": "motion_image", "url": "https://example.com/a.jpg", "fit": "contain"}
+    g = _gas_batch(core_js, [blk, dict(blk, fit="x"), {"type": "motion_image", "url": blk["url"]}])
+    assert "object-fit:contain" in g[0] and "object-fit:contain" not in g[1] and g[1] == g[2]
+    assert _norm(_py(blk)) == _norm(g[0]) and _norm(_py({"type": "motion_image", "url": blk["url"]})) == _norm(g[2])

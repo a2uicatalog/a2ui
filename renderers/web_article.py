@@ -28714,10 +28714,11 @@ def _render_motion_image(b: dict) -> str:
     alt, cap = _cv_str(b.get('alt'), 80) or 'Image', _cv_str(b.get('caption'), 60)
     zoom, px, py = _ff_num(b.get('zoom'), 1.15, 1, 2, 2), _ff_int(b.get('pan_x'), -3, -20, 20), _ff_int(b.get('pan_y'), -2, -20, 20)
     acc, url = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_img(b.get('url'))
+    contain = b.get('fit') == 'contain'
 
     def pic(u, extra):
         if u:
-            return '<img src="' + _cv_esc(u) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;left:-12%;top:-12%;width:124%;height:124%;object-fit:cover;' + extra + '">'
+            return '<img src="' + _cv_esc(u) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;' + ('left:0;top:0;width:100%;height:100%;object-fit:contain;' if contain else 'left:-12%;top:-12%;width:124%;height:124%;object-fit:cover;') + extra + '">'
         return '<div aria-hidden="true" style="position:absolute;left:-12%;top:-12%;width:124%;height:124%;background:linear-gradient(135deg,' + acc + ',color-mix(in srgb,' + acc + ' 25%,#0b0712));' + extra + '"></div>'
     inner = ''
     if mode == 'parallax':

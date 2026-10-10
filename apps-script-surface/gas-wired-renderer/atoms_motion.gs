@@ -1657,9 +1657,9 @@ var _MO_IMG_MODE = {kenburns: 1, parallax: 1, polaroid: 1};
 // polaroid that drops in tilted with a caption.
 _RENDERERS['motion_image'] = function(b) {
   var mode = _moOwn(_MO_IMG_MODE, b.mode, 'kenburns'), ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), rad = _ffInt(b.radius, 12, 0, 60), alt = _moStr(b.alt, 80) || 'Image', cap = _moStr(b.caption, 60);
-  var zoom = _ffNum(b.zoom, 1.15, 1, 2, 2), px = _ffInt(b.pan_x, -3, -20, 20), py = _ffInt(b.pan_y, -2, -20, 20), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), url = _moImg(b.url);
+  var zoom = _ffNum(b.zoom, 1.15, 1, 2, 2), px = _ffInt(b.pan_x, -3, -20, 20), py = _ffInt(b.pan_y, -2, -20, 20), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), url = _moImg(b.url), contain = b.fit === 'contain';
   function pic(u, extra) {
-    return u ? '<img src="' + _esc(u) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;left:-12%;top:-12%;width:124%;height:124%;object-fit:cover;' + extra + '">'
+    return u ? '<img src="' + _esc(u) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;' + (contain ? 'left:0;top:0;width:100%;height:100%;object-fit:contain;' : 'left:-12%;top:-12%;width:124%;height:124%;object-fit:cover;') + extra + '">'
       : '<div aria-hidden="true" style="position:absolute;left:-12%;top:-12%;width:124%;height:124%;background:linear-gradient(135deg,' + acc + ',color-mix(in srgb,' + acc + ' 25%,#0b0712));' + extra + '"></div>';
   }
   var inner = '';
