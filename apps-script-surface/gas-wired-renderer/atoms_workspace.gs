@@ -475,7 +475,8 @@ _RENDERERS['gmail_inbox'] = function(b) {
   for (var i = 0; i < emails.length; i++) {
     var isActive = i === 0;
     dots += '<span id="' + uid + 'd' + i + '" onclick="' + uid + 'go(' + i + ')" ' +
-      'style="display:inline-block;height:6px;border-radius:3px;cursor:pointer;transition:width 0.25s,background 0.25s;' +
+      'aria-label="Go to item ' + (i + 1) + ' of ' + emails.length + '" ' +
+      'style="display:inline-block;box-sizing:content-box;padding:9px;background-clip:content-box;height:6px;border-radius:3px;cursor:pointer;transition:width 0.25s,background 0.25s;' +
       (isActive ? 'width:20px;background:' + accentSafe : 'width:6px;background:rgba(255,255,255,0.2)') + ';"></span>';
   }
 
@@ -618,7 +619,8 @@ _RENDERERS['drive_recent_files'] = function(b) {
   var dots = '';
   for (var i = 0; i < files.length; i++) {
     dots += '<span id="' + uid + 'd' + i + '" onclick="' + uid + 'go(' + i + ')" ' +
-      'style="display:inline-block;height:6px;border-radius:3px;cursor:pointer;transition:width 0.25s,background 0.25s;' +
+      'aria-label="Go to item ' + (i + 1) + ' of ' + files.length + '" ' +
+      'style="display:inline-block;box-sizing:content-box;padding:9px;background-clip:content-box;height:6px;border-radius:3px;cursor:pointer;transition:width 0.25s,background 0.25s;' +
       (i===0 ? 'width:20px;background:' + accentSafe : 'width:6px;background:rgba(255,255,255,0.2)') + ';"></span>';
   }
 

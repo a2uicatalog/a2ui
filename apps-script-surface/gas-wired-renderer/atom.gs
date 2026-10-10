@@ -1891,7 +1891,7 @@ _RENDERERS['carousel'] = function(b) {
     perSlide += '<style>#' + cid + '_s' + i + ':checked ~ .' + cid + '-inner .' + cid + '-track{transform:translateX(-' + offset + '%);}</style>';
     perSlide += '<style>#' + cid + '_s' + i + ':checked ~ .' + cid + '-dots .' + cid + '-dot:nth-child(' + i + '){background:' + accent + ';transform:scale(1.25);}</style>';
   }
-  var inputs = slides.map(function(s,i){ return '<input type="radio" id="' + cid + '_s' + (i+1) + '" name="' + cid + '"' + (i===0?' checked':'') + '>'; }).join('');
+  var inputs = slides.map(function(s,i){ return '<input type="radio" id="' + cid + '_s' + (i+1) + '" name="' + cid + '" aria-label="Slide ' + (i+1) + ' of ' + slides.length + '"' + (i===0?' checked':'') + '>'; }).join('');
   var slidesHtml = slides.map(function(slide){
     var capHtml = slide.label ? '<div class="' + cid + '-cap"><strong>' + _esc(slide.label) + '</strong>' + (slide.subtitle ? '<span style="display:block;font-size:0.82rem;opacity:0.8;">' + _esc(slide.subtitle) + '</span>' : '') + '</div>' : '';
     return '<div class="' + cid + '-slide"><img src="' + _esc(slide.url||'') + '" alt="' + _esc(slide.label||'') + '" loading="lazy">' + capHtml + '</div>';
@@ -5185,7 +5185,7 @@ _RENDERERS['seat_map'] = function(b) {
         'font-size:0.68rem;color:#3c4043;cursor:' + (occupied ? 'default' : 'pointer') + ';' +
         'opacity:' + (occupied ? '0.4' : '1') + ';">' +
         '<input type="radio" id="' + iid + '" name="' + _esc(name) + '" value="' + _esc(sid) + '" ' +
-        'data-label="' + _esc(label) + '" ' + (occupied ? 'disabled' : '') + ' ' +
+        'data-label="' + _esc(label) + '" aria-label="' + _esc(label || ('Row ' + (r + 1) + ', seat ' + (s + 1))) + '" ' + (occupied ? 'disabled' : '') + ' ' +
         'style="display:none;" class="sm-input-' + uid + '">' +
         _esc(label) +
         '</label>';
