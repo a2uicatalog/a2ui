@@ -21011,7 +21011,7 @@ blocks:
 - type: motion_collage
   stage: preview
   description: 'A panel whose set of tiles swaps for the next set while the panel outline changes shape. Up to 4 sets, each up to 8
-    tiles placed on a 0 to 100 grid ({x, y, w, h, fill, fill2, label, block}). The step dial s moves through the sets: the outgoing set
+    tiles, placed by a named layout (hero, rail, grid, split, stack, header, trio, mosaic) or on a 0 to 100 grid ({x, y, w, h, fill, fill2, label, image, block}). The step dial s moves through the sets: the outgoing set
     fades and blurs out first, the next set blurs in after it, and a waiting set shows as a faint ghost. Each set names a panel silhouette
     (panel, notch, step or tab) and the outline is mixed between neighbouring sets by the same dial. The first set builds in tile by
     tile with p. Standalone it shows the last set. Plain HTML and CSS, no script.'
@@ -21024,8 +21024,7 @@ blocks:
   - Animate a dashboard panel changing between three arrangements.
   surfaces: *mla001
   fields:
-    sets: 'array (required, 2 to 4) of {panel?, tiles}; panel is panel, notch, step or tab (default panel); tiles is an array (1 to 8) of
-      {x, y, w, h (0 to 100 percent of the panel), fill?, fill2?, label? (max 28), block?} where block is any atom.'
+    sets: "array (required, 2 to 4) of {panel?, layout?, tiles}; panel is panel, notch, step or tab (default panel); layout is hero, rail, grid, split, stack, header, trio or mosaic and places the tiles for you; tiles is an array (1 to 8) of {label? (max 28), image? (https or data:image URL, shown cropped to fill the tile), fill?, fill2?, block?, x?, y?, w?, h? (0 to 100 percent of the panel; give them only to override the layout)}."
     blur: integer (optional). Peak blur in px while a set is not shown, 0 to 30. Default 10.
     ghost: number (optional). Opacity of a waiting set, 0 to 1. Default 0.18.
     radius: integer (optional). Tile corner radius px, 0 to 40. Default 10.

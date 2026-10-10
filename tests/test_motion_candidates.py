@@ -6,6 +6,7 @@ markup, and a real browser shows the thing happening at fixed instants.
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
 
@@ -317,3 +318,27 @@ def test_motion_image_fit_contain_shows_the_whole_picture(core_js):
     g = _gas_batch(core_js, [blk, dict(blk, fit="x"), {"type": "motion_image", "url": blk["url"]}])
     assert "object-fit:contain" in g[0] and "object-fit:contain" not in g[1] and g[1] == g[2]
     assert _norm(_py(blk)) == _norm(g[0]) and _norm(_py({"type": "motion_image", "url": blk["url"]})) == _norm(g[2])
+
+
+def test_collage_layouts_place_tiles_without_overlap_or_overflow():
+    import re as _re
+    src = (Path(__file__).resolve().parent.parent / "apps-script-surface" / "gas-wired-renderer" / "atoms_motion_candidates.gs").read_text()
+    body = src[src.index("var _CL_LAYOUTS"):src.index("};", src.index("var _CL_LAYOUTS"))]
+    lays = {m.group(1): [list(map(int, t.split(","))) for t in _re.findall(r"\[([\d, ]+)\]", m.group(2))] for m in _re.finditer(r"(\w+): \[(\[.*?\])\](?:,|\s*$)", body, _re.S)}
+    assert set(lays) == {"hero", "rail", "grid", "split", "stack", "header", "trio", "mosaic"}, lays.keys()
+    for name, ts in lays.items():
+        for i, (x, y, w, h) in enumerate(ts):
+            assert x >= 0 and y >= 0 and x + w <= 100 and y + h <= 100, (name, i)
+            for (a, b, c, d) in ts[:i]:
+                assert x >= a + c or a >= x + w or y >= b + d or b >= y + h, (name, i, "overlaps")
+
+
+def test_collage_layout_names_tile_images_and_overrides(core_js):
+    coll = {"type": "motion_collage", "sets": [
+        {"layout": "grid", "tiles": [{"label": "A", "image": "https://example.com/a.jpg"}, {"label": "B"}, {"label": "C", "x": 70}]},
+        {"layout": "nope", "panel": "tab", "tiles": [{"label": "D", "image": "javascript:alert(1)"}]}]}
+    h = _gas_batch(core_js, [coll])[0]
+    assert "left:5%;top:6%;width:43%;height:40%" in h and "left:52%;top:6%" in h and "left:70%;top:52%" in h      # grid places the three tiles, C's own x wins
+    assert h.count("<img") == 1 and 'src="https://example.com/a.jpg"' in h and "javascript:" not in h and 'alt=""' in h
+    assert "left:10%;top:10%;width:30%;height:30%" in h                                                          # an unknown layout falls back to the old default
+    assert "<li>A</li>" in h and "<li>D</li>" in h                                                               # labels stay in the hidden list

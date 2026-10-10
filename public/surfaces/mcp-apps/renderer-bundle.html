@@ -28345,14 +28345,26 @@ _RENDERERS['motion_lockup'] = function(b) {
 function _clObj(v) { return (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}; }
 var _CL_FILLS = ['#2c3e66', '#7a3b6e', '#2f7d63', '#9a6120', '#3b4a6b', '#5a3d2b', '#1f5f7a', '#6b2d3c'];
 var _CL_PANELS = {panel: 1, notch: 1, step: 1, tab: 1};
+// Named tile layouts, [x, y, w, h] in percent of the panel: a set that names one needs no coordinates; a tile that gives its own x, y, w or h overrides that part.
+var _CL_LAYOUTS = {
+  hero: [[5, 6, 44, 52], [52, 6, 43, 24], [52, 34, 43, 24], [5, 62, 90, 30]],
+  rail: [[5, 6, 27, 86], [35, 6, 60, 40], [35, 50, 28, 42], [66, 50, 29, 42]],
+  grid: [[5, 6, 43, 40], [52, 6, 43, 40], [5, 52, 43, 40], [52, 52, 43, 40]],
+  split: [[5, 6, 43, 86], [52, 6, 43, 86]],
+  stack: [[5, 6, 90, 26], [5, 37, 90, 26], [5, 68, 90, 26]],
+  header: [[5, 6, 90, 22], [5, 32, 43, 60], [52, 32, 43, 60]],
+  trio: [[5, 6, 28, 86], [36, 6, 28, 86], [67, 6, 28, 86]],
+  mosaic: [[5, 6, 56, 52], [64, 6, 31, 24], [64, 34, 31, 24], [5, 62, 28, 30], [36, 62, 28, 30], [67, 62, 28, 30]]
+};
 _RENDERERS['motion_collage'] = function(b) {
   var src = (Array.isArray(b.sets) ? b.sets : []).slice(0, 4), sets = [], si, ti;
   for (si = 0; si < src.length; si++) {
     var s = _clObj(src[si]), tl = (Array.isArray(s.tiles) ? s.tiles : []).slice(0, 8), tiles = [];
     for (ti = 0; ti < tl.length; ti++) {
       var t = _clObj(tl[ti]);
-      tiles.push({x: _ffNum(t.x, 10, 0, 100, 1), y: _ffNum(t.y, 10, 0, 100, 1), w: _ffNum(t.w, 30, 2, 100, 1), h: _ffNum(t.h, 30, 2, 100, 1), fill: _ffHex(t.fill, _CL_FILLS[(si * 3 + ti) % 8]), fill2: _ffHex(t.fill2, ''),
-        label: _moStr(t.label, 28), block: (t.block && typeof t.block === 'object' && !Array.isArray(t.block)) ? t.block : null});
+      var lay = _moOwn(_CL_LAYOUTS, s.layout, '') ? (_CL_LAYOUTS[s.layout][ti] || [10, 10, 30, 30]) : [10, 10, 30, 30];
+      tiles.push({x: _ffNum(t.x, lay[0], 0, 100, 1), y: _ffNum(t.y, lay[1], 0, 100, 1), w: _ffNum(t.w, lay[2], 2, 100, 1), h: _ffNum(t.h, lay[3], 2, 100, 1), fill: _ffHex(t.fill, _CL_FILLS[(si * 3 + ti) % 8]), fill2: _ffHex(t.fill2, ''),
+        label: _moStr(t.label, 28), image: _moImg(t.image), block: (t.block && typeof t.block === 'object' && !Array.isArray(t.block)) ? t.block : null});
     }
     sets.push({tiles: tiles, panel: _moOwn(_CL_PANELS, s.panel, 'panel')});
   }
@@ -28365,7 +28377,8 @@ _RENDERERS['motion_collage'] = function(b) {
     var wrap = 'position:absolute;inset:0;pointer-events:none;' + vars + 'opacity:max(' + show + ',calc(var(--cg)*' + G + '));filter:blur(calc((1 - ' + show + ')*' + blur + 'px));';
     var inner = st.tiles.map(function(t) {
       var n = idx++, bg = t.fill2 ? 'linear-gradient(135deg,' + t.fill + ',' + t.fill2 + ')' : t.fill;
-      var body = t.block ? _moRender(t.block) : (t.label ? '<span>' + _esc(t.label) + '</span>' : '');
+      var pic = t.image ? '<img src="' + _esc(t.image) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;">' : '';
+      var body = pic + (t.block ? _moRender(t.block) : (t.label ? '<span style="position:relative;' + (t.image ? 'background:rgba(8,10,20,0.62);padding:2px 8px;border-radius:6px;' : '') + '">' + _esc(t.label) + '</span>' : ''));
       if (t.label) plain.push(t.label);
       return '<div style="position:absolute;left:' + t.x + '%;top:' + t.y + '%;width:' + t.w + '%;height:' + t.h + '%;box-sizing:border-box;border-radius:' + radius + 'px;background:' + bg + ';color:#fff;font-weight:700;font-size:0.85rem;' +
         'display:flex;align-items:flex-end;padding:8px 10px;overflow:hidden;opacity:clamp(0,calc(var(--p,1)*' + (8 * N + 1) + ' - ' + n + '),1);">' + body + '</div>';

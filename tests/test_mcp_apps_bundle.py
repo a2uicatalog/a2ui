@@ -414,7 +414,7 @@ def test_bundle_size_guard(bundle):
     # the preview `menu` atom (+12.7 KB: triggers, submenu, spring rules, contextual script), the command_palette
     # renderer fix (+0.5 KB), and the wired `exit` leave animation (+3.6 KB). Delta checked, not accidental:
     # the bundle went 3,584,402 -> 3,601,154 characters, 1.2 KB over the old ceiling.
-    # Ceiling raised 3.65 -> 3.8 MB on 2026-10-10 (NOT yet confirmed by Curtis; revert to 3_650_000 to force the decision): twelve infographic atoms,
+    # Ceiling raised 3.65 -> 3.8 MB on 2026-10-10 (confirmed by Curtis 2026-10-10; the fallback if it creeps again is to leave bulky GAS-only atoms out of the MCP bundle via EXCLUDE_FILES): twelve infographic atoms,
     # nine motion atoms (lit, collage, arcs, lockup, bubbles, beats, pattern, dock, fit) and the halo/smear/tilt props, bundle 3,651,473 -> 3,736,474
     # characters, plus the a11y wrapper growth. All GAS-only preview atoms; the base commit was already over scene_stage's 3.6 MB.
     assert len(bundle) < 3_800_000, f"bundle ballooned to {len(bundle)} bytes"
