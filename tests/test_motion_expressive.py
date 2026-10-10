@@ -263,3 +263,39 @@ def test_send_button_presses_with_the_second_dial():
 def test_hand_cursor_is_its_own_drawing_and_arrow_is_unchanged():
     arrow, hand = _py({"type": "demo_cursor"}), _py({"type": "demo_cursor", "kind": "hand"})
     assert 'viewBox="0 0 22 26"' in arrow and 'viewBox="0 0 26 30"' in hand and 'viewBox="0 0 22 26"' not in hand
+
+
+# ---- reduced motion (2026-10-10): the new options inherit the engine's guard; these lock that in ----
+
+def test_no_new_option_loops_forever_without_a_reduced_motion_rule():
+    for t, b in CASES:
+        out = _py(b)
+        if re.search(r"animation[^;\"]*infinite", out):
+            assert "prefers-reduced-motion" in out, (t, b)
+
+
+def _moved_after(block, flag):
+    """Render in headless Chromium (optionally with the OS reduce-motion setting) and report whether the DOM changed between 0.4 s and 2.4 s."""
+    sig = ("function sig(){var o=[];document.querySelectorAll('body *').forEach(function(e){var c=getComputedStyle(e);"
+           "o.push(c.transform+c.opacity+c.filter+e.style.cssText+e.textContent.length)});return o.join('|');}")
+    page = ("<!doctype html><meta charset=utf-8><body style='margin:0'>" + _py(block) + "<script>" + sig
+            + "var s1;setTimeout(function(){s1=sig();},400);setTimeout(function(){document.documentElement.setAttribute('data-moved',String(s1!==sig()));},2400);</script>")
+    import tempfile, subprocess
+    from pathlib import Path
+    with tempfile.TemporaryDirectory() as td:
+        f = Path(td) / "p.html"
+        f.write_text(page)
+        args = [CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=4000"]
+        if flag:
+            args.append("--force-prefers-reduced-motion")
+        out = subprocess.run(args + ["--dump-dom", f"file://{f}"], capture_output=True, text=True, timeout=120).stdout
+    m = re.search(r'data-moved="(true|false)"', out)
+    assert m, out[:300]
+    return m.group(1) == "true"
+
+
+@browser
+def test_an_autoplaying_path_film_holds_still_under_the_reduce_motion_setting():
+    tl = dict(PATH_TL, autoplay=True, controls=True)
+    assert _moved_after(tl, False), "control: the film should play normally"
+    assert not _moved_after(tl, True), "under prefers-reduced-motion the film must not start by itself"
