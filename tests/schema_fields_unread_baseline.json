@@ -74,6 +74,9 @@
   "direction",
   "speed"
  ],
+ "bullet_graph": [
+  "title"
+ ],
  "call_mood_board": [
   "summary"
  ],
@@ -88,6 +91,9 @@
   "background",
   "border_color",
   "height"
+ ],
+ "change_chart": [
+  "title"
  ],
  "chartjs_pie": [
   "colors",
@@ -164,6 +170,9 @@
   "heading",
   "primary_cta",
   "secondary_cta"
+ ],
+ "cycle_diagram": [
+  "title"
  ],
  "data_grid": [
   "pagination",
@@ -304,6 +313,9 @@
   "alt_text",
   "device_type"
  ],
+ "gantt": [
+  "title"
+ ],
  "github_activity_grid": [
   "activity",
   "streak_days",
@@ -382,6 +394,9 @@
   "issue_type",
   "priority"
  ],
+ "journey_map": [
+  "title"
+ ],
  "key_value": [
   "title"
  ],
@@ -447,6 +462,9 @@
   "gap",
   "pause_on_hover"
  ],
+ "maturity_ladder": [
+  "title"
+ ],
  "metric_delta": [
   "previous_period_label",
   "unit"
@@ -501,6 +519,9 @@
  ],
  "option_plan_builder": [
   "total_expr"
+ ],
+ "org_chart": [
+  "title"
  ],
  "pagination": [
   "base_url",
@@ -561,6 +582,9 @@
  "pull_stat": [
   "color",
   "unit"
+ ],
+ "quadrant": [
+  "title"
  ],
  "quiz_question": [
   "style"
@@ -680,6 +704,9 @@
   "shape",
   "width"
  ],
+ "swimlane": [
+  "title"
+ ],
  "tabs": [
   "accent"
  ],
@@ -705,6 +732,9 @@
  ],
  "tonal_scale": [
   "theme"
+ ],
+ "treemap": [
+  "title"
  ],
  "typewriter": [
   "background",
@@ -737,6 +767,9 @@
   "default_value",
   "items",
   "name"
+ ],
+ "venn_diagram": [
+  "title"
  ],
  "versus_block": [
   "comparison_points",

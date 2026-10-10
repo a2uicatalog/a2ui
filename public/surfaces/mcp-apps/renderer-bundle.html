@@ -28292,7 +28292,7 @@ function _moArcsSvg(b, uid, emSize) {
 function _ifLabel(v) { return _esc(String(v === undefined || v === null || v === '' ? 'Mark' : v).slice(0, 60)); }
 _RENDERERS['motion_arcs'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="width:100%;">' + _moArcsSvg(b, uid, 0) + '</div>';
+  return '<div style="width:100%;">' + _moArcsSvg({arcs: b.arcs, label: b.label}, uid, 0) + '</div>';
 };
 
 // ── motion_lockup: type around an inline mark, with the block staying centred ────────────────────────────────

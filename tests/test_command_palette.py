@@ -60,6 +60,11 @@ def py():
 
 
 def _norm(h):
+    # the GAS wrapper (_a11yFix) adds a reduced-motion rule and names or hides bare SVGs; the Python twin is compared before that step (open gap: the
+    # Python web renderer has no such wrapper)
+    h = re.sub(r"<style>@media \(prefers-reduced-motion:reduce\)\{[^<]*\}</style>", "", h)
+    h = re.sub(r'(<svg\b[^>]*?) role="img" aria-label="[^"]*"', r"\1", h)
+    h = re.sub(r'(<svg\b[^>]*?) aria-hidden="true" focusable="false"', r"\1", h)
     h = re.sub(r"<style>.*?</style>", "", h, flags=re.S)       # Python inlines the class CSS; GAS ships it globally
     return re.sub(r"cp-[A-Za-z0-9]+", "cp-X", h)
 

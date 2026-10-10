@@ -55,6 +55,11 @@ console.log(JSON.stringify({{html: renderAtoms(blocks, {{}})}}));
 
 
 def _norm(html: str) -> str:
+    # the GAS wrapper (_a11yFix) adds a reduced-motion rule and names or hides bare SVGs; the Python twin is compared before that step (open gap: the
+    # Python web renderer has no such wrapper)
+    html = re.sub(r"<style>@media \(prefers-reduced-motion:reduce\)\{[^<]*\}</style>", "", html)
+    html = re.sub(r'(<svg\b[^>]*?) role="img" aria-label="[^"]*"', r"\1", html)
+    html = re.sub(r'(<svg\b[^>]*?) aria-hidden="true" focusable="false"', r"\1", html)
     return UID_RE.sub(r"\1-UID", html)
 
 
