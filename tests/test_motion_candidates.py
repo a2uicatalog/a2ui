@@ -298,3 +298,15 @@ def test_fit_fills_the_width_and_recedes_only_when_asked(core_js):
     plain, rec = _probe_gas(core_js, tl(base), 4, js), _probe_gas(core_js, tl(dict(base, recede=True)), 4, js)
     assert 0.6 < plain["f"] <= 1.02 and plain["o"] > 0.98, plain
     assert rec["o"] < 0.5, rec
+
+
+def test_long_data_image_urls_survive_the_url_guard_and_long_web_urls_do_not(core_js):
+    import base64
+    from test_motion_atoms import wa
+    big = "data:image/jpeg;base64," + base64.b64encode(bytes(range(256)) * 40).decode()      # about 13.7 KB
+    web = "https://example.com/" + "a" * 3000
+    blk = {"type": "motion_image", "url": big}
+    assert len(big) > 2048
+    assert wa._gd_clean(dict(blk), "") ["url"] == big and "url" not in wa._gd_clean({"type": "motion_image", "url": web}, "")
+    h = _gas_batch(core_js, [blk, {"type": "motion_image", "url": web}, {"type": "motion_image", "url": "data:image/svg+xml;base64," + "A" * 5000}])
+    assert "<img" in h[0] and "<img" not in h[1] and "<img" not in h[2]

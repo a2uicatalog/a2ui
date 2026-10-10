@@ -26810,7 +26810,9 @@ def _safe_ident(v, dflt=''):
 
 
 def _gd_url(k, v):
-    if len(v) > 2048 or _GD_URL_BAD.search(v):
+    # a data:image URL may be as long as the image renderers accept (200000 base64 characters); every other URL stays at 2048
+    img = re.match(r'^[ \t\n\r\f\v]*data:image/(png|jpe?g|gif|webp|avif);base64,', v, re.I) is not None
+    if len(v) > (200100 if img else 2048) or _GD_URL_BAD.search(v):
         return False
     if _GD_URL_STRICT.search(k) and _GD_WS.search(v):
         return False

@@ -1148,7 +1148,9 @@ function _gdCss(v) {
 }
 function _gdNum(v) { return /^-?[0-9]+(\.[0-9]+)?[a-z%]{0,4}$|^[a-z][a-z-]{0,24}$/.test(v); }
 function _gdUrl(k, v) {
-  if (v.length > 2048 || /["'<>\\`\u0000-\u001f\u007f\u2028\u2029]/.test(v)) return false;
+  // a data:image URL may be as long as the image renderers accept (200000 base64 characters); every other URL stays at 2048
+  var img = /^[ \t\n\r\f\v]*data:image\/(png|jpe?g|gif|webp|avif);base64,/i.test(v);
+  if (v.length > (img ? 200100 : 2048) || /["'<>\\`\u0000-\u001f\u007f\u2028\u2029]/.test(v)) return false;
   if (/_(url|href|src)$|^(url|href|src|endpoint)$/.test(k) && /[ \t\n\r\f\v]/.test(v)) return false;
   var m = /^[ \t\n\r\f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
   if (!m) return true;
