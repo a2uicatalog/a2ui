@@ -126,9 +126,25 @@ def test_gas_and_python_agree(name, gas_html, py_html):
     assert py_html[name] in gas_html[name], f"{name}: GAS and Python diverge"
 
 
+# Every menu ships ONE constant keyboard script (arrow keys, Home/End, Escape; WAI-ARIA menu pattern, added 2026-10-10). It has no payload text in it, so the
+# "no active markup from a payload" tests below look at the page with that one script taken out; test_every_menu_ships_the_same_single_keyboard_script covers it.
+_KEYJS = re.compile(r"<script>\(function\(\)\{var ws=document.querySelectorAll\(\"\[data-a2ui-menu\]:not\(\[data-bound-k\]\).*?</script>", re.S)
+
+
 @pytest.fixture(params=["gas", "py"])
 def html(request, gas_html, py_html):
-    return (lambda n: gas_html[n]) if request.param == "gas" else (lambda n: py_html[n])
+    src = gas_html if request.param == "gas" else py_html
+    return lambda n: _KEYJS.sub("", src[n])
+
+
+def test_every_menu_ships_the_same_single_keyboard_script(gas_html, py_html):
+    scripts = set()
+    for name in ALL:
+        for src in (gas_html, py_html):
+            found = _KEYJS.findall(src[name])
+            assert len(found) == 1, (name, len(found))
+            scripts.add(found[0])
+    assert len(scripts) == 1, "the keyboard script must not vary with the payload"
 
 
 def test_button_trigger_opens_a_details_menu(html):

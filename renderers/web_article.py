@@ -16489,6 +16489,7 @@ def _menu_spring_css():
 
 
 _MENU_ACTION_JS = '(function(){var ws=document.querySelectorAll("[data-a2ui-menu][data-actions]:not([data-bound-a])");for(var i=0;i<ws.length;i++){(function(w){w.setAttribute("data-bound-a","1");w.addEventListener("click",function(e){var b=e.target.closest?e.target.closest("button[data-row-json]"):null;if(!b)return;var ds=w.querySelectorAll("details");for(var j=0;j<ds.length;j++)ds[j].open=false;});})(ws[i]);}})();'
+_MENU_KEY_JS = '(function(){var ws=document.querySelectorAll("[data-a2ui-menu]:not([data-bound-k])");for(var i=0;i<ws.length;i++){(function(w){w.setAttribute("data-bound-k","1");var top=w.querySelector("details"),ts=top.querySelector("summary");function items(m){return Array.prototype.filter.call(m.querySelectorAll("[role=menuitem]:not([aria-disabled])"),function(el){return el.offsetParent!==null;});}w.addEventListener("keydown",function(e){var k=e.key,t=e.target;if(!t||!t.closest)return;if(k==="Escape"){if(top.open){top.open=false;ts.focus();e.preventDefault();}return;}if(t===ts){if(k==="ArrowDown"||k==="ArrowUp"){e.preventDefault();top.open=true;var l=items(top.querySelector("[role=menu]"));if(l.length)(k==="ArrowDown"?l[0]:l[l.length-1]).focus();}return;}var m=t.closest("[role=menu]");if(!m||!top.contains(t))return;if(k==="ArrowRight"&&t.tagName==="SUMMARY"&&t.getAttribute("role")==="menuitem"){e.preventDefault();var d=t.parentNode;d.open=true;var c=items(d.querySelector("[role=menu]"));if(c.length)c[0].focus();return;}if(k==="ArrowLeft"){var sd=t.closest("[role=menu]").parentNode;if(sd&&sd.tagName==="DETAILS"&&sd!==top){e.preventDefault();sd.open=false;sd.querySelector("summary").focus();}return;}if(k!=="ArrowDown"&&k!=="ArrowUp"&&k!=="Home"&&k!=="End")return;e.preventDefault();var all=items(top.querySelector("[role=menu]")),ix=all.indexOf(t);if(ix<0)return;var n=k==="Home"?0:k==="End"?all.length-1:(ix+(k==="ArrowDown"?1:-1)+all.length)%all.length;all[n].focus();});})(ws[i]);}})();'
 _MENU_CONTEXT_JS = '(function(){var els=document.querySelectorAll("[data-a2ui-menu=contextual]:not([data-bound])");for(var i=0;i<els.length;i++){(function(w){w.setAttribute("data-bound","1");var d=w.querySelector("details"),s=d.querySelector("summary"),p=d.querySelector("[role=menu]"),base=p.getAttribute("style");s.addEventListener("contextmenu",function(e){e.preventDefault();d.open=true;p.style.position="fixed";p.style.left=e.clientX+"px";p.style.top=e.clientY+"px";p.style.right="auto";var r=p.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;if(r.right>vw)p.style.left=Math.max(0,vw-r.width-4)+"px";if(r.bottom>vh)p.style.top=Math.max(0,e.clientY-r.height)+"px";});d.addEventListener("toggle",function(){if(!d.open)p.setAttribute("style",base);});document.addEventListener("click",function(e){if(d.open&&!w.contains(e.target))d.open=false;});document.addEventListener("keydown",function(e){if(e.key==="Escape")d.open=false;});})(els[i]);}})();'
 
 
@@ -16528,7 +16529,7 @@ def _render_menu(b: dict) -> str:
                 '<details style="position:relative;"><summary aria-haspopup="menu" aria-label="' +
                 _cv_esc(label + ' options' if label else 'More options') +
                 '" style="' + _menu_trig_style('0 6px 6px 0', _MENU_SPLIT_H) + 'border-left:0;">' + _MENU_CHEVRON + '</summary>' + panel + '</details></div>')
-        return '<div data-a2ui-menu="split"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + ascript + '</div>'
+        return '<div data-a2ui-menu="split"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + ascript + '<script>' + _MENU_KEY_JS + '</script></div>'
     icon_only = kind == 'icon' and icon
     if icon_only:
         trig = '<span aria-hidden="true">' + _cv_esc(icon) + '</span>'
@@ -16538,7 +16539,7 @@ def _render_menu(b: dict) -> str:
             (' aria-label="' + _cv_esc(label or 'Menu') + '"' if icon_only else '') +
             ' style="' + _menu_trig_style('6px', '-webkit-touch-callout:none;-webkit-user-select:none;' if kind == 'contextual' else '') + '">' + trig + '</summary>' + panel + '</details>')
     return ('<div data-a2ui-menu="' + kind + '"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
-            ascript + ('<script>' + _MENU_CONTEXT_JS + '</script>' if kind == 'contextual' else '') + '</div>')
+            ascript + '<script>' + _MENU_KEY_JS + '</script>' + ('<script>' + _MENU_CONTEXT_JS + '</script>' if kind == 'contextual' else '') + '</div>')
 
 
 _RENDERERS["menu"] = _render_menu

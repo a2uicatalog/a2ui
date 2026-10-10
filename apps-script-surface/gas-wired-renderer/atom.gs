@@ -221,34 +221,106 @@ function _gdInstall() {
 var _A11Y_VH = 'position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none;';
 var _A11Y_FOCUS = '<style>[data-a2ui-vh]:focus-visible,input[type=radio]:focus-visible,input[type=checkbox]:focus-visible{position:static!important;width:auto!important;height:auto!important;opacity:1!important;pointer-events:auto!important;outline:2px solid #4f46e5!important;outline-offset:2px}</style>';
 var _A11Y_KEY = "if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}";
-function _a11yFix(h) {
+function _a11yName(b) {
+  if (b && typeof b === 'object') {
+    var ks = ['aria_label', 'alt', 'title', 'label', 'name', 'text', 'heading'];
+    for (var i = 0; i < ks.length; i++) if (typeof b[ks[i]] === 'string' && b[ks[i]].trim()) return b[ks[i]].trim().slice(0, 80);
+    var t = String(b.component || b.type || '').replace(/_/g, ' ').trim();
+    if (t) return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  return 'Graphic';
+}
+function _a11yFix(h, b) {
   if (typeof h !== 'string' || h.length < 20) return h;
-  var out = h, hit = false;
-  if (out.indexOf('<input') !== -1 || out.indexOf('input') !== -1) {
-    out = out.replace(/<input\b([^>]*)>/g, function(m, at) {
-      if (!/type=["']?(?:radio|checkbox)/i.test(at) || !/style="display:none;?"/.test(at)) return m;
-      hit = true;
-      return '<input' + at.replace('style="display:none;"', 'data-a2ui-vh style="' + _A11Y_VH + '"').replace('style="display:none"', 'data-a2ui-vh style="' + _A11Y_VH + '"') + '>';
-    });
-    out = out.replace(/(input(?:\[type=(?:radio|checkbox)\])?)\{display:none;?\}/g, function(m, sel) { hit = true; return sel + '{' + _A11Y_VH + '}'; });
-  }
-  if (out.indexOf('onclick=') !== -1) {
-    out = out.replace(/<(\w+)\b([^>]*\sonclick=[^>]*)>/g, function(m, tag, at) {
-      tag = tag.toLowerCase();
-      if (/^(a|button|input|select|textarea|summary|label|option|details|svg|path|circle|rect|g|line|polygon|text)$/.test(tag)) return m;
-      if (/\sonkeydown=/.test(at) || /\stabindex=/.test(at)) return m;
+  if (h.indexOf('<input') === -1 && h.indexOf('onclick=') === -1 && h.indexOf('<svg') === -1 && h.indexOf('infinite') === -1) return h;
+  // Work on real tags only. A payload can put '<svg' or ' onclick=' inside a quoted attribute value (a title, say), where it is data; matching it with a
+  // plain regex and writing attributes there would close the value early and let the rest become markup. So: script/style blocks are set aside, the rest is
+  // split into tags and text with a quote-aware tag pattern, and every test below looks at attribute NAMES only (quoted values blanked out).
+  var keep = [], hit = false, rm = '';
+  var s = h.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, function(m) { keep.push(m); return '\u0001' + (keep.length - 1) + '\u0002'; });
+  var T = s.split(/(<\/?[A-Za-z](?:[^>"']|"[^"]*"|'[^']*')*>)/);
+  var nm = null;
+  function name() { return nm === null ? (nm = _esc(_a11yName(b))) : nm; }
+  function bare(at) { return at.replace(/"[^"]*"|'[^']*'/g, '""'); }
+  function has(at, re) { return re.test(bare(at)); }
+  var CTRL = /^(a|button|input|select|textarea|summary|label|option|details|svg|path|circle|rect|g|line|polygon|text)$/;
+  function svgHide(at) { return at + ' aria-hidden="true" focusable="false"'; }
+  function svgNamed(at, next) { return has(at, /\saria-hidden=|\srole=["']?img|\saria-label=|\saria-labelledby=/) || /^<title/i.test(next || ''); }
+  for (var i = 1; i < T.length; i += 2) {
+    var m = /^<([A-Za-z][\w-]*)([\s\S]*?)(\/?)>$/.exec(T[i]);
+    if (!m) continue;
+    var tag = m[1].toLowerCase(), at = m[2], sl = m[3];
+    if (tag === 'input') {
+      if (has(at, /\stype=/) && /\stype=["']?(?:radio|checkbox)/i.test(at)) {
+        var fixed = at.replace(/\sstyle="display:none;?"/, function() { hit = true; return ' data-a2ui-vh style="' + _A11Y_VH + '"'; });
+        if (fixed !== at) T[i] = '<input' + fixed + sl + '>';
+      }
+      continue;
+    }
+    if (tag === 'button' || tag === 'a') {
+      var j = i + 2, txt = false, hasSvg = false, svgAt = [];
+      for (; j < T.length; j += 2) {
+        var ct = T[j].toLowerCase();
+        if (ct.indexOf('</' + tag) === 0 || ct.indexOf('<button') === 0) break;
+        if (/^<svg\b/.test(ct)) hasSvg = true;
+      }
+      if (hasSvg) {
+        var inSvg = 0;
+        for (var k = i + 1; k < j; k++) {
+          if (k % 2 === 1) { var ck = T[k].toLowerCase(); if (/^<svg\b/.test(ck)) inSvg++; else if (ck === '</svg>') inSvg--; }
+          else if (!inSvg && T[k].replace(/\u0001\d+\u0002/g, '').trim() !== '') txt = true;
+        }
+        if (!txt && !has(at, /\saria-label=|\saria-labelledby=|\stitle=/)) T[i] = '<' + m[1] + at + ' aria-label="' + name() + '"' + sl + '>';
+        for (var q = i + 2; q < j; q += 2) {
+          var mq = /^<svg\b([\s\S]*?)(\/?)>$/i.exec(T[q]);
+          if (mq && !has(mq[1], /\saria-hidden=/)) T[q] = '<svg' + svgHide(mq[1]) + mq[2] + '>';
+        }
+      }
+      if (tag === 'button') continue;
+    }
+    if (tag === 'svg') {
+      if (!svgNamed(at, T[i + 2])) {
+        var wm = /\swidth="?(\d+(?:\.\d+)?)/.exec(at), hm = /\sheight="?(\d+(?:\.\d+)?)/.exec(at);
+        var small = wm && hm && parseFloat(wm[1]) <= 32 && parseFloat(hm[1]) <= 32;
+        T[i] = '<svg' + at + (small ? ' aria-hidden="true" focusable="false"' : ' role="img" aria-label="' + name() + '"') + sl + '>';
+      }
+      continue;
+    }
+    if (!CTRL.test(tag) && has(at, /\sonclick=/) && !has(at, /\sonkeydown=/) && !has(at, /\stabindex=/)) {
       var cell = /^(th|td|tr)$/.test(tag);
-      return '<' + tag + at + ' tabindex="0"' + (cell || /\srole=/.test(at) ? '' : ' role="button"') + ' onkeydown="' + _A11Y_KEY + '">';
-    });
+      T[i] = '<' + m[1] + at + ' tabindex="0"' + (cell || has(at, /\srole=/) ? '' : ' role="button"') + ' onkeydown="' + _A11Y_KEY + '"' + sl + '>';
+    }
   }
-  return hit ? _A11Y_FOCUS + out : out;
+  var out = T.join('').replace(/\u0001(\d+)\u0002/g, function(x, n) {
+    var blk = keep[+n];
+    // CSS that hides a radio/checkbox the same way, in a rule instead of inline
+    if (/^<style/i.test(blk)) blk = blk.replace(/(input(?:\[type=(?:radio|checkbox)\])?)\{display:none;?\}/g, function(m0, sel) { hit = true; return sel + '{' + _A11Y_VH + '}'; });
+    return blk;
+  });
+  // Endless CSS animation with no reduced-motion rule of its own (WCAG 2.2.2, 2.3.3). Only people who ask their OS for reduced motion are affected: the
+  // animation is switched off for them and the element rests in its normal, un-animated style. Everyone else sees the atom exactly as before.
+  if (/infinite/.test(out) && out.indexOf('prefers-reduced-motion') === -1) {
+    var sels = [];
+    keep.forEach(function(blk) {
+      if (!/^<style/i.test(blk)) return;
+      blk.replace(/^<style\b[^>]*>|<\/style>$/gi, '').split('}').forEach(function(piece) {
+        var ix = piece.lastIndexOf('{');
+        if (ix < 1) return;
+        var sel = piece.slice(0, ix).trim(), body = piece.slice(ix + 1);
+        if (!/animation[^;]*infinite/.test(body) || sel.indexOf('{') !== -1 || sel.charAt(0) === '@') return;
+        sel.split(',').forEach(function(x) { x = x.trim(); if (x && !/^(from|to|\d)/.test(x) && sels.indexOf(x) === -1) sels.push(x); });
+      });
+    });
+    rm = '<style>@media (prefers-reduced-motion:reduce){' + (sels.length ? sels.join(',') + ',' : '') + '[style*="infinite"]{animation:none!important}}</style>';
+  }
+  return (hit ? _A11Y_FOCUS : '') + rm + out;
 }
 function _a11yInstall() {
   for (var k in _RENDERERS) {
     var f = _RENDERERS[k];
     if (typeof f !== 'function' || f._a11y) continue;
     _RENDERERS[k] = (function(f) {
-      var w = function(b) { return _a11yFix(f(b)); };
+      var w = function(b) { return _a11yFix(f(b), b); };
       w._a11y = true;
       w._gd = f._gd;
       w._mo = f._mo;
@@ -2135,6 +2207,7 @@ function _menuSpringCss() {
   return out;
 }
 var _MENU_ACTION_JS = '(function(){var ws=document.querySelectorAll("[data-a2ui-menu][data-actions]:not([data-bound-a])");for(var i=0;i<ws.length;i++){(function(w){w.setAttribute("data-bound-a","1");w.addEventListener("click",function(e){var b=e.target.closest?e.target.closest("button[data-row-json]"):null;if(!b)return;var ds=w.querySelectorAll("details");for(var j=0;j<ds.length;j++)ds[j].open=false;});})(ws[i]);}})();';
+var _MENU_KEY_JS = '(function(){var ws=document.querySelectorAll("[data-a2ui-menu]:not([data-bound-k])");for(var i=0;i<ws.length;i++){(function(w){w.setAttribute("data-bound-k","1");var top=w.querySelector("details"),ts=top.querySelector("summary");function items(m){return Array.prototype.filter.call(m.querySelectorAll("[role=menuitem]:not([aria-disabled])"),function(el){return el.offsetParent!==null;});}w.addEventListener("keydown",function(e){var k=e.key,t=e.target;if(!t||!t.closest)return;if(k==="Escape"){if(top.open){top.open=false;ts.focus();e.preventDefault();}return;}if(t===ts){if(k==="ArrowDown"||k==="ArrowUp"){e.preventDefault();top.open=true;var l=items(top.querySelector("[role=menu]"));if(l.length)(k==="ArrowDown"?l[0]:l[l.length-1]).focus();}return;}var m=t.closest("[role=menu]");if(!m||!top.contains(t))return;if(k==="ArrowRight"&&t.tagName==="SUMMARY"&&t.getAttribute("role")==="menuitem"){e.preventDefault();var d=t.parentNode;d.open=true;var c=items(d.querySelector("[role=menu]"));if(c.length)c[0].focus();return;}if(k==="ArrowLeft"){var sd=t.closest("[role=menu]").parentNode;if(sd&&sd.tagName==="DETAILS"&&sd!==top){e.preventDefault();sd.open=false;sd.querySelector("summary").focus();}return;}if(k!=="ArrowDown"&&k!=="ArrowUp"&&k!=="Home"&&k!=="End")return;e.preventDefault();var all=items(top.querySelector("[role=menu]")),ix=all.indexOf(t);if(ix<0)return;var n=k==="Home"?0:k==="End"?all.length-1:(ix+(k==="ArrowDown"?1:-1)+all.length)%all.length;all[n].focus();});})(ws[i]);}})();';
 var _MENU_CONTEXT_JS = '(function(){var els=document.querySelectorAll("[data-a2ui-menu=contextual]:not([data-bound])");for(var i=0;i<els.length;i++){(function(w){w.setAttribute("data-bound","1");var d=w.querySelector("details"),s=d.querySelector("summary"),p=d.querySelector("[role=menu]"),base=p.getAttribute("style");s.addEventListener("contextmenu",function(e){e.preventDefault();d.open=true;p.style.position="fixed";p.style.left=e.clientX+"px";p.style.top=e.clientY+"px";p.style.right="auto";var r=p.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;if(r.right>vw)p.style.left=Math.max(0,vw-r.width-4)+"px";if(r.bottom>vh)p.style.top=Math.max(0,e.clientY-r.height)+"px";});d.addEventListener("toggle",function(){if(!d.open)p.setAttribute("style",base);});document.addEventListener("click",function(e){if(d.open&&!w.contains(e.target))d.open=false;});document.addEventListener("keydown",function(e){if(e.key==="Escape")d.open=false;});})(els[i]);}})();';
 _RENDERERS['menu'] = function(b) {
   var t = (b.trigger && typeof b.trigger === 'object') ? b.trigger : {};
@@ -2173,7 +2246,7 @@ _RENDERERS['menu'] = function(b) {
       ' style="' + _menuTrigStyle('6px 0 0 6px', _MENU_SPLIT_H) + '">' + _esc(label || 'Open') + '</a>' +
       '<details style="position:relative;"><summary aria-haspopup="menu" aria-label="' + _esc(label ? label + ' options' : 'More options') +
       '" style="' + _menuTrigStyle('0 6px 6px 0', _MENU_SPLIT_H) + 'border-left:0;">' + _MENU_CHEVRON + '</summary>' + panel + '</details></div>';
-    return '<div data-a2ui-menu="split"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + ascript + '</div>';
+    return '<div data-a2ui-menu="split"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + head + ascript + '<script>' + _MENU_KEY_JS + '</script></div>';
   }
   var iconOnly = kind === 'icon' && icon;
   var trig = iconOnly
@@ -2183,7 +2256,7 @@ _RENDERERS['menu'] = function(b) {
     (iconOnly ? ' aria-label="' + _esc(label || 'Menu') + '"' : '') +
     ' style="' + _menuTrigStyle('6px', kind === 'contextual' ? '-webkit-touch-callout:none;-webkit-user-select:none;' : '') + '">' + trig + '</summary>' + panel + '</details>';
   return '<div data-a2ui-menu="' + kind + '"' + sattr + aattr + ' style="margin:1rem 0;display:inline-block;">' + css + body +
-    ascript + (kind === 'contextual' ? '<script>' + _MENU_CONTEXT_JS + '</script>' : '') + '</div>';
+    ascript + '<script>' + _MENU_KEY_JS + '</script>' + (kind === 'contextual' ? '<script>' + _MENU_CONTEXT_JS + '</script>' : '') + '</div>';
 };
 
 _RENDERERS['version_badge'] = function(b) {
