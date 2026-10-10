@@ -20637,3 +20637,265 @@ blocks:
     name: a2uicatalog scene kit
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+# ── Infographic atoms (2026-10-10, preview): twelve diagram-style atoms, motion-ready via --p ──
+- type: quadrant
+  stage: preview
+  description: 'A 2x2 grid that sorts items by two axes. Each quadrant is named from the axis labels (for example High value, Low effort)
+    and holds up to three items, each with an optional short note. Motion-ready: every moving value reads --p (build progress 0 to 1,
+    default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished
+    picture; reduced motion shows the end state.'
+  compact_description: 2x2 quadrant that sorts up to 12 items by two axes
+  routing_text: A two-by-two grid for sorting items by two qualities, such as value against effort or impact against urgency. Each item
+    sits in one of four named quadrants. Not a scatter plot with exact positions.
+  intent_phrases:
+  - Sort these backlog items by value and effort.
+  - I need an impact versus urgency matrix for these risks.
+  - Show a 2x2 of quick wins, big bets, fill-ins and time sinks.
+  surfaces: &ifg001
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    - android
+    degraded_on:
+    - surface: pdf
+      note: Prints the finished picture; no motion
+    incompatible_on:
+    - surface: google-chat
+      reason: Inline CSS custom properties, clamp() and calc() are not supported
+    - surface: email
+      reason: CSS custom properties, clamp() and calc() are not supported in email clients
+  fields:
+    title: string (optional, max 80).
+    x_axis: 'object (required). {low, high}: the two ends of the horizontal axis, each max 24 characters.'
+    y_axis: 'object (required). {low, high}: the two ends of the vertical axis, each max 24 characters. high is the top row.'
+    items: array (required, 4 to 12) of {item (max 28), quadrant, note? (max 40)}. quadrant is one of top_left, top_right, bottom_left,
+      bottom_right. At most 3 items per quadrant are shown.
+  notes: Positions are by quadrant, not by coordinates. Quadrants fade in one after another with p.
+  source: &ifg002
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: bullet_graph
+  stage: preview
+  description: 'One row per measure: label, a track of three shaded bands (poor, fair, good), a dark bar for the actual value, a red
+    tick for the target and a plain-word status (target met or below target). The scale always starts at 0. Motion-ready: every moving
+    value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item
+    and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'bullet graph: actual against target over poor, fair and good bands'
+  routing_text: 'A compact performance bar: the actual value as a dark bar, the target as a red tick, and three shaded bands for poor,
+    fair and good. Replaces a dial gauge. Not a time series.'
+  intent_phrases:
+  - Show availability against its SLA target.
+  - I want a bullet chart for these KPIs instead of gauges.
+  - Display actual versus target with qualitative bands.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    rows: array (required, 1 to 6) of {label (max 40), actual (number, 0 or more), target (number, 0 or more), ranges (3 ascending numbers,
+      the upper edge of poor, fair and good)}. Negative numbers are clamped to 0.
+  notes: The actual bar grows with p. Status is stated in words so colour is never the only signal.
+  source: *ifg002
+- type: swimlane
+  stage: preview
+  description: 'Rows are roles, columns are phases. Each task is a card with a number that gives the order, placed in its role and phase.
+    At most two tasks share a cell. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item
+    --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows
+    the end state.'
+  compact_description: 'swimlane: who does which step, in order, across phases'
+  routing_text: A grid of roles (lanes) by phases (columns) with the numbered tasks placed where a role does a step. Shows hand-offs
+    and order. Not a message-passing sequence diagram and not a flowchart with branches.
+  intent_phrases:
+  - Show who does what in the review process.
+  - I need a swimlane of security, engineering and QA across triage, fix and verify.
+  - Map the hand-offs between teams.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    roles: array (required, 2 to 4 strings, max 24 each).
+    phases: array (required, 2 to 5 strings, max 24 each).
+    tasks: array (required, up to 12) of {role, phase, task (max 60)}. role and phase must be listed in roles and phases. The list order
+      is the order of the steps and gives the numbers.
+  notes: Use sequence_diagram for messages between actors; use this for ownership and phases. Tasks appear in list order as p builds.
+  source: *ifg002
+- type: gantt
+  stage: preview
+  description: 'A header of named intervals and one bar per task, starting at a slot and lasting a number of slots. Bars take the colour
+    of their category (up to four, with a key). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through
+    a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced
+    motion shows the end state.'
+  compact_description: gantt chart on a fixed grid of intervals
+  routing_text: 'A schedule: tasks as bars across a fixed set of time intervals (weeks, months, sprints). Shows overlap and sequence.
+    Not a dependency graph and not interactive scheduling.'
+  intent_phrases:
+  - Plan the migration over six weeks.
+  - Show the project schedule as a Gantt chart.
+  - I need a timeline with overlapping tasks and categories.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    intervals: 'array (required, 2 to 16 strings, max 10 each): the columns, in order.'
+    tasks: array (required, 3 to 10) of {task (max 40), start_slot (0-based integer), duration_slots (integer, at least 1), category
+      (max 16)}. Bars are clamped to the grid. At most four categories get a colour.
+  notes: Bars grow from the left with p. A hidden table lists task, start, length and category.
+  source: *ifg002
+- type: change_chart
+  stage: preview
+  description: 'Two numbers per item, drawn as a dumbbell, a slope or grouped bars. Direct labels carry the numbers; a hidden table
+    repeats them with the change. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k,
+    so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the
+    end state.'
+  compact_description: 'change chart: dumbbell, slope or grouped bars for before and after'
+  routing_text: 'Compares two values per item. mode picks the shape: dumbbell (a line between a start dot and an end dot), slope (two
+    columns joined by lines) or bars (two bars per item). Always starts at 0. Not a trend over many points.'
+  intent_phrases:
+  - Show latency before and after for each service.
+  - I want a slope chart of market share in Q1 against Q4.
+  - Compare two groups per region as grouped bars.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    mode: string (optional). dumbbell (default), slope or bars.
+    series: 'array (optional, 2 strings, max 20): names of the from and to values. Default Before and After.'
+    rows: array (required, 2 to 12) of {label (max 40), from (number, 0 or more), to (number, 0 or more)}.
+  notes: Negative values are clamped to 0 because the scale starts at 0. Items appear one by one as p builds.
+  source: *ifg002
+- type: cycle_diagram
+  stage: preview
+  description: 'Stages sit around an oval with an arrow to the next, and the last arrow returns to the first. Each stage has a name
+    and a short description. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so
+    a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the
+    end state.'
+  compact_description: 'cycle: three to six stages in a closed loop'
+  routing_text: A closed loop of stages with arrows, for a process that repeats, such as plan, build, test, deploy. Not for a process
+    with a start and an end.
+  intent_phrases:
+  - Show the delivery loop as a cycle.
+  - I need a PDCA diagram.
+  - Draw the recurring stages of our release process.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    stages: array (required, 3 to 6) of {name (max 24), description (max 60)}.
+  notes: A hidden ordered list gives the stages and says that the last stage loops back to the first. Stages and arrows appear in turn
+    with p.
+  source: *ifg002
+- type: journey_map
+  stage: preview
+  description: 'One column per stage: a stage name, a goal card, a sentiment pill with a word and a sign, and a friction card. Motion-ready:
+    every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it
+    item by item and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'journey map: stages with goal, sentiment and friction'
+  routing_text: A map of a person's path in three to six stages, each with what they want, how it feels (positive, neutral or negative,
+    in words) and what gets in the way.
+  intent_phrases:
+  - Map the developer onboarding journey.
+  - Show customer sentiment at each stage.
+  - I need a journey map with friction points.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    stages: array (required, 3 to 6) of {stage (max 24), user_goal (max 60), friction_point (max 80), sentiment}. sentiment is positive,
+      neutral or negative.
+  notes: Columns reveal left to right with p. Sentiment is a word and a sign as well as a colour.
+  source: *ifg002
+- type: maturity_ladder
+  stage: preview
+  description: 'A row of steps that rise from left to right. The current level is filled and tagged [CURRENT]. Motion-ready: every moving
+    value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item
+    and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'maturity ladder: three to six levels with the current one marked'
+  routing_text: A staircase of capability levels, each with a name and what it requires, with the current level marked. For progressive
+    stages that build on each other.
+  intent_phrases:
+  - Show our data governance maturity.
+  - I need a maturity model with the current level highlighted.
+  - Draw levels one to four of capability.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    levels: array (required, 3 to 6) of {level (integer), name (max 30), criteria (max 120), is_current? (boolean)}. At most one level
+      should be current.
+  notes: Steps rise in order with p.
+  source: *ifg002
+- type: treemap
+  stage: preview
+  description: 'Columns by category, sized by the category total; inside each, stacked rectangles sized by value. Each carries its name
+    and value. A hidden table gives item, category, value and share. Motion-ready: every moving value reads --p (build progress 0 to
+    1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished
+    picture; reduced motion shows the end state.'
+  compact_description: 'treemap: part-to-whole by category and item'
+  routing_text: Rectangles sized by value, grouped into up to four categories. Good for a quick sense of share; exact numbers are in
+    a table. Not for precise comparison.
+  intent_phrases:
+  - Show where cloud spend goes by category.
+  - I need a treemap of storage by team.
+  - Visualise the share of each item within its group.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    items: array (required, 4 to 12) of {category (max 20), name (max 24), value (number above 0)}. At most four categories are drawn;
+      items with a value of 0 or less are dropped.
+  notes: Area is a weak channel for comparing values, so the table repeats the numbers. Cells fade in with p.
+  source: *ifg002
+- type: venn_diagram
+  stage: preview
+  description: 'Two circles with the first set, the shared items and the second set, up to four items each. Motion-ready: every moving
+    value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item
+    and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'venn diagram: what two sets share'
+  routing_text: Two overlapping circles showing what belongs to each set and what both share. Conceptual overlap only; the circles are
+    not proportional to size.
+  intent_phrases:
+  - Show what product managers and tech leads have in common.
+  - I need a Venn diagram of two skill sets.
+  - Draw the overlap between two responsibilities.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    set_a_name: string (required, max 28).
+    set_b_name: string (required, max 28).
+    set_a_exclusive: array (up to 4 strings, max 28) only in A.
+    set_b_exclusive: array (up to 4 strings, max 28) only in B.
+    intersection: array (up to 4 strings, max 28) in both.
+  notes: Two sets only. Circles fade in with p, the overlap last.
+  source: *ifg002
+- type: callout_anatomy
+  stage: preview
+  description: 'A subject box in the middle with numbered note cards either side. The pin position says which side and whether the note
+    is above or below. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline
+    track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'anatomy: a subject with numbered notes on its parts'
+  routing_text: A central subject with numbered notes for three to eight of its parts, placed on the left and right. For explaining
+    what something is made of.
+  intent_phrases:
+  - Explain the parts of this API gateway.
+  - I need a labelled diagram of the components.
+  - Show the anatomy of this payload.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    central_label: string (required, max 40).
+    callouts: 'array (required, 3 to 8) of {id (integer), title (max 28), description (max 80), pin_position}. pin_position is top_left,
+      top_right, bottom_left or bottom_right: left or right picks the side.'
+  notes: Not for flows or sequences. Notes appear in number order with p.
+  source: *ifg002
+- type: org_chart
+  stage: preview
+  description: 'Boxes in tiers joined by connector lines, built from a list of nodes with parents. It is a real nested list, so it reads
+    in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k,
+    so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the
+    end state.'
+  compact_description: 'org chart: a bounded tree of up to ten nodes'
+  routing_text: A hierarchy drawn as boxes joined by lines, for a reporting line or a breakdown of up to ten nodes and three tiers.
+    Not for deep taxonomies; use tree_view for those.
+  intent_phrases:
+  - Draw the engineering leadership structure.
+  - I need an org chart of these roles.
+  - Show the work breakdown as a tree.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    nodes: array (required, 3 to 10) of {id (max 24), label (max 28), parent_id (max 24, empty for the root)}. One root; at most three
+      tiers and four children per node.
+  notes: A screen reader hears the nesting as a list. Tiers appear top down with p.
+  source: *ifg002

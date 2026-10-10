@@ -173,6 +173,18 @@ a2ui-charts-v1:
 - trend_indicator
 - uptime_timeline
 - word_cloud
+- quadrant
+- bullet_graph
+- swimlane
+- gantt
+- change_chart
+- cycle_diagram
+- journey_map
+- maturity_ladder
+- treemap
+- venn_diagram
+- callout_anatomy
+- org_chart
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing
