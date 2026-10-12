@@ -21351,3 +21351,177 @@ blocks:
     aspect: "number (optional). Width over height, 0.5 to 3. Default 1.78."
   notes: "The dot takes the first 45% of p and the pill the rest. Several tags on one picture are several atoms with different from and to."
   source: *mla002
+- type: motion_ring
+  stage: preview
+  description: "Text set around a circle that turns with the step dial s (turns whole revolutions over s 0 to 1), around a round picture or colour disc that scales in with p. The text repeats to fill the ring. Each letter is its own element at its own angle, so the render is identical every time. The words are the accessible name. Plain SVG and CSS."
+  compact_description: "text around a turning ring with a round picture in the middle"
+  routing_text: "A circular text badge that rotates around a round image or logo, like a stamp or a rotating seal."
+  intent_phrases:
+  - "A ring of text turning around a round photo."
+  - "A rotating circular badge with the words repeated round the edge."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 40). Repeats, separated by a dot, to fill the ring."
+    image: "string (optional). Picture URL for the disc, same rules as motion_image (https, a rooted path or a data: image)."
+    fill: "\"#rrggbb\" (optional). Disc colour when there is no picture. Default #7c3aed."
+    color: "\"#rrggbb\" (optional). Letter colour. Default the surrounding text colour."
+    size: "integer (optional). Width in px, 120 to 800. Default 360."
+    turns: "integer (optional). Whole revolutions as s goes 0 to 1, -4 to 4. Default 1."
+    disc: "integer (optional). Disc diameter as percent of the ring, 20 to 80. Default 52."
+    font_size: "number (optional). In the 200-unit drawing, 8 to 30. Default 15."
+    font: "string (optional). Engine font name. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+  notes: "The ring is aria-hidden and the whole thing carries one accessible name, the text, so the repeats are not read out. A ring of 36 to 120 letters."
+  source: *mla002
+- type: motion_highlight
+  stage: preview
+  description: "A marker swipe behind words: p draws the swipe from left to right behind the text. Marker (a slightly tilted block), underline or strike. The words are real text and always readable; only the swipe moves. Plain HTML and CSS."
+  compact_description: "a highlighter swipe that draws behind a phrase"
+  routing_text: "A yellow highlighter or underline that sweeps across a phrase to emphasise it."
+  intent_phrases:
+  - "Highlight the phrase with a marker swipe."
+  - "Draw an underline across the key words."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 80)."
+    style: "\"marker\" | \"underline\" | \"strike\" (optional, default marker)."
+    color: "\"#rrggbb\" (optional). Swipe colour. Default #ffe94a."
+    ink: "\"#rrggbb\" (optional). Text colour. Default the surrounding text colour."
+    size: "integer (optional). Font size px, 12 to 160. Default 40."
+    font: "string (optional). Engine font name. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+  notes: "Check contrast of the text against the swipe colour: with the default yellow, use dark text."
+  source: *mla002
+- type: motion_meters
+  stage: preview
+  description: "Equaliser columns made of dashes on either side of a centre (or in one cluster), rising in from the centre with p and rising and falling in a seeded, seekable pattern as the step dial s runs. Up to 3 child atoms sit between the clusters, such as a wordmark. Decorative; give it a label to name it. Plain CSS (sin()), no script."
+  compact_description: "equaliser columns flanking a wordmark"
+  routing_text: "Audio level bars or an equaliser that move on either side of a logo or title."
+  intent_phrases:
+  - "Equaliser bars either side of the logo."
+  - "A voice-wave of coloured dashes around the wordmark."
+  surfaces: *mla001
+  fields:
+    bars: "integer (optional). Columns per cluster, 4 to 40. Default 14."
+    rows: "integer (optional). Dashes per column, 4 to 20. Default 12."
+    colors: "array (optional, up to 5) of \"#rrggbb\", cycled across the columns. Default four bright colours."
+    layout: "\"sides\" | \"row\" (optional, default sides). Two clusters around the centre, or one cluster."
+    blocks: "array (optional, up to 3) of atoms placed in the centre."
+    height: "integer (optional). px, 60 to 600. Default 180."
+    seed: "integer (optional). Seeds the pattern, 0 to 999. Default 3."
+    cycles: "integer (optional). Rise and fall cycles as s goes 0 to 1, 1 to 8. Default 2."
+    gap: "integer (optional). px between columns, 1 to 20. Default 5."
+    label: "string (optional, max 60). Accessible name; without it the columns are hidden from screen readers."
+  notes: "Standalone it shows one frame of the pattern. Motion is the film's step key, never a CSS loop, so it can be sought and paused; nothing flashes."
+  source: *mla002
+- type: motion_discs
+  stage: preview
+  description: "Two to four overlapping discs. With the step dial at 0 they sit apart across the box; at 1 they slide together and overlap, with colours multiplying where they meet. p scales them in one after another. The geometric brand opener. Plain CSS."
+  compact_description: "overlapping discs that slide together"
+  routing_text: "Coloured circles that slide together and overlap, like a Venn diagram or a brand mark forming."
+  intent_phrases:
+  - "Three circles that slide together and overlap."
+  - "A Venn-style opener with multiply colours."
+  surfaces: *mla001
+  fields:
+    discs: "array (optional, 2 to 4) of {color (\"#rrggbb\"), r (radius as percent of the box height, 8 to 50)}. Defaults give two."
+    overlap: "number (optional). Distance between neighbouring centres when together, percent of the width, 2 to 30. Default 12."
+    blend: "bool (optional). Multiply where discs overlap. Default true."
+    aspect: "number (optional). Width over height, 0.5 to 3. Default 1.78."
+    label: "string (optional, max 60). Accessible name; without it the discs are hidden from screen readers."
+  notes: "At the default s = 1 the discs rest overlapping. Decorative unless labelled."
+  source: *mla002
+- type: motion_dotgrid
+  stage: preview
+  description: "A grid of dots with one accent token that hops from cell to cell along a path as the step dial s runs: a parabola between cells, resting on the last cell at s = 1. p scales the dots in, rippling out from the token's start. With no hops given, a seeded path of five cells is used. Decorative unless it has a label. Plain CSS (sin()), no script."
+  compact_description: "a dot grid with a token that hops from cell to cell"
+  routing_text: "A grid of dots where one coloured dot hops between positions, like a game piece or a loading indicator."
+  intent_phrases:
+  - "A grid of dots with one red dot hopping across."
+  - "A token that bounces from cell to cell on a dot grid."
+  surfaces: *mla001
+  fields:
+    cols: "integer (optional). 2 to 12. Default 5."
+    rows: "integer (optional). 2 to 10. Default 4."
+    hops: "array (optional, 2 to 8) of [col, row] cells the token visits in order. Default a seeded path."
+    seed: "integer (optional). Seeds the default path, 0 to 999. Default 4."
+    dot: "integer (optional). Dot size as percent of a cell, 30 to 95. Default 70."
+    color: "\"#rrggbb\" (optional). Grid dot colour. Default #f4ead0."
+    accent: "\"#rrggbb\" (optional). Token colour. Default #e11d48."
+    aspect: "number (optional). Width over height, 0.5 to 3. Default 1.25."
+    label: "string (optional, max 60). Accessible name; without it the grid is hidden from screen readers."
+  notes: "The token is on the last hop at the default s = 1. Hops are clamped into the grid."
+  source: *mla002
+- type: motion_blade
+  stage: preview
+  description: "A shape (half disc, disc or bar) sweeps along a line of text from left to right with the step dial s and the words appear behind it, so the shape seems to write them. The half disc also turns as it travels. The words are real text and are always in the page; only the reveal moves. Plain CSS."
+  compact_description: "a shape that sweeps along a line and writes the words"
+  routing_text: "A shape that moves across a headline and reveals the words as it passes."
+  intent_phrases:
+  - "A half circle that rolls across and writes the headline."
+  - "Reveal the words behind a moving bar."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 80)."
+    shape: "\"half\" | \"disc\" | \"bar\" (optional, default half)."
+    color: "\"#rrggbb\" (optional). Shape colour. Default #123524."
+    ink: "\"#rrggbb\" (optional). Text colour. Default the surrounding text colour."
+    size: "integer (optional). Font size px, 14 to 160. Default 48."
+    font: "string (optional). Engine font name. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+  notes: "Screen readers get the whole line from the start; the sweep is only visual."
+  source: *mla002
+- type: motion_blueprint
+  stage: preview
+  description: "A wordmark built the way a designer draws it: construction guide lines (cap line, x-height, baseline and two verticals) draw in with p, the letters appear as an outline, then fill in as the guides step back to a faint trace. Guide positions are approximations that fit most sans fonts. Plain HTML and CSS."
+  compact_description: "a wordmark that builds from construction lines, outline, then fill"
+  routing_text: "A logo wordmark that appears first as guide lines and outline, like a design construction drawing, then fills in."
+  intent_phrases:
+  - "Draw the logo from its construction lines, then fill it."
+  - "A wordmark that starts as an outline with guide lines."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 24)."
+    size: "integer (optional). Font size px, 24 to 300. Default 120."
+    color: "\"#rrggbb\" (optional). Outline and fill colour. Default the surrounding text colour."
+    guide: "\"#rrggbb\" (optional). Guide line colour. Default #7c3aed."
+    lines: "bool (optional). Show the guides. Default true."
+    font: "string (optional). Engine font name. Default sans."
+    weight: "string (optional). regular, bold or black. Default black."
+  notes: "The outline is real text with a transparent fill and a stroke, so it can be selected and read; the filled layer is aria-hidden. A thin outline needs a heavy weight to read well."
+  source: *mla002
+- type: motion_tracking
+  stage: preview
+  description: "A line of text whose letter-spacing opens (or closes, if from is larger than to) with the step dial s, so the words breathe apart as they appear. Real text, fades in with p. Plain CSS."
+  compact_description: "text whose letter-spacing opens as it appears"
+  routing_text: "A headline that spreads out its letters as it appears, or tightens up."
+  intent_phrases:
+  - "Let the words spread apart as they appear."
+  - "A line that tightens its letter-spacing."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 80)."
+    from: "number (optional). Letter-spacing in em at s = 0, -0.2 to 1. Default 0."
+    to: "number (optional). Letter-spacing in em at s = 1, -0.2 to 1. Default 0.35."
+    size: "integer (optional). Font size px, 14 to 200. Default 48."
+    color: "\"#rrggbb\" (optional). Default the surrounding text colour."
+    font: "string (optional). Engine font name. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+  notes: "Wide tracking on a long line can overflow its box; keep it short or size it to fit."
+  source: *mla002
+- type: motion_tabs
+  stage: preview
+  description: "A strip of 2 to 6 equal tabs with an accent underline that slides from the first tab to the last as the step dial s runs; the tab under the line is the bright one and the others dim. The labels are real text. Pair with a hand cursor (demo_cursor) for a click-through. Plain CSS, no script."
+  compact_description: "a tab strip with a sliding underline"
+  routing_text: "A row of tabs where the active underline slides from one tab to the next."
+  intent_phrases:
+  - "Tabs with an underline that slides along them."
+  - "A tab strip that moves through its sections."
+  surfaces: *mla001
+  fields:
+    items: "array (required, 2 to 6) of strings (max 24 each), the tab labels."
+    size: "integer (optional). Font size px, 12 to 80. Default 28."
+    color: "\"#rrggbb\" (optional). Label colour. Default the surrounding text colour."
+    accent: "\"#rrggbb\" (optional). Underline colour. Default #2563eb."
+  notes: "Tabs are equal width, so the underline lands on each one exactly; long labels are cut with an ellipsis. It is a picture of tabs, not a control: use the real tab atoms when the reader must switch."
+  source: *mla002

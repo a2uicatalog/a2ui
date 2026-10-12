@@ -321,7 +321,7 @@ _RENDERERS['motion_sweep'] = function(b) {
     + 'transform:rotate(' + ang + 'deg);pointer-events:none;background:linear-gradient(90deg,transparent,' + col + ',transparent);opacity:' + str + ';"></div></div>';
 };
 
-// ── fourth batch from the vaylens brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag ───────────────────────────────────────────
+// ── fourth batch from a brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag ───────────────────────────────────────────
 // Same rules as the earlier batches: decorative layers aria-hidden, words are real text, every dial defaults to the finished picture, no endless loops, no flashing.
 // Width that follows content ("a pill that grows as words land in it") cannot use calc() with fr units, so a box grows with max-width = progress x an estimated width,
 // and is released to its natural width at the end (the max() term), so an estimate that is a little off never clips the finished picture.
@@ -426,4 +426,134 @@ _RENDERERS['motion_tag'] = function(b) {
     '<div style="--t:' + gr + ';position:absolute;left:calc(' + fx + '% + (' + _ifFmt(parseFloat(tx) - parseFloat(fx)) + '%)*' + mv + ');top:calc(' + fy + '% + (' + _ifFmt(parseFloat(ty) - parseFloat(fy)) + '%)*' + mv + ');transform:translate(0,-50%);display:flex;align-items:center;gap:0.45em;white-space:nowrap;">' +
     '<span aria-hidden="true" style="width:0.7em;height:0.7em;border-radius:50%;background:' + acc + ';flex:none;opacity:clamp(0,calc(var(--p,1)*10),1);"></span>' +
     '<span style="display:inline-block;overflow:hidden;box-sizing:border-box;padding:0.28em calc(var(--t)*0.95em);border-radius:999px;background:' + bg + ';color:' + ink + ';line-height:1.2;' + _m4Grow('var(--t)', text.length, 1.9) + 'opacity:var(--t);">' + _esc(text) + '</span></div></div>';
+};
+
+// ── fifth batch from two motion-designer showreels (2026-10-12): ring, highlight, meters, discs ───────────────────────────────────────────────
+// motion_ring: text set around a circle that turns with the step dial, around a round picture or colour disc. Each letter is its own element at its own angle, so there is
+// no path id to mint and the render is the same every time. The words are the accessible name.
+_RENDERERS['motion_ring'] = function(b) {
+  var text = _moStr(b.text, 40) || 'Text', base = Array.from(text + ' \u00b7 '), chars = [], i;
+  while (chars.length < 36) chars = chars.concat(base);
+  chars = chars.slice(0, Math.min(120, chars.length));
+  var N = chars.length, size = _ffInt(b.size, 360, 120, 800), turns = _ffInt(b.turns, 1, -4, 4), disc = _ffInt(b.disc, 52, 20, 80), fs = _ffNum(b.font_size, 15, 8, 30, 1);
+  var col = _moInk(b, 'color', 'currentColor'), fill = _moInk(b, 'fill', '#7c3aed'), font = _ffPick(b.font, _FF_FONTS, 'sans'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), img = _moImg(b.image), out = '';
+  for (i = 0; i < N; i++) if (chars[i] !== ' ') out += '<text x="100" y="22" text-anchor="middle" transform="rotate(' + _ifFmt(i * 360 / N) + ' 100 100)">' + _esc(chars[i]) + '</text>';
+  return '<div role="img" aria-label="' + _esc(text) + '" style="position:relative;width:min(100%,' + size + 'px);aspect-ratio:1;margin:0 auto;">' +
+    '<svg aria-hidden="true" focusable="false" viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;opacity:clamp(0,calc((var(--p,1) - 0.15)*3),1);transform:rotate(calc(var(--s,1)*' + (turns * 360) + 'deg)) scale(calc(0.85 + 0.15*clamp(0,var(--p,1),1)));font-family:' + font + ';font-weight:' + weight + ';font-size:' + fs + 'px;fill:' + col + ';">' + out + '</svg>' +
+    '<div aria-hidden="true" style="position:absolute;left:50%;top:50%;width:' + disc + '%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:' + fill + ';transform:translate(-50%,-50%) scale(clamp(0,calc(var(--p,1)*3),1));">' +
+    (img ? '<img src="' + _esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;display:block;">' : '') + '</div></div>';
+};
+
+// motion_highlight: a marker swipe behind words. p draws the swipe from left to right; the words are real text and are always readable.
+var _HL_LOOK = {marker: ['0.1em', '0.04em', '-1deg'], underline: ['0.72em', '-0.02em', '0deg'], strike: ['0.46em', '0.4em', '0deg']};
+_RENDERERS['motion_highlight'] = function(b) {
+  var text = _moStr(b.text, 80) || 'Text', look = _ffPick(b.style, {marker: 'marker', underline: 'underline', strike: 'strike'}, 'marker'), g = _HL_LOOK[look], size = _ffInt(b.size, 40, 12, 160);
+  var hl = _moInk(b, 'color', '#ffe94a'), ink = _moInk(b, 'ink', 'currentColor'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
+  return '<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1.3;color:' + ink + ';white-space:nowrap;">' +
+    '<span aria-hidden="true" style="position:absolute;left:-0.12em;right:-0.12em;top:' + g[0] + ';bottom:' + g[1] + ';background:' + hl + ';border-radius:0.12em;transform:rotate(' + g[2] + ') skewX(-6deg);clip-path:inset(0 calc((1 - clamp(0,var(--p,1),1))*100%) 0 0);"></span>' +
+    '<span style="position:relative;">' + _esc(text) + '</span></span>';
+};
+
+// motion_meters: equaliser columns on either side of a centre (or in one cluster), rising and falling with the step dial in a seeded, seekable pattern. Child atoms sit between them.
+var _MT_LAYOUT = {sides: 'sides', row: 'row'};
+_RENDERERS['motion_meters'] = function(b) {
+  var bars = _ffInt(b.bars, 14, 4, 40), rows = _ffInt(b.rows, 12, 4, 20), seed = _ffInt(b.seed, 3, 0, 999), cyc = _ffInt(b.cycles, 2, 1, 8), lay = _ffPick(b.layout, _MT_LAYOUT, 'sides'), gap = _ffInt(b.gap, 5, 1, 20);
+  var src = _bxList(b.colors, 5), cols = [], i; for (i = 0; i < src.length; i++) cols.push(_ffHex(src[i], '#ffffff'));
+  if (!cols.length) cols = ['#ff5ea8', '#ffd166', '#34e0c3', '#6d6af7'];
+  var cluster = function(flip, base) {
+    var o = '', j;
+    for (j = 0; j < bars; j++) {
+      var d = flip ? bars - 1 - j : j, ph = _ifFmt(_bxSeed(seed, base + j, 2) * 6.2832), c = cols[j % cols.length], k = 'clamp(0,calc(var(--p,1)*' + (bars + 2) + ' - ' + d + '),1)';
+      o += '<span style="flex:1 1 0;min-width:2px;align-self:center;height:calc(' + k + '*(0.15 + 0.85*abs(sin(calc(' + ph + '*1rad + var(--s,1)*' + cyc + '*6.2832rad))))*100%);' +
+        'background:repeating-linear-gradient(to top,' + c + ' 0,' + c + ' ' + _ifFmt(100 / rows * 0.62) + '%,transparent ' + _ifFmt(100 / rows * 0.62) + '%,transparent ' + _ifFmt(100 / rows) + '%);"></span>';
+    }
+    return '<span aria-hidden="true" style="display:flex;gap:' + gap + 'px;flex:1 1 0;height:100%;align-items:center;">' + o + '</span>';
+  };
+  var blocks = _bxList(b.blocks, 3), mid = '', m; for (m = 0; m < blocks.length; m++) mid += _moChild(blocks[m]);
+  var named = typeof b.label === 'string' && b.label;
+  return '<div ' + (named ? 'role="img" aria-label="' + _esc(_moStr(b.label, 60)) + '" ' : '') + 'style="display:flex;align-items:center;gap:4%;width:100%;height:' + _ffInt(b.height, 180, 60, 600) + 'px;">' +
+    (lay === 'sides' ? cluster(false, 0) + '<span style="flex:none;">' + mid + '</span>' + cluster(true, 100) : cluster(false, 0) + (mid ? '<span style="flex:none;">' + mid + '</span>' : '')) + '</div>';
+};
+
+// motion_discs: two to four overlapping discs. With the step dial at 0 they sit apart across the box; at 1 they slide together and overlap (colours multiply where they meet).
+_RENDERERS['motion_discs'] = function(b) {
+  var src = _bxList(b.discs, 4), ds = [], i;
+  for (i = 0; i < src.length; i++) { var o = _clObj(src[i]); ds.push({color: _ffHex(o.color, ['#f4d21f', '#2e6fbd', '#e63950', '#16a085'][i % 4]), r: _ffNum(o.r, 24, 8, 50, 1)}); }
+  while (ds.length < 2) ds.push({color: ['#f4d21f', '#2e6fbd'][ds.length], r: _ffNum(undefined, 24, 8, 50, 1)});
+  var n = ds.length, ov = _ffNum(b.overlap, 12, 2, 30, 1), asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2), blend = b.blend !== false, out = '', named = typeof b.label === 'string' && b.label;
+  ds.forEach(function(d, j) {
+    var a = _ifFmt(14 + 72 * j / (n - 1)), t = _ifFmt(50 + (j - (n - 1) / 2) * parseFloat(ov)), k = 'clamp(0,calc(var(--p,1)*' + (n + 2) + ' - ' + j + '),1)';
+    out += '<span style="position:absolute;top:50%;left:calc((' + a + ' + (' + t + ' - ' + a + ')*clamp(0,var(--s,1),1))*1%);width:' + _ifFmt(parseFloat(d.r) * 2 / parseFloat(asp)) + '%;aspect-ratio:1;border-radius:50%;background:' + d.color + ';' + (blend ? 'mix-blend-mode:multiply;' : '') +
+      'transform:translate(-50%,-50%) scale(' + k + ');"></span>';
+  });
+  return '<div ' + (named ? 'role="img" aria-label="' + _esc(_moStr(b.label, 60)) + '"' : 'aria-hidden="true"') + ' style="position:relative;width:100%;aspect-ratio:' + asp + ';isolation:isolate;overflow:hidden;">' + out + '</div>';
+};
+
+// ── sixth batch from a food-brand film (2026-10-12): dotgrid, blade ─────────────────────────────────────────────────────────────────────
+// motion_dotgrid: a grid of dots with one token that hops from cell to cell as the step dial runs (a parabola between cells, resting on a cell at s = 1). p scales the dots in from the token's start.
+_RENDERERS['motion_dotgrid'] = function(b) {
+  var cols = _ffInt(b.cols, 5, 2, 12), rows = _ffInt(b.rows, 4, 2, 10), seed = _ffInt(b.seed, 4, 0, 999), dot = _ffInt(b.dot, 70, 30, 95), asp = _ffNum(b.aspect, 1.25, 0.5, 3, 2);
+  var base = _moInk(b, 'color', '#f4ead0'), tok = _moInk(b, 'accent', '#e11d48'), src = _bxList(b.hops, 8), hops = [], i;
+  for (i = 0; i < src.length; i++) { var h = _bxList(src[i], 2); hops.push([_ffInt(h[0], 0, 0, cols - 1), _ffInt(h[1], 0, 0, rows - 1)]); }
+  if (hops.length < 2) { hops = []; for (i = 0; i < 5; i++) hops.push([Math.floor(_bxSeed(seed, i, 1) * cols), Math.floor(_bxSeed(seed, i, 2) * rows)]); }
+  var M = hops.length, cw = _ifFmt(100 / cols), ch = _ifFmt(100 / rows), cells = '', r, c, tx = '', ty = '';
+  for (r = 0; r < rows; r++) for (c = 0; c < cols; c++) {
+    var d = Math.abs(c - hops[0][0]) + Math.abs(r - hops[0][1]);
+    cells += '<span style="display:flex;align-items:center;justify-content:center;"><span style="width:' + dot + '%;aspect-ratio:1;border-radius:50%;background:' + base + ';transform:scale(clamp(0,calc(var(--p,1)*' + (cols + rows + 2) + ' - ' + d + '),1));"></span></span>';
+  }
+  for (i = 0; i < M - 1; i++) { tx += ' + ' + (hops[i + 1][0] - hops[i][0]) + '*clamp(0,calc(var(--s,1)*' + (M - 1) + ' - ' + i + '),1)'; ty += ' + ' + (hops[i + 1][1] - hops[i][1]) + '*clamp(0,calc(var(--s,1)*' + (M - 1) + ' - ' + i + '),1)'; }
+  var tok_el = '<span aria-hidden="true" style="position:absolute;left:0;top:0;width:' + cw + '%;height:' + ch + '%;display:flex;align-items:center;justify-content:center;' +
+    'transform:translate(calc((' + hops[0][0] + tx + ')*100%),calc((' + hops[0][1] + ty + ')*100%));"><span style="width:' + dot + '%;aspect-ratio:1;border-radius:50%;background:' + tok + ';' +
+    'transform:translateY(calc(-0.9*abs(sin(calc(var(--s,1)*' + (M - 1) + '*3.14159rad)))*100%)) scale(clamp(0,calc(var(--p,1)*6),1));"></span></span>';
+  var named = typeof b.label === 'string' && b.label;
+  return '<div ' + (named ? 'role="img" aria-label="' + _esc(_moStr(b.label, 60)) + '"' : 'aria-hidden="true"') + ' style="position:relative;width:100%;aspect-ratio:' + asp + ';"><div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(' + cols + ',1fr);grid-template-rows:repeat(' + rows + ',1fr);">' + cells + '</div>' + tok_el + '</div>';
+};
+
+// motion_blade: a shape sweeps along a line of text from left to right with the step dial and the text appears behind it, so the shape seems to write the words. Disc, half-disc or bar.
+var _BL_SHAPE = {disc: 'disc', half: 'half', bar: 'bar'};
+_RENDERERS['motion_blade'] = function(b) {
+  var text = _moStr(b.text, 80) || 'Text', shape = _ffPick(b.shape, _BL_SHAPE, 'half'), size = _ffInt(b.size, 48, 14, 160), sc = _moInk(b, 'color', '#123524'), ink = _moInk(b, 'ink', 'currentColor');
+  var font = _ffPick(b.font, _FF_FONTS, 'sans'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), e = 'clamp(0,var(--s,1),1)', sh;
+  if (shape === 'disc') sh = 'width:1.5em;height:1.5em;border-radius:50%;top:-0.2em;';
+  else if (shape === 'half') sh = 'width:1.7em;height:0.85em;border-radius:1.7em 1.7em 0 0;top:0.25em;transform:rotate(calc(' + e + '*540deg - 270deg));transform-origin:50% 100%;';
+  else sh = 'width:0.18em;height:1.5em;border-radius:0.09em;top:-0.1em;';
+  return '<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1.2;color:' + ink + ';white-space:nowrap;">' +
+    '<span style="display:inline-block;clip-path:inset(0 calc((1 - ' + e + ')*100% - 0.1em) 0 0);">' + _esc(text) + '</span>' +
+    '<span aria-hidden="true" style="position:absolute;left:calc(' + e + '*100%);margin-left:-0.85em;background:' + sc + ';opacity:clamp(0,calc(var(--p,1)*8),1);' + sh + '"></span></span>';
+};
+
+// motion_blueprint: a wordmark built the way a designer draws it: construction guides draw in, the letters appear as an outline, then fill in as the guides step back.
+_RENDERERS['motion_blueprint'] = function(b) {
+  var text = _moStr(b.text, 24) || 'Text', size = _ffInt(b.size, 120, 24, 300), ink = _moInk(b, 'color', 'currentColor'), gc = _moInk(b, 'guide', '#7c3aed'), lines = b.lines !== false;
+  var font = _ffPick(b.font, _FF_FONTS, 'sans'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'black');
+  var gp = 'clamp(0,calc(var(--p,1)*2.2),1)', op = 'clamp(0,calc((var(--p,1) - 0.2)*2.2),1)', fp = 'clamp(0,calc((var(--p,1) - 0.6)*2.5),1)', hz = [0.2, 0.42, 0.8], i, g = '';
+  if (lines) {
+    for (i = 0; i < hz.length; i++) g += '<span style="position:absolute;left:-0.35em;right:-0.35em;top:' + hz[i] + 'em;height:1px;background:' + gc + ';transform:scaleX(' + gp + ');transform-origin:left;opacity:calc(1 - 0.7*' + fp + ');"></span>';
+    g += '<span style="position:absolute;left:-0.1em;top:-0.2em;bottom:-0.2em;width:1px;background:' + gc + ';transform:scaleY(' + gp + ');transform-origin:top;opacity:calc(1 - 0.7*' + fp + ');"></span>';
+    g += '<span style="position:absolute;right:-0.1em;top:-0.2em;bottom:-0.2em;width:1px;background:' + gc + ';transform:scaleY(' + gp + ');transform-origin:bottom;opacity:calc(1 - 0.7*' + fp + ');"></span>';
+  }
+  return '<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1;white-space:nowrap;padding:0.1em 0;">' +
+    '<span aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;">' + g + '</span>' +
+    '<span style="position:relative;color:' + ink + ';-webkit-text-fill-color:transparent;-webkit-text-stroke:1.5px ' + ink + ';opacity:' + op + ';">' + _esc(text) + '</span>' +
+    '<span aria-hidden="true" style="position:absolute;left:0;top:0.1em;color:' + ink + ';opacity:' + fp + ';">' + _esc(text) + '</span></span>';
+};
+
+// motion_tracking: a line whose letter-spacing opens (or closes) with the step dial, so the words breathe apart as they appear.
+_RENDERERS['motion_tracking'] = function(b) {
+  var text = _moStr(b.text, 80) || 'Text', size = _ffInt(b.size, 48, 14, 200), from = _ffNum(b.from, 0, -0.2, 1, 2), to = _ffNum(b.to, 0.35, -0.2, 1, 2), ink = _moInk(b, 'color', 'currentColor');
+  var font = _ffPick(b.font, _FF_FONTS, 'sans'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold');
+  return '<span style="display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1.2;color:' + ink + ';white-space:nowrap;letter-spacing:calc((' + from + ' + (' + to + ' - ' + from + ')*clamp(0,var(--s,1),1))*1em);opacity:clamp(0,calc(var(--p,1)*4),1);">' + _esc(text) + '</span>';
+};
+
+// motion_tabs: a strip of equal tabs with an underline that slides from the first to the last as the step dial runs; the tab under the line is the bright one. The labels are real text.
+_RENDERERS['motion_tabs'] = function(b) {
+  var src = _bxList(b.items, 6), items = [], i;
+  for (i = 0; i < src.length; i++) items.push(_moStr(src[i], 24) || ('Tab ' + (i + 1)));
+  while (items.length < 2) items.push('Tab ' + (items.length + 1));
+  var n = items.length, size = _ffInt(b.size, 28, 12, 80), ink = _moInk(b, 'color', 'currentColor'), acc = _moInk(b, 'accent', '#2563eb'), pos = 'var(--s,1)*' + (n - 1), cells = '';
+  items.forEach(function(t, j) {
+    cells += '<span style="text-align:center;padding:0.5em 0.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:calc(0.4 + 0.6*clamp(0,calc(1 - abs(' + pos + ' - ' + j + ')),1));">' + _esc(t) + '</span>';
+  });
+  return '<div style="position:relative;display:grid;grid-template-columns:repeat(' + n + ',1fr);width:100%;font-size:' + size + 'px;font-weight:600;color:' + ink + ';border-bottom:1px solid ' + ink + '33;opacity:clamp(0,calc(var(--p,1)*4),1);">' + cells +
+    '<span aria-hidden="true" style="position:absolute;bottom:-1px;height:3px;border-radius:2px;background:' + acc + ';width:calc(70%/' + n + ');left:calc((' + pos + ' + 0.15)*100%/' + n + ');"></span></div>';
 };

@@ -31702,7 +31702,7 @@ for _gx_name, _gx_fn in (
     _RENDERERS[_gx_name] = _gx_fn
 
 
-# ─── fourth batch from the vaylens brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag. Twins of the last block of atoms_motion_candidates.gs ───
+# ─── fourth batch from a brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag. Twins of the last block of atoms_motion_candidates.gs ───
 _M4_WS = '[ \t\n\r\f\v   -     　﻿]+'
 
 
@@ -31841,6 +31841,182 @@ def _render_motion_tag(b: dict) -> str:
 for _m4_name, _m4_fn in (('motion_capsule', _render_motion_capsule), ('motion_arrow', _render_motion_arrow), ('motion_swatches', _render_motion_swatches), ('motion_glass', _render_motion_glass), ('motion_wall', _render_motion_wall), ('motion_tag', _render_motion_tag)):
     _RENDERERS[_m4_name] = _m4_fn
 
+
+# ─── fifth batch from two motion-designer showreels (2026-10-12): ring, highlight, meters, discs. Twins of the last block of atoms_motion_candidates.gs ───
+def _render_motion_ring(b: dict) -> str:
+    text = _cv_str(b.get('text'), 40) or 'Text'
+    base = list(text + ' · ')
+    chars = []
+    while len(chars) < 36:
+        chars = chars + base
+    chars = chars[:min(120, len(chars))]
+    n = len(chars)
+    size, turns, disc = _ff_int(b.get('size'), 360, 120, 800), _ff_int(b.get('turns'), 1, -4, 4), _ff_int(b.get('disc'), 52, 20, 80)
+    fs = _ff_num(b.get('font_size'), 15, 8, 30, 1)
+    col, fill = _mo_ink(b, 'color', 'currentColor'), _mo_ink(b, 'fill', '#7c3aed')
+    font, weight, img = _ff_pick(b.get('font'), _FF_FONTS, 'sans'), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), _mo_img(b.get('image'))
+    out = ''.join('<text x="100" y="22" text-anchor="middle" transform="rotate(' + _if_fmt(i * 360 / n) + ' 100 100)">' + _cv_esc(c) + '</text>' for i, c in enumerate(chars) if c != ' ')
+    return ('<div role="img" aria-label="' + _cv_esc(text) + '" style="position:relative;width:min(100%,' + str(size) + 'px);aspect-ratio:1;margin:0 auto;">'
+            '<svg aria-hidden="true" focusable="false" viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;opacity:clamp(0,calc((var(--p,1) - 0.15)*3),1);transform:rotate(calc(var(--s,1)*' + str(turns * 360)
+            + 'deg)) scale(calc(0.85 + 0.15*clamp(0,var(--p,1),1)));font-family:' + font + ';font-weight:' + weight + ';font-size:' + fs + 'px;fill:' + col + ';">' + out + '</svg>'
+            '<div aria-hidden="true" style="position:absolute;left:50%;top:50%;width:' + str(disc) + '%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:' + fill + ';transform:translate(-50%,-50%) scale(clamp(0,calc(var(--p,1)*3),1));">'
+            + (('<img src="' + _cv_esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;display:block;">') if img else '') + '</div></div>')
+
+
+_HL_LOOK = {'marker': ['0.1em', '0.04em', '-1deg'], 'underline': ['0.72em', '-0.02em', '0deg'], 'strike': ['0.46em', '0.4em', '0deg']}
+
+
+def _render_motion_highlight(b: dict) -> str:
+    text = _cv_str(b.get('text'), 80) or 'Text'
+    look = _ff_pick(b.get('style'), {'marker': 'marker', 'underline': 'underline', 'strike': 'strike'}, 'marker')
+    g, size = _HL_LOOK[look], _ff_int(b.get('size'), 40, 12, 160)
+    hl, ink = _mo_ink(b, 'color', '#ffe94a'), _mo_ink(b, 'ink', 'currentColor')
+    weight, font = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), _ff_pick(b.get('font'), _FF_FONTS, 'sans')
+    return ('<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:1.3;color:' + ink + ';white-space:nowrap;">'
+            '<span aria-hidden="true" style="position:absolute;left:-0.12em;right:-0.12em;top:' + g[0] + ';bottom:' + g[1] + ';background:' + hl + ';border-radius:0.12em;transform:rotate(' + g[2] + ') skewX(-6deg);clip-path:inset(0 calc((1 - clamp(0,var(--p,1),1))*100%) 0 0);"></span>'
+            '<span style="position:relative;">' + _cv_esc(text) + '</span></span>')
+
+
+_MT_LAYOUT = {'sides': 'sides', 'row': 'row'}
+
+
+def _render_motion_meters(b: dict) -> str:
+    bars, rows = _ff_int(b.get('bars'), 14, 4, 40), _ff_int(b.get('rows'), 12, 4, 20)
+    seed, cyc = _ff_int(b.get('seed'), 3, 0, 999), _ff_int(b.get('cycles'), 2, 1, 8)
+    lay, gap = _ff_pick(b.get('layout'), _MT_LAYOUT, 'sides'), _ff_int(b.get('gap'), 5, 1, 20)
+    cols = [_ff_hex(c, '#ffffff') for c in _m3_list(b.get('colors'), 5)] or ['#ff5ea8', '#ffd166', '#34e0c3', '#6d6af7']
+
+    def cluster(flip, base):
+        o = ''
+        for j in range(bars):
+            d = bars - 1 - j if flip else j
+            ph, c = _if_fmt(_bx_seed(seed, base + j, 2) * 6.2832), cols[j % len(cols)]
+            k = 'clamp(0,calc(var(--p,1)*' + str(bars + 2) + ' - ' + str(d) + '),1)'
+            o += ('<span style="flex:1 1 0;min-width:2px;align-self:center;height:calc(' + k + '*(0.15 + 0.85*abs(sin(calc(' + ph + '*1rad + var(--s,1)*' + str(cyc) + '*6.2832rad))))*100%);'
+                  'background:repeating-linear-gradient(to top,' + c + ' 0,' + c + ' ' + _if_fmt(100 / rows * 0.62) + '%,transparent ' + _if_fmt(100 / rows * 0.62) + '%,transparent ' + _if_fmt(100 / rows) + '%);"></span>')
+        return '<span aria-hidden="true" style="display:flex;gap:' + str(gap) + 'px;flex:1 1 0;height:100%;align-items:center;">' + o + '</span>'
+    mid = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
+    named = isinstance(b.get('label'), str) and b.get('label')
+    return ('<div ' + (('role="img" aria-label="' + _cv_esc(_cv_str(b.get('label'), 60)) + '" ') if named else '') + 'style="display:flex;align-items:center;gap:4%;width:100%;height:' + str(_ff_int(b.get('height'), 180, 60, 600)) + 'px;">'
+            + ((cluster(False, 0) + '<span style="flex:none;">' + mid + '</span>' + cluster(True, 100)) if lay == 'sides' else (cluster(False, 0) + (('<span style="flex:none;">' + mid + '</span>') if mid else ''))) + '</div>')
+
+
+def _render_motion_discs(b: dict) -> str:
+    ds = []
+    for i, raw in enumerate(_m3_list(b.get('discs'), 4)):
+        o = _m3_obj(raw)
+        ds.append({'color': _ff_hex(o.get('color'), ['#f4d21f', '#2e6fbd', '#e63950', '#16a085'][i % 4]), 'r': _ff_num(o.get('r'), 24, 8, 50, 1)})
+    while len(ds) < 2:
+        ds.append({'color': ['#f4d21f', '#2e6fbd'][len(ds)], 'r': _ff_num(None, 24, 8, 50, 1)})
+    n = len(ds)
+    ov, asp = _ff_num(b.get('overlap'), 12, 2, 30, 1), _ff_num(b.get('aspect'), 1.78, 0.5, 3, 2)
+    blend = b.get('blend') is not False
+    named = isinstance(b.get('label'), str) and b.get('label')
+    out = ''
+    for j, d in enumerate(ds):
+        a, t = _if_fmt(14 + 72 * j / (n - 1)), _if_fmt(50 + (j - (n - 1) / 2) * float(ov))
+        k = 'clamp(0,calc(var(--p,1)*' + str(n + 2) + ' - ' + str(j) + '),1)'
+        out += ('<span style="position:absolute;top:50%;left:calc((' + a + ' + (' + t + ' - ' + a + ')*clamp(0,var(--s,1),1))*1%);width:' + _if_fmt(float(d['r']) * 2 / float(asp)) + '%;aspect-ratio:1;border-radius:50%;background:' + d['color'] + ';'
+                + ('mix-blend-mode:multiply;' if blend else '') + 'transform:translate(-50%,-50%) scale(' + k + ');"></span>')
+    return ('<div ' + (('role="img" aria-label="' + _cv_esc(_cv_str(b.get('label'), 60)) + '"') if named else 'aria-hidden="true"') + ' style="position:relative;width:100%;aspect-ratio:' + asp + ';isolation:isolate;overflow:hidden;">' + out + '</div>')
+
+
+for _m5_name, _m5_fn in (('motion_ring', _render_motion_ring), ('motion_highlight', _render_motion_highlight), ('motion_meters', _render_motion_meters), ('motion_discs', _render_motion_discs)):
+    _RENDERERS[_m5_name] = _m5_fn
+
+
+# ─── sixth batch from a food-brand film (2026-10-12): dotgrid, blade. Twins of the last block of atoms_motion_candidates.gs ───
+def _render_motion_dotgrid(b: dict) -> str:
+    cols, rows = _ff_int(b.get('cols'), 5, 2, 12), _ff_int(b.get('rows'), 4, 2, 10)
+    seed, dot = _ff_int(b.get('seed'), 4, 0, 999), _ff_int(b.get('dot'), 70, 30, 95)
+    asp = _ff_num(b.get('aspect'), 1.25, 0.5, 3, 2)
+    base, tok = _mo_ink(b, 'color', '#f4ead0'), _mo_ink(b, 'accent', '#e11d48')
+    hops = []
+    for raw in _m3_list(b.get('hops'), 8):
+        h = _m3_list(raw, 2)
+        hops.append([_ff_int(h[0] if len(h) > 0 else None, 0, 0, cols - 1), _ff_int(h[1] if len(h) > 1 else None, 0, 0, rows - 1)])
+    if len(hops) < 2:
+        hops = [[math.floor(_bx_seed(seed, i, 1) * cols), math.floor(_bx_seed(seed, i, 2) * rows)] for i in range(5)]
+    m = len(hops)
+    cw, ch = _if_fmt(100 / cols), _if_fmt(100 / rows)
+    cells = ''
+    for r in range(rows):
+        for c in range(cols):
+            d = abs(c - hops[0][0]) + abs(r - hops[0][1])
+            cells += ('<span style="display:flex;align-items:center;justify-content:center;"><span style="width:' + str(dot) + '%;aspect-ratio:1;border-radius:50%;background:' + base
+                      + ';transform:scale(clamp(0,calc(var(--p,1)*' + str(cols + rows + 2) + ' - ' + str(d) + '),1));"></span></span>')
+    tx = ''.join(' + ' + str(hops[i + 1][0] - hops[i][0]) + '*clamp(0,calc(var(--s,1)*' + str(m - 1) + ' - ' + str(i) + '),1)' for i in range(m - 1))
+    ty = ''.join(' + ' + str(hops[i + 1][1] - hops[i][1]) + '*clamp(0,calc(var(--s,1)*' + str(m - 1) + ' - ' + str(i) + '),1)' for i in range(m - 1))
+    tok_el = ('<span aria-hidden="true" style="position:absolute;left:0;top:0;width:' + cw + '%;height:' + ch + '%;display:flex;align-items:center;justify-content:center;transform:translate(calc((' + str(hops[0][0]) + tx + ')*100%),calc((' + str(hops[0][1]) + ty + ')*100%));">'
+              '<span style="width:' + str(dot) + '%;aspect-ratio:1;border-radius:50%;background:' + tok + ';transform:translateY(calc(-0.9*abs(sin(calc(var(--s,1)*' + str(m - 1) + '*3.14159rad)))*100%)) scale(clamp(0,calc(var(--p,1)*6),1));"></span></span>')
+    named = isinstance(b.get('label'), str) and b.get('label')
+    return ('<div ' + (('role="img" aria-label="' + _cv_esc(_cv_str(b.get('label'), 60)) + '"') if named else 'aria-hidden="true"') + ' style="position:relative;width:100%;aspect-ratio:' + asp
+            + ';"><div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(' + str(cols) + ',1fr);grid-template-rows:repeat(' + str(rows) + ',1fr);">' + cells + '</div>' + tok_el + '</div>')
+
+
+_BL_SHAPE = {'disc': 'disc', 'half': 'half', 'bar': 'bar'}
+
+
+def _render_motion_blade(b: dict) -> str:
+    text = _cv_str(b.get('text'), 80) or 'Text'
+    shape, size = _ff_pick(b.get('shape'), _BL_SHAPE, 'half'), _ff_int(b.get('size'), 48, 14, 160)
+    sc, ink = _mo_ink(b, 'color', '#123524'), _mo_ink(b, 'ink', 'currentColor')
+    font, weight = _ff_pick(b.get('font'), _FF_FONTS, 'sans'), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold')
+    e = 'clamp(0,var(--s,1),1)'
+    if shape == 'disc':
+        sh = 'width:1.5em;height:1.5em;border-radius:50%;top:-0.2em;'
+    elif shape == 'half':
+        sh = 'width:1.7em;height:0.85em;border-radius:1.7em 1.7em 0 0;top:0.25em;transform:rotate(calc(' + e + '*540deg - 270deg));transform-origin:50% 100%;'
+    else:
+        sh = 'width:0.18em;height:1.5em;border-radius:0.09em;top:-0.1em;'
+    return ('<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:1.2;color:' + ink + ';white-space:nowrap;">'
+            '<span style="display:inline-block;clip-path:inset(0 calc((1 - ' + e + ')*100% - 0.1em) 0 0);">' + _cv_esc(text) + '</span>'
+            '<span aria-hidden="true" style="position:absolute;left:calc(' + e + '*100%);margin-left:-0.85em;background:' + sc + ';opacity:clamp(0,calc(var(--p,1)*8),1);' + sh + '"></span></span>')
+
+
+
+
+
+def _render_motion_blueprint(b: dict) -> str:
+    text = _cv_str(b.get('text'), 24) or 'Text'
+    size, ink, gc = _ff_int(b.get('size'), 120, 24, 300), _mo_ink(b, 'color', 'currentColor'), _mo_ink(b, 'guide', '#7c3aed')
+    lines = b.get('lines') is not False
+    font, weight = _ff_pick(b.get('font'), _FF_FONTS, 'sans'), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black')
+    gp, op, fp = 'clamp(0,calc(var(--p,1)*2.2),1)', 'clamp(0,calc((var(--p,1) - 0.2)*2.2),1)', 'clamp(0,calc((var(--p,1) - 0.6)*2.5),1)'
+    g = ''
+    if lines:
+        for hz in (0.2, 0.42, 0.8):
+            g += ('<span style="position:absolute;left:-0.35em;right:-0.35em;top:' + _if_fmt(hz) + 'em;height:1px;background:' + gc + ';transform:scaleX(' + gp + ');transform-origin:left;opacity:calc(1 - 0.7*' + fp + ');"></span>')
+        g += '<span style="position:absolute;left:-0.1em;top:-0.2em;bottom:-0.2em;width:1px;background:' + gc + ';transform:scaleY(' + gp + ');transform-origin:top;opacity:calc(1 - 0.7*' + fp + ');"></span>'
+        g += '<span style="position:absolute;right:-0.1em;top:-0.2em;bottom:-0.2em;width:1px;background:' + gc + ';transform:scaleY(' + gp + ');transform-origin:bottom;opacity:calc(1 - 0.7*' + fp + ');"></span>'
+    return ('<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:1;white-space:nowrap;padding:0.1em 0;">'
+            '<span aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;">' + g + '</span>'
+            '<span style="position:relative;color:' + ink + ';-webkit-text-fill-color:transparent;-webkit-text-stroke:1.5px ' + ink + ';opacity:' + op + ';">' + _cv_esc(text) + '</span>'
+            '<span aria-hidden="true" style="position:absolute;left:0;top:0.1em;color:' + ink + ';opacity:' + fp + ';">' + _cv_esc(text) + '</span></span>')
+
+
+def _render_motion_tracking(b: dict) -> str:
+    text = _cv_str(b.get('text'), 80) or 'Text'
+    size, frm, to = _ff_int(b.get('size'), 48, 14, 200), _ff_num(b.get('from'), 0, -0.2, 1, 2), _ff_num(b.get('to'), 0.35, -0.2, 1, 2)
+    ink, font, weight = _mo_ink(b, 'color', 'currentColor'), _ff_pick(b.get('font'), _FF_FONTS, 'sans'), _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold')
+    return ('<span style="display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:1.2;color:' + ink + ';white-space:nowrap;letter-spacing:calc((' + frm + ' + (' + to + ' - ' + frm
+            + ')*clamp(0,var(--s,1),1))*1em);opacity:clamp(0,calc(var(--p,1)*4),1);">' + _cv_esc(text) + '</span>')
+
+
+def _render_motion_tabs(b: dict) -> str:
+    items = [(_cv_str(x, 24) or ('Tab ' + str(i + 1))) for i, x in enumerate(_m3_list(b.get('items'), 6))]
+    while len(items) < 2:
+        items.append('Tab ' + str(len(items) + 1))
+    n = len(items)
+    size, ink, acc = _ff_int(b.get('size'), 28, 12, 80), _mo_ink(b, 'color', 'currentColor'), _mo_ink(b, 'accent', '#2563eb')
+    pos = 'var(--s,1)*' + str(n - 1)
+    cells = ''.join('<span style="text-align:center;padding:0.5em 0.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:calc(0.4 + 0.6*clamp(0,calc(1 - abs(' + pos + ' - ' + str(j) + ')),1));">' + _cv_esc(t) + '</span>' for j, t in enumerate(items))
+    return ('<div style="position:relative;display:grid;grid-template-columns:repeat(' + str(n) + ',1fr);width:100%;font-size:' + str(size) + 'px;font-weight:600;color:' + ink + ';border-bottom:1px solid ' + ink + '33;opacity:clamp(0,calc(var(--p,1)*4),1);">' + cells
+            + '<span aria-hidden="true" style="position:absolute;bottom:-1px;height:3px;border-radius:2px;background:' + acc + ';width:calc(70%/' + str(n) + ');left:calc((' + pos + ' + 0.15)*100%/' + str(n) + ');"></span></div>')
+
+
+for _m6_name, _m6_fn in (('motion_dotgrid', _render_motion_dotgrid), ('motion_blade', _render_motion_blade), ('motion_blueprint', _render_motion_blueprint), ('motion_tracking', _render_motion_tracking), ('motion_tabs', _render_motion_tabs)):
+    _RENDERERS[_m6_name] = _m6_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()

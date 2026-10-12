@@ -511,7 +511,7 @@ def test_dissolve_is_unchanged_by_the_sequenced_stitches(core_js):
     assert _norm_all(_py(dict(STITCHED, stitch="dissolve"))) == _norm_all(_gas_batch(core_js, [dict(STITCHED, stitch="dissolve")])[0])
 
 
-# ── fourth batch from the vaylens brand film: capsule, arrow, swatches, glass, wall, tag ──────────────────────────────────────────────────────
+# ── fourth batch from a brand film: capsule, arrow, swatches, glass, wall, tag ──────────────────────────────────────────────────────
 def _ps(block, bid, p=None, s=None):
     """A tiny film that holds p and/or s at fixed values, probed at t=1."""
     key = {"t": 0}
@@ -590,3 +590,88 @@ def test_tag_dot_travels_then_the_pill_grows(core_js):
     a, m, z = (_probe_gas(core_js, _ps(blk, "tg", p=v), 1, js) for v in (0.01, 0.45, 1))
     assert abs(a["x"] - 10) <= 2 and abs(m["x"] - 60) <= 2 and abs(z["x"] - 60) <= 2, (a, m, z)
     assert a["pill"] < m["pill"] + 1 and m["pill"] < z["pill"] and z["pill"] > 60, (a, m, z)
+
+
+# ── fifth batch from two motion-designer showreels: ring, highlight, meters, discs ────────────────────────────────────────────────────────────
+@browser
+def test_ring_turns_with_s_and_the_disc_grows_with_p(core_js):
+    blk = {"type": "motion_ring", "text": "Reel", "turns": 1, "size": 300}
+    ang = "var s=document.querySelector('[data-mt-id=rg] svg');var m=new DOMMatrix(getComputedStyle(s).transform);return Math.round(Math.atan2(m.b,m.a)*180/Math.PI);"
+    a0, a5 = (_probe_gas(core_js, _ps(blk, "rg", p=1, s=v), 1, ang) for v in (0, 0.25))
+    assert a0 == 0 and a5 == 90, (a0, a5)
+    disc = "var d=document.querySelector('[data-mt-id=rg] [role=img] > div');return Math.round(d.getBoundingClientRect().width);"
+    assert _probe_gas(core_js, _ps(blk, "rg", p=0, s=1), 1, disc) == 0 and _probe_gas(core_js, _ps(blk, "rg", p=1, s=1), 1, disc) > 100
+
+
+@browser
+def test_highlight_swipe_follows_p_and_the_words_stay_readable(core_js):
+    blk = {"type": "motion_highlight", "text": "made tidy", "size": 48}
+    js = ("var h=document.querySelector('[data-mt-id=hl] span span');var m=/inset\\(([\\d.]+)(?:px|%)? ([\\d.]+)%/.exec(getComputedStyle(h).clipPath);"
+          "var w=document.querySelector('[data-mt-id=hl]').textContent.trim();return {right:m?+m[2]:null,text:w};")
+    a, m, z = (_probe_gas(core_js, _ps(blk, "hl", p=v), 1, js) for v in (0, 0.5, 1))
+    assert a["right"] == 100 and abs(m["right"] - 50) < 1 and z["right"] == 0 and z["text"] == "made tidy" == a["text"], (a, m, z)
+
+
+@browser
+def test_meters_rise_with_p_and_move_with_s(core_js):
+    blk = {"type": "motion_meters", "bars": 8, "height": 200, "layout": "row"}
+    js = "return Array.prototype.map.call(document.querySelectorAll('[data-mt-id=mt] [aria-hidden] > span'),function(e){return Math.round(e.getBoundingClientRect().height);});"
+    empty = _probe_gas(core_js, _ps(blk, "mt", p=0, s=0.1), 1, js)
+    a = _probe_gas(core_js, _ps(blk, "mt", p=1, s=0.1), 1, js)
+    z = _probe_gas(core_js, _ps(blk, "mt", p=1, s=0.37), 1, js)
+    assert len(a) == 8 and all(v == 0 for v in empty) and all(v > 0 for v in a) and a != z, (empty, a, z)
+    assert len(set(a)) > 2, a       # the columns are not all the same height
+
+
+@browser
+def test_discs_slide_from_apart_to_overlapping(core_js):
+    blk = {"type": "motion_discs", "discs": [{"color": "#f4d21f", "r": 24}, {"color": "#2e6fbd", "r": 24}], "aspect": 2}
+    js = ("var d=document.querySelectorAll('[data-mt-id=ds] [aria-hidden] > span');var a=d[0].getBoundingClientRect(),b=d[1].getBoundingClientRect();"
+          "return {gap:Math.round((b.left+b.width/2)-(a.left+a.width/2)),r:Math.round(a.width/2)};")
+    apart, together = (_probe_gas(core_js, _ps(blk, "ds", p=1, s=v), 1, js) for v in (0, 1))
+    assert apart["gap"] > 2 * apart["r"] > 0 and 0 < together["gap"] <= together["r"], (apart, together)
+
+
+# ── sixth batch (food-brand, rebrand and studio films): dotgrid, blade, blueprint, tracking, tabs ──────────────────────────────────────────────
+@browser
+def test_dotgrid_token_starts_on_the_first_hop_and_rests_on_the_last(core_js):
+    blk = {"type": "motion_dotgrid", "cols": 5, "rows": 4, "hops": [[0, 0], [2, 2], [4, 3]], "aspect": 1.25}
+    js = ("var g=document.querySelector('[data-mt-id=dg] > div');var r=g.getBoundingClientRect(),t=g.children[1].firstElementChild.getBoundingClientRect();"
+          "return {c:Math.round((t.left+t.width/2-r.left)/r.width*5-0.5),r:Math.round((t.top+t.height/2-r.top)/r.height*4-0.5)};")
+    a, z = (_probe_gas(core_js, _ps(blk, "dg", p=1, s=v), 1, js) for v in (0, 1))
+    assert (a["c"], a["r"]) == (0, 0) and (z["c"], z["r"]) == (4, 3), (a, z)
+
+
+@browser
+def test_blade_reveals_the_words_left_to_right_and_the_text_is_always_in_the_page(core_js):
+    blk = {"type": "motion_blade", "text": "any recipe at all", "size": 48}
+    js = ("var s=document.querySelector('[data-mt-id=bl] > span > span');var m=/inset\\(0(?:px)? (?:calc\\()?(-?[\\d.]+)%/.exec(getComputedStyle(s).clipPath);"
+          "return {frac:m?+m[1]/100:null,text:s.textContent};")
+    a, m, z = (_probe_gas(core_js, _ps(blk, "bl", p=1, s=v), 1, js) for v in (0, 0.5, 1))
+    assert a["text"] == z["text"] == "any recipe at all" and a["frac"] > 0.95 and 0.4 < m["frac"] < 0.6 and z["frac"] <= 0.02, (a, m, z)
+
+
+@browser
+def test_blueprint_outline_is_visible_and_the_fill_arrives_late(core_js):
+    blk = {"type": "motion_blueprint", "text": "atelier", "size": 100}
+    js = ("var all=Array.prototype.slice.call(document.querySelector('[data-mt-id=bp]').querySelectorAll('span'));"
+          "var out=all.filter(function(e){return getComputedStyle(e).webkitTextFillColor==='rgba(0, 0, 0, 0)';})[0],fill=all[all.length-1];"
+          "return {stroke:getComputedStyle(out).webkitTextStrokeColor,strokeOp:+(+getComputedStyle(out).opacity).toFixed(2),fillOp:+(+getComputedStyle(fill).opacity).toFixed(2)};")
+    a, m, z = (_probe_gas(core_js, _ps(blk, "bp", p=v), 1, js) for v in (0, 0.5, 1))
+    assert a["strokeOp"] == 0 and m["strokeOp"] > 0 and m["fillOp"] < z["fillOp"] == 1 and z["stroke"] != "rgba(0, 0, 0, 0)", (a, m, z)
+
+
+@browser
+def test_tracking_opens_with_s(core_js):
+    blk = {"type": "motion_tracking", "text": "open", "size": 40, "from": 0, "to": 0.4}
+    js = "return parseFloat(getComputedStyle(document.querySelector('[data-mt-id=tk] span')).letterSpacing);"
+    a, m, z = (_probe_gas(core_js, _ps(blk, "tk", p=1, s=v), 1, js) for v in (0, 0.5, 1))
+    assert (a or 0) < 0.5 and abs(m - 8) < 1 and abs(z - 16) < 1, (a, m, z)
+
+
+@browser
+def test_tabs_underline_slides_from_first_to_last(core_js):
+    blk = {"type": "motion_tabs", "items": ["a", "b", "c", "d"], "size": 20}
+    js = "var t=document.querySelector('[data-mt-id=tb] > div');var u=t.lastElementChild.getBoundingClientRect(),r=t.getBoundingClientRect();return Math.round((u.left-r.left)/r.width*100);"
+    a, m, z = (_probe_gas(core_js, _ps(blk, "tb", p=1, s=v), 1, js) for v in (0, 0.5, 1))
+    assert a < m < z and abs(a - 4) <= 1 and abs(z - 79) <= 1, (a, m, z)

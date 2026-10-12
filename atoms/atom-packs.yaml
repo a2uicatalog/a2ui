@@ -356,6 +356,15 @@ a2ui-effects-v1:
 - motion_glass
 - motion_wall
 - motion_tag
+- motion_ring
+- motion_highlight
+- motion_meters
+- motion_discs
+- motion_dotgrid
+- motion_blade
+- motion_blueprint
+- motion_tracking
+- motion_tabs
 - motion_orbit
 - motion_code
 - motion_mark

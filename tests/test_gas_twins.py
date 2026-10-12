@@ -172,6 +172,15 @@ EXAMPLES: dict = {
     "motion_glass": [{"type": "motion_glass", "blur": 24, "tint": "#ffffff", "strength": 0.3, "radius": 20, "padding": 16, "edge": False, "blocks": [{"type": "quiet_link", "text": "x"}]}, {"type": "motion_glass", "blocks": [{"type": "cert_disclaimer", "holder": "H"}]}],
     "motion_wall": [{"type": "motion_wall", "cols": 4, "rows": 2, "seed": 11, "gap": 4, "radius": 6, "images": ["https://x.y/a.jpg", {"url": "https://x.y/b.jpg"}, "data:image/png;base64,AAAA", "http://bad"], "label": "Wall"}, {"type": "motion_wall"}],
     "motion_tag": [{"type": "motion_tag", "text": "tools", "from": {"x": 10, "y": 20}, "to": {"x": 60, "y": 55}, "tone": "accent", "accent": "#34e0c3", "size": 24}, {"type": "motion_tag", "tone": "light"}],
+    "motion_ring": [{"type": "motion_ring", "text": "Reel 2026", "size": 400, "turns": 2, "disc": 50, "fill": "#2f7d63", "color": "#ffffff", "weight": "black", "font_size": 14, "image": "https://x.y/a.jpg"}, {"type": "motion_ring", "text": "NO OK"}],
+    "motion_highlight": [{"type": "motion_highlight", "text": "made tidy", "style": "marker", "color": "#ffe94a", "size": 56}, {"type": "motion_highlight", "text": "x", "style": "underline", "ink": "#111111"}, {"type": "motion_highlight", "style": "strike"}],
+    "motion_meters": [{"type": "motion_meters", "bars": 10, "rows": 8, "seed": 5, "cycles": 3, "gap": 4, "height": 160, "colors": ["#ff5ea8", "#34e0c3", "bad"], "label": "Level", "blocks": [{"type": "quiet_link", "text": "LOGO"}]}, {"type": "motion_meters", "layout": "row"}],
+    "motion_discs": [{"type": "motion_discs", "discs": [{"color": "#f4d21f", "r": 26}, {"color": "#2e6fbd", "r": 22}, {"color": "#e63950"}], "overlap": 14, "aspect": 2, "label": "Discs"}, {"type": "motion_discs", "blend": False}],
+    "motion_dotgrid": [{"type": "motion_dotgrid", "cols": 5, "rows": 4, "seed": 4}, {"type": "motion_dotgrid", "cols": 6, "rows": 3, "hops": [[0, 0], [2, 2], [4, 0], [5, 2]], "accent": "#2563eb", "color": "#d9e2ff", "dot": 60, "aspect": 2, "label": "Grid"}],
+    "motion_blade": [{"type": "motion_blade", "text": "the neutral smart kitchen", "size": 40}, {"type": "motion_blade", "text": "any recipe", "shape": "bar", "color": "#e11d48", "ink": "#111111"}, {"type": "motion_blade", "text": "x", "shape": "disc"}],
+    "motion_blueprint": [{"type": "motion_blueprint", "text": "atelier", "size": 120, "guide": "#7c3aed", "weight": "black"}, {"type": "motion_blueprint", "text": "north", "lines": False, "color": "#2563eb"}],
+    "motion_tracking": [{"type": "motion_tracking", "text": "Engineered for control", "size": 40, "from": 0, "to": 0.4}, {"type": "motion_tracking", "text": "COMPRESS", "from": 0.6, "to": 0, "weight": "black"}],
+    "motion_tabs": [{"type": "motion_tabs", "items": ["Storyboarding", "Progress", "Animation", "Delivery"], "size": 20}, {"type": "motion_tabs", "items": ["Brief", "Cut", "Ship"], "accent": "#e11d48", "color": "#111111"}],
     "form_textarea": [{"type": "form_textarea", "label": "L", "placeholder": "p", "value": "v", "rows": 6}, {"type": "form_textarea", "placeholder": "only"}],
 }
 
