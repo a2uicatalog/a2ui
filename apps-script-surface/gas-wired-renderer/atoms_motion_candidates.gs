@@ -320,3 +320,110 @@ _RENDERERS['motion_sweep'] = function(b) {
   return '<div style="position:relative;overflow:hidden;border-radius:12px;">' + inner + '<div aria-hidden="true" style="position:absolute;top:-50%;height:200%;width:' + w + '%;left:calc(-' + (w + 20) + '% + clamp(0,var(--s,1),1)*' + (2 * w + 140) + '%);'
     + 'transform:rotate(' + ang + 'deg);pointer-events:none;background:linear-gradient(90deg,transparent,' + col + ',transparent);opacity:' + str + ';"></div></div>';
 };
+
+// ── fourth batch from the vaylens brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag ───────────────────────────────────────────
+// Same rules as the earlier batches: decorative layers aria-hidden, words are real text, every dial defaults to the finished picture, no endless loops, no flashing.
+// Width that follows content ("a pill that grows as words land in it") cannot use calc() with fr units, so a box grows with max-width = progress x an estimated width,
+// and is released to its natural width at the end (the max() term), so an estimate that is a little off never clips the finished picture.
+var _WS = '[ \\t\\n\\r\\f\\v\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+';
+function _m4Grow(k, chars, pad) { return 'max-width:max(calc(' + k + '*' + _ifFmt(chars * 0.7 + pad) + 'em),calc((' + k + ' - 0.999)*1000000px));'; }
+
+// motion_capsule: a rounded capsule that widens as words land in it, one after another with p; the newest word can resolve out of noise.
+var _CP_LOOK = {outline: 'outline', solid: 'solid', glass: 'glass'};
+var _CP_RES = {fade: 'fade', blur: 'blur', scramble: 'scramble'};
+var _CP_NOISE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
+_RENDERERS['motion_capsule'] = function(b) {
+  var words = _moStr(b.text, 120).split(new RegExp(_WS)).filter(function(w) { return w; }).slice(0, 12);
+  if (!words.length) words = ['Text'];
+  var n = words.length, look = _ffPick(b.style, _CP_LOOK, 'outline'), res = _ffPick(b.resolve, _CP_RES, 'blur'), size = _ffInt(b.size, 22, 12, 64), seed = _ffInt(b.seed, 5, 0, 999);
+  var ink = _moInk(b, 'color', b.tone === 'dark' ? '#0f172a' : '#ffffff'), box;
+  if (look === 'outline') box = 'border:1.5px solid ' + ink + ';';
+  else if (look === 'solid') box = 'background:' + ink + '22;border:1.5px solid ' + ink + '55;';
+  else box = 'background:' + ink + '1a;border:1px solid ' + ink + '40;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);';
+  var inner = '';
+  words.forEach(function(w, i) {
+    var k = 'clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1)', pad = i ? '0.3em' : '0', noise = '';
+    if (res === 'scramble') {
+      var j, nz = ''; for (j = 0; j < w.length; j++) nz += _CP_NOISE.charAt(Math.floor(_bxSeed(seed, i, j) * _CP_NOISE.length));
+      noise = '<span aria-hidden="true" style="position:absolute;left:' + pad + ';top:0;opacity:calc(1 - var(--ci));">' + _esc(nz) + '</span>';
+    }
+    inner += '<span style="--ci:' + k + ';position:relative;display:inline-block;vertical-align:bottom;overflow:hidden;white-space:nowrap;padding-left:' + pad + ';' + _m4Grow('var(--ci)', w.length, i ? 0.3 : 0) +
+      'opacity:var(--ci);' + (res === 'blur' ? 'filter:blur(calc((1 - var(--ci))*5px));' : '') + '">' + _esc(w) + noise + '</span>';
+  });
+  return '<span style="display:inline-block;box-sizing:border-box;padding:0.32em 0.95em;border-radius:999px;font-size:' + size + 'px;line-height:1.25;color:' + ink + ';white-space:nowrap;' + box + 'opacity:clamp(0,calc(var(--p,1)*8),1);">' + inner + '</span>';
+};
+
+// motion_arrow: an arrow that draws itself with p and turns through a list of directions with the step dial s (0 points right).
+_RENDERERS['motion_arrow'] = function(b) {
+  var src = _bxList(b.angles, 6), ang = [], i;
+  for (i = 0; i < src.length; i++) ang.push(_ffInt(src[i], 0, -720, 720));
+  if (!ang.length) ang.push(0);
+  var M = ang.length, size = _ffInt(b.size, 64, 12, 400), wt = _ffInt(b.weight, 3, 1, 12), col = _moInk(b, 'color', 'currentColor'), solid = b.style === 'solid', inl = b.inline === true;
+  var terms = '', label = _moStr(b.label, 60) || 'Arrow';
+  for (i = 0; i < M - 1; i++) terms += ' + ' + (ang[i + 1] - ang[i]) + '*clamp(0,calc(var(--s,1)*' + (M - 1) + ' - ' + i + '),1)';
+  var shaft = 'stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,calc(var(--p,1)*1.6),1));', head = 'stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,calc(var(--p,1)*1.6 - 0.6),1));';
+  return '<svg role="img" aria-label="' + _esc(label) + '" viewBox="0 0 64 32" width="' + size + '" height="' + Math.round(size / 2) + '" style="display:' + (inl ? 'inline-block;vertical-align:-0.15em' : 'block') + ';overflow:visible;transform:rotate(calc(1deg*(' + ang[0] + terms + ')));transform-origin:50% 50%;" focusable="false">' +
+    '<path d="M4 16H58" pathLength="1" fill="none" stroke="' + col + '" stroke-width="' + wt + '" stroke-linecap="round" style="' + shaft + '"/>' +
+    (solid ? '<path d="M44 5L60 16L44 27Z" fill="' + col + '" stroke="' + col + '" stroke-width="' + wt + '" stroke-linejoin="round" style="opacity:clamp(0,calc(var(--p,1)*1.6 - 0.6),1);"/>'
+           : '<path d="M44 5L59 16L44 27" pathLength="1" fill="none" stroke="' + col + '" stroke-width="' + wt + '" stroke-linecap="round" stroke-linejoin="round" style="' + head + '"/>') + '</svg>';
+};
+
+// motion_swatches: a brand palette arriving panel by panel, each from its own edge, each labelled with a real name and hex value.
+var _SW_LAYOUT = {grid: 'grid', row: 'row', stack: 'stack'};
+function _swInk(hex) {
+  var c = [1, 3, 5].map(function(i) { var v = parseInt(hex.slice(i, i + 2), 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+  var L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  return (1.05 / (L + 0.05)) >= ((L + 0.05) / 0.05) ? '#ffffff' : '#000000';   // white or black, whichever reads better: at least 4.58:1 on any colour
+}
+_RENDERERS['motion_swatches'] = function(b) {
+  var src = _bxList(b.swatches, 6), sw = [], i;
+  for (i = 0; i < src.length; i++) { var o = _clObj(src[i]); sw.push({name: _moStr(o.name, 20) || ('Colour ' + (i + 1)), hex: _ffHex(o.hex, _CL_FILLS[i % 8])}); }
+  while (sw.length < 2) sw.push({name: 'Colour ' + (sw.length + 1), hex: _CL_FILLS[sw.length % 8]});
+  var n = sw.length, lay = _ffPick(b.layout, _SW_LAYOUT, 'grid'), cols = lay === 'row' ? n : lay === 'stack' ? 1 : (n <= 2 ? n : 2), asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2), gap = _ffInt(b.gap, 0, 0, 24), rad = _ffInt(b.radius, 0, 0, 40);
+  var dirs = ['translate(calc((1 - var(--k))*-100%),0)', 'translate(0,calc((1 - var(--k))*-100%))', 'translate(calc((1 - var(--k))*100%),0)', 'translate(0,calc((1 - var(--k))*100%))'], lis = '';
+  sw.forEach(function(s, j) {
+    var ink = _swInk(s.hex);
+    lis += '<li style="--k:clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + j + '),1);position:relative;box-sizing:border-box;padding:6% 7%;display:flex;flex-direction:column;justify-content:space-between;background:' + s.hex + ';color:' + ink + ';border-radius:' + rad + 'px;overflow:hidden;transform:' + dirs[j % 4] + ';opacity:clamp(0,calc(var(--k)*4),1);">' +
+      '<span style="font-size:0.85em;font-weight:700;">' + _esc(s.name) + '</span><span style="font-size:0.7em;letter-spacing:0.04em;opacity:0.85;">' + s.hex.toUpperCase() + '</span></li>';
+  });
+  return '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(' + cols + ',1fr);grid-auto-rows:1fr;gap:' + gap + 'px;width:100%;aspect-ratio:' + asp + ';overflow:hidden;border-radius:' + rad + 'px;font-size:clamp(11px,2.2cqw,22px);container-type:inline-size;">' + lis + '</ul>';
+};
+
+// motion_glass: a frosted pane that blurs whatever is behind it; the blur, the tint and the scale come in with p. Its children are ordinary atoms.
+_RENDERERS['motion_glass'] = function(b) {
+  var blocks = _bxList(b.blocks, 6), inner = '', i, blur = _ffInt(b.blur, 18, 2, 40), tint = _ffHex(b.tint, '#ffffff'), str = _ffNum(b.strength, 0.22, 0.05, 0.6, 2), rad = _ffInt(b.radius, 18, 0, 40), pad = _ffInt(b.padding, 18, 0, 48);
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  return '<div style="--k:clamp(0,var(--p,1),1);position:relative;box-sizing:border-box;padding:' + pad + 'px;border-radius:' + rad + 'px;background:rgba(' + _ffRgb(tint) + ',calc(' + str + '*var(--k)));' +
+    'backdrop-filter:blur(calc(var(--k)*' + blur + 'px)) saturate(1.15);-webkit-backdrop-filter:blur(calc(var(--k)*' + blur + 'px)) saturate(1.15);' +
+    (b.edge === false ? '' : 'border:1px solid rgba(255,255,255,calc(0.4*var(--k)));') + 'box-shadow:0 8px 32px rgba(0,0,0,calc(0.18*var(--k)));opacity:var(--k);transform:scale(calc(0.96 + 0.04*var(--k)));">' + inner + '</div>';
+};
+
+// motion_wall: a wall of picture tiles. p builds it tile by tile; the step dial s thins it out in a seeded order (s = 1 is the full wall, s = 0 is empty).
+_RENDERERS['motion_wall'] = function(b) {
+  var cols = _ffInt(b.cols, 6, 2, 10), rows = _ffInt(b.rows, 3, 1, 6), gap = _ffInt(b.gap, 8, 0, 24), rad = _ffInt(b.radius, 8, 0, 24), seed = _ffInt(b.seed, 3, 0, 999), asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2), N = cols * rows;
+  var src = _bxList(b.images, 24), imgs = [], i;
+  for (i = 0; i < src.length; i++) imgs.push(_moImg(typeof src[i] === 'object' && src[i] ? src[i].url : src[i]));
+  var idx = []; for (i = 0; i < N; i++) idx.push(i);
+  idx.sort(function(a, c) { return (_bxSeed(seed, a, 9) - _bxSeed(seed, c, 9)) || (a - c); });
+  var rank = []; idx.forEach(function(t, r) { rank[t] = r; });
+  var out = '';
+  for (i = 0; i < N; i++) {
+    var pic = imgs.length && imgs[i % imgs.length] ? '<img src="' + _esc(imgs[i % imgs.length]) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">' : '';
+    out += '<span style="--b:clamp(0,calc(var(--p,1)*' + (N + 3) + ' - ' + i + '),1);--v:clamp(0,calc(1 - (1 - var(--s,1))*' + (N + 3) + ' + ' + rank[i] + '),1);position:relative;display:block;overflow:hidden;border-radius:' + rad + 'px;background:' + _CL_FILLS[(i + seed) % 8] +
+      ';opacity:calc(var(--b)*var(--v));transform:scale(calc(0.8 + 0.2*var(--b)*var(--v)));">' + pic + '</span>';
+  }
+  var named = typeof b.label === 'string' && b.label;
+  return '<div ' + (named ? 'role="img" aria-label="' + _esc(_moStr(b.label, 60)) + '"' : 'aria-hidden="true"') + ' style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);grid-auto-rows:1fr;gap:' + gap + 'px;width:100%;aspect-ratio:' + asp + ';overflow:hidden;pointer-events:none;">' + out + '</div>';
+};
+
+// motion_tag: a dot that travels across the box and then grows into a label pill, so a caption seems to come out of the thing it names.
+var _TG_TONE = {dark: 'dark', light: 'light', accent: 'accent'};
+_RENDERERS['motion_tag'] = function(b) {
+  var text = _moStr(b.text, 24) || 'Label', f = _clObj(b.from), t = _clObj(b.to), size = _ffInt(b.size, 20, 12, 40), tone = _ffPick(b.tone, _TG_TONE, 'dark'), acc = _moInk(b, 'accent', '#ffd166'), asp = _ffNum(b.aspect, 1.78, 0.5, 3, 2);
+  var fx = _ffNum(f.x, 20, 0, 100, 1), fy = _ffNum(f.y, 30, 0, 100, 1), tx = _ffNum(t.x, 55, 0, 100, 1), ty = _ffNum(t.y, 55, 0, 100, 1), mv = 'clamp(0,calc(var(--p,1)*2.2),1)', gr = 'clamp(0,calc((var(--p,1) - 0.45)/0.55),1)';
+  var bg = tone === 'light' ? '#ffffff' : tone === 'accent' ? acc : '#111111', ink = tone === 'dark' ? '#ffffff' : '#111111';
+  return '<div style="position:relative;width:100%;aspect-ratio:' + asp + ';font-size:' + size + 'px;">' +
+    '<div style="--t:' + gr + ';position:absolute;left:calc(' + fx + '% + (' + _ifFmt(parseFloat(tx) - parseFloat(fx)) + '%)*' + mv + ');top:calc(' + fy + '% + (' + _ifFmt(parseFloat(ty) - parseFloat(fy)) + '%)*' + mv + ');transform:translate(0,-50%);display:flex;align-items:center;gap:0.45em;white-space:nowrap;">' +
+    '<span aria-hidden="true" style="width:0.7em;height:0.7em;border-radius:50%;background:' + acc + ';flex:none;opacity:clamp(0,calc(var(--p,1)*10),1);"></span>' +
+    '<span style="display:inline-block;overflow:hidden;box-sizing:border-box;padding:0.28em calc(var(--t)*0.95em);border-radius:999px;background:' + bg + ';color:' + ink + ';line-height:1.2;' + _m4Grow('var(--t)', text.length, 1.9) + 'opacity:var(--t);">' + _esc(text) + '</span></div></div>';
+};

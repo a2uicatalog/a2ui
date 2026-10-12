@@ -21238,3 +21238,116 @@ blocks:
     color: "\"#rrggbb\" (optional). Default #ffffff."
   notes: "One pass, soft edges, no repeat: nothing flashes. Movement comes from the film's step key, never a CSS loop."
   source: *mla002
+- type: motion_capsule
+  stage: preview
+  description: "A rounded capsule that widens as words land in it, one after another as p goes 0 to 1, so a sentence builds inside its own outline. Each word fades in (and, with resolve blur or scramble, comes out of blur or noise). Outline, solid or glass. The words are real text. Plain HTML and CSS, no script."
+  compact_description: "a capsule that widens as words land in it"
+  routing_text: "A pill or capsule outline around a line of text that grows wider as each word appears, like a caption being typed into a chip."
+  intent_phrases:
+  - "Type the sentence into a pill that grows with the words."
+  - "A rounded outline that stretches as each word lands."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 120). Split into words on white space, up to 12."
+    style: "\"outline\" | \"solid\" | \"glass\" (optional, default outline). Glass blurs what is behind it."
+    resolve: "\"fade\" | \"blur\" | \"scramble\" (optional, default blur). How a new word arrives: it fades, it comes out of blur, or it resolves out of random characters."
+    tone: "\"light\" | \"dark\" (optional, default light). Sets the default colour: white or near-black."
+    color: "\"#rrggbb\" (optional). Text and outline colour."
+    size: "integer (optional). Font size in px, 12 to 64. Default 22."
+    seed: "integer (optional). Seeds the noise for resolve scramble, 0 to 999. Default 5."
+  notes: "Width follows the words by an estimate (progress times about 0.7 em per character), and the capsule is released to its natural width at the end, so a font that runs wide never clips the finished picture. Scramble noise is aria-hidden; the real words are always in the page."
+  source: *mla002
+- type: motion_arrow
+  stage: preview
+  description: "An arrow that draws itself (shaft, then head) as p goes 0 to 1 and turns through a list of directions as the step dial s runs: angles [0, 90, 180] points right, then down, then left. Outline or solid, any size, and it can sit inline in a line of text. Plain SVG and CSS."
+  compact_description: "an arrow that draws on and turns to point a new way"
+  routing_text: "An arrow that draws itself and rotates to point in different directions, for a sentence that changes meaning or a step that moves on."
+  intent_phrases:
+  - "An arrow after the words that turns from pointing right to pointing left."
+  - "Draw an arrow and swing it round to point down."
+  surfaces: *mla001
+  fields:
+    angles: "array (optional, up to 6) of integers, degrees from -720 to 720; 0 points right. The step dial moves through them in order. Default [0]."
+    size: "integer (optional). Width in px, 12 to 400. Height is half. Default 64."
+    weight: "integer (optional). Stroke width in drawing units, 1 to 12. Default 3."
+    style: "\"outline\" | \"solid\" (optional, default outline). Solid fills the head."
+    color: "\"#rrggbb\" (optional). Default the surrounding text colour."
+    inline: "bool (optional). Sit on the text baseline instead of as a block. Default false."
+    label: "string (optional, max 60). The accessible name. Default Arrow."
+  notes: "The turn is linear between angles; ease it with the film's own easing on the step key. One accessible name, no hidden text."
+  source: *mla002
+- type: motion_swatches
+  stage: preview
+  description: "A brand palette arriving panel by panel, each panel sliding in from its own edge (left, top, right, bottom in turn) as p goes 0 to 1. Every panel carries a real name and its hex value, in white or black, whichever reads better (at least 4.58:1 on any colour). Grid, row or stack."
+  compact_description: "colour swatches that slide in from the edges with name and hex"
+  routing_text: "A colour palette shown as large panels with colour names and hex codes that slide into place."
+  intent_phrases:
+  - "Show the brand colours as panels with names and hex values."
+  - "A palette that slides in four panels from the edges."
+  surfaces: *mla001
+  fields:
+    swatches: "array (required, 2 to 6) of {name (max 20), hex (\"#rrggbb\")}."
+    layout: "\"grid\" | \"row\" | \"stack\" (optional, default grid: two columns)."
+    aspect: "number (optional). Width over height, 0.5 to 3. Default 1.78."
+    gap: "integer (optional). px between panels, 0 to 24. Default 0."
+    radius: "integer (optional). Corner radius px, 0 to 40. Default 0."
+  notes: "A list of text: each panel reads as its name then its hex. Colour is never the only signal. The label colour is chosen by contrast, not by taste."
+  source: *mla002
+- type: motion_glass
+  stage: preview
+  description: "A frosted pane: the blur of whatever is behind it, a light tint, an edge and a soft shadow come in with p, and the pane scales up a touch. Its children (up to 6 atoms) are ordinary atoms drawn on the glass. Plain CSS (backdrop-filter), no script."
+  compact_description: "a frosted glass pane that blurs what is behind it"
+  routing_text: "A frosted glass panel over a photo or video that blurs the background and holds a dashboard or text."
+  intent_phrases:
+  - "Put the dashboard on a frosted glass panel over the photo."
+  - "A blurred translucent card that fades in."
+  surfaces: *mla001
+  fields:
+    blocks: "array (required, 1 to 6) of atoms drawn on the pane."
+    blur: "integer (optional). Background blur in px at rest, 2 to 40. Default 18."
+    tint: "\"#rrggbb\" (optional). Default #ffffff."
+    strength: "number (optional). Tint opacity at rest, 0.05 to 0.6. Default 0.22."
+    radius: "integer (optional). Corner radius px, 0 to 40. Default 18."
+    padding: "integer (optional). px, 0 to 48. Default 18."
+    edge: "bool (optional). A light edge line. Default true."
+  notes: "Contrast is the author's job: text on glass must be checked against the busiest part of the picture behind it. Where backdrop-filter is not supported the pane is just the tint."
+  source: *mla002
+- type: motion_wall
+  stage: preview
+  description: "A wall of picture tiles. p builds it tile by tile; the step dial s thins it out in a seeded order (s = 1 is the full wall, s = 0 is empty), which is how a photo wall gives way to a sentence. Tiles use the pictures given, repeating, or seeded colours. Decorative unless it has a label."
+  compact_description: "a photo wall that builds and thins out tile by tile"
+  routing_text: "A grid of photos that disappears one by one to reveal text, or builds up tile by tile."
+  intent_phrases:
+  - "A wall of photos that thins out until only the headline is left."
+  - "Build a grid of image tiles one at a time."
+  surfaces: *mla001
+  fields:
+    images: "array (optional, up to 24) of picture URLs or {url}. Same URL rules as motion_image (https, a rooted path or a data: image)."
+    cols: "integer (optional). 2 to 10. Default 6."
+    rows: "integer (optional). 1 to 6. Default 3."
+    gap: "integer (optional). px, 0 to 24. Default 8."
+    radius: "integer (optional). Tile corner radius px, 0 to 24. Default 8."
+    seed: "integer (optional). Orders the tiles and picks their colours, 0 to 999. Default 3."
+    aspect: "number (optional). Width over height, 0.5 to 3. Default 1.78."
+    label: "string (optional, max 60). Gives the wall an accessible name; without it the wall is hidden from screen readers."
+  notes: "Standalone it shows the full wall. To thin it, key the step dial from 1 down to 0. Put the headline in a layer behind it. Pictures without a label are decoration."
+  source: *mla002
+- type: motion_tag
+  stage: preview
+  description: "A dot that travels from one point to another across the box and then grows into a label pill, so a caption seems to come out of the thing it names. Positions are percent of the box. The label is real text. Plain HTML and CSS."
+  compact_description: "a dot that travels and grows into a label pill"
+  routing_text: "A small dot that moves to a spot and turns into a labelled pill, like a tag being attached to a photo."
+  intent_phrases:
+  - "A dot that moves over the photo and becomes the label services."
+  - "Attach a label to a picture with a dot that grows into a pill."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 24). The label."
+    from: "{x, y} (optional). Start, percent of the box, 0 to 100. Default 20, 30."
+    to: "{x, y} (optional). Where the dot stops and the pill grows. Default 55, 55."
+    tone: "\"dark\" | \"light\" | \"accent\" (optional, default dark). Pill colour."
+    accent: "\"#rrggbb\" (optional). Dot colour, and the pill colour for tone accent. Default #ffd166."
+    size: "integer (optional). Font size px, 12 to 40. Default 20."
+    aspect: "number (optional). Width over height, 0.5 to 3. Default 1.78."
+  notes: "The dot takes the first 45% of p and the pill the rest. Several tags on one picture are several atoms with different from and to."
+  source: *mla002

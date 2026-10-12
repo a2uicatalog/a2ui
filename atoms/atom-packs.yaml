@@ -350,6 +350,12 @@ a2ui-effects-v1:
 - motion_dialog
 - motion_dots
 - motion_sweep
+- motion_capsule
+- motion_arrow
+- motion_swatches
+- motion_glass
+- motion_wall
+- motion_tag
 - motion_orbit
 - motion_code
 - motion_mark

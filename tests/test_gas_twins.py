@@ -166,6 +166,12 @@ EXAMPLES: dict = {
     "photo_stepper": [{"type": "photo_stepper", "accent": "#0f766e", "trigger_label": "Browse", "images": [{"id": "1", "url": "https://x.y/a.jpg", "name": "n", "price_display": "1", "starred_by_display": "A", "source_url": "https://x.y", "active": True, "badge": "b"}, {"id": "2", "alt": "a"}]}],
     "sortable_list": [{"type": "sortable_list", "label": "L", "items": [{"id": "a", "label": "A", "note": "n", "group": "g", "order": 2}, {"id": "b"}, {"label": "c"}], "emptyMessage": "e"}],
     "preview_frame": [{"type": "preview_frame", "src": "https://x.y", "height": 200, "label": "L", "emptyMessage": "e"}],
+    "motion_capsule": [{"type": "motion_capsule", "text": "don't have resources", "style": "outline", "resolve": "blur"}, {"type": "motion_capsule", "text": "We ship fast today", "style": "glass", "resolve": "scramble", "size": 30, "tone": "dark", "seed": 9}, {"type": "motion_capsule", "style": "solid", "color": "#ff0000", "resolve": "fade"}],
+    "motion_arrow": [{"type": "motion_arrow", "angles": [0, 90, 180], "size": 80, "weight": 4, "color": "#34e0c3", "inline": True, "label": "Next"}, {"type": "motion_arrow", "style": "solid"}],
+    "motion_swatches": [{"type": "motion_swatches", "swatches": [{"name": "Indigo", "hex": "#475eff"}, {"name": "Mellow", "hex": "#f6cf77"}, {"name": "White", "hex": "#ffffff"}, {"name": "Black", "hex": "#111111"}], "layout": "grid", "gap": 2, "radius": 8}, {"type": "motion_swatches", "layout": "row", "swatches": [{"name": "A", "hex": "#ff0000"}, {"hex": "nope"}, {"name": "C"}]}],
+    "motion_glass": [{"type": "motion_glass", "blur": 24, "tint": "#ffffff", "strength": 0.3, "radius": 20, "padding": 16, "edge": False, "blocks": [{"type": "quiet_link", "text": "x"}]}, {"type": "motion_glass", "blocks": [{"type": "cert_disclaimer", "holder": "H"}]}],
+    "motion_wall": [{"type": "motion_wall", "cols": 4, "rows": 2, "seed": 11, "gap": 4, "radius": 6, "images": ["https://x.y/a.jpg", {"url": "https://x.y/b.jpg"}, "data:image/png;base64,AAAA", "http://bad"], "label": "Wall"}, {"type": "motion_wall"}],
+    "motion_tag": [{"type": "motion_tag", "text": "tools", "from": {"x": 10, "y": 20}, "to": {"x": 60, "y": 55}, "tone": "accent", "accent": "#34e0c3", "size": 24}, {"type": "motion_tag", "tone": "light"}],
     "form_textarea": [{"type": "form_textarea", "label": "L", "placeholder": "p", "value": "v", "rows": 6}, {"type": "form_textarea", "placeholder": "only"}],
 }
 

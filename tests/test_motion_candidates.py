@@ -509,3 +509,84 @@ def test_sequenced_stitches_fade_out_first_then_in(core_js):
 
 def test_dissolve_is_unchanged_by_the_sequenced_stitches(core_js):
     assert _norm_all(_py(dict(STITCHED, stitch="dissolve"))) == _norm_all(_gas_batch(core_js, [dict(STITCHED, stitch="dissolve")])[0])
+
+
+# ── fourth batch from the vaylens brand film: capsule, arrow, swatches, glass, wall, tag ──────────────────────────────────────────────────────
+def _ps(block, bid, p=None, s=None):
+    """A tiny film that holds p and/or s at fixed values, probed at t=1."""
+    key = {"t": 0}
+    if p is not None:
+        key["p"] = p
+    if s is not None:
+        key["step"] = s
+    return _dial(block, bid, [key, dict(key, t=6)])
+
+
+@browser
+def test_capsule_widens_as_words_land_and_is_not_clipped_at_the_end(core_js):
+    blk = {"type": "motion_capsule", "text": "don't have resources at all", "size": 24}
+    js = ("var c=document.querySelector('[data-mt-id=cp] > span');var w=c.querySelectorAll('span');var clipped=false;"
+          "Array.prototype.forEach.call(w,function(e){if(e.scrollWidth>e.clientWidth+1)clipped=true;});return {w:Math.round(c.getBoundingClientRect().width),clipped:clipped};")
+    a, m, z = (_probe_gas(core_js, _ps(blk, "cp", p=v), 1, js) for v in (0.2, 0.55, 1))
+    assert a["w"] < m["w"] < z["w"], (a, m, z)
+    assert not z["clipped"], z                      # the finished capsule shows every word in full, whatever the font does to the width estimate
+
+
+@browser
+def test_arrow_turns_through_its_directions_and_draws_with_p(core_js):
+    blk = {"type": "motion_arrow", "angles": [0, 90, 180], "size": 80}
+    js = "var s=document.querySelector('[data-mt-id=ar] svg');var m=new DOMMatrix(getComputedStyle(s).transform);return Math.round(Math.atan2(m.b,m.a)*180/Math.PI);"
+    got = [_probe_gas(core_js, _ps(blk, "ar", p=1, s=v), 1, js) for v in (0, 0.5, 1)]
+    assert got[0] == 0 and got[1] == 90 and abs(got[2]) == 180, got
+    off = "return parseFloat(/-?[\\d.]+/.exec(getComputedStyle(document.querySelector('[data-mt-id=ar] path')).strokeDashoffset)[0]);"
+    assert _probe_gas(core_js, _ps(blk, "ar", p=0, s=1), 1, off) > 0.99 and abs(_probe_gas(core_js, _ps(blk, "ar", p=1, s=1), 1, off)) < 0.01
+
+
+@browser
+def test_swatches_arrive_from_their_edges_and_every_label_is_readable(core_js):
+    blk = {"type": "motion_swatches", "swatches": [{"name": "Indigo", "hex": "#475eff"}, {"name": "Mellow", "hex": "#f6cf77"}, {"name": "White", "hex": "#ffffff"}, {"name": "Black", "hex": "#111111"}]}
+    js = ("var u=document.querySelector('[data-mt-id=sw] ul'),r=u.getBoundingClientRect();return Array.prototype.map.call(u.children,function(l){var b=l.getBoundingClientRect();"
+          "return {out:b.right<=r.left+1||b.left>=r.right-1||b.bottom<=r.top+1||b.top>=r.bottom-1,o:+(+getComputedStyle(l).opacity).toFixed(2)};});")
+    a, z = (_probe_gas(core_js, _ps(blk, "sw", p=v), 1, js) for v in (0, 1))
+    assert all(x["out"] or x["o"] == 0 for x in a), a
+    assert not any(x["out"] for x in z) and all(x["o"] == 1 for x in z), z
+    from renderers import web_article as w
+    def lum(h):
+        c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+        c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    for hx in ("#475eff", "#f6cf77", "#ffffff", "#111111", "#ff0000", "#00ff00", "#808080", "#767676", "#0000ff", "#7f7f7f", "#a0a0a0"):
+        ink = w._sw_ink(hx)
+        hi, lo = sorted((lum(hx), lum(ink)), reverse=True)
+        assert (hi + 0.05) / (lo + 0.05) >= 4.5, (hx, ink)   # white or black, whichever reads better: at least 4.58:1 on any colour
+
+
+@browser
+def test_glass_blur_grows_with_p(core_js):
+    blk = {"type": "motion_glass", "blur": 20, "blocks": [{"type": "quiet_link", "text": "x"}]}
+    js = "var e=document.querySelector('[data-mt-id=gl] > div');var f=getComputedStyle(e).backdropFilter||getComputedStyle(e).webkitBackdropFilter;var m=/blur\\(([\\d.]+)px/.exec(f);return {b:m?+(+m[1]).toFixed(1):null,o:+(+getComputedStyle(e).opacity).toFixed(2)};"
+    a, m, z = (_probe_gas(core_js, _ps(blk, "gl", p=v), 1, js) for v in (0, 0.5, 1))
+    assert a["o"] == 0 and z["o"] == 1 and z["b"] == 20 and 8 < m["b"] < 12, (a, m, z)
+
+
+@browser
+def test_wall_builds_with_p_and_thins_with_s_in_a_stable_order(core_js):
+    blk = {"type": "motion_wall", "cols": 4, "rows": 2, "seed": 4}
+    js = "return Array.prototype.map.call(document.querySelectorAll('[data-mt-id=wl] > div > span'),function(e){return +(+getComputedStyle(e).opacity).toFixed(2);});"
+    built = _probe_gas(core_js, _ps(blk, "wl", p=0, s=1), 1, js)
+    full = _probe_gas(core_js, _ps(blk, "wl", p=1, s=1), 1, js)
+    half = _probe_gas(core_js, _ps(blk, "wl", p=1, s=0.5), 1, js)
+    empty = _probe_gas(core_js, _ps(blk, "wl", p=1, s=0), 1, js)
+    again = _probe_gas(core_js, _ps(blk, "wl", p=1, s=0.5), 1, js)
+    assert len(full) == 8 and all(v == 0 for v in built) and all(v == 1 for v in full) and all(v == 0 for v in empty), (built, full, empty)
+    assert 0 < sum(half) < 8 and half == again, half
+
+
+@browser
+def test_tag_dot_travels_then_the_pill_grows(core_js):
+    blk = {"type": "motion_tag", "text": "services", "from": {"x": 10, "y": 20}, "to": {"x": 60, "y": 55}, "size": 24, "aspect": 2}
+    js = ("var s=document.querySelector('[data-mt-id=tg] > div');var g=s.firstElementChild,r=s.getBoundingClientRect(),b=g.getBoundingClientRect();"
+          "return {x:Math.round((b.left-r.left)/r.width*100),pill:Math.round(g.lastElementChild.getBoundingClientRect().width)};")
+    a, m, z = (_probe_gas(core_js, _ps(blk, "tg", p=v), 1, js) for v in (0.01, 0.45, 1))
+    assert abs(a["x"] - 10) <= 2 and abs(m["x"] - 60) <= 2 and abs(z["x"] - 60) <= 2, (a, m, z)
+    assert a["pill"] < m["pill"] + 1 and m["pill"] < z["pill"] and z["pill"] > 60, (a, m, z)
