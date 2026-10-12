@@ -1345,13 +1345,13 @@ _RENDERERS['motion_mask'] = function(b) {
 // scene's start and `overlap` seconds later is the hand-over: the old scene leaves while the new one arrives. Your own tracks
 // on the same layer are applied after, and win.
 var _MO_STITCH = {
-  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'letter': 1
+  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'letter': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1
 };
 var _MO_STITCH_IN = {
-  'letter': {clip: 0, cs: 9}, 'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}, 'iris': {clip: 0, cs: 1}, 'clock': {clip: 0, cs: 2}, 'slice': {clip: 0, cs: 3}, 'ribbon': {clip: 0, cs: 6}, 'flip': {opacity: 0, ry: -90}, 'spin': {opacity: 0, rotate: -14, scale: 0.8, blur: 6}
+  'letter': {clip: 0, cs: 9}, 'fade-through': {opacity: 0, scale: 0.92}, 'shared-x': {opacity: 0, x: 8}, 'shared-y': {opacity: 0, y: 6}, 'shared-z': {opacity: 0, scale: 0.8}, 'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}, 'iris': {clip: 0, cs: 1}, 'clock': {clip: 0, cs: 2}, 'slice': {clip: 0, cs: 3}, 'ribbon': {clip: 0, cs: 6}, 'flip': {opacity: 0, ry: -90}, 'spin': {opacity: 0, rotate: -14, scale: 0.8, blur: 6}
 };
 var _MO_STITCH_OUT = {
-  'letter': {opacity: 0}, 'dissolve': {opacity: 0}, 'push': {opacity: 0, x: -8}, 'zoom-through': {opacity: 0, scale: 1.12, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: -6}, 'whip': {opacity: 0, x: -18, blur: 22}, 'wipe': {opacity: 0}, 'iris': {opacity: 0}, 'clock': {opacity: 0}, 'slice': {opacity: 0}, 'ribbon': {opacity: 0}, 'flip': {opacity: 0, ry: 90}, 'spin': {opacity: 0, rotate: 14, scale: 1.2, blur: 6}
+  'letter': {opacity: 0}, 'fade-through': {opacity: 0}, 'shared-x': {opacity: 0, x: -8}, 'shared-y': {opacity: 0, y: -6}, 'shared-z': {opacity: 0, scale: 1.1}, 'dissolve': {opacity: 0}, 'push': {opacity: 0, x: -8}, 'zoom-through': {opacity: 0, scale: 1.12, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: -6}, 'whip': {opacity: 0, x: -18, blur: 22}, 'wipe': {opacity: 0}, 'iris': {opacity: 0}, 'clock': {opacity: 0}, 'slice': {opacity: 0}, 'ribbon': {opacity: 0}, 'flip': {opacity: 0, ry: 90}, 'spin': {opacity: 0, rotate: 14, scale: 1.2, blur: 6}
 };
 var _MO_REST = {opacity: 1, x: 0, y: 0, scale: 1, blur: 0, clip: 1};
 function _moAt(k, bpm, dur) {
@@ -1371,6 +1371,14 @@ function _moPortal(v) {
   if (!v || typeof v !== 'object' || typeof v.x !== 'number' || typeof v.y !== 'number' || typeof v.w !== 'number') return null;
   var w = parseFloat(_ffNum(v.w, 30, 17, 90, 2));
   return {x: parseFloat(_ffNum(v.x, 0, 0, 100, 2)) + w / 2, y: parseFloat(_ffNum(v.y, 0, 0, 100, 2)) + w / 2, w: w};
+}
+// Material's sequenced patterns (fade through, shared axis X, Y, Z): the old scene fades out in the first 30% of the hand-over and the new one fades in after it,
+// while its move or scale carries on to rest, so the two are never both half visible. Set overlap to about 0.3 for Material's 300 ms.
+var _MO_SEQ = {'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1};
+function _moSeqMid(from) {
+  var rest = {x: 0, y: 0, scale: 1}, mid = {opacity: 0}, p;
+  for (p in from) if (p !== 'opacity') mid[p] = (p in rest) ? Math.round((rest[p] + (from[p] - rest[p]) * 0.7) * 1000) / 1000 : from[p];
+  return mid;
 }
 function _moStitch(b, ids, bpm, dur, st) {
   var src = Array.isArray(b.scenes) ? b.scenes : [], sc = [], i, own = Object.prototype.hasOwnProperty;
@@ -1411,7 +1419,7 @@ function _moStitch(b, ids, bpm, dur, st) {
       else if (fin === 'letter') { // hidden until its start (clip 0 is the word at reading size, not nothing), then dives through the word
         _moStitchKey(keys, 0, {opacity: 0, clip: 0, cs: 9}); _moStitchKey(keys, cur.t, {opacity: 1, clip: 0, cs: 9}, 'hold'); _moStitchKey(keys, cur.t + Math.max(ov, 1.4), _MO_REST, 'linear');
       }
-      else { from = _MO_STITCH_IN[fin]; _moStitchKey(keys, 0, from); _moStitchKey(keys, cur.t, from); _moStitchKey(keys, cur.t + ov, _MO_REST, 'expo-out'); }
+      else { from = _MO_STITCH_IN[fin]; _moStitchKey(keys, 0, from); _moStitchKey(keys, cur.t, from); if (own.call(_MO_SEQ, fin)) _moStitchKey(keys, cur.t + ov * 0.3, _moSeqMid(from), 'linear'); _moStitchKey(keys, cur.t + ov, _MO_REST, 'expo-out'); }
     }
     if (nxt) {
       if (fout === 'cut') _moStitchKey(keys, nxt.t, {opacity: 0}, 'hold');
@@ -1421,7 +1429,7 @@ function _moStitch(b, ids, bpm, dur, st) {
         _moStitchKey(keys, nxt.t + ov + 0.02, {opacity: 0}, 'hold');
       }
       else if (fout === 'wipe' || fout === 'iris' || fout === 'clock' || fout === 'slice' || fout === 'ribbon' || fout === 'letter') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + (fout === 'letter' ? Math.max(ov, 1.4) : ov), {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
-      else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, _MO_STITCH_OUT[fout], 'accelerate'); }
+      else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + (own.call(_MO_SEQ, fout) ? ov * 0.3 : ov), _MO_STITCH_OUT[fout], 'accelerate'); }
     }
     if (!keys.length) continue;
     var props = {};

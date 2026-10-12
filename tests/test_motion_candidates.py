@@ -476,3 +476,36 @@ def test_python_twins_of_all_candidate_atoms_match_gas_exactly(core_js):
     got = _gas_batch(core_js, TWIN_CASES)
     bad = [(b.get("type"), i) for i, (b, g) in enumerate(zip(TWIN_CASES, got)) if _norm_all(_py(b)) != _norm_all(g)]
     assert not bad, bad
+
+
+# ── Material's sequenced hand-overs: fade-through, shared-x, shared-y, shared-z ─────────────────────────────────────────────────────────────
+from test_motion_atoms import STITCHED  # noqa: E402
+
+SEQ_FX = ("fade-through", "shared-x", "shared-y", "shared-z")
+PLAIN = dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3}, {"layer": "s3", "t": 6}])
+
+
+def test_sequenced_stitches_agree_between_the_twins(core_js):
+    cases = [dict(PLAIN, stitch=fx, overlap=ov) for fx in SEQ_FX for ov in (0.3, 0.6, 1.2)]
+    cases += [dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 2, "transition": "shared-x"}, {"layer": "s3", "t": 4, "transition": "fade-through"}])]
+    got = _gas_batch(core_js, cases)
+    bad = [i for i, (b, g) in enumerate(zip(cases, got)) if _norm_all(_py(b)) != _norm_all(g)]
+    assert not bad, bad
+
+
+@browser
+def test_sequenced_stitches_fade_out_first_then_in(core_js):
+    # scene s2 starts at t=3 (STITCHED); overlap 1.0 -> out fades over 3.0-3.3, in fades 3.3-4.0, never both half visible
+    js = ("function o(id){var e=document.querySelector('[data-mt-id='+id+']');return e?+(+getComputedStyle(e).opacity).toFixed(2):null;}return {a:o('s1'),b:o('s2')};")
+    for fx in SEQ_FX:
+        tl = dict(PLAIN, stitch=fx, overlap=1.0, autoplay=False, controls=False)
+        mid_out = _probe_gas(core_js, tl, 3.12, js)    # inside the first 30%: old scene fading, new one not started
+        mid_in = _probe_gas(core_js, tl, 3.6, js)      # old gone, new one coming up
+        done = _probe_gas(core_js, tl, 4.2, js)
+        assert mid_out["b"] is not None and mid_out["b"] < 0.02 and 0.0 < mid_out["a"] < 1.0, (fx, mid_out)
+        assert mid_in["a"] is not None and mid_in["a"] < 0.02 and 0.0 < mid_in["b"] < 1.0, (fx, mid_in)
+        assert done["b"] > 0.98 and done["a"] < 0.02, (fx, done)
+
+
+def test_dissolve_is_unchanged_by_the_sequenced_stitches(core_js):
+    assert _norm_all(_py(dict(STITCHED, stitch="dissolve"))) == _norm_all(_gas_batch(core_js, [dict(STITCHED, stitch="dissolve")])[0])

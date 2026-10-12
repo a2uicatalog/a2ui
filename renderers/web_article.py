@@ -28313,9 +28313,9 @@ def _render_motion_mask(b: dict) -> str:
             + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' if mask else '') + '">' + inner + '</div>')
 
 
-_MO_STITCH = {'letter': 1, 'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1}
-_MO_STITCH_IN = {'letter': {'clip': 0, 'cs': 9}, 'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'ribbon': {'clip': 0, 'cs': 6}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
-_MO_STITCH_OUT = {'letter': {'opacity': 0}, 'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'ribbon': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
+_MO_STITCH = {'letter': 1, 'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1}
+_MO_STITCH_IN = {'letter': {'clip': 0, 'cs': 9}, 'fade-through': {'opacity': 0, 'scale': 0.92}, 'shared-x': {'opacity': 0, 'x': 8}, 'shared-y': {'opacity': 0, 'y': 6}, 'shared-z': {'opacity': 0, 'scale': 0.8}, 'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}, 'iris': {'clip': 0, 'cs': 1}, 'clock': {'clip': 0, 'cs': 2}, 'slice': {'clip': 0, 'cs': 3}, 'ribbon': {'clip': 0, 'cs': 6}, 'flip': {'opacity': 0, 'ry': -90}, 'spin': {'opacity': 0, 'rotate': -14, 'scale': 0.8, 'blur': 6}}
+_MO_STITCH_OUT = {'letter': {'opacity': 0}, 'fade-through': {'opacity': 0}, 'shared-x': {'opacity': 0, 'x': -8}, 'shared-y': {'opacity': 0, 'y': -6}, 'shared-z': {'opacity': 0, 'scale': 1.1}, 'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}, 'iris': {'opacity': 0}, 'clock': {'opacity': 0}, 'slice': {'opacity': 0}, 'ribbon': {'opacity': 0}, 'flip': {'opacity': 0, 'ry': 90}, 'spin': {'opacity': 0, 'rotate': 14, 'scale': 1.2, 'blur': 6}}
 _MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0, 'clip': 1}
 
 
@@ -28343,6 +28343,19 @@ def _mo_portal(v):
         return None
     w = float(_ff_num(v['w'], 30, 17, 90, 2))
     return {'x': float(_ff_num(v['x'], 0, 0, 100, 2)) + w / 2, 'y': float(_ff_num(v['y'], 0, 0, 100, 2)) + w / 2, 'w': w}
+
+
+# Material's sequenced patterns (fade through, shared axis X, Y, Z); twin of _MO_SEQ / _moSeqMid in atoms_motion.gs.
+_MO_SEQ = {'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1}
+
+
+def _mo_seq_mid(frm):
+    rest = {'x': 0, 'y': 0, 'scale': 1}
+    mid = {'opacity': 0}
+    for p, v in frm.items():
+        if p != 'opacity':
+            mid[p] = (lambda x: math.floor(x * 1000 + 0.5) / 1000)(rest[p] + (v - rest[p]) * 0.7) if p in rest else v
+    return mid
 
 
 def _mo_stitch(b, ids, bpm, dur, st):
@@ -28404,6 +28417,8 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 frm = _MO_STITCH_IN[fin]
                 _mo_stitch_key(keys, 0, frm)
                 _mo_stitch_key(keys, cur['t'], frm)
+                if fin in _MO_SEQ:
+                    _mo_stitch_key(keys, cur['t'] + ov * 0.3, _mo_seq_mid(frm), 'linear')
                 _mo_stitch_key(keys, cur['t'] + ov, _MO_REST, 'expo-out')
         if nxt:
             if fout == 'cut':
@@ -28419,7 +28434,7 @@ def _mo_stitch(b, ids, bpm, dur, st):
                 _mo_stitch_key(keys, nxt['t'] + (max(ov, 1.4) if fout == 'letter' else ov), {'opacity': 0}, 'hold')
             else:
                 _mo_stitch_key(keys, nxt['t'], _MO_REST)
-                _mo_stitch_key(keys, nxt['t'] + ov, _MO_STITCH_OUT[fout], 'accelerate')
+                _mo_stitch_key(keys, nxt['t'] + (ov * 0.3 if fout in _MO_SEQ else ov), _MO_STITCH_OUT[fout], 'accelerate')
         if not keys:
             continue
         props = {p for k in keys for p in k if p not in ('t', 'ease')}
