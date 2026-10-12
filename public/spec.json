@@ -12489,7 +12489,7 @@
     "font": "\"sans\" | \"serif\" | \"mono\" | \"display\" (optional, default \"sans\"). display is a heavy grotesque.",
     "weight": "\"regular\" | \"bold\" | \"black\" (optional, default \"bold\")",
     "mode": "\"lines\" | \"words\" | \"chars\" | \"block\" (optional, default \"lines\"). What reveals in turn. lines never wraps; more than 120 units falls back to block.",
-    "reveal": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" | \"reel\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus.",
+    "reveal": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" | \"reel\" | \"pop\" | \"decode\" (optional, default \"rise\"). pop scales each unit up past full size and settles (an overshoot). decode shows seeded random characters that resolve into each unit (the real text is always in the page; the noise is aria-hidden). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus.",
     "overlap": "integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.",
     "tracking": "number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02.",
     "line_height": "number (optional). 0.8-2. Default 1.05.",
@@ -12512,7 +12512,14 @@
     "split": "integer (optional). Red and cyan copies pull apart by this many px at the peak of --s and sit together at 0: the chromatic glitch. 0-60. Default 0 (off).",
     "split_a": "\"#rrggbb\" (optional). Left copy. Default a hot pink.",
     "split_b": "\"#rrggbb\" (optional). Right copy. Default cyan.",
-    "prism": "array (2-4) of words, max 14 characters each (optional). A turning 3D prism after the text that cycles the words as the second dial (--s) goes 0 to 1 (one full turn): Build / Ship / Scale. Two words repeat to fill four faces. Needs at least two words, else ignored."
+    "prism": "array (2-4) of words, max 14 characters each (optional). A turning 3D prism after the text that cycles the words as the second dial (--s) goes 0 to 1 (one full turn): Build / Ship / Scale. Two words repeat to fill four faces. Needs at least two words, else ignored.",
+    "order": "\"forward\" | \"reverse\" | \"centre\" | \"random\" (optional, default \"forward\"). The order units reveal in: reading order, last first, from the middle outwards, or a fixed random order (see order_seed). The step-dial effects (karaoke, decor, wave) keep reading order.",
+    "order_seed": "integer (optional). 0-999. Seeds order random and the noise of reveal decode. Default 3.",
+    "accent_font": "\"sans\" | \"serif\" | \"mono\" | \"display\" (optional). A typeface for the words wrapped in asterisks, so one word can be set in serif inside sans text. Default none (the line face).",
+    "accent_style": "\"italic\" (optional). Sets the asterisk words in italic. Default none.",
+    "wave": "integer (optional). Letters ride a travelling vertical wave of this many px as the second dial (--s) goes 0 to 1, flat at both ends. 0-40. Default 0 (off). Best with mode chars.",
+    "start_scale": "number (optional). 1-12. The whole line starts this many times its size, cropped by the box, and shrinks to its size as p goes 0 to 1: the oversize zoom-down. Default 1 (off). The box hides what falls outside it.",
+    "caret": "bool (optional). A caret follows the unit being revealed and stays on the last one. Use with mode words or chars; lines and block have no caret. Default false."
    },
    "source": {
     "name": "a2uicatalog",

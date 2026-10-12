@@ -27620,7 +27620,8 @@ for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens
     _RENDERERS[_mo_name] = _mo_fn
 
 
-_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1, 'reel': 1}
+_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1, 'reel': 1, 'pop': 1, 'decode': 1}
+_MO_ORDER = {'forward': 1, 'reverse': 1, 'centre': 1, 'random': 1}
 _MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'
 _MO_ALIGN = {'start': 'left', 'middle': 'center', 'end': 'right'}
 
@@ -27744,9 +27745,16 @@ def _render_motion_text(b: dict) -> str:
     ag_a, ag_b = (_ff_hex(ag[0], ''), _ff_hex(ag[1], '')) if len(ag) >= 2 else ('', '')
     acc_css = ('background:linear-gradient(90deg,' + ag_a + ',' + ag_b + ');-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;') if (ag_a and ag_b) else ''
     glow, glow_c, shine = _ff_int(b.get('glow'), 0, 0, 40), _mo_ink(b, 'glow_color', accent), b.get('shine') is True
+    # text-motion options (2026-10-12): stagger order, an accent word in its own face, a letter wave, an oversize start, a caret that follows the typing
+    ord_mode, ord_seed = _mo_own(_MO_ORDER, b.get('order'), 'forward'), _ff_int(b.get('order_seed'), 3, 0, 999)
+    acc_font, acc_ital = _mo_own(_FF_FONTS, b.get('accent_font'), ''), b.get('accent_style') == 'italic'
+    wave_px, start_k, caret = _ff_int(b.get('wave'), 0, 0, 40), _ff_num(b.get('start_scale'), 1, 1, 12, 2), b.get('caret') is True
+    acc_run = acc_css
+    if acc_font or acc_ital:
+        acc_run = (acc_css or 'color:' + accent + ';') + ('font-family:' + _FF_FONTS[acc_font] + ';' if acc_font else '') + ('font-style:italic;' if acc_ital else '')
 
     def runs(c):
-        return _mo_runs(c, accent, acc_css)
+        return _mo_runs(c, accent, acc_run)
     bar, ext, extc = _mo_ink(b, 'bar', 'var(--mt-acc,#38bdf8)'), _ff_int(b.get('extrude'), 0, 0, 30), _mo_ink(b, 'extrude_color', '#0b0b14')
     shadow = ','.join(('0' if b.get('extrude_dir') == 'down' else str(si) + 'px') + ' ' + str(si) + 'px 0 ' + extc for si in range(1, ext + 1))
     decor, decor_c, kara = _mo_own(_MO_DECOR, b.get('decor'), ''), _mo_ink(b, 'decor_color', accent), _mo_own(_MO_KARA, b.get('karaoke'), '')
@@ -27793,13 +27801,29 @@ def _render_motion_text(b: dict) -> str:
     N = sum(len(u['c']) if u.get('chars') else 1 for u in units)
     if N > 120:
         units, N, mode = [{'c': joined(' '), 'block': True}], 1, 'block'
+    ord_map = list(range(N))
+    if ord_mode == 'reverse':
+        ord_map = [N - 1 - x for x in ord_map]
+    elif ord_mode == 'centre':
+        occ = (N - 1) / 2
+        for r, tt in enumerate(sorted(range(N), key=lambda i: (abs(i - occ), i))):
+            ord_map[tt] = r
+    elif ord_mode == 'random':
+        for r, tt in enumerate(sorted(range(N), key=lambda i: (_bx_seed(ord_seed, i, 9), i))):
+            ord_map[tt] = r
+
+    def om(n):
+        return ord_map[n] if n < len(ord_map) else n
     idx = [0]
 
-    def uvar(n):
-        return '--u:clamp(0,calc((var(--p,1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1);'
+    def uexp(m):
+        return 'clamp(0,calc((var(--p,1)*' + str(N + S) + ' - ' + str(m) + ')/' + str(S) + '),1)'
 
-    def wrap_unit(inner, n, blockish):
-        h = wrap_unit0(inner, n, blockish)
+    def uvar(n):
+        return '--u:' + uexp(om(n)) + ';'
+
+    def wrap_unit(inner, n, blockish, ln=None):
+        h = wrap_unit0(inner, n, blockish, ln)
         if fvs:
             vv = 'clamp(0,var(--s,1),1)' if von == 'dial' else 'clamp(0,calc((var(' + ('--s' if von == 'wave' else '--p') + ',1)*' + str(N + S) + ' - ' + str(n) + ')/' + str(S) + '),1)'
             h = '<span style="--v:' + vv + ';' + ('display:block;' if blockish else 'display:inline-block;') + 'font-variation-settings:' + fvs + ';">' + h + '</span>'
@@ -27822,9 +27846,16 @@ def _render_motion_text(b: dict) -> str:
             else:
                 bar2 = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + dv + ');background:color-mix(in srgb,' + decor_c + ' 38%,transparent);z-index:-1;'
             h = ('<span style="position:relative;isolation:isolate;' + ('display:block;width:fit-content;' if blockish else 'display:inline-block;') + '">' + h + '<span aria-hidden="true" style="position:absolute;' + bar2 + '"></span></span>')
+        if wave_px:
+            h = ('<span style="' + ('display:block;' if blockish else 'display:inline-block;') + 'transform:translateY(calc(' + str(wave_px) + 'px*sin(calc(var(--s,0)*3.14159rad))*sin(calc(var(--s,0)*12.566rad - ' + _if_fmt(n * 0.8) + 'rad))));">' + h + '</span>')
+        if caret and not blockish:  # a caret after the unit being typed: lit once this unit has started and the next has not
+            c_a = uexp(om(n))
+            c_b = uexp(om(n + 1)) if n + 1 < N else ''
+            c_o = 'clamp(0,calc(' + c_a + '*20),1)'
+            h += '<span aria-hidden="true" style="display:inline-block;width:0.08em;height:0.9em;background:currentColor;margin-left:0.05em;vertical-align:-0.1em;opacity:' + (('calc(' + c_o + '*(1 - clamp(0,calc(' + c_b + '*20),1)))') if c_b else c_o) + ';"></span>'
         return h
 
-    def wrap_unit0(inner, n, blockish):
+    def wrap_unit0(inner, n, blockish, ln=None):
         inl = 'display:block;' if blockish else 'display:inline-block;'
         if reveal == 'bar':
             return ('<span style="' + uvar(n) + ('display:block;width:fit-content;' if blockish else 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>')
@@ -27833,6 +27864,11 @@ def _render_motion_text(b: dict) -> str:
             return ('<span style="' + uvar(n) + 'display:inline-block;overflow:hidden;height:1em;line-height:1;vertical-align:bottom;"><span style="display:block;transform:translateY(calc(var(--u)*-3em));">' + dg + '<span style="display:block;height:1em;">' + inner + '</span></span></span>')
         if reveal == 'mask':
             return ('<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>')
+        if reveal == 'pop':
+            return '<span style="' + uvar(n) + inl + 'opacity:clamp(0,calc(var(--u)*4),1);transform:scale(calc(0.2 + 0.8*var(--u) + 0.5*sin(calc(var(--u)*3.14159rad))));">' + inner + '</span>'
+        if reveal == 'decode':  # each unit resolves out of seeded noise
+            nz = ''.join(_CP_NOISE[math.floor(_bx_seed(ord_seed, n * 61 + zi, 4) * len(_CP_NOISE))] for zi in range(min(ln or 1, 60)))
+            return ('<span style="' + uvar(n) + 'position:relative;' + inl + '"><span style="opacity:clamp(0,calc(var(--u)*1.6 - 0.3),1);">' + inner + '</span><span aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;opacity:clamp(0,calc(1.2 - var(--u)*1.6),1);">' + _cv_esc(nz) + '</span></span>')
         fx = ('' if reveal == 'fade' else 'transform:translateY(calc((1 - var(--u))*-0.6em));' if reveal == 'drop'
               else 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' if reveal == 'blur'
               else 'transform:translateY(calc((1 - var(--u))*0.6em));')
@@ -27844,20 +27880,20 @@ def _render_motion_text(b: dict) -> str:
     out = ''
     for u in units:
         if u.get('block'):
-            out += wrap_unit(runs(u['c']), nxt(), True)
+            out += wrap_unit(runs(u['c']), nxt(), True, len(u['c']))
             continue
         if u.get('brk'):
             out += '<br>'
         if u.get('sp'):
             out += ' '
         if mode == 'lines':
-            out += wrap_unit(runs(u['c']), nxt(), True)
+            out += wrap_unit(runs(u['c']), nxt(), True, len(u['c']))
             continue
         if u.get('chars'):
-            ch = ''.join(wrap_unit(runs([c]), nxt(), False) for c in u['c'])
+            ch = ''.join(wrap_unit(runs([c]), nxt(), False, 1) for c in u['c'])
             out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>'
         else:
-            out += wrap_unit(runs(u['c']), nxt(), False)
+            out += wrap_unit(runs(u['c']), nxt(), False, len(u['c']))
     if reveal == 'reel' and lines:  # lines stacked on one row: --s moves the focus down the list, the rest dim, shrink and blur with distance
         rl, rn = '', len(lines)
         ro = '100% 50%' if align == 'right' else ('50% 50%' if align == 'center' else '0 50%')
@@ -27880,9 +27916,9 @@ def _render_motion_text(b: dict) -> str:
     if flip_plain and flip_plain != sr_text:
         sr_text += ', then ' + flip_plain
     return ((_mo_vf_face(vf) if vf else '') + (_mo_vf_face(flip_face) if flip_face and flip_face != vf else '') + '<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
-            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + ('position:relative;' if shine else '') + (('filter:drop-shadow(0 0 ' + _ff_num(glow / 3, 0, 0, 20, 1) + 'px color-mix(in srgb,' + glow_c + ' 85%,transparent)) drop-shadow(0 0 ' + str(glow) + 'px color-mix(in srgb,' + glow_c + ' 55%,transparent));') if glow else '') + 'width:100%;">'
+            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + text_shadow + ';' if text_shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + ('position:relative;' if shine else '') + ('overflow:hidden;' if float(start_k) > 1 else '') + (('filter:drop-shadow(0 0 ' + _ff_num(glow / 3, 0, 0, 20, 1) + 'px color-mix(in srgb,' + glow_c + ' 85%,transparent)) drop-shadow(0 0 ' + str(glow) + 'px color-mix(in srgb,' + glow_c + ' 55%,transparent));') if glow else '') + 'width:100%;">'
             + _mo_sr(sr_text)
-            + '<span aria-hidden="true" style="display:block;">' + out + prism + cycle_html + '</span>' + shine_html + '</div>')
+            + '<span aria-hidden="true" style="display:block;' + (('transform:scale(calc(1 + (' + _if_fmt(float(start_k) - 1) + ')*(1 - clamp(0,calc(var(--p,1)*1.3),1))));transform-origin:50% 50%;') if float(start_k) > 1 else '') + '">' + out + prism + cycle_html + '</span>' + shine_html + '</div>')
 
 
 def _render_motion_shape(b: dict) -> str:

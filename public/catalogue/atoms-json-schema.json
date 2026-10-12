@@ -40342,7 +40342,9 @@
               "blur",
               "bar",
               "flap",
-              "reel\" (optional, default \"rise\"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus."
+              "reel",
+              "pop",
+              "decode\" (optional, default \"rise\"). pop scales each unit up past full size and settles (an overshoot). decode shows seeded random characters that resolve into each unit (the real text is always in the page; the noise is aria-hidden). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus."
             ]
           },
           "overlap": {
@@ -40485,6 +40487,49 @@
           },
           "prism": {
             "type": "string"
+          },
+          "order": {
+            "type": "string",
+            "enum": [
+              "forward",
+              "reverse",
+              "centre",
+              "random\" (optional, default \"forward\"). The order units reveal in: reading order, last first, from the middle outwards, or a fixed random order (see order_seed). The step-dial effects (karaoke, decor, wave) keep reading order."
+            ]
+          },
+          "order_seed": {
+            "type": "integer"
+          },
+          "accent_font": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "serif",
+              "mono",
+              "display\" (optional). A typeface for the words wrapped in asterisks, so one word can be set in serif inside sans text. Default none (the line face)."
+            ]
+          },
+          "accent_style": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "wave": {
+            "type": "integer"
+          },
+          "start_scale": {
+            "type": "number"
+          },
+          "caret": {
+            "type": "string",
+            "enum": [
+              "bool . A caret follows the unit being revealed and stays on the last one. Use with mode words",
+              "chars; lines and block have no caret. Default false."
+            ]
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
