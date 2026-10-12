@@ -879,6 +879,7 @@ blocks:
   - "Allow me to define the display order for these selectable options."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -955,6 +956,7 @@ blocks:
   - "I want to browse through architectural designs, with each image representing a project."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -1065,6 +1067,7 @@ blocks:
   - "I want to get lost in each photo, with easy ways to go back or forward and a button to show I like it."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -1144,6 +1147,7 @@ blocks:
   - "Let me switch between different versions of a document and see them immediately."
   surfaces:
     works_on:
+    - web
     - mcp-apps
     - android
     degraded_on:
@@ -8573,6 +8577,7 @@ blocks:
   - "Let visitors browse our rental properties and narrow them to only the ones marked available."
   surfaces:
     works_on:
+    - web
     - mcp-apps
     - android
   fields:
@@ -18251,6 +18256,7 @@ blocks:
   - "My app has a project overview section. I need a layout that separates different project phases, with each phase containing multiple detail screens."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18289,6 +18295,7 @@ blocks:
   compact_description: deck navigation shell — left-rail layout (subjects + slides always visible)
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18322,6 +18329,7 @@ blocks:
   - "Can I add buttons that let people skip to specific areas of the product page?"
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18342,6 +18350,7 @@ blocks:
   - "I want a visual way to track the progress of a multi-stage setup process."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18364,6 +18373,7 @@ blocks:
   - "Let people type out their full product descriptions."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18407,6 +18417,7 @@ blocks:
   compact_description: live SLA timer card with severity state
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18428,6 +18439,7 @@ blocks:
   - "I want to create a quick quiz where I can see a prompt and then flip it over to see the correct response."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18447,6 +18459,7 @@ blocks:
   compact_description: scenario question with scored options and rationale reveal
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18471,6 +18484,7 @@ blocks:
   - "I want to visualize a patient's treatment progress over time."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18488,6 +18502,7 @@ blocks:
   compact_description: timed rapid question drill with countdown
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18504,13 +18519,14 @@ blocks:
   compact_description: passage with tappable highlighted excerpts
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
   fields:
     passage: string (required, the text)
     source: string (optional, attribution line)
-    highlights: array (optional) of {text (excerpt to highlight)}
+    highlights: array (optional) of {text (excerpt to highlight), analysis (optional, plain text shown when the excerpt is tapped; escaped, new lines kept)}
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -18522,6 +18538,7 @@ blocks:
   compact_description: subject overview card with key facts and scope
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18546,6 +18563,7 @@ blocks:
   compact_description: assembled-from source attribution strip
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18564,6 +18582,7 @@ blocks:
   compact_description: certification study material disclaimer
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18581,6 +18600,7 @@ blocks:
   compact_description: pulsing breaking-news banner with headline
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18601,6 +18621,7 @@ blocks:
   compact_description: ranked linked headline list
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18619,6 +18640,7 @@ blocks:
   compact_description: compact tagged news summary digest
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18924,6 +18946,7 @@ blocks:
   - "My app needs a way for visitors to switch between a light and a dark look."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -18965,6 +18988,7 @@ blocks:
   - "We need clickable areas with prominent images to guide users to key features."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19006,6 +19030,7 @@ blocks:
   - "Display a list of choices clearly with their descriptions so users can make an informed selection."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19039,6 +19064,7 @@ blocks:
   - "I want to pre-fill a common project name, but allow users to type a unique one when needed."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19072,6 +19098,7 @@ blocks:
   - "I want to present a single input method at a time to guide users through selecting how they'll provide information."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19103,6 +19130,7 @@ blocks:
   - "I want a subtle link for a secondary task that still functions as a clickable option."
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19345,6 +19373,7 @@ blocks:
   compact_description: ranked standings/leaderboard table with semantic highlights
   surfaces:
     works_on:
+    - web
     - google-meet-stage
     - google-apps-script-web
     - mcp-apps
@@ -19370,6 +19399,7 @@ blocks:
   compact_description: round-by-round matchup schedule, table or cards layout
   surfaces:
     works_on:
+    - web
     - google-meet-stage
     - google-apps-script-web
     - mcp-apps
@@ -19594,6 +19624,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19613,6 +19644,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19637,6 +19669,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19658,6 +19691,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19678,6 +19712,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19703,6 +19738,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19730,6 +19766,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -19749,6 +19786,7 @@ blocks:
   stage: preview
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -20655,6 +20693,7 @@ blocks:
   - Show a 2x2 of quick wins, big bets, fill-ins and time sinks.
   surfaces: &ifg001
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android

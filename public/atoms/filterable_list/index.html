@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/filterable_list/#page", "url": "https://a2uicatalog.ai/atoms/filterable_list/", "headline": "Filterable List: A2UI atom", "description": "A list of items, each with a title, an optional detail line and a status or category, above a row of chips (All plus one per status, with counts) that…", "about": {"@id": "https://a2uicatalog.ai/atoms/filterable_list/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/filterable_list/#atom", "name": "Filterable List", "termCode": "filterable_list", "description": "list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts", "url": "https://a2uicatalog.ai/atoms/filterable_list/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "colors, empty_text, filter_field, filters, items, show_counts, title"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/filterable_list.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/filterable_list/#page", "url": "https://a2uicatalog.ai/atoms/filterable_list/", "headline": "Filterable List: A2UI atom", "description": "A list of items, each with a title, an optional detail line and a status or category, above a row of chips (All plus one per status, with counts) that…", "about": {"@id": "https://a2uicatalog.ai/atoms/filterable_list/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/filterable_list/#atom", "name": "Filterable List", "termCode": "filterable_list", "description": "list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts", "url": "https://a2uicatalog.ai/atoms/filterable_list/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "colors, empty_text, filter_field, filters, items, show_counts, title"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/filterable_list.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,12 +173,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of filterable_list"><style>#flf0d831 .fl-bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}#flf0d831 .fl-chip{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:5px 14px;border-radius:999px;border:1.5px solid var(--c);background:transparent;color:var(--c);}#flf0d831 .fl-chip[aria-pressed="true"]{background:var(--c);color:#fff;}#flf0d831 .fl-n{opacity:.75;font-weight:500;margin-left:2px;}#flf0d831 .fl-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border,#e0e0e0);border-radius:10px;margin-bottom:8px;background:var(--surface,#f8f9fa);color:var(--text,#202124);}#flf0d831 .fl-main{flex:1;min-width:0;}#flf0d831 .fl-t{font-weight:600;}#flf0d831 .fl-d{font-size:13px;color:var(--muted,#5f6368);margin-top:2px;}#flf0d831 .fl-meta{font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;}#flf0d831 .fl-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--c);color:#fff;white-space:nowrap;}#flf0d831 .fl-count,#flf0d831 .fl-empty{font-size:12px;color:var(--muted,#5f6368);margin:6px 0;}#flf0d831 .fl-empty{display:none;}</style><div id="flf0d831" class="fl-wrap" style="margin:0.75rem 0;"><div class="fl-bar" role="group" aria-label="Filter"><button type="button" class="fl-chip" data-fv="" aria-pressed="true" style="--c:#374151">All <span class="fl-n">2</span></button></div><div class="fl-count" aria-live="polite">Showing 2 of 2</div><div class="fl-list"><div class="fl-row" data-fv=""><div class="fl-main"><div class="fl-t"></div></div></div><div class="fl-row" data-fv=""><div class="fl-main"><div class="fl-t"></div></div></div></div><div class="fl-empty">Nothing matches this filter.</div></div><script>(function(){var root=document.getElementById("flf0d831");if(!root)return;var chips=root.querySelectorAll(".fl-chip"),rows=root.querySelectorAll(".fl-row"),count=root.querySelector(".fl-count"),empty=root.querySelector(".fl-empty"),total=rows.length;function apply(v){var shown=0;for(var i=0;i<rows.length;i++){var on=(v===""||rows[i].getAttribute("data-fv")===v);rows[i].style.display=on?"":"none";if(on)shown++;}for(var j=0;j<chips.length;j++){chips[j].setAttribute("aria-pressed",chips[j].getAttribute("data-fv")===v?"true":"false");}if(count)count.textContent="Showing "+shown+" of "+total;if(empty)empty.style.display=shown?"none":"block";}for(var k=0;k<chips.length;k++){(function(c){c.addEventListener("click",function(){apply(c.getAttribute("data-fv"));});})(chips[k]);}})();</script></div>
+</div>
 
   
 
@@ -210,6 +214,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/filterable_list",
   "capabilities": [
+    "web",
     "mcp-apps",
     "android"
   ],

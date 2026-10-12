@@ -7,10 +7,10 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>A2UI on Web: 465 components — A2UI Atomic Catalog</title>
-  <meta name="description" content="The 465 A2UI Atomic Catalog components that render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.">
+  <title>A2UI on Web: 482 components — A2UI Atomic Catalog</title>
+  <meta name="description" content="The 482 A2UI Atomic Catalog components that render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.">
   <link rel="canonical" href="https://a2uicatalog.ai/surfaces/web/">
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "CollectionPage", "@id": "https://a2uicatalog.ai/surfaces/web/", "url": "https://a2uicatalog.ai/surfaces/web/", "name": "A2UI on Web: 465 components — A2UI Atomic Catalog", "description": "The 465 A2UI Atomic Catalog components that render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.", "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "numberOfItems": 465}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Web", "item": "https://a2uicatalog.ai/surfaces/web/"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "CollectionPage", "@id": "https://a2uicatalog.ai/surfaces/web/", "url": "https://a2uicatalog.ai/surfaces/web/", "name": "A2UI on Web: 482 components — A2UI Atomic Catalog", "description": "The 482 A2UI Atomic Catalog components that render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.", "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "numberOfItems": 482}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Web", "item": "https://a2uicatalog.ai/surfaces/web/"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -165,7 +165,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <h1>Web</h1>
   
-  <p class="desc">465 atoms available on this surface</p>
+  <p class="desc">482 atoms available on this surface</p>
 
   
 <div class="surface-atom">
@@ -521,6 +521,50 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 <div class="section">
   <div class="label">Live preview</div>
   <div class="preview-box" role="group" aria-label="Live preview of annotated_code"><div style="margin:1.5rem 0;"><pre style="margin:0;padding:18px;background:#1e1e2e;border-radius:10px 10px 0 0;overflow-x:auto;font-size:0.84rem;line-height:1.7;color:#cdd6f4;"><code class="language-json"><span style="display:block;">{</span><span style="display:block;">  "type": "stat_card",  // [1]</span><span style="display:block;">  "value": "1B+",      // [2]</span><span style="display:block;">  "label": "daily executions"</span><span style="display:block;">}</span></code></pre><ol style="list-style:none;padding:16px 20px;margin:0;background:#fffbf0;border:1px solid rgba(249,171,0,0.2);border-top:none;border-radius:0 0 10px 10px;"></ol></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/sortable_list">Sortable List</a>
+    <p class="sa-desc">drag-to-reorder list emitting {id, order} on drop</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of sortable_list"><div data-a2ui-sortable style="margin:var(--a2ui-block-gap,1.25rem) 0;"><div style="padding:12px;color:var(--muted,#6b7280);font-size:0.875rem;">Nothing to reorder.</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/photo_grid">Photo Grid</a>
+    <p class="sa-desc">clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of photo_grid"><style>.pg1bf17d{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0;}@media(max-width:600px){.pg1bf17d{grid-template-columns:repeat(2,1fr);}}.pg1bf17d figure{position:relative;margin:0;overflow:hidden;border-radius:8px;cursor:pointer;aspect-ratio:4/5;background:#f1f3f4;border:2px solid transparent;transition:border-color 0.15s;}.pg1bf17d figure.pg-active{border-color:#0f766e;}.pg1bf17d figure img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s ease;}.pg1bf17d figure:hover img{transform:scale(1.04);}.pg1bf17d figcaption{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,0.72));color:#fff;font-size:0.72rem;line-height:1.3;}.pg1bf17d .pg-badge{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:99px;}.pg1bf17d .pg-badge-active{background:#f59e0b;color:#1c1108;}</style><div class="pg1bf17d" data-photo-grid="1"><figure class="" data-row-json="{&quot;id&quot;:&quot;card&quot;,&quot;url&quot;:&quot;https://a2uicatalog.ai/gallery/ge-primitives/card.png&quot;,&quot;alt&quot;:&quot;Card primitive&quot;,&quot;caption&quot;:&quot;Card&quot;,&quot;badge&quot;:&quot;3&quot;}"><img src="https://a2uicatalog.ai/gallery/ge-primitives/card.png" alt="Card primitive" loading="lazy"><span class="pg-badge">3</span><figcaption>Card</figcaption></figure><figure class=" pg-active" data-row-json="{&quot;id&quot;:&quot;button&quot;,&quot;url&quot;:&quot;https://a2uicatalog.ai/gallery/ge-primitives/button.png&quot;,&quot;alt&quot;:&quot;Button primitive&quot;,&quot;caption&quot;:&quot;Button&quot;,&quot;active&quot;:true}"><img src="https://a2uicatalog.ai/gallery/ge-primitives/button.png" alt="Button primitive" loading="lazy"><figcaption>Button</figcaption></figure><figure class="" data-row-json="{&quot;id&quot;:&quot;og-card&quot;,&quot;url&quot;:&quot;https://a2uicatalog.ai/brand/og-card.png&quot;,&quot;alt&quot;:&quot;Open Graph brand card&quot;,&quot;caption&quot;:&quot;Brand card&quot;}"><img src="https://a2uicatalog.ai/brand/og-card.png" alt="Open Graph brand card" loading="lazy"><figcaption>Brand card</figcaption></figure></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/photo_stepper">Photo Stepper</a>
+    <p class="sa-desc">full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of photo_stepper"><p style="color:#94a3b8;font-style:italic;">Nothing to show yet.</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/preview_frame">Preview Frame</a>
+    <p class="sa-desc">iframe whose src is wired to another node's value, so picking updates it with no repaint</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of preview_frame"><div><div data-a2ui-frame-placeholder style="display:flex;align-items:center;justify-content:center;height:320px;border:1px dashed var(--border,#e5e7eb);border-radius:8px;color:var(--muted,#6b7280);font-size:0.875rem;background:var(--surface,#f9fafb);">Nothing selected yet.</div><iframe data-a2ui-frame src="" style="display:none;width:100%;height:320px;border:1px solid var(--border,#e5e7eb);border-radius:12px;border-radius:var(--a2ui-radius,12px);" loading="lazy" title="Preview"></iframe></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3302,6 +3346,17 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </div>
 <div class="surface-atom">
   <div class="sa-header">
+    <a class="sa-name" href="/atoms/filterable_list">Filterable List</a>
+    <p class="sa-desc">list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of filterable_list"><style>#flf0d831 .fl-bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}#flf0d831 .fl-chip{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:5px 14px;border-radius:999px;border:1.5px solid var(--c);background:transparent;color:var(--c);}#flf0d831 .fl-chip[aria-pressed="true"]{background:var(--c);color:#fff;}#flf0d831 .fl-n{opacity:.75;font-weight:500;margin-left:2px;}#flf0d831 .fl-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border,#e0e0e0);border-radius:10px;margin-bottom:8px;background:var(--surface,#f8f9fa);color:var(--text,#202124);}#flf0d831 .fl-main{flex:1;min-width:0;}#flf0d831 .fl-t{font-weight:600;}#flf0d831 .fl-d{font-size:13px;color:var(--muted,#5f6368);margin-top:2px;}#flf0d831 .fl-meta{font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;}#flf0d831 .fl-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--c);color:#fff;white-space:nowrap;}#flf0d831 .fl-count,#flf0d831 .fl-empty{font-size:12px;color:var(--muted,#5f6368);margin:6px 0;}#flf0d831 .fl-empty{display:none;}</style><div id="flf0d831" class="fl-wrap" style="margin:0.75rem 0;"><div class="fl-bar" role="group" aria-label="Filter"><button type="button" class="fl-chip" data-fv="" aria-pressed="true" style="--c:#374151">All <span class="fl-n">2</span></button></div><div class="fl-count" aria-live="polite">Showing 2 of 2</div><div class="fl-list"><div class="fl-row" data-fv=""><div class="fl-main"><div class="fl-t"></div></div></div><div class="fl-row" data-fv=""><div class="fl-main"><div class="fl-t"></div></div></div></div><div class="fl-empty">Nothing matches this filter.</div></div><script>(function(){var root=document.getElementById("flf0d831");if(!root)return;var chips=root.querySelectorAll(".fl-chip"),rows=root.querySelectorAll(".fl-row"),count=root.querySelector(".fl-count"),empty=root.querySelector(".fl-empty"),total=rows.length;function apply(v){var shown=0;for(var i=0;i<rows.length;i++){var on=(v===""||rows[i].getAttribute("data-fv")===v);rows[i].style.display=on?"":"none";if(on)shown++;}for(var j=0;j<chips.length;j++){chips[j].setAttribute("aria-pressed",chips[j].getAttribute("data-fv")===v?"true":"false");}if(count)count.textContent="Showing "+shown+" of "+total;if(empty)empty.style.display=shown?"none":"block";}for(var k=0;k<chips.length;k++){(function(c){c.addEventListener("click",function(){apply(c.getAttribute("data-fv"));});})(chips[k]);}})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
     <a class="sa-name" href="/atoms/columns">Columns</a>
     <p class="sa-desc">multi-column layout — 2–6 cols, each column holds atom blocks</p>
   </div>
@@ -5545,6 +5600,138 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </div>
 <div class="surface-atom">
   <div class="sa-header">
+    <a class="sa-name" href="/atoms/hub">Hub</a>
+    <p class="sa-desc">deck navigation shell with subjects and slides</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of hub"><style>body{background:#ffffff;margin:0;}.asw-page>h1{display:none;}#hub4586c3bbbody,#hub4586c3bbcontent{transition:background 0.25s;}#hub4586c3bbTOPNAV,#hub4586c3bbBOTNAV{transition:background 0.25s,border-color 0.25s,box-shadow 0.25s;}</style><div id="hub4586c3bbbody" style="font-family:'Inter',system-ui,sans-serif;background:#ffffff;min-height:100vh;"><div id="hub4586c3bbTOPNAV" style="position:fixed;top:0;left:0;right:0;z-index:400;background:#f8fafc;border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 8px rgba(0,0,0,0.06);"><div style="display:flex;gap:5px;overflow-x:auto;padding:10px 12px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;"><button id="hub4586c3bbT0" onclick="window['hub4586c3bb'].subj(0)" style="flex-shrink:0;padding:7px 14px;border-radius:10px;border:1.5px solid;cursor:pointer;font-size:0.78rem;font-weight:800;white-space:nowrap;letter-spacing:0.02em;transition:all 0.18s;background:#6366f1;color:#fff;border-color:#6366f1;">Maths</button><button id="hub4586c3bbT1" onclick="window['hub4586c3bb'].subj(1)" style="flex-shrink:0;padding:7px 14px;border-radius:10px;border:1.5px solid;cursor:pointer;font-size:0.78rem;font-weight:800;white-space:nowrap;letter-spacing:0.02em;transition:all 0.18s;background:transparent;color:rgba(0,0,0,0.55);border-color:rgba(0,0,0,0.15);">Physics</button></div></div><div id="hub4586c3bbcontent" style="padding-top:64px;padding-bottom:72px;background:#ffffff;box-sizing:border-box;min-height:100vh;"><div id="hub4586c3bbS0" style="display:block;"><div id="hub4586c3bbS0L0" style="display:block;"><h2>Fractions</h2></div></div><div id="hub4586c3bbS1" style="display:none;"><div id="hub4586c3bbS1L0" style="display:block;"><p>Forces and motion.</p></div></div></div><div id="hub4586c3bbBOTNAV" style="position:fixed;bottom:0;left:0;right:0;z-index:400;background:#f8fafc;border-top:1px solid rgba(0,0,0,0.08);box-shadow:0 -2px 8px rgba(0,0,0,0.06);"><div id="hub4586c3bbN0" style="display:flex;gap:5px;overflow-x:auto;padding:8px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;"><button id="hub4586c3bbP0_0" onclick="window['hub4586c3bb'].sl(0,0)" style="flex-shrink:0;padding:5px 11px;border-radius:20px;border:none;cursor:pointer;font-size:0.72rem;font-weight:700;white-space:nowrap;transition:all 0.15s;background:#6366f1;color:#fff;">Slide 1</button></div><div id="hub4586c3bbN1" style="display:none;gap:5px;overflow-x:auto;padding:8px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;"><button id="hub4586c3bbP1_0" onclick="window['hub4586c3bb'].sl(1,0)" style="flex-shrink:0;padding:5px 11px;border-radius:20px;border:none;cursor:pointer;font-size:0.72rem;font-weight:700;white-space:nowrap;transition:all 0.15s;background:#00f2ff;color:#fff;">Slide 1</button></div></div></div><script>(function(){var C=["#6366f1","#00f2ff"];var BG="#0f172a",NAV="#0f172a";var cs=0,cl=[],dark=false;var counts=[1,1];for(var i=0;i<counts.length;i++)cl.push(0);function g(id){return document.getElementById("hub4586c3bb"+id);}function iTab(){return dark?{c:"rgba(255,255,255,0.35)",b:"rgba(255,255,255,0.12)"}:{c:"rgba(0,0,0,0.55)",b:"rgba(0,0,0,0.15)"};}function iPill(){return dark?{bg:"rgba(255,255,255,0.07)",c:"rgba(255,255,255,0.4)"}:{bg:"rgba(0,0,0,0.06)",c:"rgba(0,0,0,0.45)"};}function applyTheme(d){dark=d;var cb=d?BG:"#ffffff",navb=d?NAV:"#f8fafc";var cardBg=d?"#f8fafc":"#ffffff";var bdr=d?"rgba(255,255,255,0.07)":"rgba(0,0,0,0.08)";var shT=d?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 8px rgba(0,0,0,0.06)";var shB=d?"0 -2px 12px rgba(0,0,0,0.4)":"0 -2px 8px rgba(0,0,0,0.06)";var wrap=g("body"),ct=g("content"),tn=g("TOPNAV"),bn=g("BOTNAV");if(wrap)wrap.style.background=cb;if(ct)ct.style.background=cardBg;document.body.style.background=cb;if(tn){tn.style.background=navb;tn.style.borderBottomColor=bdr;tn.style.boxShadow=shT;}if(bn){bn.style.background=navb;bn.style.borderTopColor=bdr;bn.style.boxShadow=shB;}var ts=iTab(),ps=iPill();for(var i=0;i<counts.length;i++){if(i!==cs){var t=g("T"+i);if(t){t.style.color=ts.c;t.style.borderColor=ts.b;}}for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}}}var obs=new MutationObserver(function(ms){ms.forEach(function(m){if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}});});obs.observe(document.body,{attributes:true,attributeFilter:["class"]});window["hub4586c3bb"]={subj:function(si){if(si===cs)return;var ts=iTab();g("S"+cs).style.display="none";g("N"+cs).style.display="none";var ot=g("T"+cs);ot.style.background="transparent";ot.style.color=ts.c;ot.style.borderColor=ts.b;cs=si;g("S"+si).style.display="block";g("N"+si).style.display="flex";var nt=g("T"+si);nt.style.background=C[si];nt.style.color="#fff";nt.style.borderColor=C[si];window["hub4586c3bb"].sl(si,cl[si]);window.scrollTo(0,0);},sl:function(si,sli){var ps=iPill();var op=g("P"+si+"_"+cl[si]),os=g("S"+si+"L"+cl[si]);if(op){op.style.background=ps.bg;op.style.color=ps.c;}if(os)os.style.display="none";cl[si]=sli;var np=g("P"+si+"_"+sli),ns=g("S"+si+"L"+sli);if(np){np.style.background=C[si];np.style.color="#fff";}if(ns)ns.style.display="block";window.scrollTo(0,0);}};applyTheme(document.body.classList.contains("asw-dark-theme"));})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/jump_nav">Jump Nav</a>
+    <p class="sa-desc">anchor pill buttons scrolling to page sections</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of jump_nav"><div style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px;"><button onclick="(function(){var el=document.getElementById('a2ui-');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});})()" style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">GitHub</button></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/command_step">Command Step</a>
+    <p class="sa-desc">copyable command with completion checkbox</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of command_step"><div style="font-family:system-ui,sans-serif;margin:8px 0;"><div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:1;"><div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;"><span style="color:#64748b;user-select:none;">$ </span>npm install a2ui</div><button id="cs_ec0108_copy" data-cmd="npm install a2ui" onclick="(function(b){navigator.clipboard.writeText(b.getAttribute('data-cmd'));b.textContent='✓';b.style.background='#22c55e';setTimeout(function(){b.textContent='Copy';b.style.background='#1e293b';},1500);})(this)" style="background:#1e293b;color:#94a3b8;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">Copy</button></div><label style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;user-select:none;"><input type="checkbox" data-cs-done  onchange="(function(el){var w=el.closest('[data-atom-id]');if(w&&w._a2uiWire&&w._a2uiWire.setDone){w._a2uiWire.setDone(el.checked);}})(this)" style="width:16px;height:16px;accent-color:#22c55e;cursor:pointer;"><span style="font-size:0.8rem;color:#94a3b8;font-weight:400;">Mark as done</span></label></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/form_textarea">Form Textarea</a>
+    <p class="sa-desc">multi-line text input area</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of form_textarea"><div style="display:flex;flex-direction:column;gap:4px;width:100%;"><textarea id="ta35c331" aria-label="Text" rows="4" placeholder="" style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#d1d5db'"></textarea></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/flashcard_deck">Flashcard Deck</a>
+    <p class="sa-desc">flip-card deck of question answer pairs</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of flashcard_deck"><div id="fcdc11ba442" style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:580px;margin:2rem auto;font-family:'Inter',system-ui,sans-serif;"><div style="width:100%;display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;"><div style="flex:1;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;"><div id="fcdc11ba442bar" style="height:100%;width:50%;background:#4f46e5;border-radius:2px;transition:width 0.35s;"></div></div><span id="fcdc11ba442ctr" style="font-size:0.68rem;color:#475569;font-weight:700;white-space:nowrap;min-width:44px;text-align:right;">1 / 2</span></div><div style="position:relative;width:100%;height:300px;perspective:1200px;"><div class="fcdc11ba442w" data-idx="0" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;opacity:1;pointer-events:auto;transform:scale(1);"><div class="fcdc11ba442i" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);cursor:pointer;"><div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:18px;box-sizing:border-box;text-align:center;background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.09);box-shadow:0 24px 48px rgba(0,0,0,0.5);"><div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:1.2rem;">QUESTION</div><div style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;"></div><div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— space / click to flip —</div></div><div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:18px;box-sizing:border-box;text-align:center;background:#4f46e5;box-shadow:0 24px 48px rgba(0,0,0,0.5);"><div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:1.2rem;">ANSWER</div><div style="font-size:1.05rem;font-weight:600;line-height:1.65;color:#fff;"></div><div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;">— space / click to flip —</div></div></div></div><div class="fcdc11ba442w" data-idx="1" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;opacity:0;pointer-events:none;transform:scale(0.96);"><div class="fcdc11ba442i" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);cursor:pointer;"><div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:18px;box-sizing:border-box;text-align:center;background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.09);box-shadow:0 24px 48px rgba(0,0,0,0.5);"><div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:1.2rem;">QUESTION</div><div style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;"></div><div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— space / click to flip —</div></div><div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:18px;box-sizing:border-box;text-align:center;background:#4f46e5;box-shadow:0 24px 48px rgba(0,0,0,0.5);"><div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:1.2rem;">ANSWER</div><div style="font-size:1.05rem;font-weight:600;line-height:1.65;color:#fff;"></div><div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;">— space / click to flip —</div></div></div></div></div><div style="display:flex;align-items:center;gap:10px;margin-top:1.4rem;"><button id="fcdc11ba442P" onclick="window['fcdc11ba442'].prev()" disabled style="padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;font-size:0.78rem;font-weight:600;">← Prev</button><button onclick="window['fcdc11ba442'].flip()" style="padding:8px 22px;border-radius:8px;border:none;background:#4f46e5;color:#fff;cursor:pointer;font-size:0.78rem;font-weight:700;">Flip</button><button id="fcdc11ba442N" onclick="window['fcdc11ba442'].next()" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button></div></div><script>(function(){var idx=0,tot=2;window["fcdc11ba442"]={flip:function(){var w=document.querySelector("#fcdc11ba442 .fcdc11ba442w[data-idx='"+idx+"']");if(!w)return;var inn=w.querySelector(".fcdc11ba442i");inn.style.transform=inn.style.transform?"":"rotateY(180deg)";},go:function(n){if(n<0||n>=tot)return;document.querySelectorAll("#fcdc11ba442 .fcdc11ba442w").forEach(function(w){w.style.opacity="0";w.style.pointerEvents="none";w.style.transform="scale(0.96)";var i=w.querySelector(".fcdc11ba442i");if(i)i.style.transform="";});idx=n;var a=document.querySelector("#fcdc11ba442 .fcdc11ba442w[data-idx='"+idx+"']");if(a){a.style.opacity="1";a.style.pointerEvents="auto";a.style.transform="scale(1)";}var pb=document.getElementById("fcdc11ba442bar");if(pb)pb.style.width=Math.round((idx+1)/tot*100)+"%";var ct=document.getElementById("fcdc11ba442ctr");if(ct)ct.textContent=(idx+1)+" / "+tot;var pv=document.getElementById("fcdc11ba442P");if(pv)pv.disabled=(idx===0);var nx=document.getElementById("fcdc11ba442N");if(nx)nx.disabled=(idx===tot-1);},next:function(){window["fcdc11ba442"].go(idx+1);},prev:function(){window["fcdc11ba442"].go(idx-1);}};document.querySelectorAll("#fcdc11ba442 .fcdc11ba442i").forEach(function(el){el.addEventListener("click",function(){window["fcdc11ba442"].flip();});});document.addEventListener("keydown",function(e){var el=document.getElementById("fcdc11ba442");if(!el)return;var r=el.getBoundingClientRect();if(r.bottom<0||r.top>window.innerHeight)return;if(e.key==="ArrowRight"||e.key==="ArrowDown")window["fcdc11ba442"].next();else if(e.key==="ArrowLeft"||e.key==="ArrowUp")window["fcdc11ba442"].prev();else if(e.key===" "||e.key==="Enter"){window["fcdc11ba442"].flip();e.preventDefault();}});})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/brevet_timeline">Brevet Timeline</a>
+    <p class="sa-desc">dated vertical revision timeline</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of brevet_timeline"><div style="font-family:'Inter',system-ui,sans-serif;margin:1.5rem 0;"><div id="btl2675c338" style="position:relative;padding:0.5rem 0;"><div style="position:absolute;top:0;bottom:0;left:26px;width:2px;background:linear-gradient(to bottom,#3b82f670,transparent);border-radius:2px;z-index:1;"></div><div class="btl2675c338ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;"><div style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;padding:3px 4px;background:#3b82f6;color:#fff;font-size:0.58rem;font-weight:800;text-align:center;border-radius:6px;letter-spacing:0.01em;line-height:1.4;z-index:2;">2025</div><div class="btl2675c338pn" style="background:rgba(30,41,59,0.97);border:1px solid rgba(255,255,255,0.07);padding:0.85rem 1rem;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#3b82f644'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'"><div style="font-weight:700;color:#f1f5f9;font-size:0.92rem;line-height:1.4;">Launch</div><div class="btl2675c338dd" style="max-height:0;overflow:hidden;opacity:0;margin-top:0;color:#94a3b8;font-size:0.85rem;line-height:1.7;transition:max-height 0.4s ease,opacity 0.3s ease,margin-top 0.3s ease;"></div><div style="font-size:0.6rem;color:#1e293b;margin-top:0.35rem;letter-spacing:0.07em;">▸ analyser l'impact au Brevet</div></div></div><div class="btl2675c338ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;"><div style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;padding:3px 4px;background:#3b82f6;color:#fff;font-size:0.58rem;font-weight:800;text-align:center;border-radius:6px;letter-spacing:0.01em;line-height:1.4;z-index:2;">2026</div><div class="btl2675c338pn" style="background:rgba(30,41,59,0.97);border:1px solid rgba(255,255,255,0.07);padding:0.85rem 1rem;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#3b82f644'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'"><div style="font-weight:700;color:#f1f5f9;font-size:0.92rem;line-height:1.4;">Today</div><div class="btl2675c338dd" style="max-height:0;overflow:hidden;opacity:0;margin-top:0;color:#94a3b8;font-size:0.85rem;line-height:1.7;transition:max-height 0.4s ease,opacity 0.3s ease,margin-top 0.3s ease;"></div><div style="font-size:0.6rem;color:#1e293b;margin-top:0.35rem;letter-spacing:0.07em;">▸ analyser l'impact au Brevet</div></div></div></div></div><script>(function(){document.querySelectorAll("#btl2675c338 .btl2675c338pn").forEach(function(pn){pn.addEventListener("click",function(){var dd=pn.querySelector(".btl2675c338dd");if(!dd)return;var open=parseFloat(dd.style.maxHeight)>0;dd.style.maxHeight=open?"":(dd.scrollHeight+"px");dd.style.opacity=open?"0":"1";dd.style.marginTop=open?"0":"0.65rem";});});})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/theme_toggle">Theme Toggle</a>
+    <p class="sa-desc">floating light dark theme switch</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of theme_toggle"><button id="tt0aef55" title="Dark mode" style="position:fixed;bottom:72px;right:12px;z-index:500;padding:7px 12px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.12);background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);cursor:pointer;font-size:0.88rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:all 0.2s;">🌙</button><script>(function(){var btn=document.getElementById("tt0aef55");var darkBg="#0f172a";var ld="🌙",ll="☀️";var dark=false;btn.addEventListener("click",function(){dark=!dark;document.body.classList.toggle("asw-dark-theme",dark);if(darkBg)document.body.style.background=dark?darkBg:"";btn.textContent=dark?ll:ld;btn.style.background=dark?"rgba(15,23,42,0.88)":"rgba(255,255,255,0.88)";btn.style.borderColor=dark?"rgba(255,255,255,0.12)":"rgba(0,0,0,0.12)";btn.style.color=dark?"#e2e8f0":"";btn.style.boxShadow=dark?"0 2px 8px rgba(0,0,0,0.4)":"0 2px 8px rgba(0,0,0,0.1)";});})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tool_tile">Tool Tile</a>
+    <p class="sa-desc">large icon+title tile, whole tile clickable, for an app/tool selector grid</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of tool_tile"><button id="tl652dfe" style="position:relative;display:flex;flex-direction:column;gap:14px;align-items:flex-start;text-align:left;width:100%;background:linear-gradient(135deg,#6d6af7,#4f46e5);border-radius:22px;padding:22px;box-shadow:0 8px 20px -6px rgba(79,70,229,.45),inset 0 1px 0 rgba(255,255,255,.25);border:none;cursor:pointer;font-family:inherit;transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''"><span style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;flex-shrink:0;"></span><span style="font-size:16px;font-weight:600;color:#fff;">Tool Tile</span></button></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/lens_grid">Lens Grid</a>
+    <p class="sa-desc">selectable card grid for a small, explained set of options</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of lens_grid"><div id="lg83b794" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;"><button type="button" data-lg-value="a" style="text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;border:1.5px solid #4f46e5;background:#fff;"><div style="font-size:14px;font-weight:700;color:#111827;">Option A</div></button><button type="button" data-lg-value="b" style="text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;border:1.5px solid #e2e5ea;background:#fff;"><div style="font-size:14px;font-weight:700;color:#111827;">Option B</div></button><button type="button" data-lg-value="c" style="text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;border:1.5px solid #e2e5ea;background:#fff;"><div style="font-size:14px;font-weight:700;color:#111827;">Option C</div></button></div><script>(function(){var wrap=document.getElementById("lg83b794");var btns=wrap.querySelectorAll("button");for(var i=0;i<btns.length;i++){(function(btn){btn.addEventListener("click",function(){for(var j=0;j<btns.length;j++)btns[j].style.borderColor="#e2e5ea";btn.style.borderColor="#4f46e5";if(window._a2uiEngine){try{window._a2uiEngine.trigger("end-node","setValue",btn.getAttribute("data-lg-value"));}catch(e){}}});})(btns[i]);}})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/domain_picker">Domain Picker</a>
+    <p class="sa-desc">default-pill plus free-text override for a config question</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of domain_picker"><div id="dpee3f1d" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button type="button" style="padding:7px 16px;border-radius:999px;border:1.5px solid #4f46e5;background:#4f46e5;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;">From my profile</button><input type="text" placeholder="Or type a domain…" style="flex:1 1 160px;min-width:160px;padding:8px 12px;border-radius:8px;border:1.5px solid #d9dcf5;font-size:14px;font-family:inherit;"></div><script>(function(){var wrap=document.getElementById("dpee3f1d");var pill=wrap.querySelector("button");var inp=wrap.querySelector("input");pill.addEventListener("click",function(){inp.value="";if(window._a2uiEngine){try{window._a2uiEngine.trigger("end-node","setValue","");}catch(e){}}});inp.addEventListener("input",function(){if(window._a2uiEngine){try{window._a2uiEngine.trigger("end-node","setValue",inp.value);}catch(e){}}});})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tab_group">Tab Group</a>
+    <p class="sa-desc">pill tabs that show/hide sibling layout elements</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of tab_group"><div id="tgb9ece0" style="display:inline-flex;gap:8px;flex-wrap:wrap;"><button type="button" data-tg-value="a" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid #4f46e5;background:#4f46e5;color:#fff;">Option A</button><button type="button" data-tg-value="b" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid #d9dcf5;background:#fff;color:#374151;">Option B</button><button type="button" data-tg-value="c" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid #d9dcf5;background:#fff;color:#374151;">Option C</button></div><script>(function(){function ez(id,show){var el=document.getElementById("a2ui-"+id);if(el)el.style.display=show?"":"none";}ez("P","a"==="0");ez("a","a"==="1");ez("n","a"==="2");ez("e","a"==="3");ez("l","a"==="4");ez("s","a"==="5");var wrap=document.getElementById("tgb9ece0");var btns=wrap.querySelectorAll("button");for(var i=0;i<btns.length;i++){(function(btn){btn.addEventListener("click",function(){var v=btn.getAttribute("data-tg-value");for(var j=0;j<btns.length;j++){btns[j].style.background="#fff";btns[j].style.color="#374151";btns[j].style.borderColor="#d9dcf5";}btn.style.background="#4f46e5";btn.style.color="#fff";btn.style.borderColor="#4f46e5";ez("P",v==="0");ez("a",v==="1");ez("n",v==="2");ez("e",v==="3");ez("l",v==="4");ez("s",v==="5");});})(btns[i]);}})();</script></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/quiet_link">Quiet Link</a>
+    <p class="sa-desc">chromeless secondary text action, for use beside one primary button</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of quiet_link"><div style="text-align:center;"><button id="ql4c7439" type="button" style="background:none;border:none;color:var(--muted,#5f6368);font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:4px;">A concise description of the content.</button></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
     <a class="sa-name" href="/atoms/content_tabs">Content Tabs</a>
     <p class="sa-desc">tabbed panels holding nested atom blocks</p>
   </div>
@@ -5574,7 +5761,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 #cttabs3_t1:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(1){display:block;}
 #cttabs3_t2:checked ~ .tm-tab-labels .tm-tab-label[for="cttabs3_t2"]{background:var(--surface,#fff);color:#6366f1;border-bottom-color:#6366f1;font-weight:700;}
 #cttabs3_t2:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(2){display:block;}
-</style><div class="tm-tabs"><input type="radio" id="cttabs3_t1" name="cttabs3" checked><input type="radio" id="cttabs3_t2" name="cttabs3" ><div class="tm-tab-labels"><label class="tm-tab-label" for="cttabs3_t1">4 Players</label><label class="tm-tab-label" for="cttabs3_t2">8 Players</label></div><div class="tm-tab-panels"><div class="tm-tab-panel"><p>One court, three rounds — every player partners with every other exactly once.</p></div><div class="tm-tab-panel"><p>Two courts, seven rounds — a full partner rotation.</p></div></div></div></div>
+</style><div class="tm-tabs"><input type="radio" id="cttabs3_t1" name="cttabs3" checked><input type="radio" id="cttabs3_t2" name="cttabs3" ><div class="tm-tab-labels"><label class="tm-tab-label" for="cttabs3_t1">4 Players</label><label class="tm-tab-label" for="cttabs3_t2">8 Players</label></div><div class="tm-tab-panels"><div class="tm-tab-panel"><p>One court, three rounds — every player partners with every other exactly once.</p><div style="overflow-x:auto;margin:1.2rem 0;"><table style="border-collapse:collapse;width:100%;"><tr><th style="background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);text-align:left;">Round</th><th style="background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);text-align:left;">Court 1</th></tr><tr><td style="background:transparent;border:none;padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);font-weight:700;">Round 1</td><td style="background:transparent;border:none;padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);">P1 &amp; P4 <span style="color:var(--muted,#5f6368);font-size:0.78rem;">vs</span> P2 &amp; P3</td></tr></table></div></div><div class="tm-tab-panel"><p>Two courts, seven rounds — a full partner rotation.</p></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">

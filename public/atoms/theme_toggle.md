@@ -4,7 +4,7 @@ Floating light/dark theme switch persisted per visitor.
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps, android
+web, google-apps-script-web, mcp-apps, android
 
 ## Fields
 

@@ -386,6 +386,7 @@
    "type": "sortable_list",
    "compact": "drag-to-reorder list emitting {id, order} on drop",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -395,6 +396,7 @@
    "type": "photo_grid",
    "compact": "clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -404,6 +406,7 @@
    "type": "photo_stepper",
    "compact": "full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -413,6 +416,7 @@
    "type": "preview_frame",
    "compact": "iframe whose src is wired to another node's value, so picking updates it with no repaint",
    "surfaces": [
+    "web",
     "mcp-apps",
     "android"
    ]
@@ -3052,6 +3056,7 @@
    "type": "filterable_list",
    "compact": "list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts",
    "surfaces": [
+    "web",
     "mcp-apps",
     "android"
    ]
@@ -5816,6 +5821,7 @@
    "type": "hub",
    "compact": "deck navigation shell with subjects and slides",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5825,6 +5831,7 @@
    "type": "jump_nav",
    "compact": "anchor pill buttons scrolling to page sections",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5834,6 +5841,7 @@
    "type": "command_step",
    "compact": "copyable command with completion checkbox",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5843,6 +5851,7 @@
    "type": "form_textarea",
    "compact": "multi-line text input area",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5852,6 +5861,7 @@
    "type": "flashcard_deck",
    "compact": "flip-card deck of question answer pairs",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5861,6 +5871,7 @@
    "type": "brevet_timeline",
    "compact": "dated vertical revision timeline",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5879,6 +5890,7 @@
    "type": "theme_toggle",
    "compact": "floating light dark theme switch",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5888,6 +5900,7 @@
    "type": "tool_tile",
    "compact": "large icon+title tile, whole tile clickable, for an app/tool selector grid",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5897,6 +5910,7 @@
    "type": "lens_grid",
    "compact": "selectable card grid for a small, explained set of options",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5906,6 +5920,7 @@
    "type": "domain_picker",
    "compact": "default-pill plus free-text override for a config question",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5915,6 +5930,7 @@
    "type": "tab_group",
    "compact": "pill tabs that show/hide sibling layout elements",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
@@ -5924,6 +5940,7 @@
    "type": "quiet_link",
    "compact": "chromeless secondary text action, for use beside one primary button",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"

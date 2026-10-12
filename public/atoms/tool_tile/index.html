@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/tool_tile/#page", "url": "https://a2uicatalog.ai/atoms/tool_tile/", "headline": "Tool Tile: A2UI atom", "description": "Large icon+title tile, the WHOLE tile clickable — for a small set of primary choices (an app/tool selector), not a data-dense card.", "about": {"@id": "https://a2uicatalog.ai/atoms/tool_tile/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/tool_tile/#atom", "name": "Tool Tile", "termCode": "tool_tile", "description": "large icon+title tile, whole tile clickable, for an app/tool selector grid", "url": "https://a2uicatalog.ai/atoms/tool_tile/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "badge, count, icon, label, variant"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/tool_tile.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/tool_tile/#page", "url": "https://a2uicatalog.ai/atoms/tool_tile/", "headline": "Tool Tile: A2UI atom", "description": "Large icon+title tile, the WHOLE tile clickable — for a small set of primary choices (an app/tool selector), not a data-dense card.", "about": {"@id": "https://a2uicatalog.ai/atoms/tool_tile/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/tool_tile/#atom", "name": "Tool Tile", "termCode": "tool_tile", "description": "large icon+title tile, whole tile clickable, for an app/tool selector grid", "url": "https://a2uicatalog.ai/atoms/tool_tile/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "badge, count, icon, label, variant"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/tool_tile.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,7 +173,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
@@ -183,6 +183,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of tool_tile"><button id="tl652dfe" style="position:relative;display:flex;flex-direction:column;gap:14px;align-items:flex-start;text-align:left;width:100%;background:linear-gradient(135deg,#6d6af7,#4f46e5);border-radius:22px;padding:22px;box-shadow:0 8px 20px -6px rgba(79,70,229,.45),inset 0 1px 0 rgba(255,255,255,.25);border:none;cursor:pointer;font-family:inherit;transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''"><span style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;flex-shrink:0;"></span><span style="font-size:16px;font-weight:600;color:#fff;">Tool Tile</span></button></div>
+</div>
 
   
 
@@ -207,6 +211,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/tool_tile",
   "capabilities": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"

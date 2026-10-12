@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/tab_group/#page", "url": "https://a2uicatalog.ai/atoms/tab_group/", "headline": "Tab Group: A2UI atom", "description": "Pill tabs that switch which ONE of several sibling atoms is visible, e.g.", "about": {"@id": "https://a2uicatalog.ai/atoms/tab_group/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/tab_group/#atom", "name": "Tab Group", "termCode": "tab_group", "description": "pill tabs that show/hide sibling layout elements", "url": "https://a2uicatalog.ai/atoms/tab_group/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "options, panels, target"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/tab_group.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/tab_group/#page", "url": "https://a2uicatalog.ai/atoms/tab_group/", "headline": "Tab Group: A2UI atom", "description": "Pill tabs that switch which ONE of several sibling atoms is visible, e.g.", "about": {"@id": "https://a2uicatalog.ai/atoms/tab_group/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/tab_group/#atom", "name": "Tab Group", "termCode": "tab_group", "description": "pill tabs that show/hide sibling layout elements", "url": "https://a2uicatalog.ai/atoms/tab_group/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "options, panels, target"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/tab_group.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,7 +173,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
@@ -183,6 +183,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of tab_group"><div id="tgb9ece0" style="display:inline-flex;gap:8px;flex-wrap:wrap;"><button type="button" data-tg-value="a" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid #4f46e5;background:#4f46e5;color:#fff;">Option A</button><button type="button" data-tg-value="b" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid #d9dcf5;background:#fff;color:#374151;">Option B</button><button type="button" data-tg-value="c" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid #d9dcf5;background:#fff;color:#374151;">Option C</button></div><script>(function(){function ez(id,show){var el=document.getElementById("a2ui-"+id);if(el)el.style.display=show?"":"none";}ez("P","a"==="0");ez("a","a"==="1");ez("n","a"==="2");ez("e","a"==="3");ez("l","a"==="4");ez("s","a"==="5");var wrap=document.getElementById("tgb9ece0");var btns=wrap.querySelectorAll("button");for(var i=0;i<btns.length;i++){(function(btn){btn.addEventListener("click",function(){var v=btn.getAttribute("data-tg-value");for(var j=0;j<btns.length;j++){btns[j].style.background="#fff";btns[j].style.color="#374151";btns[j].style.borderColor="#d9dcf5";}btn.style.background="#4f46e5";btn.style.color="#fff";btn.style.borderColor="#4f46e5";ez("P",v==="0");ez("a",v==="1");ez("n",v==="2");ez("e",v==="3");ez("l",v==="4");ez("s",v==="5");});})(btns[i]);}})();</script></div>
+</div>
 
   
 
@@ -221,6 +225,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/tab_group",
   "capabilities": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"

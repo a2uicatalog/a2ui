@@ -9568,7 +9568,7 @@ _RENDERERS['text_analysis'] = function(b) {
   // Store each analysis note in a hidden div to avoid JSON encoding issues
   var noteDivs = '';
   for (var j = 0; j < highlights.length; j++) {
-    noteDivs += '<div id="' + uid + 'n' + j + '" style="display:none;">' + (highlights[j].analysis || '') + '</div>';
+    noteDivs += '<div id="' + uid + 'n' + j + '" style="display:none;">' + _esc(highlights[j].analysis || '').replace(/\n/g, '<br>') + '</div>';   // escaped (it was raw HTML: an <img onerror> in an agent payload ran)
   }
 
   return (
@@ -34944,7 +34944,7 @@ _RENDERERS['scenario_case'] = function(b) {
     var lbl       = isBest ? 'Best answer' : isPartial ? 'Partial credit' : 'Avoid';
 
     var dots = '';
-    for (var d = 1; d <= maxScore; d++) {
+    for (var d = 1; d <= Math.min(maxScore, 50); d++) {   // capped: a payload score of 1e11 must not mean 1e11 loop turns
       dots += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:2px;background:' + (d <= score ? dotColor : '#e2e8f0') + ';"></span>';
     }
 

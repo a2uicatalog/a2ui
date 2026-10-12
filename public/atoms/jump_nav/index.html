@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/jump_nav/#page", "url": "https://a2uicatalog.ai/atoms/jump_nav/", "headline": "Jump Nav: A2UI atom", "description": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.", "about": {"@id": "https://a2uicatalog.ai/atoms/jump_nav/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/jump_nav/#atom", "name": "Jump Nav", "termCode": "jump_nav", "description": "anchor pill buttons scrolling to page sections", "url": "https://a2uicatalog.ai/atoms/jump_nav/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "links"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/jump_nav.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/jump_nav/#page", "url": "https://a2uicatalog.ai/atoms/jump_nav/", "headline": "Jump Nav: A2UI atom", "description": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.", "about": {"@id": "https://a2uicatalog.ai/atoms/jump_nav/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/jump_nav/#atom", "name": "Jump Nav", "termCode": "jump_nav", "description": "anchor pill buttons scrolling to page sections", "url": "https://a2uicatalog.ai/atoms/jump_nav/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "links"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/jump_nav.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,12 +173,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of jump_nav"><div style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px;"><button onclick="(function(){var el=document.getElementById('a2ui-');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});})()" style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">GitHub</button></div></div>
+</div>
 
   
 
@@ -208,6 +212,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/jump_nav",
   "capabilities": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"

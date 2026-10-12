@@ -671,6 +671,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/sortable_list",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -688,6 +689,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/photo_grid",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -705,6 +707,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/photo_stepper",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -722,6 +725,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/preview_frame",
       "capabilities": [
+        "web",
         "mcp-apps",
         "android"
       ],
@@ -5163,6 +5167,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/filterable_list",
       "capabilities": [
+        "web",
         "mcp-apps",
         "android"
       ],
@@ -10029,6 +10034,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/hub",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10046,6 +10052,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/jump_nav",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10063,6 +10070,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/command_step",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10080,6 +10088,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/form_textarea",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10097,6 +10106,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/flashcard_deck",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10114,6 +10124,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/brevet_timeline",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10148,6 +10159,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/theme_toggle",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10165,6 +10177,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/tool_tile",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10182,6 +10195,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/lens_grid",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10199,6 +10213,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/domain_picker",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10216,6 +10231,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/tab_group",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"
@@ -10233,6 +10249,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/quiet_link",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps",
         "android"

@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/form_textarea/#page", "url": "https://a2uicatalog.ai/atoms/form_textarea/", "headline": "Form Textarea: A2UI atom", "description": "Multi-line text input. Wire onChange to a ValueStore setValue to capture typed content.", "about": {"@id": "https://a2uicatalog.ai/atoms/form_textarea/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/form_textarea/#atom", "name": "Form Textarea", "termCode": "form_textarea", "description": "multi-line text input area", "url": "https://a2uicatalog.ai/atoms/form_textarea/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "label, placeholder, rows, value"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/form_textarea.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/form_textarea/#page", "url": "https://a2uicatalog.ai/atoms/form_textarea/", "headline": "Form Textarea: A2UI atom", "description": "Multi-line text input. Wire onChange to a ValueStore setValue to capture typed content.", "about": {"@id": "https://a2uicatalog.ai/atoms/form_textarea/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/form_textarea/#atom", "name": "Form Textarea", "termCode": "form_textarea", "description": "multi-line text input area", "url": "https://a2uicatalog.ai/atoms/form_textarea/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "label, placeholder, rows, value"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/form_textarea.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -173,12 +173,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of form_textarea"><div style="display:flex;flex-direction:column;gap:4px;width:100%;"><textarea id="ta35c331" aria-label="Text" rows="4" placeholder="" style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#d1d5db'"></textarea></div></div>
+</div>
 
   
 
@@ -202,6 +206,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/form_textarea",
   "capabilities": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"

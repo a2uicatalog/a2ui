@@ -7,7 +7,7 @@ No markdown conversion. No Quill. No stripping surprises.
 """
 
 from typing import List, Dict, Any
-import re, math, base64, urllib.request, urllib.error, json as _json
+import decimal, re, math, base64, urllib.request, urllib.error, json as _json
 from datetime import datetime, timezone
 from pathlib import Path
 import markdown as _md_lib
@@ -29944,6 +29944,1762 @@ def _render_motion_fit(b: dict) -> str:
 for _m9_name, _m9_fn in (('motion_lit', _render_motion_lit), ('motion_arcs', _render_motion_arcs), ('motion_lockup', _render_motion_lockup), ('motion_collage', _render_motion_collage),
                          ('motion_bubbles', _render_motion_bubbles), ('motion_beats', _render_motion_beats), ('motion_pattern', _render_motion_pattern), ('motion_dock', _render_motion_dock), ('motion_fit', _render_motion_fit)):
     _RENDERERS[_m9_name] = _m9_fn
+
+
+# ─── twins of the twelve infographic atoms (atoms_infographic.gs, 2026-10-10): quadrant, bullet_graph, swimlane, gantt, change_chart, cycle_diagram,
+# journey_map, maturity_ladder, treemap, venn_diagram, callout_anatomy, org_chart. Every helper below mirrors the JavaScript one of the same name. ───
+class _IfUndef:
+    """A key the payload does not have: JavaScript's undefined, which is not null."""
+    def __repr__(self):
+        return 'undefined'
+
+
+_IF_UNDEF = _IfUndef()
+_IF_CAT = ['#19294E', '#810998', '#0F6C4F', '#9A6120']
+_IF_FADE = 'opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));'
+_IF_BORDER = '1px solid #64748B'
+_IF_MUTED = 'var(--muted,#475569)'
+
+
+def _if_g(o, k):
+    return o.get(k, _IF_UNDEF) if isinstance(o, dict) else _IF_UNDEF
+
+
+def _if_numstr(x):
+    """JavaScript Number-to-string."""
+    if isinstance(x, bool):
+        return 'true' if x else 'false'
+    if isinstance(x, int):
+        return str(x)
+    if x != x:
+        return 'NaN'
+    if x in (float('inf'), float('-inf')):
+        return 'Infinity' if x > 0 else '-Infinity'
+    if x == int(x) and abs(x) < 1e21:
+        return str(int(x))
+    r = repr(float(x))
+    if 'e' not in r and abs(x) >= 1e-6:
+        return r
+    if 1e-6 <= abs(x) < 1e21:
+        return format(decimal.Decimal(r), 'f')
+    return r.replace('e-0', 'e-').replace('e+0', 'e+')
+
+
+def _if_str(v):
+    """JavaScript String(v)."""
+    if v is None:
+        return 'null'
+    if v is _IF_UNDEF:
+        return 'undefined'
+    if isinstance(v, bool):
+        return 'true' if v else 'false'
+    if isinstance(v, (int, float)):
+        return _if_numstr(v)
+    if isinstance(v, list):
+        return ','.join('' if (x is None or x is _IF_UNDEF) else _if_str(x) for x in v)
+    if isinstance(v, dict):
+        return '[object Object]'
+    return v
+
+
+def _if_s(v, mx=80):
+    return _cv_esc(('' if (v is None or v is _IF_UNDEF) else _if_str(v))[:mx or 80])
+
+
+def _if_n(v, lo, hi, d):
+    if isinstance(v, list):
+        v = _if_str(v)
+    n = _js_number(v)
+    return min(hi, max(lo, n)) if n == n and n not in (float('inf'), float('-inf')) else d
+
+
+def _if_arr(v, mx):
+    return v[:mx] if isinstance(v, list) else []
+
+
+def _if_obj(v):
+    return v if isinstance(v, dict) else {}
+
+
+def _if_pick(v, allowed, d):
+    return v if isinstance(v, str) and v in allowed else d
+
+
+def _if_k(i, n):
+    return '--k:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);'
+
+
+def _if_round(x):
+    return math.floor(x + 0.5)
+
+
+def _if_fmt(n):
+    return _if_numstr(_if_round(n * 100) / 100)
+
+
+def _if_fixed(x, d):
+    """JavaScript toFixed: exact binary value, ties away from zero."""
+    q = decimal.Decimal(1).scaleb(-d)
+    s = format(decimal.Decimal(abs(x)).quantize(q, rounding=decimal.ROUND_HALF_UP), 'f')
+    return ('-' if x < 0 and float(s) != 0 else '') + s
+
+
+def _if_title(b):
+    return '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _if_s(_if_g(b, 'title'), 80) + '</div>' if _if_truthy(_if_g(b, 'title')) else ''
+
+
+def _if_truthy(v):
+    if v is None or v is _IF_UNDEF or v is False:
+        return False
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        return v == v and v != 0
+    if isinstance(v, str):
+        return v != ''
+    return True
+
+
+def _if_wrap(inner):
+    return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + inner + '</div>'
+
+
+def _if_card(extra=''):
+    return 'border:' + _IF_BORDER + ';border-radius:8px;background:var(--surface,#F8FAFC);padding:8px 10px;' + extra
+
+
+def _if_table(head, rows):
+    return ('<table style="' + _IF_SR + '"><thead><tr>' + ''.join('<th scope="col">' + _if_s(h, 40) + '</th>' for h in head) + '</tr></thead><tbody>'
+            + ''.join('<tr><th scope="row">' + _if_s(r[0], 60) + '</th>' + ''.join('<td>' + _if_s(c, 60) + '</td>' for c in r[1:]) + '</tr>' for r in rows) + '</tbody></table>')
+
+
+def _if_seq(a, b):
+    """JavaScript ===, for JSON values."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return isinstance(a, bool) and isinstance(b, bool) and a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return a == b
+    if isinstance(a, str) and isinstance(b, str):
+        return a == b
+    if a is None and b is None:
+        return True
+    return a is b
+
+
+def _render_quadrant(b: dict) -> str:
+    xa, ya, items = _if_obj(_if_g(b, 'x_axis')), _if_obj(_if_g(b, 'y_axis')), _if_arr(_if_g(b, 'items'), 12)
+    q = [['top_left', _if_g(ya, 'high'), _if_g(xa, 'low')], ['top_right', _if_g(ya, 'high'), _if_g(xa, 'high')], ['bottom_left', _if_g(ya, 'low'), _if_g(xa, 'low')], ['bottom_right', _if_g(ya, 'low'), _if_g(xa, 'high')]]
+    cells = []
+    for qi, qq in enumerate(q):
+        its = [i for i in items if isinstance(i, dict) and _if_seq(i.get('quadrant', _IF_UNDEF), qq[0])][:3]
+        inner = ''
+        for i in its:
+            inner += ('<div style="border:' + _IF_BORDER + ';border-radius:6px;padding:6px 8px;margin-top:4px;background:var(--bg,#fff);">' + _if_s(_if_g(i, 'item'), 28)
+                      + (': <span style="color:' + _IF_MUTED + ';">' + _if_s(_if_g(i, 'note'), 40) + '</span>' if _if_truthy(_if_g(i, 'note')) else '') + '</div>')
+        cells.append('<div style="' + _if_card(_if_k(qi, 4) + _IF_FADE + 'min-height:96px;') + '"><div style="font-weight:700;font-size:0.78rem;color:' + _IF_MUTED + ';margin-bottom:4px;">'
+                     + _if_s(qq[1], 24) + ', ' + _if_s(qq[2], 24) + '</div>' + inner + '</div>')
+    lab = 'font-size:0.78rem;font-weight:700;color:' + _IF_MUTED + ';'
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;">'
+                    + '<div style="' + lab + 'align-self:start;text-align:right;padding-top:8px;">' + _if_s(_if_g(ya, 'high'), 24) + '</div>' + cells[0] + cells[1]
+                    + '<div style="' + lab + 'align-self:end;text-align:right;padding-bottom:8px;">' + _if_s(_if_g(ya, 'low'), 24) + '</div>' + cells[2] + cells[3]
+                    + '<div></div><div style="' + lab + '">' + _if_s(_if_g(xa, 'low'), 24) + '</div><div style="' + lab + 'text-align:right;">' + _if_s(_if_g(xa, 'high'), 24) + '</div></div>')
+
+
+def _render_bullet_graph(b: dict) -> str:
+    rows_src = _if_arr(_if_g(b, 'rows'), 6)
+    rows = ''
+    for i, r in enumerate(rows_src):
+        r = _if_obj(r)
+        a, t = _if_n(_if_g(r, 'actual'), 0, 1e9, 0), _if_n(_if_g(r, 'target'), 0, 1e9, 0)
+        rg = sorted(_if_n(v, 0, 1e9, 0) for v in _if_arr(_if_g(r, 'ranges'), 3))
+        while len(rg) < 3:
+            rg.append(rg[-1] if rg else 1)
+        top = max(rg[2], t, a) or 1
+        pc = lambda v: _if_fixed(v / top * 100, 2) + '%'
+        bands, prev, track = ['#BFDBFE', '#60A5FA', '#2563EB'], 0, ''
+        for bi, v in enumerate(rg):
+            track += '<div style="position:absolute;top:0;bottom:0;left:' + pc(prev) + ';width:' + _if_fixed((v - prev) / top * 100, 2) + '%;background:' + bands[bi] + ';"></div>'
+            prev = v
+        track += ('<div style="position:absolute;left:0;top:9px;height:10px;width:calc(var(--k,1)*' + _if_fixed(a / top * 100, 2) + '%);background:#0F172A;"></div>'
+                  + '<div style="position:absolute;left:calc(' + pc(t) + ' - 1.5px);top:-3px;width:3px;height:34px;background:#B91C1C;"></div>')
+        rows += ('<div style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _if_k(i, len(rows_src)) + '"><div>' + _if_s(_if_g(r, 'label'), 40) + '</div>'
+                 + '<div style="position:relative;height:28px;border:' + _IF_BORDER + ';border-radius:4px;overflow:visible;">' + track + '</div>'
+                 + '<div style="font-weight:700;font-size:0.82rem;white-space:nowrap;">' + _if_fmt(a) + ' / ' + _if_fmt(t) + ' <span style="font-weight:400;color:' + _IF_MUTED + ';">' + ('target met' if a >= t else 'below target') + '</span></div></div>')
+    return _if_wrap(_if_title(b) + rows + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';">Dark bar: actual. Red tick: target. Shaded bands: poor, fair, good. The scale starts at 0.</div>')
+
+
+def _render_swimlane(b: dict) -> str:
+    roles, phases, tasks = _if_arr(_if_g(b, 'roles'), 4), _if_arr(_if_g(b, 'phases'), 5), _if_arr(_if_g(b, 'tasks'), 12)
+    n = len(tasks)
+    head = '<div></div>' + ''.join('<div style="text-align:center;font-weight:700;font-size:0.8rem;padding:4px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _if_s(p, 24) + '</div>' for p in phases)
+    lanes = ''
+    for r in roles:
+        lanes += '<div style="' + _if_card('font-weight:700;display:flex;align-items:center;') + '">' + _if_s(r, 24) + '</div>'
+        for p in phases:
+            cell = [(t, ti) for ti, t in enumerate(tasks) if _if_truthy(t) and _if_seq(_if_g(t, 'role'), r) and _if_seq(_if_g(t, 'phase'), p)][:2]
+            lanes += '<div style="' + _if_card('background:var(--surface,#F8FAFC);min-height:64px;display:flex;flex-direction:column;gap:4px;') + '">'
+            for t, ti in cell:
+                lanes += ('<div style="display:flex;gap:6px;align-items:flex-start;border:' + _IF_BORDER + ';border-radius:6px;padding:5px 7px;background:var(--bg,#fff);' + _if_k(ti, n) + _IF_FADE + '">'
+                          + '<span style="flex:0 0 auto;min-width:20px;height:20px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.72rem;font-weight:700;text-align:center;line-height:20px;">' + str(ti + 1) + '</span><span>' + _if_s(_if_g(t, 'task'), 60) + '</span></div>')
+            lanes += '</div>'
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + str(max(len(phases), 1)) + ',1fr);gap:6px;">' + head + lanes + '</div>'
+                    + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">Numbers show the order of the tasks.</div>')
+
+
+def _if_cat(v, mx=16):
+    return _if_str('' if v is _IF_UNDEF else v)[:mx]
+
+
+def _render_gantt(b: dict) -> str:
+    iv, tasks = _if_arr(_if_g(b, 'intervals'), 16), _if_arr(_if_g(b, 'tasks'), 10)
+    nn = max(len(iv), 1)
+    cats = []
+    for t in tasks:
+        c = _if_cat(_if_g(_if_obj(t), 'category'))
+        if c not in cats and len(cats) < 4:
+            cats.append(c)
+    head = '<div></div>' + ''.join('<div style="text-align:center;font-weight:700;font-size:0.78rem;border-left:1px solid #CBD5E1;">' + _if_s(p, 10) + '</div>' for p in iv)
+    rows = ''
+    for i, t in enumerate(tasks):
+        t = _if_obj(t)
+        s = _if_round(_if_n(_if_g(t, 'start_slot'), 0, nn - 1, 0))
+        d = _if_round(_if_n(_if_g(t, 'duration_slots'), 1, nn - s, 1))
+        c = _if_cat(_if_g(t, 'category'))
+        ci = max(0, cats.index(c) if c in cats else -1)
+        rows += ('<div style="padding:4px 8px 4px 0;align-self:center;grid-row:' + str(i + 2) + ';">' + _if_s(_if_g(t, 'task'), 40) + '</div>'
+                 + '<div style="grid-row:' + str(i + 2) + ';grid-column:' + str(s + 2) + ' / span ' + str(d) + ';padding:3px 2px;"><div style="height:22px;border-radius:5px;background:' + _IF_CAT[ci] + ';transform:scaleX(var(--k,1));transform-origin:left;' + _if_k(i, len(tasks)) + '"></div></div>')
+    key = ''.join('<span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px;"><span style="width:12px;height:12px;border-radius:3px;background:' + _IF_CAT[ci] + ';display:inline-block;"></span>' + _if_s(c, 16) + '</span>' for ci, c in enumerate(cats))
+    trows = []
+    for t in tasks:
+        t = _if_obj(t)
+        s = _if_round(_if_n(_if_g(t, 'start_slot'), 0, nn - 1, 0))
+        trows.append([_if_g(t, 'task'), iv[s] if s < len(iv) else _IF_UNDEF, _if_round(_if_n(_if_g(t, 'duration_slots'), 1, nn - s, 1)), _if_g(t, 'category')])
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:minmax(120px,26%) repeat(' + str(nn) + ',1fr);row-gap:4px;">' + head + rows + '</div>'
+                    + '<div style="margin-top:8px;font-size:0.78rem;">' + key + '</div>' + _if_table(['Task', 'Start', 'Length', 'Category'], trows))
+
+
+def _render_change_chart(b: dict) -> str:
+    mode = _if_pick(_if_g(b, 'mode'), ['dumbbell', 'slope', 'bars'], 'dumbbell')
+    rows = []
+    for r in _if_arr(_if_g(b, 'rows'), 12):
+        r = _if_obj(r)
+        rows.append({'l': _if_g(r, 'label'), 'a': _if_n(_if_g(r, 'from'), 0, 1e12, 0), 'c': _if_n(_if_g(r, 'to'), 0, 1e12, 0)})
+    names = [_if_str(s)[:20] for s in _if_arr(_if_g(b, 'series'), 2)]
+    while len(names) < 2:
+        names.append('After' if names else 'Before')
+    top = max([max(r['a'], r['c']) for r in rows] + [1]) * 1.05
+    n = len(rows)
+    eq = _if_table(['Item', names[0], names[1], 'Change'], [[r['l'], _if_fmt(r['a']), _if_fmt(r['c']), (_if_fixed((r['c'] - r['a']) / r['a'] * 100, 1) + '%') if r['a'] else 'n/a'] for r in rows])
+    if mode == 'bars':
+        body = ''
+        for i, r in enumerate(rows):
+            body += '<div style="display:grid;grid-template-columns:minmax(110px,26%) 1fr;gap:10px;margin:8px 0;' + _if_k(i, n) + '"><div>' + _if_s(r['l'], 40) + '</div><div>'
+            for v in ([r['a'], _IF_CAT[0], names[0]], [r['c'], _IF_CAT[3], names[1]]):
+                body += ('<div style="display:flex;align-items:center;gap:6px;margin:2px 0;"><div style="height:14px;border-radius:3px;background:' + v[1] + ';width:calc(var(--k,1)*' + _if_fixed(v[0] / top * 78, 2)
+                         + '%);min-width:2px;"></div><span style="font-size:0.78rem;font-weight:700;white-space:nowrap;">' + _if_s(v[2], 20) + ' ' + _if_fmt(v[0]) + '</span></div>')
+            body += '</div></div>'
+        body += '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';">Bars start at 0 and share one scale.</div>'
+        return _if_wrap(_if_title(b) + body)
+    W, svg = 640, ''
+    if mode == 'dumbbell':
+        row_h, lw = 34, 170
+        tw = W - lw - 150
+        hh = n * row_h + 8
+        for i, r in enumerate(rows):
+            xa, xc, y = lw + r['a'] / top * tw, lw + r['c'] / top * tw, i * row_h + 17
+            svg += ('<g style="' + _if_k(i, n) + 'opacity:var(--k,1);"><text x="0" y="' + str(y + 4) + '" font-size="12" fill="currentColor">' + _if_s(r['l'], 28) + '</text><line x1="' + _if_fixed(xa, 1) + '" y1="' + str(y) + '" x2="' + _if_fixed(xc, 1) + '" y2="' + str(y) + '" stroke="#64748B" stroke-width="2"/>'
+                    + '<circle cx="' + _if_fixed(xa, 1) + '" cy="' + str(y) + '" r="7" fill="#475569"/><circle cx="' + _if_fixed(xc, 1) + '" cy="' + str(y) + '" r="7" fill="#0369A1"/>'
+                    + '<text x="' + _if_fixed(max(xa, xc) + 14, 1) + '" y="' + str(y + 4) + '" font-size="11" font-weight="700" fill="currentColor">' + _if_fmt(r['a']) + ' → ' + _if_fmt(r['c']) + '</text></g>')
+    else:
+        lx, rx, pad = 200, 440, 28
+        hh = max(220, n * 30) + pad * 2
+        ys = lambda v: pad + (hh - 2 * pad) * (1 - (v - 0) / (top - 0))
+
+        def spread(arr):
+            o, last = {}, -1e9
+            for i, v in sorted(enumerate(arr), key=lambda p: p[1]):
+                yv = max(v, last + 15)
+                o[i] = yv
+                last = yv
+            return o
+        left, right = spread([ys(r['a']) for r in rows]), spread([ys(r['c']) for r in rows])
+        svg = ('<text x="' + str(lx) + '" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">' + _if_s(names[0], 20) + '</text><text x="' + str(rx) + '" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">' + _if_s(names[1], 20) + '</text>')
+        for i, r in enumerate(rows):
+            svg += ('<g style="' + _if_k(i, n) + '"><path d="M' + str(lx) + ' ' + _if_fixed(ys(r['a']), 1) + ' L' + str(rx) + ' ' + _if_fixed(ys(r['c']), 1) + '" pathLength="1" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:calc(1 - var(--k,1));"/>'
+                    + '<text x="' + str(lx - 10) + '" y="' + _if_fixed(left[i] + 4, 1) + '" font-size="11" text-anchor="end" fill="currentColor">' + _if_s(r['l'], 20) + ' ' + _if_fmt(r['a']) + '</text>'
+                    + '<text x="' + str(rx + 10) + '" y="' + _if_fixed(right[i] + 4, 1) + '" font-size="11" fill="currentColor">' + _if_fmt(r['c']) + ' ' + _if_s(r['l'], 20) + '</text></g>')
+    return _if_wrap(_if_title(b) + '<svg viewBox="0 0 ' + str(W) + ' ' + str(hh) + '" width="100%" style="max-width:' + str(W) + 'px;display:block;" aria-hidden="true" focusable="false">' + svg + '</svg>'
+                    + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';">' + ('Grey dot: ' + _if_s(names[0], 20) + '. Blue dot: ' + _if_s(names[1], 20) + '. The scale starts at 0.' if mode == 'dumbbell' else 'Each line joins the two values for one item.') + '</div>' + eq)
+
+
+def _render_cycle_diagram(b: dict) -> str:
+    st = _if_arr(_if_g(b, 'stages'), 6)
+    n = len(st) or 1
+    vh = 340 if n <= 4 else 430
+    boxes, lines, pos = '', '', []
+    for i in range(len(st)):
+        a = -math.pi / 2 + 2 * math.pi * i / n
+        pos.append([50 + 34 * math.cos(a), 50 + (33 if n <= 4 else 38) * math.sin(a)])
+    for i, s in enumerate(st):
+        s = _if_obj(s)
+        boxes += ('<div style="position:absolute;left:' + _if_fixed(pos[i][0], 2) + '%;top:' + _if_fixed(pos[i][1], 2) + '%;width:26%;transform:translate(-50%,-50%);' + _if_card(_if_k(i, n) + 'opacity:var(--k,1);') + '"><div style="font-weight:700;">' + str(i + 1) + '. ' + _if_s(_if_g(s, 'name'), 24)
+                  + '</div><div style="font-size:0.78rem;color:' + _IF_MUTED + ';">' + _if_s(_if_g(s, 'description'), 60) + '</div></div>')
+        q, p = pos[(i + 1) % n], pos[i]
+        dx, dy, px, py = (q[0] - p[0]) * 10, (q[1] - p[1]) * vh / 100, p[0] * 10, p[1] * vh / 100
+        lines += ('<line x1="' + _if_fixed(px + dx * 0.3, 1) + '" y1="' + _if_fixed(py + dy * 0.3, 1) + '" x2="' + _if_fixed(px + dx * 0.7, 1) + '" y2="' + _if_fixed(py + dy * 0.7, 1) + '" stroke="#64748B" stroke-width="2.5" marker-end="url(#ifarr)" style="opacity:var(--k,1);' + _if_k(i, n) + '"/>')
+    lis = ''.join('<li>' + _if_s(_if_g(_if_obj(s), 'name'), 24) + '. ' + _if_s(_if_g(_if_obj(s), 'description'), 60) + '</li>' for s in st)
+    return _if_wrap(_if_title(b) + '<div style="position:relative;aspect-ratio:1000/' + str(vh) + ';"><svg viewBox="0 0 1000 ' + str(vh) + '" width="100%" height="100%" style="position:absolute;inset:0;" aria-hidden="true" focusable="false">'
+                    + '<defs><marker id="ifarr" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,1 L12,6 L0,11 z" fill="#64748B"/></marker></defs>' + lines + '</svg>' + boxes + '</div>'
+                    + '<ol style="' + _IF_SR + '">' + lis + '</ol><div style="' + _IF_SR + '">The last stage loops back to the first.</div>')
+
+
+_IF_SENT = {'positive': ['#15803D', '+ Positive'], 'neutral': ['#475569', '= Neutral'], 'negative': ['#B91C1C', '− Negative']}
+
+
+def _render_journey_map(b: dict) -> str:
+    st = _if_arr(_if_g(b, 'stages'), 6)
+    n = len(st) or 1
+    cols = ''
+    for i, s in enumerate(st):
+        s = _if_obj(s)
+        se = _IF_SENT[_if_pick(_if_g(s, 'sentiment'), ['positive', 'neutral', 'negative'], 'neutral')]
+        cols += ('<div style="display:flex;flex-direction:column;gap:6px;' + _if_k(i, n) + _IF_FADE + '"><div style="text-align:center;font-weight:700;padding:5px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _if_s(_if_g(s, 'stage'), 24) + '</div>'
+                 + '<div style="' + _if_card() + '"><div style="font-size:0.72rem;font-weight:700;color:' + _IF_MUTED + ';">Goal</div>' + _if_s(_if_g(s, 'user_goal'), 60) + '</div>'
+                 + '<div style="text-align:center;font-weight:700;padding:4px;border-radius:6px;background:' + se[0] + ';color:#fff;">' + se[1] + '</div>'
+                 + '<div style="' + _if_card() + '"><div style="font-size:0.72rem;font-weight:700;color:' + _IF_MUTED + ';">Friction</div>' + _if_s(_if_g(s, 'friction_point'), 80) + '</div></div>')
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:repeat(' + str(n) + ',minmax(0,1fr));gap:8px;">' + cols + '</div>')
+
+
+def _render_maturity_ladder(b: dict) -> str:
+    lv = _if_arr(_if_g(b, 'levels'), 6)
+    n = len(lv) or 1
+    steps = ''
+    for i, l in enumerate(lv):
+        l = _if_obj(l)
+        cur = _if_g(l, 'is_current') is True
+        steps += ('<div style="flex:1;min-width:0;min-height:' + str(84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + ('#0369A1' if cur else 'var(--surface,#F8FAFC)') + ';color:' + ('#fff' if cur else 'var(--text,#0F172A)') + ';' + _if_k(i, n) + _IF_FADE + '">'
+                  + '<div style="font-weight:700;">Level ' + _if_s(_if_g(l, 'level'), 3) + ': ' + _if_s(_if_g(l, 'name'), 30) + (' [CURRENT]' if cur else '') + '</div><div style="font-size:0.78rem;margin-top:4px;' + ('' if cur else 'color:' + _IF_MUTED + ';') + '">' + _if_s(_if_g(l, 'criteria'), 120) + '</div></div>')
+    return _if_wrap(_if_title(b) + '<div style="display:flex;align-items:flex-end;gap:6px;">' + steps + '</div>')
+
+
+def _render_treemap(b: dict) -> str:
+    items = []
+    for i in _if_arr(_if_g(b, 'items'), 12):
+        i = _if_obj(i)
+        items.append({'c': _if_cat(_if_g(i, 'category'), 20), 'n': _if_g(i, 'name'), 'v': _if_n(_if_g(i, 'value'), 0, 1e12, 0)})
+    items = [i for i in items if i['v'] > 0]
+    cats = []
+    for i in items:
+        if i['c'] not in cats and len(cats) < 4:
+            cats.append(i['c'])
+    items = [i for i in items if i['c'] in cats]
+    tot = 0
+    for i in items:
+        tot += i['v']
+    tot = tot or 1
+    cols = ''
+    for ci, c in enumerate(cats):
+        m = [i for i in items if i['c'] == c]
+        ct = 0
+        for i in m:
+            ct += i['v']
+        cols += '<div style="flex:' + _if_numstr(ct) + ' 1 0;min-width:0;display:flex;flex-direction:column;gap:2px;"><div style="font-size:0.78rem;font-weight:700;">' + _if_s(c, 20) + ' ' + _if_fmt(ct) + '</div>'
+        for k, i in enumerate(m):
+            cols += ('<div style="flex:' + _if_numstr(i['v']) + ' 1 0;min-height:0;background:' + _IF_CAT[ci] + ';color:#fff;border-radius:4px;padding:6px 8px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(ci * 4 + k, 12) + 'opacity:var(--k,1);">' + _if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) + '</div>')
+        cols += '</div>'
+    return _if_wrap(_if_title(b) + '<div style="display:flex;gap:2px;height:300px;">' + cols + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.</div>'
+                    + _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
+
+
+def _render_venn_diagram(b: dict) -> str:
+    lst = lambda v: ''.join('<div>• ' + _if_s(i, 28) + '</div>' for i in _if_arr(v, 4))
+    c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));'
+    return _if_wrap(_if_title(b) + '<div style="position:relative;max-width:640px;margin:0 auto;aspect-ratio:1.5;font-size:0.82rem;">'
+                    + '<div style="position:absolute;left:4%;top:0;font-weight:700;">' + _if_s(_if_g(b, 'set_a_name'), 28) + '</div><div style="position:absolute;right:4%;top:0;font-weight:700;text-align:right;">' + _if_s(_if_g(b, 'set_b_name'), 28) + '</div>'
+                    + '<div style="' + c + 'left:4%;background:#BFDBFE;' + _if_k(0, 2) + '"></div><div style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _if_k(1, 2) + '"></div>'
+                    + '<div style="position:absolute;left:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_a_exclusive')) + '</div>'
+                    + '<div style="position:absolute;left:38%;top:48%;width:24%;transform:translateY(-50%);text-align:center;">' + lst(_if_g(b, 'intersection')) + '</div>'
+                    + '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_b_exclusive')) + '</div></div>')
+
+
+def _render_callout_anatomy(b: dict) -> str:
+    co = []
+    for c in _if_arr(_if_g(b, 'callouts'), 8):
+        c = _if_obj(c)
+        co.append({'id': _if_round(_if_n(_if_g(c, 'id'), 1, 99, 1)), 't': _if_g(c, 'title'), 'd': _if_g(c, 'description'), 'p': _if_pick(_if_g(c, 'pin_position'), ['top_left', 'top_right', 'bottom_left', 'bottom_right'], 'top_left')})
+    side = lambda sfx: sorted([c for c in co if c['p'][-len(sfx):] == sfx], key=lambda c: 0 if c['p'].startswith('top') else 1)
+
+    def card(c):
+        return ('<div style="display:flex;gap:8px;align-items:flex-start;' + _if_card(_if_k(c['id'] - 1, len(co)) + _IF_FADE) + '"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:22px;">' + str(c['id']) + '</span>'
+                + '<div><div style="font-weight:700;">' + _if_s(c['t'], 28) + '</div><div style="font-size:0.78rem;color:' + _IF_MUTED + ';">' + _if_s(c['d'], 80) + '</div></div></div>')
+    left, right = side('left'), side('right')
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;"><div style="display:flex;flex-direction:column;gap:8px;">' + ''.join(card(c) for c in left) + '</div>'
+                    + '<div style="border:' + _IF_BORDER + ';border-radius:8px;background:#E0E7FF;color:#1E1B4B;font-weight:700;text-align:center;padding:32px 10px;">' + _if_s(_if_g(b, 'central_label'), 40) + '</div>'
+                    + '<div style="display:flex;flex-direction:column;gap:8px;">' + ''.join(card(c) for c in right) + '</div></div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">Numbered notes on the left and right describe the parts of the subject.</div>')
+
+
+def _render_org_chart(b: dict) -> str:
+    nodes = []
+    for n in _if_arr(_if_g(b, 'nodes'), 10):
+        n = _if_obj(n)
+        nid, pid = _if_g(n, 'id'), _if_g(n, 'parent_id')
+        nodes.append({'id': _if_str('' if nid is _IF_UNDEF else nid)[:24], 'l': _if_g(n, 'label'), 'p': _if_str('' if pid is _IF_UNDEF else pid)[:24]})
+    idx = [0]
+    css = ('<style>.ifoc ul{display:flex;justify-content:center;margin:0;padding:20px 0 0;list-style:none;position:relative}.ifoc li{position:relative;padding:20px 6px 0;text-align:center}'
+           '.ifoc li::before,.ifoc li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:20px;border-top:2px solid #64748B}.ifoc li::after{right:auto;left:50%;border-left:2px solid #64748B}'
+           '.ifoc li:only-child::before,.ifoc li:only-child::after{display:none}.ifoc li:only-child{padding-top:0}.ifoc li:first-child::before,.ifoc li:last-child::after{border:0 none}'
+           '.ifoc li:last-child::before{border-right:2px solid #64748B;border-radius:0 6px 0 0}.ifoc li:first-child::after{border-radius:6px 0 0 0}'
+           '.ifoc ul ul::before{content:"";position:absolute;top:0;left:50%;border-left:2px solid #64748B;height:20px}.ifoc>ul{padding-top:0}.ifoc>ul>li{padding-top:0}.ifoc>ul>li::before,.ifoc>ul>li::after{display:none}</style>')
+
+    def build(pid, depth):
+        kids = [n for n in nodes if n['p'] == pid and n['id'] != pid]
+        if not kids or depth > 3:
+            return ''
+        out = '<ul>'
+        for n in kids:
+            i = idx[0]
+            idx[0] += 1
+            out += ('<li><div style="display:inline-block;' + _if_card(('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if depth == 0 else '') + _if_k(i, len(nodes)) + _IF_FADE) + '">' + _if_s(n['l'], 28) + '</div>' + build(n['id'], depth + 1) + '</li>')
+        return out + '</ul>'
+    return _if_wrap(css + _if_title(b) + '<div class="ifoc" style="overflow-x:auto;">' + build('', 0) + '</div>')
+
+
+for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart)):
+    _RENDERERS[_if_name] = _if_fn
+
+
+# ─── Python twins of atoms that were GAS-only (2026-10-12; rule: GAS-only only if possible or relevant only on Apps Script). Each mirrors its atoms_*.gs
+# renderer including the JavaScript rules the GAS code relies on (truthiness, String(), property reads that throw on null, .map on a non-array). ───
+class _GxTypeError(TypeError):
+    """What a JavaScript TypeError becomes here: the GAS renderer would throw on this payload, so the twin does too."""
+
+
+def _gx_get(o, k):
+    """o.k in JavaScript: undefined for a missing key or a primitive, a TypeError on null / undefined."""
+    if o is None or o is _IF_UNDEF:
+        raise _GxTypeError('Cannot read properties of ' + ('null' if o is None else 'undefined') + " (reading '" + str(k) + "')")
+    if isinstance(o, dict):
+        return o.get(k, _IF_UNDEF)
+    if k == 'length' and isinstance(o, (str, list)):
+        return len(o)
+    return _IF_UNDEF
+
+
+def _gx_arr(v):
+    """The receiver of .map / .filter / .forEach / .join: a TypeError unless it is an array."""
+    if not isinstance(v, list):
+        raise _GxTypeError('value is not a function')
+    return v
+
+
+def _gx_or(a, b):
+    """a || b"""
+    return a if _if_truthy(a) else b
+
+
+def _gx_esc(v):
+    """GAS _esc: '' for null / undefined, else String(v) escaped."""
+    return '' if (v is None or v is _IF_UNDEF) else _cv_esc(_if_str(v))
+
+
+def _gx_has(v):
+    """v != null"""
+    return v is not None and v is not _IF_UNDEF
+
+
+def _gx_safe_url(u):
+    """GAS _safeUrl."""
+    if not _if_truthy(u):
+        return '#'
+    s = _if_str(u).strip()
+    return _cv_esc(s) if re.match(r'^(https?://|mailto:|#|/)', s) else '#'
+
+
+def _gx_join_truthy(vals, sep):
+    """[a, b].filter(Boolean).map(_esc).join(sep)"""
+    return sep.join(_gx_esc(v) for v in vals if _if_truthy(v))
+
+
+def _render_headline_list(b: dict) -> str:
+    accent = _gx_or(_if_g(b, 'accent'), '#4f46e5')
+    items = _gx_arr(_gx_or(_if_g(b, 'items'), []))
+    hdr = ('<p style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#9ca3af);margin:0 0 14px">' + _gx_esc(_if_g(b, 'title')) + '</p>') if _if_truthy(_if_g(b, 'title')) else ''
+    rows = ''
+    for i, item in enumerate(items):
+        rk = _gx_get(item, 'rank')
+        rank = rk if _gx_has(rk) else i + 1
+        tag = _gx_get(item, 'tag')
+        tag_html = ('<span style="background:' + _if_str(accent) + '22;color:' + _if_str(accent) + ';padding:1px 7px;border-radius:4px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:8px">' + _gx_esc(tag) + '</span>') if _if_truthy(tag) else ''
+        meta = _gx_join_truthy([_gx_get(item, 'source'), _gx_get(item, 'time')], ' · ')
+        url = _gx_get(item, 'url')
+        title_el = ('<a href="' + _gx_safe_url(url) + '" target="_top" style="color:var(--text,#f9fafb);text-decoration:none">' + _gx_esc(_gx_get(item, 'title')) + '</a>') if _if_truthy(url) else _gx_esc(_gx_or(_gx_get(item, 'title'), ''))
+        rows += ('<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border,rgba(255,255,255,0.08))">'
+                 '<span style="flex:0 0 28px;height:28px;border-radius:50%;background:' + _if_str(accent) + ';color:#fff;font-size:0.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px">' + _if_str(rank) + '</span>'
+                 '<div style="flex:1;min-width:0">'
+                 '<p style="margin:0;font-size:1rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb)">' + title_el + '</p>'
+                 + (('<p style="margin:5px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + tag_html + meta + '</p>') if (tag_html or meta) else '')
+                 + '</div></div>')
+    return '<div style="margin:12px 0">' + hdr + rows + '</div>'
+
+
+def _render_breaking_banner(b: dict) -> str:
+    accent = _if_str(_gx_or(_if_g(b, 'accent'), '#ef4444'))
+    label = _gx_or(_if_g(b, 'label'), 'BREAKING')
+    summary = ('<p style="margin:8px 0 0;font-size:0.875rem;color:var(--muted,#9ca3af);line-height:1.65">' + _gx_esc(_if_g(b, 'summary')) + '</p>') if _if_truthy(_if_g(b, 'summary')) else ''
+    source_line = ('<p style="margin:8px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + _gx_join_truthy([_if_g(b, 'source'), _if_g(b, 'time')], ' · ') + '</p>') if (_if_truthy(_if_g(b, 'source')) or _if_truthy(_if_g(b, 'time'))) else ''
+    return ('<div style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">'
+            '<p style="margin:0 0 7px;font-size:0.63rem;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:' + accent + '">' + _gx_esc(label) + '</p>'
+            '<p style="margin:0;font-size:1.15rem;font-weight:800;line-height:1.4;color:var(--text,#f9fafb)">' + _gx_esc(_gx_or(_if_g(b, 'title'), '')) + '</p>'
+            + summary + source_line + '</div>')
+
+
+def _render_news_digest(b: dict) -> str:
+    accent = _if_str(_gx_or(_if_g(b, 'accent'), '#4f46e5'))
+    items = _gx_arr(_gx_or(_if_g(b, 'items'), []))
+    hdr = ('<p style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#9ca3af);margin:0 0 14px">' + _gx_esc(_if_g(b, 'title')) + '</p>') if _if_truthy(_if_g(b, 'title')) else ''
+    cards = ''
+    for i, item in enumerate(items):
+        tg = _gx_get(item, 'tag')
+        tag = ('<span style="background:' + accent + '22;color:' + accent + ';padding:1px 7px;border-radius:4px;font-size:0.67rem;font-weight:700;margin-right:6px">' + _gx_esc(tg) + '</span>') if _if_truthy(tg) else ''
+        bd = _gx_get(item, 'body')
+        body = ('<p style="margin:6px 0 0;font-size:0.82rem;color:var(--muted,#9ca3af);line-height:1.6">' + _gx_esc(bd) + '</p>') if _if_truthy(bd) else ''
+        sr = _gx_get(item, 'source')
+        source = ('<p style="margin:6px 0 0;font-size:0.72rem;color:var(--muted,#9ca3af)">' + _gx_esc(sr) + '</p>') if _if_truthy(sr) else ''
+        cards += ('<div style="background:var(--surface2,#1a1a2e);border-radius:10px;padding:16px;position:relative">'
+                  '<span style="position:absolute;top:14px;right:14px;font-size:1.1rem;font-weight:900;color:' + accent + ';opacity:0.3">' + str(i + 1) + '</span>'
+                  + (('<p style="margin:0 0 8px">' + tag + '</p>') if tag else '')
+                  + '<p style="margin:0;font-size:0.92rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb);padding-right:24px">' + _gx_esc(_gx_or(_gx_get(item, 'title'), '')) + '</p>'
+                  + body + source + '</div>')
+    return '<div style="margin:12px 0">' + hdr + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">' + cards + '</div></div>'
+
+
+def _render_cert_disclaimer(b: dict) -> str:
+    cert, holder, url = _gx_or(_if_g(b, 'cert'), ''), _gx_or(_if_g(b, 'holder'), ''), _gx_or(_if_g(b, 'url'), '')
+    holder_link = ('<a href="' + _gx_esc(url) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">' + _gx_esc(holder) + '</a>') if _if_truthy(url) else _gx_esc(holder)
+    cert_ref = ('<strong>' + _gx_esc(cert) + '</strong> is a registered trademark of ' + holder_link + '. ') if _if_truthy(cert) else ''
+    return ('<div style="margin:16px 0 8px;padding:10px 14px;border-left:3px solid rgba(148,163,184,0.3);border-radius:0 6px 6px 0;background:rgba(148,163,184,0.06);">'
+            '<p style="margin:0;font-size:11px;line-height:1.6;color:rgba(148,163,184,0.75);font-family:JetBrains Mono,monospace;letter-spacing:0.02em;">'
+            '© ' + holder_link + '. ' + cert_ref + 'This study material is an independent work and is not affiliated with, endorsed by, or sponsored by ' + _gx_esc(holder) + '. '
+            'All trademarks remain the property of their respective holders.</p></div>')
+
+
+def _gx_num(v):
+    """Number(v)"""
+    if isinstance(v, list):
+        v = _if_str(v)
+    return _js_number(v)
+
+
+def _gx_parse_float(v):
+    """parseFloat(v): the leading decimal, nan when there is none."""
+    m = re.match(r'^[\s]*([+-]?(?:Infinity|\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?))', _if_str('' if v is _IF_UNDEF else v)) if not isinstance(v, (dict,)) else None
+    if not m:
+        return float('nan')
+    t = m.group(1)
+    return float(t.replace('Infinity', 'inf'))
+
+
+def _gx_num_or0(v):
+    """Number(v) || 0"""
+    n = _gx_num(v)
+    return n if (n == n and n != 0) else 0
+
+
+def _gx_uid6(b):
+    return _wa_uid(b)[:6]
+
+
+def _render_command_step(b: dict) -> str:
+    cmd, label, hint = _gx_or(_if_g(b, 'command'), ''), _gx_or(_if_g(b, 'label'), ''), _gx_or(_if_g(b, 'hint'), '')
+    done = _if_g(b, 'done') is True or _if_g(b, 'done') == 'true'
+    uid = 'cs_' + _gx_uid6(b)
+    cmd_opacity = '0.5' if done else '1'
+    return ('<div style="font-family:system-ui,sans-serif;margin:8px 0;">'
+            + (('<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _gx_esc(label) + '</div>') if _if_truthy(label) else '')
+            + '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:' + cmd_opacity + ';">'
+            '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">'
+            '<span style="color:#64748b;user-select:none;">$ </span>' + _gx_esc(cmd) + '</div>'
+            '<button id="' + uid + '_copy" data-cmd="' + _gx_esc(cmd) + '" onclick="(function(b){'
+            "navigator.clipboard.writeText(b.getAttribute('data-cmd'));"
+            "b.textContent='✓';b.style.background='#22c55e';"
+            "setTimeout(function(){b.textContent='Copy';b.style.background='#1e293b';},1500);"
+            '})(this)" style="background:#1e293b;color:#94a3b8;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">Copy</button></div>'
+            '<label style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;user-select:none;">'
+            '<input type="checkbox" data-cs-done ' + ('checked' if done else '') + ' onchange="(function(el){'
+            "var w=el.closest('[data-atom-id]');"
+            'if(w&&w._a2uiWire&&w._a2uiWire.setDone){w._a2uiWire.setDone(el.checked);}'
+            '})(this)" style="width:16px;height:16px;accent-color:#22c55e;cursor:pointer;">'
+            '<span style="font-size:0.8rem;color:' + ('#22c55e' if done else '#94a3b8') + ';font-weight:' + ('600' if done else '400') + ';">' + ('Done' if done else 'Mark as done') + '</span></label>'
+            + (('<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;padding-left:2px;">' + _gx_esc(hint) + '</div>') if _if_truthy(hint) else '') + '</div>')
+
+
+def _render_jump_nav(b: dict) -> str:
+    links = _if_g(b, 'links') if isinstance(_if_g(b, 'links'), list) else []
+    html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px;">'
+    for link in links:
+        label, target = _gx_or(_gx_get(link, 'label'), ''), _gx_or(_gx_get(link, 'target'), '')
+        html += ("<button onclick=\"(function(){var el=document.getElementById('a2ui-" + _gx_esc(target) + "');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});})()\""
+                 ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
+                 " onmouseover=\"this.style.background='#e2e8f0'\" onmouseout=\"this.style.background='#f1f5f9'\">" + _gx_esc(label) + '</button>')
+    return html + '</div>'
+
+
+def _render_scenario_case(b: dict) -> str:
+    sid = _gx_or(_if_g(b, 'id'), 'sc_' + _gx_uid6(b))
+    domain, diff, scenario, question, rationale = (_gx_or(_if_g(b, k), '') for k in ('domain', 'difficulty', 'scenario', 'question', 'rationale'))
+    options = _if_g(b, 'options') if isinstance(_if_g(b, 'options'), list) else []
+    max_score = 0
+    for o in options:
+        s = _gx_num_or0(_gx_get(o, 'score'))
+        if s > max_score:
+            max_score = s
+    opt_html = ''
+    for i, opt in enumerate(options):
+        letter = chr(65 + i)
+        oid = _gx_esc(_gx_or(_gx_get(opt, 'id'), letter.lower()))
+        score = _gx_num_or0(_gx_get(opt, 'score'))
+        is_best = score == max_score
+        is_partial = (not is_best) and score >= max_score - 1
+        dot = '#16a34a' if is_best else ('#d97706' if is_partial else '#ef4444')
+        lbl = 'Best answer' if is_best else ('Partial credit' if is_partial else 'Avoid')
+        dots = ''
+        d = 1
+        while d <= min(max_score, 50):   # capped: a payload score of 1e11 must not mean 1e11 loop turns
+            dots += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:2px;background:' + (dot if d <= score else '#e2e8f0') + ';"></span>'
+            d += 1
+        sel_fn = ("(function(btn){var w=btn.closest('[data-sc-wrap]');w.querySelectorAll('[data-opt-id]').forEach(function(b){"
+                  "b.removeAttribute('data-selected');b.style.background='#f8fafc';b.style.borderColor='#e2e8f0';b.style.color='#1e293b';});"
+                  "btn.setAttribute('data-selected','true');btn.style.background='#ede9fe';btn.style.borderColor='#4f46e5';btn.style.color='#4338ca';})(this)")
+        opt_html += ('<button data-opt-id="' + oid + '" data-opt-score="' + _if_numstr(score) + '" onclick="' + sel_fn + '" '
+                     'style="display:flex;flex-direction:column;width:100%;text-align:left;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;font-size:14px;color:#1e293b;line-height:1.5;">'
+                     '<div style="display:flex;align-items:flex-start;gap:10px;">'
+                     '<span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">' + letter + '</span>'
+                     '<span>' + _gx_esc(_gx_or(_gx_get(opt, 'text'), '')) + '</span></div>'
+                     '<div data-sc-score style="display:none;margin-top:8px;padding-left:34px;align-items:center;gap:6px;">' + dots + '<span style="font-size:11px;font-weight:700;color:' + dot + ';">' + lbl + '</span></div></button>')
+    reveal_fn = ("(function(btn){var w=btn.closest('[data-sc-wrap]');if(!w.querySelector('[data-selected]'))return;"
+                 "w.querySelectorAll('[data-sc-score]').forEach(function(d){d.style.display='flex';});"
+                 "w.querySelectorAll('[data-opt-id]').forEach(function(o){o.style.opacity=o.hasAttribute('data-selected')?'1':'0.55';o.style.pointerEvents='none';});"
+                 "var rat=w.querySelector('[data-sc-rat]');if(rat)rat.style.display='block';btn.style.display='none';})(this)")
+    return ('<div id="a2ui-' + _gx_esc(sid) + '" data-atom="scenario_case" data-sc-wrap style="margin:0 0 28px;font-family:system-ui,sans-serif;">'
+            '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">'
+            + (('<span style="background:#ede9fe;color:#6d28d9;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;">' + _gx_esc(domain) + '</span>') if _if_truthy(domain) else '')
+            + (('<span style="background:#f1f5f9;color:var(--muted,#5f6368);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:500;">' + _gx_esc(diff) + '</span>') if _if_truthy(diff) else '')
+            + '</div><div style="border-left:3px solid #4f46e5;padding:14px 18px;background:#fafaf9;border-radius:0 6px 6px 0;margin-bottom:18px;">'
+            '<p style="margin:0;font-size:14px;line-height:1.75;color:#374151;">' + _gx_esc(scenario) + '</p></div>'
+            '<p style="font-size:15px;font-weight:600;color:#0f172a;margin:0 0 12px;">' + _gx_esc(question) + '</p>' + opt_html
+            + '<button onclick="' + reveal_fn + '" style="margin-top:6px;background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;">Check answer</button>'
+            '<div data-sc-rat style="display:none;margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;">'
+            '<p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.06em;">Rationale</p>'
+            '<p style="margin:0;font-size:14px;line-height:1.65;color:#166534;">' + _gx_esc(rationale) + '</p></div></div>')
+
+
+def _render_sla_timer_display(b: dict) -> str:
+    title, severity = _gx_or(_if_g(b, 'title'), 'SLA Timer'), _gx_or(_if_g(b, 'severity'), 'P0')
+    sla_label, elapsed, state = _gx_or(_if_g(b, 'sla_label'), '3 min SLA'), _gx_or(_if_g(b, 'elapsed_fmt'), '0s'), _gx_or(_if_g(b, 'sla_state'), 'ok')
+    pc = _gx_parse_float(_if_g(b, 'pct'))
+    pc = 0 if (pc != pc or pc == 0) else pc
+    pct = min(max(0, pc), 100)
+    st_color = '#ef4444' if state == 'breach' else ('#f97316' if state == 'warn' else '#22c55e')
+    st_label = 'BREACH' if state == 'breach' else ('WARN' if state == 'warn' else 'OK')
+    pulse = 'animation:a2ui-pulse 1s infinite;' if state == 'breach' else ''
+    return ('<div style="background:#0f172a;border:1px solid ' + st_color + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">'
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div>'
+            '<span style="display:inline-block;background:#ef4444;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _gx_esc(severity) + '</span>'
+            '<span style="color:#94a3b8;font-size:0.85rem;font-weight:500;">' + _gx_esc(title) + '</span></div>'
+            '<span data-sla-badge style="display:inline-block;background:' + st_color + ';color:#fff;font-size:0.72rem;font-weight:800;letter-spacing:0.08em;padding:4px 14px;border-radius:99px;' + pulse + '">' + st_label + '</span></div>'
+            '<div data-sla-time style="font-size:3.5rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.03em;line-height:1;margin-bottom:20px;font-variant-numeric:tabular-nums;">' + _gx_esc(elapsed) + '</div>'
+            '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;background:#1e293b;border-radius:99px;overflow:hidden;">'
+            '<div data-sla-bar style="height:100%;width:' + _if_numstr(pct) + '%;background:' + st_color + ';border-radius:99px;transition:width 0.9s linear,background 0.4s;"></div></div>'
+            '<span style="color:#64748b;font-size:0.72rem;white-space:nowrap;">' + _gx_esc(sla_label) + '</span></div></div>')
+
+
+_GX_NL = '\\n\\r\\u2028\\u2029'
+
+
+def _gx_md(md):
+    """GAS _markdownToHtml: escape, then **bold**, *italic* and [text](url) with an allow-listed scheme."""
+    if not _if_truthy(md):
+        return ''
+    res = _gx_esc(md)
+    res = re.sub(r'\*\*([^' + _GX_NL + r']*?)\*\*', lambda m: '<strong>' + m.group(1) + '</strong>', res)
+    res = re.sub(r'\*([^' + _GX_NL + r']*?)\*', lambda m: '<em>' + m.group(1) + '</em>', res)
+    res = re.sub(r'\[([^' + _GX_NL + r']*?)\]\(([^' + _GX_NL + r']*?)\)', lambda m: '<a href="' + (m.group(2) if re.match(r'^(https?://|mailto:|#|/)', m.group(2)) else '#') + '" target="_top">' + m.group(1) + '</a>', res)
+    return res
+
+
+def _lens_evidence_verified(span, excerpt):
+    if not _if_truthy(span) or not _if_truthy(excerpt):
+        return False
+    return _if_str(span) in _if_str(excerpt)
+
+
+def _lens_evidence_block(span, excerpt):
+    if not _if_truthy(span):
+        return '<div style="font-size:0.78rem;font-style:italic;color:#b91c1c;border-left:3px solid #b91c1c;padding:4px 10px;margin:6px 0;">⚠ no supporting quote</div>'
+    ok = _lens_evidence_verified(span, excerpt)
+    color = '#0f766e' if ok else '#b91c1c'
+    label = '' if ok else '<div style="font-size:0.7rem;font-weight:700;color:' + color + ';margin-bottom:2px;">⚠ UNVERIFIED — not found in source_excerpt</div>'
+    return '<div style="border-left:3px solid ' + color + ';padding:4px 10px;margin:6px 0;">' + label + '<blockquote style="margin:0;font-size:0.85rem;">' + _gx_esc(span) + '</blockquote></div>'
+
+
+def _gx_list(v):
+    return v if isinstance(v, list) else []
+
+
+def _render_lens_quotes(b: dict) -> str:
+    items = _gx_list(_if_g(b, 'items'))
+    if not items:
+        return '<p style="opacity:0.6;font-size:0.85rem;">No quotes supplied.</p>'
+    html = ''
+    for it in items:
+        ctx = _gx_get(it, 'context')
+        html += '<blockquote style="margin:0 0 14px 0;">' + _gx_md(_gx_or(_gx_get(it, 'quote'), '')) + (('<div style="font-size:0.78rem;opacity:0.65;margin-top:4px;">' + _gx_esc(ctx) + '</div>') if _if_truthy(ctx) else '') + '</blockquote>'
+    return html
+
+
+def _render_lens_structure(b: dict) -> str:
+    items = _gx_list(_if_g(b, 'items'))
+    if not items:
+        return '<p style="opacity:0.6;font-size:0.85rem;">No structure supplied.</p>'
+    html = ''
+    for it in items:
+        html += ('<div style="margin-bottom:14px;"><div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">' + _gx_esc(_gx_or(_gx_get(it, 'heading'), '')) + '</div>'
+                 '<blockquote style="margin:0;">' + _gx_md(_gx_or(_gx_get(it, 'quote'), '')) + '</blockquote></div>')
+    return html
+
+
+def _render_lens_themes(b: dict) -> str:
+    import functools
+    items = _gx_list(_if_g(b, 'items'))
+    excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
+
+    def cmp(a, x):
+        d = _gx_num(_gx_or(_gx_get(x, 'weight'), 0)) - _gx_num(_gx_or(_gx_get(a, 'weight'), 0))
+        return 0 if d != d else (-1 if d < 0 else (1 if d > 0 else 0))
+    srt = sorted(list(items), key=functools.cmp_to_key(cmp))
+    chips = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">'
+    for i, it in enumerate(srt):
+        chips += ('<span data-lens-theme="' + str(i) + '" style="padding:5px 12px;border-radius:999px;background:rgba(124,58,237,0.12);color:#7c3aed;font-size:0.78rem;font-weight:700;">' + _gx_esc(_gx_or(_gx_get(it, 'label'), '')) + '</span>')
+    chips += '</div>'
+    ev = ''
+    for it in srt:
+        ev += '<div style="margin-bottom:8px;"><div style="font-weight:600;font-size:0.82rem;">' + _gx_esc(_gx_or(_gx_get(it, 'label'), '')) + '</div>' + _lens_evidence_block(_gx_get(it, 'evidence'), excerpt) + '</div>'
+    return chips + ev
+
+
+def _render_lens_eli5(b: dict) -> str:
+    excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
+    evidence = _gx_list(_if_g(b, 'evidence'))
+    html = '<div style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _gx_md(_gx_or(_if_g(b, 'text'), '')) + '</div>'
+    if evidence:
+        html += '<div style="font-size:0.75rem;font-weight:700;opacity:0.6;margin-bottom:4px;">DRAWN FROM</div>'
+        for e in evidence:
+            html += _lens_evidence_block(e, excerpt)
+    else:
+        html += _lens_evidence_block(None, excerpt)
+    return html
+
+
+def _render_lens_synthesis(b: dict) -> str:
+    points = _gx_list(_if_g(b, 'points'))
+    excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
+    if not points:
+        return '<p style="opacity:0.6;font-size:0.85rem;">No synthesis points supplied.</p>'
+    html = ''
+    for p in points:
+        html += '<div style="margin-bottom:14px;">' + _RENDERERS['take_away_card']({'headline': _gx_or(_gx_get(p, 'point'), '')}) + _lens_evidence_block(_gx_get(p, 'evidence'), excerpt) + '</div>'
+    return html
+
+
+def _render_lens_freeform(b: dict) -> str:
+    tier = _gx_or(_if_g(b, 'tier'), 'interpreted')
+    excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
+    evidence = _gx_list(_if_g(b, 'evidence'))
+    html = ('<div style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;font-weight:700;text-transform:uppercase;background:rgba(0,0,0,0.06);margin-bottom:8px;">off-template · ' + _gx_esc(tier) + '</div>'
+            '<div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;">' + _gx_esc(_gx_or(_if_g(b, 'label'), '')) + '</div>'
+            '<div style="font-size:0.9rem;line-height:1.6;margin-bottom:10px;">' + _gx_md(_gx_or(_if_g(b, 'text'), '')) + '</div>')
+    if tier == 'extracted' or tier == 'interpreted':
+        if evidence:
+            for e in evidence:
+                html += _lens_evidence_block(e, excerpt)
+        else:
+            html += _lens_evidence_block(None, excerpt)
+    return html
+
+
+def _lens_rows(items, key_label, key_note):
+    html = ''
+    for it in items:
+        retrieved = _if_truthy(_gx_get(it, 'retrieved'))
+        lab = _gx_or(_gx_get(it, key_label), '')
+        label_html = (('<a href="' + _gx_safe_url(_gx_get(it, 'url')) + '" target="_blank" rel="noopener" style="color:inherit;">' + _gx_esc(lab) + '</a>') if (retrieved and _if_truthy(_gx_get(it, 'url')))
+                      else _gx_esc(lab) + ' <span style="font-size:0.7rem;font-weight:700;color:#b91c1c;">· not retrieved</span>')
+        html += ('<div style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;"><div style="font-weight:700;font-size:0.88rem;">' + label_html + '</div>'
+                 '<div style="font-size:0.82rem;opacity:0.75;">' + _gx_esc(_gx_or(_gx_get(it, key_note), '')) + '</div></div>')
+    return html
+
+
+def _render_lens_similar(b: dict) -> str:
+    verified = _if_truthy(_if_g(b, 'verified'))
+    items = _gx_list(_if_g(b, 'items'))
+    notice = '' if verified else '<div style="font-size:0.78rem;font-weight:700;color:#b91c1c;margin-bottom:10px;">⚠ suggestions, unverified — not confirmed retrieved this session</div>'
+    return notice + _lens_rows(items, 'title', 'why')
+
+
+def _render_lens_context(b: dict) -> str:
+    items = _gx_list(_if_g(b, 'items'))
+    if not items:
+        return '<p style="opacity:0.6;font-size:0.85rem;">No context supplied.</p>'
+    return _lens_rows(items, 'label', 'note')
+
+
+def _render_quiet_link(b: dict) -> str:
+    uid = 'ql' + _gx_uid6(b)
+    return ('<div style="text-align:center;"><button id="' + uid + '" type="button" style="background:none;border:none;color:var(--muted,#5f6368);font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:4px;">'
+            + _gx_esc(_gx_or(_if_g(b, 'text'), '')) + '</button></div>')
+
+
+def _gx_keys(v):
+    """Object.keys(v) in JavaScript order (array-index keys ascending first, then insertion order)."""
+    if isinstance(v, dict):
+        ks = list(v.keys())
+    elif isinstance(v, list):
+        return [str(i) for i in range(len(v))]
+    elif isinstance(v, str):
+        return [str(i) for i in range(len(v))]
+    else:
+        return []
+    idx = sorted((k for k in ks if re.fullmatch(r'0|[1-9]\d{0,8}', k)), key=int)
+    return idx + [k for k in ks if not re.fullmatch(r'0|[1-9]\d{0,8}', k)]
+
+
+def _gx_index(v, k):
+    """v[k] for a key from _gx_keys."""
+    if isinstance(v, dict):
+        return v[k]
+    if isinstance(v, list):
+        return v[int(k)]
+    return v[int(k)]
+
+
+def _gx_norm(v):
+    """A parsed JSON value as JavaScript holds it: array-index keys first, whole floats as integers."""
+    if isinstance(v, dict):
+        return {k: _gx_norm(v[k]) for k in _gx_keys(v)}
+    if isinstance(v, list):
+        return [_gx_norm(x) for x in v]
+    if isinstance(v, float) and v == v and v not in (float('inf'), float('-inf')) and v == int(v) and abs(v) < 1e21:
+        return int(v)
+    return v
+
+
+def _gx_json(v):
+    """Script-safe JSON.stringify (GAS _jsJson)."""
+    return _js_json(_gx_norm(v), ensure_ascii=False, separators=(',', ':'))
+
+
+def _gx_parse_int(v):
+    """parseInt(v, 10): the leading integer of String(v), nan when there is none."""
+    m = re.match(r'^[\s]*([+-]?\d+)', _if_str('' if v is _IF_UNDEF else v)) if not isinstance(v, dict) else None
+    return int(m.group(1)) if m else float('nan')
+
+
+def _gx_int_or(v, d):
+    """parseInt(v || d, 10)"""
+    return _gx_parse_int(_gx_or(v, d))
+
+
+_TOOL_TILE_ICONS = {'user': '<circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5"></path>', 'book': '<path d="M4 5.5C6 4.5 9 4.5 12 6c3-1.5 6-1.5 8-.5v13c-2-1-5-1-8 .5-3-1.5-6-1.5-8-.5z"></path><path d="M12 6v13"></path>', 'folder': '<path d="M3 7h6l2 2h10v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path>', 'magnifier': '<circle cx="10" cy="10" r="6"></circle><path d="M20 20l-5-5"></path>', 'bolt': '<path d="M12 2 4 13h6l-1 9 9-13h-6z"></path>', 'globe': '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13 15 0 0 1 0 18a13 15 0 0 1 0-18"></path>', 'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>'}
+
+
+def _tool_tile_icon(token):
+    inner = _TOOL_TILE_ICONS.get(_if_str(token)) if not isinstance(token, dict) else None
+    if not inner:
+        return _gx_esc(token)
+    return '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>'
+
+
+def _render_tool_tile(b: dict) -> str:
+    uid = 'tl' + _gx_uid6(b)
+    icon = _tool_tile_icon(_gx_or(_if_g(b, 'icon'), ''))
+    label = _gx_esc(_gx_or(_if_g(b, 'label'), ''))
+    cnt = _if_g(b, 'count')
+    count = (' <span style="opacity:.75;font-weight:600;">(' + _gx_esc(_if_str(cnt)) + ')</span>') if (_gx_has(cnt) and cnt != '') else ''
+    variant = 'violet_magenta' if _if_g(b, 'variant') == 'violet_magenta' else 'indigo'
+    gradient = 'linear-gradient(135deg,#7c3aed,#c026d3)' if variant == 'violet_magenta' else 'linear-gradient(135deg,#6d6af7,#4f46e5)'
+    glow = '0 8px 20px -8px rgba(192,38,212,.4)' if variant == 'violet_magenta' else '0 8px 20px -6px rgba(79,70,229,.45)'
+    hl = '.2' if variant == 'violet_magenta' else '.25'
+    badge = _if_g(b, 'badge')
+    badge_html = ('<span style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.25);color:#fff;font-size:9px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px;">' + _gx_esc(badge) + '</span>') if _if_truthy(badge) else ''
+    return ('<button id="' + uid + '" style="position:relative;display:flex;flex-direction:column;gap:14px;align-items:flex-start;text-align:left;width:100%;background:' + gradient + ';border-radius:22px;padding:22px;'
+            'box-shadow:' + glow + ',inset 0 1px 0 rgba(255,255,255,' + hl + ');border:none;cursor:pointer;font-family:inherit;transition:transform 0.15s;" '
+            "onmouseover=\"this.style.transform='translateY(-2px)'\" onmouseout=\"this.style.transform=''\">" + badge_html
+            + '<span style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;flex-shrink:0;">' + icon + '</span>'
+            '<span style="font-size:16px;font-weight:600;color:#fff;">' + label + count + '</span></button>')
+
+
+def _render_theme_toggle(b: dict) -> str:
+    dark_bg = _if_g(b, 'dark_bg') if _if_g(b, 'dark_bg') is not _IF_UNDEF else '#0f172a'
+    pos = _gx_or(_if_g(b, 'position'), 'bottom-right')
+    label_dark, label_light = _gx_or(_if_g(b, 'label_dark'), '🌙'), _gx_or(_if_g(b, 'label_light'), '☀️')
+    uid = 'tt' + _gx_uid6(b)
+    pos_style = 'top:64px;right:12px;' if pos == 'top-right' else 'bottom:72px;right:12px;'
+    start_dark = _if_g(b, 'initial') == 'dark'
+    pto, pact = _if_g(b, 'persist_to'), _if_g(b, 'persist_action')
+    persist = ('if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + _gx_json(_if_str(pto)) + ',"setValue",dark?"dark":"light");'
+               'var _pa=window._a2uiEngine.nodes[' + _gx_json(_if_str(pact)) + '];if(_pa&&_pa._run)_pa._run();}catch(e){}}') if (_if_truthy(pto) and _if_truthy(pact)) else ''
+    return ('<button id="' + uid + '" title="' + ('Light mode' if start_dark else 'Dark mode') + '" style="position:fixed;' + pos_style + 'z-index:500;padding:7px 12px;border-radius:10px;border:1.5px solid '
+            + ('rgba(255,255,255,0.12)' if start_dark else 'rgba(0,0,0,0.12)') + ';background:' + ('rgba(15,23,42,0.88)' if start_dark else 'rgba(255,255,255,0.88)') + ';' + ('color:#e2e8f0;' if start_dark else '')
+            + 'backdrop-filter:blur(8px);cursor:pointer;font-size:0.88rem;box-shadow:0 2px 8px rgba(0,0,0,' + ('0.4' if start_dark else '0.1') + ');transition:all 0.2s;">'
+            + _gx_esc(label_light if start_dark else label_dark) + '</button><script>(function(){'
+            'var btn=document.getElementById("' + uid + '");var darkBg="' + _if_str(dark_bg) + '";var ld="' + _gx_esc(label_dark) + '",ll="' + _gx_esc(label_light) + '";var dark=' + ('true' if _if_g(b, 'initial') == 'dark' else 'false') + ';'
+            'btn.addEventListener("click",function(){dark=!dark;document.body.classList.toggle("asw-dark-theme",dark);if(darkBg)document.body.style.background=dark?darkBg:"";btn.textContent=dark?ll:ld;'
+            'btn.style.background=dark?"rgba(15,23,42,0.88)":"rgba(255,255,255,0.88)";btn.style.borderColor=dark?"rgba(255,255,255,0.12)":"rgba(0,0,0,0.12)";btn.style.color=dark?"#e2e8f0":"";'
+            'btn.style.boxShadow=dark?"0 2px 8px rgba(0,0,0,0.4)":"0 2px 8px rgba(0,0,0,0.1)";' + persist + '});})();</script>')
+
+
+def _render_tab_group(b: dict) -> str:
+    uid = 'tg' + _gx_uid6(b)
+    options = _gx_arr(_gx_or(_if_g(b, 'options'), []))
+    target = _gx_or(_if_g(b, 'target'), '')
+    panels = _gx_or(_if_g(b, 'panels'), {})
+    sel_o = [o for o in options if _if_truthy(_gx_get(o, 'selected'))]
+    pre = sel_o[0] if sel_o else _IF_UNDEF
+    first = options[0] if options else _IF_UNDEF
+    selected = _gx_or(_gx_or(_gx_get(pre, 'value') if _if_truthy(pre) else pre, _gx_get(first, 'value') if _if_truthy(first) else first), '')
+    pills = ''
+    for o in options:
+        is_sel = _if_seq(_gx_get(o, 'value'), selected)
+        pills += ('<button type="button" data-tg-value="' + _gx_esc(_gx_get(o, 'value')) + '" style="padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;border:1.5px solid '
+                  + ('#4f46e5' if is_sel else '#d9dcf5') + ';background:' + ('#4f46e5' if is_sel else '#fff') + ';color:' + ('#fff' if is_sel else '#374151') + ';">'
+                  + _gx_esc(_gx_or(_gx_get(o, 'label'), _gx_get(o, 'value'))) + '</button>')
+
+    def panel_js(value_expr):
+        out = ''
+        for val in _gx_keys(panels):
+            out += 'ez(' + _gx_json(_if_str(_gx_index(panels, val))) + ',' + value_expr + '===' + _gx_json(_if_str(val)) + ');'
+        return out
+    return ('<div id="' + uid + '" style="display:inline-flex;gap:8px;flex-wrap:wrap;">' + pills + '</div><script>(function(){'
+            'function ez(id,show){var el=document.getElementById("a2ui-"+id);if(el)el.style.display=show?"":"none";}' + panel_js(_gx_json(_if_str(selected)))
+            + 'var wrap=document.getElementById("' + uid + '");var btns=wrap.querySelectorAll("button");for(var i=0;i<btns.length;i++){(function(btn){btn.addEventListener("click",function(){var v=btn.getAttribute("data-tg-value");'
+            'for(var j=0;j<btns.length;j++){btns[j].style.background="#fff";btns[j].style.color="#374151";btns[j].style.borderColor="#d9dcf5";}'
+            'btn.style.background="#4f46e5";btn.style.color="#fff";btn.style.borderColor="#4f46e5";' + panel_js('v')
+            + (('if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + _gx_json(_if_str(target)) + ',"setValue",v);}catch(e){}}') if _if_truthy(target) else '') + '});})(btns[i]);}})();</script>')
+
+
+def _render_lens_grid(b: dict) -> str:
+    uid = 'lg' + _gx_uid6(b)
+    options = _gx_arr(_gx_or(_if_g(b, 'options'), []))
+    target = _gx_or(_if_g(b, 'target'), '')
+    cols = _gx_int_or(_gx_or(_if_g(b, 'columns'), 2), 2)
+    gap = _gx_int_or(_gx_or(_if_g(b, 'gap'), 10), 10)
+    first = options[0] if options else _IF_UNDEF
+    selected = _gx_or(_gx_or(_if_g(b, 'selected'), _gx_get(first, 'value') if _if_truthy(first) else first), '')
+    cards = ''
+    for o in options:
+        is_sel = _if_seq(_gx_get(o, 'value'), selected)
+        cap = _gx_get(o, 'caption')
+        cards += ('<button type="button" data-lg-value="' + _gx_esc(_gx_get(o, 'value')) + '" style="text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;border:1.5px solid ' + ('#4f46e5' if is_sel else '#e2e5ea')
+                  + ';background:#fff;"><div style="font-size:14px;font-weight:700;color:#111827;">' + _gx_esc(_gx_or(_gx_get(o, 'label'), '')) + '</div>'
+                  + (('<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:2px;">' + _gx_esc(cap) + '</div>') if _if_truthy(cap) else '') + '</button>')
+    return ('<div id="' + uid + '" style="display:grid;grid-template-columns:repeat(' + _if_numstr(cols) + ',1fr);gap:' + _if_numstr(gap) + 'px;">' + cards + '</div><script>(function(){'
+            'var wrap=document.getElementById("' + uid + '");var btns=wrap.querySelectorAll("button");for(var i=0;i<btns.length;i++){(function(btn){btn.addEventListener("click",function(){'
+            'for(var j=0;j<btns.length;j++)btns[j].style.borderColor="#e2e5ea";btn.style.borderColor="#4f46e5";'
+            + (('if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + _gx_json(_if_str(target)) + ',"setValue",btn.getAttribute("data-lg-value"));}catch(e){}}') if _if_truthy(target) else '') + '});})(btns[i]);}})();</script>')
+
+
+def _render_domain_picker(b: dict) -> str:
+    uid = 'dp' + _gx_uid6(b)
+    target = _gx_or(_if_g(b, 'target'), '')
+    dopt, fe = _if_g(b, 'default_option'), _if_g(b, 'free_entry')
+    pill_label = _gx_or(_gx_get(dopt, 'label') if _if_truthy(dopt) else dopt, 'From my profile')
+    placeholder = _gx_or(_gx_get(fe, 'placeholder') if _if_truthy(fe) else fe, 'Or type a domain…')
+    default_val = _gx_or(_if_g(b, 'default_domains'), '')
+    tgt = _gx_json(_if_str(target)) if _if_truthy(target) else ''
+    return ('<div id="' + uid + '" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button type="button" style="padding:7px 16px;border-radius:999px;border:1.5px solid #4f46e5;background:#4f46e5;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;">'
+            + _gx_esc(pill_label) + '</button><input type="text" placeholder="' + _gx_esc(placeholder) + '" style="flex:1 1 160px;min-width:160px;padding:8px 12px;border-radius:8px;border:1.5px solid #d9dcf5;font-size:14px;font-family:inherit;"></div>'
+            '<script>(function(){var wrap=document.getElementById("' + uid + '");var pill=wrap.querySelector("button");var inp=wrap.querySelector("input");pill.addEventListener("click",function(){inp.value="";'
+            + (('if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + tgt + ',"setValue",' + _gx_json(_if_str(default_val)) + ');}catch(e){}}') if _if_truthy(target) else '')
+            + '});inp.addEventListener("input",function(){' + (('if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + tgt + ',"setValue",inp.value);}catch(e){}}') if _if_truthy(target) else '') + '});})();</script>')
+
+
+def _jl(raw):
+    """Decode the escapes of a JavaScript string literal copied verbatim from the GAS source, so a long script chunk is byte-identical."""
+    out, i, simple = [], 0, {'n': '\n', 't': '\t', 'r': '\r', 'b': '\b', 'f': '\f', 'v': '\v', '0': '\0'}
+    while i < len(raw):
+        c = raw[i]
+        if c != '\\':
+            out.append(c)
+            i += 1
+            continue
+        n = raw[i + 1]
+        if n in simple:
+            out.append(simple[n])
+            i += 2
+        elif n == 'x':
+            out.append(chr(int(raw[i + 2:i + 4], 16)))
+            i += 4
+        elif n == 'u':
+            out.append(chr(int(raw[i + 2:i + 6], 16)))
+            i += 6
+        else:
+            out.append(n)
+            i += 2
+    return ''.join(out)
+
+
+def _gx_len(v):
+    return len(v) if isinstance(v, (str, list)) else _IF_UNDEF
+
+
+def _gx_idx(v, j):
+    """v[j] for a number j."""
+    if isinstance(v, list):
+        return v[j] if 0 <= j < len(v) else _IF_UNDEF
+    if isinstance(v, str):
+        return v[j] if 0 <= j < len(v) else _IF_UNDEF
+    if isinstance(v, dict):
+        return v.get(str(j), _IF_UNDEF)
+    return _IF_UNDEF
+
+
+def _gx_undef(v):
+    return v is _IF_UNDEF
+
+
+_STANDINGS_TH = 'background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);'
+_STANDINGS_TD = 'background:transparent;border:none;padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);'
+_STANDINGS_NUM = 'font-variant-numeric:tabular-nums;text-align:right;'
+_STANDINGS_FOLD_JS = _jl(r'''var st={scores:null,names:null,mode:"310"};function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[c];});}function team(s){return String(s).split("&").map(function(x){return x.trim();}).filter(Boolean);}function fold(){var el=document.querySelector("[data-a2ui-standings=\\"%%UID%%\\"]");if(!el)return;var body=el.querySelector("[data-a2ui-standings-body]");if(!body)return;if(!Array.isArray(st.scores)||!st.scores.length)return;var byRound={};st.scores.forEach(function(r){if(r&&r.round!==undefined&&r.round!=="")byRound[r.round]=r;});var nameOf={};if(Array.isArray(st.names)&&st.names.length){var nr=st.names[st.names.length-1];Object.keys(nr).forEach(function(k){var m=k.match(/^p(\\d+)$/);if(m&&String(nr[k]).trim())nameOf[m[1]]=String(nr[k]).trim();});}var stats={};function P(n){if(!stats[n])stats[n]={n:n,played:0,w:0,d:0,l:0,pf:0,pa:0};return stats[n];}Object.keys(byRound).forEach(function(rk){var row=byRound[rk];for(var mi=1;mi<=8;mi++){var ta=row["m"+mi+"_team_a"],tb=row["m"+mi+"_team_b"];var sa=row["m"+mi+"_score_a"],sb=row["m"+mi+"_score_b"];if(ta===undefined||tb===undefined)continue;sa=parseFloat(sa);sb=parseFloat(sb);if(isNaN(sa)||isNaN(sb))continue;team(ta).forEach(function(p){var s=P(p);s.played++;s.pf+=sa;s.pa+=sb;if(sa>sb)s.w++;else if(sa<sb)s.l++;else s.d++;});team(tb).forEach(function(p){var s=P(p);s.played++;s.pf+=sb;s.pa+=sa;if(sb>sa)s.w++;else if(sb<sa)s.l++;else s.d++;});}});var list=Object.keys(stats).map(function(k){var s=stats[k];s.pts=s.w*3+s.d;s.diff=s.pf-s.pa;return s;});if(!list.length)return;list.sort(function(a,b){return st.mode==="310"?((b.pts-a.pts)||(b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n))):((b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n)));});body.innerHTML=list.map(function(s,i){var lead=i===0;var rs=lead?"background:rgba(99,102,241,0.08);font-weight:700;":"";var label=nameOf[s.n]?nameOf[s.n]:("Player "+s.n);return "<tr style=\\""+rs+"\\">"+"<td style=\\""+TD+NUM+(lead?"color:var(--a2ui-accent,#4f46e5);":"")+"\\">"+(i+1)+"</td>"+"<td style=\\""+TD+"\\">"+esc(label)+"</td>"+"<td style=\\""+TD+NUM+"\\">"+s.played+"</td>"+"<td style=\\""+TD+NUM+"font-weight:700;\\">"+s.pts+"</td>"+"<td style=\\""+TD+NUM+"\\">"+s.pf+"</td>"+"<td style=\\""+TD+NUM+"\\">"+s.pa+"</td>"+"<td style=\\""+TD+NUM+"\\">"+((s.diff>0?"+":"")+s.diff)+"</td>"+"</tr>";}).join("");}window._A2UI_STANDINGS=window._A2UI_STANDINGS||{};window._A2UI_STANDINGS["%%UID%%"]=function(prop,val){if(prop==="player_names")st.names=val;else if(prop==="standings_mode")st.mode=(val===false||val==="points")?"points":"310";else st.scores=val;fold();};})();''')
+
+
+def _render_standings_table(b: dict) -> str:
+    num, th, td = _STANDINGS_NUM, _STANDINGS_TH, _STANDINGS_TD
+    if _if_truthy(_if_g(b, 'wired')):
+        wuid = 'stw' + _gx_uid6(b)
+        # the fold script text refers to the uid twice, and the style strings once each
+        script = _STANDINGS_FOLD_JS.replace('%%UID%%', wuid)
+        return ('<div data-a2ui-standings="' + wuid + '" style="overflow-x:auto;margin:1.2rem 0;"><table style="border-collapse:collapse;width:100%;"><thead><tr>'
+                '<th style="' + th + num + '">#</th><th style="' + th + 'text-align:left;">Player</th><th style="' + th + num + '">P</th><th style="' + th + num + '">PTS</th>'
+                '<th style="' + th + num + '">PF</th><th style="' + th + num + '">PA</th><th style="' + th + num + '">+/-</th></tr></thead>'
+                '<tbody data-a2ui-standings-body="1"><tr><td colspan="7" style="' + td + 'text-align:center;color:var(--muted,#5f6368);">No scores yet — save a round below.</td></tr></tbody></table></div>'
+                '<script>(function(){var TD=' + _gx_json(td) + ',NUM=' + _gx_json(num) + ';' + script + '</script>')
+    import functools
+
+    def cmp(x, y):
+        d = _gx_num(_gx_or(_gx_get(y, 'primary'), 0)) - _gx_num(_gx_or(_gx_get(x, 'primary'), 0))
+        return 0 if d != d else (-1 if d < 0 else (1 if d > 0 else 0))
+    src = _gx_or(_if_g(b, 'rows'), [])
+    rows = sorted(list(_gx_arr(src)), key=functools.cmp_to_key(cmp))
+    if not rows:
+        return ''
+    extra = _gx_or(_if_g(b, 'columns'), [])
+    show_played = any(not _gx_undef(_gx_get(r, 'played')) for r in rows)
+    head = ('<tr><th style="' + th + num + '">#</th><th style="' + th + 'text-align:left;">Player</th>' + (('<th style="' + th + num + '">P</th>') if show_played else '')
+            + '<th style="' + th + num + '">' + _gx_esc(_gx_or(_if_g(b, 'primary_label'), 'PTS')) + '</th>' + ''.join('<th style="' + th + num + '">' + _gx_esc(c) + '</th>' for c in _gx_arr(extra)) + '</tr>')
+    body = ''
+    for i, r in enumerate(rows):
+        lead = _gx_get(r, 'highlight') == 'leader'
+        played, primary = _gx_get(r, 'played'), _gx_get(r, 'primary')
+        body += ('<tr style="' + ('background:rgba(99,102,241,0.08);font-weight:700;' if lead else '') + '"><td style="' + td + num + ('color:var(--a2ui-accent,#4f46e5);' if lead else '') + '">' + str(i + 1) + '</td>'
+                 '<td style="' + td + '">' + _gx_esc(_gx_or(_gx_get(r, 'name'), '')) + '</td>'
+                 + (('<td style="' + td + num + '">' + ('' if _gx_undef(played) else _gx_esc(played)) + '</td>') if show_played else '')
+                 + '<td style="' + td + num + 'font-weight:700;">' + ('' if _gx_undef(primary) else _gx_esc(primary)) + '</td>')
+        for j, c in enumerate(_gx_arr(extra)):
+            v = _gx_idx(_gx_or(_gx_get(r, 'values'), []), j)
+            body += '<td style="' + td + num + '">' + ('' if _gx_undef(v) else _gx_esc(v)) + '</td>'
+        body += '</tr>'
+    return '<div style="overflow-x:auto;margin:1.2rem 0;"><table style="border-collapse:collapse;width:100%;">' + head + body + '</table></div>'
+
+
+def _gx_team(names):
+    return ' &amp; '.join(_gx_esc(n) for n in _gx_arr(_gx_or(names, [])))
+
+
+def _gx_scored(m):
+    return not _gx_undef(_gx_get(m, 'score_a')) and not _gx_undef(_gx_get(m, 'score_b'))
+
+
+def _render_match_schedule(b: dict) -> str:
+    rounds = _gx_or(_if_g(b, 'rounds'), [])
+    if not _if_truthy(_gx_len(rounds)):
+        return ''
+    if _gx_or(_if_g(b, 'layout'), 'table') == 'cards':
+        cards = ''
+        for ri, r in enumerate(_gx_arr(rounds)):
+            label = _gx_esc(_gx_or(_gx_get(r, 'label'), 'Round ' + str(ri + 1)))
+            items = ''
+            for m in _gx_arr(_gx_or(_gx_get(r, 'matches'), [])):
+                court = _gx_get(m, 'court')
+                items += ('<div style="border:1px solid var(--border,#e8eaed);border-radius:10px;padding:12px 14px;margin:8px 0;">'
+                          + (('<div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:6px;">' + _gx_esc(court) + '</div>') if _if_truthy(court) else '')
+                          + '<div style="display:flex;align-items:center;gap:10px;font-size:0.92rem;"><span style="flex:1;text-align:right;font-weight:600;">' + _gx_team(_gx_get(m, 'team_a')) + '</span>'
+                          + (('<span style="font-variant-numeric:tabular-nums;font-weight:700;padding:2px 10px;border-radius:6px;background:var(--surface2,#f1f3f4);">' + _gx_esc(_gx_get(m, 'score_a')) + ' – ' + _gx_esc(_gx_get(m, 'score_b')) + '</span>') if _gx_scored(m)
+                             else '<span style="font-size:0.72rem;color:var(--muted,#5f6368);font-weight:700;">vs</span>')
+                          + '<span style="flex:1;font-weight:600;">' + _gx_team(_gx_get(m, 'team_b')) + '</span></div></div>')
+            cards += '<div style="margin:1rem 0;"><div style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#4f46e5);">' + label + '</div>' + items + '</div>'
+        return '<div style="margin:1.2rem 0;">' + cards + '</div>'
+    courts = []
+    for r in _gx_arr(rounds):
+        for i, m in enumerate(_gx_arr(_gx_or(_gx_get(r, 'matches'), []))):
+            c = _gx_or(_gx_get(m, 'court'), 'Court ' + str(i + 1))
+            if not any(_if_seq(x, c) for x in courts):
+                courts.append(c)
+    th = 'background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);text-align:left;'
+    td = _STANDINGS_TD
+    head = '<tr><th style="' + th + '">Round</th>' + ''.join('<th style="' + th + '">' + _gx_esc(c) + '</th>' for c in courts) + '</tr>'
+    body = ''
+    for ri, r in enumerate(_gx_arr(rounds)):
+        by_court = {}
+        for i, m in enumerate(_gx_arr(_gx_or(_gx_get(r, 'matches'), []))):
+            by_court[_if_str(_gx_or(_gx_get(m, 'court'), 'Court ' + str(i + 1)))] = m
+        body += '<tr><td style="' + td + 'font-weight:700;">' + _gx_esc(_gx_or(_gx_get(r, 'label'), ri + 1)) + '</td>'
+        for c in courts:
+            m = by_court.get(_if_str(c), _IF_UNDEF)
+            if not _if_truthy(m):
+                body += '<td style="' + td + '"></td>'
+                continue
+            body += ('<td style="' + td + '">' + _gx_team(_gx_get(m, 'team_a')) + ' <span style="color:var(--muted,#5f6368);font-size:0.78rem;">vs</span> ' + _gx_team(_gx_get(m, 'team_b'))
+                     + ((' <b style="font-variant-numeric:tabular-nums;">' + _gx_esc(_gx_get(m, 'score_a')) + '–' + _gx_esc(_gx_get(m, 'score_b')) + '</b>') if _gx_scored(m) else '') + '</td>')
+        body += '</tr>'
+    return '<div style="overflow-x:auto;margin:1.2rem 0;"><table style="border-collapse:collapse;width:100%;">' + head + body + '</table></div>'
+
+
+def _gx_uid(b, n):
+    return _wa_uid(b)[:n]
+
+
+def _gx_replace_first(s, pat, rep):
+    """s.replace(pat, rep) with a string pattern: the first occurrence, and the $ patterns in rep expanded."""
+    i = s.find(pat)
+    if i < 0:
+        return s
+    out, k = [], 0
+    while k < len(rep):
+        c = rep[k]
+        if c == '$' and k + 1 < len(rep):
+            n = rep[k + 1]
+            if n == '$':
+                out.append('$')
+                k += 2
+                continue
+            if n == '&':
+                out.append(pat)
+                k += 2
+                continue
+            if n == '`':
+                out.append(s[:i])
+                k += 2
+                continue
+            if n == "'":
+                out.append(s[i + len(pat):])
+                k += 2
+                continue
+        out.append(c)
+        k += 1
+    return s[:i] + ''.join(out) + s[i + len(pat):]
+
+
+def _gx_nl2br(s):
+    return s.replace('\n', '<br>')
+
+
+def _render_domain_brief(b: dict) -> str:
+    title, badge, description = (_gx_or(_if_g(b, k), '') for k in ('title', 'badge', 'description'))
+    key_facts, areas = _gx_or(_if_g(b, 'key_facts'), []), _gx_or(_if_g(b, 'areas'), [])
+    areas_label, context, accent = _gx_or(_if_g(b, 'areas_label'), 'Périmètre'), _gx_or(_if_g(b, 'context'), ''), _gx_or(_if_g(b, 'accent'), '#4f46e5')
+    uid = 'dbr' + _gx_uid(b, 8)
+    facts_html = ''
+    if _if_truthy(_gx_len(key_facts)):
+        facts_html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:1.2rem 0 1rem;">'
+        for kf in _gx_arr(key_facts):
+            f = {'text': kf} if isinstance(kf, str) else kf
+            ic = _gx_get(f, 'icon')
+            facts_html += ('<div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:5px 12px;">'
+                           + (('<span style="font-size:0.82rem;">' + _gx_esc(ic) + '</span>') if _if_truthy(ic) else '')
+                           + '<span style="font-size:0.75rem;color:#cbd5e1;font-weight:600;">' + _gx_esc(_gx_or(_gx_get(f, 'text'), '')) + '</span></div>')
+        facts_html += '</div>'
+    areas_html = ''
+    if _if_truthy(_gx_len(areas)):
+        areas_html = ('<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#475569;margin:1.1rem 0 0.6rem;">' + _gx_esc(areas_label) + '</div>'
+                      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px;">')
+        for a in _gx_arr(areas):
+            ac = _gx_or(_gx_get(a, 'color'), accent)
+            det = _gx_get(a, 'detail')
+            areas_html += ('<div style="background:rgba(15,23,42,0.8);border:1px solid ' + _gx_esc(ac) + '28;border-left:3px solid ' + _gx_esc(ac) + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;">'
+                           '<div style="font-size:0.78rem;font-weight:700;color:' + _gx_esc(ac) + ';margin-bottom:3px;">' + _gx_esc(_gx_or(_gx_get(a, 'label'), '')) + '</div>'
+                           + (('<div style="font-size:0.69rem;color:#64748b;line-height:1.5;">' + _gx_esc(det) + '</div>') if _if_truthy(det) else '') + '</div>')
+        areas_html += '</div>'
+    image_url = _gx_or(_if_g(b, 'image_url'), '')
+    img = _if_truthy(image_url)
+    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:' + ('0' if img else '1.5rem') + ' 0;">'
+            '<div style="background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.07);' + ('' if img else 'border-top:3px solid ' + _gx_esc(accent) + ';')
+            + 'border-radius:' + ('0 0 14px 14px' if img else '14px') + ';overflow:hidden;">'
+            + (('<div style="width:100%;height:220px;overflow:hidden;position:relative;"><img src="' + _gx_esc(image_url) + '" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;" onerror="this.parentElement.style.display=\'none\'" />'
+                '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,23,42,0.0) 0%,rgba(15,23,42,0.3) 50%,rgba(15,23,42,0.97) 82%);"></div>'
+                '<div style="position:absolute;top:10px;right:12px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:3px 9px;font-size:0.6rem;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:0.05em;">⚡ Imagen 3</div></div>') if img else '')
+            + '<div style="padding:1.75rem 1.75rem 1.5rem;">'
+            + (('<div style="display:inline-block;background:' + _gx_esc(accent) + '1a;border:1px solid ' + _gx_esc(accent) + '44;border-radius:20px;padding:3px 12px;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _gx_esc(accent) + ';margin-bottom:1.5rem;">' + _gx_esc(badge) + '</div>') if _if_truthy(badge) else '')
+            + '<div style="font-size:1.55rem;font-weight:800;color:#f1f5f9;line-height:1.2;margin-bottom:0.8rem;">' + _gx_esc(title) + '</div>'
+            + (('<div style="font-size:0.9rem;color:#94a3b8;line-height:1.75;max-width:640px;">' + _gx_nl2br(_gx_esc(description)) + '</div>') if _if_truthy(description) else '')
+            + facts_html + areas_html
+            + (('<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.06);font-size:0.72rem;color:#334155;">' + _gx_esc(context) + '</div>') if _if_truthy(context) else '')
+            + '</div></div></div>')
+
+
+def _render_brevet_timeline(b: dict) -> str:
+    events, accent, label = _gx_or(_if_g(b, 'events'), []), _gx_or(_if_g(b, 'accent'), '#3b82f6'), _gx_or(_if_g(b, 'title'), '')
+    uid = 'btl' + _gx_uid(b, 8)
+    if not _if_truthy(_gx_len(events)):
+        return ''
+    ev_html = ''
+    for ev in _gx_arr(events):
+        ev_html += ('<div class="' + uid + 'ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;"><div style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;padding:3px 4px;background:' + _gx_esc(accent) + ';color:#fff;font-size:0.58rem;font-weight:800;text-align:center;border-radius:6px;letter-spacing:0.01em;line-height:1.4;z-index:2;">'
+                    + _gx_esc(_gx_or(_gx_get(ev, 'date'), '')) + '</div><div class="' + uid + 'pn" style="background:rgba(30,41,59,0.97);border:1px solid rgba(255,255,255,0.07);padding:0.85rem 1rem;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;transition:border-color 0.2s;" '
+                    "onmouseover=\"this.style.borderColor='" + _gx_esc(accent) + "44'\" onmouseout=\"this.style.borderColor='rgba(255,255,255,0.07)'\">"
+                    '<div style="font-weight:700;color:#f1f5f9;font-size:0.92rem;line-height:1.4;">' + _gx_esc(_gx_or(_gx_get(ev, 'title'), '')) + '</div>'
+                    '<div class="' + uid + 'dd" style="max-height:0;overflow:hidden;opacity:0;margin-top:0;color:#94a3b8;font-size:0.85rem;line-height:1.7;transition:max-height 0.4s ease,opacity 0.3s ease,margin-top 0.3s ease;">'
+                    + _gx_nl2br(_gx_esc(_gx_or(_gx_get(ev, 'desc'), ''))) + '</div><div style="font-size:0.6rem;color:#1e293b;margin-top:0.35rem;letter-spacing:0.07em;">▸ analyser l\'impact au Brevet</div></div></div>')
+    return ('<div style="font-family:\'Inter\',system-ui,sans-serif;margin:1.5rem 0;">'
+            + (('<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#475569;margin-bottom:1rem;">' + _gx_esc(label) + '</div>') if _if_truthy(label) else '')
+            + '<div id="' + uid + '" style="position:relative;padding:0.5rem 0;"><div style="position:absolute;top:0;bottom:0;left:26px;width:2px;background:linear-gradient(to bottom,' + _gx_esc(accent) + '70,transparent);border-radius:2px;z-index:1;"></div>' + ev_html + '</div></div>'
+            '<script>(function(){document.querySelectorAll("#' + uid + ' .' + uid + 'pn").forEach(function(pn){pn.addEventListener("click",function(){var dd=pn.querySelector(".' + uid + 'dd");if(!dd)return;'
+            'var open=parseFloat(dd.style.maxHeight)>0;dd.style.maxHeight=open?"":(dd.scrollHeight+"px");dd.style.opacity=open?"0":"1";dd.style.marginTop=open?"0":"0.65rem";});});})();</script>')
+
+
+def _render_text_analysis(b: dict) -> str:
+    passage, highlights, source = _gx_or(_if_g(b, 'passage'), ''), _gx_or(_if_g(b, 'highlights'), []), _gx_or(_if_g(b, 'source'), '')
+    uid = 'txa' + _gx_uid(b, 8)
+    passage_html = _gx_nl2br(_gx_esc(passage))
+    hl_list = highlights if isinstance(highlights, list) else (list(highlights) if isinstance(highlights, str) else [])
+    for i, hl in enumerate(hl_list):
+        phrase = _gx_esc(_gx_or(_gx_get(hl, 'text'), ''))
+        if not phrase:
+            continue
+        passage_html = _gx_replace_first(passage_html, phrase, '<span class="' + uid + 'hl" data-idx="' + str(i) + '" style="background:rgba(217,119,6,0.18);border-bottom:2px solid #d97706;cursor:pointer;padding:0 2px;border-radius:2px;transition:background 0.15s;">' + phrase + '</span>')
+    note_divs = ''
+    for j, hl in enumerate(hl_list):
+        note_divs += '<div id="' + uid + 'n' + str(j) + '" style="display:none;">' + _gx_nl2br(_gx_esc(_gx_or(_gx_get(hl, 'analysis'), ''))) + '</div>'
+    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:1.5rem 0;">' + note_divs
+            + '<div style="background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.07);border-left:3px solid #d97706;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:1.4rem 1.5rem;margin-bottom:0.9rem;">'
+            + (('<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#d97706;margin-bottom:0.75rem;">' + _gx_esc(source) + '</div>') if _if_truthy(source) else '')
+            + '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:1.05rem;line-height:1.9;color:#e2e8f0;font-style:italic;">' + passage_html + '</div>'
+            '<div style="font-size:0.62rem;color:#1e293b;margin-top:0.8rem;letter-spacing:0.08em;">↑ cliquer sur un terme souligné pour l\'analyser</div></div>'
+            '<div id="' + uid + 'box" style="background:rgba(15,23,42,0.97);border:1px solid rgba(217,119,6,0.18);border-radius:10px;padding:1rem 1.2rem;min-height:72px;transition:border-color 0.25s;">'
+            '<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#d97706;margin-bottom:0.5rem;">ANALYSE — Méthode Brevet</div>'
+            '<div id="' + uid + 'txt" style="font-size:0.88rem;color:#475569;line-height:1.65;transition:opacity 0.18s;">Cliquez sur un terme souligné pour afficher les clés de décryptage pour l\'examen.</div></div></div>'
+            '<script>(function(){var hlEls=document.querySelectorAll("#' + uid + ' .' + uid + 'hl");var txt=document.getElementById("' + uid + 'txt");var box=document.getElementById("' + uid + 'box");'
+            'hlEls.forEach(function(el){el.addEventListener("mouseover",function(){if(el.getAttribute("data-active")!=="1")el.style.background="rgba(217,119,6,0.3)";});'
+            'el.addEventListener("mouseout",function(){if(el.getAttribute("data-active")!=="1")el.style.background="rgba(217,119,6,0.18)";});'
+            'el.addEventListener("click",function(){var idx=parseInt(el.getAttribute("data-idx"),10);var note=document.getElementById("' + uid + 'n"+idx);if(!note)return;'
+            'hlEls.forEach(function(s){s.style.background="rgba(217,119,6,0.18)";s.removeAttribute("data-active");});el.style.background="rgba(217,119,6,0.42)";el.setAttribute("data-active","1");txt.style.opacity="0";'
+            'setTimeout(function(){txt.innerHTML=note.innerHTML;txt.style.color="#cbd5e1";txt.style.opacity="1";},130);box.style.borderColor="rgba(217,119,6,0.45)";});});})();</script>')
+
+
+def _render_brevet_automatismes(b: dict) -> str:
+    questions, duration = _gx_or(_if_g(b, 'questions'), []), _gx_or(_if_g(b, 'duration'), 1200)
+    uid = 'bau' + _gx_uid(b, 8)
+    if not _if_truthy(_gx_len(questions)):
+        return ''
+    dn = _gx_num(duration)
+    mm = math.floor(dn / 60) if dn == dn and dn not in (float('inf'), float('-inf')) else float('nan')
+    ss = dn - 60 * math.floor(dn / 60) if mm == mm else float('nan')
+    # JS % keeps the sign of the dividend
+    if dn == dn and dn not in (float('inf'), float('-inf')):
+        ss = math.fmod(dn, 60)
+    init_tmr = ('0' if (mm == mm and mm < 10) else '') + _if_numstr(mm) + ':' + ('0' if (ss == ss and ss < 10) else '') + _if_numstr(ss)
+    qs = _gx_arr(questions)
+    n = len(qs)
+    rows_html = ''
+    for i, q in enumerate(qs):
+        ans = _gx_get(q, 'answer')
+        rows_html += ('<div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 1rem;border-bottom:1px solid rgba(16,185,129,0.1);"><span style="font-size:0.95rem;color:#f1f5f9;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">'
+                      '<span style="color:#10b981;font-weight:700;margin-right:0.4rem;">' + str(i + 1) + '.</span>' + _gx_esc(_gx_or(_gx_get(q, 'question'), '')) + '</span>'
+                      '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><input type="text" aria-label="Answer to question ' + str(i + 1) + '" class="' + uid + 'in" data-ans="' + _gx_esc(_if_str(_gx_or(ans, ''))) + '" '
+                      'placeholder="?" maxlength="16" autocomplete="off" style="width:68px;padding:5px 8px;text-align:center;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(16,185,129,0.25);color:#fff;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;font-family:\'Courier New\',monospace;">'
+                      '<span class="' + uid + 'fb" style="font-size:0.9rem;width:28px;text-align:left;"></span></div></div>')
+    script = _jl(r'''var left=%%DUR%%,done=false;var tmrEl=document.getElementById("%%UID%%tmr");var iv=setInterval(function(){if(done){clearInterval(iv);return;}left--;var m=Math.floor(left/60),s=left%60;if(tmrEl)tmrEl.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;if(left<=60&&tmrEl)tmrEl.style.color="#f87171";if(left<=0){clearInterval(iv);window["%%UID%%"].validate();}},1000);window["%%UID%%"]={validate:function(){if(done)return;done=true;clearInterval(iv);var ins=document.querySelectorAll("#%%UID%% .%%UID%%in");var fbs=document.querySelectorAll("#%%UID%% .%%UID%%fb");var score=0;ins.forEach(function(inp,i){var user=inp.value.trim().replace(/,/g,".");var ans=(inp.getAttribute("data-ans")||"").trim().replace(/,/g,".");var ok=user.toLowerCase()===ans.toLowerCase();if(ok){score++;fbs[i].textContent="✓";fbs[i].style.color="#10b981";inp.style.borderColor="rgba(16,185,129,0.5)";}else{fbs[i].textContent="✗ "+ans;fbs[i].style.color="#f87171";fbs[i].style.fontSize="0.72rem";inp.style.borderColor="rgba(248,113,113,0.5)";inp.style.color="#f87171";}inp.disabled=true;});var sc=document.getElementById("%%UID%%sc");var pts=Math.round(score/%%N%%*6*10)/10;if(sc){sc.style.display="block";sc.textContent=score+"/%%N%% correct — "+pts+"/6 pts";if(score===%%N%%)sc.textContent+=" ✨ Parfait !";}var btn=document.getElementById("%%UID%%btn");if(btn)btn.style.display="none";}};var ins=document.querySelectorAll("#%%UID%% .%%UID%%in");ins.forEach(function(inp,i){inp.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(i<ins.length-1){ins[i+1].focus();}else{window["%%UID%%"].validate();}});});})();<\/script>''')
+    script = script.replace('%%UID%%', uid).replace('%%N%%', str(n)).replace('%%DUR%%', _if_str(duration))
+    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:1.5rem 0;background:rgba(4,47,30,0.25);border:2px solid #059669;border-radius:14px;overflow:hidden;">'
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1.2rem;background:rgba(6,95,70,0.45);border-bottom:1px solid rgba(16,185,129,0.18);"><div>'
+            '<div style="font-size:0.9rem;font-weight:800;color:#10b981;letter-spacing:0.02em;">⏱ Automatismes · DNB 2026</div>'
+            '<div style="font-size:0.65rem;color:rgba(167,243,208,0.65);margin-top:2px;">Partie 1 · 6 pts · Calculatrice interdite</div></div>'
+            '<div id="' + uid + 'tmr" style="background:rgba(4,47,30,0.85);color:#a7f3d0;padding:4px 14px;border-radius:6px;font-weight:800;font-family:\'Courier New\',monospace;font-size:1.15rem;letter-spacing:0.05em;">' + init_tmr + '</div></div>'
+            '<div style="padding:0.5rem 1.2rem;background:rgba(146,64,14,0.2);border-bottom:1px solid rgba(217,119,6,0.2);"><span style="font-size:0.72rem;color:#fbbf24;">⚠ Répondez rapidement — pas de calculatrice — appuyez Entrée pour passer à la question suivante</span></div>'
+            '<div>' + rows_html + '</div><div style="padding:0.9rem 1.2rem;"><button id="' + uid + 'btn" style="width:100%;padding:10px;background:#059669;color:#fff;border:none;font-weight:700;font-size:0.88rem;border-radius:8px;cursor:pointer;letter-spacing:0.04em;transition:background 0.15s;" '
+            "onmouseover=\"this.style.background='#047857'\" onmouseout=\"this.style.background='#059669'\" onclick=\"window['" + uid + "'].validate()\">Corriger mon épreuve ✓</button>"
+            '<div id="' + uid + 'sc" style="display:none;text-align:center;margin-top:0.8rem;font-size:0.92rem;font-weight:700;color:#10b981;"></div></div></div><script>(function(){' + script)
+
+
+_CAT_COLORS = {'a2media': '#8b5cf6', 'a2UI': '#4f46e5', 'a2ui': '#4f46e5', 'a2knowledge': '#10b981', 'ard': '#f59e0b'}
+
+
+def _render_catalogue_provenance(b: dict) -> str:
+    label, sources = _gx_or(_if_g(b, 'label'), 'Assembled from'), _gx_or(_if_g(b, 'sources'), [])
+    uid = 'cpv' + _gx_uid(b, 8)
+    if not _if_truthy(_gx_len(sources)):
+        return ''
+    cols = ''
+    for i, s in enumerate(_gx_arr(sources)):
+        cat = _gx_get(s, 'catalogue')
+        cc = _CAT_COLORS.get(_if_str(cat)) if (isinstance(cat, str) or isinstance(cat, (int, float, bool, list))) else None
+        color = _if_str(_gx_or(_gx_or(_gx_get(s, 'color'), cc if cc else _IF_UNDEF), '#64748b'))
+        stem_h = 40 + (0 if i % 2 == 0 else 20)
+        cols += ('<div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;"><div style="font-size:0.6rem;font-weight:700;color:' + color + ';text-align:center;padding:2px 8px;border:1px solid ' + color + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+                 'background:' + color + '0d;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;">' + _gx_esc(_gx_or(_gx_get(s, 'target'), _gx_or(_gx_get(s, 'what'), ''))) + '</div>'
+                 '<div style="width:2px;background:linear-gradient(' + color + '88,' + color + '22);height:' + str(stem_h) + 'px;margin:0 auto;"></div>'
+                 '<div style="width:52px;height:52px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 35% 35%,' + color + '28,' + color + '08);border:2px solid ' + color + ';box-shadow:0 0 16px ' + color + '44;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">'
+                 + _if_str(_gx_or(_gx_get(s, 'icon'), '◈')) + '</div>'
+                 '<div style="margin-top:5px;font-size:0.6rem;font-weight:800;letter-spacing:0.08em;color:' + color + ';">' + _gx_esc(_gx_or(cat, '')) + '</div>'
+                 '<div style="margin-top:2px;font-size:0.68rem;font-weight:600;color:var(--muted,#5f6368);text-align:center;line-height:1.3;">' + _gx_esc(_gx_or(_gx_get(s, 'what'), '')) + '</div></div>')
+    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:0.25rem 0 1.5rem;"><div style="text-align:center;margin-bottom:0.9rem;">'
+            '<span style="font-size:0.55rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#475569;background:rgba(255,255,255,0.03);padding:2px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.07);">🔍 ' + _gx_esc(label) + '</span></div>'
+            '<div style="display:flex;align-items:flex-end;justify-content:space-around;gap:8px;padding:0 4px;">' + cols + '</div></div>')
+
+
+def _gx_seq(v):
+    """What a JavaScript for-loop over 0..v.length sees: the elements of an array, the characters of a string, nothing otherwise."""
+    return v if isinstance(v, list) else (list(v) if isinstance(v, str) else [])
+
+
+def _gx_render_block(blk):
+    """var fn = _RENDERERS[blk.component || blk.type]; if (fn) html += fn(blk);"""
+    key = _gx_or(_gx_get(blk, 'component'), _gx_get(blk, 'type'))
+    fn = _RENDERERS.get(key) if isinstance(key, str) else None
+    return fn(blk) if fn else ''
+
+
+def _gx_header(header, sticky_id=None):
+    """The optional persistent source bar shared by hub and hub_rail; returns (html, ...)."""
+    meta_bits = []
+    if _if_truthy(_gx_get(header, 'author')):
+        meta_bits.append(_gx_esc(_gx_get(header, 'author')))
+    if _if_truthy(_gx_get(header, 'published')):
+        meta_bits.append(_gx_esc(_gx_get(header, 'published')))
+    return ('<span style="opacity:0.6;">· ' + ' · '.join(meta_bits) + '</span>') if meta_bits else ''
+
+
+_HUB_THEME_JS_1 = _jl(r'''function iTab(){return dark?{c:"rgba(255,255,255,0.35)",b:"rgba(255,255,255,0.12)"}:{c:"rgba(0,0,0,0.55)",b:"rgba(0,0,0,0.15)"};}function iPill(){return dark?{bg:"rgba(255,255,255,0.07)",c:"rgba(255,255,255,0.4)"}:{bg:"rgba(0,0,0,0.06)",c:"rgba(0,0,0,0.45)"};}function applyTheme(d){dark=d;var cb=d?BG:"#ffffff",navb=d?NAV:"#f8fafc";var cardBg=d?"#f8fafc":"#ffffff";var bdr=d?"rgba(255,255,255,0.07)":"rgba(0,0,0,0.08)";var shT=d?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 8px rgba(0,0,0,0.06)";var shB=d?"0 -2px 12px rgba(0,0,0,0.4)":"0 -2px 8px rgba(0,0,0,0.06)";var wrap=g("body"),ct=g("content"),tn=g("TOPNAV"),bn=g("BOTNAV");if(wrap)wrap.style.background=cb;if(ct)ct.style.background=cardBg;document.body.style.background=cb;if(tn){tn.style.background=navb;tn.style.borderBottomColor=bdr;tn.style.boxShadow=shT;}if(bn){bn.style.background=navb;bn.style.borderTopColor=bdr;bn.style.boxShadow=shB;}var ts=iTab(),ps=iPill();for(var i=0;i<counts.length;i++){if(i!==cs){var t=g("T"+i);if(t){t.style.color=ts.c;t.style.borderColor=ts.b;}}for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}}}var obs=new MutationObserver(function(ms){ms.forEach(function(m){if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}});});obs.observe(document.body,{attributes:true,attributeFilter:["class"]});''')
+_HUB_NAV_JS_2 = _jl(r'''subj:function(si){if(si===cs)return;var ts=iTab();g("S"+cs).style.display="none";g("N"+cs).style.display="none";var ot=g("T"+cs);ot.style.background="transparent";ot.style.color=ts.c;ot.style.borderColor=ts.b;cs=si;g("S"+si).style.display="block";g("N"+si).style.display="flex";var nt=g("T"+si);nt.style.background=C[si];nt.style.color="#fff";nt.style.borderColor=C[si];''')
+_HUB_NAV_JS_3 = _jl(r'''},sl:function(si,sli){var ps=iPill();var op=g("P"+si+"_"+cl[si]),os=g("S"+si+"L"+cl[si]);if(op){op.style.background=ps.bg;op.style.color=ps.c;}if(os)os.style.display="none";cl[si]=sli;var np=g("P"+si+"_"+sli),ns=g("S"+si+"L"+sli);if(np){np.style.background=C[si];np.style.color="#fff";}if(ns)ns.style.display="block";window.scrollTo(0,0);}};applyTheme(document.body.classList.contains("asw-dark-theme"));})();<\/script>''')
+
+
+def _render_hub(b: dict) -> str:
+    subjects = _gx_or(_if_g(b, 'subjects'), [])
+    bg = _gx_or(_if_g(b, 'background'), '#0f172a')
+    nav = _gx_or(_if_g(b, 'nav_background'), bg)
+    uid = 'hub' + _gx_uid(b, 8)
+    if not _if_truthy(_gx_len(subjects)):
+        return ''
+    subjects = _gx_seq(subjects)
+    header = _if_g(b, 'header')
+    header_html, header_pad = '', 0
+    if _if_truthy(header) and _if_truthy(_gx_get(header, 'url')):
+        header_html = ('<div style="padding:6px 12px;font-size:0.74rem;font-weight:600;border-bottom:1px solid rgba(0,0,0,0.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><a href="' + _gx_safe_url(_gx_get(header, 'url'))
+                       + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">🔗 ' + _gx_esc(_gx_get(header, 'url')) + '</a>' + _gx_header(header) + '</div>')
+        header_pad = 30
+    content_html, bottom_nav = '', ''
+    colors_js, counts_js = '[', '['
+    for si, subj in enumerate(subjects):
+        slides_v = _gx_or(_gx_get(subj, 'slides'), [])
+        slides = _gx_seq(slides_v)
+        accent = _gx_or(_gx_get(subj, 'color'), '#4f46e5')
+        colors_js += (',' if si else '') + '"' + _if_str(accent) + '"'
+        counts_js += (',' if si else '') + _if_str(_gx_len(slides_v))
+        content_html += '<div id="' + uid + 'S' + str(si) + '" style="display:' + ('block' if si == 0 else 'none') + ';">'
+        for sli, slide in enumerate(slides):
+            slide_html = ''
+            blocks = _gx_or(_gx_get(slide, 'blocks'), [])
+            for blk in _gx_seq(blocks):
+                slide_html += _gx_render_block(blk)
+            content_html += '<div id="' + uid + 'S' + str(si) + 'L' + str(sli) + '" style="display:' + ('block' if sli == 0 else 'none') + ';">' + slide_html + '</div>'
+        content_html += '</div>'
+        bottom_nav += '<div id="' + uid + 'N' + str(si) + '" style="display:' + ('flex' if si == 0 else 'none') + ';gap:5px;overflow-x:auto;padding:8px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
+        for sli2, sl in enumerate(slides):
+            act = sli2 == 0
+            bottom_nav += ('<button id="' + uid + 'P' + str(si) + '_' + str(sli2) + '" onclick="window[\'' + uid + '\'].sl(' + str(si) + ',' + str(sli2) + ')" style="flex-shrink:0;padding:5px 11px;border-radius:20px;border:none;cursor:pointer;font-size:0.72rem;font-weight:700;white-space:nowrap;transition:all 0.15s;'
+                           'background:' + (_if_str(accent) if act else 'rgba(0,0,0,0.06)') + ';color:' + ('#fff' if act else 'rgba(0,0,0,0.45)') + ';">' + _gx_esc(_gx_or(_gx_get(sl, 'label'), 'Slide ' + str(sli2 + 1))) + '</button>')
+        bottom_nav += '</div>'
+    tabs_html = '<div style="display:flex;gap:5px;overflow-x:auto;padding:10px 12px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
+    for si2, sj in enumerate(subjects):
+        ac2 = _gx_or(_gx_get(sj, 'color'), '#4f46e5')
+        first = si2 == 0
+        tabs_html += ('<button id="' + uid + 'T' + str(si2) + '" onclick="window[\'' + uid + '\'].subj(' + str(si2) + ')" style="flex-shrink:0;padding:7px 14px;border-radius:10px;border:1.5px solid;cursor:pointer;font-size:0.78rem;font-weight:800;white-space:nowrap;letter-spacing:0.02em;transition:all 0.18s;'
+                      'background:' + (_if_str(ac2) if first else 'transparent') + ';color:' + ('#fff' if first else 'rgba(0,0,0,0.55)') + ';border-color:' + (_if_str(ac2) if first else 'rgba(0,0,0,0.15)') + ';">' + _gx_esc(_gx_or(_gx_get(sj, 'label'), 'Subject ' + str(si2 + 1))) + '</button>')
+    tabs_html += '</div>'
+    colors_js += ']'
+    counts_js += ']'
+    return ('<style>body{background:#ffffff;margin:0;}.asw-page>h1{display:none;}#' + uid + 'body,#' + uid + 'content{transition:background 0.25s;}#' + uid + 'TOPNAV,#' + uid + 'BOTNAV{transition:background 0.25s,border-color 0.25s,box-shadow 0.25s;}</style>'
+            '<div id="' + uid + 'body" style="font-family:\'Inter\',system-ui,sans-serif;background:#ffffff;min-height:100vh;">'
+            '<div id="' + uid + 'TOPNAV" style="position:fixed;top:0;left:0;right:0;z-index:400;background:#f8fafc;border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 8px rgba(0,0,0,0.06);">' + header_html + tabs_html + '</div>'
+            '<div id="' + uid + 'content" style="padding-top:' + str(64 + header_pad) + 'px;padding-bottom:72px;background:#ffffff;box-sizing:border-box;min-height:100vh;">' + content_html + '</div>'
+            '<div id="' + uid + 'BOTNAV" style="position:fixed;bottom:0;left:0;right:0;z-index:400;background:#f8fafc;border-top:1px solid rgba(0,0,0,0.08);box-shadow:0 -2px 8px rgba(0,0,0,0.06);">' + bottom_nav + '</div></div>'
+            '<script>(function(){var C=' + colors_js + ';var BG="' + _if_str(bg) + '",NAV="' + _if_str(nav) + '";var cs=0,cl=[],dark=false;var counts=' + counts_js + ';for(var i=0;i<counts.length;i++)cl.push(0);'
+            'function g(id){return document.getElementById("' + uid + '"+id);}' + _HUB_THEME_JS_1 + 'window["' + uid + '"]={' + _HUB_NAV_JS_2 + 'window["' + uid + '"].sl(si,cl[si]);window.scrollTo(0,0);' + _HUB_NAV_JS_3)
+
+
+_RAIL_JS_1 = _jl(r'''function iTab(){return dark?{c:"rgba(255,255,255,0.35)"}:{c:"rgba(0,0,0,0.7)"};}function iPill(){return dark?{bg:"rgba(255,255,255,0.07)",c:"rgba(255,255,255,0.4)"}:{bg:"transparent",c:"rgba(0,0,0,0.6)"};}function applyTheme(d){dark=d;var cb=d?BG:"#ffffff",navb=d?NAV:"#f8fafc";var cardBg=d?"#f8fafc":"#ffffff";var bdr=d?"rgba(255,255,255,0.07)":"rgba(0,0,0,0.08)";var wrap=g("body"),ct=g("content"),rl=g("rail"),hd=g("HDR");if(wrap)wrap.style.background=cb;if(ct)ct.style.background=cardBg;document.body.style.background=cb;if(rl){rl.style.background=navb;rl.style.borderRightColor=bdr;}if(hd){hd.style.background=navb;hd.style.borderBottomColor=bdr;}var ts=iTab(),ps=iPill();for(var i=0;i<counts.length;i++){if(i!==cs){var t=g("T"+i);if(t){t.style.color=ts.c;t.style.background="transparent";}}for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}}}var obs=new MutationObserver(function(ms){ms.forEach(function(m){if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}});});obs.observe(document.body,{attributes:true,attributeFilter:["class"]});''')
+_RAIL_JS_2 = _jl(r'''subj:function(si){if(si===cs){var dtl0=g("D"+si);if(dtl0)dtl0.open=true;return;}var ts=iTab();g("S"+cs).style.display="none";var od=g("D"+cs);if(od)od.open=false;var ot=g("T"+cs);ot.style.background="transparent";ot.style.color=ts.c;cs=si;g("S"+si).style.display="block";var nd=g("D"+si);if(nd)nd.open=true;var nt=g("T"+si);nt.style.background=C[si];nt.style.color="#fff";''')
+_RAIL_JS_3 = _HUB_NAV_JS_3
+
+
+def _render_hub_rail(b: dict) -> str:
+    subjects = _gx_or(_if_g(b, 'subjects'), [])
+    bg = _gx_or(_if_g(b, 'background'), '#0f172a')
+    nav = _gx_or(_if_g(b, 'nav_background'), bg)
+    uid = 'hrail' + _gx_uid(b, 8)
+    if not _if_truthy(_gx_len(subjects)):
+        return ''
+    subjects = _gx_seq(subjects)
+    header = _if_g(b, 'header')
+    header_html = ''
+    if _if_truthy(header) and _if_truthy(_gx_get(header, 'url')):
+        header_html = ('<div id="' + uid + 'HDR" style="position:sticky;top:0;z-index:400;padding:6px 12px;font-size:0.74rem;font-weight:600;background:#f8fafc;border-bottom:1px solid rgba(0,0,0,0.08);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'
+                       '<a href="' + _gx_safe_url(_gx_get(header, 'url')) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">🔗 ' + _gx_esc(_gx_get(header, 'url')) + '</a>' + _gx_header(header) + '</div>')
+    content_html, groups_html = '', ''
+    colors_js, counts_js = '[', '['
+    for si, subj in enumerate(subjects):
+        slides_v = _gx_or(_gx_get(subj, 'slides'), [])
+        slides = _gx_seq(slides_v)
+        accent = _gx_or(_gx_get(subj, 'color'), '#4f46e5')
+        active_subj = si == 0
+        colors_js += (',' if si else '') + '"' + _if_str(accent) + '"'
+        counts_js += (',' if si else '') + _if_str(_gx_len(slides_v))
+        content_html += '<div id="' + uid + 'S' + str(si) + '" style="display:' + ('block' if active_subj else 'none') + ';">'
+        sub_html = ''
+        for sli, slide in enumerate(slides):
+            slide_html = ''
+            for blk in _gx_seq(_gx_or(_gx_get(slide, 'blocks'), [])):
+                slide_html += _gx_render_block(blk)
+            content_html += '<div id="' + uid + 'S' + str(si) + 'L' + str(sli) + '" style="display:' + ('block' if sli == 0 else 'none') + ';">' + slide_html + '</div>'
+            act = si == 0 and sli == 0
+            sub_html += ('<div id="' + uid + 'P' + str(si) + '_' + str(sli) + '" onclick="window[\'' + uid + '\'].sl(' + str(si) + ',' + str(sli) + ')" style="cursor:pointer;padding:6px 10px 6px 26px;border-radius:8px;margin:2px 6px;font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all 0.15s;'
+                         'background:' + (_if_str(accent) if act else 'transparent') + ';color:' + ('#fff' if act else 'rgba(0,0,0,0.6)') + ';">' + _gx_esc(_gx_or(_gx_get(slides[sli], 'label'), 'Slide ' + str(sli + 1))) + '</div>')
+        content_html += '</div>'
+        groups_html += ('<details id="' + uid + 'D' + str(si) + '"' + (' open' if active_subj else '') + ' style="margin-bottom:4px;"><summary id="' + uid + 'T' + str(si) + '" onclick="window[\'' + uid + '\'].subj(' + str(si) + ')" '
+                        'style="cursor:pointer;list-style:none;padding:9px 12px;border-radius:10px;font-size:0.82rem;font-weight:800;letter-spacing:0.01em;transition:all 0.18s;background:' + (_if_str(accent) if active_subj else 'transparent') + ';color:' + ('#fff' if active_subj else 'rgba(0,0,0,0.7)') + ';">'
+                        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + ('#fff' if active_subj else _if_str(accent)) + ';margin-right:8px;"></span>' + _gx_esc(_gx_or(_gx_get(subj, 'label'), 'Subject ' + str(si + 1)))
+                        + '</summary><div class="' + uid + 'sub">' + sub_html + '</div></details>')
+    colors_js += ']'
+    counts_js += ']'
+    return ('<style>body{background:#ffffff;margin:0;}.asw-page>h1{display:none;}summary::-webkit-details-marker{display:none;}#' + uid + 'body,#' + uid + 'content,#' + uid + 'rail{transition:background 0.25s;}#' + uid + 'HDR{transition:background 0.25s,border-color 0.25s;}'
+            '.' + uid + 'layout{display:flex;gap:0;align-items:flex-start;}#' + uid + 'rail{flex:0 0 220px;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;padding:12px 8px;box-sizing:border-box;}'
+            '#' + uid + 'content{flex:1;min-width:0;padding:20px 24px;box-sizing:border-box;}@media(max-width:860px){.' + uid + 'layout{flex-direction:column;}#' + uid + 'rail{position:static;width:100%;max-height:none;flex:1 1 auto;}}</style>'
+            '<div id="' + uid + 'body" style="font-family:\'Inter\',system-ui,sans-serif;background:#ffffff;min-height:100vh;">' + header_html + '<div class="' + uid + 'layout">'
+            '<div id="' + uid + 'rail" style="background:#f8fafc;border-right:1px solid rgba(0,0,0,0.08);">' + groups_html + '</div><div id="' + uid + 'content" style="background:#ffffff;">' + content_html + '</div></div></div>'
+            '<script>(function(){var C=' + colors_js + ';var BG="' + _if_str(bg) + '",NAV="' + _if_str(nav) + '";var cs=0,cl=[],dark=false;var counts=' + counts_js + ';for(var i=0;i<counts.length;i++)cl.push(0);'
+            'function g(id){return document.getElementById("' + uid + '"+id);}' + _RAIL_JS_1 + 'window["' + uid + '"]={' + _RAIL_JS_2 + 'window["' + uid + '"].sl(si,cl[si]);window.scrollTo(0,0);' + _RAIL_JS_3)
+
+
+def _gx_getkey(o, k):
+    """o[k] for a computed key (JavaScript coerces the key with String())."""
+    if o is None or o is _IF_UNDEF:
+        raise _GxTypeError("Cannot read properties of null (reading '" + _if_str(k) + "')")
+    ks = _if_str(k)
+    if isinstance(o, dict):
+        return o.get(ks, _IF_UNDEF)
+    if isinstance(o, (list, str)) and re.fullmatch(r'0|[1-9]\d{0,8}', ks) and int(ks) < len(o):
+        return o[int(ks)]
+    return _IF_UNDEF
+
+
+_FCD_JS = _jl(r'''var idx=0,tot=%%N%%;window["%%UID%%"]={flip:function(){var w=document.querySelector("#%%UID%% .%%UID%%w[data-idx=\'"+idx+"\']");if(!w)return;var inn=w.querySelector(".%%UID%%i");inn.style.transform=inn.style.transform?"":"rotateY(180deg)";},go:function(n){if(n<0||n>=tot)return;document.querySelectorAll("#%%UID%% .%%UID%%w").forEach(function(w){w.style.opacity="0";w.style.pointerEvents="none";w.style.transform="scale(0.96)";var i=w.querySelector(".%%UID%%i");if(i)i.style.transform="";});idx=n;var a=document.querySelector("#%%UID%% .%%UID%%w[data-idx=\'"+idx+"\']");if(a){a.style.opacity="1";a.style.pointerEvents="auto";a.style.transform="scale(1)";}var pb=document.getElementById("%%UID%%bar");if(pb)pb.style.width=Math.round((idx+1)/tot*100)+"%";var ct=document.getElementById("%%UID%%ctr");if(ct)ct.textContent=(idx+1)+" / "+tot;var pv=document.getElementById("%%UID%%P");if(pv)pv.disabled=(idx===0);var nx=document.getElementById("%%UID%%N");if(nx)nx.disabled=(idx===tot-1);},next:function(){window["%%UID%%"].go(idx+1);},prev:function(){window["%%UID%%"].go(idx-1);}};document.querySelectorAll("#%%UID%% .%%UID%%i").forEach(function(el){el.addEventListener("click",function(){window["%%UID%%"].flip();});});document.addEventListener("keydown",function(e){var el=document.getElementById("%%UID%%");if(!el)return;var r=el.getBoundingClientRect();if(r.bottom<0||r.top>window.innerHeight)return;if(e.key==="ArrowRight"||e.key==="ArrowDown")window["%%UID%%"].next();else if(e.key==="ArrowLeft"||e.key==="ArrowUp")window["%%UID%%"].prev();else if(e.key===" "||e.key==="Enter"){window["%%UID%%"].flip();e.preventDefault();}});})();<\/script>''')
+
+
+def _render_flashcard_deck(b: dict) -> str:
+    cards_v = _gx_or(_if_g(b, 'cards'), [])
+    accent, lbl_front, lbl_back = _gx_or(_if_g(b, 'accent'), '#4f46e5'), _gx_or(_if_g(b, 'label_front'), 'QUESTION'), _gx_or(_if_g(b, 'label_back'), 'ANSWER')
+    uid = 'fcd' + _gx_uid(b, 8)
+    if not _if_truthy(_gx_len(cards_v)):
+        return '<p style="color:#64748b;font-style:italic;text-align:center;">No flashcards provided.</p>'
+    cards = _gx_seq(cards_v)
+    cards_html = ''
+    for i, c in enumerate(cards):
+        front = _gx_nl2br(_gx_esc(_gx_or(_gx_get(c, 'front'), '')))
+        back = _gx_nl2br(_gx_esc(_gx_or(_gx_get(c, 'back'), '')))
+        show = 'opacity:1;pointer-events:auto;transform:scale(1);' if i == 0 else 'opacity:0;pointer-events:none;transform:scale(0.96);'
+        cards_html += ('<div class="' + uid + 'w" data-idx="' + str(i) + '" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;' + show + '">'
+                       '<div class="' + uid + 'i" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);cursor:pointer;">'
+                       '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:18px;box-sizing:border-box;text-align:center;background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.09);box-shadow:0 24px 48px rgba(0,0,0,0.5);">'
+                       '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:1.2rem;">' + _gx_esc(lbl_front) + '</div>'
+                       '<div style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;">' + front + '</div>'
+                       '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— space / click to flip —</div></div>'
+                       '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:18px;box-sizing:border-box;text-align:center;background:' + _gx_esc(accent) + ';box-shadow:0 24px 48px rgba(0,0,0,0.5);">'
+                       '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:1.2rem;">' + _gx_esc(lbl_back) + '</div>'
+                       '<div style="font-size:1.05rem;font-weight:600;line-height:1.65;color:#fff;">' + back + '</div>'
+                       '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;">— space / click to flip —</div></div></div></div>')
+    n = len(cards)
+    first_pct = _if_round(100 / n) if n > 1 else 100
+    return ('<div id="' + uid + '" style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:580px;margin:2rem auto;font-family:\'Inter\',system-ui,sans-serif;">'
+            '<div style="width:100%;display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;"><div style="flex:1;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;">'
+            '<div id="' + uid + 'bar" style="height:100%;width:' + str(first_pct) + '%;background:' + _gx_esc(accent) + ';border-radius:2px;transition:width 0.35s;"></div></div>'
+            '<span id="' + uid + 'ctr" style="font-size:0.68rem;color:#475569;font-weight:700;white-space:nowrap;min-width:44px;text-align:right;">1 / ' + str(n) + '</span></div>'
+            '<div style="position:relative;width:100%;height:300px;perspective:1200px;">' + cards_html + '</div>'
+            '<div style="display:flex;align-items:center;gap:10px;margin-top:1.4rem;"><button id="' + uid + 'P" onclick="window[\'' + uid + '\'].prev()" disabled style="padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;font-size:0.78rem;font-weight:600;">← Prev</button>'
+            '<button onclick="window[\'' + uid + '\'].flip()" style="padding:8px 22px;border-radius:8px;border:none;background:' + _gx_esc(accent) + ';color:#fff;cursor:pointer;font-size:0.78rem;font-weight:700;">Flip</button>'
+            '<button id="' + uid + 'N" onclick="window[\'' + uid + '\'].next()" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button></div></div>'
+            '<script>(function(){' + _FCD_JS.replace('%%UID%%', uid).replace('%%N%%', str(n)))
+
+
+_FL_PALETTE = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0891b2', '#7c3aed', '#db2777', '#65a30d']
+_FL_SCRIPT = _jl(r'''(function(){var root=document.getElementById("%%UID%%");if(!root)return;var chips=root.querySelectorAll(".fl-chip"),rows=root.querySelectorAll(".fl-row"),count=root.querySelector(".fl-count"),empty=root.querySelector(".fl-empty"),total=rows.length;function apply(v){var shown=0;for(var i=0;i<rows.length;i++){var on=(v===""||rows[i].getAttribute("data-fv")===v);rows[i].style.display=on?"":"none";if(on)shown++;}for(var j=0;j<chips.length;j++){chips[j].setAttribute("aria-pressed",chips[j].getAttribute("data-fv")===v?"true":"false");}if(count)count.textContent="Showing "+shown+" of "+total;if(empty)empty.style.display=shown?"none":"block";}for(var k=0;k<chips.length;k++){(function(c){c.addEventListener("click",function(){apply(c.getAttribute("data-fv"));});})(chips[k]);}})();<\/script>''')
+
+
+def _render_filterable_list(b: dict) -> str:
+    uid = 'fl' + _gx_uid(b, 6)
+    items = _if_g(b, 'items') if isinstance(_if_g(b, 'items'), list) else []
+    ff = _if_g(b, 'filter_field')
+    field = ff if (isinstance(ff, str) and re.fullmatch(r'[A-Za-z_]{1,32}', ff)) else 'status'
+    show_counts = _if_g(b, 'show_counts') is not False
+
+    def hexc(c):
+        return c if (isinstance(c, str) and re.fullmatch(r'#[0-9a-fA-F]{3,8}', c)) else ''
+
+    def key(v):
+        return _if_str('' if (v is None or v is _IF_UNDEF) else v).strip().lower()
+
+    def title(it):
+        t = _gx_get(it, 'title')
+        if t is not _IF_UNDEF:
+            return t
+        n = _gx_get(it, 'name')
+        return n if n is not _IF_UNDEF else ''
+
+    def detail(it):
+        d = _gx_get(it, 'detail')
+        if d is not _IF_UNDEF:
+            return d
+        s = _gx_get(it, 'subtitle')
+        return s if s is not _IF_UNDEF else ''
+    filters, seen = [], set()
+    explicit = _if_g(b, 'filters') if isinstance(_if_g(b, 'filters'), list) else None
+    if explicit is not None:
+        for f in explicit:
+            isobj = isinstance(f, (dict, list))
+            v = _gx_get(f, 'value') if isobj else f
+            k = key(v)
+            if not k or k in seen:
+                continue
+            seen.add(k)
+            lab = _gx_get(f, 'label') if isobj else _IF_UNDEF
+            filters.append({'key': k, 'label': lab if _if_truthy(lab) else _if_str(v), 'color': hexc(_gx_get(f, 'color')) if isobj else ''})
+    else:
+        for it in items:
+            fv = _gx_get(it, field)
+            k = key(fv)
+            if not k or k in seen:
+                continue
+            seen.add(k)
+            filters.append({'key': k, 'label': _if_str(fv).strip(), 'color': ''})
+    colours_v = _if_g(b, 'colors')
+    colours = colours_v if isinstance(colours_v, (dict, list)) else {}
+    for i, f in enumerate(filters):
+        f['color'] = _gx_or(_gx_or(_gx_or(f['color'], hexc(_gx_getkey(colours, f['label']))), hexc(_gx_getkey(colours, f['key']))), _FL_PALETTE[i % 8])
+    colour_of = {f['key']: f['color'] for f in filters}
+    counts = {}
+    for it in items:
+        k = key(_gx_get(it, field))
+        counts[k] = counts.get(k, 0) + 1
+    chips = ('<button type="button" class="fl-chip" data-fv="" aria-pressed="true" style="--c:#374151">All' + ((' <span class="fl-n">' + str(len(items)) + '</span>') if show_counts else '') + '</button>')
+    for f in filters:
+        chips += ('<button type="button" class="fl-chip" data-fv="' + _gx_esc(f['key']) + '" aria-pressed="false" style="--c:' + _gx_esc(f['color']) + '">' + _gx_esc(f['label']) + ((' <span class="fl-n">' + str(counts.get(f['key'], 0)) + '</span>') if show_counts else '') + '</button>')
+    rows = ''
+    for it in items:
+        fv = _gx_get(it, field)
+        k = key(fv)
+        c = colour_of.get(k) or '#9ca3af'
+        value = _if_str(fv).strip() if (fv is not _IF_UNDEF and fv is not None and _if_str(fv).strip()) else ''
+        badge = ('<span class="fl-badge" style="--c:' + _gx_esc(c) + '">' + _gx_esc(value) + '</span>') if ((field == 'status' or value) and value) else ''
+        ic, mt, dt = _gx_get(it, 'icon'), _gx_get(it, 'meta'), detail(it)
+        rows += ('<div class="fl-row" data-fv="' + _gx_esc(k) + '">' + (('<span class="fl-ic" aria-hidden="true">' + _gx_esc(ic) + '</span>') if _if_truthy(ic) else '')
+                 + '<div class="fl-main"><div class="fl-t">' + _gx_esc(title(it)) + '</div>' + (('<div class="fl-d">' + _gx_esc(dt) + '</div>') if _if_truthy(dt) else '') + '</div>'
+                 + (('<span class="fl-meta">' + _gx_esc(mt) + '</span>') if _if_truthy(mt) else '') + badge + '</div>')
+    css = ('<style>#' + uid + ' .fl-bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}#' + uid + ' .fl-chip{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:5px 14px;border-radius:999px;border:1.5px solid var(--c);background:transparent;color:var(--c);}'
+           '#' + uid + ' .fl-chip[aria-pressed="true"]{background:var(--c);color:#fff;}#' + uid + ' .fl-n{opacity:.75;font-weight:500;margin-left:2px;}'
+           '#' + uid + ' .fl-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border,#e0e0e0);border-radius:10px;margin-bottom:8px;background:var(--surface,#f8f9fa);color:var(--text,#202124);}'
+           '#' + uid + ' .fl-main{flex:1;min-width:0;}#' + uid + ' .fl-t{font-weight:600;}#' + uid + ' .fl-d{font-size:13px;color:var(--muted,#5f6368);margin-top:2px;}#' + uid + ' .fl-meta{font-size:12px;color:var(--muted,#5f6368);white-space:nowrap;}'
+           '#' + uid + ' .fl-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--c);color:#fff;white-space:nowrap;}#' + uid + ' .fl-count,#' + uid + ' .fl-empty{font-size:12px;color:var(--muted,#5f6368);margin:6px 0;}#' + uid + ' .fl-empty{display:none;}</style>')
+    script = '<script>' + _FL_SCRIPT.replace('%%UID%%', uid)
+    ttl = _if_g(b, 'title')
+    return (css + '<div id="' + uid + '" class="fl-wrap" style="margin:0.75rem 0;">' + (('<div style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--text,#202124);">' + _gx_esc(ttl) + '</div>') if _if_truthy(ttl) else '')
+            + '<div class="fl-bar" role="group" aria-label="Filter">' + chips + '</div><div class="fl-count" aria-live="polite">Showing ' + str(len(items)) + ' of ' + str(len(items)) + '</div><div class="fl-list">' + rows + '</div>'
+            '<div class="fl-empty">' + _gx_esc(_gx_or(_if_g(b, 'empty_text'), 'Nothing matches this filter.')) + '</div></div>' + script)
+
+
+def _photo_grid_items(images):
+    out = ''
+    for img in _gx_arr(images):
+        row_json = _gx_esc(_gx_json(img))
+        active = _if_truthy(_gx_get(img, 'active'))
+        badge_v, cap_v, url = _gx_get(img, 'badge'), _gx_get(img, 'caption'), _gx_get(img, 'url')
+        badge = ('<span class="pg-badge' + (' pg-badge-active' if active else '') + '">' + _gx_esc(badge_v) + '</span>') if _if_truthy(badge_v) else ''
+        cap = ('<figcaption>' + _gx_esc(cap_v) + '</figcaption>') if _if_truthy(cap_v) else ''
+        media = (('<img src="' + _gx_esc(url) + '" alt="' + _gx_esc(_gx_or(_gx_get(img, 'alt'), '')) + '" loading="lazy">') if _if_truthy(url)
+                 else '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#9aa0a6;font-size:0.78rem;">No photo</div>')
+        out += '<figure class="' + (' pg-active' if active else '') + '" data-row-json="' + row_json + '">' + media + badge + cap + '</figure>'
+    return out
+
+
+def _render_photo_grid(b: dict) -> str:
+    images = _gx_or(_gx_or(_if_g(b, 'images'), _if_g(b, 'rows')), [])
+    cols = _gx_or(_if_g(b, 'cols'), 3)
+    gid = 'pg' + _gx_uid(b, 6)
+    css = ('<style>.' + gid + '{display:grid;grid-template-columns:repeat(' + _if_str(cols) + ',1fr);gap:12px;margin:12px 0;}@media(max-width:600px){.' + gid + '{grid-template-columns:repeat(2,1fr);}}'
+           '.' + gid + ' figure{position:relative;margin:0;overflow:hidden;border-radius:8px;cursor:pointer;aspect-ratio:4/5;background:#f1f3f4;border:2px solid transparent;transition:border-color 0.15s;}'
+           '.' + gid + ' figure.pg-active{border-color:#0f766e;}.' + gid + ' figure img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s ease;}.' + gid + ' figure:hover img{transform:scale(1.04);}'
+           '.' + gid + ' figcaption{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,0.72));color:#fff;font-size:0.72rem;line-height:1.3;}'
+           '.' + gid + ' .pg-badge{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:99px;}.' + gid + ' .pg-badge-active{background:#f59e0b;color:#1c1108;}</style>')
+    return css + '<div class="' + gid + '" data-photo-grid="1">' + _photo_grid_items(images) + '</div>'
+
+
+def _render_photo_stepper(b: dict) -> str:
+    images_v = _gx_or(_gx_or(_if_g(b, 'images'), _if_g(b, 'rows')), [])
+    if not _if_truthy(_gx_len(images_v)):
+        return '<p style="color:#94a3b8;font-style:italic;">Nothing to show yet.</p>'
+    accent = _gx_or(_if_g(b, 'accent'), '#0f766e')
+    sid = 'ps' + _gx_uid(b, 6)
+    images = _gx_arr(images_v)
+    n = len(images)
+    mid = sid + '_open'
+    first = _gx_or(images[0], {})
+    trigger_label = _gx_or(_if_g(b, 'trigger_label'), 'Browse full screen')
+    a = _if_str(accent)
+    css = ('<style>#' + mid + '{display:none;}.' + sid + '-trigger{position:relative;display:block;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}'
+           '.' + sid + '-trigger img{width:100%;max-height:50vh;object-fit:cover;display:block;opacity:0.85;}'
+           '.' + sid + '-trigger-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:1.05rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,0.6);}'
+           '#' + mid + ':checked ~ .' + sid + '-trigger{display:none;}.' + sid + '{display:none;position:fixed;inset:0;z-index:9000;background:#111;overflow:hidden;}#' + mid + ':checked ~ .' + sid + '{display:block;}'
+           '.' + sid + ' input[type=radio]{display:none;}.' + sid + '-inner{position:relative;height:100%;width:100%;}'
+           '.' + sid + '-track{display:flex;height:100%;transition:transform 0.35s ease;width:' + str(n * 100) + '%;position:relative;z-index:6;pointer-events:none;}'
+           '.' + sid + '-slide{width:' + _if_numstr(100 / n) + '%;flex:0 0 ' + _if_numstr(100 / n) + '%;position:relative;height:100%;}.' + sid + '-slide img{width:100%;height:100%;display:block;object-fit:contain;background:#000;}'
+           '.' + sid + '-cap{position:absolute;left:0;right:0;bottom:0;padding:36px 24px 22px;background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));color:#fff;}'
+           '.' + sid + '-vote,.' + sid + '-source{pointer-events:auto;}.' + sid + '-cap .ps-name{font-size:1.05rem;font-weight:600;}.' + sid + '-cap .ps-price{color:#d1d5db;font-size:0.85rem;margin-top:2px;}.' + sid + '-cap .ps-voters{color:#d1d5db;font-size:0.78rem;margin-top:8px;}'
+           '.' + sid + '-badge{position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.65);color:#fff;font-size:0.78rem;font-weight:700;padding:3px 9px;border-radius:99px;}.' + sid + '-badge.ps-badge-active{background:' + a + ';color:#fff;}'
+           '.' + sid + '-vote{margin-top:12px;display:inline-block;background:' + a + ';color:#fff;border:none;border-radius:6px;padding:9px 18px;font-size:0.88rem;font-weight:600;cursor:pointer;}'
+           '.' + sid + '-source{margin-top:12px;margin-left:10px;display:inline-block;color:#d1d5db;font-size:0.82rem;text-decoration:underline;}'
+           '.' + sid + '-nav{position:absolute;top:0;bottom:0;width:15%;z-index:5;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:rgba(255,255,255,0.5);cursor:pointer;user-select:none;transition:background 0.15s;}'
+           '.' + sid + '-nav:hover{background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.9);}.' + sid + '-prev{left:0;} .' + sid + '-next{right:0;}'
+           '.' + sid + '-topbar{position:absolute;top:0;left:0;right:0;z-index:8;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0));pointer-events:none;}'
+           '.' + sid + '-topbar > *{pointer-events:auto;}.' + sid + '-close{color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;cursor:pointer;background:rgba(0,0,0,0.4);border-radius:99px;padding:6px 14px;}'
+           '.' + sid + '-count{color:#d1d5db;font-size:0.8rem;background:rgba(0,0,0,0.4);padding:4px 11px;border-radius:99px;}</style>')
+    per_slide = ''
+    for i in range(1, n + 1):
+        offset = (i - 1) * (100 / n)
+        per_slide += '<style>#' + sid + '_s' + str(i) + ':checked ~ .' + sid + '-inner .' + sid + '-track{transform:translateX(-' + _if_numstr(offset) + '%);}</style>'
+        per_slide += '<style>.' + sid + '-count' + str(i) + '{display:none;} #' + sid + '_s' + str(i) + ':checked ~ .' + sid + '-inner .' + sid + '-count' + str(i) + '{display:block;}</style>'
+    inputs = ''.join('<input type="radio" id="' + sid + '_s' + str(i + 1) + '" name="' + sid + '"' + (' checked' if i == 0 else '') + '>' for i in range(n))
+    for j in range(1, n + 1):
+        per_slide += '<style>.' + sid + '-navset' + str(j) + '{display:none;} #' + sid + '_s' + str(j) + ':checked ~ .' + sid + '-inner .' + sid + '-navset' + str(j) + '{display:flex;}</style>'
+    nav_sets = ''
+    for i in range(n):
+        prev_idx = n if i == 0 else i
+        next_idx = 1 if i == n - 1 else i + 2
+        nav_sets += ('<div class="' + sid + '-navset' + str(i + 1) + '"><label for="' + sid + '_s' + str(prev_idx) + '" class="' + sid + '-nav ' + sid + '-prev">&#10094;</label>'
+                     '<label for="' + sid + '_s' + str(next_idx) + '" class="' + sid + '-nav ' + sid + '-next">&#10095;</label></div>')
+    slides_html = ''
+    for i, img in enumerate(images):
+        row_json = _gx_esc(_gx_json(img))
+        active = _if_truthy(_gx_get(img, 'active'))
+        bv, sv, pv, su, url = _gx_get(img, 'badge'), _gx_get(img, 'starred_by_display'), _gx_get(img, 'price_display'), _gx_get(img, 'source_url'), _gx_get(img, 'url')
+        badge = ('<span class="' + sid + '-badge' + (' ps-badge-active' if active else '') + '">' + _gx_esc(bv) + '</span>') if _if_truthy(bv) else ''
+        voters = ('<div class="ps-voters">' + _gx_esc(sv) + '</div>') if _if_truthy(sv) else ''
+        price = ('<div class="ps-price">' + _gx_esc(pv) + '</div>') if _if_truthy(pv) else ''
+        source = ('<a class="' + sid + '-source" href="' + _gx_esc(su) + '" target="_blank" rel="noopener">Open source listing &#8599;</a>') if _if_truthy(su) else ''
+        media = (('<img src="' + _gx_esc(url) + '" alt="' + _gx_esc(_gx_or(_gx_get(img, 'alt'), '')) + '" loading="lazy">') if _if_truthy(url)
+                 else '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>')
+        slides_html += ('<div class="' + sid + '-slide" data-ps-slide="' + str(i) + '" data-ps-id="' + _gx_esc(_if_str(_gx_or(_gx_get(img, 'id'), ''))) + '">' + media + badge
+                        + '<div class="' + sid + '-cap"><div class="ps-name">' + _gx_esc(_gx_or(_gx_get(img, 'name'), _gx_or(_gx_get(img, 'alt'), ''))) + '</div>' + price + voters
+                        + '<button type="button" class="' + sid + '-vote" data-row-json="' + row_json + '">' + ('★ Starred — tap to unstar' if active else '☆ Star this one') + '</button>' + source + '</div></div>')
+    counters = ''.join('<span class="' + sid + '-count ' + sid + '-count' + str(i + 1) + '">' + str(i + 1) + ' / ' + str(n) + '</span>' for i in range(n))
+    return (css + '<label for="' + mid + '" class="' + sid + '-trigger"><img src="' + _gx_esc(_gx_or(_gx_get(first, 'url'), '')) + '" alt="" loading="lazy"><span class="' + sid + '-trigger-label">' + _gx_esc(trigger_label) + ' &middot; ' + str(n) + ' photos</span></label>'
+            '<input type="checkbox" id="' + mid + '">' + per_slide + '<div class="' + sid + '" data-photo-stepper="1">' + inputs + '<div class="' + sid + '-inner"><div class="' + sid + '-topbar"><label for="' + mid + '" class="' + sid + '-close">&larr; Back</label>' + counters + '</div>'
+            + nav_sets + '<div class="' + sid + '-track">' + slides_html + '</div></div></div>')
+
+
+def _render_sortable_list(b: dict) -> str:
+    items = _if_g(b, 'items') if isinstance(_if_g(b, 'items'), list) else []
+    html = '<div data-a2ui-sortable style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
+    if not items:
+        return html + '<div style="padding:12px;color:var(--muted,#6b7280);font-size:0.875rem;">' + _gx_esc(_gx_or(_if_g(b, 'emptyMessage'), 'Nothing to reorder.')) + '</div></div>'
+    if _if_truthy(_if_g(b, 'label')):
+        html += '<div style="font-size:0.8rem;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _gx_esc(_if_g(b, 'label')) + '</div>'
+    for i, raw in enumerate(items):
+        it = _gx_or(raw, {})
+        od = _gx_get(it, 'order')
+        ordv = i if (od is _IF_UNDEF or od is None) else od
+        iid, grp, lbl = _gx_get(it, 'id'), _gx_get(it, 'group'), _gx_get(it, 'label')
+        note = _gx_get(it, 'note')
+        html += ('<div draggable="true" data-sid="' + _gx_esc(_if_str(i if iid is _IF_UNDEF else iid)) + '" data-sorder="' + _gx_esc(_if_str(ordv)) + '"'
+                 + ('' if (grp is _IF_UNDEF or grp is None) else ' data-sgroup="' + _gx_esc(_if_str(grp)) + '"')
+                 + ' style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin:4px 0;background:var(--surface,#f9fafb);border:1px solid var(--border,#e5e7eb);border-radius:8px;cursor:grab;font-size:0.9rem;color:var(--text,#111827);">'
+                 '<span aria-hidden="true" style="color:var(--muted,#9ca3af);line-height:1;">⠿</span><span>' + _gx_esc(_if_str(iid) if lbl is _IF_UNDEF else lbl) + '</span>'
+                 + (('<span style="margin-left:auto;font-size:0.78rem;color:var(--muted,#6b7280);">' + _gx_esc(note) + '</span>') if _if_truthy(note) else '') + '</div>')
+    return html + '</div>'
+
+
+def _render_preview_frame(b: dict) -> str:
+    src = _gx_or(_if_g(b, 'src'), '')
+    h = _gx_parse_int(_if_g(b, 'height'))
+    height = 320 if (h != h or h == 0) else h
+    label = ('<div style="font-size:0.8rem;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _gx_esc(_if_g(b, 'label')) + '</div>') if _if_truthy(_if_g(b, 'label')) else ''
+    has = _if_truthy(src)
+    placeholder = ('<div data-a2ui-frame-placeholder style="display:' + ('none' if has else 'flex') + ';align-items:center;justify-content:center;height:' + _if_numstr(height) + 'px;border:1px dashed var(--border,#e5e7eb);border-radius:8px;color:var(--muted,#6b7280);font-size:0.875rem;background:var(--surface,#f9fafb);">'
+                   + _gx_esc(_gx_or(_if_g(b, 'emptyMessage'), 'Nothing selected yet.')) + '</div>')
+    frame = ('<iframe data-a2ui-frame src="' + _gx_esc(src) + '" style="display:' + ('' if has else 'none') + ';width:100%;height:' + _if_numstr(height) + 'px;border:1px solid var(--border,#e5e7eb);border-radius:12px;border-radius:var(--a2ui-radius,12px);" loading="lazy" title="' + _gx_esc(_gx_or(_if_g(b, 'label'), 'Preview')) + '"></iframe>')
+    return '<div>' + label + placeholder + frame + '</div>'
+
+
+def _render_form_textarea(b: dict) -> str:
+    uid = 'ta' + _gx_uid(b, 6)
+    label, ph, val = _gx_or(_if_g(b, 'label'), ''), _gx_or(_if_g(b, 'placeholder'), ''), _gx_or(_if_g(b, 'value'), '')
+    rows = _gx_parse_int(_gx_or(_if_g(b, 'rows'), 4))
+    return ('<div style="display:flex;flex-direction:column;gap:4px;width:100%;">'
+            + (('<label for="' + uid + '" style="font-size:0.8rem;font-weight:600;color:#374151;">' + _gx_esc(label) + '</label>') if _if_truthy(label) else '')
+            + '<textarea id="' + uid + '"' + ('' if _if_truthy(label) else ' aria-label="' + _gx_esc(_gx_or(ph, 'Text')) + '"') + ' rows="' + _if_numstr(rows) + '" placeholder="' + _gx_esc(ph) + '"'
+            ' style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;transition:border-color 0.15s;" '
+            "onfocus=\"this.style.borderColor='#4f46e5'\" onblur=\"this.style.borderColor='#d1d5db'\">" + _gx_esc(val) + '</textarea></div>')
+
+
+
+for _gx_name, _gx_fn in (
+    ('headline_list', _render_headline_list),
+    ('breaking_banner', _render_breaking_banner),
+    ('news_digest', _render_news_digest),
+    ('cert_disclaimer', _render_cert_disclaimer),
+    ('command_step', _render_command_step),
+    ('jump_nav', _render_jump_nav),
+    ('scenario_case', _render_scenario_case),
+    ('sla_timer_display', _render_sla_timer_display),
+    ('lens_quotes', _render_lens_quotes),
+    ('lens_structure', _render_lens_structure),
+    ('lens_themes', _render_lens_themes),
+    ('lens_eli5', _render_lens_eli5),
+    ('lens_synthesis', _render_lens_synthesis),
+    ('lens_freeform', _render_lens_freeform),
+    ('lens_similar', _render_lens_similar),
+    ('lens_context', _render_lens_context),
+    ('quiet_link', _render_quiet_link),
+    ('tool_tile', _render_tool_tile),
+    ('theme_toggle', _render_theme_toggle),
+    ('tab_group', _render_tab_group),
+    ('lens_grid', _render_lens_grid),
+    ('domain_picker', _render_domain_picker),
+    ('standings_table', _render_standings_table),
+    ('match_schedule', _render_match_schedule),
+    ('domain_brief', _render_domain_brief),
+    ('brevet_timeline', _render_brevet_timeline),
+    ('text_analysis', _render_text_analysis),
+    ('brevet_automatismes', _render_brevet_automatismes),
+    ('catalogue_provenance', _render_catalogue_provenance),
+    ('hub', _render_hub),
+    ('hub_rail', _render_hub_rail),
+    ('flashcard_deck', _render_flashcard_deck),
+    ('filterable_list', _render_filterable_list),
+    ('photo_grid', _render_photo_grid),
+    ('photo_stepper', _render_photo_stepper),
+    ('sortable_list', _render_sortable_list),
+    ('preview_frame', _render_preview_frame),
+    ('form_textarea', _render_form_textarea),
+):
+    _RENDERERS[_gx_name] = _gx_fn
 
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

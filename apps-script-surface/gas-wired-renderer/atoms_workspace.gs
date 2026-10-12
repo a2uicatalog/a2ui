@@ -865,7 +865,7 @@ _RENDERERS['scenario_case'] = function(b) {
     var lbl       = isBest ? 'Best answer' : isPartial ? 'Partial credit' : 'Avoid';
 
     var dots = '';
-    for (var d = 1; d <= maxScore; d++) {
+    for (var d = 1; d <= Math.min(maxScore, 50); d++) {   // capped: a payload score of 1e11 must not mean 1e11 loop turns
       dots += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:2px;background:' + (d <= score ? dotColor : '#e2e8f0') + ';"></span>';
     }
 

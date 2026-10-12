@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/preview_frame/#page", "url": "https://a2uicatalog.ai/atoms/preview_frame/", "headline": "Preview Frame: A2UI atom", "description": "An iframe whose `src` is driven by a wire, so picking a value elsewhere on the page re-navigates it CLIENT-SIDE — no server round trip, no paint_result…", "about": {"@id": "https://a2uicatalog.ai/atoms/preview_frame/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/preview_frame/#atom", "name": "Preview Frame", "termCode": "preview_frame", "description": "iframe whose src is wired to another node's value, so picking updates it with no repaint", "url": "https://a2uicatalog.ai/atoms/preview_frame/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "emptyMessage, height, label, src"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/preview_frame.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/preview_frame/#page", "url": "https://a2uicatalog.ai/atoms/preview_frame/", "headline": "Preview Frame: A2UI atom", "description": "An iframe whose `src` is driven by a wire, so picking a value elsewhere on the page re-navigates it CLIENT-SIDE — no server round trip, no paint_result…", "about": {"@id": "https://a2uicatalog.ai/atoms/preview_frame/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/preview_frame/#atom", "name": "Preview Frame", "termCode": "preview_frame", "description": "iframe whose src is wired to another node's value, so picking updates it with no repaint", "url": "https://a2uicatalog.ai/atoms/preview_frame/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "emptyMessage, height, label, src"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/preview_frame.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -175,7 +175,7 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bd">web ⚠</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
@@ -185,6 +185,10 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
 </div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of preview_frame"><div><div data-a2ui-frame-placeholder style="display:flex;align-items:center;justify-content:center;height:320px;border:1px dashed var(--border,#e5e7eb);border-radius:8px;color:var(--muted,#6b7280);font-size:0.875rem;background:var(--surface,#f9fafb);">Nothing selected yet.</div><iframe data-a2ui-frame src="" style="display:none;width:100%;height:320px;border:1px solid var(--border,#e5e7eb);border-radius:12px;border-radius:var(--a2ui-radius,12px);" loading="lazy" title="Preview"></iframe></div></div>
+</div>
 
   
 
@@ -208,6 +212,7 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/preview_frame",
   "capabilities": [
+    "web",
     "mcp-apps",
     "android"
   ],

@@ -195,7 +195,7 @@ _RENDERERS['text_analysis'] = function(b) {
   // Store each analysis note in a hidden div to avoid JSON encoding issues
   var noteDivs = '';
   for (var j = 0; j < highlights.length; j++) {
-    noteDivs += '<div id="' + uid + 'n' + j + '" style="display:none;">' + (highlights[j].analysis || '') + '</div>';
+    noteDivs += '<div id="' + uid + 'n' + j + '" style="display:none;">' + _esc(highlights[j].analysis || '').replace(/\n/g, '<br>') + '</div>';   // escaped (it was raw HTML: an <img onerror> in an agent payload ran)
   }
 
   return (

@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/sortable_list/#page", "url": "https://a2uicatalog.ai/atoms/sortable_list/", "headline": "Sortable List: A2UI atom", "description": "Drag to reorder a list, emitting the new position as one event.", "about": {"@id": "https://a2uicatalog.ai/atoms/sortable_list/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/sortable_list/#atom", "name": "Sortable List", "termCode": "sortable_list", "description": "drag-to-reorder list emitting {id, order} on drop", "url": "https://a2uicatalog.ai/atoms/sortable_list/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "emptyMessage, items, label"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/sortable_list.md"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/sortable_list/#page", "url": "https://a2uicatalog.ai/atoms/sortable_list/", "headline": "Sortable List: A2UI atom", "description": "Drag to reorder a list, emitting the new position as one event.", "about": {"@id": "https://a2uicatalog.ai/atoms/sortable_list/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/sortable_list/#atom", "name": "Sortable List", "termCode": "sortable_list", "description": "drag-to-reorder list emitting {id, order} on drop", "url": "https://a2uicatalog.ai/atoms/sortable_list/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "emptyMessage, items, label"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/sortable_list.md"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -177,7 +177,7 @@ Use it only where order is AUTHORED. Where order is COMPUTED — a job list rank
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+    <span class="badge bd">web ⚠</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
   </div>
 
   
@@ -187,6 +187,10 @@ Use it only where order is AUTHORED. Where order is COMPUTED — a job list rank
 </div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of sortable_list"><div data-a2ui-sortable style="margin:var(--a2ui-block-gap,1.25rem) 0;"><div style="padding:12px;color:var(--muted,#6b7280);font-size:0.875rem;">Nothing to reorder.</div></div></div>
+</div>
 
   
 
@@ -210,6 +214,7 @@ Use it only where order is AUTHORED. Where order is COMPUTED — a job list rank
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/sortable_list",
   "capabilities": [
+    "web",
     "google-apps-script-web",
     "mcp-apps",
     "android"
