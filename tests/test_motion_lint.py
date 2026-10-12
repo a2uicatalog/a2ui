@@ -84,3 +84,25 @@ def test_the_made_tidy_sting_lints_with_no_errors():
         return
     out = ml.lint(json.loads(sting.read_text()))
     assert not [x for x in out if x["level"] == "error"], out
+
+
+def sp(block, keys, duration=8):
+    b = dict({"id": "tx"}, **block)
+    return {"type": "motion_timeline", "duration": duration, "blocks": [{"type": "motion_layer", "id": "s1", "blocks": [b]}], "tracks": [{"target": "tx", "keys": keys}]}
+
+
+def test_showpiece_dials_have_speed_limits():
+    k = lambda dial, d: [{"t": 0, dial: 0}, {"t": d, dial: 1}]   # noqa: E731
+    assert "streak-fast" in rules(sp({"type": "motion_streak", "text": "x"}, k("p", 0.15)))
+    assert "streak-fast" not in rules(sp({"type": "motion_streak", "text": "x"}, k("p", 0.6)))
+    assert "drop-too-fast" in rules(sp({"type": "motion_drop", "text": "A long headline here"}, k("p", 0.2)))
+    assert "drop-too-fast" not in rules(sp({"type": "motion_drop", "text": "Bounce"}, k("p", 1.2)))
+    assert "reveal-fast" in rules(sp({"type": "motion_reveal", "text": "x"}, k("p", 0.2)))
+    assert "reveal-busy" in rules(sp({"type": "motion_reveal", "text": "x", "mode": "halftone"}, k("p", 0.7)))
+    assert "spin-fast" in rules(sp({"type": "motion_wrap", "text": "x", "turns": 3}, k("s", 1)))
+    assert {"vestibular-spin"} <= rules(sp({"type": "motion_wrap", "text": "x"}, k("s", 3)))
+    assert "spin-fast" not in rules(sp({"type": "motion_wrap", "text": "x"}, k("s", 3)))
+    assert "wave-fast" in rules(sp({"type": "motion_flag", "text": "x", "cycles": 6}, k("s", 1.5)))
+    assert "wave-fast" not in rules(sp({"type": "motion_flag", "text": "x"}, k("s", 2)))
+    assert "foil-fast" in rules(sp({"type": "motion_foil", "text": "x"}, k("s", 0.1)))
+    assert "disperse-fast" in rules(sp({"type": "motion_disperse", "text": "x"}, k("s", 0.1)))

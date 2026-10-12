@@ -675,3 +675,77 @@ def test_tabs_underline_slides_from_first_to_last(core_js):
     js = "var t=document.querySelector('[data-mt-id=tb] > div');var u=t.lastElementChild.getBoundingClientRect(),r=t.getBoundingClientRect();return Math.round((u.left-r.left)/r.width*100);"
     a, m, z = (_probe_gas(core_js, _ps(blk, "tb", p=1, s=v), 1, js) for v in (0, 0.5, 1))
     assert a < m < z and abs(a - 4) <= 1 and abs(z - 79) <= 1, (a, m, z)
+
+
+# ── showpiece pack: foil, wrap, drop, flag, disperse, reveal, streak ─────────────────────────────────────────────────────────────────────────────
+
+
+@browser
+def test_drop_letters_land_exactly_at_p1_and_are_displaced_before(core_js):
+    for mode in ("bounce", "spring", "rain", "pile", "rise", "swing"):
+        blk = {"type": "motion_drop", "text": "land", "mode": mode, "height": 120}
+        js = "var o=[];document.querySelectorAll('[data-mt-id=dr] span[aria-hidden] span').forEach(function(s){var m=new DOMMatrix(getComputedStyle(s).transform);o.push(Math.abs(m.e)+Math.abs(m.f)+Math.abs(m.a-1)+Math.abs(m.b));});return o;"
+        end = _probe_gas(core_js, _ps(blk, "dr", p=1), 1, js)
+        mid = _probe_gas(core_js, _ps(blk, "dr", p=0.12), 1, js)
+        assert max(end) < 0.05, (mode, end)
+        assert max(mid) > 0.2, (mode, mid)
+
+
+@browser
+def test_flag_is_flat_at_both_ends_of_s_and_waves_between(core_js):
+    for mode in ("flag", "ripple", "ribbon", "breeze"):
+        blk = {"type": "motion_flag", "text": "wave me", "mode": mode, "amp": 30}
+        js = "var o=[];document.querySelectorAll('[data-mt-id=fg] span[aria-hidden] span').forEach(function(s){var m=new DOMMatrix(getComputedStyle(s).transform);o.push(Math.abs(m.f));});return Math.max.apply(null,o);"
+        a, m, z = (_probe_gas(core_js, _ps(blk, "fg", p=1, s=v), 1, js) for v in (0, 0.5, 1))
+        assert a < 0.5 and z < 0.5 and m > 3, (mode, a, m, z)
+
+
+@browser
+def test_disperse_is_whole_at_s0_and_gone_at_s1(core_js):
+    for mode in ("smoke", "shatter", "rise", "sink", "implode", "explode", "wind", "evaporate"):
+        blk = {"type": "motion_disperse", "text": "leave", "mode": mode}
+        js = "var o=[];document.querySelectorAll('[data-mt-id=dp] span[aria-hidden] span').forEach(function(s){o.push(parseFloat(getComputedStyle(s).opacity));});return [Math.min.apply(null,o),Math.max.apply(null,o)];"
+        a = _probe_gas(core_js, _ps(blk, "dp", p=1, s=0), 1, js)
+        z = _probe_gas(core_js, _ps(blk, "dp", p=1, s=1), 1, js)
+        assert a[0] > 0.99, (mode, a)
+        assert z[1] < 0.01, (mode, z)
+
+
+@browser
+def test_reveal_mask_opens_with_p(core_js):
+    for mode in ("blinds", "slats", "iris", "clock", "halftone", "searchlight", "laser", "soft", "diagonal"):
+        blk = {"type": "motion_reveal", "text": "open up", "mode": mode}
+        js = "var s=document.querySelector('[data-mt-id=rv] > div > span');var c=getComputedStyle(s);return c.webkitMaskImage||c.maskImage||'';"
+        a = _probe_gas(core_js, _ps(blk, "rv", p=0), 1, js)
+        z = _probe_gas(core_js, _ps(blk, "rv", p=1), 1, js)
+        assert a and z and a != z, (mode, a, z)
+    blk = {"type": "motion_reveal", "text": "open up", "mode": "diamond"}
+    js = "return getComputedStyle(document.querySelector('[data-mt-id=rv] > div > span')).clipPath;"
+    assert _probe_gas(core_js, _ps(blk, "rv", p=0), 1, js) != _probe_gas(core_js, _ps(blk, "rv", p=1), 1, js)
+
+
+@browser
+def test_wrap_full_turn_returns_to_start_and_mid_turn_does_not(core_js):
+    for form in ("cylinder", "wheel", "helix", "ribbon"):
+        blk = {"type": "motion_wrap", "text": "spin", "form": form}
+        js = "var r=document.querySelector('[data-mt-id=wr] [aria-hidden=true] [aria-hidden=true]').getBoundingClientRect();return [Math.round(r.left),Math.round(r.top)];"
+        a, m, z = (_probe_gas(core_js, _ps(blk, "wr", p=1, s=v), 1, js) for v in (0, 0.25, 1))
+        assert abs(a[0] - z[0]) <= 1 and abs(a[1] - z[1]) <= 1, (form, a, z)
+        assert m != a, (form, a, m)
+
+
+@browser
+def test_streak_ghosts_vanish_at_p1(core_js):
+    blk = {"type": "motion_streak", "text": "whip", "ghosts": 4}
+    js = "var g=document.querySelectorAll('[data-mt-id=sk] span[aria-hidden] > span');var o=[];g.forEach(function(s){o.push(parseFloat(getComputedStyle(s).opacity));});return o.slice(0,-1);"
+    end = _probe_gas(core_js, _ps(blk, "sk", p=1), 1, js)
+    mid = _probe_gas(core_js, _ps(blk, "sk", p=0.5), 1, js)
+    assert max(end) < 0.01 and max(mid) > 0.05, (end, mid)
+
+
+@browser
+def test_foil_light_band_travels_with_s_and_text_stays_filled(core_js):
+    blk = {"type": "motion_foil", "text": "SHINE", "look": "gold"}
+    js = "var s=document.querySelector('[data-mt-id=fl] span');var c=getComputedStyle(s);return [c.backgroundPositionX,c.backgroundPositionY,c.webkitTextFillColor,parseFloat(c.opacity)];"
+    a, z = (_probe_gas(core_js, _ps(blk, "fl", p=1, s=v), 1, js) for v in (0, 1))
+    assert a[0] != z[0] and a[2] == "rgba(0, 0, 0, 0)" and a[3] == 1, (a, z)

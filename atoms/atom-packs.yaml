@@ -365,6 +365,13 @@ a2ui-effects-v1:
 - motion_blueprint
 - motion_tracking
 - motion_tabs
+- motion_foil
+- motion_wrap
+- motion_drop
+- motion_flag
+- motion_disperse
+- motion_reveal
+- motion_streak
 - motion_orbit
 - motion_code
 - motion_mark

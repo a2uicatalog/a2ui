@@ -557,3 +557,156 @@ _RENDERERS['motion_tabs'] = function(b) {
   return '<div style="position:relative;display:grid;grid-template-columns:repeat(' + n + ',1fr);width:100%;font-size:' + size + 'px;font-weight:600;color:' + ink + ';border-bottom:1px solid ' + ink + '33;opacity:clamp(0,calc(var(--p,1)*4),1);">' + cells +
     '<span aria-hidden="true" style="position:absolute;bottom:-1px;height:3px;border-radius:2px;background:' + acc + ';width:calc(70%/' + n + ');left:calc((' + pos + ' + 0.15)*100%/' + n + ');"></span></div>';
 };
+
+// ── showpiece pack (2026-10-12): foil, wrap, drop, flag, disperse, reveal, streak ───────────────────────────────────────────────────────────────
+// Seven text atoms for the cinematic end of the range, each with many looks behind enums. Same rules as the rest: every value is an enum or a clamped number, the words are
+// real text, every dial defaults to the finished picture (so a standalone render is readable), motion is the film's p (builds) and s (steps), nothing loops or flashes.
+function _tfBase(b, size0) {
+  return {font: _ffPick(b.font, _FF_FONTS, 'sans'), weight: _ffPick(b.weight, _FF_WEIGHTS, 'bold'), size: _ffInt(b.size, size0, 10, 300), color: _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align: _ffPick(b.align, _MO_ALIGN, 'middle')};
+}
+function _tfBox(f, inner, extra) {
+  return 'font-family:' + f.font + ';font-weight:' + f.weight + ';font-size:' + f.size + 'px;line-height:1.1;white-space:nowrap;color:' + f.color + ';text-align:' + f.align + ';' + (extra || '');
+}
+function _tfOrder(n, mode, seed) {
+  var m = [], i; for (i = 0; i < n; i++) m.push(i);
+  if (mode === 'reverse') return m.map(function(x) { return n - 1 - x; });
+  var idx = m.slice(), c = (n - 1) / 2;
+  if (mode === 'centre') idx.sort(function(a, d) { return (Math.abs(a - c) - Math.abs(d - c)) || (a - d); });
+  else if (mode === 'random') idx.sort(function(a, d) { return (_bxSeed(seed, a, 9) - _bxSeed(seed, d, 9)) || (a - d); });
+  else return m;
+  idx.forEach(function(t, r) { m[t] = r; });
+  return m;
+}
+var _TF_ORDER = {forward: 'forward', reverse: 'reverse', centre: 'centre', random: 'random'};
+
+// motion_foil: a metallic or iridescent gradient fills the letters and a band of light sweeps through them with the step dial.
+var _FL_LOOK = {
+  chrome: ['linear-gradient(180deg,#f8fafc 0%,#94a3b8 44%,#f1f5f9 50%,#334155 56%,#cbd5e1 100%)', '#ffffff'],
+  gold: ['linear-gradient(180deg,#fff3b0 0%,#d4a017 44%,#fff0a0 50%,#8a5a00 58%,#f6d365 100%)', '#fffbe0'],
+  silver: ['linear-gradient(180deg,#ffffff 0%,#b8c0cc 48%,#eef2f7 52%,#8a94a3 100%)', '#ffffff'],
+  copper: ['linear-gradient(180deg,#ffd9b8 0%,#c8754b 45%,#ffcfa6 50%,#7a3b1d 60%,#e29a6b 100%)', '#fff0e0'],
+  holo: ['linear-gradient(110deg,#ff9ad5,#9ad1ff,#b6ff9a,#ffe39a,#ff9ad5)', '#ffffff'],
+  rainbow: ['linear-gradient(90deg,#ff4d4d,#ffb84d,#fff94d,#4dff88,#4db8ff,#a64dff)', '#ffffff'],
+  aurora: ['linear-gradient(120deg,#34e0c3,#6d6af7,#ff5ea8)', '#e8fffb'],
+  ice: ['linear-gradient(180deg,#e0f7ff,#7ac7ff 55%,#d8f0ff)', '#ffffff'],
+  oil: ['linear-gradient(135deg,#1b1b2f,#3a1c71,#d76d77,#ffaf7b,#1b1b2f)', '#ffe9d6'],
+  mono: ['linear-gradient(180deg,currentColor,currentColor)', '#ffffff']
+};
+var _FL_DIR = {ltr: [100, 0, 0], rtl: [100, 0, 1], diagonal: [135, 0, 0], down: [180, 1, 0], up: [180, 1, 1]};
+_RENDERERS['motion_foil'] = function(b) {
+  var text = _moStr(b.text, 60) || 'Text', f = _tfBase(b, 72), lk = _ffPick(b.look, _FL_LOOK, 'chrome'), dr = _ffPick(b.direction, _FL_DIR, 'ltr'), bands = _ffInt(b.bands, 1, 1, 3), hw = _ffInt(b.width, 10, 3, 30) / 2;
+  var sh = _moInk(b, 'sheen', lk[1]), cs = bands === 1 ? [50] : bands === 2 ? [40, 60] : [30, 50, 70], g = 'linear-gradient(' + dr[0] + 'deg,transparent 0%', i;
+  for (i = 0; i < cs.length; i++) g += ',transparent ' + _ifFmt(cs[i] - hw) + '%,' + sh + ' ' + cs[i] + '%,transparent ' + _ifFmt(cs[i] + hw) + '%';
+  g += ',transparent 100%)';
+  var pos = dr[2] ? 'clamp(0,var(--s,1),1)' : '(1 - clamp(0,var(--s,1),1))';
+  return '<div style="' + _tfBox(f) + '"><span style="display:inline-block;background-image:' + g + ',' + lk[0] + ';background-size:' + (dr[1] ? '100% 300%' : '300% 100%') + ',100% 100%;background-position:' +
+    (dr[1] ? '0 calc(' + pos + '*100%)' : 'calc(' + pos + '*100%) 0') + ',0 0;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;opacity:clamp(0,calc(var(--p,1)*4),1);">' + _esc(text) + '</span></div>';
+};
+
+// motion_wrap: letters set on a 3D form that turns with the step dial: a cylinder, a wheel, a helix or a swaying ribbon. Letters at the back dim. The words are the accessible name.
+var _WR_FORM = {cylinder: 'cylinder', wheel: 'wheel', helix: 'helix', ribbon: 'ribbon'};
+_RENDERERS['motion_wrap'] = function(b) {
+  var text = _moStr(b.text, 40) || 'Text', f = _tfBase(b, 56), form = _ffPick(b.form, _WR_FORM, 'cylinder'), arc = _ffInt(b.arc, 360, 60, 360), R = _ffInt(b.radius, 220, 60, 800), turns = _ffInt(b.turns, 1, -3, 3), lean = _ffInt(b.lean, -10, -45, 45);
+  var base = Array.from(arc >= 300 ? text + ' · ' : text), chars = [], i; while (chars.length < (arc >= 300 ? 14 : 1)) chars = chars.concat(base);
+  chars = chars.slice(0, 48); var N = chars.length, step = arc / N, rot = 'calc(var(--s,1)*' + (turns * 360) + 'deg)', out = '';
+  for (i = 0; i < N; i++) {
+    var th = _ifFmt((i - (N - 1) / 2) * step), phi = 'calc(' + th + 'deg + ' + rot + ')', front = 'clamp(0,calc((cos(' + phi + ') + 1)*0.7 - 0.2),1)', tf;
+    if (form === 'wheel') tf = 'rotateX(' + th + 'deg) translateZ(' + R + 'px)';
+    else if (form === 'helix') tf = 'translateY(' + _ifFmt((i - (N - 1) / 2) * f.size * 0.26) + 'px) rotateY(' + th + 'deg) translateZ(' + R + 'px)';
+    else if (form === 'ribbon') tf = 'translateY(calc(sin(calc(' + th + 'deg*2 + ' + rot + '))*' + _ifFmt(f.size * 0.4) + 'px)) rotateY(' + th + 'deg) translateZ(' + R + 'px)';
+    else tf = 'rotateY(' + th + 'deg) translateZ(' + R + 'px)';
+    out += '<span aria-hidden="true" style="position:absolute;left:50%;top:50%;margin:-0.55em 0 0 -0.3em;white-space:pre;transform:' + tf + ';opacity:calc(' + front + '*clamp(0,calc(var(--p,1)*3),1));">' + _esc(chars[i]) + '</span>';
+  }
+  var spin = form === 'wheel' ? 'rotateX(calc(' + lean + 'deg)) rotateY(0deg) rotateX(' + rot + ')' : 'rotateX(' + lean + 'deg) rotateY(' + rot + ')';
+  return '<div role="img" aria-label="' + _esc(text) + '" style="position:relative;width:100%;height:' + Math.round(f.size * 2.6 + (form === 'wheel' ? R * 0.2 : 0)) + 'px;perspective:1100px;overflow:visible;' + _tfBox(f) + '">' +
+    '<span aria-hidden="true" style="position:absolute;inset:0;transform-style:preserve-3d;transform:scale(calc(0.7 + 0.3*clamp(0,var(--p,1),1))) ' + spin + ';">' + out + '</span></div>';
+};
+
+// motion_drop: letters fall, toss, spring or swing into place, one after another with p; each letter's motion is a pure function of p, so it can be sought.
+var _DR_MODE = {bounce: 'bounce', spring: 'spring', rain: 'rain', pile: 'pile', rise: 'rise', swing: 'swing'};
+_RENDERERS['motion_drop'] = function(b) {
+  var text = _moStr(b.text, 48) || 'Text', f = _tfBase(b, 64), mode = _ffPick(b.mode, _DR_MODE, 'bounce'), H = _ffInt(b.height, 200, 20, 800), B = _ffInt(b.bounces, 3, 1, 8), S = _ffInt(b.overlap, 3, 1, 8), seed = _ffInt(b.seed, 3, 0, 999), ord = _ffPick(b.order, _TF_ORDER, 'forward');
+  var chars = Array.from(text), N = chars.length, om = _tfOrder(N, ord, seed), out = '', i;
+  for (i = 0; i < N; i++) {
+    var u = 'clamp(0,calc((var(--p,1)*' + (N + S) + ' - ' + om[i] + ')/' + S + '),1)', e = 'calc(1 - var(--u))', tf, op = 'clamp(0,calc(var(--u)*6),1)', org = '';
+    var rs = _ifFmt((_bxSeed(seed, i, 3) - 0.5) * 80), xs = _ifFmt((_bxSeed(seed, i, 5) - 0.5) * f.size * 4);
+    if (mode === 'bounce') tf = 'translateY(calc(-' + H + 'px*' + e + '*' + e + '*abs(cos(calc(var(--u)*' + B + '*3.14159rad))))) scaleY(calc(1 - 0.3*clamp(0,calc(1 - abs(cos(calc(var(--u)*' + B + '*3.14159rad)))*8),1)*' + e + '))';
+    else if (mode === 'spring') tf = 'translateY(calc(-' + H + 'px*' + e + '*cos(calc(var(--u)*' + B + '*6.28318rad))))';
+    else if (mode === 'rain') tf = 'translateY(calc(-' + H + 'px*' + e + '*' + e + '*' + e + ')) rotate(calc(' + rs + 'deg*' + e + '))';
+    else if (mode === 'pile') tf = 'translate(calc(' + xs + 'px*' + e + '*' + e + '),calc(-' + H + 'px*' + e + '*' + e + ')) rotate(calc(' + rs + 'deg*' + e + '))';
+    else if (mode === 'rise') tf = 'translate(calc(' + _ifFmt(parseFloat(xs) / 4) + 'px*' + e + '*sin(calc(var(--u)*9.42rad))),calc(' + H + 'px*' + e + '*' + e + '))';
+    else { tf = 'rotate(calc(' + _ifFmt(28 + _bxSeed(seed, i, 7) * 20) + 'deg*' + e + '*cos(calc(var(--u)*' + B + '*6.28318rad))))'; org = 'transform-origin:50% -0.15em;'; }
+    out += '<span aria-hidden="true" style="--u:' + u + ';display:inline-block;white-space:pre;' + org + 'opacity:' + op + ';transform:' + tf + ';">' + _esc(chars[i]) + '</span>';
+  }
+  return '<div style="' + _tfBox(f) + '">' + _moSr(text) + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
+};
+
+// motion_flag: the line ripples like cloth as the step dial runs: a flag pinned at one end, an even ripple or a ribbon. Flat at both ends of s; each letter also catches the light.
+var _FG_MODE = {flag: 'flag', ripple: 'ripple', ribbon: 'ribbon', breeze: 'breeze'};
+_RENDERERS['motion_flag'] = function(b) {
+  var text = _moStr(b.text, 48) || 'Text', f = _tfBase(b, 64), mode = _ffPick(b.mode, _FG_MODE, 'flag'), A = _ffInt(b.amp, 18, 2, 80), W = _ffInt(b.waves, 2, 1, 5), C = _ffInt(b.cycles, 2, 1, 6), shade = b.shade !== false, pin = b.pin === 'right' ? 'right' : 'left';
+  var chars = Array.from(text), N = chars.length, out = '', i, env = 'sin(calc(var(--s,0)*3.14159rad))';
+  for (i = 0; i < N; i++) {
+    var x = N > 1 ? i / (N - 1) : 0, fr = pin === 'right' ? 1 - x : x, ph = 'calc(' + _ifFmt(x * W * 6.28318) + 'rad - var(--s,0)*' + (C * 6.28318) + 'rad)', amp = mode === 'flag' ? A + 'px*' + _ifFmt(fr) : mode === 'breeze' ? A + 'px*' + _ifFmt(0.4 + 0.6 * _bxSeed(7, i, 1)) : A + 'px', tf;
+    var ty = 'calc(' + amp + '*' + env + '*sin(' + ph + '))', rt = 'calc(' + _ifFmt(A * 0.5 * (mode === 'flag' ? fr : 1)) + 'deg*' + env + '*cos(' + ph + '))';
+    tf = mode === 'ribbon' ? 'translateY(' + ty + ') rotateX(calc(60deg*' + env + '*sin(' + ph + '))) rotate(' + rt + ')' : 'translateY(' + ty + ') rotate(' + rt + ')';
+    out += '<span aria-hidden="true" style="display:inline-block;white-space:pre;transform:' + tf + ';' + (shade ? 'filter:brightness(calc(1 + 0.3*' + env + '*cos(' + ph + ')));' : '') + 'opacity:clamp(0,calc(var(--p,1)*' + (N + 2) + ' - ' + i + '),1);">' + _esc(chars[i]) + '</span>';
+  }
+  return '<div style="' + _tfBox(f, '', 'perspective:700px;') + '">' + _moSr(text) + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
+};
+
+// motion_disperse: the exit. With the step dial at 0 the line is whole; as it runs to 1 the letters leave in one of eight ways, each from a seeded per-letter path.
+var _DP_MODE = {smoke: 'smoke', shatter: 'shatter', rise: 'rise', sink: 'sink', implode: 'implode', explode: 'explode', wind: 'wind', evaporate: 'evaporate'};
+_RENDERERS['motion_disperse'] = function(b) {
+  var text = _moStr(b.text, 48) || 'Text', f = _tfBase(b, 64), mode = _ffPick(b.mode, _DP_MODE, 'smoke'), S = _ffInt(b.overlap, 3, 1, 8), seed = _ffInt(b.seed, 3, 0, 999), ord = _ffPick(b.order, _TF_ORDER, 'forward'), D = _ffInt(b.distance, 90, 10, 400);
+  var chars = Array.from(text), N = chars.length, om = _tfOrder(N, ord, seed), out = '', i;
+  for (i = 0; i < N; i++) {
+    var dx = (_bxSeed(seed, i, 1) - 0.5) * 2, dy = (_bxSeed(seed, i, 2) - 0.5) * 2, rr = (_bxSeed(seed, i, 3) - 0.5) * 2, c = (i - (N - 1) / 2) / Math.max(N, 1), d = 'var(--d)', tf, op = 'calc(1 - ' + d + ')', fl = '';
+    if (mode === 'smoke') { tf = 'translate(calc(' + _ifFmt(dx * D * 0.6) + 'px*' + d + '),calc(-' + D + 'px*' + d + ')) scale(calc(1 + ' + d + '*0.6))'; fl = 'filter:blur(calc(' + d + '*10px));'; }
+    else if (mode === 'shatter') { tf = 'translate(calc(' + _ifFmt(dx * D * 1.4) + 'px*' + d + '),calc(' + _ifFmt(dy * D * 1.4) + 'px*' + d + ')) rotate(calc(' + _ifFmt(rr * 200) + 'deg*' + d + '))'; }
+    else if (mode === 'rise') { tf = 'translateY(calc(-' + D + 'px*' + d + '))'; }
+    else if (mode === 'sink') { tf = 'translateY(calc(' + D + 'px*' + d + '*' + d + ')) rotate(calc(' + _ifFmt(rr * 30) + 'deg*' + d + '))'; }
+    else if (mode === 'implode') { tf = 'translateX(calc(' + _ifFmt(-c * 2 * N * f.size * 0.5) + 'px*' + d + ')) scale(calc(1 - ' + d + '))'; op = 'calc(1 - ' + d + '*' + d + ')'; }
+    else if (mode === 'explode') { tf = 'translate(calc(' + _ifFmt(dx * D * 2) + 'px*' + d + '),calc(' + _ifFmt(dy * D * 2) + 'px*' + d + ')) scale(calc(1 + ' + d + '*2.5))'; op = 'calc(1 - ' + d + ')'; }
+    else if (mode === 'wind') { tf = 'translate(calc(' + _ifFmt(D * 2 + dx * D * 0.5) + 'px*' + d + '),calc(' + _ifFmt(dy * D * 0.3) + 'px*' + d + ')) rotate(calc(' + _ifFmt(rr * 120) + 'deg*' + d + '))'; fl = 'filter:blur(calc(' + d + '*3px));'; }
+    else { tf = 'translateY(calc(-' + _ifFmt(D * 0.35) + 'px*' + d + ')) scaleY(calc(1 + ' + d + '*0.8))'; fl = 'filter:blur(calc(' + d + '*8px));'; op = 'calc(1 - ' + d + '*1.2)'; }
+    out += '<span aria-hidden="true" style="--d:clamp(0,calc((var(--s,0)*' + (N + S) + ' - ' + om[i] + ')/' + S + '),1);display:inline-block;white-space:pre;transform:' + tf + ';opacity:calc(' + op + '*clamp(0,calc(var(--p,1)*4),1));' + fl + '">' + _esc(chars[i]) + '</span>';
+  }
+  return '<div style="' + _tfBox(f) + '">' + _moSr(text) + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
+};
+
+// motion_reveal: the line is uncovered through a moving mask as p goes 0 to 1: ten looks (blinds, iris, diamond, clock, dots, searchlight, a laser line and soft or hard wipes).
+var _RV_MODE = {blinds: 'blinds', slats: 'slats', iris: 'iris', diamond: 'diamond', clock: 'clock', halftone: 'halftone', searchlight: 'searchlight', laser: 'laser', soft: 'soft', diagonal: 'diagonal'};
+_RENDERERS['motion_reveal'] = function(b) {
+  var raw = (typeof b.text === 'string' ? b.text : '').split('\n'), lines = [], i;
+  for (i = 0; i < raw.length && lines.length < 4; i++) { var ln = raw[i].trim().slice(0, 60); if (ln) lines.push(ln); }
+  if (!lines.length) lines = ['Text'];
+  var f = _tfBase(b, 64), mode = _ffPick(b.mode, _RV_MODE, 'blinds'), n = _ffInt(b.slats, 8, 3, 24), fe = _ffInt(b.feather, 18, 0, 40), lc = _moInk(b, 'line', '#34e0c3'), p = 'var(--p,1)', m = '', size = '', extra = '';
+  var K = 'clamp(0,' + p + ',1)';
+  if (mode === 'blinds') { m = 'linear-gradient(180deg,#000 calc(' + K + '*100%),transparent calc(' + K + '*100%))'; size = '100% ' + _ifFmt(100 / n) + '%'; }
+  else if (mode === 'slats') { m = 'linear-gradient(90deg,#000 calc(' + K + '*100%),transparent calc(' + K + '*100%))'; size = _ifFmt(100 / n) + '% 100%'; }
+  else if (mode === 'diagonal') { m = 'linear-gradient(135deg,#000 calc(' + K + '*100%),transparent calc(' + K + '*100%))'; size = _ifFmt(100 / n) + '% ' + _ifFmt(100 / n) + '%'; }
+  else if (mode === 'halftone') { m = 'radial-gradient(circle,#000 calc(' + K + '*75%),transparent calc(' + K + '*75% + 1px))'; size = _ifFmt(100 / n) + '% ' + _ifFmt(100 / (n / 2)) + '%'; }
+  else if (mode === 'iris') m = 'radial-gradient(circle at 50% 50%,#000 calc(' + K + '*75%),transparent calc(' + K + '*75% + ' + fe + '%))';
+  else if (mode === 'clock') m = 'conic-gradient(from 0deg,#000 calc(' + K + '*360deg),transparent calc(' + K + '*360deg))';
+  else if (mode === 'searchlight') m = 'radial-gradient(circle at calc(' + K + '*100%) 50%,#000 calc(' + K + '*70%),transparent calc(' + K + '*70% + ' + (fe + 12) + '%))';
+  else if (mode === 'laser') m = 'linear-gradient(90deg,#000 calc(' + K + '*100%),transparent calc(' + K + '*100%))';
+  else m = 'linear-gradient(90deg,#000 calc(' + K + '*(100% + ' + fe + '%) - ' + fe + '%),transparent calc(' + K + '*(100% + ' + fe + '%)))';
+  var msk = 'mask-image:' + m + ';-webkit-mask-image:' + m + ';' + (size ? 'mask-size:' + size + ';-webkit-mask-size:' + size + ';' : '');
+  if (mode === 'diamond') { msk = 'clip-path:polygon(50% calc(50% - ' + K + '*75%),calc(50% + ' + K + '*75%) 50%,50% calc(50% + ' + K + '*75%),calc(50% - ' + K + '*75%) 50%);'; }
+  var body = lines.map(function(l) { return _esc(l); }).join('<br>');
+  if (mode === 'laser') extra = '<span aria-hidden="true" style="position:absolute;top:-4%;bottom:-4%;left:calc(' + K + '*100%);width:2px;margin-left:-1px;background:' + lc + ';box-shadow:0 0 14px 4px ' + lc + ';opacity:clamp(0,calc(1 - ' + K + '*1.1),1)"></span>';
+  return '<div style="position:relative;' + _tfBox(f) + '"><span style="display:inline-block;' + msk + '">' + body + '</span>' + extra + '</div>';
+};
+
+// motion_streak: the line whips in from one side leaving ghost copies behind it, which fade as it settles; the cheap CSS stand-in for a motion blur.
+var _SK_DIR = {left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1], diagonal: [-1, -1]};
+_RENDERERS['motion_streak'] = function(b) {
+  var text = _moStr(b.text, 60) || 'Text', f = _tfBase(b, 72), dr = _ffPick(b.direction, _SK_DIR, 'left'), G = _ffInt(b.ghosts, 5, 2, 10), D = _ffNum(b.distance, 6, 1, 14, 1), tint = _moInk(b, 'tint', ''), k = 'clamp(0,var(--p,1),1)', e = '(1 - ' + k + ')', out = '', i;
+  for (i = 1; i <= G; i++) {
+    var fr = _ifFmt(i / G);
+    out += '<span aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;' + (tint ? 'color:' + tint + ';' : '') + 'transform:translate(calc(' + dr[0] + '*' + D + 'em*' + e + '*(1 + ' + fr + '*0.7)),calc(' + dr[1] + '*' + D + 'em*' + e + '*(1 + ' + fr + '*0.7)));opacity:calc(' + _ifFmt(0.5 * (1 - i / (G + 1))) + '*' + e + '*clamp(0,calc(' + k + '*6),1));filter:blur(calc(' + _ifFmt(i * 0.6) + 'px*' + e + '));">' + _esc(text) + '</span>';
+  }
+  return '<div style="' + _tfBox(f) + '">' + _moSr(text) + '<span aria-hidden="true" style="position:relative;display:inline-block;white-space:nowrap;">' + out +
+    '<span style="position:relative;display:inline-block;transform:translate(calc(' + dr[0] + '*' + D + 'em*' + e + '),calc(' + dr[1] + '*' + D + 'em*' + e + '));opacity:clamp(0,calc(' + k + '*4),1);">' + _esc(text) + '</span></span></div>';
+};

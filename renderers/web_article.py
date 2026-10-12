@@ -32054,6 +32054,305 @@ def _render_motion_tabs(b: dict) -> str:
 for _m6_name, _m6_fn in (('motion_dotgrid', _render_motion_dotgrid), ('motion_blade', _render_motion_blade), ('motion_blueprint', _render_motion_blueprint), ('motion_tracking', _render_motion_tracking), ('motion_tabs', _render_motion_tabs)):
     _RENDERERS[_m6_name] = _m6_fn
 
+# ─── showpiece pack twins (atoms_motion_candidates.gs, 2026-10-12): foil, wrap, drop, flag, disperse, reveal, streak ───
+def _tf_base(b, size0):
+    return {'font': _ff_pick(b.get('font'), _FF_FONTS, 'sans'), 'weight': _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), 'size': _ff_int(b.get('size'), size0, 10, 300),
+            'color': _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), 'align': _ff_pick(b.get('align'), _MO_ALIGN, 'middle')}
+
+
+def _tf_box(f, extra=''):
+    return f"font-family:{f['font']};font-weight:{f['weight']};font-size:{f['size']}px;line-height:1.1;white-space:nowrap;color:{f['color']};text-align:{f['align']};{extra}"
+
+
+_TF_ORDER = {'forward': 'forward', 'reverse': 'reverse', 'centre': 'centre', 'random': 'random'}
+
+
+def _tf_order(n, mode, seed):
+    m = list(range(n))
+    if mode == 'reverse':
+        return [n - 1 - x for x in m]
+    c = (n - 1) / 2
+    if mode == 'centre':
+        idx = sorted(m, key=lambda a: (abs(a - c), a))
+    elif mode == 'random':
+        idx = sorted(m, key=lambda a: (_bx_seed(seed, a, 9), a))
+    else:
+        return m
+    for r, t in enumerate(idx):
+        m[t] = r
+    return m
+
+
+_FL_LOOK = {
+    'chrome': ['linear-gradient(180deg,#f8fafc 0%,#94a3b8 44%,#f1f5f9 50%,#334155 56%,#cbd5e1 100%)', '#ffffff'],
+    'gold': ['linear-gradient(180deg,#fff3b0 0%,#d4a017 44%,#fff0a0 50%,#8a5a00 58%,#f6d365 100%)', '#fffbe0'],
+    'silver': ['linear-gradient(180deg,#ffffff 0%,#b8c0cc 48%,#eef2f7 52%,#8a94a3 100%)', '#ffffff'],
+    'copper': ['linear-gradient(180deg,#ffd9b8 0%,#c8754b 45%,#ffcfa6 50%,#7a3b1d 60%,#e29a6b 100%)', '#fff0e0'],
+    'holo': ['linear-gradient(110deg,#ff9ad5,#9ad1ff,#b6ff9a,#ffe39a,#ff9ad5)', '#ffffff'],
+    'rainbow': ['linear-gradient(90deg,#ff4d4d,#ffb84d,#fff94d,#4dff88,#4db8ff,#a64dff)', '#ffffff'],
+    'aurora': ['linear-gradient(120deg,#34e0c3,#6d6af7,#ff5ea8)', '#e8fffb'],
+    'ice': ['linear-gradient(180deg,#e0f7ff,#7ac7ff 55%,#d8f0ff)', '#ffffff'],
+    'oil': ['linear-gradient(135deg,#1b1b2f,#3a1c71,#d76d77,#ffaf7b,#1b1b2f)', '#ffe9d6'],
+    'mono': ['linear-gradient(180deg,currentColor,currentColor)', '#ffffff'],
+}
+_FL_DIR = {'ltr': [100, 0, 0], 'rtl': [100, 0, 1], 'diagonal': [135, 0, 0], 'down': [180, 1, 0], 'up': [180, 1, 1]}
+
+
+def _render_motion_foil(b: dict) -> str:
+    text = _cv_str(b.get('text'), 60) or 'Text'
+    f = _tf_base(b, 72)
+    lk = _ff_pick(b.get('look'), _FL_LOOK, 'chrome')
+    dr = _ff_pick(b.get('direction'), _FL_DIR, 'ltr')
+    bands = _ff_int(b.get('bands'), 1, 1, 3)
+    hw = _ff_int(b.get('width'), 10, 3, 30) / 2
+    sh = _mo_ink(b, 'sheen', lk[1])
+    cs = [50] if bands == 1 else [40, 60] if bands == 2 else [30, 50, 70]
+    g = f'linear-gradient({dr[0]}deg,transparent 0%'
+    for c in cs:
+        g += f',transparent {_if_fmt(c - hw)}%,{sh} {c}%,transparent {_if_fmt(c + hw)}%'
+    g += ',transparent 100%)'
+    pos = 'clamp(0,var(--s,1),1)' if dr[2] else '(1 - clamp(0,var(--s,1),1))'
+    return (f'<div style="{_tf_box(f)}"><span style="display:inline-block;background-image:{g},{lk[0]};background-size:' + ('100% 300%' if dr[1] else '300% 100%') + ',100% 100%;background-position:' +
+            (f'0 calc({pos}*100%)' if dr[1] else f'calc({pos}*100%) 0') + ',0 0;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;opacity:clamp(0,calc(var(--p,1)*4),1);">' + _cv_esc(text) + '</span></div>')
+
+
+_WR_FORM = {'cylinder': 'cylinder', 'wheel': 'wheel', 'helix': 'helix', 'ribbon': 'ribbon'}
+
+
+def _render_motion_wrap(b: dict) -> str:
+    text = _cv_str(b.get('text'), 40) or 'Text'
+    f = _tf_base(b, 56)
+    form = _ff_pick(b.get('form'), _WR_FORM, 'cylinder')
+    arc = _ff_int(b.get('arc'), 360, 60, 360)
+    R = _ff_int(b.get('radius'), 220, 60, 800)
+    turns = _ff_int(b.get('turns'), 1, -3, 3)
+    lean = _ff_int(b.get('lean'), -10, -45, 45)
+    base = list(text + ' · ' if arc >= 300 else text)
+    chars = []
+    while len(chars) < (14 if arc >= 300 else 1):
+        chars = chars + base
+    chars = chars[:48]
+    N = len(chars)
+    step = arc / N
+    rot = f'calc(var(--s,1)*{turns * 360}deg)'
+    out = ''
+    for i in range(N):
+        th = _if_fmt((i - (N - 1) / 2) * step)
+        phi = f'calc({th}deg + {rot})'
+        front = f'clamp(0,calc((cos({phi}) + 1)*0.7 - 0.2),1)'
+        if form == 'wheel':
+            tf = f'rotateX({th}deg) translateZ({R}px)'
+        elif form == 'helix':
+            tf = f'translateY({_if_fmt((i - (N - 1) / 2) * f["size"] * 0.26)}px) rotateY({th}deg) translateZ({R}px)'
+        elif form == 'ribbon':
+            tf = f'translateY(calc(sin(calc({th}deg*2 + {rot}))*{_if_fmt(f["size"] * 0.4)}px)) rotateY({th}deg) translateZ({R}px)'
+        else:
+            tf = f'rotateY({th}deg) translateZ({R}px)'
+        out += f'<span aria-hidden="true" style="position:absolute;left:50%;top:50%;margin:-0.55em 0 0 -0.3em;white-space:pre;transform:{tf};opacity:calc({front}*clamp(0,calc(var(--p,1)*3),1));">{_cv_esc(chars[i])}</span>'
+    spin = f'rotateX(calc({lean}deg)) rotateY(0deg) rotateX({rot})' if form == 'wheel' else f'rotateX({lean}deg) rotateY({rot})'
+    hgt = _if_round(f['size'] * 2.6 + (R * 0.2 if form == 'wheel' else 0))
+    return (f'<div role="img" aria-label="{_cv_esc(text)}" style="position:relative;width:100%;height:{hgt}px;perspective:1100px;overflow:visible;{_tf_box(f)}">'
+            f'<span aria-hidden="true" style="position:absolute;inset:0;transform-style:preserve-3d;transform:scale(calc(0.7 + 0.3*clamp(0,var(--p,1),1))) {spin};">{out}</span></div>')
+
+
+_DR_MODE = {'bounce': 'bounce', 'spring': 'spring', 'rain': 'rain', 'pile': 'pile', 'rise': 'rise', 'swing': 'swing'}
+
+
+def _render_motion_drop(b: dict) -> str:
+    text = _cv_str(b.get('text'), 48) or 'Text'
+    f = _tf_base(b, 64)
+    mode = _ff_pick(b.get('mode'), _DR_MODE, 'bounce')
+    H = _ff_int(b.get('height'), 200, 20, 800)
+    B = _ff_int(b.get('bounces'), 3, 1, 8)
+    S = _ff_int(b.get('overlap'), 3, 1, 8)
+    seed = _ff_int(b.get('seed'), 3, 0, 999)
+    ordm = _ff_pick(b.get('order'), _TF_ORDER, 'forward')
+    chars = list(text)
+    N = len(chars)
+    om = _tf_order(N, ordm, seed)
+    out = ''
+    for i in range(N):
+        u = f'clamp(0,calc((var(--p,1)*{N + S} - {om[i]})/{S}),1)'
+        e = 'calc(1 - var(--u))'
+        op = 'clamp(0,calc(var(--u)*6),1)'
+        org = ''
+        rs = _if_fmt((_bx_seed(seed, i, 3) - 0.5) * 80)
+        xs = _if_fmt((_bx_seed(seed, i, 5) - 0.5) * f['size'] * 4)
+        if mode == 'bounce':
+            tf = f'translateY(calc(-{H}px*{e}*{e}*abs(cos(calc(var(--u)*{B}*3.14159rad))))) scaleY(calc(1 - 0.3*clamp(0,calc(1 - abs(cos(calc(var(--u)*{B}*3.14159rad)))*8),1)*{e}))'
+        elif mode == 'spring':
+            tf = f'translateY(calc(-{H}px*{e}*cos(calc(var(--u)*{B}*6.28318rad))))'
+        elif mode == 'rain':
+            tf = f'translateY(calc(-{H}px*{e}*{e}*{e})) rotate(calc({rs}deg*{e}))'
+        elif mode == 'pile':
+            tf = f'translate(calc({xs}px*{e}*{e}),calc(-{H}px*{e}*{e})) rotate(calc({rs}deg*{e}))'
+        elif mode == 'rise':
+            tf = f'translate(calc({_if_fmt(float(xs) / 4)}px*{e}*sin(calc(var(--u)*9.42rad))),calc({H}px*{e}*{e}))'
+        else:
+            tf = f'rotate(calc({_if_fmt(28 + _bx_seed(seed, i, 7) * 20)}deg*{e}*cos(calc(var(--u)*{B}*6.28318rad))))'
+            org = 'transform-origin:50% -0.15em;'
+        out += f'<span aria-hidden="true" style="--u:{u};display:inline-block;white-space:pre;{org}opacity:{op};transform:{tf};">{_cv_esc(chars[i])}</span>'
+    return f'<div style="{_tf_box(f)}">{_mo_sr(text)}<span aria-hidden="true" style="display:block;">{out}</span></div>'
+
+
+_FG_MODE = {'flag': 'flag', 'ripple': 'ripple', 'ribbon': 'ribbon', 'breeze': 'breeze'}
+
+
+def _render_motion_flag(b: dict) -> str:
+    text = _cv_str(b.get('text'), 48) or 'Text'
+    f = _tf_base(b, 64)
+    mode = _ff_pick(b.get('mode'), _FG_MODE, 'flag')
+    A = _ff_int(b.get('amp'), 18, 2, 80)
+    W = _ff_int(b.get('waves'), 2, 1, 5)
+    C = _ff_int(b.get('cycles'), 2, 1, 6)
+    shade = b.get('shade') is not False
+    pin = 'right' if b.get('pin') == 'right' else 'left'
+    chars = list(text)
+    N = len(chars)
+    out = ''
+    env = 'sin(calc(var(--s,0)*3.14159rad))'
+    for i in range(N):
+        x = i / (N - 1) if N > 1 else 0
+        fr = 1 - x if pin == 'right' else x
+        ph = f'calc({_if_fmt(x * W * 6.28318)}rad - var(--s,0)*{C * 6.28318}rad)'
+        amp = f'{A}px*{_if_fmt(fr)}' if mode == 'flag' else f'{A}px*{_if_fmt(0.4 + 0.6 * _bx_seed(7, i, 1))}' if mode == 'breeze' else f'{A}px'
+        ty = f'calc({amp}*{env}*sin({ph}))'
+        rt = f'calc({_if_fmt(A * 0.5 * (fr if mode == "flag" else 1))}deg*{env}*cos({ph}))'
+        tf = f'translateY({ty}) rotateX(calc(60deg*{env}*sin({ph}))) rotate({rt})' if mode == 'ribbon' else f'translateY({ty}) rotate({rt})'
+        out += (f'<span aria-hidden="true" style="display:inline-block;white-space:pre;transform:{tf};' + (f'filter:brightness(calc(1 + 0.3*{env}*cos({ph})));' if shade else '') +
+                f'opacity:clamp(0,calc(var(--p,1)*{N + 2} - {i}),1);">{_cv_esc(chars[i])}</span>')
+    return f'<div style="{_tf_box(f, "perspective:700px;")}">{_mo_sr(text)}<span aria-hidden="true" style="display:block;">{out}</span></div>'
+
+
+_DP_MODE = {'smoke': 'smoke', 'shatter': 'shatter', 'rise': 'rise', 'sink': 'sink', 'implode': 'implode', 'explode': 'explode', 'wind': 'wind', 'evaporate': 'evaporate'}
+
+
+def _render_motion_disperse(b: dict) -> str:
+    text = _cv_str(b.get('text'), 48) or 'Text'
+    f = _tf_base(b, 64)
+    mode = _ff_pick(b.get('mode'), _DP_MODE, 'smoke')
+    S = _ff_int(b.get('overlap'), 3, 1, 8)
+    seed = _ff_int(b.get('seed'), 3, 0, 999)
+    ordm = _ff_pick(b.get('order'), _TF_ORDER, 'forward')
+    D = _ff_int(b.get('distance'), 90, 10, 400)
+    chars = list(text)
+    N = len(chars)
+    om = _tf_order(N, ordm, seed)
+    out = ''
+    for i in range(N):
+        dx = (_bx_seed(seed, i, 1) - 0.5) * 2
+        dy = (_bx_seed(seed, i, 2) - 0.5) * 2
+        rr = (_bx_seed(seed, i, 3) - 0.5) * 2
+        c = (i - (N - 1) / 2) / max(N, 1)
+        d = 'var(--d)'
+        op = f'calc(1 - {d})'
+        fl = ''
+        if mode == 'smoke':
+            tf = f'translate(calc({_if_fmt(dx * D * 0.6)}px*{d}),calc(-{D}px*{d})) scale(calc(1 + {d}*0.6))'
+            fl = f'filter:blur(calc({d}*10px));'
+        elif mode == 'shatter':
+            tf = f'translate(calc({_if_fmt(dx * D * 1.4)}px*{d}),calc({_if_fmt(dy * D * 1.4)}px*{d})) rotate(calc({_if_fmt(rr * 200)}deg*{d}))'
+        elif mode == 'rise':
+            tf = f'translateY(calc(-{D}px*{d}))'
+        elif mode == 'sink':
+            tf = f'translateY(calc({D}px*{d}*{d})) rotate(calc({_if_fmt(rr * 30)}deg*{d}))'
+        elif mode == 'implode':
+            tf = f'translateX(calc({_if_fmt(-c * 2 * N * f["size"] * 0.5)}px*{d})) scale(calc(1 - {d}))'
+            op = f'calc(1 - {d}*{d})'
+        elif mode == 'explode':
+            tf = f'translate(calc({_if_fmt(dx * D * 2)}px*{d}),calc({_if_fmt(dy * D * 2)}px*{d})) scale(calc(1 + {d}*2.5))'
+            op = f'calc(1 - {d})'
+        elif mode == 'wind':
+            tf = f'translate(calc({_if_fmt(D * 2 + dx * D * 0.5)}px*{d}),calc({_if_fmt(dy * D * 0.3)}px*{d})) rotate(calc({_if_fmt(rr * 120)}deg*{d}))'
+            fl = f'filter:blur(calc({d}*3px));'
+        else:
+            tf = f'translateY(calc(-{_if_fmt(D * 0.35)}px*{d})) scaleY(calc(1 + {d}*0.8))'
+            fl = f'filter:blur(calc({d}*8px));'
+            op = f'calc(1 - {d}*1.2)'
+        out += (f'<span aria-hidden="true" style="--d:clamp(0,calc((var(--s,0)*{N + S} - {om[i]})/{S}),1);display:inline-block;white-space:pre;transform:{tf};opacity:calc({op}*clamp(0,calc(var(--p,1)*4),1));{fl}">{_cv_esc(chars[i])}</span>')
+    return f'<div style="{_tf_box(f)}">{_mo_sr(text)}<span aria-hidden="true" style="display:block;">{out}</span></div>'
+
+
+_RV_MODE = {'blinds': 'blinds', 'slats': 'slats', 'iris': 'iris', 'diamond': 'diamond', 'clock': 'clock', 'halftone': 'halftone', 'searchlight': 'searchlight', 'laser': 'laser', 'soft': 'soft', 'diagonal': 'diagonal'}
+
+
+def _render_motion_reveal(b: dict) -> str:
+    raw = (b.get('text') if isinstance(b.get('text'), str) else '').split('\n')
+    lines = []
+    for r in raw:
+        if len(lines) >= 4:
+            break
+        ln = r.strip()[:60]
+        if ln:
+            lines.append(ln)
+    if not lines:
+        lines = ['Text']
+    f = _tf_base(b, 64)
+    mode = _ff_pick(b.get('mode'), _RV_MODE, 'blinds')
+    n = _ff_int(b.get('slats'), 8, 3, 24)
+    fe = _ff_int(b.get('feather'), 18, 0, 40)
+    lc = _mo_ink(b, 'line', '#34e0c3')
+    K = 'clamp(0,var(--p,1),1)'
+    size = ''
+    if mode == 'blinds':
+        m = f'linear-gradient(180deg,#000 calc({K}*100%),transparent calc({K}*100%))'
+        size = f'100% {_if_fmt(100 / n)}%'
+    elif mode == 'slats':
+        m = f'linear-gradient(90deg,#000 calc({K}*100%),transparent calc({K}*100%))'
+        size = f'{_if_fmt(100 / n)}% 100%'
+    elif mode == 'diagonal':
+        m = f'linear-gradient(135deg,#000 calc({K}*100%),transparent calc({K}*100%))'
+        size = f'{_if_fmt(100 / n)}% {_if_fmt(100 / n)}%'
+    elif mode == 'halftone':
+        m = f'radial-gradient(circle,#000 calc({K}*75%),transparent calc({K}*75% + 1px))'
+        size = f'{_if_fmt(100 / n)}% {_if_fmt(100 / (n / 2))}%'
+    elif mode == 'iris':
+        m = f'radial-gradient(circle at 50% 50%,#000 calc({K}*75%),transparent calc({K}*75% + {fe}%))'
+    elif mode == 'clock':
+        m = f'conic-gradient(from 0deg,#000 calc({K}*360deg),transparent calc({K}*360deg))'
+    elif mode == 'searchlight':
+        m = f'radial-gradient(circle at calc({K}*100%) 50%,#000 calc({K}*70%),transparent calc({K}*70% + {fe + 12}%))'
+    elif mode == 'laser':
+        m = f'linear-gradient(90deg,#000 calc({K}*100%),transparent calc({K}*100%))'
+    else:
+        m = f'linear-gradient(90deg,#000 calc({K}*(100% + {fe}%) - {fe}%),transparent calc({K}*(100% + {fe}%)))'
+    msk = f'mask-image:{m};-webkit-mask-image:{m};' + (f'mask-size:{size};-webkit-mask-size:{size};' if size else '')
+    if mode == 'diamond':
+        msk = f'clip-path:polygon(50% calc(50% - {K}*75%),calc(50% + {K}*75%) 50%,50% calc(50% + {K}*75%),calc(50% - {K}*75%) 50%);'
+    body = '<br>'.join(_cv_esc(x) for x in lines)
+    extra = ''
+    if mode == 'laser':
+        extra = f'<span aria-hidden="true" style="position:absolute;top:-4%;bottom:-4%;left:calc({K}*100%);width:2px;margin-left:-1px;background:{lc};box-shadow:0 0 14px 4px {lc};opacity:clamp(0,calc(1 - {K}*1.1),1)"></span>'
+    return f'<div style="position:relative;{_tf_box(f)}"><span style="display:inline-block;{msk}">{body}</span>{extra}</div>'
+
+
+_SK_DIR = {'left': [-1, 0], 'right': [1, 0], 'up': [0, -1], 'down': [0, 1], 'diagonal': [-1, -1]}
+
+
+def _render_motion_streak(b: dict) -> str:
+    text = _cv_str(b.get('text'), 60) or 'Text'
+    f = _tf_base(b, 72)
+    dr = _ff_pick(b.get('direction'), _SK_DIR, 'left')
+    G = _ff_int(b.get('ghosts'), 5, 2, 10)
+    D = _ff_num(b.get('distance'), 6, 1, 14, 1)
+    tint = _mo_ink(b, 'tint', '')
+    k = 'clamp(0,var(--p,1),1)'
+    e = f'(1 - {k})'
+    out = ''
+    for i in range(1, G + 1):
+        fr = _if_fmt(i / G)
+        out += (f'<span aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;' + (f'color:{tint};' if tint else '') +
+                f'transform:translate(calc({dr[0]}*{D}em*{e}*(1 + {fr}*0.7)),calc({dr[1]}*{D}em*{e}*(1 + {fr}*0.7)));opacity:calc({_if_fmt(0.5 * (1 - i / (G + 1)))}*{e}*clamp(0,calc({k}*6),1));filter:blur(calc({_if_fmt(i * 0.6)}px*{e}));">{_cv_esc(text)}</span>')
+    return (f'<div style="{_tf_box(f)}">{_mo_sr(text)}<span aria-hidden="true" style="position:relative;display:inline-block;white-space:nowrap;">{out}'
+            f'<span style="position:relative;display:inline-block;transform:translate(calc({dr[0]}*{D}em*{e}),calc({dr[1]}*{D}em*{e}));opacity:clamp(0,calc({k}*4),1);">{_cv_esc(text)}</span></span></div>')
+
+
+for _sp_name, _sp_fn in (('motion_foil', _render_motion_foil), ('motion_wrap', _render_motion_wrap), ('motion_drop', _render_motion_drop), ('motion_flag', _render_motion_flag),
+                         ('motion_disperse', _render_motion_disperse), ('motion_reveal', _render_motion_reveal), ('motion_streak', _render_motion_streak)):
+    _RENDERERS[_sp_name] = _sp_fn
+
+
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
 _gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()

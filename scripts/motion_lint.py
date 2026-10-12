@@ -75,9 +75,9 @@ def _units(b):
     return max(n, 1), max(words, 1), mode
 
 
-def _reveal(keys, bpm):
-    """(start, end) seconds of the first time p runs from below 1 up to 1, or None."""
-    pk = [(_t(k, bpm), k["p"]) for k in keys if isinstance(k.get("p"), (int, float)) and _t(k, bpm) is not None]
+def _reveal(keys, bpm, dial="p"):
+    """(start, end) seconds of the first time the dial (p, or s) runs from below 1 up to 1, or None."""
+    pk = [(_t(k, bpm), k[dial]) for k in keys if isinstance(k.get(dial), (int, float)) and _t(k, bpm) is not None]
     pk.sort()
     for i, (t, p) in enumerate(pk):
         if p >= 0.999 and i > 0 and pk[i - 1][1] < 0.999:
@@ -93,6 +93,42 @@ def _drop_after(keys, bpm, t_end):
         if _t(k, bpm) > t_end and k["p"] < 0.999:
             return _t(k, bpm)
     return None
+
+
+_SHOWPIECE = ("motion_foil", "motion_wrap", "motion_drop", "motion_flag", "motion_disperse", "motion_reveal", "motion_streak")
+
+
+def _showpiece(add, b, tid, keys, bpm):
+    """The showpiece text atoms: how fast their dials may run. Spins and waves are vestibular and flicker risks; a fast wipe of a big area is a sudden change."""
+    typ = b["type"]
+    p, sv = _reveal(keys, bpm, "p"), _reveal(keys, bpm, "s")
+    dp, ds = (p[1] - p[0]) if p else None, (sv[1] - sv[0]) if sv else None
+    text = b.get("text") if isinstance(b.get("text"), str) else "Text"
+    n = max(len(text.strip()[:48]), 1)
+    S = b.get("overlap") if isinstance(b.get("overlap"), int) and 1 <= b.get("overlap") <= 8 else 3
+    if typ == "motion_streak" and dp is not None and dp < 0.3:
+        add("warn", "streak-fast", tid, f"the line whips in over {dp * 1000:.0f} ms: a big sudden movement; run p over at least 300 ms")
+    if typ == "motion_drop" and dp is not None and dp * 1000.0 / (n + S) < 20:
+        add("warn", "drop-too-fast", tid, f"letters land {dp * 1000.0 / (n + S):.0f} ms apart: under 20 ms the order cannot be seen; slow the p run")
+    if typ == "motion_reveal" and dp is not None:
+        if dp < 0.4:
+            add("warn", "reveal-fast", tid, f"the mask opens over {dp * 1000:.0f} ms: a large area changes suddenly; run p over at least 400 ms")
+        elif b.get("mode") in ("halftone", "blinds", "slats", "diagonal") and dp < 1:
+            add("info", "reveal-busy", tid, f"{b.get('mode')} opens many small shapes in {dp:.1f} s; a second or more reads calmer")
+    if typ == "motion_wrap":
+        turns = b.get("turns") if isinstance(b.get("turns"), int) and not isinstance(b.get("turns"), bool) else 1
+        if turns:
+            add("info", "vestibular-spin", tid, "wrap turns the words in 3D on the step dial: a spinning motion; the end state is what a reduced-motion viewer sees")
+            if ds and abs(turns) * 360.0 / ds > 720:
+                add("warn", "spin-fast", tid, f"the form turns {abs(turns) * 360.0 / ds:.0f} degrees a second: over 720 can cause discomfort; slow the s run or use fewer turns")
+    if typ == "motion_flag" and ds:
+        cyc = b.get("cycles") if isinstance(b.get("cycles"), int) and 1 <= b.get("cycles") <= 6 else 2
+        if cyc / ds > 3:
+            add("warn", "wave-fast", tid, f"the wave oscillates {cyc / ds:.1f} times a second: over 3 a second reads as flicker (WCAG 2.3.1); lengthen the s run")
+    if typ == "motion_foil" and ds is not None and ds < 0.25:
+        add("info", "foil-fast", tid, f"the light band crosses in {ds * 1000:.0f} ms; a quick glint is fine, a repeated one over a large area is a flash risk")
+    if typ == "motion_disperse" and ds is not None and ds < 0.3:
+        add("info", "disperse-fast", tid, f"the exit takes {ds * 1000:.0f} ms; 400 ms or more reads as an intentional exit")
 
 
 def lint(film: dict) -> list[dict]:
@@ -117,6 +153,9 @@ def lint(film: dict) -> list[dict]:
             continue
         b, layer = blocks[tr["target"]]
         typ, tid, keys = b.get("type"), tr["target"], [k for k in (tr.get("keys") or []) if isinstance(k, dict)]
+        if typ in _SHOWPIECE:
+            _showpiece(add, b, tid, keys, bpm)
+            continue
         if typ not in ("motion_text", "motion_capsule"):
             continue
         rv = _reveal(keys, bpm)

@@ -21533,3 +21533,164 @@ blocks:
     accent: "\"#rrggbb\" (optional). Underline colour. Default #2563eb."
   notes: "Tabs are equal width, so the underline lands on each one exactly; long labels are cut with an ellipsis. It is a picture of tabs, not a control: use the real tab atoms when the reader must switch."
   source: *mla002
+- type: motion_foil
+  stage: preview
+  description: "A line of text filled with a metallic or iridescent gradient (chrome, gold, silver, copper, holo, rainbow, aurora, ice, oil) with a band of light that sweeps through the letters as the step dial s runs 0 to 1. One to three bands, left, right, diagonal, up or down. Real text, fades in with p. Plain CSS, no script."
+  compact_description: "metallic text with a sweeping band of light"
+  routing_text: "A chrome, gold or holographic title with a shine that sweeps across it."
+  intent_phrases:
+  - "A gold title with a glint sweeping across."
+  - "Chrome lettering with a moving shine."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 60)."
+    look: "string (optional). chrome, gold, silver, copper, holo, rainbow, aurora, ice, oil or mono. Default chrome."
+    direction: "string (optional). ltr, rtl, diagonal, down or up. Default ltr."
+    bands: "integer (optional). Number of light bands, 1 to 3. Default 1."
+    width: "integer (optional). Band width as a percent of the line, 3 to 30. Default 10."
+    sheen: "\"#rrggbb\" (optional). Colour of the light band. Default depends on look."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 72."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "At s = 1 the band has left the text, so the finished picture is a still, readable foil. Use a dark background for chrome and silver; mono keeps the surrounding colour. The sweep is one pass per film, not a loop."
+  source: *mla002
+- type: motion_wrap
+  stage: preview
+  description: "Letters set on a 3D form that turns with the step dial s: a cylinder (a ring of text), a wheel (a rolling drum), a helix (a spiral) or a swaying ribbon. Letters on the far side dim. The words are the accessible name. Plain CSS 3D, no script."
+  compact_description: "text wrapped on a turning cylinder, wheel, helix or ribbon"
+  routing_text: "Text wrapped round a cylinder or spiral that turns."
+  intent_phrases:
+  - "Words wrapped round a spinning cylinder."
+  - "A ring of text that rotates in 3D."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 40)."
+    form: "string (optional). cylinder, wheel, helix or ribbon. Default cylinder."
+    arc: "integer (optional). Degrees of the form the words cover, 60 to 360. A full 360 repeats the words with a dot between. Default 360."
+    radius: "integer (optional). Form radius px, 60 to 800. Default 220."
+    turns: "integer (optional). Turns made as s goes 0 to 1, -3 to 3 (negative reverses). Default 1."
+    lean: "integer (optional). Lean toward the viewer in degrees, -45 to 45. Default -10."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 56."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "A whole number of turns ends where it began, so the finished picture matches the first. A spinning 3D motion can cause discomfort for some viewers: the film linter flags it, and a reduced-motion viewer sees the end state."
+  source: *mla002
+- type: motion_drop
+  stage: preview
+  description: "Letters fall, bounce, spring, rain down, pile in, rise or swing into place one after another as p goes 0 to 1. Six modes, a seeded per-letter scatter, and a choice of order (forward, reverse, from the centre or random). Each letter's position is a pure function of p, so it can be seeked. Real text; plain CSS."
+  compact_description: "letters that fall and bounce into place"
+  routing_text: "Letters that drop in and bounce, or rain, pile or swing into place."
+  intent_phrases:
+  - "Letters that fall and bounce into place."
+  - "A headline whose letters drop in one by one."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 48)."
+    mode: "string (optional). bounce, spring, rain, pile, rise or swing. Default bounce."
+    height: "integer (optional). Start distance px, 20 to 800. Default 200."
+    bounces: "integer (optional). Bounces or swings, 1 to 8. Default 3."
+    overlap: "integer (optional). How many letters move at once, 1 to 8. Default 3."
+    order: "string (optional). forward, reverse, centre or random. Default forward."
+    seed: "integer (optional). Scatter seed, 0 to 999. Default 3."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 64."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "At p = 1 every letter is exactly in place. Letters keep their own seeded scatter, so a render is identical every time."
+  source: *mla002
+- type: motion_flag
+  stage: preview
+  description: "A line that ripples like cloth as the step dial s runs: flag (pinned at one end, the wave grows toward the free end), ripple (even), ribbon (with a twist) or breeze (uneven). Each letter also catches the light. Flat at both ends of s. Real text; plain CSS."
+  compact_description: "text that waves like a flag"
+  routing_text: "A title that waves like a flag or ripples like cloth."
+  intent_phrases:
+  - "Text that waves like a flag."
+  - "A line that ripples in the wind."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 48)."
+    mode: "string (optional). flag, ripple, ribbon or breeze. Default flag."
+    amp: "integer (optional). Wave height px, 2 to 80. Default 18."
+    waves: "integer (optional). Wave crests along the line, 1 to 5. Default 2."
+    cycles: "integer (optional). Wave cycles over the s run, 1 to 6. Default 2."
+    pin: "string (optional). left or right: which end stays put in flag mode. Default left."
+    shade: "boolean (optional). Letters brighten and dim with the wave. Default true."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 64."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "The wave grows and dies away (a sine envelope), so s = 0 and s = 1 are both flat and readable. Keep the shading gentle over a large area."
+  source: *mla002
+- type: motion_disperse
+  stage: preview
+  description: "An exit: the line is whole at s = 0 and leaves as the step dial s runs to 1, in one of eight ways: smoke (drifts up and blurs), shatter, rise, sink, implode, explode, wind or evaporate. Per-letter seeded paths and order. Real text; plain CSS."
+  compact_description: "an exit where text disperses as smoke, shatters or blows away"
+  routing_text: "Text that disperses, shatters or blows away as it leaves."
+  intent_phrases:
+  - "Words that dissolve into smoke."
+  - "A title that shatters and leaves."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 48)."
+    mode: "string (optional). smoke, shatter, rise, sink, implode, explode, wind or evaporate. Default smoke."
+    distance: "integer (optional). How far pieces travel px, 10 to 400. Default 90."
+    overlap: "integer (optional). How many letters leave at once, 1 to 8. Default 3."
+    order: "string (optional). forward, reverse, centre or random. Default forward."
+    seed: "integer (optional). Path seed, 0 to 999. Default 3."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 64."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "Drive p to 1 and s from 0 to 1. At s = 1 nothing is left on screen, so use it as the exit of a scene. Keep distance modest so pieces stay on the stage."
+  source: *mla002
+- type: motion_reveal
+  stage: preview
+  description: "Uncovers one to four lines through a moving mask as p goes 0 to 1, in ten looks: blinds, slats, iris, diamond, clock, halftone, searchlight, laser (a bright scan line), soft or diagonal. Real text; plain CSS masks."
+  compact_description: "text uncovered by blinds, an iris, a clock wipe or a laser scan"
+  routing_text: "A reveal through blinds, an iris, a clock wipe, halftone dots or a scanning line."
+  intent_phrases:
+  - "Reveal the title through venetian blinds."
+  - "A clock wipe uncovers the words."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 60 per line, up to 4 lines separated by new lines)."
+    mode: "string (optional). blinds, slats, iris, diamond, clock, halftone, searchlight, laser, soft or diagonal. Default blinds."
+    slats: "integer (optional). Number of blinds, slats or dots, 3 to 24. Default 8."
+    feather: "integer (optional). Edge softness percent, 0 to 40, for iris, searchlight and soft. Default 18."
+    line: "\"#rrggbb\" (optional). Laser line colour. Default #34e0c3."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 64."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "At p = 1 the mask is fully open. Run the p track over at least a second for halftone and blinds so the many small shapes stay calm."
+  source: *mla002
+- type: motion_streak
+  stage: preview
+  description: "A line whips in from one side leaving fading ghost copies behind it as p goes 0 to 1, a cheap stand-in for a motion blur. Five directions, 2 to 10 ghosts, optional tint. Real text; the ghosts are hidden from assistive tech."
+  compact_description: "text that whips in leaving ghost trails"
+  routing_text: "A title that whips in fast with a motion-blur trail."
+  intent_phrases:
+  - "A title that whips in with a blur trail."
+  - "Text that streaks in from the left."
+  surfaces: *mla001
+  fields:
+    text: "string (required, max 60)."
+    direction: "string (optional). left, right, up, down or diagonal. Default left."
+    ghosts: "integer (optional). Trailing copies, 2 to 10. Default 5."
+    distance: "number (optional). Start offset in em, 1 to 14. Default 6."
+    tint: "\"#rrggbb\" (optional). Colour of the ghosts. Default the text colour."
+    font: "string (optional). sans, serif, mono or display. Default sans."
+    weight: "string (optional). regular, bold or black. Default bold."
+    size: "integer (optional). Font size px, 10 to 300. Default 72."
+    color: "\"#rrggbb\" (optional). Default the surrounding ink."
+    align: "string (optional). start, middle or end. Default middle."
+  notes: "At p = 1 the ghosts are invisible and the line is in place. Run p over at least 0.3 s: a faster whip of a very large line is a big sudden change."
+  source: *mla002
