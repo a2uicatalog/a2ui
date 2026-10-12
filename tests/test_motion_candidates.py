@@ -342,3 +342,137 @@ def test_collage_layout_names_tile_images_and_overrides(core_js):
     assert h.count("<img") == 1 and 'src="https://example.com/a.jpg"' in h and "javascript:" not in h and 'alt=""' in h
     assert "left:10%;top:10%;width:30%;height:30%" in h                                                          # an unknown layout falls back to the old default
     assert "<li>A</li>" in h and "<li>D</li>" in h                                                               # labels stay in the hidden list
+
+
+# ── third batch from the screen recordings (2026-10-11): theme, dialog, dots, sweep ───────────────────────────────────────────────────────────
+B3 = {
+    "theme": {"type": "motion_theme", "blocks": [{"type": "callout", "variant": "info", "text": "Wall builder: 412 bricks"}]},
+    "dialog": {"type": "motion_dialog", "title": "Confirm", "body": "Delete the draft?", "actions": [{"label": "Cancel"}, {"label": "Delete", "primary": True}]},
+    "dots": {"type": "motion_dots", "from": "Done", "to": "Ask an agent"},
+    "sweep": {"type": "motion_sweep", "blocks": [{"type": "demo_panel", "title": "Card", "rows": [["a", "1"]]}]},
+}
+
+
+def _dial(block, bid, keys):
+    return _scene([dict(block, id=bid, place={"x": 5, "y": 5, "w": 60})], [{"target": bid, "keys": keys}])
+
+
+def test_batch3_render_with_names_and_no_script(core_js):
+    out = dict(zip(B3, _gas_batch(core_js, list(B3.values()))))
+    for k, h in out.items():
+        assert "<script" not in h.lower() and "NaN" not in h and "undefined" not in h, k
+    assert out["dialog"].count('role="dialog"') == 1 and 'aria-label="Confirm"' in out["dialog"] and ">Delete the draft?<" in out["dialog"] and ">Cancel<" in out["dialog"]
+    assert out["dots"].count('role="img"') == 1 and 'aria-label="ASK AN AGENT"' in out["dots"] and out["dots"].count("<circle") == 7 * (12 * 6 - 1)
+    assert 'aria-hidden="true"' in out["sweep"] and "role=" not in out["sweep"]
+    assert "color-mix(in srgb" in out["theme"] and "--bg:" in out["theme"]
+
+
+def test_batch3_options_are_closed_and_text_is_inert(core_js):
+    att = '"><img src=x onerror=alert(1)><script>alert(2)</script>'
+    hostile = [
+        {"type": "motion_theme", "from": att, "to": att, "blocks": [att, 3, None]},
+        {"type": "motion_dialog", "title": att, "body": att, "enter": att, "dim": att, "scrim": att, "aspect": att, "actions": [{"label": att, "primary": att}, "x", 4]},
+        {"type": "motion_dots", "from": att, "to": att, "color": att, "color2": att, "grid": att, "label": att},
+        {"type": "motion_sweep", "angle": att, "width": att, "strength": att, "color": att, "blocks": [att, 1]},
+    ]
+    for h in _gas_batch(core_js, hostile):
+        assert "<script>alert(2)" not in h and "<img" not in h and "NaN" not in h, h[:200]
+    for h in _gas_batch(core_js, [{"type": t} for t in ("motion_theme", "motion_dialog", "motion_dots", "motion_sweep")]):
+        assert len(h) > 30 and "NaN" not in h
+
+
+@browser
+def test_theme_morphs_between_the_two_palettes_on_the_step_dial(core_js):
+    keys = [{"t": 0, "p": 1, "step": 0}, {"t": 2, "p": 1, "step": 0.5}, {"t": 6, "p": 1, "step": 1}]
+    js = "var c=getComputedStyle(document.querySelector('[data-mt-id=th] > div')).backgroundColor.match(/[\\d.]+/g).map(Number);var k=c.some(function(v){return v>1;})?1:255;return c.slice(0,3).map(function(v){return Math.round(v*k);});"
+    a, m, z = (_probe_gas(core_js, _dial(B3["theme"], "th", keys), t, js) for t in (0, 2, 6))
+    assert a == [11, 15, 20] and z == [247, 248, 250], (a, z)
+    assert all(abs(m[i] - (a[i] + z[i]) / 2) < 3 for i in range(3)), m
+
+
+@browser
+def test_dialog_scrim_then_dialog_enter_and_rest(core_js):
+    keys = [{"t": 0, "p": 0}, {"t": 2, "p": 0.2}, {"t": 6, "p": 1}]
+    js = ("var d=document.querySelector('[data-mt-id=dg] [role=dialog]');var s=d.previousElementSibling;"
+          "return {d:+(+getComputedStyle(d).opacity).toFixed(2),s:+(+getComputedStyle(s).opacity).toFixed(2)};")
+    a, b, z = (_probe_gas(core_js, _dial(B3["dialog"], "dg", keys), t, js) for t in (0, 2, 6))
+    assert a == {"d": 0, "s": 0}, a
+    assert b["s"] > 0.44 and b["d"] < 0.02, b      # scrim done, dialog not started
+    assert z["d"] == 1 and z["s"] > 0.44, z
+
+
+@browser
+def test_dots_resolve_from_one_phrase_to_the_other(core_js):
+    keys = [{"t": 0, "p": 1, "step": 0}, {"t": 6, "p": 1, "step": 1}]
+    blk = {"type": "motion_dots", "from": "A", "to": "B", "grid": False}
+    js = "var c=document.querySelectorAll('[data-mt-id=dt] circle');var o=Array.prototype.map.call(c,function(e){return +getComputedStyle(e).opacity;});return {n:o.length,lit:o.filter(function(v){return v>0.9;}).length};"
+    a, z = (_probe_gas(core_js, _dial(blk, "dt", keys), t, js) for t in (0, 6))
+    assert a["n"] == z["n"] and a["n"] > 20, (a, z)
+    assert a["lit"] > 10 and z["lit"] > 10, (a, z)
+
+
+@browser
+def test_sweep_rests_off_both_edges_and_crosses_in_between(core_js):
+    keys = [{"t": 0, "p": 1, "step": 0}, {"t": 2, "p": 1, "step": 0.5}, {"t": 6, "p": 1, "step": 1}]
+    js = ("var w=document.querySelector('[data-mt-id=sw] > div');var b=w.lastElementChild.getBoundingClientRect(),r=w.getBoundingClientRect();"
+          "return {left:b.right<r.left+1,right:b.left>r.right-1,inside:b.left<r.right&&b.right>r.left};")
+    a, m, z = (_probe_gas(core_js, _dial(B3["sweep"], "sw", keys), t, js) for t in (0, 2, 6))
+    assert a["left"] and not a["inside"], a
+    assert m["inside"], m
+    assert z["right"] and not z["inside"], z
+
+
+@browser
+def test_theme_ink_never_matches_the_surface(core_js):
+    # sample the step dial finely; the contrast between --text and --bg must stay >= 2.9:1 and the ends must be the full palettes
+    js = ("function rgb(c){var m=c.match(/[\\d.]+/g).map(Number);var k=m.some(function(v){return v>1;})?1:255;return m.slice(0,3).map(function(v){return v*k;});}"
+          "function L(c){return c.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);}).reduce(function(a,v,i){return a+v*[0.2126,0.7152,0.0722][i];},0);}"
+          "var el=document.querySelector('[data-mt-id=th] > div');var cs=getComputedStyle(el);return {bg:rgb(cs.backgroundColor),fg:rgb(cs.color)};")
+    worst = 99
+    for step in (0, 0.2, 0.4, 0.45, 0.5, 0.55, 0.6, 0.8, 1):
+        keys = [{"t": 0, "p": 1, "step": step}, {"t": 6, "p": 1, "step": step}]
+        r = _probe_gas(core_js, _dial(B3["theme"], "th", keys), 1, js)
+
+        def lum(c):
+            f = [(v / 255 / 12.92) if v / 255 <= 0.03928 else ((v / 255 + 0.055) / 1.055) ** 2.4 for v in c]
+            return 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2]
+        a, b = sorted((lum(r["bg"]), lum(r["fg"])), reverse=True)
+        worst = min(worst, (a + 0.05) / (b + 0.05))
+    assert worst >= 2.9, worst
+
+
+# ── Python twins of the 13 candidate atoms (9 keynote + 4 screen-recording) must match the GAS renderer byte for byte ─────────────────────────
+def _norm_all(h: str) -> str:
+    h = _norm(h)
+    for i, uid in enumerate(dict.fromkeys(re.findall(r'mar([a-z0-9]{6})\d', h))):   # gradient ids in arcs carry the random uid in GAS
+        h = h.replace(uid, f"UID{i}")
+    return h
+
+
+_ATT = '"><img src=x onerror=alert(1)><script>alert(2)</script>'
+# demo_panel children: the callout atom itself still differs between the two renderers (class versus inline style), which is not what this test is about
+THEME_P = {"type": "motion_theme", "blocks": [{"type": "demo_panel", "title": "Wall", "rows": [["bricks", "412"]]}]}
+TWIN_CASES = [
+    LIT, dict(LIT, layout="grid", edge=False, ghost=0.5, gap=4), {"type": "motion_lit"}, ARCS, {"type": "motion_arcs"}, dict(ARCS, label="Brand"), LOCK, dict(LOCK, settle=False, align="start", weight="black", font="serif"),
+    {"type": "motion_lockup"}, {"type": "motion_lockup", "lines": [["a", "b"], ["c"], [{"mark": {}}, "d"]]},
+    COLL, {"type": "motion_collage"}, dict(COLL, title="T", blur=3, ghost=0.4, radius=0, aspect=1.2, fill="#112233"),
+    *B2.values(), dict(B2["bubbles"], label="B", count=14, seed=999, size=40, drift=60), dict(B2["beats"], transition="fade", size=80, weight="bold"), dict(B2["pattern"], rows=1, repeat=1, angle=45, label="x"),
+    dict(B2["dock"], size=24), dict(B2["fit"], recede=True, upper=False), {"type": "motion_beats"}, {"type": "motion_dock"}, {"type": "motion_pattern"}, {"type": "motion_bubbles"}, {"type": "motion_fit"},
+    *(v for k, v in B3.items() if k != "theme"), THEME_P, dict(THEME_P, **{"from": "light", "to": "dark"}), dict(THEME_P, **{"from": "dark", "to": "dark"}), dict(B3["dialog"], enter="rise", dim=0.8, scrim="#102030", aspect=2.4), dict(B3["dialog"], enter="fade"),
+    {"type": "motion_dots", "from": "Ok!", "to": "A-B? 9,0.", "grid": False, "color": "#ff0000", "color2": "#00ff00", "label": "L"}, {"type": "motion_dots", "from": "x", "to": "y"}, dict(B3["sweep"], angle=45, width=60, strength=0.8, color="#ff00ff"),
+    {"type": "motion_theme"}, {"type": "motion_dialog"}, {"type": "motion_dots"}, {"type": "motion_sweep"},
+    {"type": "motion_lit", "layout": _ATT, "ghost": _ATT, "gap": _ATT, "edge": _ATT, "accent": _ATT, "blocks": [_ATT, 3, None]},
+    {"type": "motion_arcs", "label": _ATT, "arcs": [{"color": _ATT, "color2": "#fff000", "r": _ATT, "from": _ATT, "sweep": _ATT, "width": _ATT, "dx": _ATT, "spin": _ATT, "blur": _ATT}, "x", 7]},
+    {"type": "motion_lockup", "size": _ATT, "lines": [[_ATT, {"mark": {"arcs": [{"color": _ATT}], "label": _ATT}}, 5, None], "x", [" "]]},
+    {"type": "motion_collage", "sets": [{"tiles": [{"x": _ATT, "label": _ATT, "image": _ATT, "block": {"type": "nope"}}, "x"], "layout": _ATT, "panel": _ATT}, 4]},
+    {"type": "motion_bubbles", "count": _ATT, "seed": _ATT, "label": _ATT}, {"type": "motion_beats", "items": [{"text": _ATT, "shape": _ATT, "font": _ATT}, "x", 3]},
+    {"type": "motion_pattern", "text": _ATT, "rows": _ATT, "label": _ATT}, {"type": "motion_dock", "items": [{"glyph": _ATT, "label": _ATT}, 1]}, {"type": "motion_fit", "text": _ATT, "fill": _ATT},
+    {"type": "motion_theme", "blocks": [_ATT, 1], "from": _ATT}, {"type": "motion_dialog", "title": _ATT, "body": _ATT, "actions": [{"label": _ATT, "primary": True}, "x"], "enter": _ATT},
+    {"type": "motion_dots", "from": _ATT, "to": _ATT, "label": _ATT}, {"type": "motion_sweep", "blocks": [_ATT], "angle": _ATT, "color": _ATT},
+]
+
+
+def test_python_twins_of_all_candidate_atoms_match_gas_exactly(core_js):
+    got = _gas_batch(core_js, TWIN_CASES)
+    bad = [(b.get("type"), i) for i, (b, g) in enumerate(zip(TWIN_CASES, got)) if _norm_all(_py(b)) != _norm_all(g)]
+    assert not bad, bad

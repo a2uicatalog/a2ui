@@ -247,3 +247,76 @@ _RENDERERS['motion_fit'] = function(b) {
   return '<div style="width:100%;container-type:inline-size;overflow:hidden;"><div style="font-family:' + font + ';font-weight:' + weight + ';font-size:' + fs + 'cqw;line-height:1;white-space:nowrap;text-align:center;color:' + color + ';'
     + (upper ? 'text-transform:uppercase;' : '') + 'opacity:calc(' + op + ');transform:' + tr + ';">' + _esc(text) + '</div></div>';
 };
+
+// ── third batch from the screen recordings (2026-10-11): theme, dialog, dots, sweep ───────────────────────────────────────────────────────────
+// Measured from 88 recordings (motion_probe v2, 80 candidates reviewed by eye). Same accessibility rules as the second batch: decorative layers are aria-hidden,
+// words are real text or one accessible name, every dial defaults to the finished picture, no endless loops, no flashing (the sweep is slow and soft).
+var _TH_INK = {text: 1, 'text-muted': 1, muted: 1, accent: 1};
+var _TH_PAL = {
+  dark:  {text: '#e8edf2', 'text-muted': '#9aa7b5', muted: '#9aa7b5', border: '#2a3340', surface: '#151b23', 'surface-2': '#1b2330', surface2: '#1b2330', bg: '#0b0f14', accent: '#8b9bff'},
+  light: {text: '#14181f', 'text-muted': '#4b5563', muted: '#4b5563', border: '#d7dce4', surface: '#ffffff', 'surface-2': '#f1f3f7', surface2: '#f1f3f7', bg: '#f7f8fa', accent: '#4338ca'}
+};
+
+// motion_theme: child blocks whose colour tokens morph between dark and light with the step dial (0 = from, 1 = to). Seen as the 0.33-0.43 s ease-out
+// theme switch in the Wall Builder recordings. One set of tokens is mixed, so every child that reads them moves together and text stays legible at the midpoint.
+_RENDERERS['motion_theme'] = function(b) {
+  var from = b.from === 'light' ? 'light' : 'dark', to = b.to === 'dark' ? 'dark' : 'light', blocks = _bxList(b.blocks, 6), inner = '', i, k, vars = '';
+  if (from === to) to = from === 'dark' ? 'light' : 'dark';
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  // Surfaces fade smoothly. Ink (text, muted, accent) swaps at the half-way point (a hard flip between 0.49 and 0.491) instead, because a plain mix puts the ink and the
+  // surface at the same grey there and the words vanish; swapping keeps the worst contrast about 3:1 (measured in test_theme_ink_never_matches_the_surface).
+  for (k in _TH_PAL.dark) vars += '--' + k + ':color-mix(in srgb,' + _TH_PAL[from][k] + ' calc((1 - ' + (_TH_INK[k] ? 'clamp(0,calc((var(--s,1) - 0.49)*1000),1)' : 'clamp(0,var(--s,1),1)') + ')*100%),' + _TH_PAL[to][k] + ');';
+  return '<div style="' + vars + 'background:var(--bg);color:var(--text);padding:16px;border-radius:12px;">' + inner + '</div>';
+};
+
+// motion_dialog: a scrim and a dialog that enter in turn. The scrim takes the first fifth of p, the dialog the next two fifths (fade, rise or scale).
+var _DG_ENTER = {fade: 'fade', rise: 'rise', scale: 'scale'};
+_RENDERERS['motion_dialog'] = function(b) {
+  var title = _moStr(b.title, 60) || 'Dialog', body = _moStr(b.body, 200), enter = _ffPick(b.enter, _DG_ENTER, 'scale'), dim = _ffNum(b.dim, 0.45, 0.2, 0.8, 2), scrim = _moInk(b, 'scrim', '#000000');
+  var src = _bxList(b.actions, 3), acts = '', i, asp = _ffNum(b.aspect, 1.6, 0.8, 3, 2);
+  for (i = 0; i < src.length; i++) { var o = _clObj(src[i]), pri = o.primary === true; acts += '<span style="padding:6px 14px;border-radius:8px;font-weight:600;font-size:14px;' + (pri ? 'background:var(--accent,#4338ca);color:#fff;' : 'border:1px solid var(--border,#d7dce4);') + '">' + _esc(_moStr(o.label, 20)) + '</span>'; }
+  var t = 'clamp(0,calc((var(--p,1) - 0.2)/0.4),1)', tr = enter === 'rise' ? 'translateY(calc((1 - ' + t + ')*24px))' : enter === 'scale' ? 'scale(calc(0.9 + ' + t + '*0.1))' : '';
+  return '<div style="position:relative;width:100%;aspect-ratio:' + asp + ';overflow:hidden;background:var(--bg,#f7f8fa);border-radius:12px;">'
+    + '<div aria-hidden="true" style="position:absolute;inset:0;background:' + scrim + ';opacity:calc(clamp(0,calc(var(--p,1)*5),1)*' + dim + ');"></div>'
+    + '<div role="dialog" aria-label="' + _esc(title) + '" style="position:absolute;left:50%;top:50%;width:min(80%,420px);box-sizing:border-box;padding:18px;border-radius:14px;background:var(--surface,#fff);color:var(--text,#14181f);'
+    + 'box-shadow:0 12px 40px rgba(0,0,0,0.3);opacity:' + t + ';transform:translate(-50%,-50%) ' + tr + ';"><div style="font-weight:700;font-size:17px;">' + _esc(title) + '</div>'
+    + (body ? '<div style="margin-top:6px;font-size:14px;color:var(--muted,#4b5563);">' + _esc(body) + '</div>' : '')
+    + (acts ? '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">' + acts + '</div>' : '') + '</div></div>';
+};
+
+// motion_dots: one line of text on a 5x7 dot matrix that resolves into another, left to right, with the step dial. Dots in both words stay lit.
+var _DM_FONT = {A:'01110/10001/10001/11111/10001/10001/10001',B:'11110/10001/10001/11110/10001/10001/11110',C:'01110/10001/10000/10000/10000/10001/01110',D:'11110/10001/10001/10001/10001/10001/11110',E:'11111/10000/10000/11110/10000/10000/11111',F:'11111/10000/10000/11110/10000/10000/10000',G:'01110/10001/10000/10111/10001/10001/01111',H:'10001/10001/10001/11111/10001/10001/10001',I:'01110/00100/00100/00100/00100/00100/01110',J:'00111/00010/00010/00010/00010/10010/01100',K:'10001/10010/10100/11000/10100/10010/10001',L:'10000/10000/10000/10000/10000/10000/11111',M:'10001/11011/10101/10101/10001/10001/10001',N:'10001/11001/10101/10011/10001/10001/10001',O:'01110/10001/10001/10001/10001/10001/01110',P:'11110/10001/10001/11110/10000/10000/10000',Q:'01110/10001/10001/10001/10101/10010/01101',R:'11110/10001/10001/11110/10100/10010/10001',S:'01111/10000/10000/01110/00001/00001/11110',T:'11111/00100/00100/00100/00100/00100/00100',U:'10001/10001/10001/10001/10001/10001/01110',V:'10001/10001/10001/10001/10001/01010/00100',W:'10001/10001/10001/10101/10101/10101/01010',X:'10001/10001/01010/00100/01010/10001/10001',Y:'10001/10001/01010/00100/00100/00100/00100',Z:'11111/00001/00010/00100/01000/10000/11111',
+  '0':'01110/10001/10011/10101/11001/10001/01110','1':'00100/01100/00100/00100/00100/00100/01110','2':'01110/10001/00001/00010/00100/01000/11111','3':'11110/00001/00001/01110/00001/00001/11110','4':'00010/00110/01010/10010/11111/00010/00010','5':'11111/10000/11110/00001/00001/10001/01110','6':'00110/01000/10000/11110/10001/10001/01110','7':'11111/00001/00010/00100/01000/01000/01000','8':'01110/10001/10001/01110/10001/10001/01110','9':'01110/10001/10001/01111/00001/00010/01100',
+  '.':'00000/00000/00000/00000/00000/00000/00100','!':'00100/00100/00100/00100/00100/00000/00100','?':'01110/10001/00001/00010/00100/00000/00100',',':'00000/00000/00000/00000/00000/00100/01000','-':'00000/00000/00000/11111/00000/00000/00000',' ':'00000/00000/00000/00000/00000/00000/00000'};
+function _dmGrid(text, cols) {
+  var cells = {}, off = Math.floor((cols - (text.length * 6 - 1)) / 2), i, r, c;
+  for (i = 0; i < text.length; i++) {
+    var rows = (_DM_FONT[text.charAt(i)] || _DM_FONT['?']).split('/');
+    for (r = 0; r < 7; r++) for (c = 0; c < 5; c++) if (rows[r].charAt(c) === '1') cells[r + ',' + (off + i * 6 + c)] = 1;
+  }
+  return cells;
+}
+_RENDERERS['motion_dots'] = function(b) {
+  var clean = function(v, d) { var t = _moStr(v, 14).toUpperCase().replace(/[^A-Z0-9 .,!?\-]/g, ''); return t || d; };
+  var a = clean(b.from, 'A'), z = clean(b.to, 'B'), cols = Math.max(a.length, z.length) * 6 - 1, ga = _dmGrid(a, cols), gz = _dmGrid(z, cols), out = '', r, c;
+  var col = _moInk(b, 'color', '#e8edf2'), col2 = _moInk(b, 'color2', col), faint = b.grid !== false, dot = 10, asp = Math.round((cols * dot) / (7 * dot) * 100) / 100;
+  for (c = 0; c < cols; c++) {
+    var u = 'clamp(0,calc(var(--s,1)*1.4 - ' + (Math.round(c / cols * 40) / 100) + '),1)';
+    for (r = 0; r < 7; r++) {
+      var k = r + ',' + c, ina = ga[k] === 1, inz = gz[k] === 1, cx = c * dot + dot / 2, cy = r * dot + dot / 2;
+      if (!ina && !inz) { if (faint) out += '<circle cx="' + cx + '" cy="' + cy + '" r="1.6" fill="' + col + '" opacity="0.14"/>'; continue; }
+      var o = ina && inz ? '1' : ina ? '(1 - ' + u + ')' : u;
+      out += '<circle cx="' + cx + '" cy="' + cy + '" r="3.4" fill="' + (inz ? col : col2) + '" style="opacity:calc(' + o + ');"/>';
+    }
+  }
+  var name = typeof b.label === 'string' && b.label ? _moStr(b.label, 80) : z;
+  return '<svg role="img" aria-label="' + _esc(name) + '" viewBox="0 0 ' + (cols * dot) + ' ' + (7 * dot) + '" style="width:min(100%,' + (cols * 9) + 'px);height:auto;display:block;margin:0 auto;aspect-ratio:' + asp + ';opacity:clamp(0,calc(var(--p,1)*4),1);">' + out + '</svg>';
+};
+
+// motion_sweep: a slanted band of light crosses its blocks with the step dial (0 = off the left edge, 1 = off the right edge). Decorative and soft.
+_RENDERERS['motion_sweep'] = function(b) {
+  var blocks = _bxList(b.blocks, 6), inner = '', i, ang = _ffInt(b.angle, 20, 5, 60), w = _ffInt(b.width, 28, 8, 60), str = _ffNum(b.strength, 0.35, 0.1, 0.8, 2), col = _moInk(b, 'color', '#ffffff');
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  return '<div style="position:relative;overflow:hidden;border-radius:12px;">' + inner + '<div aria-hidden="true" style="position:absolute;top:-50%;height:200%;width:' + w + '%;left:calc(-' + (w + 20) + '% + clamp(0,var(--s,1),1)*' + (2 * w + 140) + '%);'
+    + 'transform:rotate(' + ang + 'deg);pointer-events:none;background:linear-gradient(90deg,transparent,' + col + ',transparent);opacity:' + str + ';"></div></div>';
+};

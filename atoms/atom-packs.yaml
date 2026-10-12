@@ -346,6 +346,10 @@ a2ui-effects-v1:
 - motion_pattern
 - motion_dock
 - motion_fit
+- motion_theme
+- motion_dialog
+- motion_dots
+- motion_sweep
 - motion_orbit
 - motion_code
 - motion_mark

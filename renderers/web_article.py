@@ -29480,6 +29480,457 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks), ('motion_input', _render_motion_input)):
     _RENDERERS[_mo_name] = _mo_fn
 
+# ─── third batch from the screen recordings (2026-10-11): theme, dialog, dots, sweep. Twins of the block at the end of atoms_motion_candidates.gs ───
+def _m3_n(x):
+    """JavaScript's number-to-string for the values used here: whole numbers without a point, others as the shortest repr."""
+    if isinstance(x, float) and x == int(x):
+        x = int(x)
+    return str(x)
+
+
+def _m3_round(x):
+    return math.floor(x + 0.5)
+
+
+def _m3_list(v, mx):
+    return v[:mx] if isinstance(v, list) else []
+
+
+def _m3_obj(v):
+    return v if isinstance(v, dict) else {}
+
+
+_TH_INK = {'text': 1, 'text-muted': 1, 'muted': 1, 'accent': 1}
+_TH_PAL = {
+    'dark': {'text': '#e8edf2', 'text-muted': '#9aa7b5', 'muted': '#9aa7b5', 'border': '#2a3340', 'surface': '#151b23', 'surface-2': '#1b2330', 'surface2': '#1b2330', 'bg': '#0b0f14', 'accent': '#8b9bff'},
+    'light': {'text': '#14181f', 'text-muted': '#4b5563', 'muted': '#4b5563', 'border': '#d7dce4', 'surface': '#ffffff', 'surface-2': '#f1f3f7', 'surface2': '#f1f3f7', 'bg': '#f7f8fa', 'accent': '#4338ca'},
+}
+
+
+def _render_motion_theme(b: dict) -> str:
+    frm = 'light' if b.get('from') == 'light' else 'dark'
+    to = 'dark' if b.get('to') == 'dark' else 'light'
+    blocks = _m3_list(b.get('blocks'), 6)
+    inner = ''.join(_mo_child(x) for x in blocks)
+    if frm == to:
+        to = 'light' if frm == 'dark' else 'dark'
+    vs = ''
+    for k in _TH_PAL['dark']:
+        prog = 'clamp(0,calc((var(--s,1) - 0.49)*1000),1)' if k in _TH_INK else 'clamp(0,var(--s,1),1)'
+        vs += '--' + k + ':color-mix(in srgb,' + _TH_PAL[frm][k] + ' calc((1 - ' + prog + ')*100%),' + _TH_PAL[to][k] + ');'
+    return '<div style="' + vs + 'background:var(--bg);color:var(--text);padding:16px;border-radius:12px;">' + inner + '</div>'
+
+
+_DG_ENTER = {'fade': 'fade', 'rise': 'rise', 'scale': 'scale'}
+
+
+def _render_motion_dialog(b: dict) -> str:
+    title = _cv_str(b.get('title'), 60) or 'Dialog'
+    body = _cv_str(b.get('body'), 200)
+    enter = _ff_pick(b.get('enter'), _DG_ENTER, 'scale')
+    dim = _ff_num(b.get('dim'), 0.45, 0.2, 0.8, 2)
+    scrim = _mo_ink(b, 'scrim', '#000000')
+    src = _m3_list(b.get('actions'), 3)
+    asp = _ff_num(b.get('aspect'), 1.6, 0.8, 3, 2)
+    acts = ''
+    for a in src:
+        o = _m3_obj(a)
+        pri = o.get('primary') is True
+        acts += ('<span style="padding:6px 14px;border-radius:8px;font-weight:600;font-size:14px;'
+                 + ('background:var(--accent,#4338ca);color:#fff;' if pri else 'border:1px solid var(--border,#d7dce4);') + '">' + _cv_esc(_cv_str(o.get('label'), 20)) + '</span>')
+    t = 'clamp(0,calc((var(--p,1) - 0.2)/0.4),1)'
+    tr = ('translateY(calc((1 - ' + t + ')*24px))' if enter == 'rise' else 'scale(calc(0.9 + ' + t + '*0.1))' if enter == 'scale' else '')
+    return ('<div style="position:relative;width:100%;aspect-ratio:' + asp + ';overflow:hidden;background:var(--bg,#f7f8fa);border-radius:12px;">'
+            + '<div aria-hidden="true" style="position:absolute;inset:0;background:' + scrim + ';opacity:calc(clamp(0,calc(var(--p,1)*5),1)*' + dim + ');"></div>'
+            + '<div role="dialog" aria-label="' + _cv_esc(title) + '" style="position:absolute;left:50%;top:50%;width:min(80%,420px);box-sizing:border-box;padding:18px;border-radius:14px;background:var(--surface,#fff);color:var(--text,#14181f);'
+            + 'box-shadow:0 12px 40px rgba(0,0,0,0.3);opacity:' + t + ';transform:translate(-50%,-50%) ' + tr + ';"><div style="font-weight:700;font-size:17px;">' + _cv_esc(title) + '</div>'
+            + ('<div style="margin-top:6px;font-size:14px;color:var(--muted,#4b5563);">' + _cv_esc(body) + '</div>' if body else '')
+            + ('<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">' + acts + '</div>' if acts else '') + '</div></div>')
+
+
+_DM_FONT = {
+    'A':'01110/10001/10001/11111/10001/10001/10001','B':'11110/10001/10001/11110/10001/10001/11110','C':'01110/10001/10000/10000/10000/10001/01110','D':'11110/10001/10001/10001/10001/10001/11110','E':'11111/10000/10000/11110/10000/10000/11111','F':'11111/10000/10000/11110/10000/10000/10000','G':'01110/10001/10000/10111/10001/10001/01111','H':'10001/10001/10001/11111/10001/10001/10001','I':'01110/00100/00100/00100/00100/00100/01110','J':'00111/00010/00010/00010/00010/10010/01100','K':'10001/10010/10100/11000/10100/10010/10001','L':'10000/10000/10000/10000/10000/10000/11111','M':'10001/11011/10101/10101/10001/10001/10001','N':'10001/11001/10101/10011/10001/10001/10001','O':'01110/10001/10001/10001/10001/10001/01110','P':'11110/10001/10001/11110/10000/10000/10000','Q':'01110/10001/10001/10001/10101/10010/01101','R':'11110/10001/10001/11110/10100/10010/10001','S':'01111/10000/10000/01110/00001/00001/11110','T':'11111/00100/00100/00100/00100/00100/00100','U':'10001/10001/10001/10001/10001/10001/01110','V':'10001/10001/10001/10001/10001/01010/00100','W':'10001/10001/10001/10101/10101/10101/01010','X':'10001/10001/01010/00100/01010/10001/10001','Y':'10001/10001/01010/00100/00100/00100/00100','Z':'11111/00001/00010/00100/01000/10000/11111',
+    '0':'01110/10001/10011/10101/11001/10001/01110','1':'00100/01100/00100/00100/00100/00100/01110','2':'01110/10001/00001/00010/00100/01000/11111','3':'11110/00001/00001/01110/00001/00001/11110','4':'00010/00110/01010/10010/11111/00010/00010','5':'11111/10000/11110/00001/00001/10001/01110','6':'00110/01000/10000/11110/10001/10001/01110','7':'11111/00001/00010/00100/01000/01000/01000','8':'01110/10001/10001/01110/10001/10001/01110','9':'01110/10001/10001/01111/00001/00010/01100',
+    '.':'00000/00000/00000/00000/00000/00000/00100','!':'00100/00100/00100/00100/00100/00000/00100','?':'01110/10001/00001/00010/00100/00000/00100',',':'00000/00000/00000/00000/00000/00100/01000','-':'00000/00000/00000/11111/00000/00000/00000',' ':'00000/00000/00000/00000/00000/00000/00000'}
+
+
+def _dm_grid(text, cols):
+    cells = set()
+    off = (cols - (len(text) * 6 - 1)) // 2
+    for i, ch in enumerate(text):
+        rows = (_DM_FONT.get(ch) or _DM_FONT['?']).split('/')
+        for r in range(7):
+            for c in range(5):
+                if rows[r][c] == '1':
+                    cells.add((r, off + i * 6 + c))
+    return cells
+
+
+def _render_motion_dots(b: dict) -> str:
+    def clean(v, d):
+        t = re.sub(r'[^A-Z0-9 .,!?\-]', '', _cv_str(v, 14).upper())
+        return t or d
+    a, z = clean(b.get('from'), 'A'), clean(b.get('to'), 'B')
+    cols = max(len(a), len(z)) * 6 - 1
+    ga, gz = _dm_grid(a, cols), _dm_grid(z, cols)
+    col = _mo_ink(b, 'color', '#e8edf2')
+    col2 = _mo_ink(b, 'color2', col)
+    faint = b.get('grid') is not False
+    dot = 10
+    asp = _m3_n(_m3_round((cols * dot) / (7 * dot) * 100) / 100)
+    out = []
+    for c in range(cols):
+        u = 'clamp(0,calc(var(--s,1)*1.4 - ' + _m3_n(_m3_round(c / cols * 40) / 100) + '),1)'
+        for r in range(7):
+            ina, inz = (r, c) in ga, (r, c) in gz
+            cx, cy = _m3_n(c * dot + dot / 2), _m3_n(r * dot + dot / 2)
+            if not ina and not inz:
+                if faint:
+                    out.append('<circle cx="' + cx + '" cy="' + cy + '" r="1.6" fill="' + col + '" opacity="0.14"/>')
+                continue
+            o = '1' if ina and inz else ('(1 - ' + u + ')' if ina else u)
+            out.append('<circle cx="' + cx + '" cy="' + cy + '" r="3.4" fill="' + (col if inz else col2) + '" style="opacity:calc(' + o + ');"/>')
+    name = _cv_str(b.get('label'), 80) if isinstance(b.get('label'), str) and b.get('label') else z
+    return ('<svg role="img" aria-label="' + _cv_esc(name) + '" viewBox="0 0 ' + str(cols * dot) + ' ' + str(7 * dot) + '" style="width:min(100%,' + str(cols * 9) + 'px);height:auto;display:block;margin:0 auto;aspect-ratio:' + asp
+            + ';opacity:clamp(0,calc(var(--p,1)*4),1);">' + ''.join(out) + '</svg>')
+
+
+def _render_motion_sweep(b: dict) -> str:
+    blocks = _m3_list(b.get('blocks'), 6)
+    inner = ''.join(_mo_child(x) for x in blocks)
+    ang, w = _ff_int(b.get('angle'), 20, 5, 60), _ff_int(b.get('width'), 28, 8, 60)
+    st, col = _ff_num(b.get('strength'), 0.35, 0.1, 0.8, 2), _mo_ink(b, 'color', '#ffffff')
+    return ('<div style="position:relative;overflow:hidden;border-radius:12px;">' + inner + '<div aria-hidden="true" style="position:absolute;top:-50%;height:200%;width:' + str(w) + '%;left:calc(-' + str(w + 20) + '% + clamp(0,var(--s,1),1)*' + str(2 * w + 140) + '%);'
+            + 'transform:rotate(' + str(ang) + 'deg);pointer-events:none;background:linear-gradient(90deg,transparent,' + col + ',transparent);opacity:' + st + ';"></div></div>')
+
+
+for _m3_name, _m3_fn in (('motion_theme', _render_motion_theme), ('motion_dialog', _render_motion_dialog), ('motion_dots', _render_motion_dots), ('motion_sweep', _render_motion_sweep)):
+    _RENDERERS[_m3_name] = _m3_fn
+
+
+# ─── twins of the keynote motion candidates (atoms_motion_candidates.gs, 2026-10-10): lit, arcs, lockup, collage, bubbles, beats, pattern, dock, fit ───
+_IF_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
+_CL_FILLS = ['#2c3e66', '#7a3b6e', '#2f7d63', '#9a6120', '#3b4a6b', '#5a3d2b', '#1f5f7a', '#6b2d3c']
+_CL_PANELS = {'panel': 1, 'notch': 1, 'step': 1, 'tab': 1}
+_CL_LAYOUTS = {
+    'hero': [[5, 6, 44, 52], [52, 6, 43, 24], [52, 34, 43, 24], [5, 62, 90, 30]],
+    'rail': [[5, 6, 27, 86], [35, 6, 60, 40], [35, 50, 28, 42], [66, 50, 29, 42]],
+    'grid': [[5, 6, 43, 40], [52, 6, 43, 40], [5, 52, 43, 40], [52, 52, 43, 40]],
+    'split': [[5, 6, 43, 86], [52, 6, 43, 86]],
+    'stack': [[5, 6, 90, 26], [5, 37, 90, 26], [5, 68, 90, 26]],
+    'header': [[5, 6, 90, 22], [5, 32, 43, 60], [52, 32, 43, 60]],
+    'trio': [[5, 6, 28, 86], [36, 6, 28, 86], [67, 6, 28, 86]],
+    'mosaic': [[5, 6, 56, 52], [64, 6, 31, 24], [64, 34, 31, 24], [5, 62, 28, 30], [36, 62, 28, 30], [67, 62, 28, 30]],
+}
+_MLIT_LAYOUT = {'row': 'display:flex;gap:GAPpx;align-items:stretch;', 'column': 'display:flex;flex-direction:column;gap:GAPpx;', 'grid': 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:GAPpx;'}
+
+
+def _render_motion_lit(b: dict) -> str:
+    blocks = b.get('blocks')[:8] if isinstance(b.get('blocks'), list) else []
+    n = len(blocks) or 1
+    ac = _mo_ink(b, 'accent', '#5b8cff')
+    rgb = _ff_rgb(ac)
+    g = _ff_num(b.get('ghost'), 0.3, 0, 1, 2)
+    gap = _ff_int(b.get('gap'), 14, 0, 60)
+    edge = b.get('edge') is not False
+    lay = _ff_pick(b.get('layout'), _MLIT_LAYOUT, 'row').replace('GAP', str(gap))
+    css = ('<style>.mlit-i{position:relative;box-sizing:border-box;border-radius:14px;padding:12px 14px;min-width:0;flex:1 1 0}'
+           + ('.mlit-i::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:2px;pointer-events:none;'
+              'background:conic-gradient(from calc(var(--mlk)*360deg),transparent 0,transparent 55%,rgba(var(--mlc),0.95) 80%,transparent 100%);'
+              '-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);'
+              'opacity:calc(var(--mlk)*(1 - var(--mlk))*4)}' if edge else '') + '</style>')
+    items = ''
+    for i, blk in enumerate(blocks):
+        st = ('--mlg:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);--mlk:clamp(0,calc(var(--s,1)*' + str(n) + ' - ' + str(i) + '),1);--mlc:' + rgb + ';'
+              + 'opacity:calc(var(--mlg)*(' + g + ' + (1 - ' + g + ')*var(--mlk)));'
+              + 'border:1px solid rgba(' + rgb + ',calc(0.25 + 0.75*var(--mlk)));box-shadow:0 0 calc(18px*var(--mlk)) rgba(' + rgb + ',calc(0.5*var(--mlk)))')
+        items += '<div class="mlit-i" style="' + st + '">' + _mo_child(blk) + '</div>'
+    return css + '<div style="' + lay + '">' + items + '</div>'
+
+
+def _if_label(v):
+    return _cv_esc(str('Mark' if v is None or v == '' else v)[:60])
+
+
+def _mo_arcs_svg(b, uid, em_size):
+    arcs = b.get('arcs')[:4] if isinstance(b.get('arcs'), list) else []
+    n = len(arcs) or 1
+    defs, body = '', ''
+    if not arcs:
+        arcs = [{}]
+    for i, arc in enumerate(arcs):
+        a = arc if isinstance(arc, dict) else {}
+        c1 = _ff_hex(a.get('color'), '#34e0c3' if i % 2 else '#5b8cff')
+        c2 = _ff_hex(a.get('color2'), '')
+        r = _ff_num(a.get('r'), 34 - i * 8, 8, 48, 1)
+        frm = _ff_int(a.get('from'), 200 + i * 140, 0, 359)
+        sweep = _ff_int(a.get('sweep'), 220, 20, 340)
+        w = _ff_num(a.get('width'), 11, 3, 24, 1)
+        dx = _ff_num(a.get('dx'), 0, -30, 30, 1)
+        dy = _ff_num(a.get('dy'), 0, -30, 30, 1)
+        spin = _ff_int(a.get('spin'), -140, -720, 720)
+        blur = _ff_int(a.get('blur'), 6, 0, 24)
+        cx = _ff_num(50 + float(dx), 50, 5, 95, 1)
+        cy = _ff_num(50 + float(dy), 50, 5, 95, 1)
+        gid = 'mar' + uid + str(i)
+        if c2:
+            defs += '<linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient>'
+        k = 'clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1)'
+        body += ('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + ('url(#' + gid + ')' if c2 else c1) + '" stroke-width="' + w + '" stroke-linecap="round" pathLength="360" stroke-dasharray="' + str(sweep) + ' ' + str(360 - sweep) + '" '
+                 + 'style="--ak:' + k + ';transform-box:fill-box;transform-origin:50% 50%;transform:rotate(calc(' + str(frm) + 'deg + (1 - var(--ak))*' + str(spin) + 'deg));opacity:var(--ak);filter:blur(calc((1 - var(--ak))*' + str(blur) + 'px))"/>')
+    attrs = ('width="' + _m3_n(em_size) + 'em" height="' + _m3_n(em_size) + 'em" style="display:inline-block;vertical-align:-0.18em;overflow:visible;"' if em_size else 'width="100%" style="display:block;overflow:visible;"')
+    tail = ' aria-hidden="true"' if em_size else ' role="img" aria-label="' + _if_label(b.get('label')) + '"'
+    return '<svg viewBox="0 0 100 100" ' + attrs + ' focusable="false"' + tail + '>' + ('<defs>' + defs + '</defs>' if defs else '') + body + '</svg>'
+
+
+def _render_motion_arcs(b: dict) -> str:
+    return '<div style="width:100%;">' + _mo_arcs_svg({'arcs': b.get('arcs'), 'label': b.get('label')}, _wa_uid(b)[:6], 0) + '</div>'
+
+
+def _render_motion_lockup(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    raw = b.get('lines')[:4] if isinstance(b.get('lines'), list) else []
+    lines, total, mark, mark_line, mark_pos = [], 0, None, -1, -1
+    for rl in raw:
+        toks = rl[:8] if isinstance(rl, list) else []
+        row = []
+        for t in toks:
+            if total >= 24:
+                break
+            if isinstance(t, dict) and isinstance(t.get('mark'), (dict, list)) and mark is None:   # JS truthiness: {} and [] are objects, so they count
+                mark, mark_line, mark_pos = (t['mark'] if isinstance(t['mark'], dict) else {}), len(lines), len(row)
+                row.append({'mark': True})
+                total += 1
+            elif isinstance(t, str) and t.strip():
+                row.append({'w': t.strip()[:24]})
+                total += 1
+        if row:
+            lines.append(row)
+    if not lines:
+        lines = [[{'w': 'Text'}]]
+    flat = []
+    for l, row in enumerate(lines):
+        for p, tk in enumerate(row):
+            flat.append({'l': l, 'p': p, 'tk': tk})
+    for i, f in enumerate(flat):
+        f['d'] = (-1 if f['tk'].get('mark') else abs(f['l'] - mark_line) * 4 + abs(f['p'] - mark_pos)) if mark_line >= 0 else i
+        f['i'] = i
+    flat.sort(key=lambda f: (f['d'], f['i']))
+    for i, f in enumerate(flat):
+        f['tk']['o'] = i
+    tt = len(flat)
+    size = _ff_int(b.get('size'), 72, 14, 300)
+    lh = _ff_num(b.get('line_height'), 1.15, 0.9, 2, 2)
+    weight = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold')
+    font = _ff_pick(b.get('font'), _FF_FONTS, 'sans')
+    color = _mo_ink(b, 'color', 'var(--text,#0f172a)')
+    align = _ff_pick(b.get('align'), {'start': 'flex-start', 'center': 'center', 'end': 'flex-end'}, 'center')
+    settle = b.get('settle') is not False
+    lhpx = size * float(lh)
+    n = len(lines)
+    qv, sm = '', []
+    for l, row in enumerate(lines):
+        first = min(tk['o'] for tk in row)
+        qv += '--q' + str(l) + ':clamp(0,calc(var(--p,1)*' + str(tt + 2) + ' - ' + str(first) + '),1);'
+        sm.append('var(--q' + str(l) + ')')
+    shift = ('transform:translateY(calc((' + str(n) + ' - (' + ' + '.join(sm) + '))*' + _ff_num(lhpx * 0.5, 0, 0, 1000, 2) + 'px));' if settle and n > 1 else '')
+    body = ''
+    for row in lines:
+        body += '<div style="display:flex;justify-content:' + align + ';align-items:baseline;gap:0.28em;white-space:nowrap;">'
+        for tk in row:
+            st = '--u:clamp(0,calc(var(--p,1)*' + str(tt + 2) + ' - ' + str(tk['o']) + '),1);opacity:var(--u);filter:blur(calc((1 - var(--u))*8px));transform:translateY(calc((1 - var(--u))*0.18em));display:inline-block;'
+            body += ('<span style="' + st + '">' + _mo_arcs_svg(mark, uid, 0.95) + '</span>' if tk.get('mark') else '<span style="' + st + '">' + _cv_esc(tk['w']) + '</span>')
+        body += '</div>'
+    parts = []
+    for row in lines:
+        parts.append(' '.join((str(mark.get('label'))[:40] if mark.get('label') else 'mark') if tk.get('mark') else tk['w'] for tk in row))
+    plain = ' '.join(parts)
+    return ('<div role="img" aria-label="' + _cv_esc(plain) + '" style="font-family:' + font + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:' + lh + ';color:' + color + ';' + qv + shift + '"><div aria-hidden="true">' + body + '</div></div>')
+
+
+def _render_motion_collage(b: dict) -> str:
+    src = (b.get('sets') if isinstance(b.get('sets'), list) else [])[:4]
+    sets = []
+    for si, sraw in enumerate(src):
+        s = _m3_obj(sraw)
+        tl = (s.get('tiles') if isinstance(s.get('tiles'), list) else [])[:8]
+        tiles = []
+        for ti, traw in enumerate(tl):
+            t = _m3_obj(traw)
+            own = _mo_own(_CL_LAYOUTS, s.get('layout'), '')
+            lay = (_CL_LAYOUTS[s['layout']][ti] if ti < len(_CL_LAYOUTS[s['layout']]) else [10, 10, 30, 30]) if own else [10, 10, 30, 30]
+            tiles.append({'x': _ff_num(t.get('x'), lay[0], 0, 100, 1), 'y': _ff_num(t.get('y'), lay[1], 0, 100, 1), 'w': _ff_num(t.get('w'), lay[2], 2, 100, 1), 'h': _ff_num(t.get('h'), lay[3], 2, 100, 1),
+                          'fill': _ff_hex(t.get('fill'), _CL_FILLS[(si * 3 + ti) % 8]), 'fill2': _ff_hex(t.get('fill2'), ''), 'label': _cv_str(t.get('label'), 28), 'image': _mo_img(t.get('image')),
+                          'block': t.get('block') if isinstance(t.get('block'), dict) else None})
+        sets.append({'tiles': tiles, 'panel': _mo_own(_CL_PANELS, s.get('panel'), 'panel')})
+    while len(sets) < 2:
+        sets.append({'tiles': [], 'panel': 'panel'})
+    n = len(sets)
+    blur = _ff_int(b.get('blur'), 10, 0, 30)
+    g = _ff_num(b.get('ghost'), 0.18, 0, 1, 2)
+    radius = _ff_int(b.get('radius'), 10, 0, 40)
+    asp = _ff_num(b.get('aspect'), 1.78, 0.5, 3, 2)
+    pfill = _mo_ink(b, 'fill', '#f3e8ec')
+    u = 'var(--cu)'
+    layers, plain, idx = '', [], 0
+    for j, st in enumerate(sets):
+        vars_ = ('--ci:clamp(0,calc((' + u + ' - ' + str(j) + ' + 0.45)/0.45),1);--co:clamp(0,calc((' + u + ' - ' + str(j) + ')/0.33),1);--cg:calc(clamp(0,calc((' + u + ' - ' + str(j) + ' + 0.8)/0.2),1)*(1 - var(--ci)));')
+        show = 'calc(var(--ci)*(1 - var(--co)))'
+        wrap = 'position:absolute;inset:0;pointer-events:none;' + vars_ + 'opacity:max(' + show + ',calc(var(--cg)*' + g + '));filter:blur(calc((1 - ' + show + ')*' + str(blur) + 'px));'
+        inner = ''
+        for t in st['tiles']:
+            k = idx
+            idx += 1
+            bg = 'linear-gradient(135deg,' + t['fill'] + ',' + t['fill2'] + ')' if t['fill2'] else t['fill']
+            pic = ('<img src="' + _cv_esc(t['image']) + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;">' if t['image'] else '')
+            if t['block']:
+                body = pic + _mo_render(t['block'])
+            elif t['label']:
+                body = pic + '<span style="position:relative;' + ('background:rgba(8,10,20,0.62);padding:2px 8px;border-radius:6px;' if t['image'] else '') + '">' + _cv_esc(t['label']) + '</span>'
+            else:
+                body = pic
+            if t['label']:
+                plain.append(t['label'])
+            inner += ('<div style="position:absolute;left:' + t['x'] + '%;top:' + t['y'] + '%;width:' + t['w'] + '%;height:' + t['h'] + '%;box-sizing:border-box;border-radius:' + str(radius) + 'px;background:' + bg + ';color:#fff;font-weight:700;font-size:0.85rem;'
+                      + 'display:flex;align-items:flex-end;padding:8px 10px;overflow:hidden;opacity:clamp(0,calc(var(--p,1)*' + str(8 * n + 1) + ' - ' + str(k) + '),1);">' + body + '</div>')
+        layers += '<div style="' + wrap + '">' + inner + '</div>'
+    pts = []
+    for i in range(0, 96, 2):
+        x = _mo_t10(_MO_SHAPES[sets[0]['panel']][i]) + '%'
+        y = _mo_t10(_MO_SHAPES[sets[0]['panel']][i + 1]) + '%'
+        for j in range(1, n):
+            dx = _MO_SHAPES[sets[j]['panel']][i] - _MO_SHAPES[sets[j - 1]['panel']][i]
+            dy = _MO_SHAPES[sets[j]['panel']][i + 1] - _MO_SHAPES[sets[j - 1]['panel']][i + 1]
+            m = '*clamp(0,calc((' + u + ' - ' + str(j - 1) + ' - 0.2)/0.6),1)'
+            if dx:
+                x += ' + ' + _mo_t10(dx) + '%' + m
+            if dy:
+                y += ' + ' + _mo_t10(dy) + '%' + m
+        pts.append('calc(' + x + ') calc(' + y + ')')
+    poly = 'polygon(' + ','.join(pts) + ')'
+    title = _cv_esc(b['title'][:80] if isinstance(b.get('title'), str) and b.get('title') else 'Collage')
+    return ('<div role="group" aria-label="' + title + '" style="position:relative;width:100%;aspect-ratio:' + asp + ';--cu:calc(var(--s,1)*' + str(n - 1) + ');">'
+            + '<div aria-hidden="true" style="position:absolute;inset:0;background:' + pfill + ';clip-path:' + poly + ';-webkit-clip-path:' + poly + ';"></div>'
+            + '<div aria-hidden="true" style="position:absolute;inset:0;">' + layers + '</div>'
+            + ('<ul style="' + _IF_SR + '">' + ''.join('<li>' + _cv_esc(p) + '</li>' for p in plain) + '</ul>' if plain else '') + '</div>')
+
+
+def _bx_seed(seed, i, k):
+    x = math.sin((seed + 1) * 12.9898 + i * 78.233 + k * 37.719) * 43758.5453
+    return x - math.floor(x)
+
+
+def _render_motion_bubbles(b: dict) -> str:
+    n = _ff_int(b.get('count'), 7, 2, 14)
+    seed = _ff_int(b.get('seed'), 7, 0, 999)
+    size = _ff_int(b.get('size'), 16, 4, 40)
+    drift = _ff_int(b.get('drift'), 14, 0, 60)
+    asp = _ff_num(b.get('aspect'), 1.78, 0.5, 3, 2)
+    c1, c2 = _ff_hex(b.get('color'), '#8ad8ff'), _ff_hex(b.get('color2'), '#ff9be8')
+    out = ''
+    for i in range(n):
+        d = _m3_round(size * (0.55 + _bx_seed(seed, i, 3) * 0.9) * 10) / 10
+        x = _m3_round((4 + _bx_seed(seed, i, 1) * (92 - d * 0.56)) * 10) / 10
+        y = _m3_round((6 + _bx_seed(seed, i, 2) * 80) * 10) / 10
+        dx = _m3_round((_bx_seed(seed, i, 4) - 0.5) * 2 * drift * 10) / 10
+        dy = _m3_round((_bx_seed(seed, i, 5) - 0.5) * 2 * drift * 10) / 10
+        hue = _m3_round(_bx_seed(seed, i, 6) * 360)
+        out += ('<span style="position:absolute;left:' + _m3_n(x) + '%;top:' + _m3_n(y) + '%;width:' + _m3_n(d) + '%;aspect-ratio:1;border-radius:50%;box-sizing:border-box;'
+                + 'background:radial-gradient(circle at 30% 26%,rgba(255,255,255,0.9),rgba(255,255,255,0) 34%),conic-gradient(from ' + str(hue) + 'deg,' + c1 + ',' + c2 + ',' + c1 + ');'
+                + 'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.55),inset -0.4em -0.5em 1.2em rgba(255,255,255,0.35);'
+                + '--bi:clamp(0,calc(var(--p,1)*' + str(n + 2) + ' - ' + str(i) + '),1);opacity:calc(var(--bi)*0.72);'
+                + 'transform:translate(calc(var(--s,1)*' + _m3_n(dx) + 'cqw),calc(var(--s,1)*' + _m3_n(dy) + 'cqw)) scale(calc(0.4 + var(--bi)*0.6));"></span>')
+    named = isinstance(b.get('label'), str) and b.get('label')
+    return ('<div ' + ('role="img" aria-label="' + _cv_esc(_cv_str(b.get('label'), 60)) + '"' if named else 'aria-hidden="true"') + ' style="position:relative;width:100%;aspect-ratio:' + asp + ';container-type:inline-size;overflow:hidden;pointer-events:none;">' + out + '</div>')
+
+
+def _render_motion_beats(b: dict) -> str:
+    src = _m3_list(b.get('items'), 12)
+    items = []
+    for i, raw in enumerate(src):
+        o = _m3_obj(raw)
+        items.append({'text': _cv_str(o.get('text'), 24), 'bg': _ff_hex(o.get('bg'), _CL_FILLS[i % 8]), 'color': _ff_hex(o.get('color'), '#ffffff'), 'font': _ff_pick(o.get('font'), _FF_FONTS, 'sans'), 'shape': _mo_own(_MO_SHAPES, o.get('shape'), '')})
+    while len(items) < 2:
+        items.append({'text': '' if len(items) else 'A', 'bg': '#26346a', 'color': '#ffffff', 'font': _FF_FONTS['sans'], 'shape': ''})
+    n = len(items)
+    size = _ff_int(b.get('size'), 160, 24, 400)
+    asp = _ff_num(b.get('aspect'), 1.78, 0.5, 3, 2)
+    w = '0.2' if b.get('transition') == 'fade' else '0.001'
+    weight = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black')
+    u = 'calc(var(--s,1)*' + str(n) + ')'
+    layers, plain = '', []
+    for j, it in enumerate(items):
+        inn = '1' if j == 0 else 'clamp(0,calc((' + u + ' - ' + str(j) + ')/' + w + '),1)'
+        outt = '1' if j == n - 1 else '(1 - clamp(0,calc((' + u + ' - ' + str(j + 1) + ' + ' + w + ')/' + w + '),1))'
+        blob = ''
+        if it['shape']:
+            pts = [_mo_t10(_MO_SHAPES[it['shape']][k]) + '% ' + _mo_t10(_MO_SHAPES[it['shape']][k + 1]) + '%' for k in range(0, 96, 2)]
+            blob = ('<span style="position:absolute;left:50%;top:50%;height:86%;aspect-ratio:1;transform:translate(-50%,-50%);background:' + it['color'] + ';opacity:0.18;clip-path:polygon(' + ','.join(pts) + ');-webkit-clip-path:polygon(' + ','.join(pts) + ');"></span>')
+        layers += ('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:' + it['bg'] + ';color:' + it['color'] + ';opacity:calc(' + inn + '*' + outt + ');">' + blob
+                   + '<span style="position:relative;font-family:' + it['font'] + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:1;white-space:nowrap;">' + _cv_esc(it['text']) + '</span></div>')
+        if it['text']:
+            plain.append(it['text'])
+    return ('<div role="img" aria-label="' + _cv_esc(', '.join(plain) or 'Sequence') + '" style="position:relative;width:100%;aspect-ratio:' + asp + ';overflow:hidden;opacity:clamp(0,calc(var(--p,1)*4),1);"><div aria-hidden="true" style="position:absolute;inset:0;">' + layers + '</div></div>')
+
+
+def _render_motion_pattern(b: dict) -> str:
+    text = _cv_str(b.get('text'), 28) or 'Text'
+    rows, rep = _ff_int(b.get('rows'), 5, 1, 8), _ff_int(b.get('repeat'), 6, 1, 10)
+    ang, size, slide = _ff_int(b.get('angle'), -20, -90, 90), _ff_int(b.get('size'), 56, 14, 200), _ff_int(b.get('slide'), 24, 0, 100)
+    asp, color = _ff_num(b.get('aspect'), 1.78, 0.5, 3, 2), _mo_ink(b, 'color', 'currentColor')
+    weight, font = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'bold'), _ff_pick(b.get('font'), _FF_FONTS, 'sans')
+    out = ''
+    for r in range(rows):
+        row = ''.join('<span style="padding-right:0.6em;">' + _cv_esc(text) + '</span>' for _ in range(rep))
+        out += ('<div style="white-space:nowrap;text-align:center;transform:translateX(calc(var(--s,1)*' + str(slide if r % 2 else -slide) + '%));opacity:clamp(0,calc(var(--p,1)*' + str(rows + 1) + ' - ' + str(r) + '),1);">' + row + '</div>')
+    name = _cv_str(b.get('label'), 80) if isinstance(b.get('label'), str) and b.get('label') else text
+    return ('<div role="img" aria-label="' + _cv_esc(name) + '" style="position:relative;width:100%;aspect-ratio:' + asp + ';overflow:hidden;"><div aria-hidden="true" style="position:absolute;left:50%;top:50%;width:200%;transform:translate(-50%,-50%) rotate(' + str(ang) + 'deg);'
+            + 'font-family:' + font + ';font-weight:' + weight + ';font-size:' + str(size) + 'px;line-height:1.2;color:' + color + ';">' + out + '</div></div>')
+
+
+def _render_motion_dock(b: dict) -> str:
+    src = _m3_list(b.get('items'), 7)
+    items = []
+    for i, raw in enumerate(src):
+        o = _m3_obj(raw)
+        items.append({'glyph': _cv_str(o.get('glyph'), 2), 'label': _cv_str(o.get('label'), 28) or ('Item ' + str(i + 1)), 'fill': _ff_hex(o.get('fill'), _CL_FILLS[i % 8])})
+    while len(items) < 2:
+        items.append({'glyph': '', 'label': 'Item ' + str(len(items) + 1), 'fill': _CL_FILLS[len(items) % 8]})
+    n = len(items)
+    cell = _ff_int(b.get('size'), 56, 24, 120)
+    pad = _m3_round(cell * 0.2)
+    bg, ring = _mo_ink(b, 'fill', '#eef1f7'), _mo_ink(b, 'accent', '#5b8cff')
+    lis = ''
+    for j, it in enumerate(items):
+        lis += ('<li style="position:relative;width:' + str(cell) + 'px;height:' + str(cell) + 'px;display:flex;align-items:center;justify-content:center;--di:clamp(0,calc(var(--p,1)*' + str(n + 2) + ' - ' + str(j) + '),1);opacity:var(--di);transform:scale(calc(0.5 + var(--di)*0.5));">'
+                + '<span aria-hidden="true" style="width:72%;height:72%;border-radius:50%;background:' + it['fill'] + ';color:#fff;font-weight:800;font-size:' + str(_m3_round(cell * 0.34)) + 'px;display:flex;align-items:center;justify-content:center;">' + _cv_esc(it['glyph']) + '</span>'
+                + '<span style="' + _IF_SR + '">' + _cv_esc(it['label']) + '</span></li>')
+    return ('<div style="display:inline-block;position:relative;padding:' + str(pad) + 'px;border-radius:' + _m3_n(cell / 2 + pad) + 'px;background:' + bg + ';">'
+            + '<span aria-hidden="true" style="position:absolute;left:' + str(pad) + 'px;top:' + str(pad) + 'px;width:' + str(cell) + 'px;height:' + str(cell) + 'px;border-radius:50%;box-shadow:0 0 0 3px ' + ring + ';background:rgba(255,255,255,0.55);'
+            + 'transform:translateX(calc(clamp(0,var(--s,1),1)*' + str((n - 1) * cell) + 'px));opacity:clamp(0,calc(var(--p,1)*3),1);"></span>'
+            + '<ul style="position:relative;display:flex;margin:0;padding:0;list-style:none;">' + lis + '</ul></div>')
+
+
+def _render_motion_fit(b: dict) -> str:
+    text = _cv_str(b.get('text'), 20) or 'Text'
+    fill = _ff_num(b.get('fill'), 0.96, 0.4, 1, 2)
+    color = _mo_ink(b, 'color', 'var(--text,#0f172a)')
+    weight, font = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), _ff_pick(b.get('font'), _FF_FONTS, 'sans')
+    upper = b.get('upper') is not False
+    n = max(len(text), 2)
+    fs = _m3_n(_m3_round(100 * float(fill) / (n * 0.62) * 100) / 100)
+    rec = b.get('recede') is True
+    tr = 'scale(calc(0.7 + clamp(0,var(--p,1),1)*0.3' + (' - var(--s,0)*0.45' if rec else '') + '))'
+    op = 'clamp(0,calc(var(--p,1)*3),1)' + ('*(1 - var(--s,0)*0.7)' if rec else '')
+    return ('<div style="width:100%;container-type:inline-size;overflow:hidden;"><div style="font-family:' + font + ';font-weight:' + weight + ';font-size:' + fs + 'cqw;line-height:1;white-space:nowrap;text-align:center;color:' + color + ';'
+            + ('text-transform:uppercase;' if upper else '') + 'opacity:calc(' + op + ');transform:' + tr + ';">' + _cv_esc(text) + '</div></div>')
+
+
+for _m9_name, _m9_fn in (('motion_lit', _render_motion_lit), ('motion_arcs', _render_motion_arcs), ('motion_lockup', _render_motion_lockup), ('motion_collage', _render_motion_collage),
+                         ('motion_bubbles', _render_motion_bubbles), ('motion_beats', _render_motion_beats), ('motion_pattern', _render_motion_pattern), ('motion_dock', _render_motion_dock), ('motion_fit', _render_motion_fit)):
+    _RENDERERS[_m9_name] = _m9_fn
+
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
 _gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()

@@ -20958,6 +20958,7 @@ blocks:
   - Draw an animated mark made of partial circles.
   surfaces: &mla001
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
     - android
@@ -21128,4 +21129,73 @@ blocks:
     weight: "string (optional). regular, bold or black. Default black."
     font: "string (optional). Engine font name. Default sans."
   notes: "Sizing assumes an average letter width, so a very wide or very narrow word can fill a little more or less than the width asked for."
+  source: *mla002
+- type: motion_theme
+  stage: preview
+  description: "Child blocks whose colour tokens (text, muted, border, surface, bg, accent) morph between a dark and a light theme with the step dial s: 0 is the from theme, 1 is the to theme. One set of tokens is mixed, so every child that reads them moves together and text stays readable at the midpoint. Plain HTML and CSS, no script."
+  compact_description: "a dark to light theme switch that cross-fades its children"
+  routing_text: "Show a screen switching from dark mode to light mode, or the reverse, as a smooth colour cross-fade."
+  intent_phrases:
+  - "Show the dashboard switching from dark to light mode."
+  - "Animate a theme toggle over these cards."
+  surfaces: *mla001
+  fields:
+    blocks: "array (required, 1 to 6) of atoms drawn inside the themed surface."
+    from: "\"dark\" | \"light\" (optional, default dark)."
+    to: "\"dark\" | \"light\" (optional, default light). If equal to from, the opposite theme is used."
+  notes: "Measured from recordings: the live toggle takes 0.33 to 0.43 s with an ease-out curve, so give the step key about 0.4 s in a motion_timeline and an ease-out token. Alone it renders the to theme. Surfaces fade smoothly; text, muted text and accent flip at the half-way point, because a plain mix would put words and surface at the same grey. Worst contrast during the switch is about 3:1, and it lasts a few frames. Children read the tokens --text, --text-muted, --muted, --border, --surface, --surface-2, --surface2, --bg and --accent; atoms with their own fixed colours do not change."
+  source: *mla002
+- type: motion_dialog
+  stage: preview
+  description: "A dialog that enters over a dimmed scrim: the scrim takes the first fifth of p, then the dialog fades in and rises or scales to rest. Real text, an accessible dialog name, optional action labels (not focusable; this is a picture of a dialog). Plain HTML and CSS."
+  compact_description: "a scrim fades in and a dialog scales or rises into place"
+  routing_text: "Show a confirmation or alert dialog appearing over a dimmed screen."
+  intent_phrases:
+  - "Show a confirm dialog popping up over the page."
+  - "Animate a modal entrance with a dimmed background."
+  surfaces: *mla001
+  fields:
+    title: "string (required, max 60). Also the accessible name."
+    body: "string (optional, max 200)."
+    actions: "array (optional, up to 3) of {label (max 20), primary (bool)}."
+    enter: "\"fade\" | \"rise\" | \"scale\" (optional, default scale)."
+    dim: "number (optional). Scrim strength, 0.2 to 0.8. Default 0.45."
+    scrim: "\"#rrggbb\" (optional). Scrim colour. Default #000000."
+    aspect: "number (optional). Width over height, 0.8 to 3. Default 1.6."
+  notes: "Observed: scrim about 0.2 s, dialog about 0.3 s. At p = 1 everything is at rest. Use the real modal atom when the reader must open and close it."
+  source: *mla002
+- type: motion_dots
+  stage: preview
+  description: "One line of text on a 5 by 7 dot matrix that resolves into another line, left to right, with the step dial s (0 shows from, 1 shows to). Dots lit in both lines stay lit. Letters, digits and . , ! ? - only. The accessible name is the final text."
+  compact_description: "dot-matrix text that morphs from one phrase to another"
+  routing_text: "A dot-matrix or LED sign where one phrase turns into another."
+  intent_phrases:
+  - "Make a dot-matrix sign that changes from DONE to ASK AN AGENT."
+  - "Show LED lettering morphing between two words."
+  surfaces: *mla001
+  fields:
+    from: "string (required, max 14). Upper-cased; other characters are dropped."
+    to: "string (required, max 14)."
+    color: "\"#rrggbb\" (optional). Default #e8edf2."
+    color2: "\"#rrggbb\" (optional). Colour of dots that leave. Default color."
+    grid: "bool (optional). Faint unlit dots. Default true."
+    label: "string (optional, max 80). Accessible name. Default the to text."
+  notes: "Up to 14 characters per line (about 590 dots). Reads as the final text; the starting line is not announced."
+  source: *mla002
+- type: motion_sweep
+  stage: preview
+  description: "A slanted band of soft light that crosses its child blocks with the step dial s: 0 is off the left edge, 1 is off the right edge, so it rests invisible. Decorative and aria-hidden. Plain HTML and CSS."
+  compact_description: "a diagonal light streak sweeping across a card"
+  routing_text: "A diagonal sheen or light streak passing over a card or panel."
+  intent_phrases:
+  - "Run a light streak across this card."
+  - "Add a diagonal shine sweep over the panel."
+  surfaces: *mla001
+  fields:
+    blocks: "array (required, 1 to 6) of atoms the light crosses."
+    angle: "integer (optional). Degrees, 5 to 60. Default 20."
+    width: "integer (optional). Band width as percent of the box, 8 to 60. Default 28."
+    strength: "number (optional). 0.1 to 0.8. Default 0.35."
+    color: "\"#rrggbb\" (optional). Default #ffffff."
+  notes: "One pass, soft edges, no repeat: nothing flashes. Movement comes from the film's step key, never a CSS loop."
   source: *mla002
