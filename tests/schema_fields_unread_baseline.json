@@ -473,6 +473,46 @@
   "children",
   "size"
  ],
+ "motion_disperse": [
+  "align",
+  "color",
+  "font",
+  "weight"
+ ],
+ "motion_drop": [
+  "align",
+  "color",
+  "font",
+  "weight"
+ ],
+ "motion_flag": [
+  "align",
+  "color",
+  "font",
+  "size",
+  "weight"
+ ],
+ "motion_foil": [
+  "align",
+  "color",
+  "font",
+  "size",
+  "weight"
+ ],
+ "motion_reveal": [
+  "align",
+  "color",
+  "font",
+  "size",
+  "weight"
+ ],
+ "motion_streak": [
+  "align",
+  "color",
+  "font",
+  "size",
+  "weight"
+ ],
  "motion_timeline": [
   "accent",
   "aspect",
@@ -497,6 +537,12 @@
  ],
  "motion_tokens": [
   "theme"
+ ],
+ "motion_wrap": [
+  "align",
+  "color",
+  "font",
+  "weight"
  ],
  "multi_select_input": [
   "placeholder"

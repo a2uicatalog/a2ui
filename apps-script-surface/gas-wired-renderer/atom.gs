@@ -1164,7 +1164,7 @@ _RENDERERS['youtube'] = function(b) {
   var cap = b.caption ? '<p style="font-size:0.75rem;color:var(--muted);margin:6px 0 0;text-align:center">' + _esc(b.caption) + '</p>' : '';
   return '<div style="width:100%;margin:12px 0">' +
          '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px">' +
-         '<iframe src="' + src + '" ' +
+         '<iframe src="' + src + '" title="' + _esc(b.caption || 'YouTube video') + '" ' +
          'style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" ' +
          'allow="autoplay; encrypted-media; picture-in-picture" ' +
          'allowfullscreen></iframe>' +
@@ -1193,7 +1193,7 @@ _RENDERERS['embed_stackblitz'] = function(b) {
     + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
     + '<div style="padding:7px 12px;background:#1a1a2e;border-bottom:1px solid #2a2a3e;'
     + 'font-size:0.78rem;color:#89dceb;font-family:monospace;">⚡ StackBlitz · ' + _esc(title) + '</div>'
-    + '<iframe src="' + _esc(url) + '" height="' + _esc(String(height)) + '" '
+    + '<iframe src="' + _esc(url) + '" title="' + _esc(title) + '" height="' + _esc(String(height)) + '" '
     + 'style="width:100%;border:none;display:block;" allowfullscreen loading="lazy"></iframe></div>';
 };
 
@@ -1642,10 +1642,10 @@ _RENDERERS['further_reading'] = function(b) {
     var annotation = l.annotation ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(l.annotation) + '</div>' : '';
     return '<a href="' + _esc(l.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
       '<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
-      '<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
+      '<div><div style="font-size:0.88rem;font-weight:600;color:var(--accent,#1d4ed8);">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
   }).join('');
   return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:#374151;margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
+    '<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
 };
 
 // Was fully hardcoded light-theme hex — invisible borders and clashing blue
@@ -1690,7 +1690,7 @@ _RENDERERS['checklist_interactive'] = function(b) {
     var text = typeof item === 'string' ? item : (item.text || item.label || '');
     return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
       '<input type="checkbox" aria-label="' + _esc(text) + '" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
-      '<span style="font-size:0.88rem;color:#374151;">' + _esc(text) + '</span></li>';
+      '<span style="font-size:0.88rem;color:var(--text,#374151);">' + _esc(text) + '</span></li>';
   }).join('');
   return '<ul style="list-style:none;padding:12px 18px;margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;">' + lis + '</ul>';
 };
@@ -2438,9 +2438,9 @@ _RENDERERS['anchor_list'] = function(b) {
 _RENDERERS['glossary_term'] = function(b) {
   var term = b.term || b.name || '';
   var definition = b.definition || b.text || '';
-  return '<div style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
+  return '<dl style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
     '<dt style="font-weight:700;color:#7c3aed;font-size:0.9rem;">' + _esc(term) + '</dt>' +
-    '<dd style="margin:4px 0 0 0;font-size:0.85rem;color:#374151;">' + _markdownToHtml(definition) + '</dd></div>';
+    '<dd style="margin:4px 0 0 0;font-size:0.85rem;color:#374151;">' + _markdownToHtml(definition) + '</dd></dl>';
 };
 
 _RENDERERS['blockquote_with_avatar'] = function(b) {
@@ -3185,7 +3185,7 @@ _RENDERERS['file_upload'] = function(b) {
   var accept = b.accept || '.pdf,.md,.markdown,.txt';
   var targetId = b.target_id || '';
   return '<div style="margin-bottom:12px;">' +
-    (label ? '<label style="display:block;font-size:14px;font-weight:600;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</label>' : '') +
+    (label ? '<label for="fu-' + uid + '" style="display:block;font-size:14px;font-weight:600;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</label>' : '') +
     '<input type="file" id="fu-' + uid + '" accept="' + _esc(accept) + '" ' +
       'style="display:block;width:100%;font-size:13px;color:var(--muted,#6b7280);">' +
     '<div id="fu-status-' + uid + '" style="font-size:12px;color:var(--muted,#6b7280);margin-top:4px;"></div>' +

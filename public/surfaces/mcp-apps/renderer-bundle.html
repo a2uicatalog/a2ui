@@ -2165,7 +2165,7 @@ _RENDERERS['youtube'] = function(b) {
   var cap = b.caption ? '<p style="font-size:0.75rem;color:var(--muted);margin:6px 0 0;text-align:center">' + _esc(b.caption) + '</p>' : '';
   return '<div style="width:100%;margin:12px 0">' +
          '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px">' +
-         '<iframe src="' + src + '" ' +
+         '<iframe src="' + src + '" title="' + _esc(b.caption || 'YouTube video') + '" ' +
          'style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" ' +
          'allow="autoplay; encrypted-media; picture-in-picture" ' +
          'allowfullscreen></iframe>' +
@@ -2194,7 +2194,7 @@ _RENDERERS['embed_stackblitz'] = function(b) {
     + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
     + '<div style="padding:7px 12px;background:#1a1a2e;border-bottom:1px solid #2a2a3e;'
     + 'font-size:0.78rem;color:#89dceb;font-family:monospace;">⚡ StackBlitz · ' + _esc(title) + '</div>'
-    + '<iframe src="' + _esc(url) + '" height="' + _esc(String(height)) + '" '
+    + '<iframe src="' + _esc(url) + '" title="' + _esc(title) + '" height="' + _esc(String(height)) + '" '
     + 'style="width:100%;border:none;display:block;" allowfullscreen loading="lazy"></iframe></div>';
 };
 
@@ -2643,10 +2643,10 @@ _RENDERERS['further_reading'] = function(b) {
     var annotation = l.annotation ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(l.annotation) + '</div>' : '';
     return '<a href="' + _esc(l.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
       '<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
-      '<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
+      '<div><div style="font-size:0.88rem;font-weight:600;color:var(--accent,#1d4ed8);">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
   }).join('');
   return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:#374151;margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
+    '<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
 };
 
 // Was fully hardcoded light-theme hex — invisible borders and clashing blue
@@ -2691,7 +2691,7 @@ _RENDERERS['checklist_interactive'] = function(b) {
     var text = typeof item === 'string' ? item : (item.text || item.label || '');
     return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
       '<input type="checkbox" aria-label="' + _esc(text) + '" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
-      '<span style="font-size:0.88rem;color:#374151;">' + _esc(text) + '</span></li>';
+      '<span style="font-size:0.88rem;color:var(--text,#374151);">' + _esc(text) + '</span></li>';
   }).join('');
   return '<ul style="list-style:none;padding:12px 18px;margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;">' + lis + '</ul>';
 };
@@ -3439,9 +3439,9 @@ _RENDERERS['anchor_list'] = function(b) {
 _RENDERERS['glossary_term'] = function(b) {
   var term = b.term || b.name || '';
   var definition = b.definition || b.text || '';
-  return '<div style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
+  return '<dl style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
     '<dt style="font-weight:700;color:#7c3aed;font-size:0.9rem;">' + _esc(term) + '</dt>' +
-    '<dd style="margin:4px 0 0 0;font-size:0.85rem;color:#374151;">' + _markdownToHtml(definition) + '</dd></div>';
+    '<dd style="margin:4px 0 0 0;font-size:0.85rem;color:#374151;">' + _markdownToHtml(definition) + '</dd></dl>';
 };
 
 _RENDERERS['blockquote_with_avatar'] = function(b) {
@@ -4186,7 +4186,7 @@ _RENDERERS['file_upload'] = function(b) {
   var accept = b.accept || '.pdf,.md,.markdown,.txt';
   var targetId = b.target_id || '';
   return '<div style="margin-bottom:12px;">' +
-    (label ? '<label style="display:block;font-size:14px;font-weight:600;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</label>' : '') +
+    (label ? '<label for="fu-' + uid + '" style="display:block;font-size:14px;font-weight:600;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</label>' : '') +
     '<input type="file" id="fu-' + uid + '" accept="' + _esc(accept) + '" ' +
       'style="display:block;width:100%;font-size:13px;color:var(--muted,#6b7280);">' +
     '<div id="fu-status-' + uid + '" style="font-size:12px;color:var(--muted,#6b7280);margin-top:4px;"></div>' +
@@ -28666,7 +28666,7 @@ _RENDERERS['motion_swatches'] = function(b) {
 
 // motion_glass: a frosted pane that blurs whatever is behind it; the blur, the tint and the scale come in with p. Its children are ordinary atoms.
 _RENDERERS['motion_glass'] = function(b) {
-  var blocks = _bxList(b.blocks, 6), inner = '', i, blur = _ffInt(b.blur, 18, 2, 40), tint = _ffHex(b.tint, '#ffffff'), str = _ffNum(b.strength, 0.22, 0.05, 0.6, 2), rad = _ffInt(b.radius, 18, 0, 40), pad = _ffInt(b.padding, 18, 0, 48);
+  var blocks = _bxList(b.blocks, 6), inner = '', i, blur = _ffInt(b.blur, 18, 2, 40), tint = _ffHex(b.tint, '#ffffff'), str = _ffNum(b.strength, 0.14, 0.05, 0.6, 2), rad = _ffInt(b.radius, 18, 0, 40), pad = _ffInt(b.padding, 18, 0, 48);
   for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
   return '<div style="--k:clamp(0,var(--p,1),1);position:relative;box-sizing:border-box;padding:' + pad + 'px;border-radius:' + rad + 'px;background:rgba(' + _ffRgb(tint) + ',calc(' + str + '*var(--k)));' +
     'backdrop-filter:blur(calc(var(--k)*' + blur + 'px)) saturate(1.15);-webkit-backdrop-filter:blur(calc(var(--k)*' + blur + 'px)) saturate(1.15);' +
@@ -28723,7 +28723,7 @@ _RENDERERS['motion_ring'] = function(b) {
 var _HL_LOOK = {marker: ['0.1em', '0.04em', '-1deg'], underline: ['0.72em', '-0.02em', '0deg'], strike: ['0.46em', '0.4em', '0deg']};
 _RENDERERS['motion_highlight'] = function(b) {
   var text = _moStr(b.text, 80) || 'Text', look = _ffPick(b.style, {marker: 'marker', underline: 'underline', strike: 'strike'}, 'marker'), g = _HL_LOOK[look], size = _ffInt(b.size, 40, 12, 160);
-  var hl = _moInk(b, 'color', '#ffe94a'), ink = _moInk(b, 'ink', 'currentColor'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
+  var hl = _moInk(b, 'color', '#ffe94a'), ink = _moInk(b, 'ink', look === 'marker' ? '#111111' : 'currentColor'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
   return '<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1.3;color:' + ink + ';white-space:nowrap;">' +
     '<span aria-hidden="true" style="position:absolute;left:-0.12em;right:-0.12em;top:' + g[0] + ';bottom:' + g[1] + ';background:' + hl + ';border-radius:0.12em;transform:rotate(' + g[2] + ') skewX(-6deg);clip-path:inset(0 calc((1 - clamp(0,var(--p,1),1))*100%) 0 0);"></span>' +
     '<span style="position:relative;">' + _esc(text) + '</span></span>';
@@ -28827,7 +28827,7 @@ _RENDERERS['motion_tabs'] = function(b) {
   while (items.length < 2) items.push('Tab ' + (items.length + 1));
   var n = items.length, size = _ffInt(b.size, 28, 12, 80), ink = _moInk(b, 'color', 'currentColor'), acc = _moInk(b, 'accent', '#2563eb'), pos = 'var(--s,1)*' + (n - 1), cells = '';
   items.forEach(function(t, j) {
-    cells += '<span style="text-align:center;padding:0.5em 0.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:calc(0.4 + 0.6*clamp(0,calc(1 - abs(' + pos + ' - ' + j + ')),1));">' + _esc(t) + '</span>';
+    cells += '<span style="text-align:center;padding:0.5em 0.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:calc(0.7 + 0.3*clamp(0,calc(1 - abs(' + pos + ' - ' + j + ')),1));">' + _esc(t) + '</span>';
   });
   return '<div style="position:relative;display:grid;grid-template-columns:repeat(' + n + ',1fr);width:100%;font-size:' + size + 'px;font-weight:600;color:' + ink + ';border-bottom:1px solid ' + ink + '33;opacity:clamp(0,calc(var(--p,1)*4),1);">' + cells +
     '<span aria-hidden="true" style="position:absolute;bottom:-1px;height:3px;border-radius:2px;background:' + acc + ';width:calc(70%/' + n + ');left:calc((' + pos + ' + 0.15)*100%/' + n + ');"></span></div>';
@@ -32872,7 +32872,7 @@ _RENDERERS['social_proof_banner'] = function(b) {
   var quote  = b.testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(b.testimonial) + '"</blockquote>' : '';
   // Schema also declares `icon_url` and `link_url`; neither was ever used at all
   // (surface-parity debt). 2026-09-27.
-  var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
+  var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
   var body = iconHtml
     + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
     + metric
@@ -32986,7 +32986,7 @@ _RENDERERS['media_stream_card'] = function(b) {
     // allow="autoplay" is required, not decorative -- without it in the
     // iframe's own Permissions Policy, the autoplay=1 query param is
     // silently ignored regardless of the mute state.
-    + '<iframe src="' + _safeUrl(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" sandbox="' + sandbox + '"></iframe>'
+    + '<iframe src="' + _safeUrl(src) + '" title="' + _esc(title || 'Media stream') + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" sandbox="' + sandbox + '"></iframe>'
     + '</div></div>';
 };
 

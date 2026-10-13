@@ -303,7 +303,7 @@ _RENDERERS['social_proof_banner'] = function(b) {
   var quote  = b.testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(b.testimonial) + '"</blockquote>' : '';
   // Schema also declares `icon_url` and `link_url`; neither was ever used at all
   // (surface-parity debt). 2026-09-27.
-  var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
+  var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
   var body = iconHtml
     + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
     + metric
@@ -417,7 +417,7 @@ _RENDERERS['media_stream_card'] = function(b) {
     // allow="autoplay" is required, not decorative -- without it in the
     // iframe's own Permissions Policy, the autoplay=1 query param is
     // silently ignored regardless of the mute state.
-    + '<iframe src="' + _safeUrl(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" sandbox="' + sandbox + '"></iframe>'
+    + '<iframe src="' + _safeUrl(src) + '" title="' + _esc(title || 'Media stream') + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" sandbox="' + sandbox + '"></iframe>'
     + '</div></div>';
 };
 

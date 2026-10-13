@@ -391,7 +391,7 @@ _RENDERERS['motion_swatches'] = function(b) {
 
 // motion_glass: a frosted pane that blurs whatever is behind it; the blur, the tint and the scale come in with p. Its children are ordinary atoms.
 _RENDERERS['motion_glass'] = function(b) {
-  var blocks = _bxList(b.blocks, 6), inner = '', i, blur = _ffInt(b.blur, 18, 2, 40), tint = _ffHex(b.tint, '#ffffff'), str = _ffNum(b.strength, 0.22, 0.05, 0.6, 2), rad = _ffInt(b.radius, 18, 0, 40), pad = _ffInt(b.padding, 18, 0, 48);
+  var blocks = _bxList(b.blocks, 6), inner = '', i, blur = _ffInt(b.blur, 18, 2, 40), tint = _ffHex(b.tint, '#ffffff'), str = _ffNum(b.strength, 0.14, 0.05, 0.6, 2), rad = _ffInt(b.radius, 18, 0, 40), pad = _ffInt(b.padding, 18, 0, 48);
   for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
   return '<div style="--k:clamp(0,var(--p,1),1);position:relative;box-sizing:border-box;padding:' + pad + 'px;border-radius:' + rad + 'px;background:rgba(' + _ffRgb(tint) + ',calc(' + str + '*var(--k)));' +
     'backdrop-filter:blur(calc(var(--k)*' + blur + 'px)) saturate(1.15);-webkit-backdrop-filter:blur(calc(var(--k)*' + blur + 'px)) saturate(1.15);' +
@@ -448,7 +448,7 @@ _RENDERERS['motion_ring'] = function(b) {
 var _HL_LOOK = {marker: ['0.1em', '0.04em', '-1deg'], underline: ['0.72em', '-0.02em', '0deg'], strike: ['0.46em', '0.4em', '0deg']};
 _RENDERERS['motion_highlight'] = function(b) {
   var text = _moStr(b.text, 80) || 'Text', look = _ffPick(b.style, {marker: 'marker', underline: 'underline', strike: 'strike'}, 'marker'), g = _HL_LOOK[look], size = _ffInt(b.size, 40, 12, 160);
-  var hl = _moInk(b, 'color', '#ffe94a'), ink = _moInk(b, 'ink', 'currentColor'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
+  var hl = _moInk(b, 'color', '#ffe94a'), ink = _moInk(b, 'ink', look === 'marker' ? '#111111' : 'currentColor'), weight = _ffPick(b.weight, _FF_WEIGHTS, 'bold'), font = _ffPick(b.font, _FF_FONTS, 'sans');
   return '<span style="position:relative;display:inline-block;font-family:' + font + ';font-weight:' + weight + ';font-size:' + size + 'px;line-height:1.3;color:' + ink + ';white-space:nowrap;">' +
     '<span aria-hidden="true" style="position:absolute;left:-0.12em;right:-0.12em;top:' + g[0] + ';bottom:' + g[1] + ';background:' + hl + ';border-radius:0.12em;transform:rotate(' + g[2] + ') skewX(-6deg);clip-path:inset(0 calc((1 - clamp(0,var(--p,1),1))*100%) 0 0);"></span>' +
     '<span style="position:relative;">' + _esc(text) + '</span></span>';
@@ -552,7 +552,7 @@ _RENDERERS['motion_tabs'] = function(b) {
   while (items.length < 2) items.push('Tab ' + (items.length + 1));
   var n = items.length, size = _ffInt(b.size, 28, 12, 80), ink = _moInk(b, 'color', 'currentColor'), acc = _moInk(b, 'accent', '#2563eb'), pos = 'var(--s,1)*' + (n - 1), cells = '';
   items.forEach(function(t, j) {
-    cells += '<span style="text-align:center;padding:0.5em 0.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:calc(0.4 + 0.6*clamp(0,calc(1 - abs(' + pos + ' - ' + j + ')),1));">' + _esc(t) + '</span>';
+    cells += '<span style="text-align:center;padding:0.5em 0.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:calc(0.7 + 0.3*clamp(0,calc(1 - abs(' + pos + ' - ' + j + ')),1));">' + _esc(t) + '</span>';
   });
   return '<div style="position:relative;display:grid;grid-template-columns:repeat(' + n + ',1fr);width:100%;font-size:' + size + 'px;font-weight:600;color:' + ink + ';border-bottom:1px solid ' + ink + '33;opacity:clamp(0,calc(var(--p,1)*4),1);">' + cells +
     '<span aria-hidden="true" style="position:absolute;bottom:-1px;height:3px;border-radius:2px;background:' + acc + ';width:calc(70%/' + n + ');left:calc((' + pos + ' + 0.15)*100%/' + n + ');"></span></div>';
