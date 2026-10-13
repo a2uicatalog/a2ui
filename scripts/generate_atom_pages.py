@@ -407,7 +407,17 @@ import sys as _sys_brand, os as _os_brand
 _sys_brand.path.insert(0, _os_brand.path.dirname(_os_brand.path.abspath(__file__)))
 from _brand_generated import BRAND_TOKEN_CSS, BRAND_LOGO_HTML, BRAND_HASH  # noqa: E402  GENERATED from atoms/brand-tokens.yaml
 
-SITE_BASE_CSS = BRAND_TOKEN_CSS + """
+def _stage_light_css():
+    """The atom preview stage and the preview box on the surface pages are always white, so atoms drawn inside it must see the LIGHT tokens even when the site is dark.
+    Without this their text (var(--text), var(--muted), the accent) flips to the dark theme's pale colours on a white stage: 1.15:1, near invisible.
+    Built from atoms/brand-tokens.yaml so it cannot drift from the palette."""
+    import yaml
+    d = yaml.safe_load((Path(__file__).resolve().parent.parent / "atoms" / "brand-tokens.yaml").read_text())
+    decls = "color-scheme:light;" + "".join(f"--{k}:{v};" for k, v in d["light"].items()) + "".join(f"--{k}:{v};" for k, v in d["aliases"].items())
+    return f':root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{{{decls}}}\n'
+
+
+SITE_BASE_CSS = BRAND_TOKEN_CSS + _stage_light_css() + """
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -431,7 +441,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .gh-pill:hover{border-color:var(--border-strong)}
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-footer a{color:var(--accent-2);text-decoration:none}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
 /* Announcement pill above the hero headline. Sits in normal flow (not fixed or
    sticky) so it never covers content, and wraps rather than truncating on
    narrow screens — the arrow is the only thing dropped on mobile. */
@@ -540,7 +552,7 @@ PAGE_CSS = """
 <style>""" + SITE_BASE_CSS + """
 .wrap{max-width:860px}
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
-nav.crumb a{color:var(--accent-2);text-decoration:none}
+nav.crumb a{color:var(--accent-2-text);text-decoration:none}
 nav.crumb a:hover{text-decoration:underline}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
@@ -1245,7 +1257,7 @@ header.hero{margin-bottom:36px;position:relative}
 h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;margin-bottom:2px;text-wrap:balance}
 .tagline{position:relative;font-size:1.15rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content}
 .sub{position:relative;color:var(--muted);font-size:1rem;margin-bottom:14px}
-.sub a{color:var(--accent-2);text-decoration:none}
+.sub a{color:var(--accent-2-text);text-decoration:none}
 .hero-stats{position:relative;display:flex;gap:26px;margin-bottom:22px}
 .hero-stats div{font-size:12px;color:var(--muted)}
 .hero-stats b{display:block;font-size:19px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
@@ -1335,7 +1347,7 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .stage-inner{width:200%;transform:scale(.5);transform-origin:top left;padding:16px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a}
 .stage-inner *{max-width:100%}
 .stage-empty{display:grid;place-items:center}
-.stage-empty code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12px;color:#6b7280;background:#f2f3f8;border:1px solid #e2e4ee;border-radius:6px;padding:4px 10px}
+.stage-empty code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12px;color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:4px 10px}
 .card-meta{padding:12px 15px 13px;display:flex;flex-direction:column;flex:1}
 .atom-card h3{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px}
 .atom-card p{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
