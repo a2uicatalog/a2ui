@@ -552,7 +552,7 @@ PAGE_CSS = """
 <style>""" + SITE_BASE_CSS + """
 .wrap{max-width:860px}
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
-nav.crumb a{color:var(--accent-2-text);text-decoration:none}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
@@ -1213,12 +1213,12 @@ def render_page(atom):
 
   <div class="section">
     <div class="label">Example payload</div>
-    <pre><code>{example_payload(atom)}</code></pre>
+    <pre tabindex="0"><code>{example_payload(atom)}</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
-    <pre><code>{ard_entry(atom)}</code></pre>
+    <pre tabindex="0"><code>{ard_entry(atom)}</code></pre>
   </div>
 
   <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
@@ -1227,7 +1227,7 @@ def render_page(atom):
   <div class="deploy-box">
     <div class="label">Deploy your own Google Apps Script renderer</div>
     <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
-    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+    <pre tabindex="0" style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
 cd a2ui/apps-script-surface/gas-wired-renderer
 clasp push &amp;&amp; clasp deploy</code></pre>
     <a href="/renderer">Full deploy guide →</a>
@@ -1292,7 +1292,8 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .showcase-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;transition:opacity .5s ease;pointer-events:none}
 .showcase-slide.active{opacity:1;pointer-events:auto}
 .showcase-nav{display:flex;justify-content:center;gap:6px;padding:10px;background:var(--surface)}
-.showcase-dot{width:6px;height:6px;padding:0;border-radius:50%;border:none;background:var(--border-strong);cursor:pointer;transition:background .15s,transform .15s}
+.showcase-dot{position:relative;width:6px;height:6px;padding:0;border-radius:50%;border:none;background:var(--border-strong);cursor:pointer;transition:background .15s,transform .15s}
+.showcase-dot::after{content:"";position:absolute;inset:-9px}   /* 24px hit area (WCAG 2.2 target size) around the 6px dot */
 .showcase-dot.active{background:var(--accent);transform:scale(1.3)}
 @media(prefers-reduced-motion:reduce){.showcase-slide{transition:none}}
 .spotlight{display:grid;grid-template-columns:280px 1fr;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:32px}
@@ -1460,7 +1461,7 @@ def card_stage(atom):
     # must not surface to assistive tech as if they were real, actionable
     # controls. Confirmed via audit, 2026-07-31: this is the source of most of
     # a scan's "unlabeled form controls" finding on the homepage.
-    return f'<div class="stage"><div class="stage-inner" aria-hidden="true">{html}</div></div>'
+    return f'<div class="stage"><div class="stage-inner" aria-hidden="true" inert>{html}</div></div>'
 
 
 def _agent_sketchpad_sequence_html(strokes, view_box, caption, delay_ms=1500):

@@ -116,7 +116,7 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 
 .wrap{max-width:860px}
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
-nav.crumb a{color:var(--accent-2-text);text-decoration:none}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
@@ -201,14 +201,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Example payload</div>
-    <pre><code>{
+    <pre tabindex="0"><code>{
   "type": "ambient_gradient"
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
-    <pre><code>{
+    <pre tabindex="0"><code>{
   "identifier": "urn:air:a2uicatalog.ai:atom:ambient_gradient",
   "displayName": "Ambient Gradient",
   "type": "application/vnd.a2ui.atom+json",
@@ -233,7 +233,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="deploy-box">
     <div class="label">Deploy your own Google Apps Script renderer</div>
     <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
-    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+    <pre tabindex="0" style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
 cd a2ui/apps-script-surface/gas-wired-renderer
 clasp push &amp;&amp; clasp deploy</code></pre>
     <a href="/renderer">Full deploy guide →</a>
