@@ -89,3 +89,20 @@ Generator only: every colour value in the example payloads that fails AA as text
 | Contrast, dark | 11 pages, 1,829 | 10 pages, 1,644 |
 
 A small gain. The tracer shows where the rest is: the all-atoms surface pages. `/surfaces/android` (140 failing elements) and `/surfaces/web` (132) preview every atom, so they carry the renderers' own fixed colours: greys `#8f8f8f`, `#999`, `#9ca3af`, `#94a3b8`; `#10b981` on its own `#d1fae5` tint; white on `#4285f4` and `#eab308`; `#f87171` on `#fafafa`. These are renderer defaults and derived tints, not example data; each fix is an atom change with twin tests and a view restamp, about 30 distinct pairs in about 50 atoms. Stopping the site pass at 84 (B) here is reasonable: the remaining findings are concentrated in a few pages that exist to show every atom.
+
+## Round 6 (atom contrast pass, 2026-10-14): 94 (A)
+
+Per-atom audit of every atom example (GAS and site renderers): 299 failing contrast elements in 129 items. A script planned a darker colour for each failing pair (text darkened on light fills, fills darkened under white text), applied 174 swaps to about 50 atoms in both renderers (the twin-parity suite stayed green), plus the concept palette accent (`#6267e7` to `#4f46e5`), the shared `faint` design token (`#8f8f8f` to `#757575`, in `design-tokens.yaml`), and three small page fixes (renderer page tab labels and button/link colours, the motion timeline clock). Re-audit of the examples: 299 to 129 elements, 129 to 68 items.
+
+| | Round 5 | Round 6 |
+|---|---|---|
+| Score (light / dark) | 84 / 84 | **94 / 94 (A)** |
+| Pages with a serious or critical failure | 14 / 13 | 10 / 10 |
+| Contrast, light | 13 pages, 359 elements | 9 pages, 236 |
+| Points lost to severity caps | 3.5 | 2.5 |
+
+The jump from 84 to 94 is the site cap lifting: it holds a site at 84 while more than a quarter of pages carry a serious failure, and the count fell to exactly 10 of 40, which is not more than a quarter. **That is a threshold effect, so 94 is fragile**: one more failing page returns the site to 84. The ten pages are the home page and the all-atoms surface pages (android, web, email, pdf, pptx, slides, chromium-render, mcp-apps), which show every atom, and `/atoms/tabs` (hidden radio inputs).
+
+Two of my own edits regressed in this round and were caught only by rescanning: a page-wide link colour overrode a button colour (teal on indigo, 1.12:1), and taking the timeline clock colour from the film theme put near-white text on a light page.
+
+Open: the contrast long tail in about 68 atoms; hidden radios (tabs and others) need a designed focus style, not just a different hide; clickable spans; unnamed SVGs. The full `atom-change` test run covered the main contrast pass (2,226 passed; failures were the known `test_brand` and LDraw rebake, five browser tests that pass alone, and the design-token check fixed at its source); the last small edits ran only the twin, design-token and schema-field tests, so one more full run is owed before any push.

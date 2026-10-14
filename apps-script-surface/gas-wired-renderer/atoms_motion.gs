@@ -759,7 +759,7 @@ function _moTimeline(b) {
     ? '<div style="display:flex;align-items:center;gap:12px;padding:10px 4px 0;color:' + th.ink + ';">'
       + '<button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid ' + th.line + ';background:' + th.soft + ';color:' + th.ink + ';display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;">' + icon + '</button>'
       + '<input type="range" class="mt-rng" min="0" max="1000" value="0" aria-label="Timeline position" style="flex:1;min-width:0;accent-color:' + acc + ';">'
-      + '<span class="mt-tm" style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:inherit;opacity:0.85;min-width:64px;text-align:right;">0:00</span></div>'
+      + '<span class="mt-tm" style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:var(--text,#334155);min-width:64px;text-align:right;">0:00</span></div>'
     : '';
   var note = st.dropped ? '<!-- a2ui: motion_timeline ignored ' + st.dropped + ' invalid or over-limit item(s) -->' : '';
   return '<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'

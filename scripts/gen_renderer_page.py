@@ -21,7 +21,7 @@ import generate_atom_pages as _site  # noqa: E402  the site's shared chrome — 
 
 PAGE_CSS = """
 .wrap{max-width:860px}
-.wrap a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.wrap a:not([class]){color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 .wrap a:hover{text-decoration:underline}
 
 .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:40px}
