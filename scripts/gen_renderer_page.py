@@ -21,7 +21,7 @@ import generate_atom_pages as _site  # noqa: E402  the site's shared chrome — 
 
 PAGE_CSS = """
 .wrap{max-width:860px}
-.wrap a{color:var(--accent-2);text-decoration:none}
+.wrap a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 .wrap a:hover{text-decoration:underline}
 
 .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:40px}
@@ -68,7 +68,7 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
 .try-lead strong{color:var(--text)}
 .demo-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .demo-tab{font:inherit;display:flex;align-items:baseline;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:700;letter-spacing:.02em;transition:color .15s,border-color .15s,background .15s}
-.demo-tab .k{font-size:10px;font-weight:800;letter-spacing:.09em;opacity:.65}
+.demo-tab .k{font-size:10px;font-weight:800;letter-spacing:.09em;opacity:1;color:var(--text-muted)}
 .demo-tab:hover{border-color:var(--accent);color:var(--accent)}
 .demo-tab[aria-selected="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft-bg)}
 .demo-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:48px;box-shadow:var(--shadow)}
