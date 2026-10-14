@@ -48,6 +48,7 @@ document.documentElement.setAttribute('data-theme',t)})();
   --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);--glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
 }
 :root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);}
+.stage,.preview-box{--mt-ink:#14181f}
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
@@ -185,7 +186,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of sparkline"><svg width="120" height="32" style="display:inline-block;vertical-align:middle;"><polygon points="0,32 0.0,26.0 24.0,18.0 48.0,30.0 72.0,6.0 96.0,14.0 120.0,2.0 120,32" fill="#00f2ff" fill-opacity="0.1"/><polyline points="0.0,26.0 24.0,18.0 48.0,30.0 72.0,6.0 96.0,14.0 120.0,2.0" fill="none" stroke="#00f2ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+  <div class="preview-box" role="group" aria-label="Live preview of sparkline"><svg width="120" height="32" style="display:inline-block;vertical-align:middle;"><polygon points="0,32 0.0,26.0 24.0,18.0 48.0,30.0 72.0,6.0 96.0,14.0 120.0,2.0 120,32" fill="#007c85" fill-opacity="0.1"/><polyline points="0.0,26.0 24.0,18.0 48.0,30.0 72.0,6.0 96.0,14.0 120.0,2.0" fill="none" stroke="#007c85" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
 </div>
 
   

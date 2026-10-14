@@ -396,6 +396,31 @@ _PRIVATE_EXAMPLE_BLOCKS = Path.home() / "a2ui-private" / "private-atoms" / "priv
 if _PRIVATE_EXAMPLE_BLOCKS.exists():
     _EXAMPLE_BLOCKS.update(json.loads(_PRIVATE_EXAMPLE_BLOCKS.read_text(encoding="utf-8")))
 
+
+# The example payloads are what the site previews and what agents copy. Many carried mid-tone brand colours that fail WCAG AA as text or as a
+# fill under white text (an accessibility scan, 2026-10-13/14). Map each such colour VALUE to a darker equivalent that passes (>= 4.5:1 on white and
+# for white on it), so the shown examples are accessible by default. Only exact colour strings are touched; renderers and the schema are unchanged.
+_AA_EXAMPLE_COLOURS = {
+    "#6366f1": "#4f46e5", "#10b981": "#047857", "#22c55e": "#15803d", "#16a34a": "#15803d", "#f59e0b": "#b45309", "#eab308": "#a16207",
+    "#ef4444": "#dc2626", "#34a853": "#1e7e34", "#4285f4": "#1a73e8", "#1da1f2": "#0b6fae", "#1877f2": "#1560c8", "#0ea5e9": "#0369a1",
+    "#3b82f6": "#2563eb", "#34d399": "#047857", "#38bdf8": "#0369a1", "#facc15": "#854d0e", "#ea4335": "#c5221f", "#fbbc04": "#8a6100",
+    "#ff3b30": "#c4261d", "#00f2ff": "#007c85", "#22d3ee": "#0e7490", "#8b5cf6": "#6d28d9", "#818cf8": "#4f46e5", "#60a5fa": "#1d4ed8",
+    "#f87171": "#b91c1c", "#059669": "#047857", "#94a3b8": "#64748b", "#9ca3af": "#6b7280", "#999999": "#6b7280",
+}
+
+
+def _aa_example(v):
+    if isinstance(v, str):
+        return _AA_EXAMPLE_COLOURS.get(v.lower(), v) if v.startswith("#") and len(v) == 7 else v
+    if isinstance(v, list):
+        return [_aa_example(x) for x in v]
+    if isinstance(v, dict):
+        return {k: _aa_example(x) for k, x in v.items()}
+    return v
+
+
+_EXAMPLE_BLOCKS = {k: _aa_example(v) for k, v in _EXAMPLE_BLOCKS.items()}
+
 # ── v0.3 design system (approved 2026-07-10) ────────────────────────────────
 # Tokens = a2ui-private/tests/design_handoff_nav_theme/tokens.css v0.2 verbatim.
 # Light lives on plain :root so a page that never sets data-theme still gets a
@@ -414,7 +439,9 @@ def _stage_light_css():
     import yaml
     d = yaml.safe_load((Path(__file__).resolve().parent.parent / "atoms" / "brand-tokens.yaml").read_text())
     decls = "color-scheme:light;" + "".join(f"--{k}:{v};" for k, v in d["light"].items()) + "".join(f"--{k}:{v};" for k, v in d["aliases"].items())
-    return f':root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{{{decls}}}\n'
+    # Motion text atoms default to a light ink (--mt-ink) because their usual stage is dark; the preview surfaces here are white, so pin a dark ink.
+    return (f':root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{{{decls}}}\n'
+            f'.stage,.preview-box{{--mt-ink:#14181f}}\n')
 
 
 SITE_BASE_CSS = BRAND_TOKEN_CSS + _stage_light_css() + """

@@ -77,3 +77,15 @@ Two generator fixes: atoms rendered for standalone pages ship `<style>` rules ai
 | Pages with a serious failure (light / dark) | 14 / 13 | 13 / 12 |
 
 The score holds at 84: contrast is on 12 pages, each of which also carries a few other findings. The remaining contrast is a long tail of fixed colours inside atom examples, about 30 distinct pairs across many atoms (greys `#999`, `#9ca3af`, `#94a3b8`, `#8f8f8f`; `#10b981` on `#d1fae5`; white on `#eab308`, `#4285f4`; `#f87171` on `#fafafa`). Those are per-atom colour decisions, not site CSS; the fix order says clearing all contrast takes the site to 96. One page (probably the home page, which carries hundreds of previews) timed out in axe and was reported as not audited; the score covers 39 of 40.
+
+## Round 5 (accessible example data; no renderer change)
+
+Generator only: every colour value in the example payloads that fails AA as text or under white text (`#6366f1`, `#10b981`, `#f59e0b`, `#4285f4`, `#ef4444` and 20 more) is mapped to a darker equivalent that passes, so the previews, and the examples agents copy, are accessible by default; motion text atoms get a dark default ink on the white preview surfaces.
+
+| | Round 4 | Round 5 |
+|---|---|---|
+| Score (light / dark) | 84 / 84 | 84 / 84 |
+| Contrast, light | 12 pages, 380 elements | 13 pages, 359 |
+| Contrast, dark | 11 pages, 1,829 | 10 pages, 1,644 |
+
+A small gain. The tracer shows where the rest is: the all-atoms surface pages. `/surfaces/android` (140 failing elements) and `/surfaces/web` (132) preview every atom, so they carry the renderers' own fixed colours: greys `#8f8f8f`, `#999`, `#9ca3af`, `#94a3b8`; `#10b981` on its own `#d1fae5` tint; white on `#4285f4` and `#eab308`; `#f87171` on `#fafafa`. These are renderer defaults and derived tints, not example data; each fix is an atom change with twin tests and a view restamp, about 30 distinct pairs in about 50 atoms. Stopping the site pass at 84 (B) here is reasonable: the remaining findings are concentrated in a few pages that exist to show every atom.
