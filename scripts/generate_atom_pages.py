@@ -560,7 +560,7 @@ h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .section{margin-bottom:40px}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
 .bs{background:var(--accent-soft-bg);color:var(--accent)}
-.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:var(--warn)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}
 pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
 pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
@@ -973,13 +973,25 @@ def make_renderer_url(atom):
     return f"{GAS_RENDERER}?p={enc}"
 
 
+def _scope_preview_css(html):
+    """Atoms rendered for a standalone page ship a few <style> rules aimed at the page itself (`body{background:#fff}`,
+    `html:has(.asw-page) body{background:#0b0d12!important}`). Embedded in a preview card on THIS site they repaint the whole page
+    (the surfaces pages went white in dark mode, or near-black in light). Drop rules whose selector starts at html or body; every
+    other rule is kept. Found by the accessibility scan 2026-10-13: ~3,000 contrast failures on one page came from this."""
+    def clean(m):
+        css = m.group(2)
+        css = re.sub(r"(^|\})\s*(?:html|body)\b[^{}]*\{[^{}]*\}", r"\1", css)
+        return m.group(1) + css + m.group(3)
+    return re.sub(r"(<style\b[^>]*>)(.*?)(</style>)", clean, html, flags=re.S)
+
+
 def live_preview(atom):
     atom_type = atom.get("type", "")
     if atom_type not in _RENDERER_TYPES or _web_renderer is None:
         return ""
     block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
     try:
-        html = _web_renderer.render([block])
+        html = _scope_preview_css(_web_renderer.render([block]))
         if not html.strip():
             return ""
     except Exception:
@@ -1356,7 +1368,7 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .badges{display:flex;flex-wrap:wrap;gap:4px;flex:1;align-items:center}
 .badge{font-size:11px;font-weight:650;padding:3px 9px;border-radius:6px}
 .bs{background:var(--surface-2);color:var(--muted)}
-.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));color:var(--warn)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}   /* the warn colour is a mid amber: 2.4:1 as text on its own tint; mixed toward the text colour it passes in both themes */
 .bnew{background:var(--accent-soft-bg);color:var(--accent)}
 .badge-more{font-size:11px;color:var(--muted);white-space:nowrap}
 .origin{font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;background:var(--surface-2);color:var(--muted)}
@@ -1425,7 +1437,7 @@ def card_stage(atom):
     else:
         block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
         try:
-            html = _web_renderer.render([block])
+            html = _scope_preview_css(_web_renderer.render([block]))
         except Exception:
             reason = "error"
         else:

@@ -64,3 +64,16 @@ Fixed in the atoms (GAS source and the site renderer): decorative icon alt in `s
 The last critical failure on the site was the five-page image-alt finding. With it gone, fewer than a tenth of pages are held at 69 or below, so the site cap lifts from 69 to 84. That single fix was worth +15, as the fix order had said. The next step is colour contrast on 13 pages (453 elements light, 3,401 dark, mostly inside atom example colours): worth +11 on its own, to 95.
 
 Still open: contrast inside atom examples, the hidden-radio, clickable-span and unnamed-SVG components, `venn_diagram`, the GAS `variant_selector` radios, `resources_list` empty link text, 14 unlabelled inputs on 2 pages, 6 iframes. Test status of the batch: 2,231 passed; failures are the known `test_brand` and the pending LDraw rebake; `test_schema_fields_read` needed a baseline entry for the showpiece pack's shared text options.
+
+## Round 4 (generator: scoped preview CSS, degraded badge)
+
+Two generator fixes: atoms rendered for standalone pages ship `<style>` rules aimed at the page (`body{background:#fff}`, `html:has(.asw-page) body{background:#0b0d12!important}`); embedded in a preview card they repainted the whole surfaces page (white in dark mode). The generator now drops rules whose selector starts at `html` or `body` from embedded previews. The "degraded" badge used the warn amber as text on its own tint (2.37:1); the text now mixes toward the text colour.
+
+| | Round 3 | Round 4 |
+|---|---|---|
+| Score (light / dark) | 84 / 84 | 84 / 84 |
+| Contrast, light | 13 pages, 453 elements | 12 pages, 380 |
+| Contrast, dark | 12 pages, 3,401 elements | 11 pages, 1,829 |
+| Pages with a serious failure (light / dark) | 14 / 13 | 13 / 12 |
+
+The score holds at 84: contrast is on 12 pages, each of which also carries a few other findings. The remaining contrast is a long tail of fixed colours inside atom examples, about 30 distinct pairs across many atoms (greys `#999`, `#9ca3af`, `#94a3b8`, `#8f8f8f`; `#10b981` on `#d1fae5`; white on `#eab308`, `#4285f4`; `#f87171` on `#fafafa`). Those are per-atom colour decisions, not site CSS; the fix order says clearing all contrast takes the site to 96. One page (probably the home page, which carries hundreds of previews) timed out in axe and was reported as not audited; the score covers 39 of 40.
