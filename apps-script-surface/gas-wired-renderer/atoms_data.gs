@@ -144,9 +144,9 @@ _RENDERERS['feed_status'] = function(b) {
     '<span id="' + uid + '" style="display:inline-flex;align-items:center;gap:5px;' +
       'font-family:\'Courier New\',monospace;font-size:' + size + ';letter-spacing:0.08em;' +
       'padding:3px 9px;border-radius:100px;vertical-align:middle;' +
-      'background:rgba(255,59,48,0.12);border:1px solid rgba(255,59,48,0.3);color:#ff3b30;">' +
+      'background:rgba(255,59,48,0.12);border:1px solid rgba(255,59,48,0.3);color:#d30b00;">' +
       '<span id="' + uid + 'd" style="width:6px;height:6px;border-radius:50%;flex-shrink:0;' +
-        'background:#ff3b30;box-shadow:0 0 5px #ff3b30;"></span>' +
+        'background:#d30b00;box-shadow:0 0 5px #d30b00;"></span>' +
       label + '<span id="' + uid + 'l">SIM</span>' +
     '</span>';
 
@@ -157,7 +157,7 @@ _RENDERERS['feed_status'] = function(b) {
       'function update(data){' +
         'var n=Array.isArray(data)?data.length:(data?1:0);' +
         'var live=n>0;' +
-        'var c=live?"#34c759":"#ff3b30";' +
+        'var c=live?"#34c759":"#d30b00";' +
         'var el=document.getElementById("' + uid + '");' +
         'var dot=document.getElementById("' + uid + 'd");' +
         'var lbl=document.getElementById("' + uid + 'l");' +

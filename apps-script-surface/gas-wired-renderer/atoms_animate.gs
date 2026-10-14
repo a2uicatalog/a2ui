@@ -315,7 +315,7 @@ _RENDERERS['live_refresh'] = function(b) {
   var actionId = b.action || '';
   var interval = Math.max(5, parseInt(b.interval || 30, 10)) * 1000;
   var show     = b.show !== false;
-  var color    = b.color || '#22c55e';
+  var color    = b.color || '#178640';
   var label    = b.label || 'Live';
   var uid      = 'lr' + Math.random().toString(36).substr(2, 5);
 
@@ -560,7 +560,7 @@ _RENDERERS['csv_import'] = function(b) {
   var label   = b.label   || 'Import CSV';
   var sheet   = b.sheet   || '';
   var mapping = b.mapping || 'servicenow';
-  var accent  = b.accent  || '#0ea5e9';
+  var accent  = b.accent  || '#0b7caf';
   var btnBase = 'border:none;border-radius:8px;padding:9px 18px;font-size:0.875rem;font-weight:600;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;';
   var upIco   = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5v-2z"/></svg>';
 
@@ -622,7 +622,7 @@ _RENDERERS['csv_import'] = function(b) {
 _RENDERERS['people_picker'] = function(b) {
   var role   = _esc(b.role        || 'Role');
   var ph     = _esc(b.placeholder || 'Search name or email…');
-  var accent = b.accent || '#1a73e8';
+  var accent = b.accent || '#1568d6';
   var bgLite = accent + '18';
   return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;" data-pp-accent="' + _esc(accent) + '">'
     + '<span style="min-width:148px;padding:4px 10px;border-radius:999px;background:' + bgLite + ';border:1px solid ' + accent + '44;font-size:0.73rem;font-weight:700;color:' + accent + ';letter-spacing:.04em;flex-shrink:0;text-align:center;">' + role + '</span>'
@@ -705,7 +705,7 @@ _RENDERERS['chat_space_button'] = function(b) {
     + '<button data-chat-create style="background:' + _esc(accent) + ';color:#fff;' + btnBase + '">'
       + chatIco + _esc(createLabel)
     + '</button>'
-    + '<a data-chat-join href="#" target="_blank" rel="noopener" style="display:none;background:#34a853;color:#fff;text-decoration:none;' + btnBase + '">'
+    + '<a data-chat-join href="#" target="_blank" rel="noopener" style="display:none;background:#298542;color:#fff;text-decoration:none;' + btnBase + '">'
       + chatIco + _esc(joinLabel)
     + '</a>'
     + '</div>';
@@ -743,7 +743,7 @@ _RENDERERS['form_textarea'] = function(b) {
 _RENDERERS['meet_button'] = function(b) {
   var createLabel = b.label      || 'Create Meeting';
   var joinLabel   = b.join_label || 'Join Meeting';
-  var accent      = b.accent     || '#4285f4';
+  var accent      = b.accent     || '#1b6cf2';
   var btnBase = 'border:none;border-radius:8px;padding:9px 18px;font-size:0.875rem;font-weight:600;cursor:pointer;'
     + 'display:inline-flex;align-items:center;gap:7px;transition:opacity 0.15s;white-space:nowrap;';
   var calIco  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">'
@@ -755,7 +755,7 @@ _RENDERERS['meet_button'] = function(b) {
     + '<button data-meet-create style="background:' + _esc(accent) + ';color:#fff;' + btnBase + '">'
       + calIco + _esc(createLabel)
     + '</button>'
-    + '<a data-meet-join href="#" target="_blank" rel="noopener" style="display:none;background:#16a34a;color:#fff;text-decoration:none;' + btnBase + '">'
+    + '<a data-meet-join href="#" target="_blank" rel="noopener" style="display:none;background:#12863d;color:#fff;text-decoration:none;' + btnBase + '">'
       + meetIco + _esc(joinLabel)
     + '</a>'
     + '<a data-meet-cal href="#" target="_blank" rel="noopener" style="display:none;font-size:0.75rem;color:#64748b;text-decoration:none;">'

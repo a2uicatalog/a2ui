@@ -44,7 +44,7 @@ _RENDERERS['headline_list'] = function(b) {
 //   time    — e.g. "Just now", "3h ago"
 //   accent  — border/badge colour (default: #ef4444 red)
 _RENDERERS['breaking_banner'] = function(b) {
-  var accent  = b.accent  || '#ef4444';
+  var accent  = b.accent  || '#d71212';
   var label   = b.label   || 'BREAKING';
   var summary = b.summary ? '<p style="margin:8px 0 0;font-size:0.875rem;color:var(--muted,#9ca3af);line-height:1.65">' + _esc(b.summary) + '</p>' : '';
   var sourceLine = (b.source || b.time)

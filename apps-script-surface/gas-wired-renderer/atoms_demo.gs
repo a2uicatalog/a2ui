@@ -246,7 +246,7 @@ _RENDERERS['atom_anatomy'] = function(b) {
     + '</div>'
     + '<div style="flex:1;padding:20px;background:#0f172a;min-width:0;">'
     + '<div style="font-size:0.68rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
-    + '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#e2e8f0;white-space:pre-wrap;line-height:1.6;">' + _esc(schemaStr) + '</pre>'
+    + '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#4f6e99;white-space:pre-wrap;line-height:1.6;">' + _esc(schemaStr) + '</pre>'
     + '</div>'
     + '</div></div>';
 };
@@ -293,7 +293,7 @@ _RENDERERS['prompt_to_schema'] = function(b) {
     + '<div class="pts-arrow-' + uid + '">→</div>'
     + '<div class="pts-panel-' + uid + '">'
     + '<div class="pts-hd-' + uid + '" style="background:#0f172a;color:#475569;">{ } &nbsp;' + _esc(labels[1]) + '</div>'
-    + '<div class="pts-body-' + uid + '" style="background:#0f172a;"><pre style="margin:0;font-family:monospace;font-size:0.7rem;color:#94a3b8;white-space:pre-wrap;">' + _esc(schemaStr.substring(0, 320)) + (schemaStr.length > 320 ? '\n…' : '') + '</pre></div>'
+    + '<div class="pts-body-' + uid + '" style="background:#0f172a;"><pre style="margin:0;font-family:monospace;font-size:0.7rem;color:#5c6f8a;white-space:pre-wrap;">' + _esc(schemaStr.substring(0, 320)) + (schemaStr.length > 320 ? '\n…' : '') + '</pre></div>'
     + '</div>'
     + '<div class="pts-arrow-' + uid + '">→</div>'
     + '<div class="pts-panel-' + uid + '">'
@@ -576,9 +576,9 @@ _RENDERERS['surface_map'] = function(b) {
   var title   = b.title   || 'One schema. Three surfaces.';
   var surfaces = b.surfaces || [
     { name: 'GAS Web App',       icon: '⚡', desc: 'Live web app · GAS runtime · URL = content', color: '#4f46e5' },
-    { name: 'Meet Stage',        icon: '📺', desc: 'Full-screen · Live demos · Audience view',   color: '#8b5cf6' },
-    { name: 'Google Sites HTML', icon: '📄', desc: 'Blog / docs · SEO · Static publish',         color: '#3b82f6' },
-    { name: 'Google Chat',       icon: '💬', desc: 'Cards · Bots · Workspace native',            color: '#06b6d4' }
+    { name: 'Meet Stage',        icon: '📺', desc: 'Full-screen · Live demos · Audience view',   color: '#7f4bf5' },
+    { name: 'Google Sites HTML', icon: '📄', desc: 'Blog / docs · SEO · Static publish',         color: '#1268f4' },
+    { name: 'Google Chat',       icon: '💬', desc: 'Cards · Bots · Workspace native',            color: '#047d91' }
   ];
 
   // Google Workspace product SVGs — colors from official gstatic icons

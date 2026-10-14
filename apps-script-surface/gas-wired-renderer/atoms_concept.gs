@@ -23,7 +23,7 @@
 // properties on the ladder, so a nested concept_rung inherits them and a standalone one falls back to the defaults.
 var _CONCEPT_PALETTE_LIGHT = {
   paper: '#F6F9FD', paper_raised: '#FFFFFF', ink: '#141B24', ink_soft: '#515963',
-  line: '#DDE3EC', accent: '#6267E7', accent_soft: '#E6E8FF', blocked: '#C5221F',
+  line: '#DDE3EC', accent: '#4F46E5', accent_soft: '#E6E8FF', blocked: '#C5221F',
   blocked_soft: '#FCE8E6', cleared: '#188038', cleared_soft: '#E6F4EA',
   mono_bg: '#1E2733', mono_fg: '#EAEFF5', mono_accent: '#8D98FF'
 };

@@ -6,7 +6,7 @@ _RENDERERS['trend_indicator'] = function(b) {
   var dir   = b.trend_direction || b.direction || 'stable';
   var label = _esc(b.label || '');
   var ctx   = b.context ? '<span style="font-size:0.75rem;color:var(--muted,#6b7280);margin-left:6px;">' + _esc(b.context) + '</span>' : '';
-  var map   = { up: ['↑', '#10b981', '#d1fae5'], down: ['↓', '#ef4444', '#fee2e2'], stable: ['→', '#6b7280', '#f3f4f6'] };
+  var map   = { up: ['↑', '#0b7a55', '#d1fae5'], down: ['↓', '#ef4444', '#fee2e2'], stable: ['→', '#6b7280', '#f3f4f6'] };
   var cfg   = map[dir] || map.stable;
   var col   = b.color || cfg[1];
   return '<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:' + cfg[2] + ';font-size:0.82rem;font-weight:600;color:' + col + ';">'
@@ -19,7 +19,7 @@ _RENDERERS['metric_delta'] = function(b) {
   var current = _esc(b.current_value || b.value || '');
   var delta   = _esc(b.delta_value || b.delta || '');
   var dtype   = b.delta_type || (delta.charAt(0) === '-' ? 'decrease' : 'increase');
-  var dColor  = dtype === 'increase' ? '#10b981' : dtype === 'decrease' ? '#ef4444' : '#6b7280';
+  var dColor  = dtype === 'increase' ? '#0b7a55' : dtype === 'decrease' ? '#ef4444' : '#6b7280';
   var dBg     = dtype === 'increase' ? '#d1fae5' : dtype === 'decrease' ? '#fee2e2' : '#f3f4f6';
   var arrow   = dtype === 'increase' ? '↑' : dtype === 'decrease' ? '↓' : '→';
   var period  = b.comparison_period ? '<div style="font-size:0.72rem;color:var(--a2ui-muted,#666666);margin-top:2px;">' + _esc(b.comparison_period) + '</div>' : '';
@@ -33,7 +33,7 @@ _RENDERERS['metric_delta'] = function(b) {
 // ─── action_required_card ─────────────────────────────────────────────────────
 _RENDERERS['action_required_card'] = function(b) {
   var urgency = b.urgency || b.level || 'medium';
-  var uMap    = { high: ['🔴', '#ef4444', '#fef2f2', '#fecaca'], medium: ['🟡', '#f59e0b', '#fffbeb', '#fde68a'], low: ['🔵', '#3b82f6', '#eff6ff', '#bfdbfe'] };
+  var uMap    = { high: ['🔴', '#ef4444', '#fef2f2', '#fecaca'], medium: ['🟡', '#a06707', '#fffbeb', '#fde68a'], low: ['🔵', '#3b82f6', '#eff6ff', '#bfdbfe'] };
   var cfg     = uMap[urgency] || uMap.medium;
   var icon    = b.icon || cfg[0];
   var btnHtml = (b.action_label && b.action_url)
@@ -259,10 +259,10 @@ _RENDERERS['sentiment_summary'] = function(b) {
       + '<div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--muted,#6b7280);margin-bottom:3px;"><span>' + label + '</span><span>' + pct + '%</span></div>'
       + '<div style="background:' + bg + ';border-radius:4px;height:8px;"><div style="background:' + color + ';width:' + pct + '%;height:100%;border-radius:4px;"></div></div></div>';
   }
-  var score = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#10b981;">' + index + '%</div><div style="font-size:0.78rem;color:var(--muted,#6b7280);">Positive sentiment</div></div>';
+  var score = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#0c855d;">' + index + '%</div><div style="font-size:0.78rem;color:var(--muted,#6b7280);">Positive sentiment</div></div>';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + title + score
-    + bar('Positive', index, '#10b981', '#d1fae5')
+    + bar('Positive', index, '#0c855d', '#d1fae5')
     + bar('Neutral', neu, '#6b7280', '#f3f4f6')
     + bar('Negative', neg, '#ef4444', '#fee2e2')
     + '</div>';
@@ -273,7 +273,7 @@ _RENDERERS['call_mood_board'] = function(b) {
   var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
   var moods = (b.moods || []).map(function(m) {
     var pct = Math.min(100, m.intensity || 50);
-    var color = m.color || 'var(--a2ui-accent,#4f46e5)';
+    var color = m.color || 'var(--a2ui-accent,#02020c)';
     return '<div style="text-align:center;min-width:80px;">'
       + '<div style="font-size:1.5rem;">' + _esc(m.icon || m.mood.charAt(0)) + '</div>'
       + '<div style="font-size:0.72rem;color:var(--muted,#6b7280);margin:4px 0;">' + _esc(m.mood || '') + '</div>'
@@ -740,7 +740,7 @@ _RENDERERS['data_grid'] = function(b) {
   var rows    = b.rows    || [];
   var uid     = 'dg' + Math.random().toString(36).substr(2, 5);
   var ths     = columns.map(function(c) {
-    return '<th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:600;color:var(--muted,#6b7280);white-space:nowrap;user-select:none;" title="' + _esc(c.header||c.key||'') + '">' + _esc(c.header || c.key || '') + '</th>';
+    return '<th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:600;color:var(--muted,#666d7a);white-space:nowrap;user-select:none;" title="' + _esc(c.header||c.key||'') + '">' + _esc(c.header || c.key || '') + '</th>';
   }).join('');
   var trs = rows.map(function(row, ri) {
     var tds = columns.map(function(c) {
@@ -748,7 +748,7 @@ _RENDERERS['data_grid'] = function(b) {
       var cell = '';
       if (c.type === 'status') {
         var smap = { active: ['✓','#10b981','#d1fae5'], inactive: ['✗','#ef4444','#fee2e2'], pending: ['○','#f59e0b','#fef3c7'] };
-        var cfg  = smap[String(val).toLowerCase()] || ['?','#6b7280','#f3f4f6'];
+        var cfg  = smap[String(val).toLowerCase()] || ['?','#666d7a','#f3f4f6'];
         cell = '<span style="padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600;background:' + cfg[2] + ';color:' + cfg[1] + ';">' + cfg[0] + ' ' + _esc(String(val)) + '</span>';
       } else if (c.type === 'tag') {
         cell = '<span style="padding:2px 8px;border-radius:12px;font-size:0.75rem;background:#dbeafe;color:#1d4ed8;">' + _esc(String(val)) + '</span>';

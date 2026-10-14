@@ -10,7 +10,7 @@ var _TOKEN_PRESETS = {
     "surface-muted": "#fafafa",
     "text": "#171717",
     "muted": "#666666",
-    "faint": "#8f8f8f",
+    "faint": "#757575",
     "shadow": "0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)"
   }
 };

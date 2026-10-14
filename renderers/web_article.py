@@ -990,7 +990,7 @@ def _render_actual_vs_estimate(b: dict) -> str:
     tiles = "".join(
         '<div style="flex:1;min-width:118px;padding:14px 16px;">'
         '<div style="font:600 .66rem/1 ui-monospace,monospace;letter-spacing:.09em;'
-        'text-transform:uppercase;color:#8a8a80;margin-bottom:6px;">%s</div>'
+        'text-transform:uppercase;color:#75756c;margin-bottom:6px;">%s</div>'
         '<div style="font:600 1.45rem/1.1 ui-monospace,monospace;color:%s;'
         'font-variant-numeric:tabular-nums;">%s</div></div>'
         % (_esc(str(label)), colour, value)
@@ -1047,7 +1047,7 @@ def _render_progress_bar(b: dict) -> str:
     pid     = "p" + hashlib.md5(b.get("label","").encode()).hexdigest()[:6]
     value   = min(100, max(0, int(b.get("value", 0))))
     label   = b.get("label", "")
-    accent  = b.get("accent", "#00f2ff")
+    accent  = b.get("accent", "#008087")
     show_pct = b.get("show_percent", True)
     caption = b.get("caption", "")
 
@@ -1126,7 +1126,7 @@ def _render_badge_group(b: dict) -> str:
 def _render_timeline(b: dict) -> str:
     """Vertical timeline — date, title, body per event. Good for changelogs, journeys, release notes."""
     events = b.get("events", [])
-    accent = b.get("accent", "#1a73e8")
+    accent = b.get("accent", "#176ee1")
     title  = b.get("title", "")
     title_html = f'<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">{_cv_esc(title)}</p>' if title else ""
 
@@ -2291,7 +2291,7 @@ def _render_action_items(b: dict) -> str:
     status_cfg = {
         "done":        ("✅", "#16a34a", "#f0fdf4"),
         "in_progress": ("🔄", "#2563eb", "#eff6ff"),
-        "open":        ("⭕", "#9ca3af", "#fff"),
+        "open":        ("⭕", "#6c7586", "#fff"),
     }
     rows = ""
     for i, item in enumerate(b.get("items", [])):
@@ -2329,7 +2329,7 @@ def _render_pros_cons_list(b: dict) -> str:
     pros = b.get("pros", [])
     cons = b.get("cons", [])
     pros_html = "".join(f'<li style="display:flex;gap:8px;margin-bottom:6px;">'
-                         f'<span style="color:#16a34a;flex-shrink:0;">✓</span><span>{_esc(p)}</span></li>' for p in pros)
+                         f'<span style="color:#11813b;flex-shrink:0;">✓</span><span>{_esc(p)}</span></li>' for p in pros)
     cons_html = "".join(f'<li style="display:flex;gap:8px;margin-bottom:6px;">'
                          f'<span style="color:#dc2626;flex-shrink:0;">✗</span><span>{_esc(c)}</span></li>' for c in cons)
     title_html = (f'<div style="font-size:16px;font-weight:700;color:#111827;padding:14px 16px;'
@@ -2339,7 +2339,7 @@ def _render_pros_cons_list(b: dict) -> str:
             f'<div style="display:grid;grid-template-columns:1fr 1fr;">'
             f'<div style="padding:16px;border-right:1px solid #e5e7eb;background:#f0fdf4;">'
             f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;'
-            f'margin-bottom:10px;color:#16a34a;">Pros</div>'
+            f'margin-bottom:10px;color:#11813b;">Pros</div>'
             f'<ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;color:#374151;">{pros_html}</ul></div>'
             f'<div style="padding:16px;background:#fff5f5;">'
             f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;'
@@ -2800,7 +2800,7 @@ def _render_tabbed_code(b: dict) -> str:
     labels = "".join(
         f'<label for="tc-{uid}-{_cv_esc(i)}" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;'
         f'font-weight:600;border-bottom:2px solid {"#7c3aed" if i==0 else "transparent"};'
-        f'color:{"#7c3aed" if i==0 else "#9ca3af"};">{_cv_esc(t.get("label", t.get("language","Tab")))}</label>'
+        f'color:{"#7c3aed" if i==0 else "#697281"};">{_cv_esc(t.get("label", t.get("language","Tab")))}</label>'
         for i, t in enumerate(tabs)
     )
     panels = "".join(
@@ -3013,7 +3013,7 @@ def _render_post_metadata_bar(b):
 
 def _render_notification_badge(b):
     text = b.get("text", "")
-    color = b.get("color", "#ef4444")
+    color = b.get("color", "#e71414")
     return (f'<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">'
             f'  <svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
@@ -3132,7 +3132,7 @@ def _render_figma_embed(b):
 
 def _render_difficulty_badge(b):
     level = b.get("level", "beginner")
-    cfg = {"beginner": ("#16a34a","#f0fdf4","Beginner"), "intermediate": ("#d97706","#fffbeb","Intermediate"), "advanced": ("#dc2626","#fef2f2","Advanced")}
+    cfg = {"beginner": ("#11813b","#f0fdf4","Beginner"), "intermediate": ("#d97706","#fffbeb","Intermediate"), "advanced": ("#dc2626","#fef2f2","Advanced")}
     color, bg, label = cfg.get(level, cfg["beginner"])
     return (f'<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid {color}44;'
             f'border-radius:100px;padding:3px 12px;font-size:0.75rem;font-weight:700;'
@@ -3192,9 +3192,9 @@ def _render_social_share_bar(b):
     platforms = b.get("platforms", ["twitter","linkedin"])
     url       = b.get("url", "")
     cfg = {
-        "twitter":  ("#1da1f2", "X / Twitter", f"https://twitter.com/intent/tweet?url={_cv_esc(url)}"),
+        "twitter":  ("#0b79bd", "X / Twitter", f"https://twitter.com/intent/tweet?url={_cv_esc(url)}"),
         "linkedin": ("#0a66c2", "LinkedIn",     f"https://www.linkedin.com/sharing/share-offsite/?url={_cv_esc(url)}"),
-        "facebook": ("#1877f2", "Facebook",     f"https://www.facebook.com/sharer/sharer.php?u={_cv_esc(url)}"),
+        "facebook": ("#0d6fed", "Facebook",     f"https://www.facebook.com/sharer/sharer.php?u={_cv_esc(url)}"),
         "reddit":   ("#ff4500", "Reddit",       f"https://reddit.com/submit?url={_cv_esc(url)}"),
     }
     btns = "".join(
@@ -3362,7 +3362,7 @@ def _render_cli_command(b):
     return (f'<div style="display:flex;align-items:center;background:#1e1e2e;border-radius:8px;'
             f'padding:10px 16px;margin:0.8rem 0;font-family:\'JetBrains Mono\',monospace;font-size:0.85rem;">'
             f'<span style="color:#a78bfa;margin-right:10px;user-select:none;">$</span>'
-            f'<code style="color:#e2e8f0;flex:1;">{cmd}</code></div>')
+            f'<code style="color:#4f6e99;flex:1;">{cmd}</code></div>')
 
 def _render_copy_code_button(b):
     text = b.get("text_to_copy","").replace('"','&quot;').replace("<","&lt;").replace(">","&gt;")
@@ -3381,7 +3381,7 @@ def _render_log_output(b):
     return (f'<div style="background:#0d1117;border-radius:8px;padding:14px 18px;margin:1.2rem 0;'
             f'max-height:300px;overflow-y:auto;">'
             f'<pre style="margin:0;font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;'
-            f'color:#9ca3af;white-space:pre-wrap;word-break:break-all;">{logs}</pre></div>')
+            f'color:#656e7d;white-space:pre-wrap;word-break:break-all;">{logs}</pre></div>')
 
 def _render_json_tree_viewer(b):
     import json as _json2
@@ -3394,7 +3394,7 @@ def _render_json_tree_viewer(b):
     return (f'<div style="background:#1e1e2e;border-radius:10px;padding:16px;margin:1.2rem 0;'
             f'max-height:400px;overflow:auto;">'
             f'<pre style="margin:0;font-family:\'JetBrains Mono\',monospace;font-size:0.8rem;'
-            f'color:#e2e8f0;">{pretty}</pre></div>')
+            f'color:#4f6e99;">{pretty}</pre></div>')
 
 def _render_key_takeaways(b):
     raw = b.get("items", b.get("points", []))
@@ -3430,7 +3430,7 @@ def _render_changelog_entry(b):
     version = b.get("version","")
     date    = b.get("date","")
     changes = b.get("changes",[])
-    tag_colors = {"added":"#16a34a","fixed":"#2563eb","changed":"#d97706","removed":"#dc2626","deprecated":"#7c3aed"}
+    tag_colors = {"added":"#117b38","fixed":"#1c5cea","changed":"#d97706","removed":"#dc2626","deprecated":"#7c3aed"}
     items_html = "".join(
         f'<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:4px;">'
         f'<span style="font-size:0.7rem;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;'
@@ -4111,7 +4111,7 @@ def _render_status_dashboard(b: dict) -> str:
     Legacy shapes still accepted: `metrics` [{label, value, color}] (the old
     schema.yaml doc) and `services` (old demo alias for `items`)."""
     import html as _h
-    COLORS = {"operational": "#22c55e", "degraded": "#f59e0b",
+    COLORS = {"operational": "#167d3c", "degraded": "#996206",
               "outage": "#ef4444", "maintenance": "#4f46e5"}
     LABELS = {"operational": "Operational", "degraded": "Degraded",
               "outage": "Outage", "maintenance": "Maintenance"}
@@ -4200,7 +4200,7 @@ def _render_command_palette(b: dict) -> str:
         groups[cat].append(cmd)
     h = '<div class="a2ui-cmd-palette" id="cp-' + uid + '">'
     h += '<div class="a2ui-cmd-search-wrap">'
-    h += ('<svg class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">'
+    h += ('<svg class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2">'
           '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>')
     h += ('<input class="a2ui-cmd-input" type="text" placeholder="' + _cv_esc(placeholder) + '"'
           ' oninput="(function(v){var items=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-item\');var cats=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-cat\');'
@@ -4803,7 +4803,7 @@ def _render_sentiment_summary(b: dict) -> str:
     stroke_dashoffset = stroke_dasharray - (sentiment_index / 100.0) * stroke_dasharray
     
     if sentiment_index >= 75:
-        sentiment_color = "#10b981"
+        sentiment_color = "#0c855d"
         sentiment_label = "POSITIVE"
     elif sentiment_index >= 50:
         sentiment_color = "#38bdf8"
@@ -4819,7 +4819,7 @@ def _render_sentiment_summary(b: dict) -> str:
           <linearGradient id="{gauge_id}_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#f59e0b" />
             <stop offset="50%" stop-color="#38bdf8" />
-            <stop offset="100%" stop-color="#10b981" />
+            <stop offset="100%" stop-color="#0c855d" />
           </linearGradient>
           <filter id="{gauge_id}_glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="2" result="blur" />
@@ -4871,12 +4871,12 @@ def _render_sentiment_summary(b: dict) -> str:
             <svg viewBox="0 0 {width} {height}" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="{journey_id}_line_grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#10b981" />
+                  <stop offset="0%" stop-color="#0c855d" />
                   <stop offset="50%" stop-color="#38bdf8" />
                   <stop offset="100%" stop-color="#ef4444" />
                 </linearGradient>
                 <linearGradient id="{journey_id}_area_grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
+                  <stop offset="0%" stop-color="#0c855d" stop-opacity="0.25" />
                   <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.1" />
                   <stop offset="100%" stop-color="#ef4444" stop-opacity="0.02" />
                 </linearGradient>
@@ -4891,7 +4891,7 @@ def _render_sentiment_summary(b: dict) -> str:
               <line x1="{x_min}" y1="{center_y}" x2="{x_max}" y2="{center_y}" stroke="rgba(255,255,255,0.15)" stroke-dasharray="3,3" stroke-width="1" />
               <path d="{area_path}" fill="url(#{journey_id}_area_grad)" />
               <path d="{line_path}" stroke="url(#{journey_id}_line_grad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#{journey_id}_glow)" />
-              <text x="{x_max}" y="{y_min+4}" text-anchor="end" font-size="8" fill="#10b981" font-family="monospace">Positive</text>
+              <text x="{x_max}" y="{y_min+4}" text-anchor="end" font-size="8" fill="#0c855d" font-family="monospace">Positive</text>
               <text x="{x_max}" y="{center_y-4}" text-anchor="end" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">Neutral</text>
               <text x="{x_max}" y="{y_max-4}" text-anchor="end" font-size="8" fill="#ef4444" font-family="monospace">Negative</text>
             </svg>
@@ -4908,7 +4908,7 @@ def _render_sentiment_summary(b: dict) -> str:
         if mood.lower() in ("analytical", "calm", "neutral"):
             theme_color = "#38bdf8"
         elif mood.lower() in ("engaged", "excited", "happy", "positive"):
-            theme_color = "#10b981"
+            theme_color = "#0c855d"
         elif mood.lower() in ("hesitant", "skeptical", "concerned", "negative"):
             theme_color = "#f59e0b"
         else:
@@ -6647,7 +6647,7 @@ def _render_entity_list(b: dict) -> str:
             f'<div style="font-size:0.75rem;color:var(--a2ui-muted,#666666);">{_cv_esc(subtitle)}</div>'
         ) if subtitle else ""
         meta_html = (
-            f'<div style="font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);white-space:nowrap;">{_cv_esc(meta)}</div>'
+            f'<div style="font-size:0.75rem;color:var(--a2ui-faint,#757575);white-space:nowrap;">{_cv_esc(meta)}</div>'
         ) if meta else ""
         rows += (
             f'<div style="display:flex;align-items:center;gap:12px;padding:10px 0;'
@@ -7184,7 +7184,7 @@ def _render_token_budget_meter(b: dict) -> str:
     color = (
         "#ef4444" if pct >= crit_at else
         "#f59e0b" if pct >= warn_at else
-        "#22c55e"
+        "#178640"
     )
 
     def _fmt(n):
@@ -9083,7 +9083,7 @@ def _render_blur_fade_in(atom: dict) -> str:
     from_transform = drift_map.get(direction, "translateY(16px)")
     title = atom.get("title", "")
     body  = atom.get("body", "")
-    title_html = f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else ""
+    title_html = f'<div style="font-size:1.1rem;font-weight:700;color:#4878a8;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else ""
     body_html  = f'<div style="font-size:0.9rem;color:var(--muted,#5f6368);line-height:1.65;">{_cv_esc(body)}</div>' if body else ""
     content    = title_html + body_html if (title or body) else '<div style="font-size:0.9rem;color:var(--muted,#5f6368);">Content fades in with blur reveal.</div>'
     return (
@@ -10126,7 +10126,7 @@ def _render_linkedin_post_image(b: dict) -> str:
                 f'object-fit:cover;object-position:top;display:block;"/>'
             ) if url else (
                 f'<div style="flex:1;background:#f8f9fa;display:flex;align-items:center;'
-                f'justify-content:center;color:#9aa0a6;font-size:0.8rem;">screenshot</div>'
+                f'justify-content:center;color:#6e767d;font-size:0.8rem;">screenshot</div>'
             )
             return (
                 f'<div style="flex:1;display:flex;flex-direction:column;{br}overflow:hidden;">'
@@ -10158,7 +10158,7 @@ def _render_linkedin_post_image(b: dict) -> str:
                 for i in items
             )
             return f'<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">{boxes}</div>'
-        arrow = '<div style="text-align:center;font-size:1.2rem;color:#9aa0a6;margin:6px 0;">↓</div>'
+        arrow = '<div style="text-align:center;font-size:1.2rem;color:#6e767d;margin:6px 0;">↓</div>'
         runtime_box = (
             f'<div style="background:#1e40af;border:2px solid #3b82f6;border-radius:10px;'
             f'padding:14px 24px;font-size:0.9rem;font-weight:700;color:#fff;'
@@ -10180,7 +10180,7 @@ def _render_linkedin_post_image(b: dict) -> str:
             f'{caption_html}'
         )
 
-    return f'<div style="color:#9aa0a6;font-style:italic;">Unknown linkedin_post_image mode: {_cv_esc(mode)}</div>'
+    return f'<div style="color:#6e767d;font-style:italic;">Unknown linkedin_post_image mode: {_cv_esc(mode)}</div>'
 
 
 _RENDERERS["linkedin_post_image"] = _render_linkedin_post_image
@@ -11492,7 +11492,7 @@ def _render_trend_indicator(b: dict) -> str:
     d = b.get("trend_direction") or b.get("direction", "stable")
     label = b.get("label", "")
     ctx = b.get("context", "")
-    cfg = {"up": ("↑","#10b981","#d1fae5"), "down": ("↓","#ef4444","#fee2e2"), "stable": ("→","#6b7280","#f3f4f6")}.get(d, ("→","#6b7280","#f3f4f6"))
+    cfg = {"up": ("↑","#0b7a55","#d1fae5"), "down": ("↓","#ef4444","#fee2e2"), "stable": ("→","#6b7280","#f3f4f6")}.get(d, ("→","#6b7280","#f3f4f6"))
     col = b.get("color", cfg[1])
     ctx_html = f'<span style="font-size:.75rem;color:var(--muted,#5f6368);margin-left:6px;">{_cv_esc(ctx)}</span>' if ctx else ""
     return f'<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:{cfg[2]};font-size:.82rem;font-weight:600;color:{_cv_esc(col)};">{cfg[0]} {_cv_esc(label)}{ctx_html}</span>'
@@ -11500,7 +11500,7 @@ def _render_trend_indicator(b: dict) -> str:
 def _render_metric_delta(b: dict) -> str:
     label, cur = b.get("label",""), b.get("current_value") or b.get("value","")
     delta, dtype = b.get("delta_value",""), b.get("delta_type","increase")
-    col = "#10b981" if dtype=="increase" else "#ef4444" if dtype=="decrease" else "#6b7280"
+    col = "#0b7a55" if dtype=="increase" else "#ef4444" if dtype=="decrease" else "#6b7280"
     bg  = "#d1fae5" if dtype=="increase" else "#fee2e2" if dtype=="decrease" else "#f3f4f6"
     arr = "↑" if dtype=="increase" else "↓" if dtype=="decrease" else "→"
     delta_html = f'<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:{bg};color:{col};font-size:.8rem;font-weight:600;">{arr} {_cv_esc(delta)}</span>' if delta else ""
@@ -11553,8 +11553,8 @@ def _render_sentiment_summary(b: dict) -> str:
     neu = max(0, 100 - idx - neg)
     title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     def bar(lbl, pct, col, bg): return f'<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted,#5f6368);margin-bottom:3px;"><span>{lbl}</span><span>{_cv_esc(pct)}%</span></div><div style="background:{bg};border-radius:4px;height:8px;"><div style="background:{col};width:{_cv_esc(pct)}%;height:100%;border-radius:4px;"></div></div></div>'
-    score = f'<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#10b981;">{_cv_esc(idx)}%</div><div style="font-size:.78rem;color:var(--muted,#5f6368);">Positive sentiment</div></div>'
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{title}{score}{bar("Positive",idx,"#10b981","#d1fae5")}{bar("Neutral",neu,"#6b7280","#f3f4f6")}{bar("Negative",neg,"#ef4444","#fee2e2")}</div>'
+    score = f'<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#0c855d;">{_cv_esc(idx)}%</div><div style="font-size:.78rem;color:var(--muted,#5f6368);">Positive sentiment</div></div>'
+    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{title}{score}{bar("Positive",idx,"#0c855d","#d1fae5")}{bar("Neutral",neu,"#6b7280","#f3f4f6")}{bar("Negative",neg,"#ef4444","#fee2e2")}</div>'
 
 def _render_expandable_text(b: dict) -> str:
     summary = b.get("summary","Read more")
@@ -11591,7 +11591,7 @@ def _render_stacked_area(b: dict) -> str:
 def _render_data_grid(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     cols, rows_data = b.get("columns",[]), b.get("rows",[])
-    ths = "".join(f'<th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">{_cv_esc(c.get("header",c.get("key","")))}</th>' for c in cols)
+    ths = "".join(f'<th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#666d7a;">{_cv_esc(c.get("header",c.get("key","")))}</th>' for c in cols)
     trs = ""
     for ri, row in enumerate(rows_data):
         tds = ""
@@ -11599,7 +11599,7 @@ def _render_data_grid(b: dict) -> str:
             val = str(row.get(c.get("key",""),""))
             if c.get("type") == "status":
                 smap = {"active":("✓","#10b981","#d1fae5"),"inactive":("✗","#ef4444","#fee2e2"),"pending":("○","#f59e0b","#fef3c7")}
-                cfg = smap.get(val.lower(), ("?","#6b7280","#f3f4f6"))
+                cfg = smap.get(val.lower(), ("?","#666d7a","#f3f4f6"))
                 cell = f'<span style="padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600;background:{cfg[2]};color:{cfg[1]};">{cfg[0]} {_cv_esc(val)}</span>'
             elif c.get("type") == "tag":
                 cell = f'<span style="padding:2px 8px;border-radius:12px;font-size:.75rem;background:#dbeafe;color:#1d4ed8;">{_cv_esc(val)}</span>'
@@ -11612,7 +11612,7 @@ def _render_data_grid(b: dict) -> str:
 
 def _render_action_required_card(b: dict) -> str:
     urgency = b.get("urgency") or b.get("level","medium")
-    umap = {"high":("#ef4444","#fef2f2","🔴"),"medium":("#f59e0b","#fffbeb","🟡"),"low":("#3b82f6","#eff6ff","🔵")}
+    umap = {"high":("#ef4444","#fef2f2","🔴"),"medium":("#a06707","#fffbeb","🟡"),"low":("#3b82f6","#eff6ff","🔵")}
     col,bg,di = umap.get(urgency,umap["medium"])
     icon = b.get("icon",di)
     btn = f'<a href="{_cv_esc(b.get("action_url","#"))}" target="_top" style="display:inline-block;margin-top:14px;padding:8px 20px;background:{col};color:#fff;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">{_cv_esc(b.get("action_label","Take action"))}</a>' if b.get("action_label") and b.get("action_url") else ""
@@ -11793,7 +11793,7 @@ def _render_action_items(b: dict) -> str:
     status_cfg = {
         'done':        ('✅', '#16a34a', '#f0fdf4'),
         'in_progress': ('🔄', '#2563eb', '#eff6ff'),
-        'open':        ('⭕', '#9ca3af', '#fff'),
+        'open':        ('⭕', '#6c7586', '#fff'),
     }
     rows = ''
     for i, item in enumerate(items):
@@ -12672,7 +12672,7 @@ def _render_embed_tweet(b: dict) -> str:
             f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
             f'<span style="font-size:1.2rem;">🐦</span>'
             f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
-            f'style="color:#1da1f2;font-weight:700;text-decoration:none;">@{_esc(handle)}</a></div>'
+            f'style="color:#0b79bd;font-weight:700;text-decoration:none;">@{_esc(handle)}</a></div>'
             f'<p style="margin:0;font-size:0.9rem;color:#14171a;">{_md_inline(text)}</p></div>')
 
 _RENDERERS['embed_tweet'] = _render_embed_tweet
@@ -13424,7 +13424,7 @@ def _render_notification_badge(b: dict) -> str:
     show = count
     if isinstance(count, int) and count > max_count:
         show = f'{_cv_esc(max_count)}+'
-    badge_html = (f'<span style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;'
+    badge_html = (f'<span style="position:absolute;top:-6px;right:-6px;background:#e71414;color:#fff;'
                   f'font-size:0.65rem;font-weight:800;border-radius:99px;min-width:18px;height:18px;'
                   f'display:flex;align-items:center;justify-content:center;padding:0 4px;">'
                   f'{_esc(str(show))}</span>' if count != '' else '')
@@ -14063,7 +14063,7 @@ def _render_table(b: dict) -> str:
         tds = ''.join(f'<td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);{_w(j)}">'
                       f'{_md_inline(str(c))}</td>' for j, c in enumerate(cells))
         body += f'<tr style="background:{"#fff" if i%2==0 else "#f9fafb"};">{tds}</tr>'
-    cap = f'<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#8f8f8f);text-align:left;">{_esc(caption)}</caption>' if caption else ''
+    cap = f'<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#757575);text-align:left;">{_esc(caption)}</caption>' if caption else ''
     return (f'<div style="border:1px solid var(--a2ui-border,#eaeaea);border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
             f'<table style="{table_style}">{cap}'
             f'<thead><tr>{ths}</tr></thead><tbody>{body}</tbody></table></div>')
@@ -14181,7 +14181,7 @@ def _render_timeline(b: dict) -> str:
                   f'font-size:0.7rem;">{_cv_esc(icon)}</div>'
                   f'<div style="position:absolute;left:12px;top:26px;width:2px;'
                   f'background:{_esc(accent)}44;height:calc(100% + 8px);"></div>'
-                  f'{"<div style=font-size:0.75rem;color:var(--a2ui-faint,#8f8f8f);margin-bottom:2px;>"+_esc(date)+"</div>" if date else ""}'
+                  f'{"<div style=font-size:0.75rem;color:var(--a2ui-faint,#757575);margin-bottom:2px;>"+_esc(date)+"</div>" if date else ""}'
                   f'<div style="font-weight:700;color:var(--a2ui-text,#171717);font-size:0.9rem;">{_esc(title)}</div>'
                   f'{"<div style=font-size:0.85rem;color:var(--a2ui-muted,#666666);margin-top:4px;>"+_md_inline(text)+"</div>" if text else ""}'
                   f'</div>')
@@ -17054,7 +17054,7 @@ _RENDERERS["post_metadata_bar"] = _render_post_metadata_bar
 
 def _render_notification_badge(b):
     text = b.get("text", "")
-    color = b.get("color", "#ef4444")
+    color = b.get("color", "#e71414")
     return (f'<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">'
             f'  <svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
@@ -18490,7 +18490,7 @@ def _render_annotation_highlight(b: dict) -> str:
     out = _esc(text)
     for i, n in enumerate(notes):
         term = n.get('term', '')
-        col = n.get('color', '#f59e0b')
+        col = n.get('color', '#996206')
         if term:
             escaped_term = _esc(term)
             # Schema's field is `explanation`; this read the non-existent `note`, so the
@@ -18508,7 +18508,7 @@ def _render_quiz_result_summary(b: dict) -> str:
     pass_mark = int(b.get('pass_mark', 70))
     pct = round(score / total * 100)
     passed = pct >= pass_mark
-    col = '#34d399' if passed else '#f87171'
+    col = '#1c805c' if passed else '#f87171'
     bg = 'rgba(52,211,153,0.07)' if passed else 'rgba(248,113,113,0.07)'
     verdict = '✅ Passed' if passed else '❌ Not yet'
     time_secs = int(b.get('time_secs', 0))
@@ -18530,7 +18530,7 @@ def _render_quiz_result_summary(b: dict) -> str:
     dots = ''.join(
         f'<div title="{_esc(q.get("label", f"Q{i+1}"))}" style="width:22px;height:22px;border-radius:50%;'
         f'display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;color:#fff;'
-        f'background:{"#34d399" if q.get("correct") else "#f87171"};">{"✓" if q.get("correct") else "✗"}</div>'
+        f'background:{"#1c805c" if q.get("correct") else "#f87171"};">{"✓" if q.get("correct") else "✗"}</div>'
         for i, q in enumerate(questions)
     )
     dots_html = (f'<div style="margin-top:16px;"><div style="font-size:0.65rem;color:var(--muted,#5f6368);text-transform:uppercase;'
@@ -18595,7 +18595,7 @@ def _render_spaced_repetition_card(b: dict) -> str:
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:linear-gradient(135deg,{_esc(accent)}22,{_esc(accent)}11);border:1px solid {_esc(accent)}44;padding:20px;">'
         f'<span style="font-size:1.1rem;font-weight:600;">{front}</span></div>'
         f'<div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);display:flex;align-items:center;'
-        f'justify-content:center;border-radius:14px;background:#f0fdf4;border:1px solid #34d39944;padding:20px;">'
+        f'justify-content:center;border-radius:14px;background:#f0fdf4;border:1px solid #1a7a5744;padding:20px;">'
         f'<span style="font-size:0.95rem;">{back}</span></div></div></div>'
         f'<div style="display:flex;gap:8px;font-size:0.8rem;">'
         f'<button style="flex:1;padding:8px;border-radius:8px;background:#fee2e2;border:none;cursor:pointer;font-weight:600;">Again</button>'
@@ -20272,7 +20272,7 @@ def _render_contrast_audit(b: dict) -> str:
     mono = _CV_VOICES['mono']
     def badge(ok, l):
         return ('<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:0.66rem;font-weight:700;letter-spacing:0.04em;'
-                + ('background:#16a34a22;color:#15803d;' if ok else 'background:#dc262622;color:#b91c1c;') + f'">{l} {"pass" if ok else "fail"}</span>')
+                + ('background:#16a34a22;color:#14793a;' if ok else 'background:#dc262622;color:#b91c1c;') + f'">{l} {"pass" if ok else "fail"}</span>')
     pass_aa, rows = 0, ''
     for q in pairs:
         r = _ca_ratio(q['fg'], q['bg'])
@@ -20290,7 +20290,7 @@ def _render_contrast_audit(b: dict) -> str:
                  '</div>')
     head = (f'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;">'
             f'<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};">contrast audit · WCAG 2.1</div>'
-            f'<div style="font-family:{mono};font-size:0.78rem;color:{"#15803d" if pass_aa == len(pairs) else th["mute"]};">{pass_aa} of {len(pairs)} pass AA</div></div>')
+            f'<div style="font-family:{mono};font-size:0.78rem;color:{"#14793a" if pass_aa == len(pairs) else th["mute"]};">{pass_aa} of {len(pairs)} pass AA</div></div>')
     return _cv_card(th, head + rows)
 
 
@@ -20644,7 +20644,7 @@ def _render_case_study_card(b: dict) -> str:
     situation = _md.markdown(b.get('situation', '')) if b.get('situation') else ''
     data_points = b.get('data_points', [])
     questions = b.get('questions', [])
-    accent = b.get('accent', '#38bdf8')
+    accent = b.get('accent', '#0676a8')
     dp_html = ''.join(
         f'<div style="padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);margin-bottom:6px;">'
         f'<span style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);">{_esc(dp.get("label",""))}</span>'
@@ -20926,7 +20926,7 @@ def _render_scenario_branch(b: dict) -> str:
     scene = _md.markdown(_scene_src) if _scene_src else ''
     context = _md.markdown(b.get('context', '')) if b.get('context') else ''
     choices = b.get('choices', [])
-    accent = b.get('accent', '#f59e0b')
+    accent = b.get('accent', '#9e6506')
     btns = ''
     results = ''
     for i, c in enumerate(choices):
@@ -21356,7 +21356,7 @@ def _render_chat_sequence(b: dict) -> str:
         name_align = 'left' if is_ai else 'right'
         items += ('<div style="display:flex;justify-content:' + align + ';margin-bottom:10px;">'
                   '<div style="max-width:80%;">'
-                  '<div style="font-size:0.72rem;color:#9ca3af;margin-bottom:3px;text-align:'
+                  '<div style="font-size:0.72rem;color:#6c7586;margin-bottom:3px;text-align:'
                   + name_align + ';">' + name + '</div>'
                   '<div style="padding:10px 14px;border-radius:' + radius + ';background:' + bg + ';'
                   'color:' + color + ';font-size:0.875rem;line-height:1.6;">' + text + '</div>'
@@ -23417,7 +23417,7 @@ def _render_atom_anatomy(b: dict) -> str:
     try:
         rendered = _RENDERERS.get(schema_data.get('type', ''), _render_unknown)(schema_data)
     except Exception:
-        rendered = '<em style="color:#9ca3af;">Could not render preview</em>'
+        rendered = '<em style="color:#6c7586;">Could not render preview</em>'
     schema_str = _esc(_js_json(schema_data, indent=2))
     return ('<div style="margin:1rem 0;border:1px solid ' + accent + '33;'
             'border-radius:12px;overflow:hidden;">'
@@ -23426,12 +23426,12 @@ def _render_atom_anatomy(b: dict) -> str:
             'border-bottom:1px solid ' + accent + '33;">⬡ ' + label + '</div>'
             '<div style="display:flex;gap:0;">'
             '<div style="flex:1;padding:20px;border-right:1px solid #e5e7eb;min-width:0;">'
-            '<div style="font-size:0.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;'
+            '<div style="font-size:0.68rem;font-weight:700;color:#6c7586;text-transform:uppercase;'
             'letter-spacing:0.08em;margin-bottom:10px;">Rendered</div>' + rendered + '</div>'
             '<div style="flex:1;padding:20px;background:#0f172a;min-width:0;">'
             '<div style="font-size:0.68rem;font-weight:700;color:#475569;text-transform:uppercase;'
             'letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
-            '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#e2e8f0;'
+            '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#4f6e99;'
             'white-space:pre-wrap;line-height:1.6;">' + schema_str + '</pre></div>'
             '</div></div>')
 _RENDERERS["atom_anatomy"] = _render_atom_anatomy
@@ -23948,7 +23948,7 @@ _RENDERERS['article_journey'] = _render_article_journey
 # each "sans" | "serif" | "mono". Both become CSS custom properties on the ladder; a nested rung inherits them.
 _CONCEPT_PALETTE_LIGHT = {
     'paper': '#F6F9FD', 'paper_raised': '#FFFFFF', 'ink': '#141B24', 'ink_soft': '#515963',
-    'line': '#DDE3EC', 'accent': '#6267E7', 'accent_soft': '#E6E8FF', 'blocked': '#C5221F',
+    'line': '#DDE3EC', 'accent': '#4F46E5', 'accent_soft': '#E6E8FF', 'blocked': '#C5221F',
     'blocked_soft': '#FCE8E6', 'cleared': '#188038', 'cleared_soft': '#E6F4EA',
     'mono_bg': '#1E2733', 'mono_fg': '#EAEFF5', 'mono_accent': '#8D98FF',
 }
@@ -28002,7 +28002,7 @@ _MO_MIX_FILL = 'color-mix(in srgb,var(--mt-ink,#f1f5f9) 5%,transparent)'
 
 def _render_motion_pill(b: dict) -> str:
     text, size, icon = _cv_str(b.get('text'), 60) or 'Label', _ff_int(b.get('size'), 28, 10, 120), _cv_str(b.get('icon'), 2)
-    acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'fill', '')
+    acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#4878a8)'), _mo_ink(b, 'fill', '')
     align = _ff_pick(b.get('align'), _MO_ALIGN, 'start')
     jc = 'flex-end' if align == 'right' else ('center' if align == 'center' else 'flex-start')
     href = _href_is_safe_motion_pill(b.get('href'))
@@ -28042,7 +28042,7 @@ def _render_motion_checklist(b: dict) -> str:
                  + '<span style="position:absolute;left:-2px;top:-2px;right:-2px;bottom:-2px;border-radius:50%;background:' + acc + ';display:flex;align-items:center;justify-content:center;transform:scale(var(--u));">' + tick + '</span></span></div>')
     for _ in range(skel):
         rows += '<div aria-hidden="true" style="height:2.3em;border-radius:0.7em;background:' + _MO_MIX_FILL + ';margin-top:0.55em;"></div>'
-    return ('<div style="box-sizing:border-box;width:100%;padding:0.9em;border-radius:1.1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#f1f5f9);font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;line-height:1.2;">'
+    return ('<div style="box-sizing:border-box;width:100%;padding:0.9em;border-radius:1.1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#4777a6);font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;line-height:1.2;">'
             + ('<div style="font-weight:700;font-size:0.9em;">' + _cv_esc(title) + '</div>' if title else '') + rows + '</div>')
 
 
@@ -28079,7 +28079,7 @@ def _render_motion_stepper(b: dict) -> str:
         if isinstance(f, list) and len(f) >= 2 and _mo_num_ok(f[0]) and _mo_num_ok(f[1]):
             fmap[str(math.floor(f[0])) + ',' + str(math.floor(f[1]))] = _cv_str(bsrc[i] if i < len(bsrc) else None, 6)
     dim = '0.7' if fmap else '0'
-    html = '<div style="position:relative;width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);">'
+    html = '<div style="position:relative;width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#4878a8);">'
     if cap:
         html += '<div style="font-family:' + _FF_FONTS['mono'] + ';font-size:0.62em;letter-spacing:0.2em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-bottom:1.4em;opacity:clamp(0,calc(var(--p,1)*6),1);">' + _cv_esc(cap) + '</div>'
     html += ('<div style="position:relative;display:grid;grid-template-columns:repeat(' + str(C) + ',minmax(0,1fr));column-gap:0.9em;">'
@@ -28160,7 +28160,7 @@ def _render_motion_code(b: dict) -> str:
                  + '<span style="display:block;overflow:hidden;white-space:pre;width:calc(var(--t)*1ch);">' + body + '</span>'
                  + '<span aria-hidden="true" style="flex:none;width:0.6ch;height:1.15em;background:' + acc + ';opacity:calc(clamp(0,calc(var(--t)*1000),1)*clamp(0,calc((' + str(ln_len) + ' - var(--t))*1000),1));"></span></div>')
     dot = '<span style="width:0.65em;height:0.65em;border-radius:50%;background:' + _MO_MIX_LINE + ';"></span>'
-    return ('<div style="box-sizing:border-box;width:100%;padding:0.9em 1.2em 1.1em;border-radius:1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#f1f5f9);font-family:' + _FF_FONTS['mono'] + ';font-size:' + str(size) + 'px;">'
+    return ('<div style="box-sizing:border-box;width:100%;padding:0.9em 1.2em 1.1em;border-radius:1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#4878a8);font-family:' + _FF_FONTS['mono'] + ';font-size:' + str(size) + 'px;">'
             + '<div aria-hidden="true" style="display:flex;align-items:center;gap:0.45em;margin-bottom:0.8em;">' + dot + dot + dot
             + ('<span style="margin-left:0.6em;font-size:0.72em;color:var(--mt-mute,#94a3b8);">' + _cv_esc(file_) + '</span>' if file_ else '') + '</div>'
             + _mo_sr(' '.join(lines)) + '<div aria-hidden="true">' + rows + '</div></div>')
@@ -28202,7 +28202,7 @@ def _render_motion_browser(b: dict) -> str:
     pick = min(_ff_int(b.get('pick'), -1, -1, 5), N - 1) if N else -1
     count = _cv_str(b.get('count'), 16)
     typed = ''.join('<span style="opacity:clamp(0,calc(var(--q)*' + str(len(q)) + ' - ' + str(i) + '),1);">' + _cv_esc(ch) + '</span>' for i, ch in enumerate(q))
-    html = ('<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);">'
+    html = ('<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#4878a8);">'
             + '<div style="--q:clamp(0,calc(var(--p,1)*3.334),1);position:relative;display:flex;align-items:center;gap:0.7em;box-sizing:border-box;padding:0.7em 1em;border-radius:0.7em;border:1.5px solid ' + acc + ';background:' + _MO_MIX_FILL + ';">'
             + '<svg viewBox="0 0 16 16" width="1.1em" height="1.1em" aria-hidden="true" style="flex:none;opacity:0.55;"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10.6L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
             + '<span style="position:relative;flex:1;min-height:1.3em;">' + (_mo_sr(''.join(q)) if q else '')
@@ -28219,7 +28219,7 @@ def _render_motion_browser(b: dict) -> str:
         pk = i == pick
         html += ('<div style="--u:clamp(0,calc((clamp(0,calc((var(--p,1) - 0.3)*1.4286),1)*' + str(N + 2) + ' - ' + str(i) + ')/2),1);position:relative;border-radius:0.8em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';overflow:hidden;opacity:var(--u);'
                  + 'transform:translateY(calc((1 - var(--u))*0.8em)' + (' - var(--s,1)*0.35em' if pk else '') + ');">'
-                 + '<div aria-hidden="true" style="height:7.2em;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid ' + _MO_MIX_LINE + ';' + ('background-color:' + well + ';' if well else '') + 'background-image:radial-gradient(color-mix(in srgb,var(--mt-ink,#f1f5f9) 16%,transparent) 1px,transparent 1px);background-size:12px 12px;"><div style="transform:scale(0.92);pointer-events:none;">' + cd['p'] + '</div></div>'
+                 + '<div aria-hidden="true" style="height:7.2em;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid ' + _MO_MIX_LINE + ';' + ('background-color:' + well + ';' if well else '') + 'background-image:radial-gradient(color-mix(in srgb,var(--mt-ink,#4878a8) 16%,transparent) 1px,transparent 1px);background-size:12px 12px;"><div style="transform:scale(0.92);pointer-events:none;">' + cd['p'] + '</div></div>'
                  + '<div style="padding:0.85em 0.95em 0.95em;"><div style="font-weight:700;font-size:1em;">' + _cv_esc(cd['t']) + '</div>'
                  + '<div style="font-size:0.82em;line-height:1.4;color:var(--mt-mute,#94a3b8);margin-top:0.35em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em;">' + _cv_esc(cd['x']) + '</div>'
                  + '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5em;margin-top:0.7em;">'
@@ -28572,7 +28572,7 @@ def _render_motion_rays(b: dict) -> str:
 def _render_motion_hud(b: dict) -> str:
     secs, size, label = _ff_int(b.get('seconds'), 10, 1, 3600), _ff_int(b.get('size'), 14, 8, 60), _cv_str(b.get('label'), 30)
     corners, bar = b.get('corners') is not False, b.get('bar') is not False
-    acc, color, mono = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick('mono', _FF_FONTS, 'mono')
+    acc, color, mono = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#4878a8)'), _ff_pick('mono', _FF_FONTS, 'mono')
     cs = [('top:0.6em;left:0.6em;', 'border-top:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'), ('top:0.6em;right:0.6em;', 'border-top:2px solid ' + acc + ';border-right:2px solid ' + acc + ';'),
           ('bottom:0.6em;left:0.6em;', 'border-bottom:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'), ('bottom:0.6em;right:0.6em;', 'border-bottom:2px solid ' + acc + ';border-right:2px solid ' + acc + ';')]
     html = ''
@@ -28662,7 +28662,7 @@ def _render_motion_marquee(b: dict) -> str:
             rows.append(t)
     if not rows:
         rows = ['MARQUEE']
-    size, acc, color = _ff_int(b.get('size'), 40, 10, 200), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)')
+    size, acc, color = _ff_int(b.get('size'), 40, 10, 200), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#4878a8)')
     weight, out = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), ''
     for i, row in enumerate(rows):
         unit = '<span style="padding-right:1.2em;">' + _cv_esc(row) + ' &middot; </span>'
@@ -28742,7 +28742,7 @@ def _render_motion_rail(b: dict) -> str:
         out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n - 1) + ' - ' + _ff_num(i - 0.0001, 0, -1, 10, 4) + ' ),1);position:absolute;left:' + x + '%;top:0;transform:translateX(-50%);text-align:center;">'
                 + '<div style="width:0.9em;height:0.9em;margin:0 auto;border-radius:50%;box-sizing:border-box;border:2px solid ' + acc + ';background:color-mix(in srgb,' + acc + ' calc(var(--u)*100%),transparent);"></div>'
                 + '<div style="margin-top:0.7em;white-space:nowrap;font-weight:700;opacity:calc(0.4 + 0.6*var(--u));">' + _cv_esc(t) + '</div></div>')
-    return ('<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);height:4.4em;">'
+    return ('<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#4878a8);height:4.4em;">'
             + '<div style="position:absolute;left:4em;right:4em;top:0;height:0;"><div style="position:absolute;left:0;right:0;top:0.4em;height:2px;background:' + _MO_MIX_LINE + ';"></div>'
             + '<div style="position:absolute;left:0;top:0.4em;height:2px;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></div>' + out + '</div></div>')
 
@@ -28850,8 +28850,8 @@ def _render_motion_chart(b: dict) -> str:
             segs += ('<circle cx="60" cy="60" r="44" pathLength="1" style="fill:none;stroke:' + cols[i % 4] + ';stroke-width:16;stroke-dasharray:calc(clamp(0,calc(var(--p,1) - ' + c0 + '),' + sh + ')) 1;stroke-dashoffset:-' + c0 + ';transform:rotate(-90deg);transform-origin:60px 60px;"/>')
             cum += share
         body = ('<svg viewBox="0 0 120 120" width="' + str(_ff_int(b.get('height'), 260, 80, 800)) + '" aria-hidden="true" style="display:block;margin:0 auto;max-width:100%;">' + segs
-                + '<text x="60" y="60" text-anchor="middle" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:16px;font-weight:800;fill:var(--mt-ink,#f1f5f9);">' + _cv_esc(_mo_fmt(tot, 0, '', unit)) + '</text></svg>')
-    return ('<div role="img" aria-label="' + _cv_esc(lab) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#f1f5f9);">'
+                + '<text x="60" y="60" text-anchor="middle" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:16px;font-weight:800;fill:var(--mt-ink,#4878a8);">' + _cv_esc(_mo_fmt(tot, 0, '', unit)) + '</text></svg>')
+    return ('<div role="img" aria-label="' + _cv_esc(lab) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;color:var(--mt-ink,#4878a8);">'
             + ('<div style="font-weight:800;margin-bottom:0.4em;">' + _cv_esc(title) + '</div>' if title else '') + body + '</div>')
 
 
@@ -28928,13 +28928,13 @@ def _render_motion_chat(b: dict) -> str:
             msgs.append((t, (m.get('from') == 'user') if obj else i % 2 == 0))
     if not msgs:
         msgs = [('Hello', True), ('Hi, how can I help?', False)]
-    n, size, acc, name, out = len(msgs), _ff_int(b.get('size'), 22, 8, 60), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _cv_str(b.get('agent'), 20), ''
+    n, size, acc, name, out = len(msgs), _ff_int(b.get('size'), 22, 8, 60), _mo_ink(b, 'accent', 'var(--mt-acc,#067baf)'), _cv_str(b.get('agent'), 20), ''
     for i, (t, me) in enumerate(msgs):
         u = '--u:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);'
         dots = '' if me else ('<span aria-hidden="true" style="position:absolute;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:0.25em;opacity:calc(clamp(0,calc(var(--u)*8),1)*(1 - clamp(0,calc((var(--u) - 0.3)*8),1)));">'
                               + '<i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i><i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i><i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i></span>')
         out += ('<div style="' + u + 'display:flex;justify-content:' + ('flex-end' if me else 'flex-start') + ';margin-top:0.6em;transform:translateY(calc((1 - var(--u))*0.8em));">'
-                + '<div style="position:relative;max-width:78%;padding:0.6em 0.95em;border-radius:1.1em;' + ('border-bottom-right-radius:0.3em;background:' + acc + ';color:#fff;' if me else 'border-bottom-left-radius:0.3em;background:' + _MO_MIX_FILL + ';border:1px solid ' + _MO_MIX_LINE + ';color:var(--mt-ink,#f1f5f9);') + 'line-height:1.3;opacity:clamp(0,calc(var(--u)*6),1);">'
+                + '<div style="position:relative;max-width:78%;padding:0.6em 0.95em;border-radius:1.1em;' + ('border-bottom-right-radius:0.3em;background:' + acc + ';color:#fff;' if me else 'border-bottom-left-radius:0.3em;background:' + _MO_MIX_FILL + ';border:1px solid ' + _MO_MIX_LINE + ';color:var(--mt-ink,#4878a8);') + 'line-height:1.3;opacity:clamp(0,calc(var(--u)*6),1);">'
                 + dots + '<span style="opacity:' + ('1' if me else 'clamp(0,calc((var(--u) - 0.35)*8),1)') + ';">' + _cv_esc(t) + '</span></div></div>')
     return ('<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">' + ('<div style="font-size:0.75em;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);">' + _cv_esc(name) + '</div>' if name else '') + out + '</div>')
 
@@ -30479,7 +30479,7 @@ def _render_headline_list(b: dict) -> str:
 
 
 def _render_breaking_banner(b: dict) -> str:
-    accent = _if_str(_gx_or(_if_g(b, 'accent'), '#ef4444'))
+    accent = _if_str(_gx_or(_if_g(b, 'accent'), '#d71212'))
     label = _gx_or(_if_g(b, 'label'), 'BREAKING')
     summary = ('<p style="margin:8px 0 0;font-size:0.875rem;color:var(--muted,#9ca3af);line-height:1.65">' + _gx_esc(_if_g(b, 'summary')) + '</p>') if _if_truthy(_if_g(b, 'summary')) else ''
     source_line = ('<p style="margin:8px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + _gx_join_truthy([_if_g(b, 'source'), _if_g(b, 'time')], ' · ') + '</p>') if (_if_truthy(_if_g(b, 'source')) or _if_truthy(_if_g(b, 'time'))) else ''
@@ -30559,14 +30559,14 @@ def _render_command_step(b: dict) -> str:
             "navigator.clipboard.writeText(b.getAttribute('data-cmd'));"
             "b.textContent='✓';b.style.background='#22c55e';"
             "setTimeout(function(){b.textContent='Copy';b.style.background='#1e293b';},1500);"
-            '})(this)" style="background:#1e293b;color:#94a3b8;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">Copy</button></div>'
+            '})(this)" style="background:#1e293b;color:#617592;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">Copy</button></div>'
             '<label style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;user-select:none;">'
             '<input type="checkbox" data-cs-done ' + ('checked' if done else '') + ' onchange="(function(el){'
             "var w=el.closest('[data-atom-id]');"
             'if(w&&w._a2uiWire&&w._a2uiWire.setDone){w._a2uiWire.setDone(el.checked);}'
             '})(this)" style="width:16px;height:16px;accent-color:#22c55e;cursor:pointer;">'
-            '<span style="font-size:0.8rem;color:' + ('#22c55e' if done else '#94a3b8') + ';font-weight:' + ('600' if done else '400') + ';">' + ('Done' if done else 'Mark as done') + '</span></label>'
-            + (('<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;padding-left:2px;">' + _gx_esc(hint) + '</div>') if _if_truthy(hint) else '') + '</div>')
+            '<span style="font-size:0.8rem;color:' + ('#22c55e' if done else '#617592') + ';font-weight:' + ('600' if done else '400') + ';">' + ('Done' if done else 'Mark as done') + '</span></label>'
+            + (('<div style="font-size:0.75rem;color:#617592;margin-top:4px;padding-left:2px;">' + _gx_esc(hint) + '</div>') if _if_truthy(hint) else '') + '</div>')
 
 
 def _render_jump_nav(b: dict) -> str:
@@ -30635,12 +30635,12 @@ def _render_sla_timer_display(b: dict) -> str:
     pc = _gx_parse_float(_if_g(b, 'pct'))
     pc = 0 if (pc != pc or pc == 0) else pc
     pct = min(max(0, pc), 100)
-    st_color = '#ef4444' if state == 'breach' else ('#f97316' if state == 'warn' else '#22c55e')
+    st_color = '#e71414' if state == 'breach' else ('#f97316' if state == 'warn' else '#178640')
     st_label = 'BREACH' if state == 'breach' else ('WARN' if state == 'warn' else 'OK')
     pulse = 'animation:a2ui-pulse 1s infinite;' if state == 'breach' else ''
     return ('<div style="background:#0f172a;border:1px solid ' + st_color + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">'
             '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div>'
-            '<span style="display:inline-block;background:#ef4444;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _gx_esc(severity) + '</span>'
+            '<span style="display:inline-block;background:#e71414;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _gx_esc(severity) + '</span>'
             '<span style="color:#94a3b8;font-size:0.85rem;font-weight:500;">' + _gx_esc(title) + '</span></div>'
             '<span data-sla-badge style="display:inline-block;background:' + st_color + ';color:#fff;font-size:0.72rem;font-weight:800;letter-spacing:0.08em;padding:4px 14px;border-radius:99px;' + pulse + '">' + st_label + '</span></div>'
             '<div data-sla-time style="font-size:3.5rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.03em;line-height:1;margin-bottom:20px;font-variant-numeric:tabular-nums;">' + _gx_esc(elapsed) + '</div>'
@@ -31184,7 +31184,7 @@ def _render_domain_brief(b: dict) -> str:
 
 
 def _render_brevet_timeline(b: dict) -> str:
-    events, accent, label = _gx_or(_if_g(b, 'events'), []), _gx_or(_if_g(b, 'accent'), '#3b82f6'), _gx_or(_if_g(b, 'title'), '')
+    events, accent, label = _gx_or(_if_g(b, 'events'), []), _gx_or(_if_g(b, 'accent'), '#196cf4'), _gx_or(_if_g(b, 'title'), '')
     uid = 'btl' + _gx_uid(b, 8)
     if not _if_truthy(_gx_len(events)):
         return ''
@@ -31249,25 +31249,25 @@ def _render_brevet_automatismes(b: dict) -> str:
     rows_html = ''
     for i, q in enumerate(qs):
         ans = _gx_get(q, 'answer')
-        rows_html += ('<div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 1rem;border-bottom:1px solid rgba(16,185,129,0.1);"><span style="font-size:0.95rem;color:#f1f5f9;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">'
-                      '<span style="color:#10b981;font-weight:700;margin-right:0.4rem;">' + str(i + 1) + '.</span>' + _gx_esc(_gx_or(_gx_get(q, 'question'), '')) + '</span>'
+        rows_html += ('<div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 1rem;border-bottom:1px solid rgba(16,185,129,0.1);"><span style="font-size:0.95rem;color:#335476;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">'
+                      '<span style="color:#085d41;font-weight:700;margin-right:0.4rem;">' + str(i + 1) + '.</span>' + _gx_esc(_gx_or(_gx_get(q, 'question'), '')) + '</span>'
                       '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><input type="text" aria-label="Answer to question ' + str(i + 1) + '" class="' + uid + 'in" data-ans="' + _gx_esc(_if_str(_gx_or(ans, ''))) + '" '
                       'placeholder="?" maxlength="16" autocomplete="off" style="width:68px;padding:5px 8px;text-align:center;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(16,185,129,0.25);color:#fff;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;font-family:\'Courier New\',monospace;">'
                       '<span class="' + uid + 'fb" style="font-size:0.9rem;width:28px;text-align:left;"></span></div></div>')
-    script = _jl(r'''var left=%%DUR%%,done=false;var tmrEl=document.getElementById("%%UID%%tmr");var iv=setInterval(function(){if(done){clearInterval(iv);return;}left--;var m=Math.floor(left/60),s=left%60;if(tmrEl)tmrEl.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;if(left<=60&&tmrEl)tmrEl.style.color="#f87171";if(left<=0){clearInterval(iv);window["%%UID%%"].validate();}},1000);window["%%UID%%"]={validate:function(){if(done)return;done=true;clearInterval(iv);var ins=document.querySelectorAll("#%%UID%% .%%UID%%in");var fbs=document.querySelectorAll("#%%UID%% .%%UID%%fb");var score=0;ins.forEach(function(inp,i){var user=inp.value.trim().replace(/,/g,".");var ans=(inp.getAttribute("data-ans")||"").trim().replace(/,/g,".");var ok=user.toLowerCase()===ans.toLowerCase();if(ok){score++;fbs[i].textContent="✓";fbs[i].style.color="#10b981";inp.style.borderColor="rgba(16,185,129,0.5)";}else{fbs[i].textContent="✗ "+ans;fbs[i].style.color="#f87171";fbs[i].style.fontSize="0.72rem";inp.style.borderColor="rgba(248,113,113,0.5)";inp.style.color="#f87171";}inp.disabled=true;});var sc=document.getElementById("%%UID%%sc");var pts=Math.round(score/%%N%%*6*10)/10;if(sc){sc.style.display="block";sc.textContent=score+"/%%N%% correct — "+pts+"/6 pts";if(score===%%N%%)sc.textContent+=" ✨ Parfait !";}var btn=document.getElementById("%%UID%%btn");if(btn)btn.style.display="none";}};var ins=document.querySelectorAll("#%%UID%% .%%UID%%in");ins.forEach(function(inp,i){inp.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(i<ins.length-1){ins[i+1].focus();}else{window["%%UID%%"].validate();}});});})();<\/script>''')
+    script = _jl(r'''var left=%%DUR%%,done=false;var tmrEl=document.getElementById("%%UID%%tmr");var iv=setInterval(function(){if(done){clearInterval(iv);return;}left--;var m=Math.floor(left/60),s=left%60;if(tmrEl)tmrEl.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;if(left<=60&&tmrEl)tmrEl.style.color="#f87171";if(left<=0){clearInterval(iv);window["%%UID%%"].validate();}},1000);window["%%UID%%"]={validate:function(){if(done)return;done=true;clearInterval(iv);var ins=document.querySelectorAll("#%%UID%% .%%UID%%in");var fbs=document.querySelectorAll("#%%UID%% .%%UID%%fb");var score=0;ins.forEach(function(inp,i){var user=inp.value.trim().replace(/,/g,".");var ans=(inp.getAttribute("data-ans")||"").trim().replace(/,/g,".");var ok=user.toLowerCase()===ans.toLowerCase();if(ok){score++;fbs[i].textContent="✓";fbs[i].style.color="#085d41";inp.style.borderColor="rgba(16,185,129,0.5)";}else{fbs[i].textContent="✗ "+ans;fbs[i].style.color="#f87171";fbs[i].style.fontSize="0.72rem";inp.style.borderColor="rgba(248,113,113,0.5)";inp.style.color="#f87171";}inp.disabled=true;});var sc=document.getElementById("%%UID%%sc");var pts=Math.round(score/%%N%%*6*10)/10;if(sc){sc.style.display="block";sc.textContent=score+"/%%N%% correct — "+pts+"/6 pts";if(score===%%N%%)sc.textContent+=" ✨ Parfait !";}var btn=document.getElementById("%%UID%%btn");if(btn)btn.style.display="none";}};var ins=document.querySelectorAll("#%%UID%% .%%UID%%in");ins.forEach(function(inp,i){inp.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(i<ins.length-1){ins[i+1].focus();}else{window["%%UID%%"].validate();}});});})();<\/script>''')
     script = script.replace('%%UID%%', uid).replace('%%N%%', str(n)).replace('%%DUR%%', _if_str(duration))
-    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:1.5rem 0;background:rgba(4,47,30,0.25);border:2px solid #059669;border-radius:14px;overflow:hidden;">'
+    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:1.5rem 0;background:rgba(4,47,30,0.25);border:2px solid #04855d;border-radius:14px;overflow:hidden;">'
             '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1.2rem;background:rgba(6,95,70,0.45);border-bottom:1px solid rgba(16,185,129,0.18);"><div>'
-            '<div style="font-size:0.9rem;font-weight:800;color:#10b981;letter-spacing:0.02em;">⏱ Automatismes · DNB 2026</div>'
+            '<div style="font-size:0.9rem;font-weight:800;color:#085d41;letter-spacing:0.02em;">⏱ Automatismes · DNB 2026</div>'
             '<div style="font-size:0.65rem;color:rgba(167,243,208,0.65);margin-top:2px;">Partie 1 · 6 pts · Calculatrice interdite</div></div>'
             '<div id="' + uid + 'tmr" style="background:rgba(4,47,30,0.85);color:#a7f3d0;padding:4px 14px;border-radius:6px;font-weight:800;font-family:\'Courier New\',monospace;font-size:1.15rem;letter-spacing:0.05em;">' + init_tmr + '</div></div>'
-            '<div style="padding:0.5rem 1.2rem;background:rgba(146,64,14,0.2);border-bottom:1px solid rgba(217,119,6,0.2);"><span style="font-size:0.72rem;color:#fbbf24;">⚠ Répondez rapidement — pas de calculatrice — appuyez Entrée pour passer à la question suivante</span></div>'
-            '<div>' + rows_html + '</div><div style="padding:0.9rem 1.2rem;"><button id="' + uid + 'btn" style="width:100%;padding:10px;background:#059669;color:#fff;border:none;font-weight:700;font-size:0.88rem;border-radius:8px;cursor:pointer;letter-spacing:0.04em;transition:background 0.15s;" '
-            "onmouseover=\"this.style.background='#047857'\" onmouseout=\"this.style.background='#059669'\" onclick=\"window['" + uid + "'].validate()\">Corriger mon épreuve ✓</button>"
-            '<div id="' + uid + 'sc" style="display:none;text-align:center;margin-top:0.8rem;font-size:0.92rem;font-weight:700;color:#10b981;"></div></div></div><script>(function(){' + script)
+            '<div style="padding:0.5rem 1.2rem;background:rgba(146,64,14,0.2);border-bottom:1px solid rgba(217,119,6,0.2);"><span style="font-size:0.72rem;color:#543d02;">⚠ Répondez rapidement — pas de calculatrice — appuyez Entrée pour passer à la question suivante</span></div>'
+            '<div>' + rows_html + '</div><div style="padding:0.9rem 1.2rem;"><button id="' + uid + 'btn" style="width:100%;padding:10px;background:#04855d;color:#fff;border:none;font-weight:700;font-size:0.88rem;border-radius:8px;cursor:pointer;letter-spacing:0.04em;transition:background 0.15s;" '
+            "onmouseover=\"this.style.background='#047857'\" onmouseout=\"this.style.background='#04855d'\" onclick=\"window['" + uid + "'].validate()\">Corriger mon épreuve ✓</button>"
+            '<div id="' + uid + 'sc" style="display:none;text-align:center;margin-top:0.8rem;font-size:0.92rem;font-weight:700;color:#085d41;"></div></div></div><script>(function(){' + script)
 
 
-_CAT_COLORS = {'a2media': '#8b5cf6', 'a2UI': '#4f46e5', 'a2ui': '#4f46e5', 'a2knowledge': '#10b981', 'ard': '#f59e0b'}
+_CAT_COLORS = {'a2media': '#8b5cf6', 'a2UI': '#4f46e5', 'a2ui': '#4f46e5', 'a2knowledge': '#085d41', 'ard': '#f59e0b'}
 
 
 def _render_catalogue_provenance(b: dict) -> str:
@@ -31473,7 +31473,7 @@ def _render_flashcard_deck(b: dict) -> str:
             '<div style="position:relative;width:100%;height:300px;perspective:1200px;">' + cards_html + '</div>'
             '<div style="display:flex;align-items:center;gap:10px;margin-top:1.4rem;"><button id="' + uid + 'P" onclick="window[\'' + uid + '\'].prev()" disabled style="padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;font-size:0.78rem;font-weight:600;">← Prev</button>'
             '<button onclick="window[\'' + uid + '\'].flip()" style="padding:8px 22px;border-radius:8px;border:none;background:' + _gx_esc(accent) + ';color:#fff;cursor:pointer;font-size:0.78rem;font-weight:700;">Flip</button>'
-            '<button id="' + uid + 'N" onclick="window[\'' + uid + '\'].next()" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button></div></div>'
+            '<button id="' + uid + 'N" onclick="window[\'' + uid + '\'].next()" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#617592;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button></div></div>'
             '<script>(function(){' + _FCD_JS.replace('%%UID%%', uid).replace('%%N%%', str(n)))
 
 
@@ -31591,7 +31591,7 @@ def _render_photo_grid(b: dict) -> str:
 def _render_photo_stepper(b: dict) -> str:
     images_v = _gx_or(_gx_or(_if_g(b, 'images'), _if_g(b, 'rows')), [])
     if not _if_truthy(_gx_len(images_v)):
-        return '<p style="color:#94a3b8;font-style:italic;">Nothing to show yet.</p>'
+        return '<p style="color:#617592;font-style:italic;">Nothing to show yet.</p>'
     accent = _gx_or(_if_g(b, 'accent'), '#0f766e')
     sid = 'ps' + _gx_uid(b, 6)
     images = _gx_arr(images_v)

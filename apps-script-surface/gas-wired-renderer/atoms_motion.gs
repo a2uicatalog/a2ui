@@ -1080,7 +1080,7 @@ var _MO_MIX_FILL = 'color-mix(in srgb,var(--mt-ink,#f1f5f9) 5%,transparent)';
 // A rounded call-to-action chip. *word* inside the text takes the accent colour.
 _RENDERERS['motion_pill'] = function(b) {
   var text = _moStr(b.text, 60) || 'Label', size = _ffInt(b.size, 28, 10, 120), icon = _moStr(b.icon, 2);
-  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), fill = _moInk(b, 'fill', '');
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#4878a8)'), fill = _moInk(b, 'fill', '');
   var align = _ffPick(b.align, _MO_ALIGN, 'start'), jc = align === 'right' ? 'flex-end' : (align === 'center' ? 'center' : 'flex-start');
   var href = typeof b.href === 'string' ? _hrefIsSafe(b.href) : '', tag = href ? 'a' : 'div';
   // expressive options (2026-10-09): a gradient outline and a glow, off by default
@@ -1112,7 +1112,7 @@ _RENDERERS['motion_checklist'] = function(b) {
       + '<span style="position:absolute;left:-2px;top:-2px;right:-2px;bottom:-2px;border-radius:50%;background:' + acc + ';display:flex;align-items:center;justify-content:center;transform:scale(var(--u));">' + tick + '</span></span></div>';
   }
   for (i = 0; i < skel; i++) rows += '<div aria-hidden="true" style="height:2.3em;border-radius:0.7em;background:' + _MO_MIX_FILL + ';margin-top:0.55em;"></div>';
-  return '<div style="box-sizing:border-box;width:100%;padding:0.9em;border-radius:1.1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#f1f5f9);font-family:' + _MO_SANS + ';font-size:' + size + 'px;line-height:1.2;">'
+  return '<div style="box-sizing:border-box;width:100%;padding:0.9em;border-radius:1.1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#4777a6);font-family:' + _MO_SANS + ';font-size:' + size + 'px;line-height:1.2;">'
     + (title ? '<div style="font-weight:700;font-size:0.9em;">' + _esc(title) + '</div>' : '') + rows + '</div>';
 };
 
@@ -1141,7 +1141,7 @@ _RENDERERS['motion_stepper'] = function(b) {
     if (Array.isArray(f) && typeof f[0] === 'number' && typeof f[1] === 'number' && isFinite(f[0]) && isFinite(f[1])) { fmap[Math.floor(f[0]) + ',' + Math.floor(f[1])] = _moStr(bsrc[i], 6); nf++; }
   }
   var dim = nf ? '0.7' : '0';
-  var html = '<div style="position:relative;width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);">';
+  var html = '<div style="position:relative;width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#4878a8);">';
   if (cap) html += '<div style="font-family:' + _FF_FONTS.mono + ';font-size:0.62em;letter-spacing:0.2em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);margin-bottom:1.4em;opacity:clamp(0,calc(var(--p,1)*6),1);">' + _esc(cap) + '</div>';
   html += '<div style="position:relative;display:grid;grid-template-columns:repeat(' + C + ',minmax(0,1fr));column-gap:0.9em;">'
     + '<div aria-hidden="true" style="position:absolute;left:0.4em;right:0;top:0.4em;height:2px;background:' + acc + ';opacity:0.85;transform-origin:0 0;transform:scaleX(clamp(0,var(--p,1),1));"></div>';
@@ -1202,7 +1202,7 @@ _RENDERERS['motion_code'] = function(b) {
       + '<span style="display:block;overflow:hidden;white-space:pre;width:calc(var(--t)*1ch);">' + body + '</span>'
       + '<span aria-hidden="true" style="flex:none;width:0.6ch;height:1.15em;background:' + acc + ';opacity:calc(clamp(0,calc(var(--t)*1000),1)*clamp(0,calc((' + len + ' - var(--t))*1000),1));"></span></div>';
   }
-  return '<div style="box-sizing:border-box;width:100%;padding:0.9em 1.2em 1.1em;border-radius:1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#f1f5f9);font-family:' + _FF_FONTS.mono + ';font-size:' + size + 'px;">'
+  return '<div style="box-sizing:border-box;width:100%;padding:0.9em 1.2em 1.1em;border-radius:1em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';color:var(--mt-ink,#4878a8);font-family:' + _FF_FONTS.mono + ';font-size:' + size + 'px;">'
     + '<div aria-hidden="true" style="display:flex;align-items:center;gap:0.45em;margin-bottom:0.8em;"><span style="width:0.65em;height:0.65em;border-radius:50%;background:' + _MO_MIX_LINE + ';"></span><span style="width:0.65em;height:0.65em;border-radius:50%;background:' + _MO_MIX_LINE + ';"></span><span style="width:0.65em;height:0.65em;border-radius:50%;background:' + _MO_MIX_LINE + ';"></span>'
     + (file ? '<span style="margin-left:0.6em;font-size:0.72em;color:var(--mt-mute,#94a3b8);">' + _esc(file) + '</span>' : '') + '</div>'
     + _moSr(lines.join(' ')) + '<div aria-hidden="true">' + rows + '</div></div>';
@@ -1238,7 +1238,7 @@ _RENDERERS['motion_browser'] = function(b) {
   var well = _moInk(b, 'well', ''), N = cards.length, cols = _ffInt(b.columns, 3, 2, 4), pick = N ? Math.min(_ffInt(b.pick, -1, -1, 5), N - 1) : -1, count = _moStr(b.count, 16);
   var typed = '';
   for (i = 0; i < q.length; i++) typed += '<span style="opacity:clamp(0,calc(var(--q)*' + q.length + ' - ' + i + '),1);">' + _esc(q[i]) + '</span>';
-  var html = '<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);">'
+  var html = '<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#4878a8);">'
     + '<div style="--q:clamp(0,calc(var(--p,1)*3.334),1);position:relative;display:flex;align-items:center;gap:0.7em;box-sizing:border-box;padding:0.7em 1em;border-radius:0.7em;border:1.5px solid ' + acc + ';background:' + _MO_MIX_FILL + ';">'
     + '<svg viewBox="0 0 16 16" width="1.1em" height="1.1em" aria-hidden="true" style="flex:none;opacity:0.55;"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10.6L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
     + '<span style="position:relative;flex:1;min-height:1.3em;">' + (q.length ? _moSr(q.join('')) : '')
@@ -1254,7 +1254,7 @@ _RENDERERS['motion_browser'] = function(b) {
     var cd = cards[i], pk = i === pick;
     html += '<div style="--u:clamp(0,calc((clamp(0,calc((var(--p,1) - 0.3)*1.4286),1)*' + (N + 2) + ' - ' + i + ')/2),1);position:relative;border-radius:0.8em;border:1px solid ' + _MO_MIX_LINE + ';background:' + _MO_MIX_FILL + ';overflow:hidden;opacity:var(--u);'
       + 'transform:translateY(calc((1 - var(--u))*0.8em)' + (pk ? ' - var(--s,1)*0.35em' : '') + ');">'
-      + '<div aria-hidden="true" style="height:7.2em;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid ' + _MO_MIX_LINE + ';' + (well ? 'background-color:' + well + ';' : '') + 'background-image:radial-gradient(color-mix(in srgb,var(--mt-ink,#f1f5f9) 16%,transparent) 1px,transparent 1px);background-size:12px 12px;"><div style="transform:scale(0.92);pointer-events:none;">' + cd.p + '</div></div>'
+      + '<div aria-hidden="true" style="height:7.2em;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid ' + _MO_MIX_LINE + ';' + (well ? 'background-color:' + well + ';' : '') + 'background-image:radial-gradient(color-mix(in srgb,var(--mt-ink,#4878a8) 16%,transparent) 1px,transparent 1px);background-size:12px 12px;"><div style="transform:scale(0.92);pointer-events:none;">' + cd.p + '</div></div>'
       + '<div style="padding:0.85em 0.95em 0.95em;"><div style="font-weight:700;font-size:1em;">' + _esc(cd.t) + '</div>'
       + '<div style="font-size:0.82em;line-height:1.4;color:var(--mt-mute,#94a3b8);margin-top:0.35em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em;">' + _esc(cd.x) + '</div>'
       + '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5em;margin-top:0.7em;">'
@@ -1542,7 +1542,7 @@ _RENDERERS['motion_rays'] = function(b) {
 // A heads-up display: corner brackets, a timecode that counts up, a label and a progress bar. Fills its placed box.
 _RENDERERS['motion_hud'] = function(b) {
   var secs = _ffInt(b.seconds, 10, 1, 3600), size = _ffInt(b.size, 14, 8, 60), label = _moStr(b.label, 30), corners = b.corners !== false, bar = b.bar !== false;
-  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), mono = _ffPick('mono', _FF_FONTS, 'mono'), html = '', i;
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#4878a8)'), mono = _ffPick('mono', _FF_FONTS, 'mono'), html = '', i;
   var cs = [['top:0.6em;left:0.6em;', 'border-top:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'], ['top:0.6em;right:0.6em;', 'border-top:2px solid ' + acc + ';border-right:2px solid ' + acc + ';'],
             ['bottom:0.6em;left:0.6em;', 'border-bottom:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'], ['bottom:0.6em;right:0.6em;', 'border-bottom:2px solid ' + acc + ';border-right:2px solid ' + acc + ';']];
   if (corners) for (i = 0; i < 4; i++) html += '<span aria-hidden="true" style="position:absolute;' + cs[i][0] + 'width:1.6em;height:1.6em;' + cs[i][1] + '"></span>';
@@ -1612,7 +1612,7 @@ _RENDERERS['motion_marquee'] = function(b) {
   var src = Array.isArray(b.rows) ? b.rows : [], rows = [], i;
   for (i = 0; i < src.length && rows.length < 5; i++) { var t = _moStr(src[i], 80); if (t) rows.push(t); }
   if (!rows.length) rows = ['MARQUEE'];
-  var size = _ffInt(b.size, 40, 10, 200), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), gap = 0.8, out = '';
+  var size = _ffInt(b.size, 40, 10, 200), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#4878a8)'), gap = 0.8, out = '';
   var weight = _ffPick(b.weight, _FF_WEIGHTS, 'black');
   for (i = 0; i < rows.length; i++) {
     var unit = '<span style="padding-right:1.2em;">' + _esc(rows[i]) + ' &middot; </span>', dir = i % 2 ? 1 : -1, hi = i === 1 ? acc : color;
@@ -1673,7 +1673,7 @@ _RENDERERS['motion_rail'] = function(b) {
       + '<div style="width:0.9em;height:0.9em;margin:0 auto;border-radius:50%;box-sizing:border-box;border:2px solid ' + acc + ';background:color-mix(in srgb,' + acc + ' calc(var(--u)*100%),transparent);"></div>'
       + '<div style="margin-top:0.7em;white-space:nowrap;font-weight:700;opacity:calc(0.4 + 0.6*var(--u));">' + _esc(st[i]) + '</div></div>';
   }
-  return '<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);height:4.4em;">'
+  return '<div style="position:relative;width:100%;padding:0 4em;box-sizing:border-box;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#4878a8);height:4.4em;">'
     + '<div style="position:absolute;left:4em;right:4em;top:0;height:0;"><div style="position:absolute;left:0;right:0;top:0.4em;height:2px;background:' + _MO_MIX_LINE + ';"></div>'
     + '<div style="position:absolute;left:0;top:0.4em;height:2px;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></div>' + out + '</div></div>';
 };
@@ -1759,9 +1759,9 @@ _RENDERERS['motion_chart'] = function(b) {
       cum += share;
     }
     body = '<svg viewBox="0 0 120 120" width="' + _ffInt(b.height, 260, 80, 800) + '" aria-hidden="true" style="display:block;margin:0 auto;max-width:100%;">' + segs
-      + '<text x="60" y="60" text-anchor="middle" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:16px;font-weight:800;fill:var(--mt-ink,#f1f5f9);">' + _esc(_moFmt(tot, 0, '', unit)) + '</text></svg>';
+      + '<text x="60" y="60" text-anchor="middle" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:16px;font-weight:800;fill:var(--mt-ink,#4878a8);">' + _esc(_moFmt(tot, 0, '', unit)) + '</text></svg>';
   }
-  return '<div role="img" aria-label="' + _esc(lab) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#f1f5f9);">'
+  return '<div role="img" aria-label="' + _esc(lab) + '" style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;color:var(--mt-ink,#4878a8);">'
     + (title ? '<div style="font-weight:800;margin-bottom:0.4em;">' + _esc(title) + '</div>' : '') + body + '</div>';
 };
 
@@ -1826,13 +1826,13 @@ _RENDERERS['motion_chat'] = function(b) {
     if (t) msgs.push({t: t, me: obj ? m.from === 'user' : i % 2 === 0});
   }
   if (!msgs.length) msgs = [{t: 'Hello', me: true}, {t: 'Hi, how can I help?', me: false}];
-  var n = msgs.length, size = _ffInt(b.size, 22, 8, 60), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), name = _moStr(b.agent, 20), out = '';
+  var n = msgs.length, size = _ffInt(b.size, 22, 8, 60), acc = _moInk(b, 'accent', 'var(--mt-acc,#067baf)'), name = _moStr(b.agent, 20), out = '';
   for (i = 0; i < n; i++) {
     var me = msgs[i].me, u = '--u:clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1);';
     var dots = me ? '' : '<span aria-hidden="true" style="position:absolute;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:0.25em;opacity:calc(clamp(0,calc(var(--u)*8),1)*(1 - clamp(0,calc((var(--u) - 0.3)*8),1)));">'
       + '<i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i><i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i><i style="width:0.4em;height:0.4em;border-radius:50%;background:currentColor;opacity:0.6;"></i></span>';
     out += '<div style="' + u + 'display:flex;justify-content:' + (me ? 'flex-end' : 'flex-start') + ';margin-top:0.6em;transform:translateY(calc((1 - var(--u))*0.8em));">'
-      + '<div style="position:relative;max-width:78%;padding:0.6em 0.95em;border-radius:1.1em;' + (me ? 'border-bottom-right-radius:0.3em;background:' + acc + ';color:#fff;' : 'border-bottom-left-radius:0.3em;background:' + _MO_MIX_FILL + ';border:1px solid ' + _MO_MIX_LINE + ';color:var(--mt-ink,#f1f5f9);') + 'line-height:1.3;opacity:clamp(0,calc(var(--u)*6),1);">'
+      + '<div style="position:relative;max-width:78%;padding:0.6em 0.95em;border-radius:1.1em;' + (me ? 'border-bottom-right-radius:0.3em;background:' + acc + ';color:#fff;' : 'border-bottom-left-radius:0.3em;background:' + _MO_MIX_FILL + ';border:1px solid ' + _MO_MIX_LINE + ';color:var(--mt-ink,#4878a8);') + 'line-height:1.3;opacity:clamp(0,calc(var(--u)*6),1);">'
       + dots + '<span style="opacity:' + (me ? '1' : 'clamp(0,calc((var(--u) - 0.35)*8),1)') + ';">' + _esc(msgs[i].t) + '</span></div></div>';
   }
   return '<div style="width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;">' + (name ? '<div style="font-size:0.75em;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--mt-mute,#94a3b8);">' + _esc(name) + '</div>' : '') + out + '</div>';

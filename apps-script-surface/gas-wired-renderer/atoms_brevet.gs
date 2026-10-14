@@ -110,7 +110,7 @@ _RENDERERS['domain_brief'] = function(b) {
 // Schema: events [{date, title, desc}], accent (hex), title (optional label)
 _RENDERERS['brevet_timeline'] = function(b) {
   var events = b.events || [];
-  var accent = b.accent  || '#3b82f6';
+  var accent = b.accent  || '#196cf4';
   var label  = b.title   || '';
   var uid    = 'btl' + Math.random().toString(36).substr(2, 8);
   if (!events.length) return '';
@@ -277,8 +277,8 @@ _RENDERERS['brevet_automatismes'] = function(b) {
     rowsHtml +=
       '<div style="display:flex;align-items:center;justify-content:space-between;' +
         'padding:0.7rem 1rem;border-bottom:1px solid rgba(16,185,129,0.1);">' +
-        '<span style="font-size:0.95rem;color:#f1f5f9;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">' +
-          '<span style="color:#10b981;font-weight:700;margin-right:0.4rem;">' + (i+1) + '.</span>' +
+        '<span style="font-size:0.95rem;color:#335476;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">' +
+          '<span style="color:#085d41;font-weight:700;margin-right:0.4rem;">' + (i+1) + '.</span>' +
           _esc(q.question || '') +
         '</span>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
@@ -294,13 +294,13 @@ _RENDERERS['brevet_automatismes'] = function(b) {
 
   return (
     '<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:1.5rem 0;' +
-      'background:rgba(4,47,30,0.25);border:2px solid #059669;border-radius:14px;overflow:hidden;">' +
+      'background:rgba(4,47,30,0.25);border:2px solid #04855d;border-radius:14px;overflow:hidden;">' +
       // Header
       '<div style="display:flex;justify-content:space-between;align-items:center;' +
         'padding:0.85rem 1.2rem;background:rgba(6,95,70,0.45);' +
         'border-bottom:1px solid rgba(16,185,129,0.18);">' +
         '<div>' +
-          '<div style="font-size:0.9rem;font-weight:800;color:#10b981;letter-spacing:0.02em;">⏱ Automatismes · DNB 2026</div>' +
+          '<div style="font-size:0.9rem;font-weight:800;color:#085d41;letter-spacing:0.02em;">⏱ Automatismes · DNB 2026</div>' +
           '<div style="font-size:0.65rem;color:rgba(167,243,208,0.65);margin-top:2px;">' +
             'Partie 1 · 6 pts · Calculatrice interdite</div>' +
         '</div>' +
@@ -313,23 +313,23 @@ _RENDERERS['brevet_automatismes'] = function(b) {
       // Warning bar
       '<div style="padding:0.5rem 1.2rem;background:rgba(146,64,14,0.2);' +
         'border-bottom:1px solid rgba(217,119,6,0.2);">' +
-        '<span style="font-size:0.72rem;color:#fbbf24;">⚠ Répondez rapidement — pas de calculatrice — appuyez Entrée pour passer à la question suivante</span>' +
+        '<span style="font-size:0.72rem;color:#543d02;">⚠ Répondez rapidement — pas de calculatrice — appuyez Entrée pour passer à la question suivante</span>' +
       '</div>' +
       // Questions
       '<div>' + rowsHtml + '</div>' +
       // Footer
       '<div style="padding:0.9rem 1.2rem;">' +
         '<button id="' + uid + 'btn" ' +
-          'style="width:100%;padding:10px;background:#059669;color:#fff;border:none;' +
+          'style="width:100%;padding:10px;background:#04855d;color:#fff;border:none;' +
           'font-weight:700;font-size:0.88rem;border-radius:8px;cursor:pointer;' +
           'letter-spacing:0.04em;transition:background 0.15s;" ' +
           'onmouseover="this.style.background=\'#047857\'" ' +
-          'onmouseout="this.style.background=\'#059669\'" ' +
+          'onmouseout="this.style.background=\'#04855d\'" ' +
           'onclick="window[\'' + uid + '\'].validate()">' +
           'Corriger mon épreuve ✓' +
         '</button>' +
         '<div id="' + uid + 'sc" style="display:none;text-align:center;margin-top:0.8rem;' +
-          'font-size:0.92rem;font-weight:700;color:#10b981;"></div>' +
+          'font-size:0.92rem;font-weight:700;color:#085d41;"></div>' +
       '</div>' +
     '</div>' +
     '<script>(function(){' +
@@ -354,7 +354,7 @@ _RENDERERS['brevet_automatismes'] = function(b) {
             'var ans=(inp.getAttribute("data-ans")||"").trim().replace(/,/g,".");' +
             'var ok=user.toLowerCase()===ans.toLowerCase();' +
             'if(ok){score++;' +
-              'fbs[i].textContent="✓";fbs[i].style.color="#10b981";' +
+              'fbs[i].textContent="✓";fbs[i].style.color="#085d41";' +
               'inp.style.borderColor="rgba(16,185,129,0.5)";' +
             '}else{' +
               'fbs[i].textContent="✗ "+ans;fbs[i].style.color="#f87171";' +

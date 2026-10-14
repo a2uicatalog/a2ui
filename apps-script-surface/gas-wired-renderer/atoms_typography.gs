@@ -729,7 +729,7 @@ _RENDERERS['contrast_audit'] = function(b) {
   }
   if (!pairs.length) pairs = [{fg: '#767676', bg: '#ffffff', label: 'example'}];
   var passAA = 0, rows = '';
-  var badge = function(ok, l) { return '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:0.66rem;font-weight:700;letter-spacing:0.04em;' + (ok ? 'background:#16a34a22;color:#15803d;' : 'background:#dc262622;color:#b91c1c;') + '">' + l + ' ' + (ok ? 'pass' : 'fail') + '</span>'; };
+  var badge = function(ok, l) { return '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:0.66rem;font-weight:700;letter-spacing:0.04em;' + (ok ? 'background:#16a34a22;color:#14793a;' : 'background:#dc262622;color:#b91c1c;') + '">' + l + ' ' + (ok ? 'pass' : 'fail') + '</span>'; };
   for (var j = 0; j < pairs.length; j++) {
     var q = pairs[j], r = _caRatio(q.fg, q.bg), rS = _cvFix(r, 2), aa = r >= 4.5, aaL = r >= 3, aaa = r >= 7;
     if (aa) passAA++;
@@ -745,6 +745,6 @@ _RENDERERS['contrast_audit'] = function(b) {
   }
   var head = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;">'
     + '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';">contrast audit · WCAG 2.1</div>'
-    + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;color:' + (passAA === pairs.length ? '#15803d' : th.mute) + ';">' + passAA + ' of ' + pairs.length + ' pass AA</div></div>';
+    + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;color:' + (passAA === pairs.length ? '#14793a' : th.mute) + ';">' + passAA + ' of ' + pairs.length + ' pass AA</div></div>';
   return _cvCard(th, head + rows);
 };

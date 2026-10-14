@@ -401,8 +401,7 @@ if _PRIVATE_EXAMPLE_BLOCKS.exists():
 # fill under white text (an accessibility scan, 2026-10-13/14). Map each such colour VALUE to a darker equivalent that passes (>= 4.5:1 on white and
 # for white on it), so the shown examples are accessible by default. Only exact colour strings are touched; renderers and the schema are unchanged.
 _AA_EXAMPLE_COLOURS = {
-    "#6366f1": "#4f46e5", "#10b981": "#047857", "#22c55e": "#15803d", "#16a34a": "#15803d", "#f59e0b": "#b45309", "#eab308": "#a16207",
-    "#ef4444": "#dc2626", "#34a853": "#1e7e34", "#4285f4": "#1a73e8", "#1da1f2": "#0b6fae", "#1877f2": "#1560c8", "#0ea5e9": "#0369a1",
+    "#6366f1": "#4f46e5", "#10b981": "#047857", "#22c55e": "#15803d", "#16a34a": "#15803d",     "#ef4444": "#dc2626", "#34a853": "#1e7e34", "#4285f4": "#1a73e8", "#1da1f2": "#0b6fae", "#1877f2": "#1560c8", "#0ea5e9": "#0369a1",
     "#3b82f6": "#2563eb", "#34d399": "#047857", "#38bdf8": "#0369a1", "#facc15": "#854d0e", "#ea4335": "#c5221f", "#fbbc04": "#8a6100",
     "#ff3b30": "#c4261d", "#00f2ff": "#007c85", "#22d3ee": "#0e7490", "#8b5cf6": "#6d28d9", "#818cf8": "#4f46e5", "#60a5fa": "#1d4ed8",
     "#f87171": "#b91c1c", "#059669": "#047857", "#94a3b8": "#64748b", "#9ca3af": "#6b7280", "#999999": "#6b7280",

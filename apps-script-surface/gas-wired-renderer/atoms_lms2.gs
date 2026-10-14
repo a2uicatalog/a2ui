@@ -142,7 +142,7 @@ _RENDERERS['cohort_progress_board'] = function(b) {
     var modTds = mods.map(function(m) {
       var done = !!prog['done:' + m.id];
       return '<td style="' + tdS + 'text-align:center;">' +
-        (done ? '<span style="color:#34d399;">✓</span>' : '<span style="color:#1e293b;">·</span>') +
+        (done ? '<span style="color:#1c805c;">✓</span>' : '<span style="color:#1e293b;">·</span>') +
         '</td>';
     }).join('');
 
@@ -151,12 +151,12 @@ _RENDERERS['cohort_progress_board'] = function(b) {
         '<div style="display:flex;align-items:center;gap:8px;">' +
           '<div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;flex-shrink:0;' +
             'display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:#fff;">' + init + '</div>' +
-          '<span style="font-size:0.75rem;color:#e2e8f0;">' + _esc(name) + '</span>' +
+          '<span style="font-size:0.75rem;color:#5577a4;">' + _esc(name) + '</span>' +
         '</div>' +
       '</td>' +
       modTds +
-      (pct !== null ? '<td style="' + tdS + 'text-align:center;"><span style="font-size:0.72rem;font-weight:700;color:' + (pct >= 80 ? '#34d399' : '#f59e0b') + ';">' + pct + '%</span></td>' : '<td style="' + tdS + 'text-align:center;color:#334155;font-size:0.72rem;">—</td>') +
-      (avg !== null ? '<td style="' + tdS + 'text-align:center;"><span style="font-size:0.72rem;font-weight:700;color:' + (avg >= 70 ? '#34d399' : '#f87171') + ';">' + avg + '%</span></td>' : '<td style="' + tdS + 'text-align:center;color:#334155;font-size:0.72rem;">—</td>') +
+      (pct !== null ? '<td style="' + tdS + 'text-align:center;"><span style="font-size:0.72rem;font-weight:700;color:' + (pct >= 80 ? '#1c805c' : '#f59e0b') + ';">' + pct + '%</span></td>' : '<td style="' + tdS + 'text-align:center;color:#334155;font-size:0.72rem;">—</td>') +
+      (avg !== null ? '<td style="' + tdS + 'text-align:center;"><span style="font-size:0.72rem;font-weight:700;color:' + (avg >= 70 ? '#1c805c' : '#f87171') + ';">' + avg + '%</span></td>' : '<td style="' + tdS + 'text-align:center;color:#334155;font-size:0.72rem;">—</td>') +
       '<td style="' + tdS + 'text-align:right;font-size:0.68rem;color:#475569;">' + _esc(last) + '</td>' +
       '</tr>';
   }).join('');
@@ -169,7 +169,7 @@ _RENDERERS['cohort_progress_board'] = function(b) {
       '<span style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);">👥 ' + _esc(title) + '</span>' +
       '<div style="margin-left:auto;display:flex;gap:16px;">' +
         '<div style="text-align:center;"><div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;">' + rows.length + '</div><div style="font-size:0.58rem;color:#475569;">Enrolled</div></div>' +
-        '<div style="text-align:center;"><div style="font-size:1.1rem;font-weight:800;color:#34d399;">' + active + '</div><div style="font-size:0.58rem;color:#475569;">Active</div></div>' +
+        '<div style="text-align:center;"><div style="font-size:1.1rem;font-weight:800;color:#1c805c;">' + active + '</div><div style="font-size:0.58rem;color:#475569;">Active</div></div>' +
       '</div>' +
     '</div>' +
     '<div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.07);">' +
@@ -199,7 +199,7 @@ _RENDERERS['reflection_prompt'] = function(b) {
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.12);">' +
     '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:10px;">✍️ Reflection</div>' +
-    '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;line-height:1.5;margin-bottom:14px;">' + _esc(prompt) + '</div>' +
+    '<div style="font-size:0.88rem;font-weight:600;color:#4674a3;line-height:1.5;margin-bottom:14px;">' + _esc(prompt) + '</div>' +
     '<textarea id="' + uid + 'ta" placeholder="' + _esc(ph) + '" ' +
       'style="width:100%;min-height:90px;padding:12px;border-radius:9px;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);' +
@@ -249,7 +249,7 @@ _RENDERERS['annotation_highlight'] = function(b) {
   var out = _esc(text);
   for (var i = 0; i < notes.length; i++) {
     var n   = notes[i];
-    var col = n.color || '#f59e0b';
+    var col = n.color || '#996206';
     var esc_term = n.term.replace(/[&<>"']/g, function(c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
@@ -262,12 +262,12 @@ _RENDERERS['annotation_highlight'] = function(b) {
   }
 
   var notesJson = _jsJson(notes.map(function(n) {
-    return { term: n.term, explanation: n.explanation || '', color: n.color || '#f59e0b' };
+    return { term: n.term, explanation: n.explanation || '', color: n.color || '#996206' };
   }));
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="font-size:0.88rem;color:#cbd5e1;line-height:1.9;">' + out + '</div>' +
+    '<div style="font-size:0.88rem;color:#59779b;line-height:1.9;">' + out + '</div>' +
     '<div id="' + uid + 'panel" style="display:none;margin-top:12px;padding:14px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);">' +
       '<div id="' + uid + 'pt" style="font-size:0.7rem;font-weight:700;margin-bottom:5px;"></div>' +
@@ -366,7 +366,7 @@ _RENDERERS['case_study_card'] = function(b) {
   var dataPoints = b.data_points || [];
   var questions  = b.questions  || [];
   var answer     = b.model_answer || '';
-  var accent     = b.accent    || '#38bdf8';
+  var accent     = b.accent    || '#0676a8';
 
   var dpHtml = '';
   for (var i = 0; i < dataPoints.length; i++) {
@@ -392,12 +392,12 @@ _RENDERERS['case_study_card'] = function(b) {
     // Header
     '<div style="padding:4px 20px;background:' + _esc(accent) + '18;border-bottom:1px solid rgba(255,255,255,0.06);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:6px;margin-top:16px;">📋 Case Study</div>' +
-      '<div style="font-size:1rem;font-weight:800;color:#f1f5f9;margin-bottom:16px;">' + _esc(title) + '</div>' +
+      '<div style="font-size:1rem;font-weight:800;color:#4573a1;margin-bottom:16px;">' + _esc(title) + '</div>' +
     '</div>' +
     // Situation
     '<div style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:8px;">Situation</div>' +
-      '<div style="font-size:0.82rem;color:#cbd5e1;line-height:1.7;">' + _esc(situation) + '</div>' +
+      '<div style="font-size:0.82rem;color:#59779b;line-height:1.7;">' + _esc(situation) + '</div>' +
     '</div>' +
     // Data points
     (dpHtml ? '<div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
@@ -440,7 +440,7 @@ _RENDERERS['study_timer'] = function(b) {
     // Mode label
     '<div id="' + uid + 'mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">Focus</div>' +
     // Timer display
-    '<div id="' + uid + 'disp" style="font-size:3.5rem;font-weight:900;color:#f1f5f9;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">' + (focus < 10 ? '0' + focus : focus) + ':00</div>' +
+    '<div id="' + uid + 'disp" style="font-size:3.5rem;font-weight:900;color:#4878a8;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">' + (focus < 10 ? '0' + focus : focus) + ':00</div>' +
     // Progress ring (SVG)
     '<div style="position:relative;display:inline-block;margin-bottom:20px;">' +
       '<svg width="100" height="100" viewBox="0 0 100 100">' +
@@ -494,7 +494,7 @@ _RENDERERS['rubric_card'] = function(b) {
 
   var levelCols = levels.map(function(l, i) {
     var pct = Math.round(((i + 1) / levels.length) * 100);
-    var col = i === levels.length - 1 ? '#34d399' : i >= levels.length - 2 ? accent : '#64748b';
+    var col = i === levels.length - 1 ? '#1b7c59' : i >= levels.length - 2 ? accent : '#5f6e84';
     return '<th style="padding:10px 12px;text-align:center;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;' +
       'text-transform:uppercase;color:' + col + ';border-bottom:1px solid rgba(255,255,255,0.07);min-width:100px;">' +
       _esc(l) + '</th>';
@@ -556,8 +556,8 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
           'background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.2);' +
           'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;' +
           'backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);">' +
-          '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#34d399;margin-bottom:10px;">Answer</div>' +
-          '<div style="font-size:0.88rem;color:#e2e8f0;line-height:1.6;">' + _esc(back) + '</div>' +
+          '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1a7a57;margin-bottom:10px;">Answer</div>' +
+          '<div style="font-size:0.88rem;color:#4f6e99;line-height:1.6;">' + _esc(back) + '</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -567,7 +567,7 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
       '<div style="display:flex;justify-content:center;gap:8px;">' +
         [1,2,3,4,5].map(function(n) {
           var labels = ['','Forgot','Hard','Okay','Good','Easy'];
-          var cols   = ['','#f87171','#f59e0b','#facc15','#4ade80','#34d399'];
+          var cols   = ['','#f87171','#f59e0b','#facc15','#4ade80','#1a7a57'];
           return '<button onclick="' + uid + 'rate(' + n + ')" ' +
             'style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;border-radius:9px;' +
               'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);cursor:pointer;transition:all 0.15s;"' +
@@ -637,11 +637,11 @@ _RENDERERS['leaderboard_card'] = function(b) {
   var items = rows.map(function(r, i) {
     var isTop = i < 3;
     var barW  = rows[0] && rows[0].score > 0 ? Math.round((r.score / rows[0].score) * 100) : 0;
-    var col   = i === 0 ? '#facc15' : i === 1 ? '#94a3b8' : i === 2 ? '#fb923c' : '#475569';
+    var col   = i === 0 ? '#8c7103' : i === 1 ? '#617592' : i === 2 ? '#bb5604' : '#475569';
     return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
       '<div style="width:24px;text-align:center;font-size:' + (isTop ? '1rem' : '0.72rem') + ';color:' + (isTop ? col : '#334155') + ';font-weight:700;flex-shrink:0;">' + (isTop ? MEDALS[i] : (i + 1)) + '</div>' +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">' + _esc(r.name) + '</div>' +
+        '<div style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
         '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:5px;">' +
           '<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>' +
         '</div>' +

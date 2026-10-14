@@ -121,7 +121,7 @@ _RENDERERS['sheet_stats'] = function(b) {
 _RENDERERS['gmail_unread_count'] = function(b) {
   var labels  = b.labels || ['INBOX'];
   var title   = b.title || 'Gmail';
-  var accent  = b.accent || '#ea4335';
+  var accent  = b.accent || '#e12717';
   var counts  = {};
   var errorMsg = null;
 
@@ -459,12 +459,12 @@ _RENDERERS['gmail_inbox'] = function(b) {
           'display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:#fff;">' + initial + '</div>' +
         '<div style="min-width:0;flex:1;">' +
           '<div style="font-size:0.75rem;' + bold + 'color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(em.from.name) + '</div>' +
-          '<div style="font-size:0.62rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(em.from.addr) + '</div>' +
+          '<div style="font-size:0.62rem;color:#617087;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(em.from.addr) + '</div>' +
         '</div>' +
-        '<div style="font-size:0.62rem;color:#64748b;white-space:nowrap;flex-shrink:0;">' + time + '</div>' +
+        '<div style="font-size:0.62rem;color:#617087;white-space:nowrap;flex-shrink:0;">' + time + '</div>' +
       '</div>' +
-      '<div style="font-size:0.78rem;' + bold + 'color:#e2e8f0;line-height:1.3;">' + subj + '</div>' +
-      '<div style="font-size:0.7rem;color:#64748b;line-height:1.5;flex:1;">' + snip + '</div>' +
+      '<div style="font-size:0.78rem;' + bold + 'color:#50709a;line-height:1.3;">' + subj + '</div>' +
+      '<div style="font-size:0.7rem;color:#617087;line-height:1.5;flex:1;">' + snip + '</div>' +
       (em.count > 1 ? '<div style="font-size:0.6rem;color:#475569;">' + em.count + ' messages</div>' : '') +
       (em.unread ? '<div style="width:7px;height:7px;border-radius:50%;background:' + accentSafe + ';"></div>' : '') +
       '</div></a>';
@@ -484,7 +484,7 @@ _RENDERERS['gmail_inbox'] = function(b) {
   var arw = 'position:absolute;top:50%;transform:translateY(-50%);z-index:2;' +
     'width:44px;height:44px;border-radius:50%;cursor:pointer;user-select:none;' +
     'background:rgba(10,15,28,0.88);border:1px solid rgba(255,255,255,0.13);' +
-    'box-shadow:0 4px 20px rgba(0,0,0,0.5);color:#e2e8f0;font-size:22px;' +
+    'box-shadow:0 4px 20px rgba(0,0,0,0.5);color:#50709a;font-size:22px;' +
     'display:flex;align-items:center;justify-content:center;transition:background 0.15s,opacity 0.2s;';
 
   var unreadCount = emails.filter(function(e){return e.unread;}).length;
@@ -493,7 +493,7 @@ _RENDERERS['gmail_inbox'] = function(b) {
     '<style>#' + uid + 'trk::-webkit-scrollbar{display:none}<\/style>' +
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
-      '<span style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;">✉ ' + _esc(title) + '</span>' +
+      '<span style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#617087;">✉ ' + _esc(title) + '</span>' +
       (unreadCount > 0 ? '<span style="background:' + accentSafe + ';color:#fff;font-size:0.6rem;font-weight:700;border-radius:99px;padding:2px 7px;">' + unreadCount + ' unread</span>' : '') +
     '</div>' +
     '<div style="position:relative;padding:0 52px;box-sizing:border-box;">' +
@@ -534,18 +534,18 @@ _RENDERERS['drive_recent_files'] = function(b) {
   var uid    = 'drf' + Math.random().toString(36).substr(2, 6);
   var title  = b.title  || 'Recent Files';
   var count  = Math.min(parseInt(b.count || 10), 20);
-  var accent = b.accent || '#4285f4';
+  var accent = b.accent || '#1b6cf2';
   var files  = [];
   var error  = null;
 
   // Mime type → { label, color, emoji }
   var MIME = {
-    'application/vnd.google-apps.document':     { l:'DOC',   c:'#4285f4', e:'📄' },
-    'application/vnd.google-apps.spreadsheet':  { l:'XLS',   c:'#34a853', e:'📊' },
+    'application/vnd.google-apps.document':     { l:'DOC',   c:'#1b6cf2', e:'📄' },
+    'application/vnd.google-apps.spreadsheet':  { l:'XLS',   c:'#298542', e:'📊' },
     'application/vnd.google-apps.presentation': { l:'PPT',   c:'#fbbc04', e:'📑' },
     'application/vnd.google-apps.form':         { l:'FORM',  c:'#7b1fa2', e:'📋' },
     'application/vnd.google-apps.drawing':      { l:'DRW',   c:'#00bcd4', e:'🎨' },
-    'application/pdf':                           { l:'PDF',   c:'#ef4444', e:'📕' },
+    'application/pdf':                           { l:'PDF',   c:'#e71414', e:'📕' },
     'image/png':                                 { l:'IMG',   c:'#00897b', e:'🖼️' },
     'image/jpeg':                                { l:'IMG',   c:'#00897b', e:'🖼️' },
     'video/mp4':                                 { l:'VID',   c:'#4f46e5', e:'🎬' },
@@ -589,7 +589,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
     }
   }
 
-  if (error) return '<div class="asw-native-card"><div style="color:var(--red,#ef4444);font-size:0.82rem;">Drive error: ' + _esc(error) + '</div></div>';
+  if (error) return '<div class="asw-native-card"><div style="color:var(--red,#e71414);font-size:0.82rem;">Drive error: ' + _esc(error) + '</div></div>';
 
   var CW = 218; // card width + gap
   var accentSafe = _esc(accent);
@@ -611,7 +611,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
           'display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;letter-spacing:0.04em;">' + mi.l + '</div>' +
         '<div style="font-size:0.6rem;color:#64748b;">' + relTime(f.modified) + '</div>' +
       '</div>' +
-      '<div style="font-size:0.75rem;font-weight:600;color:#e2e8f0;line-height:1.3;">' + _esc(nm) + '</div>' +
+      '<div style="font-size:0.75rem;font-weight:600;color:#5577a4;line-height:1.3;">' + _esc(nm) + '</div>' +
       (f.owner ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">' + _esc(f.owner) + '</div>' : '') +
       '</div></a>';
   }
@@ -627,7 +627,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
   var arw = 'position:absolute;top:50%;transform:translateY(-50%);z-index:2;' +
     'width:44px;height:44px;border-radius:50%;cursor:pointer;user-select:none;' +
     'background:rgba(10,15,28,0.88);border:1px solid rgba(255,255,255,0.13);' +
-    'box-shadow:0 4px 20px rgba(0,0,0,0.5);color:#e2e8f0;font-size:22px;' +
+    'box-shadow:0 4px 20px rgba(0,0,0,0.5);color:#5577a4;font-size:22px;' +
     'display:flex;align-items:center;justify-content:center;transition:background 0.15s,opacity 0.2s;';
 
   return (
@@ -752,7 +752,7 @@ _RENDERERS['drive_file_card'] = function(b) {
     'application/vnd.google-apps.spreadsheet':  { l:'XLS',  c:'#34a853' },
     'application/vnd.google-apps.presentation': { l:'PPT',  c:'#fbbc04' },
     'application/vnd.google-apps.form':         { l:'FORM', c:'#7b1fa2' },
-    'application/pdf':                           { l:'PDF',  c:'#ef4444' },
+    'application/pdf':                           { l:'PDF',  c:'#e71414' },
     'application/vnd.google-apps.folder':       { l:'DIR',  c:'#f59e0b' }
   };
 
@@ -773,10 +773,10 @@ _RENDERERS['drive_file_card'] = function(b) {
       'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
     '<div style="flex:1;min-width:0;">' +
-      '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(name) + '</div>' +
+      '<div style="font-size:0.88rem;font-weight:600;color:#4878a8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(name) + '</div>' +
       (desc ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:3px;">' + _esc(desc) + '</div>' : '') +
     '</div>' +
-    '<a href="' + _esc(url) + '" target="_top" style="flex-shrink:0;padding:7px 14px;border-radius:7px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.25);color:#60a5fa;font-size:0.72rem;font-weight:600;text-decoration:none;white-space:nowrap;transition:background 0.15s;"' +
+    '<a href="' + _esc(url) + '" target="_top" style="flex-shrink:0;padding:7px 14px;border-radius:7px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.25);color:#0766db;font-size:0.72rem;font-weight:600;text-decoration:none;white-space:nowrap;transition:background 0.15s;"' +
       ' onmouseover="this.style.background=\'rgba(66,133,244,0.2)\'"' +
       ' onmouseout="this.style.background=\'rgba(66,133,244,0.12)\'">Open →</a>' +
     '</div>'
@@ -823,7 +823,7 @@ _RENDERERS['command_step'] = function(b) {
         'navigator.clipboard.writeText(b.getAttribute(\'data-cmd\'));' +
         'b.textContent=\'✓\';b.style.background=\'#22c55e\';' +
         'setTimeout(function(){b.textContent=\'Copy\';b.style.background=\'#1e293b\';},1500);' +
-      '})(this)" style="background:#1e293b;color:#94a3b8;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">' +
+      '})(this)" style="background:#1e293b;color:#617592;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">' +
         'Copy' +
       '</button>' +
     '</div>' +
@@ -834,11 +834,11 @@ _RENDERERS['command_step'] = function(b) {
           'if(w&&w._a2uiWire&&w._a2uiWire.setDone){w._a2uiWire.setDone(el.checked);}' +
         '})(this)" ' +
         'style="width:16px;height:16px;accent-color:#22c55e;cursor:pointer;">' +
-      '<span style="font-size:0.8rem;color:' + (done ? '#22c55e' : '#94a3b8') + ';font-weight:' + (done ? '600' : '400') + ';">' +
+      '<span style="font-size:0.8rem;color:' + (done ? '#22c55e' : '#617592') + ';font-weight:' + (done ? '600' : '400') + ';">' +
         (done ? 'Done' : 'Mark as done') +
       '</span>' +
     '</label>' +
-    (hint ? '<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;padding-left:2px;">' + _esc(hint) + '</div>' : '') +
+    (hint ? '<div style="font-size:0.75rem;color:#617592;margin-top:4px;padding-left:2px;">' + _esc(hint) + '</div>' : '') +
   '</div>';
 };
 
@@ -930,14 +930,14 @@ _RENDERERS['sla_timer_display'] = function(b) {
   var state     = b.sla_state   || 'ok';
   var pct       = Math.min(Math.max(0, parseFloat(b.pct) || 0), 100);
 
-  var stateColor = state === 'breach' ? '#ef4444' : state === 'warn' ? '#f97316' : '#22c55e';
+  var stateColor = state === 'breach' ? '#e71414' : state === 'warn' ? '#f97316' : '#178640';
   var stateLabel = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
   var pulse      = state === 'breach' ? 'animation:a2ui-pulse 1s infinite;' : '';
 
   return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">' +
       '<div>' +
-        '<span style="display:inline-block;background:#ef4444;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _esc(severity) + '</span>' +
+        '<span style="display:inline-block;background:#e71414;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _esc(severity) + '</span>' +
         '<span style="color:#94a3b8;font-size:0.85rem;font-weight:500;">' + _esc(title) + '</span>' +
       '</div>' +
       '<span data-sla-badge style="display:inline-block;background:' + stateColor + ';color:#fff;font-size:0.72rem;font-weight:800;letter-spacing:0.08em;padding:4px 14px;border-radius:99px;' + pulse + '">' + stateLabel + '</span>' +

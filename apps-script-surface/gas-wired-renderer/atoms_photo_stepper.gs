@@ -32,7 +32,7 @@
 // A2UIState.html) — not a new mechanism, the third consumer of that one.
 _RENDERERS['photo_stepper'] = function(b) {
   var images = b.images || b.rows || [];
-  if (!images.length) return '<p style="color:#94a3b8;font-style:italic;">Nothing to show yet.</p>';
+  if (!images.length) return '<p style="color:#617592;font-style:italic;">Nothing to show yet.</p>';
   var accent = b.accent || '#0f766e';
   var sid = 'ps' + Math.random().toString(36).substr(2, 6);
   var n = images.length;

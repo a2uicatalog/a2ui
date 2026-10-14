@@ -492,7 +492,7 @@ _RENDERERS['table'] = function(b) {
   function w(i) { return (i < colWidths.length) ? (' style="width:' + colWidths[i] + ';"') : ''; }
   var html = '<table' + tableStyle + '>';
   // Schema declares `caption`; this never used it at all (surface-parity debt). 2026-09-27.
-  if (b.caption) html += '<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#8f8f8f);text-align:left;">' + _esc(b.caption) + '</caption>';
+  if (b.caption) html += '<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#757575);text-align:left;">' + _esc(b.caption) + '</caption>';
   if (b.headers && b.headers.length) {
     html += '<thead><tr>';
     for (var i = 0; i < b.headers.length; i++) {
@@ -1223,8 +1223,8 @@ _RENDERERS['parallax_card'] = function(b) {
 };
 
 _RENDERERS['embed_tweet'] = function(b) {
-  return '<blockquote class="asw-twitter-degraded" style="border-left-color:#1da1f2;">' +
-         '<div style="font-size:0.75rem;font-weight:700;color:#1da1f2;margin-bottom:6px;">𝕏 Tweet (Static View)</div>' +
+  return '<blockquote class="asw-twitter-degraded" style="border-left-color:#0b79bd;">' +
+         '<div style="font-size:0.75rem;font-weight:700;color:#0b79bd;margin-bottom:6px;">𝕏 Tweet (Static View)</div>' +
          '<p>' + _esc(b.text || 'Tweet contents') + '</p>' +
          (b.author ? '<cite style="display:block;margin-top:4px;font-size:0.8rem;text-align:right;">— ' + _esc(b.author) + '</cite>' : '') +
          '</blockquote>';
@@ -1445,7 +1445,7 @@ _RENDERERS['before_after'] = function(b) {
   return '<div style="margin:1.5rem 0;">' +
     '<div style="display:flex;gap:12px;align-items:flex-start;">' +
     panel(beforeLabel, beforeCode, '#dc2626', '#1e1e1e') +
-    panel(afterLabel, afterCode, '#16a34a', '#1e1e1e') +
+    panel(afterLabel, afterCode, '#12863d', '#1e1e1e') +
     '</div>' + caption + '</div>';
 };
 
@@ -1519,7 +1519,7 @@ _RENDERERS['key_value'] = function(b) {
 
 _RENDERERS['timeline'] = function(b) {
   var events = b.events || [];
-  var accent = b.accent || '#1a73e8';
+  var accent = b.accent || '#176ee1';
   var titleHtml = b.title ? '<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">' + _esc(b.title) + '</p>' : '';
   var items = events.map(function(ev, i){
     var isLast = i === events.length - 1;
@@ -1606,7 +1606,7 @@ _RENDERERS['changelog_entry'] = function(b) {
   var version = b.version || '';
   var date = b.date || '';
   var changes = b.changes || [];
-  var tagColors = {added:'#16a34a',fixed:'#2563eb',changed:'#d97706',removed:'#dc2626',deprecated:'#7c3aed'};
+  var tagColors = {added:'#117b38',fixed:'#1c5cea',changed:'#d97706',removed:'#dc2626',deprecated:'#7c3aed'};
   var items = changes.map(function(c){
     var type = (c.type || 'changed').toLowerCase();
     var color = tagColors[type] || '#6b7280';
@@ -1673,7 +1673,7 @@ _RENDERERS['sidebar_note'] = function(b) {
 
 _RENDERERS['difficulty_badge'] = function(b) {
   var level = b.level || 'beginner';
-  var cfg = {beginner:['#16a34a','#f0fdf4','Beginner','⚡'], intermediate:['#d97706','#fffbeb','Intermediate','🔧'], advanced:['#dc2626','#fef2f2','Advanced','🚀']};
+  var cfg = {beginner:['#11813b','#f0fdf4','Beginner','⚡'], intermediate:['#d97706','#fffbeb','Intermediate','🔧'], advanced:['#dc2626','#fef2f2','Advanced','🚀']};
   var c = cfg[level] || cfg.beginner;
   return '<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c[0] + '44;border-radius:100px;padding:3px 12px;font-size:0.75rem;font-weight:700;color:' + c[0] + ';background:' + c[1] + ';">' + c[3] + ' ' + c[2] + '</span>';
 };
@@ -1724,9 +1724,9 @@ _RENDERERS['social_share_bar'] = function(b) {
   var platforms = b.platforms || ['twitter','linkedin'];
   var url = b.url || '';
   var cfg = {
-    twitter: ['#1da1f2','X / Twitter','https://twitter.com/intent/tweet?url=' + encodeURIComponent(url)],
+    twitter: ['#0b79bd','X / Twitter','https://twitter.com/intent/tweet?url=' + encodeURIComponent(url)],
     linkedin: ['#0a66c2','LinkedIn','https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url)],
-    facebook: ['#1877f2','Facebook','https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url)],
+    facebook: ['#0d6fed','Facebook','https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url)],
     reddit: ['#ff4500','Reddit','https://reddit.com/submit?url=' + encodeURIComponent(url)]
   };
   var btns = platforms.filter(function(p){ return cfg[p]; }).map(function(p){
@@ -1930,7 +1930,7 @@ _RENDERERS['actual_vs_estimate'] = function(b) {
   var tiles = cells.map(function(c) {
     return '<div style="flex:1;min-width:118px;padding:14px 16px;">'
       + '<div style="font:600 .66rem/1 ui-monospace,monospace;letter-spacing:.09em;'
-      + 'text-transform:uppercase;color:#8a8a80;margin-bottom:6px;">' + _esc(String(c[0])) + '</div>'
+      + 'text-transform:uppercase;color:#75756c;margin-bottom:6px;">' + _esc(String(c[0])) + '</div>'
       + '<div style="font:600 1.45rem/1.1 ui-monospace,monospace;color:' + c[2] + ';'
       + 'font-variant-numeric:tabular-nums;">' + c[1] + '</div></div>';
   }).join('');
@@ -1961,7 +1961,7 @@ _RENDERERS['progress_bar'] = function(b) {
   var uid = Math.random().toString(36).substr(2,6);
   var value = Math.min(100, Math.max(0, parseInt(b.value||0)));
   var label = b.label || '';
-  var accent = b.accent || '#00f2ff';
+  var accent = b.accent || '#008087';
   var showPct = b.show_percent !== false;
   var caption = b.caption || '';
   var pctHtml = showPct ? '<span style="font-size:0.8rem;font-weight:700;color:' + accent + ';">' + value + '%</span>' : '';
@@ -2290,7 +2290,7 @@ _RENDERERS['cli_command'] = function(b) {
   var cmd = (b.command || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return '<div style="display:flex;align-items:center;background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 16px;margin:0.8rem 0;font-family:monospace;font-size:0.85rem;">' +
     '<span style="color:#a78bfa;margin-right:10px;user-select:none;">$</span>' +
-    '<code style="color:#e2e8f0;flex:1;">' + cmd + '</code></div>';
+    '<code style="color:#4f6e99;flex:1;">' + cmd + '</code></div>';
 };
 
 _RENDERERS['terminal_block'] = function(b) {
@@ -2329,7 +2329,7 @@ _RENDERERS['tabbed_code'] = function(b) {
   if (!tabs.length) return '';
   var uid = Math.random().toString(36).substr(2,6);
   var labels = tabs.map(function(t, i){
-    return '<label for="tc_' + uid + '_' + i + '" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid ' + (i===0?'#7c3aed':'transparent') + ';color:' + (i===0?'#7c3aed':'#9ca3af') + ';">' + _esc(t.label||t.language||('Tab '+(i+1))) + '</label>';
+    return '<label for="tc_' + uid + '_' + i + '" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid ' + (i===0?'#7c3aed':'transparent') + ';color:' + (i===0?'#7c3aed':'#697281') + ';">' + _esc(t.label||t.language||('Tab '+(i+1))) + '</label>';
   }).join('');
   var inputs = tabs.map(function(t,i){ return '<input type="radio" id="tc_' + uid + '_' + i + '" name="tc_' + uid + '"' + (i===0?' checked':'') + ' style="display:none;">'; }).join('');
   var perTab = tabs.map(function(t,i){
@@ -2574,7 +2574,7 @@ _RENDERERS['follow_button'] = function(b) {
 
 _RENDERERS['notification_badge'] = function(b) {
   var text = b.text || '';
-  var color = b.color || '#ef4444';
+  var color = b.color || '#e71414';
   return '<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">' +
     '<svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>' +
     '<span style="position:absolute;top:0;right:0;transform:translate(25%,-25%);background:' + color + ';color:#fff;font-size:0.7rem;font-weight:700;border-radius:9999px;padding:2px 6px;line-height:1;min-width:16px;text-align:center;box-shadow:0 0 0 2px #fff;">' + _esc(String(text)) + '</span></div>';
@@ -2634,7 +2634,7 @@ _RENDERERS['copy_code_button'] = function(b) {
 _RENDERERS['log_output'] = function(b) {
   var logs = (b.logs||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return '<div style="background:#0d1117;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
-    '<pre style="margin:0;font-family:monospace;font-size:0.78rem;color:#9ca3af;white-space:pre-wrap;word-break:break-all;">' + logs + '</pre></div>';
+    '<pre style="margin:0;font-family:monospace;font-size:0.78rem;color:#656e7d;white-space:pre-wrap;word-break:break-all;">' + logs + '</pre></div>';
 };
 
 _RENDERERS['json_tree_viewer'] = function(b) {
@@ -2643,7 +2643,7 @@ _RENDERERS['json_tree_viewer'] = function(b) {
   try { pretty = _jsJson(JSON.parse(raw), null, 2); } catch(e) {}
   var escaped = pretty.replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return '<div style="background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1.2rem 0;max-height:400px;overflow:auto;">' +
-    '<pre style="margin:0;font-family:monospace;font-size:0.8rem;color:#e2e8f0;">' + escaped + '</pre></div>';
+    '<pre style="margin:0;font-family:monospace;font-size:0.8rem;color:#4f6e99;">' + escaped + '</pre></div>';
 };
 
 _RENDERERS['star_rating_input'] = function(b) {
@@ -2899,7 +2899,7 @@ _RENDERERS['pdf_preview'] = function(b) {
   var url = b.url || '';
   var title = b.title || 'PDF Document';
   return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;">' +
-    '<div style="width:40px;height:48px;background:#ef4444;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>' +
+    '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>' +
     '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">Click to open PDF</div></div></a>';
 };
 
@@ -2971,7 +2971,7 @@ _RENDERERS['spinner'] = function(b) {
 _RENDERERS['status_pill'] = function(b) {
   var label = b.label || b.status || b.text || '';
   var status = b.status || 'active';
-  var colors = {active:['#059669','#d1fae5'],inactive:['#6b7280','#f3f4f6'],error:['#dc2626','#fee2e2'],pending:['#ca8a04','#fef9c3'],'in-progress':['#2563eb','#dbeafe']};
+  var colors = {active:['#047b56','#d1fae5'],inactive:['#6b7280','#f3f4f6'],error:['#dc2626','#fee2e2'],pending:['#ca8a04','#fef9c3'],'in-progress':['#2563eb','#dbeafe']};
   var c = colors[status] || ['#6b7280','#f3f4f6'];
   var dot = b.dot !== false ? '<span style="width:7px;height:7px;border-radius:50%;background:' + c[0] + ';display:inline-block;margin-right:5px;"></span>' : '';
   return '<span style="display:inline-flex;align-items:center;background:' + c[1] + ';color:' + c[0] + ';font-size:0.75rem;font-weight:600;padding:3px 10px;border-radius:100px;">' + dot + _esc(label) + '</span>';
@@ -3750,11 +3750,11 @@ _RENDERERS['pros_cons_list'] = function(b) {
     '.pcl-col-pros-' + uid + '{border-right:1px solid #e5e7eb;background:#f0fdf4;}' +
     '.pcl-col-cons-' + uid + '{background:#fff5f5;}' +
     '.pcl-col-header-' + uid + '{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;}' +
-    '.pcl-col-pros-' + uid + ' .pcl-col-header-' + uid + '{color:#16a34a;}' +
+    '.pcl-col-pros-' + uid + ' .pcl-col-header-' + uid + '{color:#11813b;}' +
     '.pcl-col-cons-' + uid + ' .pcl-col-header-' + uid + '{color:#dc2626;}' +
     '.pcl-list-' + uid + '{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}' +
     '.pcl-pro-item-' + uid + ',.pcl-con-item-' + uid + '{display:flex;align-items:flex-start;gap:8px;font-size:14px;color:#374151;}' +
-    '.pcl-pro-icon-' + uid + '{color:#16a34a;font-weight:700;flex-shrink:0;margin-top:1px;}' +
+    '.pcl-pro-icon-' + uid + '{color:#11813b;font-weight:700;flex-shrink:0;margin-top:1px;}' +
     '.pcl-con-icon-' + uid + '{color:#dc2626;font-weight:700;flex-shrink:0;margin-top:1px;}' +
     '</style>' +
     '<div class="pcl-wrap-' + uid + '">' +
@@ -4054,7 +4054,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
   var mode   = b.mode || 'conviction_card';
   var accent = b.accent || '#7c3aed';
 
-  var hint = '<div style="margin-top:8px;text-align:center;font-size:0.72rem;color:#9aa0a6;">' +
+  var hint = '<div style="margin-top:8px;text-align:center;font-size:0.72rem;color:#6e767d;">' +
     'LinkedIn post image &mdash; screenshot at 1.91:1 ratio</div>';
 
   // ── conviction_card ─────────────────────────────────────────────────────────
@@ -4094,7 +4094,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
         ? '<img src="' + _esc(url) + '" style="width:100%;height:100%;object-fit:cover;' +
           'object-position:top;display:block;"/>'
         : '<div style="flex:1;display:flex;align-items:center;justify-content:center;' +
-          'background:#f8f9fa;color:#9aa0a6;font-size:0.8rem;">screenshot</div>';
+          'background:#f8f9fa;color:#6e767d;font-size:0.8rem;">screenshot</div>';
       return '<div style="flex:1;display:flex;flex-direction:column;' + br + 'overflow:hidden;">' +
         lbl + img + '</div>';
     }
@@ -4123,7 +4123,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
             'color:' + color + ';text-align:center;white-space:nowrap;">' + _esc(i.label || '') + '</div>';
         }).join('') + '</div>';
     }
-    var arrow = '<div style="text-align:center;color:#9aa0a6;font-size:1.1rem;margin:6px 0;">↓</div>';
+    var arrow = '<div style="text-align:center;color:#6e767d;font-size:1.1rem;margin:6px 0;">↓</div>';
     var runtimeBox = '<div style="background:#1e40af;border:2px solid #3b82f6;border-radius:10px;' +
       'padding:12px 24px;font-size:0.88rem;font-weight:700;color:#fff;' +
       'text-align:center;margin:0 auto;max-width:340px;">' + _esc(runtime) + '</div>';
@@ -4155,7 +4155,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
         sublabel + '</div>'
       );
       if (i < steps.length - 1) {
-        var arrowLabel = arrows[i] ? '<div style="font-size:0.6rem;color:#9aa0a6;margin-top:3px;white-space:nowrap;">' + _esc(arrows[i]) + '</div>' : '';
+        var arrowLabel = arrows[i] ? '<div style="font-size:0.6rem;color:#6e767d;margin-top:3px;white-space:nowrap;">' + _esc(arrows[i]) + '</div>' : '';
         parts.push(
           '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
           'padding:0 4px;flex-shrink:0;">' +
@@ -4175,7 +4175,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
     );
   }
 
-  return '<div style="color:#9aa0a6;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
+  return '<div style="color:#6e767d;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
 };
 
 // ── Visual / Beauty ──────────────────────────────────────────────────────────
@@ -4567,7 +4567,7 @@ _RENDERERS['action_items'] = function(b) {
   var statusCfg = {
     done:        { icon: '✅', color: '#16a34a', bg: '#f0fdf4' },
     in_progress: { icon: '🔄', color: '#2563eb', bg: '#eff6ff' },
-    open:        { icon: '⭕', color: '#9ca3af', bg: '#fff' }
+    open:        { icon: '⭕', color: '#6c7586', bg: '#fff' }
   };
   var rowsHtml = items.map(function(item, i) {
     var cfg = statusCfg[item.status] || statusCfg.open;

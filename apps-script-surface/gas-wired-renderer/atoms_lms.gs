@@ -62,7 +62,7 @@ _RENDERERS['module_map'] = function(b) {
         '<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.12em;color:#334155;text-transform:uppercase;">Module ' + (i + 1) + '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;">' +
           '<span style="font-size:1.4rem;flex-shrink:0;">' + _esc(m.icon || '📚') + '</span>' +
-          '<div style="font-size:0.88rem;font-weight:700;color:#f1f5f9;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
+          '<div style="font-size:0.88rem;font-weight:700;color:#4878a8;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
         '</div>' +
         (m.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(m.description) + '</div>' : '') +
         '<div style="display:flex;gap:12px;margin-top:auto;">' +
@@ -126,7 +126,7 @@ _RENDERERS['module_map'] = function(b) {
             'if(link){link.href="#";link.onclick=function(e){e.preventDefault();};}' +
           '}else{' +
             'card.style.background="rgba(255,255,255,0.03)";card.style.borderColor="rgba(255,255,255,0.08)";card.style.opacity="1";card.style.cursor="pointer";' +
-            'badge.innerHTML=\'<span style="font-size:0.6rem;background:rgba(99,102,241,0.15);color:#818cf8;padding:2px 8px;border-radius:99px;font-weight:700;">Start →</span>\';' +
+            'badge.innerHTML=\'<span style="font-size:0.6rem;background:rgba(99,102,241,0.15);color:#4050f4;padding:2px 8px;border-radius:99px;font-weight:700;">Start →</span>\';' +
             'if(link)link.href=m.url;' +
             'card.onmouseover=function(){this.style.background="rgba(99,102,241,0.08)";this.style.transform="translateY(-2px)";};' +
             'card.onmouseout=function(){this.style.background="rgba(255,255,255,0.03)";this.style.transform="";};' +
@@ -163,7 +163,7 @@ _RENDERERS['knowledge_check'] = function(b) {
       '<button id="' + uid + 'o' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="display:block;width:100%;text-align:left;padding:11px 14px;border-radius:9px;margin-bottom:7px;' +
           'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
-          'color:#cbd5e1;font-size:0.8rem;cursor:pointer;transition:all 0.15s;"' +
+          'color:#567295;font-size:0.8rem;cursor:pointer;transition:all 0.15s;"' +
         ' onmouseover="if(!this.disabled)this.style.background=\'rgba(99,102,241,0.08)\'"' +
         ' onmouseout="if(!this.disabled)this.style.background=\'rgba(255,255,255,0.03)\'">' +
         '<span style="color:#475569;font-size:0.65rem;font-weight:700;margin-right:8px;">' + String.fromCharCode(65 + i) + '</span>' +
@@ -175,7 +175,7 @@ _RENDERERS['knowledge_check'] = function(b) {
     '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.14);">' +
     '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4f46e5;margin-bottom:10px;">💡 Knowledge Check</div>' +
-    '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;line-height:1.5;margin-bottom:14px;">' + _esc(question) + '</div>' +
+    '<div style="font-size:0.88rem;font-weight:600;color:#4573a1;line-height:1.5;margin-bottom:14px;">' + _esc(question) + '</div>' +
     '<div id="' + uid + 'opts">' + opts + '</div>' +
     '<div id="' + uid + 'fb" style="display:none;margin-top:10px;padding:12px 14px;border-radius:9px;font-size:0.75rem;line-height:1.5;"></div>' +
     '<script>(function(){' +
@@ -215,7 +215,7 @@ _RENDERERS['quiz_result_summary'] = function(b) {
 
   var pct    = total > 0 ? Math.round((score / total) * 100) : 0;
   var passed = pct >= passMark;
-  var col    = passed ? '#34d399' : '#f87171';
+  var col    = passed ? '#1c805c' : '#f87171';
   var bgCol  = passed ? 'rgba(52,211,153,0.07)'  : 'rgba(248,113,113,0.07)';
   var bdCol  = passed ? 'rgba(52,211,153,0.2)'   : 'rgba(248,113,113,0.2)';
   var mins   = Math.floor(timeSecs / 60);
@@ -227,7 +227,7 @@ _RENDERERS['quiz_result_summary'] = function(b) {
     var ok = questions[i].correct;
     dots += '<div title="' + _esc((questions[i].label || ('Q' + (i + 1)))) + '" ' +
       'style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;' +
-        'font-size:0.55rem;font-weight:700;color:#fff;background:' + (ok ? '#34d399' : '#f87171') + ';">' +
+        'font-size:0.55rem;font-weight:700;color:#fff;background:' + (ok ? '#1c805c' : '#f87171') + ';">' +
       (ok ? '✓' : '✗') + '</div>';
   }
 
@@ -250,8 +250,8 @@ _RENDERERS['quiz_result_summary'] = function(b) {
         '<div style="font-size:0.62rem;color:var(--muted,#5f6368);margin-top:4px;">' + score + ' / ' + total + ' correct</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;gap:8px;">' +
-        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">⏱ Time: <strong style="color:#e2e8f0;">' + timeStr + '</strong></div>' +
-        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">🎯 Pass mark: <strong style="color:#e2e8f0;">' + passMark + '%</strong></div>' +
+        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">⏱ Time: <strong style="color:#52739f;">' + timeStr + '</strong></div>' +
+        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">🎯 Pass mark: <strong style="color:#52739f;">' + passMark + '%</strong></div>' +
       '</div>' +
     '</div>' +
     (questions.length ?
@@ -278,7 +278,7 @@ _RENDERERS['scenario_branch'] = function(b) {
   var scene   = b.scenario || b.situation || '';
   var context = b.context  || '';
   var choices = b.choices  || [];
-  var accent  = b.accent   || '#f59e0b';
+  var accent  = b.accent   || '#9e6506';
 
   var btns = '';
   for (var i = 0; i < choices.length; i++) {
@@ -287,7 +287,7 @@ _RENDERERS['scenario_branch'] = function(b) {
       '<button id="' + uid + 'c' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;' +
           'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);' +
-          'color:#cbd5e1;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;"' +
+          'color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;"' +
         ' onmouseover="if(!this.disabled){this.style.background=\'rgba(245,158,11,0.07)\';this.style.borderColor=\'rgba(245,158,11,0.22)\';}"' +
         ' onmouseout="if(!this.disabled){this.style.background=\'rgba(255,255,255,0.03)\';this.style.borderColor=\'rgba(255,255,255,0.09)\';}">' +
         '<span style="color:' + _esc(accent) + ';font-weight:700;font-size:0.68rem;margin-right:8px;">' + String.fromCharCode(65 + i) + '</span>' +
@@ -304,7 +304,7 @@ _RENDERERS['scenario_branch'] = function(b) {
     '<div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">🎭 Scenario</div>' +
       (context ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '') +
-      '<div style="font-size:0.92rem;font-weight:600;color:#f1f5f9;line-height:1.5;">' + _esc(scene) + '</div>' +
+      '<div style="font-size:0.92rem;font-weight:600;color:#4674a3;line-height:1.5;">' + _esc(scene) + '</div>' +
     '</div>' +
     '<div style="padding:20px 24px;">' +
       '<div style="font-size:0.62rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">What do you do?</div>' +
@@ -316,7 +316,7 @@ _RENDERERS['scenario_branch'] = function(b) {
       'window["' + uid + 'pick"]=function(idx){' +
         'for(var j=0;j<cons.length;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}' +
         'var c=cons[idx];' +
-        'var col=c.outcome==="good"?"#34d399":c.outcome==="bad"?"#f87171":"#f59e0b";' +
+        'var col=c.outcome==="good"?"#34d399":c.outcome==="bad"?"#f87171":"#9e6506";' +
         'var icon=c.outcome==="good"?"✅":c.outcome==="bad"?"❌":"⚠️";' +
         'var bg=c.outcome==="good"?"rgba(52,211,153,0.07)":c.outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";' +
         'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
@@ -324,7 +324,7 @@ _RENDERERS['scenario_branch'] = function(b) {
         'if(res){' +
           'res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;' +
           'var hdr=\'<div style="font-size:0.68rem;font-weight:700;color:\'+col+\';margin-bottom:8px;">\'+icon+\' Outcome</div>\';' +
-          'var body=\'<div style="font-size:0.82rem;color:#cbd5e1;line-height:1.6;">\'+_E(c.consequence)+\'</div>\';' +
+          'var body=\'<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">\'+_E(c.consequence)+\'</div>\';' +
           'var nav=c.next_url' +
             '?\'<a href="\'+(/^(https?:|\\/|\\?|#)/i.test(String(c.next_url))?_E(c.next_url):"#")+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
             ':\'<button onclick="' + uid + 'rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">↩ Try again</button>\';' +
@@ -569,7 +569,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
         ' onmouseover="if(!this.dataset.sel){this.style.borderColor=\'' + ac + '55\';this.style.background=\'' + ac + '0d\';}"' +
         ' onmouseout="if(!this.dataset.sel){this.style.borderColor=\'rgba(255,255,255,0.08)\';this.style.background=\'rgba(255,255,255,0.03)\'}">' +
         '<span style="font-size:2rem;">' + _esc(p.icon || '🎯') + '</span>' +
-        '<div style="font-size:0.92rem;font-weight:700;color:#f1f5f9;">' + _esc(p.label || '') + '</div>' +
+        '<div style="font-size:0.92rem;font-weight:700;color:#4878a8;">' + _esc(p.label || '') + '</div>' +
         (p.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(p.description) + '</div>' : '') +
         (p.duration ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">⏱ ' + _esc(p.duration) + '</div>' : '') +
       '</div>';
@@ -585,7 +585,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="margin-bottom:20px;">' +
-      '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:6px;">' + _esc(title) + '</div>' +
+      '<div style="font-size:1.1rem;font-weight:800;color:#4878a8;margin-bottom:6px;">' + _esc(title) + '</div>' +
       '<div style="font-size:0.78rem;color:var(--muted,#5f6368);">' + _esc(intro) + '</div>' +
     '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">' + cards + '</div>' +
@@ -679,7 +679,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
           'color:#fff;cursor:pointer;font-size:0.78rem;font-weight:700;">Flip</button>' +
         '<button id="' + uid + 'N" onclick="window[\'' + uid + '\'].next()" ' +
           'style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);' +
-          'background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button>' +
+          'background:rgba(255,255,255,0.04);color:#617592;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button>' +
       '</div>' +
     '</div>' +
     '<script>(function(){' +
