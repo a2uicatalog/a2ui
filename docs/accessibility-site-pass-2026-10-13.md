@@ -106,3 +106,9 @@ The jump from 84 to 94 is the site cap lifting: it holds a site at 84 while more
 Two of my own edits regressed in this round and were caught only by rescanning: a page-wide link colour overrode a button colour (teal on indigo, 1.12:1), and taking the timeline clock colour from the film theme put near-white text on a light page.
 
 Open: the contrast long tail in about 68 atoms; hidden radios (tabs and others) need a designed focus style, not just a different hide; clickable spans; unnamed SVGs. The full `atom-change` test run covered the main contrast pass (2,226 passed; failures were the known `test_brand` and LDraw rebake, five browser tests that pass alone, and the design-token check fixed at its source); the last small edits ran only the twin, design-token and schema-field tests, so one more full run is owed before any push.
+
+## Round 7 (atoms found by scanning the infographic): site holds at 94
+
+Converting the accessibility infographic into an A2UI payload and scanning the rendered page with the same scanner scored it 84, not 100, which exposed defects in shared atoms: `callout` titles (info blue 3.93:1, warning orange 2.89:1), `before_after` code (no text colour, black on `#1e1e1e`), the translucent dark chart cards (18 of them: grey text on mid-grey on a white page) and unnamed chart SVGs. Fixed in the site renderer (and the Apps Script `before_after` and `chartjs_line`); the infographic then scored 100. Full `atom-change` run: 2,232 passed; failures only the known `test_brand` and LDraw rebake.
+
+Site rescan: 94 / 94 (A), unchanged; contrast in light 236 to 222 elements. The score is held by the same ten pages (home, the all-atoms surface pages, `/atoms/tabs`). Further movement now needs those ten pages cleared, not more single-atom fixes.
