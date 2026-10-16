@@ -540,8 +540,8 @@ def _render_callout(b: dict) -> str:
     """Callout/alert box — info, warning, tip, note."""
     kind = b.get("kind", "info")
     styles = {
-        "info":    ("ℹ️",  "#e8f0fe", "#1a73e8", "#1a73e8"),
-        "warning": ("⚠️",  "#fef7e0", "#f9ab00", "#e37400"),
+        "info":    ("ℹ️",  "#e8f0fe", "#1a73e8", "#1558b4"),
+        "warning": ("⚠️",  "#fef7e0", "#f9ab00", "#8a4b00"),
         "tip":     ("💡",  "#e6f4ea", "#34a853", "#137333"),
         "danger":  ("🚨",  "#fce8e6", "#ea4335", "#c5221f"),
     }
@@ -3579,7 +3579,7 @@ def _render_chartjs_bar(b: dict) -> str:
         val_str = f"{grid_v:,.1f}" if grid_v % 1 != 0 else f"{grid_v:,.0f}"
         grid_lines += f"""
         <line x1="{pad_l}" y1="{grid_y}" x2="{pad_l + chart_w}" y2="{grid_y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
-        <text x="{pad_l - 10}" y="{grid_y + 3}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{val_str}</text>
+        <text x="{pad_l - 10}" y="{grid_y + 3}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{val_str}</text>
         """
         
     # Draw bars and X axis labels
@@ -3625,7 +3625,7 @@ def _render_chartjs_bar(b: dict) -> str:
         group_x_start = pad_l + i * slot_width + (slot_width - bar_group_w) / 2
         
         # Add label text
-        x_labels += f'<text x="{pad_l + i * slot_width + slot_width/2}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
+        x_labels += f'<text x="{pad_l + i * slot_width + slot_width/2}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
         
         for di, ds in enumerate(datasets):
             data = ds.get("data", [])
@@ -3650,10 +3650,10 @@ def _render_chartjs_bar(b: dict) -> str:
     label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
     
     return f"""
-    <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {label_html}
       <div style="width:100%;height:200px;">
-        <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+        <svg role="img" aria-label="{_cv_esc(label or b.get('title') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
           <defs>
             {svg_defs}
           </defs>
@@ -3700,7 +3700,7 @@ def _render_chartjs_line(b: dict) -> str:
         val_str = f"{grid_v:,.1f}" if grid_v % 1 != 0 else f"{grid_v:,.0f}"
         grid_lines += f"""
         <line x1="{pad_l}" y1="{grid_y}" x2="{pad_l + chart_w}" y2="{grid_y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
-        <text x="{pad_l - 10}" y="{grid_y + 3}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{val_str}</text>
+        <text x="{pad_l - 10}" y="{grid_y + 3}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{val_str}</text>
         """
         
     # Draw x-axis labels
@@ -3712,7 +3712,7 @@ def _render_chartjs_line(b: dict) -> str:
             if n_labels > 8 and i % (n_labels // 4) != 0 and i != n_labels - 1:
                 continue
             x = pad_l + (i / (n_labels - 1)) * chart_w
-            x_labels += f'<text x="{x}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
+            x_labels += f'<text x="{x}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
             
     # Draw paths for datasets
     colors = [
@@ -3773,10 +3773,10 @@ def _render_chartjs_line(b: dict) -> str:
     label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
     
     return f"""
-    <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {label_html}
       <div style="width:100%;height:200px;">
-        <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+        <svg role="img" aria-label="{_cv_esc(label or b.get('title') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
           <defs>
             {svg_defs}
           </defs>
@@ -3909,7 +3909,7 @@ def _render_mini_sparkline_set(b: dict) -> str:
             <span style="font-size:1.1rem;font-weight:800;color:#f1f5f9;font-family:monospace;">{_cv_esc(latest)}</span>
           </div>
           <div style="width:100%;height:40px;">
-            <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+            <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
                 <linearGradient id="{grad_id}" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="{stroke_color}" stop-opacity="0.25" />
@@ -3975,7 +3975,7 @@ def _render_donut_stat(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
+    <div style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
       <div style="width:{_cv_esc(size)};height:{_cv_esc(size)};flex-shrink:0;">
         {svg_html}
       </div>
@@ -4078,7 +4078,7 @@ def _render_heatmap(b: dict) -> str:
             """)
             
     svg_html = f"""
-    <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+    <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
       <defs>
         <filter id="{heatmap_id}_glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="1.5" result="blur" />
@@ -4095,7 +4095,7 @@ def _render_heatmap(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       <div style="width:100%;overflow-x:auto;">
         <div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">
           {svg_html}
@@ -4282,7 +4282,7 @@ def _render_punch_card(b: dict) -> str:
     for r_idx, lbl in enumerate(labels_days):
         if r_idx < num_rows:
             y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2 + 3
-            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>'
+            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>'
             
     bubbles_html = []
     punch_id = f"punch_{_wa_oid(b)}"
@@ -4313,7 +4313,7 @@ def _render_punch_card(b: dict) -> str:
             """)
             
     svg_html = f"""
-    <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+    <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
       <defs>
         <filter id="{punch_id}_glow" x="-30%" y="-30%" width="160%" height="140%">
           <feGaussianBlur stdDeviation="2" result="blur" />
@@ -4348,7 +4348,7 @@ def _render_punch_card(b: dict) -> str:
         """
         
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       <div style="width:100%;overflow-x:auto;">
         <div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">
@@ -4537,7 +4537,7 @@ def _svg_sankey_flow(b: dict) -> str:
         
         labels_html.append(f"""
         <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="end">{_cv_esc(lp['label'])}</text>
-        <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 15}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{lp['total']:,.0f}</text>
+        <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 15}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{lp['total']:,.0f}</text>
         """)
         
     for nid, rp in right_positions.items():
@@ -4555,11 +4555,11 @@ def _svg_sankey_flow(b: dict) -> str:
         
         labels_html.append(f"""
         <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="start">{_cv_esc(rp['label'])}</text>
-        <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 15}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="start">{rp['total']:,.0f}</text>
+        <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 15}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="start">{rp['total']:,.0f}</text>
         """)
         
     return f"""
-    <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+    <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
       <defs>
         {"".join(gradients_html)}
       </defs>
@@ -4591,7 +4591,7 @@ def _render_sankey_flow(b: dict) -> str:
         """
 
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       <div style="width:100%;overflow-x:auto;">
         <div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">
@@ -4679,7 +4679,7 @@ def _render_cohort_retention(b: dict) -> str:
         """
         
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       <div style="width:100%;overflow-x:auto;">
         <div style="min-width:{240 + num_periods * 80}px;max-width:100%;display:grid;{grid_cols_style};background:rgba(15,23,42,0.3);border-radius:8px;padding:8px;gap:2px;">
@@ -4775,7 +4775,7 @@ def _render_task_list(b: dict) -> str:
     tasks_container = f'<div style="display:flex; flex-direction:column; gap:8px;">{"".join(tasks_html)}</div>'
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {tasks_container}
     </div>
@@ -4938,7 +4938,7 @@ def _render_sentiment_summary(b: dict) -> str:
         """
         
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px); display:flex; flex-direction:column; gap:20px;">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px); display:flex; flex-direction:column; gap:20px;">
       {header_html}
       <div style="display:flex; flex-wrap:wrap; gap:16px;">
         {gauge_svg}
@@ -5047,14 +5047,14 @@ def _render_conversion_funnel(b: dict) -> str:
         
     svg_content = f"""
     <div style="width:100%; height:260px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
-      <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         {"".join(elements)}
       </svg>
     </div>
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_content}
     </div>
@@ -5139,7 +5139,7 @@ def _render_gauge_sla(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_html}
     </div>
@@ -5251,7 +5251,7 @@ def _render_stacked_area(b: dict) -> str:
     
     svg_html = f"""
     <div style="width:100%; height:240px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
-      <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           {"".join(defs_html)}
         </defs>
@@ -5265,7 +5265,7 @@ def _render_stacked_area(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_html}
       {legends_container}
@@ -5449,7 +5449,7 @@ def _render_scatter_trend(b: dict) -> str:
         
     svg_html = f"""
     <div style="width:100%; height:240px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
-      <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="scatter_glow_{_wa_oid(b)}" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="2" result="blur" />
@@ -5472,7 +5472,7 @@ def _render_scatter_trend(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_html}
     </div>
@@ -5566,7 +5566,7 @@ def _render_call_mood_board(b: dict) -> str:
     """ if themes else ""
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {moods_section}
       {themes_section}
@@ -5656,7 +5656,7 @@ def _render_github_activity_grid(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {stats_html}
       <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:10px; padding:16px; box-sizing:border-box; display:flex; align-items:center; justify-content:center;">
@@ -12089,7 +12089,7 @@ def _render_before_after(b: dict) -> str:
         return (f'<div style="flex:1;min-width:0;">'
                 f'<div style="background:{color};color:#fff;font-size:0.72rem;font-weight:700;'
                 f'padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">{_cv_esc(label)}</div>'
-                f'<pre style="margin:0;padding:14px;background:{bg};overflow-x:auto;font-size:0.82rem;'
+                f'<pre style="margin:0;padding:14px;background:{bg};color:#e8eaed;overflow-x:auto;font-size:0.82rem;'
                 f'border-radius:0 0 6px 6px;"><code class="language-{_esc(lang)}">{code}</code></pre></div>')
     return (f'<div style="margin:1.5rem 0;">'
             f'<div style="display:flex;gap:12px;align-items:flex-start;">'
@@ -17190,7 +17190,7 @@ def _render_gauge_sla(b: dict) -> str:
     """
 
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_html}
     </div>
@@ -17269,7 +17269,7 @@ def _svg_scatter_trend(b: dict) -> str:
         """)
 
     return f"""
-      <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="scatter_glow_{_wa_oid(b)}" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="2" result="blur" />
@@ -17315,7 +17315,7 @@ def _render_scatter_trend(b: dict) -> str:
     """
 
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_html}
     </div>
@@ -17409,7 +17409,7 @@ def _render_call_mood_board(b: dict) -> str:
     """ if themes else ""
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {moods_section}
       {themes_section}

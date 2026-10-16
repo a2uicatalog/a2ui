@@ -148,7 +148,7 @@ _RENDERERS['chartjs_line'] = function(b) {
   function px(i)  { return padL + (n > 1 ? i / (n - 1) : 0.5) * chartW; }
   function py(v)  { return padT + (1 - (v - minVal) / (maxVal - minVal)) * chartH; }
 
-  var svg = '<svg viewBox="0 0 ' + width + ' ' + height + '" width="100%" preserveAspectRatio="xMidYMid meet">';
+  var svg = '<svg role="img" aria-label="' + _esc(title || (datasets[0] && datasets[0].label) || 'Line chart') + '" viewBox="0 0 ' + width + ' ' + height + '" width="100%" preserveAspectRatio="xMidYMid meet">';
   if (title) svg += '<text x="' + (width/2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
 
   // Gridlines

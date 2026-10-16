@@ -1440,7 +1440,7 @@ _RENDERERS['before_after'] = function(b) {
   function panel(label, code, color, bg) {
     return '<div style="flex:1;min-width:0;">' +
       '<div style="background:' + color + ';color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">' + label + '</div>' +
-      '<pre style="margin:0;padding:14px;background:' + bg + ';overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-' + _esc(lang) + '">' + code + '</code></pre></div>';
+      '<pre style="margin:0;padding:14px;background:' + bg + ';color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-' + _esc(lang) + '">' + code + '</code></pre></div>';
   }
   return '<div style="margin:1.5rem 0;">' +
     '<div style="display:flex;gap:12px;align-items:flex-start;">' +
