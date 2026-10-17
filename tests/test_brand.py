@@ -48,3 +48,14 @@ def test_pages_without_the_site_chrome_are_declared_and_only_shrink():
                      f"(generate_atom_pages.site_header + SITE_BASE_CSS); do not add to brand_exempt.json.")
     paid = sorted(exempt - bare)
     assert not paid, f"{paid} now carry the site header -- remove them from tests/brand_exempt.json."
+
+
+def test_the_private_blog_carries_the_current_brand_hash_when_its_checkout_is_present():
+    """The blog is generated in a2ui-private/blog-worker, which reads the brand tokens from this repo's generated file. Its pages are committed
+    output, so a token change here leaves them stale until the blog is regenerated: the live /blog page kept the old, low-contrast colours after the
+    accessibility fixes (found 2026-10-17). Skipped in CI, where the sibling is absent."""
+    blog = ROOT.parent / "a2ui-private" / "blog-worker" / "public" / "blog" / "index.html"
+    if not blog.exists():
+        return
+    assert f"/*brand-tokens:{BRAND_HASH}*/" in blog.read_text(), (
+        "blog pages are stale: run `python3 scripts/generate_blog_pages.py` in a2ui-private/blog-worker, then commit and push (publishes the blog)")
