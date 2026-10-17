@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -193,7 +193,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>tool_name</td><td>string (required). The name of the invoked tool, e.g. "search_database" or "execute_code".</td><td>required</td></tr><tr><td>status</td><td>string (optional, default "running"). Status of the tool execution ("running", "success", "error", or "pending").</td><td>optional</td></tr><tr><td>args</td><td>string. The input arguments passed to the tool, formatted as JSON string or key-value summary.</td><td>optional</td></tr><tr><td>result</td><td>string. The output data or response returned by the tool.</td><td>optional</td></tr><tr><td>latency_ms</td><td>number. Execution duration in milliseconds.</td><td>optional</td></tr><tr><td>error</td><td>string. Error details or exception message if status is "error".</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>tool_name</td><td>string (required). The name of the invoked tool, e.g. "search_database" or "execute_code".</td><td>required</td></tr><tr><td>status</td><td>string (optional, default "running"). Status of the tool execution ("running", "success", "error", or "pending").</td><td>optional</td></tr><tr><td>args</td><td>string. The input arguments passed to the tool, formatted as JSON string or key-value summary.</td><td>optional</td></tr><tr><td>result</td><td>string. The output data or response returned by the tool.</td><td>optional</td></tr><tr><td>latency_ms</td><td>number. Execution duration in milliseconds.</td><td>optional</td></tr><tr><td>error</td><td>string. Error details or exception message if status is "error".</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

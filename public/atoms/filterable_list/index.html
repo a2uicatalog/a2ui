@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -193,7 +193,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, heading above the list)</td><td>optional</td></tr><tr><td>items</td><td>array (required). Array of {title (or name), detail? (or subtitle), status? (or whichever field filter_field names), meta? (right-aligned small text), icon? (an emoji)}. Items with no value for the filter field show only under All.</td><td>required</td></tr><tr><td>filter_field</td><td>string (optional, default "status"). Which item field the chips filter on, e.g. "category" or "assignee".</td><td>optional</td></tr><tr><td>filters</td><td>array. Chips to show, as plain strings or {value, label?, color? (hex)}. Default: one chip per distinct value, in first-seen order.</td><td>optional</td></tr><tr><td>colors</td><td>object. Map from a status or category value to a hex colour for its chip and row badge. Default: a distinct colour per chip.</td><td>optional</td></tr><tr><td>show_counts</td><td>bool (optional, default true). Show how many rows each chip matches.</td><td>optional</td></tr><tr><td>empty_text</td><td>string (optional, shown when a filter matches nothing)</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, heading above the list)</td><td>optional</td></tr><tr><td>items</td><td>array (required). Array of {title (or name), detail? (or subtitle), status? (or whichever field filter_field names), meta? (right-aligned small text), icon? (an emoji)}. Items with no value for the filter field show only under All.</td><td>required</td></tr><tr><td>filter_field</td><td>string (optional, default "status"). Which item field the chips filter on, e.g. "category" or "assignee".</td><td>optional</td></tr><tr><td>filters</td><td>array. Chips to show, as plain strings or {value, label?, color? (hex)}. Default: one chip per distinct value, in first-seen order.</td><td>optional</td></tr><tr><td>colors</td><td>object. Map from a status or category value to a hex colour for its chip and row badge. Default: a distinct colour per chip.</td><td>optional</td></tr><tr><td>show_counts</td><td>bool (optional, default true). Show how many rows each chip matches.</td><td>optional</td></tr><tr><td>empty_text</td><td>string (optional, shown when a filter matches nothing)</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

@@ -601,7 +601,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -636,7 +636,7 @@ def fields_table(atom):
         type_clean = str(ftype).replace(" (optional)", "").replace(" (Optional)", "")
         req = "optional" if optional else "required"
         rows += f"<tr><td>{name}</td><td>{type_clean}</td><td>{req}</td></tr>"
-    return f"<table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody>{rows}</tbody></table>"
+    return f"<table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody>{rows}</tbody></table>"
 
 
 def _infer_list(name, atom_type):
@@ -2248,7 +2248,7 @@ GAS_SURFACES = {"google-meet-stage", "google-apps-script-web", "google-apps-scri
 # public/mcp-apps-demo/ this session (a2ui-private/spec/mcp-apps-surface-v0.1.md v0.2).
 MCP_APPS_HERO_HTML = """
 <style>
-:root{--mcp-indigo:#6366f1}
+:root{--mcp-indigo:#4f46e5}
 .mcp-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:var(--mcp-indigo);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
 .mcp-note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:0 0 20px}
 .mcp-note strong{color:var(--text)}

@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -200,7 +200,7 @@ Reuses data_table's onRowClick contract exactly — same data-row-json attribute
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>images</td><td>array (required). Objects of {id, url, alt?, caption?, badge?, active?}. `id` is what data-row-json carries back to onRowClick (along with every other field on the object — the WHOLE row, same contract data_table's onRowClick already has). `caption` overlays the bottom of the tile. `badge` is a short string pinned top-right (a count, a status) — omit it for no badge. `active` outlines the tile and tints its badge to mark "this one is in a selected/chosen state" from the caller's own point of view.</td><td>required</td></tr><tr><td>cols</td><td>integer (optional, default 3). 2-4 reads best; more than 4 on a phone-width viewport crowds captions into illegibility.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>images</td><td>array (required). Objects of {id, url, alt?, caption?, badge?, active?}. `id` is what data-row-json carries back to onRowClick (along with every other field on the object — the WHOLE row, same contract data_table's onRowClick already has). `caption` overlays the bottom of the tile. `badge` is a short string pinned top-right (a count, a status) — omit it for no badge. `active` outlines the tile and tints its badge to mark "this one is in a selected/chosen state" from the caller's own point of view.</td><td>required</td></tr><tr><td>cols</td><td>integer (optional, default 3). 2-4 reads best; more than 4 on a phone-width viewport crowds captions into illegibility.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. Group label.</td><td>optional</td></tr><tr><td>name</td><td>string. Field identifier.</td><td>required</td></tr><tr><td>options</td><td>{'type': 'array', 'description': 'List of {value, label, description?} entries.'}</td><td>required</td></tr><tr><td>default_value</td><td>string. Pre-selected option value. `selected_value` is accepted as a synonym — the renderer read only that spelling while this file documented only this one, so the documented prop pre-selected nothing until 2026-08-14.</td><td>optional</td></tr><tr><td>rules</td><td>array of strings. e.g. ['required'].</td><td>optional</td></tr><tr><td>wired</td><td>Carries `onChange` in the wired dialect, emitting the CHECKED option's value, and accepts a `value` wire that checks the matching option. The binding DELEGATES over the group rather than reading the first input, so N elements behave as one control. This is the single-select alternative to combobox for the case a dropdown gets wrong: few options, on a phone, where a dropdown costs two taps and a modal to answer a three-way question.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>label</td><td>string. Group label.</td><td>optional</td></tr><tr><td>name</td><td>string. Field identifier.</td><td>required</td></tr><tr><td>options</td><td>{'type': 'array', 'description': 'List of {value, label, description?} entries.'}</td><td>required</td></tr><tr><td>default_value</td><td>string. Pre-selected option value. `selected_value` is accepted as a synonym — the renderer read only that spelling while this file documented only this one, so the documented prop pre-selected nothing until 2026-08-14.</td><td>optional</td></tr><tr><td>rules</td><td>array of strings. e.g. ['required'].</td><td>optional</td></tr><tr><td>wired</td><td>Carries `onChange` in the wired dialect, emitting the CHECKED option's value, and accepts a `value` wire that checks the matching option. The binding DELEGATES over the group rather than reading the first input, so N elements behave as one control. This is the single-select alternative to combobox for the case a dropdown gets wrong: few options, on a phone, where a dropdown costs two taps and a modal to answer a three-way question.</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">

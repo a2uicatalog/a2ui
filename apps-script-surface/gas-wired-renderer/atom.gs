@@ -1440,7 +1440,7 @@ _RENDERERS['before_after'] = function(b) {
   function panel(label, code, color, bg) {
     return '<div style="flex:1;min-width:0;">' +
       '<div style="background:' + color + ';color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">' + label + '</div>' +
-      '<pre style="margin:0;padding:14px;background:' + bg + ';color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-' + _esc(lang) + '">' + code + '</code></pre></div>';
+      '<pre tabindex="0" style="margin:0;padding:14px;background:' + bg + ';color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-' + _esc(lang) + '">' + code + '</code></pre></div>';
   }
   return '<div style="margin:1.5rem 0;">' +
     '<div style="display:flex;gap:12px;align-items:flex-start;">' +
@@ -1879,7 +1879,7 @@ _RENDERERS['carousel'] = function(b) {
   var n = slides.length;
   var css = '<style>' +
     '.' + cid + '{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;}' +
-    '.' + cid + ' input[type=radio]{display:none;}' +
+    '.' + cid + ' input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.' + cid + ' input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}' +
     '.' + cid + '-track{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:' + (n*100) + '%;}' +
     '.' + cid + '-slide{width:' + Math.floor(100/n) + '%;flex:0 0 ' + Math.floor(100/n) + '%;position:relative;}' +
     '.' + cid + '-slide img{width:100%;display:block;max-height:480px;object-fit:cover;}' +
@@ -2676,7 +2676,7 @@ _RENDERERS['segmented_control'] = function(b) {
     return '<input type="radio" id="sgc' + uid + '_' + o.value + '" name="' + name + '_' + uid + '" value="' + _esc(o.value) + '"' + (o.value===selected?' checked':'') + ' style="display:none;">' +
       '<label for="sgc' + uid + '_' + o.value + '" style="padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;">' + _esc(o.label) + '</label>';
   }).join('');
-  return '<style>.sgc' + uid + ' input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style>' +
+  return '<style>.sgc' + uid + ' input:checked+label{background:#e8f0fe;color:#1558b4;font-weight:600;}</style>' +
     '<div style="margin:1rem 0;">' +
     (label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
     '<div class="sgc' + uid + '" style="display:inline-flex;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);">' + items + '</div></div>';
@@ -3087,7 +3087,7 @@ function _svg_progress_circleGas(b) {
   _RENDERERS[name] = function(b) {
     var label = b.label || b.title || b.name || '';
     var text = b.text || b.content || b.value || '';
-    var inner = (label ? '<strong>' + _esc(label) + '</strong><br>' : '') + (text ? _markdownToHtml(text) : '<em style="color:#999;">[ ' + name + ' ]</em>');
+    var inner = (label ? '<strong>' + _esc(label) + '</strong><br>' : '') + (text ? _markdownToHtml(text) : '<em style="color:#6b7280;">[ ' + name + ' ]</em>');
     return '<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">' + inner + '</div>';
   };
 });
@@ -4542,10 +4542,10 @@ _RENDERERS['risk_flag'] = function(b) {
   var uid  = Math.random().toString(36).substr(2, 6);
   var risks = b.risks || [];
   var levelCfg = {
-    critical: { bg: '#fef2f2', border: '#ef4444', badge: '#ef4444', label: 'Critical' },
-    high:     { bg: '#fff7ed', border: '#f97316', badge: '#f97316', label: 'High' },
-    medium:   { bg: '#fefce8', border: '#eab308', badge: '#eab308', label: 'Medium' },
-    low:      { bg: '#f0fdf4', border: '#22c55e', badge: '#22c55e', label: 'Low' }
+    critical: { bg: '#fef2f2', border: '#ef4444', badge: '#b91c1c', label: 'Critical' },
+    high:     { bg: '#fff7ed', border: '#f97316', badge: '#c2410c', label: 'High' },
+    medium:   { bg: '#fefce8', border: '#eab308', badge: '#a16207', label: 'Medium' },
+    low:      { bg: '#f0fdf4', border: '#22c55e', badge: '#15803d', label: 'Low' }
   };
   var rowsHtml = risks.map(function(r) {
     var cfg = levelCfg[r.level] || levelCfg.medium;

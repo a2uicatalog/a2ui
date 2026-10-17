@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -199,7 +199,7 @@ Same-origin only in practice: nothing here relaxes sandboxing. A cross-origin sr
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>src</td><td>string. Initial iframe URL. Empty renders the placeholder instead of an iframe. Normally left empty and driven entirely by `wire.src`.</td><td>optional</td></tr><tr><td>label</td><td>string. A small heading above the frame.</td><td>optional</td></tr><tr><td>height</td><td>number. Frame height in px. Default 320.</td><td>optional</td></tr><tr><td>emptyMessage</td><td>string. Shown in the placeholder before a src exists. Default "Nothing selected yet."</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>src</td><td>string. Initial iframe URL. Empty renders the placeholder instead of an iframe. Normally left empty and driven entirely by `wire.src`.</td><td>optional</td></tr><tr><td>label</td><td>string. A small heading above the frame.</td><td>optional</td></tr><tr><td>height</td><td>number. Frame height in px. Default 320.</td><td>optional</td></tr><tr><td>emptyMessage</td><td>string. Shown in the placeholder before a src exists. Default "Nothing selected yet."</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

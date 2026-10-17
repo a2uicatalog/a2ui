@@ -128,7 +128,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -399,7 +399,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box" role="group" aria-label="Live preview of tabs">
 <style>
 .tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--border, #e0e0e0);}
-.tm-tabs input[type=radio]{display:none;}
+.tm-tabs input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.tm-tabs input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
 /* Underline-style tab bar (2026-07-24, grounded in Material/Primer/Radix
    conventions): a faint fill on the bar, NO per-tab vertical dividers, and
    4px edge spacing. The active tab is signalled three ways — accent colour,
@@ -441,7 +441,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of before_after"><div style="margin:1.5rem 0;"><div style="display:flex;gap:12px;align-items:flex-start;"><div style="flex:1;min-width:0;"><div style="background:#c5221f;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">Before</div><pre style="margin:0;padding:14px;background:#1e1e1e;color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-js">const html = buildPage(data);</code></pre></div><div style="flex:1;min-width:0;"><div style="background:#137333;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">After</div><pre style="margin:0;padding:14px;background:#1e1e1e;color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-js">const html = render([{"type":"body","text":"Hello"}]);</code></pre></div></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of before_after"><div style="margin:1.5rem 0;"><div style="display:flex;gap:12px;align-items:flex-start;"><div style="flex:1;min-width:0;"><div style="background:#c5221f;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">Before</div><pre tabindex="0" style="margin:0;padding:14px;background:#1e1e1e;color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-js">const html = buildPage(data);</code></pre></div><div style="flex:1;min-width:0;"><div style="background:#137333;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">After</div><pre tabindex="0" style="margin:0;padding:14px;background:#1e1e1e;color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-js">const html = render([{"type":"body","text":"Hello"}]);</code></pre></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -452,7 +452,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of api_reference"><div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;"><div style="background:#e8f0fe;padding:14px 18px;border-bottom:1px solid #e0e0e0;"><code style="font-size:1rem;font-weight:700;color:#1a73e8;">Api Reference</code><span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">1</span></div><div style="padding:14px 18px;"><p style="color:#3c4043;margin-bottom:8px;">A concise description of the content.</p></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of api_reference"><div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;"><div style="background:#e8f0fe;padding:14px 18px;border-bottom:1px solid #e0e0e0;"><code style="font-size:1rem;font-weight:700;color:#1558b4;">Api Reference</code><span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">1</span></div><div style="padding:14px 18px;"><p style="color:#3c4043;margin-bottom:8px;">A concise description of the content.</p></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -489,7 +489,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 <style>
 .cfe8339{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}
-.cfe8339 input[type=radio]{display:none;}
+.cfe8339 input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.cfe8339 input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
 .cfe8339-track{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:200%;}
 .cfe8339-slide{width:50%;flex:0 0 50%;position:relative;}
 .cfe8339-slide img{width:100%;display:block;max-height:480px;object-fit:cover;}
@@ -1074,7 +1074,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of loading_skeleton"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ loading_skeleton ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of loading_skeleton"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#6b7280;'>[ loading_skeleton ]</em></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1129,7 +1129,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of rating_stars"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ rating_stars ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of rating_stars"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#6b7280;'>[ rating_stars ]</em></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1169,7 +1169,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_card"><div style="position:relative;flex:1;min-width:180px;border:2px solid #b5432f;border-radius:12px;padding:18px 18px 20px;background:#fdf3f0;font-family:system-ui,sans-serif;"><div style="position:absolute;top:-10px;left:16px;background:#b5432f;color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;border-radius:20px;text-transform:uppercase;">Popular</div><div style="font-weight:700;font-size:0.95rem;">Plan name</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">USD$29/mo<span style="font-size:0.75rem;font-weight:600;color:#9a9284;">/monthly</span></div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"><li style="margin-bottom:6px;">Core feature</li><li style="margin-bottom:6px;">Advanced analytics</li><li style="margin-bottom:6px;">API access</li></ul><a href="https://example.com" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:14px;padding:9px 14px;border-radius:8px;background:#b5432f;color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;">Call to action label</a></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_card"><div style="position:relative;flex:1;min-width:180px;border:2px solid #b5432f;border-radius:12px;padding:18px 18px 20px;background:#fdf3f0;font-family:system-ui,sans-serif;"><div style="position:absolute;top:-10px;left:16px;background:#b5432f;color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;border-radius:20px;text-transform:uppercase;">Popular</div><div style="font-weight:700;font-size:0.95rem;">Plan name</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">USD$29/mo<span style="font-size:0.75rem;font-weight:600;color:#6b6558;">/monthly</span></div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"><li style="margin-bottom:6px;">Core feature</li><li style="margin-bottom:6px;">Advanced analytics</li><li style="margin-bottom:6px;">API access</li></ul><a href="https://example.com" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:14px;padding:9px 14px;border-radius:8px;background:#b5432f;color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;">Call to action label</a></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1202,7 +1202,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of side_by_side_spec"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ side_by_side_spec ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of side_by_side_spec"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#6b7280;'>[ side_by_side_spec ]</em></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1224,7 +1224,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of comparison_grid"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ comparison_grid ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of comparison_grid"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#6b7280;'>[ comparison_grid ]</em></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1235,7 +1235,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of versus_block"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#999;'>[ versus_block ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of versus_block"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><em style='color:#6b7280;'>[ versus_block ]</em></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1334,7 +1334,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of segmented_control"><style>.sgc77910 input{display:none;}.sgc77910 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc77910 label:last-of-type{border-right:none;}.sgc77910 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc77910" style="display:inline-flex;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);"><input type="radio" id="sgc77910_a" name="Segmented Control_77910" value="a"><label for="sgc77910_a">Option A</label><input type="radio" id="sgc77910_b" name="Segmented Control_77910" value="b"><label for="sgc77910_b">Option B</label><input type="radio" id="sgc77910_c" name="Segmented Control_77910" value="c"><label for="sgc77910_c">Option C</label></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of segmented_control"><style>.sgc77910 input{display:none;}.sgc77910 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc77910 label:last-of-type{border-right:none;}.sgc77910 input:checked+label{background:#e8f0fe;color:#1558b4;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc77910" style="display:inline-flex;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);"><input type="radio" id="sgc77910_a" name="Segmented Control_77910" value="a"><label for="sgc77910_a">Option A</label><input type="radio" id="sgc77910_b" name="Segmented Control_77910" value="b"><label for="sgc77910_b">Option B</label><input type="radio" id="sgc77910_c" name="Segmented Control_77910" value="c"><label for="sgc77910_c">Option C</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2964,7 +2964,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of chartjs_pie"><div style="margin:1rem 0;text-align:center;"><svg viewBox="0 0 240 240" width="200" height="200" style="overflow:visible;"><path d="M 120.00 30.00 A 90 90 0 0 1 172.90 192.81 L 151.74 163.69 A 54 54 0 0 0 120.00 66.00 Z" fill="#4f85f6" stroke="#fff" stroke-width="2"/><text x="188.5" y="97.8" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#fff" font-weight="600">40%</text><path d="M 172.90 192.81 A 90 90 0 0 1 30.00 120.00 L 66.00 120.00 A 54 54 0 0 0 151.74 163.69 Z" fill="#f06292" stroke="#fff" stroke-width="2"/><text x="87.3" y="184.2" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#fff" font-weight="600">35%</text><path d="M 30.00 120.00 A 90 90 0 0 1 120.00 30.00 L 120.00 66.00 A 54 54 0 0 0 66.00 120.00 Z" fill="#66bb6a" stroke="#fff" stroke-width="2"/><text x="69.1" y="69.1" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#fff" font-weight="600">25%</text></svg><div style="display:flex;flex-direction:column;gap:5px;margin-top:10px;"><div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#4f85f6;flex-shrink:0;"></span><span>Category A</span><span style="margin-left:auto;font-weight:600;">40%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#f06292;flex-shrink:0;"></span><span>Category B</span><span style="margin-left:auto;font-weight:600;">35%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#66bb6a;flex-shrink:0;"></span><span>Category C</span><span style="margin-left:auto;font-weight:600;">25%</span></div></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of chartjs_pie"><div style="margin:1rem 0;text-align:center;"><svg viewBox="0 0 240 240" width="200" height="200" style="overflow:visible;"><path d="M 120.00 30.00 A 90 90 0 0 1 172.90 192.81 L 151.74 163.69 A 54 54 0 0 0 120.00 66.00 Z" fill="#2d5fd0" stroke="#fff" stroke-width="2"/><text x="188.5" y="97.8" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#fff" font-weight="600">40%</text><path d="M 172.90 192.81 A 90 90 0 0 1 30.00 120.00 L 66.00 120.00 A 54 54 0 0 0 151.74 163.69 Z" fill="#c2185b" stroke="#fff" stroke-width="2"/><text x="87.3" y="184.2" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#fff" font-weight="600">35%</text><path d="M 30.00 120.00 A 90 90 0 0 1 120.00 30.00 L 120.00 66.00 A 54 54 0 0 0 66.00 120.00 Z" fill="#2e7d32" stroke="#fff" stroke-width="2"/><text x="69.1" y="69.1" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#fff" font-weight="600">25%</text></svg><div style="display:flex;flex-direction:column;gap:5px;margin-top:10px;"><div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#2d5fd0;flex-shrink:0;"></span><span>Category A</span><span style="margin-left:auto;font-weight:600;">40%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#c2185b;flex-shrink:0;"></span><span>Category B</span><span style="margin-left:auto;font-weight:600;">35%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#2e7d32;flex-shrink:0;"></span><span>Category C</span><span style="margin-left:auto;font-weight:600;">25%</span></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2993,7 +2993,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of llm_comparison_table"><div style="margin:1rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><thead><tr style="background:#f9fafb;"><th style="width:50%;padding:8px 10px;text-align:left;border-bottom:2px solid #4f85f6;font-size:0.8rem;font-weight:700;color:#4f85f6;">GPT-4</th><th style="width:50%;padding:8px 10px;text-align:left;border-bottom:2px solid #f06292;font-size:0.8rem;font-weight:700;color:#f06292;">Claude Sonnet</th></tr></thead><tbody><tr><td style="width:50%;padding:8px 10px;vertical-align:top;border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;line-height:1.55;"></td><td style="width:50%;padding:8px 10px;vertical-align:top;border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;line-height:1.55;"></td></tr></tbody></table></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of llm_comparison_table"><div style="margin:1rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><thead><tr style="background:#f9fafb;"><th style="width:50%;padding:8px 10px;text-align:left;border-bottom:2px solid #2d5fd0;font-size:0.8rem;font-weight:700;color:#2d5fd0;">GPT-4</th><th style="width:50%;padding:8px 10px;text-align:left;border-bottom:2px solid #c2185b;font-size:0.8rem;font-weight:700;color:#c2185b;">Claude Sonnet</th></tr></thead><tbody><tr><td style="width:50%;padding:8px 10px;vertical-align:top;border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;line-height:1.55;"></td><td style="width:50%;padding:8px 10px;vertical-align:top;border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;line-height:1.55;"></td></tr></tbody></table></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3004,7 +3004,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of confidence_bar"><div style="margin:0.75rem 0;"><div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;"><span>Confidence Bar</span><span style="font-weight:700;color:#22c55e;">75%</span></div><div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;"><div style="width:75.0%;height:100%;background:#22c55e;border-radius:4px;transition:width .4s;"></div></div></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of confidence_bar"><div style="margin:0.75rem 0;"><div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;"><span>Confidence Bar</span><span style="font-weight:700;color:#15803d;">75%</span></div><div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;"><div style="width:75.0%;height:100%;background:#22c55e;border-radius:4px;transition:width .4s;"></div></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3015,7 +3015,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of token_budget_meter"><div style="margin:0.75rem 0;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;"><div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;"><span style="font-size:0.8rem;font-weight:600;color:#374151;">Context window</span><span style="font-size:0.78rem;font-weight:700;color:#178640;">1 / 5 (20%)</span></div><div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;"><div style="width:20.0%;height:100%;background:#178640;border-radius:4px;"></div></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of token_budget_meter"><div style="margin:0.75rem 0;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;"><div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;"><span style="font-size:0.8rem;font-weight:600;color:#374151;">Context window</span><span style="font-size:0.78rem;font-weight:700;color:#15803d;">1 / 5 (20%)</span></div><div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;"><div style="width:20.0%;height:100%;background:#15803d;border-radius:4px;"></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3400,7 +3400,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of risk_flag"><div style="border-left:4px solid #eab308;background:#fefce8;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="background:#eab308;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">Medium</span><span style="font-size:14px;font-weight:600;color:#111827;"></span></div></div><div style="border-left:4px solid #eab308;background:#fefce8;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="background:#eab308;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">Medium</span><span style="font-size:14px;font-weight:600;color:#111827;"></span></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of risk_flag"><div style="border-left:4px solid #eab308;background:#fefce8;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="background:#a16207;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">Medium</span><span style="font-size:14px;font-weight:600;color:#111827;"></span></div></div><div style="border-left:4px solid #eab308;background:#fefce8;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="background:#a16207;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">Medium</span><span style="font-size:14px;font-weight:600;color:#111827;"></span></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -4210,7 +4210,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of score_summary"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;text-align:center;"><div style="font-size:2.8rem;font-weight:800;color:#f87171;">20%</div><div style="font-weight:700;color:#f87171;margin-bottom:4px;">Failed</div><div style="color:#6b7280;font-size:0.85rem;">1 / 5 correct</div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of score_summary"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;text-align:center;"><div style="font-size:2.8rem;font-weight:800;color:#b91c1c;">20%</div><div style="font-weight:700;color:#b91c1c;margin-bottom:4px;">Failed</div><div style="color:#6b7280;font-size:0.85rem;">1 / 5 correct</div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -6334,7 +6334,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box" role="group" aria-label="Live preview of content_tabs">
 <style>
 .tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--border, #e0e0e0);}
-.tm-tabs input[type=radio]{display:none;}
+.tm-tabs input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.tm-tabs input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
 /* Underline-style tab bar (2026-07-24, grounded in Material/Primer/Radix
    conventions): a faint fill on the bar, NO per-tab vertical dividers, and
    4px edge spacing. The active tab is signalled three ways — accent colour,

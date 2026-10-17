@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>items</td><td>array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label).</td><td>required</td></tr><tr><td>size</td><td>integer. Tile px, 24-160. Default 64.</td><td>optional</td></tr><tr><td>rx</td><td>integer. Horizontal radius, percent of the placed box, 5-60. Default 40.</td><td>optional</td></tr><tr><td>ry</td><td>integer. Vertical radius, percent of the placed box, 5-60. Default 36.</td><td>optional</td></tr><tr><td>start</td><td>integer. Angle of the first tile in degrees, -360 to 360. Default -90 (top).</td><td>optional</td></tr><tr><td>spin</td><td>integer. Degrees the ring turns as step goes 0 to 1, -360 to 360. Default 40.</td><td>optional</td></tr><tr><td>fill</td><td>"#rrggbb". Tile colour. Default "#ffffff".</td><td>optional</td></tr><tr><td>ink</td><td>"#rrggbb". Tile text colour. Default "#111827".</td><td>optional</td></tr><tr><td>ring</td><td>bool. A faint dashed ellipse behind the tiles. Default true.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>items</td><td>array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label).</td><td>required</td></tr><tr><td>size</td><td>integer. Tile px, 24-160. Default 64.</td><td>optional</td></tr><tr><td>rx</td><td>integer. Horizontal radius, percent of the placed box, 5-60. Default 40.</td><td>optional</td></tr><tr><td>ry</td><td>integer. Vertical radius, percent of the placed box, 5-60. Default 36.</td><td>optional</td></tr><tr><td>start</td><td>integer. Angle of the first tile in degrees, -360 to 360. Default -90 (top).</td><td>optional</td></tr><tr><td>spin</td><td>integer. Degrees the ring turns as step goes 0 to 1, -360 to 360. Default 40.</td><td>optional</td></tr><tr><td>fill</td><td>"#rrggbb". Tile colour. Default "#ffffff".</td><td>optional</td></tr><tr><td>ink</td><td>"#rrggbb". Tile text colour. Default "#111827".</td><td>optional</td></tr><tr><td>ring</td><td>bool. A faint dashed ellipse behind the tiles. Default true.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -189,7 +189,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., 'LAST 7 DAYS — INCIDENT LOG')</td><td>optional</td></tr><tr><td>stamp</td><td>string (optional, e.g., '13 – 19 Jul')</td><td>optional</td></tr><tr><td>week</td><td>list of exactly 7 dicts, oldest to newest: [{label: string (e.g. "Mon"), count: integer, severity: one of none|low|medium}, ...]</td><td>required</td></tr><tr><td>incidents</td><td>list of up to 4 dicts, most recent first: [{service: string, summary: string, severity: one of low|medium|high, duration: string (e.g. "3h 10m"), when: string (e.g. "Sun 19"), ongoing: boolean}, ...]</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., 'LAST 7 DAYS — INCIDENT LOG')</td><td>optional</td></tr><tr><td>stamp</td><td>string (optional, e.g., '13 – 19 Jul')</td><td>optional</td></tr><tr><td>week</td><td>list of exactly 7 dicts, oldest to newest: [{label: string (e.g. "Mon"), count: integer, severity: one of none|low|medium}, ...]</td><td>required</td></tr><tr><td>incidents</td><td>list of up to 4 dicts, most recent first: [{service: string, summary: string, severity: one of low|medium|high, duration: string (e.g. "3h 10m"), when: string (e.g. "Sun 19"), ongoing: boolean}, ...]</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">

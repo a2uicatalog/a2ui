@@ -445,7 +445,7 @@ def _render_api_reference(b: dict) -> str:
 
     # Header badge
     kind_colors = {
-        "function": ("#e8f0fe", "#1a73e8"),
+        "function": ("#e8f0fe", "#1558b4"),
         "endpoint": ("#e6f4ea", "#137333"),
         "class":    ("#fef7e0", "#e37400"),
         "method":   ("#f3e8fd", "#8430ce"),
@@ -612,7 +612,7 @@ def _render_table(b: dict) -> str:
 _TAB_CSS = """
 <style>
 .tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--border, #e0e0e0);}
-.tm-tabs input[type=radio]{display:none;}
+.tm-tabs input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.tm-tabs input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
 /* Underline-style tab bar (2026-07-24, grounded in Material/Primer/Radix
    conventions): a faint fill on the bar, NO per-tab vertical dividers, and
    4px edge spacing. The active tab is signalled three ways — accent colour,
@@ -814,7 +814,7 @@ def _render_carousel(b: dict) -> str:
 <style>
 .{cid}{{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}}
-.{cid} input[type=radio]{{display:none;}}
+.{cid} input[type=radio]{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}.{cid} input[type=radio]:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}
 .{cid}-track{{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:{n*100}%;}}
 .{cid}-slide{{width:{100//n}%;flex:0 0 {100//n}%;position:relative;}}
 .{cid}-slide img{{width:100%;display:block;max-height:480px;object-fit:cover;}}
@@ -1231,7 +1231,7 @@ def _render_sparkline(b: dict) -> str:
     """TODO: Renders a small, simple line chart without axes or coordinates, showing general """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ sparkline ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ sparkline ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 
@@ -1240,28 +1240,28 @@ def _render_metric_delta(b: dict) -> str:
     """TODO: Renders a key performance indicator with its current value and a numerical or pe"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ metric_delta ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ metric_delta ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_trend_indicator(b: dict) -> str:
     """TODO: Renders a simple visual indicator (e.g., arrow, icon) representing the direction"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ trend_indicator ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ trend_indicator ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_breadcrumb(b: dict) -> str:
     """TODO: A navigation aid indicating the user's current location within a hierarchical st"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ breadcrumb ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ breadcrumb ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pagination(b: dict) -> str:
     """TODO: A control for navigating through a series of pages or results."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ pagination ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ pagination ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_stepper(atom: dict) -> str:
@@ -1373,28 +1373,28 @@ def _render_tab_bar(b: dict) -> str:
     """TODO: A horizontal navigation component displaying a set of clickable tabs, typically """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ tab_bar ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ tab_bar ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_anchor_list(b: dict) -> str:
     """TODO: A list of links that navigate to specific sections within the current document o"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ anchor_list ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ anchor_list ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_faq_accordion(b: dict) -> str:
     """TODO: Renders a list of questions and answers, where answers are hidden until the ques"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ faq_accordion ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ faq_accordion ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_glossary_term(b: dict) -> str:
     """TODO: Renders a term with its definition, often with an optional link for more details"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ glossary_term ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ glossary_term ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_footnote(b: dict) -> str:
@@ -1422,21 +1422,21 @@ def _render_blockquote_with_avatar(b: dict) -> str:
     """TODO: Renders a blockquote with an associated avatar and attribution."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ blockquote_with_avatar ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ blockquote_with_avatar ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pull_stat(b: dict) -> str:
     """TODO: Renders a prominent, large statistic or number, often with a brief descriptive l"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ pull_stat ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ pull_stat ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_accordion_item(b: dict) -> str:
     """TODO: Renders a single section of content that can be expanded or collapsed by clickin"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ accordion_item ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ accordion_item ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_tooltip(b: dict) -> str:
@@ -1483,42 +1483,42 @@ def _render_audio_player(b: dict) -> str:
     """TODO: Renders an embedded audio player for a given URL."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ audio_player ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ audio_player ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_audio_link(b: dict) -> str:
     """TODO: Renders a clickable link to an audio file, often with an audio icon."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ audio_link ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ audio_link ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pdf_preview(b: dict) -> str:
     """TODO: Renders an image thumbnail of a PDF document with a link to the full PDF."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ pdf_preview ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ pdf_preview ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_document_link(b: dict) -> str:
     """TODO: Renders a clickable link to a document (e.g., PDF, DOCX), often with a document """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ document_link ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ document_link ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_video_thumbnail(b: dict) -> str:
     """TODO: Renders a static image thumbnail for a video, with a play icon overlay and a lin"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ video_thumbnail ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ video_thumbnail ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_video_card(b: dict) -> str:
     """TODO: Renders a card with a video thumbnail, title, and description, linking to the vi"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ video_card ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ video_card ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_code_diff(atom: dict) -> str:
@@ -1568,7 +1568,7 @@ def _render_code_snippet_pair(b: dict) -> str:
     """TODO: Renders two distinct code snippets side-by-side or stacked, without diff highlig"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ code_snippet_pair ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ code_snippet_pair ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_framed_screenshot(b: dict) -> str:
@@ -1603,63 +1603,63 @@ def _render_image_with_caption(b: dict) -> str:
     """TODO: Renders a single image with a descriptive caption below it."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ image_with_caption ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ image_with_caption ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_alert_banner(b: dict) -> str:
     """TODO: A prominent banner displaying a message, often with an icon and an optional acti"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ alert_banner ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ alert_banner ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_toast_notification(b: dict) -> str:
     """TODO: A small, temporary, non-intrusive message that appears and disappears automatica"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ toast_notification ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ toast_notification ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_loading_skeleton(b: dict) -> str:
     """TODO: A placeholder UI that shows the structure of content while it's loading, indicat"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ loading_skeleton ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ loading_skeleton ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_empty_state(b: dict) -> str:
     """TODO: A UI pattern displayed when there is no data to show, often with an image, messa"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ empty_state ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ empty_state ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_spinner(b: dict) -> str:
     """TODO: A simple rotating animation indicating that content is loading or an operation i"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ spinner ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ spinner ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_status_pill(b: dict) -> str:
     """TODO: A small, colored label or "pill" used to display a concise status for an item."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ status_pill ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ status_pill ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_inline_feedback_message(b: dict) -> str:
     """TODO: A small, contextual message displayed inline with content, often used for valida"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ inline_feedback_message ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ inline_feedback_message ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_rating_stars(b: dict) -> str:
     """TODO: A visual component allowing users to rate an item using a series of stars, or di"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ rating_stars ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ rating_stars ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_progress_circle(atom: dict) -> str:
@@ -1702,14 +1702,14 @@ def _render_action_required_card(b: dict) -> str:
     """TODO: A card highlighting an important status or issue that requires immediate user at"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ action_required_card ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ action_required_card ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_feature_matrix(b: dict) -> str:
     """TODO: Renders a table comparing features across multiple products or versions."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ feature_matrix ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ feature_matrix ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pricing_tier_card(b: dict) -> str:
@@ -1729,7 +1729,7 @@ def _render_pricing_tier_card(b: dict) -> str:
         'font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;'
         'border-radius:20px;text-transform:uppercase;">Popular</div>'
     ) if highlighted else ""
-    freq_html = f'<span style="font-size:0.75rem;font-weight:600;color:#9a9284;">/{frequency}</span>' if frequency else ""
+    freq_html = f'<span style="font-size:0.75rem;font-weight:600;color:#6b6558;">/{frequency}</span>' if frequency else ""
     feat_html = "".join(
         f'<li style="margin-bottom:6px;">{_esc(str(f))}</li>' for f in features
     )
@@ -2276,7 +2276,7 @@ def _render_risk_flag(b: dict) -> str:
         rows += (
             f'<div style="border-left:4px solid {border};background:{bg};border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;">'
             f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
-            f'<span style="background:{border};color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">{label}</span>'
+            f'<span style="background:{ {"#ef4444":"#b91c1c","#f97316":"#c2410c","#eab308":"#a16207","#22c55e":"#15803d"}.get(border,border) };color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">{label}</span>'
             f'<span style="font-size:14px;font-weight:600;color:#111827;">{_cv_esc(r.get("title",""))}</span></div>'
             + (f'<div style="font-size:13px;color:#374151;line-height:1.5;">{_md_inline(r["description"])}</div>' if r.get("description") else "")
             + (f'<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:6px;">💡 <em>{_cv_esc(r["mitigation"])}</em></div>' if r.get("mitigation") else "")
@@ -2351,7 +2351,7 @@ def _render_side_by_side_spec(b: dict) -> str:
     """TODO: Renders a detailed comparison of two items, displaying their attributes and valu"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ side_by_side_spec ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ side_by_side_spec ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_product_spec_table(b: dict) -> str:
@@ -2379,42 +2379,42 @@ def _render_comparison_grid(b: dict) -> str:
     """TODO: Renders a grid comparing multiple products or services with features, often usin"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ comparison_grid ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ comparison_grid ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_versus_block(b: dict) -> str:
     """TODO: Renders a block explicitly comparing two entities with a prominent "VS" separato"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ versus_block ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ versus_block ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_rating_comparison(b: dict) -> str:
     """TODO: Renders a comparison of multiple items based on star ratings or numerical scores"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ rating_comparison ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ rating_comparison ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_capability_checklist(b: dict) -> str:
     """TODO: Renders a list of capabilities, indicating which items possess each capability u"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ capability_checklist ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ capability_checklist ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_toggle_switch(b: dict) -> str:
     """TODO: Renders a visual on/off switch."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ toggle_switch ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ toggle_switch ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_expandable_text(b: dict) -> str:
     """TODO: Renders a block of text that can be expanded or collapsed to reveal more content"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ expandable_text ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ expandable_text ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_flip_card(b: dict) -> str:
@@ -2433,7 +2433,7 @@ def _render_image_hotspots(b: dict) -> str:
     """TODO: Renders an image with interactive points that display information on hover."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ image_hotspots ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ image_hotspots ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_css_dropdown_menu(b: dict) -> str:
@@ -2518,7 +2518,7 @@ def _render_segmented_control(b: dict) -> str:
         f'color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;'
         f'transition:background .1s,color .1s;}}'
         f'.sgc{uid} label:last-of-type{{border-right:none;}}'
-        f'.sgc{uid} input:checked+label{{background:#e8f0fe;color:#1a73e8;font-weight:600;}}'
+        f'.sgc{uid} input:checked+label{{background:#e8f0fe;color:#1558b4;font-weight:600;}}'
         f'</style>'
     )
     items_html = "".join(
@@ -2696,56 +2696,56 @@ def _render_avatar_group(b: dict) -> str:
     """TODO: Renders a stack or row of small user avatars, often indicating a group or commun"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ avatar_group ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ avatar_group ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_contributor_list(b: dict) -> str:
     """TODO: Renders a list of individuals who have contributed to a project or community, wi"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ contributor_list ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ contributor_list ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_customer_logo_grid(b: dict) -> str:
     """TODO: Renders a grid or row of logos from featured customers or partners."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ customer_logo_grid ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ customer_logo_grid ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_social_proof_banner(b: dict) -> str:
     """TODO: Renders a prominent banner highlighting a key social proof metric or achievement"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ social_proof_banner ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ social_proof_banner ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_media_mention_card(b: dict) -> str:
     """TODO: Renders a card showcasing a mention or feature in a media publication."""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ media_mention_card ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ media_mention_card ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_expert_endorsement(b: dict) -> str:
     """TODO: Renders an endorsement from an industry expert, including their quote, name, and"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ expert_endorsement ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ expert_endorsement ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_review_callout(b: dict) -> str:
     """TODO: Renders a short, impactful quote from a customer review, often accompanied by a """
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ review_callout ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ review_callout ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_social_feed_embed(b: dict) -> str:
     """TODO: Renders an embedded snippet of a social media post, such as a tweet or Instagram"""
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#999;'>[ social_feed_embed ]</em>")
+    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ social_feed_embed ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 
@@ -7078,7 +7078,7 @@ def _render_llm_comparison_table(b: dict) -> str:
     if show_meta is None:
         show_meta = any(m.get("latency_ms") or m.get("cost_usd") or m.get("tokens") for m in models)
 
-    MODEL_COLORS = ["#4f85f6","#f06292","#66bb6a","#ffa726","#ab47bc"]
+    MODEL_COLORS = ["#2d5fd0","#c2185b","#2e7d32","#b45309","#8e24aa"]
 
     prompt_html = (
         f'<div style="margin-bottom:10px;padding:8px 12px;background:#f8fafc;'
@@ -7149,7 +7149,7 @@ def _render_confidence_bar(b: dict) -> str:
             f'<div style="display:flex;justify-content:space-between;'
             f'font-size:0.78rem;color:#374151;margin-bottom:3px;">'
             f'<span>{_cv_esc(label)}</span>'
-            f'<span style="font-weight:700;color:{_cv_esc(color)};">{round(pct)}%</span>'
+            f'<span style="font-weight:700;color:{ {"#22c55e":"#15803d","#f59e0b":"#b45309","#ef4444":"#dc2626"}.get(color,color) };">{round(pct)}%</span>'
             f'</div>'
             f'<div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">'
             f'<div style="width:{pct}%;height:100%;background:{_cv_esc(color)};'
@@ -7184,7 +7184,7 @@ def _render_token_budget_meter(b: dict) -> str:
     color = (
         "#ef4444" if pct >= crit_at else
         "#f59e0b" if pct >= warn_at else
-        "#178640"
+        "#15803d"
     )
 
     def _fmt(n):
@@ -7253,7 +7253,7 @@ def _render_chartjs_pie(b: dict) -> str:
     custom_colors = b.get("colors", [])
 
     DEFAULT_COLORS = [
-        "#4f85f6","#f06292","#66bb6a","#ffa726","#ab47bc",
+        "#2d5fd0","#c2185b","#2e7d32","#b45309","#8e24aa",
         "#26c6da","#ef5350","#8d6e63","#78909c","#26a69a",
     ]
 
@@ -7464,7 +7464,7 @@ def _render_multi_select_input(b: dict) -> str:
 
     chips_html = "".join(
         f'<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 10px;'
-        f'background:#e8f0fe;color:#1a73e8;border-radius:14px;font-size:0.82rem;font-weight:500;">'
+        f'background:#e8f0fe;color:#1558b4;border-radius:14px;font-size:0.82rem;font-weight:500;">'
         f'{_h.escape(next((o.get("label", v) for o in options if o.get("value")==v), v))}'
         f'<span style="color:#5f6368;margin-left:1px;cursor:pointer;">×</span></span>'
         for v in selected
@@ -12089,7 +12089,7 @@ def _render_before_after(b: dict) -> str:
         return (f'<div style="flex:1;min-width:0;">'
                 f'<div style="background:{color};color:#fff;font-size:0.72rem;font-weight:700;'
                 f'padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">{_cv_esc(label)}</div>'
-                f'<pre style="margin:0;padding:14px;background:{bg};color:#e8eaed;overflow-x:auto;font-size:0.82rem;'
+                f'<pre tabindex="0" style="margin:0;padding:14px;background:{bg};color:#e8eaed;overflow-x:auto;font-size:0.82rem;'
                 f'border-radius:0 0 6px 6px;"><code class="language-{_esc(lang)}">{code}</code></pre></div>')
     return (f'<div style="margin:1.5rem 0;">'
             f'<div style="display:flex;gap:12px;align-items:flex-start;">'
@@ -13237,7 +13237,7 @@ def _render_kanban_board(b: dict) -> str:
         for card in cards:
             title = card.get('title', '') if isinstance(card, dict) else str(card)
             tags = card.get('tags', []) if isinstance(card, dict) else []
-            tag_html = ''.join(f'<span style="font-size:0.68rem;background:#e8f0fe;color:#1a73e8;'
+            tag_html = ''.join(f'<span style="font-size:0.68rem;background:#e8f0fe;color:#1558b4;'
                                f'border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:1px 6px;">{_esc(t)}</span>' for t in tags)
             card_html += (f'<div style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;'
                           f'padding:8px 10px;font-size:0.82rem;margin-bottom:6px;">'
@@ -13767,7 +13767,7 @@ def _render_resources_list(b: dict) -> str:
         label = (item.get('title') or item.get('label', '')) if isinstance(item, dict) else str(item)
         icon = item.get('icon', '📎') if isinstance(item, dict) else '📎'
         tag = item.get('type', '') if isinstance(item, dict) else ''
-        tag_html = (f'<span style="font-size:0.68rem;background:#e8f0fe;color:#1a73e8;'
+        tag_html = (f'<span style="font-size:0.68rem;background:#e8f0fe;color:#1558b4;'
                     f'border-radius:3px;padding:1px 6px;">{_esc(tag)}</span>' if tag else '')
         rows += (f'<li style="display:flex;align-items:center;justify-content:space-between;'
                  f'padding:7px 0;border-bottom:1px solid #f3f4f6;">'
@@ -16795,7 +16795,7 @@ def _render_carousel(b: dict) -> str:
 <style>
 .{cid}{{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}}
-.{cid} input[type=radio]{{display:none;}}
+.{cid} input[type=radio]{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}.{cid} input[type=radio]:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}
 .{cid}-track{{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:{n*100}%;}}
 .{cid}-slide{{width:{100//n}%;flex:0 0 {100//n}%;position:relative;}}
 .{cid}-slide img{{width:100%;display:block;max-height:480px;object-fit:cover;}}
@@ -18183,7 +18183,7 @@ def _render_api_reference(b: dict) -> str:
 
     # Header badge
     kind_colors = {
-        "function": ("#e8f0fe", "#1a73e8"),
+        "function": ("#e8f0fe", "#1558b4"),
         "endpoint": ("#e6f4ea", "#137333"),
         "class":    ("#fef7e0", "#e37400"),
         "method":   ("#f3e8fd", "#8430ce"),
@@ -18299,7 +18299,7 @@ def _render_score_summary(b: dict) -> str:
     threshold = int(b.get('pass_threshold', 60))
     pct = min(100, round(correct / total * 100))
     passed = pct >= threshold
-    color = '#34d399' if passed else '#f87171'
+    color = '#047857' if passed else '#b91c1c'
     label = 'Passed' if passed else 'Failed'
     time_html = (f'<div style="text-align:center;margin-top:8px;font-size:0.8rem;color:#6b7280;">'
                  f'Time: {_esc(b["time_taken"])}</div>') if b.get('time_taken') else ''
@@ -24512,7 +24512,7 @@ _STATUS_DOT = {
     'critical':     ('#F87171', '✕', 'Outage'),
 }
 _VERDICT_ICON = {'ok': ('#34D399', '●'), 'warn': ('#FBBF24', '▲'), 'crit': ('#F87171', '✕')}
-_TONE_COLOR = {'good': '#34D399', 'bad': '#F87171', 'flat': '#5A6390'}
+_TONE_COLOR = {'good': '#34D399', 'bad': '#F87171', 'flat': '#8b94c4'}
 _SEVERITY_COLOR = {'low': '#818CF8', 'medium': '#FBBF24', 'high': '#F87171', 'none': 'transparent'}
 
 _CARD_OPEN = (
@@ -24524,7 +24524,7 @@ _CARD_OPEN = (
 
 def _card_head(eyebrow: str, stamp: str, rose: bool = False) -> str:
     color = '#E8836B' if rose else '#00f2ff'
-    stamp_html = (f'<div style="font-size:12px;letter-spacing:.08em;color:#5A6390;'
+    stamp_html = (f'<div style="font-size:12px;letter-spacing:.08em;color:#8b94c4;'
                   f'text-transform:uppercase;">{_esc(stamp)}</div>' if stamp else '')
     return (f'<div style="display:flex;justify-content:space-between;align-items:baseline;'
             f'margin-bottom:4px;gap:16px;">'
@@ -24548,7 +24548,7 @@ def _card_foot(left: str, atom: str) -> str:
             f'letter-spacing:.1em;text-transform:uppercase;color:#454D75;">'
             f'<span>{_esc(left)}</span>'
             f'<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;'
-            f'text-transform:none;letter-spacing:.04em;color:#5A6390;">{brand}</span></div>')
+            f'text-transform:none;letter-spacing:.04em;color:#8b94c4;">{brand}</span></div>')
 
 
 def _render_service_status_board(b: dict) -> str:
@@ -24580,7 +24580,7 @@ def _render_service_status_board(b: dict) -> str:
                  f'<span style="flex:1;font-weight:600;color:{color if state != "operational" else "#EEF2FF"};">'
                  f'{_esc(svc.get("name", ""))}</span>'
                  f'<span style="font-size:12px;letter-spacing:.05em;text-transform:uppercase;'
-                 f'color:{color if state != "operational" else "#5A6390"};">{_label}</span></div>')
+                 f'color:{color if state != "operational" else "#8b94c4"};">{_label}</span></div>')
 
     return (
         f'<div style="{_CARD_OPEN}">'
@@ -24609,7 +24609,7 @@ def _render_incident_log(b: dict) -> str:
             f'<div style="height:34px;border-radius:7px;background:{bg};border:1px solid {border};'
             f'display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;'
             f'color:{text};">{_cv_esc(d.get("count", 0) or "·")}</div>'
-            f'<div style="font-size:10.5px;letter-spacing:.08em;color:#5A6390;margin-top:5px;'
+            f'<div style="font-size:10.5px;letter-spacing:.08em;color:#8b94c4;margin-top:5px;'
             f'text-transform:uppercase;">{_esc(d.get("label", ""))}</div></div>'
         )
 
@@ -24631,7 +24631,7 @@ def _render_incident_log(b: dict) -> str:
             f'<span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:20px;'
             f'background:{dur_bg};border:1px solid {dur_border};color:{dur_color};">'
             f'{_esc(inc.get("duration", ""))}{" · ongoing" if ongoing else ""}</span>'
-            f'<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5A6390;'
+            f'<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8b94c4;'
             f'margin-top:5px;">{_esc(inc.get("when", ""))}</div></div></div>'
         )
 
@@ -24656,12 +24656,12 @@ def _render_stat_pulse(b: dict) -> str:
 
     tiles = ''
     for s in stats:
-        tone = _TONE_COLOR.get(s.get('tone', 'flat'), '#5A6390')
+        tone = _TONE_COLOR.get(s.get('tone', 'flat'), '#8b94c4')
         tiles += (
             f'<div style="flex:1;background:#121736;border:1px solid rgba(154,163,199,.12);'
             f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px 12px;min-width:0;">'
             f'<div style="font-size:30px;font-weight:800;letter-spacing:-.02em;">{_esc(s.get("value", ""))}</div>'
-            f'<div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#5A6390;'
+            f'<div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8b94c4;'
             f'margin-top:3px;">{_esc(s.get("label", ""))}</div>'
             f'<div style="font-size:12px;font-weight:700;margin-top:6px;color:{tone};">{_esc(s.get("delta", ""))}</div>'
             f'</div>'
@@ -24680,7 +24680,7 @@ def _render_stat_pulse(b: dict) -> str:
         )
         lbl = labels[i] if i < len(labels) else ''
         lbls_html += (f'<div style="flex:1;text-align:center;font-size:10.5px;letter-spacing:.08em;'
-                      f'color:#5A6390;text-transform:uppercase;">{_esc(lbl)}</div>')
+                      f'color:#8b94c4;text-transform:uppercase;">{_esc(lbl)}</div>')
 
     return (
         f'<div style="{_CARD_OPEN}">'
@@ -24743,7 +24743,7 @@ def _render_weather_now(b: dict) -> str:
             f'<div style="flex:1;background:#121736;border:1px solid rgba(154,163,199,.12);'
             f'border-radius:9px;padding:10px 12px;min-width:0;">'
             f'<div style="font-size:17px;font-weight:700;">{_esc(s.get("value", ""))}</div>'
-            f'<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5A6390;'
+            f'<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8b94c4;'
             f'margin-top:2px;">{_esc(s.get("label", ""))}</div></div>'
         )
     return (
@@ -25052,7 +25052,7 @@ def _render_weather_outlook(b: dict) -> str:
             f'<div style="display:flex;align-items:center;gap:0;padding:13px 0;{border}">'
             f'<div style="width:52px;flex:none;"><div style="font-size:14px;font-weight:800;'
             f'letter-spacing:.04em;">{_esc(d.get("label", ""))}</div>'
-            f'<div style="font-size:11px;color:#5A6390;">{_esc(d.get("date", ""))}</div></div>'
+            f'<div style="font-size:11px;color:#8b94c4;">{_esc(d.get("date", ""))}</div></div>'
             f'<div style="width:44px;flex:none;display:flex;justify-content:center;">'
             f'{_wx_glyph(d.get("code", "sun"), 28)}</div>'
             f'<div style="flex:1;position:relative;height:30px;margin:0 14px 0 4px;">'
@@ -25424,7 +25424,7 @@ def _render_agent_demo_card(b: dict) -> str:
     description = _md_inline(str(b.get('description', '')))
     primitives = [str(p) for p in (b.get('primitives_used') or [])]
     chips = ''.join(
-        f'<span style="display:inline-block;background:#e8f0fe;color:#1a73e8;font-size:0.78rem;'
+        f'<span style="display:inline-block;background:#e8f0fe;color:#1558b4;font-size:0.78rem;'
         f'font-family:ui-monospace,\'SF Mono\',Consolas,monospace;padding:3px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'margin:3px 4px 0 0;">{_esc(p)}</span>'
         for p in primitives
@@ -26297,7 +26297,7 @@ def _render_seat_map(b: dict) -> str:
         "available": ("#fff", "#dadce0"),
         "occupied": ("#f1f3f4", "#dadce0"),
         "premium": ("#fef7e0", "#f9ab00"),
-        "selected": ("#e8f0fe", "#1a73e8"),
+        "selected": ("#e8f0fe", "#1558b4"),
     }
 
     rows_html = ""
@@ -30635,7 +30635,7 @@ def _render_sla_timer_display(b: dict) -> str:
     pc = _gx_parse_float(_if_g(b, 'pct'))
     pc = 0 if (pc != pc or pc == 0) else pc
     pct = min(max(0, pc), 100)
-    st_color = '#e71414' if state == 'breach' else ('#f97316' if state == 'warn' else '#178640')
+    st_color = '#e71414' if state == 'breach' else ('#f97316' if state == 'warn' else '#15803d')
     st_label = 'BREACH' if state == 'breach' else ('WARN' if state == 'warn' else 'OK')
     pulse = 'animation:a2ui-pulse 1s infinite;' if state == 'breach' else ''
     return ('<div style="background:#0f172a;border:1px solid ' + st_color + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">'
@@ -31604,7 +31604,7 @@ def _render_photo_stepper(b: dict) -> str:
            '.' + sid + '-trigger img{width:100%;max-height:50vh;object-fit:cover;display:block;opacity:0.85;}'
            '.' + sid + '-trigger-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:1.05rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,0.6);}'
            '#' + mid + ':checked ~ .' + sid + '-trigger{display:none;}.' + sid + '{display:none;position:fixed;inset:0;z-index:9000;background:#111;overflow:hidden;}#' + mid + ':checked ~ .' + sid + '{display:block;}'
-           '.' + sid + ' input[type=radio]{display:none;}.' + sid + '-inner{position:relative;height:100%;width:100%;}'
+           '.' + sid + ' input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.' + sid + ' input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.' + sid + '-inner{position:relative;height:100%;width:100%;}'
            '.' + sid + '-track{display:flex;height:100%;transition:transform 0.35s ease;width:' + str(n * 100) + '%;position:relative;z-index:6;pointer-events:none;}'
            '.' + sid + '-slide{width:' + _if_numstr(100 / n) + '%;flex:0 0 ' + _if_numstr(100 / n) + '%;position:relative;height:100%;}.' + sid + '-slide img{width:100%;height:100%;display:block;object-fit:contain;background:#000;}'
            '.' + sid + '-cap{position:absolute;left:0;right:0;bottom:0;padding:36px 24px 22px;background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));color:#fff;}'

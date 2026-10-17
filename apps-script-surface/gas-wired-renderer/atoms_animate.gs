@@ -315,7 +315,7 @@ _RENDERERS['live_refresh'] = function(b) {
   var actionId = b.action || '';
   var interval = Math.max(5, parseInt(b.interval || 30, 10)) * 1000;
   var show     = b.show !== false;
-  var color    = b.color || '#178640';
+  var color    = b.color || '#15803d';
   var label    = b.label || 'Live';
   var uid      = 'lr' + Math.random().toString(36).substr(2, 5);
 

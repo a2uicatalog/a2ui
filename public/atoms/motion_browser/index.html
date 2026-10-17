@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>query</td><td>string (optional, max 16). Typed into the search box as p goes 0 to 0.3.</td><td>optional</td></tr><tr><td>placeholder</td><td>string (optional, max 24). Shown before typing starts. Default "Search atoms...".</td><td>optional</td></tr><tr><td>chips</td><td>array (max 6) of string (max 24). The first is drawn active.</td><td>required</td></tr><tr><td>count</td><td>string (optional, max 16). For example "51 atoms".</td><td>optional</td></tr><tr><td>cards</td><td>array (max 6) of {title (max 28), text (max 90), badge? (max 16), source? (max 20), preview? (an atom block, rendered live)}.</td><td>required</td></tr><tr><td>columns</td><td>integer. 2-4. Default 3.</td><td>optional</td></tr><tr><td>pick</td><td>integer. Index of the card to lift and outline as step goes 0 to 1, -1 for none. Default -1.</td><td>optional</td></tr><tr><td>size</td><td>integer. Base font px, 8-40. Default 16.</td><td>optional</td></tr><tr><td>well</td><td>"#rrggbb". Background of the preview area of each card. Real atoms are drawn for their own surfaces and some hard-code dark text, so on a dark stage give them a light well. Default none.</td><td>optional</td></tr><tr><td>accent</td><td>"#rrggbb". Search border, active chip, picked card. Default the stage accent.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>query</td><td>string (optional, max 16). Typed into the search box as p goes 0 to 0.3.</td><td>optional</td></tr><tr><td>placeholder</td><td>string (optional, max 24). Shown before typing starts. Default "Search atoms...".</td><td>optional</td></tr><tr><td>chips</td><td>array (max 6) of string (max 24). The first is drawn active.</td><td>required</td></tr><tr><td>count</td><td>string (optional, max 16). For example "51 atoms".</td><td>optional</td></tr><tr><td>cards</td><td>array (max 6) of {title (max 28), text (max 90), badge? (max 16), source? (max 20), preview? (an atom block, rendered live)}.</td><td>required</td></tr><tr><td>columns</td><td>integer. 2-4. Default 3.</td><td>optional</td></tr><tr><td>pick</td><td>integer. Index of the card to lift and outline as step goes 0 to 1, -1 for none. Default -1.</td><td>optional</td></tr><tr><td>size</td><td>integer. Base font px, 8-40. Default 16.</td><td>optional</td></tr><tr><td>well</td><td>"#rrggbb". Background of the preview area of each card. Real atoms are drawn for their own surfaces and some hard-code dark text, so on a dark stage give them a light well. Default none.</td><td>optional</td></tr><tr><td>accent</td><td>"#rrggbb". Search border, active chip, picked card. Default the stage accent.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

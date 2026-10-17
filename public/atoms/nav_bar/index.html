@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -193,7 +193,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. Small uppercase label above the bar.</td><td>optional</td></tr><tr><td>layout</td><td>string. "horizontal" (default) or "vertical".</td><td>optional</td></tr><tr><td>sticky</td><td>boolean. Whether to stick below the system nav header. Default true.</td><td>optional</td></tr><tr><td>top_offset</td><td>integer. Top offset in px when sticky. Default 52.</td><td>optional</td></tr><tr><td>accent</td><td>string. Active link accent colour. Default</td><td>optional</td></tr><tr><td>links</td><td>array (required). Array of {nav_slug, label, icon?, active?} objects. nav_slug is the saved page slug; the correct URL is generated at runtime.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>label</td><td>string. Small uppercase label above the bar.</td><td>optional</td></tr><tr><td>layout</td><td>string. "horizontal" (default) or "vertical".</td><td>optional</td></tr><tr><td>sticky</td><td>boolean. Whether to stick below the system nav header. Default true.</td><td>optional</td></tr><tr><td>top_offset</td><td>integer. Top offset in px when sticky. Default 52.</td><td>optional</td></tr><tr><td>accent</td><td>string. Active link accent colour. Default</td><td>optional</td></tr><tr><td>links</td><td>array (required). Array of {nav_slug, label, icon?, active?} objects. nav_slug is the saved page slug; the correct URL is generated at runtime.</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">

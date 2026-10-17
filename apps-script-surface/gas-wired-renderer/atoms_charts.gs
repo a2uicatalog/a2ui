@@ -1718,7 +1718,7 @@ _RENDERERS['token_budget_meter'] = function(b) {
   var total = parseInt(b.total) || 1;
   var unit = b.unit || 'tokens';
   var pct = Math.min(Math.round((used / total) * 100), 100);
-  var color = pct < 70 ? '#178640' : (pct < 90 ? '#f59e0b' : '#ef4444');
+  var color = pct < 70 ? '#15803d' : (pct < 90 ? '#f59e0b' : '#ef4444');
   var label = pct < 70 ? 'On track' : (pct < 90 ? 'Nearing limit' : 'Critical');
   return '<div style="margin:0.75rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
@@ -1976,7 +1976,7 @@ function _animFallback(atomName, label) {
 
 _RENDERERS['sonar_pulse'] = function(b) {
   var label = b.label || b.title || b.text || 'Live';
-  var color = b.color || '#178640';
+  var color = b.color || '#15803d';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
     + '.sp-wrap-' + uid + '{display:flex;flex-direction:column;align-items:center;padding:32px;margin:1rem 0;}'

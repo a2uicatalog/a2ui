@@ -119,27 +119,27 @@ and the A2UI letter rides inside it.
 
 ## FAQ
 
-**Is A2UI a Google project?**
+### Is A2UI a Google project?
 Google created it, with contributions from CopilotKit and the open-source community, and it
 is developed in the open at [github.com/a2ui-project/a2ui](https://github.com/a2ui-project/a2ui).
 The A2UI Atomic Catalog is an independent open-source catalog built on it.
 
-**Does the agent generate HTML?**
+### Does the agent generate HTML?
 No. It sends JSON that names components. The renderer draws them with code the app trusts.
 
-**What happens if an agent asks for a component the app doesn't have?**
+### What happens if an agent asks for a component the app doesn't have?
 That depends on the renderer. Google's Android renderer refuses unknown types, so the
 catalog's emitter reads which catalogs an app supports and sends a simpler version to apps
 that lack them.
 
-**Which AI models can use it?**
+### Which AI models can use it?
 Any model that can produce JSON. The catalog's MCP server and per-atom JSON Schemas help
 models produce valid payloads.
 
-**Is it free?**
+### Is it free?
 Yes. The protocol is Apache 2.0, and the A2UI Atomic Catalog is MIT-licensed.
 
-**How is A2UI different from AG-UI?**
+### How is A2UI different from AG-UI?
 A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the
 interaction between an agent and an app: messages, tool calls, state and user actions. A2UI
 often travels over AG-UI; as a2ui.org puts it, "use AG-UI as the pipe, A2UI as the content."

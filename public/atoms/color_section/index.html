@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -193,7 +193,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>accent</td><td>string (optional, hex, default "#4f46e5")</td><td>optional</td></tr><tr><td>style</td><td>string (optional, "tint"|"solid"|"dark"|"light", default "tint")</td><td>optional</td></tr><tr><td>padding</td><td>string (optional, css, default "24px")</td><td>optional</td></tr><tr><td>grid</td><td>boolean (optional, default false, added 2026-07-24). Layers a faint 32px graph-paper grid (tinted by accent) on top of the base colour — for technical/blueprint-style sections.</td><td>optional</td></tr><tr><td>max_width</td><td>string (optional, css length/%, added 2026-07-24). Caps and centres the section (e.g. "90%") so a wide section doesn't run the full column width; omitted → full width.</td><td>optional</td></tr><tr><td>blocks</td><td>array (required, atom blocks rendered inside)</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>accent</td><td>string (optional, hex, default "#4f46e5")</td><td>optional</td></tr><tr><td>style</td><td>string (optional, "tint"|"solid"|"dark"|"light", default "tint")</td><td>optional</td></tr><tr><td>padding</td><td>string (optional, css, default "24px")</td><td>optional</td></tr><tr><td>grid</td><td>boolean (optional, default false, added 2026-07-24). Layers a faint 32px graph-paper grid (tinted by accent) on top of the base colour — for technical/blueprint-style sections.</td><td>optional</td></tr><tr><td>max_width</td><td>string (optional, css length/%, added 2026-07-24). Caps and centres the section (e.g. "90%") so a wide section doesn't run the full column width; omitted → full width.</td><td>optional</td></tr><tr><td>blocks</td><td>array (required, atom blocks rendered inside)</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">

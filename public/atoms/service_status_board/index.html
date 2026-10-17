@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -186,14 +186,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of service_status_board"><div style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#0B0E1A;border:1px solid #1E2440;border-radius:12px;padding:26px 28px 22px;color:#EEF2FF;font-variant-numeric:tabular-nums;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:16px;"><div style="font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#00f2ff;">SERVICE STATUS</div></div><div style="display:flex;align-items:center;gap:14px;margin:18px 0 6px;"><div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);flex:none;background:#34D3991f;border:1px solid #34D39966;display:flex;align-items:center;justify-content:center;font-size:20px;color:#34D399;">●</div><div><div style="font-size:24px;font-weight:800;letter-spacing:-.01em;color:#34D399;"></div></div></div><div style="display:flex;flex-wrap:wrap;gap:0 28px;margin-top:16px;"></div><div style="display:flex;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1px solid rgba(154,163,199,.14);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#454D75;"><span></span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:none;letter-spacing:.04em;color:#5A6390;">a2uicatalog.ai · service_status_board</span></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of service_status_board"><div style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#0B0E1A;border:1px solid #1E2440;border-radius:12px;padding:26px 28px 22px;color:#EEF2FF;font-variant-numeric:tabular-nums;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:16px;"><div style="font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#00f2ff;">SERVICE STATUS</div></div><div style="display:flex;align-items:center;gap:14px;margin:18px 0 6px;"><div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);flex:none;background:#34D3991f;border:1px solid #34D39966;display:flex;align-items:center;justify-content:center;font-size:20px;color:#34D399;">●</div><div><div style="font-size:24px;font-weight:800;letter-spacing:-.01em;color:#34D399;"></div></div></div><div style="display:flex;flex-wrap:wrap;gap:0 28px;margin-top:16px;"></div><div style="display:flex;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1px solid rgba(154,163,199,.14);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#454D75;"><span></span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:none;letter-spacing:.04em;color:#8b94c4;">a2uicatalog.ai · service_status_board</span></div></div></div>
 </div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., 'GOOGLE WORKSPACE — SERVICE STATUS')</td><td>optional</td></tr><tr><td>stamp</td><td>string (optional, e.g., '19 JUL 2026 · 17:45 CET'). Right-aligned timestamp.</td><td>optional</td></tr><tr><td>verdict</td><td>dict: {level: one of ok|warn|crit, text: string headline, detail: string supporting line}</td><td>optional</td></tr><tr><td>services</td><td>list of dicts: [{name: string, state: one of operational|disruption|information|critical}, ...]</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., 'GOOGLE WORKSPACE — SERVICE STATUS')</td><td>optional</td></tr><tr><td>stamp</td><td>string (optional, e.g., '19 JUL 2026 · 17:45 CET'). Right-aligned timestamp.</td><td>optional</td></tr><tr><td>verdict</td><td>dict: {level: one of ok|warn|crit, text: string headline, detail: string supporting line}</td><td>optional</td></tr><tr><td>services</td><td>list of dicts: [{name: string, state: one of operational|disruption|information|critical}, ...]</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">

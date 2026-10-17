@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -189,7 +189,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., '30-DAY PULSE')</td><td>optional</td></tr><tr><td>stamp</td><td>string (optional, e.g., '20 Jun – 19 Jul')</td><td>optional</td></tr><tr><td>stats</td><td>list of exactly 3 dicts: [{value: string, label: string, delta: string, tone: one of good|bad|flat}, ...]</td><td>required</td></tr><tr><td>trend</td><td>dict: {bars: list of numbers (max 6), labels: list of strings matching bars length, hot_index: integer index of the bar to emphasize}</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., '30-DAY PULSE')</td><td>optional</td></tr><tr><td>stamp</td><td>string (optional, e.g., '20 Jun – 19 Jul')</td><td>optional</td></tr><tr><td>stats</td><td>list of exactly 3 dicts: [{value: string, label: string, delta: string, tone: one of good|bad|flat}, ...]</td><td>required</td></tr><tr><td>trend</td><td>dict: {bars: list of numbers (max 6), labels: list of strings matching bars length, hot_index: integer index of the bar to emphasize}</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">

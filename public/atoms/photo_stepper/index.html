@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -200,7 +200,7 @@ Reuses photo_grid's click contract exactly for the vote button (same data-row-js
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>images</td><td>array (required). Objects of {id, url, alt?, name?, price_display?, badge?, active?, starred_by_display?, source_url?}. Same shape family as photo_grid (id/url/badge/active carry the identical meaning), plus fields specific to a one-at-a-time review: `name`/`price_display` render as the slide's caption title/subtitle, `starred_by_display` is a plain pre-joined string (e.g. "Curtis, Marianne") shown under the caption, `source_url` renders a plain "Open source listing" link in the caption when present — the atom does not aggregate voter names or validate the link itself, the caller derives both server- side, same reasoning photo_grid gives for `badge` and `active` being caller-derived rather than computed by the atom.</td><td>optional</td></tr><tr><td>accent</td><td>string (optional, hex, default #0f766e). Vote-button and active- badge colour.</td><td>optional</td></tr><tr><td>trigger_label</td><td>string (optional, default "Browse full screen"). Label shown on the closed trigger card, next to the photo count.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>images</td><td>array (required). Objects of {id, url, alt?, name?, price_display?, badge?, active?, starred_by_display?, source_url?}. Same shape family as photo_grid (id/url/badge/active carry the identical meaning), plus fields specific to a one-at-a-time review: `name`/`price_display` render as the slide's caption title/subtitle, `starred_by_display` is a plain pre-joined string (e.g. "Curtis, Marianne") shown under the caption, `source_url` renders a plain "Open source listing" link in the caption when present — the atom does not aggregate voter names or validate the link itself, the caller derives both server- side, same reasoning photo_grid gives for `badge` and `active` being caller-derived rather than computed by the atom.</td><td>optional</td></tr><tr><td>accent</td><td>string (optional, hex, default #0f766e). Vote-button and active- badge colour.</td><td>optional</td></tr><tr><td>trigger_label</td><td>string (optional, default "Browse full screen"). Label shown on the closed trigger card, next to the photo count.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

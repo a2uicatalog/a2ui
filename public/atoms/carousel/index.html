@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -194,7 +194,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 <style>
 .cfe8339{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}
-.cfe8339 input[type=radio]{display:none;}
+.cfe8339 input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.cfe8339 input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
 .cfe8339-track{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:200%;}
 .cfe8339-slide{width:50%;flex:0 0 50%;position:relative;}
 .cfe8339-slide img{width:100%;display:block;max-height:480px;object-fit:cover;}
@@ -221,7 +221,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>accent</td><td>string</td><td>optional</td></tr><tr><td>caption</td><td>string</td><td>optional</td></tr><tr><td>slides</td><td>[{'url': 'string', 'label': 'string', 'subtitle': 'string'}]</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>accent</td><td>string</td><td>optional</td></tr><tr><td>caption</td><td>string</td><td>optional</td></tr><tr><td>slides</td><td>[{'url': 'string', 'label': 'string', 'subtitle': 'string'}]</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

@@ -930,7 +930,7 @@ _RENDERERS['sla_timer_display'] = function(b) {
   var state     = b.sla_state   || 'ok';
   var pct       = Math.min(Math.max(0, parseFloat(b.pct) || 0), 100);
 
-  var stateColor = state === 'breach' ? '#e71414' : state === 'warn' ? '#f97316' : '#178640';
+  var stateColor = state === 'breach' ? '#e71414' : state === 'warn' ? '#f97316' : '#15803d';
   var stateLabel = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
   var pulse      = state === 'breach' ? 'animation:a2ui-pulse 1s infinite;' : '';
 

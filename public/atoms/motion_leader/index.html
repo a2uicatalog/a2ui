@@ -140,7 +140,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
-.preview-box pre code{color:#333}
+.preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>from</td><td>[x, y]. Start point in viewBox units. Default [48, 210] on the default 400 by 300 box.</td><td>optional</td></tr><tr><td>to</td><td>[x, y]. End point, where the arrowhead lands. Default [352, 90].</td><td>optional</td></tr><tr><td>curve</td><td>integer. Bend, -100 to 100, as a percentage of the line length at its middle. 0 is straight. Default 0.</td><td>optional</td></tr><tr><td>label</td><td>string (optional, max 40). Text beside the tip.</td><td>optional</td></tr><tr><td>label_at</td><td>"end" | "start" (optional, default "end")</td><td>optional</td></tr><tr><td>arrow</td><td>bool. Arrowhead. Default true.</td><td>optional</td></tr><tr><td>dot</td><td>bool. Dot at the start. Default true.</td><td>optional</td></tr><tr><td>color</td><td>"#rrggbb". Line, dot and arrowhead. Default the stage accent.</td><td>optional</td></tr><tr><td>label_color</td><td>"#rrggbb". Default the stage ink.</td><td>optional</td></tr><tr><td>width</td><td>integer. Line px, 1-24. Default 4.</td><td>optional</td></tr><tr><td>size</td><td>integer. Label px, 8-80. Default 22.</td><td>optional</td></tr><tr><td>w</td><td>integer. ViewBox width, 50-2000. Default 400.</td><td>optional</td></tr><tr><td>h</td><td>integer. ViewBox height, 50-2000. Default 300.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>from</td><td>[x, y]. Start point in viewBox units. Default [48, 210] on the default 400 by 300 box.</td><td>optional</td></tr><tr><td>to</td><td>[x, y]. End point, where the arrowhead lands. Default [352, 90].</td><td>optional</td></tr><tr><td>curve</td><td>integer. Bend, -100 to 100, as a percentage of the line length at its middle. 0 is straight. Default 0.</td><td>optional</td></tr><tr><td>label</td><td>string (optional, max 40). Text beside the tip.</td><td>optional</td></tr><tr><td>label_at</td><td>"end" | "start" (optional, default "end")</td><td>optional</td></tr><tr><td>arrow</td><td>bool. Arrowhead. Default true.</td><td>optional</td></tr><tr><td>dot</td><td>bool. Dot at the start. Default true.</td><td>optional</td></tr><tr><td>color</td><td>"#rrggbb". Line, dot and arrowhead. Default the stage accent.</td><td>optional</td></tr><tr><td>label_color</td><td>"#rrggbb". Default the stage ink.</td><td>optional</td></tr><tr><td>width</td><td>integer. Line px, 1-24. Default 4.</td><td>optional</td></tr><tr><td>size</td><td>integer. Label px, 8-80. Default 22.</td><td>optional</td></tr><tr><td>w</td><td>integer. ViewBox width, 50-2000. Default 400.</td><td>optional</td></tr><tr><td>h</td><td>integer. ViewBox height, 50-2000. Default 300.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
