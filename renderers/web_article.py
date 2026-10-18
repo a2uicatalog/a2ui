@@ -18622,7 +18622,7 @@ def _render_spaced_repetition_card(b: dict) -> str:
     return (
         f'<div style="font-family:system-ui,sans-serif;">'
         f'<div onclick="document.getElementById(\'{uid}card\').style.transform=document.getElementById(\'{uid}card\').style.transform?\'\':\' rotateY(180deg)\'" '
-        f'role="button" tabindex="0" aria-label="Flip card" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){{event.preventDefault();this.click()}}" '
+        f'role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){{event.preventDefault();this.click()}}" '
            f'style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;">'
         f'<div id="{uid}card" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;">'
         f'<div style="position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;'
