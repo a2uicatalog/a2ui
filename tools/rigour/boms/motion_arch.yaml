@@ -1,0 +1,25 @@
+# What a CLEAR architecture diagram (catalogue atom motion_arch) needs before it may be drawn.
+# Load-bearing slots gate the artifact; stated-only slots are drawn only when the article states them;
+# clarity rules are evaluated as rebuttals on the artifact's argument record.
+artifact: motion_arch
+claim: Draw the architecture as a diagram
+warrant: >-
+  a diagram needs nodes on edges from standing slots; boundaries only where stated;
+  and it must read more clearly than a stack
+qualifier: optional (backing not measured)   # the cap until each relation rule's precision is measured
+slots:
+  nodes: {weight: load-bearing, min: 2, note: each named in the article and on an edge}
+  edges: {weight: load-bearing, min: 1, roles: [path, dependency]}
+  zones: {weight: stated-only, note: a boundary the article states; membership never guessed}
+  messages: {weight: stated-only, note: payload text quoted from the sentence}
+derived:
+  kind: glyph from the node lexicon (presentation, not a claim)
+  layout: path left to right, dependencies below their source, boxes sized to their labels
+clarity:            # each becomes a rebuttal; any that applies blocks this artifact
+  - {id: min_nodes, text: fewer than two nodes can be drawn on edges}
+  - {id: max_nodes, value: 9, text: "more than {value} nodes, too many to read at once"}
+  - {id: one_piece, text: the graph falls apart into separate pieces}
+  - {id: label_words, value: 4, text: "an edge label runs past {value} words"}
+  - {id: lone_chain, text: "it is a single chain with no dependencies or boundaries, which reads more clearly as a stack", prefer: layer_stack}
+  - {id: fits_row, value: 2000, text: "the labels cannot fit on one row within the {value}-unit canvas limit"}
+fallback: [layer_stack, bullet_list, gap_report]

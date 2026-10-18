@@ -1,0 +1,19 @@
+# What a high-level design (HLD) artifact needs: a diagram (motion_arch) with numbered flows, a components table,
+# a flows table, and open questions. Unlike the curated layer-stack choice, an HLD is always drawn as a diagram;
+# separate sourced pieces are drawn as separate clusters, and the missing links become open questions.
+artifact: hld
+claim: Draw a high-level design of what the article states
+warrant: >-
+  an HLD may show only components and interactions that standing slots state; anything missing is an
+  open question, never a drawn guess
+qualifier: optional (backing not measured)
+slots:
+  components: {weight: load-bearing, min: 2, note: each on an interaction from a standing slot}
+  interactions: {weight: load-bearing, min: 1, roles: [path, dependency]}
+  zones: {weight: stated-only}
+clarity:
+  - {id: min_nodes, text: fewer than two components are on stated interactions}
+  - {id: max_nodes, value: 12, text: "more than {value} components, too many for one diagram"}
+  - {id: label_words, value: 5, text: "an interaction label runs past {value} words"}
+  - {id: fits_row, value: 2000, text: "the components cannot fit within the {value}-unit canvas"}
+fallback: [open_questions_only]

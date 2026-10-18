@@ -1,0 +1,47 @@
+# Generic IT line icons for the explainer film, drawn by motion_path (one stroked path, 96-unit square viewBox).
+# Original artwork for this project, same stroke style as the catalogue's tool-tile icons; no third-party set.
+# No product or vendor marks, ever: these name kinds of things, not brands.
+paths:
+  printer:  M28 36V14h40v22 M22 70H16a4 4 0 0 1-4-4V40a4 4 0 0 1 4-4h64a4 4 0 0 1 4 4v26a4 4 0 0 1-4 4h-6 M28 56h40v28H28z M68 46h4
+  laptop:   M22 22h52a4 4 0 0 1 4 4v38H18V26a4 4 0 0 1 4-4z M6 72h84l-5 7H11z
+  wifi:     M10 38a54 54 0 0 1 76 0 M22 52a36 36 0 0 1 52 0 M34 65a18 18 0 0 1 28 0 M48 78v1
+  mail:     M14 24h68a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V28a4 4 0 0 1 4-4z M12 28l36 26 36-26
+  lock:     M26 44h44a4 4 0 0 1 4 4v32a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V48a4 4 0 0 1 4-4z M32 44V32a16 16 0 0 1 32 0v12 M48 58v12
+  key:      M14 48a16 16 0 1 0 32 0a16 16 0 1 0-32 0z M46 48h36 M70 48v12 M80 48v8
+  account:  M34 32a14 14 0 1 0 28 0a14 14 0 1 0-28 0z M18 84c0-17 13-27 30-27s30 10 30 27
+  shield:   M48 10l30 12v22c0 20-13 34-30 42C31 78 18 64 18 44V22z M36 48l8 8 16-16
+  network:  M40 10h16v16H40z M12 66h16v16H12z M68 66h16v16H68z M48 26v18 M20 66V44h56v22
+  phone:    M34 8h28a6 6 0 0 1 6 6v68a6 6 0 0 1-6 6H34a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z M44 76h8
+  browser:  M16 18h64a4 4 0 0 1 4 4v52a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4z M12 32h72 M21 25v1 M29 25v1
+  settings: M14 28h68 M14 48h68 M14 68h68 M32 21v14 M62 41v14 M42 61v14
+  signal:   M18 78v-8 M36 78V58 M54 78V42 M72 78V24
+  ink:      M48 12C60 30 72 44 72 60a24 24 0 0 1-48 0c0-16 12-30 24-48z
+  headset:  M20 60V48a28 28 0 0 1 56 0v12 M20 52h8a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-8z M76 52h-8a4 4 0 0 0-4 4v14a4 4 0 0 0 4 4h8z M72 74c0 8-8 12-18 12h-6
+  message:  M16 16h64a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4H44L28 80V64H16a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z M48 28v16 M48 52v1
+  clock:    M14 48a34 34 0 1 0 68 0a34 34 0 1 0-68 0z M48 28v20l14 9
+  restart:  M78 48a30 30 0 1 1-9-21 M70 10v17H53
+  check:    M14 48a34 34 0 1 0 68 0a34 34 0 1 0-68 0z M31 49l11 11 22-23
+# Which word earns which icon. A scene gets one icon at most: its caption's leading verb if that verb is listed under
+# actions, otherwise the earliest listed object word in the caption. No match, no icon. The word must be in the
+# caption, and so in the source sentence it was cut from.
+actions:
+  restart: [restart, power-cycle]
+  check: [check, confirm, verify]
+objects:
+  printer: [printer, print queue, print job]
+  laptop: [computer, laptop]
+  wifi: [wi-fi, wireless]
+  mail: [email, mail]
+  lock: [locked, lock, unlock]
+  key: [password, pin]
+  account: [account, identity]
+  shield: [vpn]
+  phone: [phone, tablet, mobile]
+  browser: [browser, web page]
+  ink: [toner, ink]
+  signal: [signal]
+  headset: [support line, support team, contact support]
+  message: [error message]
+  settings: [settings]
+  network: [network, internet, ip address]
+  clock: [minutes, seconds]

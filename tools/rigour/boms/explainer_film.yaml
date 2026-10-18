@@ -1,0 +1,39 @@
+# What an explainer film (motion_timeline) needs: a problem, then the steps or branches the source states, in the
+# source's order, as many as it states up to a ceiling. Every caption is the source's own words, trimmed, never
+# rewritten; what was trimmed is listed in the evidence report. The film's own framing (eyebrows such as
+# "Step 2 of 4") is declared below as chrome and is the only text not taken from the source.
+artifact: explainer_film
+claim: Turn the article into a short film of what it states, problem first, then each step in order
+warrant: >-
+  a film may show only what the source states, in its order; each caption is a trimmed run of the source's own
+  words, and anything trimmed or missing is reported, never filled
+qualifier: optional (backing not measured)
+slots:
+  problem:    {weight: load-bearing, min: 1, note: the first sentence under the issue heading}
+  steps:      {weight: load-bearing, min: 1, max: 7, note: list items or "If X:" branches under the resolution heading; the count is the source's, capped}
+  lead:       {weight: stated-only, note: the resolution's opening sentence, if it is not the decision question}
+  decision:   {weight: stated-only, note: a question the reader answers to pick a branch, with its options}
+  icons:      {weight: stated-only, note: one per scene at most, earned by a declared word in its caption (reading/icons.yaml)}
+  escalation: {weight: stated-only, note: the closing "if none of this works" sentence}
+chrome:
+  title_eyebrow: How to fix
+  problem: The problem
+  lead: First
+  decision: Pick the one that matches
+  step: Step {i} of {n}
+  branch: "If: {condition}"
+  escalation: Still stuck?
+  end: Every line on screen is the source's own words
+clarity:
+  - {id: has_problem, group: source, text: the source states no problem under an issue heading}
+  - {id: has_steps, group: source, text: the source states no steps or fixes under a resolution heading}
+  - {id: max_steps, group: source, value: 7, text: "the source states more than {value} steps, too many for one film"}
+  - {id: caption_fit, group: layout, text: "a caption cannot fit the renderer's text limits (4 lines of 60 characters, 160 in all) at its size"}
+  - {id: read_time, group: layout, value: 3, text: "a scene asks for more than {value} words a second of reading"}
+  - {id: renderer_limits, group: layout, text: "the film needs more than 12 scenes, 24 blocks or 40 tracks, which the renderer would drop"}
+  - {id: max_duration, group: layout, value: 90, text: "the film runs past {value} seconds"}
+  - {id: caption_coverage, group: fidelity, text: "a caption on screen uses words its source sentence does not"}
+  - {id: dangling_condition, group: fidelity, text: "a headline keeps an 'if' but its trim dropped what to do about it"}
+  - {id: icon_grounded, group: fidelity, text: "an icon's word is not in the source sentence of its scene"}
+  - {id: org_names, group: fidelity, text: "a caption names what looks like an organisation or product, which needs a reviewer"}
+fallback: [storyboard_list, open_questions_only]

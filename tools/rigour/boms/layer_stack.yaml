@@ -1,0 +1,12 @@
+# What a layer stack (catalogue atoms layer_stack + stack_layer) needs before it may be drawn.
+artifact: layer_stack
+claim: Draw the path as a layer stack
+warrant: a layer stack needs at least two components and a stated order, path slots forming one unbroken chain
+qualifier: optional (backing not measured)
+slots:
+  layers: {weight: load-bearing, min: 2, note: components of path slots}
+  order: {weight: load-bearing, note: derived from path slots forming one chain}
+  notes: {weight: supporting, note: dependency slots, shown on their source layer}
+clarity:
+  - {id: min_chain, text: fewer than two components can be placed in order}
+fallback: [bullet_list, gap_report]

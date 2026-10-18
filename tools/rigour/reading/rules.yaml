@@ -1,0 +1,84 @@
+# Relation rules (domain-specific). A slot exists only where a sentence matches
+# a rule; the rule's warrant is stated on every slot it produces. Patterns run on the lower-cased sentence;
+# the slot quotes the original. Illustrative set, written against the sample documents; not yet measured.
+relations:
+  - id: host
+    role: path
+    pattern: '\b(?:your|the) (?P<a>[a-z][a-z ]*?) runs the (?P<b>[a-z][a-z ]*?)\.'
+    label: runs
+    inverse: runs on
+    hld: placement          # an HLD draws hosting as containment, not as a flow step
+    warrant: '"X runs Y" puts Y directly on X'
+  - id: connects
+    role: path
+    pattern: '\bthe (?P<a>[a-z][a-z ]*?) connects to the (?P<b>[a-z][a-z ]*?)(?: over|\.|,)'
+    label: connects to
+    inverse: accepts connections from
+    warrant: '"X connects to Y" makes Y the next layer after X'
+  - id: forwards
+    role: path
+    pattern: '\bthe (?P<a>[a-z][a-z ]*?) forwards your traffic to the (?P<b>[a-z][a-z ]*?)\.'
+    label: forwards your traffic to
+    inverse: receives traffic from
+    warrant: '"X forwards traffic to Y" makes Y the next layer after X'
+  - id: fallback-connect
+    role: path
+    pattern: '\bconnect to the (?P<b>[a-z][a-z ]*?) instead\.'
+    implied_subject: vpn client
+    label: connects to
+    inverse: accepts connections from
+    warrant: '"connect to Y" names Y as a hop'
+  - id: authenticates
+    role: dependency
+    pattern: '\bthe (?P<a>[a-z][a-z ]*?) authenticates you against the (?P<b>[a-z][a-z ]*?) before'
+    label: authenticates against
+    inverse: authenticates users for
+    warrant: '"X authenticates against Y" makes Y a dependency of X, not a layer'
+  # General request/referral verbs, added 2026-10-18 for the first real-documentation test (Wikipedia, DNS).
+  - id: sends-request
+    role: path
+    pattern: '\b(?:such |the )?(?P<a>[a-z][a-z ]*?(?:programs?|applications?|clients?|resolvers?|servers?)) (?:will )?send(?:s)? (?:a |the )?(?:[a-z]+ )?request to (?:the |one or more (?:designated )?)?(?P<b>[a-z][a-z ]*?(?:resolvers?|servers?))(?: in\b|,|\.)'
+    label: sends requests to
+    inverse: receives requests from
+    warrant: '"X sends a request to Y" makes Y the next hop after X'
+  - id: refers
+    role: dependency
+    pattern: '\bthe (?P<a>[a-z][a-z ]*?servers?) [^.]*?respond with a referral to (?:more )?(?P<b>[a-z][a-z ]*?servers?)(?:,|\.)'
+    label: refers to
+    inverse: is referred to by
+    warrant: '"X responds with a referral to Y" means X points the asker on to Y; it does not carry the request'
+  - id: query-implied
+    role: path
+    pattern: '\bthe resolution process starts with a query to (?:one of )?the (?P<b>[a-z][a-z ]*?servers?)\.'
+    implied_subject: dns resolver
+    label: queries
+    inverse: is queried by
+    warrant: '"a query to Y" makes Y a hop, if the sentence says who queries'
+# Components the gap report looks for: named in the article but never placed by a standing slot.
+lexicon: [laptop, phone, vpn client, mail app, remote access gateway, gateway, mail server, archive,
+          identity provider, internal network, proxy, backup gateway,
+          dns resolver, dns servers, root servers, authoritative servers]
+# The names-only fallback needs at least this many named SYSTEMS (not devices): "on your laptop or phone" is not an
+# architecture, so device names alone never produce a list.
+fallback_min_systems: 2
+device_kinds: [device]
+# Glyphs for motion_arch, by name ending (presentation only, marked derived).
+kinds: {laptop: device, phone: device, client: app, app: app, programs: app, gateway: server, server: server,
+        servers: server, resolver: tool, identity provider: tool, network: store, archive: store}
+# Zone rules: a boundary is drawn only when a sentence states it.
+zones:
+  - id: your-device
+    from_relation: host
+    requires: '\byour {a}\b'
+    label: Your device
+# Statements that a hop crosses a boundary whose far side the article must also state.
+crossings:
+  - phrase: over the internet
+    boundary: the internet
+
+# Openings that mark a sentence as a fallback ("what to try if that fails"), matched at the start of a sentence
+fallback:
+  - "if (?:that|this|it|the (?:issue|problem))[^,:]{0,40}(?:persists|continues|remains|still|does ?n.?t (?:work|help|fix|resolve)|is ?n.?t (?:fixed|resolved|working))"
+  - "if (?:that|this) fails"
+  - "if not\\b"
+  - "otherwise\\b"

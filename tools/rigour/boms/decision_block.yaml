@@ -1,0 +1,40 @@
+# What a decision block needs: two or more alternatives the source states ("If X: ..." paragraphs, or a symptom/fix
+# table), each with what to do. The reader picks the one that matches and sees only that guidance. Card labels are the
+# source's own conditions; panel lines are the source's own sentences, whole. The audience changes only the framing
+# words declared under chrome, never what a line claims.
+artifact: decision_block
+claim: Turn the article's alternatives into one choice, showing only the guidance for the case the reader picks
+warrant: >-
+  a decision block may offer only the alternatives the source states, label each with the source's own condition,
+  and show under it only the source's own sentences for that case; anything missing is an open question
+qualifier: optional (backing not measured)
+slots:
+  branches:   {weight: load-bearing, min: 2, max: 6, note: each with a condition and at least one sentence}
+  question:   {weight: stated-only, note: the source's own question, if it asks one}
+  options:    {weight: stated-only, note: the question's listed answers, paired to a branch only when the pairing is exact}
+  escalation: {weight: stated-only, note: the closing "if that does not fix it" sentence, shown under every case}
+chrome:
+  reader:
+    eyebrow: Find your fix
+    ask: "{question}"
+    no_question: What are you seeing?
+    card: If you see
+    why: Why
+    do: Try this
+    after: Still not fixed?
+  operator:
+    eyebrow: Triage
+    ask: "Ask: {question}"
+    no_question: What is being reported?
+    card: Reported
+    why: Likely cause
+    do: Do
+    after: If that does not fix it
+clarity:
+  - {id: has_branches, group: source, text: the source states fewer than two alternatives, so there is nothing to choose between}
+  - {id: max_branches, group: source, value: 6, text: "the source states more than {value} alternatives, too many to scan as one choice"}
+  - {id: has_action, group: source, text: an alternative states no instruction to follow}
+  - {id: verbatim, group: fidelity, text: a line in the block is not the source's own words}
+  - {id: pairing, group: fidelity, text: "a listed answer was paired to a case whose condition it does not fully contain"}
+  - {id: org_names, group: fidelity, text: "a line names what looks like an organisation or product, which needs a reviewer"}
+fallback: [open_questions_only]

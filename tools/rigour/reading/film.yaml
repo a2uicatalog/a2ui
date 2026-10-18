@@ -1,0 +1,16 @@
+# Domain rules for reading a problem/fix document into film slots. Section names, trim points and the words a caption
+# may drop are declared here so the reader in film.py never hard-codes a judgement.
+sections:
+  problem: [issue, problem, symptom, symptoms, description]
+  resolution: [resolution, solution, fix, steps, workaround]
+# A closing paragraph that says what to do if nothing worked
+escalation: ['^if none of', '^if (?:the|it|you|[a-z]+ing)\b.*\b(?:still|not|does not|do not)\b', '^contact (?:the |your )?(?:support|manufacturer)']
+# Where a too-long sentence may be cut. The caption keeps the words before the cut; the rest is reported as trimmed.
+cuts: [' -- ', ' (', '; ', ', or ', ', ', ' by ', ' using ', ' even though ', ' because ', ' before ', ' after ', ' so that ', ' rather than ', ' and ']
+# Words a caption may drop without changing what it claims: the coverage check ignores them on both sides
+stopwords: [a, an, the, of, to, in, on, at, for, and, or, is, are, it, its, this, that, be, by, with, from, as, your, you]
+# Capitalised words that are ordinary technical terms, not organisations or products
+allowed_caps: [VPN, Wi-Fi, IP, Wi, Fi, OK, PIN, URL, USB, DNS]
+# Sentences that open with one of these verbs are instructions ("Do"); any other sentence in a case explains it ("Why")
+imperatives: [move, check, forget, restart, open, cancel, power-cycle, confirm, replace, turn, remove, set, sign, use, verify,
+              note, contact, try, select, choose, join, find, enter, wait, update, reconnect, close, quit, reset, add, switch]
