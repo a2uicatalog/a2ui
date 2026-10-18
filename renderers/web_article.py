@@ -2474,7 +2474,7 @@ def _render_star_rating_input(b: dict) -> str:
 
     inputs_html = "".join(
         f'<input type="radio" id="sr{uid}_{i}" name="sr{uid}" value="{i}"'
-        f'{" checked" if i == initial else ""} style="display:none;">'
+        f'{" checked" if i == initial else ""} style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
         for i in range(max_s, 0, -1)
     )
     labels_html = "".join(
@@ -2513,7 +2513,7 @@ def _render_segmented_control(b: dict) -> str:
 
     style = (
         f'<style>'
-        f'.sgc{uid} input{{display:none;}}'
+        f'.sgc{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
         f'.sgc{uid} label{{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;'
         f'color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;'
         f'transition:background .1s,color .1s;}}'
@@ -2582,7 +2582,7 @@ def _render_custom_checkbox_group(b: dict) -> str:
     )
     style = (
         f'<style>'
-        f'.ccg{uid} input{{display:none;}}'
+        f'.ccg{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
         f'.ccg{uid} label{{display:flex;align-items:center;gap:10px;cursor:pointer;'
         f'padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;'
         f'font-size:0.88rem;color:#374151;transition:border-color .15s,background .15s;}}'
@@ -5883,7 +5883,7 @@ def _render_form_switch_group(b: dict) -> str:
             f'{desc_html}</div>'
             # CSS-only toggle: hidden checkbox + styled label
             f'<input type="checkbox" id="{sid}" name="{_cv_esc(name)}[{_cv_esc(iname)}]" '
-            f'{"checked" if checked else ""} style="display:none;">'
+            f'{"checked" if checked else ""} style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
             f'<label for="{sid}" style="position:relative;display:inline-block;'
             f'width:42px;height:24px;flex-shrink:0;cursor:pointer;">'
             f'<span style="position:absolute;inset:0;border-radius:12px;'
@@ -6199,7 +6199,7 @@ def _render_feedback_prompt(b: dict) -> str:
 
     if style == "stars":
         star_inputs = "".join(
-            f'<input type="radio" id="{fid}_s{i}" name="{fid}_rating" value="{i}" style="display:none;">'
+            f'<input type="radio" id="{fid}_s{i}" name="{fid}_rating" value="{i}" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
             f'<label for="{fid}_s{i}" title="{i} star{"s" if i>1 else ""}">★</label>'
             for i in range(5, 0, -1)
         )
@@ -6225,11 +6225,11 @@ def _render_feedback_prompt(b: dict) -> str:
             f'<label class="{fid}-up" style="display:inline-flex;align-items:center;gap:6px;'
             f'padding:8px 16px;border:1.5px solid #dadce0;border-radius:100px;cursor:pointer;'
             f'font-size:0.88rem;font-weight:500;color:#3c4043;background:#fff;">'
-            f'<input type="radio" name="{fid}_rating" value="up" style="display:none;">👍 Yes</label>'
+            f'<input type="radio" name="{fid}_rating" value="up" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">👍 Yes</label>'
             f'<label class="{fid}-dn" style="display:inline-flex;align-items:center;gap:6px;'
             f'padding:8px 16px;border:1.5px solid #dadce0;border-radius:100px;cursor:pointer;'
             f'font-size:0.88rem;font-weight:500;color:#3c4043;background:#fff;">'
-            f'<input type="radio" name="{fid}_rating" value="down" style="display:none;">👎 No</label>'
+            f'<input type="radio" name="{fid}_rating" value="down" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">👎 No</label>'
             f'</div>'
         )
 
@@ -7329,7 +7329,7 @@ def _render_chartjs_pie(b: dict) -> str:
     return (
         f'<div style="margin:1rem 0;text-align:center;">'
         f'{title_html}'
-        f'<svg viewBox="0 0 240 240" width="200" height="200" style="overflow:visible;">'
+        f'<svg viewBox="0 0 240 240" width="200" height="200" role="img" aria-label="{_cv_esc(title or "Pie chart")}" style="overflow:visible;">'
         f'{slices_svg}'
         f'</svg>'
         f'{legend_block}'
@@ -8120,7 +8120,7 @@ def _render_quiz_question(b: dict) -> str:
         reveal_css = (
             f'#{inp_id}:checked ~ .{uid}_explain{{display:block;}}'
         ) if explain else ""
-        inputs += f'<input type="radio" id="{inp_id}" name="{uid}" style="display:none;">'
+        inputs += f'<input type="radio" id="{inp_id}" name="{uid}" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
         inputs += f'<style>{correct_css}{reveal_css}</style>'
         labels += (
             f'<label for="{inp_id}" style="display:block;padding:10px 14px;margin:6px 0;'
@@ -8500,7 +8500,7 @@ def _render_data_grid(b: dict) -> str:
         f'</style>'
     )
     radios = "".join(
-        f'<input type="radio" id="dg{uid}r{i}" name="dg{uid}" {"checked" if i==0 else ""} style="display:none;">'
+        f'<input type="radio" id="dg{uid}r{i}" name="dg{uid}" {"checked" if i==0 else ""} style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
         for i in range(n)
     )
     pages_html = "".join(
@@ -8844,7 +8844,7 @@ def _render_vote_button_group(b: dict) -> str:
             f'background:#0a0f1e;transition:all .18s;}}'
             f'.{name} input:checked+label,.{name} label:hover{{border-color:#00f2ff;color:#00f2ff;'
             f'box-shadow:0 0 10px rgba(0,242,255,.3),inset 0 0 10px rgba(0,242,255,.04);}}'
-            f'.{name} input{{display:none;}}'
+            f'.{name} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
             f'</style>'
         )
         wrap = "background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;"
@@ -8856,7 +8856,7 @@ def _render_vote_button_group(b: dict) -> str:
             f'background:#fff;transition:all .15s;}}'
             f'.{name} input:checked+label,.{name} label:hover{{background:#e8f0fe;border-color:#1a73e8;'
             f'color:#1a73e8;font-weight:600;}}'
-            f'.{name} input{{display:none;}}'
+            f'.{name} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
             f'</style>'
         )
         wrap = "background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;"
@@ -8867,7 +8867,7 @@ def _render_vote_button_group(b: dict) -> str:
             f'font-size:0.87rem;font-weight:500;color:#cbd5e1;border:1px solid #334155;'
             f'background:#1e293b;transition:all .15s;}}'
             f'.{name} input:checked+label,.{name} label:hover{{background:#1a73e8;border-color:#1a73e8;color:#fff;}}'
-            f'.{name} input{{display:none;}}'
+            f'.{name} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
             f'</style>'
         )
         wrap = "background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;"
@@ -9886,7 +9886,7 @@ def _render_agent_sketchpad(b: dict) -> str:
         f'<div style="margin:1rem 0;">'
         f'<style>@keyframes sketch-draw-{uid}{{to{{stroke-dashoffset:0;}}}}</style>'
         f'{label_html}'
-        f'<svg viewBox="{_html.escape(view_box)}" style="width:100%;height:auto;'
+        f'<svg viewBox="{_html.escape(view_box)}" role="img" aria-label="{_html.escape(label or "Agent sketchpad drawing")}" style="width:100%;height:auto;'
         f'border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
         + "".join(elements) +
         f'</svg></div>'
@@ -11541,7 +11541,7 @@ def _render_toggle_switch(b: dict) -> str:
     name = b.get("name", uid)
     accent = b.get("accent","#4f46e5")
     return (f'<div style="display:flex;align-items:center;gap:10px;margin:var(--a2ui-block-gap,1.25rem) 0;">'
-            f'<input type="checkbox" id="{uid}" name="{_cv_esc(name)}"{checked} style="display:none;">'
+            f'<input type="checkbox" id="{uid}" name="{_cv_esc(name)}"{checked} style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
             f'<label for="{uid}" style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:.875rem;color:#111827;">'
             f'<span style="width:44px;height:24px;border-radius:12px;background:{""+_cv_esc(accent) if b.get("is_checked") else "#d1d5db"};display:inline-flex;align-items:center;padding:2px;">'
             f'<span style="width:20px;height:20px;border-radius:50%;background:#fff;transform:translateX({"20px" if b.get("is_checked") else "0"});transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></span>'
@@ -12217,7 +12217,7 @@ def _render_chip_group(b: dict) -> str:
     accent = b.get('accent', '#4f46e5')
     multi = b.get('multiple', False)
     input_type = 'checkbox' if multi else 'radio'
-    html_parts = [f'<style>#{uid} input{{display:none;}}'
+    html_parts = [f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
                   f'#{uid} input:checked+label{{background:{_cv_esc(accent)};color:#fff;border-color:{_cv_esc(accent)};}}</style>'
                   f'<div id="{uid}" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;">']
     for i, chip in enumerate(chips):
@@ -12310,7 +12310,7 @@ def _render_code_snippet_pair(b: dict) -> str:
         return ''
     tabs = ''
     panels = ''
-    css = (f'<style>#{uid} input{{display:none;}}'
+    css = (f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
            + ''.join(f'#{uid} #s{uid}_{i}:checked ~ .panels .p{uid}_{i}{{display:block;}}'
                      f'#{uid} #s{uid}_{i}:checked ~ .tabs label:nth-child({i+1}){{border-bottom-color:#1a73e8;color:#1a73e8;}}' for i in range(len(snippets)))
            + f'#{uid} .panels > div{{display:none;}}</style>')
@@ -14023,7 +14023,7 @@ def _render_tab_bar(b: dict) -> str:
     uid = _wa_uid(b)
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#4f46e5')
-    css = (f'<style>#{uid} input{{display:none;}}'
+    css = (f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
            + ''.join(f'#{uid} #t{uid}_{i}:checked~div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};font-weight:700;}}'
                      for i in range(len(tabs)))
            + '</style>')
@@ -14357,7 +14357,7 @@ def _render_call_mood_board(b: dict) -> str:
         label = mood.get('label', '') if isinstance(mood, dict) else ''
         items += (f'<label style="display:flex;flex-direction:column;align-items:center;gap:4px;'
                   f'cursor:pointer;padding:8px;">'
-                  f'<input type="radio" name="{uid}" style="display:none;">'
+                  f'<input type="radio" name="{uid}" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
                   f'<span style="font-size:2rem;">{_cv_esc(emoji)}</span>'
                   f'{"<span style=font-size:0.72rem;color:var(--muted,#5f6368);>"+_esc(label)+"</span>" if label else ""}'
                   f'</label>')
@@ -15013,7 +15013,7 @@ def _render_carousel(b: dict) -> str:
     n = len(slides)
     if not slides:
         return ''
-    css = (f'<style>#{uid} .slide{{display:none;}} #{uid} input{{display:none;}}'
+    css = (f'<style>#{uid} .slide{{display:none;}} #{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
            + ''.join(f'#{uid} #sl{uid}_{i}:checked~.slides .slide:nth-child({i+1}){{display:block;}}'
                      for i in range(n))
            + f'</style>')
@@ -15534,7 +15534,7 @@ def _render_nps_score(b: dict) -> str:
     low = b.get('low_label', 'Not likely')
     high = b.get('high_label', 'Very likely')
     buttons = ''.join(
-        f'<label><input type="radio" name="{uid}" value="{i}" style="display:none;">'
+        f'<label><input type="radio" name="{uid}" value="{i}" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
         f'<span style="display:inline-flex;align-items:center;justify-content:center;'
         f'width:34px;height:34px;border:1.5px solid #e5e7eb;border-radius:4px;'
         f'cursor:pointer;font-size:0.84rem;font-weight:700;">{i}</span></label>'
@@ -15814,7 +15814,7 @@ def _render_tabs(b: dict) -> str:
     uid = _wa_uid(b)
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#4f46e5')
-    css = (f'<style>#{uid} input{{display:none;}}'
+    css = (f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
            + ''.join(f'#{uid} #tb{uid}_{i}:checked~.ta div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};}}'
                      f'#{uid} #tb{uid}_{i}:checked~.tp .p{uid}_{i}{{display:block;}}'
                      for i in range(len(tabs)))
@@ -17442,7 +17442,7 @@ def _render_feedback_prompt(b: dict) -> str:
 
     if style == "stars":
         star_inputs = "".join(
-            f'<input type="radio" id="{fid}_s{i}" name="{fid}_rating" value="{i}" style="display:none;">'
+            f'<input type="radio" id="{fid}_s{i}" name="{fid}_rating" value="{i}" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
             f'<label for="{fid}_s{i}" title="{i} star{"s" if i>1 else ""}">★</label>'
             for i in range(5, 0, -1)
         )
@@ -17468,11 +17468,11 @@ def _render_feedback_prompt(b: dict) -> str:
             f'<label class="{fid}-up" style="display:inline-flex;align-items:center;gap:6px;'
             f'padding:8px 16px;border:1.5px solid #dadce0;border-radius:100px;cursor:pointer;'
             f'font-size:0.88rem;font-weight:500;color:#3c4043;background:#fff;">'
-            f'<input type="radio" name="{fid}_rating" value="up" style="display:none;">👍 Yes</label>'
+            f'<input type="radio" name="{fid}_rating" value="up" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">👍 Yes</label>'
             f'<label class="{fid}-dn" style="display:inline-flex;align-items:center;gap:6px;'
             f'padding:8px 16px;border:1.5px solid #dadce0;border-radius:100px;cursor:pointer;'
             f'font-size:0.88rem;font-weight:500;color:#3c4043;background:#fff;">'
-            f'<input type="radio" name="{fid}_rating" value="down" style="display:none;">👎 No</label>'
+            f'<input type="radio" name="{fid}_rating" value="down" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">👎 No</label>'
             f'</div>'
         )
 
@@ -17668,7 +17668,7 @@ _PLATE_CSS = """
 :root:not([data-theme="light"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}
 .pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}
 .pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.pp-toggles input{display:none;}
+.pp-toggles input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}
 .pp-toggles label{font-family:ui-monospace,monospace;font-size:.72rem;padding:6px 14px;
   border:1px solid var(--border,#e0e0e0);border-radius:999px;cursor:pointer;color:var(--text-muted,#5f6368);
   transition:all .15s;}
@@ -25156,7 +25156,7 @@ _RENDERERS['icon_liftoff'] = _render_icon_liftoff
 #
 # It is a fixed right-half overlay (position:fixed, pointer-events:none), so
 # on a normal page it floats over the right half of the VIEWPORT.
-_ISO_FIREWORKS_TPL = """<div id="__UID__w" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;pointer-events:none;z-index:50;background:transparent;"><canvas id="__UID__c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas></div><script>(function(){var canvas=document.getElementById("__UID__c");if(!canvas)return;var ctx=canvas.getContext("2d");function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||960;}window.addEventListener("resize",resize);resize();var CA=0.866,SA=0.5,rot=0;function iso(x,y,z){var w=canvas.width,h=canvas.height,s=Math.min(w,h)/16;var c=Math.cos(rot),sn=Math.sin(rot);var xr=x*c+z*sn,zr=z*c-x*sn;return{x:w*0.5+(xr-zr)*CA*s,y:h*0.82+(xr+zr)*SA*s*0.55-y*s};}var PALETTES=[["255,224,130","255,150,0"],["190,244,255","0,200,240"],["255,190,240","236,72,153"],["235,235,255","140,150,255"]];var PADS=[[-2.4,-1.1],[0,-2.6],[2.4,-0.6],[1.1,2.1]];var shells=[],parts=[],nextLaunch=Date.now()+400;function drawGrid(){ctx.strokeStyle="rgba(99,102,241,0.16)";ctx.lineWidth=1;for(var i=-4;i<=4;i++){var a=iso(i,0,-4),b2=iso(i,0,4);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();var c2=iso(-4,0,i),d=iso(4,0,i);ctx.beginPath();ctx.moveTo(c2.x,c2.y);ctx.lineTo(d.x,d.y);ctx.stroke();}PADS.forEach(function(p){var q=iso(p[0],0,p[1]);ctx.beginPath();ctx.arc(q.x,q.y,2.5,0,Math.PI*2);ctx.fillStyle="rgba(99,102,241,0.5)";ctx.fill();});}function burst(x,y,z){var pal=PALETTES[Math.floor(Math.random()*PALETTES.length)];var n=70+Math.floor(Math.random()*40);for(var i=0;i<n;i++){var ux=Math.random()*2-1,uy=Math.random()*2-1,uz=Math.random()*2-1;var m=Math.sqrt(ux*ux+uy*uy+uz*uz)||1,sp=(0.045+Math.random()*0.05);parts.push({x:x,y:y,z:z,vx:ux/m*sp,vy:uy/m*sp,vz:uz/m*sp,life:1,decay:0.008+Math.random()*0.007,col:pal});}}function step(){var now=Date.now();if(now>nextLaunch&&shells.length<3){var pad=PADS[Math.floor(Math.random()*PADS.length)];shells.push({x:pad[0],z:pad[1],y:0,vy:0.13+Math.random()*0.04,apex:4.2+Math.random()*2.2,tw:[]});nextLaunch=now+1200+Math.random()*1400;}shells=shells.filter(function(s){s.y+=s.vy;s.vy-=0.0011;s.tw.push({x:s.x,y:s.y,z:s.z,life:1});if(s.tw.length>14)s.tw.shift();if(s.vy<=0.015||s.y>=s.apex){burst(s.x,s.y,s.z);if(Math.random()<0.28)burst(s.x,s.y*0.92,s.z);return false;}return true;});parts=parts.filter(function(p){p.x+=p.vx;p.y+=p.vy;p.z+=p.vz;p.vy-=0.0016;p.vx*=0.985;p.vz*=0.985;p.life-=p.decay;return p.life>0&&p.y>-0.2;});}function draw(){var w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);drawGrid();ctx.globalCompositeOperation="lighter";shells.forEach(function(s){s.tw.forEach(function(t,i){var q=iso(t.x,t.y,t.z),a=(i/s.tw.length)*0.6;ctx.beginPath();ctx.arc(q.x,q.y,1.6,0,Math.PI*2);ctx.fillStyle="rgba(255,214,120,"+a+")";ctx.fill();});var q2=iso(s.x,s.y,s.z);ctx.beginPath();ctx.arc(q2.x,q2.y,2.4,0,Math.PI*2);ctx.fillStyle="rgba(255,240,190,0.95)";ctx.fill();});parts.forEach(function(p){var q=iso(p.x,p.y,p.z),r=1.1+p.life*1.9;var g=ctx.createRadialGradient(q.x,q.y,0,q.x,q.y,r*2.4);g.addColorStop(0,"rgba("+p.col[0]+","+p.life+")");g.addColorStop(0.5,"rgba("+p.col[1]+","+(p.life*0.55)+")");g.addColorStop(1,"rgba("+p.col[1]+",0)");ctx.beginPath();ctx.arc(q.x,q.y,r*2.4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();if(p.y>0){var qr=iso(p.x,-p.y*0.55,p.z);ctx.beginPath();ctx.arc(qr.x,qr.y,r*1.4,0,Math.PI*2);ctx.fillStyle="rgba("+p.col[1]+","+(p.life*0.12)+")";ctx.fill();}});ctx.globalCompositeOperation="source-over";}var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(RM){burst(0,3.4,0);for(var i=0;i<24;i++)step();draw();return;}function frame(){if(!canvas.isConnected)return;rot+=0.0012;step();draw();requestAnimationFrame(frame);}frame();})();</script>"""
+_ISO_FIREWORKS_TPL = """<div id="__UID__w" aria-hidden="true" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;pointer-events:none;z-index:50;background:transparent;"><canvas id="__UID__c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas></div><script>(function(){var canvas=document.getElementById("__UID__c");if(!canvas)return;var ctx=canvas.getContext("2d");function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||960;}window.addEventListener("resize",resize);resize();var CA=0.866,SA=0.5,rot=0;function iso(x,y,z){var w=canvas.width,h=canvas.height,s=Math.min(w,h)/16;var c=Math.cos(rot),sn=Math.sin(rot);var xr=x*c+z*sn,zr=z*c-x*sn;return{x:w*0.5+(xr-zr)*CA*s,y:h*0.82+(xr+zr)*SA*s*0.55-y*s};}var PALETTES=[["255,224,130","255,150,0"],["190,244,255","0,200,240"],["255,190,240","236,72,153"],["235,235,255","140,150,255"]];var PADS=[[-2.4,-1.1],[0,-2.6],[2.4,-0.6],[1.1,2.1]];var shells=[],parts=[],nextLaunch=Date.now()+400;function drawGrid(){ctx.strokeStyle="rgba(99,102,241,0.16)";ctx.lineWidth=1;for(var i=-4;i<=4;i++){var a=iso(i,0,-4),b2=iso(i,0,4);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();var c2=iso(-4,0,i),d=iso(4,0,i);ctx.beginPath();ctx.moveTo(c2.x,c2.y);ctx.lineTo(d.x,d.y);ctx.stroke();}PADS.forEach(function(p){var q=iso(p[0],0,p[1]);ctx.beginPath();ctx.arc(q.x,q.y,2.5,0,Math.PI*2);ctx.fillStyle="rgba(99,102,241,0.5)";ctx.fill();});}function burst(x,y,z){var pal=PALETTES[Math.floor(Math.random()*PALETTES.length)];var n=70+Math.floor(Math.random()*40);for(var i=0;i<n;i++){var ux=Math.random()*2-1,uy=Math.random()*2-1,uz=Math.random()*2-1;var m=Math.sqrt(ux*ux+uy*uy+uz*uz)||1,sp=(0.045+Math.random()*0.05);parts.push({x:x,y:y,z:z,vx:ux/m*sp,vy:uy/m*sp,vz:uz/m*sp,life:1,decay:0.008+Math.random()*0.007,col:pal});}}function step(){var now=Date.now();if(now>nextLaunch&&shells.length<3){var pad=PADS[Math.floor(Math.random()*PADS.length)];shells.push({x:pad[0],z:pad[1],y:0,vy:0.13+Math.random()*0.04,apex:4.2+Math.random()*2.2,tw:[]});nextLaunch=now+1200+Math.random()*1400;}shells=shells.filter(function(s){s.y+=s.vy;s.vy-=0.0011;s.tw.push({x:s.x,y:s.y,z:s.z,life:1});if(s.tw.length>14)s.tw.shift();if(s.vy<=0.015||s.y>=s.apex){burst(s.x,s.y,s.z);if(Math.random()<0.28)burst(s.x,s.y*0.92,s.z);return false;}return true;});parts=parts.filter(function(p){p.x+=p.vx;p.y+=p.vy;p.z+=p.vz;p.vy-=0.0016;p.vx*=0.985;p.vz*=0.985;p.life-=p.decay;return p.life>0&&p.y>-0.2;});}function draw(){var w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);drawGrid();ctx.globalCompositeOperation="lighter";shells.forEach(function(s){s.tw.forEach(function(t,i){var q=iso(t.x,t.y,t.z),a=(i/s.tw.length)*0.6;ctx.beginPath();ctx.arc(q.x,q.y,1.6,0,Math.PI*2);ctx.fillStyle="rgba(255,214,120,"+a+")";ctx.fill();});var q2=iso(s.x,s.y,s.z);ctx.beginPath();ctx.arc(q2.x,q2.y,2.4,0,Math.PI*2);ctx.fillStyle="rgba(255,240,190,0.95)";ctx.fill();});parts.forEach(function(p){var q=iso(p.x,p.y,p.z),r=1.1+p.life*1.9;var g=ctx.createRadialGradient(q.x,q.y,0,q.x,q.y,r*2.4);g.addColorStop(0,"rgba("+p.col[0]+","+p.life+")");g.addColorStop(0.5,"rgba("+p.col[1]+","+(p.life*0.55)+")");g.addColorStop(1,"rgba("+p.col[1]+",0)");ctx.beginPath();ctx.arc(q.x,q.y,r*2.4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();if(p.y>0){var qr=iso(p.x,-p.y*0.55,p.z);ctx.beginPath();ctx.arc(qr.x,qr.y,r*1.4,0,Math.PI*2);ctx.fillStyle="rgba("+p.col[1]+","+(p.life*0.12)+")";ctx.fill();}});ctx.globalCompositeOperation="source-over";}var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(RM){burst(0,3.4,0);for(var i=0;i<24;i++)step();draw();return;}function frame(){if(!canvas.isConnected)return;rot+=0.0012;step();draw();requestAnimationFrame(frame);}frame();})();</script>"""
 
 
 def _render_iso_fireworks_panel(b: dict) -> str:
@@ -25183,7 +25183,7 @@ _RENDERERS["iso_fireworks_panel"] = _render_iso_fireworks_panel
 # markup (verified by diffing the left/right captures — they differ in exactly
 # two places, both templated below). `layer`/`loop` are consumed by the inline
 # canvas JS, not the wrapper, so they need no Python-side handling.
-_GDM_ROCKET_TPL = """<div id="__UID__w" data-a2ui-overlay="__SIDE__-half" style="position:fixed;top:0;__SIDE__:0;width:50%;height:100%;pointer-events:none;z-index:50;background:transparent;"><canvas id="__UID__c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas></div><script>(function(){var canvas=document.getElementById("__UID__c");if(!canvas)return;var ctx=canvas.getContext("2d");var LOOP=true,holdT=null;var logo=null;var img=new Image();img.src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xOV8xMykiPgo8cGF0aCBkPSJNMTggODQuODUyOEw4NS44ODIyIDE2Ljk3MDZDOTUuMjU0OCA3LjU5Nzk4IDExMC40NTEgNy41OTc5OCAxMTkuODIzIDE2Ljk3MDZWMTYuOTcwNkMxMjkuMTk2IDI2LjM0MzEgMTI5LjE5NiA0MS41MzkxIDExOS44MjMgNTAuOTExN0w2OC41NTgxIDEwMi4xNzciIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNNjkuMjY1MiAxMDEuNDdMMTE5LjgyMyA1MC45MTE3QzEyOS4xOTYgNDEuNTM5MSAxNDQuMzkyIDQxLjUzOTEgMTUzLjc2NSA1MC45MTE3TDE1NC4xMTggNTEuMjY1MkMxNjMuNDkxIDYwLjYzNzggMTYzLjQ5MSA3NS44MzM4IDE1NC4xMTggODUuMjA2M0w5Mi43MjQ4IDE0Ni42Qzg5LjYwMDYgMTQ5LjcyNCA4OS42MDA2IDE1NC43ODkgOTIuNzI0OCAxNTcuOTEzTDEwNS4zMzEgMTcwLjUyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTEwMi44NTMgMzMuOTQxMUw1Mi42NDgyIDg0LjE0NTdDNDMuMjc1NiA5My41MTgzIDQzLjI3NTYgMTA4LjcxNCA1Mi42NDgyIDExOC4wODdWMTE4LjA4N0M2Mi4wMjA4IDEyNy40NTkgNzcuMjE2NyAxMjcuNDU5IDg2LjU4OTMgMTE4LjA4N0wxMzYuNzk0IDY3Ljg4MjIiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzE5XzEzIj4KPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==";img.onload=function(){logo=img;};var y=1.2,trail=[],sparks=[],raf=null,landed=false;function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||960;}window.addEventListener("resize",resize);resize();function drawRocket(cx,cy,w,h){var s=Math.min(w,h)/7;var pulse=0.85+0.15*Math.sin(Date.now()/90);var glow=ctx.createRadialGradient(cx,cy+s*1.05,0,cx,cy+s*1.05,s*1.5*pulse);glow.addColorStop(0,"rgba(255,255,200,0.98)");glow.addColorStop(0.12,"rgba(255,180,0,0.9)");glow.addColorStop(0.4,"rgba(255,60,0,0.55)");glow.addColorStop(1,"rgba(255,20,0,0)");ctx.beginPath();ctx.arc(cx,cy+s*1.05,s*1.5*pulse,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(-s*0.28,s*0.55);ctx.lineTo(-s*0.72,s*1.02);ctx.lineTo(-s*0.28,s*0.82);ctx.closePath();ctx.fillStyle="#0077b6";ctx.fill();ctx.beginPath();ctx.moveTo(s*0.28,s*0.55);ctx.lineTo(s*0.72,s*1.02);ctx.lineTo(s*0.28,s*0.82);ctx.closePath();ctx.fillStyle="#0077b6";ctx.fill();ctx.beginPath();ctx.moveTo(-s*0.22,s*0.68);ctx.lineTo(-s*0.3,s*0.98);ctx.lineTo(s*0.3,s*0.98);ctx.lineTo(s*0.22,s*0.68);ctx.closePath();var bell=ctx.createLinearGradient(-s*0.3,0,s*0.3,0);bell.addColorStop(0,"#4cc9f0");bell.addColorStop(0.5,"#e0f7ff");bell.addColorStop(1,"#4cc9f0");ctx.fillStyle=bell;ctx.fill();var body=ctx.createLinearGradient(-s*0.28,0,s*0.28,0);body.addColorStop(0,"#0a8cce");body.addColorStop(0.25,"#00c8f0");body.addColorStop(0.55,"#c8f4ff");body.addColorStop(0.8,"#00c8f0");body.addColorStop(1,"#0a6ca0");ctx.beginPath();ctx.roundRect(-s*0.28,-s*0.6,s*0.56,s*1.3,s*0.05);ctx.fillStyle=body;ctx.fill();ctx.beginPath();ctx.moveTo(0,-s*1.05);ctx.bezierCurveTo(-s*0.07,-s*0.78,-s*0.24,-s*0.68,-s*0.28,-s*0.6);ctx.lineTo(s*0.28,-s*0.6);ctx.bezierCurveTo(s*0.24,-s*0.68,s*0.07,-s*0.78,0,-s*1.05);ctx.closePath();var nose=ctx.createLinearGradient(-s*0.28,0,s*0.28,0);nose.addColorStop(0,"#0a6ca0");nose.addColorStop(0.45,"#d8f8ff");nose.addColorStop(1,"#0a6ca0");ctx.fillStyle=nose;ctx.fill();var badgeSize=s*0.38,badgeX=-badgeSize/2,badgeY=-s*0.38;ctx.beginPath();ctx.roundRect(badgeX-s*0.03,badgeY-s*0.03,badgeSize+s*0.06,badgeSize+s*0.06,s*0.06);ctx.fillStyle="rgba(255,255,255,0.92)";ctx.fill();if(logo){ctx.drawImage(logo,badgeX,badgeY,badgeSize,badgeSize);}else{ctx.beginPath();ctx.arc(0,badgeY+badgeSize/2,badgeSize*0.4,0,Math.PI*2);ctx.fillStyle="#00c8f0";ctx.fill();}ctx.beginPath();ctx.roundRect(-s*0.28,s*0.2,s*0.56,s*0.06,s*0.02);ctx.fillStyle="rgba(255,255,255,0.25)";ctx.fill();ctx.restore();}function drawHud(w,h){var fs=Math.min(w,h)*0.026;var progress=Math.max(0,(1.2-y)/1.5);var altStr=y<0.05?"∞":Math.round(progress*28000).toLocaleString()+" ft";var spdStr=y<0.05?"MACH ∞":Math.round(Math.min(380,80+progress*2200))+" kt";ctx.font=fs+"px monospace";ctx.textAlign="right";ctx.fillStyle="rgba(0,255,136,0.42)";ctx.fillText("ALT "+altStr+"  SPD "+spdStr+"  ·  MCP APPS · A2UI CATALOG",w-10,h-10);}function loop(){if(!canvas.isConnected)return;var w=canvas.width,h=canvas.height,cx=w*0.5,s=Math.min(w,h)/7;ctx.clearRect(0,0,w,h);if(!landed){y-=0.012+(1.2-y)*0.002;if(y<=0.08){y=0.08;landed=true;}}var cy=y*h;if(!landed){trail.push({x:cx+(Math.random()-0.5)*s*0.08,y:cy+s*0.98,t:Date.now(),r:3+Math.random()*4});}trail=trail.filter(function(p){return Date.now()-p.t<260;});trail.forEach(function(p){var age=(Date.now()-p.t)/260;var a=(1-age)*0.75;var r=p.r*(1+age*3);var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);g.addColorStop(0,"rgba(255,230,100,"+a+")");g.addColorStop(0.4,"rgba(255,90,0,"+(a*0.7)+")");g.addColorStop(1,"rgba(255,20,0,0)");ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();});if(!landed&&Math.random()<0.45){sparks.push({x:cx+(Math.random()-0.5)*s*0.35,y:cy+s*0.98,vx:(Math.random()-0.5)*3,vy:1.5+Math.random()*4,life:1});}sparks=sparks.filter(function(sp){return sp.life>0;});sparks.forEach(function(sp){ctx.beginPath();ctx.arc(sp.x,sp.y,sp.life*2.8,0,Math.PI*2);ctx.fillStyle="rgba(255,"+Math.round(180+sp.life*75)+",40,"+sp.life+")";ctx.fill();sp.x+=sp.vx;sp.y+=sp.vy;sp.life-=0.065;});drawRocket(cx,cy,w,h);drawHud(w,h);if(landed&&trail.length===0&&sparks.length===0){if(LOOP&&!holdT){holdT=setTimeout(function(){holdT=null;y=1.2;landed=false;raf=requestAnimationFrame(loop);},2600);}return;}raf=requestAnimationFrame(loop);}loop();})();</script>"""
+_GDM_ROCKET_TPL = """<div id="__UID__w" aria-hidden="true" data-a2ui-overlay="__SIDE__-half" style="position:fixed;top:0;__SIDE__:0;width:50%;height:100%;pointer-events:none;z-index:50;background:transparent;"><canvas id="__UID__c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas></div><script>(function(){var canvas=document.getElementById("__UID__c");if(!canvas)return;var ctx=canvas.getContext("2d");var LOOP=true,holdT=null;var logo=null;var img=new Image();img.src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xOV8xMykiPgo8cGF0aCBkPSJNMTggODQuODUyOEw4NS44ODIyIDE2Ljk3MDZDOTUuMjU0OCA3LjU5Nzk4IDExMC40NTEgNy41OTc5OCAxMTkuODIzIDE2Ljk3MDZWMTYuOTcwNkMxMjkuMTk2IDI2LjM0MzEgMTI5LjE5NiA0MS41MzkxIDExOS44MjMgNTAuOTExN0w2OC41NTgxIDEwMi4xNzciIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNNjkuMjY1MiAxMDEuNDdMMTE5LjgyMyA1MC45MTE3QzEyOS4xOTYgNDEuNTM5MSAxNDQuMzkyIDQxLjUzOTEgMTUzLjc2NSA1MC45MTE3TDE1NC4xMTggNTEuMjY1MkMxNjMuNDkxIDYwLjYzNzggMTYzLjQ5MSA3NS44MzM4IDE1NC4xMTggODUuMjA2M0w5Mi43MjQ4IDE0Ni42Qzg5LjYwMDYgMTQ5LjcyNCA4OS42MDA2IDE1NC43ODkgOTIuNzI0OCAxNTcuOTEzTDEwNS4zMzEgMTcwLjUyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTEwMi44NTMgMzMuOTQxMUw1Mi42NDgyIDg0LjE0NTdDNDMuMjc1NiA5My41MTgzIDQzLjI3NTYgMTA4LjcxNCA1Mi42NDgyIDExOC4wODdWMTE4LjA4N0M2Mi4wMjA4IDEyNy40NTkgNzcuMjE2NyAxMjcuNDU5IDg2LjU4OTMgMTE4LjA4N0wxMzYuNzk0IDY3Ljg4MjIiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzE5XzEzIj4KPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==";img.onload=function(){logo=img;};var y=1.2,trail=[],sparks=[],raf=null,landed=false;function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||960;}window.addEventListener("resize",resize);resize();function drawRocket(cx,cy,w,h){var s=Math.min(w,h)/7;var pulse=0.85+0.15*Math.sin(Date.now()/90);var glow=ctx.createRadialGradient(cx,cy+s*1.05,0,cx,cy+s*1.05,s*1.5*pulse);glow.addColorStop(0,"rgba(255,255,200,0.98)");glow.addColorStop(0.12,"rgba(255,180,0,0.9)");glow.addColorStop(0.4,"rgba(255,60,0,0.55)");glow.addColorStop(1,"rgba(255,20,0,0)");ctx.beginPath();ctx.arc(cx,cy+s*1.05,s*1.5*pulse,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(-s*0.28,s*0.55);ctx.lineTo(-s*0.72,s*1.02);ctx.lineTo(-s*0.28,s*0.82);ctx.closePath();ctx.fillStyle="#0077b6";ctx.fill();ctx.beginPath();ctx.moveTo(s*0.28,s*0.55);ctx.lineTo(s*0.72,s*1.02);ctx.lineTo(s*0.28,s*0.82);ctx.closePath();ctx.fillStyle="#0077b6";ctx.fill();ctx.beginPath();ctx.moveTo(-s*0.22,s*0.68);ctx.lineTo(-s*0.3,s*0.98);ctx.lineTo(s*0.3,s*0.98);ctx.lineTo(s*0.22,s*0.68);ctx.closePath();var bell=ctx.createLinearGradient(-s*0.3,0,s*0.3,0);bell.addColorStop(0,"#4cc9f0");bell.addColorStop(0.5,"#e0f7ff");bell.addColorStop(1,"#4cc9f0");ctx.fillStyle=bell;ctx.fill();var body=ctx.createLinearGradient(-s*0.28,0,s*0.28,0);body.addColorStop(0,"#0a8cce");body.addColorStop(0.25,"#00c8f0");body.addColorStop(0.55,"#c8f4ff");body.addColorStop(0.8,"#00c8f0");body.addColorStop(1,"#0a6ca0");ctx.beginPath();ctx.roundRect(-s*0.28,-s*0.6,s*0.56,s*1.3,s*0.05);ctx.fillStyle=body;ctx.fill();ctx.beginPath();ctx.moveTo(0,-s*1.05);ctx.bezierCurveTo(-s*0.07,-s*0.78,-s*0.24,-s*0.68,-s*0.28,-s*0.6);ctx.lineTo(s*0.28,-s*0.6);ctx.bezierCurveTo(s*0.24,-s*0.68,s*0.07,-s*0.78,0,-s*1.05);ctx.closePath();var nose=ctx.createLinearGradient(-s*0.28,0,s*0.28,0);nose.addColorStop(0,"#0a6ca0");nose.addColorStop(0.45,"#d8f8ff");nose.addColorStop(1,"#0a6ca0");ctx.fillStyle=nose;ctx.fill();var badgeSize=s*0.38,badgeX=-badgeSize/2,badgeY=-s*0.38;ctx.beginPath();ctx.roundRect(badgeX-s*0.03,badgeY-s*0.03,badgeSize+s*0.06,badgeSize+s*0.06,s*0.06);ctx.fillStyle="rgba(255,255,255,0.92)";ctx.fill();if(logo){ctx.drawImage(logo,badgeX,badgeY,badgeSize,badgeSize);}else{ctx.beginPath();ctx.arc(0,badgeY+badgeSize/2,badgeSize*0.4,0,Math.PI*2);ctx.fillStyle="#00c8f0";ctx.fill();}ctx.beginPath();ctx.roundRect(-s*0.28,s*0.2,s*0.56,s*0.06,s*0.02);ctx.fillStyle="rgba(255,255,255,0.25)";ctx.fill();ctx.restore();}function drawHud(w,h){var fs=Math.min(w,h)*0.026;var progress=Math.max(0,(1.2-y)/1.5);var altStr=y<0.05?"∞":Math.round(progress*28000).toLocaleString()+" ft";var spdStr=y<0.05?"MACH ∞":Math.round(Math.min(380,80+progress*2200))+" kt";ctx.font=fs+"px monospace";ctx.textAlign="right";ctx.fillStyle="rgba(0,255,136,0.42)";ctx.fillText("ALT "+altStr+"  SPD "+spdStr+"  ·  MCP APPS · A2UI CATALOG",w-10,h-10);}function loop(){if(!canvas.isConnected)return;var w=canvas.width,h=canvas.height,cx=w*0.5,s=Math.min(w,h)/7;ctx.clearRect(0,0,w,h);if(!landed){y-=0.012+(1.2-y)*0.002;if(y<=0.08){y=0.08;landed=true;}}var cy=y*h;if(!landed){trail.push({x:cx+(Math.random()-0.5)*s*0.08,y:cy+s*0.98,t:Date.now(),r:3+Math.random()*4});}trail=trail.filter(function(p){return Date.now()-p.t<260;});trail.forEach(function(p){var age=(Date.now()-p.t)/260;var a=(1-age)*0.75;var r=p.r*(1+age*3);var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);g.addColorStop(0,"rgba(255,230,100,"+a+")");g.addColorStop(0.4,"rgba(255,90,0,"+(a*0.7)+")");g.addColorStop(1,"rgba(255,20,0,0)");ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();});if(!landed&&Math.random()<0.45){sparks.push({x:cx+(Math.random()-0.5)*s*0.35,y:cy+s*0.98,vx:(Math.random()-0.5)*3,vy:1.5+Math.random()*4,life:1});}sparks=sparks.filter(function(sp){return sp.life>0;});sparks.forEach(function(sp){ctx.beginPath();ctx.arc(sp.x,sp.y,sp.life*2.8,0,Math.PI*2);ctx.fillStyle="rgba(255,"+Math.round(180+sp.life*75)+",40,"+sp.life+")";ctx.fill();sp.x+=sp.vx;sp.y+=sp.vy;sp.life-=0.065;});drawRocket(cx,cy,w,h);drawHud(w,h);if(landed&&trail.length===0&&sparks.length===0){if(LOOP&&!holdT){holdT=setTimeout(function(){holdT=null;y=1.2;landed=false;raf=requestAnimationFrame(loop);},2600);}return;}raf=requestAnimationFrame(loop);}loop();})();</script>"""
 
 
 def _render_gdm_rocket_panel(b: dict) -> str:
@@ -26324,7 +26324,7 @@ def _render_seat_map(b: dict) -> str:
                 f'opacity:{"0.4" if occupied else "1"};">'
                 f'<input type="radio" id="{iid}" name="{name}" value="{sid}" '
                 f'data-label="{_esc(label)}" {"disabled" if occupied else ""} '
-                f'style="display:none;" class="{gid}-input">'
+                f'style="position:absolute;opacity:0;width:1px;height:1px;margin:0;" class="{gid}-input">'
                 f'{label}'
                 f'</label>'
             )
@@ -26402,7 +26402,7 @@ def _render_slot_scheduler(b: dict) -> str:
                 f'opacity:{"1" if available else "0.4"};background:#fff;">'
                 f'<input type="radio" id="{sid}" name="{gid}_slot" '
                 f'data-date="{date_str}" data-time="{time_str}" '
-                f'{"disabled" if not available else ""} style="display:none;" class="{gid}-input">'
+                f'{"disabled" if not available else ""} style="position:absolute;opacity:0;width:1px;height:1px;margin:0;" class="{gid}-input">'
                 f'{time_str}'
                 f'</label>'
             )

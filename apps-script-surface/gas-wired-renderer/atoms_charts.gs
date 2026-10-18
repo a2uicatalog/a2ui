@@ -401,7 +401,7 @@ _RENDERERS['data_table_sortable'] = function(b) {
   html += '<thead><tr>';
   columns.forEach(function(col) {
     if (col.key === '_delete' || col.key === '_select') {
-      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:34px;"></th>';
+      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:34px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Select</span></th>';
       return;
     }
     var align = col.type === 'number' ? 'right' : 'left';
@@ -1793,12 +1793,12 @@ _RENDERERS['variant_selector'] = function(b) {
     var id = 'variant-' + uid + '-' + i;
     if (v.color) {
       variantsHtml += '<label for="' + id + '" title="' + _esc(v.label || v.value || '') + '" style="cursor:pointer;">'
-        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="display:none;"' + (v.disabled ? ' disabled' : '') + '>'
+        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (v.disabled ? ' disabled' : '') + '>'
         + '<span style="display:inline-block;width:28px;height:28px;border-radius:50%;background:' + _esc(v.color) + ';border:2px solid #fff;box-shadow:0 0 0 2px #d1d5db;' + (v.disabled ? 'opacity:0.4;' : '') + '"></span>'
         + '</label>';
     } else {
       variantsHtml += '<label for="' + id + '" style="cursor:pointer;">'
-        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="display:none;"' + (v.disabled ? ' disabled' : '') + '>'
+        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (v.disabled ? ' disabled' : '') + '>'
         + '<span style="display:inline-block;padding:6px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.82rem;font-weight:500;color:#374151;' + (v.disabled ? 'opacity:0.4;' : '') + '">' + _esc(v.label || v.value || '') + '</span>'
         + '</label>';
     }
@@ -2298,7 +2298,7 @@ _RENDERERS['agent_sketchpad'] = function(b) {
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes sketch-draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
-    + '<svg viewBox="' + _esc(viewBox) + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
+    + '<svg viewBox="' + _esc(viewBox) + '" role="img" aria-label="' + _esc(label || 'Agent sketchpad drawing') + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
     + elements
     + '</svg></div>';
 };
@@ -2720,7 +2720,7 @@ _RENDERERS['step_reveal_sequence'] = function(b) {
   css += '@keyframes srs-in-' + uid + '{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}';
   css += '</style>';
   var inputs = steps.map(function(_, i) {
-    return '<input type="radio" id="srs-' + uid + '-' + i + '" name="srs-' + uid + '"' + (i===0?' checked':'') + ' style="display:none;">';
+    return '<input type="radio" id="srs-' + uid + '-' + i + '" name="srs-' + uid + '"' + (i===0?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">';
   }).join('');
   var nav = '<div class="srs-nav-' + uid + '" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
     + steps.map(function(s, i) {

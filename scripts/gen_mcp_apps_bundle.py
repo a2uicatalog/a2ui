@@ -764,6 +764,7 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
 {atom_styles}
 <style>
 body {{ padding: 24px; }}
+label:has(input[type=radio]:focus-visible), label:has(input[type=checkbox]:focus-visible), input[type=radio]:focus-visible + label, input[type=checkbox]:focus-visible + label {{ outline: 2px solid #4f46e5; outline-offset: 2px; }}
 /* Applied by paint() ONLY when the payload contains a declared half-viewport
    overlay atom (data-a2ui-overlay, e.g. gdm_rocket_panel, iso_fireworks_panel)
    -- everything else gets the full viewport. Right-half overlays (default)

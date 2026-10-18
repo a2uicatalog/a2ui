@@ -913,6 +913,7 @@
 </style>
 <style>
 body { padding: 24px; }
+label:has(input[type=radio]:focus-visible), label:has(input[type=checkbox]:focus-visible), input[type=radio]:focus-visible + label, input[type=checkbox]:focus-visible + label { outline: 2px solid #4f46e5; outline-offset: 2px; }
 /* Applied by paint() ONLY when the payload contains a declared half-viewport
    overlay atom (data-a2ui-overlay, e.g. gdm_rocket_panel, iso_fireworks_panel)
    -- everything else gets the full viewport. Right-half overlays (default)
@@ -2819,7 +2820,7 @@ _RENDERERS['tabs'] = function(b) {
   });
   css += '</style>';
   var inputs = tabList.map(function(t, i){
-    return '<input type="radio" id="tb' + uid + '_' + i + '" name="tab_' + uid + '" style="display:none;"' + (i===0?' checked':'') + '>';
+    return '<input type="radio" id="tb' + uid + '_' + i + '" name="tab_' + uid + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (i===0?' checked':'') + '>';
   }).join('');
   var labels = '<div class="tm-tab-labels-' + uid + '" style="display:flex;flex-wrap:wrap;border-bottom:2px solid #e5e7eb;margin-bottom:0;">' +
     tabList.map(function(t, i){
@@ -3332,7 +3333,7 @@ _RENDERERS['tabbed_code'] = function(b) {
   var labels = tabs.map(function(t, i){
     return '<label for="tc_' + uid + '_' + i + '" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid ' + (i===0?'#7c3aed':'transparent') + ';color:' + (i===0?'#7c3aed':'#697281') + ';">' + _esc(t.label||t.language||('Tab '+(i+1))) + '</label>';
   }).join('');
-  var inputs = tabs.map(function(t,i){ return '<input type="radio" id="tc_' + uid + '_' + i + '" name="tc_' + uid + '"' + (i===0?' checked':'') + ' style="display:none;">'; }).join('');
+  var inputs = tabs.map(function(t,i){ return '<input type="radio" id="tc_' + uid + '_' + i + '" name="tc_' + uid + '"' + (i===0?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'; }).join('');
   var perTab = tabs.map(function(t,i){
     return '<style>#tc_' + uid + '_' + i + ':checked ~ .tcp_' + uid + ' > div:nth-child(' + (i+1) + '){display:block!important;}</style>';
   }).join('');
@@ -3674,7 +3675,7 @@ _RENDERERS['segmented_control'] = function(b) {
   var norm = options.map(function(o){ var v = typeof o === 'string' ? o : (o && typeof o === 'object' ? o.value : ''), l = typeof o === 'string' ? o : (o && typeof o === 'object' ? o.label : ''); return {value: _esc(v == null ? '' : String(v)), label: _esc(l == null ? '' : String(l))}; });
   if (!selected && norm.length) selected = norm[0].value;
   var items = norm.map(function(o){
-    return '<input type="radio" id="sgc' + uid + '_' + o.value + '" name="' + name + '_' + uid + '" value="' + _esc(o.value) + '"' + (o.value===selected?' checked':'') + ' style="display:none;">' +
+    return '<input type="radio" id="sgc' + uid + '_' + o.value + '" name="' + name + '_' + uid + '" value="' + _esc(o.value) + '"' + (o.value===selected?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' +
       '<label for="sgc' + uid + '_' + o.value + '" style="padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;">' + _esc(o.label) + '</label>';
   }).join('');
   return '<style>.sgc' + uid + ' input:checked+label{background:#e8f0fe;color:#1558b4;font-weight:600;}</style>' +
@@ -3704,7 +3705,7 @@ _RENDERERS['custom_checkbox_group'] = function(b) {
     var lbl = opt.label || val;
     var checked = opt.is_checked || opt.checked ? ' checked' : '';
     var cid = 'ccg' + uid + '_' + i;
-    return '<div><input type="checkbox" id="' + cid + '" name="' + _esc(name) + '" value="' + _esc(val) + '"' + checked + ' style="display:none;">' +
+    return '<div><input type="checkbox" id="' + cid + '" name="' + _esc(name) + '" value="' + _esc(val) + '"' + checked + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' +
       '<label for="' + cid + '" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:0.88rem;color:#374151;">' +
       '<span class="box' + uid + '" style="width:18px;height:18px;border:2px solid #dadce0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">' + checkSvg + '</span>' + _esc(lbl) + '</label></div>';
   }).join('');
@@ -6192,7 +6193,7 @@ _RENDERERS['seat_map'] = function(b) {
         'opacity:' + (occupied ? '0.4' : '1') + ';">' +
         '<input type="radio" id="' + iid + '" name="' + _esc(name) + '" value="' + _esc(sid) + '" ' +
         'data-label="' + _esc(label) + '" aria-label="' + _esc(label || ('Row ' + (r + 1) + ', seat ' + (s + 1))) + '" ' + (occupied ? 'disabled' : '') + ' ' +
-        'style="display:none;" class="sm-input-' + uid + '">' +
+        'style="position:absolute;opacity:0;width:1px;height:1px;margin:0;" class="sm-input-' + uid + '">' +
         _esc(label) +
         '</label>';
     }
@@ -6258,7 +6259,7 @@ _RENDERERS['slot_scheduler'] = function(b) {
         'opacity:' + (available ? '1' : '0.4') + ';background:#fff;">' +
         '<input type="radio" id="' + sid + '" name="ss-slot-' + uid + '" ' +
         'data-date="' + _esc(dateStr) + '" data-time="' + _esc(timeStr) + '" ' +
-        (available ? '' : 'disabled') + ' style="display:none;" class="ss-input-' + uid + '">' +
+        (available ? '' : 'disabled') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;" class="ss-input-' + uid + '">' +
         _esc(timeStr) +
         '</label>';
     }
@@ -14463,7 +14464,7 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
   return (
     // Matches the original gdm-rocket-panel Lit component's layout:
     // fixed, half-width, full height, non-interactive overlay.
-    '<div id="' + uid + 'w" data-a2ui-overlay="' + side + '-half" style="position:fixed;top:0;' +
+    '<div id="' + uid + 'w" aria-hidden="true" data-a2ui-overlay="' + side + '-half" style="position:fixed;top:0;' +
       (side === 'left' ? 'left:0;' : 'right:0;') + 'width:50%;height:100%;' +
       'pointer-events:none;z-index:' + z + ';background:transparent;">' +
       '<canvas id="' + uid + 'c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>' +
@@ -14620,7 +14621,7 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
 _RENDERERS['iso_fireworks_panel'] = function(b) {
   var uid = 'ifw' + Math.random().toString(36).substr(2, 6);
   return (
-    '<div id="' + uid + 'w" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
+    '<div id="' + uid + 'w" aria-hidden="true" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
       'pointer-events:none;z-index:50;background:transparent;">' +
       '<canvas id="' + uid + 'c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>' +
     '</div>' +
@@ -16810,7 +16811,7 @@ _RENDERERS['data_table_sortable'] = function(b) {
   html += '<thead><tr>';
   columns.forEach(function(col) {
     if (col.key === '_delete' || col.key === '_select') {
-      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:34px;"></th>';
+      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:34px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Select</span></th>';
       return;
     }
     var align = col.type === 'number' ? 'right' : 'left';
@@ -18202,12 +18203,12 @@ _RENDERERS['variant_selector'] = function(b) {
     var id = 'variant-' + uid + '-' + i;
     if (v.color) {
       variantsHtml += '<label for="' + id + '" title="' + _esc(v.label || v.value || '') + '" style="cursor:pointer;">'
-        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="display:none;"' + (v.disabled ? ' disabled' : '') + '>'
+        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (v.disabled ? ' disabled' : '') + '>'
         + '<span style="display:inline-block;width:28px;height:28px;border-radius:50%;background:' + _esc(v.color) + ';border:2px solid #fff;box-shadow:0 0 0 2px #d1d5db;' + (v.disabled ? 'opacity:0.4;' : '') + '"></span>'
         + '</label>';
     } else {
       variantsHtml += '<label for="' + id + '" style="cursor:pointer;">'
-        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="display:none;"' + (v.disabled ? ' disabled' : '') + '>'
+        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (v.disabled ? ' disabled' : '') + '>'
         + '<span style="display:inline-block;padding:6px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.82rem;font-weight:500;color:#374151;' + (v.disabled ? 'opacity:0.4;' : '') + '">' + _esc(v.label || v.value || '') + '</span>'
         + '</label>';
     }
@@ -18707,7 +18708,7 @@ _RENDERERS['agent_sketchpad'] = function(b) {
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes sketch-draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
-    + '<svg viewBox="' + _esc(viewBox) + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
+    + '<svg viewBox="' + _esc(viewBox) + '" role="img" aria-label="' + _esc(label || 'Agent sketchpad drawing') + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
     + elements
     + '</svg></div>';
 };
@@ -19129,7 +19130,7 @@ _RENDERERS['step_reveal_sequence'] = function(b) {
   css += '@keyframes srs-in-' + uid + '{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}';
   css += '</style>';
   var inputs = steps.map(function(_, i) {
-    return '<input type="radio" id="srs-' + uid + '-' + i + '" name="srs-' + uid + '"' + (i===0?' checked':'') + ' style="display:none;">';
+    return '<input type="radio" id="srs-' + uid + '-' + i + '" name="srs-' + uid + '"' + (i===0?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">';
   }).join('');
   var nav = '<div class="srs-nav-' + uid + '" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
     + steps.map(function(s, i) {
@@ -20005,7 +20006,7 @@ _RENDERERS['content_tabs'] = function(b) {
 
   var inputs = tabList.map(function(t, i) {
     return '<input type="radio" name="' + uid + '" id="' + uid + '_' + i + '"' +
-           (i === open ? ' checked' : '') + ' style="display:none;">';
+           (i === open ? ' checked' : '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">';
   }).join('');
   var labels = tabList.map(function(t, i) {
     return '<label class="' + uid + 'l" for="' + uid + '_' + i + '">' + _esc(t.label || 'Tab ' + (i + 1)) + '</label>';
@@ -22986,7 +22987,7 @@ var _PP_CSS = '<style>' +
   ':root:not([data-theme="light"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}' +
   '.pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}' +
   '.pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}' +
-  '.pp-toggles input{display:none;}' +
+  '.pp-toggles input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}' +
   '.pp-toggles label{font-family:ui-monospace,monospace;font-size:.72rem;padding:6px 14px;' +
   'border:1px solid var(--border,#e0e0e0);border-radius:999px;cursor:pointer;color:var(--text-muted,#5f6368);' +
   'transition:all .15s;}' +
@@ -32696,7 +32697,7 @@ _RENDERERS['multi_select_input'] = function(b) {
     var on  = selected.indexOf(val) >= 0;
     var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
     return '<label style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;border:1px solid ' + (on ? accent : 'var(--border,#e5e7eb)') + ';background:' + (on ? accent + '15' : 'var(--bg,#fff)') + ';color:' + (on ? accent : 'var(--text,#374151)') + ';">'
-      + '<input type="checkbox" name="' + _esc(b.name || 'ms') + '[]" value="' + _esc(val) + '"' + (on ? ' checked' : '') + ' style="display:none;">' + _esc(String(lbl)) + '</label>';
+      + '<input type="checkbox" name="' + _esc(b.name || 'ms') + '[]" value="' + _esc(val) + '"' + (on ? ' checked' : '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' + _esc(String(lbl)) + '</label>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + label
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + opts + '</div></div>';

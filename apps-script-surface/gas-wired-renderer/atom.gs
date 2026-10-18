@@ -1818,7 +1818,7 @@ _RENDERERS['tabs'] = function(b) {
   });
   css += '</style>';
   var inputs = tabList.map(function(t, i){
-    return '<input type="radio" id="tb' + uid + '_' + i + '" name="tab_' + uid + '" style="display:none;"' + (i===0?' checked':'') + '>';
+    return '<input type="radio" id="tb' + uid + '_' + i + '" name="tab_' + uid + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (i===0?' checked':'') + '>';
   }).join('');
   var labels = '<div class="tm-tab-labels-' + uid + '" style="display:flex;flex-wrap:wrap;border-bottom:2px solid #e5e7eb;margin-bottom:0;">' +
     tabList.map(function(t, i){
@@ -2331,7 +2331,7 @@ _RENDERERS['tabbed_code'] = function(b) {
   var labels = tabs.map(function(t, i){
     return '<label for="tc_' + uid + '_' + i + '" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid ' + (i===0?'#7c3aed':'transparent') + ';color:' + (i===0?'#7c3aed':'#697281') + ';">' + _esc(t.label||t.language||('Tab '+(i+1))) + '</label>';
   }).join('');
-  var inputs = tabs.map(function(t,i){ return '<input type="radio" id="tc_' + uid + '_' + i + '" name="tc_' + uid + '"' + (i===0?' checked':'') + ' style="display:none;">'; }).join('');
+  var inputs = tabs.map(function(t,i){ return '<input type="radio" id="tc_' + uid + '_' + i + '" name="tc_' + uid + '"' + (i===0?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'; }).join('');
   var perTab = tabs.map(function(t,i){
     return '<style>#tc_' + uid + '_' + i + ':checked ~ .tcp_' + uid + ' > div:nth-child(' + (i+1) + '){display:block!important;}</style>';
   }).join('');
@@ -2673,7 +2673,7 @@ _RENDERERS['segmented_control'] = function(b) {
   var norm = options.map(function(o){ var v = typeof o === 'string' ? o : (o && typeof o === 'object' ? o.value : ''), l = typeof o === 'string' ? o : (o && typeof o === 'object' ? o.label : ''); return {value: _esc(v == null ? '' : String(v)), label: _esc(l == null ? '' : String(l))}; });
   if (!selected && norm.length) selected = norm[0].value;
   var items = norm.map(function(o){
-    return '<input type="radio" id="sgc' + uid + '_' + o.value + '" name="' + name + '_' + uid + '" value="' + _esc(o.value) + '"' + (o.value===selected?' checked':'') + ' style="display:none;">' +
+    return '<input type="radio" id="sgc' + uid + '_' + o.value + '" name="' + name + '_' + uid + '" value="' + _esc(o.value) + '"' + (o.value===selected?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' +
       '<label for="sgc' + uid + '_' + o.value + '" style="padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;">' + _esc(o.label) + '</label>';
   }).join('');
   return '<style>.sgc' + uid + ' input:checked+label{background:#e8f0fe;color:#1558b4;font-weight:600;}</style>' +
@@ -2703,7 +2703,7 @@ _RENDERERS['custom_checkbox_group'] = function(b) {
     var lbl = opt.label || val;
     var checked = opt.is_checked || opt.checked ? ' checked' : '';
     var cid = 'ccg' + uid + '_' + i;
-    return '<div><input type="checkbox" id="' + cid + '" name="' + _esc(name) + '" value="' + _esc(val) + '"' + checked + ' style="display:none;">' +
+    return '<div><input type="checkbox" id="' + cid + '" name="' + _esc(name) + '" value="' + _esc(val) + '"' + checked + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' +
       '<label for="' + cid + '" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:0.88rem;color:#374151;">' +
       '<span class="box' + uid + '" style="width:18px;height:18px;border:2px solid #dadce0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">' + checkSvg + '</span>' + _esc(lbl) + '</label></div>';
   }).join('');
@@ -5191,7 +5191,7 @@ _RENDERERS['seat_map'] = function(b) {
         'opacity:' + (occupied ? '0.4' : '1') + ';">' +
         '<input type="radio" id="' + iid + '" name="' + _esc(name) + '" value="' + _esc(sid) + '" ' +
         'data-label="' + _esc(label) + '" aria-label="' + _esc(label || ('Row ' + (r + 1) + ', seat ' + (s + 1))) + '" ' + (occupied ? 'disabled' : '') + ' ' +
-        'style="display:none;" class="sm-input-' + uid + '">' +
+        'style="position:absolute;opacity:0;width:1px;height:1px;margin:0;" class="sm-input-' + uid + '">' +
         _esc(label) +
         '</label>';
     }
@@ -5257,7 +5257,7 @@ _RENDERERS['slot_scheduler'] = function(b) {
         'opacity:' + (available ? '1' : '0.4') + ';background:#fff;">' +
         '<input type="radio" id="' + sid + '" name="ss-slot-' + uid + '" ' +
         'data-date="' + _esc(dateStr) + '" data-time="' + _esc(timeStr) + '" ' +
-        (available ? '' : 'disabled') + ' style="display:none;" class="ss-input-' + uid + '">' +
+        (available ? '' : 'disabled') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;" class="ss-input-' + uid + '">' +
         _esc(timeStr) +
         '</label>';
     }

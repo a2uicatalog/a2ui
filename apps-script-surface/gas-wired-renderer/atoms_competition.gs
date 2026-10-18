@@ -40,7 +40,7 @@ _RENDERERS['content_tabs'] = function(b) {
 
   var inputs = tabList.map(function(t, i) {
     return '<input type="radio" name="' + uid + '" id="' + uid + '_' + i + '"' +
-           (i === open ? ' checked' : '') + ' style="display:none;">';
+           (i === open ? ' checked' : '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">';
   }).join('');
   var labels = tabList.map(function(t, i) {
     return '<label class="' + uid + 'l" for="' + uid + '_' + i + '">' + _esc(t.label || 'Tab ' + (i + 1)) + '</label>';

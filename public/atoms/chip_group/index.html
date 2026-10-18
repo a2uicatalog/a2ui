@@ -53,6 +53,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
@@ -186,7 +187,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of chip_group"><style>#0a6fe6a9 input{display:none;}#0a6fe6a9 input:checked+label{background:#4f46e5;color:#fff;border-color:#4f46e5;}</style><div id="0a6fe6a9" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="0a6fe6a9_0" name="0a6fe6a9" value="Web"><label for="0a6fe6a9_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="0a6fe6a9_1" name="0a6fe6a9" value="Meet"><label for="0a6fe6a9_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="0a6fe6a9_2" name="0a6fe6a9" value="Chat"><label for="0a6fe6a9_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of chip_group"><style>#0a6fe6a9 input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}#0a6fe6a9 input:checked+label{background:#4f46e5;color:#fff;border-color:#4f46e5;}</style><div id="0a6fe6a9" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="0a6fe6a9_0" name="0a6fe6a9" value="Web"><label for="0a6fe6a9_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="0a6fe6a9_1" name="0a6fe6a9" value="Meet"><label for="0a6fe6a9_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="0a6fe6a9_2" name="0a6fe6a9" value="Chat"><label for="0a6fe6a9_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
 </div>
 
   

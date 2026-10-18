@@ -127,7 +127,7 @@ _RENDERERS['multi_select_input'] = function(b) {
     var on  = selected.indexOf(val) >= 0;
     var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
     return '<label style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;border:1px solid ' + (on ? accent : 'var(--border,#e5e7eb)') + ';background:' + (on ? accent + '15' : 'var(--bg,#fff)') + ';color:' + (on ? accent : 'var(--text,#374151)') + ';">'
-      + '<input type="checkbox" name="' + _esc(b.name || 'ms') + '[]" value="' + _esc(val) + '"' + (on ? ' checked' : '') + ' style="display:none;">' + _esc(String(lbl)) + '</label>';
+      + '<input type="checkbox" name="' + _esc(b.name || 'ms') + '[]" value="' + _esc(val) + '"' + (on ? ' checked' : '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' + _esc(String(lbl)) + '</label>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + label
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + opts + '</div></div>';

@@ -35,7 +35,7 @@ var _PP_CSS = '<style>' +
   ':root:not([data-theme="light"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}' +
   '.pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}' +
   '.pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}' +
-  '.pp-toggles input{display:none;}' +
+  '.pp-toggles input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}' +
   '.pp-toggles label{font-family:ui-monospace,monospace;font-size:.72rem;padding:6px 14px;' +
   'border:1px solid var(--border,#e0e0e0);border-radius:999px;cursor:pointer;color:var(--text-muted,#5f6368);' +
   'transition:all .15s;}' +
