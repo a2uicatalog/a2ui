@@ -6146,7 +6146,7 @@ def _render_choicebox_group(b: dict) -> str:
             f'border:1.5px solid #dadce0;border-radius:10px;cursor:{cursor};'
             f'background:#fff;{opacity}">'
             f'<input type="{input_type}" id="{iid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}" {dis_attr} '
-            f'style="display:none;">'
+            f'style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
             f'{icon_html}'
             f'<span style="font-size:0.9rem;font-weight:600;color:#3c4043;">{_cv_esc(title)}</span>'
             f'{desc_html}'
