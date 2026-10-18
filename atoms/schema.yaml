@@ -19804,6 +19804,36 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: toulmin_argument
+  description: >
+    One argument laid out the Toulmin way (claim, grounds, warrant, backing,
+    qualifier, rebuttals) as an inspectable record: the confidence plumbing
+    behind a decision or a reading, not a finished output. Every ground carries
+    a verbatim quote, checked as an exact substring of source_excerpt with the
+    same check the article_playbook lenses use, and tagged UNVERIFIED when it
+    is not found. A missing warrant, backing or rebuttal is shown as missing,
+    never left out, and a status chip sums the record up (STANDS, UNVERIFIED
+    GROUNDS, UNGROUNDED, REBUTTED). Field names follow article_playbook's
+    claim / grounds / warrant spine.
+  compact_description: Toulmin argument record with verbatim-checked grounds and visible gaps
+  stage: preview
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+  fields:
+    claim: string (required). What is argued, at the confidence its grounds support.
+    qualifier: string (optional). The hedge the claim carries ("probably", "recommended"). Qualifiers survive; never drop one to sound surer.
+    grounds: array (required, max 8). Array of {quote (string, verbatim substring of source_excerpt), text? (string, what the quote shows), source? (string, where it came from)}
+    warrant: string (optional, wanted). The assumption that joins grounds to claim; shown as missing when absent.
+    backing: string (optional). What supports the warrant, ideally a measured value and its basis; shown as missing when absent.
+    rebuttals: array (optional, max 6). Array of {text (string, the condition), applies (boolean, true when it holds here)}. Any rebuttal that applies marks the record REBUTTED.
+    source_excerpt: string (optional). The verbatim source text the quotes are checked against; without it every quote reads UNVERIFIED.
+    title: string (optional). A small label above the record.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: concept_ladder
   description: 'A layered-depth concept explainer — an opening hook line, a
     hero "mental model" card carrying the one-line analogy, then depth rungs

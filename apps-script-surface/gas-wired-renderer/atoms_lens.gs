@@ -172,3 +172,60 @@ _RENDERERS['lens_context'] = function(b) {
   }
   return html;
 };
+
+// ── toulmin_argument ─────────────────────────────────────────────────────────
+// One argument laid out Toulmin's way (claim, grounds, warrant, backing,
+// qualifier, rebuttals) as an inspectable record: the confidence plumbing
+// behind a decision, not a finished reading. Each ground's quote goes through
+// the same verbatim check as the lenses above; a missing warrant, backing or
+// rebuttal is shown as missing, never left out.
+function _tlRow(label, body) {
+  return '<div style="display:grid;grid-template-columns:7.5em 1fr;gap:10px;padding:9px 0;border-top:1px solid rgba(0,0,0,0.08);">' +
+    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#4b5563;padding-top:2px;">' + label + '</div>' +
+    '<div style="min-width:0;">' + body + '</div></div>';
+}
+
+function _tlMissing(text) {
+  return '<div style="font-size:0.8rem;font-style:italic;color:#92400e;">⚠ ' + text + '</div>';
+}
+
+_RENDERERS['toulmin_argument'] = function(b) {
+  var excerpt = b.source_excerpt || '';
+  var grounds = (Array.isArray(b.grounds) ? b.grounds : []).slice(0, 8);
+  var rebuttals = (Array.isArray(b.rebuttals) ? b.rebuttals : []).slice(0, 6);
+  var verified = 0, applies = 0, gh = '', rh = '';
+  for (var i = 0; i < grounds.length; i++) {
+    var g = grounds[i] || {};
+    if (_lensEvidenceVerified(g.quote, excerpt)) verified++;
+    gh += '<div style="margin-bottom:8px;">' +
+      (g.text ? '<div style="font-size:0.9rem;">' + _esc(g.text) + '</div>' : '') +
+      _lensEvidenceBlock(g.quote, excerpt) +
+      (g.source ? '<div style="font-size:0.72rem;color:#4b5563;">' + _esc(g.source) + '</div>' : '') +
+      '</div>';
+  }
+  for (var j = 0; j < rebuttals.length; j++) {
+    var r = rebuttals[j] || {};
+    var on = !!r.applies;
+    if (on) applies++;
+    rh += '<div style="display:flex;gap:8px;align-items:baseline;margin-bottom:6px;">' +
+      '<span style="flex:none;font-size:0.66rem;font-weight:700;padding:2px 7px;border-radius:999px;' +
+      (on ? 'background:#fee2e2;color:#b91c1c;">APPLIES' : 'background:rgba(0,0,0,0.06);color:#4b5563;">DOES NOT APPLY') + '</span>' +
+      '<span style="font-size:0.88rem;">unless ' + _esc(r.text || '') + '</span></div>';
+  }
+  var status = 'STANDS', scol = '#0f766e';
+  if (applies) { status = 'REBUTTED'; scol = '#b91c1c'; }
+  else if (!grounds.length) { status = 'UNGROUNDED'; scol = '#b91c1c'; }
+  else if (verified < grounds.length) { status = 'UNVERIFIED GROUNDS'; scol = '#92400e'; }
+  var claim = b.claim || '';
+  return '<div role="group" aria-label="' + _esc('Argument: ' + claim) + '" style="box-sizing:border-box;border:1px solid rgba(0,0,0,0.12);border-radius:12px;padding:14px 18px 6px;margin:1rem 0;background:#ffffff;color:#111827;font-family:system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;">' +
+    (b.title ? '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#4b5563;margin-bottom:6px;">' + _esc(b.title) + '</div>' : '') +
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;">' +
+    '<span style="font-size:0.7rem;font-weight:800;letter-spacing:0.08em;padding:3px 9px;border-radius:999px;border:1.5px solid ' + scol + ';color:' + scol + ';">' + status + '</span>' +
+    '<span style="font-size:0.75rem;color:#4b5563;">' + grounds.length + (grounds.length === 1 ? ' ground · ' : ' grounds · ') + verified + ' verified in source · ' + applies + ' of ' + rebuttals.length + ' rebuttals apply</span></div>' +
+    _tlRow('Claim', claim ? (b.qualifier ? '<span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:#e0e7ff;color:#3730a3;margin-right:6px;">' + _esc(b.qualifier) + '</span>' : '') + '<span style="font-weight:700;font-size:1rem;">' + _esc(claim) + '</span>' : _tlMissing('no claim stated')) +
+    _tlRow('Grounds', gh || _tlMissing('no grounds offered')) +
+    _tlRow('Warrant', b.warrant ? '<div style="font-size:0.9rem;">since ' + _esc(b.warrant) + '</div>' : _tlMissing('no warrant stated: the step from grounds to claim is unexamined')) +
+    _tlRow('Backing', b.backing ? '<div style="font-size:0.88rem;">' + _esc(b.backing) + '</div>' : _tlMissing('no backing: the warrant is asserted, not supported')) +
+    _tlRow('Rebuttals', rh || _tlMissing('no rebuttals considered')) +
+    '</div>';
+};

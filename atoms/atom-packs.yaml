@@ -675,6 +675,7 @@ a2ui-meta-v1:
 - surface_map
 - token_budget_meter
 - tool_call_card
+- toulmin_argument
 - url_anatomy
 a2ui-ops-v1:
 - sun_path

@@ -30789,6 +30789,65 @@ def _render_lens_context(b: dict) -> str:
     return _lens_rows(items, 'label', 'note')
 
 
+# Twin of _RENDERERS['toulmin_argument'] in atoms_lens.gs (byte for byte, tests/test_gas_twins.py).
+def _tl_row(label, body):
+    return ('<div style="display:grid;grid-template-columns:7.5em 1fr;gap:10px;padding:9px 0;border-top:1px solid rgba(0,0,0,0.08);">'
+            '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#4b5563;padding-top:2px;">' + label + '</div>'
+            '<div style="min-width:0;">' + body + '</div></div>')
+
+
+def _tl_missing(text):
+    return '<div style="font-size:0.8rem;font-style:italic;color:#92400e;">⚠ ' + text + '</div>'
+
+
+def _render_toulmin_argument(b: dict) -> str:
+    excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
+    grounds = _gx_list(_if_g(b, 'grounds'))[:8]
+    rebuttals = _gx_list(_if_g(b, 'rebuttals'))[:6]
+    verified, applies, gh, rh = 0, 0, '', ''
+    for item in grounds:
+        g = _gx_or(item, {})
+        if _lens_evidence_verified(_gx_get(g, 'quote'), excerpt):
+            verified += 1
+        text, source = _gx_get(g, 'text'), _gx_get(g, 'source')
+        gh += ('<div style="margin-bottom:8px;">'
+               + ('<div style="font-size:0.9rem;">' + _gx_esc(text) + '</div>' if _if_truthy(text) else '')
+               + _lens_evidence_block(_gx_get(g, 'quote'), excerpt)
+               + ('<div style="font-size:0.72rem;color:#4b5563;">' + _gx_esc(source) + '</div>' if _if_truthy(source) else '')
+               + '</div>')
+    for item in rebuttals:
+        r = _gx_or(item, {})
+        on = _if_truthy(_gx_get(r, 'applies'))
+        if on:
+            applies += 1
+        rh += ('<div style="display:flex;gap:8px;align-items:baseline;margin-bottom:6px;">'
+               '<span style="flex:none;font-size:0.66rem;font-weight:700;padding:2px 7px;border-radius:999px;'
+               + ('background:#fee2e2;color:#b91c1c;">APPLIES' if on else 'background:rgba(0,0,0,0.06);color:#4b5563;">DOES NOT APPLY') + '</span>'
+               '<span style="font-size:0.88rem;">unless ' + _gx_esc(_gx_or(_gx_get(r, 'text'), '')) + '</span></div>')
+    status, scol = 'STANDS', '#0f766e'
+    if applies:
+        status, scol = 'REBUTTED', '#b91c1c'
+    elif not grounds:
+        status, scol = 'UNGROUNDED', '#b91c1c'
+    elif verified < len(grounds):
+        status, scol = 'UNVERIFIED GROUNDS', '#92400e'
+    claim = _gx_or(_if_g(b, 'claim'), '')
+    title, qualifier, warrant, backing = _if_g(b, 'title'), _if_g(b, 'qualifier'), _if_g(b, 'warrant'), _if_g(b, 'backing')
+    claim_html = ((('<span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:#e0e7ff;color:#3730a3;margin-right:6px;">' + _gx_esc(qualifier) + '</span>') if _if_truthy(qualifier) else '')
+                  + '<span style="font-weight:700;font-size:1rem;">' + _gx_esc(claim) + '</span>') if _if_truthy(claim) else _tl_missing('no claim stated')
+    return ('<div role="group" aria-label="' + _gx_esc('Argument: ' + _if_str(claim)) + '" style="box-sizing:border-box;border:1px solid rgba(0,0,0,0.12);border-radius:12px;padding:14px 18px 6px;margin:1rem 0;background:#ffffff;color:#111827;font-family:system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;">'
+            + ('<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#4b5563;margin-bottom:6px;">' + _gx_esc(title) + '</div>' if _if_truthy(title) else '')
+            + '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;">'
+            '<span style="font-size:0.7rem;font-weight:800;letter-spacing:0.08em;padding:3px 9px;border-radius:999px;border:1.5px solid ' + scol + ';color:' + scol + ';">' + status + '</span>'
+            '<span style="font-size:0.75rem;color:#4b5563;">' + str(len(grounds)) + (' ground · ' if len(grounds) == 1 else ' grounds · ') + str(verified) + ' verified in source · ' + str(applies) + ' of ' + str(len(rebuttals)) + ' rebuttals apply</span></div>'
+            + _tl_row('Claim', claim_html)
+            + _tl_row('Grounds', gh or _tl_missing('no grounds offered'))
+            + _tl_row('Warrant', ('<div style="font-size:0.9rem;">since ' + _gx_esc(warrant) + '</div>') if _if_truthy(warrant) else _tl_missing('no warrant stated: the step from grounds to claim is unexamined'))
+            + _tl_row('Backing', ('<div style="font-size:0.88rem;">' + _gx_esc(backing) + '</div>') if _if_truthy(backing) else _tl_missing('no backing: the warrant is asserted, not supported'))
+            + _tl_row('Rebuttals', rh or _tl_missing('no rebuttals considered'))
+            + '</div>')
+
+
 def _render_quiet_link(b: dict) -> str:
     uid = 'ql' + _gx_uid6(b)
     return ('<div style="text-align:center;"><button id="' + uid + '" type="button" style="background:none;border:none;color:var(--muted,#5f6368);font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:4px;">'
@@ -31713,6 +31772,7 @@ for _gx_name, _gx_fn in (
     ('lens_freeform', _render_lens_freeform),
     ('lens_similar', _render_lens_similar),
     ('lens_context', _render_lens_context),
+    ('toulmin_argument', _render_toulmin_argument),
     ('quiet_link', _render_quiet_link),
     ('tool_tile', _render_tool_tile),
     ('theme_toggle', _render_theme_toggle),
