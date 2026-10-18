@@ -846,7 +846,7 @@ def _render_carousel(b: dict) -> str:
 
     # Radio inputs
     inputs = "".join(
-        f'<input type="radio" id="{cid}_s{i}" name="{cid}" {"checked" if i == 1 else ""}>'
+        f'<input type="radio" id="{cid}_s{i}" name="{cid}" aria-label="Slide {i}" {"checked" if i == 1 else ""}>'
         for i in range(1, n + 1)
     )
 
@@ -5938,7 +5938,7 @@ def _render_form_slider(b: dict) -> str:
         f'<label for="{sid}" style="font-size:0.83rem;font-weight:600;color:#3c4043;">{_cv_esc(label)}</label>'
         f'<span style="font-size:0.88rem;font-weight:700;color:#1a73e8;">{_cv_esc(val)}{unit_str}</span>'
         f'</div>'
-        f'<input id="{sid}" type="range" name="{_cv_esc(name)}" min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" step="{_cv_esc(step)}" value="{_cv_esc(val)}" '
+        f'<input id="{sid}" type="range" aria-label="{_cv_esc(label or name or "Slider")}" name="{_cv_esc(name)}" min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" step="{_cv_esc(step)}" value="{_cv_esc(val)}" '
         f'style="width:100%;margin:0;">'
         f'<div style="display:flex;justify-content:space-between;margin-top:6px;">'
         f'<span style="font-size:0.75rem;color:#9aa0a6;">{_cv_esc(mn)}{unit_str}</span>'
@@ -14684,11 +14684,11 @@ def _render_otp_input(b: dict) -> str:
     length = b.get('length', 6)
     label = b.get('label', 'Enter OTP')
     boxes = ''.join(
-        f'<input id="{uid}_{i}" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" '
+        f'<input id="{uid}_{i}" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="{_cv_esc(label)}, digit {i+1} of {length}" '
         f'oninput="this.value=this.value.replace(/[^0-9]/,\'\');if(this.value){{var next=document.getElementById(\'{uid}_{i+1}\');if(next)next.focus();}}" '
         f'onkeydown="if(event.key===\'Backspace\'&&!this.value){{var prev=document.getElementById(\'{uid}_{i-1}\');if(prev){{prev.focus();prev.value=\'\';}}}}" '
         f'style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;'
-        f'border:1.5px solid #e5e7eb;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);outline:none;">'
+        f'border:1.5px solid #e5e7eb;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);">'
         for i in range(length)
     )
     return (f'<div style="margin:1rem 0;">'
@@ -16827,7 +16827,7 @@ def _render_carousel(b: dict) -> str:
 
     # Radio inputs
     inputs = "".join(
-        f'<input type="radio" id="{cid}_s{i}" name="{cid}" {"checked" if i == 1 else ""}>'
+        f'<input type="radio" id="{cid}_s{i}" name="{cid}" aria-label="Slide {i}" {"checked" if i == 1 else ""}>'
         for i in range(1, n + 1)
     )
 
