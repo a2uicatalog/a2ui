@@ -30,7 +30,11 @@ import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SPEC = os.path.join(ROOT, "public", "spec.json")
-EVAL_PATH = os.path.join(ROOT, "..", "a2ui-private", "mcp-worker", "test", "compose-routing-eval.json")
+# Find a2ui-private through ops/, the link into it, not as a sibling folder: from a checkout outside
+# the usual layout, ROOT/../a2ui-private silently read a stale copy's eval set (2026-10-18).
+_OPS = os.path.join(ROOT, "ops")
+PRIVATE = os.path.dirname(os.path.realpath(_OPS)) if os.path.islink(_OPS) else os.path.join(ROOT, "..", "a2ui-private")
+EVAL_PATH = os.path.join(PRIVATE, "mcp-worker", "test", "compose-routing-eval.json")
 
 # KNOWN, TRACKED, TEMPORARY exceptions -- a ratchet, not a permanent allowlist.
 # Reviewable exactly like pre_push_audit.py's secret_hygiene content_allowlist:
