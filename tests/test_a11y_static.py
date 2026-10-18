@@ -54,3 +54,26 @@ def test_overlay_canvases_are_hidden_from_assistive_tech():
             if 'aria-hidden="true"' not in m.group(0):
                 bad.append(f.name)
     assert not bad, f"overlay wrapper without aria-hidden in {sorted(set(bad))}"
+
+
+# Components that hide their radio or checkbox so a styled label can be the control. A hidden input a keyboard can reach must show a visible focus
+# indicator somewhere (WCAG 2.4.7). The first version of this fix assumed the label follows the input, which is false for tabs, the carousel, the rating
+# row and others, so the ring never showed and no scan noticed (axe cannot see it). Checked in a real browser on 18 October 2026; this keeps the rules from vanishing.
+RING_ATOMS = ['tabs', 'content_tabs', 'carousel', 'star_rating_input', 'choicebox_group', 'feedback_prompt', 'quiz_question', 'custom_checkbox_group', 'chip_group']
+
+
+def test_hidden_input_components_carry_a_focus_ring_rule():
+    missing = []
+    for a in RING_ATOMS:
+        html = (ROOT / "public" / "atoms" / a / "index.html").read_text(errors="ignore")
+        rules = re.findall(r"[^{}]*focus-visible[^{}]*\{[^}]*outline:[^}]*\}", html)
+        component = [r for r in rules if "button:focus-visible" not in r and "label:has(input[type=checkbox]:focus-visible)" not in r]   # the site-wide rules do not count: a host app does not carry them
+        if not component:
+            missing.append(a)
+    assert not missing, f"no component-level focus-ring rule in the generated page for: {missing}"
+
+
+def test_style_selectors_never_start_with_a_digit():
+    """A CSS #id selector cannot start with a digit; the content-hash ids often do, and the whole <style> rule is then dropped (chip_group and tab_bar lost their styling)."""
+    bad = [str(p.relative_to(ROOT)) for p in (ROOT / "public" / "atoms").glob("*/index.html") if re.search(r"<style>#\d", p.read_text(errors="ignore"))]
+    assert not bad, f"style rules with #<digit> selectors in: {bad[:5]}"

@@ -54,7 +54,7 @@ _RENDERERS['photo_stepper'] = function(b) {
     // same position:fixed;inset:0;z-index pattern as css_modal (atom.gs).
     '.' + sid + '{display:none;position:fixed;inset:0;z-index:9000;background:#111;overflow:hidden;}' +
     '#' + mid + ':checked ~ .' + sid + '{display:block;}' +
-    '.' + sid + ' input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.' + sid + ' input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}' +
+    '.' + sid + ' input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.' + sid + ' input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.' + sid + ':has(input[type=radio]:focus-visible){outline:2px solid #4f46e5;outline-offset:3px;}' +
     '.' + sid + '-inner{position:relative;height:100%;width:100%;}' +
     // z-index:6 + pointer-events:none is the counterweight to .sid-nav's
     // z-index:5 below, and it has to live HERE rather than on the caption.

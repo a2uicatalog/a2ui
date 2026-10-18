@@ -612,7 +612,7 @@ def _render_table(b: dict) -> str:
 _TAB_CSS = """
 <style>
 .tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--border, #e0e0e0);}
-.tm-tabs input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.tm-tabs input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
+.tm-tabs input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.tm-tabs input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(1):focus-visible ~ .tm-tab-labels label:nth-child(1){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(2):focus-visible ~ .tm-tab-labels label:nth-child(2){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(3):focus-visible ~ .tm-tab-labels label:nth-child(3){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(4):focus-visible ~ .tm-tab-labels label:nth-child(4){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(5):focus-visible ~ .tm-tab-labels label:nth-child(5){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(6):focus-visible ~ .tm-tab-labels label:nth-child(6){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(7):focus-visible ~ .tm-tab-labels label:nth-child(7){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(8):focus-visible ~ .tm-tab-labels label:nth-child(8){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(9):focus-visible ~ .tm-tab-labels label:nth-child(9){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(10):focus-visible ~ .tm-tab-labels label:nth-child(10){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(11):focus-visible ~ .tm-tab-labels label:nth-child(11){outline:2px solid #4f46e5;outline-offset:2px;}.tm-tabs input:nth-of-type(12):focus-visible ~ .tm-tab-labels label:nth-child(12){outline:2px solid #4f46e5;outline-offset:2px;}
 /* Underline-style tab bar (2026-07-24, grounded in Material/Primer/Radix
    conventions): a faint fill on the bar, NO per-tab vertical dividers, and
    4px edge spacing. The active tab is signalled three ways — accent colour,
@@ -814,7 +814,7 @@ def _render_carousel(b: dict) -> str:
 <style>
 .{cid}{{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}}
-.{cid} input[type=radio]{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}.{cid} input[type=radio]:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}
+.{cid} input[type=radio]{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}.{cid} input[type=radio]:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}.{cid}:has(input[type=radio]:focus-visible){{outline:2px solid #4f46e5;outline-offset:3px;}}
 .{cid}-track{{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:{n*100}%;}}
 .{cid}-slide{{width:{100//n}%;flex:0 0 {100//n}%;position:relative;}}
 .{cid}-slide img{{width:100%;display:block;max-height:480px;object-fit:cover;}}
@@ -2487,6 +2487,7 @@ def _render_star_rating_input(b: dict) -> str:
         f'.sr{uid} input:checked ~ label,'
         f'.sr{uid} label:hover,'
         f'.sr{uid} label:hover ~ label {{color:#facc15;}}'
+        f'.sr{uid}:has(input:focus-visible){{outline:2px solid #4f46e5;outline-offset:2px;}}'
         f'</style>'
     )
     label_html = (
@@ -2583,6 +2584,7 @@ def _render_custom_checkbox_group(b: dict) -> str:
     style = (
         f'<style>'
         f'.ccg{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
+        f'.ccg{uid} label:has(input:focus-visible),.ccg{uid}:has(input:focus-visible){{outline:2px solid #4f46e5;outline-offset:2px;}}'
         f'.ccg{uid} label{{display:flex;align-items:center;gap:10px;cursor:pointer;'
         f'padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;'
         f'font-size:0.88rem;color:#374151;transition:border-color .15s,background .15s;}}'
@@ -6164,6 +6166,7 @@ def _render_choicebox_group(b: dict) -> str:
         f'<style>'
         f'.{gid}-card{{transition:border-color 0.15s,background 0.15s;}}'
         f'.{gid}-card:has(input:checked){{border-color:{border_sel}!important;background:{bg_sel}!important;}}'
+        f'.{gid}-card:has(input:focus-visible){{outline:2px solid #4f46e5;outline-offset:2px;}}'
         f'.{gid}-card:not(:has(input[disabled])):hover{{border-color:rgba(0,0,0,0.28)!important;}}'
         f'</style>'
         f'{label_html}'
@@ -6216,6 +6219,7 @@ def _render_feedback_prompt(b: dict) -> str:
     else:
         widget_html = (
             f'<style>'
+            f'.{fid}-up:has(input:focus-visible),.{fid}-dn:has(input:focus-visible){{outline:2px solid #4f46e5;outline-offset:2px;}}'
             f'.{fid}-up:has(input:checked){{border-color:#1a73e8!important;'
             f'background:rgba(26,115,232,0.08)!important;color:#1a73e8!important;}}'
             f'.{fid}-dn:has(input:checked){{border-color:#ea4335!important;'
@@ -8121,7 +8125,8 @@ def _render_quiz_question(b: dict) -> str:
             f'#{inp_id}:checked ~ .{uid}_explain{{display:block;}}'
         ) if explain else ""
         inputs += f'<input type="radio" id="{inp_id}" name="{uid}" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
-        inputs += f'<style>{correct_css}{reveal_css}</style>'
+        focus_css = f'#{inp_id}:focus-visible ~ .{uid}_opts label[for="{inp_id}"]{{outline:2px solid #4f46e5;outline-offset:2px;}}'
+        inputs += f'<style>{correct_css}{reveal_css}{focus_css}</style>'
         labels += (
             f'<label for="{inp_id}" style="display:block;padding:10px 14px;margin:6px 0;'
             f'border:1.5px solid {border};border-radius:8px;cursor:pointer;'
@@ -12217,8 +12222,9 @@ def _render_chip_group(b: dict) -> str:
     accent = b.get('accent', '#4f46e5')
     multi = b.get('multiple', False)
     input_type = 'checkbox' if multi else 'radio'
-    html_parts = [f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-                  f'#{uid} input:checked+label{{background:{_cv_esc(accent)};color:#fff;border-color:{_cv_esc(accent)};}}</style>'
+    html_parts = [f'<style>[id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
+                  f'[id="{uid}"] input:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}'
+                  f'[id="{uid}"] input:checked+label{{background:{_cv_esc(accent)};color:#fff;border-color:{_cv_esc(accent)};}}</style>'
                   f'<div id="{uid}" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;">']
     for i, chip in enumerate(chips):
         text = chip if isinstance(chip, str) else chip.get('label', str(chip))
@@ -12310,10 +12316,10 @@ def _render_code_snippet_pair(b: dict) -> str:
         return ''
     tabs = ''
     panels = ''
-    css = (f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-           + ''.join(f'#{uid} #s{uid}_{i}:checked ~ .panels .p{uid}_{i}{{display:block;}}'
-                     f'#{uid} #s{uid}_{i}:checked ~ .tabs label:nth-child({i+1}){{border-bottom-color:#1a73e8;color:#1a73e8;}}' for i in range(len(snippets)))
-           + f'#{uid} .panels > div{{display:none;}}</style>')
+    css = (f'<style>[id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
+           + ''.join(f'[id="{uid}"] #s{uid}_{i}:checked ~ .panels .p{uid}_{i}{{display:block;}}'
+                     f'[id="{uid}"] #s{uid}_{i}:checked ~ .tabs label:nth-child({i+1}){{border-bottom-color:#1a73e8;color:#1a73e8;}}' for i in range(len(snippets)))
+           + f'[id="{uid}"] .panels > div{{display:none;}}</style>')
     for i, s in enumerate(snippets):
         tabs += (f'<input type="radio" id="s{uid}_{_cv_esc(i)}" name="{uid}" {"checked" if i==0 else ""}>'
                  ) if False else ''
@@ -13898,7 +13904,7 @@ def _render_spinner(b: dict) -> str:
     label = b.get('label', '')
     return (f'<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;">'
             f'<style>@keyframes a2ui-spin{{to{{transform:rotate(360deg)}}}}'
-            f'#{uid}{{animation:a2ui-spin 0.8s linear infinite;}}</style>'
+            f'[id="{uid}"]{{animation:a2ui-spin 0.8s linear infinite;}}</style>'
             f'<div id="{uid}" style="width:{_esc(str(size))};height:{_esc(str(size))};'
             f'border:3px solid {_esc(color)}33;border-top-color:{_esc(color)};border-radius:50%;"></div>'
             f'{"<span style=font-size:0.84rem;color:var(--muted,#5f6368);>"+_esc(label)+"</span>" if label else ""}'
@@ -14023,8 +14029,8 @@ def _render_tab_bar(b: dict) -> str:
     uid = _wa_uid(b)
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#4f46e5')
-    css = (f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-           + ''.join(f'#{uid} #t{uid}_{i}:checked~div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};font-weight:700;}}'
+    css = (f'<style>[id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
+           + ''.join(f'[id="{uid}"] #t{uid}_{i}:checked~div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};font-weight:700;}}'
                      for i in range(len(tabs)))
            + '</style>')
     labels = ''.join(f'<label for="t{uid}_{_cv_esc(i)}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
@@ -15013,8 +15019,8 @@ def _render_carousel(b: dict) -> str:
     n = len(slides)
     if not slides:
         return ''
-    css = (f'<style>#{uid} .slide{{display:none;}} #{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-           + ''.join(f'#{uid} #sl{uid}_{i}:checked~.slides .slide:nth-child({i+1}){{display:block;}}'
+    css = (f'<style>[id="{uid}"] .slide{{display:none;}} [id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
+           + ''.join(f'[id="{uid}"] #sl{uid}_{i}:checked~.slides .slide:nth-child({i+1}){{display:block;}}'
                      for i in range(n))
            + f'</style>')
     inputs = ''.join(f'<input type="radio" id="sl{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>'
@@ -15814,11 +15820,11 @@ def _render_tabs(b: dict) -> str:
     uid = _wa_uid(b)
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#4f46e5')
-    css = (f'<style>#{uid} input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-           + ''.join(f'#{uid} #tb{uid}_{i}:checked~.ta div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};}}'
-                     f'#{uid} #tb{uid}_{i}:checked~.tp .p{uid}_{i}{{display:block;}}'
+    css = (f'<style>[id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
+           + ''.join(f'[id="{uid}"] #tb{uid}_{i}:checked~.ta div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};}}'
+                     f'[id="{uid}"] #tb{uid}_{i}:checked~.tp .p{uid}_{i}{{display:block;}}'
                      for i in range(len(tabs)))
-           + f'#{uid} .tp>div{{display:none;}}</style>')
+           + f'[id="{uid}"] .tp>div{{display:none;}}</style>')
     inputs = ''.join(f'<input type="radio" id="tb{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>'
                      for i in range(len(tabs)))
     labels = ''.join(f'<label for="tb{uid}_{_cv_esc(i)}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
@@ -15907,7 +15913,7 @@ def _render_ticker_tape(b: dict) -> str:
     return (f'<div style="overflow:hidden;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'padding:8px 0;margin:1rem 0;">'
             f'<style>@keyframes a2ui-ticker{uid}{{from{{transform:translateX(100%);}}to{{transform:translateX(-100%);}}}}'
-            f'#{uid}{{animation:a2ui-ticker{uid} {_cv_esc(speed)}s linear infinite;white-space:nowrap;display:inline-block;}}</style>'
+            f'[id="{uid}"]{{animation:a2ui-ticker{uid} {_cv_esc(speed)}s linear infinite;white-space:nowrap;display:inline-block;}}</style>'
             f'<div id="{uid}" style="font-size:0.84rem;padding:0 12px;">{content}</div></div>')
 
 _RENDERERS['ticker_tape'] = _render_ticker_tape
@@ -16795,7 +16801,7 @@ def _render_carousel(b: dict) -> str:
 <style>
 .{cid}{{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}}
-.{cid} input[type=radio]{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}.{cid} input[type=radio]:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}
+.{cid} input[type=radio]{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}.{cid} input[type=radio]:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}.{cid}:has(input[type=radio]:focus-visible){{outline:2px solid #4f46e5;outline-offset:3px;}}
 .{cid}-track{{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:{n*100}%;}}
 .{cid}-slide{{width:{100//n}%;flex:0 0 {100//n}%;position:relative;}}
 .{cid}-slide img{{width:100%;display:block;max-height:480px;object-fit:cover;}}
@@ -17459,6 +17465,7 @@ def _render_feedback_prompt(b: dict) -> str:
     else:
         widget_html = (
             f'<style>'
+            f'.{fid}-up:has(input:focus-visible),.{fid}-dn:has(input:focus-visible){{outline:2px solid #4f46e5;outline-offset:2px;}}'
             f'.{fid}-up:has(input:checked){{border-color:#1a73e8!important;'
             f'background:rgba(26,115,232,0.08)!important;color:#1a73e8!important;}}'
             f'.{fid}-dn:has(input:checked){{border-color:#ea4335!important;'
@@ -31663,7 +31670,7 @@ def _render_photo_stepper(b: dict) -> str:
            '.' + sid + '-trigger img{width:100%;max-height:50vh;object-fit:cover;display:block;opacity:0.85;}'
            '.' + sid + '-trigger-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:1.05rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,0.6);}'
            '#' + mid + ':checked ~ .' + sid + '-trigger{display:none;}.' + sid + '{display:none;position:fixed;inset:0;z-index:9000;background:#111;overflow:hidden;}#' + mid + ':checked ~ .' + sid + '{display:block;}'
-           '.' + sid + ' input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.' + sid + ' input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.' + sid + '-inner{position:relative;height:100%;width:100%;}'
+           '.' + sid + ' input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}.' + sid + ' input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.' + sid + ':has(input[type=radio]:focus-visible){outline:2px solid #4f46e5;outline-offset:3px;}.' + sid + '-inner{position:relative;height:100%;width:100%;}'
            '.' + sid + '-track{display:flex;height:100%;transition:transform 0.35s ease;width:' + str(n * 100) + '%;position:relative;z-index:6;pointer-events:none;}'
            '.' + sid + '-slide{width:' + _if_numstr(100 / n) + '%;flex:0 0 ' + _if_numstr(100 / n) + '%;position:relative;height:100%;}.' + sid + '-slide img{width:100%;height:100%;display:block;object-fit:contain;background:#000;}'
            '.' + sid + '-cap{position:absolute;left:0;right:0;bottom:0;padding:36px 24px 22px;background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));color:#fff;}'
