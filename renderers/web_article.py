@@ -3982,7 +3982,7 @@ def _render_donut_stat(b: dict) -> str:
       <div>
         <div style="font-size:0.75rem;font-weight:700;color:#94a3b8;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;">{_cv_esc(label)}</div>
         <div style="font-size:1.5rem;font-weight:800;color:#f1f5f9;font-family:-apple-system,sans-serif;margin-bottom:6px;">
-          {value:,.0f}{_cv_esc(unit)} <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.4);">/ {max_value:,.0f}{_cv_esc(unit)}</span>
+          {value:,.0f}{_cv_esc(unit)} <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.62);">/ {max_value:,.0f}{_cv_esc(unit)}</span>
         </div>
         <div style="font-size:0.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};"></span>
@@ -4335,9 +4335,9 @@ def _render_punch_card(b: dict) -> str:
         <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
           <div>
             {f'<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:2px;">{_cv_esc(title)}</div>' if title else ''}
-            {f'<div style="font-size:0.75rem;color:rgba(255,255,255,0.4);font-family:monospace;">{_cv_esc(subtitle)}</div>' if subtitle else ''}
+            {f'<div style="font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;">{_cv_esc(subtitle)}</div>' if subtitle else ''}
           </div>
-          <div style="display:flex;gap:12px;font-size:0.75rem;color:rgba(255,255,255,0.4);font-family:monospace;align-items:center;">
+          <div style="display:flex;gap:12px;font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;align-items:center;">
             <span>Less</span>
             <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{_cv_esc(color)};opacity:0.3;"></span>
             <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};opacity:0.6;"></span>
@@ -4613,7 +4613,7 @@ def _render_cohort_retention(b: dict) -> str:
     num_periods = len(periods)
     
     headers = []
-    headers.append('<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;">Cohort</div>')
+    headers.append('<div style="font-weight:700;color:rgba(255,255,255,0.62);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;">Cohort</div>')
     headers.append('<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:right;">Size</div>')
     for p in periods:
         headers.append(f'<div style="font-weight:700;color:rgba(255,255,255,0.4);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:center;">{_cv_esc(p)}</div>')
@@ -6145,7 +6145,7 @@ def _render_choicebox_group(b: dict) -> str:
             f'style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;'
             f'border:1.5px solid #dadce0;border-radius:10px;cursor:{cursor};'
             f'background:#fff;{opacity}">'
-            f'<input type="{input_type}" id="{iid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}" {dis_attr} '
+            f'<input type="{input_type}" id="{iid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}" aria-label="{_cv_esc(title or val or "Option")}" {dis_attr} '
             f'style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
             f'{icon_html}'
             f'<span style="font-size:0.9rem;font-weight:600;color:#3c4043;">{_cv_esc(title)}</span>'
@@ -17136,7 +17136,7 @@ def _svg_gauge_sla(b: dict) -> str:
         status_label = "BREACHED"
 
     return f"""
-      <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="{gauge_id}_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
