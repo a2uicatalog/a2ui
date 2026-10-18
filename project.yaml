@@ -273,6 +273,11 @@ generators:
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
     outputs: [README.md]              # only the block between readme-badges markers
     publish: repo-committed (GitHub renders it)
+  gen_atom_count:
+    script: scripts/gen_atom_count.py
+    source: public/catalogue/a2ui-atoms-v1.json (the published catalogue; cross-checked against public/spec.json)
+    outputs: [public/.well-known/mcp/server-card.json, SKILL.md, mcp/LISTING.md, mcp/README.md]   # only the quoted atom count in each
+    publish: repo-committed / ci (deploy.yml runs it with --check, so a stale count blocks the deploy)
   gen_atom_json_schemas:
     script: scripts/gen_atom_json_schemas.py
     source: atoms/schema.yaml
