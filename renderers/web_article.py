@@ -1686,7 +1686,7 @@ def _render_progress_circle(atom: dict) -> str:
         f'</style>'
         f'<div style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">'
         f'<div style="position:relative;width:{px}px;height:{px}px;">'
-        f'<svg width="{px}" height="{px}" viewBox="0 0 100 100" '
+        f'<svg role="img" aria-label="Progress indicator" width="{px}" height="{px}" viewBox="0 0 100 100" '
         f'style="transform:rotate(-90deg);display:block;">'
         f'<circle cx="50" cy="50" r="{r}" fill="none" stroke="#1e293b" stroke-width="9"/>'
         f'<circle class="pc_{uid}" cx="50" cy="50" r="{r}" fill="none" stroke="{_cv_esc(color)}" '
@@ -2454,7 +2454,7 @@ def _render_css_dropdown_menu(b: dict) -> str:
         f'padding:8px 14px;background:#fff;border:1px solid #dadce0;border-radius:6px;'
         f'cursor:pointer;font-size:0.88rem;font-weight:500;color:#3c4043;user-select:none;">'
         f'{_cv_esc(trigger)}'
-        f'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">'
+        f'<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">'
         f'<path d="M6 9l6 6 6-6"/></svg></summary>'
         f'<div style="position:absolute;top:calc(100% + 4px);left:0;z-index:20;'
         f'background:#fff;border:1px solid #dadce0;border-radius:8px;'
@@ -2576,7 +2576,7 @@ def _render_custom_checkbox_group(b: dict) -> str:
     uid     = abs(_wa_shash(str(options) + name)) % 100000
 
     check_svg = (
-        '<svg width="11" height="9" viewBox="0 0 11 9" fill="none">'
+        '<svg aria-hidden="true" width="11" height="9" viewBox="0 0 11 9" fill="none">'
         '<polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" '
         'stroke-linecap="round" stroke-linejoin="round"/></svg>'
     )
@@ -3015,7 +3015,7 @@ def _render_notification_badge(b):
     text = b.get("text", "")
     color = b.get("color", "#e71414")
     return (f'<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">'
-            f'  <svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
+            f'  <svg aria-hidden="true" style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
             f'  </svg>'
             f'  <span style="position:absolute;top:0;right:0;transform:translate(25%, -25%);background:{_cv_esc(color)};color:#fff;'
@@ -3371,7 +3371,7 @@ def _render_copy_code_button(b):
             f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;'
             f'border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;'
             f'font-size:0.82rem;color:#374151;">'
-            f'<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">'
+            f'<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">'
             f'<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>'
             f'<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>'
             f'</svg>Copy</button></div>')
@@ -3951,7 +3951,7 @@ def _render_donut_stat(b: dict) -> str:
     donut_id = f"donut_{_wa_oid(b)}"
     
     svg_html = f"""
-    <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" aria-label="Donut statistic" viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="{donut_id}_grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="{_cv_esc(color)}" />
@@ -4200,7 +4200,7 @@ def _render_command_palette(b: dict) -> str:
         groups[cat].append(cmd)
     h = '<div class="a2ui-cmd-palette" id="cp-' + uid + '">'
     h += '<div class="a2ui-cmd-search-wrap">'
-    h += ('<svg class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2">'
+    h += ('<svg aria-hidden="true" class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2">'
           '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>')
     h += ('<input class="a2ui-cmd-input" type="text" placeholder="' + _cv_esc(placeholder) + '"'
           ' oninput="(function(v){var items=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-item\');var cats=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-cat\');'
@@ -5104,7 +5104,7 @@ def _render_gauge_sla(b: dict) -> str:
         
     svg_html = f"""
     <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
-      <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="{gauge_id}_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
@@ -6085,7 +6085,7 @@ def _render_follow_up_chips(b: dict) -> str:
         f'border-radius:100px;border:1px solid {border};background:{bg};'
         f'color:{_cv_esc(accent)};font-size:0.85rem;font-weight:500;cursor:pointer;white-space:nowrap;">'
         f'{_cv_esc(item)}'
-        f'<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+        f'<svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
         f'<path d="M2 5h6M5.5 2l3 3-3 3"/>'
         f'</svg>'
         f'</span>'
@@ -9178,7 +9178,7 @@ def _render_animated_beam(atom: dict) -> str:
         f'<div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;'
         f'padding:20px 24px;margin:1rem 0;">'
         f'{label_html}'
-        f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+        f'<svg role="img" aria-label="Animated beam diagram" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
         f'style="display:block;max-width:100%;">'
         # path track
         f'<path d="{ctrl}" fill="none" stroke="{_cv_esc(color)}22" stroke-width="2"/>'
@@ -9558,7 +9558,7 @@ def _render_svg_path_draw(b: dict) -> str:
                 )
             return (
                 f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;overflow-x:auto;">'
-                f'<svg viewBox="0 0 {vw:.0f} {vh:.0f}" width="100%" style="max-width:{vw:.0f}px;">'
+                f'<svg role="img" aria-label="Path drawing animation" viewBox="0 0 {vw:.0f} {vh:.0f}" width="100%" style="max-width:{vw:.0f}px;">'
                 + "".join(chars_svg) +
                 f'</svg>{label_html}</div>'
             )
@@ -9572,7 +9572,7 @@ def _render_svg_path_draw(b: dict) -> str:
             f'animation:spt_{uid} {dur}s ease-out forwards;}}'
             f'</style>'
             f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;overflow-x:auto;">'
-            f'<svg viewBox="0 0 {vw:.0f} {vh:.0f}" width="100%" style="max-width:{vw:.0f}px;">'
+            f'<svg role="img" aria-label="Path drawing animation" viewBox="0 0 {vw:.0f} {vh:.0f}" width="100%" style="max-width:{vw:.0f}px;">'
             f'<text class="spt_{uid}" x="{vw/2:.0f}" y="{y:.0f}" '
             f'text-anchor="middle" font-size="{font_size}" font-weight="{_cv_esc(weight)}" '
             f'font-family="{_cv_esc(font)}" stroke="{_cv_esc(color)}" stroke-width="1.5">'
@@ -9624,7 +9624,7 @@ def _render_svg_path_draw(b: dict) -> str:
             t += plen
         return (
             f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
-            f'<svg viewBox="0 0 200 230" width="220" height="230">'
+            f'<svg role="img" aria-label="Path drawing animation" viewBox="0 0 200 230" width="220" height="230">'
             + "".join(seg_parts) +
             f'</svg>{label_html}</div>'
         )
@@ -10415,10 +10415,10 @@ def _render_wave_divider(b: dict) -> str:
         f'</style>'
         f'<div style="overflow:hidden;height:{h}px;margin:0.5rem 0;position:relative;">'
         f'<div style="display:flex;width:200%;animation:wv_{uid} {_cv_esc(speed)}s linear infinite;">'
-        f'<svg viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
+        f'<svg aria-hidden="true" viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
         f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{_cv_esc(color)}" opacity="{_cv_esc(opacity)}"/>'
         f'</svg>'
-        f'<svg viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
+        f'<svg aria-hidden="true" viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
         f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{_cv_esc(color)}" opacity="{_cv_esc(opacity)}"/>'
         f'</svg>'
         f'</div></div>'
@@ -10581,7 +10581,7 @@ def _render_countdown_ring(b: dict) -> str:
         f'</style>'
         f'<div style="margin:1rem 0;display:inline-flex;flex-direction:column;align-items:center;">'
         f'<div style="position:relative;width:{size}px;height:{size}px;">'
-        f'<svg width="{size}" height="{size}" style="transform:rotate(-90deg);">'
+        f'<svg role="img" aria-label="Countdown timer" width="{size}" height="{size}" style="transform:rotate(-90deg);">'
         f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#334155" stroke-width="{sw}"/>'
         f'<circle id="crring_{uid}" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{_cv_esc(color)}" stroke-width="{sw}"'
         f' stroke-linecap="round" stroke-dasharray="{circ} 0"'
@@ -12483,7 +12483,7 @@ def _render_copy_code_button(b: dict) -> str:
             f'<button onclick="navigator.clipboard.writeText({escaped})" '
             f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;'
             f'border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">'
-            f'<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">'
+            f'<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">'
             f'<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 '
             f'.138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 '
             f'16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 '
@@ -14503,7 +14503,7 @@ def _render_gauge_sla(b: dict) -> str:
     circ = 3.14159 * r
     dash = circ * pct / 100
     return (f'<div style="text-align:center;padding:16px;border:1px solid #e5e7eb;border-radius:12px;margin:1rem 0;">'
-            f'<svg width="140" height="80" viewBox="0 0 140 80">'
+            f'<svg role="img" aria-label="SLA gauge" width="140" height="80" viewBox="0 0 140 80">'
             f'<path d="M10 70 A60 60 0 0 1 130 70" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round"/>'
             f'<path d="M10 70 A60 60 0 0 1 130 70" fill="none" stroke="{color}" stroke-width="10" stroke-linecap="round"'
             f' stroke-dasharray="{dash:.1f} {circ:.1f}"/>'
@@ -15590,7 +15590,7 @@ def _render_progress_circle(b: dict) -> str:
     dash = pct * circ
     center = size / 2
     return (f'<div style="display:inline-flex;flex-direction:column;align-items:center;gap:6px;">'
-            f'<svg width="{size}" height="{size}">'
+            f'<svg role="img" aria-label="Progress indicator" width="{size}" height="{size}">'
             f'<circle cx="{center:.1f}" cy="{center:.1f}" r="{r:.1f}" fill="none" stroke="#e5e7eb" stroke-width="8"/>'
             f'<circle cx="{center:.1f}" cy="{center:.1f}" r="{r:.1f}" fill="none" stroke="{_cv_esc(color)}" stroke-width="8"'
             f' stroke-linecap="round" stroke-dasharray="{dash:.1f} {circ:.1f}"'
@@ -17019,7 +17019,7 @@ def _render_progress_circle(atom: dict) -> str:
         f'</style>'
         f'<div style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">'
         f'<div style="position:relative;width:{px}px;height:{px}px;">'
-        f'<svg width="{px}" height="{px}" viewBox="0 0 100 100" '
+        f'<svg role="img" aria-label="Progress indicator" width="{px}" height="{px}" viewBox="0 0 100 100" '
         f'style="transform:rotate(-90deg);display:block;">'
         f'<circle cx="50" cy="50" r="{r}" fill="none" stroke="#1e293b" stroke-width="9"/>'
         f'<circle class="pc_{uid}" cx="50" cy="50" r="{r}" fill="none" stroke="{_cv_esc(color)}" '
@@ -17056,7 +17056,7 @@ def _render_notification_badge(b):
     text = b.get("text", "")
     color = b.get("color", "#e71414")
     return (f'<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">'
-            f'  <svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
+            f'  <svg aria-hidden="true" style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
             f'  </svg>'
             f'  <span style="position:absolute;top:0;right:0;transform:translate(25%, -25%);background:{_cv_esc(color)};color:#fff;'
@@ -18576,7 +18576,7 @@ def _render_skill_radar(b: dict) -> str:
     return (
         f'<div style="font-family:system-ui,sans-serif;text-align:center;">'
         f'<div style="font-weight:700;margin-bottom:8px;">{title}</div>'
-        f'<svg width="{SIZE}" height="{SIZE}" viewBox="0 0 {SIZE} {SIZE}">{grid}{axes}{poly}{labels}</svg></div>'
+        f'<svg role="img" aria-label="Skill radar chart" width="{SIZE}" height="{SIZE}" viewBox="0 0 {SIZE} {SIZE}">{grid}{axes}{poly}{labels}</svg></div>'
     )
 _RENDERERS["skill_radar"] = _render_skill_radar
 
@@ -18765,7 +18765,7 @@ def _render_canvas_plexus(b: dict) -> str:
     bg = b.get('bg', '#0a0f1d')
     return (
         f'<div style="width:100%;height:{h}px;background:{_esc(bg)};border-radius:10px;overflow:hidden;position:relative;">'
-        f'<canvas id="{uid}" style="width:100%;height:100%;display:block;"></canvas>'
+        f'<canvas aria-hidden="true" id="{uid}" style="width:100%;height:100%;display:block;"></canvas>'
         f'<script>(function(){{var c=document.getElementById("{uid}"),x=c.getContext("2d"),'
         f'W,H,nodes=[];'
         f'function resize(){{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}}resize();'
@@ -20596,7 +20596,7 @@ def _render_isometric_mesh(b: dict) -> str:
                   f'text-transform:uppercase;opacity:0.7;">{label}</div>') if label else ''
     return (
         f'<div style="width:100%;height:{h}px;background:{_esc(bg)};border-radius:10px;overflow:hidden;position:relative;">'
-        f'<canvas id="{uid}" style="width:100%;height:100%;display:block;"></canvas>'
+        f'<canvas aria-hidden="true" id="{uid}" style="width:100%;height:100%;display:block;"></canvas>'
         f'{label_html}'
         f'<script>(function(){{var c=document.getElementById("{uid}"),x=c.getContext("2d");'
         f'var W,H;function resize(){{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}}resize();'
@@ -23017,7 +23017,7 @@ def _render_globe_3d(b: dict) -> str:
     import hashlib
     uid = 'g3d' + hashlib.md5(color.encode()).hexdigest()[:5]
     return ('<div style="display:flex;justify-content:center;margin:1rem 0;">'
-            '<canvas id="' + uid + '" width="' + str(size) + '" height="' + str(size) + '" '
+            '<canvas role="img" aria-label="Rotating 3D globe" id="' + uid + '" width="' + str(size) + '" height="' + str(size) + '" '
             'style="border-radius:50%;background:' + bg + ';display:block;cursor:grab;"></canvas></div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
@@ -23132,7 +23132,7 @@ def _render_geo_mercator_radar(b: dict) -> str:
     return ('<div style="position:relative;">'
             + ('<div style="font-size:0.72rem;font-weight:700;color:' + color + ';'
                'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + title + '</div>' if title else '')
-            + '<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
+            + '<canvas role="img" aria-label="Mercator radar map" id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas></div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
@@ -23174,7 +23174,7 @@ def _render_geo_contour_waves(b: dict) -> str:
     return ('<div style="position:relative;">'
             + ('<div style="font-size:0.72rem;font-weight:700;color:' + color + ';'
                'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + title + '</div>' if title else '')
-            + '<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
+            + '<canvas aria-hidden="true" id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas></div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
@@ -23215,7 +23215,7 @@ def _render_geo_europe_airspace(b: dict) -> str:
     return ('<div style="position:relative;margin:1rem 0;">'
             '<div style="font-size:0.72rem;font-weight:700;color:#00f2ff;letter-spacing:0.1em;'
             'text-transform:uppercase;margin-bottom:6px;">' + title + '</div>'
-            '<canvas id="' + uid + '" style="width:100%;height:320px;border-radius:12px;'
+            '<canvas role="img" aria-label="Map of European airspace traffic" id="' + uid + '" style="width:100%;height:320px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas></div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
@@ -23245,7 +23245,7 @@ def _render_geo_iso_takeoff(b: dict) -> str:
     import hashlib
     uid = 'git' + hashlib.md5(title.encode()).hexdigest()[:5]
     return ('<div style="position:relative;margin:1rem 0;">'
-            '<canvas id="' + uid + '" style="width:100%;height:260px;border-radius:12px;'
+            '<canvas role="img" aria-label="Isometric aircraft takeoff" id="' + uid + '" style="width:100%;height:260px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas>'
             '<div style="position:absolute;bottom:12px;left:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);">'
             + airline + ' ' + title + '</div></div>'
@@ -23278,7 +23278,7 @@ def _render_geo_iso_fleet(b: dict) -> str:
     import hashlib
     uid = 'gif' + hashlib.md5(airline.encode()).hexdigest()[:5]
     return ('<div style="position:relative;margin:1rem 0;">'
-            '<canvas id="' + uid + '" style="width:100%;height:260px;border-radius:12px;'
+            '<canvas role="img" aria-label="Isometric fleet scene" id="' + uid + '" style="width:100%;height:260px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas>'
             '<div style="position:absolute;bottom:12px;left:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);">'
             + airline + '</div></div>'
@@ -23307,7 +23307,7 @@ def _render_geo_iso_heli_hover(b: dict) -> str:
     import hashlib
     uid = 'gih' + hashlib.md5(title.encode()).hexdigest()[:5]
     return ('<div style="position:relative;margin:1rem 0;">'
-            '<canvas id="' + uid + '" style="width:100%;height:220px;border-radius:12px;'
+            '<canvas role="img" aria-label="Isometric helicopter hovering" id="' + uid + '" style="width:100%;height:220px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas></div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
@@ -23336,7 +23336,7 @@ def _render_geo_iso_rocket_launch(b: dict) -> str:
     import hashlib
     uid = 'gir' + hashlib.md5(title.encode()).hexdigest()[:5]
     return ('<div style="position:relative;margin:1rem 0;">'
-            '<canvas id="' + uid + '" style="width:100%;height:300px;border-radius:12px;'
+            '<canvas role="img" aria-label="Isometric rocket launch" id="' + uid + '" style="width:100%;height:300px;border-radius:12px;'
             'background:#0a1628;display:block;"></canvas></div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
@@ -25254,7 +25254,7 @@ def _render_masonry_elevation(b: dict) -> str:
         # width="100%" + preserveAspectRatio, not a fixed pixel width — same
         # fix as the JS renderer (atoms_charts.gs), same reason: a literal
         # width overflows a narrow column with nothing to shrink it.
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet">',
+        f'<svg role="img" aria-label="Masonry elevation drawing" xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet">',
         f'<rect width="{W}" height="{H}" fill="{bg_fill}"/>',
     ]
     if style != "blueprint":

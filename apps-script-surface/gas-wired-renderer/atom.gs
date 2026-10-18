@@ -2114,7 +2114,7 @@ _RENDERERS['css_dropdown_menu'] = function(b) {
   }).join('');
   return '<div style="margin:1rem 0;display:inline-block;"><details style="position:relative;">' +
     '<summary style="list-style:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid #dadce0;border-radius:6px;cursor:pointer;font-size:0.88rem;font-weight:500;color:#3c4043;">' + _esc(trigger) +
-    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></summary>' +
+    '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></summary>' +
     '<div style="position:absolute;top:calc(100% + 4px);left:0;z-index:20;background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:160px;padding:4px 0;overflow:hidden;">' + itemsHtml + '</div>' +
     '</details></div>';
 };
@@ -2576,7 +2576,7 @@ _RENDERERS['notification_badge'] = function(b) {
   var text = b.text || '';
   var color = b.color || '#e71414';
   return '<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">' +
-    '<svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>' +
+    '<svg aria-hidden="true" style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>' +
     '<span style="position:absolute;top:0;right:0;transform:translate(25%,-25%);background:' + color + ';color:#fff;font-size:0.7rem;font-weight:700;border-radius:9999px;padding:2px 6px;line-height:1;min-width:16px;text-align:center;box-shadow:0 0 0 2px #fff;">' + _esc(String(text)) + '</span></div>';
 };
 
@@ -2628,7 +2628,7 @@ _RENDERERS['copy_to_clipboard'] = function(b) {
 _RENDERERS['copy_code_button'] = function(b) {
   var text = _esc(_jsJson(String(b.text_to_copy || '')));
   return '<div style="display:inline-block;margin:0.5rem 0;"><button onclick="navigator.clipboard.writeText(' + text + ')" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">' +
-    '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>Copy</button></div>';
+    '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>Copy</button></div>';
 };
 
 _RENDERERS['log_output'] = function(b) {
@@ -2697,7 +2697,7 @@ _RENDERERS['custom_checkbox_group'] = function(b) {
   var label = b.group_label || b.label || '';
   var name = b.name || 'chk';
   var options = b.options || b.items || [];
-  var checkSvg = '<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var checkSvg = '<svg aria-hidden="true" width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var items = options.map(function(opt, i){
     var val = opt.value || opt.label || '';
     var lbl = opt.label || val;
@@ -3046,7 +3046,7 @@ _RENDERERS['progress_circle'] = function(b) {
   return '<style>.pc' + uid + '{stroke-dasharray:' + circ + ';stroke-dashoffset:' + circ + ';animation:pca' + uid + ' 1.2s ease-out forwards;}@keyframes pca' + uid + '{to{stroke-dashoffset:' + offset + ';}}</style>' +
     '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">' +
     '<div style="position:relative;width:120px;height:120px;">' +
-    '<svg width="120" height="120" viewBox="0 0 100 100" style="transform:rotate(-90deg);display:block;">' +
+    '<svg role="img" aria-label="Progress indicator" width="120" height="120" viewBox="0 0 100 100" style="transform:rotate(-90deg);display:block;">' +
     '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="#1e293b" stroke-width="9"/>' +
     '<circle class="pc' + uid + '" cx="50" cy="50" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="9" stroke-linecap="round"/>' +
     '</svg>' +
@@ -3063,8 +3063,8 @@ _RENDERERS['progress_circle'] = function(b) {
 // gets real inline attributes to read; the live animated card is untouched.
 // Also, unlike the live card, the percentage text is a real SVG <text> here
 // rather than a separately-positioned HTML overlay div -- the live overlay
-// sits outside the <svg> entirely, so the rasterizer (which only ever sees
-// the <svg>...</svg> fragment) would silently render the ring with no
+// sits outside the <svg role="img" aria-label="Progress indicator"> entirely, so the rasterizer (which only ever sees
+// the <svg role="img" aria-label="Progress indicator">...</svg> fragment) would silently render the ring with no
 // number on it at all. Placed at the root rotation's own origin (50,50) so
 // it's unaffected by the ring's transform:rotate(-90deg) (a point rotated
 // about itself doesn't move, and glyph strokes are drawn upright

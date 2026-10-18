@@ -385,7 +385,7 @@ _RENDERERS['wave_divider'] = function(b) {
     : '';
 
   return css + '<div style="margin:0;line-height:0;transform:' + flip + ';overflow:hidden;">'
-    + '<svg viewBox="0 0 1200 ' + h + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:' + h + 'px;display:block;">'
+    + '<svg aria-hidden="true" viewBox="0 0 1200 ' + h + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:' + h + 'px;display:block;">'
     + '<path id="' + uid + '-path" d="M0,' + (h*0.5) + ' C200,' + (h*0.1) + ' 400,' + (h*0.9) + ' 600,' + (h*0.5) + ' S1000,' + (h*0.2) + ' 1200,' + (h*0.5) + ' V' + h + ' H0Z" fill="' + color + '" fill-opacity="' + opacity + '"/>'
     + '<path d="M0,' + (h*0.7) + ' C300,' + (h*0.3) + ' 500,' + (h*0.9) + ' 800,' + (h*0.6) + ' S1100,' + (h*0.4) + ' 1200,' + (h*0.7) + ' V' + h + ' H0Z" fill="' + color + '" fill-opacity="' + (parseFloat(opacity)*0.5) + '"/>'
     + '</svg></div>';
@@ -778,7 +778,7 @@ _RENDERERS['countdown_ring'] = function(b) {
     + '#' + uid + '-arc{stroke-dasharray:' + circ + ';stroke-dashoffset:0;animation:' + uid + ' ' + dur + 's linear forwards;}'
     + '</style>';
 
-  var svg = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">'
+  var svg = '<svg role="img" aria-label="Countdown timer" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">'
     + '<circle cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + r + '" fill="none" stroke="var(--border,#e5e7eb)" stroke-width="6"/>'
     + '<circle id="' + uid + '-arc" cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="6" stroke-linecap="round" transform="rotate(-90 ' + (size/2) + ' ' + (size/2) + ')"/>'
     + '<text id="' + uid + '-num" x="' + (size/2) + '" y="' + (size/2+5) + '" text-anchor="middle" style="font-size:' + Math.round(size*0.22) + 'px;font-weight:700;fill:var(--text,#111827);">' + dur + '</text>'

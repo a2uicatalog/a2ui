@@ -72,7 +72,7 @@ _RENDERERS['globe_3d'] = function(b) {
 
   return '<div style="overflow:visible;display:flex;justify-content:center;margin:1.5rem auto;">'
 
-    + '<canvas id="gl' + uid + '" width="' + (size*2) + '" height="' + (size*2) + '" style="display:block;cursor:grab;flex-shrink:0;transform-origin:center center;width:' + size + 'px;height:' + size + 'px;"></canvas>'
+    + '<canvas role="img" aria-label="Rotating 3D globe" id="gl' + uid + '" width="' + (size*2) + '" height="' + (size*2) + '" style="display:block;cursor:grab;flex-shrink:0;transform-origin:center center;width:' + size + 'px;height:' + size + 'px;"></canvas>'
 
     + '</div>'
 

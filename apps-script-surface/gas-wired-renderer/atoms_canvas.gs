@@ -34,7 +34,7 @@ _RENDERERS['canvas_plexus'] = function(b) {
   var rgb = r16 + ',' + g16 + ',' + b16;
 
   return '<div style="border-radius:14px;overflow:hidden;">' +
-    '<canvas id="' + uid + '" height="' + h + '" ' +
+    '<canvas aria-hidden="true" id="' + uid + '" height="' + h + '" ' +
       'style="width:100%;display:block;background:' + _esc(bg) + ';cursor:crosshair;">' +
     '</canvas>' +
     '</div>' +
@@ -283,7 +283,7 @@ _RENDERERS['isometric_mesh'] = function(b) {
   }
   var matData = _jsJson(matrix || defaultMatrix);
 
-  return '<canvas id="' + uid + '" height="' + h + '" ' +
+  return '<canvas aria-hidden="true" id="' + uid + '" height="' + h + '" ' +
     'style="width:100%;display:block;border-radius:14px;background:' + _esc(bg) + ';cursor:grab;">' +
     '</canvas>' +
     '<script>(function(){' +
@@ -411,7 +411,7 @@ _RENDERERS['geo_mercator_radar'] = function(b) {
 
   return '<div style="position:relative;width:100%;height:' + h + ';background:#070a13;' +
     'border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;font-family:monospace;user-select:none;">' +
-    '<canvas id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
+    '<canvas role="img" aria-label="Mercator radar map" id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
     '<div style="position:absolute;top:16px;left:16px;background:rgba(11,16,29,0.85);backdrop-filter:blur(8px);' +
       'padding:10px 16px;border-radius:6px;border:1px solid ' + color + '33;color:#fff;pointer-events:none;">' +
       '<div style="font-size:0.65rem;font-weight:bold;color:' + color + ';letter-spacing:0.1em;margin-bottom:2px;">A2UI · GEO PROJECTION</div>' +
@@ -494,7 +494,7 @@ _RENDERERS['geo_contour_waves'] = function(b) {
 
   return '<div style="position:relative;width:100%;height:' + h + ';background:#070714;' +
     'border-radius:12px;overflow:hidden;font-family:monospace;user-select:none;">' +
-    '<canvas id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
+    '<canvas aria-hidden="true" id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
     '<div style="position:absolute;top:14px;left:16px;color:' + color + ';font-size:0.65rem;' +
       'letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;font-weight:bold;">' +
       _esc(title) +
@@ -878,7 +878,7 @@ _RENDERERS['geo_europe_airspace'] = function(b) {
         '<span id="' + uid + 'fltlbl" style="font-size:8px;color:#334155;margin-left:4px;"></span>' +
         '<span style="margin-left:auto;font-size:7px;color:#1e3a5f;letter-spacing:0.1em;">DRAG · SCROLL ZOOM · CLICK AIRPORT TO OPEN TMA PLAYBOOK</span>' +
       '</div>' +
-      '<canvas id="' + uid + '" style="width:100%;height:100%;display:block;cursor:grab;"></canvas>' +
+      '<canvas role="img" aria-label="Map of European airspace traffic" id="' + uid + '" style="width:100%;height:100%;display:block;cursor:grab;"></canvas>' +
       '<div id="' + uid + 'tip"><b id="' + uid + 'tipicao"></b><span id="' + uid + 'tipname"></span><br><small>Click to open TMA playbook</small></div>' +
       '<div id="' + uid + 'nav"><span>TMA PLAYBOOK</span><a id="' + uid + 'nava" target="_top">▶ OPEN PLAYBOOK</a></div>' +
     '</div>' +
@@ -1226,7 +1226,7 @@ _RENDERERS['geo_iso_takeoff'] = function(b) {
     '#' + uid + 'btn:hover{opacity:.8;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
-      '<canvas id="' + uid + 'c"></canvas>' +
+      '<canvas role="img" aria-label="Isometric aircraft takeoff" id="' + uid + 'c"></canvas>' +
       '<div id="' + uid + 'hud">' +
         '<div class="hl">' + acType + ' · TOULOUSE-BLAGNAC · LIVERY SIM</div>' +
         '<div class="ht">' + title + '</div>' +
@@ -1645,7 +1645,7 @@ _RENDERERS['geo_iso_rocket_launch'] = function(b) {
     '#' + uid + 'hud .hd{font-size:8px;color:#4b5563;margin-top:6px;min-width:280px;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
-      '<canvas id="' + uid + 'c"></canvas>' +
+      '<canvas role="img" aria-label="Isometric rocket launch" id="' + uid + 'c"></canvas>' +
       '<div id="' + uid + 'hud">' +
         '<div class="hl">TACTICAL TELEMETRY STREAM</div>' +
         '<div class="ht">' + title + '</div>' +
@@ -2107,7 +2107,7 @@ _RENDERERS['geo_iso_heli_hover'] = function(b) {
       'cursor:pointer;font-weight:700;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
-      '<canvas id="' + uid + 'c"></canvas>' +
+      '<canvas role="img" aria-label="Isometric helicopter hovering" id="' + uid + 'c"></canvas>' +
       '<div id="' + uid + 'hud">' +
         '<div class="hl">ROTARY FLIGHT DECK │ SYSTEMS ACTIVE</div>' +
         '<div class="ht">' + title + '</div>' +
@@ -2360,7 +2360,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
     '.'+uid+'dd{background:#0d1220;color:#00f2ff;border:1px solid rgba(0,242,255,.22);border-radius:3px;font-family:"Courier New",monospace;font-size:7px;padding:3px 7px;cursor:pointer;font-weight:700}'+
     '</style>'+
     '<div id="'+uid+'w">'+
-      '<canvas id="'+uid+'c"></canvas>'+
+      '<canvas role="img" aria-label="Isometric fleet scene" id="'+uid+'c"></canvas>'+
       '<div id="'+uid+'hud">'+
         '<div class="'+uid+'hl">AIRBUS FLEET DECK</div>'+
         '<div class="'+uid+'ht" id="'+uid+'ht">'+initTitle+'</div>'+
@@ -2684,7 +2684,7 @@ _RENDERERS['globe_3d'] = function(b) {
 
   return (
     '<div style="display:flex;justify-content:center;margin:1.2rem 0;">' +
-      '<canvas id="' + uid + '" width="' + size + '" height="' + size + '" ' +
+      '<canvas role="img" aria-label="Rotating 3D globe" id="' + uid + '" width="' + size + '" height="' + size + '" ' +
         'style="border-radius:50%;cursor:grab;display:block;">' +
       '</canvas>' +
     '</div>' +

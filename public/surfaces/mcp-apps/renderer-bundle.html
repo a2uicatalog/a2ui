@@ -3116,7 +3116,7 @@ _RENDERERS['css_dropdown_menu'] = function(b) {
   }).join('');
   return '<div style="margin:1rem 0;display:inline-block;"><details style="position:relative;">' +
     '<summary style="list-style:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid #dadce0;border-radius:6px;cursor:pointer;font-size:0.88rem;font-weight:500;color:#3c4043;">' + _esc(trigger) +
-    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></summary>' +
+    '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></summary>' +
     '<div style="position:absolute;top:calc(100% + 4px);left:0;z-index:20;background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:160px;padding:4px 0;overflow:hidden;">' + itemsHtml + '</div>' +
     '</details></div>';
 };
@@ -3578,7 +3578,7 @@ _RENDERERS['notification_badge'] = function(b) {
   var text = b.text || '';
   var color = b.color || '#e71414';
   return '<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">' +
-    '<svg style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>' +
+    '<svg aria-hidden="true" style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>' +
     '<span style="position:absolute;top:0;right:0;transform:translate(25%,-25%);background:' + color + ';color:#fff;font-size:0.7rem;font-weight:700;border-radius:9999px;padding:2px 6px;line-height:1;min-width:16px;text-align:center;box-shadow:0 0 0 2px #fff;">' + _esc(String(text)) + '</span></div>';
 };
 
@@ -3630,7 +3630,7 @@ _RENDERERS['copy_to_clipboard'] = function(b) {
 _RENDERERS['copy_code_button'] = function(b) {
   var text = _esc(_jsJson(String(b.text_to_copy || '')));
   return '<div style="display:inline-block;margin:0.5rem 0;"><button onclick="navigator.clipboard.writeText(' + text + ')" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">' +
-    '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>Copy</button></div>';
+    '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>Copy</button></div>';
 };
 
 _RENDERERS['log_output'] = function(b) {
@@ -3699,7 +3699,7 @@ _RENDERERS['custom_checkbox_group'] = function(b) {
   var label = b.group_label || b.label || '';
   var name = b.name || 'chk';
   var options = b.options || b.items || [];
-  var checkSvg = '<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var checkSvg = '<svg aria-hidden="true" width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var items = options.map(function(opt, i){
     var val = opt.value || opt.label || '';
     var lbl = opt.label || val;
@@ -4048,7 +4048,7 @@ _RENDERERS['progress_circle'] = function(b) {
   return '<style>.pc' + uid + '{stroke-dasharray:' + circ + ';stroke-dashoffset:' + circ + ';animation:pca' + uid + ' 1.2s ease-out forwards;}@keyframes pca' + uid + '{to{stroke-dashoffset:' + offset + ';}}</style>' +
     '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">' +
     '<div style="position:relative;width:120px;height:120px;">' +
-    '<svg width="120" height="120" viewBox="0 0 100 100" style="transform:rotate(-90deg);display:block;">' +
+    '<svg role="img" aria-label="Progress indicator" width="120" height="120" viewBox="0 0 100 100" style="transform:rotate(-90deg);display:block;">' +
     '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="#1e293b" stroke-width="9"/>' +
     '<circle class="pc' + uid + '" cx="50" cy="50" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="9" stroke-linecap="round"/>' +
     '</svg>' +
@@ -4065,8 +4065,8 @@ _RENDERERS['progress_circle'] = function(b) {
 // gets real inline attributes to read; the live animated card is untouched.
 // Also, unlike the live card, the percentage text is a real SVG <text> here
 // rather than a separately-positioned HTML overlay div -- the live overlay
-// sits outside the <svg> entirely, so the rasterizer (which only ever sees
-// the <svg>...</svg> fragment) would silently render the ring with no
+// sits outside the <svg role="img" aria-label="Progress indicator"> entirely, so the rasterizer (which only ever sees
+// the <svg role="img" aria-label="Progress indicator">...</svg> fragment) would silently render the ring with no
 // number on it at all. Placed at the root rotation's own origin (50,50) so
 // it's unaffected by the ring's transform:rotate(-90deg) (a point rotated
 // about itself doesn't move, and glyph strokes are drawn upright
@@ -8593,7 +8593,7 @@ _RENDERERS['wave_divider'] = function(b) {
     : '';
 
   return css + '<div style="margin:0;line-height:0;transform:' + flip + ';overflow:hidden;">'
-    + '<svg viewBox="0 0 1200 ' + h + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:' + h + 'px;display:block;">'
+    + '<svg aria-hidden="true" viewBox="0 0 1200 ' + h + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:' + h + 'px;display:block;">'
     + '<path id="' + uid + '-path" d="M0,' + (h*0.5) + ' C200,' + (h*0.1) + ' 400,' + (h*0.9) + ' 600,' + (h*0.5) + ' S1000,' + (h*0.2) + ' 1200,' + (h*0.5) + ' V' + h + ' H0Z" fill="' + color + '" fill-opacity="' + opacity + '"/>'
     + '<path d="M0,' + (h*0.7) + ' C300,' + (h*0.3) + ' 500,' + (h*0.9) + ' 800,' + (h*0.6) + ' S1100,' + (h*0.4) + ' 1200,' + (h*0.7) + ' V' + h + ' H0Z" fill="' + color + '" fill-opacity="' + (parseFloat(opacity)*0.5) + '"/>'
     + '</svg></div>';
@@ -8986,7 +8986,7 @@ _RENDERERS['countdown_ring'] = function(b) {
     + '#' + uid + '-arc{stroke-dasharray:' + circ + ';stroke-dashoffset:0;animation:' + uid + ' ' + dur + 's linear forwards;}'
     + '</style>';
 
-  var svg = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">'
+  var svg = '<svg role="img" aria-label="Countdown timer" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">'
     + '<circle cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + r + '" fill="none" stroke="var(--border,#e5e7eb)" stroke-width="6"/>'
     + '<circle id="' + uid + '-arc" cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="6" stroke-linecap="round" transform="rotate(-90 ' + (size/2) + ' ' + (size/2) + ')"/>'
     + '<text id="' + uid + '-num" x="' + (size/2) + '" y="' + (size/2+5) + '" text-anchor="middle" style="font-size:' + Math.round(size*0.22) + 'px;font-weight:700;fill:var(--text,#111827);">' + dur + '</text>'
@@ -12694,7 +12694,7 @@ _RENDERERS['canvas_plexus'] = function(b) {
   var rgb = r16 + ',' + g16 + ',' + b16;
 
   return '<div style="border-radius:14px;overflow:hidden;">' +
-    '<canvas id="' + uid + '" height="' + h + '" ' +
+    '<canvas aria-hidden="true" id="' + uid + '" height="' + h + '" ' +
       'style="width:100%;display:block;background:' + _esc(bg) + ';cursor:crosshair;">' +
     '</canvas>' +
     '</div>' +
@@ -12943,7 +12943,7 @@ _RENDERERS['isometric_mesh'] = function(b) {
   }
   var matData = _jsJson(matrix || defaultMatrix);
 
-  return '<canvas id="' + uid + '" height="' + h + '" ' +
+  return '<canvas aria-hidden="true" id="' + uid + '" height="' + h + '" ' +
     'style="width:100%;display:block;border-radius:14px;background:' + _esc(bg) + ';cursor:grab;">' +
     '</canvas>' +
     '<script>(function(){' +
@@ -13071,7 +13071,7 @@ _RENDERERS['geo_mercator_radar'] = function(b) {
 
   return '<div style="position:relative;width:100%;height:' + h + ';background:#070a13;' +
     'border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;font-family:monospace;user-select:none;">' +
-    '<canvas id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
+    '<canvas role="img" aria-label="Mercator radar map" id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
     '<div style="position:absolute;top:16px;left:16px;background:rgba(11,16,29,0.85);backdrop-filter:blur(8px);' +
       'padding:10px 16px;border-radius:6px;border:1px solid ' + color + '33;color:#fff;pointer-events:none;">' +
       '<div style="font-size:0.65rem;font-weight:bold;color:' + color + ';letter-spacing:0.1em;margin-bottom:2px;">A2UI · GEO PROJECTION</div>' +
@@ -13154,7 +13154,7 @@ _RENDERERS['geo_contour_waves'] = function(b) {
 
   return '<div style="position:relative;width:100%;height:' + h + ';background:#070714;' +
     'border-radius:12px;overflow:hidden;font-family:monospace;user-select:none;">' +
-    '<canvas id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
+    '<canvas aria-hidden="true" id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>' +
     '<div style="position:absolute;top:14px;left:16px;color:' + color + ';font-size:0.65rem;' +
       'letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;font-weight:bold;">' +
       _esc(title) +
@@ -13538,7 +13538,7 @@ _RENDERERS['geo_europe_airspace'] = function(b) {
         '<span id="' + uid + 'fltlbl" style="font-size:8px;color:#334155;margin-left:4px;"></span>' +
         '<span style="margin-left:auto;font-size:7px;color:#1e3a5f;letter-spacing:0.1em;">DRAG · SCROLL ZOOM · CLICK AIRPORT TO OPEN TMA PLAYBOOK</span>' +
       '</div>' +
-      '<canvas id="' + uid + '" style="width:100%;height:100%;display:block;cursor:grab;"></canvas>' +
+      '<canvas role="img" aria-label="Map of European airspace traffic" id="' + uid + '" style="width:100%;height:100%;display:block;cursor:grab;"></canvas>' +
       '<div id="' + uid + 'tip"><b id="' + uid + 'tipicao"></b><span id="' + uid + 'tipname"></span><br><small>Click to open TMA playbook</small></div>' +
       '<div id="' + uid + 'nav"><span>TMA PLAYBOOK</span><a id="' + uid + 'nava" target="_top">▶ OPEN PLAYBOOK</a></div>' +
     '</div>' +
@@ -13886,7 +13886,7 @@ _RENDERERS['geo_iso_takeoff'] = function(b) {
     '#' + uid + 'btn:hover{opacity:.8;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
-      '<canvas id="' + uid + 'c"></canvas>' +
+      '<canvas role="img" aria-label="Isometric aircraft takeoff" id="' + uid + 'c"></canvas>' +
       '<div id="' + uid + 'hud">' +
         '<div class="hl">' + acType + ' · TOULOUSE-BLAGNAC · LIVERY SIM</div>' +
         '<div class="ht">' + title + '</div>' +
@@ -14305,7 +14305,7 @@ _RENDERERS['geo_iso_rocket_launch'] = function(b) {
     '#' + uid + 'hud .hd{font-size:8px;color:#4b5563;margin-top:6px;min-width:280px;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
-      '<canvas id="' + uid + 'c"></canvas>' +
+      '<canvas role="img" aria-label="Isometric rocket launch" id="' + uid + 'c"></canvas>' +
       '<div id="' + uid + 'hud">' +
         '<div class="hl">TACTICAL TELEMETRY STREAM</div>' +
         '<div class="ht">' + title + '</div>' +
@@ -14767,7 +14767,7 @@ _RENDERERS['geo_iso_heli_hover'] = function(b) {
       'cursor:pointer;font-weight:700;}' +
     '</style>' +
     '<div id="' + uid + 'w">' +
-      '<canvas id="' + uid + 'c"></canvas>' +
+      '<canvas role="img" aria-label="Isometric helicopter hovering" id="' + uid + 'c"></canvas>' +
       '<div id="' + uid + 'hud">' +
         '<div class="hl">ROTARY FLIGHT DECK │ SYSTEMS ACTIVE</div>' +
         '<div class="ht">' + title + '</div>' +
@@ -15020,7 +15020,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
     '.'+uid+'dd{background:#0d1220;color:#00f2ff;border:1px solid rgba(0,242,255,.22);border-radius:3px;font-family:"Courier New",monospace;font-size:7px;padding:3px 7px;cursor:pointer;font-weight:700}'+
     '</style>'+
     '<div id="'+uid+'w">'+
-      '<canvas id="'+uid+'c"></canvas>'+
+      '<canvas role="img" aria-label="Isometric fleet scene" id="'+uid+'c"></canvas>'+
       '<div id="'+uid+'hud">'+
         '<div class="'+uid+'hl">AIRBUS FLEET DECK</div>'+
         '<div class="'+uid+'ht" id="'+uid+'ht">'+initTitle+'</div>'+
@@ -15344,7 +15344,7 @@ _RENDERERS['globe_3d'] = function(b) {
 
   return (
     '<div style="display:flex;justify-content:center;margin:1.2rem 0;">' +
-      '<canvas id="' + uid + '" width="' + size + '" height="' + size + '" ' +
+      '<canvas role="img" aria-label="Rotating 3D globe" id="' + uid + '" width="' + size + '" height="' + size + '" ' +
         'style="border-radius:50%;cursor:grab;display:block;">' +
       '</canvas>' +
     '</div>' +
@@ -16954,8 +16954,8 @@ _RENDERERS['masonry_elevation'] = function(b) {
     // pattern chartjs_bar already uses. A literal width="660" overflowed
     // the new two-column wall_builder layout's ~320-380px right column
     // (found live 2026-08-05, wiring that layout) since nothing here or in
-    // AtomStyles.html makes an <svg> shrink to its container by default.
-    '<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">',
+    // AtomStyles.html makes an <svg role="img" aria-label="Masonry elevation drawing"> shrink to its container by default.
+    '<svg role="img" aria-label="Masonry elevation drawing" xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">',
     '<rect width="' + W + '" height="' + H + '" fill="' + bgFill + '"/>',
   ];
   if (style !== 'blueprint') {
@@ -17130,7 +17130,7 @@ _RENDERERS['donut_stat'] = function(b) {
   var html = '';
   html += '<style>@keyframes donut-spin-' + uid + '{from{stroke-dashoffset:' + circ.toFixed(2) + '}to{stroke-dashoffset:' + dashOffset.toFixed(2) + '}}</style>';
   html += '<div class="a2ui-donut-stat" style="display:inline-block;text-align:center;">';
-  html += '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
+  html += '<svg role="img" aria-label="Donut statistic" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
   // Track
   html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#e2e8f0" stroke-width="12"/>';
   // Arc
@@ -17283,7 +17283,7 @@ _RENDERERS['command_palette'] = function(b) {
 
   var html = '<div class="a2ui-cmd-palette" id="cp-' + uid + '">';
   html += '<div class="a2ui-cmd-search-wrap">';
-  html += '<svg class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  html += '<svg aria-hidden="true" class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
   html += '<input class="a2ui-cmd-input" type="text" placeholder="' + _esc(placeholder) + '"' +
           ' oninput="(function(v){var items=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-item\');var cats=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-cat\');' +
           'items.forEach(function(el){var t=el.textContent.toLowerCase();el.style.display=t.indexOf(v.toLowerCase())>-1?\'\':\'none\';});' +
@@ -18571,7 +18571,7 @@ _RENDERERS['svg_path_draw'] = function(b) {
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
-    + '<svg viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
+    + '<svg role="img" aria-label="Path drawing animation" viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
     + '<path d="' + _esc(path) + '" stroke="' + _esc(color) + '" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:draw-' + uid + ' 2s ease-out 0.2s forwards;"/>'
     + '</svg></div>';
 };
@@ -18899,9 +18899,9 @@ _RENDERERS['animated_beam'] = function(b) {
     + '<div style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
     + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(from) + '</div>'
     + '<div style="flex:1;position:relative;height:32px;">'
-    + '<svg width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
+    + '<svg role="img" aria-label="Animated beam diagram" width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
     + '<line x1="0" y1="16" x2="100%" y2="16" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-dasharray="7 5" style="animation:beam-' + uid + ' 0.7s linear infinite;"/>'
-    + '<svg x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
+    + '<svg role="img" aria-label="Animated beam diagram" x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
     + '</svg>'
     + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:var(--muted,#5f6368);white-space:nowrap;">' + _esc(label) + '</div>' : '')
     + '</div>'
@@ -23405,7 +23405,7 @@ _RENDERERS['globe_3d'] = function(b) {
 
   return '<div style="overflow:visible;display:flex;justify-content:center;margin:1.5rem auto;">'
 
-    + '<canvas id="gl' + uid + '" width="' + (size*2) + '" height="' + (size*2) + '" style="display:block;cursor:grab;flex-shrink:0;transform-origin:center center;width:' + size + 'px;height:' + size + 'px;"></canvas>'
+    + '<canvas role="img" aria-label="Rotating 3D globe" id="gl' + uid + '" width="' + (size*2) + '" height="' + (size*2) + '" style="display:block;cursor:grab;flex-shrink:0;transform-origin:center center;width:' + size + 'px;height:' + size + 'px;"></canvas>'
 
     + '</div>'
 
@@ -25201,7 +25201,7 @@ _RENDERERS['skill_radar'] = function(b) {
   }
 
   var svgH = SIZE + 28;
-  var svg = '<svg width="' + SIZE + '" height="' + svgH + '" viewBox="0 0 ' + SIZE + ' ' + svgH + '" style="max-width:280px;">' +
+  var svg = '<svg role="img" aria-label="Skill radar chart" width="' + SIZE + '" height="' + svgH + '" viewBox="0 0 ' + SIZE + ' ' + svgH + '" style="max-width:280px;">' +
     grid + axes + before + current + dots + labels + '</svg>';
 
   var legend = hasBefore ?
@@ -33070,7 +33070,7 @@ _RENDERERS['gauge_sla'] = function(b) {
   var circ = Math.PI * r;
   var dash = pct * circ;
   var svgStyle = 'transform:rotate(-180deg)';
-  var svg = '<svg width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
+  var svg = '<svg role="img" aria-label="SLA gauge" width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
     + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f3f4f6" stroke-width="12" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + '" stroke-linecap="round"/>'
     + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-dasharray="' + dash + ' ' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + ';transition:stroke-dasharray 0.5s;" stroke-linecap="round"/>'
     + '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" style="font-size:20px;font-weight:700;fill:' + color + ';">' + value + unit + '</text>'
@@ -33100,7 +33100,7 @@ _RENDERERS['sparkline'] = function(b) {
     return x.toFixed(1) + ',' + y.toFixed(1);
   });
   var area   = '0,' + h + ' ' + fill.join(' ') + ' ' + w + ',' + h;
-  return '<svg width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;">'
+  return '<svg role="img" aria-label="Sparkline" width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;">'
     + '<polygon points="' + area + '" fill="' + color + '" fill-opacity="0.1"/>'
     + '<polyline points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="' + lw + '" stroke-linejoin="round" stroke-linecap="round"/>'
     + '</svg>';

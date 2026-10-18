@@ -500,7 +500,7 @@ _RENDERERS['gauge_sla'] = function(b) {
   var circ = Math.PI * r;
   var dash = pct * circ;
   var svgStyle = 'transform:rotate(-180deg)';
-  var svg = '<svg width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
+  var svg = '<svg role="img" aria-label="SLA gauge" width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
     + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f3f4f6" stroke-width="12" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + '" stroke-linecap="round"/>'
     + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-dasharray="' + dash + ' ' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + ';transition:stroke-dasharray 0.5s;" stroke-linecap="round"/>'
     + '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" style="font-size:20px;font-weight:700;fill:' + color + ';">' + value + unit + '</text>'
@@ -530,7 +530,7 @@ _RENDERERS['sparkline'] = function(b) {
     return x.toFixed(1) + ',' + y.toFixed(1);
   });
   var area   = '0,' + h + ' ' + fill.join(' ') + ' ' + w + ',' + h;
-  return '<svg width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;">'
+  return '<svg role="img" aria-label="Sparkline" width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;">'
     + '<polygon points="' + area + '" fill="' + color + '" fill-opacity="0.1"/>'
     + '<polyline points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="' + lw + '" stroke-linejoin="round" stroke-linecap="round"/>'
     + '</svg>';

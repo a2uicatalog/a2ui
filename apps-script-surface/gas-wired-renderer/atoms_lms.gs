@@ -485,7 +485,7 @@ _RENDERERS['skill_radar'] = function(b) {
   }
 
   var svgH = SIZE + 28;
-  var svg = '<svg width="' + SIZE + '" height="' + svgH + '" viewBox="0 0 ' + SIZE + ' ' + svgH + '" style="max-width:280px;">' +
+  var svg = '<svg role="img" aria-label="Skill radar chart" width="' + SIZE + '" height="' + svgH + '" viewBox="0 0 ' + SIZE + ' ' + svgH + '" style="max-width:280px;">' +
     grid + axes + before + current + dots + labels + '</svg>';
 
   var legend = hasBefore ?

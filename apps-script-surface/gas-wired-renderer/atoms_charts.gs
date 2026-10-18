@@ -544,8 +544,8 @@ _RENDERERS['masonry_elevation'] = function(b) {
     // pattern chartjs_bar already uses. A literal width="660" overflowed
     // the new two-column wall_builder layout's ~320-380px right column
     // (found live 2026-08-05, wiring that layout) since nothing here or in
-    // AtomStyles.html makes an <svg> shrink to its container by default.
-    '<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">',
+    // AtomStyles.html makes an <svg role="img" aria-label="Masonry elevation drawing"> shrink to its container by default.
+    '<svg role="img" aria-label="Masonry elevation drawing" xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">',
     '<rect width="' + W + '" height="' + H + '" fill="' + bgFill + '"/>',
   ];
   if (style !== 'blueprint') {
@@ -720,7 +720,7 @@ _RENDERERS['donut_stat'] = function(b) {
   var html = '';
   html += '<style>@keyframes donut-spin-' + uid + '{from{stroke-dashoffset:' + circ.toFixed(2) + '}to{stroke-dashoffset:' + dashOffset.toFixed(2) + '}}</style>';
   html += '<div class="a2ui-donut-stat" style="display:inline-block;text-align:center;">';
-  html += '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
+  html += '<svg role="img" aria-label="Donut statistic" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
   // Track
   html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#e2e8f0" stroke-width="12"/>';
   // Arc
@@ -873,7 +873,7 @@ _RENDERERS['command_palette'] = function(b) {
 
   var html = '<div class="a2ui-cmd-palette" id="cp-' + uid + '">';
   html += '<div class="a2ui-cmd-search-wrap">';
-  html += '<svg class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  html += '<svg aria-hidden="true" class="a2ui-cmd-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f738f" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
   html += '<input class="a2ui-cmd-input" type="text" placeholder="' + _esc(placeholder) + '"' +
           ' oninput="(function(v){var items=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-item\');var cats=document.querySelectorAll(\'#cp-' + uid + ' .a2ui-cmd-cat\');' +
           'items.forEach(function(el){var t=el.textContent.toLowerCase();el.style.display=t.indexOf(v.toLowerCase())>-1?\'\':\'none\';});' +
@@ -2161,7 +2161,7 @@ _RENDERERS['svg_path_draw'] = function(b) {
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
-    + '<svg viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
+    + '<svg role="img" aria-label="Path drawing animation" viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
     + '<path d="' + _esc(path) + '" stroke="' + _esc(color) + '" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:draw-' + uid + ' 2s ease-out 0.2s forwards;"/>'
     + '</svg></div>';
 };
@@ -2489,9 +2489,9 @@ _RENDERERS['animated_beam'] = function(b) {
     + '<div style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
     + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(from) + '</div>'
     + '<div style="flex:1;position:relative;height:32px;">'
-    + '<svg width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
+    + '<svg role="img" aria-label="Animated beam diagram" width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
     + '<line x1="0" y1="16" x2="100%" y2="16" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-dasharray="7 5" style="animation:beam-' + uid + ' 0.7s linear infinite;"/>'
-    + '<svg x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
+    + '<svg role="img" aria-label="Animated beam diagram" x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
     + '</svg>'
     + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:var(--muted,#5f6368);white-space:nowrap;">' + _esc(label) + '</div>' : '')
     + '</div>'
