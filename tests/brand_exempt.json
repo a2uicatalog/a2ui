@@ -10,7 +10,8 @@
   "public/surfaces/amiga/index.html",
   "public/surfaces/diagram-studio/drawio-editor/index.html",
   "public/surfaces/diagram-studio/frame-probe.html",
-  "public/surfaces/diagram-studio/view.html"
+  "public/surfaces/diagram-studio/view.html",
+  "public/surfaces/mcp-apps/export/index.html"
  ],
  "reasons": {
   "public/bricksdemo/index.html": "brick_build_3d demo gallery (ck) - standalone dark lab page",
@@ -22,6 +23,7 @@
   "public/surfaces/amiga/index.html": "vAmigaWeb emulator host page",
   "public/surfaces/diagram-studio/drawio-editor/index.html": "embedded editor frame (MCP host iframe)",
   "public/surfaces/diagram-studio/frame-probe.html": "embedded frame probe (MCP host iframe)",
-  "public/surfaces/diagram-studio/view.html": "embedded MCP Apps view (host iframe; its ui:// URI is versioned)"
+  "public/surfaces/diagram-studio/view.html": "embedded MCP Apps view (host iframe; its ui:// URI is versioned)",
+  "public/surfaces/mcp-apps/export/index.html": "film export page, deliberately unbranded: schemaestro.com serves it white-labelled (mcp-worker's parity gate 'schemaestro.com/play still re-dresses the live catalog player' fails if catalog chrome appears). Giving it the shared header broke that live on 2026-10-18 and was reverted"
  }
 }
