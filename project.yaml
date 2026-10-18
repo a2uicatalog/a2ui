@@ -421,7 +421,7 @@ generators:
       script instead (299 KB gzipped against a 1 MB limit). Emits
       PUBLISHED_ATOMS from spec.json so the staging boundary is compiled in —
       the module registers all 523 known atoms but a public endpoint must
-      serve only the 474 published ones. Rerun after ANY renderer .gs change
+      serve only the 548 published ones. Rerun after ANY renderer .gs change
       (chained into renderer-release); the Worker still needs deploying
       separately for the change to reach callers.
   gen_sitemap:
