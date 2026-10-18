@@ -52,13 +52,19 @@ var _WORKSPACE_LOGOS = {
   currents:   'currents/v14'
 };
 
+// White letters on a fallback tile when that reaches 4.5:1, otherwise a near-black (the yellow tiles cannot carry white).
+function _wsLetterColour(bg) {
+  var h = String(bg).replace('#', ''), c = [0, 2, 4].map(function(i) { var v = parseInt(h.substr(i, 2), 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+  var L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  return 1.05 / (L + 0.05) >= 4.5 ? '#fff' : '#202124';
+}
 // Brand colours — used for letter-badge fallback when app is unknown
 var _WORKSPACE_COLORS = {
-  gmail: '#EA4335', drive: '#4285F4', docs: '#4285F4', sheets: '#34A853',
-  slides: '#FBBC04', calendar: '#4285F4', meet: '#00832D', forms: '#7248B9',
-  chat: '#00AC47', classroom: '#0F9D58', keep: '#FBBC04', sites: '#4285F4',
-  vault: '#4285F4', groups: '#EA4335', tasks: '#4285F4', contacts: '#34A853',
-  jamboard: '#FF7043', admin: '#4285F4', appsheet: '#4285F4', currents: '#4285F4'
+  gmail: '#D93025', drive: '#1A73E8', docs: '#1A73E8', sheets: '#188038',
+  slides: '#FBBC04', calendar: '#1A73E8', meet: '#00832D', forms: '#7248B9',
+  chat: '#00832D', classroom: '#0B8043', keep: '#FBBC04', sites: '#1A73E8',
+  vault: '#1A73E8', groups: '#D93025', tasks: '#1A73E8', contacts: '#188038',
+  jamboard: '#C93D0A', admin: '#1A73E8', appsheet: '#1A73E8', currents: '#1A73E8'
 };
 
 // ─── Helper: inject Material Symbols font once per page ──────────────────────
@@ -172,10 +178,10 @@ _RENDERERS['workspace_logo'] = function(b) {
 
   if (!path) {
     // Unknown app — render coloured letter badge
-    var fbBg  = _WORKSPACE_COLORS[app] || '#4285F4';
+    var fbBg  = _WORKSPACE_COLORS[app] || '#1b6cf2';
     var fbCh  = _esc((app[0] || 'G').toUpperCase());
     return '<span style="' + wrapStyle + '">'
-      + '<span style="width:' + size + 'px;height:' + size + 'px;border-radius:8px;background:' + fbBg + ';display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size * 0.5) + 'px;color:#fff;">' + fbCh + '</span>'
+      + '<span style="width:' + size + 'px;height:' + size + 'px;border-radius:8px;background:' + fbBg + ';display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size * 0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>'
       + lblHtml + '</span>';
   }
 
@@ -214,7 +220,7 @@ _RENDERERS['workspace_logo_strip'] = function(b) {
     var fbBg = _WORKSPACE_COLORS[key] || '#4285F4';
     var fbCh = _esc((key[0] || 'G').toUpperCase());
     if (!path) {
-      return '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size*0.5) + 'px;color:#fff;" title="' + _esc(key) + '">' + fbCh + '</span>';
+      return '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size*0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';" title="' + _esc(key) + '">' + fbCh + '</span>';
     }
     var path2026 = _WORKSPACE_LOGOS_2026[key];
     var src2026 = path2026 ? (_WL_BASE + path2026) : (_LOGO_BASE + path + '/192px.svg');
@@ -249,11 +255,11 @@ _RENDERERS['workspace_logo_grid'] = function(b) {
     var key   = typeof app === 'string' ? app.toLowerCase() : app;
     var path  = _WORKSPACE_LOGOS[key];
     var lbl   = b.show_labels !== false ? _wsCapitalise(key) : '';
-    var fbBg  = _WORKSPACE_COLORS[key] || '#4285F4';
+    var fbBg  = _WORKSPACE_COLORS[key] || '#1b6cf2';
     var fbCh  = _esc((key[0] || 'G').toUpperCase());
     var inner = path
       ? '<img src="' + _LOGO_BASE + path + '/192px.svg" width="' + size + '" height="' + size + '" class="' + uid + '-i" alt="' + _esc(key) + '">'
-      : '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size*0.5) + 'px;color:#fff;">' + fbCh + '</span>';
+      : '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size*0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>';
     return '<div class="' + uid + '-c">'
       + inner
       + (lbl ? '<span style="font-size:0.7rem;color:var(--muted,#6b7280);font-weight:500;text-align:center;">' + _esc(lbl) + '</span>' : '')

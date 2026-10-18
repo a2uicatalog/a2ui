@@ -139,7 +139,7 @@ _RENDERERS['brevet_timeline'] = function(b) {
             'transition:max-height 0.4s ease,opacity 0.3s ease,margin-top 0.3s ease;">' +
             _esc(ev.desc || '').replace(/\n/g, '<br>') +
           '</div>' +
-          '<div style="font-size:0.6rem;color:#1e293b;margin-top:0.35rem;letter-spacing:0.07em;">▸ analyser l\'impact au Brevet</div>' +
+          '<div style="font-size:0.6rem;color:#8299bf;margin-top:0.35rem;letter-spacing:0.07em;">▸ analyser l\'impact au Brevet</div>' +
         '</div>' +
       '</div>';
   }

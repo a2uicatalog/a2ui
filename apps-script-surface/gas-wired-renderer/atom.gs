@@ -1287,7 +1287,7 @@ _RENDERERS['video_pair'] = function(b) {
     var label = _esc(v.label || v.title || '');
     var detail = v.detail ? '<p style="margin:8px 0 0;font-size:0.82rem;color:var(--muted);line-height:1.6">' + _markdownToHtml(v.detail) + '</p>' : '';
     var videoInner = vid
-      ? '<iframe src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&playsinline=1" ' +
+      ? '<iframe title="Video" src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&playsinline=1" ' +
         'style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" ' +
         'allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'
       : '<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--surface2,#1a1a2e);color:var(--muted);font-size:0.8rem;border-radius:10px">Video placeholder</div>';
@@ -1999,7 +1999,7 @@ _RENDERERS['stepper'] = function(b) {
     if (typeof s === 'string') return {label:s, description:'', state:'pending'};
     return {label:s.label||s.title||'', description:s.description||s.body||'', state:s.is_current?'active':(s.is_completed?'completed':'pending')};
   });
-  var headingHtml = heading ? '<div style="font-size:0.85rem;font-weight:700;color:#64748b;letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px;">' + _esc(heading) + '</div>' : '';
+  var headingHtml = heading ? '<div style="font-size:0.85rem;font-weight:700;color:#73839a;letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px;">' + _esc(heading) + '</div>' : '';
   var items = norm.map(function(step, i){
     var completed = step.state === 'completed' || (step.state === 'pending' && i < activeIdx);
     var active = step.state === 'active' || i === activeIdx;
@@ -2012,7 +2012,7 @@ _RENDERERS['stepper'] = function(b) {
       lc = '#f1f5f9'; dc = '#94a3b8';
     } else {
       indicator = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;border:2px solid #334155;background:#1e293b;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:#475569;"></div></div>';
-      lc = '#64748b'; dc = '#374151';
+      lc = '#73839a'; dc = '#72849f';
     }
     var descHtml = step.description ? '<div style="font-size:0.8rem;color:' + dc + ';margin-top:2px;">' + _esc(step.description) + '</div>' : '';
     var connector = i < norm.length - 1 ? '<div style="width:2px;height:14px;margin:3px 0 3px 13px;background:' + (completed ? color : '#1e293b') + ';border-radius:1px;"></div>' : '';
@@ -2267,7 +2267,7 @@ _RENDERERS['version_badge'] = function(b) {
   var status = b.status || 'stable';
   var colors = {stable:'#16a34a',beta:'#2563eb',alpha:'#d97706',rc:'#7c3aed'};
   var c = colors[status] || '#6b7280';
-  var statusLabel = status !== 'stable' ? '<span style="opacity:0.7;font-weight:400;margin-left:2px;"> · ' + _esc(status) + '</span>' : '';
+  var statusLabel = status !== 'stable' ? '<span style="font-weight:400;margin-left:2px;"> · ' + _esc(status) + '</span>' : '';
   return '<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c + ';border-radius:100px;padding:2px 10px;font-size:0.75rem;font-weight:700;color:' + c + ';font-family:monospace;">v' + _esc(v) + statusLabel + '</span>';
 };
 
@@ -4054,7 +4054,7 @@ _RENDERERS['comparison_grid'] = function(b) {
 
 _RENDERERS['linkedin_post_image'] = function(b) {
   var mode   = b.mode || 'conviction_card';
-  var accent = b.accent || '#7c3aed';
+  var accent = b.accent || '#9864f1';
 
   var hint = '<div style="margin-top:8px;text-align:center;font-size:0.72rem;color:#6e767d;">' +
     'LinkedIn post image &mdash; screenshot at 1.91:1 ratio</div>';

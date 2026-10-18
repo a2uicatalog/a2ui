@@ -63,7 +63,7 @@ _RENDERERS['schema_reveal'] = function(b) {
 // url_anatomy — visually dissects the shareable URL into its parts
 _RENDERERS['url_anatomy'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
-  var accent = b.accent || '#4f46e5';
+  var accent = b.accent || '#756eeb';
   return '<style>'
     + '#ua-' + uid + '{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:20px;margin:1rem 0;overflow:hidden;}'
     + '#ua-url-' + uid + '{font-family:monospace;font-size:0.78rem;word-break:break-all;color:var(--text);line-height:1.8;margin-bottom:16px;}'
@@ -245,7 +245,7 @@ _RENDERERS['atom_anatomy'] = function(b) {
     + rendered
     + '</div>'
     + '<div style="flex:1;padding:20px;background:#0f172a;min-width:0;">'
-    + '<div style="font-size:0.68rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
+    + '<div style="font-size:0.68rem;font-weight:700;color:#70839e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
     + '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#4f6e99;white-space:pre-wrap;line-height:1.6;">' + _esc(schemaStr) + '</pre>'
     + '</div>'
     + '</div></div>';
@@ -707,7 +707,7 @@ _RENDERERS['icon_liftoff'] = function(b) {
     var fbBg = _WORKSPACE_COLORS[app] || '#4285F4';
     var fbCh = _esc((app[0] || 'G').toUpperCase());
     iconHtml = '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:' + Math.round(size / 5)
-      + 'px;background:' + fbBg + ';display:flex;align-items:center;justify-content:center;color:#fff;'
+      + 'px;background:' + fbBg + ';display:flex;align-items:center;justify-content:center;color:' + _wsLetterColour(fbBg) + ';'
       + 'font-size:' + Math.round(size / 3) + 'px;font-weight:700;">' + fbCh + '</div>';
   }
 

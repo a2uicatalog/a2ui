@@ -647,9 +647,9 @@ _RENDERERS['flashcard_deck'] = function(b) {
             'display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;' +
             'border-radius:18px;box-sizing:border-box;text-align:center;' +
             'background:' + _esc(accent) + ';box-shadow:0 24px 48px rgba(0,0,0,0.5);">' +
-            '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:1.2rem;">' + _esc(lblBack) + '</div>' +
+            '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#dcdafa;margin-bottom:1.2rem;">' + _esc(lblBack) + '</div>' +
             '<div style="font-size:1.05rem;font-weight:600;line-height:1.65;color:#fff;">' + back + '</div>' +
-            '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;">— space / click to flip —</div>' +
+            '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#dddbfa;letter-spacing:0.1em;">— space / click to flip —</div>' +
           '</div>' +
         '</div>' +
       '</div>';

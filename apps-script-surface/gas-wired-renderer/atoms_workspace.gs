@@ -823,7 +823,7 @@ _RENDERERS['command_step'] = function(b) {
         'navigator.clipboard.writeText(b.getAttribute(\'data-cmd\'));' +
         'b.textContent=\'✓\';b.style.background=\'#22c55e\';' +
         'setTimeout(function(){b.textContent=\'Copy\';b.style.background=\'#1e293b\';},1500);' +
-      '})(this)" style="background:#1e293b;color:#617592;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">' +
+      '})(this)" style="background:#1e293b;color:#94a3b8;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">' +
         'Copy' +
       '</button>' +
     '</div>' +

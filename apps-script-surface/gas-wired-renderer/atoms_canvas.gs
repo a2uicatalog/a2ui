@@ -863,18 +863,18 @@ _RENDERERS['geo_europe_airspace'] = function(b) {
     '#' + uid + 'wrap{position:relative;background:#050810;width:100%;height:100%;overflow:hidden;font-family:"Courier New",monospace;}' +
     '#' + uid + 'hdr{position:absolute;top:0;left:0;right:0;height:34px;z-index:5;display:flex;align-items:center;gap:10px;padding:0 14px;background:linear-gradient(#060d1aee,transparent);}' +
     '#' + uid + 'tip{position:absolute;pointer-events:none;z-index:20;display:none;background:rgba(2,8,20,0.92);border:1px solid rgba(0,242,255,0.3);border-radius:6px;padding:6px 10px;font-size:9px;color:#e2e8f0;white-space:nowrap;}' +
-    '#' + uid + 'tip b{color:#00f2ff;display:block;margin-bottom:2px;}' +
+    '#' + uid + 'tip b{color:#008087;display:block;margin-bottom:2px;}' +
     '#' + uid + 'tip small{color:#334155;}' +
     '#' + uid + 'nav{display:none;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:50;' +
-      'background:linear-gradient(135deg,#001a2e,#002a40);border:1px solid #00f2ff;border-radius:8px;' +
+      'background:linear-gradient(135deg,#001a2e,#002a40);border:1px solid #008087;border-radius:8px;' +
       'padding:10px 22px;font-family:"Courier New",monospace;text-align:center;box-shadow:0 0 24px rgba(0,242,255,0.3);}' +
     '#' + uid + 'nav span{display:block;font-size:8px;color:#334155;letter-spacing:0.15em;margin-bottom:6px;}' +
-    '#' + uid + 'nava{display:block;font-size:12px;font-weight:bold;color:#00f2ff;text-decoration:none;letter-spacing:0.1em;}' +
+    '#' + uid + 'nava{display:block;font-size:12px;font-weight:bold;color:#008087;text-decoration:none;letter-spacing:0.1em;}' +
     '#' + uid + 'nava:hover{color:#fff;}' +
     '</style>' +
     '<div id="' + uid + 'wrap">' +
       '<div id="' + uid + 'hdr">' +
-        '<span style="font-size:9px;letter-spacing:0.2em;color:#00f2ff;text-transform:uppercase;">' + _esc(title) + '</span>' +
+        '<span style="font-size:9px;letter-spacing:0.2em;color:#008087;text-transform:uppercase;">' + _esc(title) + '</span>' +
         '<span id="' + uid + 'fltlbl" style="font-size:8px;color:#334155;margin-left:4px;"></span>' +
         '<span style="margin-left:auto;font-size:7px;color:#1e3a5f;letter-spacing:0.1em;">DRAG · SCROLL ZOOM · CLICK AIRPORT TO OPEN TMA PLAYBOOK</span>' +
       '</div>' +
@@ -1100,7 +1100,7 @@ _RENDERERS['geo_europe_airspace'] = function(b) {
               'ctx.strokeStyle="rgba(0,242,255,0.3)";ctx.lineWidth=1;ctx.stroke();' +
             '}' +
             'ctx.beginPath();ctx.arc(ap.x,ap.y,isFocused||hasPlaybook?3.5:2,0,Math.PI*2);' +
-            'ctx.fillStyle=hasPlaybook?"#00f2ff":isFocused?"rgba(0,200,255,0.9)":"rgba(80,140,180,0.65)";ctx.fill();' +
+            'ctx.fillStyle=hasPlaybook?"#008087":isFocused?"rgba(0,200,255,0.9)":"rgba(80,140,180,0.65)";ctx.fill();' +
             'ctx.fillStyle=hasPlaybook?"rgba(0,242,255,0.9)":isFocused?"rgba(0,200,255,0.8)":"rgba(80,140,180,0.55)";' +
             'ctx.font=(hasPlaybook?"bold ":"")+"7px \'Courier New\'";ctx.textAlign="left";' +
             'ctx.fillText(a.i,ap.x+5,ap.y+3);' +
@@ -1112,7 +1112,7 @@ _RENDERERS['geo_europe_airspace'] = function(b) {
           'var fp=toC(f.lat,f.lon);' +
           'var hdg=(f.track||f.hdg||0)*Math.PI/180;' +
           'ctx.save();ctx.translate(fp.x,fp.y);ctx.rotate(hdg);' +
-          'ctx.strokeStyle="#00f2ff";ctx.fillStyle="#00f2ff88";ctx.lineWidth=0.8;' +
+          'ctx.strokeStyle="#008087";ctx.fillStyle="#00808788";ctx.lineWidth=0.8;' +
           'ctx.beginPath();ctx.moveTo(0,-4);ctx.lineTo(-2,3);ctx.lineTo(0,1);ctx.lineTo(2,3);ctx.closePath();' +
           'ctx.fill();ctx.stroke();ctx.restore();' +
           'ctx.fillStyle="rgba(0,242,255,0.6)";ctx.font="7px \'Courier New\'";ctx.textAlign="left";' +

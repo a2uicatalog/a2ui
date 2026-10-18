@@ -301,8 +301,8 @@ _EXAMPLE_BLOCKS = {
                  {"name": "meet", "status": "beta"}]},
     "call_mood_board": {"type": "call_mood_board", "title": "Room mood",
         "moods": [
-            {"mood": "Focused", "icon": "🎯", "intensity": 80, "color": "#6366f1"},
-            {"mood": "Energised", "icon": "⚡", "intensity": 65, "color": "#00f2ff"}]},
+            {"mood": "Focused", "icon": "🎯", "intensity": 80, "color": "#a5b4fc"},
+            {"mood": "Energised", "icon": "⚡", "intensity": 65, "color": "#67e8f9"}]},
     "module_map": {"type": "module_map", "title": "Course map", "columns": 2,
         "modules": [
             {"title": "Basics", "description": "Start here", "duration": "10 min", "icon": "📘"},
@@ -601,7 +601,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
 .preview-box *{max-width:100%}
-.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
 .preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
@@ -988,7 +988,7 @@ _COMPANION_BLOCKS = {
 
 def make_renderer_url(atom):
     atom_type = atom.get("type", "")
-    block     = json.loads(example_payload(atom))
+    block     = _aa_example(json.loads(example_payload(atom)))
     blocks    = [block] + _COMPANION_BLOCKS.get(atom_type, [])
     payload   = {
         "title": atom_type.replace("_", " ").title(),
@@ -1017,7 +1017,7 @@ def live_preview(atom):
     atom_type = atom.get("type", "")
     if atom_type not in _RENDERER_TYPES or _web_renderer is None:
         return ""
-    block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
+    block = _EXAMPLE_BLOCKS.get(atom_type) or _aa_example(json.loads(example_payload(atom)))
     try:
         html = _scope_preview_css(_web_renderer.render([block]))
         if not html.strip():
@@ -1060,7 +1060,7 @@ def templates_selector(atom):
     if not children or atom_type not in _RENDERER_TYPES:
         return ""
     field = next(iter(children))          # e.g. "steps" for article_journey
-    block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
+    block = _EXAMPLE_BLOCKS.get(atom_type) or _aa_example(json.loads(example_payload(atom)))
     items = block.get(field) or []
     if not isinstance(items, list) or not items:
         return ""
@@ -1463,7 +1463,7 @@ def card_stage(atom):
     if atom_type not in _RENDERER_TYPES or _web_renderer is None:
         reason = "no_renderer"
     else:
-        block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
+        block = _EXAMPLE_BLOCKS.get(atom_type) or _aa_example(json.loads(example_payload(atom)))
         try:
             html = _scope_preview_css(_web_renderer.render([block]))
         except Exception:
@@ -3027,7 +3027,7 @@ def generate_surface_page(surface, atoms):
             # left of your scroll; the render happens in the live MCP Apps
             # view at the top. Example payloads ship in one map below.
             block = dict(_EXAMPLE_BLOCKS.get(atom_type)
-                         or json.loads(example_payload(atom)))
+                         or _aa_example(json.loads(example_payload(atom))))
             block["component"] = atom_type
             gallery_examples[atom_type] = block
             action = (f'<button class="try-btn a2ui-render-btn" data-atom="{atom_type}">'

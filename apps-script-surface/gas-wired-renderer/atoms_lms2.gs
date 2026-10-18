@@ -468,7 +468,7 @@ _RENDERERS['study_timer'] = function(b) {
         'var pct=left/total;' +
         'document.getElementById("' + uid + 'ring").setAttribute("stroke-dashoffset",CIRC*(1-pct));' +
         'document.getElementById("' + uid + 'mode").textContent=isFocus?"Focus":"Break";' +
-        'document.getElementById("' + uid + 'mode").style.color=isFocus?"' + _esc(accent) + '":"#34d399";' +
+        'document.getElementById("' + uid + 'mode").style.color=isFocus?"' + _esc(accent) + '":"#1c805c";' +
       '}' +
       'function tick(){if(left<=0){if(isFocus)sessions++;isFocus=!isFocus;total=isFocus?focusSecs:brkSecs;left=total;document.getElementById("' + uid + 'sessions").textContent=sessions+" session"+(sessions===1?"":"s")+" completed";draw();return;}left--;draw();}' +
       'window["' + uid + 'toggle"]=function(){' +

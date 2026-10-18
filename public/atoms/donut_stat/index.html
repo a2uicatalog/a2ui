@@ -139,7 +139,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
 .preview-box *{max-width:100%}
-.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
 .preview-box pre code{color:inherit}
 .preview-box h2,.preview-box h3{color:#111}
@@ -197,11 +197,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
         
     <svg role="img" aria-label="Donut statistic" viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="donut_2297687190_grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#6366f1" />
-          <stop offset="100%" stop-color="#6366f1" stop-opacity="0.6" />
+        <linearGradient id="donut_1882876177_grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#4f46e5" />
+          <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.6" />
         </linearGradient>
-        <filter id="donut_2297687190_glow" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="donut_1882876177_glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -210,9 +210,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
         </filter>
       </defs>
       <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
-      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_2297687190_grad)" stroke-width="10" 
+      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_1882876177_grad)" stroke-width="10" 
               stroke-dasharray="251.327" stroke-dashoffset="0.0"
-              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_2297687190_glow)" />
+              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_1882876177_glow)" />
       <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">75</text>
       <text x="50" y="64" fill="rgba(255,255,255,0.4)" font-size="7" font-weight="600" font-family="monospace" text-anchor="middle">100.0%</text>
     </svg>
@@ -224,7 +224,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           75 <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.62);">/ 5</span>
         </div>
         <div style="font-size:0.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6366f1;"></span>
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4f46e5;"></span>
           Progress Status: 100.0% Target Met
         </div>
       </div>

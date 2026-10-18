@@ -746,8 +746,8 @@ _RENDERERS['status_dashboard'] = function(b) {
   var items = b.items || [];
 
   var statusColors = {
-    operational:  '#167d3c',
-    degraded:     '#996206',
+    operational:  '#15793a',
+    degraded:     '#925d06',
     outage:       '#ef4444',
     maintenance:  '#4f46e5'
   };
