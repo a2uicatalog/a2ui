@@ -2351,4 +2351,55 @@ _RENDERERS['motion_kinetic_drum'] = function(b) {
     + '<div style="position:relative;width:100%;height:100%;transform-style:preserve-3d;'
     + 'opacity:clamp(0,calc(var(--p,1) * 1.8),1);transform:' + rigRot + ';">'
     + panels.join('') + '</div></div>';
+// motion_liquid_glass: added 2026-10-14 on the uplift-handoff line, ported 2026-10-19. Pure CSS/HTML, no script; a calibrated
+// two-layer optical magnification (the children drawn twice: stage, and magnified in the lens). Twin of renderers/web_article.py _render_motion_liquid_glass.
+var _MO_LGLASS_SHAPE = {pill: 1, circle: 1, bar: 1};
+
+_RENDERERS['motion_liquid_glass'] = function(b) {
+  var src = Array.isArray(b.blocks) ? b.blocks : [], ch = [], i;
+  for (i = 0; i < src.length && ch.length < 6; i++) {
+    if (src[i] && typeof src[i] === 'object') ch.push(_moRender(src[i]));
+  }
+  var inner = ch.join('');
+  var zoom = _ffNum(b.zoom, 1, 0.5, 2, 2);
+  var shape = _moOwn(_MO_LGLASS_SHAPE, b.shape, 'pill');
+  var mag = parseFloat(_ffNum(b.magnify, 1.24, 1.02, 1.6, 2));
+  var effMag = (1 + (mag - 1) * 0.45).toFixed(3);
+  var blur = _ffInt(b.blur, 2, 0, 16);
+  var disp = _ffInt(b.dispersion, 4, 0, 12);
+  var travel = _ffInt(b.travel, 24, 0, 40);
+  var accent = _ffHex(b.accent, '#38bdf8');
+  var accent2 = _ffHex(b.accent2, '#f472b6');
+  var label = _moStr(b.label, 60);
+
+  var rad = shape === 'circle' ? '50%' : (shape === 'pill' ? '999px' : '24px');
+  var wPct = shape === 'bar' ? 32 : (shape === 'circle' ? 48 : 52);
+  var hPct = shape === 'bar' ? 100 : (shape === 'circle' ? 84 : 68);
+  var invW = (10000 / wPct).toFixed(3);
+  var invH = (10000 / hPct).toFixed(3);
+
+  var zoomStyle = zoom !== '1' && zoom !== 1 ? 'transform:scale(' + zoom + ');transform-origin:center;' : '';
+  var dxStage = 'sin(var(--s,0) * 6.283185) * ' + travel + '%';
+  var dxInLens = 'sin(var(--s,0) * 6.283185) * ' + (travel * (100 / wPct)).toFixed(3) + '%';
+  var flt = (blur > 0 ? 'blur(' + blur + 'px) ' : '') + 'contrast(1.1) saturate(1.28)';
+
+  var bevelShadow = 'inset 0 2px 3px rgba(255,255,255,0.85),'
+    + 'inset 0 -2px 6px rgba(255,255,255,0.35),'
+    + (disp > 0 ? 'inset ' + disp + 'px 0 ' + (disp * 2) + 'px color-mix(in srgb,' + accent + ' 42%,transparent),inset ' + (-disp) + 'px 0 ' + (disp * 2) + 'px color-mix(in srgb,' + accent2 + ' 42%,transparent),' : '')
+    + '0 22px 48px rgba(0,0,0,0.48),0 0 0 1.5px rgba(255,255,255,0.42)';
+
+  return '<div' + (label ? ' role="img" aria-label="' + _esc(label) + '"' : '') + ' style="position:relative;width:100%;height:100%;overflow:hidden;">'
+    + '<div style="position:absolute;inset:0;' + zoomStyle + '">' + inner + '</div>'
+    + '<div aria-hidden="true" style="position:absolute;left:calc(50% + (' + dxStage + '));top:50%;width:' + wPct + '%;height:' + hPct + '%;'
+    + 'transform:translate(-50%,-50%) scale(clamp(0.01,var(--p,1),1));border-radius:' + rad + ';overflow:hidden;pointer-events:none;'
+    + 'box-shadow:' + bevelShadow + ';">'
+    + '<div style="position:absolute;inset:0;transform:scale(' + effMag + ');transform-origin:50% 50%;filter:' + flt + ';">'
+    + '<div style="position:absolute;width:' + invW + '%;height:' + invH + '%;'
+    + 'left:calc(50% - (' + dxInLens + '));top:50%;transform:translate(-50%,-50%);">'
+    + '<div style="position:absolute;inset:0;' + zoomStyle + '">' + inner + '</div>'
+    + '</div></div>'
+    + '<div style="position:absolute;inset:0;border-radius:' + rad + ';background:radial-gradient(circle at 50% 50%,transparent 58%,rgba(255,255,255,0.22) 86%,rgba(255,255,255,0.55) 100%);mix-blend-mode:screen;"></div>'
+    + '<div style="position:absolute;inset:0;border-radius:' + rad + ';opacity:0.55;mix-blend-mode:overlay;'
+    + 'background:conic-gradient(from calc(var(--s,0) * 360deg + 45deg),rgba(255,255,255,0.8),transparent 25%,' + accent + ' 50%,transparent 75%,rgba(255,255,255,0.8));"></div>'
+    + '</div></div>';
 };

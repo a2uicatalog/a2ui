@@ -406,6 +406,7 @@ a2ui-effects-v1:
 - motion_flash
 - motion_marquee
 - motion_kinetic_drum
+- motion_liquid_glass
 - motion_bounce
 - motion_scatter
 - motion_contours

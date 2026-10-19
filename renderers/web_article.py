@@ -31772,6 +31772,72 @@ def _render_motion_kinetic_drum(b: dict) -> str:
 
 
 _RENDERERS['motion_kinetic_drum'] = _render_motion_kinetic_drum
+# motion_liquid_glass (ported 2026-10-19 from the uplift-handoff line, where it was added 2026-10-14). Pure CSS: the
+# children are drawn twice, once as the stage and once magnified inside the lens (aria-hidden), so no backdrop-filter
+# and no WebGL are needed. tests/test_motion_liquid_glass.py checks it closes what it opens inside a timeline.
+_MO_LGLASS_SHAPE = {'pill': 1, 'circle': 1, 'bar': 1}
+
+
+def _render_motion_liquid_glass(b: dict) -> str:
+    src = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    ch = []
+    for blk in src:
+        if len(ch) >= 6:
+            break
+        if isinstance(blk, dict):
+            ch.append(_mo_render(blk))
+    inner = ''.join(ch)
+    zoom = _ff_num(b.get('zoom'), 1, 0.5, 2, 2)
+    shape = _mo_own(_MO_LGLASS_SHAPE, b.get('shape'), 'pill')
+    mag = float(_ff_num(b.get('magnify'), 1.24, 1.02, 1.6, 2))
+    eff_mag = f'{1.0 + (mag - 1.0) * 0.45:.3f}'
+    blur = _ff_int(b.get('blur'), 2, 0, 16)
+    disp = _ff_int(b.get('dispersion'), 4, 0, 12)
+    travel = _ff_int(b.get('travel'), 24, 0, 40)
+    accent = _ff_hex(b.get('accent'), '#38bdf8')
+    accent2 = _ff_hex(b.get('accent2'), '#f472b6')
+    label = _cv_str(b.get('label'), 60)
+
+    rad = '50%' if shape == 'circle' else ('999px' if shape == 'pill' else '24px')
+    w_pct = 32 if shape == 'bar' else (48 if shape == 'circle' else 52)
+    h_pct = 100 if shape == 'bar' else (84 if shape == 'circle' else 68)
+    inv_w = f'{10000.0 / w_pct:.3f}'
+    inv_h = f'{10000.0 / h_pct:.3f}'
+
+    zoom_style = 'transform:scale(' + zoom + ');transform-origin:center;' if zoom != '1' else ''
+    dx_stage = 'sin(var(--s,0) * 6.283185) * ' + str(travel) + '%'
+    dx_in_lens = 'sin(var(--s,0) * 6.283185) * ' + f'{travel * (100.0 / w_pct):.3f}%'
+    flt = ('blur(' + str(blur) + 'px) ' if blur > 0 else '') + 'contrast(1.1) saturate(1.28)'
+    aria = ' role="img" aria-label="' + _cv_esc(label) + '"' if label else ''
+
+    disp_shadow = (
+        'inset ' + str(disp) + 'px 0 ' + str(disp * 2) + 'px color-mix(in srgb,' + accent + ' 42%,transparent),'
+        + 'inset ' + str(-disp) + 'px 0 ' + str(disp * 2) + 'px color-mix(in srgb,' + accent2 + ' 42%,transparent),'
+    ) if disp > 0 else ''
+    bevel_shadow = (
+        'inset 0 2px 3px rgba(255,255,255,0.85),'
+        + 'inset 0 -2px 6px rgba(255,255,255,0.35),'
+        + disp_shadow
+        + '0 22px 48px rgba(0,0,0,0.48),0 0 0 1.5px rgba(255,255,255,0.42)'
+    )
+
+    return ('<div' + aria + ' style="position:relative;width:100%;height:100%;overflow:hidden;">'
+            + '<div style="position:absolute;inset:0;' + zoom_style + '">' + inner + '</div>'
+            + '<div aria-hidden="true" style="position:absolute;left:calc(50% + (' + dx_stage + '));top:50%;width:' + str(w_pct) + '%;height:' + str(h_pct) + '%;'
+            + 'transform:translate(-50%,-50%) scale(clamp(0.01,var(--p,1),1));border-radius:' + rad + ';overflow:hidden;pointer-events:none;'
+            + 'box-shadow:' + bevel_shadow + ';">'
+            + '<div style="position:absolute;inset:0;transform:scale(' + eff_mag + ');transform-origin:50% 50%;filter:' + flt + ';">'
+            + '<div style="position:absolute;width:' + inv_w + '%;height:' + inv_h + '%;'
+            + 'left:calc(50% - (' + dx_in_lens + '));top:50%;transform:translate(-50%,-50%);">'
+            + '<div style="position:absolute;inset:0;' + zoom_style + '">' + inner + '</div>'
+            + '</div></div>'
+            + '<div style="position:absolute;inset:0;border-radius:' + rad + ';background:radial-gradient(circle at 50% 50%,transparent 58%,rgba(255,255,255,0.22) 86%,rgba(255,255,255,0.55) 100%);mix-blend-mode:screen;"></div>'
+            + '<div style="position:absolute;inset:0;border-radius:' + rad + ';opacity:0.55;mix-blend-mode:overlay;'
+            + 'background:conic-gradient(from calc(var(--s,0) * 360deg + 45deg),rgba(255,255,255,0.8),transparent 25%,' + accent + ' 50%,transparent 75%,rgba(255,255,255,0.8));"></div>'
+            + '</div></div>')
+
+
+_RENDERERS['motion_liquid_glass'] = _render_motion_liquid_glass
 
 # ─── third batch from the screen recordings (2026-10-11): theme, dialog, dots, sweep. Twins of the block at the end of atoms_motion_candidates.gs ───
 def _m3_n(x):

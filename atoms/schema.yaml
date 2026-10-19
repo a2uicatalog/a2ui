@@ -22432,3 +22432,36 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+
+- type: motion_liquid_glass
+  stage: preview
+  description: 'An Apple-style Liquid Glass capsule that glides over its child blocks: a calibrated two-layer optical magnification (effMag = 1 + (mag - 1) * 0.45 and apertures circle 48/84, pill 52/68, bar 32/100) while adding a curved glass bevel, chromatic R/B edge dispersion and a directional Fresnel specular rim that sweeps around the perimeter with --s. p morphs and scales the glass capsule open; the second dial (--s) glides the capsule across the stage and turns the specular rim light. Plain HTML and CSS, no script and no SVG filter ids; standalone it renders the liquid glass capsule resting in the centre.'
+  compact_description: liquid glass capsule with calibrated optical magnification, bevel dispersion and sweeping Fresnel rim
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    zoom: 'number 0.5-2 (optional). Scales the content inside the box. Default 1.'
+    blocks: 'array (max 6) of any atom blocks shown behind and refracted through the liquid glass.'
+    shape: '"pill" | "circle" | "bar" (optional, default "pill"). Shape of the liquid glass capsule.'
+    magnify: 'number 1.02-1.6 (optional). Optical magnification inside the glass (calibrated via damped lens curve). Default 1.24.'
+    blur: 'integer 0-16 (optional). Frosted softness in px inside the glass. Default 2.'
+    dispersion: 'integer 0-12 (optional). Chromatic cyan/magenta bevel edge split in px. Default 4.'
+    travel: 'integer 0-40 (optional). Horizontal sweep amplitude in percent of the stage as --s runs. Default 24.'
+    accent: '"#rrggbb" (optional). Cyan bevel refraction rim. Default "#38bdf8".'
+    accent2: '"#rrggbb" (optional). Warm magenta bevel refraction rim. Default "#f472b6".'
+    label: 'string (optional, max 60). Accessible name.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
