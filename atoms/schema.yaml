@@ -22395,3 +22395,40 @@ blocks:
     version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
   notes: "End state: p = 1 is GONE (the source shows the block gone, revealing what is behind) and p = 0 is whole, so the standalone render, which has p = 1, draws nothing but the space the block took; put it in a motion_timeline over a scene, or hold p at 0 for a whole block. Timing: cracks p 0 to 0.3 (the real content is drawn until then), then the shards take over at the same place and move over p 0.3 to 1, nearest shards first, fading out from about half way. The shards are clipped copies of the content (aria-hidden, inert, no duplicate ids); up to 24 copies of up to 3 children is the cost. Accessibility: the real content stays in the accessibility tree while it is visible and is hidden from it (visibility) only once p reaches 1; the cracks and shards are decorative. Nothing flashes: no opacity or colour oscillates, each only rises once or falls, so there is no WCAG 2.3.1 concern at any speed. Reduced motion: no shards, no cracks, no falling; the block fades plainly to the same gone end state, so a scene that relies on the block being gone is still correct. Print shows the block whole. Shards that fly beyond the box are clipped sideways and never widen the page. Take at least 0.6 s over p so the break reads."
   source: *mla002
+- type: motion_kinetic_drum
+  stage: preview
+  description: 'A 3D cylindrical kinetic typography drum in pure HTML and CSS: arranges 6 to 12 facets around a rotating 3D barrel in perspective space (axis: "x" for a vertical slot-wheel drum, "y" for a horizontal carousel). p expands the drum radius and unfolds the staves into a cylinder; the second dial (--s) spins the barrel so words curve around the front equator and recede into depth. Plain HTML and CSS 3D transforms, no script and no WebGL; standalone it renders the drum angled at rest.'
+  compact_description: 3D cylindrical kinetic typography barrel that spins phrases around a perspective drum
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - android
+    degraded_on:
+    - surface: pdf
+      note: Prints the static 3D drum state at p = 1; no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and 3D transforms are not supported in email clients
+  fields:
+    phrases: 'array (required, 1 to 6) of strings (max 24 characters each), cycled around the drum staves.'
+    staves: 'integer (optional). Number of facets around the cylinder, 6-12. Default 8.'
+    axis: '"x" | "y" (optional, default "x"). x spins vertically like a barrel; y spins horizontally like a carousel.'
+    radius: 'integer (optional). Cylinder radius in px at p = 1, 60-220. Default 115.'
+    tilt: 'integer (optional). Cross-axis camera tilt in degrees, -35 to 35. Default -14.'
+    size: 'integer (optional). Font size in px, 16-72. Default 32.'
+    color: '"#rrggbb" (optional). Primary stave ink colour. Default "#f8fafc".'
+    accent: '"#rrggbb" (optional). Highlighted stave border and glow colour. Default "#38bdf8".'
+    backdrop: '"#rrggbb" (optional). Stage backdrop colour; omit for transparent.'
+    turns: 'number (optional). Drum revolutions per unit of --s, -6 to 6. Default 1.'
+    ratio: '"16:9" | "4:3" | "1:1" | "3:4" | "9:16" (optional, default "16:9")'
+    fill: 'bool (optional). Fill the placed box height instead of using ratio. Default false.'
+    label: 'string (optional, max 80). Accessible name.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

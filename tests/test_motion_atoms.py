@@ -46,7 +46,8 @@ REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-1
 STUDIO = ["motion_object3d", "motion_bricks"]  # studio pack (atoms_studio.gs), 2026-10-03
 INPUT = ["motion_input"]  # a text field that types itself, 2026-10-09
 VIDEO = ["motion_video", "motion_arch"]  # a video on the film clock, for screen recordings in motion_device, 2026-10-05
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + INPUT + DEMO_ATOMS
+DRUM = ["motion_kinetic_drum"]  # ported 2026-10-19 (pure CSS 3D kinetic type)
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + INPUT + DEMO_ATOMS + DRUM
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -246,6 +247,9 @@ PAYLOADS = {
     "motion_shake": [{}, {"amount": 30, "frequency": 14, "tilt": 3.5, "blocks": [{"type": "motion_text", "id": "t", "text": "Hit", "place": {"x": 1, "y": 1}}, {"type": "motion_pill", "text": "x"}]},
                      {"amount": 9999, "frequency": "x", "tilt": 99, "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"blocks": "no"}],
     "motion_flash": [{}, {"color": "#ffeecc", "strength": 0.5}, {"color": "red;x", "strength": 99}, {"strength": "x"}],
+    "motion_kinetic_drum": [{}, {"phrases": ["Kinetic <b>", "Drum", "x" * 40, "", 5, None, "a"], "staves": 10, "axis": "y", "radius": 200, "tilt": 20, "size": 40,
+                             "color": "#fff6e8", "accent": "#ff6a2b", "backdrop": "#101820", "turns": -2.5, "ratio": "1:1", "fill": True, "label": "Drum <i>"},
+                            {"phrases": "no", "staves": 9999, "axis": "z", "radius": -5, "tilt": "x", "size": 9999, "color": "url(x)", "backdrop": "url(x)", "turns": "x", "ratio": "bad"}],
     "motion_marquee": [{}, {"rows": ["DESIGN \u00b7 ANIMATION", "TIMING <b>", "x" * 120, "", 5, None, "a", "b", "c"], "size": 60, "weight": "bold", "color": "#fff6e8", "accent": "#ff6a2b"}, {"rows": "no", "size": 9999, "weight": "toString", "color": "url(x)"}],
     "motion_bounce": [{}, {"bounces": 5, "size": 80, "height": 400, "trail": False, "accent": "#ff6a2b"}, {"bounces": 9999, "size": "x", "height": -5, "accent": "url(javascript:alert(1))"}],
     "motion_scatter": [{}, {"items": ["Ticket", {"title": "Label <b>", "text": "x" * 80}, {"title": ""}, 5, None, "a", "b", "c", "d", "e"], "card_w": 30, "size": 20, "fill": "#101820", "color": "#ffffff", "accent": "#ff6a2b"}, {"items": "no", "card_w": 9999, "fill": "url(x)"}],

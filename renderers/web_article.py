@@ -31711,6 +31711,68 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks), ('motion_input', _render_motion_input)):
     _RENDERERS[_mo_name] = _mo_fn
 
+
+# motion_kinetic_drum (ported 2026-10-19 from the uplift-handoff line, where it was added 2026-10-14). Pure CSS.
+# Fixed on the way: the Python twin closed the rig <div> but not the frame <div> (the GAS twin closes both), so in a
+# motion_timeline every later block nested inside the drum, i.e. inside scene 1's layer, and never painted once
+# that layer faded out. tests/test_motion_kinetic_drum.py renders a 3-scene timeline and checks the nesting.
+_MO_DRUM_AXIS = {'x': 1, 'y': 1}
+
+
+def _render_motion_kinetic_drum(b: dict) -> str:
+    raw = b.get('phrases') if isinstance(b.get('phrases'), list) and b.get('phrases') else ['A2UI STUDIO', 'KINETIC DRUM']
+    phrases = [_cv_str(w, 24) or 'MOTION' for w in raw[:6]]
+    staves = _ff_int(b.get('staves'), 8, 6, 12)
+    axis = _mo_own(_MO_DRUM_AXIS, b.get('axis'), 'x')
+    rad = _ff_int(b.get('radius'), 115, 60, 220)
+    tilt = _ff_int(b.get('tilt'), -14, -35, 35)
+    size = _ff_int(b.get('size'), 32, 16, 72)
+    color = _ff_hex(b.get('color'), '#f8fafc')
+    accent = _ff_hex(b.get('accent'), '#38bdf8')
+    bd = b.get('backdrop')
+    bg_on = isinstance(bd, str) and re.fullmatch(r'#[0-9a-fA-F]{6}', bd) is not None
+    cb = bd.lower() if bg_on else ''
+    turns = _ff_num(b.get('turns'), 1, -6, 6, 2)
+    ratio, fill = _ff_pick(b.get('ratio'), _MO_RATIO, '16:9'), b.get('fill') is True
+    label = _cv_str(b.get('label'), 80) or ' · '.join(phrases)
+
+    spin_deg = f'{float(turns) * 360.0:.1f}'
+    if axis == 'x':
+        rig_rot = f'rotateZ({tilt}deg) rotateY(12deg) rotateX(calc(var(--s,0) * {spin_deg}deg))'
+    else:
+        rig_rot = f'rotateZ({tilt}deg) rotateX(-12deg) rotateY(calc(var(--s,0) * {spin_deg}deg))'
+
+    panels = []
+    for i in range(staves):
+        deg = f'{(i * 360.0 / staves):.2f}'
+        txt = phrases[i % len(phrases)]
+        is_ac = (i % 2 == 0)
+        p_rot = f'rotateX({deg}deg)' if axis == 'x' else f'rotateY({deg}deg)'
+        panels.append(
+            '<div aria-hidden="true" style="position:absolute;left:50%;top:50%;'
+            + 'transform-style:preserve-3d;backface-visibility: visible;'
+            + f'transform:translate(-50%,-50%) {p_rot} translateZ(calc({rad}px * clamp(0.1,var(--p,1),1)));'
+            + 'padding:6px 22px;border-radius:999px;white-space:nowrap;'
+            + f'font:900 {size}px/1.1 system-ui,sans-serif;letter-spacing:0.06em;text-transform:uppercase;'
+            + f'color:{color if is_ac else accent};'
+            + f'background:color-mix(in srgb,{accent if is_ac else color} 14%,rgba(9,13,22,0.78));'
+            + f'border:1px solid color-mix(in srgb,{accent} {"55%" if is_ac else "25%"},transparent);'
+            + 'box-shadow:0 6px 20px rgba(0,0,0,0.35);">'
+            + _cv_esc(txt) + '</div>'
+        )
+
+    return (
+        '<div role="img" aria-label="' + _cv_esc(label) + '" style="position:relative;width:100%;'
+        + ('height:100%;' if fill else 'aspect-ratio:' + ratio + ';')
+        + 'perspective:1000px;overflow:hidden;display:flex;align-items:center;justify-content:center;'
+        + ('background:' + cb + ';' if bg_on else '') + '">'
+        + '<div style="position:relative;width:100%;height:100%;transform-style:preserve-3d;'
+        + 'opacity:clamp(0,calc(var(--p,1) * 1.8),1);transform:' + rig_rot + ';">'
+        + ''.join(panels) + '</div></div>')   # rig, then frame: both close (the GAS twin always did)
+
+
+_RENDERERS['motion_kinetic_drum'] = _render_motion_kinetic_drum
+
 # ─── third batch from the screen recordings (2026-10-11): theme, dialog, dots, sweep. Twins of the block at the end of atoms_motion_candidates.gs ───
 def _m3_n(x):
     """JavaScript's number-to-string for the values used here: whole numbers without a point, others as the shortest repr."""

@@ -2296,3 +2296,59 @@ _RENDERERS['motion_input'] = function(b) {
     + '<span style="display:inline-flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:50%;background:' + acc + ';color:#ffffff;font-weight:700;transform:scale(calc(1 - 0.14*' + press + '));box-shadow:0 0 0 calc(var(--s,0)*1.6em) color-mix(in srgb,' + acc + ' calc((1 - var(--s,0))*35%),transparent);">&#8593;</span></div>'
     + '</div></div>';
 };
+
+// motion_kinetic_drum: added 2026-10-14 on the uplift-handoff line, ported 2026-10-19. Pure CSS/HTML, no script.
+// Twin of renderers/web_article.py _render_motion_kinetic_drum (which lacked the frame's closing </div>; this one never did).
+var _MO_DRUM_AXIS = {x: 1, y: 1};
+
+_RENDERERS['motion_kinetic_drum'] = function(b) {
+  var raw = Array.isArray(b.phrases) && b.phrases.length ? b.phrases.slice(0, 6) : ['A2UI STUDIO', 'KINETIC DRUM'];
+  var phrases = [], i;
+  for (i = 0; i < raw.length; i++) {
+    phrases.push(_moStr(raw[i], 24) || 'MOTION');
+  }
+  var staves = _ffInt(b.staves, 8, 6, 12);
+  var axis = _moOwn(_MO_DRUM_AXIS, b.axis, 'x');
+  var rad = _ffInt(b.radius, 115, 60, 220);
+  var tilt = _ffInt(b.tilt, -14, -35, 35);
+  var size = _ffInt(b.size, 32, 16, 72);
+  var color = _ffHex(b.color, '#f8fafc');
+  var accent = _ffHex(b.accent, '#38bdf8');
+  var bgOn = typeof b.backdrop === 'string' && /^#[0-9a-fA-F]{6}$/.test(b.backdrop), cb = bgOn ? b.backdrop.toLowerCase() : '';
+  var turns = _ffNum(b.turns, 1, -6, 6, 2);
+  var ratio = _ffPick(b.ratio, _MO_RATIO, '16:9'), fill = b.fill === true;
+  var label = _moStr(b.label, 80) || phrases.join(' · ');
+
+  var spinDeg = (parseFloat(turns) * 360).toFixed(1);
+  var rigRot = axis === 'x'
+    ? 'rotateZ(' + tilt + 'deg) rotateY(12deg) rotateX(calc(var(--s,0) * ' + spinDeg + 'deg))'
+    : 'rotateZ(' + tilt + 'deg) rotateX(-12deg) rotateY(calc(var(--s,0) * ' + spinDeg + 'deg))';
+
+  var panels = [];
+  for (i = 0; i < staves; i++) {
+    var deg = (i * 360 / staves).toFixed(2);
+    var txt = phrases[i % phrases.length];
+    var isAc = (i % 2 === 0);
+    var pRot = axis === 'x' ? 'rotateX(' + deg + 'deg)' : 'rotateY(' + deg + 'deg)';
+    panels.push(
+      '<div aria-hidden="true" style="position:absolute;left:50%;top:50%;'
+      + 'transform-style:preserve-3d;backface-visibility: visible;'
+      + 'transform:translate(-50%,-50%) ' + pRot + ' translateZ(calc(' + rad + 'px * clamp(0.1,var(--p,1),1)));'
+      + 'padding:6px 22px;border-radius:999px;white-space:nowrap;'
+      + 'font:900 ' + size + 'px/1.1 system-ui,sans-serif;letter-spacing:0.06em;text-transform:uppercase;'
+      + 'color:' + (isAc ? color : accent) + ';'
+      + 'background:color-mix(in srgb,' + (isAc ? accent : color) + ' 14%,rgba(9,13,22,0.78));'
+      + 'border:1px solid color-mix(in srgb,' + accent + ' ' + (isAc ? '55%' : '25%') + ',transparent);'
+      + 'box-shadow:0 6px 20px rgba(0,0,0,0.35);">'
+      + _esc(txt) + '</div>'
+    );
+  }
+
+  return '<div role="img" aria-label="' + _esc(label) + '" style="position:relative;width:100%;'
+    + (fill ? 'height:100%;' : 'aspect-ratio:' + ratio + ';')
+    + 'perspective:1000px;overflow:hidden;display:flex;align-items:center;justify-content:center;'
+    + (bgOn ? 'background:' + cb + ';' : '') + '">'
+    + '<div style="position:relative;width:100%;height:100%;transform-style:preserve-3d;'
+    + 'opacity:clamp(0,calc(var(--p,1) * 1.8),1);transform:' + rigRot + ';">'
+    + panels.join('') + '</div></div>';
+};
