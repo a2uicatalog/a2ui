@@ -689,3 +689,81 @@ _RENDERERS['box_plot'] = function(b) {
     _ifTable(['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'],
       used.map(function(u, k) { var s = stats[k]; return [u[0], String(s.n), f(s.min) + us, f(s.q1) + us, f(s.median) + us, f(s.q3) + us, f(s.max) + us, String(s.outliers.length)]; })));
 };
+
+// ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
+// running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
+// and every bar end, and its ticks. Twin of _wf_layout / _render_waterfall in renderers/web_article.py.
+function _wfLayout(steps) {
+  var run = 0, lo = 0, hi = 0, checks = [];
+  var bars = steps.map(function(st, k) {
+    var a, e;
+    if (st.kind === 'total') {
+      if (typeof st.value === 'number') { checks.push([k, st.value, run]); run = st.value; }
+      a = 0; e = run;
+    } else { a = run; run = run + st.value; e = run; }
+    lo = Math.min(lo, a, e); hi = Math.max(hi, a, e);
+    return [a, e];
+  });
+  var d = _hgNice(lo, hi, 5);
+  return [bars, [d[0], d[1]], _hgTicks(d[0], d[1], 5), checks];
+}
+function _wfNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+_RENDERERS['waterfall'] = function(b) {
+  var lst = Array.isArray(b.steps) ? b.steps : [], labels = [], steps = [], leftOut = 0;
+  lst.slice(0, 24).forEach(function(st, k) {
+    if (!(st && typeof st === 'object' && !Array.isArray(st))) { leftOut++; return; }
+    var tot = st.kind === 'total', v = st.value;
+    if (!tot && !_wfNum(v)) { leftOut++; return; }
+    steps.push(tot && _wfNum(v) ? {kind: 'total', value: v} : tot ? {kind: 'total'} : {value: v});
+    labels.push(st.label ? String(st.label).slice(0, 30) : 'Step ' + (k + 1));
+  });
+  var beyond = lst.length - 24;
+  var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' step had no usable number or was not a step and was' : ' steps had no usable number or were not a step and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' step beyond the first 24 was' : ' steps beyond the first 24 were') + ' not drawn.') : '');
+  if (!steps.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A waterfall needs at least one step with a number.</div>' + notes + _hgVersionNote(b, 'waterfall'));
+  var L = _wfLayout(steps), bars = L[0], X0 = L[1][0], X1 = L[1][1], ticks = L[2], n = steps.length, span = X1 - X0;
+  var given = steps.filter(function(st) { return 'value' in st; }).map(function(st) { return st.value; });
+  var dc = given.length ? Math.min(6, _hgDecimals(given)) : 0, scale = given.reduce(function(m, x) { return Math.max(m, Math.abs(x)); }, 0);
+  var f = function(v) { return _bpFmt(v, dc); };
+  var sg = function(v) { return (v > 0 ? '+' : '') + f(v); };
+  L[3].forEach(function(c) {
+    if (c[0] > 0 && Math.abs(c[1] - c[2]) > scale * 1e-9) notes += _hgNote(_esc('The total "' + labels[c[0]] + '" is ' + f(c[1]) + ' but the steps before it add up to ' + f(c[2]) + '; the bar shows ' + f(c[1]) + ' and later steps start there.'));
+  });
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var td = _hgDecimals(ticks), tlab = ticks.map(function(t) { return _hgNum(t, td); });
+  var vtxt = steps.map(function(st, k) { return st.kind === 'total' ? f(bars[k][1]) : sg(st.value); });
+  var vw = 'calc(' + Math.max.apply(null, vtxt.map(function(t) { return t.length; })) + 'ch + 8px)';
+  var pos = function(v) { return span > 0 ? _tmPct(v - X0, span) : '50%'; };
+  var wid = function(a, c) { return span > 0 ? _tmPct(c - a, span) : '0%'; };
+  var grid = ticks.map(function(t) { return '<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>'; }).join('') +
+    '<div style="position:absolute;top:0;bottom:0;left:' + pos(0) + ';border-left:1px solid var(--muted,#475569);"></div>';
+  var rows = '';
+  steps.forEach(function(st, k) {
+    var a = bars[k][0], e = bars[k][1], kind = st.kind === 'total' ? 'wft' : e > a ? 'wfu' : e < a ? 'wfd' : 'wfu';
+    var col = {wft: 'var(--accent,#0369A1)', wfu: 'var(--positive,#15803D)', wfd: 'var(--negative,#B91C1C)'}[kind];
+    rows += '<div style="display:flex;align-items:center;height:40px;">' +
+      '<div class="wfl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
+      ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(labels[k]) + '</div>' +
+      '<div class="wfp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
+      '<div class="wfg" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
+      '<div class="wfb ' + kind + '" style="position:absolute;left:' + pos(Math.min(a, e)) + ';width:' + wid(Math.min(a, e), Math.max(a, e)) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;background:' + col + ';border-radius:2px;"></div>' +
+      (k < n - 1 ? '<div class="wfc" style="position:absolute;left:' + pos(e) + ';top:78%;height:44%;border-left:1px dashed var(--muted,#475569);"></div>' : '') +
+      '</div></div>' +
+      '<div class="wfv" style="flex:0 0 ' + vw + ';box-sizing:border-box;padding-left:8px;font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text,#0F172A);">' + vtxt[k] + '</div></div>';
+  });
+  var up = null, dn = null;
+  steps.forEach(function(st, k) {
+    if (st.kind === 'total') return;
+    if (up === null || st.value > up[1]) up = [k, st.value];
+    if (dn === null || st.value < dn[1]) dn = [k, st.value];
+  });
+  var aria = 'Waterfall of ' + n + (n === 1 ? ' step' : ' steps') + ' ending at ' + f(bars[n - 1][1]) + us + '.' +
+    (up && up[1] > 0 ? ' Biggest increase: ' + labels[up[0]] + ', ' + sg(up[1]) + us + '.' : '') +
+    (dn && dn[1] < 0 ? ' Biggest decrease: ' + labels[dn[0]] + ', ' + sg(dn[1]) + us + '.' : '');
+  var chart = '<div class="ifwf" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifwf .hgx:not(.hgc){display:none}}</style>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 0 34px 0;">' + rows +
+    '<div style="position:relative;margin-left:' + _HG_LABW + ';margin-right:' + vw + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, X0, span, tlab) + '</div></div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 ' + vw + ' 0 ' + _HG_LABW + ';">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'waterfall') + _ifTable(['Step', 'Change', 'Running total'],
+    steps.map(function(st, k) { return [labels[k], st.kind === 'total' ? 'Total' : sg(st.value) + us, f(bars[k][1]) + us]; })));
+};

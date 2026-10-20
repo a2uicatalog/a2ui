@@ -187,6 +187,7 @@ a2ui-charts-v1:
 - org_chart
 - histogram
 - box_plot
+- waterfall
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

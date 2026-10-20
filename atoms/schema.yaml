@@ -21051,6 +21051,35 @@ blocks:
     dot; past 100 distinct outliers in a group the 100 furthest from the median are drawn and a note says so, while the table counts them
     all. Groups keep the given order.
   source: *ifg002
+- type: waterfall
+  stage: preview
+  description: 'A running total built step by step, as horizontal bars on one shared axis: each change runs from where the previous step
+    ended (green up, red down) and a total runs from 0 to the running total; dashed connectors join the steps and the signed change is
+    printed at the end of each row, so the direction never rests on colour alone. The axis comes from d3 nice() and ticks(), computed on
+    the server, so there is no script. A hidden table gives each change and the running total. Motion-ready: each step fades in through
+    --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.'
+  compact_description: 'waterfall: how changes add up to a total'
+  routing_text: Shows how a starting amount is moved up and down by a sequence of changes to an end amount, such as a revenue or budget
+    bridge, a headcount change or a cash flow. Give each change as a signed number and mark totals. For parts of one whole use a treemap
+    or donut; for one value per category use a bar chart.
+  intent_phrases:
+  - Build a revenue bridge from last year to this year.
+  - Show what drove the budget from plan to actual as a waterfall.
+  - How did headcount change through hires and leavers?
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    steps: 'array (required, 1 to 24) of {label (string, max 30, default "Step n"), value (number), kind (optional, "total" or "delta",
+      default "delta")}. A delta step needs a finite value up to 1e12 in size; a total step without a value shows the running total, and
+      with a value sets the running total to it (a note says when that differs from the steps before it). Other entries are left out with
+      a note; steps beyond the first 24 are noted and not drawn. Any kind other than "total" is a delta.'
+    x_label: string (optional, max 40). Names the values on the axis.
+    unit: string (optional, max 12). Appended to the axis caption, the label and every value in the hidden table.
+    version: integer (optional, default 1). The waterfall contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: Numbers print with the decimals the given values use, at most 6, so float noise never shows. Increases use --positive and
+    decreases --negative (fallbacks green and red), totals --accent. Steps keep the given order.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

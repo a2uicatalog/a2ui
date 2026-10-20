@@ -31541,8 +31541,113 @@ def _render_box_plot(b: dict) -> str:
                                 [[nm, str(s['n']), f(s['min']) + us, f(s['q1']) + us, f(s['median']) + us, f(s['q3']) + us, f(s['max']) + us, str(len(s['outliers']))] for (nm, _), s in zip(used, stats)]))
 
 
+# ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
+# running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
+# and every bar end, and its ticks. Twin of _wfLayout / _RENDERERS['waterfall'] in atoms_infographic.gs.
+def _wf_layout(steps):
+    """steps: [{kind: 'total' | other, value: number or absent}] -> ([(start, end), ...], (x0, x1), ticks, [(index, given, before), ...])."""
+    run, lo, hi, bars, checks = 0, 0, 0, [], []
+    for k, st in enumerate(steps):
+        v = st.get('value')
+        if st.get('kind') == 'total':
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                checks.append((k, v, run))
+                run = v
+            a, e = 0, run
+        else:
+            a = run
+            run = run + v
+            e = run
+        lo, hi = min(lo, a, e), max(hi, a, e)
+        bars.append((a, e))
+    x0, x1 = _hg_nice(lo, hi, 5)
+    return bars, (x0, x1), _hg_ticks(x0, x1, 5), checks
+
+
+def _wf_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _render_waterfall(b: dict) -> str:
+    lst = _if_g(b, 'steps')
+    lst = lst if isinstance(lst, list) else []
+    labels, steps, left_out = [], [], 0
+    for k, st in enumerate(lst[:24]):
+        if not isinstance(st, dict):
+            left_out += 1
+            continue
+        tot = _if_g(st, 'kind') == 'total'
+        v = _if_g(st, 'value')
+        if not tot and not _wf_num(v):
+            left_out += 1
+            continue
+        steps.append({'kind': 'total', 'value': v} if tot and _wf_num(v) else {'kind': 'total'} if tot else {'value': v})
+        labels.append(_if_str(_if_g(st, 'label'))[:30] if _if_truthy(_if_g(st, 'label')) else 'Step ' + str(k + 1))
+    beyond = len(lst) - 24
+    notes = ((_hg_note(str(left_out) + (' step had no usable number or was not a step and was' if left_out == 1 else ' steps had no usable number or were not a step and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' step beyond the first 24 was' if beyond == 1 else ' steps beyond the first 24 were') + ' not drawn.') if beyond > 0 else ''))
+    if not steps:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A waterfall needs at least one step with a number.</div>' + notes + _hg_version_note(b, 'waterfall'))
+    bars, (X0, X1), ticks, checks = _wf_layout(steps)
+    n, span = len(steps), X1 - X0
+    given = [st['value'] for st in steps if 'value' in st]
+    dc = min(6, _hg_decimals(given)) if given else 0
+    scale = max([abs(x) for x in given] + [0])
+
+    def f(v):
+        return _bp_fmt(v, dc)
+
+    def sg(v):
+        return ('+' if v > 0 else '') + f(v)
+    for k, g, before in checks:
+        if k > 0 and abs(g - before) > scale * 1e-9:
+            notes += _hg_note(_cv_esc('The total "' + labels[k] + '" is ' + f(g) + ' but the steps before it add up to ' + f(before) + '; the bar shows ' + f(g) + ' and later steps start there.'))
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    td = _hg_decimals(ticks)
+    tlab = [_hg_num(t, td) for t in ticks]
+    vtxt = [f(e) if st.get('kind') == 'total' else sg(st['value']) for st, (_, e) in zip(steps, bars)]
+    vw = 'calc(' + str(max(len(t) for t in vtxt)) + 'ch + 8px)'
+
+    def pos(v):
+        return _tm_pct(v - X0, span) if span > 0 else '50%'
+
+    def wid(a, c):
+        return _tm_pct(c - a, span) if span > 0 else '0%'
+    grid = (''.join('<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>' for t in ticks)
+            + '<div style="position:absolute;top:0;bottom:0;left:' + pos(0) + ';border-left:1px solid var(--muted,#475569);"></div>')
+    rows = ''
+    for k, (st, (a, e)) in enumerate(zip(steps, bars)):
+        kind = 'wft' if st.get('kind') == 'total' else 'wfu' if e > a else 'wfd' if e < a else 'wfu'
+        col = {'wft': 'var(--accent,#0369A1)', 'wfu': 'var(--positive,#15803D)', 'wfd': 'var(--negative,#B91C1C)'}[kind]
+        rows += ('<div style="display:flex;align-items:center;height:40px;">'
+                 '<div class="wfl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                 + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(labels[k]) + '</div>'
+                 '<div class="wfp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
+                 + '<div class="wfg" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
+                 '<div class="wfb ' + kind + '" style="position:absolute;left:' + pos(min(a, e)) + ';width:' + wid(min(a, e), max(a, e)) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;background:' + col + ';border-radius:2px;"></div>'
+                 + ('<div class="wfc" style="position:absolute;left:' + pos(e) + ';top:78%;height:44%;border-left:1px dashed var(--muted,#475569);"></div>' if k < n - 1 else '')
+                 + '</div></div>'
+                 '<div class="wfv" style="flex:0 0 ' + vw + ';box-sizing:border-box;padding-left:8px;font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text,#0F172A);">' + vtxt[k] + '</div></div>')
+    deltas = [(k, st['value']) for k, st in enumerate(steps) if st.get('kind') != 'total']
+    up = max(deltas, key=lambda kv: kv[1], default=None)
+    dn = min(deltas, key=lambda kv: kv[1], default=None)
+    aria = ('Waterfall of ' + str(n) + (' step' if n == 1 else ' steps') + ' ending at ' + f(bars[-1][1]) + us + '.'
+            + (' Biggest increase: ' + labels[up[0]] + ', ' + sg(up[1]) + us + '.' if up and up[1] > 0 else '')
+            + (' Biggest decrease: ' + labels[dn[0]] + ', ' + sg(dn[1]) + us + '.' if dn and dn[1] < 0 else ''))
+    chart = ('<div class="ifwf" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifwf .hgx:not(.hgc){display:none}}</style>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 0 34px 0;">' + rows
+             + '<div style="position:relative;margin-left:' + _HG_LABW + ';margin-right:' + vw + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, X0, span, tlab) + '</div></div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 ' + vw + ' 0 ' + _HG_LABW + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'waterfall')
+                    + _if_table(['Step', 'Change', 'Running total'],
+                                [[labels[k], 'Total' if st.get('kind') == 'total' else sg(st['value']) + us, f(e) + us] for k, (st, (_, e)) in enumerate(zip(steps, bars))]))
+
+
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall)):
     _RENDERERS[_if_name] = _if_fn
 
 
