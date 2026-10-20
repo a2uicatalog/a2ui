@@ -111,3 +111,6 @@ scripts/ldraw/qa/
 # reasoning as the LDraw cache above -- only the small set of extracted, committed files under
 # public/vendors/threejs/ are tracked.
 scripts/_threejs_cache/
+
+# Python virtual environment (local only)
+.venv/
