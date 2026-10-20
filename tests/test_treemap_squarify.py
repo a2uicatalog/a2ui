@@ -125,3 +125,16 @@ def test_rendered_boxes_follow_the_d3_layout_in_both_renderers(name, core_js):
 def test_fifth_category_is_still_dropped():
     html = _py({"type": "treemap", "items": GOLDEN["truncated_fifth"]["items"]})
     assert ">E " not in html and "n4" not in html
+
+
+def test_every_item_is_fully_visible_in_a_static_render_with_four_categories(core_js):
+    # The motion index was ci*4+k, so the 3rd and 4th categories' later items overshot the 12-step clamp and
+    # rendered at opacity 0 when --p is 1 (static pages, PDF). Every item must reach --k = 1 at p = 1.
+    import re
+    items = [{"category": c, "name": f"{c}{i}", "value": v}
+             for c, n in [("A", 2), ("B", 2), ("C", 3), ("D", 3)] for i, v in zip(range(n), [5, 3, 2])]
+    block = {"type": "treemap", "items": items}
+    for html in (_py(block), _gas_batch(core_js, [block])[0]):
+        ks = re.findall(r'var\(--p,1\)\*(\d+)\s*-\s*(\d+)\)', html)
+        assert len(ks) == len(items)
+        assert all(int(m) - int(i) >= 1 for m, i in ks), ks

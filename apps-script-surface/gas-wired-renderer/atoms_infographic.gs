@@ -237,7 +237,7 @@ _RENDERERS['treemap'] = function(b) {
   cats.forEach(function(c, ci) {
     var m = groups[ci], ct = m.reduce(function(s, i) { return s + i.v; }, 0);
     m.forEach(function(i, k) {
-      cells += '<div style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (k === 0 ? '24px' : '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(ci * 4 + k, 12) + 'opacity:var(--k,1);">' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '</div>';
+      cells += '<div style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (k === 0 ? '24px' : '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g) { return s + g.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '</div>';
     });
     tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + _ifS(c, 20) + ' ' + _ifFmt(ct) + '</div>';
   });
