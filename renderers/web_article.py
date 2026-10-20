@@ -31909,48 +31909,70 @@ def _sb_round(x):
     return float(f + 1) if x - f >= 0.5 else float(f)
 
 
-def _sb_arc(a0, a1, r0, r1, pad_angle, pad_radius, digits=3):
-    """d3-shape arc() with cornerRadius 0: startAngle a0, endAngle a1 (radians clockwise from 12 o'clock), inner radius r0, outer radius r1, padAngle and
-    padRadius (None = sqrt(r0^2 + r1^2)). The path text is d3-path's: numbers rounded to `digits` (None = not rounded) and printed as JavaScript prints them."""
-    k = None if digits is None else 10 ** digits
-    d = []
-    pos = [None, None, None, None]                                           # x0, y0 of the subpath, x1, y1 of the current point
+class _D3Path:
+    """d3-path 3.1.0 Path: moveTo, lineTo, quadraticCurveTo, arc (the SVG arc commands) and closePath, with the number rounding of its `digits`
+    (None = not rounded) and numbers printed as JavaScript prints them. Shared by _sb_arc (sunburst) and the chord ribbons (_ch_ribbon)."""
 
-    def f(v):
-        return _if_numstr(v if k is None else _sb_round(v * k) / k)
+    def __init__(self, digits=3):
+        self.k = None if digits is None else 10 ** digits
+        self.d = []
+        self.x0 = self.y0 = self.x1 = self.y1 = None
 
-    def move(x, y):
-        pos[0] = pos[2] = x
-        pos[1] = pos[3] = y
-        d.append('M' + f(x) + ',' + f(y))
+    def f(self, v):
+        return _if_numstr(v if self.k is None else _sb_round(v * self.k) / self.k)
 
-    def line(x, y):
-        pos[2], pos[3] = x, y
-        d.append('L' + f(x) + ',' + f(y))
+    def move_to(self, x, y):
+        self.x0 = self.x1 = x
+        self.y0 = self.y1 = y
+        self.d.append('M' + self.f(x) + ',' + self.f(y))
 
-    def arc(x, y, r, s0, s1, ccw):
+    def line_to(self, x, y):
+        self.x1, self.y1 = x, y
+        self.d.append('L' + self.f(x) + ',' + self.f(y))
+
+    def quad_to(self, cx, cy, x, y):
+        self.x1, self.y1 = x, y
+        self.d.append('Q' + self.f(cx) + ',' + self.f(cy) + ',' + self.f(x) + ',' + self.f(y))
+
+    def arc(self, x, y, r, s0, s1, ccw=False):
+        f = self.f
         dx, dy = r * math.cos(s0), r * math.sin(s0)
         x0, y0 = x + dx, y + dy
         cw = 0 if ccw else 1
         da = s0 - s1 if ccw else s1 - s0
-        if pos[2] is None:
-            d.append('M' + f(x0) + ',' + f(y0))
-            pos[0] = pos[2] = x0
-            pos[1] = pos[3] = y0
-        elif abs(pos[2] - x0) > 1e-6 or abs(pos[3] - y0) > 1e-6:
-            d.append('L' + f(x0) + ',' + f(y0))
-            pos[2], pos[3] = x0, y0
+        if self.x1 is None:
+            self.d.append('M' + f(x0) + ',' + f(y0))
+            self.x0 = self.x1 = x0
+            self.y0 = self.y1 = y0
+        elif abs(self.x1 - x0) > 1e-6 or abs(self.y1 - y0) > 1e-6:
+            self.d.append('L' + f(x0) + ',' + f(y0))
+            self.x1, self.y1 = x0, y0
         if not r:
             return
         if da < 0:
             da = math.fmod(da, _SB_TAU) + _SB_TAU
         if da > _SB_TAU - 1e-6:
-            d.append('A' + f(r) + ',' + f(r) + ',0,1,' + str(cw) + ',' + f(x - dx) + ',' + f(y - dy) + 'A' + f(r) + ',' + f(r) + ',0,1,' + str(cw) + ',' + f(x0) + ',' + f(y0))
-            pos[2], pos[3] = x0, y0
+            self.d.append('A' + f(r) + ',' + f(r) + ',0,1,' + str(cw) + ',' + f(x - dx) + ',' + f(y - dy) + 'A' + f(r) + ',' + f(r) + ',0,1,' + str(cw) + ',' + f(x0) + ',' + f(y0))
+            self.x1, self.y1 = x0, y0
         elif da > 1e-6:
             ex, ey = x + r * math.cos(s1), y + r * math.sin(s1)
-            d.append('A' + f(r) + ',' + f(r) + ',0,' + ('1' if da >= math.pi else '0') + ',' + str(cw) + ',' + f(ex) + ',' + f(ey))
-            pos[2], pos[3] = ex, ey
+            self.d.append('A' + f(r) + ',' + f(r) + ',0,' + ('1' if da >= math.pi else '0') + ',' + str(cw) + ',' + f(ex) + ',' + f(ey))
+            self.x1, self.y1 = ex, ey
+
+    def close(self):
+        if self.x1 is not None:
+            self.x1, self.y1 = self.x0, self.y0
+            self.d.append('Z')
+
+    def text(self):
+        return ''.join(self.d)
+
+
+def _sb_arc(a0, a1, r0, r1, pad_angle, pad_radius, digits=3):
+    """d3-shape arc() with cornerRadius 0: startAngle a0, endAngle a1 (radians clockwise from 12 o'clock), inner radius r0, outer radius r1, padAngle and
+    padRadius (None = sqrt(r0^2 + r1^2)). The path text is d3-path's: numbers rounded to `digits` (None = not rounded) and printed as JavaScript prints them."""
+    pth = _D3Path(digits)
+    move, line, arc = pth.move_to, pth.line_to, pth.arc
 
     def asin(v):
         return math.pi / 2 if v >= 1 else -math.pi / 2 if v <= -1 else math.asin(v)
@@ -32001,9 +32023,8 @@ def _sb_arc(a0, a1, r0, r1, pad_angle, pad_radius, digits=3):
             line(x10, y10)
         else:
             arc(0, 0, r0, a10, a00, cw)
-    if pos[2] is not None:
-        d.append('Z')
-    return ''.join(d)
+    pth.close()
+    return pth.text()
 
 
 # Colour: one hue per top-level group (the eight below, then they repeat), each ring out a lighter mix of it with white (whole-number percentages, so

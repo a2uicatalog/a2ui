@@ -369,22 +369,30 @@ function _sbPartition(root, dx, dy) {
 }
 function _sbRows(spec, dx, dy) { return _sbPartition(spec, dx, dy).map(function(n) { return [n.depth, n.x0, n.y0, n.x1, n.y1, n.value, n.src.n]; }); }
 function _sbAsin(x) { return x >= 1 ? Math.PI / 2 : x <= -1 ? -Math.PI / 2 : Math.asin(x); }
+// d3-path 3.1.0 Path: moveTo, lineTo, quadraticCurveTo, arc (the SVG arc commands), closePath; numbers rounded to `digits` (null = not rounded). Shared by
+// _sbArc (sunburst) and the chord ribbons (_chRibbon).
+function _D3Path(digits) { this.k = digits === null ? null : Math.pow(10, digits); this.d = ''; this.x0 = this.y0 = this.x1 = this.y1 = null; }
+_D3Path.prototype.f = function(v) { return String(this.k === null ? v : Math.round(v * this.k) / this.k); };
+_D3Path.prototype.moveTo = function(x, y) { this.x0 = this.x1 = x; this.y0 = this.y1 = y; this.d += 'M' + this.f(x) + ',' + this.f(y); };
+_D3Path.prototype.lineTo = function(x, y) { this.x1 = x; this.y1 = y; this.d += 'L' + this.f(x) + ',' + this.f(y); };
+_D3Path.prototype.quadTo = function(cx, cy, x, y) { this.x1 = x; this.y1 = y; this.d += 'Q' + this.f(cx) + ',' + this.f(cy) + ',' + this.f(x) + ',' + this.f(y); };
+_D3Path.prototype.arc = function(x, y, rr, s0, s1, ccw) {
+  var f = this.f.bind(this), dx = rr * Math.cos(s0), dy = rr * Math.sin(s0), x0 = x + dx, y0 = y + dy, w = ccw ? 0 : 1, a = ccw ? s0 - s1 : s1 - s0, ex, ey;
+  if (this.x1 === null) { this.d += 'M' + f(x0) + ',' + f(y0); this.x0 = this.x1 = x0; this.y0 = this.y1 = y0; }
+  else if (Math.abs(this.x1 - x0) > 1e-6 || Math.abs(this.y1 - y0) > 1e-6) { this.d += 'L' + f(x0) + ',' + f(y0); this.x1 = x0; this.y1 = y0; }
+  if (!rr) return;
+  if (a < 0) a = a % _SB_TAU + _SB_TAU;
+  if (a > _SB_TAU - 1e-6) { this.d += 'A' + f(rr) + ',' + f(rr) + ',0,1,' + w + ',' + f(x - dx) + ',' + f(y - dy) + 'A' + f(rr) + ',' + f(rr) + ',0,1,' + w + ',' + f(x0) + ',' + f(y0); this.x1 = x0; this.y1 = y0; }
+  else if (a > 1e-6) { ex = x + rr * Math.cos(s1); ey = y + rr * Math.sin(s1); this.d += 'A' + f(rr) + ',' + f(rr) + ',0,' + (a >= Math.PI ? 1 : 0) + ',' + w + ',' + f(ex) + ',' + f(ey); this.x1 = ex; this.y1 = ey; }
+};
+_D3Path.prototype.close = function() { if (this.x1 !== null) { this.x1 = this.x0; this.y1 = this.y0; this.d += 'Z'; } };
 // The path text of d3-shape arc() with cornerRadius 0: startAngle a0, endAngle a1 (radians clockwise from 12 o'clock), inner radius r0, outer radius r1, padAngle,
 // padRadius (null = sqrt(r0^2 + r1^2)); numbers rounded to `digits` (null = not rounded) as d3-path does.
 function _sbArc(a0, a1, r0, r1, padAngle, padRadius, digits) {
-  var k = digits === null ? null : Math.pow(10, digits), d = '', px0 = null, py0 = null, px1 = null, py1 = null, r, da, cw, a01, a11, a00, a10, da0, da1, ap, rp, p0, p1, sa, x01, y01, x10, y10;
-  function f(v) { return String(k === null ? v : Math.round(v * k) / k); }
-  function move(x, y) { px0 = px1 = x; py0 = py1 = y; d += 'M' + f(x) + ',' + f(y); }
-  function line(x, y) { px1 = x; py1 = y; d += 'L' + f(x) + ',' + f(y); }
-  function arc(x, y, rr, s0, s1, ccw) {
-    var dx = rr * Math.cos(s0), dy = rr * Math.sin(s0), x0 = x + dx, y0 = y + dy, w = ccw ? 0 : 1, a = ccw ? s0 - s1 : s1 - s0, ex, ey;
-    if (px1 === null) { d += 'M' + f(x0) + ',' + f(y0); px0 = px1 = x0; py0 = py1 = y0; }
-    else if (Math.abs(px1 - x0) > 1e-6 || Math.abs(py1 - y0) > 1e-6) { d += 'L' + f(x0) + ',' + f(y0); px1 = x0; py1 = y0; }
-    if (!rr) return;
-    if (a < 0) a = a % _SB_TAU + _SB_TAU;
-    if (a > _SB_TAU - 1e-6) { d += 'A' + f(rr) + ',' + f(rr) + ',0,1,' + w + ',' + f(x - dx) + ',' + f(y - dy) + 'A' + f(rr) + ',' + f(rr) + ',0,1,' + w + ',' + f(x0) + ',' + f(y0); px1 = x0; py1 = y0; }
-    else if (a > 1e-6) { ex = x + rr * Math.cos(s1); ey = y + rr * Math.sin(s1); d += 'A' + f(rr) + ',' + f(rr) + ',0,' + (a >= Math.PI ? 1 : 0) + ',' + w + ',' + f(ex) + ',' + f(ey); px1 = ex; py1 = ey; }
-  }
+  var pth = new _D3Path(digits), r, da, cw, a01, a11, a00, a10, da0, da1, ap, rp, p0, p1, sa, x01, y01, x10, y10;
+  function move(x, y) { pth.moveTo(x, y); }
+  function line(x, y) { pth.lineTo(x, y); }
+  function arc(x, y, rr, s0, s1, ccw) { pth.arc(x, y, rr, s0, s1, ccw); }
   a0 -= Math.PI / 2; a1 -= Math.PI / 2; da = Math.abs(a1 - a0); cw = a1 > a0;
   if (r1 < r0) { r = r1; r1 = r0; r0 = r; }
   if (!(r1 > _SB_EPS)) move(0, 0);
@@ -405,7 +413,8 @@ function _sbArc(a0, a1, r0, r1, padAngle, padRadius, digits) {
     if (da1 > _SB_EPS) arc(0, 0, r1, a01, a11, !cw);
     if (!(r0 > _SB_EPS) || !(da0 > _SB_EPS)) line(x10, y10); else arc(0, 0, r0, a10, a00, cw);
   }
-  return px1 === null ? d : d + 'Z';
+  pth.close();
+  return pth.d;
 }
 var _SB_PALETTE = ['#19294E', '#810998', '#0F6C4F', '#9A6120', '#0369A1', '#B4235A', '#4D6B0E', '#5B5F66'], _SB_SHADE = [0, 16, 40, 60];
 function _sbFill(base, depth) {
