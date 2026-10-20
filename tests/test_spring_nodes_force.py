@@ -52,7 +52,9 @@ def _block(path):
 
 def test_every_maintained_gas_copy_carries_the_same_spring_nodes_code():
     wired = _block(ROOT / "apps-script-surface/gas-wired-renderer/atoms_canvas.gs")
-    assert "_snLayout" in wired and "Math.random" not in wired and "<script" not in wired and "requestAnimationFrame" not in wired
+    # the only script is the opt-in live layer (interactive: true); the settled layout itself runs no physics at render time
+    base = re.sub(r"var _SN_LIVE_JS = '.*?';\n", "", wired).replace("if (live) out += '<script>' + _SN_LIVE_JS + '<\\/script>';", "")
+    assert "_snLayout" in wired and "Math.random" not in wired and "<script" not in base and "requestAnimationFrame" not in base
     for f in ("gas-schema-renderer/atoms_canvas.gs", "gas-schema-renderer/atoms_canvas.js"):
         assert _block(ROOT / "apps-script-surface" / f) == wired, f
 
@@ -193,3 +195,54 @@ def test_third_party_notice_names_d3_force_with_exact_version():
     i = t.index("## d3-force")
     sec = t[i:t.index("\n---", i)]
     assert "3.0.0" in sec and "ISC" in sec and "d3-quadtree" in sec and "Mike Bostock" in sec
+
+
+# ─── interactive: the optional live layer on top of the settled SVG ───────────
+STATIC_PAYLOADS = [
+    {"type": "spring_nodes"},
+    {"type": "spring_nodes", "nodes": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}, {"id": "c", "label": "C"}], "edges": [{"a": 0, "b": 1}, {"a": 1, "b": 2}]},
+    {"type": "spring_nodes", "nodes": [{"id": "n%d" % i, "label": "N%d" % i} for i in range(18)], "edges": [{"a": max(0, (i - 1) // 2), "b": i} for i in range(1, 18)], "height": 480, "colour": "#22c55e", "bg": "#ffffff"},
+]
+STATIC_SHA = ['3ab477f946b4cf00', 'ef7d77e83b15ed54', 'd51c8ddea8b4e748']     # sha256[:16] of the default output as committed before `interactive` existed
+SCRIPT = re.compile(r"<script>.*?</script>", re.S)
+DATA = re.compile(r' data-[a-z]+="[^"]*"')
+
+
+def test_default_output_is_byte_identical_to_the_static_commit(core_js):
+    import hashlib
+    for p, sha in zip(STATIC_PAYLOADS, STATIC_SHA):
+        assert hashlib.sha256(_py(p).encode()).hexdigest()[:16] == sha
+        assert _py(dict(p, interactive=False)) == _py(p) and "<script" not in _py(p)
+        assert _gas_batch(core_js, [dict(p, interactive=False)])[0] == _gas_batch(core_js, [p])[0]
+
+
+def test_only_a_real_true_turns_the_live_layer_on(core_js):
+    for v in ("true", 1, "yes", None, 0):
+        for html in _html_both({"type": "spring_nodes", "interactive": v}, core_js):
+            assert "<script" not in html
+
+
+@pytest.mark.parametrize("i", range(3))
+def test_interactive_is_the_static_svg_plus_one_script(i, core_js):
+    p = STATIC_PAYLOADS[i]
+    for html, base in zip(_html_both(dict(p, interactive=True), core_js), _html_both(p, core_js)):
+        assert html.count("<script>") == 1 and html.index("</ul>") < html.index("<script>") < html.index("</figure>")
+        assert DATA.sub("", SCRIPT.sub("", html)) == base           # the settled SVG and the text alternative are all still there, unchanged
+        assert html.count("<li>") == base.count("<li>")
+        # the script starts from the settled coordinates: the SVG it reads carries exactly the static layout
+        assert CIRCLE.findall(html) == CIRCLE.findall(base)
+        assert html.count(' data-n="') == len(CIRCLE.findall(base))
+
+
+def test_interactive_script_guards_reduced_motion_and_never_re_rolls_the_layout(core_js):
+    for html in _html_both({"type": "spring_nodes", "interactive": True}, core_js):
+        js = SCRIPT.search(html).group(0)
+        assert "prefers-reduced-motion: reduce" in js and "Math.random" not in js
+        assert "pointerdown" in js and "pointermove" in js and "ArrowLeft" in js and "tabindex" in js
+        assert "http://" not in js and "https://" not in js and "fetch(" not in js
+
+
+def test_interactive_python_matches_gas(core_js):
+    for p in STATIC_PAYLOADS:
+        a, g = _html_both(dict(p, interactive=True), core_js)
+        assert re.sub(r"\s+", " ", a) == re.sub(r"\s+", " ", g)

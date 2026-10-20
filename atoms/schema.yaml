@@ -14292,11 +14292,9 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: spring_nodes
-  description: Interactive mass-spring physics simulation — nodes repel each other
-    (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin
-    and move nodes. Settles naturally from a stacked initial position.
-  compact_description: interactive mass-spring physics graph with drag-to-pin nodes
-  routing_text: "Interactive mass-spring physics simulation — nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked ini"
+  description: "Mass-spring graph: nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. By default a settled, static layout computed server-side, so it works everywhere, including print and assistive tech. Drag-to-pin with live springs is opt-in with interactive: true."
+  compact_description: mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics
+  routing_text: "Mass-spring graph: nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. By default a settled, static layout computed server-side, so it works everywhere, including print an"
   intent_phrases:
   - "I need to visualize a network where items push apart but are connected by elastic bands."
   - "Can I see how my data points would arrange themselves if they naturally pushed away but had fixed links?"
@@ -14316,6 +14314,7 @@ blocks:
     bg: string (optional). Background colour. Default
     height: integer (optional). Canvas height px. Default 420.
     rest_length: integer (optional). Spring rest length px. Default 110.
+    interactive: 'boolean (optional). Default false: a settled, static layout that works everywhere and for assistive tech. Set true when the atom is shown in a live browser or app view and the viewer should be able to play with the graph: drag nodes to pin them, watch the springs react. Ignored under reduced motion and on static surfaces (print, slides, email, chat, and any surface that strips scripts).'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

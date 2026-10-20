@@ -122,6 +122,7 @@ _RENDERERS['canvas_plexus'] = function(b) {
 //   bg          — background colour (default #0f172a)
 //   height      — drawing height px (default 420)
 //   rest_length — spring rest length px (default 110; rest_len is read too)
+//   interactive — true adds the live layer (drag to pin, springs react); default false = settled static SVG, no script
 var _SN_TICKS = 300, _SN_CHARGE = -300, _SN_MAX_NODES = 120;
 function _snQuad() { return {c: null, data: null, next: null, x: 0, y: 0, value: 0}; }
 function _snTree(nodes) {
@@ -318,6 +319,9 @@ function _snLum(h) {
   return l;
 }
 function _snF(v) { return (Math.floor(v * 100 + 0.5) / 100).toFixed(2); }
+// The optional live layer (interactive: true): starts from the settled SVG's own coordinates and restores the old mass-spring physics with
+// click-drag to pin, plus arrow-key nudging on focusable nodes. Does nothing under prefers-reduced-motion. Twin of _SN_LIVE_JS in renderers/web_article.py.
+var _SN_LIVE_JS = '(function(){var cur=document.currentScript,f=cur&&cur.parentNode;if(!f)return;if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;var svg=f.querySelector("svg");if(!svg)return;var W=+svg.getAttribute("data-w"),H=+svg.getAttribute("data-h"),RL=+svg.getAttribute("data-rl"),A=function(q){return svg.querySelectorAll(q);};var us=A("[data-n]"),ts=A("[data-t]"),ls=A("[data-x]"),es=A("[data-e]"),ms=A("[data-m]"),ns=[],ed=[],ml=[],i,drag=-1,run=false;for(i=0;i<us.length;i++)ns.push({x:+us[i].getAttribute("cx"),y:+us[i].getAttribute("cy"),vx:0,vy:0,r:+us[i].getAttribute("r"),pin:false});for(i=0;i<es.length;i++){var p=es[i].getAttribute("data-e").split(",");ed.push([+p[0],+p[1]]);}for(i=0;i<ms.length;i++)ml[+ms[i].getAttribute("data-m")]=ms[i];svg.style.touchAction="none";svg.style.cursor="grab";function draw(){var k,n,a,b;for(k=0;k<ns.length;k++){n=ns[k];us[k].setAttribute("cx",n.x.toFixed(2));us[k].setAttribute("cy",n.y.toFixed(2));ts[k].setAttribute("cx",n.x.toFixed(2));ts[k].setAttribute("cy",n.y.toFixed(2));ls[k].setAttribute("x",n.x.toFixed(2));ls[k].setAttribute("y",(n.y+n.r+14).toFixed(2));}for(k=0;k<ed.length;k++){a=ns[ed[k][0]];b=ns[ed[k][1]];es[k].setAttribute("x1",a.x.toFixed(2));es[k].setAttribute("y1",a.y.toFixed(2));es[k].setAttribute("x2",b.x.toFixed(2));es[k].setAttribute("y2",b.y.toFixed(2));if(ml[k]){ml[k].setAttribute("x",((a.x+b.x)/2).toFixed(2));ml[k].setAttribute("y",((a.y+b.y)/2-4).toFixed(2));}}}function step(){var j,k,a,b,dx,dy,d,rep,e,f2,m=0;for(j=0;j<ns.length;j++)for(k=j+1;k<ns.length;k++){a=ns[j];b=ns[k];dx=b.x-a.x;dy=b.y-a.y;d=Math.sqrt(dx*dx+dy*dy)||1;rep=4000/(d*d);if(!a.pin){a.vx-=dx*rep/d;a.vy-=dy*rep/d;}if(!b.pin){b.vx+=dx*rep/d;b.vy+=dy*rep/d;}}for(j=0;j<ed.length;j++){a=ns[ed[j][0]];b=ns[ed[j][1]];dx=b.x-a.x;dy=b.y-a.y;d=Math.sqrt(dx*dx+dy*dy)||1;f2=(d-RL)*0.04;if(!a.pin){a.vx+=dx/d*f2;a.vy+=dy/d*f2;}if(!b.pin){b.vx-=dx/d*f2;b.vy-=dy/d*f2;}}for(j=0;j<ns.length;j++){e=ns[j];if(e.pin)continue;e.vx=(e.vx+(W/2-e.x)*0.001)*0.85;e.vy=(e.vy+(H/2-e.y)*0.001)*0.85;e.x=Math.max(e.r,Math.min(W-e.r,e.x+e.vx));e.y=Math.max(e.r,Math.min(H-e.r-18,e.y+e.vy));m=Math.max(m,Math.abs(e.vx),Math.abs(e.vy));}return m;}function loop(){var m=step();draw();if(m>0.02||drag>=0)requestAnimationFrame(loop);else run=false;}function go(){if(!run){run=true;requestAnimationFrame(loop);}}function pt(e){var r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}svg.addEventListener("pointerdown",function(e){var q=pt(e),k,dx,dy;drag=-1;for(k=0;k<ns.length;k++){dx=q.x-ns[k].x;dy=q.y-ns[k].y;if(dx*dx+dy*dy<ns[k].r*ns[k].r){drag=k;break;}}if(drag>=0){ns[drag].pin=true;svg.style.cursor="grabbing";if(svg.setPointerCapture)svg.setPointerCapture(e.pointerId);e.preventDefault();go();}});svg.addEventListener("pointermove",function(e){if(drag<0)return;var q=pt(e);ns[drag].x=q.x;ns[drag].y=q.y;ns[drag].vx=0;ns[drag].vy=0;go();});function up(){if(drag>=0)ns[drag].pin=false;drag=-1;svg.style.cursor="grab";go();}svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);ns.forEach(function(n,k){var u=us[k];u.setAttribute("tabindex","0");u.setAttribute("focusable","true");u.addEventListener("focus",function(){u.setAttribute("stroke-width","4");});u.addEventListener("blur",function(){u.setAttribute("stroke-width","2");});u.addEventListener("keydown",function(e){var s=e.key==="ArrowLeft"?[-10,0]:e.key==="ArrowRight"?[10,0]:e.key==="ArrowUp"?[0,-10]:e.key==="ArrowDown"?[0,10]:null;if(s){n.pin=true;n.x=Math.max(n.r,Math.min(W-n.r,n.x+s[0]));n.y=Math.max(n.r,Math.min(H-n.r-18,n.y+s[1]));n.vx=n.vy=0;e.preventDefault();go();}else if(e.key==="Escape"){n.pin=false;go();}});});go();})();';
 _RENDERERS['spring_nodes'] = function(b) {
   var raw = (b.nodes && b.nodes.length) ? b.nodes : null;
   var defNodes = ['Web', 'API', 'Database', 'Auth', 'Cache', 'Queue'];
@@ -373,22 +377,24 @@ _RENDERERS['spring_nodes'] = function(b) {
   var rs = Math.max(0.6, Math.min(1.0, sc * 1.15));
   for (i = 0; i < n; i++) nodes[i].r = nodes[i].r * rs;
   var txt = _snLum(bg) > 0.4 ? '#0f172a' : '#f8fafc';
+  var live = b.interactive === true;
+  function dd(k, v) { return live ? ' data-' + k + '="' + v + '"' : ''; }
   var out = '<figure style="margin:1rem 0;position:relative;"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc('Force-directed graph, ' + n + ' nodes, ' + links.length + ' links. The same content is listed below.') +
-    '" style="width:100%;height:auto;display:block;border-radius:12px;background:' + _esc(bg) + ';">';
+    '" style="width:100%;height:auto;display:block;border-radius:12px;background:' + _esc(bg) + ';"' + (live ? ' data-w="' + W + '" data-h="' + H + '" data-rl="' + _snF(rl) + '"' : '') + '>';
   for (i = 0; i < links.length; i++) {
     var A = P[links[i][0]], B = P[links[i][1]];
-    out += '<line x1="' + _snF(A[0]) + '" y1="' + _snF(A[1]) + '" x2="' + _snF(B[0]) + '" y2="' + _snF(B[1]) + '" stroke="' + _esc(colour) + '" stroke-opacity="0.7" stroke-width="1.5"/>';
+    out += '<line x1="' + _snF(A[0]) + '" y1="' + _snF(A[1]) + '" x2="' + _snF(B[0]) + '" y2="' + _snF(B[1]) + '" stroke="' + _esc(colour) + '" stroke-opacity="0.7" stroke-width="1.5"' + dd('e', links[i][0] + ',' + links[i][1]) + '/>';
   }
   for (i = 0; i < links.length; i++) {
     if (!links[i][2]) continue;
     var A2 = P[links[i][0]], B2 = P[links[i][1]];
-    out += '<text x="' + _snF((A2[0] + B2[0]) / 2) + '" y="' + _snF((A2[1] + B2[1]) / 2 - 4) + '" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke">' + _esc(links[i][2]) + '</text>';
+    out += '<text x="' + _snF((A2[0] + B2[0]) / 2) + '" y="' + _snF((A2[1] + B2[1]) / 2 - 4) + '" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke"' + dd('m', i) + '>' + _esc(links[i][2]) + '</text>';
   }
   for (i = 0; i < n; i++) {
-    out += '<circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(bg) + '" stroke="' + _esc(colour) + '" stroke-width="2"/><circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(colour) + '" fill-opacity="0.25"/>';
+    out += '<circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(bg) + '" stroke="' + _esc(colour) + '" stroke-width="2"' + dd('n', i) + '/><circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(colour) + '" fill-opacity="0.25"' + dd('t', i) + '/>';
   }
   for (i = 0; i < n; i++) {
-    out += '<text x="' + _snF(P[i][0]) + '" y="' + _snF(P[i][1] + nodes[i].r + 14) + '" text-anchor="middle" font-size="12" font-weight="600" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke">' + _esc(nodes[i].label) + '</text>';
+    out += '<text x="' + _snF(P[i][0]) + '" y="' + _snF(P[i][1] + nodes[i].r + 14) + '" text-anchor="middle" font-size="12" font-weight="600" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke"' + dd('x', i) + '>' + _esc(nodes[i].label) + '</text>';
   }
   out += '</svg><ul style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0;padding:0;">';
   for (i = 0; i < n; i++) {
@@ -398,7 +404,9 @@ _RENDERERS['spring_nodes'] = function(b) {
     }
     out += '<li>' + _esc(nodes[i].label) + (to.length ? ': linked to ' + _esc(to.join(', ')) : ': no links') + '</li>';
   }
-  return out + '</ul></figure>';
+  out += '</ul>';
+  if (live) out += '<script>' + _SN_LIVE_JS + '<\/script>';
+  return out + '</figure>';
 };
 
 // ── isometric_mesh ────────────────────────────────────────────────────────────
