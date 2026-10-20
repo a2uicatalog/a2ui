@@ -101,3 +101,38 @@ def test_every_page_declares_a_document_language():
         if not m or not re.search(r"\blang=[\"']?[a-zA-Z]", m.group(0)):
             bad.append(rel)
     assert not bad, f"pages without <html lang>: {bad}"
+
+
+# axe svg-img-alt (WCAG 1.1.1): an <svg> in the page is either decorative (aria-hidden="true") or a named image (role="img" plus aria-label / aria-labelledby / <title>).
+SVG_EXEMPT = {
+    "public/surfaces/mcp-apps/renderer-bundle.html",   # the <svg> strings are JavaScript source; see LANG_EXEMPT
+    "public/surfaces/amiga/index.html",                # third-party Amiga emulator UI, not ours
+}
+
+
+def _svg_defects(html):
+    html = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    html = re.sub(r"<(script|style)\b.*?</\1>", "", html, flags=re.S | re.I)
+    html = re.sub(r"url\((?:&quot;|[\"'\\])*data:image/svg[^)]*\)", "", html, flags=re.I)   # a CSS background image is not DOM
+    bad = []
+    for m in re.finditer(r"<svg\b[^>]*>", html, re.I):
+        head = m.group(0)
+        if re.search(r"aria-hidden=[\"']true[\"']", head):
+            continue
+        named = re.search(r"aria-label(?:ledby)?=[\"'][^\"']+[\"']", head) or re.match(r"\s*<title\b", html[m.end():])
+        if re.search(r"role=[\"']img[\"']", head) and named:
+            continue
+        bad.append(head[:90])
+    return bad
+
+
+def test_every_svg_is_hidden_or_named():
+    bad = {}
+    for p in _site_pages():
+        rel = str(p.relative_to(ROOT))
+        if rel in SVG_EXEMPT:
+            continue
+        d = _svg_defects(p.read_text(errors="ignore"))
+        if d:
+            bad[rel] = (len(d), d[0])
+    assert not bad, f"unnamed <svg> in {len(bad)} page(s): {dict(list(bad.items())[:6])}"
