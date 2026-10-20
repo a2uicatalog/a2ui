@@ -31972,8 +31972,557 @@ def _render_org_chart(b: dict) -> str:
     return _if_wrap(_if_title(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>')
 
 
+# ─── histogram (proposal): d3-array 3.2.4 bin() with thresholdSturges and the default nice domain, ported by hand. Twin: _hgBin in atoms_infographic.gs. ───
+_HG_E10, _HG_E5, _HG_E2 = math.sqrt(50), math.sqrt(10), math.sqrt(2)
+# Powers of ten are the exact decimal literals in BOTH twins (Number('1e-5')), not Math.pow(10, -5): V8's pow is off by one ulp for some exponents and differs between engine versions.
+_HG_INF = float('inf')
+_HG_NAN = float('nan')
+
+
+def _hg_pow10(p):
+    if p > 308:
+        return _HG_INF
+    return float('1e%d' % p)
+
+
+def _hg_div(a, b):
+    """JavaScript a / b: division by zero gives Infinity or NaN, not an exception."""
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return _HG_NAN if (a == 0 or a != a) else math.copysign(_HG_INF, a) * math.copysign(1.0, b)
+
+
+def _hg_floor(x):
+    return x if (x != x or x in (_HG_INF, -_HG_INF)) else float(math.floor(x))
+
+
+def _hg_round(x):
+    """JavaScript Math.round."""
+    if x != x or x in (_HG_INF, -_HG_INF):
+        return x
+    f = math.floor(x)
+    return float(f + 1 if x - f >= 0.5 else f)
+
+
+def _hg_tick_spec(start, stop, count):
+    step = _hg_div(stop - start, max(0, count))
+    if not (step > 0) or step == _HG_INF:
+        return (_HG_NAN, _HG_NAN, -_HG_INF if step <= 0 else _HG_INF)
+    power = math.floor(math.log10(step))
+    error = _hg_div(step, _hg_pow10(power))
+    factor = 10 if error >= _HG_E10 else 5 if error >= _HG_E5 else 2 if error >= _HG_E2 else 1
+    if power < 0:
+        inc = _hg_div(_hg_pow10(-power), factor)
+        i1 = _hg_round(start * inc)
+        i2 = _hg_round(stop * inc)
+        if _hg_div(i1, inc) < start:
+            i1 += 1
+        if _hg_div(i2, inc) > stop:
+            i2 -= 1
+        inc = -inc
+    else:
+        inc = _hg_pow10(power) * factor
+        i1 = _hg_round(_hg_div(start, inc))
+        i2 = _hg_round(_hg_div(stop, inc))
+        if i1 * inc < start:
+            i1 += 1
+        if i2 * inc > stop:
+            i2 -= 1
+    if i2 < i1 and 0.5 <= count < 2:
+        return _hg_tick_spec(start, stop, count * 2)
+    return (i1, i2, inc)
+
+
+def _hg_ticks(start, stop, count):
+    if not (count > 0):
+        return []
+    if start == stop:
+        return [start]
+    rev = stop < start
+    i1, i2, inc = _hg_tick_spec(stop, start, count) if rev else _hg_tick_spec(start, stop, count)
+    if not (i2 >= i1):
+        return []
+    n = int(i2 - i1 + 1)
+    out = []
+    for i in range(n):
+        if rev:
+            out.append((i2 - i) / -inc if inc < 0 else (i2 - i) * inc)
+        else:
+            out.append((i1 + i) / -inc if inc < 0 else (i1 + i) * inc)
+    return out
+
+
+def _hg_tick_increment(start, stop, count):
+    return _hg_tick_spec(start, stop, count)[2]
+
+
+def _hg_nice(start, stop, count):
+    pre = None
+    while True:
+        step = _hg_tick_increment(start, stop, count)
+        if (pre is not None and step == pre) or step == 0 or step != step or step in (_HG_INF, -_HG_INF):
+            return start, stop
+        if step > 0:
+            start = _hg_floor(start / step) * step
+            stop = math.ceil(stop / step) * step
+        elif step < 0:
+            start = math.ceil(start * step) / step
+            stop = _hg_floor(stop * step) / step
+        pre = step
+
+
+def _hg_bin(values, target=None):
+    """d3.bin().thresholds(target or thresholdSturges)(values): returns ([(x0, x1), ...], [count, ...]). values: finite floats, at least one."""
+    import bisect as _bisect
+    n = len(values)
+    mx = max(values)
+    x0, x1 = min(values), mx
+    tn = float(target) if target is not None else float(max(1, math.ceil(math.log(n) / math.log(2)) + 1))
+    x0, x1 = _hg_nice(x0, x1, tn)
+    tz = _hg_ticks(x0, x1, tn)
+    step = None
+    if tz and tz[0] <= x0:
+        step = _hg_tick_increment(x0, x1, tn)
+    if tz and tz[-1] >= x1:
+        if mx >= x1:
+            st = _hg_tick_increment(x0, x1, tn)
+            if st == st and st not in (_HG_INF, -_HG_INF):
+                if st > 0:
+                    x1 = (math.floor(x1 / st) + 1) * st
+                elif st < 0:
+                    x1 = (math.ceil(x1 * -st) + 1) / -st
+        else:
+            tz.pop()
+    m = len(tz)
+    a, b = 0, m
+    while a < len(tz) and tz[a] <= x0:
+        a += 1
+    while b - 1 >= 0 and tz[b - 1] > x1:
+        b -= 1
+    if a or b < m:
+        tz = tz[a:b]
+        m = b - a
+    edges = [(x0 if i == 0 else tz[i - 1], tz[i] if i < m else x1) for i in range(m + 1)]
+    counts = [0] * (m + 1)
+    fin = step is not None and step == step and step not in (_HG_INF, -_HG_INF)
+    for x in values:
+        if not (x0 <= x <= x1):
+            continue
+        if fin and step > 0:
+            counts[min(m, int(math.floor((x - x0) / step)))] += 1
+        elif fin and step < 0:
+            j = int(math.floor((x0 - x) * step))
+            counts[min(m, j + (1 if 0 <= j < len(tz) and tz[j] <= x else 0))] += 1
+        elif not fin:
+            counts[_bisect.bisect_right(tz, x, 0, m)] += 1
+    return edges, counts
+
+
+_HG_P10 = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8]
+
+
+def _hg_decimals(vals):
+    for d in range(9):
+        k = _HG_P10[d]
+        if all(abs(v * k - _hg_round(v * k)) <= max(1e-7, abs(v * k) * 1e-12) for v in vals):
+            return d
+    return 8
+
+
+def _hg_num(v, d):
+    s = _if_fixed(v, d)
+    neg = s.startswith('-')
+    ip, dot, fp = s.lstrip('-').partition('.')
+    return ('-' if neg else '') + re.sub(r'\B(?=(\d{3})+(?!\d))', ',', ip) + dot + fp
+
+
+def _hg_ridge(series, target=None):
+    """layout ridge: d3 bin() of all the series pooled gives the shared edges; each series is counted by
+    bin().domain([x0, x1]).thresholds(the inner edges). Returns ([(x0, x1), ...], [[count, ...] per series])."""
+    import bisect as _bisect
+    edges, _ = _hg_bin([x for s in series for x in s], target)
+    m, X0, X1 = len(edges), edges[0][0], edges[-1][1]
+    inner = [e[0] for e in edges[1:]]
+    counts = []
+    for s in series:
+        c = [0] * m
+        for x in s:
+            if X0 <= x <= X1:
+                c[_bisect.bisect_right(inner, x)] += 1
+        counts.append(c)
+    return edges, counts
+
+
+def _hg_usable(raw):
+    return [float(v) for v in raw if isinstance(v, (int, float)) and not isinstance(v, bool) and abs(v) <= 1e12]
+
+
+def _hg_target(bv):
+    return _hg_round(min(40, max(3, bv))) if (isinstance(bv, (int, float)) and not isinstance(bv, bool) and bv == bv and abs(bv) != _HG_INF) else None
+
+
+def _hg_note(s):
+    return '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">' + s + '</div>'
+
+
+def _hg_skip_note(skipped):
+    return _hg_note(str(skipped) + (' entry was' if skipped == 1 else ' entries were') + ' not a usable number and ' + ('was' if skipped == 1 else 'were') + ' skipped.') if skipped else ''
+
+
+def _hg_version_note(b, atom='histogram'):
+    v = _if_g(b, 'version')
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != _HG_INF and v == math.floor(v) and v > 1:
+        return _hg_note('Written for ' + atom + ' version ' + _if_numstr(v) + '; drawn as version 1.')
+    return ''
+
+
+def _hg_axis(ev, X0, span, lab):
+    """The x edge labels: few enough to fit, every other one hidden in a narrow container."""
+    maxlen = max(len(s) for s in lab)
+    want = max(2, min(8, 48 // maxlen))
+    stride = -(-len(ev) // want)
+    xs = ''
+    for i in range(len(ev)):
+        if i % stride == 0 and (span > 0 or i == 0):
+            xs += ('<div class="hgx' + (' hgc' if i % (2 * stride) == 0 else '') + '" style="position:absolute;top:100%;left:' + (_tm_pct(ev[i] - X0, span) if span > 0 else '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+                   '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + lab[i] + '</div></div>')
+    return xs
+
+
+_HG_LABW = 'clamp(64px,24%,150px)'
+
+
+def _render_histogram_ridge(b: dict) -> str:
+    lst = _if_g(b, 'series')
+    lst = lst if isinstance(lst, list) else []
+    used, skipped, left_out = [], 0, 0
+    for k, s in enumerate(lst[:8]):
+        if not isinstance(s, dict):
+            left_out += 1
+            continue
+        raw = _if_arr(_if_g(s, 'values'), 2000)
+        vals = _hg_usable(raw)
+        skipped += len(raw) - len(vals)
+        if len(vals) < 5:
+            left_out += 1
+            continue
+        used.append((_if_str(_if_g(s, 'label'))[:30] if _if_truthy(_if_g(s, 'label')) else 'Series ' + str(k + 1), vals))
+    beyond = len(lst) - 8
+    notes = (_hg_skip_note(skipped)
+             + (_hg_note(str(left_out) + ' series had fewer than 5 usable numbers or ' + ('was not a series and was' if left_out == 1 else 'were not a series and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + ' series beyond the first 8 ' + ('was' if beyond == 1 else 'were') + ' not drawn.') if beyond > 0 else '')
+             + _hg_version_note(b))
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A ridge histogram needs at least one series with 5 numbers.</div>' + notes)
+    edges, counts = _hg_ridge([v for _, v in used], _hg_target(_if_g(b, 'bins')))
+    m, n = len(edges), len(used)
+    X0, X1 = edges[0][0], edges[-1][1]
+    span = X1 - X0
+    shares = [[c / len(v) for c in cs] for (_, v), cs in zip(used, counts)]
+    top = max(max(s) for s in shares)
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    ev = [e[0] for e in edges] + [edges[-1][1]]
+    d = _hg_decimals(ev)
+    lab = [_hg_num(v, d) for v in ev]
+    peaks = [cs.index(max(cs)) for cs in counts]
+    aria = ('Ridgeline histogram of ' + str(n) + ' series in ' + str(m) + (' shared bin' if m == 1 else ' shared bins') + ' from ' + lab[0] + ' to ' + lab[-1] + us + '. '
+            + '; '.join(nm + ': ' + str(len(v)) + ' values, most from ' + lab[p] + ' to ' + lab[p + 1] + us for (nm, v), p in zip(used, peaks)) + '.')
+    rows = ''
+    for k, ((nm, v), sh) in enumerate(zip(used, shares)):
+        path = 'M0.00,1000.00'
+        for i in range(m):
+            path += 'H' + (_if_fixed((edges[i][0] - X0) / span * 1000, 2) if span > 0 else '0.00') + 'V' + _if_fixed(1000 - sh[i] / top * 1000, 2)
+        path += 'H1000.00L1000.00,1000.00Z'
+        rows += ('<div style="display:flex;align-items:flex-end;height:44px;">'
+                 '<div class="hgrl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding:0 8px 2px 0;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                 + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _cv_esc(nm) + '</div>'
+                 '<div class="hgrp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;border-bottom:1px solid var(--muted,#475569);">'
+                 '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;bottom:0;width:100%;height:72px;display:block;overflow:visible;">'
+                 '<g class="hgrg" style="' + _if_k(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(nm + ': ' + str(len(v)) + ' values') + '</title>'
+                 '<path class="hgrb" d="' + path + '"/><path class="hgr" d="' + path + '"/></g></svg></div></div>')
+    css = ('<style>.ifhg .hgrg{transform-box:fill-box;transform-origin:50% 100%}.ifhg .hgrb{fill:var(--bg,#fff)}'
+           '.ifhg .hgr{fill:var(--accent,#0369A1);fill-opacity:0.35;stroke:var(--accent,#0369A1);stroke-width:1.5px;vector-effect:non-scaling-stroke;stroke-linejoin:round}'
+           '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>')
+    chart = ('<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
+             + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">Share of each series per bin</div>'
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;padding-top:28px;margin:0 34px 34px 0;">' + rows
+             + '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;">' + _hg_axis(ev, X0, span, lab) + '</div></div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 ' + _HG_LABW + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes
+                    + _if_table(['Bin from', 'Bin to'] + [nm for nm, _ in used], [[lab[i] + us, lab[i + 1] + us] + [str(cs[i]) for cs in counts] for i in range(m)]))
+
+
+def _render_histogram(b: dict) -> str:
+    if _if_g(b, 'layout') == 'ridge':
+        return _render_histogram_ridge(b)
+    raw = _if_arr(_if_g(b, 'values'), 2000)
+    vals = _hg_usable(raw)
+    skipped = len(raw) - len(vals)
+    skip_note = _hg_skip_note(skipped)
+    if len(vals) < 5:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A histogram needs at least 5 numbers; this list has ' + str(len(vals)) + '.</div>' + skip_note)
+    target = _hg_target(_if_g(b, 'bins'))
+    edges, counts = _hg_bin(vals, target)
+    m = len(counts)
+    X0, X1 = edges[0][0], edges[-1][1]
+    span = X1 - X0
+    cmax = max(counts)
+    if cmax <= 4:
+        top, yt = float(cmax), [float(i) for i in range(cmax + 1)]
+    else:
+        top = _hg_nice(0, cmax, 4)[1]
+        yt = _hg_ticks(0, top, 4)
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    ev = [e[0] for e in edges] + [edges[-1][1]]
+    d = _hg_decimals(ev)
+    lab = [_hg_num(v, d) for v in ev]
+    tall = counts.index(cmax)
+    aria = ('Histogram of ' + str(len(vals)) + ' values in ' + str(m) + (' bin' if m == 1 else ' bins') + ' from ' + lab[0] + ' to ' + lab[-1] + (' ' + unit if unit else '')
+            + '. Tallest bin: ' + lab[tall] + ' to ' + lab[tall + 1] + (' ' + unit if unit else '') + ', ' + str(cmax) + (' value.' if cmax == 1 else ' values.'))
+    rects = ''
+    for i in range(m):
+        x = (edges[i][0] - X0) / span * 1000 if span > 0 else 0.0
+        w = (edges[i][1] - edges[i][0]) / span * 1000 if span > 0 else 1000.0
+        h = counts[i] / top * 1000 if top > 0 else 0.0
+        rects += ('<rect class="hgb" x="' + _if_fixed(x, 2) + '" y="' + _if_fixed(1000 - h, 2) + '" width="' + _if_fixed(w, 2) + '" height="' + _if_fixed(h, 2) + '" style="' + _if_k(i, m)
+                  + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(lab[i] + ' to ' + lab[i + 1] + (' ' + unit if unit else '') + ': ' + str(counts[i])) + '</title></rect>')
+    grid = ''
+    for t in yt:
+        bt = _if_fixed(t / top * 100, 3) + '%' if top > 0 else '0%'
+        grid += ('<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + ('var(--muted,#475569)' if t == 0 else 'var(--border,#CBD5E1)') + ';"></div>'
+                 '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _hg_num(t, 0) + '</div>')
+    xs = _hg_axis(ev, X0, span, lab)
+    css = ('<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}'
+           '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>')
+    chart = ('<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
+             + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">Count of values per bin</div>'
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid
+             + '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>'
+             + xs + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 46px;">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + skip_note + _hg_version_note(b)
+                    + _if_table(['Bin from', 'Bin to', 'Count'], [[lab[i] + (' ' + unit if unit else ''), lab[i + 1] + (' ' + unit if unit else ''), str(counts[i])] for i in range(m)]))
+
+
+# ── box_plot (proposal, I37) ── quartiles are d3-array quantileSorted (R-7); whiskers follow d3's box plot example (Tukey, 1.5 IQR);
+# the shared axis is d3 nice(min, max, 5) and its ticks. Twin of _bpLayout / _RENDERERS['box_plot'] in atoms_infographic.gs.
+def _bp_quantile(a, p):
+    n = len(a)
+    if p <= 0 or n < 2:
+        return a[0]
+    if p >= 1:
+        return a[n - 1]
+    i = (n - 1) * p
+    i0 = math.floor(i)
+    return a[i0] + (a[i0 + 1] - a[i0]) * (i - i0)
+
+
+def _bp_layout(groups):
+    """([{n, min, q1, median, q3, max, lo, hi, outliers}, ...], (x0, x1), ticks) for lists of finite floats, each at least one long."""
+    stats, lo_all, hi_all = [], _HG_INF, -_HG_INF
+    for g in groups:
+        a = sorted(g)
+        q1, med, q3 = _bp_quantile(a, 0.25), _bp_quantile(a, 0.5), _bp_quantile(a, 0.75)
+        r = 1.5 * (q3 - q1)
+        inside = [x for x in a if q1 - r <= x <= q3 + r]
+        stats.append({'n': len(a), 'min': a[0], 'q1': q1, 'median': med, 'q3': q3, 'max': a[-1], 'lo': inside[0], 'hi': inside[-1],
+                      'outliers': [x for x in a if x < q1 - r or x > q3 + r]})
+        lo_all, hi_all = min(lo_all, a[0]), max(hi_all, a[-1])
+    x0, x1 = _hg_nice(lo_all, hi_all, 5)
+    return stats, (x0, x1), _hg_ticks(x0, x1, 5)
+
+
+def _bp_fmt(v, cap):
+    return _hg_num(v, min(_hg_decimals([v]), cap))
+
+
+_BP_MAX_DOTS = 100
+
+
+def _render_box_plot(b: dict) -> str:
+    lst = _if_g(b, 'groups')
+    lst = lst if isinstance(lst, list) else []
+    used, skipped, left_out = [], 0, 0
+    for k, g in enumerate(lst[:12]):
+        if not isinstance(g, dict):
+            left_out += 1
+            continue
+        raw = _if_arr(_if_g(g, 'values'), 2000)
+        vals = _hg_usable(raw)
+        skipped += len(raw) - len(vals)
+        if len(vals) < 5:
+            left_out += 1
+            continue
+        used.append((_if_str(_if_g(g, 'label'))[:30] if _if_truthy(_if_g(g, 'label')) else 'Group ' + str(k + 1), vals))
+    beyond = len(lst) - 12
+    notes = (_hg_skip_note(skipped)
+             + (_hg_note(str(left_out) + (' group had fewer than 5 usable numbers or was not a group and was' if left_out == 1 else ' groups had fewer than 5 usable numbers or were not a group and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' group beyond the first 12 was' if beyond == 1 else ' groups beyond the first 12 were') + ' not drawn.') if beyond > 0 else ''))
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A box plot needs at least one group with 5 numbers.</div>' + notes + _hg_version_note(b, 'box_plot'))
+    stats, (X0, X1), ticks = _bp_layout([v for _, v in used])
+    n, span = len(used), X1 - X0
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    td = _hg_decimals(ticks)
+    tlab = [_hg_num(t, td) for t in ticks]
+    fc = min(_hg_decimals([x for _, v in used for x in v]) + 2, td + 3)
+
+    def pos(v):
+        return _tm_pct(v - X0, span) if span > 0 else '50%'
+
+    def wid(a, c):
+        return _tm_pct(c - a, span) if span > 0 else '0%'
+
+    def f(v):
+        return _bp_fmt(v, fc)
+    grid = ''.join('<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>' for t in ticks)
+    rows, capped = '', ''
+    for k, ((nm, _), s) in enumerate(zip(used, stats)):
+        distinct = sorted(set(s['outliers']), key=lambda v: (-abs(v - s['median']), v))
+        if len(distinct) > _BP_MAX_DOTS:
+            capped += _hg_note(_cv_esc(nm) + ' has ' + str(len(distinct)) + ' distinct outliers; the ' + str(_BP_MAX_DOTS) + ' furthest from the median are drawn. The table counts them all.')
+        dots = ''.join('<div class="bpo" style="position:absolute;left:' + pos(o) + ';top:50%;width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'
+                       for o in distinct[:_BP_MAX_DOTS])
+        rows += ('<div style="display:flex;align-items:center;height:40px;">'
+                 '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                 + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(nm) + '</div>'
+                 '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
+                 + '<div class="bpg" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
+                 '<div class="bpw" style="position:absolute;left:' + pos(s['lo']) + ';width:' + wid(s['lo'], s['hi']) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>'
+                 '<div style="position:absolute;left:' + pos(s['lo']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>'
+                 '<div style="position:absolute;left:' + pos(s['hi']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>'
+                 '<div class="bpb" style="position:absolute;left:' + pos(s['q1']) + ';width:' + wid(s['q1'], s['q3']) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:var(--surface,#F8FAFC);border-radius:2px;"></div>'
+                 '<div class="bpm" style="position:absolute;left:' + pos(s['median']) + ';top:22%;height:56%;border-left:3px solid var(--accent,#0369A1);transform:translateX(-1.5px);"></div>'
+                 + dots + '</div></div></div>')
+    no = lambda c: str(c) + (' outlier' if c == 1 else ' outliers')
+    aria = ('Box plot of ' + str(n) + (' group' if n == 1 else ' groups') + ' on a shared axis from ' + _hg_num(X0, td) + ' to ' + _hg_num(X1, td) + us + '. '
+            + '; '.join(nm + ': median ' + f(s['median']) + us + ', middle half ' + f(s['q1']) + ' to ' + f(s['q3']) + us + ', whiskers ' + f(s['lo']) + ' to ' + f(s['hi']) + us + ', ' + no(len(s['outliers']))
+                        for (nm, _), s in zip(used, stats)) + '.')
+    chart = ('<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}}</style>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 34px 34px 0;">' + rows
+             + '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, X0, span, tlab) + '</div></div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 ' + _HG_LABW + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes + capped + _hg_version_note(b, 'box_plot')
+                    + _if_table(['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'],
+                                [[nm, str(s['n']), f(s['min']) + us, f(s['q1']) + us, f(s['median']) + us, f(s['q3']) + us, f(s['max']) + us, str(len(s['outliers']))] for (nm, _), s in zip(used, stats)]))
+
+
+# ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
+# running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
+# and every bar end, and its ticks. Twin of _wfLayout / _RENDERERS['waterfall'] in atoms_infographic.gs.
+def _wf_layout(steps):
+    """steps: [{kind: 'total' | other, value: number or absent}] -> ([(start, end), ...], (x0, x1), ticks, [(index, given, before), ...])."""
+    run, lo, hi, bars, checks = 0, 0, 0, [], []
+    for k, st in enumerate(steps):
+        v = st.get('value')
+        if st.get('kind') == 'total':
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                checks.append((k, v, run))
+                run = v
+            a, e = 0, run
+        else:
+            a = run
+            run = run + v
+            e = run
+        lo, hi = min(lo, a, e), max(hi, a, e)
+        bars.append((a, e))
+    x0, x1 = _hg_nice(lo, hi, 5)
+    return bars, (x0, x1), _hg_ticks(x0, x1, 5), checks
+
+
+def _wf_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _render_waterfall(b: dict) -> str:
+    lst = _if_g(b, 'steps')
+    lst = lst if isinstance(lst, list) else []
+    labels, steps, left_out = [], [], 0
+    for k, st in enumerate(lst[:24]):
+        if not isinstance(st, dict):
+            left_out += 1
+            continue
+        tot = _if_g(st, 'kind') == 'total'
+        v = _if_g(st, 'value')
+        if not tot and not _wf_num(v):
+            left_out += 1
+            continue
+        steps.append({'kind': 'total', 'value': v} if tot and _wf_num(v) else {'kind': 'total'} if tot else {'value': v})
+        labels.append(_if_str(_if_g(st, 'label'))[:30] if _if_truthy(_if_g(st, 'label')) else 'Step ' + str(k + 1))
+    beyond = len(lst) - 24
+    notes = ((_hg_note(str(left_out) + (' step had no usable number or was not a step and was' if left_out == 1 else ' steps had no usable number or were not a step and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' step beyond the first 24 was' if beyond == 1 else ' steps beyond the first 24 were') + ' not drawn.') if beyond > 0 else ''))
+    if not steps:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A waterfall needs at least one step with a number.</div>' + notes + _hg_version_note(b, 'waterfall'))
+    bars, (X0, X1), ticks, checks = _wf_layout(steps)
+    n, span = len(steps), X1 - X0
+    given = [st['value'] for st in steps if 'value' in st]
+    dc = min(6, _hg_decimals(given)) if given else 0
+    scale = max([abs(x) for x in given] + [0])
+
+    def f(v):
+        return _bp_fmt(v, dc)
+
+    def sg(v):
+        return ('+' if v > 0 else '') + f(v)
+    for k, g, before in checks:
+        if k > 0 and abs(g - before) > scale * 1e-9:
+            notes += _hg_note(_cv_esc('The total "' + labels[k] + '" is ' + f(g) + ' but the steps before it add up to ' + f(before) + '; the bar shows ' + f(g) + ' and later steps start there.'))
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    td = _hg_decimals(ticks)
+    tlab = [_hg_num(t, td) for t in ticks]
+    vtxt = [f(e) if st.get('kind') == 'total' else sg(st['value']) for st, (_, e) in zip(steps, bars)]
+    vw = 'calc(' + str(max(len(t) for t in vtxt)) + 'ch + 8px)'
+
+    def pos(v):
+        return _tm_pct(v - X0, span) if span > 0 else '50%'
+
+    def wid(a, c):
+        return _tm_pct(c - a, span) if span > 0 else '0%'
+    grid = (''.join('<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>' for t in ticks)
+            + '<div style="position:absolute;top:0;bottom:0;left:' + pos(0) + ';border-left:1px solid var(--muted,#475569);"></div>')
+    rows = ''
+    for k, (st, (a, e)) in enumerate(zip(steps, bars)):
+        kind = 'wft' if st.get('kind') == 'total' else 'wfu' if e > a else 'wfd' if e < a else 'wfu'
+        col = {'wft': 'var(--accent,#0369A1)', 'wfu': 'var(--positive,#15803D)', 'wfd': 'var(--negative,#B91C1C)'}[kind]
+        rows += ('<div style="display:flex;align-items:center;height:40px;">'
+                 '<div class="wfl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                 + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(labels[k]) + '</div>'
+                 '<div class="wfp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
+                 + '<div class="wfg" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
+                 '<div class="wfb ' + kind + '" style="position:absolute;left:' + pos(min(a, e)) + ';width:' + wid(min(a, e), max(a, e)) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;background:' + col + ';border-radius:2px;"></div>'
+                 + ('<div class="wfc" style="position:absolute;left:' + pos(e) + ';top:78%;height:44%;border-left:1px dashed var(--muted,#475569);"></div>' if k < n - 1 else '')
+                 + '</div></div>'
+                 '<div class="wfv" style="flex:0 0 ' + vw + ';box-sizing:border-box;padding-left:8px;font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text,#0F172A);">' + vtxt[k] + '</div></div>')
+    deltas = [(k, st['value']) for k, st in enumerate(steps) if st.get('kind') != 'total']
+    up = max(deltas, key=lambda kv: kv[1], default=None)
+    dn = min(deltas, key=lambda kv: kv[1], default=None)
+    aria = ('Waterfall of ' + str(n) + (' step' if n == 1 else ' steps') + ' ending at ' + f(bars[-1][1]) + us + '.'
+            + (' Biggest increase: ' + labels[up[0]] + ', ' + sg(up[1]) + us + '.' if up and up[1] > 0 else '')
+            + (' Biggest decrease: ' + labels[dn[0]] + ', ' + sg(dn[1]) + us + '.' if dn and dn[1] < 0 else ''))
+    chart = ('<div class="ifwf" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifwf .hgx:not(.hgc){display:none}}</style>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 0 34px 0;">' + rows
+             + '<div style="position:relative;margin-left:' + _HG_LABW + ';margin-right:' + vw + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, X0, span, tlab) + '</div></div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 ' + vw + ' 0 ' + _HG_LABW + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'waterfall')
+                    + _if_table(['Step', 'Change', 'Running total'],
+                                [[labels[k], 'Total' if st.get('kind') == 'total' else sg(st['value']) + us, f(e) + us] for k, (st, (_, e)) in enumerate(zip(steps, bars))]))
+
+
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall)):
     _RENDERERS[_if_name] = _if_fn
 
 

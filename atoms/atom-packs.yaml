@@ -185,6 +185,9 @@ a2ui-charts-v1:
 - venn_diagram
 - callout_anatomy
 - org_chart
+- histogram
+- box_plot
+- waterfall
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

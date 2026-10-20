@@ -422,3 +422,348 @@ _RENDERERS['org_chart'] = function(b) {
     '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>';
   return _ifWrap(_ifTitle(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>');
 };
+
+// ── histogram (proposal) ─────────────────────────────────────────────────────────────────────────────────────
+// d3-array 3.2.4 bin() with thresholdSturges and the default (niced) domain, ported by hand (ISC, Mike Bostock); twin of _hg_bin in renderers/web_article.py.
+function _hgP10(p) { return Number('1e' + p); }   // exact decimal literals, not Math.pow(10, p): V8's pow is an ulp off for some exponents and differs between engine versions
+function _hgTickSpec(start, stop, count) {
+  var step = (stop - start) / Math.max(0, count), power = Math.floor(Math.log10(step)), error = step / _hgP10(power);
+  var factor = error >= Math.sqrt(50) ? 10 : error >= Math.sqrt(10) ? 5 : error >= Math.sqrt(2) ? 2 : 1, i1, i2, inc;
+  if (power < 0) {
+    inc = _hgP10(-power) / factor; i1 = Math.round(start * inc); i2 = Math.round(stop * inc);
+    if (i1 / inc < start) ++i1; if (i2 / inc > stop) --i2; inc = -inc;
+  } else {
+    inc = _hgP10(power) * factor; i1 = Math.round(start / inc); i2 = Math.round(stop / inc);
+    if (i1 * inc < start) ++i1; if (i2 * inc > stop) --i2;
+  }
+  if (i2 < i1 && 0.5 <= count && count < 2) return _hgTickSpec(start, stop, count * 2);
+  return [i1, i2, inc];
+}
+function _hgTicks(start, stop, count) {
+  if (!(count > 0)) return [];
+  if (start === stop) return [start];
+  var rev = stop < start, sp = rev ? _hgTickSpec(stop, start, count) : _hgTickSpec(start, stop, count), i1 = sp[0], i2 = sp[1], inc = sp[2];
+  if (!(i2 >= i1)) return [];
+  var n = i2 - i1 + 1, t = new Array(n), i;
+  for (i = 0; i < n; ++i) t[i] = rev ? (inc < 0 ? (i2 - i) / -inc : (i2 - i) * inc) : (inc < 0 ? (i1 + i) / -inc : (i1 + i) * inc);
+  return t;
+}
+function _hgTickInc(start, stop, count) { return _hgTickSpec(start, stop, count)[2]; }
+function _hgNice(start, stop, count) {
+  var pre;
+  while (true) {
+    var step = _hgTickInc(start, stop, count);
+    if (step === pre || step === 0 || !isFinite(step)) return [start, stop];
+    if (step > 0) { start = Math.floor(start / step) * step; stop = Math.ceil(stop / step) * step; }
+    else if (step < 0) { start = Math.ceil(start * step) / step; stop = Math.floor(stop * step) / step; }
+    pre = step;
+  }
+}
+function _hgBin(values, target) {
+  var n = values.length, mx = Math.max.apply(null, values), x0 = Math.min.apply(null, values), x1 = mx, i, x;
+  var tn = target === null ? Math.max(1, Math.ceil(Math.log(n) / Math.LN2) + 1) : target, nz = _hgNice(x0, x1, tn), step;
+  x0 = nz[0]; x1 = nz[1];
+  var tz = _hgTicks(x0, x1, tn);
+  if (tz.length && tz[0] <= x0) step = _hgTickInc(x0, x1, tn);
+  if (tz.length && tz[tz.length - 1] >= x1) {
+    if (mx >= x1) {
+      var st = _hgTickInc(x0, x1, tn);
+      if (isFinite(st)) { if (st > 0) x1 = (Math.floor(x1 / st) + 1) * st; else if (st < 0) x1 = (Math.ceil(x1 * -st) + 1) / -st; }
+    } else tz.pop();
+  }
+  var m = tz.length, a = 0, b = m;
+  while (a < tz.length && tz[a] <= x0) ++a;
+  while (b - 1 >= 0 && tz[b - 1] > x1) --b;
+  if (a || b < m) { tz = tz.slice(a, b); m = b - a; }
+  var edges = [], counts = [];
+  for (i = 0; i <= m; ++i) { edges.push([i > 0 ? tz[i - 1] : x0, i < m ? tz[i] : x1]); counts.push(0); }
+  var fin = isFinite(step);
+  for (i = 0; i < n; ++i) {
+    x = values[i];
+    if (!(x0 <= x && x <= x1)) continue;
+    if (fin && step > 0) counts[Math.min(m, Math.floor((x - x0) / step))]++;
+    else if (fin && step < 0) { var j = Math.floor((x0 - x) * step); counts[Math.min(m, j + (j >= 0 && j < tz.length && tz[j] <= x ? 1 : 0))]++; }
+    else if (!fin) { var lo = 0, hi = m; while (lo < hi) { var mid = (lo + hi) >>> 1; if (tz[mid] <= x) lo = mid + 1; else hi = mid; } counts[lo]++; }
+  }
+  return [edges, counts];
+}
+function _hgDecimals(vals) {
+  var P = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8];
+  for (var d = 0; d < 9; d++) { var k = P[d]; if (vals.every(function(v) { return Math.abs(v * k - Math.round(v * k)) <= Math.max(1e-7, Math.abs(v * k) * 1e-12); })) return d; }
+  return 8;
+}
+function _hgNum(v, d) {
+  var s = v.toFixed(d); if (/^-0(\.0+)?$/.test(s)) s = s.slice(1);
+  var neg = s.charAt(0) === '-', p = s.replace('-', '').split('.');
+  return (neg ? '-' : '') + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (p.length > 1 ? '.' + p[1] : '');
+}
+// layout ridge: d3 bin() of all the series pooled gives the shared edges; each series is counted by bin().domain([x0, x1]).thresholds(the inner edges)
+function _hgRidge(series, target) {
+  var edges = _hgBin([].concat.apply([], series), target)[0], m = edges.length, X0 = edges[0][0], X1 = edges[m - 1][1];
+  var inner = edges.slice(1).map(function(e) { return e[0]; });
+  var counts = series.map(function(s) {
+    var c = [], i;
+    for (i = 0; i < m; i++) c.push(0);
+    s.forEach(function(x) {
+      if (!(X0 <= x && x <= X1)) return;
+      var lo = 0, hi = inner.length;
+      while (lo < hi) { var mid = (lo + hi) >>> 1; if (inner[mid] <= x) lo = mid + 1; else hi = mid; }
+      c[lo]++;
+    });
+    return c;
+  });
+  return [edges, counts];
+}
+function _hgUsable(raw) { return raw.filter(function(v) { return typeof v === 'number' && Math.abs(v) <= 1e12; }); }
+function _hgTarget(bv) { return (typeof bv === 'number' && isFinite(bv)) ? Math.round(Math.min(40, Math.max(3, bv))) : null; }
+function _hgNote(s) { return '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + s + '</div>'; }
+function _hgSkipNote(skipped) { return skipped ? _hgNote(skipped + (skipped === 1 ? ' entry was' : ' entries were') + ' not a usable number and ' + (skipped === 1 ? 'was' : 'were') + ' skipped.') : ''; }
+function _hgVersionNote(b, atom) {
+  var v = b.version;
+  return (typeof v === 'number' && isFinite(v) && Math.floor(v) === v && v > 1) ? _hgNote('Written for ' + (atom || 'histogram') + ' version ' + v + '; drawn as version 1.') : '';
+}
+// the x edge labels: few enough to fit, every other one hidden in a narrow container
+function _hgAxis(ev, X0, span, lab) {
+  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; })), want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(ev.length / want), xs = '', i;
+  for (i = 0; i < ev.length; i++) {
+    if (i % stride === 0 && (span > 0 || i === 0)) xs += '<div class="hgx' + (i % (2 * stride) === 0 ? ' hgc' : '') + '" style="position:absolute;top:100%;left:' + (span > 0 ? _tmPct(ev[i] - X0, span) : '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + lab[i] + '</div></div>';
+  }
+  return xs;
+}
+var _HG_LABW = 'clamp(64px,24%,150px)';
+function _hgRenderRidge(b) {
+  var lst = Array.isArray(b.series) ? b.series : [], used = [], skipped = 0, leftOut = 0;
+  lst.slice(0, 8).forEach(function(s, k) {
+    if (!(s && typeof s === 'object' && !Array.isArray(s))) { leftOut++; return; }
+    var raw = _ifArr(s.values, 2000), vals = _hgUsable(raw);
+    skipped += raw.length - vals.length;
+    if (vals.length < 5) { leftOut++; return; }
+    used.push([s.label ? String(s.label).slice(0, 30) : 'Series ' + (k + 1), vals]);
+  });
+  var beyond = lst.length - 8;
+  var notes = _hgSkipNote(skipped) +
+    (leftOut ? _hgNote(leftOut + ' series had fewer than 5 usable numbers or ' + (leftOut === 1 ? 'was not a series and was' : 'were not a series and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + ' series beyond the first 8 ' + (beyond === 1 ? 'was' : 'were') + ' not drawn.') : '') + _hgVersionNote(b);
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A ridge histogram needs at least one series with 5 numbers.</div>' + notes);
+  var rg = _hgRidge(used.map(function(u) { return u[1]; }), _hgTarget(b.bins)), edges = rg[0], counts = rg[1], m = edges.length, n = used.length;
+  var X0 = edges[0][0], X1 = edges[m - 1][1], span = X1 - X0;
+  var shares = counts.map(function(cs, k) { return cs.map(function(c) { return c / used[k][1].length; }); });
+  var top = Math.max.apply(null, shares.map(function(s) { return Math.max.apply(null, s); }));
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var ev = edges.map(function(e) { return e[0]; }); ev.push(edges[m - 1][1]);
+  var d = _hgDecimals(ev), lab = ev.map(function(v) { return _hgNum(v, d); });
+  var aria = 'Ridgeline histogram of ' + n + ' series in ' + m + (m === 1 ? ' shared bin' : ' shared bins') + ' from ' + lab[0] + ' to ' + lab[lab.length - 1] + us + '. ' +
+    used.map(function(u, k) { var p = counts[k].indexOf(Math.max.apply(null, counts[k])); return u[0] + ': ' + u[1].length + ' values, most from ' + lab[p] + ' to ' + lab[p + 1] + us; }).join('; ') + '.';
+  var rows = '';
+  used.forEach(function(u, k) {
+    var path = 'M0.00,1000.00', i;
+    for (i = 0; i < m; i++) path += 'H' + (span > 0 ? ((edges[i][0] - X0) / span * 1000).toFixed(2) : '0.00') + 'V' + (1000 - shares[k][i] / top * 1000).toFixed(2);
+    path += 'H1000.00L1000.00,1000.00Z';
+    rows += '<div style="display:flex;align-items:flex-end;height:44px;">' +
+      '<div class="hgrl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding:0 8px 2px 0;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
+      ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _esc(u[0]) + '</div>' +
+      '<div class="hgrp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;border-bottom:1px solid var(--muted,#475569);">' +
+      '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;bottom:0;width:100%;height:72px;display:block;overflow:visible;">' +
+      '<g class="hgrg" style="' + _ifK(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _esc(u[0] + ': ' + u[1].length + ' values') + '</title>' +
+      '<path class="hgrb" d="' + path + '"/><path class="hgr" d="' + path + '"/></g></svg></div></div>';
+  });
+  var css = '<style>.ifhg .hgrg{transform-box:fill-box;transform-origin:50% 100%}.ifhg .hgrb{fill:var(--bg,#fff)}' +
+    '.ifhg .hgr{fill:var(--accent,#0369A1);fill-opacity:0.35;stroke:var(--accent,#0369A1);stroke-width:1.5px;vector-effect:non-scaling-stroke;stroke-linejoin:round}' +
+    '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>';
+  var chart = '<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
+    '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">Share of each series per bin</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;padding-top:28px;margin:0 34px 34px 0;">' + rows +
+    '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;">' + _hgAxis(ev, X0, span, lab) + '</div></div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 ' + _HG_LABW + ';">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + _ifTable(['Bin from', 'Bin to'].concat(used.map(function(u) { return u[0]; })),
+    edges.map(function(e, i) { return [lab[i] + us, lab[i + 1] + us].concat(counts.map(function(cs) { return String(cs[i]); })); })));
+}
+_RENDERERS['histogram'] = function(b) {
+  if (b.layout === 'ridge') return _hgRenderRidge(b);
+  var raw = _ifArr(b.values, 2000), vals = _hgUsable(raw), skipped = raw.length - vals.length;
+  var skipNote = _hgSkipNote(skipped);
+  if (vals.length < 5) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A histogram needs at least 5 numbers; this list has ' + vals.length + '.</div>' + skipNote);
+  var target = _hgTarget(b.bins);
+  var bn = _hgBin(vals, target), edges = bn[0], counts = bn[1], m = counts.length, X0 = edges[0][0], X1 = edges[m - 1][1], span = X1 - X0;
+  var cmax = Math.max.apply(null, counts), top, yt = [], i;
+  if (cmax <= 4) { top = cmax; for (i = 0; i <= cmax; i++) yt.push(i); } else { top = _hgNice(0, cmax, 4)[1]; yt = _hgTicks(0, top, 4); }
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var ev = edges.map(function(e) { return e[0]; }); ev.push(edges[m - 1][1]);
+  var d = _hgDecimals(ev), lab = ev.map(function(v) { return _hgNum(v, d); }), tall = counts.indexOf(cmax), us = unit ? ' ' + unit : '';
+  var aria = 'Histogram of ' + vals.length + ' values in ' + m + (m === 1 ? ' bin' : ' bins') + ' from ' + lab[0] + ' to ' + lab[lab.length - 1] + us +
+    '. Tallest bin: ' + lab[tall] + ' to ' + lab[tall + 1] + us + ', ' + cmax + (cmax === 1 ? ' value.' : ' values.');
+  var rects = '', grid = '', xs = _hgAxis(ev, X0, span, lab);
+  for (i = 0; i < m; i++) {
+    var x = span > 0 ? (edges[i][0] - X0) / span * 1000 : 0, w = span > 0 ? (edges[i][1] - edges[i][0]) / span * 1000 : 1000, h = top > 0 ? counts[i] / top * 1000 : 0;
+    rects += '<rect class="hgb" x="' + x.toFixed(2) + '" y="' + (1000 - h).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" style="' + _ifK(i, m) +
+      'transform:scaleY(var(--k,1));"><title>' + _esc(lab[i] + ' to ' + lab[i + 1] + us + ': ' + counts[i]) + '</title></rect>';
+  }
+  yt.forEach(function(t) {
+    var bt = top > 0 ? (t / top * 100).toFixed(3) + '%' : '0%';
+    grid += '<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + (t === 0 ? 'var(--muted,#475569)' : 'var(--border,#CBD5E1)') + ';"></div>' +
+      '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgNum(t, 0) + '</div>';
+  });
+  var css = '<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}' +
+    '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>';
+  var chart = '<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
+    '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">Count of values per bin</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid +
+    '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>' + xs + '</div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 46px;">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + skipNote + _hgVersionNote(b) + _ifTable(['Bin from', 'Bin to', 'Count'], counts.map(function(c, k) { return [lab[k] + us, lab[k + 1] + us, String(c)]; })));
+};
+
+
+// ── box_plot (proposal, I37) ── quartiles are d3-array quantileSorted (R-7); whiskers follow d3's box plot example (Tukey, 1.5 IQR);
+// the shared axis is d3 nice(min, max, 5) and its ticks. Twin of _bp_layout / _render_box_plot in renderers/web_article.py.
+function _bpQuantile(a, p) {
+  var n = a.length;
+  if (p <= 0 || n < 2) return a[0];
+  if (p >= 1) return a[n - 1];
+  var i = (n - 1) * p, i0 = Math.floor(i);
+  return a[i0] + (a[i0 + 1] - a[i0]) * (i - i0);
+}
+function _bpLayout(groups) {
+  var loAll = Infinity, hiAll = -Infinity;
+  var stats = groups.map(function(g) {
+    var a = g.slice().sort(function(x, y) { return x - y; }), q1 = _bpQuantile(a, 0.25), med = _bpQuantile(a, 0.5), q3 = _bpQuantile(a, 0.75), r = 1.5 * (q3 - q1);
+    var inside = a.filter(function(x) { return q1 - r <= x && x <= q3 + r; });
+    loAll = Math.min(loAll, a[0]); hiAll = Math.max(hiAll, a[a.length - 1]);
+    return {n: a.length, min: a[0], q1: q1, median: med, q3: q3, max: a[a.length - 1], lo: inside[0], hi: inside[inside.length - 1],
+      outliers: a.filter(function(x) { return x < q1 - r || x > q3 + r; })};
+  });
+  var d = _hgNice(loAll, hiAll, 5);
+  return [stats, [d[0], d[1]], _hgTicks(d[0], d[1], 5)];
+}
+function _bpFmt(v, cap) { return _hgNum(v, Math.min(_hgDecimals([v]), cap)); }
+var _BP_MAX_DOTS = 100;
+_RENDERERS['box_plot'] = function(b) {
+  var lst = Array.isArray(b.groups) ? b.groups : [], used = [], skipped = 0, leftOut = 0;
+  lst.slice(0, 12).forEach(function(g, k) {
+    if (!(g && typeof g === 'object' && !Array.isArray(g))) { leftOut++; return; }
+    var raw = _ifArr(g.values, 2000), vals = _hgUsable(raw);
+    skipped += raw.length - vals.length;
+    if (vals.length < 5) { leftOut++; return; }
+    used.push([g.label ? String(g.label).slice(0, 30) : 'Group ' + (k + 1), vals]);
+  });
+  var beyond = lst.length - 12;
+  var notes = _hgSkipNote(skipped) +
+    (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' group had fewer than 5 usable numbers or was not a group and was' : ' groups had fewer than 5 usable numbers or were not a group and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' group beyond the first 12 was' : ' groups beyond the first 12 were') + ' not drawn.') : '');
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A box plot needs at least one group with 5 numbers.</div>' + notes + _hgVersionNote(b, 'box_plot'));
+  var L = _bpLayout(used.map(function(u) { return u[1]; })), stats = L[0], X0 = L[1][0], X1 = L[1][1], ticks = L[2], n = used.length, span = X1 - X0;
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var td = _hgDecimals(ticks), tlab = ticks.map(function(t) { return _hgNum(t, td); });
+  var fc = Math.min(_hgDecimals([].concat.apply([], used.map(function(u) { return u[1]; }))) + 2, td + 3);
+  var pos = function(v) { return span > 0 ? _tmPct(v - X0, span) : '50%'; };
+  var wid = function(a, c) { return span > 0 ? _tmPct(c - a, span) : '0%'; };
+  var f = function(v) { return _bpFmt(v, fc); };
+  var grid = ticks.map(function(t) { return '<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>'; }).join('');
+  var rows = '', capped = '';
+  used.forEach(function(u, k) {
+    var s = stats[k], med = s.median;
+    var distinct = s.outliers.filter(function(v, i, a) { return i === 0 || v !== a[i - 1]; }).sort(function(x, y) { return (Math.abs(y - med) - Math.abs(x - med)) || (x - y); });
+    if (distinct.length > _BP_MAX_DOTS) capped += _hgNote(_esc(u[0]) + ' has ' + distinct.length + ' distinct outliers; the ' + _BP_MAX_DOTS + ' furthest from the median are drawn. The table counts them all.');
+    var dots = distinct.slice(0, _BP_MAX_DOTS).map(function(o) { return '<div class="bpo" style="position:absolute;left:' + pos(o) + ';top:50%;width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'; }).join('');
+    rows += '<div style="display:flex;align-items:center;height:40px;">' +
+      '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
+      ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(u[0]) + '</div>' +
+      '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
+      '<div class="bpg" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
+      '<div class="bpw" style="position:absolute;left:' + pos(s.lo) + ';width:' + wid(s.lo, s.hi) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:' + pos(s.lo) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:' + pos(s.hi) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>' +
+      '<div class="bpb" style="position:absolute;left:' + pos(s.q1) + ';width:' + wid(s.q1, s.q3) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:var(--surface,#F8FAFC);border-radius:2px;"></div>' +
+      '<div class="bpm" style="position:absolute;left:' + pos(med) + ';top:22%;height:56%;border-left:3px solid var(--accent,#0369A1);transform:translateX(-1.5px);"></div>' +
+      dots + '</div></div></div>';
+  });
+  var no = function(c) { return c + (c === 1 ? ' outlier' : ' outliers'); };
+  var aria = 'Box plot of ' + n + (n === 1 ? ' group' : ' groups') + ' on a shared axis from ' + _hgNum(X0, td) + ' to ' + _hgNum(X1, td) + us + '. ' +
+    used.map(function(u, k) { var s = stats[k]; return u[0] + ': median ' + f(s.median) + us + ', middle half ' + f(s.q1) + ' to ' + f(s.q3) + us + ', whiskers ' + f(s.lo) + ' to ' + f(s.hi) + us + ', ' + no(s.outliers.length); }).join('; ') + '.';
+  var chart = '<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}}</style>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 34px 34px 0;">' + rows +
+    '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, X0, span, tlab) + '</div></div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 ' + _HG_LABW + ';">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + capped + _hgVersionNote(b, 'box_plot') +
+    _ifTable(['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'],
+      used.map(function(u, k) { var s = stats[k]; return [u[0], String(s.n), f(s.min) + us, f(s.q1) + us, f(s.median) + us, f(s.q3) + us, f(s.max) + us, String(s.outliers.length)]; })));
+};
+
+// ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
+// running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
+// and every bar end, and its ticks. Twin of _wf_layout / _render_waterfall in renderers/web_article.py.
+function _wfLayout(steps) {
+  var run = 0, lo = 0, hi = 0, checks = [];
+  var bars = steps.map(function(st, k) {
+    var a, e;
+    if (st.kind === 'total') {
+      if (typeof st.value === 'number') { checks.push([k, st.value, run]); run = st.value; }
+      a = 0; e = run;
+    } else { a = run; run = run + st.value; e = run; }
+    lo = Math.min(lo, a, e); hi = Math.max(hi, a, e);
+    return [a, e];
+  });
+  var d = _hgNice(lo, hi, 5);
+  return [bars, [d[0], d[1]], _hgTicks(d[0], d[1], 5), checks];
+}
+function _wfNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+_RENDERERS['waterfall'] = function(b) {
+  var lst = Array.isArray(b.steps) ? b.steps : [], labels = [], steps = [], leftOut = 0;
+  lst.slice(0, 24).forEach(function(st, k) {
+    if (!(st && typeof st === 'object' && !Array.isArray(st))) { leftOut++; return; }
+    var tot = st.kind === 'total', v = st.value;
+    if (!tot && !_wfNum(v)) { leftOut++; return; }
+    steps.push(tot && _wfNum(v) ? {kind: 'total', value: v} : tot ? {kind: 'total'} : {value: v});
+    labels.push(st.label ? String(st.label).slice(0, 30) : 'Step ' + (k + 1));
+  });
+  var beyond = lst.length - 24;
+  var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' step had no usable number or was not a step and was' : ' steps had no usable number or were not a step and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' step beyond the first 24 was' : ' steps beyond the first 24 were') + ' not drawn.') : '');
+  if (!steps.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A waterfall needs at least one step with a number.</div>' + notes + _hgVersionNote(b, 'waterfall'));
+  var L = _wfLayout(steps), bars = L[0], X0 = L[1][0], X1 = L[1][1], ticks = L[2], n = steps.length, span = X1 - X0;
+  var given = steps.filter(function(st) { return 'value' in st; }).map(function(st) { return st.value; });
+  var dc = given.length ? Math.min(6, _hgDecimals(given)) : 0, scale = given.reduce(function(m, x) { return Math.max(m, Math.abs(x)); }, 0);
+  var f = function(v) { return _bpFmt(v, dc); };
+  var sg = function(v) { return (v > 0 ? '+' : '') + f(v); };
+  L[3].forEach(function(c) {
+    if (c[0] > 0 && Math.abs(c[1] - c[2]) > scale * 1e-9) notes += _hgNote(_esc('The total "' + labels[c[0]] + '" is ' + f(c[1]) + ' but the steps before it add up to ' + f(c[2]) + '; the bar shows ' + f(c[1]) + ' and later steps start there.'));
+  });
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var td = _hgDecimals(ticks), tlab = ticks.map(function(t) { return _hgNum(t, td); });
+  var vtxt = steps.map(function(st, k) { return st.kind === 'total' ? f(bars[k][1]) : sg(st.value); });
+  var vw = 'calc(' + Math.max.apply(null, vtxt.map(function(t) { return t.length; })) + 'ch + 8px)';
+  var pos = function(v) { return span > 0 ? _tmPct(v - X0, span) : '50%'; };
+  var wid = function(a, c) { return span > 0 ? _tmPct(c - a, span) : '0%'; };
+  var grid = ticks.map(function(t) { return '<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>'; }).join('') +
+    '<div style="position:absolute;top:0;bottom:0;left:' + pos(0) + ';border-left:1px solid var(--muted,#475569);"></div>';
+  var rows = '';
+  steps.forEach(function(st, k) {
+    var a = bars[k][0], e = bars[k][1], kind = st.kind === 'total' ? 'wft' : e > a ? 'wfu' : e < a ? 'wfd' : 'wfu';
+    var col = {wft: 'var(--accent,#0369A1)', wfu: 'var(--positive,#15803D)', wfd: 'var(--negative,#B91C1C)'}[kind];
+    rows += '<div style="display:flex;align-items:center;height:40px;">' +
+      '<div class="wfl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
+      ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(labels[k]) + '</div>' +
+      '<div class="wfp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
+      '<div class="wfg" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
+      '<div class="wfb ' + kind + '" style="position:absolute;left:' + pos(Math.min(a, e)) + ';width:' + wid(Math.min(a, e), Math.max(a, e)) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;background:' + col + ';border-radius:2px;"></div>' +
+      (k < n - 1 ? '<div class="wfc" style="position:absolute;left:' + pos(e) + ';top:78%;height:44%;border-left:1px dashed var(--muted,#475569);"></div>' : '') +
+      '</div></div>' +
+      '<div class="wfv" style="flex:0 0 ' + vw + ';box-sizing:border-box;padding-left:8px;font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text,#0F172A);">' + vtxt[k] + '</div></div>';
+  });
+  var up = null, dn = null;
+  steps.forEach(function(st, k) {
+    if (st.kind === 'total') return;
+    if (up === null || st.value > up[1]) up = [k, st.value];
+    if (dn === null || st.value < dn[1]) dn = [k, st.value];
+  });
+  var aria = 'Waterfall of ' + n + (n === 1 ? ' step' : ' steps') + ' ending at ' + f(bars[n - 1][1]) + us + '.' +
+    (up && up[1] > 0 ? ' Biggest increase: ' + labels[up[0]] + ', ' + sg(up[1]) + us + '.' : '') +
+    (dn && dn[1] < 0 ? ' Biggest decrease: ' + labels[dn[0]] + ', ' + sg(dn[1]) + us + '.' : '');
+  var chart = '<div class="ifwf" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifwf .hgx:not(.hgc){display:none}}</style>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 0 34px 0;">' + rows +
+    '<div style="position:relative;margin-left:' + _HG_LABW + ';margin-right:' + vw + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, X0, span, tlab) + '</div></div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 ' + vw + ' 0 ' + _HG_LABW + ';">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'waterfall') + _ifTable(['Step', 'Change', 'Running total'],
+    steps.map(function(st, k) { return [labels[k], st.kind === 'total' ? 'Total' : sg(st.value) + us, f(bars[k][1]) + us]; })));
+};
