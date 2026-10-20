@@ -115,6 +115,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
+## d3-force (Mike Bostock)
+
+- **Project:** d3-force 3.0.0 — `forceSimulation`, `forceLink`, `forceManyBody` and `forceCenter` (velocity Verlet force-directed layout), with its quadtree dependency d3-quadtree 3.0.1 (ISC, Mike Bostock; used by `forceManyBody` for the Barnes-Hut approximation) and the start layout and random source from d3-force itself
+- **Website:** https://github.com/d3/d3-force
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the algorithm is ported by hand (phyllotaxis start, LCG random source,
+  alpha decay, link / many-body / centering forces, quadtree add / cover / visit) into `_sn_layout` in
+  `renderers/web_article.py` and its twin `_snLayout` in `apps-script-surface/gas-wired-renderer/atoms_canvas.gs`
+  (mirrored in `apps-script-surface/gas-schema-renderer/atoms_canvas.gs` and `.js`), and checked against the real
+  libraries' output by `tests/test_spring_nodes_force.py`
+- **Used by:** the `spring_nodes` atom's server-side layout in both renderers, run for a fixed number of ticks. No script
+  is shipped to the page; the settled graph is emitted as SVG.
+
+---
+
 ## gifenc, mp4-muxer, webm-muxer (film export)
 
 - **Projects:** gifenc 1.0.3 (Matt DesLauriers, https://github.com/mattdesl/gifenc);
