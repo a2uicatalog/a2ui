@@ -23341,6 +23341,36 @@ var _GW = '[[[-452,-780],[-433,-800],[-542,-806],[-452,-780]],[[-1256,-735],[-12
 
 
 
+// lat/lon -> short text for the globe's text alternative; non-numeric -> '?' rather than NaN leaking into the page.
+function _g3dCoord(v) {
+  v = parseFloat(v);
+  return isNaN(v) ? '?' : String(v);
+}
+
+// WCAG 1.1.1: the canvas has no fallback content of its own, so the pins/arcs it was given
+// need a text alternative alongside the aria-label -- otherwise a screen-reader user gets
+// "Rotating 3D globe" and nothing about what is actually plotted on it. Visually hidden
+// (_IF_SR, from atoms_infographic.gs), same pattern as cycle_diagram's hidden <ol>.
+function _g3dAltHtml(dotsRaw, arcsRaw) {
+  var dots = Array.isArray(dotsRaw) ? dotsRaw : [];
+  var arcs = Array.isArray(arcsRaw) ? arcsRaw : [];
+  var items = [];
+  dots.forEach(function(d, i) {
+    d = (d && typeof d === 'object') ? d : {};
+    var label = d.label;
+    label = ((typeof label === 'string' || typeof label === 'number') && String(label).trim()) ? String(label).trim() : ('Pin ' + (i + 1));
+    items.push('<li>' + _esc(label) + ': ' + _esc(_g3dCoord(d.lat)) + ', ' + _esc(_g3dCoord(d.lon)) + '</li>');
+  });
+  arcs.forEach(function(a, i) {
+    a = (a && typeof a === 'object') ? a : {};
+    var s = Array.isArray(a.from) ? a.from.map(_g3dCoord).join(', ') : '?';
+    var e = Array.isArray(a.to) ? a.to.map(_g3dCoord).join(', ') : '?';
+    items.push('<li>Arc ' + (i + 1) + ': ' + _esc(s) + ' → ' + _esc(e) + '</li>');
+  });
+  if (!items.length) return '';
+  return '<ul style="' + _IF_SR + '">' + items.join('') + '</ul>';
+}
+
 _RENDERERS['globe_3d'] = function(b) {
 
   var uid   = Math.random().toString(36).substr(2, 6);
@@ -23408,6 +23438,8 @@ _RENDERERS['globe_3d'] = function(b) {
   return '<div style="overflow:visible;display:flex;justify-content:center;margin:1.5rem auto;">'
 
     + '<canvas role="img" aria-label="Rotating 3D globe" id="gl' + uid + '" width="' + (size*2) + '" height="' + (size*2) + '" style="display:block;cursor:grab;flex-shrink:0;transform-origin:center center;width:' + size + 'px;height:' + size + 'px;"></canvas>'
+
+    + _g3dAltHtml(b.dots, b.arcs)
 
     + '</div>'
 
