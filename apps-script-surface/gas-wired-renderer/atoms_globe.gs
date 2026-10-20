@@ -120,6 +120,17 @@ _RENDERERS['globe_3d'] = function(b) {
 
     + 'var dots=' + dots + ',arcs=' + arcs + ';'
 
+    // I22: the schema defines arcs as {from,to} (start/end accepted as a fallback) and pins with an optional colour.
+    // Normalise once: drop malformed arcs and non-numeric pins instead of throwing inside the draw loop.
+    + 'function _num(v){v=parseFloat(v);return isFinite(v)?v:null;}'
+    + 'function _hex(v){return typeof v==="string"&&/^#[0-9a-fA-F]{6}$/.test(v)?v:null;}'
+    + 'function _pt(p){if(!Array.isArray(p)||p.length<2)return null;var a=_num(p[0]),o=_num(p[1]);return a===null||o===null?null:[a,o];}'
+    + 'arcs=(Array.isArray(arcs)?arcs:[]).map(function(a){if(!a||typeof a!=="object")return null;'
+    +   'var s=_pt(a.from!==undefined?a.from:a.start),e=_pt(a.to!==undefined?a.to:a.end);'
+    +   'return s&&e?{s:s,e:e,segments:a.segments,color:_hex(a.color)}:null;}).filter(Boolean);'
+    + 'dots=(Array.isArray(dots)?dots:[]).map(function(d){if(!d||typeof d!=="object")return null;'
+    +   'var la=_num(d.lat),lo=_num(d.lon);return la===null||lo===null?null:{lat:la,lon:lo,label:d.label,color:_hex(d.color)};}).filter(Boolean);'
+
     + 'var _WD=' + _GW + ';'
 
     + 'var drag=false,lx=0,ly=0,vx=0,vy=0;'
@@ -244,7 +255,7 @@ _RENDERERS['globe_3d'] = function(b) {
 
     +   'arcs.forEach(function(arc,ai){'
 
-    +     'var v1=toVec(arc.start[0],arc.start[1]),v2=toVec(arc.end[0],arc.end[1]);'
+    +     'var v1=toVec(arc.s[0],arc.s[1]),v2=toVec(arc.e[0],arc.e[1]);'
 
     +     'var segs=arc.segments||50,acol=arc.color||col;'
 
@@ -292,11 +303,11 @@ _RENDERERS['globe_3d'] = function(b) {
 
     +     'ctx.beginPath();ctx.arc(p.sx,p.sy,phase*18,0,Math.PI*2);'
 
-    +     'ctx.strokeStyle=col+h2((1-phase)*160);ctx.lineWidth=1;ctx.stroke();'
+    +     'var dc=d.color||col;ctx.strokeStyle=dc+h2((1-phase)*160);ctx.lineWidth=1;ctx.stroke();'
 
-    +     'ctx.beginPath();ctx.arc(p.sx,p.sy,4,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();'
+    +     'ctx.beginPath();ctx.arc(p.sx,p.sy,4,0,Math.PI*2);ctx.fillStyle=dc;ctx.fill();'
 
-    +     'if(d.label){ctx.font="bold 11px sans-serif";ctx.fillStyle=col;ctx.fillText(d.label,p.sx+7,p.sy+4);}'
+    +     'if(d.label){ctx.font="bold 11px sans-serif";ctx.fillStyle=dc;ctx.fillText(d.label,p.sx+7,p.sy+4);}'
 
     +   '});'
 
