@@ -129,7 +129,7 @@ a{color:inherit}
 <p>Design with Gemini (a free-form prompt, built as a compact voxel grid and tiled with real LEGO parts), sketch with Gemini (the same prompt, but planned as real stud/plate-sized volumes with real carved openings -- better proportions and real windows/doors, fewer, bigger model calls), or pick a template directly (instant, no model call, zero tokens). The brick_build_3d atom checks collisions, anchoring and balance live.</p>
 </div>
 <section class="panel">
-<div class="row" role="tablist" aria-label="Design mode">
+<div class="row" role="group" aria-label="Design mode">
 <button class="go alt" id="modeGemini" type="button" aria-pressed="true">Design with Gemini</button>
 <button class="go alt" id="modeSketch" type="button" aria-pressed="false">Sketch with Gemini</button>
 <button class="go alt" id="modeTemplate" type="button" aria-pressed="false">Pick a template</button>

@@ -136,3 +136,48 @@ def test_every_svg_is_hidden_or_named():
         if d:
             bad[rel] = (len(d), d[0])
     assert not bad, f"unnamed <svg> in {len(bad)} page(s): {dict(list(bad.items())[:6])}"
+
+
+# axe aria-required-children (WCAG 1.3.1): the owned elements of a tablist are tabs and nothing else.
+TABLIST_EXEMPT = {"public/surfaces/diagram-studio/view.html"}   # zoom buttons sit inside the tablist; the view is versioned by the MCP worker (UI_VIEW_URI), so the fix waits for a bump
+
+
+def _tablist_stray_children(html):
+    from html.parser import HTMLParser
+    VOID = {"br", "hr", "img", "input", "meta", "link", "area", "base", "col", "embed", "source", "track", "wbr"}
+
+    class P(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.stack, self.stray = [], []
+
+        def handle_starttag(self, tag, attrs):
+            a = dict(attrs)
+            if self.stack and self.stack[-1][0] == "tablist" and a.get("role") != "tab" and a.get("role") not in ("presentation", "none"):
+                self.stray.append(f"<{tag}> in tablist")
+            if tag not in VOID:
+                self.stack.append((a.get("role") or "", tag))
+
+        def handle_endtag(self, tag):
+            for i in range(len(self.stack) - 1, -1, -1):
+                if self.stack[i][1] == tag:
+                    del self.stack[i:]
+                    break
+    p = P()
+    html = re.sub(r"<(script|style)\b.*?</\1>", "", html, flags=re.S | re.I)
+    p.feed(html)
+    return p.stray
+
+
+def test_tablist_owns_only_tabs():
+    bad = {}
+    for p in _site_pages():
+        rel = str(p.relative_to(ROOT))
+        if rel in TABLIST_EXEMPT or rel in SVG_EXEMPT:
+            continue
+        t = p.read_text(errors="ignore")
+        if 'role="tablist"' in t:
+            s = _tablist_stray_children(t)
+            if s:
+                bad[rel] = s[:3]
+    assert not bad, f"tablist with non-tab children: {bad}"
