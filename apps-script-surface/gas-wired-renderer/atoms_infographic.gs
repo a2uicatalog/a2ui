@@ -274,19 +274,151 @@ _RENDERERS['callout_anatomy'] = function(b) {
 };
 
 // ── org_chart ─────────────────────────────────────────────────────────────────────────────────────────────────
+// Tidy-tree layout: a line-for-line port of d3-hierarchy 3.1.2 tree() (Reingold-Tilford as Buchheim et al. implement it; ISC, Mike Bostock),
+// nodeSize [1, 1] and the default separation (1 for siblings, 2 for cousins); twin of _oc_layout in renderers/web_article.py.
+function _OcNode(sid, i) { this.sid = sid; this.parent = null; this.children = null; this.A = null; this.a = this; this.z = 0; this.m = 0; this.c = 0; this.s = 0; this.t = null; this.i = i; this.w = 0; }
+// d3's separation hook, in pixels: half of each box plus a gap (8 between siblings, 16 between cousins)
+function _ocSep(a, b) { return (a.w + b.w) / 2 + (a.parent === b.parent ? 8 : 16); }
+function _ocNextLeft(v) { return v.children ? v.children[0] : v.t; }
+function _ocNextRight(v) { return v.children ? v.children[v.children.length - 1] : v.t; }
+function _ocMoveSubtree(wm, wp, shift) { var change = shift / (wp.i - wm.i); wp.c -= change; wp.s += shift; wm.c += change; wp.z += shift; wp.m += shift; }
+function _ocExecuteShifts(v) {
+  var shift = 0, change = 0, i = v.children.length, w;
+  while (--i >= 0) { w = v.children[i]; w.z += shift; w.m += shift; shift += w.s + (change += w.c); }
+}
+function _ocApportion(v, w, ancestor) {
+  if (w) {
+    var vip = v, vop = v, vim = w, vom = vip.parent.children[0], sip = vip.m, sop = vop.m, sim = vim.m, som = vom.m, shift;
+    while (vim = _ocNextRight(vim), vip = _ocNextLeft(vip), vim && vip) {
+      vom = _ocNextLeft(vom);
+      vop = _ocNextRight(vop);
+      vop.a = v;
+      shift = vim.z + sim - vip.z - sip + _ocSep(vim, vip);
+      if (shift > 0) {
+        _ocMoveSubtree(vim.a.parent === v.parent ? vim.a : ancestor, v, shift);
+        sip += shift; sop += shift;
+      }
+      sim += vim.m; sip += vip.m; som += vom.m; sop += vop.m;
+    }
+    if (vim && !_ocNextRight(vop)) { vop.t = vim; vop.m += sim - sop; }
+    if (vip && !_ocNextLeft(vom)) { vom.t = vip; vom.m += sip - som; ancestor = v; }
+  }
+  return ancestor;
+}
+function _ocLayout(kids, root, widths) {
+  var n = kids.length, tn = [], order = [], i, fake = new _OcNode(-1, 0);
+  for (i = 0; i < n; i++) { tn.push(new _OcNode(i, 0)); tn[i].w = widths[i]; }
+  function link(i, d) {
+    order.push([i, d]);
+    var ks = kids[i];
+    if (ks.length) {
+      tn[i].children = ks.map(function(c) { return tn[c]; });
+      ks.forEach(function(c, j) { tn[c].parent = tn[i]; tn[c].i = j; link(c, d + 1); });
+    }
+  }
+  fake.children = [tn[root]]; tn[root].parent = fake; tn[root].i = 0;
+  link(root, 0);
+  function firstWalk(v) {
+    if (v.children) v.children.forEach(firstWalk);
+    var siblings = v.parent.children, w = v.i ? siblings[v.i - 1] : null, midpoint;
+    if (v.children) {
+      _ocExecuteShifts(v);
+      midpoint = (v.children[0].z + v.children[v.children.length - 1].z) / 2;
+      if (w) { v.z = w.z + _ocSep(v, w); v.m = v.z - midpoint; } else { v.z = midpoint; }
+    } else if (w) { v.z = w.z + _ocSep(v, w); }
+    v.parent.A = _ocApportion(v, w, v.parent.A || siblings[0]);
+  }
+  firstWalk(tn[root]);
+  fake.m = -tn[root].z;
+  var x = [], depth = [];
+  for (i = 0; i < n; i++) { x.push(0); depth.push(0); }
+  order.forEach(function(o) { var v = tn[o[0]]; x[o[0]] = v.z + v.parent.m; v.m += v.parent.m; depth[o[0]] = o[1]; });
+  return [x, depth];
+}
+var _OC_W = 640;   // nominal width: a tree wider than this top-down is laid out left to right
+var _OC_MAX_NODES = 30, _OC_MAX_KIDS = 6, _OC_MAX_DEPTH = 3;   // 30 nodes, six children per node, four tiers (depth 0..3)
+function _ocText(l) { return String(l === undefined || l === null ? '' : l).slice(0, 28); }
+// Box width in px from the label, by deterministic character arithmetic (8.4 px a character, 9.6 bold, plus 22 px of padding): the full one-line width,
+// but no wider than 112 px unless the longest word needs more (up to 140), so long labels wrap at spaces as the old layout did.
+function _ocWidth(t, bold) {
+  var c = bold ? 9.6 : 8.4, full = Math.ceil(t.length * c) + 22, word = Math.ceil(Math.max.apply(null, t.split(' ').map(function(x) { return x.length; })) * c) + 22;
+  return Math.max(64, Math.min(full, Math.max(112, Math.min(140, word))));
+}
+function _ocLines(t, w, bold) { var tw = Math.ceil(t.length * (bold ? 9.6 : 8.4)); return tw <= w - 22 ? 1 : Math.min(3, Math.ceil(tw / (w - 30))); }
 _RENDERERS['org_chart'] = function(b) {
-  var nodes = _ifArr(b.nodes, 10).map(function(n) { n = _ifObj(n); return { id: String(n.id === undefined ? '' : n.id).slice(0, 24), l: n.label, p: String(n.parent_id === undefined ? '' : n.parent_id).slice(0, 24) }; }), idx = 0;
-  var css = '<style>.ifoc ul{display:flex;justify-content:center;margin:0;padding:20px 0 0;list-style:none;position:relative}.ifoc li{position:relative;padding:20px 6px 0;text-align:center}' +
-    '.ifoc li::before,.ifoc li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:20px;border-top:2px solid #64748B}.ifoc li::after{right:auto;left:50%;border-left:2px solid #64748B}' +
-    '.ifoc li:only-child::before,.ifoc li:only-child::after{display:none}.ifoc li:only-child{padding-top:0}.ifoc li:first-child::before,.ifoc li:last-child::after{border:0 none}' +
-    '.ifoc li:last-child::before{border-right:2px solid #64748B;border-radius:0 6px 0 0}.ifoc li:first-child::after{border-radius:6px 0 0 0}' +
-    '.ifoc ul ul::before{content:"";position:absolute;top:0;left:50%;border-left:2px solid #64748B;height:20px}.ifoc>ul{padding-top:0}.ifoc>ul>li{padding-top:0}.ifoc>ul>li::before,.ifoc>ul>li::after{display:none}</style>';
-  var build = function(pid, depth) {
-    var kids = nodes.filter(function(n) { return n.p === pid && n.id !== pid; }); if (!kids.length || depth > 3) return '';
-    return '<ul>' + kids.map(function(n) {
-      var i = idx++;
-      return '<li><div style="display:inline-block;' + _ifCard((depth === 0 ? 'background:#E0E7FF;color:#1E1B4B;font-weight:700;' : '') + _ifK(i, nodes.length) + _IF_FADE) + '">' + _ifS(n.l, 28) + '</div>' + build(n.id, depth + 1) + '</li>';
-    }).join('') + '</ul>';
+  var nodes = _ifArr(b.nodes, _OC_MAX_NODES).map(function(n) { n = _ifObj(n); return { id: String(n.id === undefined ? '' : n.id).slice(0, 24), l: n.label, p: String(n.parent_id === undefined ? '' : n.parent_id).slice(0, 24) }; });
+  // Flatten to a tree in document (pre-order) order: four tiers, six children per node; a duplicated id renders its subtree under each.
+  var flat = [];
+  var build = function(pid, depth, par) {
+    var out = [];
+    if (depth > _OC_MAX_DEPTH) return out;
+    nodes.forEach(function(n) {
+      if (n.p === pid && n.id !== pid && out.length < _OC_MAX_KIDS) {
+        var f = { l: n.l, t: _ocText(n.l), depth: depth, par: par, kids: [] };
+        flat.push(f); out.push(flat.length - 1);
+        f.kids = build(n.id, depth + 1, flat.length - 1);
+      }
+    });
+    return out;
   };
-  return _ifWrap(css + _ifTitle(b) + '<div class="ifoc" style="overflow-x:auto;">' + build('', 0) + '</div>');
+  var top = build('', 0, -1);
+  if (!flat.length) return _ifWrap(_ifTitle(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>');
+  var total = flat.length, ws = flat.map(function(f) { return _ocWidth(f.t, f.depth === 0); });
+  var kids = flat.map(function(f) { return f.kids; }), virt = top.length !== 1, root;
+  if (virt) { kids.push(top); ws.push(0); root = total; } else { root = top[0]; }
+  var lay = _ocLayout(kids, root, ws), xs = lay[0], ds = lay[1], i, lo = Infinity, hi = -Infinity, maxd = 0, lines = 1;
+  for (i = 0; i < total; i++) {
+    lo = Math.min(lo, xs[i] - ws[i] / 2); hi = Math.max(hi, xs[i] + ws[i] / 2); maxd = Math.max(maxd, ds[i]);
+    lines = Math.max(lines, _ocLines(flat[i].t, ws[i], flat[i].depth === 0));
+  }
+  var tdWid = hi - lo, sh = virt ? 1 : 0, tiers = maxd + 1 - sh, nh = [38, 46, 60][lines - 1], d, row, pa;
+  var chart = function(box, link, cw, ch, cls) {
+    var cnt = 0, paths = [];
+    var emit = function(ids) {
+      return '<ul style="position:static;display:block;list-style:none;margin:0;padding:0;">' + ids.map(function(i) {
+        var f = flat[i], k = _ifK(cnt, total), out;
+        cnt++;
+        out = '<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tmPct(box[i][0], cw) + ';top:' + _tmPct(box[i][1], ch) + ';width:' + _tmPct(ws[i], cw) + ';height:' + nh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
+          + _ifCard('padding:2px 6px;' + (f.depth === 0 ? 'background:#E0E7FF;color:#1E1B4B;font-weight:700;' : '') + k + _IF_FADE) + '">' + _ifS(f.l, 28) + '</div>';
+        if (link[i] !== undefined) paths.push('<path d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>');
+        if (f.kids.length) out += emit(f.kids);
+        return out + '</li>';
+      }).join('') + '</ul>';
+    };
+    var lists = emit(top);
+    var svg = '<svg aria-hidden="true" viewBox="0 0 ' + cw.toFixed(3) + ' ' + ch.toFixed(3) + '" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + paths.join('') + '</svg>';
+    return '<div' + (cls ? ' class="' + cls + '"' : '') + ' style="position:relative;margin:0 auto;height:' + ch.toFixed(3) + 'px;width:' + cw.toFixed(3) + 'px;">' + svg + lists + '</div>';
+  };
+  // top-down geometry
+  row = nh + 28;
+  var tdHt = tiers * row - 28, tdBox = [], tdLink = [];
+  for (i = 0; i < total; i++) {
+    d = ds[i] - sh; tdBox[i] = [xs[i] - lo - ws[i] / 2, d * row];
+    if (flat[i].par >= 0) {
+      var y0 = (d - 1) * row + nh, y1 = d * row;
+      tdLink[i] = 'M' + (xs[flat[i].par] - lo).toFixed(3) + ' ' + y0 + 'V' + ((y0 + y1) / 2).toFixed(1) + 'H' + (xs[i] - lo).toFixed(3) + 'V' + y1;
+    }
+  }
+  var td = chart(tdBox, tdLink, tdWid, tdHt, tdWid > _OC_W ? 'oct' : '');
+  if (tdWid <= _OC_W) return _ifWrap(_ifTitle(b) + '<div class="ifoct" data-oc="td" style="overflow-x:auto;contain:inline-size;">' + td + '</div>');
+  // wider: also lay it out left to right (the same d3 tree() call with x and y swapped; separation in box heights, tiers as columns) and let CSS pick
+  var hs = [], ys, top0 = Infinity, bot = -Infinity, colw = [], col = [0], g, t, sumw, lBox = [], lLink = [];
+  for (i = 0; i < total; i++) hs.push(nh);
+  if (virt) hs.push(0);
+  ys = _ocLayout(kids, root, hs)[0];
+  for (i = 0; i < total; i++) { top0 = Math.min(top0, ys[i] - nh / 2); bot = Math.max(bot, ys[i] + nh / 2); }
+  for (t = 0; t < tiers; t++) colw.push(0);
+  for (i = 0; i < total; i++) colw[ds[i] - sh] = Math.max(colw[ds[i] - sh], ws[i]);
+  sumw = colw.reduce(function(a, c) { return a + c; }, 0);
+  g = tiers < 2 ? 28 : Math.min(28, Math.max(12, Math.floor((_OC_W - sumw) / (tiers - 1))));
+  for (t = 1; t < tiers; t++) col.push(col[t - 1] + colw[t - 1] + g);
+  for (i = 0; i < total; i++) {
+    d = ds[i] - sh; lBox[i] = [col[d], ys[i] - nh / 2 - top0]; pa = flat[i].par;
+    if (pa >= 0) lLink[i] = 'M' + (col[d - 1] + ws[pa]).toFixed(3) + ' ' + (ys[pa] - top0).toFixed(3) + 'H' + (col[d] - g / 2).toFixed(3) + 'V' + (ys[i] - top0).toFixed(3) + 'H' + col[d].toFixed(3);
+  }
+  var ltr = chart(lBox, lLink, sumw + g * (tiers - 1), bot - top0, 'ocl');
+  var w = String(Math.ceil(tdWid)), cls = 'oc-w' + w;
+  var css = '<style>.' + cls + ' .oct{display:none}.' + cls + ' .ocl{display:block}@container (min-width:' + w + 'px){.' + cls + ' .oct{display:block}.' + cls + ' .ocl{display:none}}' +
+    '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>';
+  return _ifWrap(_ifTitle(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>');
 };

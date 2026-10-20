@@ -20971,8 +20971,8 @@ blocks:
     in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k,
     so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the
     end state.'
-  compact_description: 'org chart: a bounded tree of up to ten nodes'
-  routing_text: A hierarchy drawn as boxes joined by lines, for a reporting line or a breakdown of up to ten nodes and three tiers.
+  compact_description: 'org chart: a bounded tree of up to thirty nodes'
+  routing_text: A hierarchy drawn as boxes joined by lines, for a reporting line or a breakdown of up to thirty nodes and four tiers.
     Not for deep taxonomies; use tree_view for those.
   intent_phrases:
   - Draw the engineering leadership structure.
@@ -20981,8 +20981,8 @@ blocks:
   surfaces: *ifg001
   fields:
     title: string (optional, max 80).
-    nodes: array (required, 3 to 10) of {id (max 24), label (max 28), parent_id (max 24, empty for the root)}. One root; at most three
-      tiers and four children per node.
+    nodes: array (required, 3 to 30) of {id (max 24), label (max 28), parent_id (max 24, empty for the root)}. One root; at most four
+      tiers and six children per node.
   notes: A screen reader hears the nesting as a list. Tiers appear top down with p.
   source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──

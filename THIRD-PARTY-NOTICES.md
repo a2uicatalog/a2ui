@@ -50,7 +50,7 @@ just looks plainer.
 
 ## d3-hierarchy (Mike Bostock)
 
-- **Project:** d3-hierarchy 3.1.2 — `treemapSquarify`, the squarified treemap tiling algorithm
+- **Project:** d3-hierarchy 3.1.2 — `treemapSquarify` (the squarified treemap tiling algorithm) and `tree` (the Reingold-Tilford tidy-tree layout)
 - **Website:** https://github.com/d3/d3-hierarchy
 - **License:** ISC License
 - **Copyright:** Copyright 2010-2021 Mike Bostock
@@ -58,9 +58,12 @@ just looks plainer.
   row-by-row aspect-ratio test, dice/slice placement) into `_tm_squarify` in
   `renderers/web_article.py` and its twin `_tmSquarify` in
   `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real
-  library's output by `tests/test_treemap_squarify.py`
-- **Used by:** the `treemap` atom's server-side layout in both renderers. No script is shipped
-  to the page; the rectangles are emitted as percentage-positioned boxes.
+  library's output by `tests/test_treemap_squarify.py`; the `tree` layout (firstWalk, apportion,
+  executeShifts, moveSubtree, default separation) is ported into `_oc_layout` in the same file and
+  its twin `_ocLayout` in the same `.gs` file, checked by `tests/test_org_chart_tree.py`
+- **Used by:** the `treemap` and `org_chart` atoms' server-side layout in both renderers. No script
+  is shipped to the page; boxes are emitted as percentage-positioned elements (org_chart adds an
+  SVG connector overlay).
 
 ---
 

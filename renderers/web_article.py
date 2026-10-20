@@ -30832,30 +30832,269 @@ def _render_callout_anatomy(b: dict) -> str:
                     + '<div style="display:flex;flex-direction:column;gap:8px;">' + ''.join(card(c) for c in right) + '</div></div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">Numbered notes on the left and right describe the parts of the subject.</div>')
 
 
+# Tidy-tree layout: a line-for-line port of d3-hierarchy 3.1.2 tree() (Reingold-Tilford as Buchheim et al. implement it; ISC, Mike Bostock),
+# nodeSize [1, 1] and the default separation (1 for siblings, 2 for cousins); twin of _ocLayout in atoms_infographic.gs.
+class _OcNode:
+    __slots__ = ('parent', 'children', 'A', 'a', 'z', 'm', 'c', 's', 't', 'i', 'sid', 'w')
+
+    def __init__(self, sid, i):
+        self.sid = sid          # index into the caller's node list (-1 for d3's fake parent)
+        self.parent = None
+        self.children = None
+        self.A = None
+        self.a = self
+        self.z = self.m = self.c = self.s = 0
+        self.t = None
+        self.i = i
+        self.w = 0              # box width in px, read by the separation
+
+
+def _oc_sep(a, b):
+    # d3's separation hook, in pixels: half of each box plus a gap (8 between siblings, 16 between cousins)
+    return (a.w + b.w) / 2 + (8 if a.parent is b.parent else 16)
+
+
+def _oc_next_left(v):
+    return v.children[0] if v.children else v.t
+
+
+def _oc_next_right(v):
+    return v.children[-1] if v.children else v.t
+
+
+def _oc_move_subtree(wm, wp, shift):
+    change = shift / (wp.i - wm.i)
+    wp.c -= change
+    wp.s += shift
+    wm.c += change
+    wp.z += shift
+    wp.m += shift
+
+
+def _oc_execute_shifts(v):
+    shift = change = 0
+    for w in reversed(v.children):
+        w.z += shift
+        w.m += shift
+        change += w.c
+        shift += w.s + change
+
+
+def _oc_apportion(v, w, ancestor):
+    if w:
+        vip = vop = v
+        vim = w
+        vom = vip.parent.children[0]
+        sip, sop, sim, som = vip.m, vop.m, vim.m, vom.m
+        while True:
+            vim = _oc_next_right(vim)
+            vip = _oc_next_left(vip)
+            if not (vim and vip):
+                break
+            vom = _oc_next_left(vom)
+            vop = _oc_next_right(vop)
+            vop.a = v
+            shift = vim.z + sim - vip.z - sip + _oc_sep(vim, vip)
+            if shift > 0:
+                _oc_move_subtree(vim.a if vim.a.parent is v.parent else ancestor, v, shift)
+                sip += shift
+                sop += shift
+            sim += vim.m
+            sip += vip.m
+            som += vom.m
+            sop += vop.m
+        if vim and not _oc_next_right(vop):
+            vop.t = vim
+            vop.m += sim - sop
+        if vip and not _oc_next_left(vom):
+            vom.t = vip
+            vom.m += sip - som
+            ancestor = v
+    return ancestor
+
+
+def _oc_layout(kids, root, widths):
+    """kids[i]: child indices of node i; widths[i]: its box width in px. Returns (x per node, depth per node):
+    d3 tree().nodeSize([1, 1]).separation(...) with the pixel separation above, so x is the box centre in px."""
+    n = len(kids)
+    tn = [_OcNode(i, 0) for i in range(n)]
+    for i in range(n):
+        tn[i].w = widths[i]
+    order = []                       # pre-order, left to right
+
+    def link(i, d):
+        order.append((i, d))
+        ks = kids[i]
+        if ks:
+            tn[i].children = [tn[c] for c in ks]
+            for j, c in enumerate(ks):
+                tn[c].parent = tn[i]
+                tn[c].i = j
+                link(c, d + 1)
+    fake = _OcNode(-1, 0)
+    fake.children = [tn[root]]
+    tn[root].parent = fake
+    tn[root].i = 0
+    link(root, 0)
+
+    def first_walk(v):
+        if v.children:
+            for c in v.children:
+                first_walk(c)
+        siblings = v.parent.children
+        w = siblings[v.i - 1] if v.i else None
+        if v.children:
+            _oc_execute_shifts(v)
+            midpoint = (v.children[0].z + v.children[-1].z) / 2
+            if w:
+                v.z = w.z + _oc_sep(v, w)
+                v.m = v.z - midpoint
+            else:
+                v.z = midpoint
+        elif w:
+            v.z = w.z + _oc_sep(v, w)
+        v.parent.A = _oc_apportion(v, w, v.parent.A or siblings[0])
+    first_walk(tn[root])
+    fake.m = -tn[root].z
+    x = [0] * n
+    depth = [0] * n
+    for i, d in order:
+        v = tn[i]
+        x[i] = v.z + v.parent.m
+        v.m += v.parent.m
+        depth[i] = d
+    return x, depth
+
+
+_OC_W = 640                                              # nominal width: a tree wider than this top-down is laid out left to right
+_OC_MAX_NODES, _OC_MAX_KIDS, _OC_MAX_DEPTH = 30, 6, 3     # 30 nodes, six children per node, four tiers (depth 0..3)
+
+
+def _oc_text(l):
+    return _if_str('' if (l is None or l is _IF_UNDEF) else l)[:28]
+
+
+def _oc_chars(t):
+    return len(t.encode('utf-16-le')) // 2
+
+
+def _oc_width(t, bold):
+    """Box width in px from the label, by deterministic character arithmetic (8.4 px a character, 9.6 bold, plus 22 px of padding): the full
+    one-line width, but no wider than 112 px unless the longest word needs more (up to 140), so long labels wrap at spaces as the old layout did."""
+    c = 9.6 if bold else 8.4
+    full = int(math.ceil(_oc_chars(t) * c)) + 22
+    word = int(math.ceil(max([_oc_chars(x) for x in t.split(' ')]) * c)) + 22
+    return max(64, min(full, max(112, min(140, word))))
+
+
+def _oc_lines(t, w, bold):
+    tw = int(math.ceil(_oc_chars(t) * (9.6 if bold else 8.4)))
+    return 1 if tw <= w - 22 else min(3, int(math.ceil(tw / (w - 30))))
+
+
 def _render_org_chart(b: dict) -> str:
     nodes = []
-    for n in _if_arr(_if_g(b, 'nodes'), 10):
+    for n in _if_arr(_if_g(b, 'nodes'), _OC_MAX_NODES):
         n = _if_obj(n)
         nid, pid = _if_g(n, 'id'), _if_g(n, 'parent_id')
         nodes.append({'id': _if_str('' if nid is _IF_UNDEF else nid)[:24], 'l': _if_g(n, 'label'), 'p': _if_str('' if pid is _IF_UNDEF else pid)[:24]})
-    idx = [0]
-    css = ('<style>.ifoc ul{display:flex;justify-content:center;margin:0;padding:20px 0 0;list-style:none;position:relative}.ifoc li{position:relative;padding:20px 6px 0;text-align:center}'
-           '.ifoc li::before,.ifoc li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:20px;border-top:2px solid #64748B}.ifoc li::after{right:auto;left:50%;border-left:2px solid #64748B}'
-           '.ifoc li:only-child::before,.ifoc li:only-child::after{display:none}.ifoc li:only-child{padding-top:0}.ifoc li:first-child::before,.ifoc li:last-child::after{border:0 none}'
-           '.ifoc li:last-child::before{border-right:2px solid #64748B;border-radius:0 6px 0 0}.ifoc li:first-child::after{border-radius:6px 0 0 0}'
-           '.ifoc ul ul::before{content:"";position:absolute;top:0;left:50%;border-left:2px solid #64748B;height:20px}.ifoc>ul{padding-top:0}.ifoc>ul>li{padding-top:0}.ifoc>ul>li::before,.ifoc>ul>li::after{display:none}</style>')
+    # Flatten to a tree in document (pre-order) order: four tiers, six children per node; a duplicated id renders its subtree under each.
+    flat = []                        # {l, t, depth, par, kids}
 
-    def build(pid, depth):
-        kids = [n for n in nodes if n['p'] == pid and n['id'] != pid]
-        if not kids or depth > 3:
-            return ''
-        out = '<ul>'
-        for n in kids:
-            i = idx[0]
-            idx[0] += 1
-            out += ('<li><div style="display:inline-block;' + _if_card(('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if depth == 0 else '') + _if_k(i, len(nodes)) + _IF_FADE) + '">' + _if_s(n['l'], 28) + '</div>' + build(n['id'], depth + 1) + '</li>')
-        return out + '</ul>'
-    return _if_wrap(css + _if_title(b) + '<div class="ifoc" style="overflow-x:auto;">' + build('', 0) + '</div>')
+    def build(pid, depth, par):
+        out = []
+        if depth > _OC_MAX_DEPTH:
+            return out
+        for n in nodes:
+            if n['p'] == pid and n['id'] != pid and len(out) < _OC_MAX_KIDS:
+                f = {'l': n['l'], 't': _oc_text(n['l']), 'depth': depth, 'par': par, 'kids': []}
+                flat.append(f)
+                out.append(len(flat) - 1)
+                f['kids'] = build(n['id'], depth + 1, len(flat) - 1)
+        return out
+    top = build('', 0, -1)
+    if not flat:
+        return _if_wrap(_if_title(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>')
+    total = len(flat)
+    ws = [_oc_width(f['t'], f['depth'] == 0) for f in flat]
+    kids = [f['kids'] for f in flat]
+    virt = len(top) != 1
+    if virt:
+        kids.append(top)             # an undrawn root above several top-level nodes
+        ws.append(0)
+        root = total
+    else:
+        root = top[0]
+    xs, ds = _oc_layout(kids, root, ws)
+    lo = min(xs[i] - ws[i] / 2 for i in range(total))
+    wid = max(xs[i] + ws[i] / 2 for i in range(total)) - lo
+    tiers = max(ds[:total]) + 1 - (1 if virt else 0)
+    lines = max(_oc_lines(f['t'], ws[i], f['depth'] == 0) for i, f in enumerate(flat))
+    nh = (38, 46, 60)[lines - 1]
+    sh = 1 if virt else 0
+    td_wid = wid
+
+    def chart(box, link, cw, ch, cls):
+        cnt = [0]
+        paths_l = []
+
+        def emit(ids):
+            out = '<ul style="position:static;display:block;list-style:none;margin:0;padding:0;">'
+            for i in ids:
+                f = flat[i]
+                k = _if_k(cnt[0], total)
+                cnt[0] += 1
+                out += ('<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tm_pct(box[i][0], cw) + ';top:' + _tm_pct(box[i][1], ch) + ';width:' + _tm_pct(ws[i], cw) + ';height:' + str(nh) + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
+                        + _if_card('padding:2px 6px;' + ('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if f['depth'] == 0 else '') + k + _IF_FADE) + '">' + _if_s(f['l'], 28) + '</div>')
+                if link[i] is not None:
+                    paths_l.append('<path d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
+                if f['kids']:
+                    out += emit(f['kids'])
+                out += '</li>'
+            return out + '</ul>'
+        lists = emit(top)
+        svg = ('<svg aria-hidden="true" viewBox="0 0 ' + _if_fixed(cw, 3) + ' ' + _if_fixed(ch, 3) + '" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + ''.join(paths_l) + '</svg>')
+        return '<div' + (' class="' + cls + '"' if cls else '') + ' style="position:relative;margin:0 auto;height:' + _if_fixed(ch, 3) + 'px;width:' + _if_fixed(cw, 3) + 'px;">' + svg + lists + '</div>'
+    # top-down geometry
+    row = nh + 28
+    td_ht = tiers * row - 28
+    td_box, td_link = [None] * total, [None] * total
+    for i in range(total):
+        d = ds[i] - sh
+        td_box[i] = (xs[i] - lo - ws[i] / 2, d * row)
+        if flat[i]['par'] >= 0:
+            y0 = (d - 1) * row + nh
+            y1 = d * row
+            td_link[i] = 'M' + _if_fixed(xs[flat[i]['par']] - lo, 3) + ' ' + str(y0) + 'V' + _if_fixed((y0 + y1) / 2, 1) + 'H' + _if_fixed(xs[i] - lo, 3) + 'V' + str(y1)
+    td = chart(td_box, td_link, td_wid, td_ht, 'oct' if td_wid > _OC_W else '')
+    if td_wid <= _OC_W:
+        # fits the nominal width: top-down only
+        return _if_wrap(_if_title(b) + '<div class="ifoct" data-oc="td" style="overflow-x:auto;contain:inline-size;">' + td + '</div>')
+    # wider: also lay it out left to right (the same d3 tree() call with x and y swapped; separation in box heights, tiers as columns) and let CSS pick
+    ys, _d = _oc_layout(kids, root, [nh] * total + ([0] if virt else []))
+    top0 = min(ys[i] - nh / 2 for i in range(total))
+    l_ht = max(ys[i] + nh / 2 for i in range(total)) - top0
+    colw = [0] * tiers
+    for i in range(total):
+        colw[ds[i] - sh] = max(colw[ds[i] - sh], ws[i])
+    g = 28 if tiers < 2 else min(28, max(12, (_OC_W - sum(colw)) // (tiers - 1)))
+    col = [0] * tiers
+    for d in range(1, tiers):
+        col[d] = col[d - 1] + colw[d - 1] + g
+    l_wid = sum(colw) + g * (tiers - 1)
+    l_box, l_link = [None] * total, [None] * total
+    for i in range(total):
+        d = ds[i] - sh
+        l_box[i] = (col[d], ys[i] - nh / 2 - top0)
+        pa = flat[i]['par']
+        if pa >= 0:
+            l_link[i] = 'M' + _if_fixed(col[d - 1] + ws[pa], 3) + ' ' + _if_fixed(ys[pa] - top0, 3) + 'H' + _if_fixed(col[d] - g / 2, 3) + 'V' + _if_fixed(ys[i] - top0, 3) + 'H' + _if_fixed(col[d], 3)
+    ltr = chart(l_box, l_link, l_wid, l_ht, 'ocl')
+    w = str(int(math.ceil(td_wid)))
+    cls = 'oc-w' + w
+    css = ('<style>.' + cls + ' .oct{display:none}.' + cls + ' .ocl{display:block}@container (min-width:' + w + 'px){.' + cls + ' .oct{display:block}.' + cls + ' .ocl{display:none}}'
+           '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>')
+    return _if_wrap(_if_title(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>')
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
