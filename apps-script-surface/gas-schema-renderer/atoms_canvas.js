@@ -370,6 +370,8 @@ _RENDERERS['spring_nodes'] = function(b) {
   if (ys1 - ys0 > 0) sc = Math.min(sc, ah / (ys1 - ys0));
   var cx = (xs0 + xs1) / 2, cy = (ys0 + ys1) / 2, P = [];
   for (i = 0; i < n; i++) P.push([(pos[i][0] - cx) * sc + W / 2, (pos[i][1] - cy) * sc + H / 2 - lbl / 2]);
+  var rs = Math.max(0.6, Math.min(1.0, sc * 1.15));
+  for (i = 0; i < n; i++) nodes[i].r = nodes[i].r * rs;
   var txt = _snLum(bg) > 0.4 ? '#0f172a' : '#f8fafc';
   var out = '<figure style="margin:1rem 0;position:relative;"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc('Force-directed graph, ' + n + ' nodes, ' + links.length + ' links. The same content is listed below.') +
     '" style="width:100%;height:auto;display:block;border-radius:12px;background:' + _esc(bg) + ';">';
@@ -383,7 +385,7 @@ _RENDERERS['spring_nodes'] = function(b) {
     out += '<text x="' + _snF((A2[0] + B2[0]) / 2) + '" y="' + _snF((A2[1] + B2[1]) / 2 - 4) + '" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke">' + _esc(links[i][2]) + '</text>';
   }
   for (i = 0; i < n; i++) {
-    out += '<circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(colour) + '" fill-opacity="0.25" stroke="' + _esc(colour) + '" stroke-width="2"/>';
+    out += '<circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(bg) + '" stroke="' + _esc(colour) + '" stroke-width="2"/><circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(colour) + '" fill-opacity="0.25"/>';
   }
   for (i = 0; i < n; i++) {
     out += '<text x="' + _snF(P[i][0]) + '" y="' + _snF(P[i][1] + nodes[i].r + 14) + '" text-anchor="middle" font-size="12" font-weight="600" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke">' + _esc(nodes[i].label) + '</text>';

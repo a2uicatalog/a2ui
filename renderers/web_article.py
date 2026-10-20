@@ -23812,6 +23812,9 @@ def _render_spring_nodes(b: dict) -> str:
     if ys1 - ys0 > 0: sc = min(sc, ah / (ys1 - ys0))
     cx, cy = (xs0 + xs1) / 2, (ys0 + ys1) / 2
     P = [[(p[0] - cx) * sc + W / 2, (p[1] - cy) * sc + H / 2 - lbl / 2] for p in pos]
+    rs = max(0.6, min(1.0, sc * 1.15))      # a crowded graph is scaled down, so its discs shrink a little too
+    for nd in nodes:
+        nd['r'] = nd['r'] * rs
     txt = '#0f172a' if _sn_lum(bg) > 0.4 else '#f8fafc'
     out = ['<figure style="margin:1rem 0;position:relative;"><svg viewBox="0 0 %d %d" role="img" aria-label="%s" '
            'style="width:100%%;height:auto;display:block;border-radius:12px;background:%s;">' % (
@@ -23824,8 +23827,9 @@ def _render_spring_nodes(b: dict) -> str:
             out.append('<text x="%s" y="%s" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" fill="%s" stroke="%s" stroke-width="3" paint-order="stroke">%s</text>' % (
                 _sn_f((P[s][0] + P[t][0]) / 2), _sn_f((P[s][1] + P[t][1]) / 2 - 4), txt, _esc(bg), _esc(lab)))
     for i in range(n):
-        out.append('<circle cx="%s" cy="%s" r="%s" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>' % (
-            _sn_f(P[i][0]), _sn_f(P[i][1]), _sn_f(nodes[i]['r']), _esc(colour), _esc(colour)))
+        out.append('<circle cx="%s" cy="%s" r="%s" fill="%s" stroke="%s" stroke-width="2"/><circle cx="%s" cy="%s" r="%s" fill="%s" fill-opacity="0.25"/>' % (
+            _sn_f(P[i][0]), _sn_f(P[i][1]), _sn_f(nodes[i]['r']), _esc(bg), _esc(colour),
+            _sn_f(P[i][0]), _sn_f(P[i][1]), _sn_f(nodes[i]['r']), _esc(colour)))
     for i in range(n):
         out.append('<text x="%s" y="%s" text-anchor="middle" font-size="12" font-weight="600" font-family="system-ui,sans-serif" fill="%s" stroke="%s" stroke-width="3" paint-order="stroke">%s</text>' % (
             _sn_f(P[i][0]), _sn_f(P[i][1] + nodes[i]['r'] + 14), txt, _esc(bg), _esc(nodes[i]['label'])))

@@ -66,7 +66,7 @@ def test_frozen_copies_are_untouched():
 
 # ─── render ───────────────────────────────────────────────────────────────────
 NODES = [{"id": "web", "label": "Web"}, {"id": "api", "label": "API"}, {"id": "db", "label": "Database"}, {"id": "q", "label": "Queue"}]
-CIRCLE = re.compile(r'<circle cx="(-?[\d.]+)" cy="(-?[\d.]+)" r="([\d.]+)"')
+CIRCLE = re.compile(r'<circle cx="(-?[\d.]+)" cy="(-?[\d.]+)" r="([\d.]+)" fill="[^"]*" stroke=')   # the outlined disc (a plain tint disc sits on top of it)
 LINE = re.compile(r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" x2="(-?[\d.]+)" y2="(-?[\d.]+)"')
 
 
