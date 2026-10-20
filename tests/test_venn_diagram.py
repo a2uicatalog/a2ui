@@ -185,7 +185,7 @@ def test_every_cut_item_ends_in_an_ellipsis_and_an_uncut_one_does_not(core_js):
         assert exact in lines and "short" in lines                                    # 28 characters or fewer: untouched
         cut = [l for l in lines if l.endswith("\u2026")]
         assert len(cut) == 4 and all(2 <= len(l) <= 28 for l in cut), cut        # over, 29 x, 60 x and 200 x characters
-        assert exact in lines and "short" in lines and len(lines) == 11, lines   # the seven other items are whole and unmarked
+        assert exact in lines and "short" in lines and len(lines) == 13, lines   # the other items are whole and unmarked
         assert over in html.split("<table")[1]                                        # the table keeps the full text
 
 
