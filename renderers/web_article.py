@@ -31295,10 +31295,10 @@ def _hg_skip_note(skipped):
     return _hg_note(str(skipped) + (' entry was' if skipped == 1 else ' entries were') + ' not a usable number and ' + ('was' if skipped == 1 else 'were') + ' skipped.') if skipped else ''
 
 
-def _hg_version_note(b):
+def _hg_version_note(b, atom='histogram'):
     v = _if_g(b, 'version')
     if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != _HG_INF and v == math.floor(v) and v > 1:
-        return _hg_note('Written for histogram version ' + _if_numstr(v) + '; drawn as version 1.')
+        return _hg_note('Written for ' + atom + ' version ' + _if_numstr(v) + '; drawn as version 1.')
     return ''
 
 
@@ -31435,8 +31435,114 @@ def _render_histogram(b: dict) -> str:
                     + _if_table(['Bin from', 'Bin to', 'Count'], [[lab[i] + (' ' + unit if unit else ''), lab[i + 1] + (' ' + unit if unit else ''), str(counts[i])] for i in range(m)]))
 
 
+# ── box_plot (proposal, I37) ── quartiles are d3-array quantileSorted (R-7); whiskers follow d3's box plot example (Tukey, 1.5 IQR);
+# the shared axis is d3 nice(min, max, 5) and its ticks. Twin of _bpLayout / _RENDERERS['box_plot'] in atoms_infographic.gs.
+def _bp_quantile(a, p):
+    n = len(a)
+    if p <= 0 or n < 2:
+        return a[0]
+    if p >= 1:
+        return a[n - 1]
+    i = (n - 1) * p
+    i0 = math.floor(i)
+    return a[i0] + (a[i0 + 1] - a[i0]) * (i - i0)
+
+
+def _bp_layout(groups):
+    """([{n, min, q1, median, q3, max, lo, hi, outliers}, ...], (x0, x1), ticks) for lists of finite floats, each at least one long."""
+    stats, lo_all, hi_all = [], _HG_INF, -_HG_INF
+    for g in groups:
+        a = sorted(g)
+        q1, med, q3 = _bp_quantile(a, 0.25), _bp_quantile(a, 0.5), _bp_quantile(a, 0.75)
+        r = 1.5 * (q3 - q1)
+        inside = [x for x in a if q1 - r <= x <= q3 + r]
+        stats.append({'n': len(a), 'min': a[0], 'q1': q1, 'median': med, 'q3': q3, 'max': a[-1], 'lo': inside[0], 'hi': inside[-1],
+                      'outliers': [x for x in a if x < q1 - r or x > q3 + r]})
+        lo_all, hi_all = min(lo_all, a[0]), max(hi_all, a[-1])
+    x0, x1 = _hg_nice(lo_all, hi_all, 5)
+    return stats, (x0, x1), _hg_ticks(x0, x1, 5)
+
+
+def _bp_fmt(v, cap):
+    return _hg_num(v, min(_hg_decimals([v]), cap))
+
+
+_BP_MAX_DOTS = 100
+
+
+def _render_box_plot(b: dict) -> str:
+    lst = _if_g(b, 'groups')
+    lst = lst if isinstance(lst, list) else []
+    used, skipped, left_out = [], 0, 0
+    for k, g in enumerate(lst[:12]):
+        if not isinstance(g, dict):
+            left_out += 1
+            continue
+        raw = _if_arr(_if_g(g, 'values'), 2000)
+        vals = _hg_usable(raw)
+        skipped += len(raw) - len(vals)
+        if len(vals) < 5:
+            left_out += 1
+            continue
+        used.append((_if_str(_if_g(g, 'label'))[:30] if _if_truthy(_if_g(g, 'label')) else 'Group ' + str(k + 1), vals))
+    beyond = len(lst) - 12
+    notes = (_hg_skip_note(skipped)
+             + (_hg_note(str(left_out) + (' group had fewer than 5 usable numbers or was not a group and was' if left_out == 1 else ' groups had fewer than 5 usable numbers or were not a group and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' group beyond the first 12 was' if beyond == 1 else ' groups beyond the first 12 were') + ' not drawn.') if beyond > 0 else ''))
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A box plot needs at least one group with 5 numbers.</div>' + notes + _hg_version_note(b, 'box_plot'))
+    stats, (X0, X1), ticks = _bp_layout([v for _, v in used])
+    n, span = len(used), X1 - X0
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    td = _hg_decimals(ticks)
+    tlab = [_hg_num(t, td) for t in ticks]
+    fc = min(_hg_decimals([x for _, v in used for x in v]) + 2, td + 3)
+
+    def pos(v):
+        return _tm_pct(v - X0, span) if span > 0 else '50%'
+
+    def wid(a, c):
+        return _tm_pct(c - a, span) if span > 0 else '0%'
+
+    def f(v):
+        return _bp_fmt(v, fc)
+    grid = ''.join('<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>' for t in ticks)
+    rows, capped = '', ''
+    for k, ((nm, _), s) in enumerate(zip(used, stats)):
+        distinct = sorted(set(s['outliers']), key=lambda v: (-abs(v - s['median']), v))
+        if len(distinct) > _BP_MAX_DOTS:
+            capped += _hg_note(_cv_esc(nm) + ' has ' + str(len(distinct)) + ' distinct outliers; the ' + str(_BP_MAX_DOTS) + ' furthest from the median are drawn. The table counts them all.')
+        dots = ''.join('<div class="bpo" style="position:absolute;left:' + pos(o) + ';top:50%;width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'
+                       for o in distinct[:_BP_MAX_DOTS])
+        rows += ('<div style="display:flex;align-items:center;height:40px;">'
+                 '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                 + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(nm) + '</div>'
+                 '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
+                 + '<div class="bpg" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
+                 '<div class="bpw" style="position:absolute;left:' + pos(s['lo']) + ';width:' + wid(s['lo'], s['hi']) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>'
+                 '<div style="position:absolute;left:' + pos(s['lo']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>'
+                 '<div style="position:absolute;left:' + pos(s['hi']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>'
+                 '<div class="bpb" style="position:absolute;left:' + pos(s['q1']) + ';width:' + wid(s['q1'], s['q3']) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:var(--surface,#F8FAFC);border-radius:2px;"></div>'
+                 '<div class="bpm" style="position:absolute;left:' + pos(s['median']) + ';top:22%;height:56%;border-left:3px solid var(--accent,#0369A1);transform:translateX(-1.5px);"></div>'
+                 + dots + '</div></div></div>')
+    no = lambda c: str(c) + (' outlier' if c == 1 else ' outliers')
+    aria = ('Box plot of ' + str(n) + (' group' if n == 1 else ' groups') + ' on a shared axis from ' + _hg_num(X0, td) + ' to ' + _hg_num(X1, td) + us + '. '
+            + '; '.join(nm + ': median ' + f(s['median']) + us + ', middle half ' + f(s['q1']) + ' to ' + f(s['q3']) + us + ', whiskers ' + f(s['lo']) + ' to ' + f(s['hi']) + us + ', ' + no(len(s['outliers']))
+                        for (nm, _), s in zip(used, stats)) + '.')
+    chart = ('<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}}</style>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 34px 34px 0;">' + rows
+             + '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, X0, span, tlab) + '</div></div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 ' + _HG_LABW + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes + capped + _hg_version_note(b, 'box_plot')
+                    + _if_table(['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'],
+                                [[nm, str(s['n']), f(s['min']) + us, f(s['q1']) + us, f(s['median']) + us, f(s['q3']) + us, f(s['max']) + us, str(len(s['outliers']))] for (nm, _), s in zip(used, stats)]))
+
+
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot)):
     _RENDERERS[_if_name] = _if_fn
 
 

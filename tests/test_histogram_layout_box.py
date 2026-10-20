@@ -61,7 +61,7 @@ window.addEventListener('load', function () {
 </script>'''
 
 
-def _run(blocks, extra_css=''):
+def _run(blocks, extra_css='', harness=None):
     cases = []
     for name, html in blocks.items():
         for label, px in WIDTHS:
@@ -69,7 +69,7 @@ def _run(blocks, extra_css=''):
                 cases.append('<div class="case" id="%s-%s"><div style="display:grid;grid-template-columns:300px 1fr;gap:24px;width:1300px"><div>%s</div><div></div></div></div>' % (name, label, html))
             else:
                 cases.append('<div class="case" id="%s-%s"><div style="width:%dpx">%s</div></div>' % (name, label, px, html))
-    page = '<!doctype html><meta charset="utf-8"><body style="margin:0;font-family:sans-serif">' + extra_css + ''.join(cases) + '<pre id="out"></pre>' + HARNESS
+    page = '<!doctype html><meta charset="utf-8"><body style="margin:0;font-family:sans-serif">' + extra_css + ''.join(cases) + '<pre id="out"></pre>' + (harness or HARNESS)
     with tempfile.TemporaryDirectory() as d:
         f = Path(d) / "p.html"
         f.write_text(page)
@@ -146,15 +146,10 @@ RIDGE_DRAWN = ["three", "one", "unequal", "disjoint", "all_equal", "eight", "tin
 
 @pytest.mark.parametrize("renderer", ["python", "gas"])
 def test_ridges_and_labels_never_overlap_or_widen_the_container(renderer, core_js):
-    global HARNESS
     from test_histogram_ridge import PAYLOADS as RP
     blocks = {n: RP[n] for n in RIDGE_DRAWN}
     html = {n: _py(b) for n, b in blocks.items()} if renderer == "python" else dict(zip(blocks, _gas_batch(core_js, list(blocks.values()))))
-    saved, HARNESS = HARNESS, RIDGE_HARNESS
-    try:
-        res = _run(html)
-    finally:
-        HARNESS = saved
+    res = _run(html, harness=RIDGE_HARNESS)
     assert len(res) == len(RIDGE_DRAWN) * len(WIDTHS)
     bad = {r["id"]: r["errs"] for r in res if r["errs"]}
     assert not bad, json.dumps(bad, indent=1)[:3000]

@@ -186,6 +186,7 @@ a2ui-charts-v1:
 - callout_anatomy
 - org_chart
 - histogram
+- box_plot
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

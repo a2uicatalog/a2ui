@@ -21022,6 +21022,35 @@ blocks:
     both. Bars grow with p. In the ridge layout the ridges overlap upwards, have no y axis (the hidden table gives each bin's count per
     series), and rise one after another with p.
   source: *ifg002
+- type: box_plot
+  stage: preview
+  description: 'Compares groups of numbers as box plots on one shared horizontal axis: per group a box from the lower to the upper quartile,
+    a line at the median, whiskers to the furthest numbers within 1.5 times the box length, and dots for the outliers beyond. The quartiles
+    come from d3-array quantileSorted and the axis from d3 nice() and ticks(), computed on the server, so there is no script. A hidden table
+    gives each group''s count, minimum, quartiles, median, maximum and outlier count. Motion-ready: each group fades in through --k from --p
+    (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.'
+  compact_description: 'box_plot: compare groups of numbers by median and spread'
+  routing_text: Compares how several groups of raw numbers are spread out, such as response times per region, scores per class or prices
+    per supplier, showing medians, the middle half and outliers side by side. Give the numbers, not the summary statistics. For one
+    distribution's shape use a histogram; for totals per category use a bar chart.
+  intent_phrases:
+  - Compare response times across regions with a box plot.
+  - Show the spread of scores for each class.
+  - Which supplier's prices vary the most?
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    groups: array (required, 1 to 12) of {label (string, max 30, default "Group n"), values (array, 5 to 2000, of numbers)}. Entries that
+      are not finite numbers or whose size is above 1e12 are skipped and counted in a note; a group with fewer than 5 usable numbers, or an
+      entry that is not a group, is left out with a note. Groups beyond the first 12 are noted and not drawn.
+    x_label: string (optional, max 40). Names the values on the axis.
+    unit: string (optional, max 12). Appended to the axis caption and to every value in the label and hidden table.
+    version: integer (optional, default 1). The box_plot contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: Quartiles use linear interpolation between the sorted numbers (R-7, as d3 and spreadsheets do). Each distinct outlier is one
+    dot; past 100 distinct outliers in a group the 100 furthest from the median are drawn and a note says so, while the table counts them
+    all. Groups keep the given order.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

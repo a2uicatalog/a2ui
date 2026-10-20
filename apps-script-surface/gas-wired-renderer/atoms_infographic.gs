@@ -518,9 +518,9 @@ function _hgUsable(raw) { return raw.filter(function(v) { return typeof v === 'n
 function _hgTarget(bv) { return (typeof bv === 'number' && isFinite(bv)) ? Math.round(Math.min(40, Math.max(3, bv))) : null; }
 function _hgNote(s) { return '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + s + '</div>'; }
 function _hgSkipNote(skipped) { return skipped ? _hgNote(skipped + (skipped === 1 ? ' entry was' : ' entries were') + ' not a usable number and ' + (skipped === 1 ? 'was' : 'were') + ' skipped.') : ''; }
-function _hgVersionNote(b) {
+function _hgVersionNote(b, atom) {
   var v = b.version;
-  return (typeof v === 'number' && isFinite(v) && Math.floor(v) === v && v > 1) ? _hgNote('Written for histogram version ' + v + '; drawn as version 1.') : '';
+  return (typeof v === 'number' && isFinite(v) && Math.floor(v) === v && v > 1) ? _hgNote('Written for ' + (atom || 'histogram') + ' version ' + v + '; drawn as version 1.') : '';
 }
 // the x edge labels: few enough to fit, every other one hidden in a narrow container
 function _hgAxis(ev, X0, span, lab) {
@@ -612,4 +612,80 @@ _RENDERERS['histogram'] = function(b) {
     '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>' + xs + '</div>' +
     (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 46px;">' + _esc(cap) + '</div>' : '') + '</div>';
   return _ifWrap(_ifTitle(b) + chart + skipNote + _hgVersionNote(b) + _ifTable(['Bin from', 'Bin to', 'Count'], counts.map(function(c, k) { return [lab[k] + us, lab[k + 1] + us, String(c)]; })));
+};
+
+
+// ── box_plot (proposal, I37) ── quartiles are d3-array quantileSorted (R-7); whiskers follow d3's box plot example (Tukey, 1.5 IQR);
+// the shared axis is d3 nice(min, max, 5) and its ticks. Twin of _bp_layout / _render_box_plot in renderers/web_article.py.
+function _bpQuantile(a, p) {
+  var n = a.length;
+  if (p <= 0 || n < 2) return a[0];
+  if (p >= 1) return a[n - 1];
+  var i = (n - 1) * p, i0 = Math.floor(i);
+  return a[i0] + (a[i0 + 1] - a[i0]) * (i - i0);
+}
+function _bpLayout(groups) {
+  var loAll = Infinity, hiAll = -Infinity;
+  var stats = groups.map(function(g) {
+    var a = g.slice().sort(function(x, y) { return x - y; }), q1 = _bpQuantile(a, 0.25), med = _bpQuantile(a, 0.5), q3 = _bpQuantile(a, 0.75), r = 1.5 * (q3 - q1);
+    var inside = a.filter(function(x) { return q1 - r <= x && x <= q3 + r; });
+    loAll = Math.min(loAll, a[0]); hiAll = Math.max(hiAll, a[a.length - 1]);
+    return {n: a.length, min: a[0], q1: q1, median: med, q3: q3, max: a[a.length - 1], lo: inside[0], hi: inside[inside.length - 1],
+      outliers: a.filter(function(x) { return x < q1 - r || x > q3 + r; })};
+  });
+  var d = _hgNice(loAll, hiAll, 5);
+  return [stats, [d[0], d[1]], _hgTicks(d[0], d[1], 5)];
+}
+function _bpFmt(v, cap) { return _hgNum(v, Math.min(_hgDecimals([v]), cap)); }
+var _BP_MAX_DOTS = 100;
+_RENDERERS['box_plot'] = function(b) {
+  var lst = Array.isArray(b.groups) ? b.groups : [], used = [], skipped = 0, leftOut = 0;
+  lst.slice(0, 12).forEach(function(g, k) {
+    if (!(g && typeof g === 'object' && !Array.isArray(g))) { leftOut++; return; }
+    var raw = _ifArr(g.values, 2000), vals = _hgUsable(raw);
+    skipped += raw.length - vals.length;
+    if (vals.length < 5) { leftOut++; return; }
+    used.push([g.label ? String(g.label).slice(0, 30) : 'Group ' + (k + 1), vals]);
+  });
+  var beyond = lst.length - 12;
+  var notes = _hgSkipNote(skipped) +
+    (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' group had fewer than 5 usable numbers or was not a group and was' : ' groups had fewer than 5 usable numbers or were not a group and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' group beyond the first 12 was' : ' groups beyond the first 12 were') + ' not drawn.') : '');
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A box plot needs at least one group with 5 numbers.</div>' + notes + _hgVersionNote(b, 'box_plot'));
+  var L = _bpLayout(used.map(function(u) { return u[1]; })), stats = L[0], X0 = L[1][0], X1 = L[1][1], ticks = L[2], n = used.length, span = X1 - X0;
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var td = _hgDecimals(ticks), tlab = ticks.map(function(t) { return _hgNum(t, td); });
+  var fc = Math.min(_hgDecimals([].concat.apply([], used.map(function(u) { return u[1]; }))) + 2, td + 3);
+  var pos = function(v) { return span > 0 ? _tmPct(v - X0, span) : '50%'; };
+  var wid = function(a, c) { return span > 0 ? _tmPct(c - a, span) : '0%'; };
+  var f = function(v) { return _bpFmt(v, fc); };
+  var grid = ticks.map(function(t) { return '<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>'; }).join('');
+  var rows = '', capped = '';
+  used.forEach(function(u, k) {
+    var s = stats[k], med = s.median;
+    var distinct = s.outliers.filter(function(v, i, a) { return i === 0 || v !== a[i - 1]; }).sort(function(x, y) { return (Math.abs(y - med) - Math.abs(x - med)) || (x - y); });
+    if (distinct.length > _BP_MAX_DOTS) capped += _hgNote(_esc(u[0]) + ' has ' + distinct.length + ' distinct outliers; the ' + _BP_MAX_DOTS + ' furthest from the median are drawn. The table counts them all.');
+    var dots = distinct.slice(0, _BP_MAX_DOTS).map(function(o) { return '<div class="bpo" style="position:absolute;left:' + pos(o) + ';top:50%;width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'; }).join('');
+    rows += '<div style="display:flex;align-items:center;height:40px;">' +
+      '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
+      ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(u[0]) + '</div>' +
+      '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
+      '<div class="bpg" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
+      '<div class="bpw" style="position:absolute;left:' + pos(s.lo) + ';width:' + wid(s.lo, s.hi) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:' + pos(s.lo) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:' + pos(s.hi) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>' +
+      '<div class="bpb" style="position:absolute;left:' + pos(s.q1) + ';width:' + wid(s.q1, s.q3) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:var(--surface,#F8FAFC);border-radius:2px;"></div>' +
+      '<div class="bpm" style="position:absolute;left:' + pos(med) + ';top:22%;height:56%;border-left:3px solid var(--accent,#0369A1);transform:translateX(-1.5px);"></div>' +
+      dots + '</div></div></div>';
+  });
+  var no = function(c) { return c + (c === 1 ? ' outlier' : ' outliers'); };
+  var aria = 'Box plot of ' + n + (n === 1 ? ' group' : ' groups') + ' on a shared axis from ' + _hgNum(X0, td) + ' to ' + _hgNum(X1, td) + us + '. ' +
+    used.map(function(u, k) { var s = stats[k]; return u[0] + ': median ' + f(s.median) + us + ', middle half ' + f(s.q1) + ' to ' + f(s.q3) + us + ', whiskers ' + f(s.lo) + ' to ' + f(s.hi) + us + ', ' + no(s.outliers.length); }).join('; ') + '.';
+  var chart = '<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}}</style>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 34px 34px 0;">' + rows +
+    '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, X0, span, tlab) + '</div></div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 ' + _HG_LABW + ';">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + capped + _hgVersionNote(b, 'box_plot') +
+    _ifTable(['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'],
+      used.map(function(u, k) { var s = stats[k]; return [u[0], String(s.n), f(s.min) + us, f(s.q1) + us, f(s.median) + us, f(s.q3) + us, f(s.max) + us, String(s.outliers.length)]; })));
 };
