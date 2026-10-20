@@ -17406,52 +17406,306 @@ _RENDERERS['punch_card'] = function(b) {
   return '<div class="a2ui-punch-card">' + header + svg + '</div>';
 };
 
-// ─────────────────────────────────────────────────────────
-// 14. sankey_flow — simple flow diagram (HTML table style)
-// ─────────────────────────────────────────────────────────
-_RENDERERS['sankey_flow'] = function(b) {
-  var nodes = b.nodes || [];
-  var links = b.links || [];
-  var title = b.title || '';
+// ── sankey_flow ────────────────────────────────────────────────────────────────────────────────────────────────
+// Layout is a hand port of d3-sankey 0.12.3 (BSD-3-Clause, Copyright 2015 Mike Bostock; see THIRD-PARTY-NOTICES.md): node value = max(in, out),
+// the 6 relaxation passes with alpha/beta, ascendingTargetBreadth / ascendingSourceBreadth link ordering, sankeyLinkHorizontal link paths.
+// Python twin: _sk_* in renderers/web_article.py (same names, snake_case). Output is server-side SVG; no script is shipped.
+var _SK_W = 640, _SK_H = 340, _SK_COL_W = 220, _SK_NODE_W = 16, _SK_PAD = 16, _SK_ITER = 6, _SK_MAXCOL = 15;
+var _SK_PAL = ['#38bdf8', '#10b981', '#a78bfa', '#f59e0b', '#f472b6'];
+var _SK_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
 
-  // Build node label lookup
-  var nodeMap = {};
-  nodes.forEach(function(n){ nodeMap[n.id] = n.label || n.id; });
+// d3 sums `value`; a flow value is a finite number, a numeric string, or (when absent) 1. Anything else is 0 and the flow is not drawn.
+function _skVal(v) {
+  if (v === undefined || v === null) return 1;
+  if (typeof v === 'number') return isFinite(v) ? v : 0;
+  if (typeof v === 'string') {
+    var t = v.replace(/^\s+|\s+$/g, '');
+    if (/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(t)) { var n = Number(t); return isFinite(n) ? n : 0; }
+  }
+  return 0;
+}
+function _skStr(v) {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' && isFinite(v)) return String(v);
+  return '';
+}
+// A number rounded half-up to 2 decimals, built from integers so Python and JavaScript print the same text.
+function _skR(x) {
+  if (typeof x !== 'number' || !isFinite(x)) return 0;
+  return Math.max(-9e15, Math.min(9e15, Math.floor(x * 100 + 0.5)));
+}
+function _skN(x) {
+  var r = _skR(x), a = Math.abs(r), w = Math.floor(a / 100), f = a % 100, s = String(w);
+  if (f) { s += '.' + (f < 10 ? '0' + f : String(f)); if (f % 10 === 0) s = s.slice(0, -1); }
+  return (r < 0 ? '-' : '') + s;
+}
+function _skFmt(x) {
+  var r = _skR(x), a = Math.abs(r), w = Math.floor(a / 100), f = a % 100, s = String(w).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (f) { s += '.' + (f < 10 ? '0' + f : String(f)); if (f % 10 === 0) s = s.slice(0, -1); }
+  return (r < 0 ? '-' : '') + s;
+}
+function _skHash(s) {
+  var h = 0x811c9dc5;
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0).toString(16);
+}
 
-  // Group links by source
-  var groups = {};
-  var srcOrder = [];
-  links.forEach(function(lk) {
-    var src = lk.source;
-    if (!groups[src]) { groups[src] = []; srcOrder.push(src); }
-    groups[src].push(lk);
+// d3-sankey 0.12.3 layout. nodes: [{layer}]; links: [{source: node, target: node, value}]. Sets node.x0/x1/y0/y1/value and link.width/y0/y1.
+function _skLayout(nodes, links, x0, y0, x1, y1, dx, dy, iterations) {
+  var py;
+  nodes.forEach(function(n, i) { n.index = i; n.sourceLinks = []; n.targetLinks = []; });
+  links.forEach(function(l, i) { l.index = i; l.source.sourceLinks.push(l); l.target.targetLinks.push(l); });
+  function sum(a, f) { var s = 0; a.forEach(function(d) { var v = f(d); if (v === v) s += v; }); return s; }
+  function value(d) { return d.value; }
+  function ascBreadth(a, b) { return a.y0 - b.y0; }
+  function ascSource(a, b) { return ascBreadth(a.source, b.source) || a.index - b.index; }
+  function ascTarget(a, b) { return ascBreadth(a.target, b.target) || a.index - b.index; }
+  nodes.forEach(function(n) { n.value = Math.max(sum(n.sourceLinks, value), sum(n.targetLinks, value)); });
+  var nl = 1;
+  nodes.forEach(function(n) { if (n.layer + 1 > nl) nl = n.layer + 1; });
+  var kx = nl > 1 ? (x1 - x0 - dx) / (nl - 1) : 0;
+  var byLayer = [];
+  nodes.forEach(function(n) {
+    (byLayer[n.layer] = byLayer[n.layer] || []).push(n);
+    n.x0 = x0 + n.layer * kx; n.x1 = n.x0 + dx;
   });
+  var columns = byLayer.filter(function(c) { return c && c.length; });
+  var maxLen = 0;
+  columns.forEach(function(c) { if (c.length > maxLen) maxLen = c.length; });
+  py = Math.min(dy, maxLen > 1 ? (y1 - y0) / (maxLen - 1) : Infinity);
 
-  var html = '<div class="a2ui-sankey">';
-  if (title) html += '<div class="a2ui-sankey-title">' + _esc(title) + '</div>';
-  html += '<div class="a2ui-sankey-rows">';
-
-  srcOrder.forEach(function(src) {
-    var lks  = groups[src];
-    var total = lks.reduce(function(s, l){ return s + (parseFloat(l.value)||0); }, 0);
-    html += '<div class="a2ui-sankey-group">';
-    html += '<div class="a2ui-sankey-src-hdr">' + _esc(nodeMap[src] || src) + ' <span class="a2ui-sankey-total">Total: ' + total.toLocaleString() + '</span></div>';
-    lks.forEach(function(lk) {
-      var pct = total > 0 ? ((lk.value / total) * 100).toFixed(1) : '0';
-      html += '<div class="a2ui-sankey-link">';
-      html += '<span class="a2ui-sankey-from">' + _esc(nodeMap[src] || src) + '</span>';
-      html += '<span class="a2ui-sankey-arrow">→</span>';
-      html += '<div class="a2ui-sankey-bar-wrap"><div class="a2ui-sankey-bar" style="width:' + pct + '%;"></div></div>';
-      html += '<span class="a2ui-sankey-val">' + Number(lk.value).toLocaleString() + '</span>';
-      html += '<span class="a2ui-sankey-arrow">→</span>';
-      html += '<span class="a2ui-sankey-to">' + _esc(nodeMap[lk.target] || lk.target) + '</span>';
-      html += '</div>';
+  function reorderLinks(ns) { ns.forEach(function(n) { n.sourceLinks.sort(ascTarget); n.targetLinks.sort(ascSource); }); }
+  function reorderNodeLinks(n) {
+    n.targetLinks.forEach(function(l) { l.source.sourceLinks.sort(ascTarget); });
+    n.sourceLinks.forEach(function(l) { l.target.targetLinks.sort(ascSource); });
+  }
+  var ky = Infinity;
+  columns.forEach(function(c) { var k = (y1 - y0 - (c.length - 1) * py) / sum(c, value); if (k < ky) ky = k; });
+  columns.forEach(function(ns) {
+    var y = y0;
+    ns.forEach(function(n) {
+      n.y0 = y; n.y1 = y + n.value * ky; y = n.y1 + py;
+      n.sourceLinks.forEach(function(l) { l.width = l.value * ky; });
     });
-    html += '</div>';
+    y = (y1 - y + py) / (ns.length + 1);
+    ns.forEach(function(n, i) { n.y0 += y * (i + 1); n.y1 += y * (i + 1); });
+    reorderLinks(ns);
   });
+  function targetTop(source, target) {
+    var y = source.y0 - (source.sourceLinks.length - 1) * py / 2, i, l;
+    for (i = 0; i < source.sourceLinks.length; i++) { l = source.sourceLinks[i]; if (l.target === target) break; y += l.width + py; }
+    for (i = 0; i < target.targetLinks.length; i++) { l = target.targetLinks[i]; if (l.source === source) break; y -= l.width; }
+    return y;
+  }
+  function sourceTop(source, target) {
+    var y = target.y0 - (target.targetLinks.length - 1) * py / 2, i, l;
+    for (i = 0; i < target.targetLinks.length; i++) { l = target.targetLinks[i]; if (l.source === source) break; y += l.width + py; }
+    for (i = 0; i < source.sourceLinks.length; i++) { l = source.sourceLinks[i]; if (l.target === target) break; y -= l.width; }
+    return y;
+  }
+  function collideDown(ns, y, i, alpha) {
+    for (; i < ns.length; ++i) { var n = ns[i], d = (y - n.y0) * alpha; if (d > 1e-6) { n.y0 += d; n.y1 += d; } y = n.y1 + py; }
+  }
+  function collideUp(ns, y, i, alpha) {
+    for (; i >= 0; --i) { var n = ns[i], d = (n.y1 - y) * alpha; if (d > 1e-6) { n.y0 -= d; n.y1 -= d; } y = n.y0 - py; }
+  }
+  function resolveCollisions(ns, alpha) {
+    var i = ns.length >> 1, subject = ns[i];
+    collideUp(ns, subject.y0 - py, i - 1, alpha);
+    collideDown(ns, subject.y1 + py, i + 1, alpha);
+    collideUp(ns, y1, ns.length - 1, alpha);
+    collideDown(ns, y0, 0, alpha);
+  }
+  function leftToRight(alpha, beta) {
+    for (var i = 1; i < columns.length; ++i) {
+      var column = columns[i];
+      column.forEach(function(target) {
+        var y = 0, w = 0;
+        target.targetLinks.forEach(function(l) { var v = l.value * (target.layer - l.source.layer); y += targetTop(l.source, target) * v; w += v; });
+        if (!(w > 0)) return;
+        var d = (y / w - target.y0) * alpha;
+        target.y0 += d; target.y1 += d;
+        reorderNodeLinks(target);
+      });
+      column.sort(ascBreadth);
+      resolveCollisions(column, beta);
+    }
+  }
+  function rightToLeft(alpha, beta) {
+    for (var i = columns.length - 2; i >= 0; --i) {
+      var column = columns[i];
+      column.forEach(function(source) {
+        var y = 0, w = 0;
+        source.sourceLinks.forEach(function(l) { var v = l.value * (l.target.layer - source.layer); y += sourceTop(source, l.target) * v; w += v; });
+        if (!(w > 0)) return;
+        var d = (y / w - source.y0) * alpha;
+        source.y0 += d; source.y1 += d;
+        reorderNodeLinks(source);
+      });
+      column.sort(ascBreadth);
+      resolveCollisions(column, beta);
+    }
+  }
+  // d3 uses Math.pow(0.99, i); the running product agrees to the last bit or two and cannot differ between Python and JavaScript.
+  var alpha = 1;
+  for (var it = 0; it < iterations; ++it) {
+    var beta = Math.max(1 - alpha, (it + 1) / iterations);
+    rightToLeft(alpha, beta);
+    leftToRight(alpha, beta);
+    alpha *= 0.99;
+  }
+  nodes.forEach(function(n) {
+    var a = n.y0, b = a;
+    n.sourceLinks.forEach(function(l) { l.y0 = a + l.width / 2; a += l.width; });
+    n.targetLinks.forEach(function(l) { l.y1 = b + l.width / 2; b += l.width; });
+  });
+}
 
-  html += '</div></div>';
-  return html;
+// Reads the payload into nodes + drawable flows. Flows that cannot be drawn are listed in `dropped`: a flow on a cycle (every flow whose two ends
+// can reach each other, so A->B and B->A are both listed), and a flow that would not run left to right once `column` hints and graph depth have
+// placed its ends. Flows with no usable end or a value that is not positive are ignored, as are nodes left with no flow.
+function _skModel(b) {
+  b = b || {};
+  var rawN = Array.isArray(b.nodes) ? b.nodes : [], rawL = Array.isArray(b.links) ? b.links : [];
+  var ids = [], at = {}, decl = {};
+  function nodeAt(id) { return at['$' + id]; }
+  rawN.forEach(function(n) {
+    if (!n || typeof n !== 'object') return;
+    var id = _skStr(n.id); if (id === '') return;
+    if (nodeAt(id) === undefined) { at['$' + id] = ids.length; ids.push(id); }
+    decl['$' + id] = n;
+  });
+  var flows = [];
+  rawL.forEach(function(l) {
+    if (!l || typeof l !== 'object') return;
+    var s = _skStr(l.source), t = _skStr(l.target), v = _skVal(l.value);
+    if (s === '' || t === '' || !(v > 0)) return;
+    [s, t].forEach(function(id) { if (nodeAt(id) === undefined) { at['$' + id] = ids.length; ids.push(id); } });
+    flows.push({ s: nodeAt(s), t: nodeAt(t), value: v, color: typeof l.color === 'string' && l.color ? l.color : '' });
+  });
+  var N = ids.length;
+  function labelOf(i) {
+    var d = decl['$' + ids[i]];
+    if (d) { var lb = _skStr(d.label); return lb !== '' ? lb : ids[i]; }
+    return ids[i].charAt(0).toUpperCase() + ids[i].slice(1).toLowerCase();
+  }
+  var dropped = [], gone = [];
+  // cycles: a flow is on one when its target can reach its source
+  var adj = [], i;
+  for (i = 0; i < N; i++) adj.push([]);
+  flows.forEach(function(f) { adj[f.s].push(f.t); });
+  flows.forEach(function(f, k) {
+    var seen = {}, stack = [f.t], hit = false;
+    while (stack.length && !hit) {
+      var u = stack.pop();
+      if (u === f.s) { hit = true; break; }
+      if (seen[u]) continue;
+      seen[u] = true;
+      adj[u].forEach(function(w) { if (!seen[w]) stack.push(w); });
+    }
+    if (hit) gone[k] = true;
+  });
+  var hint = [];
+  for (i = 0; i < N; i++) {
+    var dn = decl['$' + ids[i]], c = dn ? dn.column : undefined;
+    hint.push(typeof c === 'number' && isFinite(c) ? Math.min(_SK_MAXCOL, Math.max(0, Math.floor(c))) : -1);
+  }
+  var layer = [], used = [], ncols = 2;
+  for (;;) {
+    var live = flows.filter(function(f, k) { return !gone[k]; });
+    used = []; for (i = 0; i < N; i++) used.push(false);
+    live.forEach(function(f) { used[f.s] = true; used[f.t] = true; });
+    // depth as d3-sankey computes it: longest path from a node with no incoming flow
+    var depth = [], cur = [], nxt, x = 0, nOut = [];
+    for (i = 0; i < N; i++) { depth.push(0); nOut.push(0); if (used[i]) cur.push(i); }
+    live.forEach(function(f) { nOut[f.s]++; });
+    while (cur.length) {
+      nxt = []; var inN = {};
+      cur.forEach(function(u) { depth[u] = x; live.forEach(function(f) { if (f.s === u && !inN[f.t]) { inN[f.t] = true; nxt.push(f.t); } }); });
+      x++; cur = nxt;
+    }
+    var md = 0, mh = 0;
+    for (i = 0; i < N; i++) if (used[i]) { if (depth[i] > md) md = depth[i]; if (hint[i] > mh) mh = hint[i]; }
+    ncols = Math.max(md + 1, mh + 1, 2);
+    layer = [];
+    for (i = 0; i < N; i++) layer.push(!used[i] ? -1 : hint[i] >= 0 ? Math.min(hint[i], ncols - 1) : (nOut[i] ? depth[i] : ncols - 1));
+    var bad = false;
+    flows.forEach(function(f, k) { if (!gone[k] && layer[f.t] <= layer[f.s]) { gone[k] = true; bad = true; } });
+    if (!bad) break;
+  }
+  var top = 0;
+  for (i = 0; i < N; i++) if (layer[i] > top) top = layer[i];
+  ncols = Math.max(2, top + 1);
+  flows.forEach(function(f, k) {
+    if (gone[k]) dropped.push({ source: labelOf(f.s), target: labelOf(f.t), value: f.value });
+  });
+  var nodes = [], map = {};
+  for (i = 0; i < N; i++) if (used[i]) {
+    var d2 = decl['$' + ids[i]];
+    map[i] = nodes.length;
+    nodes.push({ id: ids[i], label: labelOf(i), layer: layer[i], color: d2 && typeof d2.color === 'string' && d2.color ? d2.color : '' });
+  }
+  var links = [];
+  flows.forEach(function(f, k) { if (!gone[k]) links.push({ source: nodes[map[f.s]], target: nodes[map[f.t]], value: f.value, color: f.color }); });
+  var W = _SK_W + _SK_COL_W * (ncols - 2), H = _SK_H;
+  // label room: layer 0 labels sit left of their node and the last layer's right of theirs; 60px unless a longer label needs more
+  function room(l) { var m = 0; nodes.forEach(function(n) { if (n.layer === l) { var c = Math.min(_skShort(n.label).length, 22); if (c > m) m = c; } }); return Math.min(190, Math.max(60, Math.ceil(m * 6.7) + 16)); }
+  var padL = room(0), padR = room(ncols - 1);
+  if (links.length) _skLayout(nodes, links, padL, 50, W - padR, 300, _SK_NODE_W, _SK_PAD, _SK_ITER);
+  return { nodes: nodes, links: links, dropped: dropped, ncols: ncols, w: W, h: H, padL: padL, padR: padR };
+}
+function _skShort(s) { return s.length > 22 ? s.slice(0, 21) + '…' : s; }
+
+function _skSvg(m, title, sid) {
+  var g = [], lk = [], nd = [], tx = [];
+  m.links.forEach(function(l, i) {
+    var s = l.source, t = l.target, a = s.x1, c = t.x0, mx = (a + c) / 2, col = l.color;
+    var d = 'M' + _skN(a) + ',' + _skN(l.y0) + 'C' + _skN(mx) + ',' + _skN(l.y0) + ',' + _skN(mx) + ',' + _skN(l.y1) + ',' + _skN(c) + ',' + _skN(l.y1);
+    var stroke;
+    if (col) stroke = _esc(col);
+    else {
+      stroke = 'url(#' + sid + 'g' + i + ')';
+      g.push('<linearGradient id="' + sid + 'g' + i + '" gradientUnits="userSpaceOnUse" x1="' + _skN(a) + '" y1="0" x2="' + _skN(c) + '" y2="0"><stop offset="0%" stop-color="' + _esc(_skColor(s)) + '"/><stop offset="100%" stop-color="' + _esc(_skColor(t)) + '"/></linearGradient>');
+    }
+    lk.push('<path class="sk-l" d="' + d + '" stroke="' + stroke + '" stroke-width="' + _skN(Math.max(1, l.width)) + '"><title>' + _esc(s.label) + ' → ' + _esc(t.label) + ': ' + _skFmt(l.value) + '</title></path>');
+  });
+  m.nodes.forEach(function(n, i) {
+    var c = _skColor(n), h = n.y1 - n.y0, mid = n.y0 + h / 2, last = n.layer === m.ncols - 1, first = n.layer === 0;
+    g.push('<linearGradient id="' + sid + 'n' + i + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + _esc(c) + '"/><stop offset="100%" stop-color="' + _esc(c) + '" stop-opacity="0.6"/></linearGradient>');
+    nd.push('<rect x="' + _skN(n.x0) + '" y="' + _skN(n.y0) + '" width="' + _skN(n.x1 - n.x0) + '" height="' + _skN(Math.max(h, 1)) + '" rx="3" ry="3" fill="url(#' + sid + 'n' + i + ')"><title>' + _esc(n.label) + ': ' + _skFmt(n.value) + '</title></rect>');
+    var left = first && !last ? true : false, ax = left ? _skN(n.x0 - 8) : _skN(n.x1 + 8), anc = left ? 'end' : 'start';
+    var halo = (!first && !last) ? ' stroke="rgb(15,23,42)" stroke-width="3" stroke-linejoin="round" paint-order="stroke"' : '';
+    tx.push('<text x="' + ax + '" y="' + _skN(mid + 4) + '" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _esc(_skShort(n.label)) + '</text>'
+      + '<text x="' + ax + '" y="' + _skN(mid + 15) + '" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _skFmt(n.value) + '</text>');
+  });
+  var minw = Math.round(m.w * 0.8);
+  return '<svg role="img" aria-label="' + _esc(title || 'Sankey flow chart') + '" viewBox="0 0 ' + m.w + ' ' + m.h + '" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;min-width:' + minw + 'px;overflow:visible;">'
+    + '<style>#' + sid + ' .sk-l{fill:none;stroke-opacity:0.35;transition:stroke-opacity 0.2s}#' + sid + ' .sk-l:hover{stroke-opacity:0.65}</style>'
+    + '<defs>' + g.join('') + '</defs><g id="' + sid + '">' + lk.join('') + '</g>' + nd.join('') + tx.join('') + '</svg>';
+}
+function _skColor(n) { return n.color || _SK_PAL[n.layer % _SK_PAL.length]; }
+
+_RENDERERS['sankey_flow'] = function(b) {
+  var m = _skModel(b), title = _skStr((b || {}).title);
+  if (!m.links.length && !m.dropped.length) return '';
+  var head = title ? '<div style="margin-bottom:16px;"><div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">' + _esc(title) + '</div></div>' : '';
+  var body = '';
+  if (m.links.length) {
+    var key = m.nodes.map(function(n) { return n.id; }).join('\u0001') + '\u0002' + m.links.map(function(l) { return l.source.id + '\u0003' + l.target.id + '\u0003' + _skFmt(l.value); }).join('\u0001');
+    var sid = 'sk' + _skHash(key);
+    body = '<div style="width:100%;max-width:100%;overflow-x:auto;">' + _skSvg(m, title, sid) + '</div>'
+      + '<table style="' + _SK_SR + '"><thead><tr><th scope="col">Source</th><th scope="col">Target</th><th scope="col">Value</th></tr></thead><tbody>'
+      + m.links.map(function(l) { return '<tr><th scope="row">' + _esc(l.source.label) + '</th><td>' + _esc(l.target.label) + '</td><td>' + _skFmt(l.value) + '</td></tr>'; }).join('') + '</tbody></table>';
+  }
+  var note = '';
+  if (m.dropped.length) {
+    var c = m.dropped.length;
+    note = '<div role="note" style="margin-top:14px;padding:10px 14px;border:1px solid rgba(248,113,113,0.45);border-radius:8px;background:rgba(248,113,113,0.1);color:#fecaca;font-size:0.82rem;line-height:1.5;">'
+      + '<strong>' + c + ' flow' + (c !== 1 ? 's' : '') + ' not shown.</strong> This chart draws flows from left to right; a flow that closes a cycle (A → B → A) or that would run backwards or sideways between the columns set by `column` can\'t be drawn, so it is listed here:'
+      + '<ul style="margin:6px 0 0;padding-left:18px;">' + m.dropped.map(function(d) { return '<li>' + _esc(d.source) + ' → ' + _esc(d.target) + ': ' + _skFmt(d.value) + '</li>'; }).join('') + '</ul></div>';
+  }
+  return '<div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:relative;max-width:100%;min-width:0;box-sizing:border-box;">'
+    + head + body + note + '</div>';
 };
 
 // ─────────────────────────────────────────────────────────
@@ -24267,6 +24521,7 @@ function _tmLayout(groups) {
   var cr = _tmSquarify(groups.map(_tmSum), 0, 0, _TM_W, _TM_H);
   return [cr, groups.map(function(g, i) { return _tmSquarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]); })];
 }
+function _tmFits(r, chars, wpad, hmin) { return r[2] - r[0] >= chars * 7 + wpad && r[3] - r[1] >= hmin; }
 function _tmPct(x, d) { return (x / d * 100).toFixed(3) + '%'; }
 function _tmBox(r) { return 'position:absolute;left:' + _tmPct(r[0], _TM_W) + ';top:' + _tmPct(r[1], _TM_H) + ';width:' + _tmPct(r[2] - r[0], _TM_W) + ';height:' + _tmPct(r[3] - r[1], _TM_H) + ';'; }
 _RENDERERS['treemap'] = function(b) {
@@ -24277,10 +24532,12 @@ _RENDERERS['treemap'] = function(b) {
   var lay = _tmLayout(groups.map(function(m) { return m.map(function(i) { return i.v; }); })), cr = lay[0], ir = lay[1], cells = '', tags = '';
   cats.forEach(function(c, ci) {
     var m = groups[ci], ct = m.reduce(function(s, i) { return s + i.v; }, 0);
+    var ptxt = _ifS(c, 20) + ' ' + _ifFmt(ct), pill = _tmFits(cr[ci], _ifS(c, 20).length + 1 + _ifFmt(ct).length, 12, 40);
     m.forEach(function(i, k) {
-      cells += '<div style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (k === 0 ? '24px' : '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g) { return s + g.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '</div>';
+      var lead = pill && k === 0, show = _tmFits(ir[ci][k], _ifS(i.n, 24).length + 1 + _ifFmt(i.v).length, 18, lead ? 48 : 30);
+      cells += '<div' + (show ? '' : ' title="' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '"') + ' style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? (lead ? '24px' : '6px') + ' 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g) { return s + g.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + (show ? _ifS(i.n, 24) + ' ' + _ifFmt(i.v) : '') + '</div>';
     });
-    tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + _ifS(c, 20) + ' ' + _ifFmt(ct) + '</div>';
+    if (pill) tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>';
   });
   return _ifWrap(_ifTitle(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.</div>' +
     _ifTable(['Item', 'Category', 'Value', 'Share'], items.map(function(i) { return [i.n, i.c, _ifFmt(i.v), (i.v / tot * 100).toFixed(1) + '%']; })));

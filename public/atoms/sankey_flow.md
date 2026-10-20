@@ -1,6 +1,6 @@
 # Sankey Flow
 
-Renders a flow diagram (Sankey flow) where left-hand source nodes connect to right-hand target nodes via beautiful, curved gradient Bezier bands.
+Renders a flow diagram (Sankey flow) where nodes sit in columns from left to right and are connected by curved gradient Bezier bands whose width is the flow value. Two or more columns; columns come from each node's optional `column` hint, or from graph distance when it is absent. Layout is d3-sankey's.
 
 ## Surfaces
 
@@ -10,7 +10,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| nodes | list of dictionaries representing columns (e.g., [{'id': 'revenue', 'label': 'Revenue', 'column': 0, 'color': '#10b981'}, ...]) |
+| nodes | list of dictionaries (e.g., [{'id': 'revenue', 'label': 'Revenue', 'column': 0, 'color': '#10b981'}, ...]); `column` is an optional hint, an integer 0..n for the left-to-right column (0 = leftmost, up to 15); without it the column is the node's distance from the sources (a node with no outgoing flow goes to the last column), so a source -> middle -> target chain gets three columns and the chart is wider by 220px per column beyond two. Flows that close a cycle, or would run backwards between columns, are not drawn and are listed in a note under the chart. |
 | links | list of dictionaries representing flows (e.g., [{'source': 'revenue', 'target': 'marketing', 'value': 25000, 'color': '#38bdf8'}, ...]) |
 | title | string (optional, title of the chart, e.g., 'Financial Flow Allocation') |
 
@@ -19,16 +19,6 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 ```json
 {
   "type": "sankey_flow",
-  "nodes": [
-    {
-      "id": "a",
-      "label": "Source"
-    },
-    {
-      "id": "b",
-      "label": "Target"
-    }
-  ],
   "links": [
     {
       "label": "GitHub",
