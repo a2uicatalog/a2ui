@@ -211,6 +211,26 @@ def test_the_frozen_copies_really_are_frozen():
             "declaration.")
 
 
+def test_the_frozen_renderer_dirs_really_are_frozen():
+    """Same check for whole frozen GAS renderer trees (declared 2026-10-20).
+
+    The signal is a fix that landed in gas-wired-renderer after the import: the globe_3d text
+    alternative (_g3dAltHtml). If a declared tree has it, it is being maintained after all and
+    the declaration has become a lie; if the tree is gone, the entry should go too.
+    """
+    since_import = ("_g3dAltHtml",)
+    for entry in MANIFEST["known_debt"]["frozen_renderer_dirs"]:
+        d = ROOT / entry["path"]
+        assert d.is_dir(), f"{entry['path']} no longer exists: delete its frozen_renderer_dirs entry"
+        assert entry.get("why"), f"{entry['path']}: say why it is kept frozen"
+        body = "".join(p.read_text(errors="ignore") for p in sorted(d.glob("atoms_*.gs")))
+        present = [m for m in since_import if m in body]
+        assert not present, (
+            f"{entry['path']} has picked up post-import renderer work {present}: it is being "
+            "maintained after all. Bring it fully in sync (and give it a generator) or remove "
+            "the declaration.")
+
+
 # ─── stateless_origins — a promise checked, not just written ─────────────────
 #
 # Roast panel finding, 2026-09-10: play.a2uicatalog.ai's ENTIRE security

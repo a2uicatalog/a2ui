@@ -222,6 +222,22 @@ known_debt:
     - apps-script-surface/gas-schema-renderer/A2UIState.html      # schema dialect, superseded
     - apps-script-surface/gas-wired-renderer-starter/A2UIState.html  # starter template
 
+  frozen_renderer_dirs:  # declared 2026-10-20 after the sankey/globe a11y fix touched only
+                         # gas-wired-renderer and a review asked whether the other two GAS
+                         # renderer trees were "frozen" (the list above covers only the
+                         # A2UIState.html dispatch files). They are whole hand-copies of the
+                         # 2026-07-05 import with no renderer change since 26c4ebfea; every
+                         # atom fix lands in gas-wired-renderer only. Same rule as above:
+                         # listed, not patched. Owner decision 2026-10-20: keep both as is.
+                         # Audited by test_the_frozen_renderer_dirs_really_are_frozen.
+    - path: apps-script-surface/gas-schema-renderer
+      why: legacy schema renderer; deployment @51 stays live as the snapshot linked from two
+        LinkedIn posts (2026-06-26) - the home page and two knowledge apps, which render
+        neither sankey_flow nor globe_3d (checked 2026-10-20)
+    - path: apps-script-surface/gas-fakes-schema-renderer-private
+      why: private renderer; only @HEAD (owner sign-in) is live, the anonymous deployments
+        were retired 2026-07-03 (make_url.py renderer='fakes' targets it, owner-only)
+
 # Declared processes — management as data. Run via: python3 scripts/ops.py run <name>
 # The runner executes from repo root, resolves {{inventory.paths}} from this
 # file, stops on first failure, and appends every run to ops/log.jsonl.
