@@ -67,6 +67,40 @@ just looks plainer.
 
 ---
 
+## d3-geo (Mike Bostock)
+
+- **Project:** d3-geo 3.1.1 — `geoOrthographic`, `geoMercator` (with the projection `rotate`), `geoGraticule` and `geoInterpolate` (great-circle interpolation)
+- **Website:** https://github.com/d3/d3-geo
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2024 Mike Bostock
+- **Vendored as:** nothing is vendored; the maths is ported by hand into `_geo_ortho`, `_geo_merc`,
+  `_geo_graticule`, `_geo_interp` (and the rotation they share) in `renderers/web_article.py`, and
+  stamped byte for byte as `_geoLib` into `apps-script-surface/gas-wired-renderer/atoms_globe.gs` and
+  `apps-script-surface/gas-schema-renderer/atoms_globe.gs` (+ its `.js` mirror) and into the page script of the two
+  atoms (`_GEO_LIB_JS`). Checked against the real library's output (and d3-array 3.2.4's `range`, also ISC, used by
+  `geoGraticule`) by `tests/test_geo_d3.py`. Deliberate differences: the Mercator latitude is clamped to ±85.05° (d3
+  returns Infinity at the poles) and lines are densified and clipped to the horizon by this code rather than by d3's
+  adaptive resampling / clip-angle stream.
+- **Used by:** the `globe_3d` and `geo_mercator_radar` atoms' server-side SVG in both renderers, and the small
+  in-page script that redraws the same scene on drag. No D3 is loaded at runtime and no geodata is added by this port.
+- **Licence note:** the `LICENSE` file shipped with d3-geo 3.1.1 is the ISC text above **plus a second, MIT-style notice
+  for GeographicLib (Copyright 2008-2012 Charles Karney)**, which covers d3-geo's geodesic code. None of the code ported
+  here derives from GeographicLib (graticule, rotation, interpolation, orthographic and Mercator projection are
+  Bostock's own); if the geodesic functions are ever ported, that MIT notice must be carried too.
+
+ISC License (d3-geo):
+
+> Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
+> granted, provided that the above copyright notice and this permission notice appear in all copies.
+>
+> THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+> IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+> INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+> AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+> PERFORMANCE OF THIS SOFTWARE.
+
+---
+
 ## d3-sankey (Mike Bostock)
 
 - **Project:** d3-sankey 0.12.3 — the Sankey layout: node values, column placement by graph depth, 6 relaxation
