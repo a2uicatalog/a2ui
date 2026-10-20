@@ -21775,7 +21775,82 @@ def _render_decision_tree_nested(title_html: str, nodes: list) -> str:
             + title_html + ''.join(render(n) for n in nodes) + '</div>')
 
 
+# ─── decision_tree `layout: "tree"` (I44): the nested {text, children} payload as org_chart's static top-down tidy tree (d3-hierarchy 3.1.2 tree(), _oc_layout), drawn by _oc_render_flat.
+# Twin: _dtFlatten / _dtGate in gas-wired-renderer/atoms_charts.gs. Limits: 31 nodes, 6 levels, labels of at most 32 characters; beyond them the outline is shown with a note.
+_DT_MAX_NODES, _DT_MAX_LEVELS, _DT_MAX_LABEL = 31, 6, 32
+_DT_WHY = {'nodes': 'This tree has more than 31 nodes, more than the tree layout draws; shown as the outline.',
+           'levels': 'This tree has more than 6 levels, more than the tree layout draws; shown as the outline.',
+           'label': 'A label is longer than 32 characters, more than a tree box holds; shown as the outline.',
+           'form': 'The tree layout draws the nested {text, children} form; shown as the outline.'}
+
+
+def _dt_label(n):
+    for k in ('text', 'label', 'question'):
+        v = n.get(k)
+        if _if_truthy(v):
+            return v if isinstance(v, str) else _if_numstr(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else ''
+    return ''
+
+
+def _dt_kids(n):
+    c = n.get('children')
+    if not _if_truthy(c):
+        c = n.get('branches')
+    return c if isinstance(c, list) else []
+
+
+def _dt_flatten(nodes):
+    """Pre-order flat tree of the nested payload: ([{l, t, depth, par, kids}], top indices), or (None, reason) beyond the limits."""
+    flat, fail = [], []
+
+    def build(lst, depth, par):
+        out = []
+        for n in lst:
+            if fail:
+                return out
+            if not isinstance(n, dict):
+                continue
+            if depth >= _DT_MAX_LEVELS:
+                fail.append('levels')
+                return out
+            if len(flat) >= _DT_MAX_NODES:
+                fail.append('nodes')
+                return out
+            lab = _dt_label(n)
+            if _oc_chars(lab) > _DT_MAX_LABEL:
+                fail.append('label')
+                return out
+            f = {'l': lab, 't': lab, 'depth': depth, 'par': par, 'kids': []}
+            flat.append(f)
+            out.append(len(flat) - 1)
+            f['kids'] = build(_dt_kids(n), depth + 1, len(flat) - 1)
+        return out
+    top = build(nodes, 0, -1)
+    return (None, fail[0]) if fail else (flat, top)
+
+
+def _dt_gate(b, nodes):
+    """(html, tail): html is the drawn tree or '' to keep the outline; tail goes after the outline (a reason note and/or the version note)."""
+    vn = _hg_version_note(b, 'decision_tree')
+    if b.get('layout') != 'tree' or not isinstance(b.get('layout'), str) or not isinstance(nodes, list) or not nodes:
+        return '', vn
+    if not any(isinstance(n, dict) and 'id' not in n for n in nodes):
+        return '', _hg_note(_DT_WHY['form']) + vn if any(isinstance(n, dict) for n in nodes) else vn
+    flat, top = _dt_flatten(nodes)
+    if flat is None:
+        return '', _hg_note(_DT_WHY[top]) + vn
+    if not flat:
+        return '', vn
+    return _oc_render_flat(b, flat, top, vn, 'tree', _DT_MAX_LABEL), ''
+
+
 def _render_decision_tree(b: dict) -> str:
+    nodes = b.get('nodes', [])
+    html, tail = _dt_gate(b, nodes)
+    return html or (_render_decision_tree_outline(b) + tail)
+
+
+def _render_decision_tree_outline(b: dict) -> str:
     title = b.get('title', '')
     nodes = b.get('nodes', [])
     title_html = ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:12px;">'
@@ -33110,6 +33185,12 @@ def _render_org_chart(b: dict) -> str:
         return _if_wrap(_if_title(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>' + note)
     lay_v = _if_g(b, 'layout')
     mode = lay_v if isinstance(lay_v, str) and lay_v in ('cluster', 'radial') else 'tree'
+    return _oc_render_flat(b, flat, top, note, mode, 28)
+
+
+def _oc_render_flat(b, flat, top, note, mode, lmax):
+    """Everything org_chart does once the tree is flattened (also used by decision_tree layout "tree"): box widths, the d3 tidy tree / cluster / radial layout,
+    the nested ul/li boxes and the links. lmax: the longest label a box prints."""
     total = len(flat)
     ws = [_oc_width(f['t'], f['depth'] == 0) for f in flat]
     kids = [f['kids'] for f in flat]
@@ -33146,7 +33227,7 @@ def _render_org_chart(b: dict) -> str:
                 k = _if_k(cnt[0], total)
                 cnt[0] += 1
                 out += ('<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tm_pct(max(0, box[i][0]), cw) + ';top:' + _tm_pct(max(0, box[i][1]), ch) + ';width:' + _tm_pct(ws[i], cw) + ';height:' + str(nh) + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
-                        + _if_card('padding:2px 6px;' + ('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if f['depth'] == 0 else '') + k + _IF_FADE) + '">' + _if_s(f['l'], 28) + '</div>')
+                        + _if_card('padding:2px 6px;' + ('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if f['depth'] == 0 else '') + k + _IF_FADE) + '">' + _if_s(f['l'], lmax) + '</div>')
                 if link[i] is not None:
                     paths_l.append('<path d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
                 if f['kids']:

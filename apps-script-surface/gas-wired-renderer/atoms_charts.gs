@@ -2936,9 +2936,63 @@ _RENDERERS['live_clock'] = function(b) {
     + '</div>';
 };
 
+// ── decision_tree `layout: "tree"` (I44): the nested {text, children} payload as org_chart's static top-down tidy tree (d3-hierarchy 3.1.2 tree(), _ocLayout),
+// drawn by _ocRenderFlat in atoms_infographic.gs. Twin: _dt_flatten / _dt_gate in renderers/web_article.py. Limits: 31 nodes, 6 levels, labels of at most 32 characters;
+// beyond them the outline is shown with a note.
+var _DT_MAX_NODES = 31, _DT_MAX_LEVELS = 6, _DT_MAX_LABEL = 32;
+var _DT_WHY = { nodes: 'This tree has more than 31 nodes, more than the tree layout draws; shown as the outline.',
+  levels: 'This tree has more than 6 levels, more than the tree layout draws; shown as the outline.',
+  label: 'A label is longer than 32 characters, more than a tree box holds; shown as the outline.',
+  form: 'The tree layout draws the nested {text, children} form; shown as the outline.' };
+function _dtLabel(n) {
+  var ks = ['text', 'label', 'question'], i, v;
+  for (i = 0; i < ks.length; i++) {
+    v = n[ks[i]];
+    if (v) return typeof v === 'string' ? v : (typeof v === 'number' && isFinite(v)) ? String(v) : '';
+  }
+  return '';
+}
+function _dtKids(n) {
+  var c = n.children || n.branches;
+  return Array.isArray(c) ? c : [];
+}
+function _dtFlatten(nodes) {
+  var flat = [], fail = '';
+  var build = function(lst, depth, par) {
+    var out = [], i, n, lab, f;
+    for (i = 0; i < lst.length; i++) {
+      n = lst[i];
+      if (fail) return out;
+      if (!n || typeof n !== 'object' || Array.isArray(n)) continue;
+      if (depth >= _DT_MAX_LEVELS) { fail = 'levels'; return out; }
+      if (flat.length >= _DT_MAX_NODES) { fail = 'nodes'; return out; }
+      lab = _dtLabel(n);
+      if (lab.length > _DT_MAX_LABEL) { fail = 'label'; return out; }
+      f = { l: lab, t: lab, depth: depth, par: par, kids: [] };
+      flat.push(f); out.push(flat.length - 1);
+      f.kids = build(_dtKids(n), depth + 1, flat.length - 1);
+    }
+    return out;
+  };
+  var top = build(nodes, 0, -1);
+  return fail ? { reason: fail } : { flat: flat, top: top };
+}
+function _dtGate(b, nodes) {
+  var vn = _hgVersionNote(b, 'decision_tree');
+  if (b.layout !== 'tree' || !Array.isArray(nodes) || !nodes.length) return { html: '', tail: vn };
+  var nested = nodes.some(function(n) { return n && typeof n === 'object' && !Array.isArray(n) && !('id' in n); });
+  if (!nested) return { html: '', tail: nodes.some(function(n) { return n && typeof n === 'object' && !Array.isArray(n); }) ? _hgNote(_DT_WHY.form) + vn : vn };
+  var r = _dtFlatten(nodes);
+  if (r.reason) return { html: '', tail: _hgNote(_DT_WHY[r.reason]) + vn };
+  if (!r.flat.length) return { html: '', tail: vn };
+  return { html: _ocRenderFlat(b, r.flat, r.top, vn, 'tree', _DT_MAX_LABEL), tail: '' };
+}
+
 _RENDERERS['decision_tree'] = function(b) {
   var nodes = b.nodes || b.tree || [];
   var title = b.title || '';
+  var _dt = _dtGate(b, nodes);
+  if (_dt.html) return _dt.html;
 
   function renderNode(node, depth) {
     depth = depth || 0;
@@ -2958,7 +3012,7 @@ _RENDERERS['decision_tree'] = function(b) {
   return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin:1rem 0;">'
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:14px;">' + _esc(title) + '</div>' : '')
     + nodes.map(function(n) { return renderNode(n, 0); }).join('')
-    + '</div>';
+    + '</div>' + _dt.tail;
 };
 
 _RENDERERS['step_reveal_sequence'] = function(b) {

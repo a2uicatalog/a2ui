@@ -936,6 +936,10 @@ _RENDERERS['org_chart'] = function(b) {
   };
   var top = build('', 0, -1), note = _hgVersionNote(b, 'org_chart'), mode = (b.layout === 'cluster' || b.layout === 'radial') ? b.layout : 'tree';
   if (!flat.length) return _ifWrap(_ifTitle(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>' + note);
+  return _ocRenderFlat(b, flat, top, note, mode, 28);
+};
+// Everything org_chart does once the tree is flattened (also used by decision_tree layout "tree"): widths, the d3 layout, the nested ul/li boxes and the links. lmax: the longest label a box prints.
+function _ocRenderFlat(b, flat, top, note, mode, lmax) {
   var total = flat.length, ws = flat.map(function(f) { return _ocWidth(f.t, f.depth === 0); });
   var kids = flat.map(function(f) { return f.kids; }), virt = top.length !== 1, root;
   if (virt) { kids.push(top); ws.push(0); root = total; } else { root = top[0]; }
@@ -953,7 +957,7 @@ _RENDERERS['org_chart'] = function(b) {
         var f = flat[i], k = _ifK(cnt, total), out;
         cnt++;
         out = '<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tmPct(Math.max(0, box[i][0]), cw) + ';top:' + _tmPct(Math.max(0, box[i][1]), ch) + ';width:' + _tmPct(ws[i], cw) + ';height:' + nh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
-          + _ifCard('padding:2px 6px;' + (f.depth === 0 ? 'background:#E0E7FF;color:#1E1B4B;font-weight:700;' : '') + k + _IF_FADE) + '">' + _ifS(f.l, 28) + '</div>';
+          + _ifCard('padding:2px 6px;' + (f.depth === 0 ? 'background:#E0E7FF;color:#1E1B4B;font-weight:700;' : '') + k + _IF_FADE) + '">' + _ifS(f.l, lmax) + '</div>';
         if (link[i] !== undefined) paths.push('<path d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>');
         if (f.kids.length) out += emit(f.kids);
         return out + '</li>';
@@ -996,7 +1000,7 @@ _RENDERERS['org_chart'] = function(b) {
   var css = '<style>.' + cls + ' .oct{display:none}.' + cls + ' .ocl{display:block}@container (min-width:' + w + 'px){.' + cls + ' .oct{display:block}.' + cls + ' .ocl{display:none}}' +
     '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>';
   return _ifWrap(_ifTitle(b) + css + '<div class="ifoct ' + cls + '" data-oc="both"' + dl + ' style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>' + note);
-};
+}
 
 // ── histogram (proposal) ─────────────────────────────────────────────────────────────────────────────────────
 // d3-array 3.2.4 bin() with thresholdSturges and the default (niced) domain, ported by hand (ISC, Mike Bostock); twin of _hg_bin in renderers/web_article.py.
