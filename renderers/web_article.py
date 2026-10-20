@@ -23333,11 +23333,454 @@ def _g3d_js(v) -> str:
             .replace('&', '\\u0026'))
 
 
+# ── d3-geo ports (geoOrthographic, geoMercator, geoGraticule, geoInterpolate, rotation) ──────────────
+# Ported by hand from d3-geo 3.1.1 (ISC); checked against the real library by tests/test_geo_d3.py. The
+# same maths is stamped, byte for byte, into the Apps Script twins (`_geoLib` in atoms_globe.gs) and the
+# page script of the two atoms below (`_GEO_LIB_JS`); the scene/SVG functions here mirror its output.
+import math as _gm
+
+_GEO_PI = _gm.pi
+_GEO_TAU = _gm.pi * 2
+_GEO_D2R = _gm.pi / 180
+_GEO_R2D = 180 / _gm.pi
+_GEO_EPS = 1e-6
+_GEO_MAXLAT = 85.0511287798066 * _GEO_D2R
+
+
+def _geo_round(x):
+    return _gm.floor(x + 0.5)  # JS Math.round
+
+
+def _geo_range(a, b, s):
+    n = max(0, int(_gm.ceil((b - a) / s)))
+    return [a + i * s for i in range(n)]
+
+
+def _geo_rl(d):
+    def f(l, p):
+        l += d
+        if abs(l) > _GEO_PI:
+            l -= _geo_round(l / _GEO_TAU) * _GEO_TAU
+        return l, p
+    return f
+
+
+def _geo_rpg(dp, dg):
+    cdp, sdp, cdg, sdg = _gm.cos(dp), _gm.sin(dp), _gm.cos(dg), _gm.sin(dg)
+
+    def f(l, p):
+        cp = _gm.cos(p)
+        x, y, z = _gm.cos(l) * cp, _gm.sin(l) * cp, _gm.sin(p)
+        k = z * cdp + x * sdp
+        return (_gm.atan2(y * cdg - k * sdg, x * cdp - z * sdp),
+                _gm.asin(max(-1, min(1, k * cdg + y * sdg))))
+    return f
+
+
+def _geo_ident(l, p):
+    if abs(l) > _GEO_PI:
+        l -= _geo_round(l / _GEO_TAU) * _GEO_TAU
+    return l, p
+
+
+def _geo_rotation(dl, dp, dg):
+    dl = _gm.fmod(dl, _GEO_TAU)
+    if dl:
+        if dp or dg:
+            a, b = _geo_rl(dl), _geo_rpg(dp, dg)
+            return lambda l, p: b(*a(l, p))
+        return _geo_rl(dl)
+    return _geo_rpg(dp, dg) if (dp or dg) else _geo_ident
+
+
+def _geo_ortho(rot, k, tx, ty):
+    """d3.geoOrthographic().rotate(rot).scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y, z]; z >= 0 is the near side."""
+    r = _geo_rotation(rot[0] * _GEO_D2R, rot[1] * _GEO_D2R, (rot[2] if len(rot) > 2 else 0) * _GEO_D2R)
+
+    def f(lo, la):
+        q = r(lo * _GEO_D2R, la * _GEO_D2R)
+        cp = _gm.cos(q[1])
+        return [tx + k * (cp * _gm.sin(q[0])), ty - k * _gm.sin(q[1]), cp * _gm.cos(q[0])]
+    return f
+
+
+def _geo_merc(rot, k, tx, ty):
+    """d3.geoMercator().rotate(rot).scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y]; latitude clamped to +-85.05 (d3 gives Infinity at the poles)."""
+    r = _geo_rotation(rot[0] * _GEO_D2R, rot[1] * _GEO_D2R, (rot[2] if len(rot) > 2 else 0) * _GEO_D2R)
+
+    def f(lo, la):
+        q = r(lo * _GEO_D2R, la * _GEO_D2R)
+        p = max(-_GEO_MAXLAT, min(_GEO_MAXLAT, q[1]))
+        return [tx + k * q[0], ty - k * _gm.log(_gm.tan((_GEO_PI / 2 + p) / 2))]
+    return f
+
+
+def _geo_gx(y0, y1, dy):
+    ys = _geo_range(y0, y1 - _GEO_EPS, dy) + [y1]
+    return lambda x: [[x, v] for v in ys]
+
+
+def _geo_gy(x0, x1, dx):
+    xs = _geo_range(x0, x1 - _GEO_EPS, dx) + [x1]
+    return lambda y: [[v, y] for v in xs]
+
+
+def _geo_graticule(st, ma=None, mi=None):
+    """d3.geoGraticule().step(st) [.stepMajor(ma)] [.extentMinor(mi)] .lines() -> list of coordinate lists."""
+    dx, dy = st
+    DX, DY = (ma[0], ma[1]) if ma else (dx, dy)
+    x0, x1, y0, y1 = -180, 180, -80 - _GEO_EPS, 80 + _GEO_EPS
+    if mi:
+        x0, x1, y0, y1 = mi[0][0], mi[1][0], mi[0][1], mi[1][1]
+    X0, X1, Y0, Y1 = -180, 180, -90 + _GEO_EPS, 90 - _GEO_EPS
+    x, y, X, Y = _geo_gx(y0, y1, 90), _geo_gy(x0, x1, 2.5), _geo_gx(Y0, Y1, 90), _geo_gy(X0, X1, 2.5)
+    out = [X(v) for v in _geo_range(_gm.ceil(X0 / DX) * DX, X1, DX)]
+    out += [Y(v) for v in _geo_range(_gm.ceil(Y0 / DY) * DY, Y1, DY)]
+    out += [x(v) for v in _geo_range(_gm.ceil(x0 / dx) * dx, x1, dx) if abs(_gm.fmod(v, DX)) > _GEO_EPS]
+    out += [y(v) for v in _geo_range(_gm.ceil(y0 / dy) * dy, y1, dy) if abs(_gm.fmod(v, DY)) > _GEO_EPS]
+    return out
+
+
+def _geo_hav(x):
+    x = _gm.sin(x / 2)
+    return x * x
+
+
+def _geo_interp(a, b):
+    """d3.geoInterpolate(a, b): returns (f, distance_in_radians); f(t) -> [lon, lat]."""
+    x0, y0, x1, y1 = a[0] * _GEO_D2R, a[1] * _GEO_D2R, b[0] * _GEO_D2R, b[1] * _GEO_D2R
+    cy0, sy0, cy1, sy1 = _gm.cos(y0), _gm.sin(y0), _gm.cos(y1), _gm.sin(y1)
+    kx0, ky0, kx1, ky1 = cy0 * _gm.cos(x0), cy0 * _gm.sin(x0), cy1 * _gm.cos(x1), cy1 * _gm.sin(x1)
+    d = 2 * _gm.asin(min(1, _gm.sqrt(_geo_hav(y1 - y0) + cy0 * cy1 * _geo_hav(x1 - x0))))
+    k = _gm.sin(d)
+    if d:
+        def f(t):
+            t = t * d
+            B = _gm.sin(t) / k
+            A = _gm.sin(d - t) / k
+            x, y, z = A * kx0 + B * kx1, A * ky0 + B * ky1, A * sy0 + B * sy1
+            return [_gm.atan2(y, x) * _GEO_R2D, _gm.atan2(z, _gm.sqrt(x * x + y * y)) * _GEO_R2D]
+    else:
+        def f(t):
+            return [x0 * _GEO_R2D, y0 * _GEO_R2D]
+    return f, d
+
+
+def _geo_densify(line, step):
+    out = [line[0]]
+    for i in range(1, len(line)):
+        f, d = _geo_interp(line[i - 1], line[i])
+        n = max(1, int(_gm.ceil(d * _GEO_R2D / step)))
+        for j in range(1, n):
+            out.append(f(j / n))
+        out.append(line[i])
+    return out
+
+
+def _geo_edge(a, b, cx, cy, k):
+    t = a[2] / (a[2] - b[2])
+    x = a[0] + (b[0] - a[0]) * t - cx
+    y = a[1] + (b[1] - a[1]) * t - cy
+    L = _gm.sqrt(x * x + y * y)
+    return [cx + x * k / L, cy + y * k / L] if L else [cx + x, cy + y]
+
+
+def _geo_clip(P, front, cx, cy, k):
+    out, cur = [], None
+    for i, p in enumerate(P):
+        q = p[2] >= 0 if front else p[2] < 0
+        if q:
+            if cur is None:
+                cur = []
+                out.append(cur)
+                if i > 0 and ((P[i - 1][2] < 0) if front else (P[i - 1][2] >= 0)):
+                    cur.append(_geo_edge(P[i - 1], p, cx, cy, k))
+            cur.append([p[0], p[1]])
+        elif cur is not None:
+            cur.append(_geo_edge(P[i - 1], p, cx, cy, k))
+            cur = None
+    return [s for s in out if len(s) > 1]
+
+
+def _geo_focus(C):
+    x = y = z = 0.0
+    n = 0
+    pts = [(d['lat'], d['lon']) for d in (C.get('dots') or [])]
+    for a in (C.get('arcs') or []):
+        pts += [(a['from'][0], a['from'][1]), (a['to'][0], a['to'][1])]
+    for la, lo in pts:
+        a_, o_ = la * _GEO_D2R, lo * _GEO_D2R
+        x += _gm.cos(a_) * _gm.cos(o_)
+        y += _gm.cos(a_) * _gm.sin(o_)
+        z += _gm.sin(a_)
+        n += 1
+    if not n or _gm.sqrt(x * x + y * y + z * z) < 1e-6 * n:
+        return [0, 0]
+    return [_gm.atan2(y, x) * _GEO_R2D, _gm.atan2(z, _gm.sqrt(x * x + y * y)) * _GEO_R2D]
+
+
+def _geo_globe_scene(C, rot, S, now=None):
+    R, cx, cy = S * 0.42, S / 2, S / 2
+    pr = _geo_ortho(rot, R, cx, cy)
+    n = C.get('lines') or 10
+    sc = {'S': S, 'cx': cx, 'cy': cy, 'R': R, 'back': [], 'front': [], 'arcs': [], 'pins': [], 'land': []}
+    for ring in (C.get('land') or []):
+        sc['land'] += _geo_clip([pr(q[0] / 10, q[1] / 10) for q in ring], True, cx, cy, R)
+    for l in _geo_graticule([360 / n, 180 / n]):
+        P = [pr(q[0], q[1]) for q in _geo_densify(l, 2.5)]
+        sc['front'] += _geo_clip(P, True, cx, cy, R)
+        sc['back'] += _geo_clip(P, False, cx, cy, R)
+    for ai, a in enumerate(C.get('arcs') or []):
+        segs = a.get('segments') or 50
+        f, _d = _geo_interp([a['from'][1], a['from'][0]], [a['to'][1], a['to'][0]])
+        P = []
+        for i in range(segs + 1):
+            e = f(i / segs)
+            P.append(pr(e[0], e[1]))
+        dot = None
+        if now is not None:
+            e = f(_gm.fmod((now / 2500) + ai * 0.33, 1))
+            e = pr(e[0], e[1])
+            if e[2] > 0:
+                dot = [e[0], e[1]]
+        sc['arcs'].append({'pl': _geo_clip(P, True, cx, cy, R), 'color': a.get('color') or None, 'dot': dot})
+    for i, d in enumerate(C.get('dots') or []):
+        e = pr(d['lon'], d['lat'])
+        if e[2] < -0.1:
+            continue
+        sc['pins'].append({'x': e[0], 'y': e[1], 'a': max(0.25, min(1, e[2] + 0.5)), 'label': d.get('label') or '',
+                           'color': d.get('color') or None, 'i': i, 'z': e[2]})
+    return sc
+
+
+def _geo_radar_scene(C, W, H, pan):
+    k = W / _GEO_TAU
+    pr = _geo_merc([pan[0], 0, 0], k, W / 2, H / 2 + pan[1])
+    sc = {'W': W, 'H': H, 'k': k, 'grat': [], 'links': [], 'nodes': []}
+    by_id = {}
+
+    def split(P):
+        out, cur = [], []
+        for i, p in enumerate(P):
+            if i and abs(p[0] - P[i - 1][0]) > W / 2:
+                if len(cur) > 1:
+                    out.append(cur)
+                cur = []
+            cur.append(p)
+        if len(cur) > 1:
+            out.append(cur)
+        return out
+    for l in _geo_graticule([30, 30], [360, 360], [[-180, -60 - _GEO_EPS], [180, 60 + _GEO_EPS]]):
+        sc['grat'] += split([pr(q[0], q[1]) for q in _geo_densify(l, 2.5)])
+    for nd in (C.get('nodes') or []):
+        by_id[nd['id']] = nd
+    for l in (C.get('links') or []):
+        a, b = by_id.get(l['from']), by_id.get(l['to'])
+        if not a or not b:
+            continue
+        sc['links'] += split([pr(q[0], q[1]) for q in _geo_densify([[a['lon'], a['lat']], [b['lon'], b['lat']]], 2.5)])
+    for i, nd in enumerate(C.get('nodes') or []):
+        e = pr(nd['lon'], nd['lat'])
+        sc['nodes'].append({'x': e[0], 'y': e[1], 'name': nd.get('name') or '', 'value': nd.get('value', ''), 'i': i, 'lat': nd['lat']})
+    return sc
+
+
+def _geo_jsnum(x):
+    if x != x:
+        return 'NaN'
+    if x == int(x) and abs(x) < 1e21:
+        return str(int(x))
+    return repr(x)
+
+
+def _geo_n2(v):
+    return _geo_jsnum(_gm.floor(v * 100 + 0.5) / 100)
+
+
+def _geo_jsstr(v):
+    if isinstance(v, bool):
+        return 'true' if v else 'false'
+    if isinstance(v, (int, float)):
+        return _geo_jsnum(v)
+    return str(v)
+
+
+def _geo_esc(s):
+    return _geo_jsstr(s).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+
+
+_GEO_COL_RE = None
+
+
+def _geo_col(c, d):
+    import re
+    global _GEO_COL_RE
+    if _GEO_COL_RE is None:
+        _GEO_COL_RE = re.compile(r'^(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)\Z')
+    return c if isinstance(c, str) and _GEO_COL_RE.match(c) else d
+
+
+def _geo_pd(pls):
+    return ''.join(''.join(('L' if i else 'M') + _geo_n2(p[0]) + ' ' + _geo_n2(p[1]) for i, p in enumerate(pl)) for pl in pls)
+
+
+def _geo_svg_globe(sc, c, earth, uid):
+    o, g, s = [], uid + 'g', 'style="'
+    if earth:
+        o.append('<defs><radialGradient id="' + g + '" cx="' + _geo_n2(sc['cx']) + '" cy="' + _geo_n2(sc['cy']) + '" r="' + _geo_n2(sc['R'])
+                 + '" fx="' + _geo_n2(sc['cx'] - sc['R'] * 0.28) + '" fy="' + _geo_n2(sc['cy'] - sc['R'] * 0.28) + '" fr="' + _geo_n2(sc['R'] * 0.05)
+                 + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="0.7" stop-color="#0c1a4a"/><stop offset="1" stop-color="#000"/></radialGradient></defs>')
+    o.append('<circle cx="' + _geo_n2(sc['cx']) + '" cy="' + _geo_n2(sc['cy']) + '" r="' + _geo_n2(sc['R']) + '" '
+             + ('fill="url(#' + g + ')"' if earth else s + 'fill:' + c + '" fill-opacity="0.12"') + ' ' + s + 'stroke:' + c + '" stroke-opacity="0.35" stroke-width="1.5"/>')
+    if sc['land']:
+        o.append('<path d="' + _geo_pd(sc['land']) + 'Z" fill="#1a4a3a"/>')
+    o.append('<path d="' + _geo_pd(sc['back']) + '" fill="none" ' + s + 'stroke:' + c + '" stroke-opacity="0.15" stroke-width="0.6" stroke-dasharray="3 3"/>')
+    o.append('<path d="' + _geo_pd(sc['front']) + '" fill="none" ' + s + 'stroke:' + c + '" stroke-opacity="0.7" stroke-width="1"/>')
+    for a in sc['arcs']:
+        o.append('<path d="' + _geo_pd(a['pl']) + '" fill="none" ' + s + 'stroke:' + _geo_col(a['color'], c) + '" stroke-opacity="0.8" stroke-width="1.5"/>')
+    for p in sc['pins']:
+        dc = _geo_col(p['color'], c)
+        o.append('<circle cx="' + _geo_n2(p['x']) + '" cy="' + _geo_n2(p['y']) + '" r="4" ' + s + 'fill:' + dc + '" fill-opacity="' + _geo_n2(p['a']) + '"/>')
+        if p['label']:
+            o.append('<text x="' + _geo_n2(p['x'] + 7) + '" y="' + _geo_n2(p['y'] + 4) + '" font-family="sans-serif" font-size="11" font-weight="bold" '
+                     + s + 'fill:' + dc + '">' + _geo_esc(p['label']) + '</text>')
+    S = _geo_jsstr(sc['S'])
+    return ('<svg xmlns="http://www.w3.org/2000/svg" id="' + uid + 's" viewBox="0 0 ' + S + ' ' + S + '" width="' + S + '" height="' + S
+            + '" aria-hidden="true" focusable="false" style="display:block">' + ''.join(o) + '</svg>')
+
+
+def _geo_svg_radar(sc, c):
+    o = ['<path d="' + _geo_pd(sc['grat']) + '" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>',
+         '<path class="gmrl" d="' + _geo_pd(sc['links']) + '" fill="none" style="stroke:' + c + '" stroke-opacity="0.55" stroke-width="1.5" stroke-dasharray="4 4"/>']
+    for p in sc['nodes']:
+        o.append('<circle class="gmrp" cx="' + _geo_n2(p['x']) + '" cy="' + _geo_n2(p['y']) + '" r="10" fill="none" style="stroke:' + c + '" stroke-opacity="0.3"/>')
+        o.append('<circle cx="' + _geo_n2(p['x']) + '" cy="' + _geo_n2(p['y']) + '" r="4" style="fill:' + c + '"/>')
+        o.append('<text x="' + _geo_n2(p['x'] + 10) + '" y="' + _geo_n2(p['y'] - 2) + '" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff">' + _geo_esc(p['name']) + '</text>')
+        if p['value'] != '':
+            o.append('<text x="' + _geo_n2(p['x'] + 10) + '" y="' + _geo_n2(p['y'] + 9) + '" font-family="monospace" font-size="9" fill="#b8c0cc">' + _geo_esc(p['value']) + '</text>')
+    return ''.join(o)
+
+
+_GEO_LIB_JS = r'''function _geoLib(){
+var PI=Math.PI,TAU=PI*2,D2R=PI/180,R2D=180/PI,EPS=1e-6,MAXLAT=85.0511287798066*D2R;
+function range(a,b,s){var n=Math.max(0,Math.ceil((b-a)/s))|0,r=new Array(n),i;for(i=0;i<n;i++)r[i]=a+i*s;return r;}
+function rl(d){return function(l,p){l+=d;if(Math.abs(l)>PI)l-=Math.round(l/TAU)*TAU;return[l,p];};}
+function rpg(dp,dg){var cdp=Math.cos(dp),sdp=Math.sin(dp),cdg=Math.cos(dg),sdg=Math.sin(dg);
+return function(l,p){var cp=Math.cos(p),x=Math.cos(l)*cp,y=Math.sin(l)*cp,z=Math.sin(p),k=z*cdp+x*sdp;
+return[Math.atan2(y*cdg-k*sdg,x*cdp-z*sdp),Math.asin(Math.max(-1,Math.min(1,k*cdg+y*sdg)))];};}
+function ident(l,p){if(Math.abs(l)>PI)l-=Math.round(l/TAU)*TAU;return[l,p];}
+function rotation(dl,dp,dg){dl%=TAU;
+if(dl){if(dp||dg){var a=rl(dl),b=rpg(dp,dg);return function(l,p){var q=a(l,p);return b(q[0],q[1]);};}return rl(dl);}
+return(dp||dg)?rpg(dp,dg):ident;}
+function ortho(rot,k,tx,ty){var r=rotation(rot[0]*D2R,rot[1]*D2R,(rot[2]||0)*D2R);
+return function(lo,la){var q=r(lo*D2R,la*D2R),cp=Math.cos(q[1]);return[tx+k*(cp*Math.sin(q[0])),ty-k*Math.sin(q[1]),cp*Math.cos(q[0])];};}
+function merc(rot,k,tx,ty){var r=rotation(rot[0]*D2R,rot[1]*D2R,(rot[2]||0)*D2R);
+return function(lo,la){var q=r(lo*D2R,la*D2R),p=Math.max(-MAXLAT,Math.min(MAXLAT,q[1]));return[tx+k*q[0],ty-k*Math.log(Math.tan((PI/2+p)/2))];};}
+function gx(y0,y1,dy){var y=range(y0,y1-EPS,dy).concat(y1);return function(x){return y.map(function(v){return[x,v];});};}
+function gy(x0,x1,dx){var x=range(x0,x1-EPS,dx).concat(x1);return function(y){return x.map(function(v){return[v,y];});};}
+function graticule(st,ma,mi){
+var dx=st[0],dy=st[1],DX=ma?ma[0]:dx,DY=ma?ma[1]:dy,x0=-180,x1=180,y0=-80-EPS,y1=80+EPS;
+if(mi){x0=mi[0][0];x1=mi[1][0];y0=mi[0][1];y1=mi[1][1];}
+var X0=-180,X1=180,Y0=-90+EPS,Y1=90-EPS,x=gx(y0,y1,90),y=gy(x0,x1,2.5),X=gx(Y0,Y1,90),Y=gy(X0,X1,2.5);
+return range(Math.ceil(X0/DX)*DX,X1,DX).map(function(v){return X(v);})
+.concat(range(Math.ceil(Y0/DY)*DY,Y1,DY).map(function(v){return Y(v);}))
+.concat(range(Math.ceil(x0/dx)*dx,x1,dx).filter(function(v){return Math.abs(v%DX)>EPS;}).map(function(v){return x(v);}))
+.concat(range(Math.ceil(y0/dy)*dy,y1,dy).filter(function(v){return Math.abs(v%DY)>EPS;}).map(function(v){return y(v);}));}
+function hav(x){x=Math.sin(x/2);return x*x;}
+function interp(a,b){var x0=a[0]*D2R,y0=a[1]*D2R,x1=b[0]*D2R,y1=b[1]*D2R,cy0=Math.cos(y0),sy0=Math.sin(y0),cy1=Math.cos(y1),sy1=Math.sin(y1),kx0=cy0*Math.cos(x0),ky0=cy0*Math.sin(x0),kx1=cy1*Math.cos(x1),ky1=cy1*Math.sin(x1),d=2*Math.asin(Math.min(1,Math.sqrt(hav(y1-y0)+cy0*cy1*hav(x1-x0)))),k=Math.sin(d);
+var f=d?function(t){var B=Math.sin(t*=d)/k,A=Math.sin(d-t)/k,x=A*kx0+B*kx1,y=A*ky0+B*ky1,z=A*sy0+B*sy1;return[Math.atan2(y,x)*R2D,Math.atan2(z,Math.sqrt(x*x+y*y))*R2D];}:function(){return[x0*R2D,y0*R2D];};
+f.distance=d;return f;}
+function densify(line,step){var out=[line[0]],i,j,f,n;
+for(i=1;i<line.length;i++){f=interp(line[i-1],line[i]);n=Math.max(1,Math.ceil(f.distance*R2D/step));
+for(j=1;j<n;j++)out.push(f(j/n));out.push(line[i]);}
+return out;}
+function edge(a,b,cx,cy,k){var t=a[2]/(a[2]-b[2]),x=a[0]+(b[0]-a[0])*t-cx,y=a[1]+(b[1]-a[1])*t-cy,L=Math.sqrt(x*x+y*y);
+return L?[cx+x*k/L,cy+y*k/L]:[cx+x,cy+y];}
+function clip(P,front,cx,cy,k){var out=[],cur=null,i,p,q;
+for(i=0;i<P.length;i++){p=P[i];q=front?p[2]>=0:p[2]<0;
+if(q){if(!cur){cur=[];out.push(cur);if(i>0&&(front?P[i-1][2]<0:P[i-1][2]>=0))cur.push(edge(P[i-1],p,cx,cy,k));}cur.push([p[0],p[1]]);}
+else if(cur){cur.push(edge(P[i-1],p,cx,cy,k));cur=null;}}
+return out.filter(function(s){return s.length>1;});}
+function focus(C){var x=0,y=0,z=0,n=0;
+function add(la,lo){var a=la*D2R,o=lo*D2R;x+=Math.cos(a)*Math.cos(o);y+=Math.cos(a)*Math.sin(o);z+=Math.sin(a);n++;}
+(C.dots||[]).forEach(function(d){add(d.lat,d.lon);});
+(C.arcs||[]).forEach(function(a){add(a.from[0],a.from[1]);add(a.to[0],a.to[1]);});
+if(!n||Math.sqrt(x*x+y*y+z*z)<1e-6*n)return[0,0];
+return[Math.atan2(y,x)*R2D,Math.atan2(z,Math.sqrt(x*x+y*y))*R2D];}
+function globeScene(C,rot,S,now){
+var R=S*0.42,cx=S/2,cy=S/2,pr=ortho(rot,R,cx,cy),n=C.lines||10,sc={S:S,cx:cx,cy:cy,R:R,back:[],front:[],arcs:[],pins:[],land:[]};
+(C.land||[]).forEach(function(ring){var P=ring.map(function(q){return pr(q[0]/10,q[1]/10);});sc.land=sc.land.concat(clip(P,true,cx,cy,R));});
+graticule([360/n,180/n]).forEach(function(l){var P=densify(l,2.5).map(function(q){return pr(q[0],q[1]);});
+sc.front=sc.front.concat(clip(P,true,cx,cy,R));sc.back=sc.back.concat(clip(P,false,cx,cy,R));});
+(C.arcs||[]).forEach(function(a,ai){var segs=a.segments||50,f=interp([a.from[1],a.from[0]],[a.to[1],a.to[0]]),P=[],i,t,e,dot=null;
+for(i=0;i<=segs;i++){e=f(i/segs);P.push(pr(e[0],e[1]));}
+if(now!==null&&now!==undefined){t=((now/2500)+ai*0.33)%1;e=f(t);e=pr(e[0],e[1]);if(e[2]>0)dot=[e[0],e[1]];}
+sc.arcs.push({pl:clip(P,true,cx,cy,R),color:a.color||null,dot:dot});});
+(C.dots||[]).forEach(function(d,i){var e=pr(d.lon,d.lat);if(e[2]<-0.1)return;
+sc.pins.push({x:e[0],y:e[1],a:Math.max(0.25,Math.min(1,e[2]+0.5)),label:d.label||"",color:d.color||null,i:i,z:e[2]});});
+return sc;}
+function radarScene(C,W,H,pan){
+var k=W/TAU,pr=merc([pan[0],0,0],k,W/2,H/2+pan[1]),sc={W:W,H:H,k:k,grat:[],links:[],nodes:[]},byId={};
+function split(P){var out=[],cur=[],i;for(i=0;i<P.length;i++){if(i&&Math.abs(P[i][0]-P[i-1][0])>W/2){if(cur.length>1)out.push(cur);cur=[];}cur.push(P[i]);}
+if(cur.length>1)out.push(cur);return out;}
+graticule([30,30],[360,360],[[-180,-60-EPS],[180,60+EPS]]).forEach(function(l){
+sc.grat=sc.grat.concat(split(densify(l,2.5).map(function(q){return pr(q[0],q[1]);})));});
+(C.nodes||[]).forEach(function(nd){byId[nd.id]=nd;});
+(C.links||[]).forEach(function(l){var a=byId[l.from!==undefined?l.from:l.source],b=byId[l.to!==undefined?l.to:l.target];if(!a||!b)return;
+sc.links=sc.links.concat(split(densify([[a.lon,a.lat],[b.lon,b.lat]],2.5).map(function(q){return pr(q[0],q[1]);})));});
+(C.nodes||[]).forEach(function(nd,i){var e=pr(nd.lon,nd.lat);sc.nodes.push({x:e[0],y:e[1],name:nd.name||"",value:nd.value===undefined?"":nd.value,i:i,lat:nd.lat});});
+return sc;}
+function n2(v){return String(Math.floor(v*100+0.5)/100);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function col(c,d){return(typeof c==="string"&&/^(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)$/.test(c))?c:d;}
+function pd(pls){return pls.map(function(pl){return pl.map(function(p,i){return(i?"L":"M")+n2(p[0])+" "+n2(p[1]);}).join("");}).join("");}
+function svgGlobe(sc,c,earth,uid){var o=[],g=uid+"g",s='style="';
+if(earth)o.push('<defs><radialGradient id="'+g+'" cx="'+n2(sc.cx)+'" cy="'+n2(sc.cy)+'" r="'+n2(sc.R)+'" fx="'+n2(sc.cx-sc.R*0.28)+'" fy="'+n2(sc.cy-sc.R*0.28)+'" fr="'+n2(sc.R*0.05)+'" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="0.7" stop-color="#0c1a4a"/><stop offset="1" stop-color="#000"/></radialGradient></defs>');
+o.push('<circle cx="'+n2(sc.cx)+'" cy="'+n2(sc.cy)+'" r="'+n2(sc.R)+'" '+(earth?'fill="url(#'+g+')"':s+'fill:'+c+'" fill-opacity="0.12"')+' '+s+'stroke:'+c+'" stroke-opacity="0.35" stroke-width="1.5"/>');
+if(sc.land.length)o.push('<path d="'+pd(sc.land)+'Z" fill="#1a4a3a"/>');
+o.push('<path d="'+pd(sc.back)+'" fill="none" '+s+'stroke:'+c+'" stroke-opacity="0.15" stroke-width="0.6" stroke-dasharray="3 3"/>');
+o.push('<path d="'+pd(sc.front)+'" fill="none" '+s+'stroke:'+c+'" stroke-opacity="0.7" stroke-width="1"/>');
+sc.arcs.forEach(function(a){o.push('<path d="'+pd(a.pl)+'" fill="none" '+s+'stroke:'+col(a.color,c)+'" stroke-opacity="0.8" stroke-width="1.5"/>');});
+sc.pins.forEach(function(p){var dc=col(p.color,c);
+o.push('<circle cx="'+n2(p.x)+'" cy="'+n2(p.y)+'" r="4" '+s+'fill:'+dc+'" fill-opacity="'+n2(p.a)+'"/>');
+if(p.label)o.push('<text x="'+n2(p.x+7)+'" y="'+n2(p.y+4)+'" font-family="sans-serif" font-size="11" font-weight="bold" '+s+'fill:'+dc+'">'+esc(p.label)+'</text>');});
+return'<svg xmlns="http://www.w3.org/2000/svg" id="'+uid+'s" viewBox="0 0 '+sc.S+' '+sc.S+'" width="'+sc.S+'" height="'+sc.S+'" aria-hidden="true" focusable="false" style="display:block">'+o.join("")+'</svg>';}
+function stroke(x,pls){x.beginPath();pls.forEach(function(pl){pl.forEach(function(p,i){i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]);});});x.stroke();}
+function paintGlobe(x,sc,c,earth,rm,now){var S=sc.S,cx=sc.cx,cy=sc.cy,R=sc.R,g=x.createRadialGradient(cx-R*0.28,cy-R*0.28,R*0.05,cx,cy,R);
+x.clearRect(0,0,S,S);x.globalAlpha=1;
+if(earth){g.addColorStop(0,"#1e3a8a");g.addColorStop(0.7,"#0c1a4a");g.addColorStop(1,"#000");}else{g.addColorStop(0,c);g.addColorStop(1,c);}
+x.beginPath();x.arc(cx,cy,R,0,TAU);x.fillStyle=g;x.globalAlpha=earth?1:0.12;x.fill();x.globalAlpha=1;
+if(sc.land.length){x.save();x.beginPath();x.arc(cx,cy,R,0,TAU);x.clip();x.beginPath();sc.land.forEach(function(pl){pl.forEach(function(p,i){i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]);});});x.fillStyle="#1a4a3a";x.fill();x.restore();}
+x.beginPath();x.arc(cx,cy,R,0,TAU);x.strokeStyle=c;x.globalAlpha=0.35;x.lineWidth=1.5;x.stroke();
+x.strokeStyle=c;x.lineWidth=0.6;x.setLineDash([3,3]);x.globalAlpha=0.15;stroke(x,sc.back);
+x.lineWidth=1;x.setLineDash([]);x.globalAlpha=0.7;stroke(x,sc.front);
+x.globalAlpha=0.8;x.lineWidth=1.5;
+sc.arcs.forEach(function(a){var ac=a.color||c;x.strokeStyle=ac;x.globalAlpha=0.8;x.lineWidth=1.5;stroke(x,a.pl);
+if(a.dot){x.globalAlpha=1;x.beginPath();x.arc(a.dot[0],a.dot[1],4,0,TAU);x.fillStyle=ac;x.fill();x.beginPath();x.arc(a.dot[0],a.dot[1],8,0,TAU);x.strokeStyle=ac;x.globalAlpha=0.4;x.lineWidth=1;x.stroke();}});
+sc.pins.forEach(function(p){var dc=p.color||c;
+if(!rm){var ph=((now/1400)+p.i*0.618)%1;x.beginPath();x.arc(p.x,p.y,ph*18,0,TAU);x.strokeStyle=dc;x.globalAlpha=p.a*(1-ph)*0.6;x.lineWidth=1;x.stroke();}
+x.globalAlpha=p.a;x.beginPath();x.arc(p.x,p.y,4,0,TAU);x.fillStyle=dc;x.fill();
+if(p.label){x.globalAlpha=1;x.font="bold 11px sans-serif";x.fillText(p.label,p.x+7,p.y+4);}});
+x.globalAlpha=1;}
+function svgRadar(sc,c){var o=[];
+o.push('<path d="'+pd(sc.grat)+'" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>');
+o.push('<path class="gmrl" d="'+pd(sc.links)+'" fill="none" style="stroke:'+c+'" stroke-opacity="0.55" stroke-width="1.5" stroke-dasharray="4 4"/>');
+sc.nodes.forEach(function(p){
+o.push('<circle class="gmrp" cx="'+n2(p.x)+'" cy="'+n2(p.y)+'" r="10" fill="none" style="stroke:'+c+'" stroke-opacity="0.3"/>');
+o.push('<circle cx="'+n2(p.x)+'" cy="'+n2(p.y)+'" r="4" style="fill:'+c+'"/>');
+o.push('<text x="'+n2(p.x+10)+'" y="'+n2(p.y-2)+'" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff">'+esc(p.name)+'</text>');
+if(p.value!=="")o.push('<text x="'+n2(p.x+10)+'" y="'+n2(p.y+9)+'" font-family="monospace" font-size="9" fill="#b8c0cc">'+esc(p.value)+'</text>');});
+return o.join("");}
+function js(v){return JSON.stringify(v).replace(/[<>&'\u2028\u2029]/g,function(c){return"\\u"+("0000"+c.charCodeAt(0).toString(16)).slice(-4);});}
+return{js:js,ortho:ortho,merc:merc,graticule:graticule,interp:interp,densify:densify,focus:focus,globeScene:globeScene,radarScene:radarScene,svgGlobe:svgGlobe,paintGlobe:paintGlobe,svgRadar:svgRadar,col:col,esc:esc,n2:n2,D2R:D2R,R2D:R2D,TAU:TAU};
+}'''
 def _render_globe_3d(b: dict) -> str:
-    """Draws the payload's dots (pins) and great-circle arcs, as atoms_globe.gs does. Colours
-    are theme tokens: accent from --accent unless the payload sets `color`, backdrop from --bg
-    (canvas cannot use var(), so the script resolves --accent once). Reduced motion: no
-    auto-spin, pulses or travelling dots; a static frame that redraws only on drag."""
+    """Orthographic globe on the d3-geo projection math (_geo_ortho + _geo_graticule, see the ports above). The
+    graticule, pins and great-circle arcs are rendered SERVER-SIDE as an SVG (complete, settled, no script needed);
+    the canvas on top is a progressive enhancement that re-draws the same scene from the same maths (drag, spin,
+    pulses) and hides the SVG once it has painted. Colours are theme tokens: accent from --accent unless the
+    payload sets `color`, backdrop from --bg. Reduced motion: no auto-spin, pulses or travelling dots; the canvas
+    paints one settled frame and redraws only on drag."""
     size = int(_g3d_num(b.get('size')) or 300)
     color = b.get('color', b.get('colour'))
     color = color.strip() if isinstance(color, str) and color.strip() else None
@@ -23349,62 +23792,37 @@ def _render_globe_3d(b: dict) -> str:
     import hashlib
     import json
     uid = 'g3d' + hashlib.md5(json.dumps([size, color, dots, arcs], sort_keys=True).encode()).hexdigest()[:6]
-    cfg = _g3d_js({'color': color, 'speed': speed, 'lines': lines, 'earth': earth, 'dots': dots, 'arcs': arcs})
+    cfg = _g3d_js({'color': color, 'speed': speed, 'lines': lines, 'earth': earth, 'dots': dots, 'arcs': arcs, 'size': size})
+    foc = _geo_focus({'dots': dots, 'arcs': arcs})
+    scene = _geo_globe_scene({'lines': lines, 'dots': dots, 'arcs': arcs}, [-foc[0], -foc[1], 0], size)
+    svg = _geo_svg_globe(scene, _geo_col(color, 'var(--accent,#4f46e5)'), earth, uid)
     js = (
         '(function(){'
         'var c=document.getElementById("' + uid + '");if(!c)return;'
         'var C=' + cfg + ';var x=c.getContext("2d");if(!x)return;'
+        'var G=(' + _GEO_LIB_JS + ')();var sv=document.getElementById("' + uid + 's");'
         'var col=C.color||(getComputedStyle(c).getPropertyValue("--accent").trim())||"#4f46e5";'
-        'var W=c.width,H=c.height,cx=W/2,cy=H/2,R=W*0.42,n=C.lines,S=60;'
+        'var S=C.size,k=c.width/S,f=G.focus(C),aY=-f[0]*G.D2R,aX=f[1]*G.D2R,shown=false;'
         'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
-        'var aY=0,aX=0,spd=RM?0:C.speed,drag=false,lx=0,ly=0,vx=0,vy=0;'
-        'function projVec(v){var x1=v.x*Math.cos(aY)+v.z*Math.sin(aY),z1=-v.x*Math.sin(aY)+v.z*Math.cos(aY);'
-        'var y2=v.y*Math.cos(aX)-z1*Math.sin(aX),z2=v.y*Math.sin(aX)+z1*Math.cos(aX);return{sx:cx+x1*R,sy:cy-y2*R,z:z2};}'
-        'function toVec(lat,lon){var la=lat*Math.PI/180,lo=lon*Math.PI/180;return{x:Math.cos(la)*Math.sin(lo),y:Math.sin(la),z:Math.cos(la)*Math.cos(lo)};}'
-        'function proj(lat,lon){return projVec({x:Math.cos(lat)*Math.sin(lon),y:Math.sin(lat),z:Math.cos(lat)*Math.cos(lon)});}'
-        'function slerp(a,b,t){var d=Math.max(-1,Math.min(1,a.x*b.x+a.y*b.y+a.z*b.z)),om=Math.acos(d);'
-        'if(om<0.0001)return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t};'
-        'var s=Math.sin(om),fa=Math.sin((1-t)*om)/s,fb=Math.sin(t*om)/s;return{x:a.x*fa+b.x*fb,y:a.y*fa+b.y*fb,z:a.z*fa+b.z*fb};}'
+        'var spd=RM?0:C.speed,drag=false,lx=0,ly=0,vx=0,vy=0;'
         'function draw(){'
-        'x.clearRect(0,0,W,H);x.globalAlpha=1;'
         'if(!drag){aY+=spd+vx;aX+=vy;vx*=0.94;vy*=0.94;}'
-        'var g=x.createRadialGradient(cx-R*0.28,cy-R*0.28,R*0.05,cx,cy,R);'
-        'if(C.earth){g.addColorStop(0,"#1e3a8a");g.addColorStop(0.7,"#0c1a4a");g.addColorStop(1,"#000");}'
-        'else{g.addColorStop(0,col);g.addColorStop(1,col);}'
-        'x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fillStyle=g;x.globalAlpha=C.earth?1:0.12;x.fill();x.globalAlpha=1;'
-        'x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.strokeStyle=col;x.globalAlpha=0.35;x.lineWidth=1.5;x.stroke();'
-        '[false,true].forEach(function(front){'
-        'x.lineWidth=front?1:0.6;x.setLineDash(front?[]:[3,3]);x.globalAlpha=front?0.7:0.15;x.strokeStyle=col;'
-        'for(var i=1;i<n;i++){var lat=(i/n)*Math.PI-Math.PI/2;x.beginPath();var go=false;'
-        'for(var j=0;j<=S;j++){var p=proj(lat,(j/S)*Math.PI*2);if((p.z>=0)!==front){go=false;continue;}go?x.lineTo(p.sx,p.sy):x.moveTo(p.sx,p.sy);go=true;}x.stroke();}'
-        'for(var i=0;i<n;i++){var lon=(i/n)*Math.PI*2;x.beginPath();var go=false;'
-        'for(var j=0;j<=S;j++){var p=proj((j/S)*Math.PI-Math.PI/2,lon);if((p.z>=0)!==front){go=false;continue;}go?x.lineTo(p.sx,p.sy):x.moveTo(p.sx,p.sy);go=true;}x.stroke();}'
-        '});x.setLineDash([]);x.globalAlpha=1;'
-        'var now=Date.now();'
-        'C.arcs.forEach(function(arc,ai){var v1=toVec(arc.from[0],arc.from[1]),v2=toVec(arc.to[0],arc.to[1]),acol=arc.color||col;'
-        'x.beginPath();var go=false;'
-        'for(var i=0;i<=50;i++){var p=projVec(slerp(v1,v2,i/50));if(p.z<0){go=false;continue;}go?x.lineTo(p.sx,p.sy):x.moveTo(p.sx,p.sy);go=true;}'
-        'x.strokeStyle=acol;x.globalAlpha=0.8;x.lineWidth=1.5;x.stroke();x.globalAlpha=1;'
-        'if(!RM){var pp=projVec(slerp(v1,v2,((now/2500)+ai*0.33)%1));'
-        'if(pp.z>0){x.beginPath();x.arc(pp.sx,pp.sy,4,0,Math.PI*2);x.fillStyle=acol;x.fill();'
-        'x.beginPath();x.arc(pp.sx,pp.sy,8,0,Math.PI*2);x.strokeStyle=acol;x.globalAlpha=0.4;x.lineWidth=1;x.stroke();x.globalAlpha=1;}}'
-        '});'
-        'C.dots.forEach(function(d,i){var p=proj(d.lat*Math.PI/180,d.lon*Math.PI/180);if(p.z<-0.1)return;'
-        'var dc=d.color||col,a=Math.max(0.25,Math.min(1,p.z+0.5));'
-        'if(!RM){var ph=((now/1400)+i*0.618)%1;x.beginPath();x.arc(p.sx,p.sy,ph*18,0,Math.PI*2);x.strokeStyle=dc;x.globalAlpha=a*(1-ph)*0.6;x.lineWidth=1;x.stroke();}'
-        'x.globalAlpha=a;x.beginPath();x.arc(p.sx,p.sy,4,0,Math.PI*2);x.fillStyle=dc;x.fill();'
-        'if(d.label){x.font="bold 11px sans-serif";x.fillText(d.label,p.sx+7,p.sy+4);}'
-        'x.globalAlpha=1;});'
+        'aX=Math.max(-1.4,Math.min(1.4,aX));var now=Date.now();'
+        'var sc=G.globeScene(C,[aY*G.R2D,-aX*G.R2D,0],S,RM?null:now);'
+        'x.save();x.scale(k,k);G.paintGlobe(x,sc,col,C.earth,RM,now);x.restore();'
+        'if(sv&&!shown){sv.style.visibility="hidden";shown=true;}'
         'if(!RM)requestAnimationFrame(draw);}'
         'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});'
         'document.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});'
         'document.addEventListener("mousemove",function(e){if(!drag)return;vx=(e.clientX-lx)*0.012;vy=(e.clientY-ly)*0.012;'
-        'aY+=vx;aX+=vy;aX=Math.max(-1.4,Math.min(1.4,aX));lx=e.clientX;ly=e.clientY;if(RM)draw();});'
+        'aY+=vx;aX+=vy;lx=e.clientX;ly=e.clientY;if(RM)draw();});'
         'draw();})();'
     )
     return ('<div style="display:flex;justify-content:center;margin:1rem 0;">'
+            '<div style="position:relative;width:' + str(size) + 'px;height:' + str(size) + 'px;border-radius:50%;background:var(--bg,#0a0a1a);">'
+            + svg +
             '<canvas role="img" aria-label="Rotating 3D globe" id="' + uid + '" width="' + str(size) + '" height="' + str(size) + '" '
-            'style="border-radius:50%;background:var(--bg,#0a0a1a);display:block;cursor:grab;"></canvas>'
+            'style="position:absolute;inset:0;border-radius:50%;cursor:grab;"></canvas></div>'
             + _g3d_alt_html(b) + '</div><script>' + js + '</script>')
 
 _RENDERERS["globe_3d"] = _render_globe_3d
@@ -23470,48 +23888,92 @@ def _render_spring_nodes(b: dict) -> str:
 _RENDERERS["spring_nodes"] = _render_spring_nodes
 
 
+def _geo_radar_data(b: dict):
+    """Payload nodes/links -> clean JSON-safe lists (ids are compared as strings; a node with no usable lat/lon is skipped)."""
+    nodes, links = [], []
+    for i, n in enumerate(b.get('nodes') if isinstance(b.get('nodes'), list) else []):
+        if not isinstance(n, dict):
+            continue
+        la, lo = _g3d_num(n.get('lat')), _g3d_num(n.get('lon'))
+        if la is None or lo is None:
+            continue
+        nid = n.get('id')
+        nid = _geo_jsstr(nid) if isinstance(nid, (str, int, float)) and not isinstance(nid, bool) and _geo_jsstr(nid) != '' else str(i)
+        name = ''
+        for key in ('name', 'label'):
+            v = n.get(key)
+            if isinstance(v, (str, int, float)) and not isinstance(v, bool) and _geo_jsstr(v).strip():
+                name = _geo_jsstr(v).strip()
+                break
+        item = {'id': nid, 'name': name or nid, 'lat': la, 'lon': lo}
+        v = n.get('value')
+        if isinstance(v, (str, int, float)) and not isinstance(v, bool) and _geo_jsstr(v) != '':
+            item['value'] = _geo_jsstr(v)
+        nodes.append(item)
+    for l in (b.get('links') if isinstance(b.get('links'), list) else []):
+        if not isinstance(l, dict):
+            continue
+        fr, to = l.get('from', l.get('source')), l.get('to', l.get('target'))
+        if all(isinstance(v, (str, int, float)) and not isinstance(v, bool) for v in (fr, to)):
+            links.append({'from': _geo_jsstr(fr), 'to': _geo_jsstr(to)})
+    return nodes, links
+
+
+def _geo_radar_alt_html(nodes, links) -> str:
+    items = []
+    for n in nodes:
+        items.append('<li>' + _esc(n['name']) + ': ' + _esc(_g3d_coord(n['lat'])) + ', ' + _esc(_g3d_coord(n['lon']))
+                     + (' (' + _esc(n['value']) + ')' if n.get('value') else '') + '</li>')
+    names = {n['id']: n['name'] for n in nodes}
+    for l in links:
+        if l['from'] in names and l['to'] in names:
+            items.append('<li>Link: ' + _esc(names[l['from']]) + ' &rarr; ' + _esc(names[l['to']]) + '</li>')
+    return '<ul style="' + _IF_SR + '">' + ''.join(items) + '</ul>' if items else ''
+
+
+_GMR_CSS = ('@media (prefers-reduced-motion:no-preference){.gmrl{animation:gmrd 1.6s linear infinite}'
+            '.gmrp{animation:gmrp 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}}'
+            '@keyframes gmrd{to{stroke-dashoffset:-8}}@keyframes gmrp{50%{transform:scale(1.4);opacity:.3}}')
+
+
 def _render_geo_mercator_radar(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    color = _esc(b.get('color', '#00f2ff'))
-    height = int(b.get('height', 340))
-    nodes = b.get('nodes', [])
-    links = b.get('links', [])
-    import hashlib, json
-    uid = 'gmr' + hashlib.md5(title.encode()).hexdigest()[:5]
-    nodes_js = _js_json(nodes)
-    links_js = _js_json(links)
+    """Mercator map on the d3-geo projection math (_geo_merc + _geo_graticule): graticule, great-circle link
+    vectors and node pins are rendered SERVER-SIDE as one SVG (complete without script). Pulses and the link
+    marching-ants are CSS, inside prefers-reduced-motion: no-preference, so the settled layout is the static one.
+    Drag / arrow keys pan (a small script re-renders the same scene); the map does not need it to be read."""
+    title = b.get('title') if isinstance(b.get('title'), str) else ''
+    color = _geo_col(b.get('color'), '#00f2ff')
+    height = max(120, min(int(_g3d_num(b.get('height')) or 450), 1200))
+    nodes, links = _geo_radar_data(b)
+    import hashlib
+    import json
+    uid = 'gmr' + hashlib.md5(json.dumps([title, color, height, nodes, links], sort_keys=True).encode()).hexdigest()[:6]
+    W = 800
+    scene = _geo_radar_scene({'nodes': nodes, 'links': links}, W, height, [0, 0])
+    label = title.strip() or 'Mercator radar map'
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" id="' + uid + '" viewBox="0 0 ' + str(W) + ' ' + str(height)
+           + '" preserveAspectRatio="xMidYMid slice" role="img" aria-label="' + _esc(label) + '" tabindex="0" '
+           'style="position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y;">'
+           '<style>' + _GMR_CSS + '</style><g id="' + uid + 'm">' + _geo_svg_radar(scene, color) + '</g></svg>')
+    cfg = _g3d_js({'nodes': nodes, 'links': links})
+    js = (
+        '(function(){var s=document.getElementById("' + uid + '");if(!s)return;var m=document.getElementById("' + uid + 'm");'
+        'var C=' + cfg + ';var G=(' + _GEO_LIB_JS + ')();var W=' + str(W) + ',H=' + str(height) + ',pan=[0,0],drag=false,lx=0,ly=0;'
+        'var lim=Math.max(0,W/G.TAU*Math.PI-H/2);'
+        'function draw(){pan[1]=Math.max(-lim,Math.min(lim,pan[1]));m.innerHTML=G.svgRadar(G.radarScene(C,W,H,pan),' + _g3d_js(color) + ');}'
+        'function q(){var r=s.getBoundingClientRect();return Math.max(r.width/W,r.height/H)||1;}'
+        's.addEventListener("pointerdown",function(e){drag=true;lx=e.clientX;ly=e.clientY;s.style.cursor="grabbing";if(s.setPointerCapture)s.setPointerCapture(e.pointerId);});'
+        's.addEventListener("pointermove",function(e){if(!drag)return;var z=q();pan[0]+=(e.clientX-lx)/z*360/W;pan[1]+=(e.clientY-ly)/z;lx=e.clientX;ly=e.clientY;draw();});'
+        'function up(){drag=false;s.style.cursor="grab";}s.addEventListener("pointerup",up);s.addEventListener("pointercancel",up);'
+        's.addEventListener("keydown",function(e){var d={ArrowLeft:[15,0],ArrowRight:[-15,0],ArrowUp:[0,30],ArrowDown:[0,-30]}[e.key];'
+        'if(!d)return;e.preventDefault();pan[0]+=d[0];pan[1]+=d[1];draw();});'
+        '})();'
+    )
     return ('<div style="position:relative;">'
             + ('<div style="font-size:0.72rem;font-weight:700;color:' + color + ';'
-               'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + title + '</div>' if title else '')
-            + '<canvas role="img" aria-label="Mercator radar map" id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
-            'background:#0a1628;display:block;"></canvas></div>'
-            '<script>(function(){'
-            'var c=document.getElementById("' + uid + '");'
-            'c.width=c.offsetWidth||600;c.height=' + str(height) + ';'
-            'var W=c.width,H=c.height,x=c.getContext("2d");'
-            'var NODES=' + nodes_js + ';var LINKS=' + links_js + ';'
-            'var col="' + color + '";'
-            'function toScreen(lat,lon){'
-            'return{x:((lon+180)/360)*W,y:((90-lat)/180)*H};}'
-            'function draw(){'
-            'x.clearRect(0,0,W,H);'
-            'x.strokeStyle=col+"22";x.lineWidth=1;'
-            'for(var lat=-60;lat<=60;lat+=30){var p=toScreen(lat,0);x.beginPath();x.moveTo(0,p.y);x.lineTo(W,p.y);x.stroke();}'
-            'for(var lon=-180;lon<=180;lon+=30){var p=toScreen(0,lon);x.beginPath();x.moveTo(p.x,0);x.lineTo(p.x,H);x.stroke();}'
-            'x.strokeStyle=col+"55";x.lineWidth=1.5;'
-            'LINKS.forEach(function(l){'
-            'var a=NODES.find(function(n){return n.id===l.source||n.id===l.from;});'
-            'var b=NODES.find(function(n){return n.id===l.target||n.id===l.to;});'
-            'if(!a||!b)return;'
-            'var pa=toScreen(a.lat,a.lon),pb=toScreen(b.lat,b.lon);'
-            'x.beginPath();x.moveTo(pa.x,pa.y);x.lineTo(pb.x,pb.y);x.stroke();});'
-            'NODES.forEach(function(n){'
-            'var p=toScreen(n.lat||0,n.lon||0);'
-            'x.beginPath();x.arc(p.x,p.y,5,0,Math.PI*2);'
-            'x.fillStyle=col;x.fill();'
-            'if(n.label){x.fillStyle=col;x.font="11px system-ui";x.fillText(n.label,p.x+7,p.y+4);}});}'
-            'draw();'
-            '})();</script>')
+               'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + _esc(title) + '</div>' if title else '')
+            + '<div style="position:relative;height:' + str(height) + 'px;background:#0a1628;border-radius:12px;overflow:hidden;">'
+            + svg + '</div>' + _geo_radar_alt_html(nodes, links) + '</div><script>' + js + '</script>')
 _RENDERERS["geo_mercator_radar"] = _render_geo_mercator_radar
 
 
