@@ -4385,12 +4385,22 @@ def _render_punch_card(b: dict) -> str:
     </div>
     """
 
-def _svg_sankey_flow(b: dict) -> str:
+def _svg_sankey_flow(b: dict):
+    """Returns (svg_html, dropped) where `dropped` lists the links that could not be drawn.
+
+    This is a two-column layout by design: every node sits in the left (source) column or
+    the right (target) column, never both. A link whose target is ALSO a source elsewhere
+    (the two-column equivalent of a cycle, e.g. A -> B -> A) lands that target in the left
+    column too, so the link has nowhere on the right to land. The old code just `continue`d
+    past that link -- silently dropping real data with no sign anything was missing. Now
+    those links are collected instead, so the caller can render a visible note (and the
+    link survives in any text alternative) rather than vanishing.
+    """
     raw_nodes = b.get("nodes", [])
     raw_links = b.get("links", [])
 
     if not raw_links:
-        return ""
+        return "", []
 
     nodes_map = {n["id"]: n for n in raw_nodes}
     
@@ -4492,15 +4502,21 @@ def _svg_sankey_flow(b: dict) -> str:
         
     gradients_html = []
     links_html = []
-    
+    dropped = []
+
     sankey_id = f"sankey_{_wa_oid(b)}"
-    
+
     for idx, link in enumerate(raw_links):
         s, t, v = link["source"], link["target"], float(link.get("value", 1))
-        
+
         if s not in left_positions or t not in right_positions:
+            dropped.append({
+                "source": nodes_map.get(s, {}).get("label", s),
+                "target": nodes_map.get(t, {}).get("label", t),
+                "value": v,
+            })
             continue
-            
+
         lp = left_positions[s]
         rp = right_positions[t]
         
@@ -4585,7 +4601,7 @@ def _svg_sankey_flow(b: dict) -> str:
         <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 15}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="start">{rp['total']:,.0f}</text>
         """)
         
-    return f"""
+    svg_html = f"""
     <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
       <defs>
         {"".join(gradients_html)}
@@ -4595,6 +4611,12 @@ def _svg_sankey_flow(b: dict) -> str:
       {"".join(labels_html)}
     </svg>
     """
+    return svg_html, dropped
+
+
+def _sk_num(v) -> str:
+    """A flow value for the not-drawn note: thousands separators, up to two decimals, no trailing zeros (0.3, not 0)."""
+    return f"{float(v):,.2f}".rstrip("0").rstrip(".")
 
 
 def _render_sankey_flow(b: dict) -> str:
@@ -4605,7 +4627,7 @@ def _render_sankey_flow(b: dict) -> str:
     if not raw_links:
         return ""
 
-    svg_html = _svg_sankey_flow(b)
+    svg_html, dropped = _svg_sankey_flow(b)
     if not svg_html:
         return ""
 
@@ -4617,6 +4639,26 @@ def _render_sankey_flow(b: dict) -> str:
         </div>
         """
 
+    # Visible note for links the two-column layout could not draw (a node that is both a
+    # source and a destination -- the two-column shape of a cycle, e.g. A -> B -> A). This
+    # is real text, not a decorative aside: it is the only record of that data surviving the
+    # render, and it doubles as the chart's text alternative for that content (a screen
+    # reader reading the page in order reaches it right after the chart).
+    note_html = ""
+    if dropped:
+        count = len(dropped)
+        items_html = "".join(
+            f"<li>{_cv_esc(d['source'])} → {_cv_esc(d['target'])}: {_sk_num(d['value'])}</li>"
+            for d in dropped
+        )
+        plural = "s" if count != 1 else ""
+        note_html = f"""
+        <div role="note" style="margin-top:14px;padding:10px 14px;border:1px solid rgba(248,113,113,0.45);border-radius:8px;background:rgba(248,113,113,0.1);color:#fecaca;font-size:0.82rem;line-height:1.5;">
+          <strong>{count} flow{plural} not shown.</strong> This chart draws two columns (sources on the left, destinations on the right); a node that is both a source and a destination elsewhere can't sit in both columns, so the flow into it can't be drawn here:
+          <ul style="margin:6px 0 0;padding-left:18px;">{items_html}</ul>
+        </div>
+        """
+
     return f"""
     <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
@@ -4625,6 +4667,7 @@ def _render_sankey_flow(b: dict) -> str:
           {svg_html}
         </div>
       </div>
+      {note_html}
     </div>
     """
 
@@ -23053,6 +23096,38 @@ def _render_orbit_diagram(b: dict) -> str:
 _RENDERERS["orbit_diagram"] = _render_orbit_diagram
 
 
+def _g3d_coord(v):
+    """lat/lon -> short text for the globe's text alternative; non-numeric -> '?' rather than a crash."""
+    try:
+        return f'{float(v):g}'
+    except (TypeError, ValueError):
+        return '?'
+
+
+def _g3d_alt_html(b: dict) -> str:
+    """WCAG 1.1.1: the canvas has no fallback content of its own, so the pins/arcs it was
+    given need a text alternative alongside the aria-label -- otherwise a screen-reader user
+    gets 'Rotating 3D globe' and nothing about what is actually plotted on it. Visually
+    hidden (_IF_SR), same pattern as _render_cycle_diagram's hidden <ol>."""
+    dots = b.get('dots') if isinstance(b.get('dots'), list) else []
+    arcs = b.get('arcs') if isinstance(b.get('arcs'), list) else []
+    items = []
+    for i, d in enumerate(dots):
+        d = d if isinstance(d, dict) else {}
+        label = d.get('label')
+        label = str(label).strip() if isinstance(label, (str, int, float)) and not isinstance(label, bool) and str(label).strip() else f'Pin {i + 1}'
+        items.append('<li>' + _esc(label) + ': ' + _esc(_g3d_coord(d.get('lat'))) + ', ' + _esc(_g3d_coord(d.get('lon'))) + '</li>')
+    for i, a in enumerate(arcs):
+        a = a if isinstance(a, dict) else {}
+        start, end = a.get('from'), a.get('to')
+        s_txt = ', '.join(_g3d_coord(v) for v in start) if isinstance(start, list) else '?'
+        e_txt = ', '.join(_g3d_coord(v) for v in end) if isinstance(end, list) else '?'
+        items.append('<li>Arc ' + str(i + 1) + ': ' + _esc(s_txt) + ' → ' + _esc(e_txt) + '</li>')
+    if not items:
+        return ''
+    return '<ul style="' + _IF_SR + '">' + ''.join(items) + '</ul>'
+
+
 def _render_globe_3d(b: dict) -> str:
     size = int(b.get('size', 300))
     color = _esc(b.get('color', b.get('colour', '#4f46e5')))
@@ -23063,7 +23138,8 @@ def _render_globe_3d(b: dict) -> str:
     uid = 'g3d' + hashlib.md5(color.encode()).hexdigest()[:5]
     return ('<div style="display:flex;justify-content:center;margin:1rem 0;">'
             '<canvas role="img" aria-label="Rotating 3D globe" id="' + uid + '" width="' + str(size) + '" height="' + str(size) + '" '
-            'style="border-radius:50%;background:' + bg + ';display:block;cursor:grab;"></canvas></div>'
+            'style="border-radius:50%;background:' + bg + ';display:block;cursor:grab;"></canvas>'
+            + _g3d_alt_html(b) + '</div>'
             '<script>(function(){'
             'var c=document.getElementById("' + uid + '");'
             'if(!c)return;'
