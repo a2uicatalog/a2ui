@@ -21091,6 +21091,11 @@ blocks:
       entry that is not a group, is left out with a note. Groups beyond the first 12 are noted and not drawn.
     x_label: string (optional, max 40). Names the values on the axis.
     unit: string (optional, max 12). Appended to the axis caption and to every value in the label and hidden table.
+    show_points: boolean (optional, default false). Only true switches it on. Draws every usable number of each group as a small dot along
+      its row, spread vertically by a deterministic beeswarm (d3-force forceX, forceY and forceCollide run for a fixed 120 ticks on the
+      server, no script), behind the box, whiskers and median. Rows are taller. At most 500 dots per group (evenly spaced through the sorted
+      numbers; a note says so, and the table counts them all). The picture is laid out for a narrow chart, so in a very crowded group
+      dots can touch.
     version: integer (optional, default 1). The box_plot contract the payload was written for. Only version 1 exists; a higher whole
       number is drawn as version 1 with a note.
   notes: Quartiles use linear interpolation between the sorted numbers (R-7, as d3 and spreadsheets do). Each distinct outlier is one

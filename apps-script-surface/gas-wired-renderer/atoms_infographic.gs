@@ -1267,6 +1267,67 @@ function _bpLayout(groups) {
 }
 function _bpFmt(v, cap) { return _hgNum(v, Math.min(_hgDecimals([v]), cap)); }
 var _BP_MAX_DOTS = 100;
+// Beeswarm for box_plot show_points: d3-force 3.0.0 forceSimulation + forceX(x).strength(1) + forceY(0).strength(1) + forceCollide(radius), `ticks` ticks,
+// on nodes with no x/y (d3's phyllotaxis start), as in the d3 beeswarm examples. It reuses the spring_nodes port in atoms_canvas.gs (same project):
+// _snLcg, _snTree, _snVisit and the same simulation constants; only forceX, forceY and forceCollide are added. All dots have one radius, so d3's collide
+// `prepare` (each quad's largest radius) is that radius everywhere and is not computed. Twin of _sn_swarm in renderers/web_article.py.
+var _BP_REFW = 180, _BP_DOT_R = 3, _BP_SWARM_TICKS = 120, _BP_MAX_POINTS = 500, _BP_ROW_H = 64;
+function _snSwarm(xs, ticks, radius) {
+  var n = xs.length, random = _snLcg(), nodes = [], i, k, angle = Math.PI * (3 - Math.sqrt(5));
+  function jiggle() { return (random() - 0.5) * 1e-6; }
+  for (i = 0; i < n; ++i) {
+    var rad = 10 * Math.sqrt(0.5 + i), a = i * angle;
+    nodes.push({index: i, x: rad * Math.cos(a), y: rad * Math.sin(a), vx: 0, vy: 0});
+  }
+  var alphaDecay = 1 - Math.pow(0.001, 1 / 300), alpha = 1, velocityDecay = 1 - 0.4;
+  var ri = +radius, rj0 = ri, ri2 = ri * ri, r = ri + rj0, node, xi, yi;
+  function apply(quad, x0, y0, x1, y1) {
+    var data = quad.data;
+    if (data) {
+      data = data.nd;
+      if (data.index > node.index) {
+        var x = xi - data.x - data.vx, y = yi - data.y - data.vy, l = x * x + y * y, rj;
+        if (l < r * r) {
+          if (x === 0) x = jiggle(), l += x * x;
+          if (y === 0) y = jiggle(), l += y * y;
+          l = (r - (l = Math.sqrt(l))) / l * 1;
+          rj = rj0 * rj0; rj = rj / (ri2 + rj);
+          node.vx += (x *= l) * rj;
+          node.vy += (y *= l) * rj;
+          rj = 1 - rj;
+          data.vx -= x * rj;
+          data.vy -= y * rj;
+        }
+      }
+      return;
+    }
+    return x0 > xi + r || x1 < xi - r || y0 > yi + r || y1 < yi - r;
+  }
+  for (k = 0; k < ticks; ++k) {
+    alpha += (0 - alpha) * alphaDecay;
+    for (i = 0; i < n; ++i) nodes[i].vx += (xs[i] - nodes[i].x) * 1 * alpha;
+    for (i = 0; i < n; ++i) nodes[i].vy += (0 - nodes[i].y) * 1 * alpha;
+    var tree = _snTree(nodes.map(function(d) { return {x: d.x + d.vx, y: d.y + d.vy, nd: d}; }));
+    for (i = 0; i < n; ++i) {
+      node = nodes[i]; xi = node.x + node.vx; yi = node.y + node.vy;
+      _snVisit(tree, apply);
+    }
+    for (i = 0; i < n; ++i) {
+      nodes[i].x += nodes[i].vx *= velocityDecay;
+      nodes[i].y += nodes[i].vy *= velocityDecay;
+    }
+  }
+  return nodes.map(function(d) { return [d.x, d.y]; });
+}
+// toFixed(2) without a negative zero ("-0.00"), which Python's _if_fixed never prints.
+function _bpPx(v) { var t = v.toFixed(2); return parseFloat(t) === 0 ? '0.00' : t; }
+// The values drawn as dots, at most _BP_MAX_POINTS: all of them, or evenly spaced through the sorted values (first and last included).
+function _bpPoints(vals) {
+  var a = vals.slice().sort(function(x, y) { return x - y; }), m = a.length, c = _BP_MAX_POINTS - 1, out = [], i;
+  if (m <= _BP_MAX_POINTS) return a;
+  for (i = 0; i < _BP_MAX_POINTS; i++) out.push(a[Math.floor((i * (m - 1) + Math.floor(c / 2)) / c)]);
+  return out;
+}
 _RENDERERS['box_plot'] = function(b) {
   var lst = Array.isArray(b.groups) ? b.groups : [], used = [], skipped = 0, leftOut = 0;
   lst.slice(0, 12).forEach(function(g, k) {
@@ -1289,27 +1350,37 @@ _RENDERERS['box_plot'] = function(b) {
   var wid = function(a, c) { return span > 0 ? _tmPct(c - a, span) : '0%'; };
   var f = function(v) { return _bpFmt(v, fc); };
   var grid = ticks.map(function(t) { return '<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>'; }).join('');
-  var rows = '', capped = '';
+  var show = b.show_points === true, rows = '', capped = '';
   used.forEach(function(u, k) {
     var s = stats[k], med = s.median;
     var distinct = s.outliers.filter(function(v, i, a) { return i === 0 || v !== a[i - 1]; }).sort(function(x, y) { return (Math.abs(y - med) - Math.abs(x - med)) || (x - y); });
     if (distinct.length > _BP_MAX_DOTS) capped += _hgNote(_esc(u[0]) + ' has ' + distinct.length + ' distinct outliers; the ' + _BP_MAX_DOTS + ' furthest from the median are drawn. The table counts them all.');
     var dots = distinct.slice(0, _BP_MAX_DOTS).map(function(o) { return '<div class="bpo" style="position:absolute;left:' + pos(o) + ';top:50%;width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'; }).join('');
-    rows += '<div style="display:flex;align-items:center;height:40px;">' +
+    var strip = '';
+    if (show) {
+      var drawn = _bpPoints(u[1]);
+      if (u[1].length > drawn.length) capped += _hgNote(_esc(u[0]) + ' has ' + u[1].length + ' numbers; the ' + drawn.length + ' drawn as dots are evenly spaced through the sorted values. The table counts them all.');
+      var xy = _snSwarm(drawn.map(function(v) { return (span > 0 ? (v - X0) / span : 0.5) * _BP_REFW; }), _BP_SWARM_TICKS, _BP_DOT_R), lim = _BP_ROW_H / 2 - 4;
+      strip = xy.map(function(p) {
+        return '<div class="bpd" style="position:absolute;left:' + (Math.max(0, Math.min(_BP_REFW, p[0])) / _BP_REFW * 100).toFixed(3) + '%;top:calc(50% + ' + _bpPx(Math.max(-lim, Math.min(lim, p[1]))) +
+          'px);width:5px;height:5px;border-radius:50%;background:var(--accent,#0369A1);opacity:0.7;transform:translate(-50%,-50%);"></div>';
+      }).join('');
+    }
+    rows += '<div style="display:flex;align-items:center;height:' + (show ? _BP_ROW_H : 40) + 'px;">' +
       '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
       ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(u[0]) + '</div>' +
       '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
-      '<div class="bpg" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
+      '<div class="bpg" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' + strip +
       '<div class="bpw" style="position:absolute;left:' + pos(s.lo) + ';width:' + wid(s.lo, s.hi) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>' +
       '<div style="position:absolute;left:' + pos(s.lo) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>' +
       '<div style="position:absolute;left:' + pos(s.hi) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>' +
-      '<div class="bpb" style="position:absolute;left:' + pos(s.q1) + ';width:' + wid(s.q1, s.q3) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:var(--surface,#F8FAFC);border-radius:2px;"></div>' +
+      '<div class="bpb" style="position:absolute;left:' + pos(s.q1) + ';width:' + wid(s.q1, s.q3) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:' + (show ? 'transparent' : 'var(--surface,#F8FAFC)') + ';border-radius:2px;"></div>' +
       '<div class="bpm" style="position:absolute;left:' + pos(med) + ';top:22%;height:56%;border-left:3px solid var(--accent,#0369A1);transform:translateX(-1.5px);"></div>' +
       dots + '</div></div></div>';
   });
   var no = function(c) { return c + (c === 1 ? ' outlier' : ' outliers'); };
   var aria = 'Box plot of ' + n + (n === 1 ? ' group' : ' groups') + ' on a shared axis from ' + _hgNum(X0, td) + ' to ' + _hgNum(X1, td) + us + '. ' +
-    used.map(function(u, k) { var s = stats[k]; return u[0] + ': median ' + f(s.median) + us + ', middle half ' + f(s.q1) + ' to ' + f(s.q3) + us + ', whiskers ' + f(s.lo) + ' to ' + f(s.hi) + us + ', ' + no(s.outliers.length); }).join('; ') + '.';
+    used.map(function(u, k) { var s = stats[k]; return u[0] + ': median ' + f(s.median) + us + ', middle half ' + f(s.q1) + ' to ' + f(s.q3) + us + ', whiskers ' + f(s.lo) + ' to ' + f(s.hi) + us + ', ' + no(s.outliers.length); }).join('; ') + '.' + (show ? ' Dots show every value.' : '');
   var chart = '<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}}</style>' +
     '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 34px 34px 0;">' + rows +
     '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, X0, span, tlab) + '</div></div>' +

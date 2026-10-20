@@ -210,10 +210,11 @@ function _snVisit(tree, cb) {
     }
   }
 }
+// d3-force's default random source (lcg.js: a linear congruential generator, seed 1), shared by every force of one simulation.
+function _snLcg() { var s = 1; return function() { return (s = (1664525 * s + 1013904223) % 4294967296) / 4294967296; }; }
 // d3-force: simulation (alpha 1 -> alphaMin 0.001 over 300 ticks, velocityDecay 0.4), forceLink (default strength and bias, distance = dist), forceManyBody (theta 0.9, distanceMin 1), forceCenter(0, 0).
 function _snLayout(n, links, dist, charge, ticks) {
-  var s = 1;
-  function random() { return (s = (1664525 * s + 1013904223) % 4294967296) / 4294967296; }
+  var random = _snLcg();
   function jiggle() { return (random() - 0.5) * 1e-6; }
   var nodes = [], i, k, m = links.length, angle = Math.PI * (3 - Math.sqrt(5));
   for (i = 0; i < n; ++i) {

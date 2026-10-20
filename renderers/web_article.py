@@ -7,7 +7,7 @@ No markdown conversion. No Quill. No stripping surprises.
 """
 
 from typing import List, Dict, Any
-import decimal, re, math, base64, urllib.request, urllib.error, json as _json
+import decimal, re, math, struct, base64, urllib.request, urllib.error, json as _json
 from datetime import datetime, timezone
 from pathlib import Path
 import markdown as _md_lib
@@ -24299,7 +24299,7 @@ class _SnTree:
             quads.append((self.root, self.x0, self.y0, self.x1, self.y1))
         while quads:
             node, x0, y0, x1, y1 = quads.pop()
-            if not cb(node, x0, x1) and node.c is not None:
+            if not cb(node, x0, x1, y0, y1) and node.c is not None:
                 xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
                 ch = node.c
                 if ch[3] is not None: quads.append((ch[3], xm, ym, x1, y1))
@@ -24308,13 +24308,19 @@ class _SnTree:
                 if ch[0] is not None: quads.append((ch[0], x0, y0, xm, ym))
 
 
-def _sn_layout(n, links, dist, charge, ticks):
-    """d3-force 3.0.0: forceSimulation + forceLink(distance=dist) + forceManyBody(strength=charge) + forceCenter(0, 0), `ticks` ticks, no initial x/y."""
+def _sn_lcg():
+    """d3-force's default random source (lcg.js: a linear congruential generator, seed 1), shared by every force of one simulation."""
     state = [1]
 
     def random():
         state[0] = (1664525 * state[0] + 1013904223) % 4294967296
         return state[0] / 4294967296
+    return random
+
+
+def _sn_layout(n, links, dist, charge, ticks):
+    """d3-force 3.0.0: forceSimulation + forceLink(distance=dist) + forceManyBody(strength=charge) + forceCenter(0, 0), `ticks` ticks, no initial x/y."""
+    random = _sn_lcg()
 
     def jiggle():
         return (random() - 0.5) * 1e-6
@@ -24387,7 +24393,7 @@ def _sn_layout(n, links, dist, charge, ticks):
                     break
         quad.value = strength
 
-    def apply(quad, x1, x2):
+    def apply(quad, x1, x2, *_):
         node, a = cur[0], al[0]
         if not quad.value:
             return True
@@ -33733,6 +33739,163 @@ def _bp_fmt(v, cap):
 _BP_MAX_DOTS = 100
 
 
+# V8's Math.cos / Math.sin are fdlibm's (ieee754::cos / sin); glibc's differ from them in the last bit for about 7% of the phyllotaxis angles, and the
+# swarm's soft collisions amplify a one-bit start difference into pixels. These bit-exact ports (checked against node over 22500 angles by
+# tests/test_box_plot_points.py) let the Python twin reproduce d3's start positions, and so d3's whole run, exactly. Twin: Math.cos / Math.sin in GAS.
+def _v8_hi(x): return struct.unpack('>I', struct.pack('>d', x)[:4])[0]
+def _v8_mk(hi, lo=0): return struct.unpack('>d', struct.pack('>II', hi, lo))[0]
+_V8_S = (-1.66666666666666324348e-01, 8.33333333332248946124e-03, -1.98412698298579493134e-04, 2.75573137070700676789e-06, -2.50507602534068634195e-08, 1.58969099521155010221e-10)
+_V8_C = (4.16666666666666019037e-02, -1.38888888888741095749e-03, 2.48015872894767294178e-05, -2.75573143513906633035e-07, 2.08757232129817482790e-09, -1.13596475577881948265e-11)
+_V8_INVPIO2, _V8_PIO2_1, _V8_PIO2_1T = 6.36619772367581382433e-01, 1.57079632673412561417e+00, 6.07710050650619224932e-11
+_V8_PIO2_2, _V8_PIO2_2T = 6.07710050630396597660e-11, 2.02226624879595063154e-21
+_V8_PIO2_3, _V8_PIO2_3T = 2.02226624871116645580e-21, 8.47842766036889956997e-32
+def _v8_ksin(x, y, iy):
+    ix = _v8_hi(x) & 0x7fffffff
+    if ix < 0x3e400000 and int(x) == 0: return x
+    z = x * x; v = z * x
+    r = _V8_S[1] + z * (_V8_S[2] + z * (_V8_S[3] + z * (_V8_S[4] + z * _V8_S[5])))
+    if iy == 0: return x + v * (_V8_S[0] + z * r)
+    return x - ((z * (0.5 * y - v * r) - y) - v * _V8_S[0])
+def _v8_kcos(x, y):
+    ix = _v8_hi(x) & 0x7fffffff
+    if ix < 0x3e400000 and int(x) == 0: return 1.0
+    z = x * x
+    r = z * (_V8_C[0] + z * (_V8_C[1] + z * (_V8_C[2] + z * (_V8_C[3] + z * (_V8_C[4] + z * _V8_C[5])))))
+    if ix < 0x3FD33333: return 1.0 - (0.5 * z - (z * r - x * y))
+    qx = 0.28125 if ix > 0x3fe90000 else _v8_mk(ix - 0x00200000)
+    hz = 0.5 * z - qx; a = 1.0 - qx
+    return a - (hz - (z * r - x * y))
+def _v8_rem(x):
+    hx = _v8_hi(x); ix = hx & 0x7fffffff; neg = hx >= 0x80000000
+    if ix <= 0x3fe921fb: return 0, x, 0.0
+    if ix < 0x4002d97c:
+        if not neg:
+            z = x - _V8_PIO2_1
+            if ix != 0x3ff921fb: y0 = z - _V8_PIO2_1T; y1 = (z - y0) - _V8_PIO2_1T
+            else: z -= _V8_PIO2_2; y0 = z - _V8_PIO2_2T; y1 = (z - y0) - _V8_PIO2_2T
+            return 1, y0, y1
+        z = x + _V8_PIO2_1
+        if ix != 0x3ff921fb: y0 = z + _V8_PIO2_1T; y1 = (z - y0) + _V8_PIO2_1T
+        else: z += _V8_PIO2_2; y0 = z + _V8_PIO2_2T; y1 = (z - y0) + _V8_PIO2_2T
+        return -1, y0, y1
+    t = abs(x); n = int(t * _V8_INVPIO2 + 0.5); fn = float(n)
+    r = t - fn * _V8_PIO2_1; w = fn * _V8_PIO2_1T
+    if n < 32 and ix != _V8_NPIO2_HW[n - 1]: y0 = r - w
+    else:
+        j = ix >> 20; y0 = r - w; i = j - ((_v8_hi(y0) >> 20) & 0x7ff)
+        if i > 16:
+            t = r; w = fn * _V8_PIO2_2; r = t - w; w = fn * _V8_PIO2_2T - ((t - r) - w); y0 = r - w
+            i = j - ((_v8_hi(y0) >> 20) & 0x7ff)
+            if i > 49:
+                t = r; w = fn * _V8_PIO2_3; r = t - w; w = fn * _V8_PIO2_3T - ((t - r) - w); y0 = r - w
+    y1 = (r - y0) - w
+    if neg: return -n, -y0, -y1
+    return n, y0, y1
+_V8_NPIO2_HW = [0x3FF921FB, 0x400921FB, 0x4012D97C, 0x401921FB, 0x401F6A7A, 0x4022D97C, 0x4025FDBB, 0x402921FB, 0x402C463A, 0x402F6A7A, 0x4031475C, 0x4032D97C, 0x40346B9C, 0x4035FDBB, 0x40378FDB, 0x403921FB,
+             0x403AB41B, 0x403C463A, 0x403DD85A, 0x403F6A7A, 0x40407E4C, 0x404147AE, 0x4042106F, 0x4042D97C, 0x4043A28A, 0x40446B9C, 0x404534A9, 0x4045FDBB, 0x4046C6CB, 0x40478FDB, 0x404858EB, 0x404921FB]
+def _v8_cos(x):
+    ix = _v8_hi(x) & 0x7fffffff
+    if ix <= 0x3fe921fb: return _v8_kcos(x, 0.0)
+    n, y0, y1 = _v8_rem(x)
+    n &= 3
+    return _v8_kcos(y0, y1) if n == 0 else -_v8_ksin(y0, y1, 1) if n == 1 else -_v8_kcos(y0, y1) if n == 2 else _v8_ksin(y0, y1, 1)
+def _v8_sin(x):
+    ix = _v8_hi(x) & 0x7fffffff
+    if ix <= 0x3fe921fb: return _v8_ksin(x, 0.0, 0)
+    n, y0, y1 = _v8_rem(x)
+    n &= 3
+    return _v8_ksin(y0, y1, 1) if n == 0 else _v8_kcos(y0, y1) if n == 1 else -_v8_ksin(y0, y1, 1) if n == 2 else -_v8_kcos(y0, y1)
+
+
+# Beeswarm for box_plot show_points: d3-force 3.0.0 forceSimulation + forceX(x).strength(1) + forceY(0).strength(1) + forceCollide(radius), `ticks` ticks,
+# on nodes with no x/y (d3's phyllotaxis start), as in the d3 beeswarm examples. It reuses the spring_nodes port: the same LCG (_sn_lcg), the same
+# d3-quadtree (_SnTree) and the same simulation constants; only forceX, forceY and forceCollide are added. All dots have one radius, so d3's collide
+# `prepare` (each quad's largest radius) is that radius everywhere and is not computed. Twin of _snSwarm in atoms_infographic.gs; checked against the
+# real library by tests/test_box_plot_points.py.
+_BP_REFW, _BP_DOT_R, _BP_SWARM_TICKS, _BP_MAX_POINTS, _BP_ROW_H = 180, 3, 120, 500, 64
+
+
+def _sn_swarm(xs, ticks, radius):
+    n = len(xs)
+    random = _sn_lcg()
+
+    def jiggle():
+        return (random() - 0.5) * 1e-6
+
+    angle = math.pi * (3 - math.sqrt(5))
+    nodes = []
+    for i in range(n):
+        rad = 10 * math.sqrt(0.5 + i)
+        a = i * angle
+        nodes.append({"index": i, "x": rad * _v8_cos(a), "y": rad * _v8_sin(a), "vx": 0.0, "vy": 0.0})
+    alpha_decay = 1 - math.pow(0.001, 1 / 300)
+    alpha = 1.0
+    velocity_decay = 1 - 0.4
+    ri = rj0 = float(radius)
+    ri2 = ri * ri
+    r = ri + rj0
+    cur = [None, 0.0, 0.0]
+
+    def apply(quad, x0, x1, y0, y1):
+        node = cur[0]
+        xi, yi = cur[1], cur[2]
+        if quad.data is not None:
+            data = quad.data["nd"]
+            if data["index"] > node["index"]:
+                x = xi - data["x"] - data["vx"]
+                y = yi - data["y"] - data["vy"]
+                l = x * x + y * y
+                if l < r * r:
+                    if x == 0:
+                        x = jiggle()
+                        l += x * x
+                    if y == 0:
+                        y = jiggle()
+                        l += y * y
+                    l = math.sqrt(l)
+                    l = (r - l) / l * 1
+                    x *= l
+                    rj = rj0 * rj0
+                    rj = rj / (ri2 + rj)
+                    node["vx"] += x * rj
+                    y *= l
+                    node["vy"] += y * rj
+                    rj = 1 - rj
+                    data["vx"] -= x * rj
+                    data["vy"] -= y * rj
+            return None
+        return x0 > xi + r or x1 < xi - r or y0 > yi + r or y1 < yi - r
+
+    for _ in range(ticks):
+        alpha += (0 - alpha) * alpha_decay
+        for nd, t in zip(nodes, xs):
+            nd["vx"] += (t - nd["x"]) * 1 * alpha
+        for nd in nodes:
+            nd["vy"] += (0 - nd["y"]) * 1 * alpha
+        tree = _SnTree([{"x": nd["x"] + nd["vx"], "y": nd["y"] + nd["vy"], "nd": nd} for nd in nodes])
+        for nd in nodes:
+            cur[0] = nd
+            cur[1] = nd["x"] + nd["vx"]
+            cur[2] = nd["y"] + nd["vy"]
+            tree.visit(apply)
+        for nd in nodes:
+            nd["vx"] *= velocity_decay
+            nd["x"] += nd["vx"]
+            nd["vy"] *= velocity_decay
+            nd["y"] += nd["vy"]
+    return [[d["x"], d["y"]] for d in nodes]
+
+
+def _bp_points(vals):
+    """The values drawn as dots, at most _BP_MAX_POINTS: all of them, or evenly spaced through the sorted values (first and last included)."""
+    a = sorted(vals)
+    m = len(a)
+    if m <= _BP_MAX_POINTS:
+        return a
+    c = _BP_MAX_POINTS - 1
+    return [a[(i * (m - 1) + c // 2) // c] for i in range(_BP_MAX_POINTS)]
+
+
 def _render_box_plot(b: dict) -> str:
     lst = _if_g(b, 'groups')
     lst = lst if isinstance(lst, list) else []
@@ -33773,28 +33936,38 @@ def _render_box_plot(b: dict) -> str:
     def f(v):
         return _bp_fmt(v, fc)
     grid = ''.join('<div style="position:absolute;top:0;bottom:0;left:' + pos(t) + ';border-left:1px solid var(--border,#CBD5E1);"></div>' for t in ticks)
+    show = _if_g(b, 'show_points') is True
     rows, capped = '', ''
-    for k, ((nm, _), s) in enumerate(zip(used, stats)):
+    for k, ((nm, vs), s) in enumerate(zip(used, stats)):
         distinct = sorted(set(s['outliers']), key=lambda v: (-abs(v - s['median']), v))
         if len(distinct) > _BP_MAX_DOTS:
             capped += _hg_note(_cv_esc(nm) + ' has ' + str(len(distinct)) + ' distinct outliers; the ' + str(_BP_MAX_DOTS) + ' furthest from the median are drawn. The table counts them all.')
         dots = ''.join('<div class="bpo" style="position:absolute;left:' + pos(o) + ';top:50%;width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'
                        for o in distinct[:_BP_MAX_DOTS])
-        rows += ('<div style="display:flex;align-items:center;height:40px;">'
+        strip = ''
+        if show:
+            drawn = _bp_points(vs)
+            if len(vs) > len(drawn):
+                capped += _hg_note(_cv_esc(nm) + ' has ' + str(len(vs)) + ' numbers; the ' + str(len(drawn)) + ' drawn as dots are evenly spaced through the sorted values. The table counts them all.')
+            xy = _sn_swarm([((v - X0) / span if span > 0 else 0.5) * _BP_REFW for v in drawn], _BP_SWARM_TICKS, _BP_DOT_R)
+            lim = _BP_ROW_H / 2 - 4
+            strip = ''.join('<div class="bpd" style="position:absolute;left:' + _if_fixed(max(0.0, min(float(_BP_REFW), x)) / _BP_REFW * 100, 3) + '%;top:calc(50% + ' + _if_fixed(max(-lim, min(lim, y)), 2)
+                            + 'px);width:5px;height:5px;border-radius:50%;background:var(--accent,#0369A1);opacity:0.7;transform:translate(-50%,-50%);"></div>' for x, y in xy)
+        rows += ('<div style="display:flex;align-items:center;height:' + str(_BP_ROW_H if show else 40) + 'px;">'
                  '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
                  + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(nm) + '</div>'
                  '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
-                 + '<div class="bpg" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
-                 '<div class="bpw" style="position:absolute;left:' + pos(s['lo']) + ';width:' + wid(s['lo'], s['hi']) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>'
+                 + '<div class="bpg" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">' + strip
+                 + '<div class="bpw" style="position:absolute;left:' + pos(s['lo']) + ';width:' + wid(s['lo'], s['hi']) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>'
                  '<div style="position:absolute;left:' + pos(s['lo']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>'
                  '<div style="position:absolute;left:' + pos(s['hi']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>'
-                 '<div class="bpb" style="position:absolute;left:' + pos(s['q1']) + ';width:' + wid(s['q1'], s['q3']) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:var(--surface,#F8FAFC);border-radius:2px;"></div>'
+                 '<div class="bpb" style="position:absolute;left:' + pos(s['q1']) + ';width:' + wid(s['q1'], s['q3']) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;border:1.5px solid var(--accent,#0369A1);background:' + ('transparent' if show else 'var(--surface,#F8FAFC)') + ';border-radius:2px;"></div>'
                  '<div class="bpm" style="position:absolute;left:' + pos(s['median']) + ';top:22%;height:56%;border-left:3px solid var(--accent,#0369A1);transform:translateX(-1.5px);"></div>'
                  + dots + '</div></div></div>')
     no = lambda c: str(c) + (' outlier' if c == 1 else ' outliers')
     aria = ('Box plot of ' + str(n) + (' group' if n == 1 else ' groups') + ' on a shared axis from ' + _hg_num(X0, td) + ' to ' + _hg_num(X1, td) + us + '. '
             + '; '.join(nm + ': median ' + f(s['median']) + us + ', middle half ' + f(s['q1']) + ' to ' + f(s['q3']) + us + ', whiskers ' + f(s['lo']) + ' to ' + f(s['hi']) + us + ', ' + no(len(s['outliers']))
-                        for (nm, _), s in zip(used, stats)) + '.')
+                        for (nm, _), s in zip(used, stats)) + '.' + (' Dots show every value.' if show else ''))
     chart = ('<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}}</style>'
              '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 34px 34px 0;">' + rows
              + '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, X0, span, tlab) + '</div></div>'
