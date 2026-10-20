@@ -196,7 +196,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## d3-force (Mike Bostock)
 
-- **Project:** d3-force 3.0.0 — `forceSimulation`, `forceLink`, `forceManyBody`, `forceCenter`, `forceX`, `forceY` and `forceCollide` (velocity Verlet force-directed layout), with its quadtree dependency d3-quadtree 3.0.1 (ISC, Mike Bostock; used by `forceManyBody` for the Barnes-Hut approximation) and the start layout and random source from d3-force itself
+- **Project:** d3-force 3.0.0 — `forceSimulation`, `forceLink`, `forceManyBody` and `forceCenter` (velocity Verlet force-directed layout), with its quadtree dependency d3-quadtree 3.0.1 (ISC, Mike Bostock; used by `forceManyBody` for the Barnes-Hut approximation) and the start layout and random source from d3-force itself
 - **Website:** https://github.com/d3/d3-force
 - **License:** ISC License
 - **Copyright:** Copyright 2010-2021 Mike Bostock
@@ -207,11 +207,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   libraries' output by `tests/test_spring_nodes_force.py`
 - **Used by:** the `spring_nodes` atom's server-side layout in both renderers, run for a fixed number of ticks. No script
   is shipped to the page; the settled graph is emitted as SVG.
-  The `box_plot` atom's optional `show_points` beeswarm (`forceX`, `forceY` and `forceCollide` on the same simulation) is
-  ported by hand into `_sn_swarm` in `renderers/web_article.py` and its twin `_snSwarm` in
-  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, reusing the spring_nodes random source and quadtree, and
-  checked against the real library's output, exactly, by `tests/test_box_plot_points.py`. Python reproduces d3's phyllotaxis
-  start bit for bit by porting the fdlibm `cos`/`sin` that V8 uses (also ISC/public-domain Sun fdlibm).
+
+---
+
+## Observable Plot dodge transform (Observable, Inc.)
+
+- **Project:** Observable Plot, the `dodgeY` / `dodgeX` transform (the approach: place circles in order, each at its exact position along one axis and at the smallest offset on the other axis that does not touch a circle already placed, alternating sides on ties), also shown in the d3 beeswarm example
+- **Website:** https://github.com/observablehq/plot
+- **License:** ISC License (wording checked in the project's `LICENSE` on GitHub, main branch, on 2026-10-21)
+- **Copyright:** Copyright 2020-2025 Observable, Inc.
+- **Vendored as:** nothing is vendored and no code is copied. The `box_plot` atom's `show_points` dodge beeswarm is an independent
+  implementation of the approach, written from its description, in `_bp_dodge` in `renderers/web_article.py` and its twin `_bpDodge` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`; credit is given for the idea. `tests/test_box_plot_points.py` checks it
+  against a brute-force reference.
+- **Used by:** the `box_plot` atom's optional `show_points`, in both renderers. No script is shipped to the page.
 
 ---
 

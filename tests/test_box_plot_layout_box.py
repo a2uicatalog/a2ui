@@ -107,7 +107,7 @@ def test_dots_stay_inside_their_row_do_not_crowd_and_leave_the_box_and_median_vi
     bad = {r["id"]: r["errs"] for r in res if r["errs"]}
     assert not bad, json.dumps(bad, indent=1)[:3000]
     print({r["id"]: (r["dots"], r["tight"], r["pairs"]) for r in res if r["id"].endswith("w320")})
-    # the swarm is laid out for a 180px-wide plot and run for a fixed 120 ticks, so d3 leaves a few pairs slightly overlapped (centres 3.5 to 5px apart, 5px dots);
-    # none is more than half hidden behind another
+    # the dodge is laid out for a 180px-wide plot (centres at least 5.5px apart); at wider widths dots have more room;
+    # so no pair is closer than 3.5px at any tested width
     assert sum(r["tight"] for r in res) == 0, {r["id"]: r["tight"] for r in res if r["tight"]}
     assert all(r["dots"] == html[r["id"].split("-")[0]].count('class="bpd"') for r in res)
