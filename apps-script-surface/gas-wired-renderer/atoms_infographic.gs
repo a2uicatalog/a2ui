@@ -644,14 +644,64 @@ _RENDERERS['chord_diagram'] = function(b) {
 };
 
 // ── venn_diagram ──────────────────────────────────────────────────────────────────────────────────────────────
+// Three-set venn: a fixed symmetric layout (circles of radius W/3 whose centres are W/3 apart, so the triple overlap is a Reuleaux triangle),
+// NOT area-proportional and with no venn.js. Text boxes sit at fixed fractions of the box width, tuned so each lies wholly inside its region
+// at 290px and up. Twin of _render_venn_diagram3 in renderers/web_article.py.
+var _VD_REGIONS = [  // key, field, max lines (items + the "+n more" line), centre x/y and width in % of the box: narrow tier, then wide tier (container >= 480px)
+  ['a', 'set_a_exclusive', 5, [22, 21.5, 19], [18.5, 27, 27.5]], ['b', 'set_b_exclusive', 5, [78, 21.5, 19], [81.5, 27, 27.5]], ['c', 'set_c_exclusive', 5, [50, 83.5, 26], [50, 77.5, 40]],
+  ['ab', 'intersection', 3, [50, 22, 16.5], [50, 25, 26]], ['ac', 'intersection_ac', 3, [29, 58.5, 14.5], [29, 61, 21]], ['bc', 'intersection_bc', 3, [71, 58.5, 14.5], [71, 61, 21]],
+  ['abc', 'intersection_abc', 4, [50, 43, 19.5], [50, 40, 27.5]]];
+var _VD_COL = ['var(--accent,#2563EB)', '#C2410C', '#15803D'], _VD_MAXREAD = 60;
+function _vdRaw(v, mx) { return String(v === undefined || v === null ? '' : v).slice(0, mx); }
+function _vdUsable(v) { return typeof v === 'string' ? /[^ \t\n\r]/.test(v) : (typeof v === 'number' && isFinite(v)); }
+function _vdCss() {
+  var pos = function(t) { return 'left:' + t[0] + '%;top:' + t[1] + '%;width:' + t[2] + '%;'; };
+  return '<style>' + _VD_REGIONS.map(function(r) { return '.v3t.v3' + r[0] + '{' + pos(r[3]) + '}'; }).join('') + '@container (width>=480px){' + _VD_REGIONS.map(function(r) { return '.v3t.v3' + r[0] + '{' + pos(r[4]) + '}'; }).join('') + '}</style>';
+}
+function _vdRender3(b) {
+  var names = [_vdRaw(b.set_a_name, 28) || 'Set A', _vdRaw(b.set_b_name, 28) || 'Set B', _vdRaw(b.set_c_name, 28) || 'Set C'];
+  var labels = ['Only ' + names[0], 'Only ' + names[1], 'Only ' + names[2], names[0] + ' and ' + names[1] + ' only', names[0] + ' and ' + names[2] + ' only', names[1] + ' and ' + names[2] + ' only', 'All three sets'];
+  var items = [], bad = 0, extra = 0;
+  _VD_REGIONS.forEach(function(r) {
+    var src = Array.isArray(b[r[1]]) ? b[r[1]] : [], ok = src.filter(_vdUsable);
+    bad += src.length - ok.length;
+    extra += Math.max(0, ok.length - _VD_MAXREAD);
+    items.push(ok.slice(0, _VD_MAXREAD).map(function(x) { return _vdRaw(x, 60); }));
+  });
+  var swatch = function(i) { return '<span style="flex:0 0 auto;width:10px;height:10px;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';background:' + _VD_COL[i] + ';opacity:0.6;box-sizing:border-box;"></span>'; };
+  var nm = function(i, xs) { return '<div style="display:flex;align-items:center;gap:6px;min-width:0;font-weight:700;font-size:13px;line-height:16px;' + xs + '">' + swatch(i) + '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _ifS(names[i], 28) + '</span></div>'; };
+  var circ = [['0', '0'], ['33.333', '0'], ['16.667', '30.218']].map(function(p, i) {
+    return '<div class="v3o" style="position:absolute;left:' + p[0] + '%;top:' + p[1] + '%;width:66.667%;aspect-ratio:1;box-sizing:border-box;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';opacity:var(--k,1);' + _ifK(i, 10) +
+      '"><div style="position:absolute;inset:0;border-radius:50%;background:' + _VD_COL[i] + ';opacity:0.16;"></div></div>';
+  }).join('');
+  var boxes = '';
+  _VD_REGIONS.forEach(function(r, i) {
+    var its = items[i], lim = r[2], shown = its.length <= lim ? its : its.slice(0, lim - 1);
+    var lines = shown.map(function(x) { return '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _ifS(x, 28) + '</div>'; }).join('');
+    if (its.length > lim) lines += '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-style:italic;color:var(--muted,#475569);">+' + (its.length - shown.length) + ' more</div>';
+    if (lines) boxes += '<div class="v3t v3' + r[0] + '" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _ifK(3 + i, 10) + '">' + lines + '</div>';
+  });
+  var aria = 'Venn diagram of three sets: ' + names[0] + ', ' + names[1] + ' and ' + names[2] + '. ' + labels.map(function(l, i) { return l + ': ' + items[i].length + (items[i].length === 1 ? ' item. ' : ' items. '); }).join('').replace(/\s+$/, '') + ' The circles are not drawn to scale. Every item is in the table.';
+  var rows = labels.map(function(l, i) { return '<tr><th scope="row">' + _ifS(l, 90) + '</th><td>' + (items[i].length ? items[i].map(function(x) { return _ifS(x, 60); }).join('; ') : 'none') + '</td></tr>'; }).join('');
+  var note = (bad ? _hgNote(bad + (bad === 1 ? ' entry was' : ' entries were') + ' not text or a number and ' + (bad === 1 ? 'was' : 'were') + ' skipped.') : '') +
+    (extra ? _hgNote(extra + (extra === 1 ? ' entry' : ' entries') + ' beyond the first ' + _VD_MAXREAD + ' in a region ' + (extra === 1 ? 'was' : 'were') + ' left out.') : '');
+  return _ifWrap(_ifTitle(b) + '<div role="img" aria-label="' + _ifS(aria, 900) + '" style="max-width:640px;margin:0 auto;container-type:inline-size;font-size:12px;">' + _vdCss() +
+    '<div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:6px;"><div style="flex:1 1 0;min-width:0;display:flex;">' + nm(0, 'min-width:0;max-width:100%;') + '</div><div style="flex:1 1 0;min-width:0;display:flex;justify-content:flex-end;">' + nm(1, 'min-width:0;max-width:100%;') + '</div></div>' +
+    '<div style="position:relative;width:100%;aspect-ratio:1/0.955342;">' + circ + boxes + '</div>' +
+    '<div style="display:flex;justify-content:center;margin-top:6px;">' + nm(2, 'min-width:0;max-width:100%;') + '</div></div>' +
+    _hgNote('Three fixed circles, not drawn to scale: a region\'s size says nothing about how many items it holds. Long item names are cut in the picture; the table has them in full.') +
+    note + _hgVersionNote(b, 'venn_diagram') +
+    '<table style="' + _IF_SR + '"><thead><tr><th scope="col">Region</th><th scope="col">Items</th></tr></thead><tbody>' + rows + '</tbody></table>');
+}
 _RENDERERS['venn_diagram'] = function(b) {
+  if (b.set_c_name) return _vdRender3(b);
   var list = function(v) { return _ifArr(v, 4).map(function(i) { return '<div>• ' + _ifS(i, 28) + '</div>'; }).join(''); }, c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));';
   return _ifWrap(_ifTitle(b) + '<div style="position:relative;max-width:640px;margin:0 auto;aspect-ratio:1.5;font-size:0.82rem;">' +
     '<div style="position:absolute;left:4%;top:0;font-weight:700;">' + _ifS(b.set_a_name, 28) + '</div><div style="position:absolute;right:4%;top:0;font-weight:700;text-align:right;">' + _ifS(b.set_b_name, 28) + '</div>' +
     '<div style="' + c + 'left:4%;background:#BFDBFE;' + _ifK(0, 2) + '"></div><div style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _ifK(1, 2) + '"></div>' +
     '<div style="position:absolute;left:10%;top:48%;width:24%;transform:translateY(-50%);">' + list(b.set_a_exclusive) + '</div>' +
     '<div style="position:absolute;left:38%;top:48%;width:24%;transform:translateY(-50%);text-align:center;">' + list(b.intersection) + '</div>' +
-    '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + list(b.set_b_exclusive) + '</div></div>');
+    '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + list(b.set_b_exclusive) + '</div></div>' + _hgVersionNote(b, 'venn_diagram'));
 };
 
 // ── callout_anatomy ───────────────────────────────────────────────────────────────────────────────────────────

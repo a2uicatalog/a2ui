@@ -827,7 +827,13 @@
   "name"
  ],
  "venn_diagram": [
-  "title"
+  "intersection_abc",
+  "intersection_ac",
+  "intersection_bc",
+  "set_c_exclusive",
+  "set_c_name",
+  "title",
+  "version"
  ],
  "versus_block": [
   "comparison_points",

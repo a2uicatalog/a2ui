@@ -32703,7 +32703,74 @@ def _render_chord_diagram(b: dict) -> str:
                     + _if_table(['From', 'To', 'Value'], flows) + _if_table(['Group', 'Total out', 'Total in'], [[names[i], f(out_t[i]), f(in_t[i])] for i in range(n)]))
 
 
+# Three-set venn: a fixed symmetric layout (circles of radius W/3 whose centres are W/3 apart, so the triple overlap is a Reuleaux triangle),
+# NOT area-proportional and with no venn.js. Text boxes sit at fixed fractions of the box width, tuned so each lies wholly inside its region
+# at 290px and up (tests/test_venn_diagram.py checks it in a browser). Twin of the 3-set branch of _RENDERERS['venn_diagram'] in atoms_infographic.gs.
+_VD_REGIONS = (  # key, field, max lines (items + the "+n more" line), centre x/y and width in % of the box: narrow tier, then wide tier (container >= 480px)
+    ('a', 'set_a_exclusive', 5, (22, 21.5, 19), (18.5, 27, 27.5)), ('b', 'set_b_exclusive', 5, (78, 21.5, 19), (81.5, 27, 27.5)), ('c', 'set_c_exclusive', 5, (50, 83.5, 26), (50, 77.5, 40)),
+    ('ab', 'intersection', 3, (50, 22, 16.5), (50, 25, 26)), ('ac', 'intersection_ac', 3, (29, 58.5, 14.5), (29, 61, 21)), ('bc', 'intersection_bc', 3, (71, 58.5, 14.5), (71, 61, 21)),
+    ('abc', 'intersection_abc', 4, (50, 43, 19.5), (50, 40, 27.5)))
+_VD_COL = ('var(--accent,#2563EB)', '#C2410C', '#15803D')
+_VD_MAXREAD = 60
+
+
+def _vd_raw(v, mx):
+    return ('' if (v is None or v is _IF_UNDEF) else _if_str(v))[:mx]
+
+
+def _vd_usable(v):
+    if isinstance(v, str):
+        return v.strip() != ''
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != _HG_INF
+
+
+def _vd_css():
+    pos = lambda t: 'left:' + _if_numstr(t[0]) + '%;top:' + _if_numstr(t[1]) + '%;width:' + _if_numstr(t[2]) + '%;'
+    return ('<style>' + ''.join('.v3t.v3' + r[0] + '{' + pos(r[3]) + '}' for r in _VD_REGIONS) + '@container (width>=480px){'
+            + ''.join('.v3t.v3' + r[0] + '{' + pos(r[4]) + '}' for r in _VD_REGIONS) + '}</style>')
+
+
+def _render_venn_diagram3(b: dict) -> str:
+    names = [_vd_raw(_if_g(b, 'set_a_name'), 28) or 'Set A', _vd_raw(_if_g(b, 'set_b_name'), 28) or 'Set B', _vd_raw(_if_g(b, 'set_c_name'), 28) or 'Set C']
+    labels = ['Only ' + names[0], 'Only ' + names[1], 'Only ' + names[2], names[0] + ' and ' + names[1] + ' only', names[0] + ' and ' + names[2] + ' only', names[1] + ' and ' + names[2] + ' only', 'All three sets']
+    items, bad, extra = [], 0, 0
+    for r in _VD_REGIONS:
+        v = _if_g(b, r[1])
+        src = v if isinstance(v, list) else []
+        ok = [x for x in src if _vd_usable(x)]
+        bad += len(src) - len(ok)
+        extra += max(0, len(ok) - _VD_MAXREAD)
+        items.append([_vd_raw(x, 60) for x in ok[:_VD_MAXREAD]])
+    swatch = lambda i: '<span style="flex:0 0 auto;width:10px;height:10px;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';background:' + _VD_COL[i] + ';opacity:0.6;box-sizing:border-box;"></span>'
+    nm = lambda i, extra_style='': ('<div style="display:flex;align-items:center;gap:6px;min-width:0;font-weight:700;font-size:13px;line-height:16px;' + extra_style + '">' + swatch(i)
+                                    + '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _if_s(names[i], 28) + '</span></div>')
+    circ = ''.join('<div class="v3o" style="position:absolute;left:' + l + '%;top:' + t + '%;width:66.667%;aspect-ratio:1;box-sizing:border-box;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';opacity:var(--k,1);' + _if_k(i, 10)
+                   + '"><div style="position:absolute;inset:0;border-radius:50%;background:' + _VD_COL[i] + ';opacity:0.16;"></div></div>' for i, (l, t) in enumerate((('0', '0'), ('33.333', '0'), ('16.667', '30.218'))))
+    boxes = ''
+    for i, r in enumerate(_VD_REGIONS):
+        its, lim = items[i], r[2]
+        shown = its if len(its) <= lim else its[:lim - 1]
+        lines = ''.join('<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _if_s(x, 28) + '</div>' for x in shown)
+        if len(its) > lim:
+            lines += '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-style:italic;color:' + _IF_MUTED + ';">+' + str(len(its) - len(shown)) + ' more</div>'
+        if lines:
+            boxes += '<div class="v3t v3' + r[0] + '" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _if_k(3 + i, 10) + '">' + lines + '</div>'
+    aria = 'Venn diagram of three sets: ' + names[0] + ', ' + names[1] + ' and ' + names[2] + '. ' + ''.join(labels[i] + ': ' + str(len(items[i])) + (' item. ' if len(items[i]) == 1 else ' items. ') for i in range(7)).rstrip() + ' The circles are not drawn to scale. Every item is in the table.'
+    rows = ''.join('<tr><th scope="row">' + _if_s(labels[i], 90) + '</th><td>' + ('; '.join(_if_s(x, 60) for x in items[i]) if items[i] else 'none') + '</td></tr>' for i in range(7))
+    note = (_hg_note(str(bad) + (' entry was' if bad == 1 else ' entries were') + ' not text or a number and ' + ('was' if bad == 1 else 'were') + ' skipped.') if bad else '') \
+        + (_hg_note(str(extra) + (' entry' if extra == 1 else ' entries') + ' beyond the first ' + str(_VD_MAXREAD) + ' in a region ' + ('was' if extra == 1 else 'were') + ' left out.') if extra else '')
+    return _if_wrap(_if_title(b) + '<div role="img" aria-label="' + _if_s(aria, 900) + '" style="max-width:640px;margin:0 auto;container-type:inline-size;font-size:12px;">' + _vd_css()
+                    + '<div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:6px;"><div style="flex:1 1 0;min-width:0;display:flex;">' + nm(0, 'min-width:0;max-width:100%;') + '</div><div style="flex:1 1 0;min-width:0;display:flex;justify-content:flex-end;">' + nm(1, 'min-width:0;max-width:100%;') + '</div></div>'
+                    + '<div style="position:relative;width:100%;aspect-ratio:1/0.955342;">' + circ + boxes + '</div>'
+                    + '<div style="display:flex;justify-content:center;margin-top:6px;">' + nm(2, 'min-width:0;max-width:100%;') + '</div></div>'
+                    + _hg_note('Three fixed circles, not drawn to scale: a region\'s size says nothing about how many items it holds. Long item names are cut in the picture; the table has them in full.')
+                    + note + _hg_version_note(b, 'venn_diagram')
+                    + '<table style="' + _IF_SR + '"><thead><tr><th scope="col">Region</th><th scope="col">Items</th></tr></thead><tbody>' + rows + '</tbody></table>')
+
+
 def _render_venn_diagram(b: dict) -> str:
+    if _if_truthy(_if_g(b, 'set_c_name')):
+        return _render_venn_diagram3(b)
     lst = lambda v: ''.join('<div>• ' + _if_s(i, 28) + '</div>' for i in _if_arr(v, 4))
     c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));'
     return _if_wrap(_if_title(b) + '<div style="position:relative;max-width:640px;margin:0 auto;aspect-ratio:1.5;font-size:0.82rem;">'
@@ -32711,7 +32778,7 @@ def _render_venn_diagram(b: dict) -> str:
                     + '<div style="' + c + 'left:4%;background:#BFDBFE;' + _if_k(0, 2) + '"></div><div style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _if_k(1, 2) + '"></div>'
                     + '<div style="position:absolute;left:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_a_exclusive')) + '</div>'
                     + '<div style="position:absolute;left:38%;top:48%;width:24%;transform:translateY(-50%);text-align:center;">' + lst(_if_g(b, 'intersection')) + '</div>'
-                    + '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_b_exclusive')) + '</div></div>')
+                    + '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_b_exclusive')) + '</div></div>' + _hg_version_note(b, 'venn_diagram'))
 
 
 def _render_callout_anatomy(b: dict) -> str:

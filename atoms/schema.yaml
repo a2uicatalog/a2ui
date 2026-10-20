@@ -20947,12 +20947,12 @@ blocks:
   source: *ifg002
 - type: venn_diagram
   stage: preview
-  description: 'Two circles with the first set, the shared items and the second set, up to four items each. Motion-ready: every moving
+  description: 'Two circles with the first set, the shared items and the second set, up to four items each; or, when set_c_name is given, three fixed circles with items in all seven regions (each set alone, each pair, all three). Motion-ready: every moving
     value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item
     and the standalone render is the finished picture; reduced motion shows the end state.'
-  compact_description: 'venn diagram: what two sets share'
-  routing_text: Two overlapping circles showing what belongs to each set and what both share. Conceptual overlap only; the circles are
-    not proportional to size.
+  compact_description: 'venn diagram: what two or three sets share'
+  routing_text: Two or three overlapping circles showing what belongs to each set and what the sets share. Conceptual overlap only; the
+    circles are not proportional to size, so it is not for sizes or counts (use a chart) and not for more than three sets.
   intent_phrases:
   - Show what product managers and tech leads have in common.
   - I need a Venn diagram of two skill sets.
@@ -20964,8 +20964,18 @@ blocks:
     set_b_name: string (required, max 28).
     set_a_exclusive: array (up to 4 strings, max 28) only in A.
     set_b_exclusive: array (up to 4 strings, max 28) only in B.
-    intersection: array (up to 4 strings, max 28) in both.
-  notes: Two sets only. Circles fade in with p, the overlap last.
+    intersection: array (up to 4 strings, max 28) in A and B. With a third set it means A and B only, not C.
+    set_c_name: string (optional, max 28). Giving it switches to the three-set drawing; without it the two-set drawing is unchanged.
+    set_c_exclusive: array (optional, three-set only) of strings, only in C.
+    intersection_ac: array (optional, three-set only) of strings, in A and C but not B.
+    intersection_bc: array (optional, three-set only) of strings, in B and C but not A.
+    intersection_abc: array (optional, three-set only) of strings, in all three.
+    version: integer (optional, default 1). Only version 1 exists; a higher whole number is drawn as version 1 with a note.
+  notes: Two sets by default; set_c_name adds a third. The three-set drawing is a fixed symmetric layout of three equal circles, not
+    area-proportional, and uses no venn.js or other library. Items are listed inside each of the seven regions as text (strings or numbers
+    only), cut to 28 characters in the picture, with at most 5 lines in a set's own region, 3 in a pairwise region and 4 in the all-three
+    region (the last line is "+n more" when there are more). A hidden table (Region, Items) holds every item in full, up to 60 per
+    region, and the aria label gives the count per region. Circles fade in with p, the overlap last.
   source: *ifg002
 - type: callout_anatomy
   stage: preview
