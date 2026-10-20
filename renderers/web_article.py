@@ -29053,7 +29053,7 @@ def _render_motion_chart(b: dict) -> str:
 
 def _render_motion_lower_third(b: dict) -> str:
     name, role, size = _cv_str(b.get('name'), 40) or 'Name', _cv_str(b.get('role'), 60), _ff_int(b.get('size'), 36, 10, 120)
-    acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', '#f1f5f9'), _mo_ink(b, 'fill', '#0b0712')
+    acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'fill', '#0b0712')
     return ('<div style="display:flex;align-items:stretch;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">'
             + '<div aria-hidden="true" style="width:0.18em;background:' + acc + ';transform-origin:50% 100%;transform:scaleY(clamp(0,calc(var(--p,1)*4),1));"></div>'
             + '<div style="overflow:hidden;padding:0.25em 0.8em 0.3em 0.6em;background:color-mix(in srgb,' + fill + ' 82%,transparent);clip-path:inset(0 calc((1 - clamp(0,calc(var(--p,1)*2.2 - 0.2),1))*100%) 0 0);">'
