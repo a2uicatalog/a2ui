@@ -30513,6 +30513,102 @@ def _render_maturity_ladder(b: dict) -> str:
     return _if_wrap(_if_title(b) + '<div style="display:flex;align-items:flex-end;gap:6px;">' + steps + '</div>')
 
 
+# Squarified treemap layout: a line-for-line port of d3-hierarchy 3.1.2 treemapSquarify (ISC, Mike Bostock); twin of _tmSquarify in atoms_infographic.gs.
+# Laid out in a nominal 900 x 300 box, no padding, no rounding; the renderer emits the rectangles as percentages and draws the gaps in CSS.
+_TM_PHI = (1 + math.sqrt(5)) / 2
+_TM_W = 900
+_TM_H = 300
+
+
+def _tm_div(a, b):
+    """JavaScript a / b for a > 0 (Infinity instead of ZeroDivisionError)."""
+    return a / b if b else float('inf')
+
+
+def _tm_sum(vals):
+    """d3 hierarchy.sum(): children are added last to first."""
+    s = 0.0
+    for v in reversed(vals):
+        s += v
+    return s
+
+
+def _tm_squarify(vals, x0, y0, x1, y1):
+    """Rectangles [x0, y0, x1, y1] for the positive values, in order (d3 squarifyRatio with ratio = phi)."""
+    n = len(vals)
+    out = [None] * n
+    value = _tm_sum(vals)
+    i0 = i1 = 0
+    while i0 < n:
+        dx = x1 - x0
+        dy = y1 - y0
+        while True:
+            sv = float(vals[i1])
+            i1 += 1
+            if sv or i1 >= n:
+                break
+        mn = mx = sv
+        alpha = _tm_div(max(_tm_div(dy, dx), _tm_div(dx, dy)), value * _TM_PHI)
+        beta = sv * sv * alpha
+        mr = max(_tm_div(mx, beta), _tm_div(beta, mn))
+        while i1 < n:
+            nv = float(vals[i1])
+            sv += nv
+            if nv < mn:
+                mn = nv
+            if nv > mx:
+                mx = nv
+            beta = sv * sv * alpha
+            nr = max(_tm_div(mx, beta), _tm_div(beta, mn))
+            if nr > mr:
+                sv -= nv
+                break
+            mr = nr
+            i1 += 1
+        rx0, ry0 = x0, y0
+        if dx < dy:
+            if value:
+                y0 += dy * sv / value
+                ry1 = y0
+            else:
+                ry1 = y1
+            k = (x1 - rx0) / sv if sv else 0.0
+            px = rx0
+            for j in range(i0, i1):
+                out[j] = [px, ry0, 0.0, ry1]
+                px += float(vals[j]) * k
+                out[j][2] = px
+        else:
+            if value:
+                x0 += dx * sv / value
+                rx1 = x0
+            else:
+                rx1 = x1
+            k = (y1 - ry0) / sv if sv else 0.0
+            py = ry0
+            for j in range(i0, i1):
+                out[j] = [rx0, py, rx1, 0.0]
+                py += float(vals[j]) * k
+                out[j][3] = py
+        value -= sv
+        i0 = i1
+    return out
+
+
+def _tm_layout(groups):
+    """groups: one list of positive values per category. Returns (category rects, item rects per category)."""
+    cr = _tm_squarify([_tm_sum(g) for g in groups], 0, 0, _TM_W, _TM_H)
+    return cr, [_tm_squarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]) for i, g in enumerate(groups)]
+
+
+def _tm_pct(x, d):
+    return _if_fixed(x / d * 100, 3) + '%'
+
+
+def _tm_box(r):
+    return 'position:absolute;left:' + _tm_pct(r[0], _TM_W) + ';top:' + _tm_pct(r[1], _TM_H) + ';width:' + _tm_pct(r[2] - r[0], _TM_W) + ';height:' + _tm_pct(r[3] - r[1], _TM_H) + ';'
+
+
 def _render_treemap(b: dict) -> str:
     items = []
     for i in _if_arr(_if_g(b, 'items'), 12):
@@ -30528,17 +30624,19 @@ def _render_treemap(b: dict) -> str:
     for i in items:
         tot += i['v']
     tot = tot or 1
-    cols = ''
+    groups = [[i for i in items if i['c'] == c] for c in cats]
+    cr, ir = _tm_layout([[i['v'] for i in m] for m in groups])
+    cells = ''
+    tags = ''
     for ci, c in enumerate(cats):
-        m = [i for i in items if i['c'] == c]
+        m = groups[ci]
         ct = 0
         for i in m:
             ct += i['v']
-        cols += '<div style="flex:' + _if_numstr(ct) + ' 1 0;min-width:0;display:flex;flex-direction:column;gap:2px;"><div style="font-size:0.78rem;font-weight:700;">' + _if_s(c, 20) + ' ' + _if_fmt(ct) + '</div>'
         for k, i in enumerate(m):
-            cols += ('<div style="flex:' + _if_numstr(i['v']) + ' 1 0;min-height:0;background:' + _IF_CAT[ci] + ';color:#fff;border-radius:4px;padding:6px 8px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(ci * 4 + k, 12) + 'opacity:var(--k,1);">' + _if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) + '</div>')
-        cols += '</div>'
-    return _if_wrap(_if_title(b) + '<div style="display:flex;gap:2px;height:300px;">' + cols + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.</div>'
+            cells += ('<div style="' + _tm_box(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + ('24px' if k == 0 else '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(ci * 4 + k, 12) + 'opacity:var(--k,1);">' + _if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) + '</div>')
+        tags += ('<div style="position:absolute;left:' + _tm_pct(cr[ci][0], _TM_W) + ';top:' + _tm_pct(cr[ci][1], _TM_H) + ';max-width:' + _tm_pct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + _if_s(c, 20) + ' ' + _if_fmt(ct) + '</div>')
+    return _if_wrap(_if_title(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.</div>'
                     + _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
 
 

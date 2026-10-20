@@ -186,17 +186,62 @@ _RENDERERS['maturity_ladder'] = function(b) {
 };
 
 // ── treemap ───────────────────────────────────────────────────────────────────────────────────────────────────
+// Squarified treemap layout: a line-for-line port of d3-hierarchy 3.1.2 treemapSquarify (ISC, Mike Bostock); twin of _tm_squarify in renderers/web_article.py.
+// Laid out in a nominal 900 x 300 box, no padding, no rounding; the renderer emits the rectangles as percentages and draws the gaps in CSS.
+var _TM_PHI = (1 + Math.sqrt(5)) / 2, _TM_W = 900, _TM_H = 300;
+function _tmSum(vals) { var s = 0, i = vals.length; while (--i >= 0) s += vals[i]; return s; }
+function _tmSquarify(vals, x0, y0, x1, y1) {
+  var n = vals.length, out = new Array(n), value = _tmSum(vals), i0 = 0, i1 = 0, dx, dy, sv, mn, mx, alpha, beta, mr, nr, nv, rx0, ry0, ry1, rx1, k, px, py, j;
+  while (i0 < n) {
+    dx = x1 - x0; dy = y1 - y0;
+    do sv = +vals[i1++]; while (!sv && i1 < n);
+    mn = mx = sv;
+    alpha = Math.max(dy / dx, dx / dy) / (value * _TM_PHI);
+    beta = sv * sv * alpha;
+    mr = Math.max(mx / beta, beta / mn);
+    for (; i1 < n; ++i1) {
+      sv += nv = +vals[i1];
+      if (nv < mn) mn = nv;
+      if (nv > mx) mx = nv;
+      beta = sv * sv * alpha;
+      nr = Math.max(mx / beta, beta / mn);
+      if (nr > mr) { sv -= nv; break; }
+      mr = nr;
+    }
+    rx0 = x0; ry0 = y0;
+    if (dx < dy) {
+      if (value) { y0 += dy * sv / value; ry1 = y0; } else ry1 = y1;
+      k = sv ? (x1 - rx0) / sv : 0; px = rx0;
+      for (j = i0; j < i1; j++) { out[j] = [px, ry0, 0, ry1]; px += vals[j] * k; out[j][2] = px; }
+    } else {
+      if (value) { x0 += dx * sv / value; rx1 = x0; } else rx1 = x1;
+      k = sv ? (y1 - ry0) / sv : 0; py = ry0;
+      for (j = i0; j < i1; j++) { out[j] = [rx0, py, rx1, 0]; py += vals[j] * k; out[j][3] = py; }
+    }
+    value -= sv; i0 = i1;
+  }
+  return out;
+}
+function _tmLayout(groups) {
+  var cr = _tmSquarify(groups.map(_tmSum), 0, 0, _TM_W, _TM_H);
+  return [cr, groups.map(function(g, i) { return _tmSquarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]); })];
+}
+function _tmPct(x, d) { return (x / d * 100).toFixed(3) + '%'; }
+function _tmBox(r) { return 'position:absolute;left:' + _tmPct(r[0], _TM_W) + ';top:' + _tmPct(r[1], _TM_H) + ';width:' + _tmPct(r[2] - r[0], _TM_W) + ';height:' + _tmPct(r[3] - r[1], _TM_H) + ';'; }
 _RENDERERS['treemap'] = function(b) {
   var items = _ifArr(b.items, 12).map(function(i) { i = _ifObj(i); return { c: String(i.category === undefined ? '' : i.category).slice(0, 20), n: i.name, v: _ifNum(i.value, 0, 1e12, 0) }; }).filter(function(i) { return i.v > 0; });
   var cats = []; items.forEach(function(i) { if (cats.indexOf(i.c) < 0 && cats.length < 4) cats.push(i.c); }); items = items.filter(function(i) { return cats.indexOf(i.c) >= 0; });
   var tot = items.reduce(function(s, i) { return s + i.v; }, 0) || 1;
-  var cols = cats.map(function(c, ci) {
-    var m = items.filter(function(i) { return i.c === c; }), ct = m.reduce(function(s, i) { return s + i.v; }, 0);
-    return '<div style="flex:' + ct + ' 1 0;min-width:0;display:flex;flex-direction:column;gap:2px;"><div style="font-size:0.78rem;font-weight:700;">' + _ifS(c, 20) + ' ' + _ifFmt(ct) + '</div>' + m.map(function(i, k) {
-      return '<div style="flex:' + i.v + ' 1 0;min-height:0;background:' + _IF_CAT[ci] + ';color:#fff;border-radius:4px;padding:6px 8px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(ci * 4 + k, 12) + 'opacity:var(--k,1);">' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '</div>';
-    }).join('') + '</div>';
-  }).join('');
-  return _ifWrap(_ifTitle(b) + '<div style="display:flex;gap:2px;height:300px;">' + cols + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.</div>' +
+  var groups = cats.map(function(c) { return items.filter(function(i) { return i.c === c; }); });
+  var lay = _tmLayout(groups.map(function(m) { return m.map(function(i) { return i.v; }); })), cr = lay[0], ir = lay[1], cells = '', tags = '';
+  cats.forEach(function(c, ci) {
+    var m = groups[ci], ct = m.reduce(function(s, i) { return s + i.v; }, 0);
+    m.forEach(function(i, k) {
+      cells += '<div style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (k === 0 ? '24px' : '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(ci * 4 + k, 12) + 'opacity:var(--k,1);">' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '</div>';
+    });
+    tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + _ifS(c, 20) + ' ' + _ifFmt(ct) + '</div>';
+  });
+  return _ifWrap(_ifTitle(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.</div>' +
     _ifTable(['Item', 'Category', 'Value', 'Share'], items.map(function(i) { return [i.n, i.c, _ifFmt(i.v), (i.v / tot * 100).toFixed(1) + '%']; })));
 };
 
