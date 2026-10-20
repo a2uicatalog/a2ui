@@ -12,7 +12,9 @@ h1{color:#e5e7eb;font-size:1.2rem;}</style>
 <style>
 .c03aa11{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
   box-shadow:0 4px 24px rgba(0,0,0,0.12);}
-.c03aa11 input[type=radio]{display:none;}
+.c03aa11 input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;}
+.c03aa11 input[type=radio]:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}
+.c03aa11:has(input[type=radio]:focus-visible){outline:2px solid #4f46e5;outline-offset:3px;}
 .c03aa11-track{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:500%;}
 .c03aa11-slide{width:20%;flex:0 0 20%;position:relative;}
 .c03aa11-slide img{width:100%;display:block;max-height:480px;object-fit:cover;}

@@ -181,3 +181,13 @@ def test_tablist_owns_only_tabs():
             if s:
                 bad[rel] = s[:3]
     assert not bad, f"tablist with non-tab children: {bad}"
+
+
+def test_published_pages_do_not_hide_radios_with_display_none():
+    """Same rule as the renderer check above, on the shipped HTML (the gallery article pages carried a stale copy of the old carousel CSS)."""
+    bad = []
+    for p in _site_pages():
+        t = p.read_text(errors="ignore")
+        if re.search(r"input(?:\[type=(?:radio|checkbox)\])?\s*\{\s*display:\s*none", t) and re.search(r"type=[\"']?(?:radio|checkbox)", t):
+            bad.append(str(p.relative_to(ROOT)))
+    assert not bad, f"radio/checkbox hidden with display:none in {bad}"
