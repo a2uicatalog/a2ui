@@ -564,6 +564,14 @@ function _saStack(vals, offset) {
 }
 function _saStr(v) { return typeof v === 'string' ? v : (typeof v === 'number' && isFinite(v)) ? String(v) : ''; }
 function _saFx(x) { return x.toFixed(2); }
+// every stride-th label, and always the last one: it takes the place of the regular label just before it, which would crowd it
+function _saTicks(m, stride) {
+  var t = [], i, o = {};
+  for (i = 0; i < m; i += stride) t.push(i);
+  if (t[t.length - 1] !== m - 1) { if (t[t.length - 1] !== 0) t.pop(); t.push(m - 1); }
+  t.forEach(function(k) { o[k] = true; });
+  return o;
+}
 function _saChart(b, offset) {
   var labels = Array.isArray(b.labels) ? b.labels : [], list = Array.isArray(b.series) ? b.series : [];
   var m = Math.min(labels.length, 60), ser = [], skipped = 0, bad = 0, i, j;
@@ -598,13 +606,13 @@ function _saChart(b, offset) {
     for (j = m - 1; j >= 0; j--) pts.push(X(j) + ',' + Y(ST.lo[i][j]));
     polys += '<polygon points="' + pts.join(' ') + '" fill="' + ser[i].col + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>';
   }
-  var lab = labels.slice(0, m).map(function(l) { return _saStr(l).slice(0, 14); });
+  var full = labels.slice(0, m).map(function(l) { return _saStr(l); }), lab = full.map(function(t) { return t.length > 14 ? t.slice(0, 13).replace(/\s+$/, '') + '\u2026' : t; });
   var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; }).concat([1]));
-  var want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(m / want), xs = '';
+  var want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(m / want), xs = ''; var shown = _saTicks(m, stride), coarse = _saTicks(m, 2 * stride);
   for (j = 0; j < m; j++) {
-    if (j % stride !== 0) continue;
+    if (!shown[j]) continue;
     var tr = j === 0 ? '' : (j === m - 1 ? 'transform:translateX(-100%);' : 'transform:translateX(-50%);');
-    xs += '<div class="sax' + (j % (2 * stride) === 0 ? ' sac' : '') + '" style="position:absolute;top:100%;left:' + _saFx(j / (m - 1) * 100) + '%;">'
+    xs += '<div class="sax' + (coarse[j] ? ' sac' : '') + '" style="position:absolute;top:100%;left:' + _saFx(j / (m - 1) * 100) + '%;">'
       + '<div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
       + '<div style="position:absolute;left:0;top:7px;' + tr + 'font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _esc(lab[j]) + '</div></div>';
   }
@@ -617,7 +625,7 @@ function _saChart(b, offset) {
   }
   var mode = offset === 'expand' ? 'each point scaled to 100 percent' : offset === 'silhouette' ? 'centred baseline' : 'streamgraph, baseline chosen to minimise wiggle';
   var names = ser.map(function(s) { return s.name; });
-  var aria = 'Stacked area chart, ' + mode + ': ' + ser.length + ' series over ' + m + ' points from ' + lab[0] + ' to ' + lab[m - 1] + '. Series: ' + names.join(', ') + '.';
+  var aria = 'Stacked area chart, ' + mode + ': ' + ser.length + ' series over ' + m + ' points from ' + full[0] + ' to ' + full[m - 1] + '. Series: ' + names.join(', ') + '.';
   var legend = '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
     + ser.map(function(s) { return '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:' + s.col + ';border:1px solid var(--border,#CBD5E1);box-sizing:border-box;display:inline-block;"></span>' + _esc(s.name) + '</span>'; }).join('') + '</div>';
   var notes = '';

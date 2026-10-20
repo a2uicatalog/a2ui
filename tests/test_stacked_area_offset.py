@@ -396,3 +396,19 @@ def test_schema_declares_offset_and_version():
     assert "offset" in a["fields"] and "version" in a["fields"]
     for w in ("expand", "silhouette", "wiggle", "none"):
         assert w in a["fields"]["offset"]
+
+
+def test_long_x_labels_end_in_an_ellipsis_and_the_last_label_is_always_shown(core_js):
+    # seen on the PM's screenshot: "January 2026 (" was cut mid-text, and at 4 points the narrow tier showed P1 and P3 but not P4
+    import re as _re
+    from test_motion_atoms import _gas_batch as _gb, _py as _p
+    long = {"type": "stacked_area", "offset": "expand", "labels": ["January 2026 (provisional)", "February 2026", "March 2026 (provisional)"],
+            "series": [{"label": "A", "data": [1, 2, 3]}, {"label": "B", "data": [3, 2, 1]}]}
+    four = {"type": "stacked_area", "offset": "wiggle", "labels": ["P1", "P2", "P3", "P4"], "series": [{"label": "A", "data": [1, 2, 3, 4]}, {"label": "B", "data": [4, 3, 2, 1]}]}
+    for h in (_p(long), _gb(core_js, [long])[0]):
+        assert "January 2026…" in h and "January 2026 (<" not in h
+    for b in (four, dict(four, labels=["P%d" % i for i in range(1, 12)], series=[{"label": "A", "data": list(range(11))}])):
+        for h in (_p(b), _gb(core_js, [b])[0]):
+            marks = _re.findall(r'<div class="sax( sac)?" style="position:absolute;top:100%;left:([\d.]+)%;', h)
+            assert marks[-1][1] == "100.00" and marks[-1][0] == " sac", marks       # the last point is labelled in both tiers
+            assert marks[0][1] == "0.00" and marks[0][0] == " sac"

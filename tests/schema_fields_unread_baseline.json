@@ -185,6 +185,10 @@
   "label",
   "target_date"
  ],
+ "decision_tree": [
+  "layout",
+  "version"
+ ],
  "demo_chart": [
   "accent"
  ],
@@ -737,6 +741,10 @@
  ],
  "sprint_board": [
   "sprint_name"
+ ],
+ "stacked_area": [
+  "offset",
+  "version"
  ],
  "status_pill": [
   "color",

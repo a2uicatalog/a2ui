@@ -11903,6 +11903,16 @@ def _sa_stack(vals, offset):
     return order, [[p[0] for p in r] for r in S], [[p[1] for p in r] for r in S]
 
 
+def _sa_ticks(m, stride):
+    """Every stride-th label, and always the last one: it takes the place of the regular label just before it, which would crowd it."""
+    t = list(range(0, m, stride))
+    if t[-1] != m - 1:
+        if t[-1] != 0:
+            t.pop()
+        t.append(m - 1)
+    return set(t)
+
+
 def _sa_chart(b, offset):
     labels = b.get('labels') if isinstance(b.get('labels'), list) else []
     lst = b.get('series') if isinstance(b.get('series'), list) else []
@@ -11948,16 +11958,18 @@ def _sa_chart(b, offset):
     for i in range(len(ser)):
         pts = [X(j) + ',' + Y(HI[i][j]) for j in range(m)] + [X(j) + ',' + Y(LO[i][j]) for j in range(m - 1, -1, -1)]
         polys += '<polygon points="' + ' '.join(pts) + '" fill="' + ser[i]['col'] + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>'
-    lab = [_sa_str(l)[:14] for l in labels[:m]]
+    full = [_sa_str(l) for l in labels[:m]]
+    lab = [t[:13].rstrip() + '\u2026' if len(t) > 14 else t for t in full]
     maxlen = max([len(s) for s in lab] + [1])
     want = max(2, min(8, 48 // maxlen))
     stride = -(-m // want)
+    shown, coarse = _sa_ticks(m, stride), _sa_ticks(m, 2 * stride)
     xs = ''
     for j in range(m):
-        if j % stride != 0:
+        if j not in shown:
             continue
         tr = '' if j == 0 else 'transform:translateX(-100%);' if j == m - 1 else 'transform:translateX(-50%);'
-        xs += ('<div class="sax' + (' sac' if j % (2 * stride) == 0 else '') + '" style="position:absolute;top:100%;left:' + _if_fixed(j / (m - 1) * 100, 2) + '%;">'
+        xs += ('<div class="sax' + (' sac' if j in coarse else '') + '" style="position:absolute;top:100%;left:' + _if_fixed(j / (m - 1) * 100, 2) + '%;">'
                '<div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
                '<div style="position:absolute;left:0;top:7px;' + tr + 'font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _cv_esc(lab[j]) + '</div></div>')
     ys = ''
@@ -11967,7 +11979,7 @@ def _sa_chart(b, offset):
                    '<div style="position:absolute;right:100%;top:' + str(100 - j * 25) + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>')
     mode = 'each point scaled to 100 percent' if offset == 'expand' else 'centred baseline' if offset == 'silhouette' else 'streamgraph, baseline chosen to minimise wiggle'
     names = [s['name'] for s in ser]
-    aria = 'Stacked area chart, ' + mode + ': ' + str(len(ser)) + ' series over ' + str(m) + ' points from ' + lab[0] + ' to ' + lab[m - 1] + '. Series: ' + ', '.join(names) + '.'
+    aria = 'Stacked area chart, ' + mode + ': ' + str(len(ser)) + ' series over ' + str(m) + ' points from ' + full[0] + ' to ' + full[m - 1] + '. Series: ' + ', '.join(names) + '.'
     legend = ('<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
               + ''.join('<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:' + s['col'] + ';border:1px solid var(--border,#CBD5E1);box-sizing:border-box;display:inline-block;"></span>' + _cv_esc(s['name']) + '</span>' for s in ser) + '</div>')
     if offset == 'expand':
