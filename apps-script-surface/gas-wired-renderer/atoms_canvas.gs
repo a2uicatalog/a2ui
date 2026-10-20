@@ -111,142 +111,292 @@ _RENDERERS['canvas_plexus'] = function(b) {
 };
 
 // ── spring_nodes ──────────────────────────────────────────────────────────────
-// Mass-spring graph layout: nodes repel each other (Coulomb), edges attract
-// (Hooke). Starts jumbled at centre, settles naturally. Click-drag any node.
+// A settled force-directed graph, laid out server-side and drawn as a static SVG (no script, no physics at runtime, no CDN).
+// The layout is a line-for-line port of d3-force 3.0.0 (ISC, Mike Bostock) with d3-quadtree 3.0.1: forceLink + forceManyBody (Barnes-Hut) + forceCenter,
+// d3's own phyllotaxis start and LCG random source, run for a FIXED number of ticks, so the same payload always gives the same picture.
+// Twin of _sn_layout in renderers/web_article.py; checked against the real library by tests/test_spring_nodes_force.py.
 // Fields:
-//   nodes    — array of {id, label} objects
-//   edges    — array of {from, to, label?} using node ids
-//   colour   — accent colour for nodes (default #4f46e5)
-//   height   — canvas height px (default 340)
-//   bg       — background colour (default #0d1117)
-//   spring   — spring constant (default 0.003)
-//   repulsion— Coulomb constant (default 2400)
-//   rest_len — spring rest length px (default 130)
+//   nodes       — array of {id, label, size?} (default: six labelled nodes)
+//   edges       — array of {a, b} index pairs (also read: {from, to} / {source, target} by node id)
+//   colour      — node and line accent colour (default #818cf8)
+//   bg          — background colour (default #0f172a)
+//   height      — drawing height px (default 420)
+//   rest_length — spring rest length px (default 110; rest_len is read too)
+var _SN_TICKS = 300, _SN_CHARGE = -300, _SN_MAX_NODES = 120;
+function _snQuad() { return {c: null, data: null, next: null, x: 0, y: 0, value: 0}; }
+function _snTree(nodes) {
+  var tree = {x0: NaN, y0: NaN, x1: NaN, y1: NaN, root: null};
+  function cover(x, y) {
+    if (isNaN(x = +x) || isNaN(y = +y)) return;
+    var x0 = tree.x0, y0 = tree.y0, x1 = tree.x1, y1 = tree.y1;
+    if (isNaN(x0)) { x1 = (x0 = Math.floor(x)) + 1; y1 = (y0 = Math.floor(y)) + 1; }
+    else {
+      var z = x1 - x0 || 1, node = tree.root, parent, i;
+      while (x0 > x || x >= x1 || y0 > y || y >= y1) {
+        i = ((y < y0) << 1) | (x < x0);
+        parent = {c: [null, null, null, null]}; parent.c[i] = node; node = parent; z *= 2;
+        switch (i) {
+          case 0: x1 = x0 + z; y1 = y0 + z; break;
+          case 1: x0 = x1 - z; y1 = y0 + z; break;
+          case 2: x1 = x0 + z; y0 = y1 - z; break;
+          case 3: x0 = x1 - z; y0 = y1 - z; break;
+        }
+      }
+      if (tree.root && tree.root.c) tree.root = node;
+    }
+    tree.x0 = x0; tree.y0 = y0; tree.x1 = x1; tree.y1 = y1;
+  }
+  function add(x, y, d) {
+    var parent = null, node = tree.root, leaf = _snQuad(), x0 = tree.x0, y0 = tree.y0, x1 = tree.x1, y1 = tree.y1, xm, ym, xp, yp, right, bottom, i, j;
+    leaf.data = d;
+    if (!node) { tree.root = leaf; return; }
+    while (node.c) {
+      if (right = x >= (xm = (x0 + x1) / 2)) x0 = xm; else x1 = xm;
+      if (bottom = y >= (ym = (y0 + y1) / 2)) y0 = ym; else y1 = ym;
+      parent = node; i = (bottom << 1) | right;
+      if (!(node = node.c[i])) { parent.c[i] = leaf; return; }
+    }
+    xp = node.data.x; yp = node.data.y;
+    if (x === xp && y === yp) { leaf.next = node; if (parent) parent.c[i] = leaf; else tree.root = leaf; return; }
+    do {
+      var made = _snQuad(); made.c = [null, null, null, null];
+      if (parent) parent.c[i] = made; else tree.root = made;
+      parent = made;
+      if (right = x >= (xm = (x0 + x1) / 2)) x0 = xm; else x1 = xm;
+      if (bottom = y >= (ym = (y0 + y1) / 2)) y0 = ym; else y1 = ym;
+    } while ((i = (bottom << 1) | right) === (j = ((yp >= ym) << 1) | (xp >= xm)));
+    parent.c[j] = node; parent.c[i] = leaf;
+  }
+  var n = nodes.length, i, x, y, xz = new Array(n), yz = new Array(n), x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (i = 0; i < n; ++i) {
+    if (isNaN(x = +nodes[i].x) || isNaN(y = +nodes[i].y)) continue;
+    xz[i] = x; yz[i] = y;
+    if (x < x0) x0 = x; if (x > x1) x1 = x;
+    if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  if (x0 > x1 || y0 > y1) return tree;
+  cover(x0, y0); cover(x1, y1);
+  for (i = 0; i < n; ++i) add(xz[i], yz[i], nodes[i]);
+  return tree;
+}
+function _snVisitAfter(tree, cb) {
+  var quads = [], next = [], q, node, child, x0, y0, x1, y1, xm, ym;
+  if (tree.root) quads.push({node: tree.root, x0: tree.x0, y0: tree.y0, x1: tree.x1, y1: tree.y1});
+  while (q = quads.pop()) {
+    node = q.node;
+    if (node.c) {
+      x0 = q.x0; y0 = q.y0; x1 = q.x1; y1 = q.y1; xm = (x0 + x1) / 2; ym = (y0 + y1) / 2;
+      if (child = node.c[0]) quads.push({node: child, x0: x0, y0: y0, x1: xm, y1: ym});
+      if (child = node.c[1]) quads.push({node: child, x0: xm, y0: y0, x1: x1, y1: ym});
+      if (child = node.c[2]) quads.push({node: child, x0: x0, y0: ym, x1: xm, y1: y1});
+      if (child = node.c[3]) quads.push({node: child, x0: xm, y0: ym, x1: x1, y1: y1});
+    }
+    next.push(q);
+  }
+  while (q = next.pop()) cb(q.node, q.x0, q.y0, q.x1, q.y1);
+}
+function _snVisit(tree, cb) {
+  var quads = [], q, node, child, x0, y0, x1, y1, xm, ym;
+  if (tree.root) quads.push({node: tree.root, x0: tree.x0, y0: tree.y0, x1: tree.x1, y1: tree.y1});
+  while (q = quads.pop()) {
+    node = q.node; x0 = q.x0; y0 = q.y0; x1 = q.x1; y1 = q.y1;
+    if (!cb(node, x0, y0, x1, y1) && node.c) {
+      xm = (x0 + x1) / 2; ym = (y0 + y1) / 2;
+      if (child = node.c[3]) quads.push({node: child, x0: xm, y0: ym, x1: x1, y1: y1});
+      if (child = node.c[2]) quads.push({node: child, x0: x0, y0: ym, x1: xm, y1: y1});
+      if (child = node.c[1]) quads.push({node: child, x0: xm, y0: y0, x1: x1, y1: ym});
+      if (child = node.c[0]) quads.push({node: child, x0: x0, y0: y0, x1: xm, y1: ym});
+    }
+  }
+}
+// d3-force: simulation (alpha 1 -> alphaMin 0.001 over 300 ticks, velocityDecay 0.4), forceLink (default strength and bias, distance = dist), forceManyBody (theta 0.9, distanceMin 1), forceCenter(0, 0).
+function _snLayout(n, links, dist, charge, ticks) {
+  var s = 1;
+  function random() { return (s = (1664525 * s + 1013904223) % 4294967296) / 4294967296; }
+  function jiggle() { return (random() - 0.5) * 1e-6; }
+  var nodes = [], i, k, m = links.length, angle = Math.PI * (3 - Math.sqrt(5));
+  for (i = 0; i < n; ++i) {
+    var radius = 10 * Math.sqrt(0.5 + i), a = i * angle;
+    nodes.push({index: i, x: radius * Math.cos(a), y: radius * Math.sin(a), vx: 0, vy: 0});
+  }
+  var count = new Array(n), bias = new Array(m), strengths = new Array(m), L;
+  for (i = 0; i < m; ++i) {
+    L = links[i];
+    count[L[0]] = (count[L[0]] || 0) + 1;
+    count[L[1]] = (count[L[1]] || 0) + 1;
+  }
+  for (i = 0; i < m; ++i) {
+    L = links[i];
+    bias[i] = count[L[0]] / (count[L[0]] + count[L[1]]);
+    strengths[i] = 1 / Math.min(count[L[0]], count[L[1]]);
+  }
+  var alphaMin = 0.001, alphaDecay = 1 - Math.pow(alphaMin, 1 / 300), alpha = 1, velocityDecay = 1 - 0.4;
+  var theta2 = 0.9 * 0.9, distanceMin2 = 1, distanceMax2 = Infinity, cstr = +charge, node;
+  function linkForce(al) {
+    for (var j = 0, link, source, target, x, y, l, b; j < m; ++j) {
+      link = links[j]; source = nodes[link[0]]; target = nodes[link[1]];
+      x = target.x + target.vx - source.x - source.vx || jiggle();
+      y = target.y + target.vy - source.y - source.vy || jiggle();
+      l = Math.sqrt(x * x + y * y);
+      l = (l - dist) / l * al * strengths[j];
+      x *= l; y *= l;
+      target.vx -= x * (b = bias[j]);
+      target.vy -= y * b;
+      source.vx += x * (b = 1 - b);
+      source.vy += y * b;
+    }
+  }
+  function accumulate(quad) {
+    var strength = 0, q, c, weight = 0, x, y, j;
+    if (quad.c) {
+      for (x = y = j = 0; j < 4; ++j) {
+        if ((q = quad.c[j]) && (c = Math.abs(q.value))) { strength += q.value; weight += c; x += c * q.x; y += c * q.y; }
+      }
+      quad.x = x / weight; quad.y = y / weight;
+    } else {
+      q = quad; q.x = q.data.x; q.y = q.data.y;
+      do strength += cstr; while (q = q.next);
+    }
+    quad.value = strength;
+  }
+  function apply(quad, x1, _, x2) {
+    if (!quad.value) return true;
+    var x = quad.x - node.x, y = quad.y - node.y, w = x2 - x1, l = x * x + y * y;
+    if (w * w / theta2 < l) {
+      if (l < distanceMax2) {
+        if (x === 0) { x = jiggle(); l += x * x; }
+        if (y === 0) { y = jiggle(); l += y * y; }
+        if (l < distanceMin2) l = Math.sqrt(distanceMin2 * l);
+        node.vx += x * quad.value * alpha / l;
+        node.vy += y * quad.value * alpha / l;
+      }
+      return true;
+    } else if (quad.c || l >= distanceMax2) return false;
+    if (quad.data !== node || quad.next) {
+      if (x === 0) { x = jiggle(); l += x * x; }
+      if (y === 0) { y = jiggle(); l += y * y; }
+      if (l < distanceMin2) l = Math.sqrt(distanceMin2 * l);
+    }
+    do if (quad.data !== node) {
+      w = cstr * alpha / l;
+      node.vx += x * w;
+      node.vy += y * w;
+    } while (quad = quad.next);
+    return false;
+  }
+  function chargeForce() {
+    var tree = _snTree(nodes);
+    _snVisitAfter(tree, accumulate);
+    for (var j = 0; j < n; ++j) { node = nodes[j]; _snVisit(tree, apply); }
+  }
+  function centerForce() {
+    var j, nd, sx = 0, sy = 0;
+    for (j = 0; j < n; ++j) { nd = nodes[j]; sx += nd.x; sy += nd.y; }
+    for (sx = (sx / n - 0) * 1, sy = (sy / n - 0) * 1, j = 0; j < n; ++j) { nd = nodes[j]; nd.x -= sx; nd.y -= sy; }
+  }
+  for (k = 0; k < ticks; ++k) {
+    alpha += (0 - alpha) * alphaDecay;
+    linkForce(alpha); chargeForce(); centerForce();
+    for (i = 0; i < n; ++i) {
+      node = nodes[i];
+      node.x += node.vx *= velocityDecay;
+      node.y += node.vy *= velocityDecay;
+    }
+  }
+  return nodes.map(function(d) { return [d.x, d.y]; });
+}
+var _SN_COLOUR_RE = /^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|[a-zA-Z]{3,20}|(?:rgb|hsl)a?\([0-9., %]{1,40}\))$/;
+function _snColour(v, dflt) { return (typeof v === 'string' && _SN_COLOUR_RE.test(v.trim())) ? v.trim() : dflt; }
+function _snLum(h) {
+  var m = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/.exec(h);
+  if (!m) return 0;
+  var t = m[1].length === 3 ? m[1].replace(/(.)/g, '$1$1') : m[1], l = 0, w = [0.2126, 0.7152, 0.0722];
+  for (var i = 0; i < 3; i++) {
+    var c = parseInt(t.substr(i * 2, 2), 16) / 255;
+    l += w[i] * (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  }
+  return l;
+}
+function _snF(v) { return (Math.floor(v * 100 + 0.5) / 100).toFixed(2); }
 _RENDERERS['spring_nodes'] = function(b) {
-  var nodes    = b.nodes || [
-    {id:'web',   label:'Web'},
-    {id:'api',   label:'API'},
-    {id:'db',    label:'Database'},
-    {id:'auth',  label:'Auth'},
-    {id:'cache', label:'Cache'}
-  ];
-  var edges    = b.edges || [
-    {from:'web',  to:'api'},
-    {from:'api',  to:'db'},
-    {from:'api',  to:'auth'},
-    {from:'api',  to:'cache'},
-    {from:'web',  to:'auth'}
-  ];
-  var colour   = b.colour   || '#4f46e5';
-  var h        = b.height   || 340;
-  var bg       = b.bg       || '#0d1117';
-  var KS       = b.spring   !== undefined ? b.spring    : 0.003;
-  var KR       = b.repulsion!== undefined ? b.repulsion : 2400;
-  var RL       = b.rest_len !== undefined ? b.rest_len  : 130;
-  var uid      = 'spn' + Math.random().toString(36).substr(2, 6);
-
-  return '<canvas id="' + uid + '" height="' + h + '" ' +
-    'style="width:100%;display:block;border-radius:14px;background:' + _esc(bg) + ';cursor:grab;">' +
-    '</canvas>' +
-    '<script>(function(){' +
-      'var c=document.getElementById("' + uid + '");' +
-      'if(!c)return;' +
-      'var ctx=c.getContext("2d");' +
-      'c.width=c.offsetWidth||600;' +
-      'var W=c.width,H=c.height;' +
-      'var COL="' + _esc(colour) + '";' +
-      'var KS=' + KS + ',KR=' + KR + ',RL=' + RL + ',DMP=0.86;' +
-      'var nodeDefs=' + _jsJson(nodes) + ';' +
-      'var edgeDefs=' + _jsJson(edges) + ';' +
-      // Init nodes bunched at centre with small jitter
-      'var ns=nodeDefs.map(function(d){return{' +
-        'id:d.id,label:d.label||d.id,' +
-        'x:W/2+(Math.random()-0.5)*50,' +
-        'y:H/2+(Math.random()-0.5)*50,' +
-        'vx:(Math.random()-0.5)*4,' +
-        'vy:(Math.random()-0.5)*4,' +
-        'r:28,pinned:false' +
-      '};});' +
-      'var idx={};ns.forEach(function(n,i){idx[n.id]=i;});' +
-      // Drag
-      'var drag=-1;' +
-      'function ptOnCanvas(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}' +
-      'function hitNode(x,y){for(var i=0;i<ns.length;i++){var n=ns[i],dx=x-n.x,dy=y-n.y;if(dx*dx+dy*dy<n.r*n.r)return i;}return -1;}' +
-      'c.addEventListener("mousedown",function(e){var p=ptOnCanvas(e);drag=hitNode(p.x,p.y);if(drag>=0){ns[drag].pinned=true;c.style.cursor="grabbing";}});' +
-      'window.addEventListener("mousemove",function(e){if(drag<0)return;var p=ptOnCanvas(e);ns[drag].x=p.x;ns[drag].y=p.y;ns[drag].vx=0;ns[drag].vy=0;});' +
-      'window.addEventListener("mouseup",function(){if(drag>=0)ns[drag].pinned=false;drag=-1;c.style.cursor="grab";});' +
-      // Physics
-      'function step(){' +
-        // Pairwise repulsion
-        'for(var i=0;i<ns.length;i++){' +
-          'for(var j=i+1;j<ns.length;j++){' +
-            'var dx=ns[i].x-ns[j].x,dy=ns[i].y-ns[j].y;' +
-            'var d2=Math.max(dx*dx+dy*dy,100);var d=Math.sqrt(d2);' +
-            'var f=Math.min(KR/d2,8);' +
-            'var fx=dx/d*f,fy=dy/d*f;' +
-            'if(!ns[i].pinned){ns[i].vx+=fx;ns[i].vy+=fy;}' +
-            'if(!ns[j].pinned){ns[j].vx-=fx;ns[j].vy-=fy;}' +
-          '}' +
-        '}' +
-        // Spring attraction on edges
-        'for(var e=0;e<edgeDefs.length;e++){' +
-          'var ed=edgeDefs[e];' +
-          'var na=ns[idx[ed.from]],nb=ns[idx[ed.to]];' +
-          'if(!na||!nb)continue;' +
-          'var dx=nb.x-na.x,dy=nb.y-na.y;' +
-          'var d=Math.sqrt(dx*dx+dy*dy)||1;' +
-          'var f=KS*(d-RL);' +
-          'var fx=dx/d*f,fy=dy/d*f;' +
-          'if(!na.pinned){na.vx+=fx;na.vy+=fy;}' +
-          'if(!nb.pinned){nb.vx-=fx;nb.vy-=fy;}' +
-        '}' +
-        // Integrate + dampen + boundary
-        'for(var i=0;i<ns.length;i++){' +
-          'var n=ns[i];if(n.pinned)continue;' +
-          'n.vx*=DMP;n.vy*=DMP;' +
-          'n.x+=n.vx;n.y+=n.vy;' +
-          'n.x=Math.max(n.r+4,Math.min(W-n.r-4,n.x));' +
-          'n.y=Math.max(n.r+4,Math.min(H-n.r-4,n.y));' +
-        '}' +
-      '}' +
-      // Draw
-      'function draw(){' +
-        'ctx.clearRect(0,0,W,H);' +
-        // Edges
-        'for(var e=0;e<edgeDefs.length;e++){' +
-          'var ed=edgeDefs[e];' +
-          'var na=ns[idx[ed.from]],nb=ns[idx[ed.to]];' +
-          'if(!na||!nb)continue;' +
-          'ctx.beginPath();' +
-          'ctx.strokeStyle="rgba(255,255,255,0.1)";' +
-          'ctx.lineWidth=1.5;' +
-          'ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);' +
-          'ctx.stroke();' +
-          'if(ed.label){' +
-            'ctx.fillStyle="rgba(255,255,255,0.25)";ctx.font="9px system-ui";ctx.textAlign="center";' +
-            'ctx.fillText(ed.label,(na.x+nb.x)/2,(na.y+nb.y)/2-5);' +
-          '}' +
-        '}' +
-        // Nodes
-        'for(var i=0;i<ns.length;i++){' +
-          'var n=ns[i];' +
-          // Glow
-          'var grd=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*2.2);' +
-          'grd.addColorStop(0,COL+"44");grd.addColorStop(1,"rgba(0,0,0,0)");' +
-          'ctx.fillStyle=grd;ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.2,0,Math.PI*2);ctx.fill();' +
-          // Circle fill
-          'ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);' +
-          'ctx.fillStyle=COL+"1a";ctx.fill();' +
-          'ctx.strokeStyle=COL;ctx.lineWidth=n.pinned?2.5:1.5;ctx.stroke();' +
-          // Label
-          'ctx.fillStyle="rgba(255,255,255,0.9)";' +
-          'ctx.font="bold 10px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";' +
-          'ctx.fillText(n.label,n.x,n.y);' +
-        '}' +
-      '}' +
-      'function loop(){step();draw();requestAnimationFrame(loop);}' +
-      'loop();' +
-    '})();<\/script>';
+  var raw = (b.nodes && b.nodes.length) ? b.nodes : null;
+  var defNodes = ['Web', 'API', 'Database', 'Auth', 'Cache', 'Queue'];
+  var nodes = [], ids = {}, i;
+  var src = raw || defNodes;
+  for (i = 0; i < src.length && i < _SN_MAX_NODES; i++) {
+    var d = src[i];
+    if (d === null || typeof d !== 'object') d = {id: d, label: d};
+    var id = (d.id !== undefined && d.id !== null) ? String(d.id) : String(i);
+    var lab = (d.label !== undefined && d.label !== null) ? String(d.label) : (raw ? id : String(d.id));
+    var sz = +d.size;
+    nodes.push({id: id, label: lab.substr(0, 24), r: (sz >= 8 && sz <= 48) ? sz : 22});
+    if (!(id in ids)) ids[id] = i;
+  }
+  var edgeSrc = b.edges || (raw ? [] : [{a: 0, b: 1}, {a: 1, b: 2}, {a: 1, b: 3}, {a: 1, b: 4}, {a: 0, b: 3}, {a: 1, b: 5}]);
+  function ref(v) {
+    if (typeof v === 'number') return (v === Math.floor(v) && v >= 0 && v < nodes.length) ? v : -1;
+    if (typeof v === 'string') {
+      if (Object.prototype.hasOwnProperty.call(ids, v)) return ids[v];
+      if (/^\d{1,4}$/.test(v) && +v < nodes.length) return +v;
+    }
+    return -1;
+  }
+  var links = [];
+  for (i = 0; i < edgeSrc.length && i < 400; i++) {
+    var e = edgeSrc[i];
+    if (!e || typeof e !== 'object') continue;
+    var s0, t0;
+    if (e.a !== undefined || e.b !== undefined) { s0 = e.a; t0 = e.b; }
+    else if (e.from !== undefined || e.to !== undefined) { s0 = e.from; t0 = e.to; }
+    else { s0 = e.source; t0 = e.target; }
+    var si = ref(s0), ti = ref(t0);
+    if (si < 0 || ti < 0 || si === ti) continue;
+    links.push([si, ti, e.label ? String(e.label).substr(0, 24) : '']);
+  }
+  var colour = _snColour(b.colour !== undefined ? b.colour : b.color, '#818cf8');
+  var bg = _snColour(b.bg, '#0f172a');
+  var H = Math.max(160, Math.min(1200, Math.floor(+b.height) || 420));
+  var rl = +(b.rest_length !== undefined ? b.rest_length : b.rest_len);
+  if (!(rl > 0)) rl = 110;
+  var n = nodes.length, pos = _snLayout(n, links, rl, _SN_CHARGE, _SN_TICKS);
+  var W = 600, pad = 24, lbl = 18, rmax = 0, xs0 = Infinity, xs1 = -Infinity, ys0 = Infinity, ys1 = -Infinity;
+  for (i = 0; i < n; i++) {
+    if (nodes[i].r > rmax) rmax = nodes[i].r;
+    if (pos[i][0] < xs0) xs0 = pos[i][0]; if (pos[i][0] > xs1) xs1 = pos[i][0];
+    if (pos[i][1] < ys0) ys0 = pos[i][1]; if (pos[i][1] > ys1) ys1 = pos[i][1];
+  }
+  var aw = Math.max(1, W - 2 * (pad + rmax)), ah = Math.max(1, H - 2 * (pad + rmax) - lbl), sc = 1;
+  if (xs1 - xs0 > 0) sc = Math.min(sc, aw / (xs1 - xs0));
+  if (ys1 - ys0 > 0) sc = Math.min(sc, ah / (ys1 - ys0));
+  var cx = (xs0 + xs1) / 2, cy = (ys0 + ys1) / 2, P = [];
+  for (i = 0; i < n; i++) P.push([(pos[i][0] - cx) * sc + W / 2, (pos[i][1] - cy) * sc + H / 2 - lbl / 2]);
+  var txt = _snLum(bg) > 0.4 ? '#0f172a' : '#f8fafc';
+  var out = '<figure style="margin:1rem 0;position:relative;"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc('Force-directed graph, ' + n + ' nodes, ' + links.length + ' links. The same content is listed below.') +
+    '" style="width:100%;height:auto;display:block;border-radius:12px;background:' + _esc(bg) + ';">';
+  for (i = 0; i < links.length; i++) {
+    var A = P[links[i][0]], B = P[links[i][1]];
+    out += '<line x1="' + _snF(A[0]) + '" y1="' + _snF(A[1]) + '" x2="' + _snF(B[0]) + '" y2="' + _snF(B[1]) + '" stroke="' + _esc(colour) + '" stroke-opacity="0.7" stroke-width="1.5"/>';
+  }
+  for (i = 0; i < links.length; i++) {
+    if (!links[i][2]) continue;
+    var A2 = P[links[i][0]], B2 = P[links[i][1]];
+    out += '<text x="' + _snF((A2[0] + B2[0]) / 2) + '" y="' + _snF((A2[1] + B2[1]) / 2 - 4) + '" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke">' + _esc(links[i][2]) + '</text>';
+  }
+  for (i = 0; i < n; i++) {
+    out += '<circle cx="' + _snF(P[i][0]) + '" cy="' + _snF(P[i][1]) + '" r="' + _snF(nodes[i].r) + '" fill="' + _esc(colour) + '" fill-opacity="0.25" stroke="' + _esc(colour) + '" stroke-width="2"/>';
+  }
+  for (i = 0; i < n; i++) {
+    out += '<text x="' + _snF(P[i][0]) + '" y="' + _snF(P[i][1] + nodes[i].r + 14) + '" text-anchor="middle" font-size="12" font-weight="600" font-family="system-ui,sans-serif" fill="' + txt + '" stroke="' + _esc(bg) + '" stroke-width="3" paint-order="stroke">' + _esc(nodes[i].label) + '</text>';
+  }
+  out += '</svg><ul style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0;padding:0;">';
+  for (i = 0; i < n; i++) {
+    var to = [];
+    for (var j = 0; j < links.length; j++) {
+      if (links[j][0] === i) to.push(nodes[links[j][1]].label); else if (links[j][1] === i) to.push(nodes[links[j][0]].label);
+    }
+    out += '<li>' + _esc(nodes[i].label) + (to.length ? ': linked to ' + _esc(to.join(', ')) : ': no links') + '</li>';
+  }
+  return out + '</ul></figure>';
 };
 
 // ── isometric_mesh ────────────────────────────────────────────────────────────

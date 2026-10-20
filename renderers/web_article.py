@@ -23410,63 +23410,436 @@ def _render_globe_3d(b: dict) -> str:
 _RENDERERS["globe_3d"] = _render_globe_3d
 
 
+# ── spring_nodes ──────────────────────────────────────────────────────────────
+# A settled force-directed graph, laid out server-side and drawn as a static SVG (no script, no physics at runtime, no CDN).
+# The layout is a line-for-line port of d3-force 3.0.0 (ISC, Mike Bostock) with d3-quadtree 3.0.1: forceLink + forceManyBody (Barnes-Hut) + forceCenter,
+# d3's own phyllotaxis start and LCG random source, run for a FIXED number of ticks, so the same payload always gives the same picture.
+# Twin of _snLayout in apps-script-surface/*/atoms_canvas.gs; checked against the real library by tests/test_spring_nodes_force.py.
+_SN_TICKS, _SN_CHARGE, _SN_MAX_NODES = 300, -300, 120
+
+
+class _SnQ:
+    __slots__ = ("c", "data", "next", "x", "y", "value")
+
+    def __init__(self, c=None):
+        self.c = c
+        self.data = None
+        self.next = None
+        self.x = self.y = self.value = 0
+
+
+class _SnTree:
+    def __init__(self, nodes):
+        nan = float("nan")
+        self.x0 = self.y0 = self.x1 = self.y1 = nan
+        self.root = None
+        n = len(nodes)
+        xz, yz = [0.0] * n, [0.0] * n
+        x0 = y0 = float("inf")
+        x1 = y1 = float("-inf")
+        for i, d in enumerate(nodes):
+            x, y = d["x"], d["y"]
+            if x != x or y != y:
+                continue
+            xz[i], yz[i] = x, y
+            if x < x0: x0 = x
+            if x > x1: x1 = x
+            if y < y0: y0 = y
+            if y > y1: y1 = y
+        if x0 > x1 or y0 > y1:
+            return
+        self.cover(x0, y0)
+        self.cover(x1, y1)
+        for i in range(n):
+            self.add(xz[i], yz[i], nodes[i])
+
+    def cover(self, x, y):
+        if x != x or y != y:
+            return
+        x0, y0, x1, y1 = self.x0, self.y0, self.x1, self.y1
+        if x0 != x0:
+            x0 = math.floor(x)
+            x1 = x0 + 1
+            y0 = math.floor(y)
+            y1 = y0 + 1
+        else:
+            z = (x1 - x0) or 1
+            node = self.root
+            while x0 > x or x >= x1 or y0 > y or y >= y1:
+                i = (int(y < y0) << 1) | int(x < x0)
+                parent = _SnQ([None, None, None, None])
+                parent.c[i] = node
+                node = parent
+                z *= 2
+                if i == 0: x1 = x0 + z; y1 = y0 + z
+                elif i == 1: x0 = x1 - z; y1 = y0 + z
+                elif i == 2: x1 = x0 + z; y0 = y1 - z
+                else: x0 = x1 - z; y0 = y1 - z
+            if self.root is not None and self.root.c is not None:
+                self.root = node
+        self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
+
+    def add(self, x, y, d):
+        parent = None
+        node = self.root
+        leaf = _SnQ()
+        leaf.data = d
+        x0, y0, x1, y1 = self.x0, self.y0, self.x1, self.y1
+        if node is None:
+            self.root = leaf
+            return
+        i = 0
+        while node.c is not None:
+            xm = (x0 + x1) / 2
+            right = x >= xm
+            if right: x0 = xm
+            else: x1 = xm
+            ym = (y0 + y1) / 2
+            bottom = y >= ym
+            if bottom: y0 = ym
+            else: y1 = ym
+            parent = node
+            i = (int(bottom) << 1) | int(right)
+            node = node.c[i]
+            if node is None:
+                parent.c[i] = leaf
+                return
+        xp, yp = node.data["x"], node.data["y"]
+        if x == xp and y == yp:
+            leaf.next = node
+            if parent is not None: parent.c[i] = leaf
+            else: self.root = leaf
+            return
+        while True:
+            made = _SnQ([None, None, None, None])
+            if parent is not None: parent.c[i] = made
+            else: self.root = made
+            parent = made
+            xm = (x0 + x1) / 2
+            right = x >= xm
+            if right: x0 = xm
+            else: x1 = xm
+            ym = (y0 + y1) / 2
+            bottom = y >= ym
+            if bottom: y0 = ym
+            else: y1 = ym
+            i = (int(bottom) << 1) | int(right)
+            j = (int(yp >= ym) << 1) | int(xp >= xm)
+            if i != j:
+                break
+        parent.c[j] = node
+        parent.c[i] = leaf
+
+    def visit_after(self, cb):
+        quads, nxt = [], []
+        if self.root is not None:
+            quads.append((self.root, self.x0, self.y0, self.x1, self.y1))
+        while quads:
+            q = quads.pop()
+            node = q[0]
+            if node.c is not None:
+                x0, y0, x1, y1 = q[1], q[2], q[3], q[4]
+                xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
+                ch = node.c
+                if ch[0] is not None: quads.append((ch[0], x0, y0, xm, ym))
+                if ch[1] is not None: quads.append((ch[1], xm, y0, x1, ym))
+                if ch[2] is not None: quads.append((ch[2], x0, ym, xm, y1))
+                if ch[3] is not None: quads.append((ch[3], xm, ym, x1, y1))
+            nxt.append(q)
+        while nxt:
+            q = nxt.pop()
+            cb(q[0])
+
+    def visit(self, cb):
+        quads = []
+        if self.root is not None:
+            quads.append((self.root, self.x0, self.y0, self.x1, self.y1))
+        while quads:
+            node, x0, y0, x1, y1 = quads.pop()
+            if not cb(node, x0, x1) and node.c is not None:
+                xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
+                ch = node.c
+                if ch[3] is not None: quads.append((ch[3], xm, ym, x1, y1))
+                if ch[2] is not None: quads.append((ch[2], x0, ym, xm, y1))
+                if ch[1] is not None: quads.append((ch[1], xm, y0, x1, ym))
+                if ch[0] is not None: quads.append((ch[0], x0, y0, xm, ym))
+
+
+def _sn_layout(n, links, dist, charge, ticks):
+    """d3-force 3.0.0: forceSimulation + forceLink(distance=dist) + forceManyBody(strength=charge) + forceCenter(0, 0), `ticks` ticks, no initial x/y."""
+    state = [1]
+
+    def random():
+        state[0] = (1664525 * state[0] + 1013904223) % 4294967296
+        return state[0] / 4294967296
+
+    def jiggle():
+        return (random() - 0.5) * 1e-6
+
+    angle = math.pi * (3 - math.sqrt(5))
+    nodes = []
+    for i in range(n):
+        radius = 10 * math.sqrt(0.5 + i)
+        a = i * angle
+        nodes.append({"index": i, "x": radius * math.cos(a), "y": radius * math.sin(a), "vx": 0.0, "vy": 0.0})
+    m = len(links)
+    count = [0] * n
+    for s, t in ((L[0], L[1]) for L in links):
+        count[s] += 1
+        count[t] += 1
+    bias = [count[L[0]] / (count[L[0]] + count[L[1]]) for L in links]
+    strengths = [1 / min(count[L[0]], count[L[1]]) for L in links]
+    alpha_min = 0.001
+    alpha_decay = 1 - math.pow(alpha_min, 1 / 300)
+    alpha = 1.0
+    velocity_decay = 1 - 0.4
+    theta2 = 0.9 * 0.9
+    distance_min2 = 1
+    cstr = float(charge)
+    cur = [None]
+    al = [1.0]
+
+    def link_force(a):
+        for j in range(m):
+            source, target = nodes[links[j][0]], nodes[links[j][1]]
+            x = target["x"] + target["vx"] - source["x"] - source["vx"]
+            if x == 0: x = jiggle()
+            y = target["y"] + target["vy"] - source["y"] - source["vy"]
+            if y == 0: y = jiggle()
+            l = math.sqrt(x * x + y * y)
+            l = (l - dist) / l * a * strengths[j]
+            x *= l
+            y *= l
+            b = bias[j]
+            target["vx"] -= x * b
+            target["vy"] -= y * b
+            b = 1 - b
+            source["vx"] += x * b
+            source["vy"] += y * b
+
+    def accumulate(quad):
+        strength = 0
+        if quad.c is not None:
+            weight = 0
+            x = y = 0
+            for j in range(4):
+                q = quad.c[j]
+                if q is not None:
+                    c = abs(q.value)
+                    if c:
+                        strength += q.value
+                        weight += c
+                        x += c * q.x
+                        y += c * q.y
+            quad.x = x / weight
+            quad.y = y / weight
+        else:
+            quad.x = quad.data["x"]
+            quad.y = quad.data["y"]
+            q = quad
+            while True:
+                strength += cstr
+                q = q.next
+                if q is None:
+                    break
+        quad.value = strength
+
+    def apply(quad, x1, x2):
+        node, a = cur[0], al[0]
+        if not quad.value:
+            return True
+        x = quad.x - node["x"]
+        y = quad.y - node["y"]
+        w = x2 - x1
+        l = x * x + y * y
+        if w * w / theta2 < l:
+            if x == 0:
+                x = jiggle()
+                l += x * x
+            if y == 0:
+                y = jiggle()
+                l += y * y
+            if l < distance_min2:
+                l = math.sqrt(distance_min2 * l)
+            node["vx"] += x * quad.value * a / l
+            node["vy"] += y * quad.value * a / l
+            return True
+        elif quad.c is not None:
+            return False
+        if quad.data is not node or quad.next is not None:
+            if x == 0:
+                x = jiggle()
+                l += x * x
+            if y == 0:
+                y = jiggle()
+                l += y * y
+            if l < distance_min2:
+                l = math.sqrt(distance_min2 * l)
+        while True:
+            if quad.data is not node:
+                w = cstr * a / l
+                node["vx"] += x * w
+                node["vy"] += y * w
+            quad = quad.next
+            if quad is None:
+                break
+        return False
+
+    def charge_force(a):
+        tree = _SnTree(nodes)
+        tree.visit_after(accumulate)
+        al[0] = a
+        for j in range(n):
+            cur[0] = nodes[j]
+            tree.visit(apply)
+
+    def center_force():
+        sx = sy = 0.0
+        for nd in nodes:
+            sx += nd["x"]
+            sy += nd["y"]
+        sx = (sx / n - 0) * 1
+        sy = (sy / n - 0) * 1
+        for nd in nodes:
+            nd["x"] -= sx
+            nd["y"] -= sy
+
+    for _ in range(ticks):
+        alpha += (0 - alpha) * alpha_decay
+        link_force(alpha)
+        charge_force(alpha)
+        center_force()
+        for nd in nodes:
+            nd["vx"] *= velocity_decay
+            nd["x"] += nd["vx"]
+            nd["vy"] *= velocity_decay
+            nd["y"] += nd["vy"]
+    return [[d["x"], d["y"]] for d in nodes]
+
+
+_SN_COLOUR_RE = re.compile(r'^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|[a-zA-Z]{3,20}|(?:rgb|hsl)a?\([0-9., %]{1,40}\))$')
+
+
+def _sn_colour(v, dflt):
+    return v.strip() if isinstance(v, str) and _SN_COLOUR_RE.match(v.strip()) else dflt
+
+
+def _sn_lum(h):
+    m = re.match(r'^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})', h)
+    if not m:
+        return 0.0
+    t = m.group(1)
+    if len(t) == 3:
+        t = ''.join(ch * 2 for ch in t)
+    lum = 0.0
+    for k, w in zip((0, 2, 4), (0.2126, 0.7152, 0.0722)):
+        c = int(t[k:k + 2], 16) / 255
+        lum += w * (c / 12.92 if c <= 0.03928 else math.pow((c + 0.055) / 1.055, 2.4))
+    return lum
+
+
+def _sn_f(v):
+    return '%.2f' % (math.floor(v * 100 + 0.5) / 100)
+
+
 def _render_spring_nodes(b: dict) -> str:
-    nodes = b.get('nodes', [])
-    edges = b.get('edges', [])
-    colour = _esc(b.get('colour', b.get('color', '#4f46e5')))
-    bg = _esc(b.get('bg', '#0f172a'))
-    height = int(b.get('height', 340))
-    import hashlib, json
-    uid = 'sn' + hashlib.md5(str(nodes[:2]).encode()).hexdigest()[:5]
-    nodes_js = _js_json(nodes)
-    edges_js = _js_json(edges)
-    return ('<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
-            'background:' + bg + ';display:block;cursor:grab;"></canvas>'
-            '<script>(function(){'
-            'var c=document.getElementById("' + uid + '");'
-            'c.width=c.offsetWidth||600;c.height=' + str(height) + ';'
-            'var W=c.width,H=c.height,x=c.getContext("2d");'
-            'var nodeDefs=' + nodes_js + ';'
-            'var edgeDefs=' + edges_js + ';'
-            'var ns=nodeDefs.map(function(d,i){'
-            'return{id:d.id||String(i),label:d.label||"",x:(0.1+Math.random()*0.8)*W,'
-            'y:(0.1+Math.random()*0.8)*H,vx:0,vy:0,r:d.size||22,pinned:false};});'
-            'var idx={};ns.forEach(function(n,i){idx[n.id]=i;});'
-            'var drag=-1,lx=0,ly=0;'
-            'function ptOn(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}'
-            'function hit(px,py){for(var i=0;i<ns.length;i++){var n=ns[i],dx=px-n.x,dy=py-n.y;if(dx*dx+dy*dy<n.r*n.r)return i;}return -1;}'
-            'c.addEventListener("mousedown",function(e){var p=ptOn(e);drag=hit(p.x,p.y);if(drag>=0){ns[drag].pinned=true;c.style.cursor="grabbing";}});'
-            'window.addEventListener("mouseup",function(){if(drag>=0)ns[drag].pinned=false;drag=-1;c.style.cursor="grab";});'
-            'window.addEventListener("mousemove",function(e){if(drag<0)return;var p=ptOn(e);ns[drag].x=p.x;ns[drag].y=p.y;ns[drag].vx=0;ns[drag].vy=0;});'
-            '(function loop(){'
-            'requestAnimationFrame(loop);'
-            'for(var i=0;i<ns.length;i++){for(var j=i+1;j<ns.length;j++){'
-            'var a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;'
-            'var rep=1200/(d*d);if(!a.pinned){a.vx-=dx*rep/d;a.vy-=dy*rep/d;}if(!b.pinned){b.vx+=dx*rep/d;b.vy+=dy*rep/d;}}}'
-            'edgeDefs.forEach(function(e){'
-            'var ai=idx[e.source||e.from],bi=idx[e.target||e.to];'
-            'if(ai===undefined||bi===undefined)return;'
-            'var a=ns[ai],b=ns[bi],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;'
-            'var rl=e.rest_length||120,f=(d-rl)*0.04;'
-            'if(!a.pinned){a.vx+=dx/d*f;a.vy+=dy/d*f;}if(!b.pinned){b.vx-=dx/d*f;b.vy-=dy/d*f;}});'
-            'ns.forEach(function(n){'
-            'if(n.pinned)return;'
-            'n.vx=(n.vx+(W/2-n.x)*0.001)*0.85;n.vy=(n.vy+(H/2-n.y)*0.001)*0.85;'
-            'n.x=Math.max(n.r,Math.min(W-n.r,n.x+n.vx));n.y=Math.max(n.r,Math.min(H-n.r,n.y+n.vy));});'
-            'x.clearRect(0,0,W,H);'
-            'x.strokeStyle="' + colour + '44";x.lineWidth=1.5;'
-            'edgeDefs.forEach(function(e){'
-            'var ai=idx[e.source||e.from],bi=idx[e.target||e.to];'
-            'if(ai===undefined||bi===undefined)return;'
-            'x.beginPath();x.moveTo(ns[ai].x,ns[ai].y);x.lineTo(ns[bi].x,ns[bi].y);x.stroke();});'
-            'ns.forEach(function(n){'
-            'x.beginPath();x.arc(n.x,n.y,n.r,0,Math.PI*2);'
-            'x.fillStyle="' + colour + '22";x.fill();'
-            'x.strokeStyle="' + colour + '";x.lineWidth=2;x.stroke();'
-            'x.fillStyle="#fff";x.font="bold 11px system-ui";x.textAlign="center";x.textBaseline="middle";'
-            'x.fillText(n.label.substr(0,12),n.x,n.y);});'
-            '})();'
-            '})();</script>')
+    raw = b.get('nodes') if isinstance(b.get('nodes'), list) and b.get('nodes') else None
+    src = raw or ['Web', 'API', 'Database', 'Auth', 'Cache', 'Queue']
+    nodes, ids = [], {}
+    for i, d in enumerate(src[:_SN_MAX_NODES]):
+        if not isinstance(d, dict):
+            d = {'id': d, 'label': d}
+        nid = str(d['id']) if d.get('id') is not None else str(i)
+        lab = str(d['label']) if d.get('label') is not None else nid
+        try:
+            sz = float(d.get('size'))
+        except (TypeError, ValueError):
+            sz = 0
+        nodes.append({'id': nid, 'label': lab[:24], 'r': sz if 8 <= sz <= 48 else 22})
+        ids.setdefault(nid, i)
+    edge_src = b.get('edges') if isinstance(b.get('edges'), list) else (None if raw else [
+        {'a': 0, 'b': 1}, {'a': 1, 'b': 2}, {'a': 1, 'b': 3}, {'a': 1, 'b': 4}, {'a': 0, 'b': 3}, {'a': 1, 'b': 5}])
+    edge_src = edge_src or []
+
+    def ref(v):
+        if isinstance(v, bool):
+            return -1
+        if isinstance(v, (int, float)):
+            return int(v) if v == math.floor(v) and 0 <= v < len(nodes) else -1
+        if isinstance(v, str):
+            if v in ids:
+                return ids[v]
+            if re.match(r'^\d{1,4}$', v) and int(v) < len(nodes):
+                return int(v)
+        return -1
+
+    links = []
+    for e in edge_src[:400]:
+        if not isinstance(e, dict):
+            continue
+        if e.get('a') is not None or e.get('b') is not None:
+            s0, t0 = e.get('a'), e.get('b')
+        elif e.get('from') is not None or e.get('to') is not None:
+            s0, t0 = e.get('from'), e.get('to')
+        else:
+            s0, t0 = e.get('source'), e.get('target')
+        si, ti = ref(s0), ref(t0)
+        if si < 0 or ti < 0 or si == ti:
+            continue
+        links.append([si, ti, str(e['label'])[:24] if e.get('label') else ''])
+    colour = _sn_colour(b.get('colour', b.get('color')), '#818cf8')
+    bg = _sn_colour(b.get('bg'), '#0f172a')
+    try:
+        H = max(160, min(1200, int(float(b.get('height')))))
+    except (TypeError, ValueError):
+        H = 420
+    try:
+        rl = float(b.get('rest_length', b.get('rest_len')))
+    except (TypeError, ValueError):
+        rl = 0
+    if not rl > 0:
+        rl = 110
+    n = len(nodes)
+    pos = _sn_layout(n, links, rl, _SN_CHARGE, _SN_TICKS)
+    W, pad, lbl = 600, 24, 18
+    rmax = max(nd['r'] for nd in nodes)
+    xs0, xs1 = min(p[0] for p in pos), max(p[0] for p in pos)
+    ys0, ys1 = min(p[1] for p in pos), max(p[1] for p in pos)
+    aw = max(1, W - 2 * (pad + rmax))
+    ah = max(1, H - 2 * (pad + rmax) - lbl)
+    sc = 1.0
+    if xs1 - xs0 > 0: sc = min(sc, aw / (xs1 - xs0))
+    if ys1 - ys0 > 0: sc = min(sc, ah / (ys1 - ys0))
+    cx, cy = (xs0 + xs1) / 2, (ys0 + ys1) / 2
+    P = [[(p[0] - cx) * sc + W / 2, (p[1] - cy) * sc + H / 2 - lbl / 2] for p in pos]
+    txt = '#0f172a' if _sn_lum(bg) > 0.4 else '#f8fafc'
+    out = ['<figure style="margin:1rem 0;position:relative;"><svg viewBox="0 0 %d %d" role="img" aria-label="%s" '
+           'style="width:100%%;height:auto;display:block;border-radius:12px;background:%s;">' % (
+               W, H, _esc('Force-directed graph, %d nodes, %d links. The same content is listed below.' % (n, len(links))), _esc(bg))]
+    for s, t, _l in links:
+        out.append('<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-opacity="0.7" stroke-width="1.5"/>' % (
+            _sn_f(P[s][0]), _sn_f(P[s][1]), _sn_f(P[t][0]), _sn_f(P[t][1]), _esc(colour)))
+    for s, t, lab in links:
+        if lab:
+            out.append('<text x="%s" y="%s" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" fill="%s" stroke="%s" stroke-width="3" paint-order="stroke">%s</text>' % (
+                _sn_f((P[s][0] + P[t][0]) / 2), _sn_f((P[s][1] + P[t][1]) / 2 - 4), txt, _esc(bg), _esc(lab)))
+    for i in range(n):
+        out.append('<circle cx="%s" cy="%s" r="%s" fill="%s" fill-opacity="0.25" stroke="%s" stroke-width="2"/>' % (
+            _sn_f(P[i][0]), _sn_f(P[i][1]), _sn_f(nodes[i]['r']), _esc(colour), _esc(colour)))
+    for i in range(n):
+        out.append('<text x="%s" y="%s" text-anchor="middle" font-size="12" font-weight="600" font-family="system-ui,sans-serif" fill="%s" stroke="%s" stroke-width="3" paint-order="stroke">%s</text>' % (
+            _sn_f(P[i][0]), _sn_f(P[i][1] + nodes[i]['r'] + 14), txt, _esc(bg), _esc(nodes[i]['label'])))
+    out.append('</svg><ul style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0;padding:0;">')
+    for i in range(n):
+        to = []
+        for s, t, _l in links:
+            if s == i: to.append(nodes[t]['label'])
+            elif t == i: to.append(nodes[s]['label'])
+        out.append('<li>%s%s</li>' % (_esc(nodes[i]['label']), (': linked to ' + _esc(', '.join(to))) if to else ': no links'))
+    out.append('</ul></figure>')
+    return ''.join(out)
+
+
 _RENDERERS["spring_nodes"] = _render_spring_nodes
 
 
