@@ -20999,6 +20999,7 @@ blocks:
   - Show the distribution of these response times.
   - I need a histogram of order values.
   - How are these exam scores spread out?
+  - Compare the distributions of wait times before, during and after the change.
   surfaces: *ifg001
   fields:
     title: string (optional, max 80).
@@ -21009,8 +21010,17 @@ blocks:
       edges to 1, 2 or 5 times a power of ten, so the number drawn can differ a little from the number asked for.
     x_label: string (optional, max 40). Names the values on the x axis.
     unit: string (optional, max 12). Appended to the x label and to the edge values in the hidden table.
+    layout: string (optional, "bars" or "ridge", default "bars"). "ridge" draws one ridge per entry of `series` on shared bins, to compare
+      distributions; `values` is then not read. Any other value draws bars.
+    series: array (optional, read only when layout is "ridge", 1 to 8) of {label (string, max 30, default "Series n"), values (array, 5
+      to 2000, of numbers, filtered like `values`)}. The shared bins come from d3 bin() of all the series pooled (`bins` applies); each
+      ridge's height is its share of that series' values per bin, so series of different sizes compare. A series with fewer than 5
+      usable numbers is left out with a note; series beyond the first 8 are noted and not drawn.
+    version: integer (optional, default 1). The histogram contract the payload was written for. Only version 1 exists; a higher
+      whole number is drawn as version 1 with a note.
   notes: The y axis always starts at 0. A bin includes its lower edge and excludes its upper edge, except the last bin, which includes
-    both. Bars grow with p.
+    both. Bars grow with p. In the ridge layout the ridges overlap upwards, have no y axis (the hidden table gives each bin's count per
+    series), and rise one after another with p.
   source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit

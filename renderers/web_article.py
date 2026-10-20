@@ -31262,15 +31262,135 @@ def _hg_num(v, d):
     return ('-' if neg else '') + re.sub(r'\B(?=(\d{3})+(?!\d))', ',', ip) + dot + fp
 
 
+def _hg_ridge(series, target=None):
+    """layout ridge: d3 bin() of all the series pooled gives the shared edges; each series is counted by
+    bin().domain([x0, x1]).thresholds(the inner edges). Returns ([(x0, x1), ...], [[count, ...] per series])."""
+    import bisect as _bisect
+    edges, _ = _hg_bin([x for s in series for x in s], target)
+    m, X0, X1 = len(edges), edges[0][0], edges[-1][1]
+    inner = [e[0] for e in edges[1:]]
+    counts = []
+    for s in series:
+        c = [0] * m
+        for x in s:
+            if X0 <= x <= X1:
+                c[_bisect.bisect_right(inner, x)] += 1
+        counts.append(c)
+    return edges, counts
+
+
+def _hg_usable(raw):
+    return [float(v) for v in raw if isinstance(v, (int, float)) and not isinstance(v, bool) and abs(v) <= 1e12]
+
+
+def _hg_target(bv):
+    return _hg_round(min(40, max(3, bv))) if (isinstance(bv, (int, float)) and not isinstance(bv, bool) and bv == bv and abs(bv) != _HG_INF) else None
+
+
+def _hg_note(s):
+    return '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">' + s + '</div>'
+
+
+def _hg_skip_note(skipped):
+    return _hg_note(str(skipped) + (' entry was' if skipped == 1 else ' entries were') + ' not a usable number and ' + ('was' if skipped == 1 else 'were') + ' skipped.') if skipped else ''
+
+
+def _hg_version_note(b):
+    v = _if_g(b, 'version')
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != _HG_INF and v == math.floor(v) and v > 1:
+        return _hg_note('Written for histogram version ' + _if_numstr(v) + '; drawn as version 1.')
+    return ''
+
+
+def _hg_axis(ev, X0, span, lab):
+    """The x edge labels: few enough to fit, every other one hidden in a narrow container."""
+    maxlen = max(len(s) for s in lab)
+    want = max(2, min(8, 48 // maxlen))
+    stride = -(-len(ev) // want)
+    xs = ''
+    for i in range(len(ev)):
+        if i % stride == 0 and (span > 0 or i == 0):
+            xs += ('<div class="hgx' + (' hgc' if i % (2 * stride) == 0 else '') + '" style="position:absolute;top:100%;left:' + (_tm_pct(ev[i] - X0, span) if span > 0 else '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+                   '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + lab[i] + '</div></div>')
+    return xs
+
+
+_HG_LABW = 'clamp(64px,24%,150px)'
+
+
+def _render_histogram_ridge(b: dict) -> str:
+    lst = _if_g(b, 'series')
+    lst = lst if isinstance(lst, list) else []
+    used, skipped, left_out = [], 0, 0
+    for k, s in enumerate(lst[:8]):
+        if not isinstance(s, dict):
+            left_out += 1
+            continue
+        raw = _if_arr(_if_g(s, 'values'), 2000)
+        vals = _hg_usable(raw)
+        skipped += len(raw) - len(vals)
+        if len(vals) < 5:
+            left_out += 1
+            continue
+        used.append((_if_str(_if_g(s, 'label'))[:30] if _if_truthy(_if_g(s, 'label')) else 'Series ' + str(k + 1), vals))
+    beyond = len(lst) - 8
+    notes = (_hg_skip_note(skipped)
+             + (_hg_note(str(left_out) + ' series had fewer than 5 usable numbers or ' + ('was not a series and was' if left_out == 1 else 'were not a series and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + ' series beyond the first 8 ' + ('was' if beyond == 1 else 'were') + ' not drawn.') if beyond > 0 else '')
+             + _hg_version_note(b))
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A ridge histogram needs at least one series with 5 numbers.</div>' + notes)
+    edges, counts = _hg_ridge([v for _, v in used], _hg_target(_if_g(b, 'bins')))
+    m, n = len(edges), len(used)
+    X0, X1 = edges[0][0], edges[-1][1]
+    span = X1 - X0
+    shares = [[c / len(v) for c in cs] for (_, v), cs in zip(used, counts)]
+    top = max(max(s) for s in shares)
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    ev = [e[0] for e in edges] + [edges[-1][1]]
+    d = _hg_decimals(ev)
+    lab = [_hg_num(v, d) for v in ev]
+    peaks = [cs.index(max(cs)) for cs in counts]
+    aria = ('Ridgeline histogram of ' + str(n) + ' series in ' + str(m) + (' shared bin' if m == 1 else ' shared bins') + ' from ' + lab[0] + ' to ' + lab[-1] + us + '. '
+            + '; '.join(nm + ': ' + str(len(v)) + ' values, most from ' + lab[p] + ' to ' + lab[p + 1] + us for (nm, v), p in zip(used, peaks)) + '.')
+    rows = ''
+    for k, ((nm, v), sh) in enumerate(zip(used, shares)):
+        path = 'M0.00,1000.00'
+        for i in range(m):
+            path += 'H' + (_if_fixed((edges[i][0] - X0) / span * 1000, 2) if span > 0 else '0.00') + 'V' + _if_fixed(1000 - sh[i] / top * 1000, 2)
+        path += 'H1000.00L1000.00,1000.00Z'
+        rows += ('<div style="display:flex;align-items:flex-end;height:44px;">'
+                 '<div class="hgrl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding:0 8px 2px 0;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                 + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _cv_esc(nm) + '</div>'
+                 '<div class="hgrp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;border-bottom:1px solid var(--muted,#475569);">'
+                 '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;bottom:0;width:100%;height:72px;display:block;overflow:visible;">'
+                 '<g class="hgrg" style="' + _if_k(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(nm + ': ' + str(len(v)) + ' values') + '</title>'
+                 '<path class="hgrb" d="' + path + '"/><path class="hgr" d="' + path + '"/></g></svg></div></div>')
+    css = ('<style>.ifhg .hgrg{transform-box:fill-box;transform-origin:50% 100%}.ifhg .hgrb{fill:var(--bg,#fff)}'
+           '.ifhg .hgr{fill:var(--accent,#0369A1);fill-opacity:0.35;stroke:var(--accent,#0369A1);stroke-width:1.5px;vector-effect:non-scaling-stroke;stroke-linejoin:round}'
+           '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>')
+    chart = ('<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
+             + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">Share of each series per bin</div>'
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;padding-top:28px;margin:0 34px 34px 0;">' + rows
+             + '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;">' + _hg_axis(ev, X0, span, lab) + '</div></div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 ' + _HG_LABW + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes
+                    + _if_table(['Bin from', 'Bin to'] + [nm for nm, _ in used], [[lab[i] + us, lab[i + 1] + us] + [str(cs[i]) for cs in counts] for i in range(m)]))
+
+
 def _render_histogram(b: dict) -> str:
+    if _if_g(b, 'layout') == 'ridge':
+        return _render_histogram_ridge(b)
     raw = _if_arr(_if_g(b, 'values'), 2000)
-    vals = [float(v) for v in raw if isinstance(v, (int, float)) and not isinstance(v, bool) and abs(v) <= 1e12]
+    vals = _hg_usable(raw)
     skipped = len(raw) - len(vals)
-    skip_note = ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">' + str(skipped) + (' entry was' if skipped == 1 else ' entries were') + ' not a usable number and ' + ('was' if skipped == 1 else 'were') + ' skipped.</div>') if skipped else ''
+    skip_note = _hg_skip_note(skipped)
     if len(vals) < 5:
         return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A histogram needs at least 5 numbers; this list has ' + str(len(vals)) + '.</div>' + skip_note)
-    bv = _if_g(b, 'bins')
-    target = _hg_round(min(40, max(3, bv))) if (isinstance(bv, (int, float)) and not isinstance(bv, bool) and bv == bv and abs(bv) != _HG_INF) else None
+    target = _hg_target(_if_g(b, 'bins'))
     edges, counts = _hg_bin(vals, target)
     m = len(counts)
     X0, X1 = edges[0][0], edges[-1][1]
@@ -31290,12 +31410,6 @@ def _render_histogram(b: dict) -> str:
     tall = counts.index(cmax)
     aria = ('Histogram of ' + str(len(vals)) + ' values in ' + str(m) + (' bin' if m == 1 else ' bins') + ' from ' + lab[0] + ' to ' + lab[-1] + (' ' + unit if unit else '')
             + '. Tallest bin: ' + lab[tall] + ' to ' + lab[tall + 1] + (' ' + unit if unit else '') + ', ' + str(cmax) + (' value.' if cmax == 1 else ' values.'))
-    maxlen = max(len(s) for s in lab)
-    want = max(2, min(8, 48 // maxlen))
-    stride = -(-len(ev) // want)
-
-    def pos(e):
-        return _tm_pct(e - X0, span) if span > 0 else '50%'
     rects = ''
     for i in range(m):
         x = (edges[i][0] - X0) / span * 1000 if span > 0 else 0.0
@@ -31308,11 +31422,7 @@ def _render_histogram(b: dict) -> str:
         bt = _if_fixed(t / top * 100, 3) + '%' if top > 0 else '0%'
         grid += ('<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + ('var(--muted,#475569)' if t == 0 else 'var(--border,#CBD5E1)') + ';"></div>'
                  '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _hg_num(t, 0) + '</div>')
-    xs = ''
-    for i in range(len(ev)):
-        if i % stride == 0 and (span > 0 or i == 0):
-            xs += ('<div class="hgx' + (' hgc' if i % (2 * stride) == 0 else '') + '" style="position:absolute;top:100%;left:' + pos(ev[i]) + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
-                   '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + lab[i] + '</div></div>')
+    xs = _hg_axis(ev, X0, span, lab)
     css = ('<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}'
            '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>')
     chart = ('<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
@@ -31321,7 +31431,7 @@ def _render_histogram(b: dict) -> str:
              + '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>'
              + xs + '</div>'
              + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 46px;">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
-    return _if_wrap(_if_title(b) + chart + skip_note
+    return _if_wrap(_if_title(b) + chart + skip_note + _hg_version_note(b)
                     + _if_table(['Bin from', 'Bin to', 'Count'], [[lab[i] + (' ' + unit if unit else ''), lab[i + 1] + (' ' + unit if unit else ''), str(counts[i])] for i in range(m)]))
 
 

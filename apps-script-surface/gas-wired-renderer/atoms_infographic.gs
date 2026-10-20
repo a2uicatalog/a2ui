@@ -497,11 +497,94 @@ function _hgNum(v, d) {
   var neg = s.charAt(0) === '-', p = s.replace('-', '').split('.');
   return (neg ? '-' : '') + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (p.length > 1 ? '.' + p[1] : '');
 }
+// layout ridge: d3 bin() of all the series pooled gives the shared edges; each series is counted by bin().domain([x0, x1]).thresholds(the inner edges)
+function _hgRidge(series, target) {
+  var edges = _hgBin([].concat.apply([], series), target)[0], m = edges.length, X0 = edges[0][0], X1 = edges[m - 1][1];
+  var inner = edges.slice(1).map(function(e) { return e[0]; });
+  var counts = series.map(function(s) {
+    var c = [], i;
+    for (i = 0; i < m; i++) c.push(0);
+    s.forEach(function(x) {
+      if (!(X0 <= x && x <= X1)) return;
+      var lo = 0, hi = inner.length;
+      while (lo < hi) { var mid = (lo + hi) >>> 1; if (inner[mid] <= x) lo = mid + 1; else hi = mid; }
+      c[lo]++;
+    });
+    return c;
+  });
+  return [edges, counts];
+}
+function _hgUsable(raw) { return raw.filter(function(v) { return typeof v === 'number' && Math.abs(v) <= 1e12; }); }
+function _hgTarget(bv) { return (typeof bv === 'number' && isFinite(bv)) ? Math.round(Math.min(40, Math.max(3, bv))) : null; }
+function _hgNote(s) { return '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + s + '</div>'; }
+function _hgSkipNote(skipped) { return skipped ? _hgNote(skipped + (skipped === 1 ? ' entry was' : ' entries were') + ' not a usable number and ' + (skipped === 1 ? 'was' : 'were') + ' skipped.') : ''; }
+function _hgVersionNote(b) {
+  var v = b.version;
+  return (typeof v === 'number' && isFinite(v) && Math.floor(v) === v && v > 1) ? _hgNote('Written for histogram version ' + v + '; drawn as version 1.') : '';
+}
+// the x edge labels: few enough to fit, every other one hidden in a narrow container
+function _hgAxis(ev, X0, span, lab) {
+  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; })), want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(ev.length / want), xs = '', i;
+  for (i = 0; i < ev.length; i++) {
+    if (i % stride === 0 && (span > 0 || i === 0)) xs += '<div class="hgx' + (i % (2 * stride) === 0 ? ' hgc' : '') + '" style="position:absolute;top:100%;left:' + (span > 0 ? _tmPct(ev[i] - X0, span) : '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + lab[i] + '</div></div>';
+  }
+  return xs;
+}
+var _HG_LABW = 'clamp(64px,24%,150px)';
+function _hgRenderRidge(b) {
+  var lst = Array.isArray(b.series) ? b.series : [], used = [], skipped = 0, leftOut = 0;
+  lst.slice(0, 8).forEach(function(s, k) {
+    if (!(s && typeof s === 'object' && !Array.isArray(s))) { leftOut++; return; }
+    var raw = _ifArr(s.values, 2000), vals = _hgUsable(raw);
+    skipped += raw.length - vals.length;
+    if (vals.length < 5) { leftOut++; return; }
+    used.push([s.label ? String(s.label).slice(0, 30) : 'Series ' + (k + 1), vals]);
+  });
+  var beyond = lst.length - 8;
+  var notes = _hgSkipNote(skipped) +
+    (leftOut ? _hgNote(leftOut + ' series had fewer than 5 usable numbers or ' + (leftOut === 1 ? 'was not a series and was' : 'were not a series and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + ' series beyond the first 8 ' + (beyond === 1 ? 'was' : 'were') + ' not drawn.') : '') + _hgVersionNote(b);
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A ridge histogram needs at least one series with 5 numbers.</div>' + notes);
+  var rg = _hgRidge(used.map(function(u) { return u[1]; }), _hgTarget(b.bins)), edges = rg[0], counts = rg[1], m = edges.length, n = used.length;
+  var X0 = edges[0][0], X1 = edges[m - 1][1], span = X1 - X0;
+  var shares = counts.map(function(cs, k) { return cs.map(function(c) { return c / used[k][1].length; }); });
+  var top = Math.max.apply(null, shares.map(function(s) { return Math.max.apply(null, s); }));
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var ev = edges.map(function(e) { return e[0]; }); ev.push(edges[m - 1][1]);
+  var d = _hgDecimals(ev), lab = ev.map(function(v) { return _hgNum(v, d); });
+  var aria = 'Ridgeline histogram of ' + n + ' series in ' + m + (m === 1 ? ' shared bin' : ' shared bins') + ' from ' + lab[0] + ' to ' + lab[lab.length - 1] + us + '. ' +
+    used.map(function(u, k) { var p = counts[k].indexOf(Math.max.apply(null, counts[k])); return u[0] + ': ' + u[1].length + ' values, most from ' + lab[p] + ' to ' + lab[p + 1] + us; }).join('; ') + '.';
+  var rows = '';
+  used.forEach(function(u, k) {
+    var path = 'M0.00,1000.00', i;
+    for (i = 0; i < m; i++) path += 'H' + (span > 0 ? ((edges[i][0] - X0) / span * 1000).toFixed(2) : '0.00') + 'V' + (1000 - shares[k][i] / top * 1000).toFixed(2);
+    path += 'H1000.00L1000.00,1000.00Z';
+    rows += '<div style="display:flex;align-items:flex-end;height:44px;">' +
+      '<div class="hgrl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding:0 8px 2px 0;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
+      ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _esc(u[0]) + '</div>' +
+      '<div class="hgrp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;border-bottom:1px solid var(--muted,#475569);">' +
+      '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;bottom:0;width:100%;height:72px;display:block;overflow:visible;">' +
+      '<g class="hgrg" style="' + _ifK(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _esc(u[0] + ': ' + u[1].length + ' values') + '</title>' +
+      '<path class="hgrb" d="' + path + '"/><path class="hgr" d="' + path + '"/></g></svg></div></div>';
+  });
+  var css = '<style>.ifhg .hgrg{transform-box:fill-box;transform-origin:50% 100%}.ifhg .hgrb{fill:var(--bg,#fff)}' +
+    '.ifhg .hgr{fill:var(--accent,#0369A1);fill-opacity:0.35;stroke:var(--accent,#0369A1);stroke-width:1.5px;vector-effect:non-scaling-stroke;stroke-linejoin:round}' +
+    '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>';
+  var chart = '<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
+    '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">Share of each series per bin</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;padding-top:28px;margin:0 34px 34px 0;">' + rows +
+    '<div style="position:relative;margin-left:' + _HG_LABW + ';height:0;">' + _hgAxis(ev, X0, span, lab) + '</div></div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 ' + _HG_LABW + ';">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + _ifTable(['Bin from', 'Bin to'].concat(used.map(function(u) { return u[0]; })),
+    edges.map(function(e, i) { return [lab[i] + us, lab[i + 1] + us].concat(counts.map(function(cs) { return String(cs[i]); })); })));
+}
 _RENDERERS['histogram'] = function(b) {
-  var raw = _ifArr(b.values, 2000), vals = raw.filter(function(v) { return typeof v === 'number' && Math.abs(v) <= 1e12; }), skipped = raw.length - vals.length;
-  var skipNote = skipped ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + skipped + (skipped === 1 ? ' entry was' : ' entries were') + ' not a usable number and ' + (skipped === 1 ? 'was' : 'were') + ' skipped.</div>' : '';
+  if (b.layout === 'ridge') return _hgRenderRidge(b);
+  var raw = _ifArr(b.values, 2000), vals = _hgUsable(raw), skipped = raw.length - vals.length;
+  var skipNote = _hgSkipNote(skipped);
   if (vals.length < 5) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A histogram needs at least 5 numbers; this list has ' + vals.length + '.</div>' + skipNote);
-  var target = (typeof b.bins === 'number' && isFinite(b.bins)) ? Math.round(Math.min(40, Math.max(3, b.bins))) : null;
+  var target = _hgTarget(b.bins);
   var bn = _hgBin(vals, target), edges = bn[0], counts = bn[1], m = counts.length, X0 = edges[0][0], X1 = edges[m - 1][1], span = X1 - X0;
   var cmax = Math.max.apply(null, counts), top, yt = [], i;
   if (cmax <= 4) { top = cmax; for (i = 0; i <= cmax; i++) yt.push(i); } else { top = _hgNice(0, cmax, 4)[1]; yt = _hgTicks(0, top, 4); }
@@ -510,9 +593,7 @@ _RENDERERS['histogram'] = function(b) {
   var d = _hgDecimals(ev), lab = ev.map(function(v) { return _hgNum(v, d); }), tall = counts.indexOf(cmax), us = unit ? ' ' + unit : '';
   var aria = 'Histogram of ' + vals.length + ' values in ' + m + (m === 1 ? ' bin' : ' bins') + ' from ' + lab[0] + ' to ' + lab[lab.length - 1] + us +
     '. Tallest bin: ' + lab[tall] + ' to ' + lab[tall + 1] + us + ', ' + cmax + (cmax === 1 ? ' value.' : ' values.');
-  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; })), want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(ev.length / want);
-  var pos = function(e) { return span > 0 ? _tmPct(e - X0, span) : '50%'; };
-  var rects = '', grid = '', xs = '';
+  var rects = '', grid = '', xs = _hgAxis(ev, X0, span, lab);
   for (i = 0; i < m; i++) {
     var x = span > 0 ? (edges[i][0] - X0) / span * 1000 : 0, w = span > 0 ? (edges[i][1] - edges[i][0]) / span * 1000 : 1000, h = top > 0 ? counts[i] / top * 1000 : 0;
     rects += '<rect class="hgb" x="' + x.toFixed(2) + '" y="' + (1000 - h).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" style="' + _ifK(i, m) +
@@ -523,10 +604,6 @@ _RENDERERS['histogram'] = function(b) {
     grid += '<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + (t === 0 ? 'var(--muted,#475569)' : 'var(--border,#CBD5E1)') + ';"></div>' +
       '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgNum(t, 0) + '</div>';
   });
-  for (i = 0; i < ev.length; i++) {
-    if (i % stride === 0 && (span > 0 || i === 0)) xs += '<div class="hgx' + (i % (2 * stride) === 0 ? ' hgc' : '') + '" style="position:absolute;top:100%;left:' + pos(ev[i]) + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>' +
-      '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + lab[i] + '</div></div>';
-  }
   var css = '<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}' +
     '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>';
   var chart = '<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
@@ -534,5 +611,5 @@ _RENDERERS['histogram'] = function(b) {
     '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid +
     '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>' + xs + '</div>' +
     (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 46px;">' + _esc(cap) + '</div>' : '') + '</div>';
-  return _ifWrap(_ifTitle(b) + chart + skipNote + _ifTable(['Bin from', 'Bin to', 'Count'], counts.map(function(c, k) { return [lab[k] + us, lab[k + 1] + us, String(c)]; })));
+  return _ifWrap(_ifTitle(b) + chart + skipNote + _hgVersionNote(b) + _ifTable(['Bin from', 'Bin to', 'Count'], counts.map(function(c, k) { return [lab[k] + us, lab[k + 1] + us, String(c)]; })));
 };
