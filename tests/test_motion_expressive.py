@@ -275,20 +275,49 @@ def test_no_new_option_loops_forever_without_a_reduced_motion_rule():
 
 
 def _moved_after(block, flag):
-    """Render in headless Chromium (optionally with the OS reduce-motion setting) and report whether the DOM changed between 0.4 s and 2.4 s."""
+    """Render in headless Chromium (optionally with the OS reduce-motion setting) and report whether the DOM changed between 0.4 s and 2.4 s.
+
+    Real time, not --virtual-time-budget: under virtual time headless Chromium never fires requestAnimationFrame (and the timeline
+    plays from rAF), so the control film stayed still and the test failed (I18). --dump-dom fires at the load event, so a local
+    server holds a trailing <script> for 3 s to keep the page alive in real time while the 0.4 s / 2.4 s timers run."""
+    import http.server
+    import shutil
+    import subprocess
+    import tempfile
+    import threading
+    import time
+    from pathlib import Path
+
+    class Hold(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            time.sleep(3)
+            self.send_response(200)
+            self.send_header("Content-Type", "text/javascript")
+            self.end_headers()
+
+        def log_message(self, *a):
+            pass
+
     sig = ("function sig(){var o=[];document.querySelectorAll('body *').forEach(function(e){var c=getComputedStyle(e);"
            "o.push(c.transform+c.opacity+c.filter+e.style.cssText+e.textContent.length)});return o.join('|');}")
-    page = ("<!doctype html><meta charset=utf-8><body style='margin:0'>" + _py(block) + "<script>" + sig
-            + "var s1;setTimeout(function(){s1=sig();},400);setTimeout(function(){document.documentElement.setAttribute('data-moved',String(s1!==sig()));},2400);</script>")
-    import tempfile, subprocess
-    from pathlib import Path
-    with tempfile.TemporaryDirectory() as td:
-        f = Path(td) / "p.html"
-        f.write_text(page)
-        args = [CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--window-size=1000,700", "--virtual-time-budget=4000"]
-        if flag:
-            args.append("--force-prefers-reduced-motion")
-        out = subprocess.run(args + ["--dump-dom", f"file://{f}"], capture_output=True, text=True, timeout=120).stdout
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Hold)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    profile = tempfile.mkdtemp(prefix="a2ui-chromium-")
+    try:
+        page = ("<!doctype html><meta charset=utf-8><body style='margin:0'>" + _py(block) + "<script>" + sig
+                + "var s1;setTimeout(function(){s1=sig();},400);setTimeout(function(){document.documentElement.setAttribute('data-moved',String(s1!==sig()));},2400);</script>"
+                + f"<script src='http://127.0.0.1:{srv.server_port}/hold.js'></script>")
+        with tempfile.TemporaryDirectory() as td:
+            f = Path(td) / "p.html"
+            f.write_text(page)
+            args = [CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--window-size=1000,700",
+                    f"--user-data-dir={profile}"]
+            if flag:
+                args.append("--force-prefers-reduced-motion")
+            out = subprocess.run(args + ["--dump-dom", f"file://{f}"], capture_output=True, text=True, timeout=120).stdout
+    finally:
+        srv.shutdown()
+        shutil.rmtree(profile, ignore_errors=True)
     m = re.search(r'data-moved="(true|false)"', out)
     assert m, out[:300]
     return m.group(1) == "true"
