@@ -21551,7 +21551,7 @@ def _render_decision_tree_nested(title_html: str, nodes: list) -> str:
             return ('<div style="padding:10px 14px;margin:4px 0;background:#f0fdf4;border:1px solid #86efac;'
                     'border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.875rem;color:#166534;'
                     'font-weight:500;">\u2713 ' + label + '</div>')
-        return ('<details style="margin:4px 0;"' + (' open' if depth == 0 else '') + '>'
+        return ('<details style="margin:4px 0;"' + ' open' + '>'
                 '<summary style="cursor:pointer;list-style:none;padding:10px 14px;background:#f8fafc;'
                 'border:1px solid #e2e8f0;border-radius:8px;font-size:0.875rem;font-weight:600;color:#0f172a;'
                 'user-select:none;">\u25b8 ' + label + '</summary>'

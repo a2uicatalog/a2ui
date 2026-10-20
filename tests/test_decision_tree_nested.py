@@ -32,3 +32,8 @@ def test_nested_branches_are_collapsible_like_the_gas_twin():
 def test_id_graph_form_still_renders():
     html = _py(GRAPH)
     assert "Start" in html and "End" in html
+
+
+def test_every_branch_is_open_so_static_renders_show_all_levels():
+    html = _py(NESTED)
+    assert html.count("<details") == html.count("<details style=\"margin:4px 0;\" open")
