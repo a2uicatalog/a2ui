@@ -20978,23 +20978,37 @@ blocks:
   source: *ifg002
 - type: org_chart
   stage: preview
-  description: 'Boxes in tiers joined by connector lines, built from a list of nodes with parents. It is a real nested list, so it reads
-    in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k,
+  description: 'A hierarchy built from a list of nodes with parents, drawn as boxes in tiers joined by connector lines (layout "tree", the
+    default), as a dendrogram with every leaf on the last tier (layout "cluster"), or as a radial tree with the root at the centre and
+    rotated labels (layout "radial"). It is a real nested list in every layout, so it reads in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k,
     so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the
     end state.'
-  compact_description: 'org chart: a bounded tree of up to thirty nodes'
-  routing_text: A hierarchy drawn as boxes joined by lines, for a reporting line or a breakdown of up to thirty nodes and four tiers.
-    Not for deep taxonomies; use tree_view for those.
+  compact_description: 'org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree'
+  routing_text: A hierarchy drawn as boxes joined by lines, for a reporting line or a breakdown of up to thirty nodes and four tiers; as a
+    dendrogram when the leaves should line up, or radially when the shape of the branching matters more than reading order. Not for deep
+    taxonomies (use tree_view) and not for branch lengths or distances (no height field).
   intent_phrases:
   - Draw the engineering leadership structure.
   - I need an org chart of these roles.
   - Show the work breakdown as a tree.
+  - Draw this hierarchy as a dendrogram with the leaves lined up.
+  - Show the structure as a radial tree.
   surfaces: *ifg001
   fields:
     title: string (optional, max 80).
     nodes: array (required, 3 to 30) of {id (max 24), label (max 28), parent_id (max 24, empty for the root)}. One root; at most four
-      tiers and six children per node.
-  notes: A screen reader hears the nesting as a list. Tiers appear top down with p.
+      tiers and six children per node. Several top-level nodes are drawn under an undrawn root.
+    layout: string (optional, "tree", "cluster" or "radial", default "tree"). "tree" is the tidy tree (d3 tree). "cluster" is a dendrogram
+      (d3 cluster) with the same boxes, labels and caps; every leaf sits on the last tier whatever its depth and a parent is centred over
+      its children; there is no distance or height field, so tier spacing carries no meaning. "radial" is d3's radial tidy tree with the
+      root at the centre, small dots for nodes and the label outside each dot, turned along its branch and never upside down. Any other
+      value draws the tree.
+    version: integer (optional, default 1). The org_chart contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: A screen reader hears the nesting as a list in every layout (there is no table or aria-label; the list is the description).
+    Tree and cluster show tiers top down when wide enough and left to right in a narrow container; the radial chart is a square that
+    scales with its container between 300 and 640 px and shortens labels with an ellipsis (the whole text stays in the page, and in a
+    title where it can be cut) so none overlap. Nodes appear in list order with p.
   source: *ifg002
 - type: histogram
   stage: preview

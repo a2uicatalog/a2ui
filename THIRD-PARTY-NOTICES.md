@@ -64,7 +64,15 @@ just looks plainer.
   library's output by `tests/test_treemap_path.py` (golden vectors from
   `tests/fixtures/treemap_d3_golden_gen.mjs`); the `tree` layout (firstWalk, apportion,
   executeShifts, moveSubtree, default separation) is ported into `_oc_layout` in the same file and
-  its twin `_ocLayout` in the same `.gs` file, checked by `tests/test_org_chart_tree.py`
+  its twin `_ocLayout` in the same `.gs` file, checked by `tests/test_org_chart_tree.py`; the
+  `cluster` layout (dendrogram: leaf placement by a separation hook, parents over the mean of their
+  children, leaves on the last row) is ported into `_oc_cluster` / `_ocCluster`, and `tree` sized to
+  `[2π, radius]` with the radial separation into `_oc_radial` / `_ocRadial` (the `layout` field of
+  `org_chart`), checked against the real library's output by `tests/test_org_chart_layouts.py`
+  (golden vectors from `tests/fixtures/org_chart_cluster_d3_golden_gen.mjs` and
+  `tests/fixtures/org_chart_radial_d3_golden_gen.mjs`). The radial link curve is the formula of
+  d3-shape 3.2.0 `linkRadial` (`curveBumpRadial`, with `pointRadial`; ISC, Mike Bostock), written
+  out in `_oc_link_radial` / `_ocLinkRadial` and checked against the real d3-shape in the same test
 - **Used by:** the `treemap` and `org_chart` atoms' server-side layout in both renderers. No script
   is shipped to the page; boxes are emitted as percentage-positioned elements (org_chart adds an
   SVG connector overlay).

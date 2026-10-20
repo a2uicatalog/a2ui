@@ -567,7 +567,9 @@
   "total_expr"
  ],
  "org_chart": [
-  "title"
+  "layout",
+  "title",
+  "version"
  ],
  "pagination": [
   "base_url",
