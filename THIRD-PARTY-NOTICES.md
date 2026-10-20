@@ -72,10 +72,29 @@ just looks plainer.
   (golden vectors from `tests/fixtures/org_chart_cluster_d3_golden_gen.mjs` and
   `tests/fixtures/org_chart_radial_d3_golden_gen.mjs`). The radial link curve is the formula of
   d3-shape 3.2.0 `linkRadial` (`curveBumpRadial`, with `pointRadial`; ISC, Mike Bostock), written
-  out in `_oc_link_radial` / `_ocLinkRadial` and checked against the real d3-shape in the same test
-- **Used by:** the `treemap` and `org_chart` atoms' server-side layout in both renderers. No script
+  out in `_oc_link_radial` / `_ocLinkRadial` and checked against the real d3-shape in the same test;
+  `partition()` (the `sunburst` atom's rings and, for its `icicle` layout, columns: the same
+  `hierarchy().sum().sort()` as above, then `treemapDice` placement of each node's children across its
+  extent) is ported into `_sb_partition` / `_sb_rows` and its twin `_sbPartition` / `_sbRows`, checked
+  against the real library's output by `tests/test_sunburst.py` (golden vectors from
+  `tests/fixtures/sunburst_d3_golden_gen.mjs`)
+- **Used by:** the `treemap`, `org_chart` and `sunburst` atoms' server-side layout in both renderers. No script
   is shipped to the page; boxes are emitted as percentage-positioned elements (org_chart adds an
   SVG connector overlay).
+
+---
+
+## d3-shape and d3-path (Mike Bostock)
+
+- **Project:** d3-shape 3.2.0 — `arc` (the circular and annular sector with `padAngle` and `padRadius`; corner rounding is not used), and its dependency d3-path 3.1.0 — `arc` (the SVG arc commands and the 3-digit number rounding)
+- **Website:** https://github.com/d3/d3-shape and https://github.com/d3/d3-path
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2022 Mike Bostock (d3-shape); Copyright 2015-2022 Mike Bostock (d3-path)
+- **Vendored as:** nothing is vendored; the sector geometry is ported by hand into `_sb_arc` in
+  `renderers/web_article.py` and its twin `_sbArc` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`,
+  and checked against the real libraries' path text (and, at full precision, to 1e-9) by `tests/test_sunburst.py`
+  (golden vectors from `tests/fixtures/sunburst_d3_golden_gen.mjs`)
+- **Used by:** the `sunburst` atom's arcs in both renderers. No script is shipped to the page; the arcs are static SVG paths.
 
 ---
 

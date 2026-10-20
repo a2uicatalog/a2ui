@@ -188,6 +188,7 @@ a2ui-charts-v1:
 - histogram
 - box_plot
 - waterfall
+- sunburst
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

@@ -237,17 +237,18 @@ function _tmBox(r) { return 'position:absolute;left:' + _tmPct(r[0], _TM_W) + ';
 // Nested treemap: a line-for-line port of d3-hierarchy 3.1.2 hierarchy().sum().sort(by value, descending) and treemap().tile(treemapSquarify)
 // .size([900, 300]) with paddingInner 2 and, below the root, paddingOuter 3 and a 20 high paddingTop (the group header); no rounding.
 // root: {n, c: [children]} for a group, {n, v} for a leaf. Returns every node in pre-order (d3 eachBefore): {depth, x0, y0, x1, y1, value, src, kids}.
+// d3 hierarchy(d, c).sum(v).sort(by value, descending): {src, depth, kids (sorted, or null for a leaf), value}; children are added last to first.
+function _tmBuild(d, depth) {
+  var kids = (d.c instanceof Array && d.c.length) ? d.c : null, node = { src: d, depth: depth, kids: null, value: 0 }, i, s;
+  if (!kids) { node.value = typeof d.v === 'number' && d.v === d.v ? d.v : 0; return node; }
+  node.kids = kids.map(function(k) { return _tmBuild(k, depth + 1); });
+  s = 0; i = node.kids.length; while (--i >= 0) s += node.kids[i].value;
+  node.value = s;
+  node.kids = node.kids.slice().sort(function(a, b) { return b.value - a.value; });
+  return node;
+}
 function _tmNest(root) {
-  function build(d, depth) {
-    var kids = (d.c instanceof Array && d.c.length) ? d.c : null, node = { src: d, depth: depth, kids: null, value: 0 }, i, s;
-    if (!kids) { node.value = typeof d.v === 'number' && d.v === d.v ? d.v : 0; return node; }
-    node.kids = kids.map(function(k) { return build(k, depth + 1); });
-    s = 0; i = node.kids.length; while (--i >= 0) s += node.kids[i].value;
-    node.value = s;
-    node.kids = node.kids.slice().sort(function(a, b) { return b.value - a.value; });
-    return node;
-  }
-  var top = build(root, 0), pad = { 0: 0 }, out = [], stack = [top], nd, p, x0, y0, x1, y1, outer, rects, i;
+  var top = _tmBuild(root, 0), pad = { 0: 0 }, out = [], stack = [top], nd, p, x0, y0, x1, y1, outer, rects, i;
   top.x0 = top.y0 = 0; top.x1 = _TM_W; top.y1 = _TM_H;
   while (stack.length) {
     nd = stack.pop(); out.push(nd);
@@ -278,6 +279,23 @@ function _tmPath(raw) {
 // [class attribute, gate width]: a label needing more than 320px hides itself in a narrower container.
 function _tmGate(w) { return w > _TM_MINW ? [' class="tmw' + w + '"', w] : ['', 0]; }
 function _tmLabel(show, g, cls, text) { return show ? (g ? '<span' + cls + '>' + text + '</span>' : text) : ''; }
+// The group tree of items that carry a chain (their ancestor group names, top down): [root {n, c}, tops] with the top-level entries in first-seen order.
+// A group is {n, c, chain, topc}; a leaf is {n, v, item, k, topc}. An item with an empty chain is a leaf of the root and is its own top-level entry.
+function _tmTree(items) {
+  var root = { n: '', c: [] }, tops = [];
+  items.forEach(function(i, k) {
+    var node = root, leaf;
+    i.chain.forEach(function(g) {
+      var nx = null; node.c.forEach(function(x) { if (!nx && x.c && x.n === g) nx = x; });
+      if (!nx) { nx = { n: g, c: [], chain: (node.chain || []).concat([g]) }; if (node === root) tops.push(nx); nx.topc = node === root ? tops.length - 1 : node.topc; node.c.push(nx); }
+      node = nx;
+    });
+    leaf = { n: i.n, v: i.v, item: i, k: k };
+    if (node === root) { tops.push(leaf); leaf.topc = tops.length - 1; } else leaf.topc = node.topc;
+    node.c.push(leaf);
+  });
+  return [root, tops];
+}
 _RENDERERS['treemap'] = function(b) {
   // the optional 'version' field is read by _hgVersionNote at the end
   var items = _ifArr(b.items, 12).map(function(i) { i = _ifObj(i); return { c: String(i.category === undefined ? '' : i.category).slice(0, 20), n: i.name, v: _ifNum(i.value, 0, 1e12, 0), p: _tmPath(i.path) }; }).filter(function(i) { return i.v > 0; });
@@ -285,16 +303,8 @@ _RENDERERS['treemap'] = function(b) {
   if (!nested) { items.forEach(function(i) { if (cats.indexOf(i.c) < 0 && cats.length < 4) cats.push(i.c); }); items = items.filter(function(i) { return cats.indexOf(i.c) >= 0; }); }
   var tot = items.reduce(function(s, i) { return s + i.v; }, 0) || 1, cells = '', tags = '', boxes = '', gates = [], hid = [], aria = '', table, css = '', ws = [];
   if (nested) {
-    var root = { n: '', c: [] }, tops = [];
-    items.forEach(function(i, k) {
-      var node = root; i.chain = i.p.length ? i.p : [i.c || 'Other'];
-      i.chain.forEach(function(g) {
-        var nx = null; node.c.forEach(function(x) { if (!nx && x.c && x.n === g) nx = x; });
-        if (!nx) { nx = { n: g, c: [] }; if (node === root) tops.push(nx); nx.topc = node === root ? tops.length - 1 : node.topc; node.c.push(nx); }
-        node = nx;
-      });
-      node.c.push({ n: i.n, v: i.v, item: i, k: k, topc: node.topc });
-    });
+    items.forEach(function(i) { i.chain = i.p.length ? i.p : [i.c || 'Other']; });
+    var tr = _tmTree(items), root = tr[0], tops = tr[1];
     _tmNest(root).slice(1).forEach(function(nd) {
       var sp = nd.src, r = [nd.x0, nd.y0, nd.x1, nd.y1], w = r[2] - r[0], h = r[3] - r[1], col = _IF_CAT[sp.topc % 4], txt, wm, show, gt, cls, g, name;
       if (nd.kids) {
@@ -330,6 +340,157 @@ _RENDERERS['treemap'] = function(b) {
   if (ws.length) css = '<style>' + ws.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>';
   return _ifWrap(_ifTitle(b) + '<div' + aria + ' style="position:relative;height:300px;' + (css ? 'container-type:inline-size;' : '') + (css || hid.some(function(x) { return x; }) ? 'overflow:hidden;' : '') + '">' + css + boxes + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.' +
     (nested ? ' Boxes inside boxes are groups.' : '') + '</div>' + _hgVersionNote(b, 'treemap') + table);
+};
+
+// ── sunburst (I40) and its icicle layout (I54) ───────────────────────────────────────────────────────────────────────────────────────────────
+// d3-hierarchy 3.1.2 partition() on the same hierarchy().sum().sort(by value, descending) as the nested treemap (_tmBuild), and d3-shape 3.2.0 arc()
+// (the sector without rounded corners, with padAngle and padRadius) drawn through d3-path 3.1.0 arc() and its 3-digit number rounding (ISC, Mike Bostock);
+// twin of _sb_partition / _sb_arc / _render_sunburst in renderers/web_article.py.
+var _SB_R = 300, _SB_PAD = 0.005, _SB_PADR = 450, _SB_TAU = 2 * Math.PI, _SB_EPS = 1e-12;
+function _sbPartition(root, dx, dy) {
+  var top = _tmBuild(root, 0), out = [], stack = [top], nd, n, x0, y0, x1, y1, k, i, c;
+  function height(m) { var h = 0, j; if (m.kids) for (j = 0; j < m.kids.length; j++) h = Math.max(h, 1 + height(m.kids[j])); return h; }
+  n = height(top) + 1;
+  top.x0 = top.y0 = 0; top.x1 = dx; top.y1 = dy / n;
+  while (stack.length) {
+    nd = stack.pop(); out.push(nd);
+    if (nd.kids) {
+      x0 = nd.x0; y0 = dy * (nd.depth + 1) / n; x1 = nd.x1; y1 = dy * (nd.depth + 2) / n;
+      k = nd.value && (x1 - x0) / nd.value;
+      for (i = 0; i < nd.kids.length; i++) { c = nd.kids[i]; c.y0 = y0; c.y1 = y1; c.x0 = x0; c.x1 = x0 += c.value * k; }
+    }
+    x0 = nd.x0; y0 = nd.y0; x1 = nd.x1; y1 = nd.y1;
+    if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
+    if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
+    nd.x0 = x0; nd.y0 = y0; nd.x1 = x1; nd.y1 = y1;
+    if (nd.kids) for (i = nd.kids.length - 1; i >= 0; i--) stack.push(nd.kids[i]);
+  }
+  return out;
+}
+function _sbRows(spec, dx, dy) { return _sbPartition(spec, dx, dy).map(function(n) { return [n.depth, n.x0, n.y0, n.x1, n.y1, n.value, n.src.n]; }); }
+function _sbAsin(x) { return x >= 1 ? Math.PI / 2 : x <= -1 ? -Math.PI / 2 : Math.asin(x); }
+// The path text of d3-shape arc() with cornerRadius 0: startAngle a0, endAngle a1 (radians clockwise from 12 o'clock), inner radius r0, outer radius r1, padAngle,
+// padRadius (null = sqrt(r0^2 + r1^2)); numbers rounded to `digits` (null = not rounded) as d3-path does.
+function _sbArc(a0, a1, r0, r1, padAngle, padRadius, digits) {
+  var k = digits === null ? null : Math.pow(10, digits), d = '', px0 = null, py0 = null, px1 = null, py1 = null, r, da, cw, a01, a11, a00, a10, da0, da1, ap, rp, p0, p1, sa, x01, y01, x10, y10;
+  function f(v) { return String(k === null ? v : Math.round(v * k) / k); }
+  function move(x, y) { px0 = px1 = x; py0 = py1 = y; d += 'M' + f(x) + ',' + f(y); }
+  function line(x, y) { px1 = x; py1 = y; d += 'L' + f(x) + ',' + f(y); }
+  function arc(x, y, rr, s0, s1, ccw) {
+    var dx = rr * Math.cos(s0), dy = rr * Math.sin(s0), x0 = x + dx, y0 = y + dy, w = ccw ? 0 : 1, a = ccw ? s0 - s1 : s1 - s0, ex, ey;
+    if (px1 === null) { d += 'M' + f(x0) + ',' + f(y0); px0 = px1 = x0; py0 = py1 = y0; }
+    else if (Math.abs(px1 - x0) > 1e-6 || Math.abs(py1 - y0) > 1e-6) { d += 'L' + f(x0) + ',' + f(y0); px1 = x0; py1 = y0; }
+    if (!rr) return;
+    if (a < 0) a = a % _SB_TAU + _SB_TAU;
+    if (a > _SB_TAU - 1e-6) { d += 'A' + f(rr) + ',' + f(rr) + ',0,1,' + w + ',' + f(x - dx) + ',' + f(y - dy) + 'A' + f(rr) + ',' + f(rr) + ',0,1,' + w + ',' + f(x0) + ',' + f(y0); px1 = x0; py1 = y0; }
+    else if (a > 1e-6) { ex = x + rr * Math.cos(s1); ey = y + rr * Math.sin(s1); d += 'A' + f(rr) + ',' + f(rr) + ',0,' + (a >= Math.PI ? 1 : 0) + ',' + w + ',' + f(ex) + ',' + f(ey); px1 = ex; py1 = ey; }
+  }
+  a0 -= Math.PI / 2; a1 -= Math.PI / 2; da = Math.abs(a1 - a0); cw = a1 > a0;
+  if (r1 < r0) { r = r1; r1 = r0; r0 = r; }
+  if (!(r1 > _SB_EPS)) move(0, 0);
+  else if (da > _SB_TAU - _SB_EPS) {
+    move(r1 * Math.cos(a0), r1 * Math.sin(a0)); arc(0, 0, r1, a0, a1, !cw);
+    if (r0 > _SB_EPS) { move(r0 * Math.cos(a1), r0 * Math.sin(a1)); arc(0, 0, r0, a1, a0, cw); }
+  } else {
+    a01 = a0; a11 = a1; a00 = a0; a10 = a1; da0 = da; da1 = da; ap = padAngle / 2;
+    rp = (ap > _SB_EPS) && (padRadius !== null ? padRadius : Math.sqrt(r0 * r0 + r1 * r1));
+    if (rp > _SB_EPS) {
+      sa = Math.sin(ap);
+      p0 = _sbAsin(rp / r0 * sa); p1 = _sbAsin(rp / r1 * sa);
+      if ((da0 -= p0 * 2) > _SB_EPS) { p0 *= (cw ? 1 : -1); a00 += p0; a10 -= p0; } else { da0 = 0; a00 = a10 = (a0 + a1) / 2; }
+      if ((da1 -= p1 * 2) > _SB_EPS) { p1 *= (cw ? 1 : -1); a01 += p1; a11 -= p1; } else { da1 = 0; a01 = a11 = (a0 + a1) / 2; }
+    }
+    x01 = r1 * Math.cos(a01); y01 = r1 * Math.sin(a01); x10 = r0 * Math.cos(a10); y10 = r0 * Math.sin(a10);
+    move(x01, y01);
+    if (da1 > _SB_EPS) arc(0, 0, r1, a01, a11, !cw);
+    if (!(r0 > _SB_EPS) || !(da0 > _SB_EPS)) line(x10, y10); else arc(0, 0, r0, a10, a00, cw);
+  }
+  return px1 === null ? d : d + 'Z';
+}
+var _SB_PALETTE = ['#19294E', '#810998', '#0F6C4F', '#9A6120', '#0369A1', '#B4235A', '#4D6B0E', '#5B5F66'], _SB_SHADE = [0, 16, 40, 60];
+function _sbFill(base, depth) {
+  var pct = _SB_SHADE[Math.min(Math.max(depth, 1), 4) - 1];
+  return '#' + [1, 3, 5].map(function(i) { var v = parseInt(base.slice(i, i + 2), 16), m = v + Math.floor(((255 - v) * pct + 50) / 100); return (m < 16 ? '0' : '') + m.toString(16).toUpperCase(); }).join('');
+}
+function _sbInk(fill) {
+  function lin(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+  var lum = 0.2126 * lin(parseInt(fill.slice(1, 3), 16)) + 0.7152 * lin(parseInt(fill.slice(3, 5), 16)) + 0.0722 * lin(parseInt(fill.slice(5, 7), 16));
+  return lum <= 0.179 ? '#FFFFFF' : '#000000';
+}
+// A label's width is estimated, identically in both twins, as 0.6em per character of the 12px label font; see _SB_K in renderers/web_article.py.
+var _SB_K = 7.2, _SB_MINW = 240, _SB_MAXW = 640, _SB_BOX = 604, _SB_LINE = 18, _SB_IW = 900, _SB_IH = 360, _SB_IMAXW = 1600;
+function _sbQ(w) { return Math.ceil(w / 10) * 10; }
+function _sbCls(wm) { return wm > _SB_MINW ? [' tmw' + wm, wm] : ['', 0]; }
+function _sbBox(l, t, w, h) { return 'position:absolute;left:' + _tmPct(l, _SB_IW) + ';top:' + _tmPct(t, _SB_IH) + ';width:' + _tmPct(w, _SB_IW) + ';height:' + _tmPct(h, _SB_IH) + ';'; }
+_RENDERERS['sunburst'] = function(b) {
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var lst = Array.isArray(b.items) ? b.items : [], items = [], leftOut = 0;
+  lst.slice(0, 40).forEach(function(it, k) {
+    var v = (it && typeof it === 'object' && !Array.isArray(it)) ? _ifNum(it.value, 0, 1e12, 0) : 0;
+    if (!(v > 0)) { leftOut++; return; }
+    items.push({ n: it.name ? String(it.name).slice(0, 24) : 'Item ' + (k + 1), v: v, chain: _tmPath(it.path) });
+  });
+  var beyond = lst.length - 40;
+  var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' entry had no value above 0 or was not an item and was' : ' entries had no value above 0 or were not an item and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' item beyond the first 40 was' : ' items beyond the first 40 were') + ' not drawn.') : '');
+  if (items.length < 2) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A sunburst needs at least 2 items with a value above 0.</div>' + notes + _hgVersionNote(b, 'sunburst'));
+  var icicle = _ifPick(b.layout, ['radial', 'icicle'], 'radial') === 'icicle', unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var f = function(v) { return _bpFmt(v, 2) + us; };
+  var tr = _tmTree(items), root = tr[0], tops = tr[1], height = Math.max.apply(null, items.map(function(i) { return i.chain.length; })) + 1, ncol = height + 1;
+  var nodes = icicle ? _sbPartition(root, _SB_IH, _SB_IW * ncol / height) : _sbPartition(root, _SB_TAU, _SB_R), tot = nodes[0].value, ws = [], cells = '', labels = '', rings = [], i;
+  for (i = 0; i < height; i++) rings.push('');
+  nodes.slice(1).forEach(function(nd) {
+    var sp = nd.src, dp = nd.depth, fill = _sbFill(_SB_PALETTE[sp.topc % 8], dp), ink = _sbInk(fill), c = Math.min(sp.n.length, 6), kk = _ifK(dp - 1, height), x0 = nd.x0, y0 = nd.y0, x1 = nd.x1, y1 = nd.y1;
+    var title = _ifS((nd.kids ? sp.chain : sp.item.chain.concat([sp.n])).join(' / '), 160) + ': ' + _esc(f(nd.value)) + ' (' + (nd.value / tot * 100).toFixed(1) + '%)';
+    var ro, t, dth, wm, cl, rm, th, deg, left, w, hh, show, g;
+    if (!icicle) {
+      ro = Math.max(y0, y1 - 1);
+      rings[dp - 1] += '<path d="' + _sbArc(x0, x1, y0, ro, Math.min((x1 - x0) / 2, _SB_PAD), _SB_PADR, 3) + '" fill="' + fill + '"><title>' + title + '</title></path>';
+      t = ro - y0; dth = x1 - x0;
+      if (t > 0 && dth > 0) {
+        wm = _sbQ(Math.max((c * _SB_K + 8) * _SB_BOX / t, _SB_LINE * _SB_BOX / ((y0 + 4) * dth)));
+        if (wm <= _SB_MAXW) {
+          cl = _sbCls(wm); ws.push(cl[1]);
+          rm = (y0 + ro) / 2; th = (x0 + x1) / 2; deg = th * 180 / Math.PI - 90; if (deg > 90) deg -= 180;
+          labels += '<div class="sbl' + cl[0] + '" style="position:absolute;left:' + _tmPct(_SB_BOX / 2 + rm * Math.sin(th), _SB_BOX) + ';top:' + _tmPct(_SB_BOX / 2 - rm * Math.cos(th), _SB_BOX) +
+            ';transform:translate(-50%,-50%) rotate(' + deg.toFixed(2).replace(/^-0\.00$/, '0.00') + 'deg);width:max-content;max-width:calc(' + _tmPct(t, _SB_BOX).slice(0, -1) + 'cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;' +
+            'text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _ifS(sp.n, 24) + '</div>';
+        }
+      }
+    } else {
+      left = y0 - nodes[0].y1; w = y1 - y0; hh = x1 - x0;
+      wm = w > 0 ? _sbQ((c * _SB_K + 12) * _SB_IW / w) : 1e9; show = hh >= 20 && wm <= _SB_IMAXW; cl = _sbCls(wm); g = show ? cl[1] : 0; ws.push(g);
+      cells += '<div title="' + title + '" style="' + _sbBox(left, x0, w, hh) + 'box-sizing:border-box;border:1px solid transparent;background:' + fill + ';background-clip:padding-box;border-radius:3px;color:' + ink +
+        ';padding:1px 5px 0;font-size:12px;line-height:17px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;' + kk + 'opacity:var(--k,1);">' +
+        (show ? (g ? '<span class="' + cl[0].replace(/^ /, '') + '">' + _ifS(sp.n, 24) + '</span>' : _ifS(sp.n, 24)) : '') + '</div>';
+    }
+  });
+  var top = nodes[0].kids[0];
+  var aria = (icicle ? 'Icicle chart' : 'Sunburst') + ' of ' + items.length + ' items in ' + tops.length + ' top-level group' + (tops.length === 1 ? '' : 's') + ', total ' + f(tot) + '. Largest top-level group: ' +
+    top.src.n + ', ' + f(top.value) + ', ' + (top.value / tot * 100).toFixed(1) + '% of the total.';
+  var body, boxcss, cap;
+  if (!icicle) {
+    var hole = nodes[0].y1, half = f(tot).length * _SB_K / 2, wmc = _sbQ((Math.sqrt(half * half + 196) + 3) * _SB_BOX / hole), centre = '', cc;
+    if (wmc <= _SB_MAXW) {
+      cc = _sbCls(wmc); ws.push(cc[1]);
+      centre = '<div class="sbc' + cc[0] + '" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;">' +
+        '<div style="font-weight:700;">' + _ifS(f(tot), 40) + '</div><div style="color:var(--muted,#475569);">total</div></div>';
+    }
+    body = '<svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
+      rings.map(function(g, j) { return '<g class="sbr" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>' + labels + centre;
+    boxcss = 'position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;';
+    cap = 'Angle shows share of the total; each ring out is one level deeper. The centre shows the total.';
+  } else {
+    body = cells; boxcss = 'position:relative;height:' + _SB_IH + 'px;';
+    cap = 'Height shows share of the total; each column to the right is one level deeper.';
+  }
+  var uw = [];
+  ws.forEach(function(w) { if (w && uw.indexOf(w) < 0) uw.push(w); });
+  uw.sort(function(a, c) { return a - c; });
+  var css = uw.length ? '<style>' + uw.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>' : '';
+  return _ifWrap(_ifTitle(b) + '<div role="img" aria-label="' + _ifS(aria, 400) + '" style="' + boxcss + 'container-type:inline-size;overflow:hidden;">' + css + body + '</div>' +
+    _hgNote(cap) + notes + _hgVersionNote(b, 'sunburst') +
+    _ifTable(['Item', 'Path', 'Value', 'Share of total'], items.map(function(it) { return [it.n, it.chain.join(' / ') || 'Top level', f(it.v), (it.v / tot * 100).toFixed(1) + '%']; })));
 };
 
 // ── venn_diagram ──────────────────────────────────────────────────────────────────────────────────────────────

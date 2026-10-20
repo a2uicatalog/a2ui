@@ -21105,6 +21105,42 @@ blocks:
   notes: Numbers print with the decimals the given values use, at most 6, so float noise never shows. Increases use --positive and
     decreases --negative (fallbacks green and red), totals --accent. Steps keep the given order.
   source: *ifg002
+- type: sunburst
+  stage: preview
+  description: 'Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost
+    ring and each level of the optional per-item path (1 to 3 group names, top down) is one ring further out, so a budget, a disk-usage breakdown or a
+    folder tree reads from the inside out. Laid out by d3-hierarchy partition() and drawn with d3-shape arc() paths on the server, so there is no script.
+    With the optional layout "icicle" the same hierarchy is drawn as horizontal bars instead, the top-level groups in the left column and each level one
+    column further right. A group''s hue follows its top-level group and each ring out is a lighter shade of it; every arc or bar carries its name, path,
+    value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of
+    groups and the largest group. Labels are drawn only where they fit and are rotated to read outward, never upside down; the centre of the ring
+    shows the total. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-ring --k, so a motion_timeline track
+    on p builds it ring by ring from the inside out and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'sunburst: share of a total in nested rings'
+  routing_text: Share of a total broken down through up to three levels of groups, as concentric rings (or a horizontal icicle), such as a budget by
+    department and line, disk usage by folder or revenue by region and product. Reads the hierarchy from the inside out. For exact areas side by
+    side use a treemap instead; it is not for a flat list of values, for which use a bar chart.
+  intent_phrases:
+  - Show the budget by department and line as a sunburst.
+  - What is using my disk space, folder by folder, as nested rings?
+  - Break revenue down by region, then product, as concentric rings.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    items: 'array (required, 2 to 40) of {path (optional, array of 0 to 3 strings, max 20 each: the item''s ancestor groups from the top down; same shape
+      as the treemap''s nested mode), name (max 24, default "Item n"), value (number above 0)}. An item without a usable path is its own arc in the
+      innermost ring. Items with a value of 0 or less, a value that is not a finite number, or that are not an item are dropped and counted in a note;
+      items beyond the first 40 are noted and not drawn. With fewer than 2 usable items a note replaces the chart.'
+    layout: '"radial" or "icicle" (optional, default "radial"). radial draws concentric rings (a sunburst); icicle draws horizontal bars with the
+      top-level groups on the left. Any other value is drawn as radial.'
+    unit: string (optional, max 12). Appended to every value in the title, the centre, the aria label and the hidden table.
+    version: integer (optional, default 1). The sunburst contract the payload was written for. Only version 1 exists; a higher whole number is drawn
+      as version 1 with a note.
+  notes: Angle (or bar height) is a weak channel for comparing values, so the table repeats the numbers. The chart is a square that scales to its
+    container up to 640 px; labels are placed by a deterministic width estimate (0.6em per character), so a label appears only in a container wide
+    enough for it, and a long name ends in an ellipsis (the title and the table keep it in full). Hues repeat after eight top-level groups. Groups
+    keep d3's order, largest first.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

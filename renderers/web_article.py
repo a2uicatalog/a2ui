@@ -31655,26 +31655,29 @@ def _tm_box(r):
     return 'position:absolute;left:' + _tm_pct(r[0], _TM_W) + ';top:' + _tm_pct(r[1], _TM_H) + ';width:' + _tm_pct(r[2] - r[0], _TM_W) + ';height:' + _tm_pct(r[3] - r[1], _TM_H) + ';'
 
 
+def _tm_build(d, depth):
+    """d3 hierarchy(d, c).sum(v).sort(by value, descending): {'src', 'depth', 'kids' (sorted, or None for a leaf), 'value'}; children are added last to first."""
+    kids = d.get('c') if isinstance(d.get('c'), list) and d.get('c') else None
+    node = {'src': d, 'depth': depth, 'kids': None, 'value': 0.0}
+    if kids is None:
+        v = d.get('v')
+        node['value'] = float(v) if isinstance(v, (int, float)) and v == v else 0.0
+    else:
+        node['kids'] = [_tm_build(k, depth + 1) for k in kids]
+        s = 0.0
+        for k in reversed(node['kids']):
+            s += k['value']
+        node['value'] = s
+        node['kids'] = sorted(node['kids'], key=lambda k: -k['value'])
+    return node
+
+
 def _tm_nest(root):
     """Nested treemap: a line-for-line port of d3-hierarchy 3.1.2 hierarchy().sum().sort(by value, descending) and
     treemap().tile(treemapSquarify).size([900, 300]) with paddingInner 2 and, below the root, paddingOuter 3 and a 20 high paddingTop
     (the group header); no rounding. root: {'n': name, 'c': [children]} for a group, {'n': name, 'v': value} for a leaf.
     Returns every node in pre-order (d3 eachBefore) as a dict with depth, x0, y0, x1, y1, value and src (the spec dict)."""
-    def build(d, depth):
-        kids = d.get('c') if isinstance(d.get('c'), list) and d.get('c') else None
-        node = {'src': d, 'depth': depth, 'kids': None, 'value': 0.0}
-        if kids is None:
-            v = d.get('v')
-            node['value'] = float(v) if isinstance(v, (int, float)) and v == v else 0.0
-        else:
-            node['kids'] = [build(k, depth + 1) for k in kids]
-            s = 0.0
-            for k in reversed(node['kids']):
-                s += k['value']
-            node['value'] = s
-            node['kids'] = sorted(node['kids'], key=lambda k: -k['value'])
-        return node
-    top = build(root, 0)
+    top = _tm_build(root, 0)
     top['x0'] = top['y0'] = 0.0
     top['x1'] = float(_TM_W)
     top['y1'] = float(_TM_H)
@@ -31730,6 +31733,33 @@ def _tm_label(show, g, cls, text):
     return ('<span' + cls + '>' + text + '</span>' if g else text) if show else ''
 
 
+def _tm_tree(items):
+    """The group tree of items that carry a `chain` (their ancestor group names, top down): {'n', 'c': [groups and leaves]} and the top-level entries
+    in first-seen order. A group is {'n', 'c', 'chain', 'topc'}; a leaf is {'n', 'v', 'item', 'k', 'topc'} (k = its index in items). An item with an empty
+    chain is a leaf of the root and is its own top-level entry."""
+    root = {'n': '', 'c': []}
+    tops = []
+    for k, i in enumerate(items):
+        node = root
+        for g in i['chain']:
+            nx = next((x for x in node['c'] if 'c' in x and x['n'] == g), None)
+            if nx is None:
+                nx = {'n': g, 'c': [], 'chain': node.get('chain', []) + [g]}
+                if node is root:
+                    tops.append(nx)
+                nx['topc'] = len(tops) - 1 if node is root else node['topc']
+                node['c'].append(nx)
+            node = nx
+        leaf = {'n': i['n'], 'v': i['v'], 'item': i, 'k': k}
+        if node is root:
+            tops.append(leaf)
+            leaf['topc'] = len(tops) - 1
+        else:
+            leaf['topc'] = node['topc']
+        node['c'].append(leaf)
+    return root, tops
+
+
 def _render_treemap(b: dict) -> str:
     # the optional 'version' field is read by _hg_version_note at the end
     items = []
@@ -31755,21 +31785,9 @@ def _render_treemap(b: dict) -> str:
     aria = ''
     hid = []
     if nested:
-        root = {'n': '', 'c': []}
-        tops = []
-        for k, i in enumerate(items):
-            node = root
+        for i in items:
             i['chain'] = i['p'] or [i['c'] or 'Other']
-            for g in i['chain']:
-                nx = next((x for x in node['c'] if 'c' in x and x['n'] == g), None)
-                if nx is None:
-                    nx = {'n': g, 'c': []}
-                    if node is root:
-                        tops.append(nx)
-                    nx['topc'] = len(tops) - 1 if node is root else node['topc']
-                    node['c'].append(nx)
-                node = nx
-            node['c'].append({'n': i['n'], 'v': i['v'], 'item': i, 'k': k, 'topc': node['topc']})
+        root, tops = _tm_tree(items)
         for nd in _tm_nest(root)[1:]:
             sp = nd['src']
             r = [nd['x0'], nd['y0'], nd['x1'], nd['y1']]
@@ -31834,6 +31852,293 @@ def _render_treemap(b: dict) -> str:
         table = _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items])
     return _if_wrap(_if_title(b) + '<div' + aria + ' style="position:relative;height:300px;' + ('container-type:inline-size;' if css else '') + ('overflow:hidden;' if css or any(hid) else '') + '">' + css + boxes + cells + tags + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.'
                     + (' Boxes inside boxes are groups.' if nested else '') + '</div>' + _hg_version_note(b, 'treemap') + table)
+
+
+# ── sunburst (I40) and its icicle layout (I54) ─────────────────────────────────────────────────────────────────────────────────────────────────
+# d3-hierarchy 3.1.2 partition() on the same hierarchy().sum().sort(by value, descending) as the nested treemap (_tm_build), and d3-shape 3.2.0 arc()
+# (the sector without rounded corners, with padAngle and padRadius) drawn through d3-path 3.1.0 arc() and its 3-digit number rounding. Twin of
+# _sbRows / _sbArc / _RENDERERS['sunburst'] in atoms_infographic.gs.
+_SB_R, _SB_PAD, _SB_PADR = 300, 0.005, 450.0
+_SB_TAU = 2 * math.pi
+_SB_EPS = 1e-12
+
+
+def _sb_partition(root, dx, dy):
+    """partition().size([dx, dy]) of the tree `root` ({'n', 'c': [...]} / {'n', 'v'}); every node in pre-order (eachBefore) as a dict with depth, x0, y0, x1, y1,
+    value, kids and src. A node's x is its share of dx, its y the ring (or column) of its depth."""
+    top = _tm_build(root, 0)
+
+    def height(nd):
+        return 1 + max(height(k) for k in nd['kids']) if nd['kids'] else 0
+    n = height(top) + 1
+    top['x0'] = top['y0'] = 0.0
+    top['x1'] = float(dx)
+    top['y1'] = dy / n
+    out = []
+    stack = [top]
+    while stack:
+        nd = stack.pop()
+        out.append(nd)
+        if nd['kids']:
+            x0, y0, x1, y1 = nd['x0'], dy * (nd['depth'] + 1) / n, nd['x1'], dy * (nd['depth'] + 2) / n
+            k = (x1 - x0) / nd['value'] if nd['value'] else nd['value']
+            for c in nd['kids']:
+                c['y0'], c['y1'] = y0, y1
+                c['x0'] = x0
+                x0 += c['value'] * k
+                c['x1'] = x0
+        x0, y0, x1, y1 = nd['x0'], nd['y0'], nd['x1'], nd['y1']
+        if x1 < x0:
+            x0 = x1 = (x0 + x1) / 2
+        if y1 < y0:
+            y0 = y1 = (y0 + y1) / 2
+        nd['x0'], nd['y0'], nd['x1'], nd['y1'] = x0, y0, x1, y1
+        if nd['kids']:
+            for c in reversed(nd['kids']):
+                stack.append(c)
+    return out
+
+
+def _sb_rows(spec, dx, dy):
+    return [[n['depth'], n['x0'], n['y0'], n['x1'], n['y1'], n['value'], n['src'].get('n')] for n in _sb_partition(spec, dx, dy)]
+
+
+def _sb_round(x):
+    """JavaScript Math.round."""
+    f = math.floor(x)
+    return float(f + 1) if x - f >= 0.5 else float(f)
+
+
+def _sb_arc(a0, a1, r0, r1, pad_angle, pad_radius, digits=3):
+    """d3-shape arc() with cornerRadius 0: startAngle a0, endAngle a1 (radians clockwise from 12 o'clock), inner radius r0, outer radius r1, padAngle and
+    padRadius (None = sqrt(r0^2 + r1^2)). The path text is d3-path's: numbers rounded to `digits` (None = not rounded) and printed as JavaScript prints them."""
+    k = None if digits is None else 10 ** digits
+    d = []
+    pos = [None, None, None, None]                                           # x0, y0 of the subpath, x1, y1 of the current point
+
+    def f(v):
+        return _if_numstr(v if k is None else _sb_round(v * k) / k)
+
+    def move(x, y):
+        pos[0] = pos[2] = x
+        pos[1] = pos[3] = y
+        d.append('M' + f(x) + ',' + f(y))
+
+    def line(x, y):
+        pos[2], pos[3] = x, y
+        d.append('L' + f(x) + ',' + f(y))
+
+    def arc(x, y, r, s0, s1, ccw):
+        dx, dy = r * math.cos(s0), r * math.sin(s0)
+        x0, y0 = x + dx, y + dy
+        cw = 0 if ccw else 1
+        da = s0 - s1 if ccw else s1 - s0
+        if pos[2] is None:
+            d.append('M' + f(x0) + ',' + f(y0))
+            pos[0] = pos[2] = x0
+            pos[1] = pos[3] = y0
+        elif abs(pos[2] - x0) > 1e-6 or abs(pos[3] - y0) > 1e-6:
+            d.append('L' + f(x0) + ',' + f(y0))
+            pos[2], pos[3] = x0, y0
+        if not r:
+            return
+        if da < 0:
+            da = math.fmod(da, _SB_TAU) + _SB_TAU
+        if da > _SB_TAU - 1e-6:
+            d.append('A' + f(r) + ',' + f(r) + ',0,1,' + str(cw) + ',' + f(x - dx) + ',' + f(y - dy) + 'A' + f(r) + ',' + f(r) + ',0,1,' + str(cw) + ',' + f(x0) + ',' + f(y0))
+            pos[2], pos[3] = x0, y0
+        elif da > 1e-6:
+            ex, ey = x + r * math.cos(s1), y + r * math.sin(s1)
+            d.append('A' + f(r) + ',' + f(r) + ',0,' + ('1' if da >= math.pi else '0') + ',' + str(cw) + ',' + f(ex) + ',' + f(ey))
+            pos[2], pos[3] = ex, ey
+
+    def asin(v):
+        return math.pi / 2 if v >= 1 else -math.pi / 2 if v <= -1 else math.asin(v)
+    a0 -= math.pi / 2
+    a1 -= math.pi / 2
+    da = abs(a1 - a0)
+    cw = a1 > a0
+    if r1 < r0:
+        r0, r1 = r1, r0
+    if not r1 > _SB_EPS:
+        move(0, 0)
+    elif da > _SB_TAU - _SB_EPS:
+        move(r1 * math.cos(a0), r1 * math.sin(a0))
+        arc(0, 0, r1, a0, a1, not cw)
+        if r0 > _SB_EPS:
+            move(r0 * math.cos(a1), r0 * math.sin(a1))
+            arc(0, 0, r0, a1, a0, cw)
+    else:
+        a01, a11, a00, a10, da0, da1 = a0, a1, a0, a1, da, da
+        ap = pad_angle / 2
+        rp = (ap > _SB_EPS) and (pad_radius if pad_radius is not None else math.sqrt(r0 * r0 + r1 * r1))
+        if rp and rp > _SB_EPS:
+            sa = math.sin(ap)
+            p0 = asin(rp / r0 * sa if r0 else math.inf if sa > 0 else -math.inf if sa < 0 else 0.0)      # rp / 0 is Infinity in JavaScript
+            p1 = asin(rp / r1 * sa)
+            da0 -= p0 * 2
+            if da0 > _SB_EPS:
+                p0 *= (1 if cw else -1)
+                a00 += p0
+                a10 -= p0
+            else:
+                da0 = 0
+                a00 = a10 = (a0 + a1) / 2
+            da1 -= p1 * 2
+            if da1 > _SB_EPS:
+                p1 *= (1 if cw else -1)
+                a01 += p1
+                a11 -= p1
+            else:
+                da1 = 0
+                a01 = a11 = (a0 + a1) / 2
+        x01, y01 = r1 * math.cos(a01), r1 * math.sin(a01)
+        x10, y10 = r0 * math.cos(a10), r0 * math.sin(a10)
+        move(x01, y01)
+        if da1 > _SB_EPS:
+            arc(0, 0, r1, a01, a11, not cw)
+        if not r0 > _SB_EPS or not da0 > _SB_EPS:
+            line(x10, y10)
+        else:
+            arc(0, 0, r0, a10, a00, cw)
+    if pos[2] is not None:
+        d.append('Z')
+    return ''.join(d)
+
+
+# Colour: one hue per top-level group (the eight below, then they repeat), each ring out a lighter mix of it with white (whole-number percentages, so
+# both twins agree to the digit); the label ink is white or dark, whichever contrasts more.
+_SB_PALETTE = ['#19294E', '#810998', '#0F6C4F', '#9A6120', '#0369A1', '#B4235A', '#4D6B0E', '#5B5F66']
+_SB_SHADE = (0, 16, 40, 60)
+
+
+def _sb_fill(base, depth):
+    pct = _SB_SHADE[min(max(depth, 1), 4) - 1]
+    return '#' + ''.join('%02X' % (v + ((255 - v) * pct + 50) // 100) for v in (int(base[i:i + 2], 16) for i in (1, 3, 5)))
+
+
+def _sb_ink(fill):
+    def lin(v):
+        v /= 255
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    lum = 0.2126 * lin(int(fill[1:3], 16)) + 0.7152 * lin(int(fill[3:5], 16)) + 0.0722 * lin(int(fill[5:7], 16))
+    return '#FFFFFF' if lum <= 0.179 else '#000000'
+
+
+# A label's width is estimated, identically in both twins, as 0.6em per character of the 12px label font. The chart is drawn at whatever width its
+# container has, so what a label needs is turned into the narrowest container it fits in (rounded up to 10 px); a label needing more than 240 px
+# is hidden below that width by the container-query rule the treemap uses (class tmw<N>), and one that cannot fit even at the widest the chart
+# is drawn is left out. A label shows at least 6 characters (or its whole name when shorter); the browser ends a longer name with an ellipsis.
+_SB_K, _SB_MINW, _SB_MAXW, _SB_BOX, _SB_LINE = 7.2, 240, 640, 604, 18
+_SB_IW, _SB_IH, _SB_IMAXW = 900, 360, 1600
+
+
+def _sb_q(w):
+    return int(math.ceil(w / 10)) * 10
+
+
+def _sb_cls(wm):
+    return (' tmw' + str(wm) if wm > _SB_MINW else '', wm if wm > _SB_MINW else 0)
+
+
+def _sb_box(l, t, w, h):
+    return 'position:absolute;left:' + _tm_pct(l, _SB_IW) + ';top:' + _tm_pct(t, _SB_IH) + ';width:' + _tm_pct(w, _SB_IW) + ';height:' + _tm_pct(h, _SB_IH) + ';'
+
+
+def _render_sunburst(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
+    lst = _if_g(b, 'items')
+    lst = lst if isinstance(lst, list) else []
+    items, left_out = [], 0
+    for k, it in enumerate(lst[:40]):
+        v = _if_n(_if_g(it, 'value'), 0, 1e12, 0) if isinstance(it, dict) else 0
+        if not v > 0:
+            left_out += 1
+            continue
+        nm = _if_g(it, 'name')
+        items.append({'n': _if_str(nm)[:24] if _if_truthy(nm) else 'Item ' + str(k + 1), 'v': v, 'chain': _tm_path(_if_g(it, 'path'))})
+    beyond = len(lst) - 40
+    notes = ((_hg_note(str(left_out) + (' entry had no value above 0 or was not an item and was' if left_out == 1 else ' entries had no value above 0 or were not an item and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' item beyond the first 40 was' if beyond == 1 else ' items beyond the first 40 were') + ' not drawn.') if beyond > 0 else ''))
+    if len(items) < 2:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A sunburst needs at least 2 items with a value above 0.</div>' + notes + _hg_version_note(b, 'sunburst'))
+    icicle = _if_pick(_if_g(b, 'layout'), ['radial', 'icicle'], 'radial') == 'icicle'
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+
+    def f(v):
+        return _bp_fmt(v, 2) + us
+    root, tops = _tm_tree(items)
+    height = max(len(i['chain']) for i in items) + 1
+    ncol = height + 1                                                          # the root takes one ring (the centre) or one column (not drawn)
+    nodes = _sb_partition(root, _SB_TAU, _SB_R) if not icicle else _sb_partition(root, float(_SB_IH), float(_SB_IW) * ncol / height)
+    tot = nodes[0]['value']
+    ws, cells, labels, rings = [], '', '', [''] * height
+
+    def title_of(nd):
+        sp = nd['src']
+        return _if_s(' / '.join(sp['chain'] if nd['kids'] else sp['item']['chain'] + [sp['n']]), 160) + ': ' + _cv_esc(f(nd['value'])) + ' (' + _if_fixed(nd['value'] / tot * 100, 1) + '%)'
+    for nd in nodes[1:]:
+        sp, dp = nd['src'], nd['depth']
+        base = _SB_PALETTE[sp['topc'] % 8]
+        fill = _sb_fill(base, dp)
+        ink = _sb_ink(fill)
+        title = title_of(nd)
+        c = min(_oc_chars(sp['n']), 6)
+        kk = _if_k(dp - 1, height)
+        x0, y0, x1, y1 = nd['x0'], nd['y0'], nd['x1'], nd['y1']
+        if not icicle:
+            ro = max(y0, y1 - 1)
+            rings[dp - 1] += '<path d="' + _sb_arc(x0, x1, y0, ro, min((x1 - x0) / 2, _SB_PAD), _SB_PADR) + '" fill="' + fill + '"><title>' + title + '</title></path>'
+            t, dth = ro - y0, x1 - x0
+            if t > 0 and dth > 0:
+                wm = _sb_q(max((c * _SB_K + 8) * _SB_BOX / t, _SB_LINE * _SB_BOX / ((y0 + 4) * dth)))
+                if wm <= _SB_MAXW:
+                    cls, g = _sb_cls(wm)
+                    ws.append(g)
+                    rm, th = (y0 + ro) / 2, (x0 + x1) / 2
+                    deg = th * 180 / math.pi - 90
+                    if deg > 90:
+                        deg -= 180
+                    labels += ('<div class="sbl' + cls + '" style="position:absolute;left:' + _tm_pct(_SB_BOX / 2 + rm * math.sin(th), _SB_BOX) + ';top:' + _tm_pct(_SB_BOX / 2 - rm * math.cos(th), _SB_BOX)
+                               + ';transform:translate(-50%,-50%) rotate(' + _if_fixed(deg, 2) + 'deg);width:max-content;max-width:calc(' + _tm_pct(t, _SB_BOX)[:-1] + 'cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;'
+                               + 'text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _if_s(sp['n'], 24) + '</div>')
+        else:
+            left, w, hh = y0 - nodes[0]['y1'], y1 - y0, x1 - x0
+            wm = _sb_q((c * _SB_K + 12) * _SB_IW / w) if w > 0 else 10 ** 9
+            show = hh >= 20 and wm <= _SB_IMAXW
+            cls, g = _sb_cls(wm)
+            g = g if show else 0
+            ws.append(g)
+            cells += ('<div title="' + title + '" style="' + _sb_box(left, x0, w, hh) + 'box-sizing:border-box;border:1px solid transparent;background:' + fill + ';background-clip:padding-box;border-radius:3px;color:' + ink
+                      + ';padding:1px 5px 0;font-size:12px;line-height:17px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;' + kk + 'opacity:var(--k,1);">'
+                      + (('<span class="' + cls.strip() + '">' + _if_s(sp['n'], 24) + '</span>' if g else _if_s(sp['n'], 24)) if show else '') + '</div>')
+    top = nodes[0]['kids'][0]
+    aria = ('Icicle chart' if icicle else 'Sunburst') + ' of ' + str(len(items)) + ' items in ' + str(len(tops)) + ' top-level group' + ('' if len(tops) == 1 else 's') + ', total ' + f(tot) + '. Largest top-level group: ' \
+        + top['src']['n'] + ', ' + f(top['value']) + ', ' + _if_fixed(top['value'] / tot * 100, 1) + '% of the total.'
+    if not icicle:
+        hole = nodes[0]['y1']
+        tl = len(f(tot))
+        half = tl * _SB_K / 2
+        wm = _sb_q((math.sqrt(half * half + 196) + 3) * _SB_BOX / hole)
+        centre = ''
+        if wm <= _SB_MAXW:
+            cls, g = _sb_cls(wm)
+            ws.append(g)
+            centre = ('<div class="sbc' + cls + '" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;">'
+                      '<div style="font-weight:700;">' + _if_s(f(tot), 40) + '</div><div style="color:' + _IF_MUTED + ';">total</div></div>')
+        svg = ('<svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
+               + ''.join('<g class="sbr" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
+        body, boxcss = svg + labels + centre, 'position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;'
+        cap = 'Angle shows share of the total; each ring out is one level deeper. The centre shows the total.'
+    else:
+        body, boxcss = cells, 'position:relative;height:' + str(_SB_IH) + 'px;'
+        cap = 'Height shows share of the total; each column to the right is one level deeper.'
+    uw = sorted(set(w for w in ws if w))
+    css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
+    return _if_wrap(_if_title(b) + '<div role="img" aria-label="' + _if_s(aria, 400) + '" style="' + boxcss + 'container-type:inline-size;overflow:hidden;">' + css + body + '</div>'
+                    + _hg_note(cap) + notes + _hg_version_note(b, 'sunburst')
+                    + _if_table(['Item', 'Path', 'Value', 'Share of total'], [[i['n'], ' / '.join(i['chain']) or 'Top level', f(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
 
 
 def _render_venn_diagram(b: dict) -> str:
@@ -32970,7 +33275,7 @@ def _render_waterfall(b: dict) -> str:
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst)):
     _RENDERERS[_if_name] = _if_fn
 
 
