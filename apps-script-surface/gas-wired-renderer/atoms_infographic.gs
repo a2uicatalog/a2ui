@@ -190,8 +190,8 @@ _RENDERERS['maturity_ladder'] = function(b) {
 // Laid out in a nominal 900 x 300 box, no padding, no rounding; the renderer emits the rectangles as percentages and draws the gaps in CSS.
 var _TM_PHI = (1 + Math.sqrt(5)) / 2, _TM_W = 900, _TM_H = 300;
 function _tmSum(vals) { var s = 0, i = vals.length; while (--i >= 0) s += vals[i]; return s; }
-function _tmSquarify(vals, x0, y0, x1, y1) {
-  var n = vals.length, out = new Array(n), value = _tmSum(vals), i0 = 0, i1 = 0, dx, dy, sv, mn, mx, alpha, beta, mr, nr, nv, rx0, ry0, ry1, rx1, k, px, py, j;
+function _tmSquarify(vals, x0, y0, x1, y1, pv) {  // pv: the parent's value as d3 summed it (input order); a sorted layout must pass it
+  var n = vals.length, out = new Array(n), value = pv === undefined ? _tmSum(vals) : pv, i0 = 0, i1 = 0, dx, dy, sv, mn, mx, alpha, beta, mr, nr, nv, rx0, ry0, ry1, rx1, k, px, py, j;
   while (i0 < n) {
     dx = x1 - x0; dy = y1 - y0;
     do sv = +vals[i1++]; while (!sv && i1 < n);
@@ -226,26 +226,110 @@ function _tmLayout(groups) {
   var cr = _tmSquarify(groups.map(_tmSum), 0, 0, _TM_W, _TM_H);
   return [cr, groups.map(function(g, i) { return _tmSquarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]); })];
 }
-function _tmFits(r, chars, wpad, hmin) { return r[2] - r[0] >= chars * 7 + wpad && r[3] - r[1] >= hmin; }
+// A label's width is estimated, identically in both twins, as 0.6em per character of the 0.78rem (12.48px) bold label font, plus padding.
+// The chart is drawn at whatever width its container has, so the width a label needs is turned into the narrowest container it fits in
+// (_tmWmin). A label needing more than 320px is gated by a container query rule (class tmw<N> hides it below N px); one that cannot fit
+// even in 1600px is left out. Heights are exact: the chart is always 300px high, the same as its nominal box.
+var _TM_K = 7.488, _TM_HDR = 20, _TM_MAXW = 1600, _TM_MINW = 320;
+function _tmWmin(chars, pad, w) { return w > 0 ? Math.ceil((chars * _TM_K + pad) * _TM_W / w) : 1e9; }
 function _tmPct(x, d) { return (x / d * 100).toFixed(3) + '%'; }
 function _tmBox(r) { return 'position:absolute;left:' + _tmPct(r[0], _TM_W) + ';top:' + _tmPct(r[1], _TM_H) + ';width:' + _tmPct(r[2] - r[0], _TM_W) + ';height:' + _tmPct(r[3] - r[1], _TM_H) + ';'; }
+// Nested treemap: a line-for-line port of d3-hierarchy 3.1.2 hierarchy().sum().sort(by value, descending) and treemap().tile(treemapSquarify)
+// .size([900, 300]) with paddingInner 2 and, below the root, paddingOuter 3 and a 20 high paddingTop (the group header); no rounding.
+// root: {n, c: [children]} for a group, {n, v} for a leaf. Returns every node in pre-order (d3 eachBefore): {depth, x0, y0, x1, y1, value, src, kids}.
+function _tmNest(root) {
+  function build(d, depth) {
+    var kids = (d.c instanceof Array && d.c.length) ? d.c : null, node = { src: d, depth: depth, kids: null, value: 0 }, i, s;
+    if (!kids) { node.value = typeof d.v === 'number' && d.v === d.v ? d.v : 0; return node; }
+    node.kids = kids.map(function(k) { return build(k, depth + 1); });
+    s = 0; i = node.kids.length; while (--i >= 0) s += node.kids[i].value;
+    node.value = s;
+    node.kids = node.kids.slice().sort(function(a, b) { return b.value - a.value; });
+    return node;
+  }
+  var top = build(root, 0), pad = { 0: 0 }, out = [], stack = [top], nd, p, x0, y0, x1, y1, outer, rects, i;
+  top.x0 = top.y0 = 0; top.x1 = _TM_W; top.y1 = _TM_H;
+  while (stack.length) {
+    nd = stack.pop(); out.push(nd);
+    p = pad[nd.depth];
+    x0 = nd.x0 + p; y0 = nd.y0 + p; x1 = nd.x1 - p; y1 = nd.y1 - p;
+    if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
+    if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
+    nd.x0 = x0; nd.y0 = y0; nd.x1 = x1; nd.y1 = y1;
+    if (nd.kids) {
+      p = pad[nd.depth + 1] = 2 / 2;
+      outer = nd.depth ? 3 : 0;
+      x0 += outer - p; y0 += (nd.depth ? _TM_HDR : 0) - p; x1 -= outer - p; y1 -= outer - p;
+      if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
+      if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
+      rects = _tmSquarify(nd.kids.map(function(k) { return k.value; }), x0, y0, x1, y1, nd.value);
+      for (i = 0; i < rects.length; i++) { nd.kids[i].x0 = rects[i][0]; nd.kids[i].y0 = rects[i][1]; nd.kids[i].x1 = rects[i][2]; nd.kids[i].y1 = rects[i][3]; }
+      for (i = nd.kids.length - 1; i >= 0; i--) stack.push(nd.kids[i]);
+    }
+  }
+  return out;
+}
+function _tmNestLayout(spec) { return _tmNest(spec).map(function(n) { return [n.depth, n.x0, n.y0, n.x1, n.y1, n.value, n.src.n]; }); }
+// The usable group names of an item's `path`: strings that are not blank, 20 characters each, at most 3.
+function _tmPath(raw) {
+  if (!(raw instanceof Array)) return [];
+  return raw.slice(0, 12).filter(function(e) { return typeof e === 'string' && e.replace(/[ \t\r\n]/g, '') !== ''; }).map(function(e) { return e.slice(0, 20); }).slice(0, 3);
+}
+// [class attribute, gate width]: a label needing more than 320px hides itself in a narrower container.
+function _tmGate(w) { return w > _TM_MINW ? [' class="tmw' + w + '"', w] : ['', 0]; }
+function _tmLabel(show, g, cls, text) { return show ? (g ? '<span' + cls + '>' + text + '</span>' : text) : ''; }
 _RENDERERS['treemap'] = function(b) {
-  var items = _ifArr(b.items, 12).map(function(i) { i = _ifObj(i); return { c: String(i.category === undefined ? '' : i.category).slice(0, 20), n: i.name, v: _ifNum(i.value, 0, 1e12, 0) }; }).filter(function(i) { return i.v > 0; });
-  var cats = []; items.forEach(function(i) { if (cats.indexOf(i.c) < 0 && cats.length < 4) cats.push(i.c); }); items = items.filter(function(i) { return cats.indexOf(i.c) >= 0; });
-  var tot = items.reduce(function(s, i) { return s + i.v; }, 0) || 1;
-  var groups = cats.map(function(c) { return items.filter(function(i) { return i.c === c; }); });
-  var lay = _tmLayout(groups.map(function(m) { return m.map(function(i) { return i.v; }); })), cr = lay[0], ir = lay[1], cells = '', tags = '';
-  cats.forEach(function(c, ci) {
-    var m = groups[ci], ct = m.reduce(function(s, i) { return s + i.v; }, 0);
-    var ptxt = _ifS(c, 20) + ' ' + _ifFmt(ct), pill = _tmFits(cr[ci], _ifS(c, 20).length + 1 + _ifFmt(ct).length, 12, 40);
-    m.forEach(function(i, k) {
-      var lead = pill && k === 0, show = _tmFits(ir[ci][k], _ifS(i.n, 24).length + 1 + _ifFmt(i.v).length, 18, lead ? 48 : 30);
-      cells += '<div' + (show ? '' : ' title="' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '"') + ' style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? (lead ? '24px' : '6px') + ' 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g) { return s + g.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + (show ? _ifS(i.n, 24) + ' ' + _ifFmt(i.v) : '') + '</div>';
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var items = _ifArr(b.items, 12).map(function(i) { i = _ifObj(i); return { c: String(i.category === undefined ? '' : i.category).slice(0, 20), n: i.name, v: _ifNum(i.value, 0, 1e12, 0), p: _tmPath(i.path) }; }).filter(function(i) { return i.v > 0; });
+  var nested = items.some(function(i) { return i.p.length > 0; }), cats = [];
+  if (!nested) { items.forEach(function(i) { if (cats.indexOf(i.c) < 0 && cats.length < 4) cats.push(i.c); }); items = items.filter(function(i) { return cats.indexOf(i.c) >= 0; }); }
+  var tot = items.reduce(function(s, i) { return s + i.v; }, 0) || 1, cells = '', tags = '', boxes = '', gates = [], hid = [], aria = '', table, css = '', ws = [];
+  if (nested) {
+    var root = { n: '', c: [] }, tops = [];
+    items.forEach(function(i, k) {
+      var node = root; i.chain = i.p.length ? i.p : [i.c || 'Other'];
+      i.chain.forEach(function(g) {
+        var nx = null; node.c.forEach(function(x) { if (!nx && x.c && x.n === g) nx = x; });
+        if (!nx) { nx = { n: g, c: [] }; if (node === root) tops.push(nx); nx.topc = node === root ? tops.length - 1 : node.topc; node.c.push(nx); }
+        node = nx;
+      });
+      node.c.push({ n: i.n, v: i.v, item: i, k: k, topc: node.topc });
     });
-    if (pill) tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>';
-  });
-  return _ifWrap(_ifTitle(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.</div>' +
-    _ifTable(['Item', 'Category', 'Value', 'Share'], items.map(function(i) { return [i.n, i.c, _ifFmt(i.v), (i.v / tot * 100).toFixed(1) + '%']; })));
+    _tmNest(root).slice(1).forEach(function(nd) {
+      var sp = nd.src, r = [nd.x0, nd.y0, nd.x1, nd.y1], w = r[2] - r[0], h = r[3] - r[1], col = _IF_CAT[sp.topc % 4], txt, wm, show, gt, cls, g, name;
+      if (nd.kids) {
+        txt = _ifS(sp.n, 20) + ' ' + _ifFmt(nd.value); wm = _tmWmin(txt.length, 14, w); show = h >= 24 && wm <= _TM_MAXW; gt = _tmGate(wm); cls = gt[0]; g = show ? gt[1] : 0; gates.push(g);
+        boxes += '<div' + (show && !g ? '' : ' title="' + txt + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid ' + col + ';border-radius:4px;background:var(--surface,#F8FAFC);"></div>';
+        if (show) tags += '<div' + cls + ' style="position:absolute;left:' + _tmPct(r[0], _TM_W) + ';top:' + _tmPct(r[1], _TM_H) + ';width:' + _tmPct(w, _TM_W) + ';height:' + _tmPct(_TM_HDR, _TM_H) +
+          ';box-sizing:border-box;padding:1px 7px 0;overflow:hidden;white-space:nowrap;font-size:0.78rem;font-weight:700;line-height:18px;color:var(--text,#0F172A);">' + txt + '</div>';
+      } else {
+        name = _ifS(sp.item.n, 24) + ' ' + _ifFmt(sp.item.v); wm = _tmWmin(name.length, 18, w); show = h >= 30 && wm <= _TM_MAXW; gt = _tmGate(wm); cls = gt[0]; g = show ? gt[1] : 0; gates.push(g); hid.push(!show);
+        cells += '<div' + (show && !g ? '' : ' title="' + name + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + col + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? '6px 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(sp.k, 12) + 'opacity:var(--k,1);">' + _tmLabel(show, g, cls, name) + '</div>';
+      }
+    });
+    var shown = tops.slice(0, 6).map(function(t) { return t.n + ' ' + _ifFmt(items.reduce(function(s, i) { return i.chain[0] === t.n ? s + i.v : s; }, 0)); }).join(', ');
+    aria = ' role="img" aria-label="' + _ifS('Nested treemap of ' + items.length + ' items in ' + tops.length + ' top-level group' + (tops.length === 1 ? '' : 's') + ', area shows share of the total ' + _ifFmt(tot) + ': ' + shown + (tops.length <= 6 ? '' : ', and ' + (tops.length - 6) + ' more') + '.', 400) + '"';
+    table = _ifTable(['Item', 'Path', 'Value', 'Share'], items.map(function(i) { return [i.n, i.chain.join(' / '), _ifFmt(i.v), (i.v / tot * 100).toFixed(1) + '%']; }));
+  } else {
+    var groups = cats.map(function(c) { return items.filter(function(i) { return i.c === c; }); });
+    var lay = _tmLayout(groups.map(function(m) { return m.map(function(i) { return i.v; }); })), cr = lay[0], ir = lay[1];
+    cats.forEach(function(c, ci) {
+      var m = groups[ci], ct = m.reduce(function(s, i) { return s + i.v; }, 0), ptxt = _ifS(c, 20) + ' ' + _ifFmt(ct), pw = _tmWmin(ptxt.length, 12, cr[ci][2] - cr[ci][0]);
+      var pill = cr[ci][3] - cr[ci][1] >= 40 && pw <= _TM_MAXW, pg = _tmGate(pw), pcls = pg[0]; gates.push(pill ? pg[1] : 0);
+      m.forEach(function(i, k) {
+        var lead = pill && k === 0, name = _ifS(i.n, 24) + ' ' + _ifFmt(i.v), r = ir[ci][k], wm = _tmWmin(name.length, 18, r[2] - r[0]), show = r[3] - r[1] >= (lead ? 48 : 30) && wm <= _TM_MAXW, gt = _tmGate(wm), cls = gt[0], g = show ? gt[1] : 0;
+        gates.push(g); hid.push(!show);
+        cells += '<div' + (show && !g ? '' : ' title="' + name + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? (lead ? '24px' : '6px') + ' 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g_) { return s + g_.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + _tmLabel(show, g, cls, name) + '</div>';
+      });
+      if (pill) tags += '<div' + pcls + ' style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>';
+    });
+    table = _ifTable(['Item', 'Category', 'Value', 'Share'], items.map(function(i) { return [i.n, i.c, _ifFmt(i.v), (i.v / tot * 100).toFixed(1) + '%']; }));
+  }
+  gates.forEach(function(g) { if (g && ws.indexOf(g) < 0) ws.push(g); });
+  ws.sort(function(a, c) { return a - c; });
+  if (ws.length) css = '<style>' + ws.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>';
+  return _ifWrap(_ifTitle(b) + '<div' + aria + ' style="position:relative;height:300px;' + (css ? 'container-type:inline-size;' : '') + (css || hid.some(function(x) { return x; }) ? 'overflow:hidden;' : '') + '">' + css + boxes + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.' +
+    (nested ? ' Boxes inside boxes are groups.' : '') + '</div>' + _hgVersionNote(b, 'treemap') + table);
 };
 
 // ── venn_diagram ──────────────────────────────────────────────────────────────────────────────────────────────

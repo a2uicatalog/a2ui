@@ -31563,11 +31563,12 @@ def _tm_sum(vals):
     return s
 
 
-def _tm_squarify(vals, x0, y0, x1, y1):
-    """Rectangles [x0, y0, x1, y1] for the positive values, in order (d3 squarifyRatio with ratio = phi)."""
+def _tm_squarify(vals, x0, y0, x1, y1, value=None):
+    """Rectangles [x0, y0, x1, y1] for the positive values, in order (d3 squarifyRatio with ratio = phi).
+    `value` is the parent's value as d3 summed it (input order); a sorted layout must pass it, floats do not add associatively."""
     n = len(vals)
     out = [None] * n
-    value = _tm_sum(vals)
+    value = _tm_sum(vals) if value is None else value
     i0 = i1 = 0
     while i0 < n:
         dx = x1 - x0
@@ -31631,9 +31632,19 @@ def _tm_layout(groups):
     return cr, [_tm_squarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]) for i, g in enumerate(groups)]
 
 
-def _tm_fits(r, chars, wpad, hmin):
-    """Does a rect (nominal 900 x 300 box) hold a label of `chars` characters at 7px each plus wpad, and hmin tall?"""
-    return r[2] - r[0] >= chars * 7 + wpad and r[3] - r[1] >= hmin
+# A label's width is estimated, identically in both twins, as 0.6em per character of the 0.78rem (12.48px) bold label font, plus padding.
+# The chart is drawn at whatever width its container has, so the width a label needs is turned into the narrowest container it fits in
+# (_tm_wmin). A label needing more than 320px is gated by a container query rule (class tmw<N> hides it below N px); one that cannot fit
+# even in 1600px is left out. Heights are exact: the chart is always 300px high, the same as its nominal box.
+_TM_K = 7.488
+_TM_HDR = 20
+_TM_MAXW = 1600
+_TM_MINW = 320
+
+
+def _tm_wmin(chars, pad, w):
+    """The narrowest container (px) in which `chars` characters plus `pad` px of padding fit in a rect `w` nominal units wide."""
+    return math.ceil((chars * _TM_K + pad) * _TM_W / w) if w > 0 else 10 ** 9
 
 
 def _tm_pct(x, d):
@@ -31644,40 +31655,185 @@ def _tm_box(r):
     return 'position:absolute;left:' + _tm_pct(r[0], _TM_W) + ';top:' + _tm_pct(r[1], _TM_H) + ';width:' + _tm_pct(r[2] - r[0], _TM_W) + ';height:' + _tm_pct(r[3] - r[1], _TM_H) + ';'
 
 
+def _tm_nest(root):
+    """Nested treemap: a line-for-line port of d3-hierarchy 3.1.2 hierarchy().sum().sort(by value, descending) and
+    treemap().tile(treemapSquarify).size([900, 300]) with paddingInner 2 and, below the root, paddingOuter 3 and a 20 high paddingTop
+    (the group header); no rounding. root: {'n': name, 'c': [children]} for a group, {'n': name, 'v': value} for a leaf.
+    Returns every node in pre-order (d3 eachBefore) as a dict with depth, x0, y0, x1, y1, value and src (the spec dict)."""
+    def build(d, depth):
+        kids = d.get('c') if isinstance(d.get('c'), list) and d.get('c') else None
+        node = {'src': d, 'depth': depth, 'kids': None, 'value': 0.0}
+        if kids is None:
+            v = d.get('v')
+            node['value'] = float(v) if isinstance(v, (int, float)) and v == v else 0.0
+        else:
+            node['kids'] = [build(k, depth + 1) for k in kids]
+            s = 0.0
+            for k in reversed(node['kids']):
+                s += k['value']
+            node['value'] = s
+            node['kids'] = sorted(node['kids'], key=lambda k: -k['value'])
+        return node
+    top = build(root, 0)
+    top['x0'] = top['y0'] = 0.0
+    top['x1'] = float(_TM_W)
+    top['y1'] = float(_TM_H)
+    pad = {0: 0.0}
+    out = []
+    stack = [top]
+    while stack:
+        nd = stack.pop()
+        out.append(nd)
+        p = pad[nd['depth']]
+        x0, y0, x1, y1 = nd['x0'] + p, nd['y0'] + p, nd['x1'] - p, nd['y1'] - p
+        if x1 < x0:
+            x0 = x1 = (x0 + x1) / 2
+        if y1 < y0:
+            y0 = y1 = (y0 + y1) / 2
+        nd['x0'], nd['y0'], nd['x1'], nd['y1'] = x0, y0, x1, y1
+        if nd['kids']:
+            p = 2 / 2
+            pad[nd['depth'] + 1] = p
+            outer = 3.0 if nd['depth'] else 0.0
+            x0 += outer - p
+            y0 += (float(_TM_HDR) if nd['depth'] else 0.0) - p
+            x1 -= outer - p
+            y1 -= outer - p
+            if x1 < x0:
+                x0 = x1 = (x0 + x1) / 2
+            if y1 < y0:
+                y0 = y1 = (y0 + y1) / 2
+            for k, r in zip(nd['kids'], _tm_squarify([k['value'] for k in nd['kids']], x0, y0, x1, y1, nd['value'])):
+                k['x0'], k['y0'], k['x1'], k['y1'] = r
+            for k in reversed(nd['kids']):
+                stack.append(k)
+    return out
+
+
+def _tm_nest_layout(spec):
+    return [[n['depth'], n['x0'], n['y0'], n['x1'], n['y1'], n['value'], n['src'].get('n')] for n in _tm_nest(spec)]
+
+
+def _tm_path(raw):
+    """The usable group names of an item's `path`: strings that are not blank, 20 characters each, at most 3."""
+    if not isinstance(raw, list):
+        return []
+    return [e[:20] for e in raw[:12] if isinstance(e, str) and e.strip(' \t\r\n') != ''][:3]
+
+
+def _tm_gate(w):
+    """(class attribute, gate width): a label needing more than 320px hides itself in a narrower container."""
+    return (' class="tmw' + str(w) + '"', w) if w > _TM_MINW else ('', 0)
+
+
+def _tm_label(show, g, cls, text):
+    return ('<span' + cls + '>' + text + '</span>' if g else text) if show else ''
+
+
 def _render_treemap(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
     items = []
     for i in _if_arr(_if_g(b, 'items'), 12):
         i = _if_obj(i)
-        items.append({'c': _if_cat(_if_g(i, 'category'), 20), 'n': _if_g(i, 'name'), 'v': _if_n(_if_g(i, 'value'), 0, 1e12, 0)})
+        items.append({'c': _if_cat(_if_g(i, 'category'), 20), 'n': _if_g(i, 'name'), 'v': _if_n(_if_g(i, 'value'), 0, 1e12, 0), 'p': _tm_path(_if_g(i, 'path'))})
     items = [i for i in items if i['v'] > 0]
+    nested = any(i['p'] for i in items)
     cats = []
-    for i in items:
-        if i['c'] not in cats and len(cats) < 4:
-            cats.append(i['c'])
-    items = [i for i in items if i['c'] in cats]
+    if not nested:
+        for i in items:
+            if i['c'] not in cats and len(cats) < 4:
+                cats.append(i['c'])
+        items = [i for i in items if i['c'] in cats]
     tot = 0
     for i in items:
         tot += i['v']
     tot = tot or 1
-    groups = [[i for i in items if i['c'] == c] for c in cats]
-    cr, ir = _tm_layout([[i['v'] for i in m] for m in groups])
     cells = ''
     tags = ''
-    for ci, c in enumerate(cats):
-        m = groups[ci]
-        ct = 0
-        for i in m:
-            ct += i['v']
-        ptxt = _if_s(c, 20) + ' ' + _if_fmt(ct)
-        pill = _tm_fits(cr[ci], len(_if_s(c, 20)) + 1 + len(_if_fmt(ct)), 12, 40)
-        for k, i in enumerate(m):
-            lead = pill and k == 0
-            show = _tm_fits(ir[ci][k], len(_if_s(i['n'], 24)) + 1 + len(_if_fmt(i['v'])), 18, 48 if lead else 30)
-            cells += ('<div' + ('' if show else ' title="' + _if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) + '"') + ' style="' + _tm_box(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (('24px' if lead else '6px') + ' 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sum(len(g) for g in groups[:ci]) + k, 12) + 'opacity:var(--k,1);">' + (_if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) if show else '') + '</div>')
-        if pill:
-            tags += ('<div style="position:absolute;left:' + _tm_pct(cr[ci][0], _TM_W) + ';top:' + _tm_pct(cr[ci][1], _TM_H) + ';max-width:' + _tm_pct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>')
-    return _if_wrap(_if_title(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.</div>'
-                    + _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
+    boxes = ''
+    gates = []
+    aria = ''
+    hid = []
+    if nested:
+        root = {'n': '', 'c': []}
+        tops = []
+        for k, i in enumerate(items):
+            node = root
+            i['chain'] = i['p'] or [i['c'] or 'Other']
+            for g in i['chain']:
+                nx = next((x for x in node['c'] if 'c' in x and x['n'] == g), None)
+                if nx is None:
+                    nx = {'n': g, 'c': []}
+                    if node is root:
+                        tops.append(nx)
+                    nx['topc'] = len(tops) - 1 if node is root else node['topc']
+                    node['c'].append(nx)
+                node = nx
+            node['c'].append({'n': i['n'], 'v': i['v'], 'item': i, 'k': k, 'topc': node['topc']})
+        for nd in _tm_nest(root)[1:]:
+            sp = nd['src']
+            r = [nd['x0'], nd['y0'], nd['x1'], nd['y1']]
+            w, h = r[2] - r[0], r[3] - r[1]
+            col = _IF_CAT[sp['topc'] % 4]
+            if nd['kids']:
+                txt = _if_s(sp['n'], 20) + ' ' + _if_fmt(nd['value'])
+                wm = _tm_wmin(len(txt), 14, w)
+                show = h >= 24 and wm <= _TM_MAXW
+                cls, g = _tm_gate(wm)
+                g = g if show else 0
+                gates.append(g)
+                boxes += ('<div' + ('' if show and not g else ' title="' + txt + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid ' + col + ';border-radius:4px;background:var(--surface,#F8FAFC);"></div>')
+                if show:
+                    tags += ('<div' + cls + ' style="position:absolute;left:' + _tm_pct(r[0], _TM_W) + ';top:' + _tm_pct(r[1], _TM_H) + ';width:' + _tm_pct(w, _TM_W) + ';height:' + _tm_pct(_TM_HDR, _TM_H)
+                             + ';box-sizing:border-box;padding:1px 7px 0;overflow:hidden;white-space:nowrap;font-size:0.78rem;font-weight:700;line-height:18px;color:var(--text,#0F172A);">' + txt + '</div>')
+            else:
+                it = sp['item']
+                name = _if_s(it['n'], 24) + ' ' + _if_fmt(it['v'])
+                wm = _tm_wmin(len(name), 18, w)
+                show = h >= 30 and wm <= _TM_MAXW
+                cls, g = _tm_gate(wm)
+                g = g if show else 0
+                gates.append(g)
+                hid.append(not show)
+                cells += ('<div' + ('' if show and not g else ' title="' + name + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + col + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:'
+                          + ('6px 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sp['k'], 12) + 'opacity:var(--k,1);">' + _tm_label(show, g, cls, name) + '</div>')
+        shown = ', '.join(t['n'] + ' ' + _if_fmt(sum(i['v'] for i in items if i['chain'][0] == t['n'])) for t in tops[:6])
+        aria = ' role="img" aria-label="' + _if_s('Nested treemap of ' + str(len(items)) + ' items in ' + str(len(tops)) + ' top-level group' + ('' if len(tops) == 1 else 's') + ', area shows share of the total ' + _if_fmt(tot) + ': ' + shown + ('' if len(tops) <= 6 else ', and ' + str(len(tops) - 6) + ' more') + '.', 400) + '"'
+    else:
+        groups = [[i for i in items if i['c'] == c] for c in cats]
+        cr, ir = _tm_layout([[i['v'] for i in m] for m in groups])
+        for ci, c in enumerate(cats):
+            m = groups[ci]
+            ct = 0
+            for i in m:
+                ct += i['v']
+            ptxt = _if_s(c, 20) + ' ' + _if_fmt(ct)
+            pw = _tm_wmin(len(ptxt), 12, cr[ci][2] - cr[ci][0])
+            pill = cr[ci][3] - cr[ci][1] >= 40 and pw <= _TM_MAXW
+            pcls, pg = _tm_gate(pw)
+            pg = pg if pill else 0
+            gates.append(pg)
+            for k, i in enumerate(m):
+                lead = pill and k == 0
+                name = _if_s(i['n'], 24) + ' ' + _if_fmt(i['v'])
+                r = ir[ci][k]
+                wm = _tm_wmin(len(name), 18, r[2] - r[0])
+                show = r[3] - r[1] >= (48 if lead else 30) and wm <= _TM_MAXW
+                cls, g = _tm_gate(wm)
+                g = g if show else 0
+                gates.append(g)
+                hid.append(not show)
+                cells += ('<div' + ('' if show and not g else ' title="' + name + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (('24px' if lead else '6px') + ' 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sum(len(g_) for g_ in groups[:ci]) + k, 12) + 'opacity:var(--k,1);">' + _tm_label(show, g, cls, name) + '</div>')
+            if pill:
+                tags += ('<div' + pcls + ' style="position:absolute;left:' + _tm_pct(cr[ci][0], _TM_W) + ';top:' + _tm_pct(cr[ci][1], _TM_H) + ';max-width:' + _tm_pct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>')
+    ws = sorted(set(g for g in gates if g))
+    css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in ws) + '</style>' if ws else ''
+    if nested:
+        table = _if_table(['Item', 'Path', 'Value', 'Share'], [[i['n'], ' / '.join(i['chain']), _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items])
+    else:
+        table = _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items])
+    return _if_wrap(_if_title(b) + '<div' + aria + ' style="position:relative;height:300px;' + ('container-type:inline-size;' if css else '') + ('overflow:hidden;' if css or any(hid) else '') + '">' + css + boxes + cells + tags + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.'
+                    + (' Boxes inside boxes are groups.' if nested else '') + '</div>' + _hg_version_note(b, 'treemap') + table)
 
 
 def _render_venn_diagram(b: dict) -> str:

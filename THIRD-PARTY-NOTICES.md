@@ -58,7 +58,11 @@ just looks plainer.
   row-by-row aspect-ratio test, dice/slice placement) into `_tm_squarify` in
   `renderers/web_article.py` and its twin `_tmSquarify` in
   `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real
-  library's output by `tests/test_treemap_squarify.py`; the `tree` layout (firstWalk, apportion,
+  library's output by `tests/test_treemap_squarify.py`; the nested treemap (`hierarchy().sum().sort()`
+  and `treemap()` with `paddingInner`, `paddingOuter` and `paddingTop`, used by the `path` field) is ported into
+  `_tm_nest` / `_tm_nest_layout` and its twin `_tmNest` / `_tmNestLayout`, checked against the real
+  library's output by `tests/test_treemap_path.py` (golden vectors from
+  `tests/fixtures/treemap_d3_golden_gen.mjs`); the `tree` layout (firstWalk, apportion,
   executeShifts, moveSubtree, default separation) is ported into `_oc_layout` in the same file and
   its twin `_ocLayout` in the same `.gs` file, checked by `tests/test_org_chart_tree.py`
 - **Used by:** the `treemap` and `org_chart` atoms' server-side layout in both renderers. No script

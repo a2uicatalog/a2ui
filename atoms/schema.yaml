@@ -20904,23 +20904,35 @@ blocks:
   source: *ifg002
 - type: treemap
   stage: preview
-  description: 'Columns by category, sized by the category total; inside each, stacked rectangles sized by value. Each carries its name
-    and value. A hidden table gives item, category, value and share. Motion-ready: every moving value reads --p (build progress 0 to
-    1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished
-    picture; reduced motion shows the end state.'
-  compact_description: 'treemap: part-to-whole by category and item'
-  routing_text: Rectangles sized by value, grouped into up to four categories. Good for a quick sense of share; exact numbers are in
-    a table. Not for precise comparison.
+  description: 'Part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm (d3-hierarchy
+    treemapSquarify). By default up to four categories: each category is one block and its items are rectangles inside it, with the category
+    name and total in a pill. With an optional per-item path (1 to 3 group names, top down) the chart nests by that path instead, up to three
+    levels of group boxes with a header showing the group name and total, so a folder tree or a cost breakdown reads like a disk-usage map.
+    Each rectangle carries its name and value where the drawn width and height can hold them; in a narrower container or a thin cell the label
+    is hidden (the hover title and the hidden table keep it). A hidden table gives item, category (or path), value and share. Motion-ready:
+    every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by
+    item and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'treemap: part-to-whole by category or nested path'
+  routing_text: Rectangles sized by value, grouped into up to four categories, or nested up to three levels deep by a path per item (a folder
+    tree, a spend breakdown). Good for a quick sense of share; exact numbers are in a table. Not for precise comparison, and not for more than
+    12 items.
   intent_phrases:
   - Show where cloud spend goes by category.
   - I need a treemap of storage by team.
   - Visualise the share of each item within its group.
+  - Show what is using my disk space, folder by folder.
   surfaces: *ifg001
   fields:
     title: string (optional, max 80).
-    items: array (required, 4 to 12) of {category (max 20), name (max 24), value (number above 0)}. At most four categories are drawn;
-      items with a value of 0 or less are dropped.
-  notes: Area is a weak channel for comparing values, so the table repeats the numbers. Cells fade in with p.
+    items: array (required, 4 to 12) of {category (max 20), name (max 24), value (number above 0), path? (array of 1 to 3 strings, max 20
+      each, the item's ancestor groups from the top down)}. Without any path at most four categories are drawn; items with a value of 0 or
+      less are dropped. When any item has a usable path the chart nests by path and category is ignored for items that have one; an item
+      without a path goes into a group named by its category, or Other. The item cap stays 12.
+    version: integer (optional, default 1). The treemap contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: Area is a weak channel for comparing values, so the table repeats the numbers. Cells fade in with p. Labels are placed by a
+    deterministic width estimate (0.6em per character), so a label appears only in a container wide enough for it. Group colours repeat
+    after four top-level groups.
   source: *ifg002
 - type: venn_diagram
   stage: preview
