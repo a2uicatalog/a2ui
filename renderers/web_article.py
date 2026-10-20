@@ -31866,7 +31866,7 @@ def _render_callout_anatomy(b: dict) -> str:
 # Tidy-tree layout: a line-for-line port of d3-hierarchy 3.1.2 tree() (Reingold-Tilford as Buchheim et al. implement it; ISC, Mike Bostock),
 # nodeSize [1, 1] and the default separation (1 for siblings, 2 for cousins); twin of _ocLayout in atoms_infographic.gs.
 class _OcNode:
-    __slots__ = ('parent', 'children', 'A', 'a', 'z', 'm', 'c', 's', 't', 'i', 'sid', 'w')
+    __slots__ = ('parent', 'children', 'A', 'a', 'z', 'm', 'c', 's', 't', 'i', 'sid', 'w', 'd')
 
     def __init__(self, sid, i):
         self.sid = sid          # index into the caller's node list (-1 for d3's fake parent)
@@ -31878,6 +31878,7 @@ class _OcNode:
         self.t = None
         self.i = i
         self.w = 0              # box width in px, read by the separation
+        self.d = 0              # depth (the root is 0), read by the radial separation
 
 
 def _oc_sep(a, b):
@@ -31911,7 +31912,7 @@ def _oc_execute_shifts(v):
         shift += w.s + change
 
 
-def _oc_apportion(v, w, ancestor):
+def _oc_apportion(v, w, ancestor, sep=_oc_sep):
     if w:
         vip = vop = v
         vim = w
@@ -31925,7 +31926,7 @@ def _oc_apportion(v, w, ancestor):
             vom = _oc_next_left(vom)
             vop = _oc_next_right(vop)
             vop.a = v
-            shift = vim.z + sim - vip.z - sip + _oc_sep(vim, vip)
+            shift = vim.z + sim - vip.z - sip + sep(vim, vip)
             if shift > 0:
                 _oc_move_subtree(vim.a if vim.a.parent is v.parent else ancestor, v, shift)
                 sip += shift
@@ -31944,9 +31945,9 @@ def _oc_apportion(v, w, ancestor):
     return ancestor
 
 
-def _oc_layout(kids, root, widths):
-    """kids[i]: child indices of node i; widths[i]: its box width in px. Returns (x per node, depth per node):
-    d3 tree().nodeSize([1, 1]).separation(...) with the pixel separation above, so x is the box centre in px."""
+def _oc_walk(kids, root, widths, sep):
+    """d3 tree() before any scaling: the tree nodes (index = the caller's node index), their pre-order [(index, depth)] and d3's fake parent.
+    sep(a, b) is d3's separation hook, called with the same nodes in the same order as d3 calls it."""
     n = len(kids)
     tn = [_OcNode(i, 0) for i in range(n)]
     for i in range(n):
@@ -31955,6 +31956,7 @@ def _oc_layout(kids, root, widths):
 
     def link(i, d):
         order.append((i, d))
+        tn[i].d = d
         ks = kids[i]
         if ks:
             tn[i].children = [tn[c] for c in ks]
@@ -31978,23 +31980,146 @@ def _oc_layout(kids, root, widths):
             _oc_execute_shifts(v)
             midpoint = (v.children[0].z + v.children[-1].z) / 2
             if w:
-                v.z = w.z + _oc_sep(v, w)
+                v.z = w.z + sep(v, w)
                 v.m = v.z - midpoint
             else:
                 v.z = midpoint
         elif w:
-            v.z = w.z + _oc_sep(v, w)
-        v.parent.A = _oc_apportion(v, w, v.parent.A or siblings[0])
+            v.z = w.z + sep(v, w)
+        v.parent.A = _oc_apportion(v, w, v.parent.A or siblings[0], sep)
     first_walk(tn[root])
     fake.m = -tn[root].z
+    for i, d in order:
+        v = tn[i]
+        v.t = v.z + v.parent.m       # the real x (d3's second walk); the thread slot is free by now
+        v.m += v.parent.m
+    return tn, order
+
+
+def _oc_layout(kids, root, widths):
+    """kids[i]: child indices of node i; widths[i]: its box width in px. Returns (x per node, depth per node):
+    d3 tree().nodeSize([1, 1]).separation(...) with the pixel separation above, so x is the box centre in px."""
+    n = len(kids)
+    tn, order = _oc_walk(kids, root, widths, _oc_sep)
     x = [0] * n
     depth = [0] * n
     for i, d in order:
-        v = tn[i]
-        x[i] = v.z + v.parent.m
-        v.m += v.parent.m
+        x[i] = tn[i].t
         depth[i] = d
     return x, depth
+
+
+def _oc_radial_sep(a, b):
+    """The separation of the d3 radial tidy tree: (a.parent == b.parent ? 1 : 2) / a.depth."""
+    return (1 if a.parent is b.parent else 2) / (a.d or 1)
+
+
+def _oc_radial(kids, root, radius):
+    """d3 tree().size([2 * PI, radius]).separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth): (angle per node, radius per node, depth per node).
+    The angle is in radians from twelve o'clock, clockwise (d3's x), the radius is depth * radius / deepest."""
+    n = len(kids)
+    tn, order = _oc_walk(kids, root, [0] * n, _oc_radial_sep)
+    left = right = bottom = tn[root]
+    for i, d in order:
+        v = tn[i]
+        if v.t < left.t:
+            left = v
+        if v.t > right.t:
+            right = v
+        if d > bottom.d:
+            bottom = v
+    s = 1 if left is right else _oc_radial_sep(left, right) / 2
+    tx = s - left.t
+    kx = (2 * math.pi) / (right.t + s + tx)
+    ky = radius / (bottom.d or 1)
+    x = [0] * n
+    y = [0] * n
+    depth = [0] * n
+    for i, d in order:
+        x[i] = (tn[i].t + tx) * kx
+        y[i] = d * ky
+        depth[i] = d
+    return x, y, depth
+
+
+def _oc_polar(a, r):
+    """d3 pointRadial(angle, radius): the point (r cos(a - PI/2), r sin(a - PI/2))."""
+    a -= math.pi / 2
+    return r * math.cos(a), r * math.sin(a)
+
+
+def _oc_link_radial(a0, r0, a1, r1):
+    """d3-shape linkRadial() (curveBumpRadial): the Bezier from (a0, r0) to (a1, r1) with both control points at the mid radius.
+    Returns [x0, y0, c1x, c1y, c2x, c2y, x1, y1]."""
+    rm = (r0 + r1) / 2
+    return list(_oc_polar(a0, r0) + _oc_polar(a0, rm) + _oc_polar(a1, rm) + _oc_polar(a1, r1))
+
+
+def _oc_cluster(kids, root, size):
+    """d3 cluster().nodeSize([1, 1]).separation(...): (x per node, tier row per node). size[i] is node i's extent along the leaf axis in px.
+    The separation of two consecutive leaves is the gap needed in any tier row between what their two chains put there: a node (its size) or,
+    where a chain skips the row, the link running down through it (size 0). Chains that share the node or the link need nothing.
+    Leaves all land on the last row, whatever their depth; parents sit over the mean of their children."""
+    n = len(kids)
+    parent = [-1] * n
+    post = []                                # left-to-right post-order, as d3 eachAfter
+
+    def walk(i):
+        for c in kids[i]:
+            parent[c] = i
+            walk(c)
+        post.append(i)
+    walk(root)
+    height = [0] * n
+    for i in post:
+        if kids[i]:
+            height[i] = 1 + max(height[c] for c in kids[i])
+    top = height[root]
+    row = [top - height[i] for i in range(n)]
+
+    def occupants(leaf):
+        occ = []
+        chain = []
+        v = leaf
+        while v != -1:
+            chain.append(v)
+            v = parent[v]
+        for k in range(top + 1):
+            hit = None
+            below = None
+            for v in chain:
+                if row[v] == k:
+                    hit = v
+                if row[v] > k:
+                    below = v
+            occ.append(('n', hit, size[hit]) if hit is not None else ('e', below, 0))
+        return occ
+    x = [0] * n
+    prev = None
+    run = 0
+    occs = {}
+    for i in post:
+        ks = kids[i]
+        if ks:
+            t = 0
+            for c in ks:
+                t += x[c]
+            x[i] = t / len(ks)
+        else:
+            occs[i] = occupants(i)
+            if prev is None:
+                x[i] = 0
+            else:
+                gap = 8 if parent[i] == parent[prev] else 16
+                need = 0
+                for p, q in zip(occs[i], occs[prev]):
+                    if p[0] != q[0] or p[1] != q[1]:
+                        need = max(need, (p[2] + q[2]) / 2 + gap)
+                run += need
+                x[i] = run
+            prev = i
+    rx = x[root]
+    return [(x[i] - rx) * 1 for i in range(n)], row
 
 
 _OC_W = 640                                              # nominal width: a tree wider than this top-down is laid out left to right

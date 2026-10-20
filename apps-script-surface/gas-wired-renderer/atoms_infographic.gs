@@ -360,7 +360,7 @@ _RENDERERS['callout_anatomy'] = function(b) {
 // ── org_chart ─────────────────────────────────────────────────────────────────────────────────────────────────
 // Tidy-tree layout: a line-for-line port of d3-hierarchy 3.1.2 tree() (Reingold-Tilford as Buchheim et al. implement it; ISC, Mike Bostock),
 // nodeSize [1, 1] and the default separation (1 for siblings, 2 for cousins); twin of _oc_layout in renderers/web_article.py.
-function _OcNode(sid, i) { this.sid = sid; this.parent = null; this.children = null; this.A = null; this.a = this; this.z = 0; this.m = 0; this.c = 0; this.s = 0; this.t = null; this.i = i; this.w = 0; }
+function _OcNode(sid, i) { this.sid = sid; this.parent = null; this.children = null; this.A = null; this.a = this; this.z = 0; this.m = 0; this.c = 0; this.s = 0; this.t = null; this.i = i; this.w = 0; this.d = 0; }
 // d3's separation hook, in pixels: half of each box plus a gap (8 between siblings, 16 between cousins)
 function _ocSep(a, b) { return (a.w + b.w) / 2 + (a.parent === b.parent ? 8 : 16); }
 function _ocNextLeft(v) { return v.children ? v.children[0] : v.t; }
@@ -370,14 +370,14 @@ function _ocExecuteShifts(v) {
   var shift = 0, change = 0, i = v.children.length, w;
   while (--i >= 0) { w = v.children[i]; w.z += shift; w.m += shift; shift += w.s + (change += w.c); }
 }
-function _ocApportion(v, w, ancestor) {
+function _ocApportion(v, w, ancestor, sep) {
   if (w) {
     var vip = v, vop = v, vim = w, vom = vip.parent.children[0], sip = vip.m, sop = vop.m, sim = vim.m, som = vom.m, shift;
     while (vim = _ocNextRight(vim), vip = _ocNextLeft(vip), vim && vip) {
       vom = _ocNextLeft(vom);
       vop = _ocNextRight(vop);
       vop.a = v;
-      shift = vim.z + sim - vip.z - sip + _ocSep(vim, vip);
+      shift = vim.z + sim - vip.z - sip + sep(vim, vip);
       if (shift > 0) {
         _ocMoveSubtree(vim.a.parent === v.parent ? vim.a : ancestor, v, shift);
         sip += shift; sop += shift;
@@ -389,11 +389,13 @@ function _ocApportion(v, w, ancestor) {
   }
   return ancestor;
 }
-function _ocLayout(kids, root, widths) {
+// d3 tree() before any scaling: the tree nodes (index = the caller's node index) and their pre-order [index, depth]. sep(a, b) is d3's separation hook.
+function _ocWalk(kids, root, widths, sep) {
   var n = kids.length, tn = [], order = [], i, fake = new _OcNode(-1, 0);
   for (i = 0; i < n; i++) { tn.push(new _OcNode(i, 0)); tn[i].w = widths[i]; }
   function link(i, d) {
     order.push([i, d]);
+    tn[i].d = d;
     var ks = kids[i];
     if (ks.length) {
       tn[i].children = ks.map(function(c) { return tn[c]; });
@@ -408,16 +410,79 @@ function _ocLayout(kids, root, widths) {
     if (v.children) {
       _ocExecuteShifts(v);
       midpoint = (v.children[0].z + v.children[v.children.length - 1].z) / 2;
-      if (w) { v.z = w.z + _ocSep(v, w); v.m = v.z - midpoint; } else { v.z = midpoint; }
-    } else if (w) { v.z = w.z + _ocSep(v, w); }
-    v.parent.A = _ocApportion(v, w, v.parent.A || siblings[0]);
+      if (w) { v.z = w.z + sep(v, w); v.m = v.z - midpoint; } else { v.z = midpoint; }
+    } else if (w) { v.z = w.z + sep(v, w); }
+    v.parent.A = _ocApportion(v, w, v.parent.A || siblings[0], sep);
   }
   firstWalk(tn[root]);
   fake.m = -tn[root].z;
-  var x = [], depth = [];
-  for (i = 0; i < n; i++) { x.push(0); depth.push(0); }
-  order.forEach(function(o) { var v = tn[o[0]]; x[o[0]] = v.z + v.parent.m; v.m += v.parent.m; depth[o[0]] = o[1]; });
+  order.forEach(function(o) { var v = tn[o[0]]; v.t = v.z + v.parent.m; v.m += v.parent.m; });   // v.t: the real x (the thread slot is free by now)
+  return [tn, order];
+}
+function _ocLayout(kids, root, widths) {
+  var w = _ocWalk(kids, root, widths, _ocSep), tn = w[0], x = [], depth = [], i;
+  for (i = 0; i < kids.length; i++) { x.push(0); depth.push(0); }
+  w[1].forEach(function(o) { x[o[0]] = tn[o[0]].t; depth[o[0]] = o[1]; });
   return [x, depth];
+}
+// The separation of the d3 radial tidy tree: (a.parent == b.parent ? 1 : 2) / a.depth.
+function _ocRadialSep(a, b) { return (a.parent === b.parent ? 1 : 2) / (a.d || 1); }
+// d3 tree().size([2 * PI, radius]) with that separation: [angle per node, radius per node, depth per node]; the angle is d3's x (radians from twelve o'clock, clockwise).
+function _ocRadial(kids, root, radius) {
+  var n = kids.length, z = [], i, w;
+  for (i = 0; i < n; i++) z.push(0);
+  w = _ocWalk(kids, root, z, _ocRadialSep);
+  var tn = w[0], left = tn[root], right = tn[root], bottom = tn[root];
+  w[1].forEach(function(o) { var v = tn[o[0]]; if (v.t < left.t) left = v; if (v.t > right.t) right = v; if (o[1] > bottom.d) bottom = v; });
+  var s = left === right ? 1 : _ocRadialSep(left, right) / 2, tx = s - left.t, kx = (2 * Math.PI) / (right.t + s + tx), ky = radius / (bottom.d || 1), x = z.slice(), y = z.slice(), depth = z.slice();
+  w[1].forEach(function(o) { x[o[0]] = (tn[o[0]].t + tx) * kx; y[o[0]] = o[1] * ky; depth[o[0]] = o[1]; });
+  return [x, y, depth];
+}
+// d3 pointRadial(angle, radius).
+function _ocPolar(a, r) { a -= Math.PI / 2; return [r * Math.cos(a), r * Math.sin(a)]; }
+// d3-shape linkRadial() (curveBumpRadial): the Bezier from (a0, r0) to (a1, r1), both control points at the mid radius: [x0, y0, c1x, c1y, c2x, c2y, x1, y1].
+function _ocLinkRadial(a0, r0, a1, r1) { var rm = (r0 + r1) / 2; return _ocPolar(a0, r0).concat(_ocPolar(a0, rm), _ocPolar(a1, rm), _ocPolar(a1, r1)); }
+// d3 cluster().nodeSize([1, 1]) with a pixel separation: [x per node, tier row per node]; size[i] is node i's extent along the leaf axis. See _oc_cluster in renderers/web_article.py.
+function _ocCluster(kids, root, size) {
+  var n = kids.length, parent = [], post = [], height = [], row = [], x = [], i;
+  for (i = 0; i < n; i++) { parent.push(-1); height.push(0); x.push(0); }
+  function walk(i) { kids[i].forEach(function(c) { parent[c] = i; walk(c); }); post.push(i); }
+  walk(root);
+  post.forEach(function(i) { if (kids[i].length) height[i] = 1 + Math.max.apply(null, kids[i].map(function(c) { return height[c]; })); });
+  var top = height[root];
+  for (i = 0; i < n; i++) row.push(top - height[i]);
+  function occupants(leaf) {
+    var occ = [], chain = [], v = leaf, k, j;
+    while (v !== -1) { chain.push(v); v = parent[v]; }
+    for (k = 0; k <= top; k++) {
+      var hit = null, below = null;
+      for (j = 0; j < chain.length; j++) { if (row[chain[j]] === k) hit = chain[j]; if (row[chain[j]] > k) below = chain[j]; }
+      occ.push(hit !== null ? ['n', hit, size[hit]] : ['e', below, 0]);
+    }
+    return occ;
+  }
+  var prev = null, run = 0, occs = {};
+  post.forEach(function(i) {
+    var ks = kids[i];
+    if (ks.length) {
+      var t = 0;
+      ks.forEach(function(c) { t += x[c]; });
+      x[i] = t / ks.length;
+    } else {
+      occs[i] = occupants(i);
+      if (prev === null) { x[i] = 0; } else {
+        var gap = parent[i] === parent[prev] ? 8 : 16, need = 0, k, p, q;
+        for (k = 0; k < occs[i].length; k++) {
+          p = occs[i][k]; q = occs[prev][k];
+          if (p[0] !== q[0] || p[1] !== q[1]) need = Math.max(need, (p[2] + q[2]) / 2 + gap);
+        }
+        run += need; x[i] = run;
+      }
+      prev = i;
+    }
+  });
+  var rx = x[root];
+  return [x.map(function(v) { return (v - rx) * 1; }), row];
 }
 var _OC_W = 640;   // nominal width: a tree wider than this top-down is laid out left to right
 var _OC_MAX_NODES = 30, _OC_MAX_KIDS = 6, _OC_MAX_DEPTH = 3;   // 30 nodes, six children per node, four tiers (depth 0..3)
