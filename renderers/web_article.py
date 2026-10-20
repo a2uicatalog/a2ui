@@ -21539,11 +21539,36 @@ def _render_user_profile_card(b: dict) -> str:
 _RENDERERS["user_profile_card"] = _render_user_profile_card
 
 
+def _render_decision_tree_nested(title_html: str, nodes: list) -> str:
+    """The documented payload (schema: nodes = [{text, children: [{text, children}]}]): collapsible outline, the
+    same markup as the GAS twin (atoms_charts.gs). Depth is capped like the graph form."""
+    def render(n, depth=0):
+        if not isinstance(n, dict) or depth > 8:
+            return ''
+        label = _esc(n.get('text') or n.get('label') or n.get('question') or '')
+        kids = n.get('children') or n.get('branches') or []
+        if not kids:
+            return ('<div style="padding:10px 14px;margin:4px 0;background:#f0fdf4;border:1px solid #86efac;'
+                    'border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.875rem;color:#166534;'
+                    'font-weight:500;">\u2713 ' + label + '</div>')
+        return ('<details style="margin:4px 0;"' + (' open' if depth == 0 else '') + '>'
+                '<summary style="cursor:pointer;list-style:none;padding:10px 14px;background:#f8fafc;'
+                'border:1px solid #e2e8f0;border-radius:8px;font-size:0.875rem;font-weight:600;color:#0f172a;'
+                'user-select:none;">\u25b8 ' + label + '</summary>'
+                '<div style="padding-left:20px;border-left:2px solid #e2e8f0;margin-left:14px;margin-top:4px;">'
+                + ''.join(render(c, depth + 1) for c in kids) + '</div></details>')
+    return ('<div style="margin:1.5rem 0;padding:16px;border:1px solid #e5e7eb;'
+            'border-radius:10px;background:#fff;overflow-x:auto;">'
+            + title_html + ''.join(render(n) for n in nodes) + '</div>')
+
+
 def _render_decision_tree(b: dict) -> str:
     title = b.get('title', '')
     nodes = b.get('nodes', [])
     title_html = ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:12px;">'
                   + _esc(title) + '</div>') if title else ''
+    if any(isinstance(n, dict) and 'id' not in n for n in nodes):
+        return _render_decision_tree_nested(title_html, nodes)
     node_map = {n['id']: n for n in nodes if 'id' in n}
     all_child_ids = set()
     for n in nodes:
