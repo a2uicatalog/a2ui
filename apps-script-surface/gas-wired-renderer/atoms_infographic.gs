@@ -652,7 +652,8 @@ var _VD_REGIONS = [  // key, field, max lines (items + the "+n more" line), cent
   ['ab', 'intersection', 3, [50, 22, 16.5], [50, 25, 26]], ['ac', 'intersection_ac', 3, [29, 58.5, 14.5], [29, 61, 21]], ['bc', 'intersection_bc', 3, [71, 58.5, 14.5], [71, 61, 21]],
   ['abc', 'intersection_abc', 4, [50, 43, 19.5], [50, 40, 27.5]]];
 var _VD_COL = ['var(--accent,#2563EB)', '#C2410C', '#15803D'], _VD_MAXREAD = 60;
-function _vdCut(x) { return _esc(x.length <= 28 ? x : x.slice(0, 27).replace(/\s+$/, '') + '\u2026'); }
+function _vdTrim(x) { return x.length <= 28 ? x : x.slice(0, 27).replace(/\s+$/, '') + '\u2026'; }
+function _vdCut(x) { return _esc(_vdTrim(x)); }
 function _vdRaw(v, mx) { return String(v === undefined || v === null ? '' : v).slice(0, mx); }
 function _vdUsable(v) { return typeof v === 'string' ? /[^ \t\n\r]/.test(v) : (typeof v === 'number' && isFinite(v)); }
 function _vdCss() {
@@ -660,7 +661,7 @@ function _vdCss() {
   return '<style>' + _VD_REGIONS.map(function(r) { return '.v3t.v3' + r[0] + '{' + pos(r[3]) + '}'; }).join('') + '@container (width>=480px){' + _VD_REGIONS.map(function(r) { return '.v3t.v3' + r[0] + '{' + pos(r[4]) + '}'; }).join('') + '}</style>';
 }
 function _vdRender3(b) {
-  var names = [_vdRaw(b.set_a_name, 28) || 'Set A', _vdRaw(b.set_b_name, 28) || 'Set B', _vdRaw(b.set_c_name, 28) || 'Set C'];
+  var names = [_vdTrim(_vdRaw(b.set_a_name, 60)) || 'Set A', _vdTrim(_vdRaw(b.set_b_name, 60)) || 'Set B', _vdTrim(_vdRaw(b.set_c_name, 60)) || 'Set C'];
   var labels = ['Only ' + names[0], 'Only ' + names[1], 'Only ' + names[2], names[0] + ' and ' + names[1] + ' only', names[0] + ' and ' + names[2] + ' only', names[1] + ' and ' + names[2] + ' only', 'All three sets'];
   var items = [], bad = 0, extra = 0;
   _VD_REGIONS.forEach(function(r) {

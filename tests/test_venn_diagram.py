@@ -193,3 +193,11 @@ def test_the_long_payload_has_no_mid_word_cut_without_an_ellipsis(core_js):
     for html in (_py(PAYLOADS["long"]), _gas_batch(core_js, [PAYLOADS["long"]])[0]):
         assert "An item whose text is much t…" in html or "An item whose text is much…" in html
         assert "much t</div>" not in html
+
+
+def test_a_cut_set_name_ends_in_an_ellipsis_too_in_the_legend_and_the_label(core_js):
+    cut = lambda t: t[:27].rstrip() + "\u2026"
+    names = [cut("A" * 40), cut("Engineering and platform reliability"), cut("Product management and strategy")]
+    for html in (_py(PAYLOADS["long"]), _gas_batch(core_js, [PAYLOADS["long"]])[0]):
+        assert all(">" + n + "</span>" in html for n in names), names
+        assert "Only " + names[0] in html and "Only " + names[2] in html                # the aria label and the table use the same cut name

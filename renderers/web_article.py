@@ -32718,9 +32718,13 @@ def _vd_raw(v, mx):
     return ('' if (v is None or v is _IF_UNDEF) else _if_str(v))[:mx]
 
 
+def _vd_trim(x):
+    """An item or set name as drawn: at most 28 characters, and a cut one ends in an ellipsis (at most 27 characters, trailing spaces dropped, and the ellipsis). Twin: _vdTrim."""
+    return x if len(x) <= 28 else x[:27].rstrip() + '\u2026'
+
+
 def _vd_cut(x):
-    """An item as drawn in its region: at most 28 characters, and a cut one ends in an ellipsis (at most 27 characters, trailing spaces dropped, and the ellipsis). Twin: _vdCut."""
-    return _cv_esc(x if len(x) <= 28 else x[:27].rstrip() + '\u2026')
+    return _cv_esc(_vd_trim(x))
 
 
 def _vd_usable(v):
@@ -32736,7 +32740,7 @@ def _vd_css():
 
 
 def _render_venn_diagram3(b: dict) -> str:
-    names = [_vd_raw(_if_g(b, 'set_a_name'), 28) or 'Set A', _vd_raw(_if_g(b, 'set_b_name'), 28) or 'Set B', _vd_raw(_if_g(b, 'set_c_name'), 28) or 'Set C']
+    names = [_vd_trim(_vd_raw(_if_g(b, 'set_a_name'), 60)) or 'Set A', _vd_trim(_vd_raw(_if_g(b, 'set_b_name'), 60)) or 'Set B', _vd_trim(_vd_raw(_if_g(b, 'set_c_name'), 60)) or 'Set C']
     labels = ['Only ' + names[0], 'Only ' + names[1], 'Only ' + names[2], names[0] + ' and ' + names[1] + ' only', names[0] + ' and ' + names[2] + ' only', names[1] + ' and ' + names[2] + ' only', 'All three sets']
     items, bad, extra = [], 0, 0
     for r in _VD_REGIONS:
