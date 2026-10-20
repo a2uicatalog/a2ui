@@ -32130,7 +32130,7 @@ def _render_sunburst(b: dict) -> str:
         svg = ('<svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
                + ''.join('<g class="sbr" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
         body, boxcss = svg + labels + centre, 'position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;'
-        cap = 'Angle shows share of the total; each ring out is one level deeper. The centre shows the total.'
+        cap = 'Angle shows share of the total; each ring out is one level deeper.'
     else:
         body, boxcss = cells, 'position:relative;height:' + str(_SB_IH) + 'px;'
         cap = 'Height shows share of the total; each column to the right is one level deeper.'

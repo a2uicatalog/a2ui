@@ -479,7 +479,7 @@ _RENDERERS['sunburst'] = function(b) {
     body = '<svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
       rings.map(function(g, j) { return '<g class="sbr" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>' + labels + centre;
     boxcss = 'position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;';
-    cap = 'Angle shows share of the total; each ring out is one level deeper. The centre shows the total.';
+    cap = 'Angle shows share of the total; each ring out is one level deeper.';
   } else {
     body = cells; boxcss = 'position:relative;height:' + _SB_IH + 'px;';
     cap = 'Height shows share of the total; each column to the right is one level deeper.';
