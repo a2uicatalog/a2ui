@@ -781,7 +781,8 @@
   "theme"
  ],
  "treemap": [
-  "title"
+  "title",
+  "version"
  ],
  "typewriter": [
   "background",
