@@ -2991,7 +2991,7 @@ function _dtGate(b, nodes) {
 _RENDERERS['decision_tree'] = function(b) {
   var nodes = b.nodes || b.tree || [];
   var title = b.title || '';
-  var _dt = _dtGate(b, nodes);
+  var _dt = _dtGate(b, nodes);   // reads b.layout and b.version
   if (_dt.html) return _dt.html;
 
   function renderNode(node, depth) {
