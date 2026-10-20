@@ -4385,291 +4385,446 @@ def _render_punch_card(b: dict) -> str:
     </div>
     """
 
-def _svg_sankey_flow(b: dict):
-    """Returns (svg_html, dropped) where `dropped` lists the links that could not be drawn.
+# ── sankey_flow ───────────────────────────────────────────────────────────────────────────────────────────────
+# Layout is a hand port of d3-sankey 0.12.3 (BSD-3-Clause, Copyright 2015 Mike Bostock; see THIRD-PARTY-NOTICES.md): node value = max(in, out),
+# the 6 relaxation passes with alpha/beta, ascendingTargetBreadth / ascendingSourceBreadth link ordering, sankeyLinkHorizontal link paths.
+# GAS twin: _sk* in apps-script-surface/gas-wired-renderer/atoms_charts.gs (same logic, camelCase). Server-side SVG; no script is shipped.
+import functools as _sk_functools
+_SK_W, _SK_H, _SK_COL_W, _SK_NODE_W, _SK_PAD, _SK_ITER, _SK_MAXCOL = 640, 340, 220, 16, 16, 6, 15
+_SK_PAL = ['#38bdf8', '#10b981', '#a78bfa', '#f59e0b', '#f472b6']
+_SK_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
+_SK_NUM_RE = re.compile(r'^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$')
 
-    This is a two-column layout by design: every node sits in the left (source) column or
-    the right (target) column, never both. A link whose target is ALSO a source elsewhere
-    (the two-column equivalent of a cycle, e.g. A -> B -> A) lands that target in the left
-    column too, so the link has nowhere on the right to land. The old code just `continue`d
-    past that link -- silently dropping real data with no sign anything was missing. Now
-    those links are collected instead, so the caller can render a visible note (and the
-    link survives in any text alternative) rather than vanishing.
-    """
-    raw_nodes = b.get("nodes", [])
-    raw_links = b.get("links", [])
 
-    if not raw_links:
-        return "", []
+def _sk_val(v):
+    """A flow value: a finite number, a numeric string, or 1 when absent. Anything else is 0 and the flow is not drawn."""
+    if v is None:
+        return 1.0
+    if isinstance(v, bool):
+        return 0.0
+    if isinstance(v, (int, float)):
+        f = float(v)
+        return f if f - f == 0 else 0.0
+    if isinstance(v, str):
+        t = v.strip(' \t\n\r\f\v ﻿')
+        if _SK_NUM_RE.match(t):
+            f = float(t)
+            return f if f - f == 0 else 0.0
+    return 0.0
 
-    nodes_map = {n["id"]: n for n in raw_nodes}
-    
-    for link in raw_links:
-        s, t = link["source"], link["target"]
-        if s not in nodes_map:
-            nodes_map[s] = {"id": s, "label": s.capitalize(), "column": 0}
-        if t not in nodes_map:
-            nodes_map[t] = {"id": t, "label": t.capitalize(), "column": 1}
-            
-    left_nodes = []
-    right_nodes = []
-    
-    node_out_totals = {}
-    node_in_totals = {}
-    for link in raw_links:
-        s, t, v = link["source"], link["target"], float(link.get("value", 1))
-        node_out_totals[s] = node_out_totals.get(s, 0.0) + v
-        node_in_totals[t] = node_in_totals.get(t, 0.0) + v
-        
-    for nid, node in nodes_map.items():
-        col = node.get("column", 0)
-        if "column" not in node:
-            if nid in node_out_totals:
-                col = 0
-            else:
-                col = 1
-                
-        node_item = {
-            "id": nid,
-            "label": node.get("label", nid),
-            "color": node.get("color", "#38bdf8" if col == 0 else "#10b981"),
-            "total_out": node_out_totals.get(nid, 0.0),
-            "total_in": node_in_totals.get(nid, 0.0),
-        }
-        node_item["total"] = max(node_item["total_out"], node_item["total_in"], 1.0)
-        
-        if col == 0:
-            left_nodes.append(node_item)
-        else:
-            right_nodes.append(node_item)
-            
-    left_nodes.sort(key=lambda x: x["total"], reverse=True)
-    right_nodes.sort(key=lambda x: x["total"], reverse=True)
-    
-    w, h = 640, 340
-    pad_l, pad_r, pad_t, pad_b = 60, 60, 50, 40
-    usable_h = h - pad_t - pad_b
-    
-    x_left = pad_l
-    node_w = 16
-    x_right = w - pad_r - node_w
-    
-    gap_l = 16
-    total_gaps_l = (len(left_nodes) - 1) * gap_l if len(left_nodes) > 1 else 0
-    avail_h_l = max(usable_h - total_gaps_l, 100)
-    sum_left_totals = sum(n["total"] for n in left_nodes) or 1.0
-    scale_l = avail_h_l / sum_left_totals
-    
-    y = pad_t
-    left_positions = {}
-    for n in left_nodes:
-        n_h = max(n["total"] * scale_l, 10.0)
-        left_positions[n["id"]] = {
-            "x": x_left,
-            "y": y,
-            "w": node_w,
-            "h": n_h,
-            "color": n["color"],
-            "label": n["label"],
-            "total": n["total"],
-            "curr_offset": 0.0,
-            "scale": scale_l,
-        }
-        y += n_h + gap_l
-        
-    gap_r = 16
-    total_gaps_r = (len(right_nodes) - 1) * gap_r if len(right_nodes) > 1 else 0
-    avail_h_r = max(usable_h - total_gaps_r, 100)
-    sum_right_totals = sum(n["total"] for n in right_nodes) or 1.0
-    scale_r = avail_h_r / sum_right_totals
-    
-    y = pad_t
-    right_positions = {}
-    for n in right_nodes:
-        n_h = max(n["total"] * scale_r, 10.0)
-        right_positions[n["id"]] = {
-            "x": x_right,
-            "y": y,
-            "w": node_w,
-            "h": n_h,
-            "color": n["color"],
-            "label": n["label"],
-            "total": n["total"],
-            "curr_offset": 0.0,
-            "scale": scale_r,
-        }
-        y += n_h + gap_r
-        
-    gradients_html = []
-    links_html = []
-    dropped = []
 
-    sankey_id = f"sankey_{_wa_oid(b)}"
+def _sk_str(v):
+    if isinstance(v, str):
+        return v
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and float(v) - float(v) == 0:
+        return str(int(v)) if float(v).is_integer() and abs(v) < 1e21 else repr(float(v))
+    return ''
 
-    for idx, link in enumerate(raw_links):
-        s, t, v = link["source"], link["target"], float(link.get("value", 1))
 
-        if s not in left_positions or t not in right_positions:
-            dropped.append({
-                "source": nodes_map.get(s, {}).get("label", s),
-                "target": nodes_map.get(t, {}).get("label", t),
-                "value": v,
-            })
+def _sk_r(x):
+    x = float(x)
+    if x - x != 0:
+        return 0
+    return int(max(-9e15, min(9e15, math.floor(x * 100 + 0.5))))
+
+
+def _sk_n(x):
+    """A number rounded half-up to 2 decimals, built from integers so Python and JavaScript print the same text."""
+    r = _sk_r(x)
+    a = abs(r)
+    w, f = a // 100, a % 100
+    s = str(w)
+    if f:
+        s += '.' + ('0' + str(f) if f < 10 else str(f))
+        if f % 10 == 0:
+            s = s[:-1]
+    return ('-' if r < 0 else '') + s
+
+
+def _sk_fmt(x):
+    r = _sk_r(x)
+    a = abs(r)
+    w, f = a // 100, a % 100
+    s = f'{w:,}'
+    if f:
+        s += '.' + ('0' + str(f) if f < 10 else str(f))
+        if f % 10 == 0:
+            s = s[:-1]
+    return ('-' if r < 0 else '') + s
+
+
+def _sk_hash(s):
+    h = 0x811c9dc5
+    b = s.encode('utf-16-le', 'surrogatepass')
+    for i in range(0, len(b), 2):
+        h ^= b[i] | (b[i + 1] << 8)
+        h = (h * 0x01000193) & 0xffffffff
+    return format(h, 'x')
+
+
+def _sk_short(s):
+    return s[:21] + '…' if len(s) > 22 else s
+
+
+def _sk_layout(nodes, links, x0, y0, x1, y1, dx, dy, iterations):
+    """d3-sankey 0.12.3 layout. nodes: [{'layer'}], links: [{'source': node, 'target': node, 'value'}].
+    Sets node x0/x1/y0/y1/value and link width/y0/y1."""
+    for i, n in enumerate(nodes):
+        n['index'] = i
+        n['sourceLinks'] = []
+        n['targetLinks'] = []
+    for i, l in enumerate(links):
+        l['index'] = i
+        l['source']['sourceLinks'].append(l)
+        l['target']['targetLinks'].append(l)
+
+    def vsum(a):
+        s = 0.0
+        for d in a:
+            v = d['value']
+            if v == v:
+                s += v
+        return s
+
+    nan = float('nan')
+
+    def asc_source(a, b):
+        d = a['source'].get('y0', nan) - b['source'].get('y0', nan)    # JavaScript: NaN || index difference
+        return d if d == d and d != 0 else a['index'] - b['index']
+
+    def asc_target(a, b):
+        d = a['target'].get('y0', nan) - b['target'].get('y0', nan)
+        return d if d == d and d != 0 else a['index'] - b['index']
+
+    _key_source = _sk_functools.cmp_to_key(asc_source)
+    _key_target = _sk_functools.cmp_to_key(asc_target)
+
+    for n in nodes:
+        n['value'] = max(vsum(n['sourceLinks']), vsum(n['targetLinks']))
+    nl = 1
+    for n in nodes:
+        nl = max(nl, n['layer'] + 1)
+    kx = (x1 - x0 - dx) / (nl - 1) if nl > 1 else 0.0
+    by_layer = {}
+    for n in nodes:
+        by_layer.setdefault(n['layer'], []).append(n)
+        n['x0'] = x0 + n['layer'] * kx
+        n['x1'] = n['x0'] + dx
+    columns = [by_layer[k] for k in sorted(by_layer) if by_layer[k]]
+    max_len = max((len(c) for c in columns), default=0)
+    py = min(dy, (y1 - y0) / (max_len - 1) if max_len > 1 else float('inf'))
+
+    def reorder_links(ns):
+        for n in ns:
+            n['sourceLinks'].sort(key=_key_target)
+            n['targetLinks'].sort(key=_key_source)
+
+    def reorder_node_links(n):
+        for l in n['targetLinks']:
+            l['source']['sourceLinks'].sort(key=_key_target)
+        for l in n['sourceLinks']:
+            l['target']['targetLinks'].sort(key=_key_source)
+
+    ky = float('inf')
+    for c in columns:
+        k = (y1 - y0 - (len(c) - 1) * py) / vsum(c)
+        if k < ky:
+            ky = k
+    for ns in columns:
+        y = y0
+        for n in ns:
+            n['y0'] = y
+            n['y1'] = y + n['value'] * ky
+            y = n['y1'] + py
+            for l in n['sourceLinks']:
+                l['width'] = l['value'] * ky
+        y = (y1 - y + py) / (len(ns) + 1)
+        for i, n in enumerate(ns):
+            n['y0'] += y * (i + 1)
+            n['y1'] += y * (i + 1)
+        reorder_links(ns)
+
+    def target_top(source, target):
+        y = source['y0'] - (len(source['sourceLinks']) - 1) * py / 2
+        for l in source['sourceLinks']:
+            if l['target'] is target:
+                break
+            y += l['width'] + py
+        for l in target['targetLinks']:
+            if l['source'] is source:
+                break
+            y -= l['width']
+        return y
+
+    def source_top(source, target):
+        y = target['y0'] - (len(target['targetLinks']) - 1) * py / 2
+        for l in target['targetLinks']:
+            if l['source'] is source:
+                break
+            y += l['width'] + py
+        for l in source['sourceLinks']:
+            if l['target'] is target:
+                break
+            y -= l['width']
+        return y
+
+    def collide_down(ns, y, i, alpha):
+        while i < len(ns):
+            n = ns[i]
+            d = (y - n['y0']) * alpha
+            if d > 1e-6:
+                n['y0'] += d
+                n['y1'] += d
+            y = n['y1'] + py
+            i += 1
+
+    def collide_up(ns, y, i, alpha):
+        while i >= 0:
+            n = ns[i]
+            d = (n['y1'] - y) * alpha
+            if d > 1e-6:
+                n['y0'] -= d
+                n['y1'] -= d
+            y = n['y0'] - py
+            i -= 1
+
+    def resolve_collisions(ns, alpha):
+        i = len(ns) >> 1
+        subject = ns[i]
+        collide_up(ns, subject['y0'] - py, i - 1, alpha)
+        collide_down(ns, subject['y1'] + py, i + 1, alpha)
+        collide_up(ns, y1, len(ns) - 1, alpha)
+        collide_down(ns, y0, 0, alpha)
+
+    def left_to_right(alpha, beta):
+        for i in range(1, len(columns)):
+            column = columns[i]
+            for target in column:
+                y = w = 0.0
+                for l in target['targetLinks']:
+                    v = l['value'] * (target['layer'] - l['source']['layer'])
+                    y += target_top(l['source'], target) * v
+                    w += v
+                if not w > 0:
+                    continue
+                d = (y / w - target['y0']) * alpha
+                target['y0'] += d
+                target['y1'] += d
+                reorder_node_links(target)
+            column.sort(key=lambda n: n['y0'])
+            resolve_collisions(column, beta)
+
+    def right_to_left(alpha, beta):
+        for i in range(len(columns) - 2, -1, -1):
+            column = columns[i]
+            for source in column:
+                y = w = 0.0
+                for l in source['sourceLinks']:
+                    v = l['value'] * (l['target']['layer'] - source['layer'])
+                    y += source_top(source, l['target']) * v
+                    w += v
+                if not w > 0:
+                    continue
+                d = (y / w - source['y0']) * alpha
+                source['y0'] += d
+                source['y1'] += d
+                reorder_node_links(source)
+            column.sort(key=lambda n: n['y0'])
+            resolve_collisions(column, beta)
+
+    # d3 uses Math.pow(0.99, i); the running product agrees to the last bit or two and cannot differ between Python and JavaScript.
+    alpha = 1.0
+    for it in range(iterations):
+        beta = max(1 - alpha, (it + 1) / iterations)
+        right_to_left(alpha, beta)
+        left_to_right(alpha, beta)
+        alpha *= 0.99
+    for n in nodes:
+        a = n['y0']
+        b = a
+        for l in n['sourceLinks']:
+            l['y0'] = a + l['width'] / 2
+            a += l['width']
+        for l in n['targetLinks']:
+            l['y1'] = b + l['width'] / 2
+            b += l['width']
+
+
+def _sk_model(b):
+    """Reads the payload into nodes + drawable flows. Flows that cannot be drawn are listed in `dropped`: a flow on a cycle (every flow whose two
+    ends can reach each other, so A->B and B->A are both listed), and a flow that would not run left to right once `column` hints and graph depth have
+    placed its ends. Flows with no usable end or a value that is not positive are ignored, as are nodes left with no flow."""
+    b = b if isinstance(b, dict) else {}
+    raw_n = b.get('nodes') if isinstance(b.get('nodes'), list) else []
+    raw_l = b.get('links') if isinstance(b.get('links'), list) else []
+    ids, at, decl = [], {}, {}
+    for n in raw_n:
+        if not isinstance(n, dict):
             continue
+        i = _sk_str(n.get('id'))
+        if i == '':
+            continue
+        if i not in at:
+            at[i] = len(ids)
+            ids.append(i)
+        decl[i] = n
+    flows = []
+    for l in raw_l:
+        if not isinstance(l, dict):
+            continue
+        s, t, v = _sk_str(l.get('source')), _sk_str(l.get('target')), _sk_val(l.get('value'))
+        if s == '' or t == '' or not v > 0:
+            continue
+        for i in (s, t):
+            if i not in at:
+                at[i] = len(ids)
+                ids.append(i)
+        c = l.get('color')
+        flows.append({'s': at[s], 't': at[t], 'value': v, 'color': c if isinstance(c, str) and c else ''})
+    N = len(ids)
 
-        lp = left_positions[s]
-        rp = right_positions[t]
-        
-        link_h_l = v * lp["scale"]
-        link_h_r = rp["scale"] * v if rp["total"] > 0 else rp["scale"] * v
-        # Ensure we don't scale by RP if total sum doesn't match
-        link_h_r = v * rp["scale"]
-        
-        y_l = lp["y"] + lp["curr_offset"]
-        y_r = rp["y"] + rp["curr_offset"]
-        
-        lp["curr_offset"] += link_h_l
-        rp["curr_offset"] += link_h_r
-        
-        x0 = lp["x"] + lp["w"]
-        x1 = rp["x"]
-        dx = (x1 - x0) / 2
-        
-        top_curve = f"C {x0 + dx} {y_l}, {x1 - dx} {y_r}, {_cv_esc(x1)} {y_r}"
-        bot_curve = f"C {x1 - dx} {y_r + link_h_r}, {x0 + dx} {y_l + link_h_l}, {x0} {y_l + link_h_l}"
-        
-        path_data = f"M {x0} {y_l} {top_curve} L {_cv_esc(x1)} {y_r + link_h_r} {bot_curve} Z"
-        
-        grad_id = f"{sankey_id}_grad_{_cv_esc(idx)}"
-        link_color = link.get("color")
-        
-        if link_color:
-            fill_val = link_color
-            opacity = 0.35
+    def label_of(i):
+        d = decl.get(ids[i])
+        if d is not None:
+            lb = _sk_str(d.get('label'))
+            return lb if lb != '' else ids[i]
+        return ids[i][:1].upper() + ids[i][1:].lower()
+
+    gone = [False] * len(flows)
+    adj = [[] for _ in range(N)]
+    for f in flows:
+        adj[f['s']].append(f['t'])
+    for k, f in enumerate(flows):
+        seen, stack, hit = set(), [f['t']], False
+        while stack and not hit:
+            u = stack.pop()
+            if u == f['s']:
+                hit = True
+                break
+            if u in seen:
+                continue
+            seen.add(u)
+            for w in adj[u]:
+                if w not in seen:
+                    stack.append(w)
+        if hit:
+            gone[k] = True
+    hint = []
+    for i in range(N):
+        dn = decl.get(ids[i])
+        c = dn.get('column') if dn else None
+        ok = isinstance(c, (int, float)) and not isinstance(c, bool) and float(c) - float(c) == 0
+        hint.append(min(_SK_MAXCOL, max(0, math.floor(c))) if ok else -1)
+    layer, used, ncols = [], [], 2
+    while True:
+        live = [f for k, f in enumerate(flows) if not gone[k]]
+        used = [False] * N
+        for f in live:
+            used[f['s']] = used[f['t']] = True
+        depth, n_out = [0] * N, [0] * N
+        for f in live:
+            n_out[f['s']] += 1
+        cur, x = [i for i in range(N) if used[i]], 0
+        while cur:
+            nxt, in_n = [], set()
+            for u in cur:
+                depth[u] = x
+                for f in live:
+                    if f['s'] == u and f['t'] not in in_n:
+                        in_n.add(f['t'])
+                        nxt.append(f['t'])
+            x += 1
+            cur = nxt
+        md = max([depth[i] for i in range(N) if used[i]], default=0)
+        mh = max([hint[i] for i in range(N) if used[i]], default=0)
+        ncols = max(md + 1, mh + 1, 2)
+        layer = [-1 if not used[i] else (min(hint[i], ncols - 1) if hint[i] >= 0 else (depth[i] if n_out[i] else ncols - 1)) for i in range(N)]
+        bad = False
+        for k, f in enumerate(flows):
+            if not gone[k] and layer[f['t']] <= layer[f['s']]:
+                gone[k] = True
+                bad = True
+        if not bad:
+            break
+    ncols = max(2, max(layer, default=0) + 1)
+    dropped = [{'source': label_of(f['s']), 'target': label_of(f['t']), 'value': f['value']} for k, f in enumerate(flows) if gone[k]]
+    nodes, pos = [], {}
+    for i in range(N):
+        if used[i]:
+            d2 = decl.get(ids[i])
+            col = d2.get('color') if d2 else None
+            pos[i] = len(nodes)
+            nodes.append({'id': ids[i], 'label': label_of(i), 'layer': layer[i], 'color': col if isinstance(col, str) and col else ''})
+    links = [{'source': nodes[pos[f['s']]], 'target': nodes[pos[f['t']]], 'value': f['value'], 'color': f['color']} for k, f in enumerate(flows) if not gone[k]]
+    W = _SK_W + _SK_COL_W * (ncols - 2)
+
+    def room(layer_no):
+        m = max([min(len(_sk_short(n['label'])), 22) for n in nodes if n['layer'] == layer_no], default=0)
+        return min(190, max(60, math.ceil(m * 6.7) + 16))
+
+    pad_l, pad_r = room(0), room(ncols - 1)
+    if links:
+        _sk_layout(nodes, links, pad_l, 50, W - pad_r, 300, _SK_NODE_W, _SK_PAD, _SK_ITER)
+    return {'nodes': nodes, 'links': links, 'dropped': dropped, 'ncols': ncols, 'w': W, 'h': _SK_H, 'padL': pad_l, 'padR': pad_r}
+
+
+def _sk_color(n):
+    return n['color'] or _SK_PAL[n['layer'] % len(_SK_PAL)]
+
+
+def _sk_svg(m, title, sid):
+    g, lk, nd, tx = [], [], [], []
+    for i, l in enumerate(m['links']):
+        s, t = l['source'], l['target']
+        a, c = s['x1'], t['x0']
+        mx = (a + c) / 2
+        d = 'M' + _sk_n(a) + ',' + _sk_n(l['y0']) + 'C' + _sk_n(mx) + ',' + _sk_n(l['y0']) + ',' + _sk_n(mx) + ',' + _sk_n(l['y1']) + ',' + _sk_n(c) + ',' + _sk_n(l['y1'])
+        if l['color']:
+            stroke = _cv_esc(l['color'])
         else:
-            gradients_html.append(f"""
-            <linearGradient id="{grad_id}" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="{_cv_esc(lp['color'])}" stop-opacity="0.3" />
-              <stop offset="100%" stop-color="{_cv_esc(rp['color'])}" stop-opacity="0.3" />
-            </linearGradient>
-            """)
-            fill_val = f"url(#{grad_id})"
-            opacity = 1.0
-            
-        links_html.append(f"""
-        <path d="{path_data}" fill="{_cv_esc(fill_val)}" opacity="{opacity}" style="transition: opacity 0.2s;" onmouseover="this.setAttribute('opacity', '0.65')" onmouseout="this.setAttribute('opacity', '{opacity}')">
-          <title>{_cv_esc(lp['label'])} → {_cv_esc(rp['label'])}: {v:,.0f}</title>
-        </path>
-        """)
-        
-    nodes_html = []
-    labels_html = []
-    
-    for nid, lp in left_positions.items():
-        node_glow_id = f"{sankey_id}_node_glow_{_cv_esc(nid)}"
-        gradients_html.append(f"""
-        <linearGradient id="{node_glow_id}_grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{_cv_esc(lp['color'])}" />
-          <stop offset="100%" stop-color="{_cv_esc(lp['color'])}" stop-opacity="0.6" />
-        </linearGradient>
-        """)
-        
-        nodes_html.append(f"""
-        <rect x="{_cv_esc(lp['x'])}" y="{_cv_esc(lp['y'])}" width="{_cv_esc(lp['w'])}" height="{_cv_esc(lp['h'])}" fill="url(#{node_glow_id}_grad)" rx="3" ry="3" />
-        """)
-        
-        labels_html.append(f"""
-        <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="end">{_cv_esc(lp['label'])}</text>
-        <text x="{lp['x'] - 8}" y="{lp['y'] + lp['h']/2 + 15}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{lp['total']:,.0f}</text>
-        """)
-        
-    for nid, rp in right_positions.items():
-        node_glow_id = f"{sankey_id}_node_glow_{_cv_esc(nid)}"
-        gradients_html.append(f"""
-        <linearGradient id="{node_glow_id}_grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{_cv_esc(rp['color'])}" />
-          <stop offset="100%" stop-color="{_cv_esc(rp['color'])}" stop-opacity="0.6" />
-        </linearGradient>
-        """)
-        
-        nodes_html.append(f"""
-        <rect x="{_cv_esc(rp['x'])}" y="{_cv_esc(rp['y'])}" width="{_cv_esc(rp['w'])}" height="{_cv_esc(rp['h'])}" fill="url(#{node_glow_id}_grad)" rx="3" ry="3" />
-        """)
-        
-        labels_html.append(f"""
-        <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 4}" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="start">{_cv_esc(rp['label'])}</text>
-        <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 15}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="start">{rp['total']:,.0f}</text>
-        """)
-        
-    svg_html = f"""
-    <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-      <defs>
-        {"".join(gradients_html)}
-      </defs>
-      {"".join(links_html)}
-      {"".join(nodes_html)}
-      {"".join(labels_html)}
-    </svg>
-    """
-    return svg_html, dropped
-
-
-def _sk_num(v) -> str:
-    """A flow value for the not-drawn note: thousands separators, up to two decimals, no trailing zeros (0.3, not 0)."""
-    return f"{float(v):,.2f}".rstrip("0").rstrip(".")
+            stroke = 'url(#' + sid + 'g' + str(i) + ')'
+            g.append('<linearGradient id="' + sid + 'g' + str(i) + '" gradientUnits="userSpaceOnUse" x1="' + _sk_n(a) + '" y1="0" x2="' + _sk_n(c) + '" y2="0"><stop offset="0%" stop-color="' + _cv_esc(_sk_color(s)) + '"/><stop offset="100%" stop-color="' + _cv_esc(_sk_color(t)) + '"/></linearGradient>')
+        lk.append('<path class="sk-l" d="' + d + '" stroke="' + stroke + '" stroke-width="' + _sk_n(max(1, l['width'])) + '"><title>' + _cv_esc(s['label']) + ' → ' + _cv_esc(t['label']) + ': ' + _sk_fmt(l['value']) + '</title></path>')
+    for i, n in enumerate(m['nodes']):
+        c = _sk_color(n)
+        h = n['y1'] - n['y0']
+        mid = n['y0'] + h / 2
+        last, first = n['layer'] == m['ncols'] - 1, n['layer'] == 0
+        g.append('<linearGradient id="' + sid + 'n' + str(i) + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + _cv_esc(c) + '"/><stop offset="100%" stop-color="' + _cv_esc(c) + '" stop-opacity="0.6"/></linearGradient>')
+        nd.append('<rect x="' + _sk_n(n['x0']) + '" y="' + _sk_n(n['y0']) + '" width="' + _sk_n(n['x1'] - n['x0']) + '" height="' + _sk_n(max(h, 1)) + '" rx="3" ry="3" fill="url(#' + sid + 'n' + str(i) + ')"><title>' + _cv_esc(n['label']) + ': ' + _sk_fmt(n['value']) + '</title></rect>')
+        left = first and not last
+        ax = _sk_n(n['x0'] - 8) if left else _sk_n(n['x1'] + 8)
+        anc = 'end' if left else 'start'
+        halo = '' if (first or last) else ' stroke="rgb(15,23,42)" stroke-width="3" stroke-linejoin="round" paint-order="stroke"'
+        tx.append('<text x="' + ax + '" y="' + _sk_n(mid + 4) + '" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _cv_esc(_sk_short(n['label'])) + '</text>'
+                  + '<text x="' + ax + '" y="' + _sk_n(mid + 15) + '" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _sk_fmt(n['value']) + '</text>')
+    minw = int(math.floor(m['w'] * 0.8 + 0.5))
+    return ('<svg role="img" aria-label="' + _cv_esc(title or 'Sankey flow chart') + '" viewBox="0 0 ' + str(m['w']) + ' ' + str(m['h']) + '" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;min-width:' + str(minw) + 'px;overflow:visible;">'
+            + '<style>#' + sid + ' .sk-l{fill:none;stroke-opacity:0.35;transition:stroke-opacity 0.2s}#' + sid + ' .sk-l:hover{stroke-opacity:0.65}</style>'
+            + '<defs>' + ''.join(g) + '</defs><g id="' + sid + '">' + ''.join(lk) + '</g>' + ''.join(nd) + ''.join(tx) + '</svg>')
 
 
 def _render_sankey_flow(b: dict) -> str:
-    raw_links = b.get("links", [])
-    title     = b.get("title", "")
-    w, h      = 640, 340  # matches the fixed canvas size in _svg_sankey_flow
-
-    if not raw_links:
-        return ""
-
-    svg_html, dropped = _svg_sankey_flow(b)
-    if not svg_html:
-        return ""
-
-    header_html = ""
-    if title:
-        header_html = f"""
-        <div style="margin-bottom:16px;">
-          <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{_cv_esc(title)}</div>
-        </div>
-        """
-
-    # Visible note for links the two-column layout could not draw (a node that is both a
-    # source and a destination -- the two-column shape of a cycle, e.g. A -> B -> A). This
-    # is real text, not a decorative aside: it is the only record of that data surviving the
-    # render, and it doubles as the chart's text alternative for that content (a screen
-    # reader reading the page in order reaches it right after the chart).
-    note_html = ""
-    if dropped:
-        count = len(dropped)
-        items_html = "".join(
-            f"<li>{_cv_esc(d['source'])} → {_cv_esc(d['target'])}: {_sk_num(d['value'])}</li>"
-            for d in dropped
-        )
-        plural = "s" if count != 1 else ""
-        note_html = f"""
-        <div role="note" style="margin-top:14px;padding:10px 14px;border:1px solid rgba(248,113,113,0.45);border-radius:8px;background:rgba(248,113,113,0.1);color:#fecaca;font-size:0.82rem;line-height:1.5;">
-          <strong>{count} flow{plural} not shown.</strong> This chart draws two columns (sources on the left, destinations on the right); a node that is both a source and a destination elsewhere can't sit in both columns, so the flow into it can't be drawn here:
-          <ul style="margin:6px 0 0;padding-left:18px;">{items_html}</ul>
-        </div>
-        """
-
-    return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-      {header_html}
-      <div style="width:100%;overflow-x:auto;">
-        <div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">
-          {svg_html}
-        </div>
-      </div>
-      {note_html}
-    </div>
-    """
+    m = _sk_model(b)
+    title = _sk_str(b.get('title')) if isinstance(b, dict) else ''
+    if not m['links'] and not m['dropped']:
+        return ''
+    head = ('<div style="margin-bottom:16px;"><div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">' + _cv_esc(title) + '</div></div>') if title else ''
+    body = ''
+    if m['links']:
+        key = '\u0001'.join(n['id'] for n in m['nodes']) + '\u0002' + '\u0001'.join(l['source']['id'] + '\u0003' + l['target']['id'] + '\u0003' + _sk_fmt(l['value']) for l in m['links'])
+        sid = 'sk' + _sk_hash(key)
+        body = ('<div style="width:100%;max-width:100%;overflow-x:auto;">' + _sk_svg(m, title, sid) + '</div>'
+                + '<table style="' + _SK_SR + '"><thead><tr><th scope="col">Source</th><th scope="col">Target</th><th scope="col">Value</th></tr></thead><tbody>'
+                + ''.join('<tr><th scope="row">' + _cv_esc(l['source']['label']) + '</th><td>' + _cv_esc(l['target']['label']) + '</td><td>' + _sk_fmt(l['value']) + '</td></tr>' for l in m['links']) + '</tbody></table>')
+    note = ''
+    if m['dropped']:
+        c = len(m['dropped'])
+        note = ('<div role="note" style="margin-top:14px;padding:10px 14px;border:1px solid rgba(248,113,113,0.45);border-radius:8px;background:rgba(248,113,113,0.1);color:#fecaca;font-size:0.82rem;line-height:1.5;">'
+                '<strong>' + str(c) + ' flow' + ('s' if c != 1 else '') + ' not shown.</strong> This chart draws flows from left to right; a flow that closes a cycle (A → B → A) or that would run backwards or sideways between the columns set by `column` can\'t be drawn, so it is listed here:'
+                '<ul style="margin:6px 0 0;padding-left:18px;">' + ''.join('<li>' + _cv_esc(d['source']) + ' → ' + _cv_esc(d['target']) + ': ' + _sk_fmt(d['value']) + '</li>' for d in m['dropped']) + '</ul></div>')
+    return ('<div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:relative;max-width:100%;min-width:0;box-sizing:border-box;">'
+            + head + body + note + '</div>')
 
 def _render_cohort_retention(b: dict) -> str:
     cohorts     = b.get("cohorts", [])
@@ -30601,6 +30756,11 @@ def _tm_layout(groups):
     return cr, [_tm_squarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]) for i, g in enumerate(groups)]
 
 
+def _tm_fits(r, chars, wpad, hmin):
+    """Does a rect (nominal 900 x 300 box) hold a label of `chars` characters at 7px each plus wpad, and hmin tall?"""
+    return r[2] - r[0] >= chars * 7 + wpad and r[3] - r[1] >= hmin
+
+
 def _tm_pct(x, d):
     return _if_fixed(x / d * 100, 3) + '%'
 
@@ -30633,9 +30793,14 @@ def _render_treemap(b: dict) -> str:
         ct = 0
         for i in m:
             ct += i['v']
+        ptxt = _if_s(c, 20) + ' ' + _if_fmt(ct)
+        pill = _tm_fits(cr[ci], len(_if_s(c, 20)) + 1 + len(_if_fmt(ct)), 12, 40)
         for k, i in enumerate(m):
-            cells += ('<div style="' + _tm_box(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + ('24px' if k == 0 else '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sum(len(g) for g in groups[:ci]) + k, 12) + 'opacity:var(--k,1);">' + _if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) + '</div>')
-        tags += ('<div style="position:absolute;left:' + _tm_pct(cr[ci][0], _TM_W) + ';top:' + _tm_pct(cr[ci][1], _TM_H) + ';max-width:' + _tm_pct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + _if_s(c, 20) + ' ' + _if_fmt(ct) + '</div>')
+            lead = pill and k == 0
+            show = _tm_fits(ir[ci][k], len(_if_s(i['n'], 24)) + 1 + len(_if_fmt(i['v'])), 18, 48 if lead else 30)
+            cells += ('<div' + ('' if show else ' title="' + _if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) + '"') + ' style="' + _tm_box(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (('24px' if lead else '6px') + ' 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sum(len(g) for g in groups[:ci]) + k, 12) + 'opacity:var(--k,1);">' + (_if_s(i['n'], 24) + ' ' + _if_fmt(i['v']) if show else '') + '</div>')
+        if pill:
+            tags += ('<div style="position:absolute;left:' + _tm_pct(cr[ci][0], _TM_W) + ';top:' + _tm_pct(cr[ci][1], _TM_H) + ';max-width:' + _tm_pct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>')
     return _if_wrap(_if_title(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.</div>'
                     + _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
 

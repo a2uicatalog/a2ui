@@ -64,6 +64,54 @@ just looks plainer.
 
 ---
 
+## d3-sankey (Mike Bostock)
+
+- **Project:** d3-sankey 0.12.3 — the Sankey layout: node values, column placement by graph depth, 6 relaxation
+  passes with collision resolution, link ordering by breadth, and `sankeyLinkHorizontal` link paths
+- **Website:** https://github.com/d3/d3-sankey
+- **License:** BSD-3-Clause
+- **Copyright:** Copyright 2015, Mike Bostock
+- **Vendored as:** nothing is vendored; the algorithm is ported by hand into `_sk_layout` / `_sk_model` in
+  `renderers/web_article.py` and its twin `_skLayout` / `_skModel` in
+  `apps-script-surface/gas-wired-renderer/atoms_charts.gs` (and `gas-schema-renderer/atoms_charts.gs`), and checked
+  against the real library's output by `tests/test_sankey_multicolumn.py`
+- **Used by:** the `sankey_flow` atom's server-side layout in both renderers. No script is shipped to the page; the
+  bands are emitted as SVG paths.
+
+BSD-3-Clause licence text, reproduced as the licence requires (source redistribution retains this notice):
+
+```
+Copyright 2015, Mike Bostock
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the author nor the names of contributors may be used to
+  endorse or promote products derived from this software without specific prior
+  written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+---
+
 ## gifenc, mp4-muxer, webm-muxer (film export)
 
 - **Projects:** gifenc 1.0.3 (Matt DesLauriers, https://github.com/mattdesl/gifenc);

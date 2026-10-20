@@ -226,6 +226,7 @@ function _tmLayout(groups) {
   var cr = _tmSquarify(groups.map(_tmSum), 0, 0, _TM_W, _TM_H);
   return [cr, groups.map(function(g, i) { return _tmSquarify(g, cr[i][0], cr[i][1], cr[i][2], cr[i][3]); })];
 }
+function _tmFits(r, chars, wpad, hmin) { return r[2] - r[0] >= chars * 7 + wpad && r[3] - r[1] >= hmin; }
 function _tmPct(x, d) { return (x / d * 100).toFixed(3) + '%'; }
 function _tmBox(r) { return 'position:absolute;left:' + _tmPct(r[0], _TM_W) + ';top:' + _tmPct(r[1], _TM_H) + ';width:' + _tmPct(r[2] - r[0], _TM_W) + ';height:' + _tmPct(r[3] - r[1], _TM_H) + ';'; }
 _RENDERERS['treemap'] = function(b) {
@@ -236,10 +237,12 @@ _RENDERERS['treemap'] = function(b) {
   var lay = _tmLayout(groups.map(function(m) { return m.map(function(i) { return i.v; }); })), cr = lay[0], ir = lay[1], cells = '', tags = '';
   cats.forEach(function(c, ci) {
     var m = groups[ci], ct = m.reduce(function(s, i) { return s + i.v; }, 0);
+    var ptxt = _ifS(c, 20) + ' ' + _ifFmt(ct), pill = _tmFits(cr[ci], _ifS(c, 20).length + 1 + _ifFmt(ct).length, 12, 40);
     m.forEach(function(i, k) {
-      cells += '<div style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (k === 0 ? '24px' : '6px') + ' 8px 6px;font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g) { return s + g.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '</div>';
+      var lead = pill && k === 0, show = _tmFits(ir[ci][k], _ifS(i.n, 24).length + 1 + _ifFmt(i.v).length, 18, lead ? 48 : 30);
+      cells += '<div' + (show ? '' : ' title="' + _ifS(i.n, 24) + ' ' + _ifFmt(i.v) + '"') + ' style="' + _tmBox(ir[ci][k]) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? (lead ? '24px' : '6px') + ' 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g) { return s + g.length; }, 0) + k, 12) + 'opacity:var(--k,1);">' + (show ? _ifS(i.n, 24) + ' ' + _ifFmt(i.v) : '') + '</div>';
     });
-    tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + _ifS(c, 20) + ' ' + _ifFmt(ct) + '</div>';
+    if (pill) tags += '<div style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>';
   });
   return _ifWrap(_ifTitle(b) + '<div style="position:relative;height:300px;">' + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.</div>' +
     _ifTable(['Item', 'Category', 'Value', 'Share'], items.map(function(i) { return [i.n, i.c, _ifFmt(i.v), (i.v / tot * 100).toFixed(1) + '%']; })));
