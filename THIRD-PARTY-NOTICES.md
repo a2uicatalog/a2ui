@@ -86,7 +86,7 @@ just looks plainer.
 
 ## d3-shape and d3-path (Mike Bostock)
 
-- **Project:** d3-shape 3.2.0 — `arc` (the circular and annular sector with `padAngle` and `padRadius`; corner rounding is not used), and its dependency d3-path 3.1.0 — `arc` (the SVG arc commands and the 3-digit number rounding)
+- **Project:** d3-shape 3.2.0 — `arc` (the circular and annular sector with `padAngle` and `padRadius`; corner rounding is not used), and the `stack` offsets `stackOffsetNone`, `stackOffsetExpand`, `stackOffsetSilhouette`, `stackOffsetWiggle` with `stackOrderInsideOut` and `stackOrderAppearance` (the `offset` field of `stacked_area`, in `_sa_stack` / `_saStack`), and its dependency d3-path 3.1.0 — `arc` (the SVG arc commands and the 3-digit number rounding)
 - **Website:** https://github.com/d3/d3-shape and https://github.com/d3/d3-path
 - **License:** ISC License
 - **Copyright:** Copyright 2010-2022 Mike Bostock (d3-shape); Copyright 2015-2022 Mike Bostock (d3-path)

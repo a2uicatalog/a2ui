@@ -11803,7 +11803,220 @@ def _render_conversion_funnel(b: dict) -> str:
         html += f'<div style="text-align:center;margin-bottom:4px;"><div style="display:inline-block;width:{pct:.0f}%;background:{_cv_esc(accent)};opacity:{opacity:.2f};color:#fff;padding:8px 12px;border-radius:4px;font-size:.85rem;font-weight:600;min-width:140px;">{_cv_esc(s.get("stage") or s.get("label",""))} — {_cv_esc(s.get("value",""))}</div>{"<div style=font-size:.72rem;color:var(--muted,#5f6368);margin-top:2px>"+conv+"</div>" if conv else ""}</div>'
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{html}</div>'
 
+# ─── stacked_area `offset` (2026-10-21, I49): "expand" | "silhouette" | "wiggle" draw a real SVG area chart; absent / "none" / unknown keeps the bars below ───
+# d3-shape 3.2.0 stackOffsetExpand, stackOffsetSilhouette, stackOffsetWiggle, stackOffsetNone and stackOrderInsideOut / stackOrderAppearance, ported by hand
+# (ISC, Mike Bostock); twin of _saStack / _saChart in the atoms_unstub.gs files. Self-contained on purpose: the Apps Script copies also live where the infographic helpers do not exist.
+_SA_COLORS = ['#0369A1', '#B45309', '#15803D', '#7C3AED', '#BE123C', '#0F766E', '#A16207', '#475569']
+_SA_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
+
+
+def _sa_note(s):
+    return '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + s + '</div>'
+
+
+def _sa_num(v):
+    """A JSON number that JavaScript's typeof/isFinite would accept."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf')
+
+
+def _sa_str(v):
+    return v if isinstance(v, str) else _if_numstr(v) if _sa_num(v) else ''
+
+
+def _sa_version_note(b):
+    v = b.get('version')
+    return _sa_note('Written for stacked_area version ' + _if_numstr(v) + '; drawn as version 1.') if _sa_num(v) and v == math.floor(v) and v > 1 else ''
+
+
+def _sa_stack(vals, offset):
+    """d3.stack().offset(<offset>).order(none, or insideOut for wiggle) on vals[series][point]; returns (order, lo, hi) by original series index."""
+    n, m = len(vals), len(vals[0])
+    S = [[[0.0, float(vals[i][j])] for j in range(m)] for i in range(n)]
+    order = list(range(n))
+    if offset == 'wiggle':
+        peaks, sums = [], []
+        for i in range(n):
+            pj, vj, s = 0, -float('inf'), 0.0
+            for j in range(m):
+                if S[i][j][1] > vj:
+                    vj, pj = S[i][j][1], j
+                if S[i][j][1]:
+                    s += S[i][j][1]
+            peaks.append(pj)
+            sums.append(s)
+        ordered = sorted(order, key=lambda a: peaks[a])
+        top = bottom = 0.0
+        tops, bottoms = [], []
+        for i in range(n):
+            k = ordered[i]
+            if top < bottom:
+                top += sums[k]
+                tops.append(k)
+            else:
+                bottom += sums[k]
+                bottoms.append(k)
+        order = bottoms[::-1] + tops
+    if offset == 'expand':
+        for j in range(m):
+            y = 0.0
+            for i in range(n):
+                y += S[i][j][1] or 0
+            if y:
+                for i in range(n):
+                    S[i][j][1] /= y
+    elif offset == 'silhouette':
+        s0 = S[order[0]]
+        for j in range(m):
+            y = 0.0
+            for i in range(n):
+                y += S[i][j][1] or 0
+            s0[j][0] = -y / 2
+            s0[j][1] = s0[j][1] + s0[j][0]
+    elif offset == 'wiggle':
+        s0 = S[order[0]]
+        y = 0.0
+        for j in range(1, m):
+            q1 = q2 = 0.0
+            for i in range(n):
+                si = S[order[i]]
+                sij0, sij1 = si[j][1] or 0, si[j - 1][1] or 0
+                s3 = (sij0 - sij1) / 2
+                for k in range(i):
+                    sk = S[order[k]]
+                    skj0, skj1 = sk[j][1] or 0, sk[j - 1][1] or 0
+                    s3 += skj0 - skj1
+                q1 += sij0
+                q2 += s3 * sij0
+            s0[j - 1][0] = y
+            s0[j - 1][1] = s0[j - 1][1] + s0[j - 1][0]
+            if q1:
+                y -= q2 / q1
+        s0[m - 1][0] = y
+        s0[m - 1][1] = s0[m - 1][1] + s0[m - 1][0]
+    if n > 1:   # stackOffsetNone, which every offset ends with: each series sits on the one before it in `order`
+        s1 = S[order[0]]
+        for i in range(1, n):
+            s0, s1 = s1, S[order[i]]
+            for j in range(m):
+                s1[j][0] = s0[j][1]
+                s1[j][1] = s1[j][1] + s1[j][0]
+    return order, [[p[0] for p in r] for r in S], [[p[1] for p in r] for r in S]
+
+
+def _sa_chart(b, offset):
+    labels = b.get('labels') if isinstance(b.get('labels'), list) else []
+    lst = b.get('series') if isinstance(b.get('series'), list) else []
+    m, ser, skipped, bad = min(len(labels), 60), [], 0, 0
+    for k, s in enumerate(lst[:12]):
+        if not isinstance(s, dict):
+            skipped += 1
+            continue
+        d = s.get('data') if isinstance(s.get('data'), list) else []
+        raw, vals = [], []
+        for j in range(m):
+            v = d[j] if j < len(d) else None
+            raw.append(_if_numstr(v) if _sa_num(v) else '')
+            if _sa_num(v) and abs(v) <= 1e12 and v >= 0:
+                vals.append(float(v))
+            else:
+                vals.append(0.0)
+                if j < len(d):
+                    bad += 1
+        nm = _sa_str(s.get('label'))
+        col = s.get('color')
+        ser.append({'name': nm[:40] if nm else 'Series ' + str(k + 1), 'raw': raw, 'vals': vals,
+                    'col': col if isinstance(col, str) and re.fullmatch(r'#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})', col) else _SA_COLORS[k % len(_SA_COLORS)]})
+    if m < 2 or not ser:
+        return None
+    beyond_s, beyond_p = len(lst) - 12, len(labels) - 60
+    order, LO, HI = _sa_stack([s['vals'] for s in ser], offset)
+    if offset == 'expand':
+        ymin, ymax = 0.0, 1.0
+    else:
+        ymin, ymax = min(min(r) for r in LO), max(max(r) for r in HI)
+    span = ymax - ymin
+    if not span > 0:
+        span = 1.0
+
+    def X(jj):
+        return _if_fixed(jj / (m - 1) * 1000, 2)
+
+    def Y(v):
+        t = (ymax - v) / span * 100
+        return _if_fixed(0 if t < 0 else 100 if t > 100 else t, 2)
+    polys = ''
+    for i in range(len(ser)):
+        pts = [X(j) + ',' + Y(HI[i][j]) for j in range(m)] + [X(j) + ',' + Y(LO[i][j]) for j in range(m - 1, -1, -1)]
+        polys += '<polygon points="' + ' '.join(pts) + '" fill="' + ser[i]['col'] + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>'
+    lab = [_sa_str(l)[:14] for l in labels[:m]]
+    maxlen = max([len(s) for s in lab] + [1])
+    want = max(2, min(8, 48 // maxlen))
+    stride = -(-m // want)
+    xs = ''
+    for j in range(m):
+        if j % stride != 0:
+            continue
+        tr = '' if j == 0 else 'transform:translateX(-100%);' if j == m - 1 else 'transform:translateX(-50%);'
+        xs += ('<div class="sax' + (' sac' if j % (2 * stride) == 0 else '') + '" style="position:absolute;top:100%;left:' + _if_fixed(j / (m - 1) * 100, 2) + '%;">'
+               '<div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+               '<div style="position:absolute;left:0;top:7px;' + tr + 'font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _cv_esc(lab[j]) + '</div></div>')
+    ys = ''
+    if offset == 'expand':
+        for j in range(5):
+            ys += ('<div class="say" style="position:absolute;right:100%;top:' + str(100 - j * 25) + '%;width:38px;padding-right:6px;box-sizing:border-box;text-align:right;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted,#475569);">' + str(j * 25) + '%</div>'
+                   '<div style="position:absolute;right:100%;top:' + str(100 - j * 25) + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>')
+    mode = 'each point scaled to 100 percent' if offset == 'expand' else 'centred baseline' if offset == 'silhouette' else 'streamgraph, baseline chosen to minimise wiggle'
+    names = [s['name'] for s in ser]
+    aria = 'Stacked area chart, ' + mode + ': ' + str(len(ser)) + ' series over ' + str(m) + ' points from ' + lab[0] + ' to ' + lab[m - 1] + '. Series: ' + ', '.join(names) + '.'
+    legend = ('<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
+              + ''.join('<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:' + s['col'] + ';border:1px solid var(--border,#CBD5E1);box-sizing:border-box;display:inline-block;"></span>' + _cv_esc(s['name']) + '</span>' for s in ser) + '</div>')
+    if offset == 'expand':
+        notes = _sa_note('Each point is scaled so its layers add up to 100%; the axis shows each series’ share of the total.')
+    else:
+        notes = _sa_note(('Streamgraph: the baseline moves to keep the layers’ wiggle small and the layers are ordered inside-out, not as listed. ' if offset == 'wiggle' else 'The layers are centred on a middle line. ')
+                         + 'There is no value axis because the baseline has no meaning; layer thickness shows the size, and the exact values are in the table.')
+    if bad:
+        notes += _sa_note(str(bad) + (' value was' if bad == 1 else ' values were') + ' negative or not a usable number and ' + ('is' if bad == 1 else 'are') + ' drawn as 0.')
+    if skipped:
+        notes += _sa_note(str(skipped) + (' series was' if skipped == 1 else ' series were') + ' not an object and ' + ('was' if skipped == 1 else 'were') + ' left out.')
+    if beyond_s > 0:
+        notes += _sa_note(str(beyond_s) + (' series beyond the first 12 was' if beyond_s == 1 else ' series beyond the first 12 were') + ' not drawn.')
+    if beyond_p > 0:
+        notes += _sa_note(str(beyond_p) + (' label beyond the first 60 was' if beyond_p == 1 else ' labels beyond the first 60 were') + ' not drawn.')
+    table = ('<table style="' + _SA_SR + '"><thead><tr><th scope="col">Point</th>' + ''.join('<th scope="col">' + _cv_esc(n[:40]) + '</th>' for n in names) + '</tr></thead><tbody>'
+             + ''.join('<tr><th scope="row">' + _cv_esc(_sa_str(labels[jj])[:60]) + '</th>' + ''.join('<td>' + _cv_esc(s['raw'][jj]) + '</td>' for s in ser) + '</tr>' for jj in range(m)) + '</tbody></table>')
+    ttl = _sa_str(b.get('title'))
+    title = '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _cv_esc(ttl[:80]) + '</div>' if ttl else ''
+    yw = '44px' if offset == 'expand' else '0'
+    return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + title
+            + '<div class="ifsa" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifsa .sax:not(.sac){display:none}}</style>'
+            + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:8px 0 34px 0;">'
+            + '<div style="position:relative;margin-left:' + yw + ';height:240px;border-bottom:1px solid var(--muted,#475569);' + ('border-left:1px solid var(--muted,#475569);' if offset == 'expand' else '') + '">'
+            + '<svg aria-hidden="true" focusable="false" viewBox="0 0 1000 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;">' + polys + '</svg>' + ys + xs + '</div></div>'
+            + legend + '</div>' + notes + _sa_version_note(b) + table + '</div>')
+
+
+def _sa_card(b, msg):
+    """What an offset chart says when there is nothing to draw: the bars would raise on some of these payloads."""
+    ttl = _sa_str(b.get('title'))
+    return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">'
+            + ('<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _cv_esc(ttl[:80]) + '</div>' if ttl else '')
+            + '<div style="border:1px solid #64748B;border-radius:8px;background:var(--surface,#F8FAFC);padding:8px 10px;">' + msg + '</div>' + _sa_version_note(b) + '</div>')
+
+
+def _sa_gate(b):
+    """(html, tail): html is the offset chart (or its message) or '' to keep the bars; tail is appended to the bars (the version note)."""
+    off = b.get('offset')
+    if not isinstance(off, str) or off not in ('expand', 'silhouette', 'wiggle'):
+        return '', _sa_version_note(b)
+    h = _sa_chart(b, off) if isinstance(b.get('labels'), list) and isinstance(b.get('series'), list) else None
+    return (_sa_card(b, 'A stacked area chart with an offset needs at least two labels and one series with numbers.') if h is None else h), ''
+
+
 def _render_stacked_area(b: dict) -> str:
+    _sa_html, _sa_tail = _sa_gate(b)
+    if _sa_html:
+        return _sa_html
     title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:12px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     labels, series = b.get("labels",[]), b.get("series",[])
     colors = ["#4f46e5","#10b981","#f59e0b","#ef4444","#8b5cf6","#0ea5e9"]
@@ -11814,7 +12027,7 @@ def _render_stacked_area(b: dict) -> str:
         segs = "".join(f'<div style="width:{s.get("data",[0]*99)[i]/max_t*100:.1f}%;height:100%;background:{_cv_esc(s.get("color",colors[si%len(colors)]))};display:inline-block;" title="{_cv_esc(s.get("label",""))}: {_cv_esc(s.get("data",[0]*99)[i])}"></div>' for si,s in enumerate(series) if i<len(s.get("data",[])))
         rows += f'<div style="margin-bottom:8px;"><div style="font-size:.75rem;color:var(--muted,#5f6368);margin-bottom:2px;">{_cv_esc(lbl)}</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;">{segs}</div></div>'
     legend = "".join(f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:{_cv_esc(s.get("color",colors[si%len(colors)]))}"></span>{_cv_esc(s.get("label",""))}</span>' for si,s in enumerate(series))
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{rows}<div style="margin-top:10px;">{legend}</div></div>'
+    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{rows}<div style="margin-top:10px;">{legend}</div></div>' + _sa_tail
 
 def _render_data_grid(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""

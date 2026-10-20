@@ -494,9 +494,167 @@ _RENDERERS['scatter_trend'] = function(b) {
     + title + svg + '</div>';
 };
 
+// ─── stacked_area `offset` (2026-10-21, I49): "expand" | "silhouette" | "wiggle" draw a real SVG area chart; absent / "none" / unknown keeps the bars above ───
+// d3-shape 3.2.0 stackOffsetExpand, stackOffsetSilhouette, stackOffsetWiggle, stackOffsetNone and stackOrderInsideOut / stackOrderAppearance, ported by hand
+// (ISC, Mike Bostock); twin of _sa_* in renderers/web_article.py. Self-contained on purpose: this file is also used where the infographic helpers do not exist.
+var _SA_COLORS = ['#0369A1', '#B45309', '#15803D', '#7C3AED', '#BE123C', '#0F766E', '#A16207', '#475569'];
+var _SA_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
+function _saNote(s) { return '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + s + '</div>'; }
+function _saVersionNote(b) {
+  var v = b.version;
+  return (typeof v === 'number' && isFinite(v) && v === Math.floor(v) && v > 1) ? _saNote('Written for stacked_area version ' + String(v) + '; drawn as version 1.') : '';
+}
+function _saStack(vals, offset) {
+  var n = vals.length, m = vals[0].length, S = [], i, j, k, y, s0, s1, order = [];
+  for (i = 0; i < n; i++) { S.push([]); for (j = 0; j < m; j++) S[i].push([0, vals[i][j]]); }
+  for (i = 0; i < n; i++) order.push(i);
+  if (offset === 'wiggle') {   // stackOrderInsideOut: the series are ordered by where they peak, then dealt to the top or bottom to keep both sides level
+    var peaks = [], sums = [], top = 0, bottom = 0, tops = [], bottoms = [];
+    for (i = 0; i < n; i++) {
+      var pj = 0, vj = -Infinity, s = 0;
+      for (j = 0; j < m; j++) { if (S[i][j][1] > vj) { vj = S[i][j][1]; pj = j; } if (S[i][j][1]) s += S[i][j][1]; }
+      peaks.push(pj); sums.push(s);
+    }
+    order.sort(function(a, c) { return (peaks[a] - peaks[c]) || (a - c); });
+    var ordered = order.slice();
+    for (i = 0; i < n; i++) {
+      k = ordered[i];
+      if (top < bottom) { top += sums[k]; tops.push(k); } else { bottom += sums[k]; bottoms.push(k); }
+    }
+    order = bottoms.reverse().concat(tops);
+  }
+  if (offset === 'expand') {
+    for (j = 0; j < m; j++) {
+      y = 0;
+      for (i = 0; i < n; i++) y += S[i][j][1] || 0;
+      if (y) for (i = 0; i < n; i++) S[i][j][1] /= y;
+    }
+  } else if (offset === 'silhouette') {
+    s0 = S[order[0]];
+    for (j = 0; j < m; j++) {
+      y = 0;
+      for (i = 0; i < n; i++) y += S[i][j][1] || 0;
+      s0[j][1] += s0[j][0] = -y / 2;
+    }
+  } else if (offset === 'wiggle') {
+    s0 = S[order[0]]; y = 0;
+    for (j = 1; j < m; j++) {
+      var q1 = 0, q2 = 0;
+      for (i = 0; i < n; i++) {
+        var si = S[order[i]], sij0 = si[j][1] || 0, sij1 = si[j - 1][1] || 0, s3 = (sij0 - sij1) / 2;
+        for (k = 0; k < i; k++) {
+          var sk = S[order[k]], skj0 = sk[j][1] || 0, skj1 = sk[j - 1][1] || 0;
+          s3 += skj0 - skj1;
+        }
+        q1 += sij0; q2 += s3 * sij0;
+      }
+      s0[j - 1][1] += s0[j - 1][0] = y;
+      if (q1) y -= q2 / q1;
+    }
+    s0[j - 1][1] += s0[j - 1][0] = y;
+  }
+  if (n > 1) {   // stackOffsetNone, which every offset ends with: each series sits on the one before it in `order`
+    s1 = S[order[0]];
+    for (i = 1; i < n; i++) {
+      s0 = s1; s1 = S[order[i]];
+      for (j = 0; j < m; j++) s1[j][1] += s1[j][0] = isNaN(s0[j][1]) ? s0[j][0] : s0[j][1];
+    }
+  }
+  return { order: order, lo: S.map(function(r) { return r.map(function(p) { return p[0]; }); }), hi: S.map(function(r) { return r.map(function(p) { return p[1]; }); }) };
+}
+function _saStr(v) { return typeof v === 'string' ? v : (typeof v === 'number' && isFinite(v)) ? String(v) : ''; }
+function _saFx(x) { return x.toFixed(2); }
+function _saChart(b, offset) {
+  var labels = Array.isArray(b.labels) ? b.labels : [], list = Array.isArray(b.series) ? b.series : [];
+  var m = Math.min(labels.length, 60), ser = [], skipped = 0, bad = 0, i, j;
+  list.slice(0, 12).forEach(function(s, k) {
+    if (!s || typeof s !== 'object' || Array.isArray(s)) { skipped++; return; }
+    var d = Array.isArray(s.data) ? s.data : [], raw = [], vals = [];
+    for (j = 0; j < m; j++) {
+      var v = d[j];
+      raw.push(typeof v === 'number' && isFinite(v) ? String(v) : '');
+      if (typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12 && v >= 0) vals.push(v);
+      else { vals.push(0); if (j < d.length) bad++; }
+    }
+    ser.push({ name: _saStr(s.label) ? _saStr(s.label).slice(0, 40) : 'Series ' + (k + 1), raw: raw, vals: vals,
+               col: (typeof s.color === 'string' && /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s.color)) ? s.color : _SA_COLORS[k % _SA_COLORS.length] });
+  });
+  if (m < 2 || !ser.length) return null;
+  var beyondS = list.length - 12, beyondP = labels.length - 60, ST = _saStack(ser.map(function(s) { return s.vals; }), offset);
+  var ymin = 0, ymax = 0;
+  if (offset === 'expand') { ymax = 1; }
+  else {
+    ymin = Infinity; ymax = -Infinity;
+    ST.lo.forEach(function(r) { r.forEach(function(v) { if (v < ymin) ymin = v; }); });
+    ST.hi.forEach(function(r) { r.forEach(function(v) { if (v > ymax) ymax = v; }); });
+  }
+  var span = ymax - ymin; if (!(span > 0)) span = 1;
+  function X(jj) { return _saFx(jj / (m - 1) * 1000); }
+  function Y(v) { var t = (ymax - v) / span * 100; return _saFx(t < 0 ? 0 : t > 100 ? 100 : t); }
+  var polys = '';
+  for (i = 0; i < ser.length; i++) {
+    var pts = [];
+    for (j = 0; j < m; j++) pts.push(X(j) + ',' + Y(ST.hi[i][j]));
+    for (j = m - 1; j >= 0; j--) pts.push(X(j) + ',' + Y(ST.lo[i][j]));
+    polys += '<polygon points="' + pts.join(' ') + '" fill="' + ser[i].col + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>';
+  }
+  var lab = labels.slice(0, m).map(function(l) { return _saStr(l).slice(0, 14); });
+  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; }).concat([1]));
+  var want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(m / want), xs = '';
+  for (j = 0; j < m; j++) {
+    if (j % stride !== 0) continue;
+    var tr = j === 0 ? '' : (j === m - 1 ? 'transform:translateX(-100%);' : 'transform:translateX(-50%);');
+    xs += '<div class="sax' + (j % (2 * stride) === 0 ? ' sac' : '') + '" style="position:absolute;top:100%;left:' + _saFx(j / (m - 1) * 100) + '%;">'
+      + '<div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+      + '<div style="position:absolute;left:0;top:7px;' + tr + 'font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _esc(lab[j]) + '</div></div>';
+  }
+  var ys = '';
+  if (offset === 'expand') {
+    for (j = 0; j <= 4; j++) {
+      ys += '<div class="say" style="position:absolute;right:100%;top:' + (100 - j * 25) + '%;width:38px;padding-right:6px;box-sizing:border-box;text-align:right;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted,#475569);">' + (j * 25) + '%</div>'
+        + '<div style="position:absolute;right:100%;top:' + (100 - j * 25) + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>';
+    }
+  }
+  var mode = offset === 'expand' ? 'each point scaled to 100 percent' : offset === 'silhouette' ? 'centred baseline' : 'streamgraph, baseline chosen to minimise wiggle';
+  var names = ser.map(function(s) { return s.name; });
+  var aria = 'Stacked area chart, ' + mode + ': ' + ser.length + ' series over ' + m + ' points from ' + lab[0] + ' to ' + lab[m - 1] + '. Series: ' + names.join(', ') + '.';
+  var legend = '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
+    + ser.map(function(s) { return '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:' + s.col + ';border:1px solid var(--border,#CBD5E1);box-sizing:border-box;display:inline-block;"></span>' + _esc(s.name) + '</span>'; }).join('') + '</div>';
+  var notes = '';
+  if (offset === 'expand') notes += _saNote('Each point is scaled so its layers add up to 100%; the axis shows each series’ share of the total.');
+  else notes += _saNote((offset === 'wiggle' ? 'Streamgraph: the baseline moves to keep the layers’ wiggle small and the layers are ordered inside-out, not as listed. ' : 'The layers are centred on a middle line. ')
+    + 'There is no value axis because the baseline has no meaning; layer thickness shows the size, and the exact values are in the table.');
+  if (bad) notes += _saNote(bad + (bad === 1 ? ' value was' : ' values were') + ' negative or not a usable number and ' + (bad === 1 ? 'is' : 'are') + ' drawn as 0.');
+  if (skipped) notes += _saNote(skipped + (skipped === 1 ? ' series was' : ' series were') + ' not an object and ' + (skipped === 1 ? 'was' : 'were') + ' left out.');
+  if (beyondS > 0) notes += _saNote(beyondS + (beyondS === 1 ? ' series beyond the first 12 was' : ' series beyond the first 12 were') + ' not drawn.');
+  if (beyondP > 0) notes += _saNote(beyondP + (beyondP === 1 ? ' label beyond the first 60 was' : ' labels beyond the first 60 were') + ' not drawn.');
+  var table = '<table style="' + _SA_SR + '"><thead><tr><th scope="col">Point</th>' + names.map(function(n) { return '<th scope="col">' + _esc(n.slice(0, 40)) + '</th>'; }).join('') + '</tr></thead><tbody>'
+    + lab.map(function(l, jj) { return '<tr><th scope="row">' + _esc(_saStr(labels[jj]).slice(0, 60)) + '</th>' + ser.map(function(s) { return '<td>' + _esc(s.raw[jj]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+  var title = _saStr(b.title) ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _esc(_saStr(b.title).slice(0, 80)) + '</div>' : '';
+  var yw = offset === 'expand' ? '44px' : '0';
+  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + title
+    + '<div class="ifsa" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifsa .sax:not(.sac){display:none}}</style>'
+    + '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:8px 0 34px 0;">'
+    + '<div style="position:relative;margin-left:' + yw + ';height:240px;border-bottom:1px solid var(--muted,#475569);' + (offset === 'expand' ? 'border-left:1px solid var(--muted,#475569);' : '') + '">'
+    + '<svg aria-hidden="true" focusable="false" viewBox="0 0 1000 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;">' + polys + '</svg>' + ys + xs + '</div></div>'
+    + legend + '</div>' + notes + _saVersionNote(b) + table + '</div>';
+}
+function _saCard(b, msg) {   // what an offset chart says when there is nothing to draw: the bars below would raise on some of these payloads
+  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + (_saStr(b.title) ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _esc(_saStr(b.title).slice(0, 80)) + '</div>' : '')
+    + '<div style="border:1px solid #64748B;border-radius:8px;background:var(--surface,#F8FAFC);padding:8px 10px;">' + msg + '</div>' + _saVersionNote(b) + '</div>';
+}
+function _saGate(b) {
+  var off = b.offset;
+  if (off !== 'expand' && off !== 'silhouette' && off !== 'wiggle') return { html: '', tail: _saVersionNote(b) };
+  var h = (Array.isArray(b.labels) && Array.isArray(b.series)) ? _saChart(b, off) : null;
+  return { html: h === null ? _saCard(b, 'A stacked area chart with an offset needs at least two labels and one series with numbers.') : h, tail: '' };
+}
+
 // ─── stacked_area ─────────────────────────────────────────────────────────────
 // Rendered as stacked horizontal bars (CSS approximation — no canvas/JS charting needed).
 _RENDERERS['stacked_area'] = function(b) {
+  var _sa = _saGate(b);   // reads b.offset and b.version (and b.labels, b.series, b.title, b.data, b.color) for the offset chart
+  if (_sa.html) return _sa.html;
   var title   = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
   var labels  = b.labels || [];
   var series  = b.series || [];
@@ -524,7 +682,7 @@ _RENDERERS['stacked_area'] = function(b) {
       + '<span style="width:10px;height:10px;border-radius:2px;background:' + col + ';display:inline-block;"></span>' + _esc(ser.label||'') + '</span>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-    + title + rows + '<div style="margin-top:10px;">' + legend + '</div></div>';
+    + title + rows + '<div style="margin-top:10px;">' + legend + '</div></div>' + _sa.tail;
 };
 
 // ─── heatmap_calendar ─────────────────────────────────────────────────────────
