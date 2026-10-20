@@ -502,6 +502,147 @@ _RENDERERS['sunburst'] = function(b) {
     _ifTable(['Item', 'Path', 'Value', 'Share of total'], items.map(function(it) { return [it.n, it.chain.join(' / ') || 'Top level', f(it.v), (it.v / tot * 100).toFixed(1) + '%']; })));
 };
 
+// ── chord_diagram (I47) and its directed mode (I62) ───────────────────────────────────────────────────────────────────────────────────────────
+// d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape arc() (_sbArc, via _D3Path) for
+// the group arcs. Twin of _ch_chord / _ch_ribbon / _render_chord_diagram in renderers/web_article.py.
+var _CH_PAD = 0.05, _CH_IN = 175, _CH_OUT = 190, _CH_RR = 174, _CH_RPAD = 1 / 175, _CH_HEAD = 10, _CH_EPS = 1e-12, _CH_BOX = 600, _CH_LAB = 198, _CH_MAXW = 720, _CH_LINE = 14;
+function _chSort(idx, key) {   // a stable sort by d3.descending of key(i)
+  var d = idx.map(function(v, p) { return [v, p, key(v)]; });
+  d.sort(function(a, b) { return (a[2] < b[2] ? 1 : a[2] > b[2] ? -1 : 0) || a[1] - b[1]; });
+  return d.map(function(e) { return e[0]; });
+}
+function _chChord(matrix, directed) {
+  var n = matrix.length, m = [], sums = [], k = 0, dx, chords = {}, groups = [], x = 0, i, j, x0, sub, c, v, st, key, keys, out = [];
+  for (i = 0; i < n; i++) for (j = 0; j < n; j++) m.push(Number(matrix[i][j]));
+  for (i = 0; i < n; i++) { var s = 0; for (j = 0; j < n; j++) s += m[i * n + j] + (directed ? m[j * n + i] : 0); sums[i] = s; k += s; }
+  k = Math.max(0, _SB_TAU - _CH_PAD * n) / k;
+  dx = k ? _CH_PAD : _SB_TAU / n;
+  function slot(idx) { return chords[idx] || (chords[idx] = {}); }
+  for (i = 0; i < n; i++) {
+    x0 = x;
+    if (directed) {
+      sub = [];
+      for (j = -n; j < n; j++) if (j < 0 ? m[(-j - 1) * n + i] : m[i * n + j]) sub.push(j);
+      sub = _chSort(sub, function(a) { return a < 0 ? -m[(-a - 1) * n + i] : m[i * n + a]; });
+      sub.forEach(function(jj) {
+        if (jj < 0) { c = slot((-jj - 1) * n + i); v = m[(-jj - 1) * n + i]; st = x; x += v * k; c.t = [i, st, x, v]; }
+        else { c = slot(i * n + jj); v = m[i * n + jj]; st = x; x += v * k; c.s = [i, st, x, v]; }
+      });
+    } else {
+      sub = [];
+      for (j = 0; j < n; j++) if (m[i * n + j] || m[j * n + i]) sub.push(j);
+      sub = _chSort(sub, function(a) { return m[i * n + a]; });
+      sub.forEach(function(jj) {
+        v = m[i * n + jj]; st = x; x += v * k;
+        if (i < jj) { c = slot(i * n + jj); c.s = [i, st, x, v]; }
+        else { c = slot(jj * n + i); c.t = [i, st, x, v]; if (i === jj) c.s = c.t; }
+        if (c.s && c.t && c.s[3] < c.t[3]) { var tmp = c.s; c.s = c.t; c.t = tmp; }
+      });
+    }
+    groups[i] = [i, x0, x, sums[i]];
+    x += dx;
+  }
+  keys = Object.keys(chords).map(Number).sort(function(a, b) { return a - b; });
+  keys.forEach(function(q) { out.push(chords[q].s.concat(chords[q].t)); });
+  return [groups, out];
+}
+function _chRibbon(row, radius, padAngle, arrow, digits) {
+  var sa0 = row[1] - Math.PI / 2, sa1 = row[2] - Math.PI / 2, ta0 = row[5] - Math.PI / 2, ta1 = row[6] - Math.PI / 2, ap = padAngle / 2, sr = radius, tr = radius, p = new _D3Path(digits), tr2, ta2;
+  if (ap > _CH_EPS) {
+    if (Math.abs(sa1 - sa0) > ap * 2 + _CH_EPS) { if (sa1 > sa0) { sa0 += ap; sa1 -= ap; } else { sa0 -= ap; sa1 += ap; } } else sa0 = sa1 = (sa0 + sa1) / 2;
+    if (Math.abs(ta1 - ta0) > ap * 2 + _CH_EPS) { if (ta1 > ta0) { ta0 += ap; ta1 -= ap; } else { ta0 -= ap; ta1 += ap; } } else ta0 = ta1 = (ta0 + ta1) / 2;
+  }
+  p.moveTo(sr * Math.cos(sa0), sr * Math.sin(sa0));
+  p.arc(0, 0, sr, sa0, sa1, false);
+  if (sa0 !== ta0 || sa1 !== ta1) {
+    if (arrow) {
+      tr2 = tr - _CH_HEAD; ta2 = (ta0 + ta1) / 2;
+      p.quadTo(0, 0, tr2 * Math.cos(ta0), tr2 * Math.sin(ta0));
+      p.lineTo(tr * Math.cos(ta2), tr * Math.sin(ta2));
+      p.lineTo(tr2 * Math.cos(ta1), tr2 * Math.sin(ta1));
+    } else {
+      p.quadTo(0, 0, tr * Math.cos(ta0), tr * Math.sin(ta0));
+      p.arc(0, 0, tr, ta0, ta1, false);
+    }
+  }
+  p.quadTo(0, 0, sr * Math.cos(sa0), sr * Math.sin(sa0));
+  p.close();
+  return p.d;
+}
+_RENDERERS['chord_diagram'] = function(b) {
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var gl = Array.isArray(b.groups) ? b.groups : [], ml = b.matrix, ng = gl.length, why = '', r, i, j, k;
+  var wrap = function(inner) { return _ifWrap(_ifTitle(b) + inner + _hgVersionNote(b, 'chord_diagram')); };
+  if (ng < 2) return wrap('<div style="' + _ifCard() + '">A chord diagram needs at least 2 groups.</div>');
+  if (!Array.isArray(ml)) why = 'The matrix is missing or is not a list of rows.';
+  else if (ml.length !== ng) why = 'The matrix has ' + ml.length + (ml.length === 1 ? ' row' : ' rows') + ' but there are ' + ng + ' groups.';
+  else for (r = 0; r < ng; r++) {
+    if (!Array.isArray(ml[r])) { why = 'Row ' + (r + 1) + ' is not a list.'; break; }
+    if (ml[r].length !== ng) { why = 'Row ' + (r + 1) + ' has ' + ml[r].length + (ml[r].length === 1 ? ' cell' : ' cells') + ' but there are ' + ng + ' groups.'; break; }
+  }
+  if (why) return wrap('<div style="' + _ifCard() + '">' + _esc('A chord diagram needs a square matrix with one row per group. ' + why) + '</div>');
+  var n = Math.min(ng, 12), names = [], mat = [], bad = 0, v;
+  for (k = 0; k < n; k++) names.push((typeof gl[k] === 'string' && gl[k] !== '') || (typeof gl[k] === 'number' && isFinite(gl[k])) ? String(gl[k]).slice(0, 20) : 'Group ' + (k + 1));
+  for (i = 0; i < n; i++) {
+    var row = [];
+    for (j = 0; j < n; j++) { v = _ifNum(ml[i][j], -1e300, 1e12, null); if (v === null || v < 0) { bad++; v = 0; } row.push(v + 0); }
+    mat.push(row);
+  }
+  var notes = (bad ? _hgNote(bad + (bad === 1 ? ' cell was' : ' cells were') + ' negative or not a number and ' + (bad === 1 ? 'was' : 'were') + ' drawn as 0.') : '') +
+    (ng > n ? _hgNote((ng - n) + (ng - n === 1 ? ' group' : ' groups') + ' beyond the first 12 ' + (ng - n === 1 ? 'was' : 'were') + ' not drawn.') : '');
+  var directed = b.directed === true, unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var f = function(x) { return _bpFmt(x, 2) + us; };
+  var total = 0, best = null;
+  for (i = 0; i < n; i++) for (j = 0; j < n; j++) { total += mat[i][j]; if (mat[i][j] > 0 && (best === null || mat[i][j] > mat[best[0]][best[1]])) best = [i, j]; }
+  if (best === null) return wrap('<div style="' + _ifCard() + '">Every flow is 0, so there is nothing to draw.</div>' + notes);
+  var cg = _chChord(mat, directed), groups = cg[0], chords = cg[1], outT = [], inT = [];
+  for (i = 0; i < n; i++) { outT.push(0); inT.push(0); }
+  for (i = 0; i < n; i++) for (j = 0; j < n; j++) { outT[i] += mat[i][j]; inT[j] += mat[i][j]; }
+  var col = names.map(function(_, q) { return _SB_PALETTE[q % 8]; }), ribs = names.map(function() { return ''; });
+  chords.forEach(function(rw) {
+    var s = rw[0], t = rw[4], title = _ifS(names[s], 20) + ' → ' + _ifS(names[t], 20) + ': ' + _esc(f(rw[3])) + (directed ? '' : ' (' + _ifS(names[t], 20) + ' → ' + _ifS(names[s], 20) + ': ' + _esc(f(rw[7])) + ')');
+    ribs[s] += '<path class="chd" d="' + _chRibbon(rw, _CH_RR, _CH_RPAD, directed, 3) + '" fill="' + col[s] + '" fill-opacity="0.55" stroke="' + col[s] + '" stroke-width="0.6"><title>' + title + '</title></path>';
+  });
+  var arcs = '', labels = '', legend = '', ws = [];
+  var order = groups.filter(function(g) { return g[2] > g[1]; }).sort(function(a, c) { return a[1] - c[1]; }), need = {};
+  order.forEach(function(g, p) {
+    var mid = (g[1] + g[2]) / 2, gap = 10;
+    [order[(p + order.length - 1) % order.length], order[(p + 1) % order.length]].forEach(function(o) {
+      if (o !== g) { var d = Math.abs((o[1] + o[2]) / 2 - mid); gap = Math.min(gap, Math.min(d, _SB_TAU - d)); }
+    });
+    need[g[0]] = gap > 0 ? _sbQ(_CH_LINE * _CH_BOX / (_CH_LAB * gap)) : 1e9;
+  });
+  groups.forEach(function(g, q) {
+    var nm = _ifS(names[q], 20), kk = _ifK(q, n);
+    legend += '<span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + col[q] + ';margin-right:5px;"></span>' + nm + '</span>';
+    if (!(g[2] > g[1])) return;
+    arcs += '<g class="chg" style="' + kk + 'opacity:var(--k,1);"><path class="cha" d="' + _sbArc(g[1], g[2], _CH_IN, _CH_OUT, 0, null, 3) + '" fill="' + col[q] + '"><title>' + nm + ': sends ' + _esc(f(outT[q])) + ', receives ' + _esc(f(inT[q])) + '</title></path></g>';
+    var wm = need[q];
+    if (wm > _CH_MAXW) return;
+    var cl = _sbCls(wm), th = (g[1] + g[2]) / 2, x = _CH_LAB * Math.sin(th), y = -_CH_LAB * Math.cos(th), right = Math.sin(th) >= 0;
+    ws.push(cl[1]);
+    var deg = right ? th * 180 / Math.PI - 90 : th * 180 / Math.PI - 270, ty = 'top:' + _tmPct(_CH_BOX / 2 + y, _CH_BOX) + ';';
+    var anchor = right ? 'left:' + _tmPct(_CH_BOX / 2 + x, _CH_BOX) + ';' + ty + 'transform-origin:0 7px;' : 'right:' + _tmPct(_CH_BOX / 2 - x, _CH_BOX) + ';' + ty + 'transform-origin:100% 7px;';
+    labels += '<div class="chl' + cl[0] + '" style="position:absolute;' + anchor + 'margin-top:-7px;transform:rotate(' + deg.toFixed(2).replace(/^-0\.00$/, '0.00') + 'deg);width:max-content;max-width:calc(' +
+      _tmPct(_CH_BOX / 2 - _CH_LAB, _CH_BOX).slice(0, -1) + 'cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:' + (right ? 'left' : 'right') +
+      ';font-size:12px;line-height:14px;font-weight:600;color:' + col[q] + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + nm + '</div>';
+  });
+  var aria = (directed ? 'Directed chord diagram' : 'Chord diagram') + ' of ' + n + ' groups, total flow ' + f(total) + '. Largest flow: ' + names[best[0]] + ' to ' + names[best[1]] + ', ' + f(mat[best[0]][best[1]]) + '.';
+  var svg = '<svg viewBox="-300 -300 600 600" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
+    ribs.map(function(rs, q) { return '<g class="chk" style="' + _ifK(q, n) + 'opacity:var(--k,1);">' + rs + '</g>'; }).join('') + arcs + '</svg>';
+  var uw = [];
+  ws.forEach(function(w) { if (w && uw.indexOf(w) < 0) uw.push(w); });
+  uw.sort(function(a, c) { return a - c; });
+  var css = uw.length ? '<style>' + uw.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>' : '';
+  var cap = directed ? 'Each ribbon is an arrow from the group that sends the flow to the group that receives it; its width shows the amount. A group\'s arc covers what it sends and what it receives.' :
+    'Each ribbon joins two groups; its width at each end shows the flow from that group to the other.';
+  var flows = [];
+  for (i = 0; i < n; i++) for (j = 0; j < n; j++) if (mat[i][j] > 0) flows.push([names[i], names[j], f(mat[i][j])]);
+  return _ifWrap(_ifTitle(b) + '<div role="img" aria-label="' + _ifS(aria, 400) + '" style="position:relative;width:100%;max-width:' + _CH_MAXW + 'px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;">' +
+    css + svg + labels + '</div><div style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:0.8rem;">' + legend + '</div>' + _hgNote(cap) + notes + _hgVersionNote(b, 'chord_diagram') +
+    _ifTable(['From', 'To', 'Value'], flows) + _ifTable(['Group', 'Total out', 'Total in'], names.map(function(nm, q) { return [nm, f(outT[q]), f(inT[q])]; })));
+};
+
 // ── venn_diagram ──────────────────────────────────────────────────────────────────────────────────────────────
 _RENDERERS['venn_diagram'] = function(b) {
   var list = function(v) { return _ifArr(v, 4).map(function(i) { return '<div>• ' + _ifS(i, 28) + '</div>'; }).join(''); }, c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));';

@@ -32162,6 +32162,247 @@ def _render_sunburst(b: dict) -> str:
                     + _if_table(['Item', 'Path', 'Value', 'Share of total'], [[i['n'], ' / '.join(i['chain']) or 'Top level', f(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
 
 
+# ── chord_diagram (I47) and its directed mode (I62) ────────────────────────────────────────────────────────────────────────────────────────────
+# d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape 3.2.0 arc() (the sunburst's
+# _sb_arc, via _D3Path) for the group arcs. Twin of _chChord / _chRibbon / _RENDERERS['chord_diagram'] in atoms_infographic.gs.
+_CH_PAD, _CH_IN, _CH_OUT, _CH_RR, _CH_RPAD, _CH_HEAD = 0.05, 175, 190, 174, 1 / 175, 10
+_CH_EPS = 1e-12
+_CH_BOX, _CH_LAB, _CH_MAXW, _CH_LINE = 600, 198, 720, 14
+
+
+def _ch_desc(a, b):
+    """d3.descending as a comparator."""
+    return 1 if a < b else -1 if a > b else 0
+
+
+def _ch_sort(idx, key):
+    """Array.prototype.sort(descending of key(i)) : stable."""
+    import functools
+    return sorted(idx, key=functools.cmp_to_key(lambda a, b: _ch_desc(key(a), key(b))))
+
+
+def _ch_chord(matrix, directed):
+    """d3-chord chord() (directed False) or chordDirected() (True) with padAngle _CH_PAD and sortSubgroups(d3.descending), on a square list of lists of numbers
+    >= 0. Returns (groups, chords): groups [index, startAngle, endAngle, value] in index order, chords [source.index, source.startAngle, source.endAngle,
+    source.value, target.index, target.startAngle, target.endAngle, target.value] in the order Object.values() gives d3's sparse chords array (ascending
+    key i * n + j)."""
+    n = len(matrix)
+    m = [float(matrix[i][j]) for i in range(n) for j in range(n)]
+    sums, k = [0.0] * n, 0.0
+    for i in range(n):
+        x = 0.0
+        for j in range(n):
+            x += m[i * n + j] + (m[j * n + i] if directed else 0)
+        sums[i] = x
+        k += x
+    room = max(0.0, _SB_TAU - _CH_PAD * n)
+    k = room / k if k else float('inf')                                      # JavaScript: x / 0 is Infinity (room > 0 for n <= 12)
+    dx = _CH_PAD if k else _SB_TAU / n
+    chords, groups = {}, [None] * n
+    x = 0.0
+    for i in range(n):
+        x0 = x
+        if directed:
+            sub = [j for j in range(-n, n) if (m[(-j - 1) * n + i] if j < 0 else m[i * n + j])]
+            sub = _ch_sort(sub, lambda a: -m[(-a - 1) * n + i] if a < 0 else m[i * n + a])
+            for j in sub:
+                if j < 0:
+                    c = chords.setdefault((-j - 1) * n + i, {})
+                    v = m[(-j - 1) * n + i]
+                    st = x
+                    x += v * k
+                    c['t'] = [i, st, x, v]
+                else:
+                    c = chords.setdefault(i * n + j, {})
+                    v = m[i * n + j]
+                    st = x
+                    x += v * k
+                    c['s'] = [i, st, x, v]
+        else:
+            sub = [j for j in range(n) if m[i * n + j] or m[j * n + i]]
+            sub = _ch_sort(sub, lambda a: m[i * n + a])
+            for j in sub:
+                v = m[i * n + j]
+                st = x
+                x += v * k
+                if i < j:
+                    c = chords.setdefault(i * n + j, {})
+                    c['s'] = [i, st, x, v]
+                else:
+                    c = chords.setdefault(j * n + i, {})
+                    c['t'] = [i, st, x, v]
+                    if i == j:
+                        c['s'] = c['t']
+                if 's' in c and 't' in c and c['s'][3] < c['t'][3]:
+                    c['s'], c['t'] = c['t'], c['s']
+        groups[i] = [i, x0, x, sums[i]]
+        x += dx
+    return groups, [chords[key]['s'] + chords[key]['t'] for key in sorted(chords)]
+
+
+def _ch_ribbon(row, radius, pad_angle, arrow, digits=3):
+    """d3-chord ribbon() (arrow False) or ribbonArrow() (True, head radius 10) for the chord `row` (as _ch_chord returns it), both ends at `radius`. The path
+    text is d3-path's with numbers rounded to `digits` (None = not rounded; d3-chord itself does not round)."""
+    sa0, sa1, ta0, ta1 = row[1] - math.pi / 2, row[2] - math.pi / 2, row[5] - math.pi / 2, row[6] - math.pi / 2
+    ap = pad_angle / 2
+    sr = tr = radius
+    if ap > _CH_EPS:
+        if abs(sa1 - sa0) > ap * 2 + _CH_EPS:
+            sa0, sa1 = (sa0 + ap, sa1 - ap) if sa1 > sa0 else (sa0 - ap, sa1 + ap)
+        else:
+            sa0 = sa1 = (sa0 + sa1) / 2
+        if abs(ta1 - ta0) > ap * 2 + _CH_EPS:
+            ta0, ta1 = (ta0 + ap, ta1 - ap) if ta1 > ta0 else (ta0 - ap, ta1 + ap)
+        else:
+            ta0 = ta1 = (ta0 + ta1) / 2
+    p = _D3Path(digits)
+    p.move_to(sr * math.cos(sa0), sr * math.sin(sa0))
+    p.arc(0, 0, sr, sa0, sa1, False)
+    if sa0 != ta0 or sa1 != ta1:
+        if arrow:
+            tr2, ta2 = tr - _CH_HEAD, (ta0 + ta1) / 2
+            p.quad_to(0, 0, tr2 * math.cos(ta0), tr2 * math.sin(ta0))
+            p.line_to(tr * math.cos(ta2), tr * math.sin(ta2))
+            p.line_to(tr2 * math.cos(ta1), tr2 * math.sin(ta1))
+        else:
+            p.quad_to(0, 0, tr * math.cos(ta0), tr * math.sin(ta0))
+            p.arc(0, 0, tr, ta0, ta1, False)
+    p.quad_to(0, 0, sr * math.cos(sa0), sr * math.sin(sa0))
+    p.close()
+    return p.text()
+
+
+def _ch_prepare(b):
+    """Read and bound the payload. Returns (error_text_or_None, names, matrix, notes, invalid_cells)."""
+    gl = _if_g(b, 'groups')
+    gl = gl if isinstance(gl, list) else []
+    if len(gl) < 2:
+        return 'A chord diagram needs at least 2 groups.', [], [], '', 0
+    ml = _if_g(b, 'matrix')
+    ng = len(gl)
+    why = ''
+    if not isinstance(ml, list):
+        why = 'The matrix is missing or is not a list of rows.'
+    elif len(ml) != ng:
+        why = 'The matrix has ' + str(len(ml)) + (' row' if len(ml) == 1 else ' rows') + ' but there are ' + str(ng) + ' groups.'
+    else:
+        for r, row in enumerate(ml):
+            if not isinstance(row, list):
+                why = 'Row ' + str(r + 1) + ' is not a list.'
+                break
+            if len(row) != ng:
+                why = 'Row ' + str(r + 1) + ' has ' + str(len(row)) + (' cell' if len(row) == 1 else ' cells') + ' but there are ' + str(ng) + ' groups.'
+                break
+    if why:
+        return 'A chord diagram needs a square matrix with one row per group. ' + why, [], [], '', 0
+    n = min(ng, 12)
+    names = []
+    for k in range(n):
+        g = gl[k]
+        names.append(g[:20] if isinstance(g, str) and g != '' else _if_str(g)[:20] if isinstance(g, (int, float)) and not isinstance(g, bool) and g == g and abs(g) != float('inf') else 'Group ' + str(k + 1))
+    bad, mat = 0, []
+    for i in range(n):
+        row = []
+        for j in range(n):
+            v = _if_n(ml[i][j], -1e300, 1e12, None)
+            if v is None or v < 0:
+                bad += 1
+                v = 0.0
+            row.append(v + 0.0)
+        mat.append(row)
+    notes = (_hg_note(str(bad) + (' cell was' if bad == 1 else ' cells were') + ' negative or not a number and ' + ('was' if bad == 1 else 'were') + ' drawn as 0.') if bad else '') \
+        + (_hg_note(str(ng - n) + (' group' if ng - n == 1 else ' groups') + ' beyond the first 12 ' + ('was' if ng - n == 1 else 'were') + ' not drawn.') if ng > n else '')
+    return None, names, mat, notes, bad
+
+
+def _render_chord_diagram(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
+    err, names, mat, notes, _bad = _ch_prepare(b)
+    if err:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">' + _cv_esc(err) + '</div>' + _hg_version_note(b, 'chord_diagram'))
+    n = len(names)
+    directed = _if_g(b, 'directed') is True
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+
+    def f(v):
+        return _bp_fmt(v, 2) + us
+    total = 0.0
+    best = None
+    for i in range(n):
+        for j in range(n):
+            total += mat[i][j]
+            if mat[i][j] > 0 and (best is None or mat[i][j] > mat[best[0]][best[1]]):
+                best = (i, j)
+    if best is None:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">Every flow is 0, so there is nothing to draw.</div>' + notes + _hg_version_note(b, 'chord_diagram'))
+    groups, chords = _ch_chord(mat, directed)
+    out_t, in_t = [0.0] * n, [0.0] * n                                         # plain left-to-right sums (Python's sum() compensates, JavaScript's does not)
+    for i in range(n):
+        for j in range(n):
+            out_t[i] += mat[i][j]
+            in_t[j] += mat[i][j]
+    col = [_SB_PALETTE[i % 8] for i in range(n)]
+    ribs = [''] * n
+    for row in chords:
+        s, t = row[0], row[4]
+        if directed:
+            title = _if_s(names[s], 20) + ' → ' + _if_s(names[t], 20) + ': ' + _cv_esc(f(row[3]))
+        else:
+            title = _if_s(names[s], 20) + ' → ' + _if_s(names[t], 20) + ': ' + _cv_esc(f(row[3])) + ' (' + _if_s(names[t], 20) + ' → ' + _if_s(names[s], 20) + ': ' + _cv_esc(f(row[7])) + ')'
+        ribs[s] += ('<path class="chd" d="' + _ch_ribbon(row, _CH_RR, _CH_RPAD, directed) + '" fill="' + col[s] + '" fill-opacity="0.55" stroke="' + col[s]
+                    + '" stroke-width="0.6"><title>' + title + '</title></path>')
+    arcs, labels, legend = '', '', ''
+    drawn = [g for g in groups if g[2] > g[1]]
+    order = sorted(drawn, key=lambda g: g[1])
+    need = {}
+    for p, g in enumerate(order):                                              # the narrowest container in which this label clears its two neighbours
+        mid = (g[1] + g[2]) / 2
+        gap = 10.0
+        for o in (order[p - 1], order[(p + 1) % len(order)]):
+            if o is not g:
+                d = abs((o[1] + o[2]) / 2 - mid)
+                gap = min(gap, min(d, _SB_TAU - d))
+        need[g[0]] = _sb_q(_CH_LINE * _CH_BOX / (_CH_LAB * gap)) if gap > 0 else 10 ** 9
+    ws = []
+    for i, g in enumerate(groups):
+        nm = _if_s(names[i], 20)
+        kk = _if_k(i, n)
+        legend += '<span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + col[i] + ';margin-right:5px;"></span>' + nm + '</span>'
+        if not g[2] > g[1]:
+            continue
+        arcs += ('<g class="chg" style="' + kk + 'opacity:var(--k,1);"><path class="cha" d="' + _sb_arc(g[1], g[2], _CH_IN, _CH_OUT, 0, None) + '" fill="' + col[i] + '"><title>' + nm + ': sends '
+                 + _cv_esc(f(out_t[i])) + ', receives ' + _cv_esc(f(in_t[i])) + '</title></path></g>')
+        wm = need[i]
+        if wm > _CH_MAXW:
+            continue
+        cls, w = _sb_cls(wm)
+        ws.append(w)
+        th = (g[1] + g[2]) / 2
+        x, y = _CH_LAB * math.sin(th), -_CH_LAB * math.cos(th)
+        deg = th * 180 / math.pi - 90 if math.sin(th) >= 0 else th * 180 / math.pi - 270
+        ty = 'top:' + _tm_pct(_CH_BOX / 2 + y, _CH_BOX) + ';'
+        if math.sin(th) >= 0:                                                  # right half: starts at the ring, reads outward to the right
+            anchor, align = 'left:' + _tm_pct(_CH_BOX / 2 + x, _CH_BOX) + ';' + ty + 'transform-origin:0 7px;', 'left'
+        else:                                                                  # left half: ends at the ring (right-aligned), turned so it is never upside down
+            anchor, align = 'right:' + _tm_pct(_CH_BOX / 2 - x, _CH_BOX) + ';' + ty + 'transform-origin:100% 7px;', 'right'
+        labels += ('<div class="chl' + cls + '" style="position:absolute;' + anchor + 'margin-top:-7px;transform:rotate(' + _if_fixed(deg, 2) + 'deg);width:max-content;max-width:calc('
+                   + _tm_pct(_CH_BOX / 2 - _CH_LAB, _CH_BOX)[:-1] + 'cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:' + align
+                   + ';font-size:12px;line-height:14px;font-weight:600;color:' + col[i] + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + nm + '</div>')
+    big = names[best[0]], names[best[1]]
+    aria = ('Directed chord diagram' if directed else 'Chord diagram') + ' of ' + str(n) + ' groups, total flow ' + f(total) + '. Largest flow: ' + big[0] + ' to ' + big[1] + ', ' + f(mat[best[0]][best[1]]) + '.'
+    svg = ('<svg viewBox="-300 -300 600 600" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
+           + ''.join('<g class="chk" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + r + '</g>' for i, r in enumerate(ribs)) + arcs + '</svg>')
+    uw = sorted(set(w for w in ws if w))
+    css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
+    cap = ('Each ribbon is an arrow from the group that sends the flow to the group that receives it; its width shows the amount. A group\'s arc covers what it sends and what it receives.' if directed
+           else 'Each ribbon joins two groups; its width at each end shows the flow from that group to the other.')
+    flows = [[names[i], names[j], f(mat[i][j])] for i in range(n) for j in range(n) if mat[i][j] > 0]
+    return _if_wrap(_if_title(b) + '<div role="img" aria-label="' + _if_s(aria, 400) + '" style="position:relative;width:100%;max-width:' + str(_CH_MAXW) + 'px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;">'
+                    + css + svg + labels + '</div><div style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:0.8rem;">' + legend + '</div>' + _hg_note(cap) + notes + _hg_version_note(b, 'chord_diagram')
+                    + _if_table(['From', 'To', 'Value'], flows) + _if_table(['Group', 'Total out', 'Total in'], [[names[i], f(out_t[i]), f(in_t[i])] for i in range(n)]))
+
+
 def _render_venn_diagram(b: dict) -> str:
     lst = lambda v: ''.join('<div>• ' + _if_s(i, 28) + '</div>' for i in _if_arr(v, 4))
     c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));'
@@ -33296,7 +33537,7 @@ def _render_waterfall(b: dict) -> str:
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram)):
     _RENDERERS[_if_name] = _if_fn
 
 
