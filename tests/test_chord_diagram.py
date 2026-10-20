@@ -119,7 +119,7 @@ PAYLOADS = {
     "self_loop_directed": {"type": "chord_diagram", "directed": True, "groups": ["A", "B", "C"], "matrix": [[7, 2, 0], [2, 0, 1], [0, 1, 3]]},
     "twelve": {"type": "chord_diagram", "unit": "GB", "groups": ["Group number %d here" % k for k in range(12)], "matrix": [[((i * 5 + j * 3) % 11) * (1 + (i + j) % 3) if i != j else 0 for j in range(12)] for i in range(12)]},
     "twelve_directed": {"type": "chord_diagram", "directed": True, "unit": "GB", "groups": ["Group number %d here" % k for k in range(12)], "matrix": [[((i * 5 + j * 3) % 11) * (1 + (i + j) % 3) if i != j else 0 for j in range(12)] for i in range(12)]},
-    "tight": {"type": "chord_diagram", "groups": ["Big", "Tiny one", "Tiny two", "Other"], "matrix": [[0, 1000, 0.5, 400], [900, 0, 0.5, 100], [0.5, 0.5, 0, 0.2], [300, 80, 0.2, 0]]},
+    "tight": {"type": "chord_diagram", "groups": ["Big", "Other", "Tiny one", "Tiny two"], "matrix": [[0, 400, 0.5, 0.5], [300, 0, 0.1, 0.1], [0.5, 0.1, 0, 0.2], [0.5, 0.1, 0.2, 0]]},
     "gated": {"type": "chord_diagram", "groups": ["Alpha", "Beta", "Tiny 1", "Tiny 2", "Gamma", "Delta"], "matrix": [[100 if i == j and i not in (2, 3) else 4 if i == j else 0 for j in range(6)] for i in range(6)]},
     "long_names": {"type": "chord_diagram", "groups": ["A group with a long name", "Another quite long name!!", "Short"], "matrix": [[0, 5, 2], [4, 0, 9], [1, 3, 0]]},
     "twelve_plus": {"type": "chord_diagram", "groups": ["G%d" % k for k in range(14)], "matrix": [[(i * 3 + j * 5) % 7 + 1 for j in range(14)] for i in range(14)]},
@@ -339,7 +339,7 @@ def test_a_label_in_a_tight_slot_is_gated_by_container_width_and_the_legend_alwa
 
 def test_a_label_that_cannot_clear_its_neighbours_in_any_width_is_left_out_but_still_in_the_legend_and_tables():
     h = _py(PAYLOADS["tight"])
-    assert len(_labels(h)) < 4 and h.count('<span class="chs"') == 4
+    assert len(_labels(h)) == 2 and h.count('<span class="chs"') == 4
     assert "Tiny one" in [r[0] for r in _tables(h)[1][1]] and "Tiny one: sends" in h
 
 

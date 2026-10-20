@@ -189,6 +189,7 @@ a2ui-charts-v1:
 - box_plot
 - waterfall
 - sunburst
+- chord_diagram
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

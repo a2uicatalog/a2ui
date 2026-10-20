@@ -98,6 +98,20 @@ just looks plainer.
 
 ---
 
+## d3-chord (Mike Bostock)
+
+- **Project:** d3-chord 3.0.1 — `chord` and `chordDirected` (the circular matrix layout, with `padAngle` and `sortSubgroups`) and `ribbon` and `ribbonArrow` (the ribbon and arrow paths)
+- **Website:** https://github.com/d3/d3-chord
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the layout and the ribbon geometry are ported by hand into `_ch_chord` and `_ch_ribbon` in
+  `renderers/web_article.py` and their twins `_chChord` and `_chRibbon` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`
+  (the paths are written through the d3-path 3.1.0 `Path` already ported for d3-shape, `_D3Path`), and checked against the real library's
+  output (angles and values with ==, path strings to 1e-9) by `tests/test_chord_diagram.py` (golden vectors from `tests/fixtures/chord_d3_golden_gen.mjs`)
+- **Used by:** the `chord_diagram` atom in both renderers (the group arcs use d3-shape `arc`, credited above). No script is shipped to the page; the layout is static SVG.
+
+---
+
 ## d3-geo (Mike Bostock)
 
 - **Project:** d3-geo 3.1.1 — `geoOrthographic`, `geoMercator` (with the projection `rotate`), `geoGraticule` and `geoInterpolate` (great-circle interpolation)
