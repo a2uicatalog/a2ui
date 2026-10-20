@@ -23128,55 +23128,130 @@ def _g3d_alt_html(b: dict) -> str:
     return '<ul style="' + _IF_SR + '">' + ''.join(items) + '</ul>'
 
 
+def _g3d_num(v):
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return f if f == f and abs(f) != float('inf') else None
+
+
+def _g3d_data(b: dict):
+    """Payload dots/arcs -> clean JSON-safe lists for the draw loop (mirrors atoms_globe.gs:
+    dots {lat, lon, label?, color?}; arcs {from:[lat,lon], to:[lat,lon], color?}). Malformed
+    entries are skipped rather than plotted at 0,0."""
+    dots, arcs = [], []
+    for d in (b.get('dots') if isinstance(b.get('dots'), list) else []):
+        if not isinstance(d, dict):
+            continue
+        la, lo = _g3d_num(d.get('lat')), _g3d_num(d.get('lon'))
+        if la is None or lo is None:
+            continue
+        item = {'lat': la, 'lon': lo}
+        lab = d.get('label')
+        if isinstance(lab, (str, int, float)) and not isinstance(lab, bool) and str(lab).strip():
+            item['label'] = str(lab).strip()
+        if isinstance(d.get('color'), str) and d['color'].strip():
+            item['color'] = d['color'].strip()
+        dots.append(item)
+    for a in (b.get('arcs') if isinstance(b.get('arcs'), list) else []):
+        if not isinstance(a, dict):
+            continue
+        fr = a.get('from', a.get('start'))
+        to = a.get('to', a.get('end'))
+        if not (isinstance(fr, list) and isinstance(to, list) and len(fr) >= 2 and len(to) >= 2):
+            continue
+        v = [_g3d_num(x) for x in (fr[0], fr[1], to[0], to[1])]
+        if any(x is None for x in v):
+            continue
+        item = {'from': v[:2], 'to': v[2:]}
+        if isinstance(a.get('color'), str) and a['color'].strip():
+            item['color'] = a['color'].strip()
+        arcs.append(item)
+    return dots, arcs
+
+
+def _g3d_js(v) -> str:
+    """json.dumps that is safe inside an inline <script> (no </script>, ASCII only)."""
+    import json
+    return (json.dumps(v, ensure_ascii=True).replace('<', '\\u003c').replace('>', '\\u003e')
+            .replace('&', '\\u0026'))
+
+
 def _render_globe_3d(b: dict) -> str:
-    size = int(b.get('size', 300))
-    color = _esc(b.get('color', b.get('colour', '#4f46e5')))
-    speed = float(b.get('speed', 0.5))
-    theme = b.get('theme', 'dark')
-    bg = '#0a0a1a' if theme == 'dark' else '#f0f4ff'
+    """Draws the payload's dots (pins) and great-circle arcs, as atoms_globe.gs does. Colours
+    are theme tokens: accent from --accent unless the payload sets `color`, backdrop from --bg
+    (canvas cannot use var(), so the script resolves --accent once). Reduced motion: no
+    auto-spin, pulses or travelling dots; a static frame that redraws only on drag."""
+    size = int(_g3d_num(b.get('size')) or 300)
+    color = b.get('color', b.get('colour'))
+    color = color.strip() if isinstance(color, str) and color.strip() else None
+    speed = _g3d_num(b.get('speed'))
+    speed = 0.006 if speed is None else speed
+    lines = max(2, min(int(_g3d_num(b.get('lines')) or 10), 60))
+    earth = b.get('theme') == 'earth'
+    dots, arcs = _g3d_data(b)
     import hashlib
-    uid = 'g3d' + hashlib.md5(color.encode()).hexdigest()[:5]
+    import json
+    uid = 'g3d' + hashlib.md5(json.dumps([size, color, dots, arcs], sort_keys=True).encode()).hexdigest()[:6]
+    cfg = _g3d_js({'color': color, 'speed': speed, 'lines': lines, 'earth': earth, 'dots': dots, 'arcs': arcs})
+    js = (
+        '(function(){'
+        'var c=document.getElementById("' + uid + '");if(!c)return;'
+        'var C=' + cfg + ';var x=c.getContext("2d");if(!x)return;'
+        'var col=C.color||(getComputedStyle(c).getPropertyValue("--accent").trim())||"#4f46e5";'
+        'var W=c.width,H=c.height,cx=W/2,cy=H/2,R=W*0.42,n=C.lines,S=60;'
+        'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+        'var aY=0,aX=0,spd=RM?0:C.speed,drag=false,lx=0,ly=0,vx=0,vy=0;'
+        'function projVec(v){var x1=v.x*Math.cos(aY)+v.z*Math.sin(aY),z1=-v.x*Math.sin(aY)+v.z*Math.cos(aY);'
+        'var y2=v.y*Math.cos(aX)-z1*Math.sin(aX),z2=v.y*Math.sin(aX)+z1*Math.cos(aX);return{sx:cx+x1*R,sy:cy-y2*R,z:z2};}'
+        'function toVec(lat,lon){var la=lat*Math.PI/180,lo=lon*Math.PI/180;return{x:Math.cos(la)*Math.sin(lo),y:Math.sin(la),z:Math.cos(la)*Math.cos(lo)};}'
+        'function proj(lat,lon){return projVec({x:Math.cos(lat)*Math.sin(lon),y:Math.sin(lat),z:Math.cos(lat)*Math.cos(lon)});}'
+        'function slerp(a,b,t){var d=Math.max(-1,Math.min(1,a.x*b.x+a.y*b.y+a.z*b.z)),om=Math.acos(d);'
+        'if(om<0.0001)return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t};'
+        'var s=Math.sin(om),fa=Math.sin((1-t)*om)/s,fb=Math.sin(t*om)/s;return{x:a.x*fa+b.x*fb,y:a.y*fa+b.y*fb,z:a.z*fa+b.z*fb};}'
+        'function draw(){'
+        'x.clearRect(0,0,W,H);x.globalAlpha=1;'
+        'if(!drag){aY+=spd+vx;aX+=vy;vx*=0.94;vy*=0.94;}'
+        'var g=x.createRadialGradient(cx-R*0.28,cy-R*0.28,R*0.05,cx,cy,R);'
+        'if(C.earth){g.addColorStop(0,"#1e3a8a");g.addColorStop(0.7,"#0c1a4a");g.addColorStop(1,"#000");}'
+        'else{g.addColorStop(0,col);g.addColorStop(1,col);}'
+        'x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fillStyle=g;x.globalAlpha=C.earth?1:0.12;x.fill();x.globalAlpha=1;'
+        'x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.strokeStyle=col;x.globalAlpha=0.35;x.lineWidth=1.5;x.stroke();'
+        '[false,true].forEach(function(front){'
+        'x.lineWidth=front?1:0.6;x.setLineDash(front?[]:[3,3]);x.globalAlpha=front?0.7:0.15;x.strokeStyle=col;'
+        'for(var i=1;i<n;i++){var lat=(i/n)*Math.PI-Math.PI/2;x.beginPath();var go=false;'
+        'for(var j=0;j<=S;j++){var p=proj(lat,(j/S)*Math.PI*2);if((p.z>=0)!==front){go=false;continue;}go?x.lineTo(p.sx,p.sy):x.moveTo(p.sx,p.sy);go=true;}x.stroke();}'
+        'for(var i=0;i<n;i++){var lon=(i/n)*Math.PI*2;x.beginPath();var go=false;'
+        'for(var j=0;j<=S;j++){var p=proj((j/S)*Math.PI-Math.PI/2,lon);if((p.z>=0)!==front){go=false;continue;}go?x.lineTo(p.sx,p.sy):x.moveTo(p.sx,p.sy);go=true;}x.stroke();}'
+        '});x.setLineDash([]);x.globalAlpha=1;'
+        'var now=Date.now();'
+        'C.arcs.forEach(function(arc,ai){var v1=toVec(arc.from[0],arc.from[1]),v2=toVec(arc.to[0],arc.to[1]),acol=arc.color||col;'
+        'x.beginPath();var go=false;'
+        'for(var i=0;i<=50;i++){var p=projVec(slerp(v1,v2,i/50));if(p.z<0){go=false;continue;}go?x.lineTo(p.sx,p.sy):x.moveTo(p.sx,p.sy);go=true;}'
+        'x.strokeStyle=acol;x.globalAlpha=0.8;x.lineWidth=1.5;x.stroke();x.globalAlpha=1;'
+        'if(!RM){var pp=projVec(slerp(v1,v2,((now/2500)+ai*0.33)%1));'
+        'if(pp.z>0){x.beginPath();x.arc(pp.sx,pp.sy,4,0,Math.PI*2);x.fillStyle=acol;x.fill();'
+        'x.beginPath();x.arc(pp.sx,pp.sy,8,0,Math.PI*2);x.strokeStyle=acol;x.globalAlpha=0.4;x.lineWidth=1;x.stroke();x.globalAlpha=1;}}'
+        '});'
+        'C.dots.forEach(function(d,i){var p=proj(d.lat*Math.PI/180,d.lon*Math.PI/180);if(p.z<-0.1)return;'
+        'var dc=d.color||col,a=Math.max(0.25,Math.min(1,p.z+0.5));'
+        'if(!RM){var ph=((now/1400)+i*0.618)%1;x.beginPath();x.arc(p.sx,p.sy,ph*18,0,Math.PI*2);x.strokeStyle=dc;x.globalAlpha=a*(1-ph)*0.6;x.lineWidth=1;x.stroke();}'
+        'x.globalAlpha=a;x.beginPath();x.arc(p.sx,p.sy,4,0,Math.PI*2);x.fillStyle=dc;x.fill();'
+        'if(d.label){x.font="bold 11px sans-serif";x.fillText(d.label,p.sx+7,p.sy+4);}'
+        'x.globalAlpha=1;});'
+        'if(!RM)requestAnimationFrame(draw);}'
+        'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});'
+        'document.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});'
+        'document.addEventListener("mousemove",function(e){if(!drag)return;vx=(e.clientX-lx)*0.012;vy=(e.clientY-ly)*0.012;'
+        'aY+=vx;aX+=vy;aX=Math.max(-1.4,Math.min(1.4,aX));lx=e.clientX;ly=e.clientY;if(RM)draw();});'
+        'draw();})();'
+    )
     return ('<div style="display:flex;justify-content:center;margin:1rem 0;">'
             '<canvas role="img" aria-label="Rotating 3D globe" id="' + uid + '" width="' + str(size) + '" height="' + str(size) + '" '
-            'style="border-radius:50%;background:' + bg + ';display:block;cursor:grab;"></canvas>'
-            + _g3d_alt_html(b) + '</div>'
-            '<script>(function(){'
-            'var c=document.getElementById("' + uid + '");'
-            'if(!c)return;'
-            'var x=c.getContext("2d"),W=c.width,H=c.height,cx=W/2,cy=H/2,r=W*0.42;'
-            'var spd=' + f'{speed:.2f}' + ',t=0,drag=false,lx=0,ly=0,rx=0,ry=0;'
-            'var pts=[];'
-            'for(var i=0;i<200;i++){'
-            'var lat=(Math.random()-0.5)*Math.PI;'
-            'var lon=Math.random()*Math.PI*2;'
-            'pts.push([lat,lon]);}'
-            'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});'
-            'window.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});'
-            'window.addEventListener("mousemove",function(e){'
-            'if(!drag)return;rx+=(e.clientX-lx)*0.005;ry+=(e.clientY-ly)*0.005;lx=e.clientX;ly=e.clientY;});'
-            '(function loop(){'
-            'requestAnimationFrame(loop);'
-            'if(!drag)rx+=spd*0.01;'
-            'x.clearRect(0,0,W,H);'
-            'x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);'
-            'var grd=x.createRadialGradient(cx-r*0.3,cy-r*0.3,0,cx,cy,r);'
-            'grd.addColorStop(0,"' + color + '66");grd.addColorStop(1,"' + color + '11");'
-            'x.fillStyle=grd;x.fill();'
-            'pts.forEach(function(p){'
-            'var lat=p[0]+ry,lon=p[1]+rx;'
-            'var cosLat=Math.cos(lat);'
-            'var px3=cosLat*Math.sin(lon);'
-            'var py3=Math.sin(lat);'
-            'var pz3=cosLat*Math.cos(lon);'
-            'if(pz3<0)return;'
-            'var px=cx+r*px3,py=cy-r*py3;'
-            'var alpha=0.3+pz3*0.7;'
-            'x.beginPath();x.arc(px,py,1.5,0,Math.PI*2);'
-            'x.fillStyle="' + color + '";x.globalAlpha=alpha;x.fill();x.globalAlpha=1;'
-            '});'
-            't+=0.01;'
-            '})();'
-            '})();</script>')
+            'style="border-radius:50%;background:var(--bg,#0a0a1a);display:block;cursor:grab;"></canvas>'
+            + _g3d_alt_html(b) + '</div><script>' + js + '</script>')
+
 _RENDERERS["globe_3d"] = _render_globe_3d
 
 
