@@ -170,3 +170,26 @@ def test_schema_documents_the_new_fields_and_the_fixed_layout():
     assert {"set_c_name", "set_c_exclusive", "intersection_ac", "intersection_bc", "intersection_abc", "version"} <= set(a["fields"])
     assert "not area-proportional" in a["notes"] and "venn.js" in a["notes"]
     assert "intersection" in a["fields"] and "A and B only" in a["fields"]["intersection"]
+
+
+# ─── a cut item always says it was cut ─────────────────────────────────────────
+def _item_lines(html):
+    return re.findall(r'<div class="v3i" style="[^"]*">• ([^<]*)</div>', html)
+
+
+def test_every_cut_item_ends_in_an_ellipsis_and_an_uncut_one_does_not(core_js):
+    exact, over = "x" * 28, "An item whose text is much too long to fit a region at 320px wide"
+    b = _v3(set_a_exclusive=[exact, over, "y" * 29, "z" * 60, "short"], set_b_exclusive=["w" * 200])
+    for html in (_py(b), _gas_batch(core_js, [b])[0]):
+        lines = _item_lines(html)
+        assert exact in lines and "short" in lines                                    # 28 characters or fewer: untouched
+        cut = [l for l in lines if l.endswith("\u2026")]
+        assert len(cut) == 4 and all(2 <= len(l) <= 28 for l in cut), cut        # over, 29 x, 60 x and 200 x characters
+        assert exact in lines and "short" in lines and len(lines) == 11, lines   # the seven other items are whole and unmarked
+        assert over in html.split("<table")[1]                                        # the table keeps the full text
+
+
+def test_the_long_payload_has_no_mid_word_cut_without_an_ellipsis(core_js):
+    for html in (_py(PAYLOADS["long"]), _gas_batch(core_js, [PAYLOADS["long"]])[0]):
+        assert "An item whose text is much t…" in html or "An item whose text is much…" in html
+        assert "much t</div>" not in html

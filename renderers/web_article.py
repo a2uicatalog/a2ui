@@ -32724,6 +32724,11 @@ def _vd_raw(v, mx):
     return ('' if (v is None or v is _IF_UNDEF) else _if_str(v))[:mx]
 
 
+def _vd_cut(x):
+    """An item as drawn in its region: at most 28 characters, and a cut one ends in an ellipsis (at most 27 characters, trailing spaces dropped, and the ellipsis). Twin: _vdCut."""
+    return _cv_esc(x if len(x) <= 28 else x[:27].rstrip() + '\u2026')
+
+
 def _vd_usable(v):
     if isinstance(v, str):
         return v.strip() != ''
@@ -32756,7 +32761,7 @@ def _render_venn_diagram3(b: dict) -> str:
     for i, r in enumerate(_VD_REGIONS):
         its, lim = items[i], r[2]
         shown = its if len(its) <= lim else its[:lim - 1]
-        lines = ''.join('<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _if_s(x, 28) + '</div>' for x in shown)
+        lines = ''.join('<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _vd_cut(x) + '</div>' for x in shown)
         if len(its) > lim:
             lines += '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-style:italic;color:' + _IF_MUTED + ';">+' + str(len(its) - len(shown)) + ' more</div>'
         if lines:

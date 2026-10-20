@@ -652,6 +652,7 @@ var _VD_REGIONS = [  // key, field, max lines (items + the "+n more" line), cent
   ['ab', 'intersection', 3, [50, 22, 16.5], [50, 25, 26]], ['ac', 'intersection_ac', 3, [29, 58.5, 14.5], [29, 61, 21]], ['bc', 'intersection_bc', 3, [71, 58.5, 14.5], [71, 61, 21]],
   ['abc', 'intersection_abc', 4, [50, 43, 19.5], [50, 40, 27.5]]];
 var _VD_COL = ['var(--accent,#2563EB)', '#C2410C', '#15803D'], _VD_MAXREAD = 60;
+function _vdCut(x) { return _esc(x.length <= 28 ? x : x.slice(0, 27).replace(/\s+$/, '') + '\u2026'); }
 function _vdRaw(v, mx) { return String(v === undefined || v === null ? '' : v).slice(0, mx); }
 function _vdUsable(v) { return typeof v === 'string' ? /[^ \t\n\r]/.test(v) : (typeof v === 'number' && isFinite(v)); }
 function _vdCss() {
@@ -677,7 +678,7 @@ function _vdRender3(b) {
   var boxes = '';
   _VD_REGIONS.forEach(function(r, i) {
     var its = items[i], lim = r[2], shown = its.length <= lim ? its : its.slice(0, lim - 1);
-    var lines = shown.map(function(x) { return '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _ifS(x, 28) + '</div>'; }).join('');
+    var lines = shown.map(function(x) { return '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _vdCut(x) + '</div>'; }).join('');
     if (its.length > lim) lines += '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-style:italic;color:var(--muted,#475569);">+' + (its.length - shown.length) + ' more</div>';
     if (lines) boxes += '<div class="v3t v3' + r[0] + '" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _ifK(3 + i, 10) + '">' + lines + '</div>';
   });
