@@ -32148,6 +32148,162 @@ def _oc_lines(t, w, bold):
     return 1 if tw <= w - 22 else min(3, int(math.ceil(tw / (w - 30))))
 
 
+# Radial layout (I55). The tree is d3's radial tidy tree (_oc_radial); the chart is a square that scales to its container, between 300 and 640 px.
+# Labels are rotated along their ray and flipped on the left half so the text never reads upside down. Their lengths are fitted by arithmetic, in
+# px at several chart sides, so that no two labels touch, no label touches another node's dot, and none leaves the square: the fitted length is the
+# label's max-width and the browser draws the ellipsis; the full label stays in the text (and in a title when it can be cut).
+_OC_RAD_MIN, _OC_RAD_BREAK, _OC_RAD_MAX = 300, 520, 640
+_OC_RAD_A = (300, 340, 400, 460, 519)                    # the sides the lengths are fitted at below the break
+_OC_RAD_B = (520, 580, 640)                              # ... and from the break up
+_OC_RAD_R = (0.24, 0.30, 0.34)                           # the outermost ring as a fraction of the side, for 1, 2 and 3 rings
+_OC_RAD_PAD, _OC_RAD_TH, _OC_RAD_MINL, _OC_RAD_CAP, _OC_RAD_EDGE, _OC_RAD_GAP = 9, 15, 14, 210, 2, 2
+
+
+def _oc_q(v):
+    """Round to 1e-6 so the fitting below (which compares lengths to touching distances) sees identical doubles in both twins whatever Math.cos / Math.sin
+    (V8) and libm (CPython) do in the last bit."""
+    return math.floor(v * 1e6 + 0.5) / 1e6
+
+
+def _oc_rad_hit(a, b, m):
+    """Oriented boxes (centre x, y, axis ux, uy, half length, half thickness) closer than m px: a separating-axis test."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    for ax, ay in ((a[2], a[3]), (-a[3], a[2]), (b[2], b[3]), (-b[3], b[2])):
+        ra = a[4] * abs(ax * a[2] + ay * a[3]) + a[5] * abs(-ax * a[3] + ay * a[2])
+        rb = b[4] * abs(ax * b[2] + ay * b[3]) + b[5] * abs(-ax * b[3] + ay * b[2])
+        if abs(dx * ax + dy * ay) >= ra + rb + m:
+            return False
+    return True
+
+
+def _oc_rad_dot(a, px, py, r, m):
+    """Does the circle at (px, py) of radius r come within m px of the oriented box a?"""
+    lx = (px - a[0]) * a[2] + (py - a[1]) * a[3]
+    ly = -(px - a[0]) * a[3] + (py - a[1]) * a[2]
+    qx, qy = max(abs(lx) - a[4], 0), max(abs(ly) - a[5], 0)
+    return qx * qx + qy * qy < (r + m) * (r + m)
+
+
+def _oc_rad_fit(side, fx, fy, ux, uy, nat, dot_r):
+    """Label lengths in px at a chart side: from the natural length down to the longest that stays in the square, then shortened 4 px at a time,
+    the longer of two touching labels first, until no label touches another label or another node's dot. fx, fy: node centres as fractions of the side."""
+    n = len(nat)
+    cx = [side * (0.5 + fx[i]) for i in range(n)]
+    cy = [side * (0.5 + fy[i]) for i in range(n)]
+    h = _OC_RAD_TH / 2
+    L = []
+    for i in range(n):
+        sx, sy = cx[i] + _OC_RAD_PAD * ux[i], cy[i] + _OC_RAD_PAD * uy[i]
+        lim = nat[i]
+        for sg in (1, -1):
+            for c, u in ((sx - sg * h * uy[i], ux[i]), (sy + sg * h * ux[i], uy[i])):
+                if u > 1e-9:
+                    lim = min(lim, (side - _OC_RAD_EDGE - c) / u)
+                elif u < -1e-9:
+                    lim = min(lim, (_OC_RAD_EDGE - c) / u)
+        L.append(max(_OC_RAD_MINL, int(math.floor(lim))))
+
+    def box(i):
+        m = _OC_RAD_PAD + L[i] / 2
+        return (cx[i] + m * ux[i], cy[i] + m * uy[i], ux[i], uy[i], L[i] / 2, h)
+    pairs, dots = [], []                       # lengths only shrink, so only what could meet at the starting lengths is ever tested
+    for i in range(n):
+        for j in range(n):
+            d2 = (cx[j] - cx[i]) ** 2 + (cy[j] - cy[i]) ** 2
+            if j > i and d2 <= (2 * _OC_RAD_PAD + L[i] + L[j] + 2 * _OC_RAD_TH + _OC_RAD_GAP) ** 2:
+                pairs.append((i, j))
+            if j != i and d2 <= (_OC_RAD_PAD + L[i] + _OC_RAD_TH + dot_r[j] + _OC_RAD_GAP) ** 2:
+                dots.append((i, j))
+    for _ in range(400):
+        changed = False
+        for i, j in pairs:
+            if _oc_rad_hit(box(i), box(j), _OC_RAD_GAP):
+                k = i if L[i] >= L[j] else j
+                if L[k] <= _OC_RAD_MINL:
+                    k = j if k == i else i
+                if L[k] > _OC_RAD_MINL:
+                    L[k] = max(_OC_RAD_MINL, L[k] - 4)
+                    changed = True
+        for i, j in dots:
+            if L[i] > _OC_RAD_MINL and _oc_rad_dot(box(i), cx[j], cy[j], dot_r[j], _OC_RAD_GAP):
+                L[i] = max(_OC_RAD_MINL, L[i] - 4)
+                changed = True
+        if not changed:
+            break
+    return L
+
+
+def _oc_render_radial(b, flat, kids, top, root, virt, note):
+    total = len(flat)
+    n = len(kids)
+    deep = max(_oc_radial(kids, root, 1)[2])             # the number of rings
+    frac = _OC_RAD_R[min(max(deep, 1), 3) - 1]
+    ang, rad, dep = _oc_radial(kids, root, frac)
+    fx, fy, ux, uy, lab_x = [], [], [], [], list(ang)
+    if not virt:
+        ch = sorted(ang[c] for c in kids[root])
+        if ch:
+            best, at = -1, 0
+            for k in range(len(ch)):
+                gap = (ch[k + 1] if k + 1 < len(ch) else ch[0] + 2 * math.pi) - ch[k]
+                if gap > best:
+                    best, at = gap, ch[k] + gap / 2
+            lab_x[root] = at % (2 * math.pi)
+        else:
+            lab_x[root] = math.pi / 2
+    for i in range(n):
+        px, py = _oc_polar(ang[i], rad[i])
+        qx, qy = _oc_polar(lab_x[i], 1)
+        fx.append(_oc_q(px))
+        fy.append(_oc_q(py))
+        ux.append(_oc_q(qx))
+        uy.append(_oc_q(qy))
+    nat = [min(_OC_RAD_CAP, int(math.ceil(_oc_chars(flat[i]['t']) * 7.2)) + 2) if i < total else 0 for i in range(n)]
+    dot_r = [7 if (i == root and not virt) else 5 for i in range(n)]
+    ids = list(range(total))
+    sel = lambda a: [a[i] for i in ids]
+    La = [_OC_RAD_CAP] * total
+    Lb = [_OC_RAD_CAP] * total
+    for sides, tgt in ((_OC_RAD_A, La), (_OC_RAD_B, Lb)):
+        for side in sides:
+            got = _oc_rad_fit(side, sel(fx), sel(fy), sel(ux), sel(uy), sel(nat), sel(dot_r))
+            for i in range(total):
+                tgt[i] = min(tgt[i], got[i])
+    cnt = [0]
+    paths_l = []
+
+    def emit(idx):
+        out = '<ul style="position:static;display:block;list-style:none;margin:0;padding:0;">'
+        for i in idx:
+            f = flat[i]
+            k = _if_k(cnt[0], total)
+            cnt[0] += 1
+            isroot = i == root and not virt
+            dr = dot_r[i]
+            left, topp = _if_fixed(50 + 100 * fx[i], 3) + '%', _if_fixed(50 + 100 * fy[i], 3) + '%'
+            deg = lab_x[i] * 180 / math.pi - 90
+            flip = ux[i] < -1e-9
+            tf = ('rotate(' + _if_fixed(deg - 180, 2) + 'deg) translate(calc(-100% - ' + str(_OC_RAD_PAD) + 'px),-50%)') if flip else ('rotate(' + _if_fixed(deg, 2) + 'deg) translate(' + str(_OC_RAD_PAD) + 'px,-50%)')
+            out += ('<li style="position:static;padding:0;"><div aria-hidden="true" style="position:absolute;left:' + left + ';top:' + topp + ';width:' + str(2 * dr) + 'px;height:' + str(2 * dr) + 'px;margin:-' + str(dr) + 'px 0 0 -' + str(dr) + 'px;box-sizing:border-box;border-radius:50%;'
+                    + ('background:#E0E7FF;border:2px solid #1E1B4B;' if isroot else 'background:var(--surface,#F8FAFC);border:2px solid #64748B;') + k + 'opacity:var(--k,1);"></div>'
+                    + '<div class="ocr-l"' + (' title="' + _if_s(f['l'], 28) + '"' if nat[i] > Lb[i] else '') + ' style="position:absolute;left:' + left + ';top:' + topp + ';width:max-content;max-width:var(--la);height:' + str(_OC_RAD_TH) + 'px;--la:' + str(La[i]) + 'px;--lb:' + str(Lb[i]) + 'px;transform-origin:0 0;transform:' + tf
+                    + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:' + str(_OC_RAD_TH) + 'px;color:var(--text,#0F172A);' + ('font-weight:700;' if isroot else '')
+                    + 'text-shadow:0 0 2px var(--bg,#fff),0 0 2px var(--bg,#fff),0 0 3px var(--bg,#fff);' + k + 'opacity:var(--k,1);">' + _if_s(f['l'], 28) + '</div>')
+            if f['par'] >= 0:
+                p = f['par']
+                c = _oc_link_radial(ang[p], rad[p], ang[i], rad[i])
+                paths_l.append('<path d="M' + _if_fixed(500 + 1000 * c[0], 3) + ' ' + _if_fixed(500 + 1000 * c[1], 3) + 'C' + ' '.join(_if_fixed(500 + 1000 * v, 3) for v in c[2:]) + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
+            if f['kids']:
+                out += emit(f['kids'])
+            out += '</li>'
+        return out + '</ul>'
+    lists = emit(top)
+    svg = '<svg aria-hidden="true" viewBox="0 0 1000 1000" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + ''.join(paths_l) + '</svg>'
+    css = '<style>.ocr-l{max-width:var(--la)}@container (min-width:' + str(_OC_RAD_BREAK) + 'px){.ocr-l{max-width:var(--lb)}}</style>'
+    chart = '<div style="position:relative;margin:0 auto;width:100%;min-width:' + str(_OC_RAD_MIN) + 'px;max-width:' + str(_OC_RAD_MAX) + 'px;aspect-ratio:1/1;">' + svg + lists + '</div>'
+    return _if_wrap(_if_title(b) + css + '<div class="ifoct" data-oc="radial" data-oc-layout="radial" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + chart + '</div>' + note)
+
+
 def _render_org_chart(b: dict) -> str:
     nodes = []
     for n in _if_arr(_if_g(b, 'nodes'), _OC_MAX_NODES):
@@ -32169,8 +32325,11 @@ def _render_org_chart(b: dict) -> str:
                 f['kids'] = build(n['id'], depth + 1, len(flat) - 1)
         return out
     top = build('', 0, -1)
+    note = _hg_version_note(b, 'org_chart')
     if not flat:
-        return _if_wrap(_if_title(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>')
+        return _if_wrap(_if_title(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>' + note)
+    lay_v = _if_g(b, 'layout')
+    mode = lay_v if isinstance(lay_v, str) and lay_v in ('cluster', 'radial') else 'tree'
     total = len(flat)
     ws = [_oc_width(f['t'], f['depth'] == 0) for f in flat]
     kids = [f['kids'] for f in flat]
@@ -32181,7 +32340,12 @@ def _render_org_chart(b: dict) -> str:
         root = total
     else:
         root = top[0]
-    xs, ds = _oc_layout(kids, root, ws)
+    if mode == 'radial':
+        return _oc_render_radial(b, flat, kids, top, root, virt, note)
+    if mode == 'cluster':
+        xs, ds = _oc_cluster(kids, root, ws)             # d3 cluster(): leaves on the last tier
+    else:
+        xs, ds = _oc_layout(kids, root, ws)
     lo = min(xs[i] - ws[i] / 2 for i in range(total))
     wid = max(xs[i] + ws[i] / 2 for i in range(total)) - lo
     tiers = max(ds[:total]) + 1 - (1 if virt else 0)
@@ -32189,6 +32353,7 @@ def _render_org_chart(b: dict) -> str:
     nh = (38, 46, 60)[lines - 1]
     sh = 1 if virt else 0
     td_wid = wid
+    dl = ' data-oc-layout="cluster"' if mode == 'cluster' else ''
 
     def chart(box, link, cw, ch, cls):
         cnt = [0]
@@ -32200,7 +32365,7 @@ def _render_org_chart(b: dict) -> str:
                 f = flat[i]
                 k = _if_k(cnt[0], total)
                 cnt[0] += 1
-                out += ('<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tm_pct(box[i][0], cw) + ';top:' + _tm_pct(box[i][1], ch) + ';width:' + _tm_pct(ws[i], cw) + ';height:' + str(nh) + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
+                out += ('<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tm_pct(max(0, box[i][0]), cw) + ';top:' + _tm_pct(max(0, box[i][1]), ch) + ';width:' + _tm_pct(ws[i], cw) + ';height:' + str(nh) + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
                         + _if_card('padding:2px 6px;' + ('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if f['depth'] == 0 else '') + k + _IF_FADE) + '">' + _if_s(f['l'], 28) + '</div>')
                 if link[i] is not None:
                     paths_l.append('<path d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
@@ -32219,15 +32384,16 @@ def _render_org_chart(b: dict) -> str:
         d = ds[i] - sh
         td_box[i] = (xs[i] - lo - ws[i] / 2, d * row)
         if flat[i]['par'] >= 0:
-            y0 = (d - 1) * row + nh
+            y0 = (ds[flat[i]['par']] - sh) * row + nh          # the parent's bottom edge; the bus runs in the gap below it
             y1 = d * row
-            td_link[i] = 'M' + _if_fixed(xs[flat[i]['par']] - lo, 3) + ' ' + str(y0) + 'V' + _if_fixed((y0 + y1) / 2, 1) + 'H' + _if_fixed(xs[i] - lo, 3) + 'V' + str(y1)
+            td_link[i] = 'M' + _if_fixed(xs[flat[i]['par']] - lo, 3) + ' ' + str(y0) + 'V' + _if_fixed(y0 + 14, 1) + 'H' + _if_fixed(xs[i] - lo, 3) + 'V' + str(y1)
     td = chart(td_box, td_link, td_wid, td_ht, 'oct' if td_wid > _OC_W else '')
     if td_wid <= _OC_W:
         # fits the nominal width: top-down only
-        return _if_wrap(_if_title(b) + '<div class="ifoct" data-oc="td" style="overflow-x:auto;contain:inline-size;">' + td + '</div>')
+        return _if_wrap(_if_title(b) + '<div class="ifoct" data-oc="td"' + dl + ' style="overflow-x:auto;contain:inline-size;">' + td + '</div>' + note)
     # wider: also lay it out left to right (the same d3 tree() call with x and y swapped; separation in box heights, tiers as columns) and let CSS pick
-    ys, _d = _oc_layout(kids, root, [nh] * total + ([0] if virt else []))
+    hs = [nh] * total + ([0] if virt else [])
+    ys = _oc_cluster(kids, root, hs)[0] if mode == 'cluster' else _oc_layout(kids, root, hs)[0]
     top0 = min(ys[i] - nh / 2 for i in range(total))
     l_ht = max(ys[i] + nh / 2 for i in range(total)) - top0
     colw = [0] * tiers
@@ -32244,13 +32410,14 @@ def _render_org_chart(b: dict) -> str:
         l_box[i] = (col[d], ys[i] - nh / 2 - top0)
         pa = flat[i]['par']
         if pa >= 0:
-            l_link[i] = 'M' + _if_fixed(col[d - 1] + ws[pa], 3) + ' ' + _if_fixed(ys[pa] - top0, 3) + 'H' + _if_fixed(col[d] - g / 2, 3) + 'V' + _if_fixed(ys[i] - top0, 3) + 'H' + _if_fixed(col[d], 3)
+            pd = ds[pa] - sh
+            l_link[i] = 'M' + _if_fixed(col[pd] + ws[pa], 3) + ' ' + _if_fixed(ys[pa] - top0, 3) + 'H' + _if_fixed(col[pd] + colw[pd] + g / 2, 3) + 'V' + _if_fixed(ys[i] - top0, 3) + 'H' + _if_fixed(col[d], 3)
     ltr = chart(l_box, l_link, l_wid, l_ht, 'ocl')
     w = str(int(math.ceil(td_wid)))
     cls = 'oc-w' + w
     css = ('<style>.' + cls + ' .oct{display:none}.' + cls + ' .ocl{display:block}@container (min-width:' + w + 'px){.' + cls + ' .oct{display:block}.' + cls + ' .ocl{display:none}}'
            '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>')
-    return _if_wrap(_if_title(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>')
+    return _if_wrap(_if_title(b) + css + '<div class="ifoct ' + cls + '" data-oc="both"' + dl + ' style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>' + note)
 
 
 # ─── histogram (proposal): d3-array 3.2.4 bin() with thresholdSturges and the default nice domain, ported by hand. Twin: _hgBin in atoms_infographic.gs. ───

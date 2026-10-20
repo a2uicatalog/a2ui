@@ -494,6 +494,119 @@ function _ocWidth(t, bold) {
   return Math.max(64, Math.min(full, Math.max(112, Math.min(140, word))));
 }
 function _ocLines(t, w, bold) { var tw = Math.ceil(t.length * (bold ? 9.6 : 8.4)); return tw <= w - 22 ? 1 : Math.min(3, Math.ceil(tw / (w - 30))); }
+// ── org_chart radial layout (I55): twin of the radial block above _render_org_chart in renderers/web_article.py (read its comments) ──
+var _OC_RAD_MIN = 300, _OC_RAD_BREAK = 520, _OC_RAD_MAX = 640, _OC_RAD_A = [300, 340, 400, 460, 519], _OC_RAD_B = [520, 580, 640], _OC_RAD_R = [0.24, 0.30, 0.34];
+var _OC_RAD_PAD = 9, _OC_RAD_TH = 15, _OC_RAD_MINL = 14, _OC_RAD_CAP = 210, _OC_RAD_EDGE = 2, _OC_RAD_GAP = 2;
+// Round to 1e-6 so the fitting sees identical doubles in both twins whatever Math.cos / Math.sin and CPython's libm do in the last bit.
+function _ocQ(v) { return Math.floor(v * 1e6 + 0.5) / 1e6; }
+function _ocRadHit(a, b, m) {
+  var dx = b[0] - a[0], dy = b[1] - a[1], ax = [a[2], -a[3], b[2], -b[3]], ay = [a[3], a[2], b[3], b[2]], i, ra, rb;
+  for (i = 0; i < 4; i++) {
+    ra = a[4] * Math.abs(ax[i] * a[2] + ay[i] * a[3]) + a[5] * Math.abs(-ax[i] * a[3] + ay[i] * a[2]);
+    rb = b[4] * Math.abs(ax[i] * b[2] + ay[i] * b[3]) + b[5] * Math.abs(-ax[i] * b[3] + ay[i] * b[2]);
+    if (Math.abs(dx * ax[i] + dy * ay[i]) >= ra + rb + m) return false;
+  }
+  return true;
+}
+function _ocRadDot(a, px, py, r, m) {
+  var lx = (px - a[0]) * a[2] + (py - a[1]) * a[3], ly = -(px - a[0]) * a[3] + (py - a[1]) * a[2], qx = Math.max(Math.abs(lx) - a[4], 0), qy = Math.max(Math.abs(ly) - a[5], 0);
+  return qx * qx + qy * qy < (r + m) * (r + m);
+}
+function _ocRadFit(side, fx, fy, ux, uy, nat, dotR) {
+  var n = nat.length, cx = [], cy = [], L = [], h = _OC_RAD_TH / 2, i, j, sg, sx, sy, lim, cs, us, q, pairs = [], dots = [], d2;
+  for (i = 0; i < n; i++) { cx.push(side * (0.5 + fx[i])); cy.push(side * (0.5 + fy[i])); }
+  for (i = 0; i < n; i++) {
+    sx = cx[i] + _OC_RAD_PAD * ux[i]; sy = cy[i] + _OC_RAD_PAD * uy[i]; lim = nat[i];
+    for (sg = 1; sg >= -1; sg -= 2) {
+      cs = [sx - sg * h * uy[i], sy + sg * h * ux[i]]; us = [ux[i], uy[i]];
+      for (q = 0; q < 2; q++) {
+        if (us[q] > 1e-9) lim = Math.min(lim, (side - _OC_RAD_EDGE - cs[q]) / us[q]);
+        else if (us[q] < -1e-9) lim = Math.min(lim, (_OC_RAD_EDGE - cs[q]) / us[q]);
+      }
+    }
+    L.push(Math.max(_OC_RAD_MINL, Math.floor(lim)));
+  }
+  function box(i) { var m = _OC_RAD_PAD + L[i] / 2; return [cx[i] + m * ux[i], cy[i] + m * uy[i], ux[i], uy[i], L[i] / 2, h]; }
+  for (i = 0; i < n; i++) for (j = 0; j < n; j++) {
+    d2 = (cx[j] - cx[i]) * (cx[j] - cx[i]) + (cy[j] - cy[i]) * (cy[j] - cy[i]);
+    if (j > i && d2 <= Math.pow(2 * _OC_RAD_PAD + L[i] + L[j] + 2 * _OC_RAD_TH + _OC_RAD_GAP, 2)) pairs.push([i, j]);
+    if (j !== i && d2 <= Math.pow(_OC_RAD_PAD + L[i] + _OC_RAD_TH + dotR[j] + _OC_RAD_GAP, 2)) dots.push([i, j]);
+  }
+  var pass, changed, k, pr;
+  for (pass = 0; pass < 400; pass++) {
+    changed = false;
+    for (q = 0; q < pairs.length; q++) {
+      i = pairs[q][0]; j = pairs[q][1];
+      if (_ocRadHit(box(i), box(j), _OC_RAD_GAP)) {
+        k = L[i] >= L[j] ? i : j;
+        if (L[k] <= _OC_RAD_MINL) k = k === i ? j : i;
+        if (L[k] > _OC_RAD_MINL) { L[k] = Math.max(_OC_RAD_MINL, L[k] - 4); changed = true; }
+      }
+    }
+    for (q = 0; q < dots.length; q++) {
+      i = dots[q][0]; j = dots[q][1];
+      if (L[i] > _OC_RAD_MINL && _ocRadDot(box(i), cx[j], cy[j], dotR[j], _OC_RAD_GAP)) { L[i] = Math.max(_OC_RAD_MINL, L[i] - 4); changed = true; }
+    }
+    if (!changed) break;
+  }
+  return L;
+}
+function _ocRenderRadial(b, flat, kids, top, root, virt, note) {
+  var total = flat.length, n = kids.length, i, deep = 0, d0 = _ocRadial(kids, root, 1)[2];
+  for (i = 0; i < n; i++) deep = Math.max(deep, d0[i]);
+  var frac = _OC_RAD_R[Math.min(Math.max(deep, 1), 3) - 1], r = _ocRadial(kids, root, frac), ang = r[0], rad = r[1];
+  var labX = ang.slice(), fx = [], fy = [], ux = [], uy = [], nat = [], dotR = [], pt;
+  if (!virt) {
+    var ch = kids[root].map(function(c) { return ang[c]; }).sort(function(a, c) { return a - c; });
+    if (ch.length) {
+      var best = -1, at = 0, k, gap;
+      for (k = 0; k < ch.length; k++) {
+        gap = (k + 1 < ch.length ? ch[k + 1] : ch[0] + 2 * Math.PI) - ch[k];
+        if (gap > best) { best = gap; at = ch[k] + gap / 2; }
+      }
+      labX[root] = at % (2 * Math.PI);
+    } else labX[root] = Math.PI / 2;
+  }
+  for (i = 0; i < n; i++) {
+    pt = _ocPolar(ang[i], rad[i]); fx.push(_ocQ(pt[0])); fy.push(_ocQ(pt[1]));
+    pt = _ocPolar(labX[i], 1); ux.push(_ocQ(pt[0])); uy.push(_ocQ(pt[1]));
+    nat.push(i < total ? Math.min(_OC_RAD_CAP, Math.ceil(flat[i].t.length * 7.2) + 2) : 0);
+    dotR.push(i === root && !virt ? 7 : 5);
+  }
+  var La = [], Lb = [], sel = function(a) { return a.slice(0, total); }, fit = function(sides, tgt) {
+    sides.forEach(function(side) {
+      var got = _ocRadFit(side, sel(fx), sel(fy), sel(ux), sel(uy), sel(nat), sel(dotR)), j;
+      for (j = 0; j < total; j++) tgt[j] = Math.min(tgt[j], got[j]);
+    });
+  };
+  for (i = 0; i < total; i++) { La.push(_OC_RAD_CAP); Lb.push(_OC_RAD_CAP); }
+  fit(_OC_RAD_A, La); fit(_OC_RAD_B, Lb);
+  var cnt = 0, paths = [];
+  var emit = function(idx) {
+    return '<ul style="position:static;display:block;list-style:none;margin:0;padding:0;">' + idx.map(function(i) {
+      var f = flat[i], kk = _ifK(cnt, total), isroot = i === root && !virt, dr = dotR[i], out, c, p;
+      cnt++;
+      var left = (50 + 100 * fx[i]).toFixed(3) + '%', tp = (50 + 100 * fy[i]).toFixed(3) + '%', deg = labX[i] * 180 / Math.PI - 90, flip = ux[i] < -1e-9;
+      var tf = flip ? 'rotate(' + (deg - 180).toFixed(2) + 'deg) translate(calc(-100% - ' + _OC_RAD_PAD + 'px),-50%)' : 'rotate(' + deg.toFixed(2) + 'deg) translate(' + _OC_RAD_PAD + 'px,-50%)';
+      out = '<li style="position:static;padding:0;"><div aria-hidden="true" style="position:absolute;left:' + left + ';top:' + tp + ';width:' + (2 * dr) + 'px;height:' + (2 * dr) + 'px;margin:-' + dr + 'px 0 0 -' + dr + 'px;box-sizing:border-box;border-radius:50%;' +
+        (isroot ? 'background:#E0E7FF;border:2px solid #1E1B4B;' : 'background:var(--surface,#F8FAFC);border:2px solid #64748B;') + kk + 'opacity:var(--k,1);"></div>' +
+        '<div class="ocr-l"' + (nat[i] > Lb[i] ? ' title="' + _ifS(f.l, 28) + '"' : '') + ' style="position:absolute;left:' + left + ';top:' + tp + ';width:max-content;max-width:var(--la);height:' + _OC_RAD_TH + 'px;--la:' + La[i] + 'px;--lb:' + Lb[i] + 'px;transform-origin:0 0;transform:' + tf +
+        ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:' + _OC_RAD_TH + 'px;color:var(--text,#0F172A);' + (isroot ? 'font-weight:700;' : '') +
+        'text-shadow:0 0 2px var(--bg,#fff),0 0 2px var(--bg,#fff),0 0 3px var(--bg,#fff);' + kk + 'opacity:var(--k,1);">' + _ifS(f.l, 28) + '</div>';
+      if (f.par >= 0) {
+        p = f.par; c = _ocLinkRadial(ang[p], rad[p], ang[i], rad[i]);
+        paths.push('<path d="M' + (500 + 1000 * c[0]).toFixed(3) + ' ' + (500 + 1000 * c[1]).toFixed(3) + 'C' + c.slice(2).map(function(v) { return (500 + 1000 * v).toFixed(3); }).join(' ') + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + kk + 'opacity:var(--k,1);"/>');
+      }
+      if (f.kids.length) out += emit(f.kids);
+      return out + '</li>';
+    }).join('') + '</ul>';
+  };
+  var lists = emit(top);
+  var svg = '<svg aria-hidden="true" viewBox="0 0 1000 1000" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + paths.join('') + '</svg>';
+  var css = '<style>.ocr-l{max-width:var(--la)}@container (min-width:' + _OC_RAD_BREAK + 'px){.ocr-l{max-width:var(--lb)}}</style>';
+  var chart = '<div style="position:relative;margin:0 auto;width:100%;min-width:' + _OC_RAD_MIN + 'px;max-width:' + _OC_RAD_MAX + 'px;aspect-ratio:1/1;">' + svg + lists + '</div>';
+  return _ifWrap(_ifTitle(b) + css + '<div class="ifoct" data-oc="radial" data-oc-layout="radial" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + chart + '</div>' + note);
+}
 _RENDERERS['org_chart'] = function(b) {
   var nodes = _ifArr(b.nodes, _OC_MAX_NODES).map(function(n) { n = _ifObj(n); return { id: String(n.id === undefined ? '' : n.id).slice(0, 24), l: n.label, p: String(n.parent_id === undefined ? '' : n.parent_id).slice(0, 24) }; });
   // Flatten to a tree in document (pre-order) order: four tiers, six children per node; a duplicated id renders its subtree under each.
@@ -510,12 +623,13 @@ _RENDERERS['org_chart'] = function(b) {
     });
     return out;
   };
-  var top = build('', 0, -1);
-  if (!flat.length) return _ifWrap(_ifTitle(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>');
+  var top = build('', 0, -1), note = _hgVersionNote(b, 'org_chart'), mode = (b.layout === 'cluster' || b.layout === 'radial') ? b.layout : 'tree';
+  if (!flat.length) return _ifWrap(_ifTitle(b) + '<div class="ifoct" style="overflow-x:auto;contain:inline-size;"></div>' + note);
   var total = flat.length, ws = flat.map(function(f) { return _ocWidth(f.t, f.depth === 0); });
   var kids = flat.map(function(f) { return f.kids; }), virt = top.length !== 1, root;
   if (virt) { kids.push(top); ws.push(0); root = total; } else { root = top[0]; }
-  var lay = _ocLayout(kids, root, ws), xs = lay[0], ds = lay[1], i, lo = Infinity, hi = -Infinity, maxd = 0, lines = 1;
+  if (mode === 'radial') return _ocRenderRadial(b, flat, kids, top, root, virt, note);
+  var lay = mode === 'cluster' ? _ocCluster(kids, root, ws) : _ocLayout(kids, root, ws), xs = lay[0], ds = lay[1], i, lo = Infinity, hi = -Infinity, maxd = 0, lines = 1;
   for (i = 0; i < total; i++) {
     lo = Math.min(lo, xs[i] - ws[i] / 2); hi = Math.max(hi, xs[i] + ws[i] / 2); maxd = Math.max(maxd, ds[i]);
     lines = Math.max(lines, _ocLines(flat[i].t, ws[i], flat[i].depth === 0));
@@ -527,7 +641,7 @@ _RENDERERS['org_chart'] = function(b) {
       return '<ul style="position:static;display:block;list-style:none;margin:0;padding:0;">' + ids.map(function(i) {
         var f = flat[i], k = _ifK(cnt, total), out;
         cnt++;
-        out = '<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tmPct(box[i][0], cw) + ';top:' + _tmPct(box[i][1], ch) + ';width:' + _tmPct(ws[i], cw) + ';height:' + nh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
+        out = '<li style="position:static;padding:0;"><div style="position:absolute;left:' + _tmPct(Math.max(0, box[i][0]), cw) + ';top:' + _tmPct(Math.max(0, box[i][1]), ch) + ';width:' + _tmPct(ws[i], cw) + ';height:' + nh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
           + _ifCard('padding:2px 6px;' + (f.depth === 0 ? 'background:#E0E7FF;color:#1E1B4B;font-weight:700;' : '') + k + _IF_FADE) + '">' + _ifS(f.l, 28) + '</div>';
         if (link[i] !== undefined) paths.push('<path d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>');
         if (f.kids.length) out += emit(f.kids);
@@ -544,17 +658,18 @@ _RENDERERS['org_chart'] = function(b) {
   for (i = 0; i < total; i++) {
     d = ds[i] - sh; tdBox[i] = [xs[i] - lo - ws[i] / 2, d * row];
     if (flat[i].par >= 0) {
-      var y0 = (d - 1) * row + nh, y1 = d * row;
-      tdLink[i] = 'M' + (xs[flat[i].par] - lo).toFixed(3) + ' ' + y0 + 'V' + ((y0 + y1) / 2).toFixed(1) + 'H' + (xs[i] - lo).toFixed(3) + 'V' + y1;
+      var y0 = (ds[flat[i].par] - sh) * row + nh, y1 = d * row;
+      tdLink[i] = 'M' + (xs[flat[i].par] - lo).toFixed(3) + ' ' + y0 + 'V' + (y0 + 14).toFixed(1) + 'H' + (xs[i] - lo).toFixed(3) + 'V' + y1;
     }
   }
   var td = chart(tdBox, tdLink, tdWid, tdHt, tdWid > _OC_W ? 'oct' : '');
-  if (tdWid <= _OC_W) return _ifWrap(_ifTitle(b) + '<div class="ifoct" data-oc="td" style="overflow-x:auto;contain:inline-size;">' + td + '</div>');
+  var dl = mode === 'cluster' ? ' data-oc-layout="cluster"' : '';
+  if (tdWid <= _OC_W) return _ifWrap(_ifTitle(b) + '<div class="ifoct" data-oc="td"' + dl + ' style="overflow-x:auto;contain:inline-size;">' + td + '</div>' + note);
   // wider: also lay it out left to right (the same d3 tree() call with x and y swapped; separation in box heights, tiers as columns) and let CSS pick
   var hs = [], ys, top0 = Infinity, bot = -Infinity, colw = [], col = [0], g, t, sumw, lBox = [], lLink = [];
   for (i = 0; i < total; i++) hs.push(nh);
   if (virt) hs.push(0);
-  ys = _ocLayout(kids, root, hs)[0];
+  ys = (mode === 'cluster' ? _ocCluster(kids, root, hs) : _ocLayout(kids, root, hs))[0];
   for (i = 0; i < total; i++) { top0 = Math.min(top0, ys[i] - nh / 2); bot = Math.max(bot, ys[i] + nh / 2); }
   for (t = 0; t < tiers; t++) colw.push(0);
   for (i = 0; i < total; i++) colw[ds[i] - sh] = Math.max(colw[ds[i] - sh], ws[i]);
@@ -563,13 +678,13 @@ _RENDERERS['org_chart'] = function(b) {
   for (t = 1; t < tiers; t++) col.push(col[t - 1] + colw[t - 1] + g);
   for (i = 0; i < total; i++) {
     d = ds[i] - sh; lBox[i] = [col[d], ys[i] - nh / 2 - top0]; pa = flat[i].par;
-    if (pa >= 0) lLink[i] = 'M' + (col[d - 1] + ws[pa]).toFixed(3) + ' ' + (ys[pa] - top0).toFixed(3) + 'H' + (col[d] - g / 2).toFixed(3) + 'V' + (ys[i] - top0).toFixed(3) + 'H' + col[d].toFixed(3);
+    if (pa >= 0) lLink[i] = 'M' + (col[ds[pa] - sh] + ws[pa]).toFixed(3) + ' ' + (ys[pa] - top0).toFixed(3) + 'H' + (col[ds[pa] - sh] + colw[ds[pa] - sh] + g / 2).toFixed(3) + 'V' + (ys[i] - top0).toFixed(3) + 'H' + col[d].toFixed(3);
   }
   var ltr = chart(lBox, lLink, sumw + g * (tiers - 1), bot - top0, 'ocl');
   var w = String(Math.ceil(tdWid)), cls = 'oc-w' + w;
   var css = '<style>.' + cls + ' .oct{display:none}.' + cls + ' .ocl{display:block}@container (min-width:' + w + 'px){.' + cls + ' .oct{display:block}.' + cls + ' .ocl{display:none}}' +
     '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>';
-  return _ifWrap(_ifTitle(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>');
+  return _ifWrap(_ifTitle(b) + css + '<div class="ifoct ' + cls + '" data-oc="both"' + dl + ' style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>' + note);
 };
 
 // ── histogram (proposal) ─────────────────────────────────────────────────────────────────────────────────────
