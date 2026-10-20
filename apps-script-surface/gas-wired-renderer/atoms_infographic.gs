@@ -422,3 +422,117 @@ _RENDERERS['org_chart'] = function(b) {
     '@media print{.' + cls + ' .oct{display:block!important}.' + cls + ' .ocl{display:none!important}}</style>';
   return _ifWrap(_ifTitle(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>');
 };
+
+// ── histogram (proposal) ─────────────────────────────────────────────────────────────────────────────────────
+// d3-array 3.2.4 bin() with thresholdSturges and the default (niced) domain, ported by hand (ISC, Mike Bostock); twin of _hg_bin in renderers/web_article.py.
+function _hgP10(p) { return Number('1e' + p); }   // exact decimal literals, not Math.pow(10, p): V8's pow is an ulp off for some exponents and differs between engine versions
+function _hgTickSpec(start, stop, count) {
+  var step = (stop - start) / Math.max(0, count), power = Math.floor(Math.log10(step)), error = step / _hgP10(power);
+  var factor = error >= Math.sqrt(50) ? 10 : error >= Math.sqrt(10) ? 5 : error >= Math.sqrt(2) ? 2 : 1, i1, i2, inc;
+  if (power < 0) {
+    inc = _hgP10(-power) / factor; i1 = Math.round(start * inc); i2 = Math.round(stop * inc);
+    if (i1 / inc < start) ++i1; if (i2 / inc > stop) --i2; inc = -inc;
+  } else {
+    inc = _hgP10(power) * factor; i1 = Math.round(start / inc); i2 = Math.round(stop / inc);
+    if (i1 * inc < start) ++i1; if (i2 * inc > stop) --i2;
+  }
+  if (i2 < i1 && 0.5 <= count && count < 2) return _hgTickSpec(start, stop, count * 2);
+  return [i1, i2, inc];
+}
+function _hgTicks(start, stop, count) {
+  if (!(count > 0)) return [];
+  if (start === stop) return [start];
+  var rev = stop < start, sp = rev ? _hgTickSpec(stop, start, count) : _hgTickSpec(start, stop, count), i1 = sp[0], i2 = sp[1], inc = sp[2];
+  if (!(i2 >= i1)) return [];
+  var n = i2 - i1 + 1, t = new Array(n), i;
+  for (i = 0; i < n; ++i) t[i] = rev ? (inc < 0 ? (i2 - i) / -inc : (i2 - i) * inc) : (inc < 0 ? (i1 + i) / -inc : (i1 + i) * inc);
+  return t;
+}
+function _hgTickInc(start, stop, count) { return _hgTickSpec(start, stop, count)[2]; }
+function _hgNice(start, stop, count) {
+  var pre;
+  while (true) {
+    var step = _hgTickInc(start, stop, count);
+    if (step === pre || step === 0 || !isFinite(step)) return [start, stop];
+    if (step > 0) { start = Math.floor(start / step) * step; stop = Math.ceil(stop / step) * step; }
+    else if (step < 0) { start = Math.ceil(start * step) / step; stop = Math.floor(stop * step) / step; }
+    pre = step;
+  }
+}
+function _hgBin(values, target) {
+  var n = values.length, mx = Math.max.apply(null, values), x0 = Math.min.apply(null, values), x1 = mx, i, x;
+  var tn = target === null ? Math.max(1, Math.ceil(Math.log(n) / Math.LN2) + 1) : target, nz = _hgNice(x0, x1, tn), step;
+  x0 = nz[0]; x1 = nz[1];
+  var tz = _hgTicks(x0, x1, tn);
+  if (tz.length && tz[0] <= x0) step = _hgTickInc(x0, x1, tn);
+  if (tz.length && tz[tz.length - 1] >= x1) {
+    if (mx >= x1) {
+      var st = _hgTickInc(x0, x1, tn);
+      if (isFinite(st)) { if (st > 0) x1 = (Math.floor(x1 / st) + 1) * st; else if (st < 0) x1 = (Math.ceil(x1 * -st) + 1) / -st; }
+    } else tz.pop();
+  }
+  var m = tz.length, a = 0, b = m;
+  while (a < tz.length && tz[a] <= x0) ++a;
+  while (b - 1 >= 0 && tz[b - 1] > x1) --b;
+  if (a || b < m) { tz = tz.slice(a, b); m = b - a; }
+  var edges = [], counts = [];
+  for (i = 0; i <= m; ++i) { edges.push([i > 0 ? tz[i - 1] : x0, i < m ? tz[i] : x1]); counts.push(0); }
+  var fin = isFinite(step);
+  for (i = 0; i < n; ++i) {
+    x = values[i];
+    if (!(x0 <= x && x <= x1)) continue;
+    if (fin && step > 0) counts[Math.min(m, Math.floor((x - x0) / step))]++;
+    else if (fin && step < 0) { var j = Math.floor((x0 - x) * step); counts[Math.min(m, j + (j >= 0 && j < tz.length && tz[j] <= x ? 1 : 0))]++; }
+    else if (!fin) { var lo = 0, hi = m; while (lo < hi) { var mid = (lo + hi) >>> 1; if (tz[mid] <= x) lo = mid + 1; else hi = mid; } counts[lo]++; }
+  }
+  return [edges, counts];
+}
+function _hgDecimals(vals) {
+  var P = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8];
+  for (var d = 0; d < 9; d++) { var k = P[d]; if (vals.every(function(v) { return Math.abs(v * k - Math.round(v * k)) <= Math.max(1e-7, Math.abs(v * k) * 1e-12); })) return d; }
+  return 8;
+}
+function _hgNum(v, d) {
+  var s = v.toFixed(d); if (/^-0(\.0+)?$/.test(s)) s = s.slice(1);
+  var neg = s.charAt(0) === '-', p = s.replace('-', '').split('.');
+  return (neg ? '-' : '') + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (p.length > 1 ? '.' + p[1] : '');
+}
+_RENDERERS['histogram'] = function(b) {
+  var raw = _ifArr(b.values, 2000), vals = raw.filter(function(v) { return typeof v === 'number' && Math.abs(v) <= 1e12; }), skipped = raw.length - vals.length;
+  var skipNote = skipped ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">' + skipped + (skipped === 1 ? ' entry was' : ' entries were') + ' not a usable number and ' + (skipped === 1 ? 'was' : 'were') + ' skipped.</div>' : '';
+  if (vals.length < 5) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A histogram needs at least 5 numbers; this list has ' + vals.length + '.</div>' + skipNote);
+  var target = (typeof b.bins === 'number' && isFinite(b.bins)) ? Math.round(Math.min(40, Math.max(3, b.bins))) : null;
+  var bn = _hgBin(vals, target), edges = bn[0], counts = bn[1], m = counts.length, X0 = edges[0][0], X1 = edges[m - 1][1], span = X1 - X0;
+  var cmax = Math.max.apply(null, counts), top, yt = [], i;
+  if (cmax <= 4) { top = cmax; for (i = 0; i <= cmax; i++) yt.push(i); } else { top = _hgNice(0, cmax, 4)[1]; yt = _hgTicks(0, top, 4); }
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var ev = edges.map(function(e) { return e[0]; }); ev.push(edges[m - 1][1]);
+  var d = _hgDecimals(ev), lab = ev.map(function(v) { return _hgNum(v, d); }), tall = counts.indexOf(cmax), us = unit ? ' ' + unit : '';
+  var aria = 'Histogram of ' + vals.length + ' values in ' + m + (m === 1 ? ' bin' : ' bins') + ' from ' + lab[0] + ' to ' + lab[lab.length - 1] + us +
+    '. Tallest bin: ' + lab[tall] + ' to ' + lab[tall + 1] + us + ', ' + cmax + (cmax === 1 ? ' value.' : ' values.');
+  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; })), want = Math.max(2, Math.min(8, Math.floor(48 / maxlen))), stride = Math.ceil(ev.length / want);
+  var pos = function(e) { return span > 0 ? _tmPct(e - X0, span) : '50%'; };
+  var rects = '', grid = '', xs = '';
+  for (i = 0; i < m; i++) {
+    var x = span > 0 ? (edges[i][0] - X0) / span * 1000 : 0, w = span > 0 ? (edges[i][1] - edges[i][0]) / span * 1000 : 1000, h = top > 0 ? counts[i] / top * 1000 : 0;
+    rects += '<rect class="hgb" x="' + x.toFixed(2) + '" y="' + (1000 - h).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" style="' + _ifK(i, m) +
+      'transform:scaleY(var(--k,1));"><title>' + _esc(lab[i] + ' to ' + lab[i + 1] + us + ': ' + counts[i]) + '</title></rect>';
+  }
+  yt.forEach(function(t) {
+    var bt = top > 0 ? (t / top * 100).toFixed(3) + '%' : '0%';
+    grid += '<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + (t === 0 ? 'var(--muted,#475569)' : 'var(--border,#CBD5E1)') + ';"></div>' +
+      '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgNum(t, 0) + '</div>';
+  });
+  for (i = 0; i < ev.length; i++) {
+    if (i % stride === 0 && (span > 0 || i === 0)) xs += '<div class="hgx' + (i % (2 * stride) === 0 ? ' hgc' : '') + '" style="position:absolute;top:100%;left:' + pos(ev[i]) + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + lab[i] + '</div></div>';
+  }
+  var css = '<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}' +
+    '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>';
+  var chart = '<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
+    '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">Count of values per bin</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid +
+    '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>' + xs + '</div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 46px;">' + _esc(cap) + '</div>' : '') + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + skipNote + _ifTable(['Bin from', 'Bin to', 'Count'], counts.map(function(c, k) { return [lab[k] + us, lab[k + 1] + us, String(c)]; })));
+};

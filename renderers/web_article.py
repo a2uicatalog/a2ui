@@ -31097,8 +31097,236 @@ def _render_org_chart(b: dict) -> str:
     return _if_wrap(_if_title(b) + css + '<div class="ifoct ' + cls + '" data-oc="both" style="overflow-x:auto;contain:inline-size;container-type:inline-size;">' + td + ltr + '</div>')
 
 
+# ─── histogram (proposal): d3-array 3.2.4 bin() with thresholdSturges and the default nice domain, ported by hand. Twin: _hgBin in atoms_infographic.gs. ───
+_HG_E10, _HG_E5, _HG_E2 = math.sqrt(50), math.sqrt(10), math.sqrt(2)
+# Powers of ten are the exact decimal literals in BOTH twins (Number('1e-5')), not Math.pow(10, -5): V8's pow is off by one ulp for some exponents and differs between engine versions.
+_HG_INF = float('inf')
+_HG_NAN = float('nan')
+
+
+def _hg_pow10(p):
+    if p > 308:
+        return _HG_INF
+    return float('1e%d' % p)
+
+
+def _hg_div(a, b):
+    """JavaScript a / b: division by zero gives Infinity or NaN, not an exception."""
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return _HG_NAN if (a == 0 or a != a) else math.copysign(_HG_INF, a) * math.copysign(1.0, b)
+
+
+def _hg_floor(x):
+    return x if (x != x or x in (_HG_INF, -_HG_INF)) else float(math.floor(x))
+
+
+def _hg_round(x):
+    """JavaScript Math.round."""
+    if x != x or x in (_HG_INF, -_HG_INF):
+        return x
+    f = math.floor(x)
+    return float(f + 1 if x - f >= 0.5 else f)
+
+
+def _hg_tick_spec(start, stop, count):
+    step = _hg_div(stop - start, max(0, count))
+    if not (step > 0) or step == _HG_INF:
+        return (_HG_NAN, _HG_NAN, -_HG_INF if step <= 0 else _HG_INF)
+    power = math.floor(math.log10(step))
+    error = _hg_div(step, _hg_pow10(power))
+    factor = 10 if error >= _HG_E10 else 5 if error >= _HG_E5 else 2 if error >= _HG_E2 else 1
+    if power < 0:
+        inc = _hg_div(_hg_pow10(-power), factor)
+        i1 = _hg_round(start * inc)
+        i2 = _hg_round(stop * inc)
+        if _hg_div(i1, inc) < start:
+            i1 += 1
+        if _hg_div(i2, inc) > stop:
+            i2 -= 1
+        inc = -inc
+    else:
+        inc = _hg_pow10(power) * factor
+        i1 = _hg_round(_hg_div(start, inc))
+        i2 = _hg_round(_hg_div(stop, inc))
+        if i1 * inc < start:
+            i1 += 1
+        if i2 * inc > stop:
+            i2 -= 1
+    if i2 < i1 and 0.5 <= count < 2:
+        return _hg_tick_spec(start, stop, count * 2)
+    return (i1, i2, inc)
+
+
+def _hg_ticks(start, stop, count):
+    if not (count > 0):
+        return []
+    if start == stop:
+        return [start]
+    rev = stop < start
+    i1, i2, inc = _hg_tick_spec(stop, start, count) if rev else _hg_tick_spec(start, stop, count)
+    if not (i2 >= i1):
+        return []
+    n = int(i2 - i1 + 1)
+    out = []
+    for i in range(n):
+        if rev:
+            out.append((i2 - i) / -inc if inc < 0 else (i2 - i) * inc)
+        else:
+            out.append((i1 + i) / -inc if inc < 0 else (i1 + i) * inc)
+    return out
+
+
+def _hg_tick_increment(start, stop, count):
+    return _hg_tick_spec(start, stop, count)[2]
+
+
+def _hg_nice(start, stop, count):
+    pre = None
+    while True:
+        step = _hg_tick_increment(start, stop, count)
+        if (pre is not None and step == pre) or step == 0 or step != step or step in (_HG_INF, -_HG_INF):
+            return start, stop
+        if step > 0:
+            start = _hg_floor(start / step) * step
+            stop = math.ceil(stop / step) * step
+        elif step < 0:
+            start = math.ceil(start * step) / step
+            stop = _hg_floor(stop * step) / step
+        pre = step
+
+
+def _hg_bin(values, target=None):
+    """d3.bin().thresholds(target or thresholdSturges)(values): returns ([(x0, x1), ...], [count, ...]). values: finite floats, at least one."""
+    import bisect as _bisect
+    n = len(values)
+    mx = max(values)
+    x0, x1 = min(values), mx
+    tn = float(target) if target is not None else float(max(1, math.ceil(math.log(n) / math.log(2)) + 1))
+    x0, x1 = _hg_nice(x0, x1, tn)
+    tz = _hg_ticks(x0, x1, tn)
+    step = None
+    if tz and tz[0] <= x0:
+        step = _hg_tick_increment(x0, x1, tn)
+    if tz and tz[-1] >= x1:
+        if mx >= x1:
+            st = _hg_tick_increment(x0, x1, tn)
+            if st == st and st not in (_HG_INF, -_HG_INF):
+                if st > 0:
+                    x1 = (math.floor(x1 / st) + 1) * st
+                elif st < 0:
+                    x1 = (math.ceil(x1 * -st) + 1) / -st
+        else:
+            tz.pop()
+    m = len(tz)
+    a, b = 0, m
+    while a < len(tz) and tz[a] <= x0:
+        a += 1
+    while b - 1 >= 0 and tz[b - 1] > x1:
+        b -= 1
+    if a or b < m:
+        tz = tz[a:b]
+        m = b - a
+    edges = [(x0 if i == 0 else tz[i - 1], tz[i] if i < m else x1) for i in range(m + 1)]
+    counts = [0] * (m + 1)
+    fin = step is not None and step == step and step not in (_HG_INF, -_HG_INF)
+    for x in values:
+        if not (x0 <= x <= x1):
+            continue
+        if fin and step > 0:
+            counts[min(m, int(math.floor((x - x0) / step)))] += 1
+        elif fin and step < 0:
+            j = int(math.floor((x0 - x) * step))
+            counts[min(m, j + (1 if 0 <= j < len(tz) and tz[j] <= x else 0))] += 1
+        elif not fin:
+            counts[_bisect.bisect_right(tz, x, 0, m)] += 1
+    return edges, counts
+
+
+_HG_P10 = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8]
+
+
+def _hg_decimals(vals):
+    for d in range(9):
+        k = _HG_P10[d]
+        if all(abs(v * k - _hg_round(v * k)) <= max(1e-7, abs(v * k) * 1e-12) for v in vals):
+            return d
+    return 8
+
+
+def _hg_num(v, d):
+    s = _if_fixed(v, d)
+    neg = s.startswith('-')
+    ip, dot, fp = s.lstrip('-').partition('.')
+    return ('-' if neg else '') + re.sub(r'\B(?=(\d{3})+(?!\d))', ',', ip) + dot + fp
+
+
+def _render_histogram(b: dict) -> str:
+    raw = _if_arr(_if_g(b, 'values'), 2000)
+    vals = [float(v) for v in raw if isinstance(v, (int, float)) and not isinstance(v, bool) and abs(v) <= 1e12]
+    skipped = len(raw) - len(vals)
+    skip_note = ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">' + str(skipped) + (' entry was' if skipped == 1 else ' entries were') + ' not a usable number and ' + ('was' if skipped == 1 else 'were') + ' skipped.</div>') if skipped else ''
+    if len(vals) < 5:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A histogram needs at least 5 numbers; this list has ' + str(len(vals)) + '.</div>' + skip_note)
+    bv = _if_g(b, 'bins')
+    target = _hg_round(min(40, max(3, bv))) if (isinstance(bv, (int, float)) and not isinstance(bv, bool) and bv == bv and abs(bv) != _HG_INF) else None
+    edges, counts = _hg_bin(vals, target)
+    m = len(counts)
+    X0, X1 = edges[0][0], edges[-1][1]
+    span = X1 - X0
+    cmax = max(counts)
+    if cmax <= 4:
+        top, yt = float(cmax), [float(i) for i in range(cmax + 1)]
+    else:
+        top = _hg_nice(0, cmax, 4)[1]
+        yt = _hg_ticks(0, top, 4)
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    ev = [e[0] for e in edges] + [edges[-1][1]]
+    d = _hg_decimals(ev)
+    lab = [_hg_num(v, d) for v in ev]
+    tall = counts.index(cmax)
+    aria = ('Histogram of ' + str(len(vals)) + ' values in ' + str(m) + (' bin' if m == 1 else ' bins') + ' from ' + lab[0] + ' to ' + lab[-1] + (' ' + unit if unit else '')
+            + '. Tallest bin: ' + lab[tall] + ' to ' + lab[tall + 1] + (' ' + unit if unit else '') + ', ' + str(cmax) + (' value.' if cmax == 1 else ' values.'))
+    maxlen = max(len(s) for s in lab)
+    want = max(2, min(8, 48 // maxlen))
+    stride = -(-len(ev) // want)
+
+    def pos(e):
+        return _tm_pct(e - X0, span) if span > 0 else '50%'
+    rects = ''
+    for i in range(m):
+        x = (edges[i][0] - X0) / span * 1000 if span > 0 else 0.0
+        w = (edges[i][1] - edges[i][0]) / span * 1000 if span > 0 else 1000.0
+        h = counts[i] / top * 1000 if top > 0 else 0.0
+        rects += ('<rect class="hgb" x="' + _if_fixed(x, 2) + '" y="' + _if_fixed(1000 - h, 2) + '" width="' + _if_fixed(w, 2) + '" height="' + _if_fixed(h, 2) + '" style="' + _if_k(i, m)
+                  + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(lab[i] + ' to ' + lab[i + 1] + (' ' + unit if unit else '') + ': ' + str(counts[i])) + '</title></rect>')
+    grid = ''
+    for t in yt:
+        bt = _if_fixed(t / top * 100, 3) + '%' if top > 0 else '0%'
+        grid += ('<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + ('var(--muted,#475569)' if t == 0 else 'var(--border,#CBD5E1)') + ';"></div>'
+                 '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _hg_num(t, 0) + '</div>')
+    xs = ''
+    for i in range(len(ev)):
+        if i % stride == 0 and (span > 0 or i == 0):
+            xs += ('<div class="hgx' + (' hgc' if i % (2 * stride) == 0 else '') + '" style="position:absolute;top:100%;left:' + pos(ev[i]) + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+                   '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + lab[i] + '</div></div>')
+    css = ('<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}'
+           '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>')
+    chart = ('<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
+             + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">Count of values per bin</div>'
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid
+             + '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>'
+             + xs + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 46px;">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    return _if_wrap(_if_title(b) + chart + skip_note
+                    + _if_table(['Bin from', 'Bin to', 'Count'], [[lab[i] + (' ' + unit if unit else ''), lab[i + 1] + (' ' + unit if unit else ''), str(counts[i])] for i in range(m)]))
+
+
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram)):
     _RENDERERS[_if_name] = _if_fn
 
 

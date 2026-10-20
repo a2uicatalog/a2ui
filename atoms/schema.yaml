@@ -20985,6 +20985,33 @@ blocks:
       tiers and six children per node.
   notes: A screen reader hears the nesting as a list. Tiers appear top down with p.
   source: *ifg002
+- type: histogram
+  stage: preview
+  description: 'The distribution of a list of numbers: bars of counts per bin on a counted y axis, with the bin edges on the x axis. The
+    bins and the rounded axis come from d3-array bin() with the Sturges rule, computed on the server, so there is no script. A hidden table
+    gives each bin from, to and count. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item
+    --k, so a motion_timeline track on p grows the bars one after another and the standalone render is the finished picture; reduced
+    motion shows the end state.'
+  compact_description: 'histogram: counts of numbers per bin'
+  routing_text: Shows how a list of raw numbers is spread out, such as response times, order values or scores. Give the numbers, not the
+    counts; the bins are computed. Not for comparing categories (use a bar chart) or for showing a trend over time.
+  intent_phrases:
+  - Show the distribution of these response times.
+  - I need a histogram of order values.
+  - How are these exam scores spread out?
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    values: array (required, 5 to 2000) of numbers. Entries that are not finite numbers (text, null, true or false, NaN, Infinity) or whose
+      size is above 1e12 are skipped and counted in a note; with fewer than 5 numbers left a note replaces the chart. Only the first 2000
+      entries are read.
+    bins: integer (optional, 3 to 40). The number of bins to aim for. Default is the Sturges rule, ceil(log2(n)) + 1. d3 rounds the bin
+      edges to 1, 2 or 5 times a power of ten, so the number drawn can differ a little from the number asked for.
+    x_label: string (optional, max 40). Names the values on the x axis.
+    unit: string (optional, max 12). Appended to the x label and to the edge values in the hidden table.
+  notes: The y axis always starts at 0. A bin includes its lower edge and excludes its upper edge, except the last bin, which includes
+    both. Bars grow with p.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview
