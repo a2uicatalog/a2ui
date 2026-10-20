@@ -37,3 +37,15 @@ def test_id_graph_form_still_renders():
 def test_every_branch_is_open_so_static_renders_show_all_levels():
     html = _py(NESTED)
     assert html.count("<details") == html.count("<details style=\"margin:4px 0;\" open")
+
+
+def test_gas_twins_open_every_branch_like_python():
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent / "apps-script-surface"
+    for rel in ("gas-schema-renderer/atoms_charts.gs", "gas-schema-renderer/atoms_charts.js",
+                "gas-wired-renderer/atoms_charts.gs"):
+        src = (root / rel).read_text(encoding="utf-8")
+        start = src.index("_RENDERERS['decision_tree']")
+        body = src[start:start + 1800]
+        assert "depth === 0 ? ' open'" not in body, rel
+        assert "'<details style=\"margin:4px 0;\"' + ' open'" in body, rel
