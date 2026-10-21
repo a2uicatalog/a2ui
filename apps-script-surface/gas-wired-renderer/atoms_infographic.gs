@@ -2274,6 +2274,146 @@ function _voVoronoi(points, bounds) {
 }
 
 
+// ---- the voronoi atom (twin of _render_voronoi in renderers/web_article.py; see the comment there for the label rule)
+var _VO_W = 600, _VO_MAXN = 200, _VO_MINH = 200, _VO_MAXH = 600, _VO_PADX = 84, _VO_LY = 21, _VO_MAXWM = 820;
+// A label or group: text, or a finite number as JavaScript prints it; anything else (an array, an object, a boolean, null) is no text.
+function _voText(v, mx) {
+  if (typeof v === 'string') return v.slice(0, mx);
+  if (typeof v === 'number' && isFinite(v)) return String(v).slice(0, mx);
+  return '';
+}
+// Shoelace area of a closed polygon (first point repeated at the end), from coordinates relative to (ox, oy).
+function _voArea(poly, ox, oy) {
+  var s = 0, i;
+  for (i = 0; i < poly.length - 1; i++) s += (poly[i][0] - ox) * (poly[i + 1][1] - oy) - (poly[i + 1][0] - ox) * (poly[i][1] - oy);
+  return Math.abs(s) / 2;
+}
+// The distance from (px, py) to the nearest edge of the closed ring [[x, y], ...].
+function _voInscribed(px, py, ring) {
+  var best = Infinity, k, ax, ay, bx, by, dx, dy, l2, t, ex, ey, d;
+  for (k = 0; k < ring.length - 1; k++) {
+    ax = ring[k][0]; ay = ring[k][1]; bx = ring[k + 1][0]; by = ring[k + 1][1];
+    dx = bx - ax; dy = by - ay; l2 = dx * dx + dy * dy;
+    if (l2 === 0) continue;
+    t = Math.min(1, Math.max(0, ((px - ax) * dx + (py - ay) * dy) / l2));
+    ex = ax + t * dx - px; ey = ay + t * dy - py;
+    d = Math.sqrt(ex * ex + ey * ey);
+    if (d < best) best = d;
+  }
+  return best;
+}
+_RENDERERS['voronoi'] = function(b) {
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var notes = '';
+  function plural(c, one, many) { return c + ' ' + (c === 1 ? one : many); }
+  function fail(msg) { return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">' + msg + '</div>' + notes + _hgVersionNote(b, 'voronoi')); }
+  var raw = b.sites;
+  if (!Array.isArray(raw)) return fail('A Voronoi diagram needs a list of sites, each with a numeric x and y.');
+  var lst = raw.slice(0, _VO_MAXN), beyond = raw.length - _VO_MAXN;
+  if (beyond > 0) notes += _hgNote(plural(beyond, 'site', 'sites') + ' beyond the first ' + _VO_MAXN + ' ' + (beyond === 1 ? 'was' : 'were') + ' not used.');
+  var sites = [], seen = {}, bad = 0, merged = 0, i, e, x, y, key, isObj;
+  for (i = 0; i < lst.length; i++) {
+    e = lst[i];
+    isObj = e !== null && typeof e === 'object' && !Array.isArray(e);
+    x = isObj ? e.x : undefined; y = isObj ? e.y : undefined;
+    if (!(_cnUsable(x) && _cnUsable(y))) { bad++; continue; }
+    key = x + ',' + y;
+    if (Object.prototype.hasOwnProperty.call(seen, key)) { merged++; continue; }
+    seen[key] = sites.length;
+    sites.push({x: x, y: y, l: _voText(e.label, 24), g: _voText(e.group, 20), v: _cnUsable(e.value) ? e.value : null});
+  }
+  if (bad) notes += _hgNote(plural(bad, 'entry', 'entries') + ' ' + (bad === 1 ? 'was' : 'were') + ' not a site with a finite numeric x and y and ' + (bad === 1 ? 'was' : 'were') + ' left out.');
+  if (merged) notes += _hgNote(plural(merged, 'site', 'sites') + ' shared a position with an earlier site and ' + (merged === 1 ? 'was' : 'were') + ' merged into it.');
+  var n = sites.length;
+  if (n < 3) return fail('A Voronoi diagram needs at least 3 sites at different positions; this list has ' + n + '.');
+  var unit = _voText(b.unit, 12), us = unit ? ' ' + unit : '', xl = _voText(b.x_label, 30), yl = _voText(b.y_label, 30);
+  function axis(lo, hi) {
+    if (lo === hi) { lo = lo - 1; hi = hi + 1; }
+    var m = (hi - lo) * 0.05;
+    return _hgNice(lo - m, hi + m, 6);
+  }
+  var xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+  sites.forEach(function(s) { if (s.x < xmin) xmin = s.x; if (s.x > xmax) xmax = s.x; if (s.y < ymin) ymin = s.y; if (s.y > ymax) ymax = s.y; });
+  var ax = axis(xmin, xmax), ay = axis(ymin, ymax), X0 = ax[0], X1 = ax[1], Y0 = ay[0], Y1 = ay[1];
+  if (!(X1 > X0 && Y1 > Y0)) return fail('These sites are too close together, or too large, to draw.');
+  var cells;
+  try {
+    cells = _voVoronoi(sites.map(function(s) { return [s.x, s.y]; }), [X0, Y0, X1, Y1]).cells;
+  } catch (err) {
+    return fail('The regions could not be worked out for these sites.');
+  }
+  var W = _VO_W, hraw = W * (Y1 - Y0) / (X1 - X0), H = Math.floor(Math.min(_VO_MAXH, Math.max(_VO_MINH, hraw)) + 0.5);
+  if (Math.abs(H - hraw) > 1) notes += _hgNote('The x and y scales differ in this drawing (its height is kept between a third of its width and its width), so distances look stretched; the regions are worked out from the x and y values.');
+  var groups = [];
+  sites.forEach(function(s) { if (s.g && groups.indexOf(s.g) < 0) groups.push(s.g); });
+  sites.forEach(function(s) { s.c = s.g ? _SB_PALETTE[groups.indexOf(s.g) % 8] : (groups.length ? _AD_NONE : _SB_PALETTE[4]); });
+  var total = (X1 - X0) * (Y1 - Y0), areas = cells.map(function(c) { return c ? _voArea(c, X0, Y0) / total : 0; }), best = 0, nocell = 0;
+  for (i = 0; i < n; i++) { if (areas[i] > areas[best]) best = i; if (!cells[i]) nocell++; }
+  if (nocell) notes += _hgNote(plural(nocell, 'site is', 'sites are') + ' too close to another site to have a region of its own.');
+  function name(k) { return sites[k].l || ('Site ' + (k + 1)); }
+  function val(s) { return s.v !== null ? _bpFmt(s.v, 2) + us : ''; }
+  var cellsvg = '', labs = '', wms = [], s, cx, cy, tip, path, ring, wt, hw, d, wm;
+  for (i = 0; i < n; i++) {
+    s = sites[i];
+    cx = (s.x - X0) * W / (X1 - X0); cy = (Y1 - s.y) * H / (Y1 - Y0);
+    tip = name(i) + (s.g ? ' (' + s.g + ')' : '') + ': ';
+    path = '';
+    if (cells[i]) {
+      ring = cells[i].map(function(p) { return [(p[0] - X0) * W / (X1 - X0), (Y1 - p[1]) * H / (Y1 - Y0)]; });
+      path = '<path class="voc" d="M' + ring.slice(0, ring.length - 1).map(function(p) { return _cnR(p[0]) + ',' + _cnR(p[1]); }).join('L') + 'Z" fill="' + s.c + '" fill-opacity="0.22" style="stroke:var(--text,#0F172A);" ' +
+        'stroke-opacity="0.55" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+      tip += (s.v !== null ? val(s) + ', ' : '') + (areas[i] * 100).toFixed(1) + '% of the area';
+      if (s.l) {
+        wt = s.l.length * 7.2 + 8; hw = wt / 2;
+        d = _voInscribed(cx, cy, ring);
+        wm = d > 0 ? _cpQ(Math.sqrt(hw * hw + _VO_LY * _VO_LY) * W / d + _VO_PADX) : 1e9;
+        if (wm <= _VO_MAXWM) {
+          wm = wm > _CP_MINW ? wm : 0;
+          wms.push(wm);
+          labs += '<div class="vol' + (wm ? ' tmw' + wm : '') + '" style="position:absolute;left:' + _tmPct(cx, W) + ';top:' + _tmPct(cy, H) +
+            ';transform:translate(-50%,7px);white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _ifK(i, n) + 'opacity:var(--k,1);">' + _esc(s.l) + '</div>';
+        }
+      }
+    } else {
+      tip += 'no region of its own';
+    }
+    cellsvg += '<g class="vog" style="' + _ifK(i, n) + 'opacity:var(--k,1);">' + path + '<circle class="vod" cx="' + _cnR(cx) + '" cy="' + _cnR(cy) + '" r="4" fill="' + s.c +
+      '" style="stroke:var(--surface,#F8FAFC);" stroke-width="1.5"/><title>' + _esc(tip) + '</title></g>';
+  }
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">' +
+    '<rect x="0" y="0" width="' + W + '" height="' + H + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg +
+    '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>';
+  var ex = _hgTicks(X0, X1, 6), ey = _hgTicks(Y0, Y1, 6), xaxis = '', yaxis = '';
+  if (ex.length) { var dxs = _hgDecimals(ex); xaxis = _hgAxis(ex, X0, X1 - X0, ex.map(function(v) { return _hgNum(v, dxs); })); }
+  if (ey.length) {
+    var dys = _hgDecimals(ey);
+    ey.forEach(function(v) {
+      yaxis += '<div class="voy" style="position:absolute;right:100%;margin-right:6px;top:' + _tmPct(Y1 - v, Y1 - Y0) +
+        ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgNum(v, dys) + '</div>';
+    });
+  }
+  var aria = 'Nearest-site regions of ' + plural(n, 'site', 'sites') + (groups.length ? ' in ' + plural(groups.length, 'group', 'groups') : '') + '. Largest region: ' + name(best) + ', ' + (areas[best] * 100).toFixed(1) + '% of the area.';
+  var gates = [];
+  wms.forEach(function(w) { if (w && gates.indexOf(w) < 0) gates.push(w); });
+  gates.sort(function(a, c) { return a - c; });
+  var css = '<style>@container (max-width:560px){.ifvo .hgx:not(.hgc){display:none}}' + gates.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>';
+  var chart = '<div class="ifvo" style="container-type:inline-size;max-width:' + _VO_MAXWM + 'px;overflow:hidden;">' + css +
+    (yl ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 2px 0;">' + _esc(yl) + '</div>' : '') +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:8px 30px 34px 54px;">' + svg + yaxis + xaxis + labs + '</div>' +
+    (xl ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 30px 0 54px;">' + _esc(xl) + '</div>' : '') + '</div>';
+  var legend = '';
+  if (groups.length) {
+    var ent = groups.map(function(g, j) { return [g, _SB_PALETTE[j % 8]]; });
+    if (sites.some(function(t) { return !t.g; })) ent.push(['No group', _AD_NONE]);
+    legend = '<div class="voleg" style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);">' +
+      ent.map(function(t) { return '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;box-sizing:border-box;border:2px solid ' + t[1] + ';background:' + t[1] + '38;"></span>' + _esc(t[0]) + '</span>'; }).join('') + '</div>';
+  }
+  var rows = sites.map(function(t, k) { return [name(k), String(t.x), String(t.y), t.g || 'No group', t.v !== null ? val(t) : '—', (areas[k] * 100).toFixed(1) + '%']; });
+  return _ifWrap(_ifTitle(b) + chart + legend +
+    _hgNote('Each region is the part of the area that is nearer to its site than to any other (straight-line distance in the x and y units). In a narrow container some names are hidden; the table lists every site and its share of the area.') +
+    notes + _hgVersionNote(b, 'voronoi') + _ifTable(['Site', 'x', 'y', 'Group', 'Value', 'Share of the area'], rows));
+};
+
 // ── chord_diagram (I47) and its directed mode (I62) ───────────────────────────────────────────────────────────────────────────────────────────
 // d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape arc() (_sbArc, via _D3Path) for
 // the group arcs. Twin of _ch_chord / _ch_ribbon / _render_chord_diagram in renderers/web_article.py.

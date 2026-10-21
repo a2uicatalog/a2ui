@@ -35106,6 +35106,181 @@ def _vo_voronoi(points, bounds):
             'cells': [v.cell_polygon(i) for i in range(len(points))]}
 
 
+# ---- the voronoi atom
+# Sites are drawn on a 600-unit-wide plot whose height follows the bounds' shape (between 200 and 600), cells in data space (Delaunay.from(points).voronoi(bounds)), bounds the sites'
+# extent plus 5% niced with _hg_nice. A label is drawn at its site only if the circle around the site that touches the nearest cell edge (the inscribed circle, in drawing units)
+# holds the label placed 7 px below the dot: the circle's corner distance sqrt((w/2)^2 + 21^2) must be <= d * the plot's scale, which gives the narrowest container (class tmwN) at
+# which the label is shown, by the same character arithmetic as the other atoms (7.2 px a character plus 8 px of padding at 12 px).
+_VO_W, _VO_MAXN, _VO_MINH, _VO_MAXH, _VO_PADX, _VO_LY, _VO_MAXWM = 600, 200, 200, 600, 84, 21, 820
+
+
+def _vo_text(v, mx):
+    """A label or group: text, or a finite number as JavaScript prints it; anything else (a list, an object, a boolean, null) is no text."""
+    if isinstance(v, str):
+        return v[:mx]
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != _HG_INF:
+        return _if_numstr(v)[:mx]
+    return ''
+
+
+def _vo_area(poly, ox, oy):
+    """Shoelace area of a closed polygon (first point repeated at the end), from coordinates relative to (ox, oy)."""
+    s = 0.0
+    for i in range(len(poly) - 1):
+        s += (poly[i][0] - ox) * (poly[i + 1][1] - oy) - (poly[i + 1][0] - ox) * (poly[i][1] - oy)
+    return abs(s) / 2
+
+
+def _vo_inscribed(px, py, ring):
+    """The distance from (px, py) to the nearest edge of the closed ring [(x, y), ...]."""
+    best = _HG_INF
+    for k in range(len(ring) - 1):
+        ax, ay, bx, by = ring[k][0], ring[k][1], ring[k + 1][0], ring[k + 1][1]
+        dx, dy = bx - ax, by - ay
+        l2 = dx * dx + dy * dy
+        if l2 == 0:
+            continue
+        t = min(1.0, max(0.0, ((px - ax) * dx + (py - ay) * dy) / l2))
+        ex, ey = ax + t * dx - px, ay + t * dy - py
+        d = math.sqrt(ex * ex + ey * ey)
+        if d < best:
+            best = d
+    return best
+
+
+def _render_voronoi(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
+    notes = ''
+
+    def plural(c, one, many):
+        return str(c) + ' ' + (one if c == 1 else many)
+
+    def fail(msg):
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">' + msg + '</div>' + notes + _hg_version_note(b, 'voronoi'))
+    raw = _if_g(b, 'sites')
+    if not isinstance(raw, list):
+        return fail('A Voronoi diagram needs a list of sites, each with a numeric x and y.')
+    lst = raw[:_VO_MAXN]
+    beyond = len(raw) - _VO_MAXN
+    if beyond > 0:
+        notes += _hg_note(plural(beyond, 'site', 'sites') + ' beyond the first ' + str(_VO_MAXN) + ' ' + ('was' if beyond == 1 else 'were') + ' not used.')
+    sites, seen, bad, merged = [], {}, 0, 0
+    for e in lst:
+        x, y = _if_g(e, 'x'), _if_g(e, 'y')
+        if not (_cn_usable(x) and _cn_usable(y)):
+            bad += 1
+            continue
+        x, y = float(x), float(y)
+        if (x, y) in seen:
+            merged += 1
+            continue
+        seen[(x, y)] = len(sites)
+        v = _if_g(e, 'value')
+        sites.append({'x': x, 'y': y, 'l': _vo_text(_if_g(e, 'label'), 24), 'g': _vo_text(_if_g(e, 'group'), 20), 'v': float(v) if _cn_usable(v) else None})
+    if bad:
+        notes += _hg_note(plural(bad, 'entry', 'entries') + ' ' + ('was' if bad == 1 else 'were') + ' not a site with a finite numeric x and y and ' + ('was' if bad == 1 else 'were') + ' left out.')
+    if merged:
+        notes += _hg_note(plural(merged, 'site', 'sites') + ' shared a position with an earlier site and ' + ('was' if merged == 1 else 'were') + ' merged into it.')
+    n = len(sites)
+    if n < 3:
+        return fail('A Voronoi diagram needs at least 3 sites at different positions; this list has ' + str(n) + '.')
+    unit = _vo_text(_if_g(b, 'unit'), 12)
+    us = ' ' + unit if unit else ''
+    xl, yl = _vo_text(_if_g(b, 'x_label'), 30), _vo_text(_if_g(b, 'y_label'), 30)
+
+    def axis(lo, hi):
+        if lo == hi:
+            lo, hi = lo - 1, hi + 1
+        m = (hi - lo) * 0.05
+        return _hg_nice(lo - m, hi + m, 6)
+    X0, X1 = axis(min(s['x'] for s in sites), max(s['x'] for s in sites))
+    Y0, Y1 = axis(min(s['y'] for s in sites), max(s['y'] for s in sites))
+    if not (X1 > X0 and Y1 > Y0):
+        return fail('These sites are too close together, or too large, to draw.')
+    try:
+        cells = _vo_voronoi([[s['x'], s['y']] for s in sites], [X0, Y0, X1, Y1])['cells']
+    except Exception:
+        return fail('The regions could not be worked out for these sites.')
+    W = _VO_W
+    hraw = W * (Y1 - Y0) / (X1 - X0)
+    H = int(_if_round(min(_VO_MAXH, max(_VO_MINH, hraw))))
+    if abs(H - hraw) > 1:
+        notes += _hg_note('The x and y scales differ in this drawing (its height is kept between a third of its width and its width), so distances look stretched; the regions are worked out from the x and y values.')
+    groups = []
+    for s in sites:
+        if s['g'] and s['g'] not in groups:
+            groups.append(s['g'])
+    for s in sites:
+        s['c'] = _SB_PALETTE[groups.index(s['g']) % 8] if s['g'] else (_AD_NONE if groups else _SB_PALETTE[4])
+    total = (X1 - X0) * (Y1 - Y0)
+    areas = [(_vo_area(c, X0, Y0) / total if c else 0.0) for c in cells]
+    best = 0
+    for i in range(n):
+        if areas[i] > areas[best]:
+            best = i
+    nocell = sum(1 for c in cells if not c)
+    if nocell:
+        notes += _hg_note(plural(nocell, 'site is', 'sites are') + ' too close to another site to have a region of its own.')
+
+    def name(i):
+        return sites[i]['l'] or ('Site ' + str(i + 1))
+
+    def val(s):
+        return _bp_fmt(s['v'], 2) + us if s['v'] is not None else ''
+    cellsvg, labs, wms = '', '', []
+    for i, s in enumerate(sites):
+        cx, cy = (s['x'] - X0) * W / (X1 - X0), (Y1 - s['y']) * H / (Y1 - Y0)
+        tip = name(i) + (' (' + s['g'] + ')' if s['g'] else '') + ': '
+        path = ''
+        if cells[i]:
+            ring = [((x - X0) * W / (X1 - X0), (Y1 - y) * H / (Y1 - Y0)) for x, y in cells[i]]
+            path = ('<path class="voc" d="M' + 'L'.join(_cn_r(p[0]) + ',' + _cn_r(p[1]) for p in ring[:-1]) + 'Z" fill="' + s['c'] + '" fill-opacity="0.22" style="stroke:var(--text,#0F172A);" '
+                    'stroke-opacity="0.55" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>')
+            tip += (val(s) + ', ' if s['v'] is not None else '') + _if_fixed(areas[i] * 100, 1) + '% of the area'
+            if s['l']:
+                wt = _oc_chars(s['l']) * 7.2 + 8
+                hw = wt / 2
+                d = _vo_inscribed(cx, cy, ring)
+                wm = _cp_q(math.sqrt(hw * hw + _VO_LY * _VO_LY) * W / d + _VO_PADX) if d > 0 else 10 ** 9
+                if wm <= _VO_MAXWM:
+                    wm = wm if wm > _CP_MINW else 0
+                    wms.append(wm)
+                    labs += ('<div class="vol' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;left:' + _tm_pct(cx, W) + ';top:' + _tm_pct(cy, H)
+                             + ';transform:translate(-50%,7px);white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _if_k(i, n) + 'opacity:var(--k,1);">' + _cv_esc(s['l']) + '</div>')
+        else:
+            tip += 'no region of its own'
+        cellsvg += ('<g class="vog" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + path + '<circle class="vod" cx="' + _cn_r(cx) + '" cy="' + _cn_r(cy) + '" r="4" fill="' + s['c']
+                    + '" style="stroke:var(--surface,#F8FAFC);" stroke-width="1.5"/><title>' + _cv_esc(tip) + '</title></g>')
+    svg = ('<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">'
+           '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg
+           + '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>')
+    ex, ey = _hg_ticks(X0, X1, 6), _hg_ticks(Y0, Y1, 6)
+    xaxis = _hg_axis(ex, X0, X1 - X0, [_hg_num(v, _hg_decimals(ex)) for v in ex]) if ex else ''
+    yaxis = ''
+    if ey:
+        dys = _hg_decimals(ey)
+        for v in ey:
+            yaxis += ('<div class="voy" style="position:absolute;right:100%;margin-right:6px;top:' + _tm_pct(Y1 - v, Y1 - Y0)
+                      + ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _hg_num(v, dys) + '</div>')
+    aria = ('Nearest-site regions of ' + plural(n, 'site', 'sites') + (' in ' + plural(len(groups), 'group', 'groups') if groups else '') + '. Largest region: ' + name(best) + ', '
+            + _if_fixed(areas[best] * 100, 1) + '% of the area.')
+    css = '<style>@container (max-width:560px){.ifvo .hgx:not(.hgc){display:none}}' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in sorted(set(w for w in wms if w))) + '</style>'
+    chart = ('<div class="ifvo" style="container-type:inline-size;max-width:' + str(_VO_MAXWM) + 'px;overflow:hidden;">' + css
+             + ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 2px 0;">' + _cv_esc(yl) + '</div>' if yl else '')
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:8px 30px 34px 54px;">' + svg + yaxis + xaxis + labs + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 30px 0 54px;">' + _cv_esc(xl) + '</div>' if xl else '') + '</div>')
+    legend = ''
+    if groups:
+        ent = [(g, _SB_PALETTE[j % 8]) for j, g in enumerate(groups)] + ([('No group', _AD_NONE)] if any(not s['g'] for s in sites) else [])
+        legend = ('<div class="voleg" style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);">'
+                  + ''.join('<span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;box-sizing:border-box;border:2px solid ' + c + ';background:' + c + '38;"></span>' + _cv_esc(g) + '</span>' for g, c in ent) + '</div>')
+    tables = _if_table(['Site', 'x', 'y', 'Group', 'Value', 'Share of the area'],
+                       [[name(i), _if_numstr(s['x']), _if_numstr(s['y']), s['g'] or 'No group', val(s) if s['v'] is not None else '—', _if_fixed(areas[i] * 100, 1) + '%'] for i, s in enumerate(sites)])
+    return _if_wrap(_if_title(b) + chart + legend
+                    + _hg_note('Each region is the part of the area that is nearer to its site than to any other (straight-line distance in the x and y units). In a narrow container some names are hidden; the table lists every site and its share of the area.')
+                    + notes + _hg_version_note(b, 'voronoi') + tables)
+
+
 # ── chord_diagram (I47) and its directed mode (I62) ────────────────────────────────────────────────────────────────────────────────────────────
 # d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape 3.2.0 arc() (the sunburst's
 # _sb_arc, via _D3Path) for the group arcs. Twin of _chChord / _chRibbon / _RENDERERS['chord_diagram'] in atoms_infographic.gs.
@@ -36672,7 +36847,7 @@ def _render_waterfall(b: dict) -> str:
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot), ('voronoi', _render_voronoi)):
     _RENDERERS[_if_name] = _if_fn
 
 

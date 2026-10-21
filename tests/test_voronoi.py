@@ -149,7 +149,7 @@ def test_the_golden_set_covers_the_hard_cases():
     assert len(c["random_200"]["cells"]) == 200 and len(c["random_200"]["triangles"]) > 1000
     assert len(c["square_grid_5x5"]["triangles"]) // 3 == 32 and len(c["octagon_and_centre"]["hull"]) == 8                     # exact cocircular ties
     assert len(D["fuzz"]) == 44 and len(O) >= 300
-    assert any(len(f["raw"]["triangles"]) == 0 for f in D["fuzz"])                                                               # a fuzz case that is collinear
+    assert sum(1 for f in D["fuzz"] if f["jittered"] != _flat(f["points"])) >= 5                                                 # fuzz cases that take the jitter path (tiny scale: d3's cross <= 1e-10 test)
     assert any(None in f["cells"] for f in D["fuzz"])
 
 
@@ -285,7 +285,7 @@ def _aria(html):
 
 
 def _cells(html):
-    return re.findall(r'<g class="vog" style="([^"]*)"><path class="voc" d="([^"]*)" fill="([^"]*)" fill-opacity="([^"]*)" stroke="([^"]*)"[^>]*/><circle class="vod" cx="([^"]*)" cy="([^"]*)"[^>]*/><title>(.*?)</title></g>', html)
+    return re.findall(r'<g class="vog" style="([^"]*)"><path class="voc" d="([^"]*)" fill="([^"]*)" fill-opacity="([^"]*)" style="([^"]*)"[^>]*/><circle class="vod" cx="([^"]*)" cy="([^"]*)"[^>]*/><title>(.*?)</title></g>', html)
 
 
 def _bounds(sites):
@@ -458,8 +458,8 @@ def test_odd_fields_are_coerced_never_breaking(gas):
     for html in (py("odd_fields"), gas["odd_fields"]):
         assert "NaN" not in html and "undefined" not in html and "[object Object]" not in html and 'role="img"' in html
         (_, rows), = _tables(html)
-        assert rows[0][0] == "5" and rows[0][3] == "7" and rows[1][3] == "true"
-        assert rows[3][3] == "No group" and rows[2][3] == "No group"
+        assert rows[0][0] == "5" and rows[0][3] == "7"                                    # a number is text; a list, an object and a boolean are not
+        assert [r[0] for r in rows[1:3]] == ["Site 2", "Site 3"] and rows[1][3] == rows[2][3] == rows[3][3] == "No group"
 
 
 def test_stretched_area_is_noted_and_the_height_is_clamped(gas):
@@ -487,7 +487,7 @@ def test_axes_use_nice_ticks_in_data_units(gas):
 
 def test_motion_index_per_site_stays_inside_its_clamp(gas):
     for html in (py("depots"), gas["depots"]):
-        ks = re.findall(r'--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);opacity:var\(--k,1\);', html)
+        ks = re.findall(r'<g class="vog" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);opacity:var\(--k,1\);"', html)
         assert [int(i) for _, i in ks] == list(range(12)) and all(int(n) == 13 for n, _ in ks)
 
 
@@ -541,7 +541,7 @@ def test_unlabelled_sites_get_no_label_and_the_full_label_is_always_in_the_title
         titles = [c[7] for c in _cells(html)]
         assert "A very long depot label" in titles[0] and "Ünïcode ✓" in titles[3]
         (_, rows), = _tables(html)
-        assert rows[0][0] == "A very long depot label"[:24] and rows[0][3] == "A group name that is"
+        assert rows[0][0] == "A very long depot label x"[:24] and rows[0][3] == "A group name that is"
 
 
 def test_caps_on_text_lengths(gas):
