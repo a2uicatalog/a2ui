@@ -99,7 +99,7 @@ def test_diverging_midpoint_gets_the_scale_midpoint_colour():
 def test_value_format_subset():
     f = wa._hm_fmt
     assert f(1234.5, ",.1f") == "1,234.5" and f(0.256, ".0%") == "26%" and f(2, ".2f") == "2.00" and f(-1234567, ",") == "-1,234,567"
-    assert f(1.005, None) == "1" or f(1.005, None) == "1.01" or True
+    assert f(0.5, None) == "0.5" and f(-0.001, None) == "0" and f(1e6, ",") == "1,000,000"
     assert f(3.14159, None) == "3.14" and f(3, None) == "3" and f(12.5, "d") == "13" and f(5, "nonsense") == "5"
 
 
@@ -127,7 +127,7 @@ def test_missing_cells_are_marked_not_dropped():
 def test_hostile_text_is_escaped_and_nothing_prints_garbage():
     for n in ("hostile", "bad_numbers", "unknown_scale", "not_lists", "empty"):
         h = _py(dict(EXT[n]))
-        assert "<img" not in h and "<script" not in h.lower() and "onerror=alert(1)>" not in h.replace("&gt;", ">") or "&lt;" in h
+        assert "<img" not in h and "<script" not in h.lower(), n
         assert not re.search(r"NaN|undefined|Infinity|\[object", h), n
     assert "Nope" in _py(dict(EXT["unknown_scale"])) and "Viridis" in _py(dict(EXT["unknown_scale"]))
 
@@ -145,6 +145,6 @@ def test_version_note_and_empty_state():
 def test_schema_registration():
     import yaml
     s = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())
-    atom = [a for a in (s["atoms"] if isinstance(s, dict) and "atoms" in s else s) if isinstance(a, dict) and a.get("type") == "heatmap"][0]
+    atom = [a for a in s["blocks"] if a.get("type") == "heatmap"][0]
     for f in ("z_min", "z_max", "z_mid", "scale", "show_colorbar", "show_values", "value_format", "version"):
         assert f in atom["fields"], f

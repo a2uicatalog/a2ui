@@ -38913,6 +38913,179 @@ def _render_motion_shatter(b: dict) -> str:
 _RENDERERS['motion_shatter'] = _render_motion_shatter
 
 
+# ─── heatmap variants (additive; twin of the heatmap block at the end of atoms_infographic.gs) ───────────────────────────────────────
+# Plotly's named colour scales, copied from plotly.js src/components/colorscale/scales.js (tests/fixtures/plotly_scales.json holds the original).
+_HM_SCALES = {
+    'Greys': [(0, (0, 0, 0)), (1, (255, 255, 255))],
+    'YlGnBu': [(0, (8, 29, 88)), (0.125, (37, 52, 148)), (0.25, (34, 94, 168)), (0.375, (29, 145, 192)), (0.5, (65, 182, 196)), (0.625, (127, 205, 187)), (0.75, (199, 233, 180)), (0.875, (237, 248, 217)), (1, (255, 255, 217))],
+    'Greens': [(0, (0, 68, 27)), (0.125, (0, 109, 44)), (0.25, (35, 139, 69)), (0.375, (65, 171, 93)), (0.5, (116, 196, 118)), (0.625, (161, 217, 155)), (0.75, (199, 233, 192)), (0.875, (229, 245, 224)), (1, (247, 252, 245))],
+    'YlOrRd': [(0, (128, 0, 38)), (0.125, (189, 0, 38)), (0.25, (227, 26, 28)), (0.375, (252, 78, 42)), (0.5, (253, 141, 60)), (0.625, (254, 178, 76)), (0.75, (254, 217, 118)), (0.875, (255, 237, 160)), (1, (255, 255, 204))],
+    'Bluered': [(0, (0, 0, 255)), (1, (255, 0, 0))],
+    'RdBu': [(0, (5, 10, 172)), (0.35, (106, 137, 247)), (0.5, (190, 190, 190)), (0.6, (220, 170, 132)), (0.7, (230, 145, 90)), (1, (178, 10, 28))],
+    'Reds': [(0, (220, 220, 220)), (0.2, (245, 195, 157)), (0.4, (245, 160, 105)), (1, (178, 10, 28))],
+    'Blues': [(0, (5, 10, 172)), (0.35, (40, 60, 190)), (0.5, (70, 100, 245)), (0.6, (90, 120, 245)), (0.7, (106, 137, 247)), (1, (220, 220, 220))],
+    'Picnic': [(0, (0, 0, 255)), (0.1, (51, 153, 255)), (0.2, (102, 204, 255)), (0.3, (153, 204, 255)), (0.4, (204, 204, 255)), (0.5, (255, 255, 255)), (0.6, (255, 204, 255)), (0.7, (255, 153, 255)), (0.8, (255, 102, 204)), (0.9, (255, 102, 102)), (1, (255, 0, 0))],
+    'Rainbow': [(0, (150, 0, 90)), (0.125, (0, 0, 200)), (0.25, (0, 25, 255)), (0.375, (0, 152, 255)), (0.5, (44, 255, 150)), (0.625, (151, 255, 0)), (0.75, (255, 234, 0)), (0.875, (255, 111, 0)), (1, (255, 0, 0))],
+    'Portland': [(0, (12, 51, 131)), (0.25, (10, 136, 186)), (0.5, (242, 211, 56)), (0.75, (242, 143, 56)), (1, (217, 30, 30))],
+    'Jet': [(0, (0, 0, 131)), (0.125, (0, 60, 170)), (0.375, (5, 255, 255)), (0.625, (255, 255, 0)), (0.875, (250, 0, 0)), (1, (128, 0, 0))],
+    'Hot': [(0, (0, 0, 0)), (0.3, (230, 0, 0)), (0.6, (255, 210, 0)), (1, (255, 255, 255))],
+    'Blackbody': [(0, (0, 0, 0)), (0.2, (230, 0, 0)), (0.4, (230, 210, 0)), (0.7, (255, 255, 255)), (1, (160, 200, 255))],
+    'Earth': [(0, (0, 0, 130)), (0.1, (0, 180, 180)), (0.2, (40, 210, 40)), (0.4, (230, 230, 50)), (0.6, (120, 70, 20)), (1, (255, 255, 255))],
+    'Electric': [(0, (0, 0, 0)), (0.15, (30, 0, 100)), (0.4, (120, 0, 100)), (0.6, (160, 90, 0)), (0.8, (230, 200, 0)), (1, (255, 250, 220))],
+    'Viridis': [(0, (68, 1, 84)), (0.06274509803921569, (72, 24, 106)), (0.12549019607843137, (71, 45, 123)), (0.18823529411764706, (66, 64, 134)), (0.25098039215686274, (59, 82, 139)), (0.3137254901960784, (51, 99, 141)), (0.3764705882352941, (44, 114, 142)), (0.4392156862745098, (38, 130, 142)), (0.5019607843137255, (33, 145, 140)), (0.5647058823529412, (31, 160, 136)), (0.6274509803921569, (40, 174, 128)), (0.6901960784313725, (63, 188, 115)), (0.7529411764705882, (94, 201, 98)), (0.8156862745098039, (132, 212, 75)), (0.8784313725490196, (173, 220, 48)), (0.9411764705882353, (216, 226, 25)), (1, (253, 231, 37))],
+    'Cividis': [(0, (0, 32, 76)), (0.058824, (0, 42, 102)), (0.117647, (0, 52, 110)), (0.176471, (39, 63, 108)), (0.235294, (60, 74, 107)), (0.294118, (76, 85, 107)), (0.352941, (91, 95, 109)), (0.411765, (104, 106, 112)), (0.470588, (117, 117, 117)), (0.529412, (131, 129, 120)), (0.588235, (146, 140, 120)), (0.647059, (161, 152, 118)), (0.705882, (176, 165, 114)), (0.764706, (192, 177, 109)), (0.823529, (209, 191, 102)), (0.882353, (225, 204, 92)), (0.941176, (243, 219, 79)), (1, (255, 233, 69))],
+}
+_HM_NAMES = {k.lower(): k for k in _HM_SCALES}
+_HM_KEYS = ('z_min', 'z_max', 'z_mid', 'scale', 'show_colorbar', 'show_values', 'value_format', 'version')
+_HM_CAP = 40
+
+
+def _hm_num(v):
+    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12 else None
+
+
+def _hm_rgb(sc, t):
+    st = _HM_SCALES[sc] if isinstance(sc, str) else sc
+    t = min(1.0, max(0.0, t))
+    for i in range(1, len(st)):
+        if t <= st[i][0] or i == len(st) - 1:
+            p0, c0 = st[i - 1]
+            p1, c1 = st[i]
+            f = 0.0 if p1 == p0 else min(1.0, max(0.0, (t - p0) / (p1 - p0)))
+            return tuple(_if_round(c0[k] + (c1[k] - c0[k]) * f) for k in range(3))
+    return st[0][1]
+
+
+def _hm_domain(vals, zmin, zmax, zmid):
+    lo = zmin if zmin is not None else min(vals)
+    hi = zmax if zmax is not None else max(vals)
+    if zmid is not None and not (zmin is not None and zmax is not None):
+        d = max(abs(zmid - lo), abs(hi - zmid))
+        lo, hi = zmid - d, zmid + d
+    return (lo, hi if hi > lo else lo + 1)
+
+
+def _hm_fmt(x, spec):
+    """d3-format subset: [,][.N][f|%|d]. Anything else (or none) is the default: two decimals, trailing zeros trimmed."""
+    m = re.fullmatch(r'(,)?(?:\.([0-9]))?([f%d])?', spec) if isinstance(spec, str) and spec else None
+    if m is None:
+        s = _if_fixed(x, 2)
+        return (s.rstrip('0').rstrip('.') if '.' in s else s)
+    typ = m.group(3)
+    d = int(m.group(2)) if m.group(2) else (0 if typ in ('%', 'd') else 2)
+    if typ is None and not m.group(2):
+        s = _if_fixed(x, 2)
+        s = s.rstrip('0').rstrip('.') if '.' in s else s
+    else:
+        s = _if_fixed(x * 100 if typ == '%' else x, d)
+    if m.group(1):
+        neg = s.startswith('-')
+        ip, _, fp = s.lstrip('-').partition('.')
+        g = ''
+        while len(ip) > 3:
+            g = ',' + ip[-3:] + g
+            ip = ip[:-3]
+        s = ('-' if neg else '') + ip + g + ('.' + fp if fp else '')
+    return s + ('%' if typ == '%' else '')
+
+
+def _hm_hex_scale(v):
+    if not isinstance(v, list) or len(v) < 2:
+        return None
+    out = []
+    for c in v[:32]:
+        m = re.fullmatch(r'#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})', c) if isinstance(c, str) else None
+        if not m:
+            return None
+        h = m.group(1)
+        h = ''.join(ch + ch for ch in h) if len(h) == 3 else h
+        out.append((len(out), (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))))
+    n = len(out) - 1
+    return [(i / n, c) for i, (_, c) in enumerate(out)]
+
+
+def _hm_ext(b):
+    raw = _if_g(b, 'data')
+    rows_in = raw if isinstance(raw, list) else []
+    nr_all = len(rows_in)
+    nc_all = max([len(r) for r in rows_in if isinstance(r, list)] + [0])
+    R, C = min(_HM_CAP, nr_all), min(_HM_CAP, nc_all)
+    grid = [[_hm_num(rows_in[i][j]) if isinstance(rows_in[i], list) and j < len(rows_in[i]) else None for j in range(C)] for i in range(R)]
+    vals = [v for r in grid for v in r if v is not None]
+    capnote = ''
+    if nr_all > R:
+        capnote += _hg_note('Showing the first ' + str(R) + ' of ' + str(nr_all) + ' rows.')
+    if nc_all > C:
+        capnote += _hg_note('Showing the first ' + str(C) + ' of ' + str(nc_all) + ' columns.')
+    if not vals:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A heatmap needs at least one number in data.</div>' + capnote + _hg_version_note(b, 'heatmap'))
+    ly, lx = _if_g(b, 'labels_y'), _if_g(b, 'labels_x')
+    ly = ly if isinstance(ly, list) else (_if_g(b, 'rows') if isinstance(_if_g(b, 'rows'), list) else [])
+    lx = lx if isinstance(lx, list) else (_if_g(b, 'cols') if isinstance(_if_g(b, 'cols'), list) else [])
+    rl = [_if_str(ly[i])[:24] if i < len(ly) and _if_truthy(ly[i]) else 'Row ' + str(i + 1) for i in range(R)]
+    cl = [_if_str(lx[j])[:24] if j < len(lx) and _if_truthy(lx[j]) else 'Col ' + str(j + 1) for j in range(C)]
+    notes = capnote
+    sname, stops = _if_g(b, 'scale'), None
+    if isinstance(sname, str) and sname.lower() in _HM_NAMES:
+        stops = _HM_SCALES[_HM_NAMES[sname.lower()]]
+    elif _if_truthy(sname):
+        notes += _hg_note('Unknown scale "' + _if_s(sname, 30) + '"; drawn with Viridis.')
+    if stops is None:
+        stops = (_hm_hex_scale(_if_g(b, 'color_scale')) if not _if_truthy(sname) else None) or _HM_SCALES['Viridis']
+    zmin, zmax, zmid = _hm_num(_if_g(b, 'z_min')), _hm_num(_if_g(b, 'z_max')), _hm_num(_if_g(b, 'z_mid'))
+    lo, hi = _hm_domain(vals, zmin, zmax, zmid)
+    mid_on = zmid is not None and not (zmin is not None and zmax is not None)
+    spec = _if_g(b, 'value_format')
+    if _if_truthy(spec) and not (isinstance(spec, str) and re.fullmatch(r'(,)?(?:\.([0-9]))?([f%d])?', spec)):
+        notes += _hg_note('value_format "' + _if_s(spec, 20) + '" is not understood (use , .N and f, % or d); values use the default format.')
+        spec = None
+
+    def f(x):
+        return _hm_fmt(x, spec)
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    show = _if_g(b, 'show_values') is True
+    W = 56 if show else 40
+    cells = '<div></div>' + ''.join('<div style="font-size:12px;line-height:1.25;text-align:center;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;">' + _if_s(c, 24) + '</div>' for c in cl)
+    nmiss = 0
+    for i in range(R):
+        cells += '<div style="font-size:12px;line-height:1.25;text-align:right;overflow-wrap:anywhere;max-width:110px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:var(--muted,#475569);">' + _if_s(rl[i], 24) + '</div>'
+        for j in range(C):
+            v = grid[i][j]
+            tip = _if_s(rl[i] + ', ' + cl[j] + ': ', 60)
+            if v is None:
+                nmiss += 1
+                cells += '<div class="hmc hmn" title="' + tip + 'no data" style="min-height:32px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px dashed var(--muted,#475569);color:var(--muted,#475569);">–</div>'
+                continue
+            r, g, bl = _hm_rgb(stops, (v - lo) / (hi - lo))
+            fg = '#fff' if 0.299 * r + 0.587 * g + 0.114 * bl < 140 else '#111'
+            cells += ('<div class="hmc" title="' + tip + _if_s(f(v) + us, 30) + '" style="min-height:32px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;overflow-wrap:anywhere;background:rgb('
+                      + str(r) + ',' + str(g) + ',' + str(bl) + ');color:' + fg + ';">' + (_if_s(f(v), 20) if show else '') + '</div>')
+    if nmiss:
+        notes += _hg_note(str(nmiss) + (' cell has' if nmiss == 1 else ' cells have') + ' no usable number and ' + ('is' if nmiss == 1 else 'are') + ' marked "no data".')
+    aria = 'Heatmap, ' + str(R) + (' row' if R == 1 else ' rows') + ' by ' + str(C) + (' column' if C == 1 else ' columns') + ', values from ' + f(min(vals)) + ' to ' + f(max(vals)) + us + '.'
+    grid_html = ('<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _if_s(aria, 200) + '" style="display:grid;grid-template-columns:auto repeat(' + str(C) + ',minmax(' + str(W)
+                 + 'px,1fr));gap:2px;width:100%;max-width:' + str(120 + C * 96) + 'px;">' + cells + '</div></div>')
+    bar = ''
+    if _if_g(b, 'show_colorbar') is not False:
+        grad = ','.join('rgb(%d,%d,%d) %s%%' % (*c, _if_fmt(p * 100)) for p, c in stops)
+        bar = ('<div class="hmb" style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted,#475569);"><span>' + _if_s(f(lo) + us, 30)
+               + '</span><div style="flex:1;min-width:60px;height:12px;border:1px solid var(--border,#CBD5E1);border-radius:3px;background:linear-gradient(to right,' + grad + ');"></div><span>' + _if_s(f(hi) + us, 30) + '</span></div>')
+        if mid_on:
+            bar += _hg_note('Colour midpoint: ' + _if_s(f(zmid) + us, 30) + '.')
+    table = _if_table(['Row'] + cl, [[rl[i]] + [('no data' if grid[i][j] is None else f(grid[i][j]) + us) for j in range(C)] for i in range(R)])
+    return _if_wrap('<div class="ifhm" style="max-width:100%;">' + _if_title(b) + grid_html + bar + notes + _hg_version_note(b, 'heatmap') + table + '</div>')
+
+
+def _hm_wrap(prev):
+    def go(b):
+        return _hm_ext(b) if isinstance(b, dict) and any(k in b for k in _HM_KEYS) else prev(b)
+    return go
+
+
+_RENDERERS['heatmap'] = _hm_wrap(_RENDERERS['heatmap'])
+
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
 _gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()
