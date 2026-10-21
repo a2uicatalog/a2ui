@@ -36741,7 +36741,7 @@ def _cs_axis(start, stop, count):
     return t, [_cs_label(x) for x in t]
 
 
-_CS_DATE = re.compile(r'^[ \t\r\n]*(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?Z?[ \t\r\n]*\Z')
+_CS_DATE = re.compile(r'^[ \t\r\n]*(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?Z?[ \t\r\n]*\Z', re.ASCII)
 
 
 def _cs_parse(s):
@@ -36783,12 +36783,26 @@ def _cs_bars(b):
     return bars, left_out, vmiss, max(0, len(dates) - _CS_READ), bool(vol)
 
 
+def _cs_axis_html(ev, X0, span, lab):
+    """_hg_axis with one change for narrow containers: the labels kept are the UTC-midnight ones when any are shown (a date), else every other."""
+    maxlen = max(len(s) for s in lab)
+    stride = -(-len(ev) // max(2, min(8, 48 // maxlen)))
+    shown = [i for i in range(len(ev)) if i % stride == 0 and (span > 0 or i == 0)]
+    pool = [i for i in shown if ev[i] % _CS_DAY == 0] or shown
+    keep = set(pool[::2])
+    xs = ''
+    for i in shown:
+        xs += ('<div class="hgx' + (' hgc' if i in keep else '') + '" style="position:absolute;top:100%;left:' + (_tm_pct(ev[i] - X0, span) if span > 0 else '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+               '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + lab[i] + '</div></div>')
+    return xs
+
+
 def _render_candlestick_chart(b: dict) -> str:
     bars, left_out, vmiss, unread, hasvol = _cs_bars(b)
     beyond = len(bars) - _CS_CAP
     bars = bars[:_CS_CAP]
     notes = ((_hg_note(str(left_out) + (' bar had' if left_out == 1 else ' bars had') + ' a missing date, a missing number or prices that do not fit together and ' + ('was' if left_out == 1 else 'were') + ' left out.') if left_out else '')
-             + (_hg_note(str(vmiss) + (' volume was' if vmiss == 1 else ' volumes were') + ' missing or not a number and ' + ('was' if vmiss == 1 else 'were') + ' left out.') if vmiss else '')
+             + (_hg_note(str(vmiss) + (' volume was' if vmiss == 1 else ' volumes were') + ' missing, negative or not a number and ' + ('was' if vmiss == 1 else 'were') + ' left out.') if vmiss else '')
              + (_hg_note(str(beyond) + (' bar beyond the first 250 was' if beyond == 1 else ' bars beyond the first 250 were') + ' not drawn.') if beyond > 0 else '')
              + (_hg_note(str(unread) + (' entry beyond the first 10000 was' if unread == 1 else ' entries beyond the first 10000 were') + ' not read.') if unread else ''))
     if not bars:
@@ -36875,7 +36889,7 @@ def _render_candlestick_chart(b: dict) -> str:
              + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 0 34px 0;padding:8px 36px 0 0;">'
              '<div style="display:flex;"><div style="flex:0 0 ' + gut + ';position:relative;">' + ylab + '</div>'
              '<div class="csp" style="position:relative;flex:1 1 auto;min-width:0;height:260px;border-left:1px solid var(--muted,#475569);">' + grid + candles + '</div></div>' + vpanel
-             + '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, T0, tspan, tlab) + '</div></div></div>')
+             + '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _cs_axis_html(ticks, T0, tspan, tlab) + '</div></div></div>')
     head = ['Date', 'Open', 'High', 'Low', 'Close', 'Direction'] + (['Volume'] if show_vol else [])
     rows = [[r[1], f(r[2]) + us, f(r[3]) + us, f(r[4]) + us, f(r[5]) + us, 'Up' if r[5] >= r[2] else 'Down'] + ([_bp_fmt(r[6], 6) if r[6] is not None else 'none'] if show_vol else []) for r in bars]
     return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'candlestick_chart') + _if_table(head, rows))

@@ -38,7 +38,7 @@ window.addEventListener('load', function () {
     var rects = labs.map(function (e) { return e.getBoundingClientRect(); });
     rects.forEach(function (r, k) {
       if (r.left < rr.left - 0.5 || r.right > rr.right + 0.5 || r.top < rr.top - 0.5 || r.bottom > rr.bottom + 0.5) errs.push('label "' + labs[k].textContent + '" is clipped by the chart box');
-      if (parseFloat(getComputedStyle(labs[k]).fontSize) < 11.5) errs.push('label font below 12px');
+      if (parseFloat(getComputedStyle(labs[k]).fontSize) < 11.99) errs.push("label font below 12px");
     });
     for (i = 0; i < rects.length; i++) for (j = i + 1; j < rects.length; j++) if (hit(rects[i], rects[j], 1)) errs.push('labels overlap: "' + labs[i].textContent + '" and "' + labs[j].textContent + '"');
     res.push({id: c.id, cands: cands.length, xlabels: labs.length, errs: errs});
@@ -57,3 +57,25 @@ def test_candles_and_labels_never_overlap_or_widen_the_container(renderer, core_
     bad = {r["id"]: r["errs"] for r in res if r["errs"]}
     assert not bad, json.dumps(bad, indent=1)[:3000]
     assert all(r["cands"] == html[r["id"].split("-")[0]].count('class="csc ') for r in res)
+
+
+NARROW = r'''<script>
+window.addEventListener('load', function () {
+  var res = [];
+  document.querySelectorAll('.case').forEach(function (c) {
+    var vis = Array.prototype.slice.call(c.querySelectorAll('.hgx')).filter(function (e) { return getComputedStyle(e).display !== 'none'; }).map(function (e) { return e.children[1].textContent; });
+    res.push({id: c.id, labels: vis});
+  });
+  document.getElementById('out').textContent = JSON.stringify(res);
+});
+</script>'''
+
+
+@pytest.mark.parametrize("renderer", ["python", "gas"])
+def test_three_daily_bars_show_a_date_at_320px(renderer, core_js):
+    """C2: the narrow rule used to keep only the 12 PM ticks, so the axis had no date at all."""
+    blocks = {"daily3": PAYLOADS["small"]}
+    html = {n: _py(b) for n, b in blocks.items()} if renderer == "python" else dict(zip(blocks, _gas_batch(core_js, list(blocks.values()))))
+    res = {r["id"]: r["labels"] for r in _run(html, harness=NARROW)}
+    labs = res["daily3-w320"]
+    assert labs and any(not l.endswith(("AM", "PM")) for l in labs), labs

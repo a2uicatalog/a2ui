@@ -3220,6 +3220,17 @@ function _csAxis(start, stop, count) {
   }
   return [t, t.map(_csLabel)];
 }
+function _csAxisHtml(ev, X0, span, lab) {
+  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; })), stride = Math.ceil(ev.length / Math.max(2, Math.min(8, Math.floor(48 / maxlen)))), shown = [], i, xs = '';
+  for (i = 0; i < ev.length; i++) if (i % stride === 0 && (span > 0 || i === 0)) shown.push(i);
+  var mid = shown.filter(function(k) { return _csMod(ev[k], _CS_DAY) === 0; }), pool = mid.length ? mid : shown, keep = {};
+  pool.forEach(function(k, j) { if (j % 2 === 0) keep[k] = true; });
+  shown.forEach(function(k) {
+    xs += '<div class="hgx' + (keep[k] ? ' hgc' : '') + '" style="position:absolute;top:100%;left:' + (span > 0 ? _tmPct(ev[k] - X0, span) : '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + lab[k] + '</div></div>';
+  });
+  return xs;
+}
 function _csParse(s) {
   if (typeof s !== 'string') return null;
   var m = /^[ \t\r\n]*(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?Z?[ \t\r\n]*$/.exec(s);
@@ -3246,7 +3257,7 @@ _RENDERERS['candlestick_chart'] = function(b) {
   var R = _csBars(b), bars = R[0], leftOut = R[1], vmiss = R[2], unread = R[3], beyond = bars.length - _CS_CAP;
   bars = bars.slice(0, _CS_CAP);
   var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' bar had' : ' bars had') + ' a missing date, a missing number or prices that do not fit together and ' + (leftOut === 1 ? 'was' : 'were') + ' left out.') : '') +
-    (vmiss ? _hgNote(vmiss + (vmiss === 1 ? ' volume was' : ' volumes were') + ' missing or not a number and ' + (vmiss === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (vmiss ? _hgNote(vmiss + (vmiss === 1 ? ' volume was' : ' volumes were') + ' missing, negative or not a number and ' + (vmiss === 1 ? 'was' : 'were') + ' left out.') : '') +
     (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' bar beyond the first 250 was' : ' bars beyond the first 250 were') + ' not drawn.') : '') +
     (unread ? _hgNote(unread + (unread === 1 ? ' entry beyond the first 10000 was' : ' entries beyond the first 10000 were') + ' not read.') : '');
   if (!bars.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A candlestick chart needs at least one bar with a date and open, high, low and close numbers.</div>' + notes + _hgVersionNote(b, 'candlestick_chart'));
@@ -3310,7 +3321,7 @@ _RENDERERS['candlestick_chart'] = function(b) {
     '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 0 34px 0;padding:8px 36px 0 0;">' +
     '<div style="display:flex;"><div style="flex:0 0 ' + gut + ';position:relative;">' + ylab + '</div>' +
     '<div class="csp" style="position:relative;flex:1 1 auto;min-width:0;height:260px;border-left:1px solid var(--muted,#475569);">' + grid + candles + '</div></div>' + vpanel +
-    '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, T0, tspan, tlab) + '</div></div></div>';
+    '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _csAxisHtml(ticks, T0, tspan, tlab) + '</div></div></div>';
   var head = ['Date', 'Open', 'High', 'Low', 'Close', 'Direction'].concat(showVol ? ['Volume'] : []);
   return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'candlestick_chart') + _ifTable(head, bars.map(function(r) {
     return [r[1], f(r[2]) + us, f(r[3]) + us, f(r[4]) + us, f(r[5]) + us, r[5] >= r[2] ? 'Up' : 'Down'].concat(showVol ? [r[6] !== null ? _bpFmt(r[6], 6) : 'none'] : []);

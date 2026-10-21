@@ -238,7 +238,7 @@ def test_malformed_bars_are_left_out_and_explained(core_js):
         _, rows = _table(h)
         assert [r[0] for r in rows] == ["2024-03-04", "2024-03-09", "2024-03-10"]
         assert "5 bars had a missing date, a missing number or prices that do not fit together and were left out." in h
-        assert "2 volumes were missing or not a number and were left out." in h
+        assert "2 volumes were missing, negative or not a number and were left out." in h
         assert "NaN" not in h and "undefined" not in h and "[object Object]" not in h
     h = _py(PAYLOADS["inconsistent"])
     assert "2 bars had a missing date" in h and 'role="img"' not in h
@@ -294,3 +294,35 @@ def test_registered_as_a_preview_atom_in_the_charts_pack():
     import generate_atom_pages as g
     assert "candlestick_chart" in g._EXAMPLE_BLOCKS and "<table" in _py(g._EXAMPLE_BLOCKS["candlestick_chart"])
     assert "d3-time-format" in (ROOT / "THIRD-PARTY-NOTICES.md").read_text()
+
+
+# ─── review round 2 (C1 Unicode digits, C2 narrow axis, C3 volume wording) ─────
+@pytest.mark.parametrize("s", ["２０２４-０１-０１", "٢٠٢٤-٠١-٠١", "2024-０１-01", "2024-01-01T１０:30"])
+def test_non_ascii_digits_are_not_dates_in_either_twin(s, core_js):
+    assert wa._cs_parse(s) is None
+    assert _node(core_js, "console.log(JSON.stringify(_csParse(%s)));" % json.dumps(s)) is None
+
+
+def test_non_ascii_digit_dates_render_identically(core_js):
+    b = {**SMALL, "dates": ["２０２４-０１-０１", "2024-01-02", "2024-01-03"]}
+    py, gas = _py(b), _gas_batch(core_js, [b])[0]
+    assert py == gas
+    assert "２０２４" not in re.sub(r"<table.*", "", py, flags=re.S) and "of 2 bars" in py
+
+
+def _narrow_labels(html):
+    """The x labels left visible by the narrow-container rule (every .hgx without .hgc is hidden at <= 560px)."""
+    return [re.sub(r"<[^>]+>", "", m) for m in re.findall(r'<div class="hgx hgc"[^>]*>.*?top:10px;[^>]*>([^<]*)</div>', html)]
+
+
+def test_narrow_axis_keeps_a_date_label_for_midnight_bars(core_js):
+    b = {**SMALL, "volume": None}
+    for html in (_py(b), _gas_batch(core_js, [b])[0]):
+        labs = _narrow_labels(html)
+        assert labs and not any(re.fullmatch(r"\d\d? [AP]M", s) for s in labs), labs
+
+
+def test_volume_note_names_negative_volumes(core_js):
+    b = {**SMALL, "volume": [1500, -1, 900]}
+    for html in (_py(b), _gas_batch(core_js, [b])[0]):
+        assert "missing, negative or not a number" in html
