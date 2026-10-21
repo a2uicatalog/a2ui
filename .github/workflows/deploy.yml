@@ -90,6 +90,11 @@ jobs:
       - name: Enforce project.yaml (visibility policy + declared debt)
         run: python3 -m pytest tests/test_project_manifest.py -q
 
+      - name: Agent-readiness tests (homepage heading outline, Markdown 404 worker)
+        run: |
+          python3 -m pytest tests/test_homepage_headings.py -q
+          node --test tests-js/worker-404.test.mjs
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0  # v4.0.0
         with:
@@ -105,3 +110,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: deploy --config wrangler-play.toml
+
+      # Live regression gate: fails the job if production stopped answering a
+      # Markdown 404 or the homepage skips a heading level. Retries absorb
+      # propagation; the same script runs locally against any URL.
+      - name: Live agent-readiness check (production)
+        run: python3 scripts/check_agent_ready.py https://a2uicatalog.ai --retries 6 --delay 10
