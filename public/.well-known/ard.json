@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 548 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 557 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -881,10 +881,10 @@
         "mcp-apps",
         "android"
       ],
-      "description": "Renders a flow diagram (Sankey flow) where left-hand source nodes connect to right-hand target nodes via beautiful, curved gradient Bezier bands.",
+      "description": "Renders a flow diagram (Sankey flow) where nodes sit in columns from left to right and are connected by curved gradient Bezier bands whose width is the flow value. Two or more columns; columns come from each node's optional `column` hint, or from graph distance when it is absent. Layout is d3-sankey's.",
       "representativeQueries": [
-        "show a curved dual-column gradient flow diagram for financial or pipeline streams",
-        "renders a flow diagram (sankey flow) where left-hand source nodes connect to right-hand target nodes via beautiful,",
+        "show a curved multi-column gradient flow diagram for financial or pipeline streams",
+        "renders a flow diagram (sankey flow) where nodes sit in columns from left to right and are connected by curved",
         "render a sankey flow"
       ]
     },
@@ -7306,10 +7306,10 @@
         "mcp-apps",
         "android"
       ],
-      "description": "Interactive mass-spring physics simulation \u2014 nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked initial position.",
+      "description": "Mass-spring graph: nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. By default a settled, static layout computed server-side, so it works everywhere, including print and assistive tech. Drag-to-pin with live springs is opt-in with interactive: true.",
       "representativeQueries": [
-        "show a interactive mass-spring physics graph with drag-to-pin nodes",
-        "interactive mass-spring physics simulation \u2014 nodes repel each other (coulomb) and are held by hooke springs on defined",
+        "show a mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics",
+        "mass-spring graph: nodes repel each other (coulomb) and are held by hooke springs on defined edges. by default a",
         "render a spring nodes"
       ]
     },
@@ -10510,6 +10510,168 @@
         "show a one verified vector clipart image by id",
         "one piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for",
         "render a clipart"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:histogram",
+      "displayName": "Histogram",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/histogram",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "The distribution of a list of numbers: bars of counts per bin on a counted y axis, with the bin edges on the x axis. The bins and the rounded axis come from d3-array bin() with the Sturges rule, computed on the server, so there is no script. A hidden table gives each bin from, to and count. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p grows the bars one after another and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a histogram: counts of numbers per bin",
+        "the distribution of a list of numbers: bars of counts per bin on a counted y axis, with the bin edges on the x axis",
+        "render a histogram"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:box_plot",
+      "displayName": "Box Plot",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/box_plot",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Compares groups of numbers as box plots on one shared horizontal axis: per group a box from the lower to the upper quartile, a line at the median, whiskers to the furthest numbers within 1.5 times the box length, and dots for the outliers beyond. The quartiles come from d3-array quantileSorted and the axis from d3 nice() and ticks(), computed on the server, so there is no script. A hidden table gives each group's count, minimum, quartiles, median, maximum and outlier count. Motion-ready: each group fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a box_plot: compare groups of numbers by median and spread",
+        "compares groups of numbers as box plots on one shared horizontal axis: per group a box from the lower to the upper",
+        "render a box plot"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:waterfall",
+      "displayName": "Waterfall",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/waterfall",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A running total built step by step, as horizontal bars on one shared axis: each change runs from where the previous step ended (green up, red down) and a total runs from 0 to the running total; dashed connectors join the steps and the signed change is printed at the end of each row, so the direction never rests on colour alone. The axis comes from d3 nice() and ticks(), computed on the server, so there is no script. A hidden table gives each change and the running total. Motion-ready: each step fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a waterfall: how changes add up to a total",
+        "a running total built step by step, as horizontal bars on one shared axis: each change runs from where the previous",
+        "render a waterfall"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:sunburst",
+      "displayName": "Sunburst",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/sunburst",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost ring and each level of the optional per-item path (1 to 3 group names, top down) is one ring further out, so a budget, a disk-usage breakdown or a folder tree reads from the inside out. Laid out by d3-hierarchy partition() and drawn with d3-shape arc() paths on the server, so there is no script. With the optional layout \"icicle\" the same hierarchy is drawn as horizontal bars instead, the top-level groups in the left column and each level one column further right. A group's hue follows its top-level group and each ring out is a lighter shade of it; every arc or bar carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of groups and the largest group. Labels are drawn only where they fit and are rotated to read outward, never upside down; the centre of the ring shows the total. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-ring --k, so a motion_timeline track on p builds it ring by ring from the inside out and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a sunburst: share of a total in nested rings",
+        "part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit",
+        "render a sunburst"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:chord_diagram",
+      "displayName": "Chord Diagram",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/chord_diagram",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each ribbon joins two groups, its width at each end showing the flow from that group to the other, so migration between regions, traffic between services or trade between countries reads at a glance. Laid out by d3-chord chord() with sorted subgroups and drawn with d3-shape arc() and d3-chord ribbon() paths on the server, so there is no script. With the optional directed true the same matrix is laid out by chordDirected() and every flow is an arrow (ribbonArrow()) from the sending group to the receiving one, so direction is drawn instead of read from two widths. Each group has its own hue and a ribbon takes the colour of its source group at reduced opacity; every ribbon carries \"A to B: value (B to A: value)\" (one direction when directed) in a hover title, and the hidden tables list every non-zero flow (from, to, value) and each group's total out and in; the aria label gives the number of groups, the total flow and the largest flow. Group names sit outside the ring, rotated to read outward and never upside down, shortened with an ellipsis where they do not fit and left out where a neighbour is too close (a visible legend always names every group). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-group --k, so a motion_timeline track on p builds it group by group and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a chord_diagram: flows between a few entities as ribbons on a ring",
+        "flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow",
+        "render a chord diagram"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:circle_pack",
+      "displayName": "Circle Pack",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/circle_pack",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Part-to-whole as packed circles: each item is a circle whose area shows its value, and the optional per-item path (1 to 3 group names, top down) nests the circles inside outlined group circles, so a budget, a skills inventory or a folder tree reads as clusters. Laid out by d3-hierarchy pack() (circle packing: the front-chain placement of packSiblings and the smallest enclosing circle of packEnclose, padding 3) on the server, so there is no script. A group's hue follows its top-level group and a deeper circle is a lighter shade of it; group circles are outlined, leaf circles are filled. Every circle carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of groups and the largest item. A leaf name (and its value, in a wider container) is drawn inside the circle where it fits, and a group name at the top of its circle where it fits; both are 12 px text gated on the container width. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-depth --k, so a motion_timeline track on p builds it level by level from the groups inward and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a circle_pack: grouping and rough size as packed circles",
+        "part-to-whole as packed circles: each item is a circle whose area shows its value, and the optional per-item path (1",
+        "render a circle pack"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:arc_diagram",
+      "displayName": "Arc Diagram",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/arc_diagram",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Connections between named things as arcs: the nodes sit on one horizontal line and each link is a semicircle above it joining its two nodes (the d3 gallery \"arc diagram\"), so a co-authorship list, a module-dependency graph or a who-talks-to-whom table reads as clusters of short arcs and a few long ones. Node positions are even steps along the line (d3-scale scalePoint with padding 0.5) and the arcs are static SVG, so there is no script. Arc thickness shows the link value (1 to 6 px; all links at 2 px when every value is equal). The optional node group sets the dot and the arc colour (an arc takes its source node's) and a legend names every group, but colour is never the only cue: every dot and arc carries its name, group, link count or value in a hover title, and the hidden tables list every node with its group and link count and every link with its two ends and value. The aria label gives the node and link counts and the most connected node. Node names hang below the line rotated 90 degrees; in a narrow container only every second, fourth or eighth name is drawn (the first always) so that none overlaps. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a --k, so a motion_timeline track on p draws the arcs and then the nodes and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a arc_diagram: links between nodes as arcs over a line",
+        "connections between named things as arcs: the nodes sit on one horizontal line and each link is a semicircle above it",
+        "render a arc diagram"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:contour_plot",
+      "displayName": "Contour Plot",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/contour_plot",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of delivery locations, incidents or customers). Both use d3-contour: for a grid, marching squares at evenly spaced levels (d3's default count of levels, or the thresholds field); for points, a kernel density estimate (d3 contourDensity: the points are smoothed with the given bandwidth and contoured at up to 20 levels). Bands run from light to dark as the value or density rises, every band is named in a legend as a range of numbers (never colour alone), and a thin outline marks each level. A grid is drawn with column and row numbers on its axes; points use their own x and y with nice axis ticks and are also drawn as faint dots. Static SVG, no script, scaled to its container. The hidden tables give every level with its colour name and, for a grid, the share of cells at or above it, for points the share of points in cells at or above it, then the points themselves (first 200). The aria label gives the mode, the size, the value range and the number of levels. Motion-ready: each band reads --p through a --k so a motion_timeline track on p draws the bands from the lowest level up; the standalone render is the finished picture.",
+      "representativeQueries": [
+        "show a contour_plot: filled contour bands of a value grid or of the density of points",
+        "filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud",
+        "render a contour plot"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:voronoi",
+      "displayName": "Voronoi",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/voronoi",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that is closer to its site than to any other site (a catchment or service area: which store, depot, sensor or office is nearest). Regions come from a Delaunay triangulation and its Voronoi cells (d3-delaunay, with delaunator and robust-predicates), clipped to the sites' extent plus a margin, with nice axis ticks in the data's own units. Each region is filled with a light colour by group (a legend names every group, never colour alone) or with one light fill and a visible outline when there are no groups; the site is a dot, and its label sits under the dot when the region is wide enough for it (otherwise the label is hidden; the full label is in the region's tooltip and in the table). Static SVG, no script, scaled to its container. The hidden table lists every site with x, y, group, value and its share of the area. The aria label gives the number of sites, the number of groups and the site with the largest region. Motion-ready: each region reads --p through a --k so a motion_timeline track on p fades the regions in one after another; the standalone render is the finished picture.",
+      "representativeQueries": [
+        "show a voronoi: nearest-site regions of a set of points (catchments, service areas)",
+        "nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that",
+        "render a voronoi"
       ]
     }
   ]

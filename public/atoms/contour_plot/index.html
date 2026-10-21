@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Contour Plot — A2UI Atomic Catalog</title>
+  <meta name="description" content="Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of delivery…">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/contour_plot/">
+  <link rel="alternate" type="text/markdown" href="/atoms/contour_plot.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Contour Plot", "item": "https://a2uicatalog.ai/atoms/contour_plot/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/contour_plot/#page", "url": "https://a2uicatalog.ai/atoms/contour_plot/", "headline": "Contour Plot: A2UI atom", "description": "Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of delivery…", "about": {"@id": "https://a2uicatalog.ai/atoms/contour_plot/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/contour_plot/#atom", "name": "Contour Plot", "termCode": "contour_plot", "description": "contour_plot: filled contour bands of a value grid or of the density of points", "url": "https://a2uicatalog.ai/atoms/contour_plot/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "bandwidth, grid, points, thresholds, title, unit, value_label, version, x_label, y_label"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/contour_plot.md"}]}]}</script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>/*brand-tokens:e22641fc*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);
+  --positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);
+  --radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(33% 0.06 277);--accent-2:oklch(75% 0.12 202);--accent-2-text:oklch(75% 0.12 202);
+  --positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);--glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:inherit}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / contour_plot
+  </nav>
+
+  <h1>Contour Plot</h1>
+  <p class="desc">Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of delivery locations, incidents or customers). Both use d3-contour: for a grid, marching squares at evenly spaced levels (d3's default count of levels, or the thresholds field); for points, a kernel density estimate (d3 contourDensity: the points are smoothed with the given bandwidth and contoured at up to 20 levels). Bands run from light to dark as the value or density rises, every band is named in a legend as a range of numbers (never colour alone), and a thin outline marks each level. A grid is drawn with column and row numbers on its axes; points use their own x and y with nice axis ticks and are also drawn as faint dots. Static SVG, no script, scaled to its container. The hidden tables give every level with its colour name and, for a grid, the share of cells at or above it, for points the share of points in cells at or above it, then the points themselves (first 200). The aria label gives the mode, the size, the value range and the number of levels. Motion-ready: each band reads --p through a --k so a motion_timeline track on p draws the bands from the lowest level up; the standalone render is the finished picture.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Prints the finished picture; no motion</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of contour_plot"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;"><div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">Surface temperature across a field (°C)</div><div class="ifcn" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifcn .hgx:not(.hgc){display:none}}</style><div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 2px 0;">Metres south (rows of 10 m)</div><div role="img" aria-label="Contour plot of a 16 by 10 grid, values from 9 to 19.3 °C, 11 levels. Darker bands are higher values." style="position:relative;margin:8px 30px 34px 54px;"><svg viewBox="0 0 600 400" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false"><rect x="0" y="0" width="600" height="400" style="fill:var(--surface,#F8FAFC);"/><path class="cnb" d="M600,380L600,340L600,300L600,260L600,220L600,180L600,140L600,100L600,60L600,20L581.25,0L543.75,0L506.25,0L468.75,0L431.25,0L393.75,0L356.25,0L318.75,0L281.25,0L243.75,0L206.25,0L168.75,0L131.25,0L93.75,0L56.25,0L18.75,0L0,20L0,60L0,100L0,140L0,180L0,220L0,260L0,300L0,340L0,380L18.75,400L56.25,400L93.75,400L131.25,400L168.75,400L206.25,400L243.75,400L281.25,400L318.75,400L356.25,400L393.75,400L431.25,400L468.75,400L506.25,400L543.75,400L581.25,400L600,380Z" fill="#CFE3F5" stroke="#04182B" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 0),1);opacity:var(--k,1);"><title>9 to 10 °C</title></path><path class="cnb" d="M600,380L600,340L600,300L600,260L600,220L600,180L600,140L600,100L600,60L600,20L581.25,0L543.75,0L506.25,0L468.75,0L431.25,0L393.75,0L356.25,0L318.75,0L281.25,0L243.75,0L206.25,0L168.75,0L131.25,0L93.75,0L56.25,0L18.75,0L0,20L0,60L0,100L0,140L0,180L0,220L0,260L0,300L18.75,311.43L56.25,332L81.25,340L93.75,345L131.25,356L168.75,358.18L206.25,356L243.75,353.33L281.25,350L318.75,370L329.46,380L356.25,400L393.75,400L431.25,400L468.75,400L506.25,400L543.75,400L581.25,400L600,380Z" fill="#B5D3ED" stroke="#04182B" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 1),1);opacity:var(--k,1);"><title>10 to 11 °C</title></path><path class="cnb" d="M558.75,380L581.25,350L600,340L600,300L600,260L600,220L600,180L581.25,180L553.12,140L543.75,126.67L506.25,100L506.25,100L468.75,60L506.25,40L543.75,20L581.25,20L600,20L581.25,0L543.75,0L506.25,0L468.75,0L431.25,0L393.75,0L356.25,0L318.75,0L281.25,0L243.75,0L206.25,0L168.75,0L131.25,0L93.75,0L56.25,0L18.75,0L0,20L0,60L0,100L0,140L0,180L0,220L0,260L18.75,260L56.25,293.33L68.75,300L93.75,312.31L131.25,324L168.75,327.5L206.25,325L243.75,318.46L281.25,310.91L318.75,320L335.42,340L356.25,360L375,380L393.75,400L431.25,400L468.75,400L506.25,400L543.75,400L558.75,380Z" fill="#9CC3E4" stroke="#04182B" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 2),1);opacity:var(--k,1);"><title>11 to 12 °C</title></path><path class="cnb" d="M521.25,380L543.75,360L559.82,340L574.22,300L573.21,260L560.8,220L543.75,197.78L518.75,180L506.25,170L468.75,157.78L431.25,157.78L393.75,160L375,140L362.5,100L356.25,60L356.25,60L345.54,20L318.75,0L281.25,0L243.75,0L206.25,0L168.75,0L131.25,0L93.75,0L56.25,0L18.75,0L0,20L0,60L0,100L0,140L0,180L18.75,215L21.43,220L56.25,260L56.25,260L93.75,285.88L131.25,298L150,300L168.75,302.5L206.25,300L206.25,300L243.75,290L281.25,274.55L318.75,265.71L346.88,300L356.25,311.43L370.67,340L393.75,364.62L414.58,380L431.25,400L468.75,400L506.25,400L521.25,380Z" fill="#82B2DB" stroke="#04182B" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 3),1);opacity:var(--k,1);"><title>12 to 13 °C</title></path><path class="cnb" d="M253.12,260L281.25,240L306.25,220L318.75,196L328.13,180L332.39,140L328.13,100L318.75,70L316.07,60L300,20L281.25,0L243.75,0L206.25,0L168.75,0L131.25,0L93.75,0L56.25,0L37.5,20L21.43,60L18.75,73.33L0,100L0,140L18.75,150L25.37,180L48.21,220L56.25,229.23L90.34,260L93.75,262.35L131.25,278L168.75,282.86L206.25,278.95L243.75,265L253.12,260ZM532.21,340L543.75,317.14L550.78,300L546.43,260L543.75,253.33L522.92,220L506.25,206.67L468.75,195.38L431.25,198.18L393.75,220L393.75,220L375,260L379.33,300L393.75,328.57L400,340L431.25,365L468.75,375L506.25,364L532.21,340Z" fill="#68A1D2" stroke="#04182B" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 4),1);opacity:var(--k,1);"><title>13 to 14 °C</title></path><path class="cnb" d="M193.75,260L206.25,258.18L243.75,241.18L269.71,220L281.25,204L297.32,180L305.51,140L302.34,100L289.29,60L281.25,45L264.2,20L243.75,0L206.25,0L168.75,0L131.25,0L93.75,0L73.3,20L56.25,45L48.21,60L36.4,100L36.51,140L47.43,180L56.25,194.55L73.75,220L93.75,238.82L131.25,258.1L143.75,260L168.75,263.81L193.75,260ZM498.75,340L506.25,335L525,300L517.79,260L506.25,244L468.75,226.67L431.25,236L410.8,260L408.17,300L431.25,340L431.25,340L468.75,350L498.75,340Z" fill="#4E8FC9" stroke="#04182B" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 5),1);opacity:var(--k,1);"><title>14 to 15 °C</title></path><path class="cnb" d="M240.63,220L243.75,217.33L272.92,180L281.25,148L283.46,140L281.25,120L279.28,100L263.75,60L243.75,33.33L225,20L206.25,0L168.75,0L131.25,0L112.5,20L93.75,33.33L73.75,60L58.22,100L56.25,140L56.25,140L56.25,140L68.09,180L93.75,214.67L100,220L131.25,239.05L168.75,246.09L206.25,240L240.63,220ZM487.5,300L468.75,260L468.75,260L468.75,260L446.25,300L468.75,313.33L487.5,300Z" fill="#3E81BD" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 6),1);opacity:var(--k,1);"><title>15 to 16 °C</title></path><path class="cnb" d="M209.38,220L243.75,190.67L252.08,180L263.49,140L259.54,100L243.75,68L237.5,60L206.25,35L168.75,26.67L131.25,35L100,60L93.75,68L77.96,100L75,140L87.83,180L93.75,188L131.25,220L131.25,220L168.75,228.7L206.25,221.82L209.38,220Z" fill="#2D72B0" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 7),1);opacity:var(--k,1);"><title>16 to 17 °C</title></path><path class="cnb" d="M227.68,180L243.75,140L243.75,140L243.75,140L238.75,100L206.25,60L206.25,60L168.75,48.89L131.25,60L131.25,60L98.75,100L93.75,140L93.75,140L93.75,140L111.25,180L131.25,197.78L168.75,209.47L206.25,198.82L227.68,180Z" fill="#20629F" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 8),1);opacity:var(--k,1);"><title>17 to 18 °C</title></path><path class="cnb" d="M193.75,180L206.25,170L220.31,140L213.75,100L206.25,90.77L168.75,74.29L131.25,90.77L123.75,100L117.19,140L131.25,170L143.75,180L168.75,188.42L193.75,180Z" fill="#154F89" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 9),1);opacity:var(--k,1);"><title>18 to 19 °C</title></path><path class="cnb" d="M184.82,140L168.75,110L152.68,140L168.75,153.33L184.82,140Z" fill="#0B3C73" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" vector-effect="non-scaling-stroke" style="--k:clamp(0,calc(var(--p,1)*12 - 10),1);opacity:var(--k,1);"><title>19 °C and above</title></path><rect x="0" y="0" width="600" height="400" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg><div class="cny" style="position:absolute;right:100%;margin-right:6px;top:0.000%;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">0</div><div class="cny" style="position:absolute;right:100%;margin-right:6px;top:20.000%;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">2</div><div class="cny" style="position:absolute;right:100%;margin-right:6px;top:40.000%;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">4</div><div class="cny" style="position:absolute;right:100%;margin-right:6px;top:60.000%;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">6</div><div class="cny" style="position:absolute;right:100%;margin-right:6px;top:80.000%;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">8</div><div class="cny" style="position:absolute;right:100%;margin-right:6px;top:100.000%;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">10</div><div class="hgx hgc" style="position:absolute;top:100%;left:0.000%;"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div><div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">0</div></div><div class="hgx" style="position:absolute;top:100%;left:25.000%;"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div><div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">4</div></div><div class="hgx hgc" style="position:absolute;top:100%;left:50.000%;"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div><div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">8</div></div><div class="hgx" style="position:absolute;top:100%;left:75.000%;"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div><div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">12</div></div><div class="hgx hgc" style="position:absolute;top:100%;left:100.000%;"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div><div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">16</div></div></div><div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 30px 0 54px;">Metres east (columns of 10 m)</div></div><div class="cnleg" style="margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);"><div style="color:var(--muted,#475569);margin-bottom:4px;">Temperature</div><div style="display:flex;flex-wrap:wrap;gap:4px 14px;"><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:var(--surface,#F8FAFC);"></span>Below 9 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#CFE3F5;"></span>9 to 10 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#B5D3ED;"></span>10 to 11 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#9CC3E4;"></span>11 to 12 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#82B2DB;"></span>12 to 13 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#68A1D2;"></span>13 to 14 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#4E8FC9;"></span>14 to 15 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#3E81BD;"></span>15 to 16 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#2D72B0;"></span>16 to 17 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#20629F;"></span>17 to 18 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#154F89;"></span>18 to 19 °C</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:#0B3C73;"></span>19 °C and above</span></div></div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Each band is the area at or above its level; the outline between two bands is the level.</div><table style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"><thead><tr><th scope="col">Level from</th><th scope="col">Band colour</th><th scope="col">Cells at or above</th></tr></thead><tbody><tr><th scope="row">9 °C</th><td>pale blue</td><td>100.0%</td></tr><tr><th scope="row">10 °C</th><td>pale blue</td><td>93.1%</td></tr><tr><th scope="row">11 °C</th><td>light blue</td><td>82.5%</td></tr><tr><th scope="row">12 °C</th><td>light blue</td><td>60.6%</td></tr><tr><th scope="row">13 °C</th><td>mid blue</td><td>43.1%</td></tr><tr><th scope="row">14 °C</th><td>mid blue</td><td>29.4%</td></tr><tr><th scope="row">15 °C</th><td>mid blue</td><td>18.8%</td></tr><tr><th scope="row">16 °C</th><td>deep blue</td><td>13.1%</td></tr><tr><th scope="row">17 °C</th><td>deep blue</td><td>8.8%</td></tr><tr><th scope="row">18 °C</th><td>dark blue</td><td>4.4%</td></tr><tr><th scope="row">19 °C</th><td>dark blue</td><td>0.6%</td></tr></tbody></table></div></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, max 80).</td><td>optional</td></tr><tr><td>grid</td><td>object (one of grid or points is required): {width (whole number, 2 to 100), height (whole number, 2 to 100), values (array of width times height numbers, row-major: the first row is the top)}. A value that is not a finite number (or beyond 1e12) is left empty, counted in a note and treated as below every level, as d3 does. A grid whose size is not right gets a note instead of the chart. If points is also given, the grid is drawn and a note says so.</td><td>required</td></tr><tr><td>points</td><td>array (one of grid or points is required, 3 to 2000) of {x, y} numbers. An entry that is not an object with finite numeric x and y is skipped and counted in a note; points beyond the first 2000 are noted and not used; fewer than 3 usable points gets a note instead of the chart. The axes are the data range niced by d3 (a flat range is widened by 1 each side), y up.</td><td>required</td></tr><tr><td>thresholds</td><td>integer (optional, 3 to 20; another number is clamped, a fraction is rounded down). How many levels d3 aims for: ticks at 1, 2 or 5 times a power of ten, so the drawn count can differ. Default: for a grid d3's Sturges count from the number of cells (thresholdSturges); for points 20.</td><td>optional</td></tr><tr><td>bandwidth</td><td>number (optional, 5 to 60, default 20; clamped). Points mode only: the smoothing radius of the kernel density, in pixels of the 600 by 400 drawing (it scales with the chart). Larger merges clusters.</td><td>optional</td></tr><tr><td>x_label</td><td>string (optional, max 30). Under the plot. A grid defaults to "Column".</td><td>optional</td></tr><tr><td>y_label</td><td>string (optional, max 30). Above the plot. A grid defaults to "Row".</td><td>optional</td></tr><tr><td>value_label</td><td>string (optional, max 30). Grid mode only, names the values in the legend (default "Value"). Points mode names the density itself.</td><td>optional</td></tr><tr><td>unit</td><td>string (optional, max 12). Grid mode only, appended to the values in the legend, the tables and the aria label.</td><td>optional</td></tr><tr><td>version</td><td>integer (optional, default 1). The contour_plot contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre tabindex="0"><code>{
+  "type": "contour_plot",
+  "grid": 1,
+  "points": 1
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre tabindex="0"><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:contour_plot",
+  "displayName": "Contour Plot",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/contour_plot",
+  "capabilities": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+  ],
+  "description": "Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of delivery locations, incidents or customers). Both use d3-contour: for a grid, marching squares at evenly spaced levels (d3's default count of levels, or the thresholds field); for points, a kernel density estimate (d3 contourDensity: the points are smoothed with the given bandwidth and contoured at up to 20 levels). Bands run from light to dark as the value or density rises, every band is named in a legend as a range of numbers (never colour alone), and a thin outline marks each level. A grid is drawn with column and row numbers on its axes; points use their own x and y with nice axis ticks and are also drawn as faint dots. Static SVG, no script, scaled to its container. The hidden tables give every level with its colour name and, for a grid, the share of cells at or above it, for points the share of points in cells at or above it, then the points themselves (first 200). The aria label gives the mode, the size, the value range and the number of levels. Motion-ready: each band reads --p through a --k so a motion_timeline track on p draws the bands from the lowest level up; the standalone render is the finished picture.",
+  "representativeQueries": [
+    "show a contour_plot: filled contour bands of a value grid or of the density of points",
+    "filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure",
+    "render a contour plot"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre tabindex="0" style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

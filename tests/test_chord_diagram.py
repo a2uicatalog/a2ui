@@ -343,10 +343,10 @@ def test_a_label_that_cannot_clear_its_neighbours_in_any_width_is_left_out_but_s
     assert "Tiny one" in [r[0] for r in _tables(h)[1][1]] and "Tiny one: sends" in h
 
 
-def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
+def test_registered_as_a_stable_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["chord_diagram"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "groups", "matrix", "unit", "directed", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "groups", "matrix", "unit", "directed", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert "sankey_flow" in a["routing_text"] and "12" in a["routing_text"] and len(a["intent_phrases"]) == 3
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- chord_diagram$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)

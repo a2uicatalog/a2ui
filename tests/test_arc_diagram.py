@@ -296,10 +296,10 @@ def test_every_node_has_a_label_and_the_gate_thins_them_by_halves():
     assert len(_labels(_py(MODULES))) == 8 and all(g == 0 for g, *_ in _labels(_py(MODULES)))     # 8 nodes: 16 * 8 + 16 = 144 px, always drawn
 
 
-def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
+def test_registered_as_a_stable_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["arc_diagram"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "nodes", "links", "order", "unit", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "nodes", "links", "order", "unit", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert "chord" in a["routing_text"] and "sankey" in a["routing_text"] and len(a["intent_phrases"]) == 3
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- arc_diagram$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)

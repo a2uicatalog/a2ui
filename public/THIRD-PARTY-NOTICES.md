@@ -48,6 +48,275 @@ just looks plainer.
 
 ---
 
+## d3-hierarchy (Mike Bostock)
+
+- **Project:** d3-hierarchy 3.1.2 — `treemapSquarify` (the squarified treemap tiling algorithm) and `tree` (the Reingold-Tilford tidy-tree layout)
+- **Website:** https://github.com/d3/d3-hierarchy
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the algorithm is ported by hand (golden ratio `phi`,
+  row-by-row aspect-ratio test, dice/slice placement) into `_tm_squarify` in
+  `renderers/web_article.py` and its twin `_tmSquarify` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real
+  library's output by `tests/test_treemap_squarify.py`; the nested treemap (`hierarchy().sum().sort()`
+  and `treemap()` with `paddingInner`, `paddingOuter` and `paddingTop`, used by the `path` field) is ported into
+  `_tm_nest` / `_tm_nest_layout` and its twin `_tmNest` / `_tmNestLayout`, checked against the real
+  library's output by `tests/test_treemap_path.py` (golden vectors from
+  `tests/fixtures/treemap_d3_golden_gen.mjs`); the `tree` layout (firstWalk, apportion,
+  executeShifts, moveSubtree, default separation) is ported into `_oc_layout` in the same file and
+  its twin `_ocLayout` in the same `.gs` file, checked by `tests/test_org_chart_tree.py`; the
+  `cluster` layout (dendrogram: leaf placement by a separation hook, parents over the mean of their
+  children, leaves on the last row) is ported into `_oc_cluster` / `_ocCluster`, and `tree` sized to
+  `[2π, radius]` with the radial separation into `_oc_radial` / `_ocRadial` (the `layout` field of
+  `org_chart`), checked against the real library's output by `tests/test_org_chart_layouts.py`
+  (golden vectors from `tests/fixtures/org_chart_cluster_d3_golden_gen.mjs` and
+  `tests/fixtures/org_chart_radial_d3_golden_gen.mjs`). The radial link curve is the formula of
+  d3-shape 3.2.0 `linkRadial` (`curveBumpRadial`, with `pointRadial`; ISC, Mike Bostock), written
+  out in `_oc_link_radial` / `_ocLinkRadial` and checked against the real d3-shape in the same test;
+  `partition()` (the `sunburst` atom's rings and, for its `icicle` layout, columns: the same
+  `hierarchy().sum().sort()` as above, then `treemapDice` placement of each node's children across its
+  extent) is ported into `_sb_partition` / `_sb_rows` and its twin `_sbPartition` / `_sbRows`, checked
+  against the real library's output by `tests/test_sunburst.py` (golden vectors from
+  `tests/fixtures/sunburst_d3_golden_gen.mjs`);
+  `pack()` (the `circle_pack` atom: `packSiblings`, the front-chain placement of circles round a
+  centre, and `packEnclose`, the smallest enclosing circle with d3's fixed LCG shuffle, run for each
+  group in `eachAfter` order and then rescaled to the size) is ported into `_cp_pack` / `_cp_siblings` /
+  `_cp_enclose` and its twin `_cpPack` / `_cpSiblings` / `_cpEnclose`, checked against the real
+  library's output (every x, y and r with ==) by `tests/test_circle_pack.py` (golden vectors from
+  `tests/fixtures/circle_pack_d3_golden_gen.mjs`)
+- **Used by:** the `treemap`, `org_chart`, `sunburst` and `circle_pack` atoms' server-side layout in both renderers. No script
+  is shipped to the page; boxes are emitted as percentage-positioned elements (org_chart adds an
+  SVG connector overlay).
+
+---
+
+## d3-shape and d3-path (Mike Bostock)
+
+- **Project:** d3-shape 3.2.0 — `arc` (the circular and annular sector with `padAngle` and `padRadius`; corner rounding is not used), and the `stack` offsets `stackOffsetNone`, `stackOffsetExpand`, `stackOffsetSilhouette`, `stackOffsetWiggle` with `stackOrderInsideOut` and `stackOrderAppearance` (the `offset` field of `stacked_area`, in `_sa_stack` / `_saStack`), and its dependency d3-path 3.1.0 — `arc` (the SVG arc commands and the 3-digit number rounding)
+- **Website:** https://github.com/d3/d3-shape and https://github.com/d3/d3-path
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2022 Mike Bostock (d3-shape); Copyright 2015-2022 Mike Bostock (d3-path)
+- **Vendored as:** nothing is vendored; the sector geometry is ported by hand into `_sb_arc` in
+  `renderers/web_article.py` and its twin `_sbArc` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`,
+  and checked against the real libraries' path text (and, at full precision, to 1e-9) by `tests/test_sunburst.py`
+  (golden vectors from `tests/fixtures/sunburst_d3_golden_gen.mjs`)
+- **Used by:** the `sunburst` atom's arcs in both renderers. No script is shipped to the page; the arcs are static SVG paths.
+
+---
+
+## d3-chord (Mike Bostock)
+
+- **Project:** d3-chord 3.0.1 — `chord` and `chordDirected` (the circular matrix layout, with `padAngle` and `sortSubgroups`) and `ribbon` and `ribbonArrow` (the ribbon and arrow paths)
+- **Website:** https://github.com/d3/d3-chord
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the layout and the ribbon geometry are ported by hand into `_ch_chord` and `_ch_ribbon` in
+  `renderers/web_article.py` and their twins `_chChord` and `_chRibbon` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`
+  (the paths are written through the d3-path 3.1.0 `Path` already ported for d3-shape, `_D3Path`), and checked against the real library's
+  output (angles and values with ==, path strings to 1e-9) by `tests/test_chord_diagram.py` (golden vectors from `tests/fixtures/chord_d3_golden_gen.mjs`)
+- **Used by:** the `chord_diagram` atom in both renderers (the group arcs use d3-shape `arc`, credited above). No script is shipped to the page; the layout is static SVG.
+
+---
+
+## d3-scale (Mike Bostock)
+
+- **Project:** d3-scale 4.0.2 — `scalePoint` (a band scale with no inner padding: n evenly spaced positions in a range, with `padding` 0.5 of a step at each end)
+- **Website:** https://github.com/d3/d3-scale
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the position arithmetic is ported by hand into `_ad_point` in `renderers/web_article.py` and its twin `_adPoint` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real library's output (every position with ==) by
+  `tests/test_arc_diagram.py` (golden vectors from `tests/fixtures/arc_diagram_d3_golden_gen.mjs`)
+- **Used by:** the `arc_diagram` atom's node positions in both renderers. No script is shipped to the page; the arcs are static SVG semicircles.
+
+---
+
+## d3-geo (Mike Bostock)
+
+- **Project:** d3-geo 3.1.1 — `geoOrthographic`, `geoMercator` (with the projection `rotate`), `geoGraticule` and `geoInterpolate` (great-circle interpolation)
+- **Website:** https://github.com/d3/d3-geo
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2024 Mike Bostock
+- **Vendored as:** nothing is vendored; the maths is ported by hand into `_geo_ortho`, `_geo_merc`,
+  `_geo_graticule`, `_geo_interp` (and the rotation they share) in `renderers/web_article.py`, and
+  stamped byte for byte as `_geoLib` into `apps-script-surface/gas-wired-renderer/atoms_globe.gs` and
+  `apps-script-surface/gas-schema-renderer/atoms_globe.gs` (+ its `.js` mirror) and into the page script of the two
+  atoms (`_GEO_LIB_JS`). Checked against the real library's output (and d3-array 3.2.4's `range`, also ISC, used by
+  `geoGraticule`) by `tests/test_geo_d3.py`. Deliberate differences: the Mercator latitude is clamped to ±85.05° (d3
+  returns Infinity at the poles) and lines are densified and clipped to the horizon by this code rather than by d3's
+  adaptive resampling / clip-angle stream.
+- **Used by:** the `globe_3d` and `geo_mercator_radar` atoms' server-side SVG in both renderers, and the small
+  in-page script that redraws the same scene on drag. No D3 is loaded at runtime and no geodata is added by this port.
+- **Licence note:** the `LICENSE` file shipped with d3-geo 3.1.1 is the ISC text above **plus a second, MIT-style notice
+  for GeographicLib (Copyright 2008-2012 Charles Karney)**, which covers d3-geo's geodesic code. None of the code ported
+  here derives from GeographicLib (graticule, rotation, interpolation, orthographic and Mercator projection are
+  Bostock's own); if the geodesic functions are ever ported, that MIT notice must be carried too.
+
+ISC License (d3-geo):
+
+> Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
+> granted, provided that the above copyright notice and this permission notice appear in all copies.
+>
+> THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+> IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+> INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+> AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+> PERFORMANCE OF THIS SOFTWARE.
+
+---
+
+## d3-sankey (Mike Bostock)
+
+- **Project:** d3-sankey 0.12.3 — the Sankey layout: node values, column placement by graph depth, 6 relaxation
+  passes with collision resolution, link ordering by breadth, and `sankeyLinkHorizontal` link paths
+- **Website:** https://github.com/d3/d3-sankey
+- **License:** BSD-3-Clause
+- **Copyright:** Copyright 2015, Mike Bostock
+- **Vendored as:** nothing is vendored; the algorithm is ported by hand into `_sk_layout` / `_sk_model` in
+  `renderers/web_article.py` and its twin `_skLayout` / `_skModel` in
+  `apps-script-surface/gas-wired-renderer/atoms_charts.gs` (and `gas-schema-renderer/atoms_charts.gs`), and checked
+  against the real library's output by `tests/test_sankey_multicolumn.py`
+- **Used by:** the `sankey_flow` atom's server-side layout in both renderers. No script is shipped to the page; the
+  bands are emitted as SVG paths.
+
+BSD-3-Clause licence text, reproduced as the licence requires (source redistribution retains this notice):
+
+```
+Copyright 2015, Mike Bostock
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the author nor the names of contributors may be used to
+  endorse or promote products derived from this software without specific prior
+  written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+---
+
+## d3-force (Mike Bostock)
+
+- **Project:** d3-force 3.0.0 — `forceSimulation`, `forceLink`, `forceManyBody` and `forceCenter` (velocity Verlet force-directed layout), with its quadtree dependency d3-quadtree 3.0.1 (ISC, Mike Bostock; used by `forceManyBody` for the Barnes-Hut approximation) and the start layout and random source from d3-force itself
+- **Website:** https://github.com/d3/d3-force
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the algorithm is ported by hand (phyllotaxis start, LCG random source,
+  alpha decay, link / many-body / centering forces, quadtree add / cover / visit) into `_sn_layout` in
+  `renderers/web_article.py` and its twin `_snLayout` in `apps-script-surface/gas-wired-renderer/atoms_canvas.gs`
+  (mirrored in `apps-script-surface/gas-schema-renderer/atoms_canvas.gs` and `.js`), and checked against the real
+  libraries' output by `tests/test_spring_nodes_force.py`
+- **Used by:** the `spring_nodes` atom's server-side layout in both renderers, run for a fixed number of ticks. No script
+  is shipped to the page; the settled graph is emitted as SVG.
+
+---
+
+## Observable Plot dodge transform (Observable, Inc.)
+
+- **Project:** Observable Plot, the `dodgeY` / `dodgeX` transform (the approach: place circles in order, each at its exact position along one axis and at the smallest offset on the other axis that does not touch a circle already placed, alternating sides on ties), also shown in the d3 beeswarm example
+- **Website:** https://github.com/observablehq/plot
+- **License:** ISC License (wording checked in the project's `LICENSE` on GitHub, main branch, on 2026-10-21)
+- **Copyright:** Copyright 2020-2025 Observable, Inc.
+- **Vendored as:** nothing is vendored and no code is copied. The `box_plot` atom's `show_points` dodge beeswarm is an independent
+  implementation of the approach, written from its description, in `_bp_dodge` in `renderers/web_article.py` and its twin `_bpDodge` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`; credit is given for the idea. `tests/test_box_plot_points.py` checks it
+  against a brute-force reference.
+- **Used by:** the `box_plot` atom's optional `show_points`, in both renderers. No script is shipped to the page.
+
+---
+
+## d3-contour (Mike Bostock)
+
+- **Project:** d3-contour 4.0.2 — `contours()` (marching squares with the rings stitched, smoothed linearly and the holes given to the polygon that holds them) and `contourDensity()` (the points splatted onto a float32 grid of 4 px cells, padded by three blur radii, blurred, then contoured at thresholds scaled by 16), with d3-array 3.2.4 `blur2`, `nice`, `ticks` and `thresholdSturges` for the grid and the levels
+- **Website:** https://github.com/d3/d3-contour
+- **License:** ISC License
+- **Copyright:** Copyright 2012-2023 Mike Bostock
+- **Vendored as:** nothing is vendored; the algorithms are ported by hand, in the order of the JavaScript's floating-point operations, into `_cn_contours`, `_cn_density` and
+  `_cn_blur2` in `renderers/web_article.py` and their twins `_cnContours`, `_cnDensity` and `_cnBlur2` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and
+  checked against the real libraries' output (every polygon coordinate with ==) by `tests/test_contour_plot.py` (golden vectors in `tests/fixtures/contour_plot_d3_golden.json`,
+  generated by `tests/fixtures/contour_plot_d3_golden_gen.mjs`)
+- **Used by:** the `contour_plot` atom's filled bands for a value grid and for the density of points in both renderers. No script is shipped to the page; the bands are static SVG paths.
+
+---
+
+## d3-delaunay (Mike Bostock, Observable)
+
+- **Project:** d3-delaunay 6.0.4 — `Delaunay` (the `inedges` and hull index, the collinear check with its tiny jitter, `_step`) and `Voronoi` (circumcenters and the rays of the exterior cells, `cellPolygon()` with its clipping to the bounds: `_cell`, `_clip`, `_clipFinite`, `_clipSegment`, `_clipInfinite`, `_edge`, `_project`, `_simplify`)
+- **Website:** https://github.com/d3/d3-delaunay
+- **License:** ISC License
+- **Copyright:** Copyright 2018-2021 Observable, Inc.; Copyright 2021 Mapbox
+- **Vendored as:** nothing is vendored; the algorithms are ported by hand, in the order of the JavaScript's floating-point operations, into `_VoDelaunay` and `_VoVoronoi` in `renderers/web_article.py`
+  and their twins `_VoDelaunay` and `_VoVoronoi` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real library's output (triangles, halfedges, hull,
+  every cellPolygon coordinate with ==) by `tests/test_voronoi.py` (golden vectors in `tests/fixtures/voronoi_d3_golden.json`, generated by `tests/fixtures/voronoi_d3_golden_gen.mjs`)
+- **Used by:** the `voronoi` atom's nearest-site regions in both renderers. No script is shipped to the page; the regions are static SVG paths.
+
+---
+
+## delaunator (Vladimir Agafonkin, Mapbox)
+
+- **Project:** delaunator 5.1.0 — the Delaunay triangulation: seed triangle, radial sort (`quicksort`), the advancing convex hull with its angular hash, `_legalize` (edge flips), `_link`, `_addTriangle`, `pseudoAngle`, `inCircle`, `circumradius`, `circumcenter`; the collinear case returns the points as a hull
+- **Website:** https://github.com/mapbox/delaunator
+- **License:** ISC License
+- **Copyright:** Copyright (c) 2026, Mapbox (as the `LICENSE` file of the 5.1.0 package reads)
+- **Vendored as:** nothing is vendored; ported by hand into `_VoDelaunator` and the `_vo_*` helpers in `renderers/web_article.py` and `_VoDelaunator` and the `_vo*` helpers in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked by `tests/test_voronoi.py` against the real library's triangles, halfedges and hull.
+- **Used by:** the `voronoi` atom, as d3-delaunay's triangulation, in both renderers.
+
+---
+
+## robust-predicates (Vladimir Agafonkin; after Jonathan Richard Shewchuk's public-domain predicates.c)
+
+- **Project:** robust-predicates 3.0.3 — `orient2d` with its adaptive stages (the fast filter, stage B, the tail terms of stage C and the full exact expansion of stage D) and the `sum`, `estimate` helpers of its `util.js`. It is a modern port of Shewchuk's C code, which Shewchuk placed in the public domain.
+- **Website:** https://github.com/mourner/robust-predicates
+- **License:** The Unlicense (public domain dedication). The package's `LICENSE` reads: "This is free and unencumbered software released into the public domain. Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means." No copyright notice has to be reproduced; credit is given here anyway.
+- **Vendored as:** nothing is vendored; ported line by line (every arithmetic step, so the exact-arithmetic paths behave identically) into `_vo_orient2d` in `renderers/web_article.py` and `_voOrient2d` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked by `tests/test_voronoi.py` against the real library on 367 hand-made triples that reach every stage.
+- **Used by:** the `voronoi` atom's triangulation (delaunator calls `orient2d` for the seed orientation and the hull walk), in both renderers.
+
+---
+
+## d3-array (Mike Bostock)
+
+- **Project:** d3-array 3.2.4 — `bin()` with `thresholdSturges` and the default niced domain (which use `ticks`, `tickIncrement`, `nice` and `extent`)
+- **Website:** https://github.com/d3/d3-array
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2023 Mike Bostock
+- **Vendored as:** nothing is vendored; the binning is ported by hand (Sturges bin count, tick step of 1, 2 or 5
+  times a power of ten, the niced domain, the extension of the last bin when the maximum falls on a tick, and
+  the quantised bin assignment) into `_hg_bin` in `renderers/web_article.py` and its twin `_hgBin` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real library's output
+  by `tests/test_histogram.py` (golden vectors in `tests/fixtures/histogram_d3_golden.json`, generated by
+  `tests/fixtures/histogram_d3_golden_gen.mjs`)
+- **Used by:** the `histogram` atom's server-side bin edges and counts in both renderers. No script is shipped
+  to the page; the bars are emitted as static SVG.
+- **Also ported for `box_plot`:** `quantileSorted` (R-7 quartiles) and `nice` / `ticks` for the shared axis, into
+  `_bp_layout` in `renderers/web_article.py` and its twin `_bpLayout` in `atoms_infographic.gs`, checked against the real
+  library by `tests/test_box_plot.py` (golden vectors in `tests/fixtures/box_plot_d3_golden.json`, generated by
+  `tests/fixtures/box_plot_d3_golden_gen.mjs`). The whisker rule (1.5 IQR) follows d3's box plot example.
+- **Also ported for `waterfall`:** `nice` / `ticks` for its shared axis (`_wf_layout` / `_wfLayout`), checked against the
+  real library by `tests/test_waterfall.py` (golden vectors in `tests/fixtures/waterfall_d3_golden.json`, generated by
+  `tests/fixtures/waterfall_d3_golden_gen.mjs`).
+
+---
+
 ## gifenc, mp4-muxer, webm-muxer (film export)
 
 - **Projects:** gifenc 1.0.3 (Matt DesLauriers, https://github.com/mattdesl/gifenc);

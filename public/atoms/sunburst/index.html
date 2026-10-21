@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Sunburst — A2UI Atomic Catalog</title>
+  <meta name="description" content="Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost ring and each level of…">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/sunburst/">
+  <link rel="alternate" type="text/markdown" href="/atoms/sunburst.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Sunburst", "item": "https://a2uicatalog.ai/atoms/sunburst/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/sunburst/#page", "url": "https://a2uicatalog.ai/atoms/sunburst/", "headline": "Sunburst: A2UI atom", "description": "Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost ring and each level of…", "about": {"@id": "https://a2uicatalog.ai/atoms/sunburst/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/sunburst/#atom", "name": "Sunburst", "termCode": "sunburst", "description": "sunburst: share of a total in nested rings", "url": "https://a2uicatalog.ai/atoms/sunburst/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "items, layout, title, unit, version"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/sunburst.md"}]}]}</script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>/*brand-tokens:e22641fc*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);
+  --positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);
+  --radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(33% 0.06 277);--accent-2:oklch(75% 0.12 202);--accent-2-text:oklch(75% 0.12 202);
+  --positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);--glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:inherit}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / sunburst
+  </nav>
+
+  <h1>Sunburst</h1>
+  <p class="desc">Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost ring and each level of the optional per-item path (1 to 3 group names, top down) is one ring further out, so a budget, a disk-usage breakdown or a folder tree reads from the inside out. Laid out by d3-hierarchy partition() and drawn with d3-shape arc() paths on the server, so there is no script. With the optional layout "icicle" the same hierarchy is drawn as horizontal bars instead, the top-level groups in the left column and each level one column further right. A group's hue follows its top-level group and each ring out is a lighter shade of it; every arc or bar carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of groups and the largest group. Labels are drawn only where they fit and are rotated to read outward, never upside down; the centre of the ring shows the total. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-ring --k, so a motion_timeline track on p builds it ring by ring from the inside out and the standalone render is the finished picture; reduced motion shows the end state.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Prints the finished picture; no motion</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of sunburst"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;"><div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">Where the budget goes (k EUR)</div><div role="img" aria-label="Sunburst of 16 items in 4 top-level groups, total 3,290 k EUR. Largest top-level group: People, 1,675 k EUR, 50.9% of the total." style="position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;"><style>@container (width<310px){.tmw310{display:none}}@container (width<360px){.tmw360{display:none}}@container (width<370px){.tmw370{display:none}}@container (width<420px){.tmw420{display:none}}@container (width<440px){.tmw440{display:none}}@container (width<500px){.tmw500{display:none}}@container (width<530px){.tmw530{display:none}}@container (width<630px){.tmw630{display:none}}</style><svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false"><g class="sbr" style="--k:clamp(0,calc(var(--p,1)*4 - 0),1);opacity:var(--k,1);"><path d="M1.125,-148.996A149,149,0,1,1,-7.409,148.816L-3.171,74.933A75,75,0,1,0,1.125,-74.992Z" fill="#810998"><title>People: 1,675 k EUR (50.9%)</title></path><path d="M-9.655,148.687A149,149,0,0,1,-120.619,-87.476L-61.041,-43.578A75,75,0,0,0,-5.417,74.804Z" fill="#19294E"><title>Operations: 1,125 k EUR (34.2%)</title></path><path d="M-119.285,-89.287A149,149,0,0,1,-26.592,-146.608L-13.935,-73.694A75,75,0,0,0,-59.706,-45.389Z" fill="#0F6C4F"><title>Marketing: 400 k EUR (12.2%)</title></path><path d="M-24.375,-146.993A149,149,0,0,1,-1.125,-148.996L-1.125,-74.992A75,75,0,0,0,-11.718,-74.079Z" fill="#9A6120"><title>Legal: 90 k EUR (2.7%)</title></path></g><g class="sbr" style="--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);"><path d="M1.125,-223.997A224,224,0,0,1,218.631,48.747L146.485,32.28A150,150,0,0,0,1.125,-149.996Z" fill="#9530A8"><title>People / Engineering: 940 k EUR (28.6%)</title></path><path d="M218.131,50.941A224,224,0,0,1,24.604,222.645L16.845,149.051A150,150,0,0,0,145.985,34.474Z" fill="#9530A8"><title>People / Sales: 650 k EUR (19.8%)</title></path><path d="M22.366,222.881A224,224,0,0,1,-11.703,223.694L-7.466,149.814A150,150,0,0,0,14.608,149.287Z" fill="#9530A8"><title>People / Recruiting: 85 k EUR (2.6%)</title></path><path d="M-13.95,223.565A224,224,0,0,1,-219.917,42.574L-147.195,28.874A150,150,0,0,0,-9.712,149.685Z" fill="#3E4B6A"><title>Operations / Cloud: 695 k EUR (21.1%)</title></path><path d="M-220.333,40.363A224,224,0,0,1,-196.975,-106.662L-132.079,-71.099A150,150,0,0,0,-147.611,26.663Z" fill="#3E4B6A"><title>Operations / Offices: 360 k EUR (10.9%)</title></path><path d="M-195.894,-108.636A224,224,0,0,1,-181.001,-131.965L-121.424,-88.069A150,150,0,0,0,-130.998,-73.072Z" fill="#3E4B6A"><title>Operations / Insurance: 70 k EUR (2.1%)</title></path><path d="M-179.666,-133.776A224,224,0,0,1,-92.395,-204.057L-62.21,-136.491A150,150,0,0,0,-120.09,-89.88Z" fill="#35846B"><title>Marketing / Paid: 270 k EUR (8.2%)</title></path><path d="M-90.341,-204.974A224,224,0,0,1,-62.321,-215.156L-42.09,-143.974A150,150,0,0,0,-60.156,-137.409Z" fill="#35846B"><title>Marketing / Events: 75 k EUR (2.3%)</title></path><path d="M-60.157,-215.771A224,224,0,0,1,-39.42,-220.504L-26.763,-147.593A150,150,0,0,0,-39.926,-144.589Z" fill="#35846B"><title>Marketing / Content: 55 k EUR (1.7%)</title></path></g><g class="sbr" style="--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);"><path d="M1.125,-298.998A299,299,0,0,1,295.895,42.98L222.703,32.067A225,225,0,0,0,1.125,-224.997Z" fill="#B36BC1"><title>People / Engineering / Salaries: 900 k EUR (27.4%)</title></path><path d="M295.563,45.205A299,299,0,0,1,291.752,65.436L219.606,48.97A225,225,0,0,0,222.371,34.293Z" fill="#B36BC1"><title>People / Engineering / Training: 40 k EUR (1.2%)</title></path><path d="M291.251,67.63A299,299,0,0,1,104.51,280.14L78.906,210.71A225,225,0,0,0,219.106,51.163Z" fill="#B36BC1"><title>People / Sales / Salaries: 520 k EUR (15.8%)</title></path><path d="M102.399,280.919A299,299,0,0,1,32.467,297.232L24.709,223.639A225,225,0,0,0,76.795,211.489Z" fill="#B36BC1"><title>People / Sales / Commission: 130 k EUR (4.0%)</title></path><path d="M-18.244,298.443A299,299,0,0,1,-225.742,196.065L-169.69,147.751A225,225,0,0,0,-14.007,224.564Z" fill="#757F95"><title>Operations / Cloud / Compute: 420 k EUR (12.8%)</title></path><path d="M-227.211,194.361A299,299,0,0,1,-278.615,108.512L-209.559,81.916A225,225,0,0,0,-171.159,146.046Z" fill="#757F95"><title>Operations / Cloud / Storage: 180 k EUR (5.5%)</title></path><path d="M-279.423,106.412A299,299,0,0,1,-293.621,56.459L-220.9,42.759A225,225,0,0,0,-210.367,79.816Z" fill="#757F95"><title>Operations / Cloud / Network: 95 k EUR (2.9%)</title></path><path d="M-294.038,54.248A299,299,0,0,1,-277.34,-111.729L-208.805,-83.819A225,225,0,0,0,-221.316,40.548Z" fill="#757F95"><title>Operations / Offices / Rent: 300 k EUR (9.1%)</title></path><path d="M-276.492,-113.813A299,299,0,0,1,-262.747,-142.706L-197.852,-107.143A225,225,0,0,0,-207.956,-85.902Z" fill="#757F95"><title>Operations / Offices / Utilities: 60 k EUR (1.8%)</title></path><path d="M-240.047,-178.265A299,299,0,0,1,-177.117,-240.895L-133.506,-181.111A225,225,0,0,0,-180.471,-134.369Z" fill="#6FA795"><title>Marketing / Paid / Search: 160 k EUR (4.9%)</title></path><path d="M-175.299,-242.221A299,299,0,0,1,-122.988,-272.534L-92.803,-204.97A225,225,0,0,0,-131.689,-182.437Z" fill="#6FA795"><title>Marketing / Paid / Social: 110 k EUR (3.3%)</title></path><path d="M-120.934,-273.452A299,299,0,0,1,-82.826,-287.299L-62.595,-216.118A225,225,0,0,0,-90.749,-205.887Z" fill="#6FA795"><title>Marketing / Events / Conference: 75 k EUR (2.3%)</title></path></g></svg><div class="sbl tmw420" style="position:absolute;left:68.535%;top:50.531%;transform:translate(-50%,-50%) rotate(1.64deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 0),1);opacity:var(--k,1);">People</div><div class="sbl tmw420" style="position:absolute;left:74.206%;top:30.697%;transform:translate(-50%,-50%) rotate(-38.57deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Engineering</div><div class="sbl tmw420" style="position:absolute;left:82.856%;top:21.679%;transform:translate(-50%,-50%) rotate(-40.76deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Salaries</div><div class="sbl tmw630" style="position:absolute;left:92.628%;top:58.030%;transform:translate(-50%,-50%) rotate(10.67deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Training</div><div class="sbl tmw360" style="position:absolute;left:70.547%;top:73.159%;transform:translate(-50%,-50%) rotate(48.42deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Sales</div><div class="sbl tmw420" style="position:absolute;left:82.584%;top:78.633%;transform:translate(-50%,-50%) rotate(41.31deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Salaries</div><div class="sbl tmw420" style="position:absolute;left:59.854%;top:92.243%;transform:translate(-50%,-50%) rotate(76.87deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Commission</div><div class="sbl tmw440" style="position:absolute;left:50.739%;top:80.951%;transform:translate(-50%,-50%) rotate(88.63deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Recruiting</div><div class="sbl tmw420" style="position:absolute;left:33.217%;top:57.886%;transform:translate(-50%,-50%) rotate(-25.17deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 0),1);opacity:var(--k,1);">Operations</div><div class="sbl tmw360" style="position:absolute;left:29.563%;top:73.257%;transform:translate(-50%,-50%) rotate(-48.69deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Cloud</div><div class="sbl tmw420" style="position:absolute;left:30.807%;top:88.900%;transform:translate(-50%,-50%) rotate(-63.74deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Compute</div><div class="sbl tmw420" style="position:absolute;left:12.784%;top:72.284%;transform:translate(-50%,-50%) rotate(-30.91deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Storage</div><div class="sbl tmw420" style="position:absolute;left:8.275%;top:61.859%;transform:translate(-50%,-50%) rotate(-15.87deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Network</div><div class="sbl tmw420" style="position:absolute;left:19.423%;top:45.142%;transform:translate(-50%,-50%) rotate(9.03deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Offices</div><div class="sbl tmw310" style="position:absolute;left:6.840%;top:45.658%;transform:translate(-50%,-50%) rotate(5.74deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Rent</div><div class="sbl tmw420" style="position:absolute;left:10.829%;top:31.366%;transform:translate(-50%,-50%) rotate(25.44deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Utilities</div><div class="sbl tmw530" style="position:absolute;left:23.904%;top:33.341%;transform:translate(-50%,-50%) rotate(32.55deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Insurance</div><div class="sbl tmw420" style="position:absolute;left:40.247%;top:34.229%;transform:translate(-50%,-50%) rotate(58.27deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#FFFFFF;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 0),1);opacity:var(--k,1);">Marketing</div><div class="sbl tmw310" style="position:absolute;left:30.581%;top:25.887%;transform:translate(-50%,-50%) rotate(51.16deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Paid</div><div class="sbl tmw420" style="position:absolute;left:19.401%;top:19.254%;transform:translate(-50%,-50%) rotate(45.14deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Search</div><div class="sbl tmw420" style="position:absolute;left:28.252%;top:12.469%;transform:translate(-50%,-50%) rotate(59.91deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Social</div><div class="sbl tmw500" style="position:absolute;left:39.426%;top:20.901%;transform:translate(-50%,-50%) rotate(70.03deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 1),1);opacity:var(--k,1);">Events</div><div class="sbl tmw420" style="position:absolute;left:35.186%;top:9.231%;transform:translate(-50%,-50%) rotate(70.03deg);width:max-content;max-width:calc(12.252cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:600;color:#000000;pointer-events:none;--k:clamp(0,calc(var(--p,1)*4 - 2),1);opacity:var(--k,1);">Conference</div><div class="sbc tmw370" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;"><div style="font-weight:700;">3,290 k EUR</div><div style="color:var(--muted,#475569);">total</div></div></div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Angle shows share of the total; each ring out is one level deeper.</div><table style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"><thead><tr><th scope="col">Item</th><th scope="col">Path</th><th scope="col">Value</th><th scope="col">Share of total</th></tr></thead><tbody><tr><th scope="row">Compute</th><td>Operations / Cloud</td><td>420 k EUR</td><td>12.8%</td></tr><tr><th scope="row">Storage</th><td>Operations / Cloud</td><td>180 k EUR</td><td>5.5%</td></tr><tr><th scope="row">Network</th><td>Operations / Cloud</td><td>95 k EUR</td><td>2.9%</td></tr><tr><th scope="row">Rent</th><td>Operations / Offices</td><td>300 k EUR</td><td>9.1%</td></tr><tr><th scope="row">Utilities</th><td>Operations / Offices</td><td>60 k EUR</td><td>1.8%</td></tr><tr><th scope="row">Insurance</th><td>Operations</td><td>70 k EUR</td><td>2.1%</td></tr><tr><th scope="row">Salaries</th><td>People / Engineering</td><td>900 k EUR</td><td>27.4%</td></tr><tr><th scope="row">Training</th><td>People / Engineering</td><td>40 k EUR</td><td>1.2%</td></tr><tr><th scope="row">Salaries</th><td>People / Sales</td><td>520 k EUR</td><td>15.8%</td></tr><tr><th scope="row">Commission</th><td>People / Sales</td><td>130 k EUR</td><td>4.0%</td></tr><tr><th scope="row">Recruiting</th><td>People</td><td>85 k EUR</td><td>2.6%</td></tr><tr><th scope="row">Search</th><td>Marketing / Paid</td><td>160 k EUR</td><td>4.9%</td></tr><tr><th scope="row">Social</th><td>Marketing / Paid</td><td>110 k EUR</td><td>3.3%</td></tr><tr><th scope="row">Conference</th><td>Marketing / Events</td><td>75 k EUR</td><td>2.3%</td></tr><tr><th scope="row">Content</th><td>Marketing</td><td>55 k EUR</td><td>1.7%</td></tr><tr><th scope="row">Legal</th><td>Top level</td><td>90 k EUR</td><td>2.7%</td></tr></tbody></table></div></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, max 80).</td><td>optional</td></tr><tr><td>items</td><td>array (required, 2 to 40) of {path (optional, array of 0 to 3 strings, max 20 each: the item's ancestor groups from the top down; same shape as the treemap's nested mode), name (max 24, default "Item n"), value (number above 0)}. An item without a usable path is its own arc in the innermost ring. Items with a value of 0 or less, a value that is not a finite number, or that are not an item are dropped and counted in a note; items beyond the first 40 are noted and not drawn. With fewer than 2 usable items a note replaces the chart.</td><td>optional</td></tr><tr><td>layout</td><td>"radial" or "icicle" (optional, default "radial"). radial draws concentric rings (a sunburst); icicle draws horizontal bars with the top-level groups on the left. Any other value is drawn as radial.</td><td>optional</td></tr><tr><td>unit</td><td>string (optional, max 12). Appended to every value in the title, the centre, the aria label and the hidden table.</td><td>optional</td></tr><tr><td>version</td><td>integer (optional, default 1). The sunburst contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre tabindex="0"><code>{
+  "type": "sunburst"
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre tabindex="0"><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:sunburst",
+  "displayName": "Sunburst",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/sunburst",
+  "capabilities": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+  ],
+  "description": "Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost ring and each level of the optional per-item path (1 to 3 group names, top down) is one ring further out, so a budget, a disk-usage breakdown or a folder tree reads from the inside out. Laid out by d3-hierarchy partition() and drawn with d3-shape arc() paths on the server, so there is no script. With the optional layout \"icicle\" the same hierarchy is drawn as horizontal bars instead, the top-level groups in the left column and each level one column further right. A group's hue follows its top-level group and each ring out is a lighter shade of it; every arc or bar carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of groups and the largest group. Labels are drawn only where they fit and are rotated to read outward, never upside down; the centre of the ring shows the total. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-ring --k, so a motion_timeline track on p builds it ring by ring from the inside out and the standalone render is the finished picture; reduced motion shows the end state.",
+  "representativeQueries": [
+    "show a sunburst: share of a total in nested rings",
+    "part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top",
+    "render a sunburst"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre tabindex="0" style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

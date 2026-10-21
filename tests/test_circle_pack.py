@@ -301,10 +301,10 @@ def test_a_circle_too_small_for_a_name_has_no_label():
     assert len(_leaf_labels(_py(PAYLOADS["flat"]))) == 4
 
 
-def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
+def test_registered_as_a_stable_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["circle_pack"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "items", "unit", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "items", "unit", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert "treemap" in a["routing_text"] and "bar chart" in a["routing_text"] and "grouping and rough size" in a["routing_text"] and len(a["intent_phrases"]) == 3
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- circle_pack$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)

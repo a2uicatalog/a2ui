@@ -21032,7 +21032,7 @@ blocks:
     title where it can be cut) so none overlap. Nodes appear in list order with p.
   source: *ifg002
 - type: histogram
-  stage: preview
+  stage: stable
   description: 'The distribution of a list of numbers: bars of counts per bin on a counted y axis, with the bin edges on the x axis. The
     bins and the rounded axis come from d3-array bin() with the Sturges rule, computed on the server, so there is no script. A hidden table
     gives each bin from, to and count. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item
@@ -21069,7 +21069,7 @@ blocks:
     series), and rise one after another with p.
   source: *ifg002
 - type: box_plot
-  stage: preview
+  stage: stable
   description: 'Compares groups of numbers as box plots on one shared horizontal axis: per group a box from the lower to the upper quartile,
     a line at the median, whiskers to the furthest numbers within 1.5 times the box length, and dots for the outliers beyond. The quartiles
     come from d3-array quantileSorted and the axis from d3 nice() and ticks(), computed on the server, so there is no script. A hidden table
@@ -21103,7 +21103,7 @@ blocks:
     all. Groups keep the given order.
   source: *ifg002
 - type: waterfall
-  stage: preview
+  stage: stable
   description: 'A running total built step by step, as horizontal bars on one shared axis: each change runs from where the previous step
     ended (green up, red down) and a total runs from 0 to the running total; dashed connectors join the steps and the signed change is
     printed at the end of each row, so the direction never rests on colour alone. The axis comes from d3 nice() and ticks(), computed on
@@ -21132,7 +21132,7 @@ blocks:
     decreases --negative (fallbacks green and red), totals --accent. Steps keep the given order.
   source: *ifg002
 - type: sunburst
-  stage: preview
+  stage: stable
   description: 'Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost
     ring and each level of the optional per-item path (1 to 3 group names, top down) is one ring further out, so a budget, a disk-usage breakdown or a
     folder tree reads from the inside out. Laid out by d3-hierarchy partition() and drawn with d3-shape arc() paths on the server, so there is no script.
@@ -21168,7 +21168,7 @@ blocks:
     keep d3's order, largest first.
   source: *ifg002
 - type: chord_diagram
-  stage: preview
+  stage: stable
   description: 'Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each
     ribbon joins two groups, its width at each end showing the flow from that group to the other, so migration between regions, traffic between services
     or trade between countries reads at a glance. Laid out by d3-chord chord() with sorted subgroups and drawn with d3-shape arc() and d3-chord ribbon()
@@ -21211,7 +21211,7 @@ blocks:
     as in d3's chord examples.
   source: *ifg002
 - type: circle_pack
-  stage: preview
+  stage: stable
   description: 'Part-to-whole as packed circles: each item is a circle whose area shows its value, and the optional per-item path (1 to 3 group names, top
     down) nests the circles inside outlined group circles, so a budget, a skills inventory or a folder tree reads as clusters. Laid out by d3-hierarchy
     pack() (circle packing: the front-chain placement of packSiblings and the smallest enclosing circle of packEnclose, padding 3) on the server, so
@@ -21245,7 +21245,7 @@ blocks:
     largest first; the layout is deterministic (d3's fixed random seed), so the same data always draws the same picture.
   source: *ifg002
 - type: arc_diagram
-  stage: preview
+  stage: stable
   description: 'Connections between named things as arcs: the nodes sit on one horizontal line and each link is a semicircle above it joining its two
     nodes (the d3 gallery "arc diagram"), so a co-authorship list, a module-dependency graph or a who-talks-to-whom table reads as clusters of short arcs
     and a few long ones. Node positions are even steps along the line (d3-scale scalePoint with padding 0.5) and the arcs are static SVG, so there is no
@@ -21286,7 +21286,7 @@ blocks:
     eight groups; ungrouped nodes are slate. Link values are not directional.
   source: *ifg002
 - type: contour_plot
-  stage: preview
+  stage: stable
   description: 'Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of
     delivery locations, incidents or customers). Both use d3-contour: for a grid, marching squares at evenly spaced levels (d3''s default count of levels,
     or the thresholds field); for points, a kernel density estimate (d3 contourDensity: the points are smoothed with the given bandwidth and contoured at
@@ -21332,7 +21332,7 @@ blocks:
     colour scale choice.
   source: *ifg002
 - type: voronoi
-  stage: preview
+  stage: stable
   description: 'Nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that is closer to its site than to any
     other site (a catchment or service area: which store, depot, sensor or office is nearest). Regions come from a Delaunay triangulation and its Voronoi cells (d3-delaunay,
     with delaunator and robust-predicates), clipped to the sites'' extent plus a margin, with nice axis ticks in the data''s own units. Each region is filled with a light colour

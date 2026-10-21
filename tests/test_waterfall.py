@@ -198,10 +198,10 @@ def test_hostile_text_is_escaped_in_both_twins(core_js):
 
 
 # ─── registration ─────────────────────────────────────────────────────────────
-def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
+def test_registered_as_a_stable_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["waterfall"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "steps", "x_label", "unit", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "steps", "x_label", "unit", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- waterfall$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)
     assert '"waterfall":"a2ui-charts-v1"' in (ROOT / "apps-script-surface/gas-wired-renderer/PackMap.gs").read_text()

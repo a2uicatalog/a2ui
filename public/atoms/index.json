@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 548,
+ "atomCount": 557,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -500,7 +500,7 @@
   },
   {
    "type": "sankey_flow",
-   "compact": "curved dual-column gradient flow diagram for financial or pipeline streams",
+   "compact": "curved multi-column gradient flow diagram for financial or pipeline streams",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -4283,7 +4283,7 @@
   },
   {
    "type": "spring_nodes",
-   "compact": "interactive mass-spring physics graph with drag-to-pin nodes",
+   "compact": "mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics",
    "surfaces": [
     "google-apps-script-web",
     "web",
@@ -6073,6 +6073,96 @@
    "type": "clipart",
    "compact": "one verified vector clipart image by id",
    "surfaces": [
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "histogram",
+   "compact": "histogram: counts of numbers per bin",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "box_plot",
+   "compact": "box_plot: compare groups of numbers by median and spread",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "waterfall",
+   "compact": "waterfall: how changes add up to a total",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "sunburst",
+   "compact": "sunburst: share of a total in nested rings",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "chord_diagram",
+   "compact": "chord_diagram: flows between a few entities as ribbons on a ring",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "circle_pack",
+   "compact": "circle_pack: grouping and rough size as packed circles",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "arc_diagram",
+   "compact": "arc_diagram: links between nodes as arcs over a line",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "contour_plot",
+   "compact": "contour_plot: filled contour bands of a value grid or of the density of points",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "voronoi",
+   "compact": "voronoi: nearest-site regions of a set of points (catchments, service areas)",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
     "mcp-apps",
     "android"
    ]

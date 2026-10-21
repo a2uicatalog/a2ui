@@ -444,10 +444,10 @@ def test_hostile_text_is_escaped_in_both_twins(core_js):
 
 
 # ─── registration ──────────────────────────────────────────────────────────────────────────────────────────────
-def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
+def test_registered_as_a_stable_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["contour_plot"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "grid", "points", "thresholds", "bandwidth", "x_label", "y_label", "value_label", "unit", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "grid", "points", "thresholds", "bandwidth", "x_label", "y_label", "value_label", "unit", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert len(a["intent_phrases"]) == 3 and a["routing_text"] and "scatter" in a["routing_text"] and a["compact_description"] and a["notes"]
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- contour_plot$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)

@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 548,
+ "atomCount": 557,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -1777,8 +1777,8 @@
   },
   {
    "type": "sankey_flow",
-   "description": "Renders a flow diagram (Sankey flow) where left-hand source nodes connect to right-hand target nodes via beautiful, curved gradient Bezier bands.",
-   "compact_description": "curved dual-column gradient flow diagram for financial or pipeline streams",
+   "description": "Renders a flow diagram (Sankey flow) where nodes sit in columns from left to right and are connected by curved gradient Bezier bands whose width is the flow value. Two or more columns; columns come from each node's optional `column` hint, or from graph distance when it is absent. Layout is d3-sankey's.",
+   "compact_description": "curved multi-column gradient flow diagram for financial or pipeline streams",
    "surfaces": {
     "works_on": [
      "web",
@@ -1804,7 +1804,7 @@
     ]
    },
    "fields": {
-    "nodes": "list of dictionaries representing columns (e.g., [{'id': 'revenue', 'label': 'Revenue', 'column': 0, 'color': '#10b981'}, ...])",
+    "nodes": "list of dictionaries (e.g., [{'id': 'revenue', 'label': 'Revenue', 'column': 0, 'color': '#10b981'}, ...]); `column` is an optional hint, an integer 0..n for the left-to-right column (0 = leftmost, up to 15); without it the column is the node's distance from the sources (a node with no outgoing flow goes to the last column), so a source -> middle -> target chain gets three columns and the chart is wider by 220px per column beyond two. Flows that close a cycle, or would run backwards between columns, are not drawn and are listed in a note under the chart.",
     "links": "list of dictionaries representing flows (e.g., [{'source': 'revenue', 'target': 'marketing', 'value': 25000, 'color': '#38bdf8'}, ...])",
     "title": "string (optional, title of the chart, e.g., 'Financial Flow Allocation')"
    },
@@ -1813,7 +1813,7 @@
     "url": "https://github.com/a2uicatalog/a2ui",
     "license": "MIT"
    },
-   "routing_text": "Renders a flow diagram (Sankey flow) where left-hand source nodes connect to right-hand target nodes via beautiful, curved gradient Bezier bands.",
+   "routing_text": "Renders a flow diagram (Sankey flow) where nodes sit in columns from left to right and are connected by curved gradient Bezier bands whose width is the flow value.",
    "intent_phrases": [
     "I need to visualize where our users are coming from and where they go next on our website.",
     "Show me how money moves between different departments in our company's budget.",
@@ -8159,7 +8159,9 @@
    "fields": {
     "title": "string (optional, e.g., 'SaaS Cumulative Workloads')",
     "labels": "list of strings representing X-axis ticks (e.g., ['Q1', 'Q2', 'Q3', 'Q4'])",
-    "series": "list of dictionaries representing stacked layers: [{'label': 'Enterprise', 'data': [10, 25, 45, 60], 'color': '#00f2ff'}, ...]"
+    "series": "list of dictionaries representing stacked layers: [{'label': 'Enterprise', 'data': [10, 25, 45, 60], 'color': '#00f2ff'}, ...]",
+    "offset": "string (optional): how the layers sit on the baseline. Absent, 'none' or anything else keeps today's stacked bars. 'expand' draws a real area chart with every point scaled to 100% (a 0-100% axis), 'silhouette' centres the layers on a middle line, 'wiggle' is a streamgraph (d3's wiggle baseline, layers ordered inside-out). silhouette and wiggle have no value axis (the baseline means nothing); the hidden table lists the raw values. Up to 12 series and 60 labels; negative or non-numeric cells draw as 0 and are counted in a note.",
+    "version": "integer (optional, default 1). The stacked_area contract the payload was written for. Only version 1 exists; a higher whole number draws as version 1 with a note."
    },
    "source": {
     "name": "a2uicatalog",
@@ -15932,8 +15934,8 @@
   },
   {
    "type": "spring_nodes",
-   "description": "Interactive mass-spring physics simulation — nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked initial position.",
-   "compact_description": "interactive mass-spring physics graph with drag-to-pin nodes",
+   "description": "Mass-spring graph: nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. By default a settled, static layout computed server-side, so it works everywhere, including print and assistive tech. Drag-to-pin with live springs is opt-in with interactive: true.",
+   "compact_description": "mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics",
    "surfaces": {
     "works_on": [
      "google-apps-script-web",
@@ -15949,14 +15951,15 @@
     "colour": "string (optional). Node and edge accent colour. Default",
     "bg": "string (optional). Background colour. Default",
     "height": "integer (optional). Canvas height px. Default 420.",
-    "rest_length": "integer (optional). Spring rest length px. Default 110."
+    "rest_length": "integer (optional). Spring rest length px. Default 110.",
+    "interactive": "boolean (optional). Default false: a settled, static layout that works everywhere and for assistive tech. Set true when the atom is shown in a live browser or app view and the viewer should be able to play with the graph: drag nodes to pin them, watch the springs react. Ignored under reduced motion and on static surfaces (print, slides, email, chat, and any surface that strips scripts)."
    },
    "source": {
     "name": "a2uicatalog",
     "url": "https://github.com/a2uicatalog/a2ui",
     "license": "MIT"
    },
-   "routing_text": "Interactive mass-spring physics simulation — nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked ini",
+   "routing_text": "Mass-spring graph: nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. By default a settled, static layout computed server-side, so it works everywhere, including print an",
    "intent_phrases": [
     "I need to visualize a network where items push apart but are connected by elastic bands.",
     "Can I see how my data points would arrange themselves if they naturally pushed away but had fixed links?",
@@ -17504,7 +17507,9 @@
    },
    "fields": {
     "nodes": "array of {text, children: [{text, children}]} — nested tree nodes",
-    "title": "string (optional)"
+    "title": "string (optional)",
+    "layout": "string (optional). Absent, 'outline' or anything else keeps the collapsible outline. 'tree' draws the nested form as a static top-down tidy tree (the same d3 tree layout and boxes as org_chart; the nested lists stay in the page for screen readers, but there is nothing to expand or collapse). It draws at most 31 nodes, 6 levels and labels of up to 32 characters; beyond that, or for the id/next graph form, the outline is shown with a note. Branch text stays inside each node's text (there is no separate edge label field).",
+    "version": "integer (optional, default 1). The decision_tree contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
    },
    "source": {
     "name": "a2uicatalog",
@@ -21929,6 +21934,441 @@
     "I need a professional-looking icon for a 'safety first' feature.",
     "Show me a simple graphic of a construction worker for our team page.",
     "We need a standardized graphic for our project management tool."
+   ]
+  },
+  {
+   "type": "histogram",
+   "description": "The distribution of a list of numbers: bars of counts per bin on a counted y axis, with the bin edges on the x axis. The bins and the rounded axis come from d3-array bin() with the Sturges rule, computed on the server, so there is no script. A hidden table gives each bin from, to and count. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p grows the bars one after another and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "histogram: counts of numbers per bin",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "values": "array (required, 5 to 2000) of numbers. Entries that are not finite numbers (text, null, true or false, NaN, Infinity) or whose size is above 1e12 are skipped and counted in a note; with fewer than 5 numbers left a note replaces the chart. Only the first 2000 entries are read.",
+    "bins": "integer (optional, 3 to 40). The number of bins to aim for. Default is the Sturges rule, ceil(log2(n)) + 1. d3 rounds the bin edges to 1, 2 or 5 times a power of ten, so the number drawn can differ a little from the number asked for.",
+    "x_label": "string (optional, max 40). Names the values on the x axis.",
+    "unit": "string (optional, max 12). Appended to the x label and to the edge values in the hidden table.",
+    "layout": "string (optional, \"bars\" or \"ridge\", default \"bars\"). \"ridge\" draws one ridge per entry of `series` on shared bins, to compare distributions; `values` is then not read. Any other value draws bars.",
+    "series": "array (optional, read only when layout is \"ridge\", 1 to 8) of {label (string, max 30, default \"Series n\"), values (array, 5 to 2000, of numbers, filtered like `values`)}. The shared bins come from d3 bin() of all the series pooled (`bins` applies); each ridge's height is its share of that series' values per bin, so series of different sizes compare. A series with fewer than 5 usable numbers is left out with a note; series beyond the first 8 are noted and not drawn.",
+    "version": "integer (optional, default 1). The histogram contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Shows how a list of raw numbers is spread out, such as response times, order values or scores. Give the numbers, not the counts; the bins are computed. Not for comparing categories (use a bar chart) or for showing a trend over time.",
+   "intent_phrases": [
+    "Show the distribution of these response times.",
+    "I need a histogram of order values.",
+    "How are these exam scores spread out?",
+    "Compare the distributions of wait times before, during and after the change."
+   ]
+  },
+  {
+   "type": "box_plot",
+   "description": "Compares groups of numbers as box plots on one shared horizontal axis: per group a box from the lower to the upper quartile, a line at the median, whiskers to the furthest numbers within 1.5 times the box length, and dots for the outliers beyond. The quartiles come from d3-array quantileSorted and the axis from d3 nice() and ticks(), computed on the server, so there is no script. A hidden table gives each group's count, minimum, quartiles, median, maximum and outlier count. Motion-ready: each group fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+   "compact_description": "box_plot: compare groups of numbers by median and spread",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "groups": "array (required, 1 to 12) of {label (string, max 30, default \"Group n\"), values (array, 5 to 2000, of numbers)}. Entries that are not finite numbers or whose size is above 1e12 are skipped and counted in a note; a group with fewer than 5 usable numbers, or an entry that is not a group, is left out with a note. Groups beyond the first 12 are noted and not drawn.",
+    "x_label": "string (optional, max 40). Names the values on the axis.",
+    "unit": "string (optional, max 12). Appended to the axis caption and to every value in the label and hidden table.",
+    "show_points": "boolean (optional, default false). Only true switches it on. Draws every usable number of each group as a small dot along its row, at exactly its place on the axis, stacked vertically only as far as needed so no two dots touch (a deterministic dodge beeswarm, no script), behind the box, whiskers and median. Rows are taller. At most 300 dots per chart, shared across the groups in proportion to their sizes and evenly spaced through each group's sorted numbers; a note says so, and the table counts them all. A dot that cannot be placed without touching another stays on the edge of its row; a note counts these.",
+    "version": "integer (optional, default 1). The box_plot contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Compares how several groups of raw numbers are spread out, such as response times per region, scores per class or prices per supplier, showing medians, the middle half and outliers side by side. Give the numbers, not the summary statistics. For one distribution's shape use a histogram; for totals per category use a bar chart.",
+   "intent_phrases": [
+    "Compare response times across regions with a box plot.",
+    "Show the spread of scores for each class.",
+    "Which supplier's prices vary the most?"
+   ]
+  },
+  {
+   "type": "waterfall",
+   "description": "A running total built step by step, as horizontal bars on one shared axis: each change runs from where the previous step ended (green up, red down) and a total runs from 0 to the running total; dashed connectors join the steps and the signed change is printed at the end of each row, so the direction never rests on colour alone. The axis comes from d3 nice() and ticks(), computed on the server, so there is no script. A hidden table gives each change and the running total. Motion-ready: each step fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+   "compact_description": "waterfall: how changes add up to a total",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "steps": "array (required, 1 to 24) of {label (string, max 30, default \"Step n\"), value (number), kind (optional, \"total\" or \"delta\", default \"delta\")}. A delta step needs a finite value up to 1e12 in size; a total step without a value shows the running total, and with a value sets the running total to it (a note says when that differs from the steps before it). Other entries are left out with a note; steps beyond the first 24 are noted and not drawn. Any kind other than \"total\" is a delta.",
+    "x_label": "string (optional, max 40). Names the values on the axis.",
+    "unit": "string (optional, max 12). Appended to the axis caption, the label and every value in the hidden table.",
+    "version": "integer (optional, default 1). The waterfall contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Shows how a starting amount is moved up and down by a sequence of changes to an end amount, such as a revenue or budget bridge, a headcount change or a cash flow. Give each change as a signed number and mark totals. For parts of one whole use a treemap or donut; for one value per category use a bar chart.",
+   "intent_phrases": [
+    "Build a revenue bridge from last year to this year.",
+    "Show what drove the budget from plan to actual as a waterfall.",
+    "How did headcount change through hires and leavers?"
+   ]
+  },
+  {
+   "type": "sunburst",
+   "description": "Part-to-whole as nested rings: each item is an arc whose angle shows its share of the total, the top-level groups sit in the innermost ring and each level of the optional per-item path (1 to 3 group names, top down) is one ring further out, so a budget, a disk-usage breakdown or a folder tree reads from the inside out. Laid out by d3-hierarchy partition() and drawn with d3-shape arc() paths on the server, so there is no script. With the optional layout \"icicle\" the same hierarchy is drawn as horizontal bars instead, the top-level groups in the left column and each level one column further right. A group's hue follows its top-level group and each ring out is a lighter shade of it; every arc or bar carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of groups and the largest group. Labels are drawn only where they fit and are rotated to read outward, never upside down; the centre of the ring shows the total. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-ring --k, so a motion_timeline track on p builds it ring by ring from the inside out and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "sunburst: share of a total in nested rings",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "items": "array (required, 2 to 40) of {path (optional, array of 0 to 3 strings, max 20 each: the item's ancestor groups from the top down; same shape as the treemap's nested mode), name (max 24, default \"Item n\"), value (number above 0)}. An item without a usable path is its own arc in the innermost ring. Items with a value of 0 or less, a value that is not a finite number, or that are not an item are dropped and counted in a note; items beyond the first 40 are noted and not drawn. With fewer than 2 usable items a note replaces the chart.",
+    "layout": "\"radial\" or \"icicle\" (optional, default \"radial\"). radial draws concentric rings (a sunburst); icicle draws horizontal bars with the top-level groups on the left. Any other value is drawn as radial.",
+    "unit": "string (optional, max 12). Appended to every value in the title, the centre, the aria label and the hidden table.",
+    "version": "integer (optional, default 1). The sunburst contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Share of a total broken down through up to three levels of groups, as concentric rings (or a horizontal icicle), such as a budget by department and line, disk usage by folder or revenue by region and product. Reads the hierarchy from the inside out. For exact areas side by side use a treemap instead; it is not for a flat list of values, for which use a bar chart.",
+   "intent_phrases": [
+    "Show the budget by department and line as a sunburst.",
+    "What is using my disk space, folder by folder, as nested rings?",
+    "Break revenue down by region, then product, as concentric rings."
+   ]
+  },
+  {
+   "type": "chord_diagram",
+   "description": "Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each ribbon joins two groups, its width at each end showing the flow from that group to the other, so migration between regions, traffic between services or trade between countries reads at a glance. Laid out by d3-chord chord() with sorted subgroups and drawn with d3-shape arc() and d3-chord ribbon() paths on the server, so there is no script. With the optional directed true the same matrix is laid out by chordDirected() and every flow is an arrow (ribbonArrow()) from the sending group to the receiving one, so direction is drawn instead of read from two widths. Each group has its own hue and a ribbon takes the colour of its source group at reduced opacity; every ribbon carries \"A to B: value (B to A: value)\" (one direction when directed) in a hover title, and the hidden tables list every non-zero flow (from, to, value) and each group's total out and in; the aria label gives the number of groups, the total flow and the largest flow. Group names sit outside the ring, rotated to read outward and never upside down, shortened with an ellipsis where they do not fit and left out where a neighbour is too close (a visible legend always names every group). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-group --k, so a motion_timeline track on p builds it group by group and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "chord_diagram: flows between a few entities as ribbons on a ring",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "groups": "array (required, 2 to 12) of strings (max 20 each) naming the entities. A name that is not a string or a number is shown as \"Group n\". Groups beyond the 12th are noted and not drawn, and their rows and columns are dropped. With fewer than 2 groups a note replaces the chart.",
+    "matrix": "array of rows (required): square, one row and one column per group, numbers 0 or more; the cell at row i and column j is the flow from group i to group j (the diagonal is a flow from a group to itself, drawn as a loop). A matrix that is not a list, not square, or whose size does not match groups is replaced by the note \"A chord diagram needs a square matrix with one row per group.\" and what was wrong. A cell that is negative or not a finite number counts as 0 and is counted in a note. If every flow is 0 a note replaces the chart.",
+    "unit": "string (optional, max 12). Appended to every value in the titles, the aria label and the hidden tables.",
+    "directed": "boolean (optional, default false). false draws chord(): one ribbon joins each pair of groups and its width at each end is the flow from that group (the larger direction is the ribbon's source). true draws chordDirected() with ribbonArrow(): one arrow per non-zero flow, pointing at the receiving group, and a group's arc covers what it sends and what it receives. Any value other than the boolean true is drawn as false.",
+    "version": "integer (optional, default 1). The chord_diagram contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Flows between a few entities (2 to 12) in both directions, as a ring with a ribbon per pair, such as migration between regions, traffic between services, trade between countries or transfers between teams; set directed to draw each flow as an arrow. For one-way staged flows from sources through stages to outcomes use sankey_flow instead; it is not for more than 12 entities, for a hierarchy (use sunburst or treemap) or for a single list of values (use a bar chart).",
+   "intent_phrases": [
+    "Show migration between five regions as a chord diagram.",
+    "Which of our services talk to which, and how much traffic goes each way?",
+    "Draw the flows between these teams as ribbons around a circle, with arrows for direction."
+   ]
+  },
+  {
+   "type": "circle_pack",
+   "description": "Part-to-whole as packed circles: each item is a circle whose area shows its value, and the optional per-item path (1 to 3 group names, top down) nests the circles inside outlined group circles, so a budget, a skills inventory or a folder tree reads as clusters. Laid out by d3-hierarchy pack() (circle packing: the front-chain placement of packSiblings and the smallest enclosing circle of packEnclose, padding 3) on the server, so there is no script. A group's hue follows its top-level group and a deeper circle is a lighter shade of it; group circles are outlined, leaf circles are filled. Every circle carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and the aria label gives the total, the number of groups and the largest item. A leaf name (and its value, in a wider container) is drawn inside the circle where it fits, and a group name at the top of its circle where it fits; both are 12 px text gated on the container width. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-depth --k, so a motion_timeline track on p builds it level by level from the groups inward and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "circle_pack: grouping and rough size as packed circles",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "items": "array (required, 2 to 60) of {path (optional, array of 0 to 3 strings, max 20 each: the item's ancestor groups from the top down; same shape as the treemap's nested mode and the sunburst), name (max 24, default \"Item n\"), value (number above 0)}. An item without a usable path is a circle of its own at the top level. Items with a value of 0 or less, a value that is not a finite number, or that are not an item are dropped and counted in a note; items beyond the first 60 are noted and not drawn. With fewer than 2 usable items a note replaces the chart.",
+    "unit": "string (optional, max 12). Appended to every value in the title, the aria label, the labels and the hidden table.",
+    "version": "integer (optional, default 1). The circle_pack contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "For a sense of grouping and rough size; items as circles packed inside their groups, such as skills by team, files by folder or spend by department and line. For comparing sizes use a treemap or bar chart (circle area is hard to compare); it is not for a flat ranked list, for which use a bar chart, or for share of a total through levels as rings, for which use a sunburst.",
+   "intent_phrases": [
+    "Show our team's skills grouped by area as packed circles.",
+    "Which folders are taking the space, as a circle packing?",
+    "Give me a bubble-cluster view of spend by department and line."
+   ]
+  },
+  {
+   "type": "arc_diagram",
+   "description": "Connections between named things as arcs: the nodes sit on one horizontal line and each link is a semicircle above it joining its two nodes (the d3 gallery \"arc diagram\"), so a co-authorship list, a module-dependency graph or a who-talks-to-whom table reads as clusters of short arcs and a few long ones. Node positions are even steps along the line (d3-scale scalePoint with padding 0.5) and the arcs are static SVG, so there is no script. Arc thickness shows the link value (1 to 6 px; all links at 2 px when every value is equal). The optional node group sets the dot and the arc colour (an arc takes its source node's) and a legend names every group, but colour is never the only cue: every dot and arc carries its name, group, link count or value in a hover title, and the hidden tables list every node with its group and link count and every link with its two ends and value. The aria label gives the node and link counts and the most connected node. Node names hang below the line rotated 90 degrees; in a narrow container only every second, fourth or eighth name is drawn (the first always) so that none overlaps. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a --k, so a motion_timeline track on p draws the arcs and then the nodes and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "arc_diagram: links between nodes as arcs over a line",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "nodes": "array (required, 2 to 40) of {id (string, max 40: what links refer to), label (string, max 24, default the id), group (optional string, max 20)}. An entry that is not a node, has no id or repeats an earlier id is left out and counted in a note; entries beyond the first 40 are noted and not drawn. With fewer than 2 usable nodes a note replaces the chart.",
+    "links": "array (optional, 0 to 120) of {source (a node id), target (a node id), value (optional number above 0, default 1)}. A link that is not an object, joins a node to itself, names an id that is not a node or has a value that is not a finite number above 0 is dropped and counted in a note; links beyond the first 120 are noted and not drawn. Links are undirected: the arc is always drawn above the line between its two nodes. Parallel links are drawn on top of one another.",
+    "order": "\"input\" (default), \"group\" or \"degree\". input keeps the order of nodes; group sorts by group name and then label (a node without a group first; plain code-unit comparison, ties keep the input order); degree puts the most connected node first (ties keep the input order). Any other value is input.",
+    "unit": "string (optional, max 12). Appended to every link value in the titles and the hidden table.",
+    "version": "integer (optional, default 1). The arc_diagram contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Connections between a few dozen named things as arcs over one line, such as who co-wrote with whom, which module imports which or which teams talk to each other; the node order (input, by group or by most connected first) is the story. For flows with amounts use a sankey_flow; for connections between a handful of groups use a chord_diagram; it is not for hierarchies (use a treemap or sunburst) and not for more than 40 nodes.",
+   "intent_phrases": [
+    "Show who co-authored with whom as an arc diagram.",
+    "Draw which modules import which, as arcs over a line.",
+    "Put the nodes on a line and join the connected ones with arcs."
+   ]
+  },
+  {
+   "type": "contour_plot",
+   "description": "Filled contour bands drawn from data: either a grid of values (a temperature, elevation or pressure field) or a cloud of points (the density of delivery locations, incidents or customers). Both use d3-contour: for a grid, marching squares at evenly spaced levels (d3's default count of levels, or the thresholds field); for points, a kernel density estimate (d3 contourDensity: the points are smoothed with the given bandwidth and contoured at up to 20 levels). Bands run from light to dark as the value or density rises, every band is named in a legend as a range of numbers (never colour alone), and a thin outline marks each level. A grid is drawn with column and row numbers on its axes; points use their own x and y with nice axis ticks and are also drawn as faint dots. Static SVG, no script, scaled to its container. The hidden tables give every level with its colour name and, for a grid, the share of cells at or above it, for points the share of points in cells at or above it, then the points themselves (first 200). The aria label gives the mode, the size, the value range and the number of levels. Motion-ready: each band reads --p through a --k so a motion_timeline track on p draws the bands from the lowest level up; the standalone render is the finished picture.",
+   "compact_description": "contour_plot: filled contour bands of a value grid or of the density of points",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "grid": "object (one of grid or points is required): {width (whole number, 2 to 100), height (whole number, 2 to 100), values (array of width times height numbers, row-major: the first row is the top)}. A value that is not a finite number (or beyond 1e12) is left empty, counted in a note and treated as below every level, as d3 does. A grid whose size is not right gets a note instead of the chart. If points is also given, the grid is drawn and a note says so.",
+    "points": "array (one of grid or points is required, 3 to 2000) of {x, y} numbers. An entry that is not an object with finite numeric x and y is skipped and counted in a note; points beyond the first 2000 are noted and not used; fewer than 3 usable points gets a note instead of the chart. The axes are the data range niced by d3 (a flat range is widened by 1 each side), y up.",
+    "thresholds": "integer (optional, 3 to 20; another number is clamped, a fraction is rounded down). How many levels d3 aims for: ticks at 1, 2 or 5 times a power of ten, so the drawn count can differ. Default: for a grid d3's Sturges count from the number of cells (thresholdSturges); for points 20.",
+    "bandwidth": "number (optional, 5 to 60, default 20; clamped). Points mode only: the smoothing radius of the kernel density, in pixels of the 600 by 400 drawing (it scales with the chart). Larger merges clusters.",
+    "x_label": "string (optional, max 30). Under the plot. A grid defaults to \"Column\".",
+    "y_label": "string (optional, max 30). Above the plot. A grid defaults to \"Row\".",
+    "value_label": "string (optional, max 30). Grid mode only, names the values in the legend (default \"Value\"). Points mode names the density itself.",
+    "unit": "string (optional, max 12). Grid mode only, appended to the values in the legend, the tables and the aria label.",
+    "version": "integer (optional, default 1). The contour_plot contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "A 2D field of values (temperature, elevation, pressure on a grid) or a dense cloud of points (hundreds of delivery locations, incidents, readings) shown as filled contour bands with a range legend. For a few dozen points use a scatter plot; it is not a map (no coordinates, projection or base map, use a geo atom), not a heatmap of categories (a heatmap colours each cell, this draws smoothed regions) and not for more than 100 by 100 grid cells or 2000 points.",
+   "intent_phrases": [
+    "Draw contour lines of this temperature grid.",
+    "Show where my delivery locations are densest as density contours.",
+    "I have a grid of elevation values and want filled contour bands with a legend."
+   ]
+  },
+  {
+   "type": "voronoi",
+   "description": "Nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that is closer to its site than to any other site (a catchment or service area: which store, depot, sensor or office is nearest). Regions come from a Delaunay triangulation and its Voronoi cells (d3-delaunay, with delaunator and robust-predicates), clipped to the sites' extent plus a margin, with nice axis ticks in the data's own units. Each region is filled with a light colour by group (a legend names every group, never colour alone) or with one light fill and a visible outline when there are no groups; the site is a dot, and its label sits under the dot when the region is wide enough for it (otherwise the label is hidden; the full label is in the region's tooltip and in the table). Static SVG, no script, scaled to its container. The hidden table lists every site with x, y, group, value and its share of the area. The aria label gives the number of sites, the number of groups and the site with the largest region. Motion-ready: each region reads --p through a --k so a motion_timeline track on p fades the regions in one after another; the standalone render is the finished picture.",
+   "compact_description": "voronoi: nearest-site regions of a set of points (catchments, service areas)",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "sites": "array (required, 3 to 200) of {x, y (numbers, required), label (optional, max 24), group (optional, max 20), value (optional number)}. A site whose position equals an earlier site's is merged into the first, with a note. An entry that is not an object with finite numeric x and y (or beyond 1e12) is left out and counted in a note; entries beyond the first 200 are noted and not used; fewer than 3 sites at different positions gets a note instead of the chart. A label or group that is a number is shown as that number; a list, object or boolean is no text (the site is called \"Site 1\", \"Site 2\" ... by its place in the list, and has no group). value is shown in the table and in the region's tooltip only, never drawn.",
+    "x_label": "string (optional, max 30). Under the plot.",
+    "y_label": "string (optional, max 30). Above the plot.",
+    "unit": "string (optional, max 12). Appended to the values in the table and the tooltips.",
+    "version": "integer (optional, default 1). The voronoi contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "The nearest-site region of each of a set of points: which store, depot, sensor or office is closest to every spot of an area (catchments, service areas, coverage). It is not a map of real borders or regions (no coordinates, projection or base map; use a choropleth), not for finding clusters or the density of points (use a contour plot or a scatter plot), and distances are straight lines in the x and y units, not travel time along roads. 3 to 200 sites.",
+   "intent_phrases": [
+    "Show which of my depots is the nearest to each part of the city.",
+    "Draw the service area of each store as nearest-site regions.",
+    "Split this area into catchments, one per sensor, by closest distance."
    ]
   }
  ]

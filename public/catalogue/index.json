@@ -585,11 +585,19 @@
       "title": "Data visualisation",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
-      "atomCount": 23,
+      "atomCount": 32,
       "atoms": [
+        {
+          "type": "arc_diagram",
+          "description": "arc_diagram: links between nodes as arcs over a line"
+        },
         {
           "type": "benchmark_comparison",
           "description": "side-by-side performance benchmark comparison bars"
+        },
+        {
+          "type": "box_plot",
+          "description": "box_plot: compare groups of numbers by median and spread"
         },
         {
           "type": "calibration_plot",
@@ -608,8 +616,20 @@
           "description": "multi-slice pie or donut SVG chart with legend"
         },
         {
+          "type": "chord_diagram",
+          "description": "chord_diagram: flows between a few entities as ribbons on a ring"
+        },
+        {
+          "type": "circle_pack",
+          "description": "circle_pack: grouping and rough size as packed circles"
+        },
+        {
           "type": "confidence_bar",
           "description": "labelled probability bar with colour-coded confidence fill"
+        },
+        {
+          "type": "contour_plot",
+          "description": "contour_plot: filled contour bands of a value grid or of the density of points"
         },
         {
           "type": "conversion_funnel",
@@ -635,6 +655,10 @@
           "description": "grid heatmap coloured by intensity value are represented as colors in a matrix."
         },
         {
+          "type": "histogram",
+          "description": "histogram: counts of numbers per bin"
+        },
+        {
           "type": "masonry_elevation",
           "description": "coursed block/brick wall elevation with bond-pattern stagger and render-style options"
         },
@@ -648,7 +672,7 @@
         },
         {
           "type": "sankey_flow",
-          "description": "curved dual-column gradient flow diagram for financial or pipeline streams"
+          "description": "curved multi-column gradient flow diagram for financial or pipeline streams"
         },
         {
           "type": "scatter_trend",
@@ -671,12 +695,24 @@
           "description": "stacked area chart with overlapping glowing translucent gradients"
         },
         {
+          "type": "sunburst",
+          "description": "sunburst: share of a total in nested rings"
+        },
+        {
           "type": "trend_indicator",
           "description": "compact inline value with mini trend bar the direction of a"
         },
         {
           "type": "uptime_timeline",
           "description": "30-day uptime timeline with per-day status blocks"
+        },
+        {
+          "type": "voronoi",
+          "description": "voronoi: nearest-site regions of a set of points (catchments, service areas)"
+        },
+        {
+          "type": "waterfall",
+          "description": "waterfall: how changes add up to a total"
         },
         {
           "type": "word_cloud",
@@ -1624,7 +1660,7 @@
         },
         {
           "type": "spring_nodes",
-          "description": "interactive mass-spring physics graph with drag-to-pin nodes"
+          "description": "mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics"
         },
         {
           "type": "stagger_list",

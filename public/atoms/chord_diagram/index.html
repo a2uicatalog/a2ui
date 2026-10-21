@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Chord Diagram — A2UI Atomic Catalog</title>
+  <meta name="description" content="Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each ribbon joins…">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/chord_diagram/">
+  <link rel="alternate" type="text/markdown" href="/atoms/chord_diagram.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Chord Diagram", "item": "https://a2uicatalog.ai/atoms/chord_diagram/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/chord_diagram/#page", "url": "https://a2uicatalog.ai/atoms/chord_diagram/", "headline": "Chord Diagram: A2UI atom", "description": "Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each ribbon joins…", "about": {"@id": "https://a2uicatalog.ai/atoms/chord_diagram/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/chord_diagram/#atom", "name": "Chord Diagram", "termCode": "chord_diagram", "description": "chord_diagram: flows between a few entities as ribbons on a ring", "url": "https://a2uicatalog.ai/atoms/chord_diagram/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "directed, groups, matrix, title, unit, version"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/chord_diagram.md"}]}]}</script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>/*brand-tokens:e22641fc*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);
+  --positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);
+  --radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(33% 0.06 277);--accent-2:oklch(75% 0.12 202);--accent-2-text:oklch(75% 0.12 202);
+  --positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);--glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:inherit}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / chord_diagram
+  </nav>
+
+  <h1>Chord Diagram</h1>
+  <p class="desc">Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each ribbon joins two groups, its width at each end showing the flow from that group to the other, so migration between regions, traffic between services or trade between countries reads at a glance. Laid out by d3-chord chord() with sorted subgroups and drawn with d3-shape arc() and d3-chord ribbon() paths on the server, so there is no script. With the optional directed true the same matrix is laid out by chordDirected() and every flow is an arrow (ribbonArrow()) from the sending group to the receiving one, so direction is drawn instead of read from two widths. Each group has its own hue and a ribbon takes the colour of its source group at reduced opacity; every ribbon carries "A to B: value (B to A: value)" (one direction when directed) in a hover title, and the hidden tables list every non-zero flow (from, to, value) and each group's total out and in; the aria label gives the number of groups, the total flow and the largest flow. Group names sit outside the ring, rotated to read outward and never upside down, shortened with an ellipsis where they do not fit and left out where a neighbour is too close (a visible legend always names every group). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-group --k, so a motion_timeline track on p builds it group by group and the standalone render is the finished picture; reduced motion shows the end state.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Prints the finished picture; no motion</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of chord_diagram"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;"><div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">Migration between regions (thousand people a year)</div><div role="img" aria-label="Chord diagram of 5 groups, total flow 848 k people. Largest flow: Europe to Asia, 120 k people." style="position:relative;width:100%;max-width:720px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;"><svg viewBox="-300 -300 600 600" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false"><g class="chk" style="--k:clamp(0,calc(var(--p,1)*6 - 0),1);opacity:var(--k,1);"><path class="chd" d="M0.497,-173.999A174,174,0,0,1,130.826,-114.72Q0,0,166.418,50.803A174,174,0,0,1,98.87,143.181Q0,0,0.497,-173.999Z" fill="#19294E" fill-opacity="0.55" stroke="#19294E" stroke-width="0.6"><title>Europe → Asia: 120 k people (Asia → Europe: 95 k people)</title></path><path class="chd" d="M131.479,-113.971A174,174,0,0,1,172.027,-26.128Q0,0,-69.653,159.451A174,174,0,0,1,-128.753,117.041Q0,0,131.479,-113.971Z" fill="#19294E" fill-opacity="0.55" stroke="#19294E" stroke-width="0.6"><title>Europe → North America: 80 k people (North America → Europe: 60 k people)</title></path></g><g class="chk" style="--k:clamp(0,calc(var(--p,1)*6 - 1),1);opacity:var(--k,1);"><path class="chd" d="M98.05,143.743A174,174,0,0,1,18.464,173.018Q0,0,-129.42,116.304A174,174,0,0,1,-159.045,70.573Q0,0,98.05,143.743Z" fill="#810998" fill-opacity="0.55" stroke="#810998" stroke-width="0.6"><title>Asia → North America: 70 k people (North America → Asia: 45 k people)</title></path><path class="chd" d="M17.475,173.12A174,174,0,0,1,-48.919,166.982Q0,0,-136.417,-108.011A174,174,0,0,1,-111.209,-133.823Q0,0,17.475,173.12Z" fill="#810998" fill-opacity="0.55" stroke="#810998" stroke-width="0.6"><title>Asia → Africa: 55 k people (Africa → Asia: 30 k people)</title></path></g><g class="chk" style="--k:clamp(0,calc(var(--p,1)*6 - 2),1);opacity:var(--k,1);"><path class="chd" d="M-170.584,34.309A174,174,0,0,1,-173.94,4.58Q0,0,-110.442,-134.456A174,174,0,0,1,-99.393,-142.818Q0,0,-170.584,34.309Z" fill="#0F6C4F" fill-opacity="0.55" stroke="#0F6C4F" stroke-width="0.6"><title>North America → Africa: 25 k people (Africa → North America: 12 k people)</title></path><path class="chd" d="M-159.446,69.663A174,174,0,0,1,-170.385,35.283Q0,0,-85.959,-151.284A174,174,0,0,1,-62.255,-162.482Q0,0,-159.446,69.663Z" fill="#0F6C4F" fill-opacity="0.55" stroke="#0F6C4F" stroke-width="0.6"><title>North America → South America: 30 k people (South America → North America: 22 k people)</title></path></g><g class="chk" style="--k:clamp(0,calc(var(--p,1)*6 - 3),1);opacity:var(--k,1);"><path class="chd" d="M-173.925,-5.113A174,174,0,0,1,-137.032,-107.23Q0,0,172.174,-25.145A174,174,0,0,1,172.444,23.221Q0,0,-173.925,-5.113Z" fill="#9A6120" fill-opacity="0.55" stroke="#9A6120" stroke-width="0.6"><title>Africa → Europe: 90 k people (Europe → Africa: 40 k people)</title></path></g><g class="chk" style="--k:clamp(0,calc(var(--p,1)*6 - 4),1);opacity:var(--k,1);"><path class="chd" d="M-61.326,-162.835A174,174,0,0,1,-38.584,-169.668Q0,0,172.308,24.206A174,174,0,0,1,168.989,41.457Q0,0,-61.326,-162.835Z" fill="#0369A1" fill-opacity="0.55" stroke="#0369A1" stroke-width="0.6"><title>South America → Europe: 20 k people (Europe → South America: 15 k people)</title></path><path class="chd" d="M-37.614,-169.886A174,174,0,0,1,-16.6,-173.206Q0,0,-49.873,166.699A174,174,0,0,1,-60.666,163.082Q0,0,-37.614,-169.886Z" fill="#0369A1" fill-opacity="0.55" stroke="#0369A1" stroke-width="0.6"><title>South America → Asia: 18 k people (Asia → South America: 10 k people)</title></path><path class="chd" d="M-15.609,-173.298A174,174,0,0,1,-9.193,-173.757Q0,0,-98.575,-143.384A174,174,0,0,1,-94.25,-146.263Q0,0,-15.609,-173.298Z" fill="#0369A1" fill-opacity="0.55" stroke="#0369A1" stroke-width="0.6"><title>South America → Africa: 6 k people (Africa → South America: 5 k people)</title></path></g><g class="chg" style="--k:clamp(0,calc(var(--p,1)*6 - 0),1);opacity:var(--k,1);"><path class="cha" d="M0,-190A190,190,0,0,1,184.398,45.796L169.841,42.18A175,175,0,0,0,0,-175Z" fill="#19294E"><title>Europe: sends 255 k people, receives 265 k people</title></path></g><g class="chg" style="--k:clamp(0,calc(var(--p,1)*6 - 1),1);opacity:var(--k,1);"><path class="cha" d="M181.879,54.955A190,190,0,0,1,-66.753,177.888L-61.483,163.844A175,175,0,0,0,167.52,50.616Z" fill="#810998"><title>Asia: sends 230 k people, receives 213 k people</title></path></g><g class="chg" style="--k:clamp(0,calc(var(--p,1)*6 - 2),1);opacity:var(--k,1);"><path class="cha" d="M-75.56,174.329A190,190,0,0,1,-189.948,4.459L-174.952,4.107A175,175,0,0,0,-69.595,160.566Z" fill="#0F6C4F"><title>North America: sends 160 k people, receives 184 k people</title></path></g><g class="chg" style="--k:clamp(0,calc(var(--p,1)*6 - 3),1);opacity:var(--k,1);"><path class="cha" d="M-189.933,-5.04A190,190,0,0,1,-102.46,-160.006L-94.371,-147.374A175,175,0,0,0,-174.938,-4.642Z" fill="#9A6120"><title>Africa: sends 137 k people, receives 126 k people</title></path></g><g class="chg" style="--k:clamp(0,calc(var(--p,1)*6 - 4),1);opacity:var(--k,1);"><path class="cha" d="M-94.335,-164.927A190,190,0,0,1,-9.496,-189.763L-8.746,-174.781A175,175,0,0,0,-86.888,-151.906Z" fill="#0369A1"><title>South America: sends 66 k people, receives 60 k people</title></path></g></svg><div class="chl" style="position:absolute;left:75.995%;top:29.671%;transform-origin:0 7px;margin-top:-7px;transform:rotate(-38.03deg);width:max-content;max-width:calc(17.000cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left;font-size:12px;line-height:14px;font-weight:600;color:#19294E;pointer-events:none;--k:clamp(0,calc(var(--p,1)*6 - 0),1);opacity:var(--k,1);">Europe</div><div class="chl" style="position:absolute;left:64.626%;top:79.582%;transform-origin:0 7px;margin-top:-7px;transform:rotate(63.69deg);width:max-content;max-width:calc(17.000cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left;font-size:12px;line-height:14px;font-weight:600;color:#810998;pointer-events:none;--k:clamp(0,calc(var(--p,1)*6 - 1),1);opacity:var(--k,1);">Asia</div><div class="chl" style="position:absolute;right:77.373%;top:68.432%;transform-origin:100% 7px;margin-top:-7px;transform:rotate(-33.96deg);width:max-content;max-width:calc(17.000cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:right;font-size:12px;line-height:14px;font-weight:600;color:#0F6C4F;pointer-events:none;--k:clamp(0,calc(var(--p,1)*6 - 2),1);opacity:var(--k,1);">North America</div><div class="chl" style="position:absolute;right:78.738%;top:33.778%;transform-origin:100% 7px;margin-top:-7px;transform:rotate(29.44deg);width:max-content;max-width:calc(17.000cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:right;font-size:12px;line-height:14px;font-weight:600;color:#9A6120;pointer-events:none;--k:clamp(0,calc(var(--p,1)*6 - 3),1);opacity:var(--k,1);">Africa</div><div class="chl" style="position:absolute;right:59.271%;top:18.329%;transform-origin:100% 7px;margin-top:-7px;transform:rotate(73.68deg);width:max-content;max-width:calc(17.000cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:right;font-size:12px;line-height:14px;font-weight:600;color:#0369A1;pointer-events:none;--k:clamp(0,calc(var(--p,1)*6 - 4),1);opacity:var(--k,1);">South America</div></div><div style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:0.8rem;"><span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#19294E;margin-right:5px;"></span>Europe</span><span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#810998;margin-right:5px;"></span>Asia</span><span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0F6C4F;margin-right:5px;"></span>North America</span><span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#9A6120;margin-right:5px;"></span>Africa</span><span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0369A1;margin-right:5px;"></span>South America</span></div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Each ribbon joins two groups; its width at each end shows the flow from that group to the other.</div><table style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"><thead><tr><th scope="col">From</th><th scope="col">To</th><th scope="col">Value</th></tr></thead><tbody><tr><th scope="row">Europe</th><td>Asia</td><td>120 k people</td></tr><tr><th scope="row">Europe</th><td>North America</td><td>80 k people</td></tr><tr><th scope="row">Europe</th><td>Africa</td><td>40 k people</td></tr><tr><th scope="row">Europe</th><td>South America</td><td>15 k people</td></tr><tr><th scope="row">Asia</th><td>Europe</td><td>95 k people</td></tr><tr><th scope="row">Asia</th><td>North America</td><td>70 k people</td></tr><tr><th scope="row">Asia</th><td>Africa</td><td>55 k people</td></tr><tr><th scope="row">Asia</th><td>South America</td><td>10 k people</td></tr><tr><th scope="row">North America</th><td>Europe</td><td>60 k people</td></tr><tr><th scope="row">North America</th><td>Asia</td><td>45 k people</td></tr><tr><th scope="row">North America</th><td>Africa</td><td>25 k people</td></tr><tr><th scope="row">North America</th><td>South America</td><td>30 k people</td></tr><tr><th scope="row">Africa</th><td>Europe</td><td>90 k people</td></tr><tr><th scope="row">Africa</th><td>Asia</td><td>30 k people</td></tr><tr><th scope="row">Africa</th><td>North America</td><td>12 k people</td></tr><tr><th scope="row">Africa</th><td>South America</td><td>5 k people</td></tr><tr><th scope="row">South America</th><td>Europe</td><td>20 k people</td></tr><tr><th scope="row">South America</th><td>Asia</td><td>18 k people</td></tr><tr><th scope="row">South America</th><td>North America</td><td>22 k people</td></tr><tr><th scope="row">South America</th><td>Africa</td><td>6 k people</td></tr></tbody></table><table style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"><thead><tr><th scope="col">Group</th><th scope="col">Total out</th><th scope="col">Total in</th></tr></thead><tbody><tr><th scope="row">Europe</th><td>255 k people</td><td>265 k people</td></tr><tr><th scope="row">Asia</th><td>230 k people</td><td>213 k people</td></tr><tr><th scope="row">North America</th><td>160 k people</td><td>184 k people</td></tr><tr><th scope="row">Africa</th><td>137 k people</td><td>126 k people</td></tr><tr><th scope="row">South America</th><td>66 k people</td><td>60 k people</td></tr></tbody></table></div></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, max 80).</td><td>optional</td></tr><tr><td>groups</td><td>array (required, 2 to 12) of strings (max 20 each) naming the entities. A name that is not a string or a number is shown as "Group n". Groups beyond the 12th are noted and not drawn, and their rows and columns are dropped. With fewer than 2 groups a note replaces the chart.</td><td>required</td></tr><tr><td>matrix</td><td>array of rows (required): square, one row and one column per group, numbers 0 or more; the cell at row i and column j is the flow from group i to group j (the diagonal is a flow from a group to itself, drawn as a loop). A matrix that is not a list, not square, or whose size does not match groups is replaced by the note "A chord diagram needs a square matrix with one row per group." and what was wrong. A cell that is negative or not a finite number counts as 0 and is counted in a note. If every flow is 0 a note replaces the chart.</td><td>required</td></tr><tr><td>unit</td><td>string (optional, max 12). Appended to every value in the titles, the aria label and the hidden tables.</td><td>optional</td></tr><tr><td>directed</td><td>boolean (optional, default false). false draws chord(): one ribbon joins each pair of groups and its width at each end is the flow from that group (the larger direction is the ribbon's source). true draws chordDirected() with ribbonArrow(): one arrow per non-zero flow, pointing at the receiving group, and a group's arc covers what it sends and what it receives. Any value other than the boolean true is drawn as false.</td><td>optional</td></tr><tr><td>version</td><td>integer (optional, default 1). The chord_diagram contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre tabindex="0"><code>{
+  "type": "chord_diagram",
+  "groups": 1,
+  "matrix": 1
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre tabindex="0"><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:chord_diagram",
+  "displayName": "Chord Diagram",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/chord_diagram",
+  "capabilities": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+  ],
+  "description": "Flows between a few entities in both directions as a circle: each group is an arc on the ring (its length is the flow that leaves it) and each ribbon joins two groups, its width at each end showing the flow from that group to the other, so migration between regions, traffic between services or trade between countries reads at a glance. Laid out by d3-chord chord() with sorted subgroups and drawn with d3-shape arc() and d3-chord ribbon() paths on the server, so there is no script. With the optional directed true the same matrix is laid out by chordDirected() and every flow is an arrow (ribbonArrow()) from the sending group to the receiving one, so direction is drawn instead of read from two widths. Each group has its own hue and a ribbon takes the colour of its source group at reduced opacity; every ribbon carries \"A to B: value (B to A: value)\" (one direction when directed) in a hover title, and the hidden tables list every non-zero flow (from, to, value) and each group's total out and in; the aria label gives the number of groups, the total flow and the largest flow. Group names sit outside the ring, rotated to read outward and never upside down, shortened with an ellipsis where they do not fit and left out where a neighbour is too close (a visible legend always names every group). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-group --k, so a motion_timeline track on p builds it group by group and the standalone render is the finished picture; reduced motion shows the end state.",
+  "representativeQueries": [
+    "show a chord_diagram: flows between a few entities as ribbons on a ring",
+    "flows between a few entities in both directions as a circle: each group is an arc on the ring (its l",
+    "render a chord diagram"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre tabindex="0" style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 548 atoms.** One line each:
+1. **Compact index — all 557 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 548 atoms)
+### Compact index (all 557 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -420,7 +420,7 @@ does not exist.
 - `sparkline` — inline SVG trend line chart general trends.
 - `heatmap` — grid heatmap coloured by intensity value are represented as colors in a matrix.
 - `punch_card` — 7x24 grid of glowing activity bubbles representing hourly commits
-- `sankey_flow` — curved dual-column gradient flow diagram for financial or pipeline streams
+- `sankey_flow` — curved multi-column gradient flow diagram for financial or pipeline streams
 - `cohort_retention` — triangular cohort retention grid with continuous color-scale rendering
 - `donut_stat` — CSS ring chart with centre value and percentage its proportion or progress.
 - `metric_delta` — big number metric with directional change indicator or percentage
@@ -751,7 +751,7 @@ does not exist.
 - `text_highlight` — prose sentence with **marked** words highlighted in accent colour
 - `reveal_line` — clip-path sweep-in reveal line, auto-plays on load
 - `canvas_plexus` — animated particle plexus with proximity lines and mouse repulsion
-- `spring_nodes` — interactive mass-spring physics graph with drag-to-pin nodes
+- `spring_nodes` — mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics
 - `isometric_mesh` — rotating 3D isometric mesh with height-colour mapping and drag-rotate
 - `geo_iso_takeoff` — isometric 3D canvas of A321neo takeoff from LFBO — animated roll, rotation, gear-up, climb; HUD with airline/runway
 - `geo_iso_rocket_launch` — isometric 3D canvas of Ariane 6 rocket launch from Kourou — animated liftoff and ascent; mission HUD
@@ -929,6 +929,15 @@ does not exist.
 - `tool_call_card` — structured agent tool call card with status, inputs, result, and latency
 - `scene_stage` — animated looping SVG scene of a place (53 ready presets) from verified clipart
 - `clipart` — one verified vector clipart image by id
+- `histogram` — histogram: counts of numbers per bin
+- `box_plot` — box_plot: compare groups of numbers by median and spread
+- `waterfall` — waterfall: how changes add up to a total
+- `sunburst` — sunburst: share of a total in nested rings
+- `chord_diagram` — chord_diagram: flows between a few entities as ribbons on a ring
+- `circle_pack` — circle_pack: grouping and rough size as packed circles
+- `arc_diagram` — arc_diagram: links between nodes as arcs over a line
+- `contour_plot` — contour_plot: filled contour bands of a value grid or of the density of points
+- `voronoi` — voronoi: nearest-site regions of a set of points (catchments, service areas)
 ## Payload envelope (renderer contract — not in the catalog)
 
 Simple page:
