@@ -175,3 +175,56 @@ def test_reduced_motion_shows_the_clean_end_state():
     m = re.search(r"data-probe='([^']*)'|data-probe=\"([^\"]*)\"", out)
     d = json.loads(_h.unescape(m.group(1) or m.group(2)))
     assert d["b"] == 1 and d["disp"] == "none", d
+
+
+# ─── existing payloads, byte for byte against the renderer before the glitch prop ────────────────────────────
+def _old_renderer():
+    """renderers/web_article.py as of 18c8f2b8f (before glitch), loaded beside the real one; skipped if the commit is not in this clone."""
+    import importlib.util, subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    r = subprocess.run(["git", "-C", str(root), "show", "18c8f2b8f:renderers/web_article.py"], capture_output=True, text=True)
+    if r.returncode:
+        pytest.skip("18c8f2b8f not available")
+    f = root / "renderers" / "_web_article_pre_glitch.py"
+    f.write_text(r.stdout)
+    try:
+        spec = importlib.util.spec_from_file_location("renderers._web_article_pre_glitch", f)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod
+        spec.loader.exec_module(mod)
+    finally:
+        f.unlink()
+    return mod
+
+
+def _existing_payloads():
+    import test_motion_atoms as A, test_motion_candidates as C, test_motion_expressive as E
+    out = [A.TIMELINE, A.STITCHED, A.MORPHED, C.CARD, C.PILL, C.LIT, C.ARCS, C.LOCK, C.COLL, C.THEME_P, *C.FX, *C.TWIN_CASES]
+    out += [c[1] if isinstance(c, tuple) else c for c in C.CASES]
+    for P in (A.PAYLOADS, E.PAYLOADS):
+        for t, bs in P.items():
+            out += [dict(b, type=b.get("type", t)) for b in bs]
+    return [b for b in out if isinstance(b, dict) and b.get("type")]
+
+
+def test_existing_motion_payloads_render_byte_for_byte_as_before_the_glitch_prop():
+    from renderers import web_article as wa
+    old = _old_renderer()
+    old._mo_install()
+    wa._mo_install()
+    pays = _existing_payloads()
+    assert len(pays) > 150, len(pays)
+    bad = []
+    for b in pays:
+        k = b.get("component") or b["type"]
+        if k not in old._RENDERERS or "glitch" in b:
+            continue
+        try:
+            a = old._RENDERERS[k](dict(b))
+        except Exception:
+            continue
+        n = wa._RENDERERS[k](dict(b))
+        if a != n:
+            bad.append(k)
+    assert not bad, bad[:10]
