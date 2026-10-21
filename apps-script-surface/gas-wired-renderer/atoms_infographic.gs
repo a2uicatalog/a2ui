@@ -774,6 +774,318 @@ _RENDERERS['arc_diagram'] = function(b) {
     _hgNote('Arc thickness shows the link value. In a narrow container only some node names are drawn; the table lists every node and link.') + notes + _hgVersionNote(b, 'arc_diagram') + tables);
 };
 
+// ── contour_plot (I57 contours of a value grid, I51 density contours of points) ──────────────────────────────────────────────────────────────
+// d3-contour 4.0.2 (ISC, Mike Bostock): contours() and contourDensity(), with d3-array 3.2.4 blur2, ported by hand in the order of the JavaScript source
+// (the density grid is a Float32Array in d3; here every store goes through Math.fround). Twin of the _cn_* functions and _render_contour_plot in
+// renderers/web_article.py, where the notes are.
+var _CN_CASES = [
+  [], [[[1.0, 1.5], [0.5, 1.0]]], [[[1.5, 1.0], [1.0, 1.5]]], [[[1.5, 1.0], [0.5, 1.0]]], [[[1.0, 0.5], [1.5, 1.0]]],
+  [[[1.0, 1.5], [0.5, 1.0]], [[1.0, 0.5], [1.5, 1.0]]], [[[1.0, 0.5], [1.0, 1.5]]], [[[1.0, 0.5], [0.5, 1.0]]], [[[0.5, 1.0], [1.0, 0.5]]],
+  [[[1.0, 1.5], [1.0, 0.5]]], [[[0.5, 1.0], [1.0, 0.5]], [[1.5, 1.0], [1.0, 1.5]]], [[[1.5, 1.0], [1.0, 0.5]]], [[[0.5, 1.0], [1.5, 1.0]]],
+  [[[1.0, 1.5], [1.5, 1.0]]], [[[0.5, 1.0], [1.0, 1.5]]], []];
+var _CN_W = 600, _CN_H = 400, _CN_MAXPTS = 2000, _CN_MAXROWS = 200, _CN_BUDGET = 40000, _CN_MIN_VALUE = 5e-324;
+var _CN_STOPS = [[0xCF, 0xE3, 0xF5], [0x8F, 0xBB, 0xE0], [0x4E, 0x8F, 0xC9], [0x25, 0x6B, 0xAA], [0x0B, 0x3C, 0x73]];
+var _CN_NAMES = ['pale blue', 'light blue', 'mid blue', 'deep blue', 'dark blue'];
+
+function _cnRingArea(ring) {
+  var i = 0, n = ring.length, area = ring[n - 1][1] * ring[0][0] - ring[n - 1][0] * ring[0][1];
+  while (++i < n) area += ring[i - 1][1] * ring[i][0] - ring[i - 1][0] * ring[i][1];
+  return area;
+}
+function _cnWithin(p, q, r) { return p <= q && q <= r || r <= q && q <= p; }
+function _cnRingContains(ring, point) {
+  var x = point[0], y = point[1], contains = -1;
+  for (var i = 0, n = ring.length, j = n - 1; i < n; j = i++) {
+    var pi = ring[i], xi = pi[0], yi = pi[1], pj = ring[j], xj = pj[0], yj = pj[1];
+    if ((pj[0] - pi[0]) * (point[1] - pi[1]) === (point[0] - pi[0]) * (pj[1] - pi[1])) {
+      var k = +(pi[0] === pj[0]);
+      if (_cnWithin(pi[k], point[k], pj[k])) return 0;
+    }
+    if (((yi > y) !== (yj > y)) && ((x < (xj - xi) * (y - yi) / (yj - yi) + xi))) contains = -contains;
+  }
+  return contains;
+}
+function _cnContains(ring, hole) {
+  var i = -1, n = hole.length, c;
+  while (++i < n) if (c = _cnRingContains(ring, hole[i])) return c;
+  return 0;
+}
+function _cnValid(v) { return v === undefined || v === null || isNaN(v = +v) ? -Infinity : v; }
+function _cnSmooth1(x, v0, v1, value) {
+  var a = value - v0, b = v1 - v0, d = isFinite(a) || isFinite(b) ? a / b : Math.sign(a) / Math.sign(b);
+  return isNaN(d) ? x : x + d - 0.5;
+}
+function _cnIsorings(values, dx, dy, value, callback) {
+  var byStart = {}, byEnd = {}, x, y, t0, t1, t2, t3;
+  function above(v) { return v === undefined || v === null ? false : +v >= value; }
+  function stitch(line) {
+    var start = [line[0][0] + x, line[0][1] + y], end = [line[1][0] + x, line[1][1] + y],
+        si = start[0] * 2 + start[1] * (dx + 1) * 4, ei = end[0] * 2 + end[1] * (dx + 1) * 4, f, g;
+    if (f = byEnd[si]) {
+      if (g = byStart[ei]) {
+        delete byEnd[f.end]; delete byStart[g.start];
+        if (f === g) { f.ring.push(end); callback(f.ring); }
+        else byStart[f.start] = byEnd[g.end] = {start: f.start, end: g.end, ring: f.ring.concat(g.ring)};
+      } else { delete byEnd[f.end]; f.ring.push(end); byEnd[f.end = ei] = f; }
+    } else if (f = byStart[ei]) {
+      if (g = byEnd[si]) {
+        delete byStart[f.start]; delete byEnd[g.end];
+        if (f === g) { f.ring.push(end); callback(f.ring); }
+        else byStart[g.start] = byEnd[f.end] = {start: g.start, end: f.end, ring: g.ring.concat(f.ring)};
+      } else { delete byStart[f.start]; f.ring.unshift(start); byStart[f.start = si] = f; }
+    } else byStart[si] = byEnd[ei] = {start: si, end: ei, ring: [start, end]};
+  }
+  function run(c) { _CN_CASES[c].forEach(stitch); }
+  x = y = -1;
+  t1 = +above(values[0]);
+  run(t1 << 1);
+  while (++x < dx - 1) { t0 = t1; t1 = +above(values[x + 1]); run(t0 | t1 << 1); }
+  run(t1 << 0);
+  while (++y < dy - 1) {
+    x = -1;
+    t1 = +above(values[y * dx + dx]);
+    t2 = +above(values[y * dx]);
+    run(t1 << 1 | t2 << 2);
+    while (++x < dx - 1) {
+      t0 = t1; t1 = +above(values[y * dx + dx + x + 1]);
+      t3 = t2; t2 = +above(values[y * dx + x + 1]);
+      run(t0 | t1 << 1 | t2 << 2 | t3 << 3);
+    }
+    run(t1 | t2 << 3);
+  }
+  x = -1;
+  t2 = +(values[y * dx] >= value);
+  run(t2 << 2);
+  while (++x < dx - 1) { t3 = t2; t2 = +above(values[y * dx + x + 1]); run(t2 << 2 | t3 << 3); }
+  run(t2 << 3);
+}
+function _cnContour(values, dx, dy, value) {
+  var polygons = [], holes = [];
+  _cnIsorings(values, dx, dy, value, function(ring) {
+    ring.forEach(function(point) {
+      var x = point[0], y = point[1], xt = x | 0, yt = y | 0, v1 = _cnValid(values[yt * dx + xt]);
+      if (x > 0 && x < dx && xt === x) point[0] = _cnSmooth1(x, _cnValid(values[yt * dx + xt - 1]), v1, value);
+      if (y > 0 && y < dy && yt === y) point[1] = _cnSmooth1(y, _cnValid(values[(yt - 1) * dx + xt]), v1, value);
+    });
+    if (_cnRingArea(ring) > 0) polygons.push([ring]); else holes.push(ring);
+  });
+  holes.forEach(function(hole) {
+    for (var i = 0, n = polygons.length, polygon; i < n; ++i) {
+      if (_cnContains((polygon = polygons[i])[0], hole) !== -1) { polygon.push(hole); return; }
+    }
+  });
+  return polygons;
+}
+function _cnSturges(count) { return count > 0 ? Math.max(1, Math.ceil(Math.log(count) / Math.LN2) + 1) : 1; }
+function _cnContours(values, dx, dy, thresholds) {
+  var tz;
+  if (Array.isArray(thresholds)) tz = thresholds.slice().sort(function(a, b) { return a - b; });
+  else {
+    var e0 = Infinity, e1 = -Infinity, cnt = 0, i;
+    for (i = 0; i < values.length; i++) {
+      var v = values[i];
+      if (v === null || v === undefined || v !== v) continue;
+      cnt++;
+      if (isFinite(v)) { if (v < e0) e0 = v; if (v > e1) e1 = v; }
+    }
+    if (e0 === Infinity) return [];
+    var c = thresholds === null || thresholds === undefined ? _cnSturges(cnt) : thresholds, nn = _hgNice(e0, e1, c);
+    tz = _hgTicks(nn[0], nn[1], c);
+    while (tz.length && tz[tz.length - 1] >= e1) tz.pop();
+    while (tz.length > 1 && tz[1] < e0) tz.shift();
+  }
+  return tz.map(function(v) { return [v, _cnContour(values, dx, dy, v)]; });
+}
+function _cnBlurf(radius) {
+  var radius0 = Math.floor(radius), w = 2 * radius + 1, t = radius - radius0;
+  if (radius0 === radius) return function(T, S, start, stop, step) {
+    if (!((stop -= step) >= start)) return;
+    var sum = radius * S[start], s = step * radius, i, j;
+    for (i = start, j = start + s; i < j; i += step) sum += S[Math.min(stop, i)];
+    for (i = start, j = stop; i <= j; i += step) { sum += S[Math.min(stop, i + s)]; T[i] = Math.fround(sum / w); sum -= S[Math.max(start, i - s)]; }
+  };
+  return function(T, S, start, stop, step) {
+    if (!((stop -= step) >= start)) return;
+    var sum = radius0 * S[start], s0 = step * radius0, s1 = s0 + step, i, j;
+    for (i = start, j = start + s0; i < j; i += step) sum += S[Math.min(stop, i)];
+    for (i = start, j = stop; i <= j; i += step) {
+      sum += S[Math.min(stop, i + s0)];
+      T[i] = Math.fround((sum + t * (S[Math.max(start, i - s1)] + S[Math.min(stop, i + s1)])) / w);
+      sum -= S[Math.max(start, i - s0)];
+    }
+  };
+}
+// values: an array of numbers that are already float32 values; blurred in place (rx = ry)
+function _cnBlur2(values, width, height, rx) {
+  if (!width || !height || !rx) return;
+  var blur = _cnBlurf(rx), temp = values.slice();
+  function blurh(T, S) { for (var y = 0, n = width * height; y < n;) blur(T, S, y, y += width, 1); }
+  function blurv(T, S) { for (var x = 0, n = width * height; x < width; ++x) blur(T, S, x, x + n, width); }
+  blurh(temp, values); blurh(values, temp); blurh(temp, values);
+  blurv(values, temp); blurv(temp, values); blurv(values, temp);
+}
+function _cnDensityGrid(points, W, H, bandwidth) {
+  var r = (Math.sqrt(4 * bandwidth * bandwidth + 1) - 1) / 2, o = r * 3, n = (W + o * 2) >> 2, m = (H + o * 2) >> 2, ln = n * m, values = [], i;
+  for (i = 0; i < ln; i++) values.push(0);
+  points.forEach(function(p) {
+    var xi = (p[0] + o) * 0.25, yi = (p[1] + o) * 0.25;
+    if (xi >= 0 && xi < n && yi >= 0 && yi < m) {
+      var x0 = Math.floor(xi), y0 = Math.floor(yi), xt = xi - x0 - 0.5, yt = yi - y0 - 0.5, wi = 1;
+      var idx = [x0 + y0 * n, x0 + 1 + y0 * n, x0 + 1 + (y0 + 1) * n, x0 + (y0 + 1) * n], wt = [(1 - xt) * (1 - yt) * wi, xt * (1 - yt) * wi, xt * yt * wi, (1 - xt) * yt * wi];
+      for (var k = 0; k < 4; k++) if (idx[k] < ln) values[idx[k]] = Math.fround(values[idx[k]] + wt[k]);
+    }
+  });
+  _cnBlur2(values, n, m, r * 0.25);
+  return {values: values, n: n, m: m, o: o};
+}
+function _cnDensityFull(points, W, H, bandwidth, count) {
+  var g = _cnDensityGrid(points, W, H, bandwidth), mx = -Infinity, i;
+  for (i = 0; i < g.values.length; i++) if (g.values[i] > mx) mx = g.values[i];
+  mx = mx / 16;
+  var tz = _hgTicks(_CN_MIN_VALUE, mx, count === null || count === undefined ? 20 : count), thr = tz.map(function(d) { return d * 16; });
+  var out = _cnContours(g.values, g.n, g.m, thr);
+  out.forEach(function(c) { c[1].forEach(function(poly) { poly.forEach(function(ring) { ring.forEach(function(pt) { pt[0] = pt[0] * 4 - g.o; pt[1] = pt[1] * 4 - g.o; }); }); }); });
+  return {levels: tz.map(function(v, k) { return [v, out[k][1]]; }), max: mx, grid: g, thr: thr};
+}
+function _cnDensity(points, W, H, bandwidth, count) { var r = _cnDensityFull(points, W, H, bandwidth, count); return [r.levels, r.max]; }
+function _cnRamp(i, m) {
+  var t = m === 1 ? 0.5 : i / (m - 1), pos = t * 4, j = Math.min(3, Math.floor(pos)), f = pos - j, a = _CN_STOPS[j], b = _CN_STOPS[j + 1], s = '#';
+  for (var c = 0; c < 3; c++) { var h = Math.floor(a[c] + (b[c] - a[c]) * f + 0.5).toString(16).toUpperCase(); s += h.length < 2 ? '0' + h : h; }
+  return s;
+}
+function _cnLine(color) { return 299 * parseInt(color.slice(1, 3), 16) + 587 * parseInt(color.slice(3, 5), 16) + 114 * parseInt(color.slice(5, 7), 16) < 128000 ? '#FFFFFF' : '#04182B'; }
+function _cnName(i, m) { return _CN_NAMES[Math.floor((m === 1 ? 0.5 : i / (m - 1)) * 4 + 0.5)]; }
+function _cnR(x) { var s = x.toFixed(2); if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); return s === '-0' ? '0' : s; }
+function _cnPath(polys, sx, sy) {
+  return polys.map(function(poly) { return poly.map(function(ring) { return 'M' + ring.map(function(p) { return _cnR(p[0] * sx) + ',' + _cnR(p[1] * sy); }).join('L') + 'Z'; }).join(''); }).join('');
+}
+function _cnNum(v, lo, hi) { return typeof v === 'number' && isFinite(v) ? Math.min(hi, Math.max(lo, v)) : null; }
+function _cnUsable(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+_RENDERERS['contour_plot'] = function(b) {
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var g = b.grid, pts = b.points, notes = '';
+  function plural(c, one, many) { return c + ' ' + (c === 1 ? one : many); }
+  function fail(msg) { return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">' + msg + '</div>' + notes + _hgVersionNote(b, 'contour_plot')); }
+  var isObj = function(o) { return !!o && typeof o === 'object' && !Array.isArray(o); };
+  if (!isObj(g) && !Array.isArray(pts)) return fail('A contour plot needs either a grid (width, height and values) or points.');
+  var gridMode = isObj(g);
+  if (gridMode && Array.isArray(pts)) notes += _hgNote('Both a grid and points were given; the grid is drawn.');
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var xl = b.x_label ? String(b.x_label).slice(0, 30) : '', yl = b.y_label ? String(b.y_label).slice(0, 30) : '';
+  var levels = [], shares, total, vlab, X0, X1, Y0, Y1, flip, dots = '', disp, sx, sy, gw, gh, loV = 0, hiV = 0, xy, bw = 0, i, k;
+  if (gridMode) {
+    gw = g.width; gh = g.height;
+    var okd = function(v) { return typeof v === 'number' && isFinite(v) && v === Math.floor(v) && v >= 2 && v <= 100; };
+    if (!(okd(gw) && okd(gh))) return fail('The grid needs a width and a height that are whole numbers from 2 to 100.');
+    var raw = Array.isArray(g.values) ? g.values : [];
+    if (raw.length !== gw * gh) return fail('The grid needs width times height numbers: ' + (gw * gh) + ' expected, ' + raw.length + ' given.');
+    var vals = raw.map(function(v) { return _cnUsable(v) ? v : null; }), bad = 0, usable = [];
+    vals.forEach(function(v) { if (v === null) bad++; else usable.push(v); });
+    if (bad) notes += _hgNote(plural(bad, 'grid value was', 'grid values were') + ' not a usable number and ' + (bad === 1 ? 'was' : 'were') + ' left empty.');
+    var tn = _cnNum(b.thresholds, 3, 20), out = _cnContours(vals, gw, gh, tn === null ? null : Math.floor(tn));
+    sx = _CN_W / gw; sy = _CN_H / gh;
+    out.forEach(function(c) { if (c[1].length) levels.push(c); });
+    total = usable.length;
+    shares = levels.map(function(l) { var c = 0; usable.forEach(function(x) { if (x >= l[0]) c++; }); return c; });
+    vlab = b.value_label ? String(b.value_label).slice(0, 30) : 'Value';
+    xl = xl || 'Column'; yl = yl || 'Row';
+    X0 = 0; X1 = gw; Y0 = 0; Y1 = gh; flip = false;
+    disp = levels.map(function(l) { return l[0]; });
+    if (usable.length) { loV = usable[0]; hiV = usable[0]; usable.forEach(function(x) { if (x < loV) loV = x; if (x > hiV) hiV = x; }); }
+  } else {
+    var lst = pts.slice(0, _CN_MAXPTS), beyond = pts.length - _CN_MAXPTS;
+    xy = lst.filter(function(p) { return isObj(p) && _cnUsable(p.x) && _cnUsable(p.y); }).map(function(p) { return [p.x, p.y]; });
+    var bad2 = lst.length - xy.length;
+    if (beyond > 0) notes += _hgNote(plural(beyond, 'point', 'points') + ' beyond the first 2000 ' + (beyond === 1 ? 'was' : 'were') + ' not used.');
+    if (bad2) notes += _hgNote(plural(bad2, 'point was', 'points were') + ' not an object with a numeric x and y and ' + (bad2 === 1 ? 'was' : 'were') + ' skipped.');
+    if (xy.length < 3) return fail('A density contour plot needs at least 3 points with a numeric x and y; this list has ' + xy.length + '.');
+    var xs = xy.map(function(p) { return p[0]; }), ys = xy.map(function(p) { return p[1]; });
+    var xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+    xs.forEach(function(v) { if (v < xmin) xmin = v; if (v > xmax) xmax = v; });
+    ys.forEach(function(v) { if (v < ymin) ymin = v; if (v > ymax) ymax = v; });
+    var nx = xmin === xmax ? _hgNice(xmin - 1, xmax + 1, 6) : _hgNice(xmin, xmax, 6), ny = ymin === ymax ? _hgNice(ymin - 1, ymax + 1, 6) : _hgNice(ymin, ymax, 6);
+    X0 = nx[0]; X1 = nx[1]; Y0 = ny[0]; Y1 = ny[1];
+    var px = xs.map(function(x) { return (x - X0) * _CN_W / (X1 - X0); }), py = ys.map(function(y) { return (Y1 - y) * _CN_H / (Y1 - Y0); });
+    var bwn = _cnNum(b.bandwidth, 5, 60);
+    bw = bwn === null ? 20 : bwn;
+    var tn2 = _cnNum(b.thresholds, 3, 20), res = _cnDensityFull(px.map(function(a, j) { return [a, py[j]]; }), _CN_W, _CN_H, bw, tn2 === null ? null : Math.floor(tn2));
+    var gd = res.grid;
+    res.levels.forEach(function(l, j) { if (l[1].length) levels.push([l[0], l[1], res.thr[j]]); });
+    sx = 1; sy = 1;
+    var cells = px.map(function(a, j) {
+      var xi = (a + gd.o) * 0.25, yi = (py[j] + gd.o) * 0.25;
+      return xi >= 0 && xi < gd.n && yi >= 0 && yi < gd.m ? gd.values[Math.floor(xi) + Math.floor(yi) * gd.n] : null;
+    });
+    total = xy.length;
+    shares = levels.map(function(l) { var c = 0; cells.forEach(function(v) { if (v !== null && v >= l[2]) c++; }); return c; });
+    vlab = 'Density (points per 10,000 px² of the drawing)';
+    flip = true;
+    dots = px.length ? 'M' + px.map(function(a, j) { return _cnR(a) + ',' + _cnR(py[j]) + 'h0'; }).join('M') : '';
+    disp = levels.map(function(l) { return l[0] * 10000; });
+  }
+  if (!levels.length) return fail('No contour level could be drawn from this data.');
+  var budget = _CN_BUDGET, keep = 0;
+  for (i = 0; i < levels.length; i++) {
+    var cnt = 0;
+    levels[i][1].forEach(function(poly) { poly.forEach(function(r) { cnt += r.length; }); });
+    if (cnt > budget && keep) break;
+    budget -= cnt; keep++;
+  }
+  if (keep < levels.length) {
+    notes += _hgNote(plural(levels.length - keep, 'highest level was', 'highest levels were') + ' not drawn to keep the picture small (limit 40,000 outline points).');
+    levels = levels.slice(0, keep); shares = shares.slice(0, keep); disp = disp.slice(0, keep);
+  }
+  var m = levels.length, d = _hgDecimals(disp), lab = disp.map(function(v) { return _hgNum(v, d); }), cols = [], bands = '';
+  for (i = 0; i < m; i++) cols.push(_cnRamp(i, m));
+  var rng = function(j) { return lab[j] + (j + 1 < m ? ' to ' + lab[j + 1] + us : us + ' and above'); };
+  for (i = 0; i < m; i++) {
+    bands += '<path class="cnb" d="' + _cnPath(levels[i][1], sx, sy) + '" fill="' + cols[i] + '" stroke="' + _cnLine(cols[i]) + '" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" ' +
+      'vector-effect="non-scaling-stroke" style="' + _ifK(i, m) + 'opacity:var(--k,1);"><title>' + _esc(rng(i)) + '</title></path>';
+  }
+  if (dots) bands += '<path class="cnp" d="' + dots + '" fill="none" style="stroke:var(--text,#0F172A);" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+  var svg = '<svg viewBox="0 0 ' + _CN_W + ' ' + _CN_H + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">' +
+    '<rect x="0" y="0" width="' + _CN_W + '" height="' + _CN_H + '" style="fill:var(--surface,#F8FAFC);"/>' + bands +
+    '<rect x="0" y="0" width="' + _CN_W + '" height="' + _CN_H + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>';
+  var ex = _hgTicks(X0, X1, 6), ey = _hgTicks(Y0, Y1, 6), xaxis = '', yaxis = '';
+  if (ex.length) { var dxs = _hgDecimals(ex); xaxis = _hgAxis(ex, X0, X1 - X0, ex.map(function(v) { return _hgNum(v, dxs); })); }
+  if (ey.length) {
+    var dys = _hgDecimals(ey);
+    ey.forEach(function(v) {
+      yaxis += '<div class="cny" style="position:absolute;right:100%;margin-right:6px;top:' + _tmPct(flip ? Y1 - v : v - Y0, Y1 - Y0) +
+        ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgNum(v, dys) + '</div>';
+    });
+  }
+  var aria;
+  if (gridMode) aria = 'Contour plot of a ' + gw + ' by ' + gh + ' grid, values from ' + _bpFmt(loV, 2) + ' to ' + _bpFmt(hiV, 2) + us + ', ' + m + ' level' + (m === 1 ? '' : 's') + '. Darker bands are higher values.';
+  else aria = 'Density contour plot of ' + total + ' points, ' + m + ' level' + (m === 1 ? '' : 's') + ' from ' + lab[0] + ' to ' + lab[m - 1] + ' points per 10,000 px². Darker bands are denser areas.';
+  var css = '<style>@container (max-width:560px){.ifcn .hgx:not(.hgc){display:none}}</style>';
+  var chart = '<div class="ifcn" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
+    (yl ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">' + _esc(yl) + '</div>' : '') +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 14px 34px 46px;">' + svg + yaxis + xaxis + '</div>' +
+    (xl ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 14px 0 46px;">' + _esc(xl) + '</div>' : '') + '</div>';
+  var ent = [['Below ' + lab[0] + us, 'var(--surface,#F8FAFC)']];
+  for (i = 0; i < m; i++) ent.push([rng(i), cols[i]]);
+  var legend = '<div class="cnleg" style="margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);"><div style="color:var(--muted,#475569);margin-bottom:4px;">' + _esc(vlab) + '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;">' +
+    ent.map(function(e) { return '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:' + e[1] + ';"></span>' + _esc(e[0]) + '</span>'; }).join('') +
+    '</div></div>';
+  var tables, rows = [];
+  if (gridMode) {
+    for (i = 0; i < m; i++) rows.push([lab[i] + us, _cnName(i, m), (shares[i] / total * 100).toFixed(1) + '%']);
+    tables = _ifTable(['Level from', 'Band colour', 'Cells at or above'], rows);
+  } else {
+    for (i = 0; i < m; i++) rows.push([lab[i], _cnName(i, m), (shares[i] / total * 100).toFixed(1) + '% (' + shares[i] + ' of ' + total + ')']);
+    tables = _ifTable(['Density from (points per 10,000 px²)', 'Band colour', 'Points in cells at or above'], rows);
+    var prow = [];
+    for (k = 0; k < Math.min(total, _CN_MAXROWS); k++) prow.push([String(k + 1), String(xy[k][0]), String(xy[k][1])]);
+    tables += _ifTable(['Point', 'x', 'y'], prow);
+    if (total > _CN_MAXROWS) notes += _hgNote('Table of points shows the first ' + _CN_MAXROWS + ' of ' + total + '.');
+  }
+  return _ifWrap(_ifTitle(b) + chart + legend +
+    _hgNote('Each band is the area at or above its level; the outline between two bands is the level.' + (gridMode ? '' : ' Density is smoothed (bandwidth ' + _bpFmt(bw, 2) + ' px).')) +
+    notes + _hgVersionNote(b, 'contour_plot') + tables);
+};
+
 // ── chord_diagram (I47) and its directed mode (I62) ───────────────────────────────────────────────────────────────────────────────────────────
 // d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape arc() (_sbArc, via _D3Path) for
 // the group arcs. Twin of _ch_chord / _ch_ribbon / _render_chord_diagram in renderers/web_article.py.

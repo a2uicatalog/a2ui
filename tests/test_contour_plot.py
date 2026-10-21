@@ -76,6 +76,12 @@ def test_gas_blur2_matches_d3_array_exactly(core_js):
     assert res == [c["after"] for c in BLUR]
 
 
+def test_sturges_count_agrees_with_javascript_for_every_cell_count_a_grid_can_have(core_js):
+    # d3 thresholdSturges is ceil(log(count) / LN2) + 1; Python's log and V8's can differ in the last bit, which would matter at exact powers of two
+    res = _node(core_js, "var o = []; for (var n = 1; n <= 10000; n++) o.push(_cnSturges(n)); console.log(JSON.stringify(o));")
+    assert res == [wa._cn_sturges(n) for n in range(1, 10001)]
+
+
 def test_the_golden_set_covers_the_hard_cases():
     assert any(len(p) > 1 for m in GRIDS["two_peaks_with_crater"]["out"] for p in m["coordinates"])              # a polygon with a hole
     assert any(len(p) > 1 for m in GRIDS["ring_with_hole_and_island"]["out"] for p in m["coordinates"])
