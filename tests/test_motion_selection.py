@@ -31,6 +31,7 @@ CASES = [
     dict(BASE, toolbar=[]), dict(BASE, toolbar=["", "  ", None, 3, True, {"x": 1}, ["y"]]), dict(BASE, toolbar="B"), dict(BASE, toolbar=None), dict(BASE, toolbar=7),
     dict(BASE, toolbar=["<b>", HOSTILE, "a&b", "toolongtoolong"]),
     dict(BASE, text="x" * 300), dict(BASE, text=HOSTILE), dict(BASE, text=""), dict(BASE, text="   "), dict(BASE, text=42), dict(BASE, text=["x"]), dict(BASE, text="two\nlines"),
+    dict(BASE, size=44), dict(BASE, size=5), dict(BASE, size=9999), dict(BASE, size=-3), dict(BASE, size="x"), dict(BASE, size=0), dict(BASE, size=None), dict(BASE, size=True), dict(BASE, size="60px"), dict(BASE, size=HOSTILE),
     dict(BASE, version=2), dict(BASE, version=1), dict(BASE, version="x"), dict(BASE, version=1.5),
     {"type": "motion_selection", "blocks": [{"type": "motion_pill", "text": "Go"}]},
     {"type": "motion_selection", "text": "ignored", "blocks": [{"type": "motion_pill", "text": "Go"}, {"type": "demo_panel", "title": "T", "rows": [["a", "1"]]}]},
@@ -98,8 +99,16 @@ def test_children_replace_the_text_and_garbage_children_fall_back():
 
 def test_every_moving_value_reads_p_and_nothing_loops_or_scripts():
     h = _py(BASE)
-    assert h.count("var(--p,1)") == 4 and not re.search(r"var\(--s[,)]", h)
+    assert h.count("var(--p,1)") == 4 and h.count("--p:1") == 1 and not re.search(r"var\(--s[,)]", h)
     assert "animation" not in h and "@keyframes" not in h and "<script" not in h.lower() and "<style" not in h.lower()
+
+
+def test_size_is_optional_clamped_and_inert_when_off():
+    plain = _py(BASE)
+    for off in (None, 0, "x", True, False, -3, HOSTILE, [1], {}):
+        assert _py(dict(BASE, size=off)) == plain, off
+    assert "font-size:44px;" in _py(dict(BASE, size=44)) and "font-size:12px;" in _py(dict(BASE, size=5)) and "font-size:160px;" in _py(dict(BASE, size=9999))
+    assert "font-size:60px;" in _py(dict(BASE, size="60px"))
 
 
 def test_colour_is_a_hex_or_the_stage_accent_and_is_never_echoed():
@@ -139,7 +148,7 @@ def test_registered_everywhere():
     for k in ("description", "compact_description", "routing_text", "intent_phrases", "fields", "notes", "surfaces", "source"):
         assert ent[0].get(k), k
     assert len(ent[0]["intent_phrases"]) >= 2
-    for f in ("text", "blocks", "toolbar", "handles", "color", "tint", "version"):
+    for f in ("text", "blocks", "toolbar", "handles", "color", "tint", "size", "version"):
         assert f in ent[0]["fields"], f
     packs = yaml.safe_load((root / "atoms" / "atom-packs.yaml").read_text())
     assert "motion_selection" in packs["a2ui-effects-v1"]
@@ -170,8 +179,13 @@ _STATE = ("function q(s){return Array.prototype.slice.call(document.querySelecto
           "hs:q('handle').map(function(e){return +(+cs(e).opacity).toFixed(3);}),hsc:q('handle').map(function(e){return +(new DOMMatrix(cs(e).transform).a).toFixed(3);})};")
 
 
+def _drawn(clip):
+    return clip == "none" or _inset(clip) == 0
+
+
 def _inset(clip):
-    m = re.search(r"inset\(([\d.]+)(px|%)", clip)
+    """The right-hand inset in %: how much of the frame is still to be drawn (the frame wipes in from the left)."""
+    m = re.search(r"inset\(\S+ ([\d.]+)(px|%)", clip)
     return None if not m else float(m.group(1))
 
 
@@ -180,12 +194,12 @@ def test_the_frame_draws_in_then_the_handles_pop_then_the_toolbar_rises(core_js)
     html = _gas_batch(core_js, [BASE])[0]
     st = {p: _page(html, p, 650, _STATE) for p in (0, 0.25, 0.5, 0.75, 1)}
     # frame: clipped away at 0, partly drawn at 0.25, complete from 0.4
-    assert _inset(st[0]["clip"]) == 50 and st[1]["clip"] in ("none", "inset(0px)", "inset(0%)") and st[0.5]["clip"] in ("none", "inset(0px)", "inset(0%)"), st
+    assert _inset(st[0]["clip"]) == 100 and _drawn(st[1]["clip"]) and _drawn(st[0.5]["clip"]), st
     assert st[0]["hs"] == [0, 0, 0, 0] and st[1]["hs"] == [1, 1, 1, 1] and st[1]["hsc"] == [1, 1, 1, 1], st
     assert st[0]["tint"] == 0 and abs(st[1]["tint"] - 0.22) < 0.01
     assert st[0]["bar"] == 0 and st[1]["bar"] == 1 and st[1]["barY"] == 0 and st[0]["barY"] > 4
     # staged: at 0.25 the frame is drawing, the handles not yet up, the toolbar not yet there
-    assert st[0.25]["clip"] != "none" and 0 < _inset(st[0.25]["clip"]) < _inset(st[0]["clip"])
+    assert st[0.25]["clip"] != "none" and 0 < _inset(st[0.25]["clip"]) < 100 and abs(_inset(st[0.25]["clip"]) - 37.5) < 0.5
     assert st[0.25]["bar"] == 0 and 0 < st[0.25]["tint"] < 0.22
     # at 0.5 the frame is complete, the handles are up, the toolbar is still rising (not 0, not 1 yet is allowed at exactly 0.5 = 0)
     assert all(o > 0 for o in st[0.5]["hs"]) and st[0.5]["bar"] >= 0
@@ -202,7 +216,7 @@ def test_the_frame_draws_in_then_the_handles_pop_then_the_toolbar_rises(core_js)
 def test_standalone_is_the_settled_picture_in_both_twins(core_js):
     for html in (_py(BASE), _gas_batch(core_js, [BASE])[0]):
         d = _page(html, None, 650, _STATE)     # no --p set at all: the default is 1
-        assert d["clip"] in ("none", "inset(0px)", "inset(0%)") and d["bar"] == 1 and d["hs"] == [1, 1, 1, 1] and d["barY"] == 0, d
+        assert _drawn(d["clip"]) and d["bar"] == 1 and d["hs"] == [1, 1, 1, 1] and d["barY"] == 0, d
 
 
 _BOX = ("var r=function(e){var b=e.getBoundingClientRect();return {l:b.left,t:b.top,r:b.right,b:b.bottom,w:b.width,h:b.height};};"
@@ -219,7 +233,7 @@ LONG = {"type": "motion_selection", "text": "A rather long line of selected copy
 
 @browser
 def test_nothing_is_clipped_or_wider_than_the_container_at_650_and_320(core_js):
-    for blk in (BASE, LONG, dict(LONG, toolbar=["Bold", "Italic", "Under", "Color", "Link", "More"]), {"type": "motion_selection", "blocks": [{"type": "motion_pill", "text": "Go"}]}):
+    for blk in (BASE, dict(LONG, size=48), LONG, dict(LONG, toolbar=["Bold", "Italic", "Under", "Color", "Link", "More"]), {"type": "motion_selection", "blocks": [{"type": "motion_pill", "text": "Go"}]}):
         for html in (_py(blk), _gas_batch(core_js, [blk])[0]):
             for w in (650, 320):
                 for p in (0, 0.5, 1):
@@ -238,6 +252,30 @@ def test_nothing_is_clipped_or_wider_than_the_container_at_650_and_320(core_js):
     corners = sorted([(fr["l"], fr["t"]), (fr["r"], fr["t"]), (fr["l"], fr["b"]), (fr["r"], fr["b"])])
     centres = sorted([(h["l"] + h["w"] / 2, h["t"] + h["h"] / 2) for h in hs])
     assert all(abs(c[0] - k[0]) <= 1.5 and abs(c[1] - k[1]) <= 1.5 for c, k in zip(centres, corners)), (centres, corners)
+
+
+@browser
+def test_selected_content_is_there_before_the_selection_arrives(core_js):
+    """The content exists first and is selected after: a child that reads p (motion_text) is held at p = 1 inside the frame, whatever p the selection is at."""
+    blk = {"type": "motion_selection", "blocks": [{"type": "motion_text", "text": "Hello there", "size": 30}]}
+    js = ("var b=document.querySelector('[data-sel=body]');var r=b.getBoundingClientRect();var s=Array.prototype.map.call(b.querySelectorAll('span'),function(e){return +getComputedStyle(e).opacity;});"
+          "return {w:Math.round(r.width),txt:b.textContent.replace(/\\s+/g,' ').trim(),op:s.length?Math.min.apply(null,s):1};")
+    for html in (_py(blk), _gas_batch(core_js, [blk])[0]):
+        d0, d1 = _page(html, 0, 650, js), _page(html, 1, 650, js)
+        assert "Hello there" in d0["txt"] and d0["op"] == 1 and d0 == d1, (d0, d1)
+
+
+@browser
+def test_size_scales_handles_and_toolbar_with_the_text_and_never_below_the_floor(core_js):
+    js = ("var q=function(s){return Array.prototype.slice.call(document.querySelectorAll('[data-sel='+s+']'));};"
+          "return {tool:parseFloat(getComputedStyle(q('tool')[0]).fontSize),h:Math.round(q('handle')[0].getBoundingClientRect().width*10)/10,body:parseFloat(getComputedStyle(q('body')[0]).fontSize)};")
+    small, big = (_page(_gas_batch(core_js, [dict(BASE, size=s)])[0], 1, 650, js) for s in (16, 120))
+    assert small["tool"] == 12 and small["h"] == 10 and small["body"] == 16, small
+    assert big["tool"] > 30 and big["h"] > 20 and big["body"] == 120, big
+    for blk in (dict(BASE, size=12), dict(BASE, size=16)):
+        for w in (650, 320):
+            d = _page(_py(blk), 1, w, _BOX)
+            assert d["minFont"] >= 12 and d["minL"] >= -0.01 and d["maxR"] <= w + 0.01 and d["sw"] <= d["iw"], (w, d)
 
 
 @browser

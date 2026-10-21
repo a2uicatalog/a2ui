@@ -22143,6 +22143,7 @@ blocks:
     handles: "bool (optional, default true). false leaves the four corner handles out."
     color: "\"#rrggbb\" (optional). Frame, handle and tint colour. Default the stage accent."
     tint: "bool (optional, default true). A translucent accent wash behind the selected content. Text keeps its own colour so it stays readable."
+    size: "integer (optional). Font size px of the text, 12 to 160. Omit to inherit. The toolbar labels, handles and spacing scale with it (labels never below 12px)."
     version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
-  notes: "Compose with demo_cursor for the click that lands first: put both in a motion_timeline and key the cursor to arrive just before p starts. The frame takes p 0 to 0.4, the tint 0.15 to 0.4, the handles 0.3 to 0.55 and the toolbar 0.5 to 1. The toolbar space is reserved from the start, so nothing shifts as p builds. The source event lasts about 0.13 s, so a short run of p is right; there is nothing to loop."
+  notes: "Compose with demo_cursor for the click that lands first: put both in a motion_timeline and key the cursor to arrive just before p starts. The frame takes p 0 to 0.4, the tint 0.15 to 0.4, the handles 0.3 to 0.55 and the toolbar 0.5 to 1. The toolbar space is reserved from the start, so nothing shifts as p builds. Children are held at p = 1 inside the frame, so the content is there before it is selected. On a large stage give size the same number as the child text so the toolbar and handles scale with it. The source event lasts about 0.13 s, so a short run of p is right; there is nothing to loop."
   source: *mla002
