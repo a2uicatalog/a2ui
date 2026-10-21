@@ -5371,133 +5371,6 @@ def _render_gauge_sla(b: dict) -> str:
     """
 
 
-def _render_stacked_area(b: dict) -> str:
-    title = b.get("title", "")
-    labels = b.get("labels", [])
-    series = b.get("series", [])
-    
-    if not series or not labels:
-        return ""
-        
-    header_html = ""
-    if title:
-        header_html = f"""
-        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#38bdf8; font-weight:900;">⬟</span> {_cv_esc(title)}
-          </div>
-        </div>
-        """
-        
-    w, h = 520, 240
-    pad_l, pad_r, pad_t, pad_b = 55, 20, 30, 35
-    chart_w = w - pad_l - pad_r
-    chart_h = h - pad_t - pad_b
-    
-    n_pts = len(labels)
-    n_series = len(series)
-    
-    stacked_y_vals = []
-    curr_stack = [0.0] * n_pts
-    for s_idx, s in enumerate(series):
-        data = [float(v) for v in s.get("data", [])]
-        if len(data) < n_pts:
-            data += [0.0] * (n_pts - len(data))
-        for i in range(n_pts):
-            curr_stack[i] += data[i]
-        stacked_y_vals.append(list(curr_stack))
-        
-    max_stacked_val = max(curr_stack) if curr_stack else 1.0
-    rng = max_stacked_val or 1.0
-    
-    layers_svg = []
-    defs_html = []
-    
-    grid_lines = ""
-    for grid_idx in range(5):
-        grid_y = pad_t + (grid_idx / 4) * chart_h
-        grid_v = max_stacked_val - (grid_idx / 4) * rng
-        grid_lines += f"""
-        <line x1="{pad_l}" y1="{grid_y}" x2="{pad_l + chart_w}" y2="{grid_y}" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3,3" />
-        <text x="{pad_l - 12}" y="{grid_y + 3}" fill="rgba(255,255,255,0.4)" font-size="8.5" font-family="monospace" text-anchor="end">{grid_v:,.0f}</text>
-        """
-        
-    x_labels_html = ""
-    for i, lbl in enumerate(labels):
-        x = pad_l + (i / max(1, n_pts - 1)) * chart_w
-        x_labels_html += f'<text x="{x}" y="{pad_t + chart_h + 18}" fill="rgba(255,255,255,0.4)" font-size="8.5" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
-        
-    for s_idx in range(n_series - 1, -1, -1):
-        s = series[s_idx]
-        color = s.get("color", "#38bdf8")
-        
-        coords = []
-        for i in range(n_pts):
-            val = stacked_y_vals[s_idx][i]
-            x = pad_l + (i / max(1, n_pts - 1)) * chart_w
-            y = pad_t + (1 - val / rng) * chart_h
-            coords.append((x, y))
-            
-        path_pts = " ".join(f"{px:.1f},{py:.1f}" for px, py in coords)
-        area_pts = f"{pad_l:.1f},{pad_t + chart_h:.1f} " + path_pts + f" {pad_l + chart_w:.1f},{pad_t + chart_h:.1f}"
-        
-        layer_id = f"stack_layer_{_cv_esc(s_idx)}_{_wa_oid(b)}"
-        
-        defs_html.append(f"""
-        <linearGradient id="{layer_id}_area_grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{_cv_esc(color)}" stop-opacity="0.3" />
-          <stop offset="100%" stop-color="{_cv_esc(color)}" stop-opacity="0.0" />
-        </linearGradient>
-        <filter id="{layer_id}_glow" x="-10%" y="-10%" width="120%" height="120%">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        """)
-        
-        layers_svg.append(f"""
-        <polygon points="{area_pts}" fill="url(#{layer_id}_area_grad)" />
-        <polyline points="{path_pts}" fill="none" stroke="{_cv_esc(color)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#{layer_id}_glow)" />
-        """)
-        
-    legends_html = []
-    for s_idx, s in enumerate(series):
-        color = s.get("color", "#38bdf8")
-        label_name = s.get("label", "")
-        legends_html.append(f"""
-        <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; font-family:monospace; color:rgba(255,255,255,0.7);">
-          <div style="width:10px; height:10px; border-radius:3px; background:{_cv_esc(color)}; box-shadow: 0 0 6px {_cv_esc(color)};"></div>
-          <span>{_cv_esc(label_name)}</span>
-        </div>
-        """)
-    legends_container = f'<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; justify-content:center;">{"".join(legends_html)}</div>'
-    
-    svg_html = f"""
-    <div style="width:100%; height:240px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
-      <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          {"".join(defs_html)}
-        </defs>
-        
-        {grid_lines}
-        {x_labels_html}
-        
-        {"".join(layers_svg)}
-      </svg>
-    </div>
-    """
-    
-    return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-      {header_html}
-      {svg_html}
-      {legends_container}
-    </div>
-    """
-
-
 _CALIBRATION_PALETTE = ["#8b5cf6", "#dc2626", "#0891b2", "#16a34a", "#d97706", "#db2777"]
 
 
@@ -8252,7 +8125,6 @@ _RENDERERS = {
     "sentiment_summary": _render_sentiment_summary,
     "conversion_funnel": _render_conversion_funnel,
     "gauge_sla": _render_gauge_sla,
-    "stacked_area": _render_stacked_area,
     "scatter_trend": _render_scatter_trend,
     "metric_comparison_card": _render_metric_comparison_card,
     "mini_sparkline_set": _render_mini_sparkline_set,
@@ -11803,7 +11675,7 @@ def _render_conversion_funnel(b: dict) -> str:
         html += f'<div style="text-align:center;margin-bottom:4px;"><div style="display:inline-block;width:{pct:.0f}%;background:{_cv_esc(accent)};opacity:{opacity:.2f};color:#fff;padding:8px 12px;border-radius:4px;font-size:.85rem;font-weight:600;min-width:140px;">{_cv_esc(s.get("stage") or s.get("label",""))} — {_cv_esc(s.get("value",""))}</div>{"<div style=font-size:.72rem;color:var(--muted,#5f6368);margin-top:2px>"+conv+"</div>" if conv else ""}</div>'
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{html}</div>'
 
-# ─── stacked_area `offset` (2026-10-21, I49): "expand" | "silhouette" | "wiggle" draw a real SVG area chart; absent / "none" / unknown keeps the bars below ───
+# ─── stacked_area `offset` and `layout` (2026-10-21): the default layout is a real SVG area chart (D22); `layout: "bars"` keeps the CSS bar list below; `offset` (I49) "expand" | "silhouette" | "wiggle" reshapes the chart ───
 # d3-shape 3.2.0 stackOffsetExpand, stackOffsetSilhouette, stackOffsetWiggle, stackOffsetNone and stackOrderInsideOut / stackOrderAppearance, ported by hand
 # (ISC, Mike Bostock); twin of _saStack / _saChart in the atoms_unstub.gs files. Self-contained on purpose: the Apps Script copies also live where the infographic helpers do not exist.
 _SA_COLORS = ['#0369A1', '#B45309', '#15803D', '#7C3AED', '#BE123C', '#0F766E', '#A16207', '#475569']
@@ -11913,6 +11785,37 @@ def _sa_ticks(m, stride):
     return set(t)
 
 
+def _sa_axis(mx):
+    """The zero-based value axis of the default layout: a 1-2-5 step, at most five intervals, k / M / B / T suffix, or None when the
+    maximum is not worth an axis (0, below 1e-9, or needing more than 6 decimals). Loops, not log10, so both twins agree to the bit."""
+    if not mx > 1e-9:
+        return None
+    raw = mx / 4
+    mag, e = 1.0, 0
+    while mag * 10 <= raw:
+        mag *= 10
+        e += 1
+    while mag > raw:
+        mag /= 10
+        e -= 1
+    r = raw / mag
+    d = 1 if r <= 1 else 2 if r <= 2 else 5 if r <= 5 else 10
+    step = d * mag
+    if d == 10:
+        e += 1
+    n = int(math.ceil(mx / step))
+    unit, suffix, ul = 1.0, '', 0
+    top = n * step
+    for u, sx, k in ((1e12, 'T', 12), (1e9, 'B', 9), (1e6, 'M', 6), (1e3, 'k', 3)):
+        if top >= u:
+            unit, suffix, ul = u, sx, k
+            break
+    dec = max(0, ul - e)
+    if dec > 6:
+        return None
+    return {'top': top, 'ticks': [(k * step, '0' if k == 0 else _if_fixed(k * step / unit, dec) + suffix) for k in range(n + 1)]}
+
+
 def _sa_chart(b, offset):
     labels = b.get('labels') if isinstance(b.get('labels'), list) else []
     lst = b.get('series') if isinstance(b.get('series'), list) else []
@@ -11940,10 +11843,18 @@ def _sa_chart(b, offset):
         return None
     beyond_s, beyond_p = len(lst) - 12, len(labels) - 60
     order, LO, HI = _sa_stack([s['vals'] for s in ser], offset)
+    axis, allzero = None, False
     if offset == 'expand':
         ymin, ymax = 0.0, 1.0
     else:
         ymin, ymax = min(min(r) for r in LO), max(max(r) for r in HI)
+        if offset == 'none':
+            axis = _sa_axis(ymax)
+            if axis:
+                ymin, ymax = 0.0, axis['top']
+            elif not ymax > 0:
+                ymax = 1.0
+                allzero = True
     span = ymax - ymin
     if not span > 0:
         span = 1.0
@@ -11977,12 +11888,26 @@ def _sa_chart(b, offset):
         for j in range(5):
             ys += ('<div class="say" style="position:absolute;right:100%;top:' + str(100 - j * 25) + '%;width:38px;padding-right:6px;box-sizing:border-box;text-align:right;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted,#475569);">' + str(j * 25) + '%</div>'
                    '<div style="position:absolute;right:100%;top:' + str(100 - j * 25) + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>')
-    mode = 'each point scaled to 100 percent' if offset == 'expand' else 'centred baseline' if offset == 'silhouette' else 'streamgraph, baseline chosen to minimise wiggle'
+    yw = '44px' if offset == 'expand' else '0'
+    if offset == 'none':
+        ticks = axis['ticks'] if axis else [(0.0, '0')]
+        wd = int(math.ceil(max(len(t[1]) for t in ticks) * 7.5)) + 10
+        yw = str(wd) + 'px'
+        for v, t in ticks:
+            top = Y(v)
+            ys += ('<div class="say" style="position:absolute;right:100%;top:' + top + '%;width:' + str(wd - 6) + 'px;padding-right:6px;box-sizing:border-box;text-align:right;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted,#475569);">' + t + '</div>'
+                   '<div style="position:absolute;right:100%;top:' + top + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>')
+    mode = ('zero baseline' if offset == 'none' else 'each point scaled to 100 percent' if offset == 'expand' else 'centred baseline' if offset == 'silhouette'
+            else 'streamgraph, baseline chosen to minimise wiggle')
     names = [s['name'] for s in ser]
     aria = 'Stacked area chart, ' + mode + ': ' + str(len(ser)) + ' series over ' + str(m) + ' points from ' + full[0] + ' to ' + full[m - 1] + '. Series: ' + ', '.join(names) + '.'
     legend = ('<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
               + ''.join('<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:' + s['col'] + ';border:1px solid var(--border,#CBD5E1);box-sizing:border-box;display:inline-block;"></span>' + _cv_esc(s['name']) + '</span>' for s in ser) + '</div>')
-    if offset == 'expand':
+    if offset == 'none':
+        notes = _sa_note('The top edge is the total of all layers; each layer’s thickness is its own value, and the exact values are in the table.')
+        if allzero:
+            notes = _sa_note('Every value is 0, so there is nothing to draw above the baseline.')
+    elif offset == 'expand':
         notes = _sa_note('Each point is scaled so its layers add up to 100%; the axis shows each series’ share of the total.')
     else:
         notes = _sa_note(('Streamgraph: the baseline moves to keep the layers’ wiggle small and the layers are ordered inside-out, not as listed. ' if offset == 'wiggle' else 'The layers are centred on a middle line. ')
@@ -11999,30 +11924,37 @@ def _sa_chart(b, offset):
              + ''.join('<tr><th scope="row">' + _cv_esc(_sa_str(labels[jj])[:60]) + '</th>' + ''.join('<td>' + _cv_esc(s['raw'][jj]) + '</td>' for s in ser) + '</tr>' for jj in range(m)) + '</tbody></table>')
     ttl = _sa_str(b.get('title'))
     title = '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _cv_esc(ttl[:80]) + '</div>' if ttl else ''
-    yw = '44px' if offset == 'expand' else '0'
     return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + title
             + '<div class="ifsa" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifsa .sax:not(.sac){display:none}}</style>'
             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:8px 0 34px 0;">'
-            + '<div style="position:relative;margin-left:' + yw + ';height:240px;border-bottom:1px solid var(--muted,#475569);' + ('border-left:1px solid var(--muted,#475569);' if offset == 'expand' else '') + '">'
+            + '<div style="position:relative;margin-left:' + yw + ';height:240px;border-bottom:1px solid var(--muted,#475569);' + ('border-left:1px solid var(--muted,#475569);' if offset in ('expand', 'none') else '') + '">'
             + '<svg aria-hidden="true" focusable="false" viewBox="0 0 1000 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;">' + polys + '</svg>' + ys + xs + '</div></div>'
             + legend + '</div>' + notes + _sa_version_note(b) + table + '</div>')
 
 
 def _sa_card(b, msg):
-    """What an offset chart says when there is nothing to draw: the bars would raise on some of these payloads."""
+    """What the area chart says when there is nothing to draw."""
     ttl = _sa_str(b.get('title'))
     return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">'
             + ('<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _cv_esc(ttl[:80]) + '</div>' if ttl else '')
             + '<div style="border:1px solid #64748B;border-radius:8px;background:var(--surface,#F8FAFC);padding:8px 10px;">' + msg + '</div>' + _sa_version_note(b) + '</div>')
 
 
+_SA_OFFSETS = ('expand', 'silhouette', 'wiggle')
+
+
 def _sa_gate(b):
-    """(html, tail): html is the offset chart (or its message) or '' to keep the bars; tail is appended to the bars (the version note)."""
+    """(html, tail). D22 (2026-10-21): the default layout is the area chart. html is the chart (or its message), or '' for layout "bars";
+    tail is appended to the bar list (a note when an offset was given and ignored, then the version note)."""
     off = b.get('offset')
-    if not isinstance(off, str) or off not in ('expand', 'silhouette', 'wiggle'):
-        return '', _sa_version_note(b)
-    h = _sa_chart(b, off) if isinstance(b.get('labels'), list) and isinstance(b.get('series'), list) else None
-    return (_sa_card(b, 'A stacked area chart with an offset needs at least two labels and one series with numbers.') if h is None else h), ''
+    off = off if isinstance(off, str) and off in _SA_OFFSETS else None
+    if b.get('layout') == 'bars':
+        return '', (_sa_note('The bar list has no offset; \u201c' + off + '\u201d only applies to the area layout.') if off else '') + _sa_version_note(b)
+    h = _sa_chart(b, off or 'none') if isinstance(b.get('labels'), list) and isinstance(b.get('series'), list) else None
+    if h is None:
+        h = _sa_card(b, 'A stacked area chart with an offset needs at least two labels and one series with numbers.' if off
+                     else 'A stacked area chart needs at least two labels and one series with numbers. Set layout to bars for a bar list.')
+    return h, ''
 
 
 def _sa_bar_num(v):
@@ -12034,6 +11966,13 @@ def _render_stacked_area(b: dict) -> str:
     _sa_html, _sa_tail = _sa_gate(b)
     if _sa_html:
         return _sa_html
+    try:
+        return _sa_bars(b) + _sa_tail
+    except Exception:   # a payload the bar list cannot read (series that are not objects, data that is not a list ...) still gets a page, never an exception
+        return _sa_card(b, 'The bar list could not be drawn from this data.') + _sa_tail
+
+
+def _sa_bars(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:12px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     labels, series = b.get("labels",[]), b.get("series",[])
     colors = ["#4f46e5","#10b981","#f59e0b","#ef4444","#8b5cf6","#0ea5e9"]
@@ -12044,7 +11983,7 @@ def _render_stacked_area(b: dict) -> str:
         segs = "".join(f'<div style="width:{_sa_bar_num(s.get("data",[0]*99)[i])/max_t*100:.1f}%;height:100%;background:{_cv_esc(s.get("color",colors[si%len(colors)]))};display:inline-block;" title="{_cv_esc(s.get("label",""))}: {_cv_esc(s.get("data",[0]*99)[i])}"></div>' for si,s in enumerate(series) if i<len(s.get("data",[])))
         rows += f'<div style="margin-bottom:8px;"><div style="font-size:.75rem;color:var(--muted,#5f6368);margin-bottom:2px;">{_cv_esc(lbl)}</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;">{segs}</div></div>'
     legend = "".join(f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:{_cv_esc(s.get("color",colors[si%len(colors)]))}"></span>{_cv_esc(s.get("label",""))}</span>' for si,s in enumerate(series))
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{rows}<div style="margin-top:10px;">{legend}</div></div>' + _sa_tail
+    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{rows}<div style="margin-top:10px;">{legend}</div></div>'
 
 def _render_data_grid(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""

@@ -4,10 +4,11 @@ GOLDEN (tests/fixtures/stacked_area_d3_golden.json) holds what the REAL d3-shape
 Silhouette / Wiggle (see stacked_area_d3_golden_gen.mjs); wiggle is stacked in stackOrderInsideOut, the order of d3's streamgraph example
 (the other three keep stackOrderNone). Python and every Apps Script copy must reproduce the doubles EXACTLY (== , not a tolerance).
 
-BYTE FOR BYTE: an absent, "none" or unknown `offset` must render exactly what the renderer rendered before this field existed. The
+BYTE FOR BYTE: with `layout: "bars"` (D22, 2026-10-21: the default became the SVG area chart; the bar list is the optional layout) an
+absent, "none" or unknown `offset` must render exactly what the renderer rendered before this field existed. The
 fixture stacked_area_baseline.json holds the output of the UNMODIFIED code (Python, and the Apps Script copies) for every stacked_area
-payload in the repository plus malformed ones; this file compares against it. (The live stacked_area is the CSS horizontal-bar renderer,
-not the SVG area chart that is still in web_article.py above it and is shadowed by the later definition; `offset` adds a real chart.)
+payload in the repository plus malformed ones; this file compares against it. (Until 2026-10-21 the live stacked_area was the CSS
+horizontal-bar renderer; its output is now `layout: "bars"`. The default layout is covered by tests/test_stacked_area_layout.py.)
 
 Also held: Python/GAS byte-identical HTML, all six Apps Script copies carry the same block, the hidden table, the aria label,
 the axis rules, malformed input, caps, escaping and the version note.
@@ -134,24 +135,24 @@ def test_the_baseline_fixture_covers_every_payload():
 
 @pytest.mark.parametrize("name", list(BASE))
 def test_absent_offset_is_byte_for_byte_todays_output_in_python(name):
-    assert _pyx(BASE[name]) == BASELINE["python"][name]
+    assert _pyx({**BASE[name], "layout": "bars"}) == BASELINE["python"][name]
 
 
 def test_absent_offset_is_byte_for_byte_todays_output_in_gas(core_js):
-    out = _gas_batch(core_js, list(BASE.values()))
+    out = _gas_batch(core_js, [{**b, "layout": "bars"} for b in BASE.values()])
     assert dict(zip(BASE, out)) == BASELINE["gas"]
 
 
 @pytest.mark.parametrize("junk", JUNK, ids=lambda j: json.dumps(j))
 def test_none_and_unknown_offsets_render_todays_output_in_every_twin(junk, core_js):
-    blocks = [{**b, "offset": junk} for b in BASE.values()]
+    blocks = [{**b, "offset": junk, "layout": "bars"} for b in BASE.values()]
     assert [_pyx(b) for b in blocks] == [BASELINE["python"][n] for n in BASE]
     assert _gas_batch(core_js, blocks) == [BASELINE["gas"][n] for n in BASE]
 
 
 def test_version_one_and_junk_versions_change_nothing(core_js):
     for v in (1, 0, -3, 2.5, "2", None, True, [2]):
-        blocks = [{**b, "version": v} for b in BASE.values()]
+        blocks = [{**b, "version": v, "layout": "bars"} for b in BASE.values()]
         assert [_pyx(b) for b in blocks] == [BASELINE["python"][n] for n in BASE], v
         assert _gas_batch(core_js, blocks) == [BASELINE["gas"][n] for n in BASE], v
 
@@ -350,7 +351,7 @@ def test_schema_declares_offset_and_version():
     import yaml
     s = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())
     a = next(x for x in s["blocks"] if x.get("type") == "stacked_area")
-    assert "offset" in a["fields"] and "version" in a["fields"]
+    assert "offset" in a["fields"] and "version" in a["fields"] and "layout" in a["fields"]
     for w in ("expand", "silhouette", "wiggle", "none"):
         assert w in a["fields"]["offset"]
 

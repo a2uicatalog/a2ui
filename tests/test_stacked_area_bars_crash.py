@@ -1,4 +1,4 @@
-"""I64: the default stacked_area renderer (the bar list) raised ZeroDivisionError on all-zero data and TypeError on a text
+"""I64: the stacked_area bar list (until 2026-10-21 the default; since D22 it is `layout: "bars"`) raised ZeroDivisionError on all-zero data and TypeError on a text
 cell in Python (the GAS twin renders both without throwing). A renderer must never throw on a payload. Payloads that rendered
 before must render byte for byte as before (hashes captured from the pre-fix code, 2026-10-21)."""
 from __future__ import annotations
@@ -27,13 +27,13 @@ def _h(s):
     {"type": "stacked_area", "labels": ["a"], "series": [{"label": "A", "data": [float("nan")]}]},
 ])
 def test_the_bar_list_never_throws_and_never_prints_nan(payload):
-    h = _py(payload)
+    h = _py({**payload, "layout": "bars"})
     assert "NaN" not in h.split("title=")[0] and "inf%" not in h and "nan%" not in h
     assert 'width:0.0%' in h or 'width:' in h
 
 
-def test_payloads_that_rendered_before_are_unchanged():
-    got = {k: _h(_py(b)) for k, (b, _) in BEFORE.items()}
+def test_payloads_that_rendered_before_are_unchanged_under_layout_bars():
+    got = {k: _h(_py({**b, "layout": "bars"})) for k, (b, _) in BEFORE.items()}
     assert got == EXPECTED, got
 
 
