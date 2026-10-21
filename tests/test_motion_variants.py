@@ -193,3 +193,58 @@ def test_rays_angle_turns_the_lines_and_the_frame_stays_16_9():
           "return [Math.round(Math.atan2(m.b,m.a)*180/Math.PI), Math.round(r.width/r.height*100)/100];")
     ang, aspect = _probe(blk, 2, js)
     assert ang == 30 and aspect == pytest.approx(1.78, abs=0.01)
+
+
+# ─── 5. motion_scatter origin (and up to 12 cards with it) ─────────────────────────────────────────────────────────────────────────
+MANY = [f"Card {i}" for i in range(14)]
+CASES["scatter"] = [
+    dict(SCATTER, origin="center"), dict(SCATTER, origin={"x": 70, "y": 30}), dict(SCATTER, origin={"x": 70}), dict(SCATTER, origin={"x": -50, "y": 999}), dict(SCATTER, origin={"x": "a", "y": None}),
+    dict(SCATTER, origin={}), dict(SCATTER, origin="Center"), dict(SCATTER, origin="nowhere"), dict(SCATTER, origin=5), dict(SCATTER, origin=[1, 2]), dict(SCATTER, origin=None), dict(SCATTER, origin=True),
+    dict(SCATTER, origin="center", items=MANY), dict(SCATTER, items=MANY), dict(SCATTER, origin={"x": 50, "y": 50}, items=MANY, card_w=16, size=14),
+    dict(SCATTER, origin="center", items=[{"title": "<b>x</b>", "text": "a & b"}, "<img src=x onerror=alert(1)>", 7, None] + MANY),
+    dict(SCATTER, origin={"x": "<x>", "y": "1e400"}),
+]
+ALL = [b for bs in CASES.values() for b in bs]
+
+
+def test_scatter_python_matches_gas_exactly(core_js):
+    cs = CASES["scatter"]
+    got = _gas_batch(core_js, cs)
+    bad = [str(b)[:90] for b, g in zip(cs, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_scatter_without_a_valid_origin_is_unchanged_including_the_8_card_cap():
+    plain, many = _py(SCATTER), _py(dict(SCATTER, items=MANY))
+    for off in ("Center", "nowhere", 5, [1, 2], None, True, False, ""):
+        assert _py(dict(SCATTER, origin=off)) == plain, off
+        assert _py(dict(SCATTER, items=MANY, origin=off)) == many, off
+    assert many.count("Card ") == 8 and "Card 8" not in many
+    assert "scale(calc(0.3" not in plain
+
+
+def test_scatter_origin_lifts_the_cap_to_12_and_no_further():
+    h = _py(dict(SCATTER, origin="center", items=MANY))
+    assert h.count("Card ") == 12 and "Card 11" in h and "Card 12" not in h
+
+
+def test_scatter_origin_bursts_from_the_point_and_clamps_it():
+    c = _py(dict(SCATTER, origin="center"))
+    assert c == _py(dict(SCATTER, origin={"x": 50, "y": 50})) == _py(dict(SCATTER, origin={}))
+    assert "calc(50%" in c and "scale(calc(0.3" in c
+    far = _py(dict(SCATTER, origin={"x": -50, "y": 999}))
+    assert "calc(0%" in far and "calc(100%" in far
+    hostile = _py(dict(SCATTER, origin={"x": "30;}</style>", "y": "1e400"}))  # (Python only: _ff_num reads "30;}" as junk, JS parseFloat as 30, a pre-existing helper difference)
+    assert "</style>" not in hostile and "Infinity" not in hostile and "NaN" not in hostile
+    assert "<img" not in _py(CASES["scatter"][15])
+
+
+@browser
+def test_scatter_cards_start_at_the_origin_and_end_at_their_slots():
+    b = dict(SCATTER, id="s", origin={"x": 50, "y": 50}, card_w=20, place={"x": 0, "y": 0, "w": 100, "h": 100})
+    blk = _scene([b], [{"target": "s", "keys": [{"t": 0, "p": 0.0001}, {"t": 4, "p": 1}]}])
+    js = ("var box=document.querySelector('[data-mt-id=s] > div').getBoundingClientRect(),c=document.querySelectorAll('[data-mt-id=s] > div > div');"
+          "return Array.prototype.map.call(c,function(e){var r=e.getBoundingClientRect();return [Math.round((r.left+r.width/2-box.left)/box.width*100),Math.round((r.top+r.height/2-box.top)/box.height*100)];});")
+    start, end = _probe(blk, 0, js), _probe(blk, 4, js)
+    assert all(abs(x - 50) <= 3 and abs(y - 50) <= 4 for x, y in start), start
+    assert any(abs(x - 50) > 15 or abs(y - 50) > 15 for x, y in end), end

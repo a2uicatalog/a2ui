@@ -1671,7 +1671,7 @@ _RENDERERS['motion_flash'] = function(b) {
 };
 
 // ─── fourth reference batch (2026-10-01, five LinkedIn/YouTube motion pieces): marquee rows, glitch type, bounce, scatter, contours, rail ───
-var _MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4]];
+var _MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4], [76, 24, 7], [2, 42, -6], [80, 44, 9], [28, 84, -8]];
 var _MO_WAVE = [14, -22, 30, -10, 24, -30, 8, -18];
 
 // Rows of big text that slide sideways forever (--s is the travel), alternate rows going opposite ways: the ticker behind a headline.
@@ -1704,12 +1704,19 @@ _RENDERERS['motion_bounce'] = function(b) {
 
 // Cards that fly in from outside the frame and settle at scattered, tilted rest positions: the pile of tickets, labels or notes.
 _RENDERERS['motion_scatter'] = function(b) {
-  var src = Array.isArray(b.items) ? b.items : [], items = [], i;
-  for (i = 0; i < src.length && items.length < 8; i++) { var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30); if (t) items.push({t: t, x: obj ? _moStr(it.text, 50) : ''}); }
+  var src = Array.isArray(b.items) ? b.items : [], items = [], i, og = b.origin; // opt-in: 'center' or {x, y} (percent of the box, a missing coordinate is 50); the cards burst out from that point and the cap rises from 8 to 12
+  var org = (og && typeof og === 'object' && !Array.isArray(og)) ? [_ffNum(og.x, 50, 0, 100, 2), _ffNum(og.y, 50, 0, 100, 2)] : (og === 'center' ? ['50', '50'] : null);
+  for (i = 0; i < src.length && items.length < (org ? 12 : 8); i++) { var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30); if (t) items.push({t: t, x: obj ? _moStr(it.text, 50) : ''}); }
   if (!items.length) items = [{t: 'Card', x: ''}];
   var size = _ffInt(b.size, 18, 8, 60), w = _ffInt(b.card_w, 24, 10, 50), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), fill = _moInk(b, 'fill', '#ffffff'), ink = _moInk(b, 'color', '#14161c'), out = '';
   for (i = 0; i < items.length; i++) {
     var P = _MO_SCATTER[i], dx = (i % 2 ? 1 : -1) * (60 + i * 7), dy = -40 - i * 5;
+    if (org) { // centre of the card starts on the origin and slides to its slot, growing and straightening as it goes
+      out += '<div style="--u:clamp(0,calc((var(--p,1) - ' + _ffNum(0.3 * i / Math.max(1, items.length - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + P[0] + '%*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + P[1] + '%*var(--u) - ' + org[1] + '%*var(--u));width:' + w + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+        + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:clamp(0,calc(var(--u)*4),1);transform:translate(calc((1 - var(--u))*-50%),calc((1 - var(--u))*-50%)) scale(calc(0.3 + 0.7*var(--u))) rotate(calc(' + P[2] + 'deg + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
+        + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';
+      continue;
+    }
     out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (items.length + 2) + ' - ' + i + '),1);position:absolute;left:' + P[0] + '%;top:' + P[1] + '%;width:' + w + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
       + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + dx + '%),calc((1 - var(--u))*' + dy + '%)) rotate(calc(' + P[2] + 'deg + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
       + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';

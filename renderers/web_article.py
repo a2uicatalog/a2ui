@@ -30200,7 +30200,7 @@ def _render_motion_flash(b: dict) -> str:
 
 
 # ─── fourth reference batch (2026-10-01): see the matching block in atoms_motion.gs ──────────────────────────────────────────
-_MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4]]
+_MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4], [76, 24, 7], [2, 42, -6], [80, 44, 9], [28, 84, -8]]
 _MO_WAVE = [14, -22, 30, -10, 24, -30, 8, -18]
 
 
@@ -30246,8 +30246,10 @@ def _render_motion_bounce(b: dict) -> str:
 
 def _render_motion_scatter(b: dict) -> str:
     items = []
+    og = b.get('origin')  # opt-in: 'center' or {x, y} (percent of the box, a missing coordinate is 50); the cards burst out from that point and the cap rises from 8 to 12
+    org = (_ff_num(og.get('x'), 50, 0, 100, 2), _ff_num(og.get('y'), 50, 0, 100, 2)) if isinstance(og, dict) else (('50', '50') if og == 'center' else None)
     for it in (b.get('items') if isinstance(b.get('items'), list) else []):
-        if len(items) >= 8:
+        if len(items) >= (12 if org else 8):
             break
         obj = isinstance(it, dict)
         t = _cv_str(it if isinstance(it, str) else (it.get('title') if obj else ''), 30)
@@ -30260,6 +30262,11 @@ def _render_motion_scatter(b: dict) -> str:
     for i, (t, x) in enumerate(items):
         P = _MO_SCATTER[i]
         dx, dy = (1 if i % 2 else -1) * (60 + i * 7), -40 - i * 5
+        if org:  # centre of the card starts on the origin and slides to its slot, growing and straightening as it goes
+            out += ('<div style="--u:clamp(0,calc((var(--p,1) - ' + _ff_num(0.3 * i / max(1, len(items) - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + str(P[0]) + '%*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + str(P[1]) + '%*var(--u) - ' + org[1] + '%*var(--u));width:' + str(w) + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+                    + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:clamp(0,calc(var(--u)*4),1);transform:translate(calc((1 - var(--u))*-50%),calc((1 - var(--u))*-50%)) scale(calc(0.3 + 0.7*var(--u))) rotate(calc(' + str(P[2]) + 'deg + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
+                    + '<div style="font-weight:800;">' + _cv_esc(t) + '</div>' + ('<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')
+            continue
         out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(len(items) + 2) + ' - ' + str(i) + '),1);position:absolute;left:' + str(P[0]) + '%;top:' + str(P[1]) + '%;width:' + str(w) + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
                 + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + str(dx) + '%),calc((1 - var(--u))*' + str(dy) + '%)) rotate(calc(' + str(P[2]) + 'deg + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
                 + '<div style="font-weight:800;">' + _cv_esc(t) + '</div>' + ('<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')

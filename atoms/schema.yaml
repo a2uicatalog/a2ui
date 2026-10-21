@@ -11334,7 +11334,8 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    items: 'array (max 8) of strings or {title, text?}. title max 30, text max 50.'
+    items: 'array (max 8) of strings or {title, text?}. title max 30, text max 50. With origin set the limit is 12 (the extra four sit in the gaps; use a smaller card_w, about 16-18, so twelve cards stay readable).'
+    origin: '"center" | {x, y} (optional). Where the cards burst out from, as a percent of the box (x and y 0-100, a missing one is 50). Each card starts centred on that point, small, turned and transparent, and slides out to its slot as progress advances, growing and straightening. Without it the cards fly in from outside the box, as before, and only the first 8 items are used. Anything else is ignored.'
     card_w: 'integer (optional). Card width as a percent of the box, 10-50. Default 24.'
     size: 'integer (optional). Text px, 8-60. Default 18.'
     fill: '"#rrggbb" (optional). Card colour. Default white.'

@@ -533,6 +533,9 @@
   "size",
   "weight"
  ],
+ "motion_scatter": [
+  "origin"
+ ],
  "motion_selection": [
   "version"
  ],
