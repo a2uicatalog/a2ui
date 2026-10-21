@@ -103,7 +103,9 @@ def test_lit_ghost_cards_build_with_p(core_js):
 # ---- motion_morph panel silhouettes and aspect -------------------------------------------------------------------------------------------------
 MORPH_CASES = [("morph", {"type": "motion_morph", "shapes": ["panel", "notch"], "aspect": 1.78}), ("morph", {"type": "motion_morph", "shapes": ["notch", "step", "tab", "panel"]}),
                ("morph", {"type": "motion_morph", "shapes": ["panel", "circle"], "aspect": 99}), ("morph", {"type": "motion_morph", "shapes": ["panel", "tab"], "aspect": "x"}),
-               ("morph", {"type": "motion_morph", "shapes": ["square", "star"]})]
+               ("morph", {"type": "motion_morph", "shapes": ["square", "star"]}),
+               ("morph", {"type": "motion_morph", "shapes": ["dot", "circle", "lens", "panel"], "aspect": 1.78, "fill": "#f4f4f2", "glossy": True}),
+               ("morph", {"type": "motion_morph", "shapes": ["lens", "tab"]}), ("morph", {"type": "motion_morph", "shapes": ["lens", "lens", "dot"], "aspect": 0.4})]
 
 
 def test_morph_panels_agree_between_twins(core_js):
@@ -124,12 +126,98 @@ def test_every_new_silhouette_has_48_points_that_start_at_the_top_and_stay_insid
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent))
     from renderers.web_article import _MO_SHAPES
-    for name in ("panel", "notch", "step", "tab"):
+    for name in ("panel", "notch", "step", "tab", "lens", "dot"):
         pts = _MO_SHAPES[name]
         assert len(pts) == 96, name
         assert pts[0] == 500, name                                   # starts at x = 50, on the top edge
         assert all(0 <= v <= 1000 for v in pts), name
         ys = pts[1::2]; assert pts[1] == min(ys[:8]) or name == "tab", name
+
+
+def test_lens_is_a_horizontal_vesica_whose_points_sit_where_the_circle_has_its_quarters():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from renderers.web_article import _MO_SHAPES
+    L = _MO_SHAPES["lens"]
+    xy = [(L[i], L[i + 1]) for i in range(0, 96, 2)]
+    # starts at the top apex of the upper arc; the two cusps are points 12 (right) and 36 (left), on the horizontal axis; point 24 is the bottom apex
+    assert xy[0] == (500, 250) and xy[12][1] == 500 and xy[36][1] == 500 and xy[24] == (500, 750)
+    assert xy[12][0] > 900 and xy[36][0] < 100 and xy[12][0] + xy[36][0] == 1000
+    for i in range(48):                                              # mirror symmetric about both axes (to rounding)
+        mx, my = xy[(48 - i) % 48], xy[(24 - i) % 48]
+        assert abs(xy[i][0] + mx[0] - 1000) <= 1 and abs(xy[i][1] - mx[1]) <= 1 and abs(xy[i][1] + my[1] - 1000) <= 1 and abs(xy[i][0] - my[0]) <= 1, i
+    # wider than tall (880 x 500 in box units, about 3:1 in a 16:9 box), and the arcs bulge outward past the chord between the cusps
+    assert max(x for x, _ in xy) - min(x for x, _ in xy) > 1.5 * (max(y for _, y in xy) - min(y for _, y in xy))
+    assert all(y < 500 for x, y in xy[1:12]) and all(y > 500 for x, y in xy[13:24])
+
+
+def test_the_observed_dot_circle_lens_panel_sequence_renders_in_both_twins_and_old_payloads_do_not_change(core_js):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from renderers.web_article import _MO_SHAPES
+    seq = {"type": "motion_morph", "shapes": ["dot", "circle", "lens", "panel"], "aspect": 1.78, "fill": "#f4f4f2", "glossy": True}
+    h = _py(seq)
+    assert all(("clamp(0,calc(var(--p,1)*3 - %d),1)" % j) in h for j in (0, 1, 2))
+    assert "aspect-ratio:1.78" in h and 'aria-label="dot to circle to lens to panel"' in h
+    # at p = 1 every point equals the last shape's point, at the lens stop (p = 2/3) the lens's
+    assert _norm(_gas_batch(core_js, [seq])[0]) == _norm(h)
+    for name in ("dot", "lens"):                                     # the new presets are named only by name: a payload that never names them is unchanged
+        assert name in _MO_SHAPES
+    assert _py({"type": "motion_morph", "shapes": ["circle", "star"]}) == _py({"type": "motion_morph"})
+
+
+ROUND_CASES = [{"type": "motion_morph", "shapes": ["dot", "circle", "lens", "panel"], "aspect": 1.78, "round": True}, {"type": "motion_morph", "shapes": ["circle", "dot"], "aspect": 0.5, "round": True},
+               {"type": "motion_morph", "shapes": ["circle", "star", "dot"], "aspect": 2.33, "round": True, "glossy": True}, {"type": "motion_morph", "shapes": ["circle", "dot"], "aspect": 1.78, "round": "yes"},
+               {"type": "motion_morph", "shapes": ["circle", "dot"], "round": True}, {"type": "motion_morph", "shapes": ["circle", "dot"], "aspect": 99, "round": True}]
+
+
+def test_round_keeps_circle_and_dot_round_in_a_wide_or_tall_box_and_is_inert_otherwise(core_js):
+    base = {"type": "motion_morph", "shapes": ["circle", "dot", "lens", "panel"], "aspect": 1.78}
+    assert _py(dict(base, round=False)) == _py(base) and _py(dict(base, round="yes")) == _py(base) and _py(dict(base, round=1)) == _py(base)
+    sq = {"type": "motion_morph", "shapes": ["circle", "dot", "lens"]}
+    assert _py(dict(sq, round=True)) == _py(sq)                                   # a square box needs no squeeze
+    assert _py(dict(base, round=True)) != _py(base)
+    only_panels = {"type": "motion_morph", "shapes": ["lens", "panel", "star"], "aspect": 1.78}
+    assert _py(dict(only_panels, round=True)) == _py(only_panels)                 # shapes that are not circle or dot are never touched
+    got = _gas_batch(core_js, ROUND_CASES)
+    bad = [str(b)[:90] for b, g in zip(ROUND_CASES, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+@browser
+def test_round_circle_is_as_wide_as_it_is_tall_in_pixels():
+    seq = {"type": "motion_morph", "id": "m1", "shapes": ["circle", "lens"], "aspect": 1.78, "round": True, "place": {"x": 10, "y": 10, "w": 60}}
+    tl = _scene([seq], [{"target": "m1", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = ("var e=document.querySelector('[data-mt-id=m1] div[style*=clip-path]');var r=e.getBoundingClientRect(),c=getComputedStyle(e).clipPath;"
+          "var n=c.slice(8,-1).split(',').map(function(s){return s.trim().split(/\\s+/).map(parseFloat);});var pc=c.indexOf('%')>0;"
+          "var xs=n.map(function(q){return pc?q[0]/100*r.width:q[0];}),ys=n.map(function(q){return pc?q[1]/100*r.height:q[1];});"
+          "return [Math.max.apply(null,xs)-Math.min.apply(null,xs),Math.max.apply(null,ys)-Math.min.apply(null,ys)];")
+    w, h = _probe(tl, 0, js)
+    assert abs(w - h) / h < 0.01, (w, h)
+
+
+@browser
+def test_lens_sequence_passes_through_the_lens_and_ends_on_the_panel():
+    seq = {"type": "motion_morph", "id": "m1", "shapes": ["dot", "circle", "lens", "panel"], "aspect": 1.78, "place": {"x": 10, "y": 10, "w": 60}}
+    tl = _scene([seq], [{"target": "m1", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = ("var e=document.querySelector('[data-mt-id=m1] div[style*=clip-path]');var r=e.getBoundingClientRect(),c=getComputedStyle(e).clipPath;"
+          "var n=c.slice(8,-1).split(',').map(function(s){return s.trim().split(/\\s+/).map(function(v){return parseFloat(v)*(v.indexOf('%')>0?(v===v?1:1):1);});});"
+          "return {w:r.width,h:r.height,n:n.length,pts:n,pct:c.indexOf('%')>0};")
+    def xs(t):
+        o = _probe(tl, t, js)
+        assert o["n"] == 48, o
+        div = o["w"] if not o["pct"] else 100
+        divh = o["h"] if not o["pct"] else 100
+        px = [p[0] / div for p in o["pts"]]; py = [p[1] / divh for p in o["pts"]]
+        return min(px), max(px), min(py), max(py), o
+    x0, x1, y0, y1, _o = xs(0)
+    assert x1 - x0 < 0.12 and y1 - y0 < 0.12                         # a dot
+    x0, x1, y0, y1, _o = xs(8 / 3)                                   # p = 2/3: the lens (cusps on the left and right, 0.5 tall)
+    assert abs(x0 - 0.06) < 0.01 and abs(x1 - 0.94) < 0.01 and abs(y0 - 0.25) < 0.01 and abs(y1 - 0.75) < 0.01, (x0, x1, y0, y1)
+    x0, x1, y0, y1, _o = xs(4)                                       # the panel
+    assert abs(x0 - 0.06) < 0.01 and abs(x1 - 0.94) < 0.01 and abs(y0 - 0.10) < 0.01 and abs(y1 - 0.90) < 0.01, (x0, x1, y0, y1)
 
 
 @browser

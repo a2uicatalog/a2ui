@@ -11823,7 +11823,7 @@ blocks:
     license: MIT
 - type: motion_morph
   stage: preview
-  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow), plus four panel silhouettes (panel, notch, step, tab) for a large panel that reshapes between slides played in order. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
+  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow), four panel silhouettes (panel, notch, step, tab) for a large panel that reshapes between slides played in order, a horizontal pointed lens (lens: two circular arcs meeting in a point left and right) and a small dot (dot, a circle a twelfth of the circle's size) so a dot can swell into a circle, the circle into the lens and the lens open out into the panel. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
   compact_description: shape that morphs into the next shape
   surfaces:
     works_on:
@@ -11841,12 +11841,13 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    shapes: 'array (2-4) of preset names. Default circle then star.'
+    shapes: 'array (2-4) of preset names: circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow, panel, notch, step, tab, lens, dot. Default circle then star. The four shapes are spread evenly over p, so a motion_timeline track with a held key (the same p at two times) sets how long each stop lasts. Shapes are drawn in percent of the box, so by default a circle in a wide box (aspect above 1) is an oval (set round true to keep circle and dot round); the text on a shape is a separate motion_text placed over it.'
     fill: '"#rrggbb" (optional). Default the stage accent.'
     fill2: '"#rrggbb" (optional). Second colour of a 135 degree gradient.'
     glossy: 'bool (optional). A specular highlight, a soft core shadow and a drop shadow, so the shape reads as a solid object. Default false.'
     rotate: 'integer (optional). Degrees turned at --s = 1, -720 to 720. Default 0.'
     aspect: 'number (optional). Width over height of the box, 0.4 to 3. Default 1 (a square). Use 1.78 for a 16:9 panel.'
+    round: 'bool (optional). Keeps the circle and dot presets round in a box that is not square (they are squeezed by the aspect), so a dot can swell into a true circle before it becomes a lens or panel. Other shapes are not touched. Default false.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
