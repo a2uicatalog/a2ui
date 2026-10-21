@@ -178,6 +178,9 @@ ISC License (d3-geo):
   against the real library's output by `tests/test_sankey_multicolumn.py`
 - **Used by:** the `sankey_flow` atom's server-side layout in both renderers. No script is shipped to the page; the
   bands are emitted as SVG paths.
+- **Also ported for `swimlane`:** the node-depth rule of `computeNodeDepths` (longest path from the sources) as
+  `_sw_depth` / its GAS twin, for `layout: "auto"`; checked against real d3-sankey 0.12.3 depths by
+  `tests/test_swimlane_links.py`.
 
 BSD-3-Clause licence text, reproduced as the licence requires (source redistribution retains this notice):
 
