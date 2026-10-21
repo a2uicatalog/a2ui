@@ -1703,20 +1703,47 @@ _RENDERERS['motion_bounce'] = function(b) {
 };
 
 var _MO_SC_JIT = [0, 0.6, -0.6, 0.3, -0.3, 0.6, 0, -0.6, 0.3, 0, -0.3, 0.6];
+var _MO_SC_BANDS = [[0, 300, 240], [300, 480, 300], [480, 640, 480], [640, 900, 640], [900, 1100, 900]]; // container width from, to, and the width the card-height estimate assumes
 
-// Fit layout for motion_scatter (backlog I74): from 3 cards up, a stylesheet keyed on the stage's own width (container query) settles the cards on a tidy grid with a
-// little deterministic jitter and sizes the type to the cell, so no card hides another's text. Above 1100 px with up to 8 cards and no origin the original slots stay.
-function _moScatterFit(n, org) {
-  var wide = !!org || n > 8, cls = 'mosf' + n + (wide ? 'd' : '');
-  function band(cols) {
-    var rows = Math.ceil(n / cols), cw = 100 / cols, ch = 100 / rows, i;
-    var rules = '.' + cls + '>div{font-size:min(1em,' + _ffNum(cw / 11, 0, 0, 100, 2) + 'cqw,' + _ffNum(ch / 8.5, 0, 0, 100, 2) + 'cqh);--w:' + _ffNum(cw - 2, 0, 0, 100, 2) + '%}';
-    for (i = 0; i < n; i++) rules += '.' + cls + '>div:nth-child(' + (i + 1) + '){--x:' + _ffNum((i % cols) * cw + 1 + _MO_SC_JIT[i], 0, -100, 200, 2) + '%;--y:' + _ffNum(Math.floor(i / cols) * ch + 1, 0, -100, 200, 2) + '%;--r:' + _ffNum(_MO_SCATTER[i][2] * 0.25, 0, -10, 10, 2) + 'deg}';
-    return rules;
+// Pessimistic pixel height of the tallest card at the 12 px type floor (title bold, text; 0.65 and 0.58 em per character, line 1.25, 10% spare).
+function _moScatterNeed(lt, ls, w, cols) {
+  var inner = Math.max(24, w * (100 / cols - 2) / 100 - 21.6), h = 19.8 + Math.max(1, Math.ceil(lt * 7.8 / inner)) * 15;
+  if (ls) h += 3 + Math.max(1, Math.ceil(ls * 6.96 / inner)) * 15;
+  return Math.ceil(h * 1.1);
+}
+
+// Fit layout for motion_scatter (backlog I74), 3 cards and up. A stylesheet keyed on the stage's own width and height (container queries) settles the cards on a jittered
+// grid and sizes the type to the cell, never below 12 px. When the cards cannot fit at 12 px it first hides every card's text line (titles only), then shows only the rows
+// that fit and a muted "+N more"; a visually hidden list keeps every card for screen readers. Above 1100 px with up to 8 cards and no origin the original slots stay.
+function _moScatterFit(items, org) {
+  var n = items.length, wide = !!org || n > 8, lt = 0, ls = 0, i, k, sr = [];
+  for (i = 0; i < n; i++) { lt = Math.max(lt, Array.from(items[i].t).length); ls = Math.max(ls, Array.from(items[i].x).length); sr.push(items[i].t + (items[i].x ? ': ' + items[i].x : '')); }
+  var cls = 'mosf' + n + (wide ? 'd' : '') + '_' + lt + '_' + ls; // the rules depend on the longest title and text, so the class names them
+  var css = '.' + cls + '>.mosn{display:none;position:absolute;left:1%;bottom:0;font-size:12px;line-height:20px;white-space:nowrap;color:var(--muted,#9aa3b2)}';
+  for (k = 0; k < _MO_SC_BANDS.length; k++) {
+    var lo = _MO_SC_BANDS[k][0], hi = _MO_SC_BANDS[k][1], wrep = _MO_SC_BANDS[k][2];
+    if (lo === 900 && wide) hi = 0;
+    var cols = lo === 300 ? (n <= 8 ? 2 : 3) : (lo === 0 ? 2 : (lo < 900 ? (n <= 4 ? 2 : 3) : (n <= 4 ? 2 : (n <= 6 ? 3 : 4)))), rows = Math.ceil(n / cols), cw = 100 / cols;
+    var wq = '(width>=' + lo + 'px)' + (hi ? ' and (width<' + hi + 'px)' : ''), body = '.' + cls + '>div{--w:' + _ffNum(cw - 2, 0, 0, 100, 2) + '%}';
+    for (i = 0; i < n; i++) body += '.' + cls + '>div:nth-child(' + (i + 1) + '){--x:' + _ffNum((i % cols) * cw + 1 + _MO_SC_JIT[i], 0, -100, 200, 2) + '%;--y:calc(' + Math.floor(i / cols) + '*var(--ch) + 1%);--r:' + _ffNum(_MO_SCATTER[i][2] * 0.25, 0, -10, 10, 2) + 'deg}';
+    css += '@container ' + wq + '{' + body + '}';
+    var nt = _moScatterNeed(lt, 0, wrep, cols), nf = _moScatterNeed(lt, ls, wrep, cols), T = [], r;
+    for (r = 1; r <= rows; r++) { var t = Math.ceil((r * nt + (r < rows ? 22 : 0)) / (1 - 0.02 * r)); T.push(r === 1 ? 1 : Math.max(t, T[T.length - 1] + 1)); }
+    var F = ls ? Math.max(Math.ceil(nf / (1 / rows - 0.02)), T[T.length - 1] + 1) : null, opts = [];
+    for (r = 1; r <= rows; r++) opts.push([r, true, T[r - 1], r < rows ? T[r] : F]);
+    if (ls) opts.push([rows, false, F, null]);
+    for (i = 0; i < opts.length; i++) {
+      var o = opts[i], rr = o[0], tonly = o[1], h0 = o[2], h1 = o[3];
+      if (h1 !== null && h1 <= h0) continue;
+      var hq = (h0 > 1 ? '(height>=' + h0 + 'px)' : '') + (h1 ? (h0 > 1 ? ' and ' : '') + '(height<' + h1 + 'px)' : '');
+      var ch = rr === rows ? 'calc(100% / ' + rows + ')' : 'calc((100% - 22px) / ' + rr + ')';
+      var fs = 'max(12px,min(1em,' + _ffNum(cw / 11, 0, 0, 100, 2) + 'cqw,' + _ffNum((100 / rr) / (tonly ? 5.5 : 8.5), 0, 0, 100, 2) + 'cqh))';
+      var rule = '.' + cls + '>div{--ch:' + ch + ';font-size:' + fs + '}.' + cls + '>div>div+div{' + (tonly ? 'display:none' : 'font-size:max(12px,0.8em)!important') + '}';
+      if (rr < rows) rule += '.' + cls + '>div:nth-child(n+' + (rr * cols + 1) + '){display:none}.' + cls + '>.mosn{display:block}.' + cls + '>.mosn::after{content:"+' + (n - rr * cols) + ' more"}';
+      css += '@container ' + wq + (hq ? ' and ' + hq : '') + '{' + rule + '}';
+    }
   }
-  var cNarrow = n <= 8 ? 2 : 3, cMid = n <= 4 ? 2 : 3, cWide = n <= 4 ? 2 : (n <= 6 ? 3 : 4);
-  var css = '@container (width<480px){' + band(cNarrow) + '}@container (width>=480px) and (width<900px){' + band(cMid) + '}' + (wide ? '@container (width>=900px){' : '@container (width>=900px) and (width<1100px){') + band(cWide) + '}';
-  return {cls: cls, css: '<style>' + css + '</style>'};
+  return {cls: cls, css: '<style>' + css + '</style><span class="mosn" aria-hidden="true"></span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + _esc(sr.join('; ')) + '</span>'};
 }
 
 // Cards that fly in from outside the frame and settle at scattered, tilted rest positions: the pile of tickets, labels or notes.
@@ -1726,20 +1753,20 @@ _RENDERERS['motion_scatter'] = function(b) {
   for (i = 0; i < src.length && items.length < (org ? 12 : 8); i++) { var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30); if (t) items.push({t: t, x: obj ? _moStr(it.text, 50) : ''}); }
   if (!items.length) items = [{t: 'Card', x: ''}];
   var size = _ffInt(b.size, 18, 8, 60), w = _ffInt(b.card_w, 24, 10, 50), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), fill = _moInk(b, 'fill', '#ffffff'), ink = _moInk(b, 'color', '#14161c'), out = '';
-  var fit = items.length < 3 ? null : _moScatterFit(items.length, org);
+  var fit = items.length < 3 ? null : _moScatterFit(items, org);
   for (i = 0; i < items.length; i++) {
     var P = _MO_SCATTER[i], L = fit ? 'var(--x,' + P[0] + '%)' : P[0] + '%', T = fit ? 'var(--y,' + P[1] + '%)' : P[1] + '%', W = fit ? 'var(--w,' + w + '%)' : w + '%', R = fit ? 'var(--r,' + P[2] + 'deg)' : P[2] + 'deg', dx = (i % 2 ? 1 : -1) * (60 + i * 7), dy = -40 - i * 5;
     if (org) { // centre of the card starts on the origin and slides to its slot, growing and straightening as it goes
-      out += '<div style="--u:clamp(0,calc((var(--p,1) - ' + _ffNum(0.3 * i / Math.max(1, items.length - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + L + '*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + T + '*var(--u) - ' + org[1] + '%*var(--u));width:' + W + ';box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+      out += '<div' + (fit ? ' aria-hidden="true"' : '') + ' style="--u:clamp(0,calc((var(--p,1) - ' + _ffNum(0.3 * i / Math.max(1, items.length - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + L + '*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + T + '*var(--u) - ' + org[1] + '%*var(--u));width:' + W + ';box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
         + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:clamp(0,calc(var(--u)*4),1);transform:translate(calc((1 - var(--u))*-50%),calc((1 - var(--u))*-50%)) scale(calc(0.3 + 0.7*var(--u))) rotate(calc(' + R + ' + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
         + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';
       continue;
     }
-    out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (items.length + 2) + ' - ' + i + '),1);position:absolute;left:' + L + ';top:' + T + ';width:' + W + ';box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+    out += '<div' + (fit ? ' aria-hidden="true"' : '') + ' style="--u:clamp(0,calc(var(--p,1)*' + (items.length + 2) + ' - ' + i + '),1);position:absolute;left:' + L + ';top:' + T + ';width:' + W + ';box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
       + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + dx + '%),calc((1 - var(--u))*' + dy + '%)) rotate(calc(' + R + ' + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
       + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';
   }
-  return '<div' + (fit ? ' class="' + fit.cls + '"' : '') + ' style="position:relative;width:100%;height:100%;min-height:12em;' + (fit ? 'container-type:size;' : '') + 'font-family:' + _MO_SANS + ';font-size:' + size + 'px;">' + out + (fit ? fit.css : '') + '</div>';
+  return '<div' + (fit ? ' class="' + fit.cls + '"' : '') + ' style="position:relative;width:100%;height:100%;min-height:' + (fit ? '6em;container-type:size;' : '12em;') + 'font-family:' + _MO_SANS + ';font-size:' + size + 'px;">' + out + (fit ? fit.css : '') + '</div>';
 };
 
 // Flowing contour lines that draw themselves and drift (--s slides them sideways), like a topographic or wind-map background.

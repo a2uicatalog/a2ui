@@ -3,8 +3,9 @@
 A real headless Chromium renders the atom at p = 1 (the default) in stages 320, 650, 760 and 1200 px wide with 4, 8 and 12
 {title, text} cards, with and without `origin`, and checks per stage that (1) no two cards' title/text boxes overlap, (2) no card's
 box covers another card's text (elementsFromPoint at the middle of every text box finds its own card on top), (3) the text boxes stay
-inside the stage. Each is also run with the longest titles and texts the atom keeps (30 and 50 characters). Stage height is 16:9 from 650 up (760 x 428, the size the PM saw) and 420 px at 320 (a phone column). All stages
-are measured in one browser run.
+inside the stage. Each is also run with the longest titles and texts the atom keeps (30 and 50 characters). Stages are 16:9 from 650 up (760 x 428, the size the PM saw), 320 x 420 (a phone column) and 320 x 180. Also: (4) every drawn text
+node is at least 12 px, (5) the muted "+N more" note shows exactly when cards are hidden, with N the number hidden. All stages are measured in one
+browser run.
 """
 from __future__ import annotations
 
@@ -17,7 +18,7 @@ import pytest
 
 from test_motion_atoms import CHROMIUM, _py, browser
 
-WIDTHS = [320, 650, 760, 1200]
+WIDTHS = [(320, 420), (320, 180), (650, 366), (760, 428), (1200, 675)]  # (width, height): a phone column, the same at 16:9, then 16:9
 COUNTS = [4, 8, 12]
 TEXTS = ["Review the draft with the team", "Ship the release on Friday", "Archive the old files", "Invite two more people",
          "Plan the next sprint", "Tag every open ticket", "Write the weekly update", "Book the launch room",
@@ -35,10 +36,6 @@ def _block(n, origin, long=False):
     if origin:
         b["origin"] = "center"
     return b
-
-
-def _height(w):
-    return 420 if w == 320 else round(w * 9 / 16)
 
 
 JS = """
@@ -62,33 +59,51 @@ function overlap(a, b){  // separating-axis test on two convex quads, 0.5 px tol
   }
   return true;
 }
-var res = {};
+var res = {}, info = {};
 document.querySelectorAll('[data-stage]').forEach(function(st){
   var sr = st.getBoundingClientRect(), wrap = st.firstElementChild, wr = wrap.getBoundingClientRect(), cards = Array.prototype.filter.call(wrap.children, function(e){ return e.tagName === 'DIV'; }), bad = [];
-  var tx = cards.map(function(c){ return Array.prototype.map.call(c.children, function(e){ return quad(c, e, wr); }); });
+  var all = cards, note = wrap.querySelector('.mosn');
+  cards = cards.filter(function(c){ return getComputedStyle(c).display !== 'none'; });
+  var hidden = all.length - cards.length, nstyle = note && getComputedStyle(note), nafter = note && getComputedStyle(note, '::after').content;
+  if (!cards.length) bad.push('no card shown');
+  if (hidden) {
+    if (!note || nstyle.display === 'none' || nafter !== '"+' + hidden + ' more"') bad.push('note ' + hidden + ' vs ' + nafter);
+    else if (parseFloat(nstyle.fontSize) < 12) bad.push('note font');
+  } else if (note && nstyle.display !== 'none') bad.push('note shown with nothing hidden');
+  var walker = document.createTreeWalker(wrap, NodeFilter.SHOW_TEXT);
+  for (var nd; (nd = walker.nextNode());) {
+    var el = nd.parentElement;
+    if (!nd.nodeValue.trim() || el.tagName === 'STYLE' || (el.closest('span') && !el.closest('.mosn'))) continue;  // the visually hidden list for screen readers is not drawn
+    if (!el.checkVisibility()) continue;
+    if (parseFloat(getComputedStyle(el).fontSize) < 12 - 0.01) bad.push('font ' + getComputedStyle(el).fontSize + ' ' + nd.nodeValue.slice(0, 10));
+  }
+  var tx = cards.map(function(c){ return Array.prototype.filter.call(c.children, function(e){ return e.checkVisibility(); }).map(function(e){ return quad(c, e, wr); }); });
   for (var i = 0; i < cards.length; i++) {
     for (var j = i + 1; j < cards.length; j++) tx[i].forEach(function(a){ tx[j].forEach(function(b){ if (overlap(a, b)) bad.push('text ' + i + '/' + j); }); });
     tx[i].forEach(function(q){
       var cx = (q[0][0] + q[2][0]) / 2, cy = (q[0][1] + q[2][1]) / 2, top = document.elementsFromPoint(cx, cy).find(function(e){ return cards.some(function(c){ return c.contains(e); }); });
       if (top && !cards[i].contains(top)) bad.push('covered ' + i);
+      if (note && nstyle.display !== 'none') { var nr = note.getBoundingClientRect(); if (q.some(function(p){ return p[0] > nr.left && p[0] < nr.right && p[1] > nr.top + 2 && p[1] < nr.bottom; })) bad.push('note over text ' + i); }
       if (q.some(function(p){ return p[0] < sr.left - 1 || p[0] > sr.right + 1 || p[1] < sr.top - 1 || p[1] > sr.bottom + 1; })) bad.push('outside ' + i);
     });
   }
   res[st.getAttribute('data-stage')] = bad;
+  info[st.getAttribute('data-stage')] = [hidden, cards.some(function(c){ return c.children[1] && !c.children[1].checkVisibility(); })];
 });
+res.info = info;
 document.documentElement.setAttribute('data-probe', JSON.stringify(res));
 """
 
 
 def _measure():
     stages, keys = "", []
-    for w in WIDTHS:
+    for w, h in WIDTHS:
         for n in COUNTS:
             for o in (False, True):
                 for lg in (False, True):
-                    k = f"{w}x{n}{'o' if o else ''}{'L' if lg else ''}"
+                    k = f"{w}x{h}x{n}{'o' if o else ''}{'L' if lg else ''}"
                     keys.append(k)
-                    stages += f'<div data-stage="{k}" style="position:relative;width:{w}px;height:{_height(w)}px;margin:0 0 40px;background:#223;">{_py(_block(n, o, lg))}</div>'
+                    stages += f'<div data-stage="{k}" style="position:relative;width:{w}px;height:{h}px;margin:0 0 40px;background:#223;">{_py(_block(n, o, lg))}</div>'
     html = "<!doctype html><meta charset=utf-8><body style='margin:0'>" + stages + "<script>" + JS + "</script>"
     with tempfile.TemporaryDirectory() as td:
         f = Path(td) / "p.html"
@@ -107,6 +122,10 @@ def test_scatter_cards_never_overlap_at_p1_in_any_stage_size():
     res, keys = _measure()
     bad = {k: sorted(set(res[k]))[:6] for k in keys if res[k]}
     assert not bad, bad
+    info = res["info"]
+    assert info["320x180x12L"][0] > 0, info["320x180x12L"]  # too small for 12 cards at 12 px: cards are dropped and the "+N more" note (checked above) shows
+    assert info["320x180x4L"][1] and info["320x420x8L"][1] and not info["320x420x4"][1], info  # titles only where the text line does not fit
+    assert info["760x428x12"] == [0, False] and info["1200x675x8"] == [0, False]  # roomy stages show everything
 
 
 # ─── the contract: Python == GAS, small payloads untouched, hostile input still inert ────────────────────────────────────────────
@@ -114,7 +133,8 @@ from test_motion_atoms import _gas_batch, _norm, core_js  # noqa: E402,F401  (co
 
 BASE = {"type": "motion_scatter", "items": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]}
 CASES = [_block(n, o, lg) for n in (1, 2, 3, 4, 5, 6, 7, 8, 12) for o in (False, True) for lg in (False, True)] + [
-    dict(BASE), dict(BASE, origin={"x": 20, "y": 80}, card_w=18, size=12), dict(BASE, items=BASE["items"][:2], origin="center"),
+    dict(BASE), {"type": "motion_scatter", "items": [{"title": "\U0001F680 launch \u00e9\u00e8", "text": "caf\u00e9 \U0001F600\U0001F600 x"}, "b", "c"]},
+    dict(BASE, origin={"x": 20, "y": 80}, card_w=18, size=12), dict(BASE, items=BASE["items"][:2], origin="center"),
     {"type": "motion_scatter", "items": ["<img src=x onerror=alert(1)>", {"title": "a & b", "text": "</style><b>"}, "x"], "origin": "center"},
 ]
 
@@ -152,3 +172,13 @@ def test_scatter_old_slots_stay_for_a_wide_stage_with_up_to_8_cards_and_no_origi
     h = _py(dict(BASE, items=BASE["items"][:5]))
     assert "@container (width>=900px) and (width<1100px)" in h and "(width>=1100px)" not in h
     assert "@container (width>=900px){" in _py(dict(BASE, origin="center"))
+
+
+def test_scatter_fit_keeps_every_card_for_screen_readers_and_floors_the_type_at_12px():
+    h = _py(dict(BASE, items=[{"title": "T" + str(i), "text": "x<b>" + str(i)} for i in range(12)], origin="center"))
+    sr = h.split('clip:rect(0 0 0 0)')[1]
+    assert all(("T" + str(i) + ": x&lt;b&gt;" + str(i)) in sr for i in range(12)), sr[:200]
+    assert h.count('<div aria-hidden="true" style="--u:') == 12 and 'class="mosn" aria-hidden="true"' in h
+    import re
+    sizes = re.findall(r"font-size:max\(12px,", h)
+    assert sizes and "font-size:min(" not in h and "min-height:6em" in h
