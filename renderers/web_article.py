@@ -33474,7 +33474,7 @@ def _render_contour_plot(b: dict) -> str:
                   'vector-effect="non-scaling-stroke" style="' + _if_k(i, m) + 'opacity:var(--k,1);"><title>' + _cv_esc(rng) + '</title></path>')
     if dots:
         bands += '<path class="cnp" d="' + dots + '" fill="none" style="stroke:var(--text,#0F172A);" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
-    svg = ('<svg viewBox="0 0 ' + str(_CN_W) + ' ' + str(_CN_H) + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">'
+    svg = ('<svg viewBox="0 0 ' + str(_CN_W) + ' ' + str(_CN_H) + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">'
            '<rect x="0" y="0" width="' + str(_CN_W) + '" height="' + str(_CN_H) + '" style="fill:var(--surface,#F8FAFC);"/>' + bands
            + '<rect x="0" y="0" width="' + str(_CN_W) + '" height="' + str(_CN_H) + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>')
     ex = _hg_ticks(X0, X1, 6)
@@ -33494,9 +33494,9 @@ def _render_contour_plot(b: dict) -> str:
                 + ' points per 10,000 px². Darker bands are denser areas.')
     css = '<style>@container (max-width:560px){.ifcn .hgx:not(.hgc){display:none}}</style>'
     chart = ('<div class="ifcn" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
-             + ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">' + _cv_esc(yl) + '</div>' if yl else '')
-             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 14px 34px 46px;">' + svg + yaxis + xaxis + '</div>'
-             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 14px 0 46px;">' + _cv_esc(xl) + '</div>' if xl else '') + '</div>')
+             + ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 2px 0;">' + _cv_esc(yl) + '</div>' if yl else '')
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:8px 30px 34px 54px;">' + svg + yaxis + xaxis + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 30px 0 54px;">' + _cv_esc(xl) + '</div>' if xl else '') + '</div>')
     ent = [('Below ' + lab[0] + us, 'var(--surface,#F8FAFC)')] + [(lab[i] + (' to ' + lab[i + 1] + us if i + 1 < m else us + ' and above'), cols[i]) for i in range(m)]
     legend = ('<div class="cnleg" style="margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);"><div style="color:' + _IF_MUTED + ';margin-bottom:4px;">' + _cv_esc(vlab) + '</div>'
               '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;">'

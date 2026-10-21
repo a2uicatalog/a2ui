@@ -1043,7 +1043,7 @@ _RENDERERS['contour_plot'] = function(b) {
       'vector-effect="non-scaling-stroke" style="' + _ifK(i, m) + 'opacity:var(--k,1);"><title>' + _esc(rng(i)) + '</title></path>';
   }
   if (dots) bands += '<path class="cnp" d="' + dots + '" fill="none" style="stroke:var(--text,#0F172A);" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-  var svg = '<svg viewBox="0 0 ' + _CN_W + ' ' + _CN_H + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">' +
+  var svg = '<svg viewBox="0 0 ' + _CN_W + ' ' + _CN_H + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">' +
     '<rect x="0" y="0" width="' + _CN_W + '" height="' + _CN_H + '" style="fill:var(--surface,#F8FAFC);"/>' + bands +
     '<rect x="0" y="0" width="' + _CN_W + '" height="' + _CN_H + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>';
   var ex = _hgTicks(X0, X1, 6), ey = _hgTicks(Y0, Y1, 6), xaxis = '', yaxis = '';
@@ -1060,9 +1060,9 @@ _RENDERERS['contour_plot'] = function(b) {
   else aria = 'Density contour plot of ' + total + ' points, ' + m + ' level' + (m === 1 ? '' : 's') + ' from ' + lab[0] + ' to ' + lab[m - 1] + ' points per 10,000 px². Darker bands are denser areas.';
   var css = '<style>@container (max-width:560px){.ifcn .hgx:not(.hgc){display:none}}</style>';
   var chart = '<div class="ifcn" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
-    (yl ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">' + _esc(yl) + '</div>' : '') +
-    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 14px 34px 46px;">' + svg + yaxis + xaxis + '</div>' +
-    (xl ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 14px 0 46px;">' + _esc(xl) + '</div>' : '') + '</div>';
+    (yl ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 2px 0;">' + _esc(yl) + '</div>' : '') +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:8px 30px 34px 54px;">' + svg + yaxis + xaxis + '</div>' +
+    (xl ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 30px 0 54px;">' + _esc(xl) + '</div>' : '') + '</div>';
   var ent = [['Below ' + lab[0] + us, 'var(--surface,#F8FAFC)']];
   for (i = 0; i < m; i++) ent.push([rng(i), cols[i]]);
   var legend = '<div class="cnleg" style="margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);"><div style="color:var(--muted,#475569);margin-bottom:4px;">' + _esc(vlab) + '</div>' +
