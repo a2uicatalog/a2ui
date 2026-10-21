@@ -331,7 +331,7 @@ def test_auto_column_headers_come_from_phases_when_given_and_are_absent_otherwis
     h = _py(dict(ARCH, phases=["Capture", "Gate", "Think", "Return"]))
     assert [x for x in re.findall(r'class="swh"[^>]*>([^<]*)<', h)] == ["Capture", "Gate", "Think", "Return"]
     h2 = _py(dict(ARCH, phases=["Capture", "Gate"]))
-    assert re.findall(r'class="swh"[^>]*>([^<]*)<', h2) == ["Capture", "Gate", "", ""]
+    assert re.findall(r'class="swh"[^>]*>([^<]*)<', h2) == ["Capture", "Gate"]
 
 
 def test_barycentre_orders_a_cell_in_auto_but_not_in_grid():
@@ -429,3 +429,14 @@ def test_schema_describes_links_layout_and_version():
     assert "architecture" in d["routing_text"] and "sequence_diagram" in d["routing_text"]
     assert "phase" in f["tasks"] and "optional" in f["tasks"].lower()
     assert "cycle" in d["notes"].lower() and "6 columns" in (d["notes"] + f["layout"])
+
+
+def test_the_geometry_checker_itself_catches_a_connector_through_a_card_and_a_chip_over_one():
+    h = _py(ARCH)
+    cards, chips, paths, _ = _geo(h)
+    x, y, w, ht = cards[3]
+    through = h.replace(paths[0][2], "M0 %dH%d" % (y + 20, x + w + 5), 1)
+    assert any("crosses card 3" in e for e in _check_geometry(through))
+    cx, cy, cw, ch = chips[0]
+    over = h.replace('class="swl" style="position:absolute;left:%dpx;top:%dpx' % (cx, cy), 'class="swl" style="position:absolute;left:%dpx;top:%dpx' % (x + 5, y + 5), 1)
+    assert any("over card 3" in e for e in _check_geometry(over))

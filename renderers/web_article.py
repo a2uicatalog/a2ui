@@ -31694,22 +31694,350 @@ def _render_bullet_graph(b: dict) -> str:
     return _if_wrap(_if_title(b) + rows + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';">Dark bar: actual. Red tick: target. Shaded bands: poor, fair, good. The scale starts at 0.</div>')
 
 
+# ─── swimlane `links` and `layout: "auto"` (I32 / D10). With neither, _render_swimlane draws the original CSS grid byte for byte. With a link that can be
+# drawn, or layout "auto", it draws a fixed-size canvas instead: cards at computed pixel positions, connectors in an SVG under them, labels on chips over
+# them, inside a scroller (as org_chart does). All geometry is integer arithmetic and deterministic. Twin: _swDepth and the sw* helpers in atoms_infographic.gs. ───
+_SW_CW, _SW_CH, _SW_GAP, _SW_PAD, _SW_LW, _SW_HEAD = 172, 76, 10, 12, 104, 36
+_SW_TRK, _SW_TRKY, _SW_GMIN, _SW_GPAD, _SW_CHIPH, _SW_MAXCOL = 14, 24, 36, 14, 20, 6
+_SW_NARROW = ".,:;|!'`()[] -/ijlI"
+_SW_WIDE = 'mwMW@%'
+
+
+def _sw_int(v):
+    """A task number: a whole number, or a string of one to three digits. -1 for anything else."""
+    if isinstance(v, bool):
+        return -1
+    if isinstance(v, (int, float)):
+        return int(v) if v == v and 0 <= v < 1e6 and v == math.floor(v) else -1
+    if isinstance(v, str) and re.fullmatch(r'[0-9]{1,3}', v):
+        return int(v)
+    return -1
+
+
+def _sw_label(v):
+    if isinstance(v, str):
+        return v[:24]
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        return _if_numstr(v)[:24]
+    return ''
+
+
+def _sw_chipw(s):
+    """The width of a label chip in px: a per-character estimate (tenths of a pixel at 12px, UTF-16 units) plus 16 for the padding."""
+    t = 0
+    for ch in s:
+        o = ord(ch)
+        if o > 0xFFFF:
+            t += 260
+        elif ch in _SW_NARROW:
+            t += 45
+        elif ch in _SW_WIDE:
+            t += 110
+        elif 'A' <= ch <= 'Z':
+            t += 83
+        elif o >= 0x2E80:
+            t += 130
+        else:
+            t += 70
+    return -(-t // 10) + 16
+
+
+def _sw_depth(n, edges):
+    """Longest-path layering (d3-sankey 0.12.3 computeNodeDepths). Edges that close a cycle are ignored first: a depth-first walk from the nodes with no incoming
+    edge (then from node 0 up) marks every edge that points at a node still on the walk. Returns (depth per node, indexes of the ignored edges)."""
+    out = [[] for _ in range(n)]
+    indeg = [0] * n
+    for k, (a, b) in enumerate(edges):
+        out[a].append((b, k))
+        indeg[b] += 1
+    state, ign = [0] * n, [False] * len(edges)
+
+    def walk(u):
+        state[u] = 1
+        for v, k in out[u]:
+            if state[v] == 1:
+                ign[k] = True
+            elif state[v] == 0:
+                walk(v)
+        state[u] = 2
+    for u in range(n):
+        if indeg[u] == 0 and state[u] == 0:
+            walk(u)
+    for u in range(n):
+        if state[u] == 0:
+            walk(u)
+    depth, cur, x = [0] * n, list(range(n)), 0
+    while cur:
+        nxt, seen = [], set()
+        for u in cur:
+            depth[u] = x
+            for v, k in out[u]:
+                if not ign[k] and v not in seen:
+                    seen.add(v)
+                    nxt.append(v)
+        x += 1
+        if x > n:
+            break
+        cur = nxt
+    return depth, [k for k in range(len(edges)) if ign[k]]
+
+
+def _sw_firstfit(spans):
+    """spans: (lo, hi, key). Gives each span the lowest track whose last span ends before it starts: ({key: track}, number of tracks)."""
+    tracks, tr = [], {}
+    for lo, hi, key in sorted(spans, key=lambda s: (s[0], s[2])):
+        for k in range(len(tracks)):
+            if tracks[k] < lo:
+                tracks[k] = hi
+                tr[key] = k
+                break
+        else:
+            tracks.append(hi)
+            tr[key] = len(tracks) - 1
+    return tr, len(tracks)
+
+
+def _sw_layout(R, ncols, cells, col, lane, links, head):
+    """Pixel geometry of the canvas. cells: {(lane, column): [task index, ...] top to bottom}; links: [(from, to, label)]."""
+    CW, CH = _SW_CW, _SW_CH
+    kmax = [0] * R
+    for (ri, c), lst in cells.items():
+        kmax[ri] = max(kmax[ri], len(lst))
+    LH = [56 if k == 0 else 2 * _SW_PAD + k * CH + (k - 1) * _SW_GAP for k in kmax]
+    L = len(links)
+    kind = ['f' if col[t] == col[s] + 1 else ('s' if col[t] == col[s] else 'c') for s, t, _ in links]
+    gr = lambda li: (min(col[links[li][0]] + 1, col[links[li][1]]), max(col[links[li][0]] + 1, col[links[li][1]]))
+    top_i = [li for li in range(L) if kind[li] == 'c' and lane[links[li][0]] + lane[links[li][1]] <= R - 1]
+    bot_i = [li for li in range(L) if kind[li] == 'c' and lane[links[li][0]] + lane[links[li][1]] > R - 1]
+    trt, mt = _sw_firstfit([(gr(li)[0], gr(li)[1], li) for li in top_i])
+    trb, mb = _sw_firstfit([(gr(li)[0], gr(li)[1], li) for li in bot_i])
+    y0 = _SW_HEAD + 4 if head else 0
+    top_h = mt * _SW_TRKY + 6 if mt else 6
+    lane_top, y = [], y0 + top_h
+    for ri in range(R):
+        lane_top.append(y)
+        y += LH[ri]
+    bot_y0 = y
+    H = bot_y0 + (mb * _SW_TRKY + 6 if mb else 6)
+    chy = {}
+    for li in top_i:
+        chy[li] = y0 + 15 + trt[li] * _SW_TRKY
+    for li in bot_i:
+        chy[li] = bot_y0 + 15 + trb[li] * _SW_TRKY
+    ty = {}
+    for (ri, c), lst in cells.items():
+        s = len(lst) * CH + (len(lst) - 1) * _SW_GAP
+        for j, ti in enumerate(lst):
+            ty[ti] = lane_top[ri] + (LH[ri] - s) // 2 + j * (CH + _SW_GAP)
+    # ports: ends of links spread down a card edge, ordered by where the other end is
+    rp, lp = {ti: [] for ti in ty}, {ti: [] for ti in ty}
+    for li, (s, t, _) in enumerate(links):
+        rp[s].append((ty[t], li, 0))
+        (rp if kind[li] == 's' else lp)[t].append((ty[s], li, 1))
+    sy, ey = {}, {}
+    for ti in ty:
+        for lst, edge in ((sorted(rp[ti]), 'r'), (sorted(lp[ti]), 'l')):
+            for j, (_, li, io) in enumerate(lst):
+                py = ty[ti] + (j + 1) * CH // (len(lst) + 1)
+                if io == 0:
+                    sy[li] = py
+                else:
+                    ey[li] = py
+    # gutter tracks: the vertical runs between columns, packed so runs that overlap in height get different x
+    spans = [[] for _ in range(ncols + 1)]
+    for li, (s, t, lab) in enumerate(links):
+        cs, ct = col[s], col[t]
+        if kind[li] == 'c':
+            for g, a, b, tag in ((cs + 1, sy[li], chy[li], 'x'), (ct, ey[li], chy[li], 'e')):
+                spans[g].append((min(a, b) - 4, max(a, b) + 4, (li, tag)))
+        else:
+            lo, hi = min(sy[li], ey[li]), max(sy[li], ey[li])
+            if lab != '':
+                mid = (sy[li] + ey[li]) // 2
+                lo, hi = min(lo, mid - 12), max(hi, mid + 12)
+            spans[cs + 1].append((lo - 4, hi + 4, (li, 'v')))
+    gtr, gm, G = [], [], []
+    for g in range(ncols + 1):
+        tr, m = _sw_firstfit(spans[g])
+        mc = max([_sw_chipw(links[k[0]][2]) for k in tr if k[1] == 'v' and links[k[0]][2] != ''], default=0)
+        gtr.append(tr)
+        gm.append(m)
+        G.append(max(_SW_GMIN, 2 * _SW_GPAD + mc + (m - 1) * _SW_TRK) if m else _SW_GMIN)
+    gx, colx, x = [], [], _SW_LW
+    for g in range(ncols + 1):
+        gx.append(x)
+        if g < ncols:
+            colx.append(x + G[g])
+            x = x + G[g] + CW
+    W = gx[ncols] + G[ncols]
+
+    def tx(g, key):
+        return gx[g] + (G[g] - (gm[g] - 1) * _SW_TRK) // 2 + gtr[g][key] * _SW_TRK
+    paths, mids = [], []
+    for li, (s, t, lab) in enumerate(links):
+        cs, ct = col[s], col[t]
+        sx = colx[cs] + CW
+        if kind[li] == 'f':
+            xt = tx(cs + 1, (li, 'v'))
+            paths.append('M%d %dH%dV%dH%d' % (sx, sy[li], xt, ey[li], colx[ct]))
+            mids.append((xt, (sy[li] + ey[li]) // 2, 0))
+        elif kind[li] == 's':
+            xt = tx(cs + 1, (li, 'v'))
+            paths.append('M%d %dH%dV%dH%d' % (sx, sy[li], xt, ey[li], sx))
+            mids.append((xt, (sy[li] + ey[li]) // 2, 0))
+        else:
+            xs, xe = tx(cs + 1, (li, 'x')), tx(ct, (li, 'e'))
+            paths.append('M%d %dH%dV%dH%dV%dH%d' % (sx, sy[li], xs, chy[li], xe, ey[li], colx[ct]))
+            mids.append(((xs + xe) // 2, chy[li], 1))
+    cards = [(colx[col[ti]], ty[ti]) for ti in ty]
+
+    def clash(cx, cy, w, placed):
+        if cx < 0 or cy < 0 or cx + w > W or cy + _SW_CHIPH > H:
+            return True
+        for (px, py) in cards:
+            if cx < px + CW and px < cx + w and cy < py + CH and py < cy + _SW_CHIPH:
+                return True
+        for (px, py, pw) in placed:
+            if cx < px + pw + 2 and px < cx + w + 2 and cy < py + _SW_CHIPH + 2 and py < cy + _SW_CHIPH + 2:
+                return True
+        return False
+    chips, placed = {}, []
+    for li, (s, t, lab) in enumerate(links):
+        if lab == '':
+            continue
+        w = _sw_chipw(lab)
+        mx, my, horiz = mids[li]
+        best = None
+        for k in range(61):
+            d = 0 if k == 0 else (-(-k // 2)) * (16 if horiz else 12) * (1 if k % 2 == 1 else -1)
+            cx, cy = (mx + d - w // 2, my - _SW_CHIPH // 2) if horiz else (mx - w // 2, my + d - _SW_CHIPH // 2)
+            if not clash(cx, cy, w, placed):
+                best = (cx, cy)
+                break
+        if best is None:
+            best = (mx - w // 2, my - _SW_CHIPH // 2)
+        chips[li] = (best[0], best[1], w)
+        placed.append((best[0], best[1], w))
+    return {'W': W, 'H': H, 'colx': colx, 'ty': ty, 'lane_top': lane_top, 'LH': LH, 'paths': paths, 'chips': chips}
+
+
+def _sw_note(n, one, many):
+    return _hg_note(str(n) + ' ' + (one if n == 1 else many))
+
+
 def _render_swimlane(b: dict) -> str:
-    roles, phases, tasks = _if_arr(_if_g(b, 'roles'), 4), _if_arr(_if_g(b, 'phases'), 5), _if_arr(_if_g(b, 'tasks'), 12)
-    n = len(tasks)
-    head = '<div></div>' + ''.join('<div style="text-align:center;font-weight:700;font-size:0.8rem;padding:4px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _if_s(p, 24) + '</div>' for p in phases)
-    lanes = ''
-    for r in roles:
-        lanes += '<div style="' + _if_card('font-weight:700;display:flex;align-items:center;') + '">' + _if_s(r, 24) + '</div>'
-        for p in phases:
-            cell = [(t, ti) for ti, t in enumerate(tasks) if _if_truthy(t) and _if_seq(_if_g(t, 'role'), r) and _if_seq(_if_g(t, 'phase'), p)][:2]
-            lanes += '<div style="' + _if_card('background:var(--surface,#F8FAFC);min-height:64px;display:flex;flex-direction:column;gap:4px;') + '">'
-            for t, ti in cell:
-                lanes += ('<div style="display:flex;gap:6px;align-items:flex-start;border:' + _IF_BORDER + ';border-radius:6px;padding:5px 7px;background:var(--bg,#fff);' + _if_k(ti, n) + _IF_FADE + '">'
-                          + '<span style="flex:0 0 auto;min-width:20px;height:20px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.72rem;font-weight:700;text-align:center;line-height:20px;">' + str(ti + 1) + '</span><span>' + _if_s(_if_g(t, 'task'), 60) + '</span></div>')
-            lanes += '</div>'
-    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + str(max(len(phases), 1)) + ',1fr);gap:6px;">' + head + lanes + '</div>'
-                    + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">Numbers show the order of the tasks.</div>')
+    roles, tasks = _if_arr(_if_g(b, 'roles'), 4), _if_arr(_if_g(b, 'tasks'), 12)
+    auto = _if_pick(_if_g(b, 'layout'), ['grid', 'auto'], 'grid') == 'auto'
+    phases = _if_arr(_if_g(b, 'phases'), 6 if auto else 5)
+    n, R = len(tasks), len(roles)
+    place = [None] * n
+    for ti, t in enumerate(tasks):
+        if not _if_truthy(t):
+            continue
+        ri = next((i for i, r in enumerate(roles) if _if_seq(_if_g(t, 'role'), r)), -1)
+        pi = 0 if auto else next((i for i, p in enumerate(phases) if _if_seq(_if_g(t, 'phase'), p)), -1)
+        if ri >= 0 and pi >= 0:
+            place[ti] = (ri, pi)
+    placed = [ti for ti in range(n) if place[ti]]
+    links, dropped, seen = [], 0, set()
+    lk = _if_g(b, 'links')
+    for l in _if_arr(lk, 24):
+        a, c = (_sw_int(_if_g(l, 'from')), _sw_int(_if_g(l, 'to'))) if isinstance(l, dict) else (-1, -1)
+        if a < 1 or c < 1 or a > n or c > n or a == c or not place[a - 1] or not place[c - 1] or (a, c) in seen:
+            dropped += 1
+            continue
+        seen.add((a, c))
+        links.append((a - 1, c - 1, _sw_label(_if_g(l, 'label'))))
+    note_drop = _sw_note(dropped, 'link was dropped (an unknown task number, a link from a task to itself, or a repeat).', 'links were dropped (an unknown task number, a link from a task to itself, or a repeat).') if dropped else ''
+    ver = _hg_version_note(b, 'swimlane')
+    legend_txt = 'Numbers show the order of the tasks.'
+    if not placed or not (auto or links):
+        n_ = n
+        head = '<div></div>' + ''.join('<div style="text-align:center;font-weight:700;font-size:0.8rem;padding:4px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _if_s(p, 24) + '</div>' for p in phases)
+        lanes = ''
+        for r in roles:
+            lanes += '<div style="' + _if_card('font-weight:700;display:flex;align-items:center;') + '">' + _if_s(r, 24) + '</div>'
+            for p in phases:
+                cell = [(t, ti) for ti, t in enumerate(tasks) if _if_truthy(t) and _if_seq(_if_g(t, 'role'), r) and _if_seq(_if_g(t, 'phase'), p)][:2]
+                lanes += '<div style="' + _if_card('background:var(--surface,#F8FAFC);min-height:64px;display:flex;flex-direction:column;gap:4px;') + '">'
+                for t, ti in cell:
+                    lanes += ('<div style="display:flex;gap:6px;align-items:flex-start;border:' + _IF_BORDER + ';border-radius:6px;padding:5px 7px;background:var(--bg,#fff);' + _if_k(ti, n_) + _IF_FADE + '">'
+                              + '<span style="flex:0 0 auto;min-width:20px;height:20px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.72rem;font-weight:700;text-align:center;line-height:20px;">' + str(ti + 1) + '</span><span>' + _if_s(_if_g(t, 'task'), 60) + '</span></div>')
+                lanes += '</div>'
+        return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + str(max(len(phases), 1)) + ',1fr);gap:6px;">' + head + lanes + '</div>'
+                        + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">' + legend_txt + '</div>' + note_drop + ver)
+    # the canvas
+    if auto:
+        at = {ti: k for k, ti in enumerate(placed)}
+        depth, ign = _sw_depth(len(placed), [(at[s], at[t]) for s, t, _ in links])
+        col = {ti: min(depth[at[ti]], _SW_MAXCOL - 1) for ti in placed}
+        over = sum(1 for ti in placed if depth[at[ti]] >= _SW_MAXCOL)
+        ncols = max(max(col.values()) + 1, len(phases))
+    else:
+        ign, over, col = [], 0, {ti: place[ti][1] for ti in placed}
+        ncols = len(phases)
+    lane = {ti: place[ti][0] for ti in placed}
+    cells = {}
+    for ti in placed:
+        cells.setdefault((lane[ti], col[ti]), []).append(ti)
+    if auto and links:
+        nb = {ti: [] for ti in placed}
+        for s, t, _ in links:
+            nb[s].append(t)
+            nb[t].append(s)
+        pos = {}
+        for (ri, c), lst in cells.items():
+            for k, ti in enumerate(lst):
+                pos[ti] = ri * 100 + k
+        for cs, fwd in ((range(1, ncols), True), (range(ncols - 2, -1, -1), False)):
+            for c in cs:
+                for ri in range(R):
+                    lst = cells.get((ri, c))
+                    if not lst or len(lst) < 2:
+                        continue
+                    keyed = []
+                    for ti in lst:
+                        ps = [pos[x] for x in nb[ti] if (col[x] < c if fwd else col[x] > c)]
+                        keyed.append((sum(ps) / len(ps) if ps else pos[ti], ti))
+                    keyed.sort()
+                    cells[(ri, c)] = [ti for _, ti in keyed]
+                    for k, ti in enumerate(cells[(ri, c)]):
+                        pos[ti] = ri * 100 + k
+    showhead = len(phases) > 0
+    m = _sw_layout(R, ncols, cells, col, lane, links, showhead)
+    L = len(links)
+    pl = lambda k, w: str(k) + ' ' + w + ('' if k == 1 else 's')
+    label = (_if_s(_if_g(b, 'title'), 80) if _if_truthy(_if_g(b, 'title')) else 'Swimlane diagram') + ': ' + pl(len(placed), 'task') + ' across ' + pl(R, 'lane') + ', ' + pl(L, 'link')
+    abs_ = 'position:absolute;'
+    html = ''
+    if showhead:
+        for c in range(ncols):
+            if c < len(phases):
+                html += ('<div class="swh" style="' + abs_ + 'left:' + str(m['colx'][c]) + 'px;top:0;width:' + str(_SW_CW) + 'px;height:' + str(_SW_HEAD) + 'px;box-sizing:border-box;overflow:hidden;text-align:center;font-weight:700;font-size:0.8rem;line-height:1.2;padding:2px 4px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;overflow-wrap:anywhere;">'
+                         + _if_s(phases[c], 24) + '</div>')
+    for ri in range(R):
+        html += ('<div class="swr" style="' + abs_ + 'left:0;top:' + str(m['lane_top'][ri]) + 'px;width:' + str(m['W']) + 'px;height:' + str(m['LH'][ri]) + 'px;box-sizing:border-box;border:1px solid var(--border,#CBD5E1);border-radius:8px;background:var(--surface,#F8FAFC);"></div>'
+                 + '<div class="swn" style="' + abs_ + 'left:0;top:' + str(m['lane_top'][ri]) + 'px;width:' + str(_SW_LW) + 'px;height:' + str(m['LH'][ri]) + 'px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;font-weight:700;overflow:hidden;overflow-wrap:anywhere;">' + _if_s(roles[ri], 24) + '</div>')
+    svg = ''.join('<path class="swp" data-f="' + str(s + 1) + '" data-t="' + str(t + 1) + '" d="' + m['paths'][li] + '" fill="none" marker-end="url(#swarr)" style="' + _if_k(li, L) + 'opacity:var(--k,1);stroke:#475569;stroke-width:1.6;"/>' for li, (s, t, _) in enumerate(links))
+    html += ('<svg style="' + abs_ + 'left:0;top:0;" width="' + str(m['W']) + '" height="' + str(m['H']) + '" viewBox="0 0 ' + str(m['W']) + ' ' + str(m['H']) + '" aria-hidden="true" focusable="false">'
+             '<defs><marker id="swarr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,1 L10,5 L0,9 z" style="fill:#475569;"/></marker></defs>' + svg + '</svg>')
+    for ti in placed:
+        html += ('<div class="swc" data-n="' + str(ti + 1) + '" style="' + abs_ + 'left:' + str(m['colx'][col[ti]]) + 'px;top:' + str(m['ty'][ti]) + 'px;width:' + str(_SW_CW) + 'px;height:' + str(_SW_CH)
+                 + 'px;box-sizing:border-box;overflow:hidden;display:flex;gap:6px;align-items:flex-start;border:' + _IF_BORDER + ';border-radius:6px;padding:4px 7px;background:var(--bg,#fff);font-size:0.8rem;line-height:16px;overflow-wrap:anywhere;' + _if_k(ti, n) + _IF_FADE + '">'
+                 + '<span style="flex:0 0 auto;min-width:20px;height:20px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:20px;">' + str(ti + 1) + '</span><span>' + _if_s(_if_g(tasks[ti], 'task'), 60) + '</span></div>')
+    for li, (cx, cy, w) in sorted(m['chips'].items()):
+        html += ('<div class="swl" style="' + abs_ + 'left:' + str(cx) + 'px;top:' + str(cy) + 'px;width:' + str(w) + 'px;height:' + str(_SW_CHIPH) + 'px;box-sizing:border-box;overflow:hidden;white-space:nowrap;text-align:center;font-size:12px;line-height:18px;'
+                 'border:1px solid var(--border,#94A3B8);border-radius:10px;background:var(--bg,#fff);color:var(--text,#0F172A);' + _if_k(li, L) + 'opacity:var(--k,1);">' + _cv_esc(links[li][2]) + '</div>')
+    scroller = ('<div class="ifsw" role="group" aria-label="' + label + '" tabindex="0" style="overflow-x:auto;contain:inline-size;"><div class="swv" style="position:relative;width:' + str(m['W']) + 'px;height:' + str(m['H']) + 'px;">' + html + '</div></div>')
+    legend = '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">' + legend_txt + (' Arrows run from a task to the one it hands over to; a label names the hand-off.' if L else '') + '</div>'
+    notes = note_drop
+    if ign:
+        notes += _sw_note(len(ign), 'link was ignored when placing the columns, because the links form a cycle.', 'links were ignored when placing the columns, because the links form a cycle.')
+    if over:
+        notes += _hg_note(str(over) + (' task would need' if over == 1 else ' tasks would need') + ' more than ' + str(_SW_MAXCOL) + ' columns and ' + ('is' if over == 1 else 'are') + ' drawn in the last column.')
+    tt = lambda s: str(s + 1) + '. ' + ('' if _if_g(tasks[s], 'task') is _IF_UNDEF or _if_g(tasks[s], 'task') is None else _if_str(_if_g(tasks[s], 'task')))
+    table = _if_table(['From', 'To', 'Label'], [[tt(s), tt(t), lab] for s, t, lab in links]) if links else ''
+    return _if_wrap(_if_title(b) + scroller + legend + notes + table + ver)
 
 
 def _if_cat(v, mx=16):
