@@ -21210,6 +21210,40 @@ blocks:
     the chart is the complete key. Groups keep input order; hues repeat after eight groups. padAngle is 0.05 rad and subgroups are sorted largest first,
     as in d3's chord examples.
   source: *ifg002
+- type: circle_pack
+  stage: preview
+  description: 'Part-to-whole as packed circles: each item is a circle whose area shows its value, and the optional per-item path (1 to 3 group names, top
+    down) nests the circles inside outlined group circles, so a budget, a skills inventory or a folder tree reads as clusters. Laid out by d3-hierarchy
+    pack() (circle packing: the front-chain placement of packSiblings and the smallest enclosing circle of packEnclose, padding 3) on the server, so
+    there is no script. A group''s hue follows its top-level group and a deeper circle is a lighter shade of it; group circles are outlined, leaf circles
+    are filled. Every circle carries its name, path, value and share in a hover title and in the hidden table (item, path, value, share of total), and
+    the aria label gives the total, the number of groups and the largest item. A leaf name (and its value, in a wider container) is drawn inside the
+    circle where it fits, and a group name at the top of its circle where it fits; both are 12 px text gated on the container width. Motion-ready:
+    every moving value reads --p (build progress 0 to 1, default 1) through a per-depth --k, so a motion_timeline track on p builds it level by level
+    from the groups inward and the standalone render is the finished picture; reduced motion shows the end state.'
+  compact_description: 'circle_pack: grouping and rough size as packed circles'
+  routing_text: For a sense of grouping and rough size; items as circles packed inside their groups, such as skills by team, files by folder or spend by
+    department and line. For comparing sizes use a treemap or bar chart (circle area is hard to compare); it is not for a flat ranked list, for which
+    use a bar chart, or for share of a total through levels as rings, for which use a sunburst.
+  intent_phrases:
+  - Show our team's skills grouped by area as packed circles.
+  - Which folders are taking the space, as a circle packing?
+  - Give me a bubble-cluster view of spend by department and line.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    items: 'array (required, 2 to 60) of {path (optional, array of 0 to 3 strings, max 20 each: the item''s ancestor groups from the top down; same shape
+      as the treemap''s nested mode and the sunburst), name (max 24, default "Item n"), value (number above 0)}. An item without a usable path is a
+      circle of its own at the top level. Items with a value of 0 or less, a value that is not a finite number, or that are not an item are dropped and
+      counted in a note; items beyond the first 60 are noted and not drawn. With fewer than 2 usable items a note replaces the chart.'
+    unit: string (optional, max 12). Appended to every value in the title, the aria label, the labels and the hidden table.
+    version: integer (optional, default 1). The circle_pack contract the payload was written for. Only version 1 exists; a higher whole number is drawn
+      as version 1 with a note.
+  notes: Circle area is a weak channel for comparing values, so the table repeats the numbers. The chart is a square that scales to its container up to
+    640 px; labels are placed by a deterministic width estimate (0.6em per character), so a label appears only in a container wide enough for it, and a
+    long name ends in an ellipsis (the title and the table keep it in full). Hues repeat after eight top-level groups. Circles keep d3's order, the
+    largest first; the layout is deterministic (d3's fixed random seed), so the same data always draws the same picture.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

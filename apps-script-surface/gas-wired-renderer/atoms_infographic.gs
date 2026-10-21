@@ -647,8 +647,8 @@ _RENDERERS['circle_pack'] = function(b) {
       wm = _cpQ(Math.max((c * _CP_K + 8) / 0.8, 40) * S / r);
       if (wm <= 640) {
         cl = _cpGate(wm); ws.push(cl[1]);
-        glabs += '<div class="cpg' + cl[0] + '" style="position:absolute;left:' + left + ';top:calc(' + _tmPct(y - r + 2, M) + ' + 10px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tmPct(0.8 * r, M).slice(0, -1) +
-          'cqw - 4px),120px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);' +
+        glabs += '<div class="cpg' + cl[0] + '" style="position:absolute;left:' + left + ';top:calc(' + _tmPct(y - r + 2, M) + ' + 18px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tmPct(0.8 * r, M).slice(0, -1) +
+          'cqw - 4px),100px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);' +
           'text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff),0 0 2px var(--bg,#fff);pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _ifS(sp.n, 24) + '</div>';
       }
     } else {
@@ -661,9 +661,9 @@ _RENDERERS['circle_pack'] = function(b) {
         wv = _cpQ(Math.max(Math.sqrt(Math.pow(Math.max(half, hv), 2) + 196) + 2, (vt.length * _CP_K + 4) / 1.4) * S / r);
         cn = _cpGate(wn); ws.push(cn[1]); vline = '';
         if (wv <= 640) { cv = _cpGate(wv); ws.push(cv[1]); vline = '<div class="cpv' + cv[0] + '" style="opacity:0.85;">' + _ifS(vt, 40) + '</div>'; }
-        llabs += '<div class="cpl" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tmPct(1.4 * r, M).slice(0, -1) +
+        llabs += '<div class="cpl' + cn[0] + '" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tmPct(1.4 * r, M).slice(0, -1) +
           'cqw - 4px);text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' +
-          '<div class="cpn' + cn[0] + '" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _ifS(sp.n, 24) + '</div>' + vline + '</div>';
+          '<div class="cpn" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _ifS(sp.n, 24) + '</div>' + vline + '</div>';
       }
     }
   });

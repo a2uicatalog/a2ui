@@ -190,6 +190,7 @@ a2ui-charts-v1:
 - waterfall
 - sunburst
 - chord_diagram
+- circle_pack
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

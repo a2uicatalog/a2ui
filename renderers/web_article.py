@@ -32822,8 +32822,8 @@ def _render_circle_pack(b: dict) -> str:
             if wm <= 640:
                 cls, g = _cp_gate(wm)
                 ws.append(g)
-                glabs += ('<div class="cpg' + cls + '" style="position:absolute;left:' + left + ';top:calc(' + _tm_pct(y - r + 2, M) + ' + 10px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tm_pct(0.8 * r, M)[:-1]
-                          + 'cqw - 4px),120px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);'
+                glabs += ('<div class="cpg' + cls + '" style="position:absolute;left:' + left + ';top:calc(' + _tm_pct(y - r + 2, M) + ' + 18px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tm_pct(0.8 * r, M)[:-1]
+                          + 'cqw - 4px),100px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);'
                           'text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff),0 0 2px var(--bg,#fff);pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _if_s(sp['n'], 24) + '</div>')
         else:
             fill = _sb_fill(base, dp)
@@ -32845,9 +32845,9 @@ def _render_circle_pack(b: dict) -> str:
                     cv, gv = _cp_gate(wv)
                     ws.append(gv)
                     vline = '<div class="cpv' + cv + '" style="opacity:0.85;">' + _if_s(vt, 40) + '</div>'
-                llabs += ('<div class="cpl" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tm_pct(1.4 * r, M)[:-1]
+                llabs += ('<div class="cpl' + cn + '" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tm_pct(1.4 * r, M)[:-1]
                           + 'cqw - 4px);text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">'
-                          '<div class="cpn' + cn + '" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _if_s(sp['n'], 24) + '</div>' + vline + '</div>')
+                          '<div class="cpn" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _if_s(sp['n'], 24) + '</div>' + vline + '</div>')
     aria = ('Circle packing of ' + str(len(items)) + ' items in ' + str(len(tops)) + ' top-level group' + ('' if len(tops) == 1 else 's') + ', total ' + f(tot) + '. Largest item: '
             + big['src']['n'] + ', ' + f(big['value']) + ', ' + _if_fixed(big['value'] / tot * 100, 1) + '% of the total.')
     svg = ('<svg viewBox="-2 -2 ' + str(M) + ' ' + str(M) + '" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'

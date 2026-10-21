@@ -240,15 +240,15 @@ K = wa._CP_K
 
 def _leaf_labels(html):
     """(gate of the name, gate of the value or 0, left %, top %, name, value or None) of every leaf label."""
-    return [(int(m.group(3) or 0), int(m.group(5) or 0), float(m.group(1)), float(m.group(2)), m.group(4), m.group(6))
-            for m in re.finditer(r'<div class="cpl" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;[^"]*"><div class="cpn(?: tmw(\d+))?" style="[^"]*">(.*?)</div>'
+    return [(int(m.group(1) or 0), int(m.group(5) or 0), float(m.group(2)), float(m.group(3)), m.group(4), m.group(6))
+            for m in re.finditer(r'<div class="cpl(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;[^"]*"><div class="cpn" style="[^"]*">(.*?)</div>'
                                  r'(?:<div class="cpv(?: tmw(\d+))?" style="[^"]*">(.*?)</div>)?</div>', html)]
 
 
 def _group_labels(html):
     """(gate, left %, top %, name) of every group label."""
     return [(int(m.group(1) or 0), float(m.group(2)), float(m.group(3)), m.group(4))
-            for m in re.finditer(r'<div class="cpg(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:calc\(([\d.]+)% \+ 10px\);[^"]*">(.*?)</div>', html)]
+            for m in re.finditer(r'<div class="cpg(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:calc\(([\d.]+)% \+ 18px\);[^"]*">(.*?)</div>', html)]
 
 
 def _radius_at(circles, left, top):

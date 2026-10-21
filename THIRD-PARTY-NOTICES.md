@@ -77,8 +77,14 @@ just looks plainer.
   `hierarchy().sum().sort()` as above, then `treemapDice` placement of each node's children across its
   extent) is ported into `_sb_partition` / `_sb_rows` and its twin `_sbPartition` / `_sbRows`, checked
   against the real library's output by `tests/test_sunburst.py` (golden vectors from
-  `tests/fixtures/sunburst_d3_golden_gen.mjs`)
-- **Used by:** the `treemap`, `org_chart` and `sunburst` atoms' server-side layout in both renderers. No script
+  `tests/fixtures/sunburst_d3_golden_gen.mjs`);
+  `pack()` (the `circle_pack` atom: `packSiblings`, the front-chain placement of circles round a
+  centre, and `packEnclose`, the smallest enclosing circle with d3's fixed LCG shuffle, run for each
+  group in `eachAfter` order and then rescaled to the size) is ported into `_cp_pack` / `_cp_siblings` /
+  `_cp_enclose` and its twin `_cpPack` / `_cpSiblings` / `_cpEnclose`, checked against the real
+  library's output (every x, y and r with ==) by `tests/test_circle_pack.py` (golden vectors from
+  `tests/fixtures/circle_pack_d3_golden_gen.mjs`)
+- **Used by:** the `treemap`, `org_chart`, `sunburst` and `circle_pack` atoms' server-side layout in both renderers. No script
   is shipped to the page; boxes are emitted as percentage-positioned elements (org_chart adds an
   SVG connector overlay).
 
