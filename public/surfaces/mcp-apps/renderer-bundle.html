@@ -36524,7 +36524,7 @@ _RENDERERS['calibration_plot'] = function(b) {
     + title + svg + '<div style="margin-top:8px;">' + legendHtml + '</div></div>';
 };
 
-// ─── stacked_area `offset` (2026-10-21, I49): "expand" | "silhouette" | "wiggle" draw a real SVG area chart; absent / "none" / unknown keeps the bars above ───
+// ─── stacked_area `offset` and `layout` (2026-10-21): the default layout is a real SVG area chart (D22); `layout: "bars"` keeps the CSS bar list below; `offset` (I49) "expand" | "silhouette" | "wiggle" reshapes the chart ───
 // d3-shape 3.2.0 stackOffsetExpand, stackOffsetSilhouette, stackOffsetWiggle, stackOffsetNone and stackOrderInsideOut / stackOrderAppearance, ported by hand
 // (ISC, Mike Bostock); twin of _sa_* in renderers/web_article.py. Self-contained on purpose: this file is also used where the infographic helpers do not exist.
 var _SA_COLORS = ['#0369A1', '#B45309', '#15803D', '#7C3AED', '#BE123C', '#0F766E', '#A16207', '#475569'];
@@ -36602,6 +36602,23 @@ function _saTicks(m, stride) {
   t.forEach(function(k) { o[k] = true; });
   return o;
 }
+// the zero-based value axis of the default layout: a 1-2-5 step, at most five intervals, k / M / B / T suffix; null when the maximum is not worth an axis
+function _saAxis(mx) {
+  if (!(mx > 1e-9)) return null;
+  var raw = mx / 4, mag = 1, e = 0, d, step, n, unit = 1, suffix = '', ul = 0, k, top, ticks = [], U = [[1e12, 'T', 12], [1e9, 'B', 9], [1e6, 'M', 6], [1e3, 'k', 3]];
+  while (mag * 10 <= raw) { mag *= 10; e++; }
+  while (mag > raw) { mag /= 10; e--; }
+  var r = raw / mag;
+  d = r <= 1 ? 1 : r <= 2 ? 2 : r <= 5 ? 5 : 10;
+  step = d * mag;
+  if (d === 10) e++;
+  n = Math.ceil(mx / step); top = n * step;
+  for (k = 0; k < U.length; k++) if (top >= U[k][0]) { unit = U[k][0]; suffix = U[k][1]; ul = U[k][2]; break; }
+  var dec = Math.max(0, ul - e);
+  if (dec > 6) return null;
+  for (k = 0; k <= n; k++) ticks.push([k * step, k === 0 ? '0' : (k * step / unit).toFixed(dec) + suffix]);
+  return { top: top, ticks: ticks };
+}
 function _saChart(b, offset) {
   var labels = Array.isArray(b.labels) ? b.labels : [], list = Array.isArray(b.series) ? b.series : [];
   var m = Math.min(labels.length, 60), ser = [], skipped = 0, bad = 0, i, j;
@@ -36619,12 +36636,17 @@ function _saChart(b, offset) {
   });
   if (m < 2 || !ser.length) return null;
   var beyondS = list.length - 12, beyondP = labels.length - 60, ST = _saStack(ser.map(function(s) { return s.vals; }), offset);
-  var ymin = 0, ymax = 0;
+  var ymin = 0, ymax = 0, axis = null, allzero = false;
   if (offset === 'expand') { ymax = 1; }
   else {
     ymin = Infinity; ymax = -Infinity;
     ST.lo.forEach(function(r) { r.forEach(function(v) { if (v < ymin) ymin = v; }); });
     ST.hi.forEach(function(r) { r.forEach(function(v) { if (v > ymax) ymax = v; }); });
+    if (offset === 'none') {
+      axis = _saAxis(ymax);
+      if (axis) { ymin = 0; ymax = axis.top; }
+      else if (!(ymax > 0)) { ymax = 1; allzero = true; }
+    }
   }
   var span = ymax - ymin; if (!(span > 0)) span = 1;
   function X(jj) { return _saFx(jj / (m - 1) * 1000); }
@@ -36653,13 +36675,24 @@ function _saChart(b, offset) {
         + '<div style="position:absolute;right:100%;top:' + (100 - j * 25) + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>';
     }
   }
-  var mode = offset === 'expand' ? 'each point scaled to 100 percent' : offset === 'silhouette' ? 'centred baseline' : 'streamgraph, baseline chosen to minimise wiggle';
+  var yw = offset === 'expand' ? '44px' : '0';
+  if (offset === 'none') {
+    var tk = axis ? axis.ticks : [[0, '0']], wd = Math.ceil(Math.max.apply(null, tk.map(function(t) { return t[1].length; })) * 7.5) + 10;
+    yw = wd + 'px';
+    tk.forEach(function(t) {
+      var tp = Y(t[0]);
+      ys += '<div class="say" style="position:absolute;right:100%;top:' + tp + '%;width:' + (wd - 6) + 'px;padding-right:6px;box-sizing:border-box;text-align:right;transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted,#475569);">' + t[1] + '</div>'
+        + '<div style="position:absolute;right:100%;top:' + tp + '%;width:4px;border-top:1px solid var(--muted,#475569);"></div>';
+    });
+  }
+  var mode = offset === 'none' ? 'zero baseline' : offset === 'expand' ? 'each point scaled to 100 percent' : offset === 'silhouette' ? 'centred baseline' : 'streamgraph, baseline chosen to minimise wiggle';
   var names = ser.map(function(s) { return s.name; });
   var aria = 'Stacked area chart, ' + mode + ': ' + ser.length + ' series over ' + m + ' points from ' + full[0] + ' to ' + full[m - 1] + '. Series: ' + names.join(', ') + '.';
   var legend = '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
     + ser.map(function(s) { return '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:' + s.col + ';border:1px solid var(--border,#CBD5E1);box-sizing:border-box;display:inline-block;"></span>' + _esc(s.name) + '</span>'; }).join('') + '</div>';
   var notes = '';
-  if (offset === 'expand') notes += _saNote('Each point is scaled so its layers add up to 100%; the axis shows each series’ share of the total.');
+  if (offset === 'none') notes += _saNote(allzero ? 'Every value is 0, so there is nothing to draw above the baseline.' : 'The top edge is the total of all layers; each layer’s thickness is its own value, and the exact values are in the table.');
+  else if (offset === 'expand') notes += _saNote('Each point is scaled so its layers add up to 100%; the axis shows each series’ share of the total.');
   else notes += _saNote((offset === 'wiggle' ? 'Streamgraph: the baseline moves to keep the layers’ wiggle small and the layers are ordered inside-out, not as listed. ' : 'The layers are centred on a middle line. ')
     + 'There is no value axis because the baseline has no meaning; layer thickness shows the size, and the exact values are in the table.');
   if (bad) notes += _saNote(bad + (bad === 1 ? ' value was' : ' values were') + ' negative or not a usable number and ' + (bad === 1 ? 'is' : 'are') + ' drawn as 0.');
@@ -36669,30 +36702,32 @@ function _saChart(b, offset) {
   var table = '<table style="' + _SA_SR + '"><thead><tr><th scope="col">Point</th>' + names.map(function(n) { return '<th scope="col">' + _esc(n.slice(0, 40)) + '</th>'; }).join('') + '</tr></thead><tbody>'
     + lab.map(function(l, jj) { return '<tr><th scope="row">' + _esc(_saStr(labels[jj]).slice(0, 60)) + '</th>' + ser.map(function(s) { return '<td>' + _esc(s.raw[jj]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
   var title = _saStr(b.title) ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _esc(_saStr(b.title).slice(0, 80)) + '</div>' : '';
-  var yw = offset === 'expand' ? '44px' : '0';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + title
     + '<div class="ifsa" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifsa .sax:not(.sac){display:none}}</style>'
     + '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:8px 0 34px 0;">'
-    + '<div style="position:relative;margin-left:' + yw + ';height:240px;border-bottom:1px solid var(--muted,#475569);' + (offset === 'expand' ? 'border-left:1px solid var(--muted,#475569);' : '') + '">'
+    + '<div style="position:relative;margin-left:' + yw + ';height:240px;border-bottom:1px solid var(--muted,#475569);' + (offset === 'expand' || offset === 'none' ? 'border-left:1px solid var(--muted,#475569);' : '') + '">'
     + '<svg aria-hidden="true" focusable="false" viewBox="0 0 1000 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;">' + polys + '</svg>' + ys + xs + '</div></div>'
     + legend + '</div>' + notes + _saVersionNote(b) + table + '</div>';
 }
-function _saCard(b, msg) {   // what an offset chart says when there is nothing to draw: the bars below would raise on some of these payloads
+function _saCard(b, msg) {   // what the area chart says when there is nothing to draw
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + (_saStr(b.title) ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + _esc(_saStr(b.title).slice(0, 80)) + '</div>' : '')
     + '<div style="border:1px solid #64748B;border-radius:8px;background:var(--surface,#F8FAFC);padding:8px 10px;">' + msg + '</div>' + _saVersionNote(b) + '</div>';
 }
-function _saGate(b) {
-  var off = b.offset;
-  if (off !== 'expand' && off !== 'silhouette' && off !== 'wiggle') return { html: '', tail: _saVersionNote(b) };
-  var h = (Array.isArray(b.labels) && Array.isArray(b.series)) ? _saChart(b, off) : null;
-  return { html: h === null ? _saCard(b, 'A stacked area chart with an offset needs at least two labels and one series with numbers.') : h, tail: '' };
+function _saGate(b) {   // D22: the default layout is the area chart; html is the chart (or its message), '' for layout "bars"; tail goes after the bar list
+  var off = (b.offset === 'expand' || b.offset === 'silhouette' || b.offset === 'wiggle') ? b.offset : null;
+  if (b.layout === 'bars') return { html: '', tail: (off ? _saNote('The bar list has no offset; \u201c' + off + '\u201d only applies to the area layout.') : '') + _saVersionNote(b) };
+  var h = (Array.isArray(b.labels) && Array.isArray(b.series)) ? _saChart(b, off || 'none') : null;
+  return { html: h === null ? _saCard(b, off ? 'A stacked area chart with an offset needs at least two labels and one series with numbers.' : 'A stacked area chart needs at least two labels and one series with numbers. Set layout to bars for a bar list.') : h, tail: '' };
 }
 
 // ─── stacked_area ─────────────────────────────────────────────────────────────
-// Rendered as stacked horizontal bars (CSS approximation — no canvas/JS charting needed).
+// The default layout is the area chart above (_saGate); `layout: "bars"` renders stacked horizontal bars (CSS approximation — no canvas/JS charting needed).
 _RENDERERS['stacked_area'] = function(b) {
-  var _sa = _saGate(b);   // reads b.offset and b.version (and b.labels, b.series, b.title, b.data, b.color) for the offset chart
+  var _sa = _saGate(b);   // reads b.layout, b.offset and b.version (and b.labels, b.series, b.title, b.data, b.color) for the area chart
   if (_sa.html) return _sa.html;
+  try { return _saBars(b) + _sa.tail; } catch (e) { return _saCard(b, 'The bar list could not be drawn from this data.') + _sa.tail; }
+};
+function _saBars(b) {
   var title   = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
   var labels  = b.labels || [];
   var series  = b.series || [];
@@ -36720,8 +36755,8 @@ _RENDERERS['stacked_area'] = function(b) {
       + '<span style="width:10px;height:10px;border-radius:2px;background:' + col + ';display:inline-block;"></span>' + _esc(ser.label||'') + '</span>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-    + title + rows + '<div style="margin-top:10px;">' + legend + '</div></div>' + _sa.tail;
-};
+    + title + rows + '<div style="margin-top:10px;">' + legend + '</div></div>';
+}
 
 // ─── heatmap_calendar ─────────────────────────────────────────────────────────
 _RENDERERS['heatmap_calendar'] = function(b) {

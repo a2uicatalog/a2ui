@@ -1,6 +1,6 @@
 # Stacked Area
 
-Renders cumulative layered area chart trends utilizing overlapping translucent gradient fills and glowing series borders.
+A stacked area chart: one coloured layer per series, stacked on a zero baseline over an ordered x axis (time, stages, categories), so the top edge is the total and each layer's thickness is that series' value. Drawn as SVG with a zero-based value axis, a legend and a hidden data table. The optional offset turns it into a 100% share chart (expand), a centred chart (silhouette) or a streamgraph (wiggle). Before 2026-10-21 the default was a list of horizontal bars; layout 'bars' still draws that.
 
 ## Surfaces
 
@@ -13,7 +13,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | title | string (optional, e.g., 'SaaS Cumulative Workloads') |
 | labels | list of strings representing X-axis ticks (e.g., ['Q1', 'Q2', 'Q3', 'Q4']) |
 | series | list of dictionaries representing stacked layers: [{'label': 'Enterprise', 'data': [10, 25, 45, 60], 'color': '#00f2ff'}, ...] |
-| offset | string (optional): how the layers sit on the baseline. Absent, 'none' or anything else keeps today's stacked bars. 'expand' draws a real area chart with every point scaled to 100% (a 0-100% axis), 'silhouette' centres the layers on a middle line, 'wiggle' is a streamgraph (d3's wiggle baseline, layers ordered inside-out). silhouette and wiggle have no value axis (the baseline means nothing); the hidden table lists the raw values. Up to 12 series and 60 labels; negative or non-numeric cells draw as 0 and are counted in a note. |
+| layout | string (optional, default 'area'): 'area' draws the stacked area chart (SVG, zero baseline, value axis). 'bars' draws a list of horizontal stacked bars, one row per label; that was the only drawing before 2026-10-21 and 'bars' keeps it unchanged. Absent, null or any other value means 'area'. The bar list ignores offset (a note says so when one is given). |
+| offset | string (optional, area layout only): how the layers sit on the baseline. Absent, 'none' or anything else is the plain zero baseline. 'expand' scales every point to 100% (a 0-100% axis), 'silhouette' centres the layers on a middle line, 'wiggle' is a streamgraph (d3's wiggle baseline, layers ordered inside-out). silhouette and wiggle have no value axis (the baseline means nothing); the hidden table lists the raw values. Up to 12 series and 60 labels; negative or non-numeric cells draw as 0 and are counted in a note. |
 | version | integer (optional, default 1). The stacked_area contract the payload was written for. Only version 1 exists; a higher whole number draws as version 1 with a note. |
 
 ## Example payload

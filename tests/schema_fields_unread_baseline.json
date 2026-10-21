@@ -753,9 +753,6 @@
  "sprint_board": [
   "sprint_name"
  ],
- "stacked_area": [
-  "layout"
- ],
  "status_pill": [
   "color",
   "icon"
