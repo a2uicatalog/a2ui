@@ -21,7 +21,7 @@ import pytest
 from test_motion_atoms import CHROMIUM, _gas_batch, _norm, _py, browser, core_js  # noqa: F401
 
 HOSTILE = 'x";}</style><script>alert(1)</script><b onload="1"'
-BASE = {"type": "motion_selection", "text": "Claude makes it."}
+BASE = {"type": "motion_selection", "text": "Your headline here."}
 
 CASES = [
     BASE, {"type": "motion_selection"}, dict(BASE, color="#e11d48"), dict(BASE, color="red"), dict(BASE, color=HOSTILE),
@@ -52,13 +52,13 @@ def test_python_matches_gas_exactly(core_js):
 def test_structure_content_is_real_text_and_decoration_is_aria_hidden():
     h = _py(BASE)
     assert h.count('data-sel="frame"') == 1 and h.count('data-sel="handle"') == 4 and h.count('data-sel="bar"') == 1 and h.count('data-sel="tint"') == 1
-    assert ">Claude makes it.<" in h
+    assert ">Your headline here.<" in h
     for part in ("frame", "handle", "bar", "tint"):
         assert all('aria-hidden="true"' in m for m in re.findall(r'<(?:span|div)[^>]*data-sel="' + part + r'"[^>]*>', h)), part
     assert "<script" not in h.lower() and "role=" not in h and "tabindex" not in h and "<button" not in h
     # the content element itself is not hidden
     body = re.search(r'<div data-sel="body"[^>]*>(.*?)</div>', h, re.S)
-    assert body and "aria-hidden" not in re.search(r'<div data-sel="body"[^>]*>', h).group(0) and body.group(1) == "Claude makes it."
+    assert body and "aria-hidden" not in re.search(r'<div data-sel="body"[^>]*>', h).group(0) and body.group(1) == "Your headline here."
 
 
 def test_options_toggle_pieces():
