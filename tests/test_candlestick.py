@@ -283,7 +283,7 @@ def test_extremes_are_caught_by_the_number_guard():
 # ─── registration ─────────────────────────────────────────────────────────────
 def test_registered_as_a_preview_atom_in_the_charts_pack():
     s = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())
-    atom = [a for a in s["atoms"] if a.get("type") == "candlestick_chart"] if isinstance(s, dict) and "atoms" in s else [a for a in s if a.get("type") == "candlestick_chart"]
+    atom = [a for a in s["blocks"] if a.get("type") == "candlestick_chart"]
     assert len(atom) == 1 and atom[0]["stage"] == "preview"
     for k in ("description", "compact_description", "routing_text", "intent_phrases", "fields", "notes", "surfaces", "source"):
         assert atom[0].get(k), k
