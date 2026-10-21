@@ -1219,8 +1219,8 @@ _RENDERERS['motion_stepper'] = function(b) {
 // Tiles that fly out from the centre onto an ellipse and swing round it as --s goes 0..1. Text tiles only (letters, glyphs, short
 // labels): never brand logos. Put the product shot in the same layer, centred.
 _RENDERERS['motion_orbit'] = function(b) {
-  var size = _ffInt(b.size, 64, 24, 160), src = Array.isArray(b.items) ? b.items : [], items = [], i;
-  for (i = 0; i < src.length && items.length < 12; i++) { var t = _moStr(typeof src[i] === 'string' ? src[i] : (src[i] && typeof src[i] === 'object' ? src[i].text : ''), 8); if (t) items.push(t); }
+  var size = _ffInt(b.size, 64, 24, 160), pill = b.shape === 'pill', src = Array.isArray(b.items) ? b.items : [], items = [], i;
+  for (i = 0; i < src.length && items.length < 12; i++) { var t = _moStr(typeof src[i] === 'string' ? src[i] : (src[i] && typeof src[i] === 'object' ? src[i].text : ''), pill ? 24 : 8); if (t) items.push(t); }
   if (!items.length) items = ['A'];
   var n = items.length, rx = _ffInt(b.rx, 40, 5, 60), ry = _ffInt(b.ry, 36, 5, 60), start = _ffInt(b.start, -90, -360, 360), spin = _ffInt(b.spin, 40, -360, 360);
   var fill = _moInk(b, 'fill', '#ffffff'), ink = _moInk(b, 'ink', '#111827');
@@ -1229,6 +1229,11 @@ _RENDERERS['motion_orbit'] = function(b) {
   for (i = 0; i < n; i++) {
     var a = start + Math.floor(i * 360 / n + 0.5), len = Array.from(items[i]).length, fs = len > 2 ? Math.floor(size * 22 / 100) : Math.floor(size * 42 / 100);
     var ang = 'calc(' + a + 'deg + var(--s,0)*' + spin + 'deg)';
+    if (pill) {
+      var ph = Math.floor(size * 55 / 100), pf = Math.max(12, Math.floor(size * 26 / 100));
+      html += '<div style="--u:clamp(0,calc((var(--p,1)*' + (n + 3) + ' - ' + i + ')/3),1);position:absolute;left:calc(50% + ' + rx + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + ry + '%*var(--u)*sin(' + ang + '));width:auto;height:' + ph + 'px;padding:0 ' + Math.floor(ph * 45 / 100) + 'px;box-sizing:border-box;white-space:nowrap;display:flex;align-items:center;justify-content:center;border-radius:999px;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + pf + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:translate(-50%,-50%) scale(var(--u));opacity:var(--u);">' + _esc(items[i]) + '</div>';
+      continue;
+    }
     html += '<div style="--u:clamp(0,calc((var(--p,1)*' + (n + 3) + ' - ' + i + ')/3),1);position:absolute;left:calc(50% + ' + rx + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + ry + '%*var(--u)*sin(' + ang + '));width:' + size + 'px;height:' + size + 'px;margin:-' + Math.floor(size / 2) + 'px 0 0 -' + Math.floor(size / 2) + 'px;display:flex;align-items:center;justify-content:center;border-radius:28%;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + fs + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:scale(var(--u));opacity:var(--u);">' + _esc(items[i]) + '</div>';
   }
   return html + '</div>';

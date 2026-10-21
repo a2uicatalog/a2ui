@@ -29642,11 +29642,12 @@ def _render_motion_stepper(b: dict) -> str:
 
 def _render_motion_orbit(b: dict) -> str:
     size = _ff_int(b.get('size'), 64, 24, 160)
+    pill = b.get('shape') == 'pill'  # opt-in: rectangular tiles that size to a label of up to 24 characters
     items = []
     for it in (b.get('items') if isinstance(b.get('items'), list) else []):
         if len(items) >= 12:
             break
-        t = _cv_str(it if isinstance(it, str) else (it.get('text') if isinstance(it, dict) else ''), 8)
+        t = _cv_str(it if isinstance(it, str) else (it.get('text') if isinstance(it, dict) else ''), 24 if pill else 8)
         if t:
             items.append(t)
     if not items:
@@ -29661,6 +29662,10 @@ def _render_motion_orbit(b: dict) -> str:
         a = start + math.floor(i * 360 / n + 0.5)
         fs = size * 22 // 100 if len(t) > 2 else size * 42 // 100
         ang = 'calc(' + str(a) + 'deg + var(--s,0)*' + str(spin) + 'deg)'
+        if pill:
+            ph, pf = size * 55 // 100, max(12, size * 26 // 100)
+            html += ('<div style="--u:clamp(0,calc((var(--p,1)*' + str(n + 3) + ' - ' + str(i) + ')/3),1);position:absolute;left:calc(50% + ' + str(rx) + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + str(ry) + '%*var(--u)*sin(' + ang + '));width:auto;height:' + str(ph) + 'px;padding:0 ' + str(ph * 45 // 100) + 'px;box-sizing:border-box;white-space:nowrap;display:flex;align-items:center;justify-content:center;border-radius:999px;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + str(pf) + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:translate(-50%,-50%) scale(var(--u));opacity:var(--u);">' + _cv_esc(t) + '</div>')
+            continue
         html += ('<div style="--u:clamp(0,calc((var(--p,1)*' + str(n + 3) + ' - ' + str(i) + ')/3),1);position:absolute;left:calc(50% + ' + str(rx) + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + str(ry) + '%*var(--u)*sin(' + ang + '));width:' + str(size) + 'px;height:' + str(size) + 'px;margin:-' + str(size // 2) + 'px 0 0 -' + str(size // 2) + 'px;display:flex;align-items:center;justify-content:center;border-radius:28%;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:scale(var(--u));opacity:var(--u);">' + _cv_esc(t) + '</div>')
     return html + '</div>'
 
