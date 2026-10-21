@@ -3574,6 +3574,245 @@ def _render_live_demo_embed(b: dict) -> str:
 def _render_benchmark_comparison(b: dict) -> str:
     return '<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="padding:8px;background:#f0f9ff;border-radius:4px;">Benchmark A: 95ms</div><div style="padding:8px;background:#f0fdf4;border-radius:4px;">Benchmark B: 120ms</div></div></div>'
 
+# ── shared chart-axis helper (plotly core-bar) ──────────────────────────────────────────────────────────────────────────────
+# d3-format 3.1.0 subset (types d f e g s % and n; flags fill/align, sign, $, 0, width, comma, precision, ~), d3-scale 4.0.2
+# scaleLog ticks and nice (base 10) and the linear nice/ticks the histogram already ports. Types b c o p r x X are NOT ported: such a
+# specifier is rejected (the caller shows plain numbers and says so) rather than answered wrongly. Twin of _ax* in atoms_infographic.gs.
+_AX_SPEC = re.compile(r'^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?([0-9]+)?(,)?(\.[0-9]+)?(~)?([a-z%])?$', re.I)
+_AX_SI = ['y', 'z', 'a', 'f', 'p', 'n', 'µ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
+_AX_TYPES = ('d', 'f', 'e', 'g', 's', '%', 'n', '')
+
+
+def _ax_parse(spec):
+    """d3 formatSpecifier, or None when d3 would throw or the type is outside the ported subset."""
+    if not isinstance(spec, str) or len(spec) > 24 or '\n' in spec or '\r' in spec:
+        return None
+    m = _AX_SPEC.match(spec)
+    if m is None:
+        return None
+    fill, align, sign, symbol, zero, width, comma, prec, trim, typ = m.groups()
+    typ = typ or ''
+    if typ not in _AX_TYPES:
+        return None
+    return {'fill': fill or ' ', 'align': align or '>', 'sign': sign or '-', 'symbol': symbol or '', 'zero': bool(zero),
+            'width': int(width) if width is not None else None, 'comma': bool(comma), 'precision': int(prec[1:]) if prec else None,
+            'trim': bool(trim), 'type': typ}
+
+
+def _ax_toexp(x, p=None):
+    """JavaScript x.toExponential(p) for finite x >= 0 (p None = as many digits as needed): 1.5e+3, 1e-7."""
+    if x == 0:
+        return '0' + ('.' + '0' * p if p else '') + 'e+0'
+    if p is None:
+        d = decimal.Decimal(repr(float(x))).normalize()
+        dg = d.as_tuple().digits
+        e = len(dg) - 1 + d.as_tuple().exponent
+        ds = ''.join(str(i) for i in dg)
+    else:
+        d = decimal.Context(prec=p + 1, rounding=decimal.ROUND_HALF_UP).create_decimal(decimal.Decimal(float(x)))
+        dg = d.as_tuple().digits
+        e = len(dg) - 1 + d.as_tuple().exponent
+        ds = ''.join(str(i) for i in dg).ljust(p + 1, '0')[:p + 1]
+    return ds[0] + ('.' + ds[1:] if len(ds) > 1 else '') + 'e' + ('+' if e >= 0 else '-') + str(abs(e))
+
+
+def _ax_toprec(x, p):
+    """JavaScript x.toPrecision(p) for finite x >= 0."""
+    if x == 0:
+        return '0' + ('.' + '0' * (p - 1) if p > 1 else '')
+    mant, e = _ax_toexp(x, p - 1).split('e')
+    e = int(e)
+    dg = mant.replace('.', '')
+    if e < -6 or e >= p:
+        return mant + 'e' + ('+' if e >= 0 else '-') + str(abs(e))
+    if e == p - 1:
+        return dg
+    if e >= 0:
+        return dg[:e + 1] + '.' + dg[e + 1:]
+    return '0.' + '0' * (-(e + 1)) + dg
+
+
+def _ax_dparts(x, p):
+    s = _ax_toexp(x, p - 1) if p else _ax_toexp(x, None)
+    c, e = s.split('e')
+    return (c[0] + c[2:] if len(c) > 1 else c), int(e)
+
+
+def _ax_prefix_auto(x, p):
+    """d3 formatPrefixAuto -> (digits, prefixExponent)."""
+    coef, ex = _ax_dparts(x, p)
+    pe = max(-8, min(8, math.floor(ex / 3))) * 3
+    i, n = ex - pe + 1, len(coef)
+    if i == n:
+        return coef, pe
+    if i > n:
+        return coef + '0' * (i - n), pe
+    if i > 0:
+        return coef[:i] + '.' + coef[i:], pe
+    return '0.' + '0' * (1 - i - 1) + _ax_dparts(x, max(0, p + i - 1))[0], pe
+
+
+def _ax_trim(s):
+    i0, i1, i, n = -1, 0, 1, len(s)
+    while i < n:
+        c = s[i]
+        if c == '.':
+            i0 = i1 = i
+        elif c == '0':
+            if i0 == 0:
+                i0 = i
+            i1 = i
+        else:
+            if not (c in '123456789'):
+                break
+            if i0 > 0:
+                i0 = 0
+        i += 1
+    return s[:i0] + s[i1 + 1:] if i0 > 0 else s
+
+
+def _ax_group(value, width):
+    i, t, g, length = len(value), [], 3, 0
+    while i > 0 and g > 0:
+        if length + g + 1 > width:
+            g = max(1, width - length)
+        t.append(value[max(0, i - g):i])
+        i -= g
+        length += g + 1
+        if length > width:
+            break
+    return ','.join(reversed(t))
+
+
+def _ax_format(spec, v):
+    """d3.format(spec)(v) for a finite number (NaN and the infinities come back as plain words)."""
+    s = _ax_parse(spec)
+    v = float(v)
+    if s is None or v != v or v in (_HG_INF, -_HG_INF):
+        return 'NaN' if v != v else ('Infinity' if v > 0 else '−Infinity')
+    typ, prec, trim, comma, fill, align, sign, zero, width = s['type'], s['precision'], s['trim'], s['comma'], s['fill'], s['align'], s['sign'], s['zero'], s['width']
+    if typ == 'n':
+        comma, typ = True, 'g'
+    elif typ not in ('d', 'f', 'e', 'g', 's', '%'):
+        if prec is None:
+            prec = 12
+        trim, typ = True, 'g'
+    if zero or (fill == '0' and align == '='):
+        zero, fill, align = True, '0', '='
+    prec = 6 if prec is None else (max(1, min(21, prec)) if typ in ('g', 's') else max(0, min(20, prec)))
+    cur = s['symbol'] == '$'
+    prefix = '$' if cur else ''
+    suffix = '' if cur else ('%' if typ == '%' else '')
+    neg = v < 0 or (v == 0 and math.copysign(1.0, v) < 0)
+    a, pe = abs(v), 0
+    if typ == '%':
+        body = _ax_fixed(a * 100, prec)
+    elif typ == 'd':
+        body = _ax_decimal(a)
+    elif typ == 'e':
+        body = _ax_toexp(a, prec)
+    elif typ == 'f':
+        body = _ax_fixed(a, prec)
+    elif typ == 'g':
+        body = _ax_toprec(a, prec)
+    else:
+        body, pe = _ax_prefix_auto(a, prec)
+    if trim:
+        body = _ax_trim(body)
+    try:
+        isz = float(body) == 0
+    except ValueError:
+        isz = False
+    if neg and isz and sign != '+':
+        neg = False
+    pre = ('(' if sign == '(' else '−') if neg else ('' if sign in ('-', '(') else sign)
+    pre += prefix
+    suf = (_AX_SI[8 + pe // 3] if typ == 's' else '') + suffix + (')' if neg and sign == '(' else '')
+    for i, c in enumerate(body):
+        if not ('0' <= c <= '9'):
+            suf = ('.' + body[i + 1:] if c == '.' else body[i:]) + suf
+            body = body[:i]
+            break
+    if comma and not zero:
+        body = _ax_group(body, _HG_INF)
+    length = len(pre) + len(body) + len(suf)
+    pad = fill * (width - length) if width is not None and length < width else ''
+    if comma and zero:
+        body, pad = _ax_group(pad + body, (width - len(suf)) if pad else _HG_INF), ''
+    if align == '<':
+        return pre + body + suf + pad
+    if align == '=':
+        return pre + pad + body + suf
+    if align == '^':
+        h = len(pad) >> 1
+        return pad[:h] + pre + body + suf + pad[h:]
+    return pad + pre + body + suf
+
+
+def _ax_fixed(x, d):
+    return _if_numstr(x) if x >= 1e21 else _if_fixed(x, d)
+
+
+def _ax_decimal(x):
+    r = _hg_round(x)
+    return _if_numstr(r) if r < 1e21 else format(decimal.Decimal(repr(float(r))), 'f')
+
+
+def _ax_log_ticks(u, v, n):
+    """scaleLog().domain([u, v]).ticks(n), base 10, u and v > 0."""
+    rev = v < u
+    if rev:
+        u, v = v, u
+    i, j = math.log10(u), math.log10(v)
+    z = []
+    if j - i < n:
+        i, j = math.floor(i), math.ceil(j)
+        while i <= j:
+            for k in range(1, 10):
+                t = k / _hg_pow10(-i) if i < 0 else k * _hg_pow10(i)
+                if t < u:
+                    continue
+                if t > v:
+                    break
+                z.append(t)
+            i += 1
+        if len(z) * 2 < n:
+            z = _hg_ticks(u, v, n)
+    else:
+        z = [_hg_pow10(int(q)) for q in _hg_ticks(i, j, min(j - i, n))]
+    return z[::-1] if rev else z
+
+
+def _ax_log_nice(u, v):
+    """scaleLog().domain([u, v]).nice().domain()."""
+    rev = v < u
+    a, b = (v, u) if rev else (u, v)
+    a, b = _hg_pow10(int(math.floor(math.log10(a)))), _hg_pow10(int(math.ceil(math.log10(b))))
+    return (b, a) if rev else (a, b)
+
+
+def _ax_scale(lo, hi, log, rng, reverse, count):
+    """The value axis of a bar chart: {lo, hi, ticks, log, pos(v) -> 0..1 along the axis}. lo and hi are the data extent (zero
+    included for linear); rng is a usable [a, b] or None; for a log axis the extent is of the positive values."""
+    if rng:
+        lo, hi = rng
+    elif log:
+        lo, hi = _ax_log_nice(lo, hi)
+        if lo == hi:
+            hi = lo * 10
+    else:
+        if lo == hi:
+            lo, hi = (lo - 1, hi + 1) if lo != 0 else (0, 1)
+        lo, hi = _hg_nice(lo, hi, count)
+    ticks = _ax_log_ticks(lo, hi, count) if log else _hg_ticks(lo, hi, count)
+    if log:
+        l0, l1 = math.log10(lo), math.log10(hi)
+        f = lambda v: (math.log10(v) - l0) / (l1 - l0)
+    else:
+        f = lambda v: (v - lo) / (hi - lo)
+    return {'lo': lo, 'hi': hi, 'ticks': ticks, 'log': log, 'pos': (lambda v: 1 - f(v)) if reverse else f}
+
+
 def _render_chartjs_bar(b: dict) -> str:
     datasets = b.get("datasets", [])
     labels   = b.get("labels", [])
