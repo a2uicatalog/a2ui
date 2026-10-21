@@ -11823,7 +11823,7 @@ blocks:
     license: MIT
 - type: motion_morph
   stage: preview
-  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow), four panel silhouettes (panel, notch, step, tab) for a large panel that reshapes between slides played in order, a horizontal pointed lens (lens: two circular arcs meeting in a point left and right) and a small dot (dot, a circle a twelfth of the circle's size) so a dot can swell into a circle, the circle into the lens and the lens open out into the panel. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
+  description: 'One shape becomes the next as p goes 0 to 1: 2 to 4 presets (circle, square, triangle, diamond, hexagon, star, heart, blob, plus, arrow), four panel silhouettes (panel, notch, step, tab) for a large panel that reshapes between slides played in order, a horizontal pointed lens (lens: two circular arcs meeting in a point left and right) and a small dot (dot, a circle about a twelfth the size of circle) so a dot can swell into a circle, the circle into the lens and the lens open out into the panel. Every shape is stored as 48 points spaced evenly round its outline from the top, so any pair morphs without twisting; the clip polygon is pure CSS and scrubs exactly. Fills its placed width as a square. --s turns it by rotate degrees.'
   compact_description: shape that morphs into the next shape
   surfaces:
     works_on:
