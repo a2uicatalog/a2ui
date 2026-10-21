@@ -176,8 +176,18 @@ def _svg(html):
 
 
 def _norm(svg):
-    uid = re.search(r'id="(\w+?)s?"', svg).group(1)
+    # The ids are a per-chart uid plus suffixed variants (uid + "m", uid + "s"). The GAS uid is random base 36, so it can
+    # itself end in "s"; the old lazy pattern id="(\w+?)s?" then cut that "s" off and the twins compared unequal about one
+    # run in ten (2026-10-21). The shortest id is always the bare uid (or the only, suffixed one), so replace that.
+    uid = min(re.findall(r'id="(\w+)"', svg), key=len)
     return svg.replace(uid, "UID")
+
+
+def test_the_uid_normaliser_survives_a_uid_that_ends_in_s():
+    a = '<svg><g id="gmrab12cs"></g><g id="gmrab12csm"></g><use href="#gmrab12cs"/></svg>'
+    b = '<svg><g id="gmr0f0f0f"></g><g id="gmr0f0f0fm"></g><use href="#gmr0f0f0f"/></svg>'
+    assert _norm(a) == _norm(b)
+    assert _norm('<svg id="g3dabcdes"></svg>') == _norm('<svg id="g3d012345s"></svg>')
 
 
 def _gas_html(d, block):
