@@ -584,7 +584,7 @@ var _MO_TIMELINE_JS =
   'if(tr)e.style.transform=tr;' +
   'if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);' +
   'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";' +
-  'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999||cs===5){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else if(cs===9)cpp=lz(g.i,cl);else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}' +
+  'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999||cs===5){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else if(cs===7){var h7=((1-cl)*50).toFixed(3);cpp="inset(0 "+h7+"% 0 "+h7+"%)";}else if(cs===9)cpp=lz(g.i,cl);else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}' +
   'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}' +
   'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}' +
   'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}' +
@@ -1423,7 +1423,7 @@ _RENDERERS['motion_mask'] = function(b) {
 // scene's start and `overlap` seconds later is the hand-over: the old scene leaves while the new one arrives. Your own tracks
 // on the same layer are applied after, and win.
 var _MO_STITCH = {
-  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'letter': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1
+  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'letter': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1, 'collapse': 1, 'collapse': 1
 };
 var _MO_STITCH_IN = {
   'letter': {clip: 0, cs: 9}, 'fade-through': {opacity: 0, scale: 0.92}, 'shared-x': {opacity: 0, x: 8}, 'shared-y': {opacity: 0, y: 6}, 'shared-z': {opacity: 0, scale: 0.8}, 'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}, 'iris': {clip: 0, cs: 1}, 'clock': {clip: 0, cs: 2}, 'slice': {clip: 0, cs: 3}, 'ribbon': {clip: 0, cs: 6}, 'flip': {opacity: 0, ry: -90}, 'spin': {opacity: 0, rotate: -14, scale: 0.8, blur: 6}
@@ -1494,6 +1494,9 @@ function _moStitch(b, ids, bpm, dur, st) {
         _moStitchKey(keys, 0, {opacity: 0, x: P.x - 50, y: P.y - 50, scale: s0}); _moStitchKey(keys, cur.t, {opacity: 1, x: P.x - 50, y: P.y - 50, scale: s0}, 'hold');
         _moStitchKey(keys, cur.t + ov, {x: 0, y: 0, scale: 1}, 'quart-in-out');
       }
+      else if (fin === 'collapse') { // waits, whole and invisible, until the old scene has squeezed away, then appears
+        _moStitchKey(keys, 0, {opacity: 0}); _moStitchKey(keys, cur.t + ov, {opacity: 1}, 'hold');
+      }
       else if (fin === 'letter') { // hidden until its start (clip 0 is the word at reading size, not nothing), then dives through the word
         _moStitchKey(keys, 0, {opacity: 0, clip: 0, cs: 9}); _moStitchKey(keys, cur.t, {opacity: 1, clip: 0, cs: 9}, 'hold'); _moStitchKey(keys, cur.t + Math.max(ov, 1.4), _MO_REST, 'linear');
       }
@@ -1505,6 +1508,9 @@ function _moStitch(b, ids, bpm, dur, st) {
         var Q = nxt.pb, kq = 100 / Q.w;
         _moStitchKey(keys, nxt.t, {opacity: 1, x: 0, y: 0, scale: 1}); _moStitchKey(keys, nxt.t + ov, {x: -(Q.x - 50) * kq, y: -(Q.y - 50) * kq, scale: kq}, 'quart-in-out');
         _moStitchKey(keys, nxt.t + ov + 0.02, {opacity: 0}, 'hold');
+      }
+      else if (fout === 'collapse') { // the old scene is clipped to a band that narrows to nothing (clip shape 7)
+        _moStitchKey(keys, nxt.t, {opacity: 1, clip: 1, cs: 7}, 'hold'); _moStitchKey(keys, nxt.t + ov, {clip: 0, cs: 7}, 'quart-in-out');
       }
       else if (fout === 'wipe' || fout === 'iris' || fout === 'clock' || fout === 'slice' || fout === 'ribbon' || fout === 'letter') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + (fout === 'letter' ? Math.max(ov, 1.4) : ov), {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
       else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + (own.call(_MO_SEQ, fout) ? ov * 0.3 : ov), _MO_STITCH_OUT[fout], 'accelerate'); }

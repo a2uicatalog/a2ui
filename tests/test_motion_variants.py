@@ -72,3 +72,44 @@ def test_orbit_pill_tiles_are_wider_than_tall_and_hug_their_label():
     sizes = [s for s in _probe(blk, 2, js) if s[0] > 0]
     assert len(sizes) == len(PILLS) and all(w > 1.5 * h for w, h in sizes), sizes
     assert len({round(w) for w, _h in sizes}) > 1, "tiles size to their own label, not one shared width"
+
+
+# ─── 2. motion_timeline scene transition "collapse" ────────────────────────────────────────────────────────────────────────────────
+
+def _col(**kw):
+    return dict(STITCHED, stitch="collapse", bpm=0, overlap=2.0, duration=9, controls=False, autoplay=False, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3}], **kw)
+
+
+CASES["timeline"] = [
+    _col(), dict(STITCHED, stitch="collapse"), dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "collapse"}, {"layer": "s3", "t": 6, "transition": "wipe"}]),
+    dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "wipe"}, {"layer": "s3", "t": 6, "transition": "collapse"}]),
+    dict(STITCHED, scenes=[{"layer": "s1", "t": 0, "transition": "collapse"}, {"layer": "s2", "t": 3, "transition": "iris"}, {"layer": "s3", "t": 6, "transition": "collapse"}]),
+    dict(STITCHED, stitch="Collapse"), dict(STITCHED, stitch="collapse<x>", scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "collapse\"><script>"}]),
+]
+ALL = [b for bs in CASES.values() for b in bs]
+
+
+def test_collapse_python_matches_gas_exactly(core_js):
+    cs = CASES["timeline"]
+    got = _gas_batch(core_js, cs)
+    bad = [str(b)[:90] for b, g in zip(cs, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_collapse_is_new_and_other_transitions_are_unchanged():
+    assert _norm(_py(dict(STITCHED, stitch="Collapse"))) == _norm(_py(dict(STITCHED, stitch="dissolve"))), "unknown names still fall back to dissolve"
+    assert _norm(_py(_col())) != _norm(_py(dict(_col(), stitch="dissolve")))
+    assert 'collapse"><script>' not in _py(CASES["timeline"][-1]), "a hostile transition name is dropped, never echoed"
+
+
+@browser
+def test_collapse_squeezes_the_old_scene_to_a_thin_band_then_shows_the_new_one():
+    clip = "var e=document.querySelector('[data-mt-id=%s]');return [getComputedStyle(e).clipPath, +e.style.opacity];"
+    wide = lambda c: [float(v) for v in re.findall(r"inset\(0(?:px)? ([0-9.]+)%? ", c)]
+    assert _probe(_col(), 2, clip % "s1")[0] in ("none", "inset(0px)"), "before the transition the old scene is whole"
+    mid = _probe(_col(), 4, clip % "s1")[0]
+    assert mid.startswith("inset("), mid
+    late = _probe(_col(), 4.8, clip % "s1")[0]
+    assert late.startswith("inset(") and late != mid, (mid, late)
+    assert _probe(_col(), 4, clip % "s2")[1] == 0, "the new scene waits while the old one collapses"
+    assert _probe(_col(), 5.5, clip % "s2")[1] == 1, "and is whole once the collapse is done"
