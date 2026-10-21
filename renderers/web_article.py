@@ -36639,7 +36639,7 @@ def _render_ternary_plot(b: dict) -> str:
              + tri + svg + line + '</svg>' + dots + labs + '</div></div>'
              '<div style="display:flex;justify-content:space-between;gap:8px;margin:30px 0 0;">'
              '<div class="tpv" style="' + vl + 'max-width:45%;">' + _cv_esc(names[1]) + '</div><div class="tpv" style="' + vl + 'max-width:45%;text-align:right;">' + _cv_esc(names[2]) + '</div></div></div></div>')
-    hint = _hg_note('Gridlines every 20%: ' + _cv_esc(names[0]) + ' counts up the left edge, ' + _cv_esc(names[1]) + ' along the bottom edge towards the left, ' + _cv_esc(names[2]) + ' up the right edge.')
+    hint = _hg_note('Gridlines every 20%: ' + _cv_esc(names[0]) + ' counts up the left edge, ' + _cv_esc(names[1]) + ' along the bottom edge towards the left, ' + _cv_esc(names[2]) + ' counts down the right edge towards its corner.')
     return _if_wrap(_if_title(b) + chart + hint + notes + ver
                     + _if_table(['Point'] + names, [[u[0]] + [_hg_num(v * 100, d) + '%' for v in u[1:]] for u in used]))
 

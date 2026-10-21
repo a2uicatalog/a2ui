@@ -268,3 +268,18 @@ def test_registered_as_a_preview_chart_atom(atom):
     assert '"%s"' % atom in (ROOT / "apps-script-surface/gas-wired-renderer/PackMap.gs").read_text()
     assert '"%s": {"type": "%s"' % (atom, atom) in (ROOT / "scripts/generate_atom_pages.py").read_text()
     assert "d3-scale" in (ROOT / "THIRD-PARTY-NOTICES.md").read_text()
+
+
+# ─── round 2 review findings ──────────────────────────────────────────────────
+def test_q1_ternary_hint_says_the_third_part_counts_down_the_right_edge(core_js):
+    for html in (_py(TERN["basic"]), _gas_batch(core_js, [TERN["basic"]])[0]):
+        assert "Clay counts down the right edge towards its corner" in html
+        assert "Clay up the right edge" not in html
+        assert "Sand counts up the left edge" in html
+
+
+def test_q2_quiver_routing_text_says_direction_ignores_axes_and_arrows_are_centred():
+    sch = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())
+    atom = next(a for a in sch["blocks"] if isinstance(a, dict) and a.get("type") == "quiver")
+    rt = " ".join(atom["routing_text"].split())
+    assert "ignores the axis scales" in rt and "centred on their point, not tail-anchored" in rt

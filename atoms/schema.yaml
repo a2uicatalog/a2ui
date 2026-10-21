@@ -21428,7 +21428,7 @@ blocks:
   routing_text: >-
     Draws a vector field, one arrow per point, such as wind speed and direction across a map grid, water flow or the force on each node.
     Give x, y and the arrow's across (u) and up (v) numbers. It is not for flows between categories (use sankey_flow), for change over
-    time (use a line chart) or for plain points (use scatter_trend). The arrow angle is the picture angle of (u, v), not scaled by the axes.
+    time (use a line chart) or for plain points (use scatter_trend). The arrow direction ignores the axis scales (it is the picture angle of (u, v), not scaled by x or y), and arrows are centred on their point, not tail-anchored.
   intent_phrases:
   - Draw the wind field over this grid as arrows.
   - Show the direction and strength of the current at each station.

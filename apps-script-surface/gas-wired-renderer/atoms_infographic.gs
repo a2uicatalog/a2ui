@@ -3146,7 +3146,7 @@ _RENDERERS['ternary_plot'] = function(b) {
     tri + svg + line + '</svg>' + dots + labs + '</div></div>' +
     '<div style="display:flex;justify-content:space-between;gap:8px;margin:30px 0 0;">' +
     '<div class="tpv" style="' + vl + 'max-width:45%;">' + _esc(names[1]) + '</div><div class="tpv" style="' + vl + 'max-width:45%;text-align:right;">' + _esc(names[2]) + '</div></div></div></div>';
-  var hint = _hgNote('Gridlines every 20%: ' + _esc(names[0]) + ' counts up the left edge, ' + _esc(names[1]) + ' along the bottom edge towards the left, ' + _esc(names[2]) + ' up the right edge.');
+  var hint = _hgNote('Gridlines every 20%: ' + _esc(names[0]) + ' counts up the left edge, ' + _esc(names[1]) + ' along the bottom edge towards the left, ' + _esc(names[2]) + ' counts down the right edge towards its corner.');
   return _ifWrap(_ifTitle(b) + chart + hint + notes + ver +
     _ifTable(['Point'].concat(names), used.map(function(u) { return [u[0], _hgNum(u[1] * 100, d) + '%', _hgNum(u[2] * 100, d) + '%', _hgNum(u[3] * 100, d) + '%']; })));
 };
