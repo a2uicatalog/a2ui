@@ -331,6 +331,10 @@ def test_existing_motion_payloads_are_unchanged():
             a = old._RENDERERS[k](dict(b))
         except Exception:
             continue
-        if a != wa._RENDERERS[k](dict(b)):
+        n = wa._RENDERERS[k](dict(b))
+        if k == "motion_timeline":
+            # later, deliberate change: the shared player script grew a `collapse` branch (I71); compare outside the <script>
+            a, n = (re.sub(r"<script>.*?</script>", "<script/>", x, flags=re.S) for x in (a, n))
+        if a != n:
             bad.append(k)
     assert not bad, bad[:10]
