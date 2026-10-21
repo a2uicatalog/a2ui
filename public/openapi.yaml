@@ -283,6 +283,17 @@ paths:
       responses:
         '200':
           description: Rendered HTML page
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/ApiVersion'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/XRateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/XRateLimitRemaining'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimitPolicy'
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
           content:
             text/html:
               schema:
@@ -648,6 +659,32 @@ components:
         retry, not avoiding a duplicated side effect — but the contract is the same
         shape a mutating endpoint would use.
   headers:
+    XRateLimitLimit:
+      description: Requests allowed in the current window (sent only when the request
+        was metered).
+      schema:
+        type: integer
+        example: 50
+    XRateLimitRemaining:
+      description: Requests remaining in the current window.
+      schema:
+        type: integer
+        example: 49
+    RateLimitPolicy:
+      description: 'IETF RateLimit policy (draft-ietf-httpapi-ratelimit-headers):
+        `"daily";q=<quota>;w=<window seconds>`. Sent on rate-gated routes only, and
+        only when the request was metered; a route with no gate sends neither this
+        nor RateLimit.'
+      schema:
+        type: string
+        example: '"daily";q=50;w=86400'
+    RateLimit:
+      description: 'IETF RateLimit state: `"daily";r=<remaining>[;t=<seconds to reset>]`.
+        `t` is present only when known (always on /api/render successes and on 429s
+        via Retry-After).'
+      schema:
+        type: string
+        example: '"daily";r=49;t=86400'
     ApiVersion:
       description: 'Wire-format version of this response, currently "1". The additive
         alternative to a /v1/ path prefix: bump only on a documented, intentional
@@ -689,6 +726,10 @@ components:
           description: Seconds until the window resets (present on some sources).
           schema:
             type: integer
+        RateLimit-Policy:
+          $ref: '#/components/headers/RateLimitPolicy'
+        RateLimit:
+          $ref: '#/components/headers/RateLimit'
         X-API-Version:
           $ref: '#/components/headers/ApiVersion'
       content:
