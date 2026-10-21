@@ -148,3 +148,27 @@ def test_schema_registration():
     atom = [a for a in s["blocks"] if a.get("type") == "heatmap"][0]
     for f in ("z_min", "z_max", "z_mid", "scale", "show_colorbar", "show_values", "value_format", "version"):
         assert f in atom["fields"], f
+
+
+# ─── round 2 (review HM-2 / HM-3) ─────────────────────────────────────────────
+OBJ_LABELS = {"type": "heatmap", "data": [[1, 2], [3, 4]], "labels_x": [{"o": 1}, ["q"]], "labels_y": [{"o": 1}, True], "scale": "Viridis"}
+OBJ_SCALE = {"type": "heatmap", "data": [[1, 2]], "scale": {"name": "Jet"}}
+DICT_ITEMS = {"type": "heatmap", "version": 1, "data": [{"row": "a", "col": "x", "value": 3}, {"row": "a", "col": "y", "value": 9}, {"row": "b", "col": "y", "value": 5}]}
+
+
+def test_object_labels_fall_back_to_row_col_names_not_object_object(core_js):
+    for b in (OBJ_LABELS, OBJ_SCALE):
+        for h in (_py(dict(b)), _gas_batch(core_js, [dict(b)])[0]):
+            assert "[object" not in h and "object Object" not in h
+    h = _py(dict(OBJ_LABELS))
+    assert "Col 1" in h and "Col 2" in h and "Row 1" in h and "Row 2" in h
+    assert 'Unknown scale' in _py(dict(OBJ_SCALE))
+
+
+def test_legacy_row_col_value_items_still_draw_with_a_new_field(core_js):
+    h = _py(dict(DICT_ITEMS))
+    assert "needs at least one number" not in h
+    assert h.count('class="hmc"') == 3 and h.count("hmn") == 1
+    assert ">a<" in h and ">x<" in h and ">y<" in h and ">b<" in h
+    assert _gas_batch(core_js, [dict(DICT_ITEMS)])[0] == h
+    assert 'aria-label="Heatmap, 2 rows by 2 columns, values from 3 to 9.' in h

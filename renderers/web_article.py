@@ -38938,6 +38938,7 @@ _HM_SCALES = {
 _HM_NAMES = {k.lower(): k for k in _HM_SCALES}
 _HM_KEYS = ('z_min', 'z_max', 'z_mid', 'scale', 'show_colorbar', 'show_values', 'value_format', 'version')
 _HM_CAP = 40
+_HM_COMPACT = 8
 
 
 def _hm_num(v):
@@ -39004,8 +39005,37 @@ def _hm_hex_scale(v):
     return [(i / n, c) for i, (_, c) in enumerate(out)]
 
 
+def _hm_lab(v):
+    """A label is a non-empty string or a finite non-zero number; anything else (objects, arrays, booleans) counts as missing."""
+    if isinstance(v, str):
+        return v or None
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf') and v != 0:
+        return _if_str(v)
+    return None
+
+
+def _hm_pivot(raw):
+    """Legacy [{row, col, value}] items -> (matrix, row labels, col labels), in order of first appearance; None if raw is not that shape."""
+    if not (isinstance(raw, list) and raw and all(isinstance(x, dict) for x in raw) and any('value' in x for x in raw)):
+        return None
+    ry, cx, cell = [], [], {}
+    for x in raw:
+        r, c = _hm_lab(_if_g(x, 'row')), _hm_lab(_if_g(x, 'col'))
+        if r is None or c is None:
+            continue
+        if r not in ry:
+            ry.append(r)
+        if c not in cx:
+            cx.append(c)
+        cell[(r, c)] = _if_g(x, 'value')
+    return [[cell.get((r, c)) for c in cx] for r in ry], ry, cx
+
+
 def _hm_ext(b):
     raw = _if_g(b, 'data')
+    piv = _hm_pivot(raw)
+    if piv:
+        raw = piv[0]
     rows_in = raw if isinstance(raw, list) else []
     nr_all = len(rows_in)
     nc_all = max([len(r) for r in rows_in if isinstance(r, list)] + [0])
@@ -39022,14 +39052,16 @@ def _hm_ext(b):
     ly, lx = _if_g(b, 'labels_y'), _if_g(b, 'labels_x')
     ly = ly if isinstance(ly, list) else (_if_g(b, 'rows') if isinstance(_if_g(b, 'rows'), list) else [])
     lx = lx if isinstance(lx, list) else (_if_g(b, 'cols') if isinstance(_if_g(b, 'cols'), list) else [])
-    rl = [_if_str(ly[i])[:24] if i < len(ly) and _if_truthy(ly[i]) else 'Row ' + str(i + 1) for i in range(R)]
-    cl = [_if_str(lx[j])[:24] if j < len(lx) and _if_truthy(lx[j]) else 'Col ' + str(j + 1) for j in range(C)]
+    if piv:
+        ly, lx = piv[1], piv[2]
+    rl = [_hm_lab(ly[i])[:24] if i < len(ly) and _hm_lab(ly[i]) else 'Row ' + str(i + 1) for i in range(R)]
+    cl = [_hm_lab(lx[j])[:24] if j < len(lx) and _hm_lab(lx[j]) else 'Col ' + str(j + 1) for j in range(C)]
     notes = capnote
     sname, stops = _if_g(b, 'scale'), None
     if isinstance(sname, str) and sname.lower() in _HM_NAMES:
         stops = _HM_SCALES[_HM_NAMES[sname.lower()]]
     elif _if_truthy(sname):
-        notes += _hg_note('Unknown scale "' + _if_s(sname, 30) + '"; drawn with Viridis.')
+        notes += _hg_note('Unknown scale' + (' "' + _if_s(sname, 30) + '"' if isinstance(sname, str) else '') + '; drawn with Viridis.')
     if stops is None:
         stops = (_hm_hex_scale(_if_g(b, 'color_scale')) if not _if_truthy(sname) else None) or _HM_SCALES['Viridis']
     zmin, zmax, zmid = _hm_num(_if_g(b, 'z_min')), _hm_num(_if_g(b, 'z_max')), _hm_num(_if_g(b, 'z_mid'))
@@ -39045,8 +39077,17 @@ def _hm_ext(b):
     unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
     us = ' ' + unit if unit else ''
     show = _if_g(b, 'show_values') is True
-    W = 56 if show else 40
-    cells = '<div></div>' + ''.join('<div style="font-size:12px;line-height:1.25;text-align:center;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;">' + _if_s(c, 24) + '</div>' for c in cl)
+    compact = C > _HM_COMPACT
+    if compact:
+        if show:
+            notes += _hg_note('Values are not drawn above ' + str(_HM_COMPACT) + ' columns (the grid is squeezed to fit); hover a cell or read the table.')
+        show = False
+        k = -(-C // 4)
+        hdr = ''.join('<div style="font-size:12px;line-height:1.25;text-align:left;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;grid-column:span ' + str(min(k, C - j)) + ';">' + _if_s(cl[j], 24) + '</div>' for j in range(0, C, k))
+    else:
+        hdr = ''.join('<div style="font-size:12px;line-height:1.25;text-align:center;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;">' + _if_s(c, 24) + '</div>' for c in cl)
+    mh = '16' if compact else '32'
+    cells = '<div></div>' + hdr
     nmiss = 0
     for i in range(R):
         cells += '<div style="font-size:12px;line-height:1.25;text-align:right;overflow-wrap:anywhere;max-width:110px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:var(--muted,#475569);">' + _if_s(rl[i], 24) + '</div>'
@@ -39055,17 +39096,16 @@ def _hm_ext(b):
             tip = _if_s(rl[i] + ', ' + cl[j] + ': ', 60)
             if v is None:
                 nmiss += 1
-                cells += '<div class="hmc hmn" title="' + tip + 'no data" style="min-height:32px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px dashed var(--muted,#475569);color:var(--muted,#475569);">–</div>'
+                cells += '<div class="hmc hmn" title="' + tip + 'no data" style="min-height:' + mh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px dashed var(--muted,#475569);color:var(--muted,#475569);">–</div>'
                 continue
             r, g, bl = _hm_rgb(stops, (v - lo) / (hi - lo))
             fg = '#fff' if 0.299 * r + 0.587 * g + 0.114 * bl < 140 else '#111'
-            cells += ('<div class="hmc" title="' + tip + _if_s(f(v) + us, 30) + '" style="min-height:32px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;overflow-wrap:anywhere;background:rgb('
+            cells += ('<div class="hmc" title="' + tip + _if_s(f(v) + us, 30) + '" style="min-height:' + mh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;overflow-wrap:anywhere;background:rgb('
                       + str(r) + ',' + str(g) + ',' + str(bl) + ');color:' + fg + ';">' + (_if_s(f(v), 20) if show else '') + '</div>')
     if nmiss:
         notes += _hg_note(str(nmiss) + (' cell has' if nmiss == 1 else ' cells have') + ' no usable number and ' + ('is' if nmiss == 1 else 'are') + ' marked "no data".')
     aria = 'Heatmap, ' + str(R) + (' row' if R == 1 else ' rows') + ' by ' + str(C) + (' column' if C == 1 else ' columns') + ', values from ' + f(min(vals)) + ' to ' + f(max(vals)) + us + '.'
-    grid_html = ('<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _if_s(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + str(C) + ',minmax(' + str(W)
-                 + 'px,1fr));gap:2px;width:100%;max-width:' + str(120 + C * 96) + 'px;">' + cells + '</div></div>')
+    grid_html = ('<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _if_s(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + str(C) + ',minmax(0,1fr));gap:2px;width:100%;max-width:' + str(120 + C * 96) + 'px;">' + cells + '</div></div>')
     bar = ''
     if _if_g(b, 'show_colorbar') is not False:
         grad = ','.join('rgb(%d,%d,%d) %s%%' % (*c, _if_fmt(p * 100)) for p, c in stops)

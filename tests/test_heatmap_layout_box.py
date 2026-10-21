@@ -1,5 +1,5 @@
 """heatmap (extended path) in a real browser: cells never overlap, labels stay >= 12px and unclipped, the block is never wider than its
-container (a wide grid scrolls inside it). Same method and widths as tests/test_histogram_layout_box.py."""
+container (a wide grid is squeezed to fit, never scrolled or clipped). Same method and widths as tests/test_histogram_layout_box.py."""
 from __future__ import annotations
 
 import json
@@ -23,10 +23,11 @@ window.addEventListener('load', function () {
     if (rr.right > cs.right + 0.5 || rr.left < cs.left - 0.5) errs.push('block widens its container: ' + rr.width + ' in ' + cs.width);
     if (root.scrollWidth > root.clientWidth + 1) errs.push('content is wider than the block: ' + root.scrollWidth + ' > ' + root.clientWidth);
     var sc = root.querySelector('.hms'), sr = sc.getBoundingClientRect();
+    var compact = !!root.querySelector('[style*="grid-column:span"]');
     var cells = Array.prototype.slice.call(root.querySelectorAll('.hmc'));
     var rects = cells.map(function (e) { return e.getBoundingClientRect(); });
     for (i = 0; i < rects.length; i++) {
-      if (rects[i].width < 20 || rects[i].height < 20) errs.push('cell ' + i + ' too small: ' + rects[i].width + 'x' + rects[i].height);
+      if (rects[i].width < (compact ? 3 : 20) || rects[i].height < (compact ? 14 : 20)) errs.push('cell ' + i + ' too small: ' + rects[i].width + 'x' + rects[i].height);
       if (i && hit(rects[i], rects[i - 1])) errs.push('cells ' + (i - 1) + ',' + i + ' overlap');
       if (cells[i].scrollWidth > cells[i].clientWidth + 1) errs.push('cell ' + i + ' text clipped');
     }
@@ -57,4 +58,4 @@ def test_cells_and_labels_never_overlap_or_widen_the_container(renderer, core_js
     assert not bad, json.dumps(bad, indent=1)[:3000]
     assert all(r["cells"] == html[r["id"].split("-")[0]].count('class="hmc') for r in res)
     by = {r["id"]: r for r in res}
-    assert not by["plain-w650"]["scrolls"] and by["big-w320"]["scrolls"]   # a 40-column grid scrolls inside its box at 320 px, a 3-column one never does
+    assert not any(r["scrolls"] for r in res)   # no grid scrolls: a 40-column grid is squeezed into its box, never cut off (HM-4)

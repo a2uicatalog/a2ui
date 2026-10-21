@@ -3172,6 +3172,7 @@ var _HM_SCALES = {
 };
 var _HM_KEYS = ['z_min', 'z_max', 'z_mid', 'scale', 'show_colorbar', 'show_values', 'value_format', 'version'];
 var _HM_CAP = 40;
+var _HM_COMPACT = 8;
 var _HM_FMT_RE = /^(,)?(?:\.([0-9]))?([f%d])?$/;
 function _hmNum(v) { return (typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12) ? v : null; }
 function _hmRound(x) { return Math.floor(x + 0.5); }
@@ -3218,8 +3219,27 @@ function _hmHexScale(v) {
   }
   return out.map(function(c, k) { return [k / (out.length - 1), c]; });
 }
+function _hmLab(v) {
+  if (typeof v === 'string') return v || null;
+  if (typeof v === 'number' && isFinite(v) && v !== 0) return String(v);
+  return null;
+}
+function _hmPivot(raw) {
+  if (!(Array.isArray(raw) && raw.length && raw.every(function(x) { return x && typeof x === 'object' && !Array.isArray(x); }) && raw.some(function(x) { return Object.prototype.hasOwnProperty.call(x, 'value'); }))) return null;
+  var ry = [], cx = [], cell = {};
+  raw.forEach(function(x) {
+    var r = _hmLab(x.row), c = _hmLab(x.col);
+    if (r === null || c === null) return;
+    if (ry.indexOf(r) < 0) ry.push(r);
+    if (cx.indexOf(c) < 0) cx.push(c);
+    cell[JSON.stringify([r, c])] = x.value;
+  });
+  return [ry.map(function(r) { return cx.map(function(c) { var k = JSON.stringify([r, c]); return Object.prototype.hasOwnProperty.call(cell, k) ? cell[k] : null; }); }), ry, cx];
+}
 function _hmExt(b) {
-  var raw = b.data, rowsIn = Array.isArray(raw) ? raw : [];
+  var raw = b.data, piv = _hmPivot(raw);
+  if (piv) raw = piv[0];
+  var rowsIn = Array.isArray(raw) ? raw : [];
   var nrAll = rowsIn.length, ncAll = 0;
   rowsIn.forEach(function(r) { if (Array.isArray(r) && r.length > ncAll) ncAll = r.length; });
   var R = Math.min(_HM_CAP, nrAll), C = Math.min(_HM_CAP, ncAll), grid = [], vals = [], i, j;
@@ -3229,20 +3249,30 @@ function _hmExt(b) {
   if (ncAll > C) capnote += _hgNote('Showing the first ' + C + ' of ' + ncAll + ' columns.');
   if (!vals.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A heatmap needs at least one number in data.</div>' + capnote + _hgVersionNote(b, 'heatmap'));
   var ly = Array.isArray(b.labels_y) ? b.labels_y : (Array.isArray(b.rows) ? b.rows : []), lx = Array.isArray(b.labels_x) ? b.labels_x : (Array.isArray(b.cols) ? b.cols : []);
+  if (piv) { ly = piv[1]; lx = piv[2]; }
   var rl = [], cl = [];
-  for (i = 0; i < R; i++) rl.push(i < ly.length && ly[i] ? String(ly[i]).slice(0, 24) : 'Row ' + (i + 1));
-  for (j = 0; j < C; j++) cl.push(j < lx.length && lx[j] ? String(lx[j]).slice(0, 24) : 'Col ' + (j + 1));
+  for (i = 0; i < R; i++) rl.push(i < ly.length && _hmLab(ly[i]) ? _hmLab(ly[i]).slice(0, 24) : 'Row ' + (i + 1));
+  for (j = 0; j < C; j++) cl.push(j < lx.length && _hmLab(lx[j]) ? _hmLab(lx[j]).slice(0, 24) : 'Col ' + (j + 1));
   var notes = capnote, sname = b.scale, stops = null, lname = typeof sname === 'string' ? sname.toLowerCase() : null;
   if (lname !== null) Object.keys(_HM_SCALES).forEach(function(k) { if (stops === null && k.toLowerCase() === lname) stops = _HM_SCALES[k]; });
-  if (stops === null && sname) notes += _hgNote('Unknown scale "' + _ifS(sname, 30) + '"; drawn with Viridis.');
+  if (stops === null && sname) notes += _hgNote('Unknown scale' + (typeof sname === 'string' ? ' "' + _ifS(sname, 30) + '"' : '') + '; drawn with Viridis.');
   if (stops === null) stops = (!sname ? _hmHexScale(b.color_scale) : null) || _HM_SCALES.Viridis;
   var zmin = _hmNum(b.z_min), zmax = _hmNum(b.z_max), zmid = _hmNum(b.z_mid);
   var dom = _hmDomain(vals, zmin, zmax, zmid), lo = dom[0], hi = dom[1];
   var midOn = zmid !== null && !(zmin !== null && zmax !== null), spec = b.value_format;
   if (spec && !(typeof spec === 'string' && _HM_FMT_RE.test(spec))) { notes += _hgNote('value_format "' + _ifS(spec, 20) + '" is not understood (use , .N and f, % or d); values use the default format.'); spec = null; }
   function f(x) { return _hmFmt(x, spec); }
-  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', show = b.show_values === true, W = show ? 56 : 40;
-  var cells = '<div></div>' + cl.map(function(c) { return '<div style="font-size:12px;line-height:1.25;text-align:center;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;">' + _ifS(c, 24) + '</div>'; }).join('');
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', show = b.show_values === true, compact = C > _HM_COMPACT, hdr, mh = compact ? '16' : '32';
+  if (compact) {
+    if (show) notes += _hgNote('Values are not drawn above ' + _HM_COMPACT + ' columns (the grid is squeezed to fit); hover a cell or read the table.');
+    show = false;
+    var k = Math.ceil(C / 4);
+    hdr = '';
+    for (j = 0; j < C; j += k) hdr += '<div style="font-size:12px;line-height:1.25;text-align:left;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;grid-column:span ' + Math.min(k, C - j) + ';">' + _ifS(cl[j], 24) + '</div>';
+  } else {
+    hdr = cl.map(function(c) { return '<div style="font-size:12px;line-height:1.25;text-align:center;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;">' + _ifS(c, 24) + '</div>'; }).join('');
+  }
+  var cells = '<div></div>' + hdr;
   var nmiss = 0;
   for (i = 0; i < R; i++) {
     cells += '<div style="font-size:12px;line-height:1.25;text-align:right;overflow-wrap:anywhere;max-width:110px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:var(--muted,#475569);">' + _ifS(rl[i], 24) + '</div>';
@@ -3250,19 +3280,18 @@ function _hmExt(b) {
       var v = grid[i][j], tip = _ifS(rl[i] + ', ' + cl[j] + ': ', 60);
       if (v === null) {
         nmiss++;
-        cells += '<div class="hmc hmn" title="' + tip + 'no data" style="min-height:32px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px dashed var(--muted,#475569);color:var(--muted,#475569);">–</div>';
+        cells += '<div class="hmc hmn" title="' + tip + 'no data" style="min-height:' + mh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px dashed var(--muted,#475569);color:var(--muted,#475569);">–</div>';
         continue;
       }
       var c = _hmRgb(stops, (v - lo) / (hi - lo)), fg = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2] < 140 ? '#fff' : '#111';
-      cells += '<div class="hmc" title="' + tip + _ifS(f(v) + us, 30) + '" style="min-height:32px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;overflow-wrap:anywhere;background:rgb(' +
+      cells += '<div class="hmc" title="' + tip + _ifS(f(v) + us, 30) + '" style="min-height:' + mh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;overflow-wrap:anywhere;background:rgb(' +
         c[0] + ',' + c[1] + ',' + c[2] + ');color:' + fg + ';">' + (show ? _ifS(f(v), 20) : '') + '</div>';
     }
   }
   if (nmiss) notes += _hgNote(nmiss + (nmiss === 1 ? ' cell has' : ' cells have') + ' no usable number and ' + (nmiss === 1 ? 'is' : 'are') + ' marked "no data".');
   var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
   var aria = 'Heatmap, ' + R + (R === 1 ? ' row' : ' rows') + ' by ' + C + (C === 1 ? ' column' : ' columns') + ', values from ' + f(mn) + ' to ' + f(mx) + us + '.';
-  var gridHtml = '<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _ifS(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + C + ',minmax(' + W +
-    'px,1fr));gap:2px;width:100%;max-width:' + (120 + C * 96) + 'px;">' + cells + '</div></div>';
+  var gridHtml = '<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _ifS(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + C + ',minmax(0,1fr));gap:2px;width:100%;max-width:' + (120 + C * 96) + 'px;">' + cells + '</div></div>';
   var bar = '';
   if (b.show_colorbar !== false) {
     var grad = stops.map(function(s) { return 'rgb(' + s[1][0] + ',' + s[1][1] + ',' + s[1][2] + ') ' + _ifFmt(s[0] * 100) + '%'; }).join(',');
