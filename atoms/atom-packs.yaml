@@ -192,6 +192,7 @@ a2ui-charts-v1:
 - chord_diagram
 - circle_pack
 - arc_diagram
+- contour_plot
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing
