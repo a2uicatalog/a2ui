@@ -101,11 +101,12 @@ def test_origin_is_a_named_edge_or_a_percent_point_and_bad_values_are_the_defaul
     def start(h):
         m = re.search(r'd="M(-?[\d.]+),(-?[\d.]+)', h)
         return float(m.group(1)), float(m.group(2))
-    assert start(_py(dict(BASE, origin={"x": 20, "y": 80}))) == (20, 80)
-    assert start(_py(dict(BASE, origin={"x": 999, "y": -999}))) == (100, 0), "clamped to the box"
-    assert start(_py(dict(BASE, origin={"x": 50}))) == (50, 50), "a missing coordinate is 50"
-    assert start(_py(dict(BASE, origin="top")))[1] == 0 and start(_py(dict(BASE, origin="bottom")))[1] == 100
-    assert start(_py(dict(BASE, origin="left")))[0] == 0 and start(_py(dict(BASE, origin="right")))[0] == 100
+    # the bolts are drawn in a fixed 160 x 90 space (so angles are kept in any box): x = percent * 1.6, y = percent * 0.9
+    assert start(_py(dict(BASE, origin={"x": 20, "y": 80}))) == (32, 72)
+    assert start(_py(dict(BASE, origin={"x": 999, "y": -999}))) == (160, 0), "clamped to the box"
+    assert start(_py(dict(BASE, origin={"x": 50}))) == (80, 45), "a missing coordinate is 50"
+    assert start(_py(dict(BASE, origin="top")))[1] == 0 and start(_py(dict(BASE, origin="bottom")))[1] == 90
+    assert start(_py(dict(BASE, origin="left")))[0] == 0 and start(_py(dict(BASE, origin="right")))[0] == 160
 
 
 def test_colour_is_a_hex_never_echoed_and_default_is_a_cool_near_white():
@@ -237,6 +238,7 @@ def test_reduced_motion_and_print_show_the_settled_picture():
     assert "prefers-reduced-motion:reduce" in css and "print" in css
     assert ".lt-flash{display:none!important}" in css.replace(" ", "")
     assert ".lt-g{clip-path:none!important;opacity:1!important}" in css.replace(" ", "")
+    assert ".lt-fade{display:none!important}" in css.replace(" ", ""), "over children the bolts are gone at rest, in reduced motion and in print"
 
 
 def test_version_note():
@@ -328,3 +330,73 @@ def test_children_are_held_at_p_one_and_readable_under_the_bolts(core_js):
     for html in (_py(blk), _gas_batch(core_js, [blk])[0]):
         d0, d1 = _page(html, 0, 650, js), _page(html, 1, 650, js)
         assert "Hello there" in d0["txt"] and d0["op"] == 1 and d0 == d1, (d0, d1)
+
+
+# ─── over children the bolts are gone when the scene settles; bare, they stay ────
+KID = {"type": "motion_lightning", "blocks": [{"type": "motion_pill", "text": "Continue"}]}
+
+
+def test_over_children_the_bolt_layer_fades_out_and_bare_it_does_not():
+    h = _py(KID)
+    svg = re.search(r'<svg\b[^>]*>', h).group(0)
+    assert 'class="lt-fade"' in svg and "opacity:clamp(0,calc((1 - var(--p,1))*2.5),1)" in svg
+    b = re.search(r'<svg\b[^>]*>', _py(BASE)).group(0)
+    assert "lt-fade" not in b and "opacity:" not in b
+
+
+@browser
+def test_with_children_the_bolt_layer_has_no_opacity_at_one_and_reduced_motion_and_the_fade_is_monotone(core_js):
+    js = ("var s=document.querySelector('svg');var r=document.querySelector('[data-lt=root]');var out=[];for(var i=0;i<=40;i++){r.style.setProperty('--p',i/40);out.push(+getComputedStyle(s).opacity);}return out;")
+    for html in (_py(KID), _gas_batch(core_js, [KID])[0]):
+        o = _page(html, 1, 650, js)
+        assert o[-1] == 0 and o[0] == 1 and o[24] == 1 and o[30] < 1, o
+        assert all(a >= b for a, b in zip(o[16:], o[17:])), "only ever fades away: one more monotone change"
+        d = _page(html, None, 650, "return [getComputedStyle(document.querySelector('svg')).opacity, document.querySelector('[data-lt=body]').textContent];")
+        assert d[0] == "0" and "Continue" in d[1], d
+    for html in (_py(BASE), _gas_batch(core_js, [BASE])[0]):
+        assert _page(html, None, 650, "return getComputedStyle(document.querySelector('svg')).opacity;") == "1"
+
+
+@browser
+def test_sampled_rises_stay_within_three_with_children_too(core_js):
+    blk = dict(KID, flash=True, bolts=6, branches=4)
+    js = ("var g=Array.prototype.slice.call(document.querySelectorAll('.lt-g')),f=document.querySelector('[data-lt=flash]'),s=document.querySelector('svg'),root=document.querySelector('[data-lt=root]'),out=[];"
+          "for(var i=0;i<=120;i++){root.style.setProperty('--p',i/120);var o=g.map(function(e){return +getComputedStyle(e).opacity;});var m=o.reduce(function(a,b){return a+b;},0)/o.length;"
+          "out.push([m*(+getComputedStyle(s).opacity),+getComputedStyle(f).opacity]);}return out;")
+    for html in (_py(blk), _gas_batch(core_js, [blk])[0]):
+        series = _page(html, 1, 650, js)
+        n = 0
+        for col in (0, 1):
+            v = [x[col] for x in series]
+            up, base = False, v[0]
+            for a, b in zip(v, v[1:]):
+                if b > a + 1e-9:
+                    if not up:
+                        up, base = True, a
+                else:
+                    if up and a - base >= 0.02:
+                        n += 1
+                    up = False
+            if up and v[-1] - base >= 0.02:
+                n += 1
+        assert n <= 3, n
+
+
+# ─── proportions: the bolts keep their angles in any box ──────────────────────
+@browser
+def test_bolts_over_a_short_wide_pill_are_not_flattened(core_js):
+    js = ("var p=document.querySelector('[data-lt=bolt]').getBoundingClientRect();var r=document.querySelector('[data-lt=root]').getBoundingClientRect();return {w:p.width,h:p.height,rw:r.width,rh:r.height};")
+    blk = dict(KID, bolts=1, branches=0)
+    for html in (_py(blk), _gas_batch(core_js, [blk])[0]):
+        wide = _page(html, 1, 650, js)
+        ref = _page(_py(dict(BASE, bolts=1, branches=0)), 1, 650, js)
+        assert wide["rh"] < 90, wide
+        assert wide["h"] / wide["w"] > 0.4 * ref["h"] / ref["w"] and wide["h"] > 0.6 * wide["w"] * 0.3, (wide, ref)
+        assert abs(wide["h"] / wide["w"] - ref["h"] / ref["w"]) < 0.05 * ref["h"] / ref["w"], "same bolt, same aspect, whatever the box"
+
+
+def test_the_alignment_follows_the_origin_so_the_strike_point_stays_in_the_box():
+    def par(o):
+        return re.search(r'preserveAspectRatio="([^"]*)"', _py(dict(BASE, origin=o))).group(1)
+    assert par("top") == "xMidYMin slice" and par("bottom") == "xMidYMax slice" and par("left") == "xMinYMid slice" and par("right") == "xMaxYMid slice" and par("center") == "xMidYMid slice"
+    assert par({"x": 10, "y": 90}) == "xMinYMax slice"
