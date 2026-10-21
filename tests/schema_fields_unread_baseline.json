@@ -527,6 +527,9 @@
   "size",
   "weight"
  ],
+ "motion_selection": [
+  "version"
+ ],
  "motion_streak": [
   "align",
   "color",
