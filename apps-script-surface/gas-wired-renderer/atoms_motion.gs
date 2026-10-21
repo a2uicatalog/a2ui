@@ -197,7 +197,7 @@ function _moGlOn(v) { return v === true || (!!v && typeof v === 'object' && !Arr
 function _moGlitch(spec, html) {
   if (!_moGlOn(spec)) return html;
   var o = spec === true ? {} : spec;
-  var n = _ffInt(o.slices, 7, 2, 12), shift = _ffNum(o.shift, 8, 0, 40, 2), fr = _ffInt(o.fringe, 0, 0, 20), seed = _ffInt(o.seed, 7, 0, 9999);
+  var n = _ffInt(o.slices, 7, 2, 12), shift = _ffNum(o.shift, 8, 0, 40, 2), fr = _ffInt(o.fringe, 2, 0, 20), seed = _ffInt(o.seed, 7, 0, 9999);
   if (parseFloat(shift) === 0 && fr === 0) return html;
   if (html.toLowerCase().indexOf('<script') >= 0) return html;
   var dialS = o.dial === 's';
@@ -214,7 +214,7 @@ function _moGlitch(spec, html) {
   function nxt() { st = st * 16807 % 2147483647; return st; }
   var sl = [], tot = 0, j;
   for (j = 0; j < n; j++) {
-    var w = 1 + nxt() % 3, sg = nxt() % 2 ? 1 : -1, amp = (4 + nxt() % 7) / 10, f = 18 + nxt() % 23, ph = (nxt() % 63) / 10;
+    var w = 1 + nxt() % 3, sg = nxt() % 2 ? 1 : -1, amp = (4 + nxt() % 7) / 10, f = 4 + nxt() % 6, ph = (nxt() % 63) / 10;
     sl.push([w, sg, amp, f, ph]); tot += w;
   }
   var fil = '';

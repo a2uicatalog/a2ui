@@ -79,7 +79,7 @@ def test_deterministic_and_seeded():
     a, b = _py(dict(PILL, glitch={"seed": 5})), _py(dict(PILL, glitch={"seed": 5}))
     assert a == b and "random" not in a.lower()
     assert _py(dict(PILL, glitch={"seed": 6})) != a
-    assert _py(dict(PILL, glitch=True)) == _py(dict(PILL, glitch={"seed": 7, "slices": 7, "shift": 8, "fringe": 0, "dial": "p"}))
+    assert _py(dict(PILL, glitch=True)) == _py(dict(PILL, glitch={"seed": 7, "slices": 7, "shift": 8, "fringe": 2, "dial": "p"}))
 
 
 def test_hostile_values_never_reach_markup():
@@ -225,6 +225,27 @@ def test_existing_motion_payloads_render_byte_for_byte_as_before_the_glitch_prop
         except Exception:
             continue
         n = wa._RENDERERS[k](dict(b))
+        if k == "motion_timeline":
+            # the timeline's shared player script grew a branch for the `collapse` transition (I71): existing films behave the
+            # same and only that script's text changed, so compare everything outside the <script> exactly
+            a, n = (re.sub(r"<script>.*?</script>", "<script/>", x, flags=re.S) for x in (a, n))
         if a != n:
             bad.append(k)
     assert not bad, bad[:10]
+
+
+def test_a_tear_never_flashes_more_than_three_times():
+    """WCAG 2.3.1 (three flashes, and the stricter red-flash rule for the red/cyan fringe): every slice swings at most 9 rad of
+    sin over the whole tear, under 1.5 cycles, so a tear of any length has at most 3 flashes. Checked over many seeds and slice counts."""
+    worst = 0.0
+    for seed in range(0, 400, 7):
+        for n in (2, 7, 12):
+            h = _py(dict(PILL, glitch={"seed": seed, "slices": n}))
+            for f in re.findall(r"sin\(calc\(var\(--p,1\)\*(\d+(?:\.\d+)?) \+", h):
+                worst = max(worst, float(f))
+    assert 0 < worst <= 9
+
+
+def test_red_cyan_fringe_is_the_default_and_thin():
+    h = _py(dict(PILL, glitch=True))
+    assert "rgba(255,45,111,0.85)" in h and "rgba(25,211,255,0.85)" in h and "calc(2px*" in h

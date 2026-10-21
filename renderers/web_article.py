@@ -28378,7 +28378,7 @@ def _mo_glitch(spec, html):
     o = spec if isinstance(spec, dict) else {}
     n = _ff_int(o.get('slices'), 7, 2, 12)
     shift = _ff_num(o.get('shift'), 8, 0, 40, 2)
-    fr = _ff_int(o.get('fringe'), 0, 0, 20)
+    fr = _ff_int(o.get('fringe'), 2, 0, 20)
     seed = _ff_int(o.get('seed'), 7, 0, 9999)
     if float(shift) == 0 and fr == 0:
         return html
@@ -28402,7 +28402,7 @@ def _mo_glitch(spec, html):
         w = 1 + nxt() % 3
         sg = 1 if nxt() % 2 else -1
         amp = (4 + nxt() % 7) / 10
-        f = 18 + nxt() % 23
+        f = 4 + nxt() % 6      # at most 9 rad over p 0..1: under 1.5 swings, so a tear of any length makes at most 3 flashes (WCAG 2.3.1)
         ph = (nxt() % 63) / 10
         sl.append((w, sg, amp, f, ph))
     tot = sum(r[0] for r in sl)
