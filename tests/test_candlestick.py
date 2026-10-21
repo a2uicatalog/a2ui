@@ -121,7 +121,7 @@ PAYLOADS = {
     "malformed": {"type": "candlestick_chart", "dates": ["2024-03-04", "bad", "2024-03-06", None, "2024-03-08", "2024-03-09", "2024-03-10", "2024-03-11"],
                   "open": [1, 2, "3", 4, 5, 6, 7, 8], "high": [2, 3, 4, 5, 3, 7, 8, 9], "low": [0, 1, 2, 3, 4, 5, 6, 7], "close": [1.5, 2.5, 3.5, 4.5, 5, 6.5, 7, 1e30],
                   "volume": [10, 20, 30, 40, 50, "x", -5, 80]},
-    "inconsistent": {"type": "candlestick_chart", "dates": ["2024-03-04", "2024-03-05"], "open": [1, 2], "high": [2, 1], "low": [0, 0], "close": [1.5, 3]},
+    "inconsistent": {"type": "candlestick_chart", "dates": ["2024-03-04", "2024-03-05"], "open": [1, 2], "high": [0.5, 1], "low": [0, 0], "close": [1.5, 3]},
     "no_dates": {"type": "candlestick_chart", "title": "T", "open": [1], "high": [2], "low": [0], "close": [1]},
     "not_lists": {"type": "candlestick_chart", "dates": "2024-03-04", "open": 1, "high": {"a": 1}, "low": None, "close": True},
     "none_usable": {"type": "candlestick_chart", "dates": ["x", "y"], "open": [1, 2], "high": [1, 2], "low": [1, 2], "close": [1, 2]},
