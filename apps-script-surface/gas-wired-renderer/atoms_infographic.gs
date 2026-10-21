@@ -3175,13 +3175,18 @@ function _pcLayout(dims) {
   return {xs: xs, domains: domains, ticks: ticks, tickY: tickY, ys: ys, paths: paths};
 }
 function _pcNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+function _pcText(v) {
+  if (typeof v === 'string') return v !== '' ? v : null;
+  return typeof v === 'number' && isFinite(v) && v !== 0 ? String(v) : null;
+}
 function _pcPlural(c, one, many) { return c + ' ' + (c === 1 ? one : many); }
 _RENDERERS['parallel_coords'] = function(b) {
   var raw = Array.isArray(b.dimensions) ? b.dimensions : [], dims = [], leftD = 0;
   raw.slice(0, 8).forEach(function(d, k) {
     if (!(d && typeof d === 'object' && !Array.isArray(d)) || !Array.isArray(d.values)) { leftD++; return; }
     var ok = _pcNum(d.min) && _pcNum(d.max) && d.min < d.max;
-    dims.push({label: d.label ? String(d.label).slice(0, 24) : 'Dimension ' + (k + 1), raw: d.values, min: ok ? d.min : null, max: ok ? d.max : null, reverse: d.reverse === true});
+    var full = _pcText(d.label);
+    dims.push({full: full, label: full !== null ? full.slice(0, 24) : 'Dimension ' + (k + 1), raw: d.values, min: ok ? d.min : null, max: ok ? d.max : null, reverse: d.reverse === true});
   });
   var beyondD = raw.length - 8, longest = dims.reduce(function(m, d) { return Math.max(m, d.raw.length); }, 0), nrows = Math.min(200, longest), keep = [], i;
   for (i = 0; i < nrows; i++) if (dims.every(function(d) { return i < d.raw.length && _pcNum(d.raw[i]); })) keep.push(i);
@@ -3201,12 +3206,12 @@ _RENDERERS['parallel_coords'] = function(b) {
     d.lo = Math.min.apply(null, d.real); d.hi = Math.max.apply(null, d.real);
   });
   var L = _pcLayout(dims), cb = b.color_by, cbi = null, cd = null, cols = [];
-  if (typeof cb === 'string' && cb !== '') { for (i = 0; i < n; i++) if (dims[i].label === cb) { cbi = i; break; } }
+  if (typeof cb === 'string' && cb !== '') { for (i = 0; i < n; i++) if (dims[i].label === cb || dims[i].full === cb) { cbi = i; break; } }
   else if (typeof cb === 'number' && cb === Math.floor(cb) && cb >= 0 && cb < n) cbi = cb;
   if (cbi === null && cb) notes += _hgNote('color_by "' + _esc(String(cb).slice(0, 40)) + '" matches no dimension; the lines are drawn in one colour.');
   if (clamped) notes += _hgNote(_pcPlural(clamped, 'value was', 'values were') + ' outside ' + (clamped === 1 ? 'its' : 'their') + ' axis range and ' + (clamped === 1 ? 'is' : 'are') + ' drawn on its edge.');
   var rl = Array.isArray(b.row_labels) ? b.row_labels : [];
-  var names = keep.map(function(r) { return r < rl.length && rl[r] ? String(rl[r]).slice(0, 30) : 'Row ' + (r + 1); });
+  var names = keep.map(function(r) { return r < rl.length && _pcText(rl[r]) !== null ? _pcText(rl[r]).slice(0, 30) : 'Row ' + (r + 1); });
   var f = function(v) { return _bpFmt(v, 6); };
   var tl = L.ticks.map(function(tk) { var dc = _hgDecimals(tk); return tk.map(function(t) { return _hgNum(t, dc); }); });
   var lw = Math.max.apply(null, [].concat.apply([], tl).map(function(s) { return s.length; })) * 8 + 6, pitch = Math.max(92, lw + 8), pad = Math.max(0, lw - Math.floor(pitch / 2)), ACC = 'var(--accent,#0369A1)';
@@ -3236,8 +3241,8 @@ _RENDERERS['parallel_coords'] = function(b) {
   var aria = 'Parallel coordinates of ' + _pcPlural(keep.length, 'row', 'rows') + ' across ' + n + ' dimensions.' +
     dims.map(function(d) { return ' ' + d.label + ' from ' + f(d.lo) + ' to ' + f(d.hi) + (d.reverse ? ', drawn upside down' : '') + '.'; }).join('') +
     (cbi !== null ? ' Lines are coloured by ' + cd.label + ', light for low and dark for high.' : '');
-  var chart = '<div class="ifpc" style="container-type:inline-size;max-width:100%;">' +
-    '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + (n * pitch + pad - 1) + 'px){.ifpc .pcs{display:block!important}}</style>' +
+  var chart = '<div class="ifpc pcm' + (n * pitch + pad - 1) + '" style="container-type:inline-size;max-width:100%;">' +
+    '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + (n * pitch + pad - 1) + 'px){.pcm' + (n * pitch + pad - 1) + ' .pcs{display:block!important}}</style>' +
     '<div class="pcs" style="display:none;font-size:0.75rem;color:var(--muted,#475569);margin:0 0 4px;">Scroll sideways to see every axis.</div>' +
     '<div role="region" aria-label="Parallel coordinates chart" tabindex="0" style="overflow-x:auto;">' +
     '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;box-sizing:content-box;padding-left:' + pad + 'px;min-width:' + (n * pitch) + 'px;">' +

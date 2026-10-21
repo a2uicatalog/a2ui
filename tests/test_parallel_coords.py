@@ -219,3 +219,27 @@ def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_doc
 def test_d3_credit_names_parallel_coords():
     t = (ROOT / "THIRD-PARTY-NOTICES.md").read_text()
     assert "tests/test_parallel_coords.py" in t
+
+
+# ─── round 2 (review P1, P3) ───────────────────────────────────────────────────
+def test_object_labels_never_print_object_object(core_js):
+    """P1: a dimension or row label that is not text or a number falls back to the default name, in both twins."""
+    b = {"type": "parallel_coords", "row_labels": [{"x": 1}, ["a"]],
+         "dimensions": [{"label": {"o": 1}, "values": [1, 2]}, {"label": ["l"], "values": [3, 4]}, {"label": True, "values": [5, 6]}]}
+    py, gas = _py(b), _gas_batch(core_js, [b])[0]
+    assert py == gas
+    assert "[object" not in py
+    for want in ("Dimension 1", "Dimension 2", "Dimension 3", "Row 1", "Row 2"):
+        assert want in py
+    n = {"type": "parallel_coords", "row_labels": [7, 8],
+         "dimensions": [{"label": 12, "values": [1, 2]}, {"label": "B", "values": [3, 4]}]}
+    assert _py(n) == _gas_batch(core_js, [n])[0] and "12" in _py(n) and "<th" in _py(n)
+
+
+def test_color_by_matches_a_label_longer_than_24_characters(core_js):
+    """P3: color_by given the full label still finds the dimension whose heading is cut to 24 characters."""
+    long = "Average fuel consumption per hundred km"
+    b = {"type": "parallel_coords", "color_by": long,
+         "dimensions": [{"label": long, "values": [1, 2, 3]}, {"label": "B", "values": [3, 4, 5]}]}
+    for h in (_py(b), _gas_batch(core_js, [b])[0]):
+        assert "matches no dimension" not in h

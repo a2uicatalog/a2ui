@@ -57,3 +57,32 @@ def test_labels_never_overlap_or_clip_and_the_chart_never_widens_the_container(r
     assert len(res) == len(DRAWN) * len(WIDTHS)
     bad = {r["id"]: r["errs"] for r in res if r["errs"]}
     assert not bad, json.dumps(bad, indent=1)[:3000]
+
+
+PAIR_HARNESS = r'''<script>
+window.addEventListener('load', function () {
+  var res = [];
+  document.querySelectorAll('.case').forEach(function (c) {
+    var errs = [];
+    c.querySelectorAll('.ifpc').forEach(function (root, k) {
+      var note = root.querySelector('.pcs'), sc = root.querySelector('[role=region]');
+      var overflows = sc.scrollWidth > sc.clientWidth + 1, shown = getComputedStyle(note).display !== 'none';
+      if (shown && !overflows) errs.push('chart ' + k + ' shows the scroll hint though it fits');
+      if (overflows && !shown) errs.push('chart ' + k + ' scrolls with no hint');
+    });
+    res.push({id: c.id, errs: errs});
+  });
+  document.getElementById('out').textContent = JSON.stringify(res);
+});
+</script>'''
+
+
+@pytest.mark.parametrize("renderer", ["python", "gas"])
+def test_scroll_hint_belongs_to_its_own_chart_when_two_share_a_page(renderer, core_js):
+    """P2: the 8-axis chart's hint threshold must not switch the hint on for a 2-axis chart beside it."""
+    blocks = [PAYLOADS["two"], PAYLOADS["eight"], PAYLOADS["two"]]
+    htm = "".join(_py(b) for b in blocks) if renderer == "python" else "".join(_gas_batch(core_js, blocks))
+    res = _run({"pair": htm}, harness=PAIR_HARNESS)
+    assert res
+    bad = {r["id"]: r["errs"] for r in res if r["errs"]}
+    assert not bad, json.dumps(bad, indent=1)

@@ -36681,6 +36681,15 @@ def _pc_num(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
 
 
+def _pc_text(v):
+    """A label is text or a finite non-zero number; anything else (object, list, bool, null) is no label. Twin of _pcText."""
+    if isinstance(v, str):
+        return v if v != '' else None
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and v != 0:
+        return _if_str(v)
+    return None
+
+
 def _pc_plural(c, one, many):
     return str(c) + ' ' + (one if c == 1 else many)
 
@@ -36695,7 +36704,8 @@ def _render_parallel_coords(b: dict) -> str:
             left_d += 1
             continue
         mn, mx = _if_g(d, 'min'), _if_g(d, 'max')
-        dims.append({'label': _if_str(_if_g(d, 'label'))[:24] if _if_truthy(_if_g(d, 'label')) else 'Dimension ' + str(k + 1), 'raw': vals,
+        full = _pc_text(_if_g(d, 'label'))
+        dims.append({'full': full, 'label': full[:24] if full is not None else 'Dimension ' + str(k + 1), 'raw': vals,
                      'min': mn if _pc_num(mn) and _pc_num(mx) and mn < mx else None, 'max': mx if _pc_num(mn) and _pc_num(mx) and mn < mx else None,
                      'reverse': _if_g(d, 'reverse') is True})
     beyond_d = len(raw) - 8
@@ -36724,7 +36734,7 @@ def _render_parallel_coords(b: dict) -> str:
     cb = _if_g(b, 'color_by')
     cbi = None
     if isinstance(cb, str) and cb != '':
-        cbi = next((k for k, d in enumerate(dims) if d['label'] == cb), None)
+        cbi = next((k for k, d in enumerate(dims) if d['label'] == cb or d['full'] == cb), None)
     elif isinstance(cb, (int, float)) and not isinstance(cb, bool) and cb == math.floor(cb) and 0 <= cb < n:
         cbi = int(cb)
     if cbi is None and _if_truthy(cb):
@@ -36733,7 +36743,7 @@ def _render_parallel_coords(b: dict) -> str:
         notes += _hg_note(_pc_plural(clamped, 'value was', 'values were') + ' outside ' + ('its' if clamped == 1 else 'their') + ' axis range and ' + ('is' if clamped == 1 else 'are') + ' drawn on its edge.')
     rl = _if_g(b, 'row_labels')
     rl = rl if isinstance(rl, list) else []
-    names = [_if_str(rl[i])[:30] if i < len(rl) and _if_truthy(rl[i]) else 'Row ' + str(i + 1) for i in keep]
+    names = [_pc_text(rl[i])[:30] if i < len(rl) and _pc_text(rl[i]) is not None else 'Row ' + str(i + 1) for i in keep]
     f = lambda v: _bp_fmt(v, 6)
     tl = [[_hg_num(t, _hg_decimals(tk)) for t in tk] for tk in L['ticks']]
     lw = max(len(s) for ls in tl for s in ls) * 8 + 6
@@ -36762,8 +36772,8 @@ def _render_parallel_coords(b: dict) -> str:
     aria = ('Parallel coordinates of ' + _pc_plural(len(keep), 'row', 'rows') + ' across ' + str(n) + ' dimensions.'
             + ''.join(' ' + d['label'] + ' from ' + f(d['lo']) + ' to ' + f(d['hi']) + (', drawn upside down' if d['reverse'] else '') + '.' for d in dims)
             + (' Lines are coloured by ' + cd['label'] + ', light for low and dark for high.' if cbi is not None else ''))
-    chart = ('<div class="ifpc" style="container-type:inline-size;max-width:100%;">'
-             '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + str(n * pitch + pad - 1) + 'px){.ifpc .pcs{display:block!important}}</style>'
+    chart = ('<div class="ifpc pcm' + str(n * pitch + pad - 1) + '" style="container-type:inline-size;max-width:100%;">'
+             '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + str(n * pitch + pad - 1) + 'px){.pcm' + str(n * pitch + pad - 1) + ' .pcs{display:block!important}}</style>'
              '<div class="pcs" style="display:none;font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 4px;">Scroll sideways to see every axis.</div>'
              '<div role="region" aria-label="Parallel coordinates chart" tabindex="0" style="overflow-x:auto;">'
              '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;box-sizing:content-box;padding-left:' + str(pad) + 'px;min-width:' + str(n * pitch) + 'px;">'
