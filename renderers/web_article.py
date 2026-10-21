@@ -39064,13 +39064,13 @@ def _hm_ext(b):
     if nmiss:
         notes += _hg_note(str(nmiss) + (' cell has' if nmiss == 1 else ' cells have') + ' no usable number and ' + ('is' if nmiss == 1 else 'are') + ' marked "no data".')
     aria = 'Heatmap, ' + str(R) + (' row' if R == 1 else ' rows') + ' by ' + str(C) + (' column' if C == 1 else ' columns') + ', values from ' + f(min(vals)) + ' to ' + f(max(vals)) + us + '.'
-    grid_html = ('<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _if_s(aria, 200) + '" style="display:grid;grid-template-columns:auto repeat(' + str(C) + ',minmax(' + str(W)
+    grid_html = ('<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _if_s(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + str(C) + ',minmax(' + str(W)
                  + 'px,1fr));gap:2px;width:100%;max-width:' + str(120 + C * 96) + 'px;">' + cells + '</div></div>')
     bar = ''
     if _if_g(b, 'show_colorbar') is not False:
         grad = ','.join('rgb(%d,%d,%d) %s%%' % (*c, _if_fmt(p * 100)) for p, c in stops)
-        bar = ('<div class="hmb" style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted,#475569);"><span>' + _if_s(f(lo) + us, 30)
-               + '</span><div style="flex:1;min-width:60px;height:12px;border:1px solid var(--border,#CBD5E1);border-radius:3px;background:linear-gradient(to right,' + grad + ');"></div><span>' + _if_s(f(hi) + us, 30) + '</span></div>')
+        bar = ('<div class="hmb" style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted,#475569);"><span style="max-width:35%;overflow-wrap:anywhere;">' + _if_s(f(lo) + us, 30)
+               + '</span><div style="flex:1 0 60px;height:12px;border:1px solid var(--border,#CBD5E1);border-radius:3px;background:linear-gradient(to right,' + grad + ');"></div><span style="max-width:35%;overflow-wrap:anywhere;">' + _if_s(f(hi) + us, 30) + '</span></div>')
         if mid_on:
             bar += _hg_note('Colour midpoint: ' + _if_s(f(zmid) + us, 30) + '.')
     table = _if_table(['Row'] + cl, [[rl[i]] + [('no data' if grid[i][j] is None else f(grid[i][j]) + us) for j in range(C)] for i in range(R)])

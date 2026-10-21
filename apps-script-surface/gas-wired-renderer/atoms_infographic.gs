@@ -3261,13 +3261,13 @@ function _hmExt(b) {
   if (nmiss) notes += _hgNote(nmiss + (nmiss === 1 ? ' cell has' : ' cells have') + ' no usable number and ' + (nmiss === 1 ? 'is' : 'are') + ' marked "no data".');
   var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
   var aria = 'Heatmap, ' + R + (R === 1 ? ' row' : ' rows') + ' by ' + C + (C === 1 ? ' column' : ' columns') + ', values from ' + f(mn) + ' to ' + f(mx) + us + '.';
-  var gridHtml = '<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _ifS(aria, 200) + '" style="display:grid;grid-template-columns:auto repeat(' + C + ',minmax(' + W +
+  var gridHtml = '<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _ifS(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + C + ',minmax(' + W +
     'px,1fr));gap:2px;width:100%;max-width:' + (120 + C * 96) + 'px;">' + cells + '</div></div>';
   var bar = '';
   if (b.show_colorbar !== false) {
     var grad = stops.map(function(s) { return 'rgb(' + s[1][0] + ',' + s[1][1] + ',' + s[1][2] + ') ' + _ifFmt(s[0] * 100) + '%'; }).join(',');
-    bar = '<div class="hmb" style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted,#475569);"><span>' + _ifS(f(lo) + us, 30) +
-      '</span><div style="flex:1;min-width:60px;height:12px;border:1px solid var(--border,#CBD5E1);border-radius:3px;background:linear-gradient(to right,' + grad + ');"></div><span>' + _ifS(f(hi) + us, 30) + '</span></div>';
+    bar = '<div class="hmb" style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted,#475569);"><span style="max-width:35%;overflow-wrap:anywhere;">' + _ifS(f(lo) + us, 30) +
+      '</span><div style="flex:1 0 60px;height:12px;border:1px solid var(--border,#CBD5E1);border-radius:3px;background:linear-gradient(to right,' + grad + ');"></div><span style="max-width:35%;overflow-wrap:anywhere;">' + _ifS(f(hi) + us, 30) + '</span></div>';
     if (midOn) bar += _hgNote('Colour midpoint: ' + _ifS(f(zmid) + us, 30) + '.');
   }
   var table = _ifTable(['Row'].concat(cl), rl.map(function(r, ri) { return [r].concat(cl.map(function(_, ci) { return grid[ri][ci] === null ? 'no data' : f(grid[ri][ci]) + us; })); }));
