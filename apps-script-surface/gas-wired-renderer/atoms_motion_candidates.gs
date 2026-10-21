@@ -769,6 +769,7 @@ _RENDERERS['motion_lightning'] = function(b) {
     var e = (typeof og === 'string' && Object.prototype.hasOwnProperty.call(_LT_EDGE, og)) ? _LT_EDGE[og] : _LT_EDGE.top;
     ox = e[0]; oy = e[1]; base = e[2];
   }
+  var gx = ox * 1.6, gy = oy * 0.9, par = 'x' + (ox < 34 ? 'Min' : ox > 66 ? 'Max' : 'Mid') + 'Y' + (oy < 34 ? 'Min' : oy > 66 ? 'Max' : 'Mid') + ' slice';
   var st = (seed * 7919 + 104729) % 2147483646 + 1;
   function rnd() { st = st * 16807 % 2147483647; return st / 2147483647; }
   function jag(ax, ay, bx, by, depth) {
@@ -789,7 +790,7 @@ _RENDERERS['motion_lightning'] = function(b) {
     var a;
     if (circle) a = i * 360 / n + (rnd() - 0.5) * 20;
     else a = base + ((i - (n - 1) / 2) * spread / (n > 1 ? n - 1 : 1)) + (rnd() - 0.5) * 16;
-    var ln = 70 + rnd() * 25, pts = jag(ox, oy, ox + _ltSin(a) * ln, oy + _ltSin(a + 90) * ln, 4), d0 = i * 0.04, d0s = _ffNum(d0, 0, 0, 1, 2), ph = _ffNum(rnd() * 6.2, 0, 0, 7, 1);
+    var ln = (70 + rnd() * 25) * 0.9, pts = jag(gx, gy, gx + _ltSin(a) * ln, gy + _ltSin(a + 90) * ln, 4), d0 = i * 0.04, d0s = _ffNum(d0, 0, 0, 1, 2), ph = _ffNum(rnd() * 6.2, 0, 0, 7, 1);
     var inner = '<path data-lt="bolt" d="' + _ltPath(pts) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>';
     for (k = 0; k < nb; k++) {
       var jx = 4 + Math.floor(rnd() * 9), sg = k % 2 === 0 ? 1 : -1, ba = a + sg * (25 + Math.floor(rnd() * 25)), bl = 18 + rnd() * 14, q = pts[jx];
@@ -799,7 +800,11 @@ _RENDERERS['motion_lightning'] = function(b) {
     groups += '<g class="lt-g" data-lt="grow" style="clip-path:circle(calc(clamp(0,calc((var(--p,1) - ' + d0s + ')*3),1)*110%) at ' + _ffNum(ox, 50, 0, 100, 1) + '% ' + _ffNum(oy, 50, 0, 100, 1) + '%) view-box;opacity:calc(1 - 0.45*(1 - clamp(0,var(--p,1),1))*(0.5 + 0.5*sin(calc(var(--p,1)*' + ff + ' + ' + ph + '))));">' + inner + '</g>';
   }
   var glow = b.glow !== false ? 'filter:drop-shadow(0 0 3px rgba(' + rgb + ',0.9)) drop-shadow(0 0 9px rgba(' + rgb + ',0.6));' : '';
-  var svg = '<svg aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;' + glow + '">' + groups + '</svg>';
+  var kids = _bxList(b.blocks, 3), inner2 = '';
+  for (i = 0; i < kids.length; i++) inner2 += _moChild(kids[i]);
+  var fade = !!inner2.trim();
+  var svg = '<svg' + (fade ? ' class="lt-fade"' : '') + ' aria-hidden="true" focusable="false" viewBox="0 0 160 90" preserveAspectRatio="' + par + '" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;' +
+    (fade ? 'opacity:clamp(0,calc((1 - var(--p,1))*2.5),1);' : '') + glow + '">' + groups + '</svg>';
   var flash = '';
   if (b.flash === true) {
     var fcs = rgb.split(','), fc = [];
@@ -807,10 +812,8 @@ _RENDERERS['motion_lightning'] = function(b) {
     flash = '<span class="lt-flash" data-lt="flash" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;background:rgb(' + fc.join(',') + ');' +
       'opacity:calc(0.3*clamp(0,min(calc((var(--p,1) - 0.04)*12),calc((0.2 - var(--p,1))*12)),1));"></span>';
   }
-  var kids = _bxList(b.blocks, 3), inner2 = '';
-  for (i = 0; i < kids.length; i++) inner2 += _moChild(kids[i]);
   var body = inner2.trim() ? '<div data-lt="body" style="--p:1;position:relative;overflow-wrap:anywhere;">' + inner2 + '</div>' : '';
-  return '<style>@media (prefers-reduced-motion:reduce),print{.lt-flash{display:none!important}.lt-g{clip-path:none!important;opacity:1!important}}</style>' +
+  return '<style>@media (prefers-reduced-motion:reduce),print{.lt-flash{display:none!important}.lt-g{clip-path:none!important;opacity:1!important}.lt-fade{display:none!important}}</style>' +
     '<div data-lt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;' + (body ? '' : 'aspect-ratio:16/9;') + '">' +
     body + flash + svg + '</div>' + _hgVersionNote(b, 'motion_lightning');
 };

@@ -38666,6 +38666,8 @@ def _render_motion_lightning(b: dict) -> str:
     else:
         e = _LT_EDGE[og] if isinstance(og, str) and og in _LT_EDGE else _LT_EDGE['top']
         ox, oy, base = float(e[0]), float(e[1]), e[2]
+    gx, gy = ox * 1.6, oy * 0.9   # the bolts are drawn in a fixed 160 x 90 space and sliced into the box, so angles and proportions hold in any box shape
+    par = 'x' + ('Min' if ox < 34 else 'Max' if ox > 66 else 'Mid') + 'Y' + ('Min' if oy < 34 else 'Max' if oy > 66 else 'Mid') + ' slice'
     st = [(seed * 7919 + 104729) % 2147483646 + 1]
 
     def rnd():
@@ -38695,8 +38697,8 @@ def _render_motion_lightning(b: dict) -> str:
             a = i * 360 / n + (rnd() - 0.5) * 20
         else:
             a = base + ((i - (n - 1) / 2) * spread / (n - 1 if n > 1 else 1)) + (rnd() - 0.5) * 16
-        ln = 70 + rnd() * 25
-        pts = jag(ox, oy, ox + _lt_sin(a) * ln, oy + _lt_sin(a + 90) * ln, 4)
+        ln = (70 + rnd() * 25) * 0.9
+        pts = jag(gx, gy, gx + _lt_sin(a) * ln, gy + _lt_sin(a + 90) * ln, 4)
         d0 = i * 0.04
         ph = _ff_num(rnd() * 6.2, 0, 0, 7, 1)
         inner = ('<path data-lt="bolt" d="' + _lt_path(pts) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>')
@@ -38710,16 +38712,17 @@ def _render_motion_lightning(b: dict) -> str:
             inner += ('<path data-lt="branch" d="' + _lt_path(bp) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>')
         groups += ('<g class="lt-g" data-lt="grow" style="clip-path:circle(calc(clamp(0,calc((var(--p,1) - ' + _ff_num(d0, 0, 0, 1, 2) + ')*3),1)*110%) at ' + _ff_num(ox, 50, 0, 100, 1) + '% ' + _ff_num(oy, 50, 0, 100, 1) + '%) view-box;opacity:calc(1 - 0.45*(1 - clamp(0,var(--p,1),1))*(0.5 + 0.5*sin(calc(var(--p,1)*' + ff + ' + ' + ph + '))));">' + inner + '</g>')
     glow = ('filter:drop-shadow(0 0 3px rgba(' + rgb + ',0.9)) drop-shadow(0 0 9px rgba(' + rgb + ',0.6));') if b.get('glow') is not False else ''
-    svg = ('<svg aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;' + glow + '">'
-           + groups + '</svg>')
+    kids = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
+    fade = bool(kids.strip())   # over children the strike happens and is gone when the scene settles (p 0.6 to 1)
+    svg = ('<svg' + (' class="lt-fade"' if fade else '') + ' aria-hidden="true" focusable="false" viewBox="0 0 160 90" preserveAspectRatio="' + par + '" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;'
+           + ('opacity:clamp(0,calc((1 - var(--p,1))*2.5),1);' if fade else '') + glow + '">' + groups + '</svg>')
     flash = ''
     if b.get('flash') is True:
         fc = ','.join(str(math.floor(int(c) + (255 - int(c)) * 0.85 + 0.5)) for c in rgb.split(','))
         flash = ('<span class="lt-flash" data-lt="flash" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;background:rgb(' + fc + ');'
                  'opacity:calc(0.3*clamp(0,min(calc((var(--p,1) - 0.04)*12),calc((0.2 - var(--p,1))*12)),1));"></span>')
-    kids = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
     body = ('<div data-lt="body" style="--p:1;position:relative;overflow-wrap:anywhere;">' + kids + '</div>') if kids.strip() else ''
-    return ('<style>@media (prefers-reduced-motion:reduce),print{.lt-flash{display:none!important}.lt-g{clip-path:none!important;opacity:1!important}}</style>'
+    return ('<style>@media (prefers-reduced-motion:reduce),print{.lt-flash{display:none!important}.lt-g{clip-path:none!important;opacity:1!important}.lt-fade{display:none!important}}</style>'
             '<div data-lt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;' + ('' if body else 'aspect-ratio:16/9;') + '">'
             + body + flash + svg + '</div>' + _hg_version_note(b, 'motion_lightning'))
 

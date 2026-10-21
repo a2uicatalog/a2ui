@@ -22162,7 +22162,7 @@ blocks:
   - "A lightning strike over the avatar with a quick pale flash."
   surfaces: *mla001
   fields:
-    blocks: "array (optional, up to 3) of atoms the bolts are drawn over, same convention as motion_selection. They stay readable and are held at their finished state. Without blocks the atom is a 16:9 stage of its own."
+    blocks: "array (optional, up to 3) of atoms the bolts are drawn over, same convention as motion_selection. They stay readable and are held at their finished state, and the bolts fade out over p 0.6 to 1 so the settled content is clean (also in reduced motion and print). Without blocks the atom is a 16:9 stage of its own and the bolts stay drawn at p = 1."
     bolts: "integer (optional). Number of main bolts, 1 to 6. Default 3. They fan out from the origin."
     origin: "string or object (optional). A named edge top, bottom, left, right or center, or {x, y} in percent of the box (0 to 100, a missing coordinate is 50). Bolts fan inward from an edge, and in all directions from the centre. Default top."
     branches: "integer (optional). Forks per bolt, 0 to 4. Default 3."
@@ -22171,5 +22171,5 @@ blocks:
     flash: "bool (optional, default false). One brief pale wash over the block as the strike lands, at most 30 percent strong. It is the colour mixed 85 percent toward white, so even a red colour never makes a saturated red area."
     seed: "integer (optional). 0 to 9999, default 7. The same seed draws the same bolts."
     version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
-  notes: "Accessibility: the bolts and the flash are decorative (aria-hidden) and the children stay readable. The bolts flicker with one shared sinusoid of under one cycle over p 0 to 1 (one flash) and the optional flash is one pulse, so a strike makes at most 2 flashes over its whole run however long p is played over (WCAG 2.3.1, at most 3 a second). At p = 1 (the standalone render, and for reduced motion and print) the bolts are fully drawn with no flicker and no flash. The strike takes p 0 to about 0.55; the flash peaks at p 0.12. Put it in a motion_timeline and run p over at least 0.4 s, or drive it from a trigger."
+  notes: "Accessibility: the bolts and the flash are decorative (aria-hidden) and the children stay readable. The bolts flicker with one shared sinusoid of under one cycle over p 0 to 1 (one flash) and the optional flash is one pulse, so a strike makes at most 2 flashes over its whole run however long p is played over (WCAG 2.3.1, at most 3 a second). At p = 1 (the standalone render, and for reduced motion and print) a bare strike has its bolts fully drawn with no flicker and no flash, and over blocks the bolts are gone. The bolts are drawn in a fixed 16:9 space and sliced into the box, anchored to the origin, so their angles and proportions hold in a short wide box (a box much flatter than 16:9 shows only the part of the strike nearest the origin). The strike takes p 0 to about 0.55; the flash peaks at p 0.12. Put it in a motion_timeline and run p over at least 0.4 s, or drive it from a trigger."
   source: *mla002
