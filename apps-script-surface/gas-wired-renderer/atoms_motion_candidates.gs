@@ -817,3 +817,102 @@ _RENDERERS['motion_lightning'] = function(b) {
     '<div data-lt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;' + (body ? '' : 'aspect-ratio:16/9;') + '">' +
     body + flash + svg + '</div>' + _hgVersionNote(b, 'motion_lightning');
 };
+
+// motion_shatter (I69): cracks radiate from an impact point, then the block breaks into shards that fall away. Twin of _render_motion_shatter in web_article.py (read its header:
+// seeded Voronoi shards, p = 1 is GONE, the real content is hidden from assistive tech only then, reduced motion is a plain fade, nothing oscillates).
+function _shFold(c, m) {
+  if (c < 2) c = 4 - c;
+  if (c > m - 2) c = 2 * (m - 2) - c;
+  return Math.max(2, Math.min(m - 2, c));
+}
+function _shClip(poly, mx, my, dx, dy) {
+  var out = [], n = poly.length, k;
+  for (k = 0; k < n; k++) {
+    var a = poly[k], b = poly[(k + 1) % n], fa = (a[0] - mx) * dx + (a[1] - my) * dy, fb = (b[0] - mx) * dx + (b[1] - my) * dy;
+    if (fa <= 0) out.push(a);
+    if ((fa < 0 && fb > 0) || (fa > 0 && fb < 0)) {
+      var t = fa / (fa - fb);
+      out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+    }
+  }
+  return out;
+}
+_RENDERERS['motion_shatter'] = function(b) {
+  var n = _ffInt(b.shards, 12, 4, 24), seed = _ffInt(b.seed, 7, 0, 9999), spin = _ffInt(b.spin, 40, 0, 180), outFall = b.fall === 'out', og = b.origin, ox, oy, i, j, k;
+  if (og && typeof og === 'object' && !Array.isArray(og)) { ox = _ltCoord(og.x); oy = _ltCoord(og.y); }
+  else {
+    var e = (typeof og === 'string' && Object.prototype.hasOwnProperty.call(_LT_EDGE, og)) ? _LT_EDGE[og] : _LT_EDGE.top;
+    ox = e[0]; oy = e[1];
+  }
+  var st = (seed * 7919 + 104729) % 2147483646 + 1;
+  function rnd() { st = st * 16807 % 2147483647; return st / 2147483647; }
+  var gx = ox * 1.6, gy = oy * 0.9, sites = [];
+  for (i = 0; i < n; i++) {
+    var r1 = rnd(), r2 = rnd();
+    if (i === 0) sites.push([_shFold(gx + (r1 - 0.5) * 6, 160), _shFold(gy + (r2 - 0.5) * 6, 90)]);
+    else {
+      var a0 = i * 137.5 + r1 * 40, rr = 6 + 100 * (i / n) * (0.75 + 0.5 * r2);
+      sites.push([_shFold(gx + _ltSin(a0 + 90) * rr, 160), _shFold(gy + _ltSin(a0) * rr, 90)]);
+    }
+  }
+  var box = [[0, 0], [160, 0], [160, 90], [0, 90]];
+  var kl = _bxList(b.blocks, 3), kids = '';
+  for (i = 0; i < kl.length; i++) kids += _moChild(kl[i]);
+  var has = !!kids.trim();
+  var face = has ? '<div data-sh="face" style="--p:1;position:relative;overflow-wrap:anywhere;">' + kids + '</div>' :
+    '<div data-sh="face" style="--p:1;position:relative;box-sizing:border-box;width:100%;height:100%;border:1px solid var(--border,#cbd5e1);border-radius:12px;background:var(--surface,#f1f5f9);"></div>';
+  var copy = face.replace(/[ \t\n\r](?:id|data-mt-id)="[^"]*"/g, '');
+  var shards = '', seen = {}, edges = [];
+  for (i = 0; i < n; i++) {
+    var poly = box;
+    for (j = 0; j < n; j++) {
+      if (j !== i && poly.length) poly = _shClip(poly, (sites[i][0] + sites[j][0]) / 2, (sites[i][1] + sites[j][1]) / 2, sites[j][0] - sites[i][0], sites[j][1] - sites[i][1]);
+    }
+    if (poly.length < 3) continue;
+    var pts = [], sx = 0, sy = 0;
+    for (k = 0; k < poly.length; k++) { pts.push([_ffNum(poly[k][0] / 1.6, 0, 0, 100, 1), _ffNum(poly[k][1] / 0.9, 0, 0, 100, 1)]); sx += poly[k][0]; sy += poly[k][1]; }
+    var cx = sx / poly.length, cy = sy / poly.length;
+    for (k = 0; k < pts.length; k++) {
+      var pa = pts[k], pc = pts[(k + 1) % pts.length];
+      if ((pa[0] === pc[0] && pa[1] === pc[1]) || (pa[0] === pc[0] && (pa[0] === '0' || pa[0] === '100')) || (pa[1] === pc[1] && (pa[1] === '0' || pa[1] === '100'))) continue;
+      var k1 = pa[0] + ',' + pa[1], k2 = pc[0] + ',' + pc[1], key = k1 <= k2 ? k1 + ' ' + k2 : k2 + ' ' + k1;
+      if (seen[key]) continue;
+      seen[key] = true;
+      edges.push('M' + pa[0] + ',' + pa[1] + ' L' + pc[0] + ',' + pc[1]);
+    }
+    var rTx = rnd(), rTy = rnd(), rRot = rnd(), rRx = rnd(), rRy = rnd(), rDl = rnd();
+    var dist = Math.sqrt((cx - gx) * (cx - gx) + (cy - gy) * (cy - gy)), tx, ty;
+    if (outFall) {
+      var vx = cx - gx, vy = cy - gy, ln = Math.sqrt(vx * vx + vy * vy);
+      if (ln < 0.000001) { vx = _ltSin(rTx * 360 + 90); vy = _ltSin(rTx * 360); ln = 1; }
+      var kk = (40 + rTy * 40) / ln;
+      tx = vx * kk; ty = vy * kk * 1.7778;
+    } else { tx = (rTx - 0.5) * 30; ty = 60 + rTy * 70; }
+    var rz = (rRot < 0.5 ? 1 : -1) * spin * (0.35 + 0.65 * rDl);
+    var d = 0.05 + 0.25 * Math.min(1, dist / 110) + rDl * 0.05, kf = 1 / (1 - d), hp = [];
+    for (k = 0; k < pts.length; k++) hp.push(pts[k][0] + '% ' + pts[k][1] + '%');
+    shards += '<div data-sh="shard" style="position:absolute;inset:0;pointer-events:none;user-select:none;--u:clamp(0,calc((var(--sh-t) - ' + _ffNum(d, 0, 0, 1, 3) + ')*' + _ffNum(kf, 1, 1, 2, 3) +
+      '),1);--tx:' + _ffNum(tx, 0, -300, 300, 1) + ';--ty:' + _ffNum(ty, 0, -300, 300, 1) + ';--rz:' + _ffNum(rz, 0, -180, 180, 1) +
+      ';--rx:' + _ffNum((rRx - 0.5) * 60, 0, -30, 30, 1) + ';--ry:' + _ffNum((rRy - 0.5) * 60, 0, -30, 30, 1) +
+      ';clip-path:polygon(' + hp.join(',') + ');transform-origin:' + _ffNum(cx / 1.6, 50, 0, 100, 1) + '% ' + _ffNum(cy / 0.9, 50, 0, 100, 1) +
+      '%;opacity:clamp(0,calc(var(--sh-on)*(0.9 - var(--u))*2.5),1);transform:perspective(900px) translate(calc(var(--tx)*var(--u)*var(--u)*1%),calc(var(--ty)*var(--u)*var(--u)*1%)) ' +
+      'rotate(calc(var(--rz)*var(--u)*var(--u)*1deg)) rotateX(calc(var(--rx)*var(--u)*1deg)) rotateY(calc(var(--ry)*var(--u)*1deg));">' +
+      '<div style="--p:1;width:100%;height:100%;">' + copy + '</div></div>';
+  }
+  var cracks = '';
+  if (b.cracks !== false && edges.length) {
+    var dd = edges.join(' ');
+    cracks = '<svg class="sh-cracks" data-sh="cracks" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;' +
+      'clip-path:circle(calc(clamp(0,calc(var(--p,1)*3.5),1)*150%) at ' + _ffNum(ox, 50, 0, 100, 1) + '% ' + _ffNum(oy, 50, 0, 100, 1) + '%) view-box;opacity:clamp(0,calc((0.42 - var(--p,1))*8),1);">' +
+      '<path d="' + dd + '" fill="none" stroke="var(--bg,#0b1020)" stroke-opacity="0.55" stroke-width="2.6" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>' +
+      '<path d="' + dd + '" fill="none" stroke="var(--text,#e8ecf4)" stroke-width="1.2" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>';
+  }
+  var css = '<style>@keyframes sh-gone{from{visibility:visible}to{visibility:hidden}}' +
+    '.sh-body{opacity:clamp(0,calc((0.301 - var(--p,1))*1000),1);animation:sh-gone 1s linear paused both;animation-delay:calc(var(--p,1)*-1s)}' +
+    '@media (prefers-reduced-motion:reduce){.sh-shards,.sh-cracks{display:none!important}.sh-body{opacity:clamp(0,calc((1 - var(--p,1))*1.4286),1)}}' +
+    '@media print{.sh-shards,.sh-cracks{display:none!important}.sh-body{opacity:1!important;animation:none!important}}</style>';
+  return css + '<div data-sh="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;overflow-x:clip;isolation:isolate;' +
+    '--sh-t:clamp(0,calc((var(--p,1) - 0.3)*1.4286),1);--sh-on:clamp(0,calc((var(--p,1) - 0.299)*1000),1);' + (has ? '' : 'aspect-ratio:16/9;') + '">' +
+    '<div class="sh-body" data-sh="body" style="position:relative;' + (has ? '' : 'height:100%;') + '">' + face + '</div>' +
+    '<div class="sh-shards" data-sh="shards" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;">' + shards + '</div>' + cracks + '</div>' + _hgVersionNote(b, 'motion_shatter');
+};

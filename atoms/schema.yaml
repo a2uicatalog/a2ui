@@ -22173,3 +22173,25 @@ blocks:
     version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
   notes: "Accessibility: the bolts and the flash are decorative (aria-hidden) and the children stay readable. The bolts flicker with one shared sinusoid of under one cycle over p 0 to 1 (one flash) and the optional flash is one pulse, so a strike makes at most 2 flashes over its whole run however long p is played over (WCAG 2.3.1, at most 3 a second). At p = 1 (the standalone render, and for reduced motion and print) a bare strike has its bolts fully drawn with no flicker and no flash, and over blocks the bolts are gone. The bolts are drawn in a fixed 16:9 space and sliced into the box, anchored to the origin, so their angles and proportions hold in a short wide box (a box much flatter than 16:9 shows only the part of the strike nearest the origin). The strike takes p 0 to about 0.55; the flash peaks at p 0.12. Put it in a motion_timeline and run p over at least 0.4 s, or drive it from a trigger."
   source: *mla002
+
+- type: motion_shatter
+  stage: preview
+  description: "Shatters any block, or a plain panel, like glass. As p runs 0 to 1 crack lines grow out from the impact point across the block, then the block splits into polygonal shards that fall, spin and fade away, leaving what is behind it. The shards are a seeded Voronoi partition (never a random call), so the same seed always breaks the same way, with small shards near the impact and bigger ones far from it. Each shard is an aria-hidden, inert copy of the content. It can wrap up to 3 child atoms; with none it shatters a plain panel. At p = 1 the block is gone."
+  compact_description: "a block or panel cracks from an impact point and breaks into shards that fall away"
+  routing_text: "A block or panel that cracks and breaks into falling shards, revealing what is behind it, as a card shattering on screen. Not a text-only scatter (use motion_disperse), not vertical bars sliding apart (use the slice timeline transition), not a lightning strike (use motion_lightning), not a glitch tear (use the glitch prop on a motion block), not a fade or wipe (use motion_reveal)."
+  intent_phrases:
+  - "The card cracks from the middle and shatters into falling pieces."
+  - "Smash the panel like glass and reveal the scene behind it."
+  - "The block breaks into shards that spin away from the impact."
+  surfaces: *mla001
+  fields:
+    blocks: "array (optional, up to 3) of atoms to shatter, same convention as motion_lightning. They are held at their finished state while whole and stay readable. Without blocks the atom is a 16:9 plain panel (surface colour, border, rounded corners) and shatters that."
+    shards: "integer (optional). Number of shards, 4 to 24. Default 12."
+    origin: "string or object (optional). The impact point: a named edge top, bottom, left, right or center, or {x, y} in percent of the box (0 to 100, a missing coordinate is 50). Cracks grow outward from it and the shards nearest it are the smallest and move first. Default top."
+    cracks: "bool (optional, default true). Crack lines along the shard borders, drawn outward from the origin over p 0 to 0.3. false skips them and the block just breaks."
+    fall: "string (optional). down (default): shards drop under gravity with a little sideways drift. out: shards fly outward away from the impact point."
+    spin: "integer (optional). Most a shard may rotate, in degrees, 0 to 180. Default 40. 0 means the shards fall without turning. Each shard also tilts up to 30 degrees in 3D."
+    seed: "integer (optional). 0 to 9999, default 7. The same seed breaks the same way."
+    version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
+  notes: "End state: p = 1 is GONE (the source shows the block gone, revealing what is behind) and p = 0 is whole, so the standalone render, which has p = 1, draws nothing but the space the block took; put it in a motion_timeline over a scene, or hold p at 0 for a whole block. Timing: cracks p 0 to 0.3 (the real content is drawn until then), then the shards take over at the same place and move over p 0.3 to 1, nearest shards first, fading out from about half way. The shards are clipped copies of the content (aria-hidden, inert, no duplicate ids); up to 24 copies of up to 3 children is the cost. Accessibility: the real content stays in the accessibility tree while it is visible and is hidden from it (visibility) only once p reaches 1; the cracks and shards are decorative. Nothing flashes: no opacity or colour oscillates, each only rises once or falls, so there is no WCAG 2.3.1 concern at any speed. Reduced motion: no shards, no cracks, no falling; the block fades plainly to the same gone end state, so a scene that relies on the block being gone is still correct. Print shows the block whole. Shards that fly beyond the box are clipped sideways and never widen the page. Take at least 0.6 s over p so the break reads."
+  source: *mla002

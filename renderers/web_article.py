@@ -38730,6 +38730,130 @@ def _render_motion_lightning(b: dict) -> str:
 _RENDERERS['motion_lightning'] = _render_motion_lightning
 
 
+# ─── motion_shatter (I69, owner's video review 2026-10-21, event 11): cracks radiate from an impact point, then the block breaks into shards that fall away ───
+# Twin of the motion_shatter block in atoms_motion_candidates.gs. The shards are a seeded Voronoi partition of the box (sites placed by a fixed LCG, densest near the
+# impact point, cells made by clipping the box against each bisector, never a random call); each shard is an aria-hidden, inert copy of the content clipped to its cell
+# and moved by p alone. END STATE: p = 1 is GONE (the source shows the block gone, revealing what is behind), p = 0 whole. The real content is drawn only while p <= 0.3
+# (the cracks), then the shards stand in for it at the same place; it is hidden from assistive tech (visibility) only when p reaches 1, by a paused keyframe whose
+# delay is read from p. Reduced motion: no shards, no cracks, no falling, the block fades plainly to the same gone end. Print: whole. WCAG 2.3.1: nothing oscillates.
+def _sh_fold(c, m):
+    if c < 2:
+        c = 4 - c
+    if c > m - 2:
+        c = 2 * (m - 2) - c
+    return max(2.0, min(m - 2.0, c))
+
+
+def _sh_clip(poly, mx, my, dx, dy):
+    out = []
+    n = len(poly)
+    for k in range(n):
+        a, b = poly[k], poly[(k + 1) % n]
+        fa = (a[0] - mx) * dx + (a[1] - my) * dy
+        fb = (b[0] - mx) * dx + (b[1] - my) * dy
+        if fa <= 0:
+            out.append(a)
+        if (fa < 0 and fb > 0) or (fa > 0 and fb < 0):
+            t = fa / (fa - fb)
+            out.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
+    return out
+
+
+def _render_motion_shatter(b: dict) -> str:
+    n = _ff_int(b.get('shards'), 12, 4, 24)
+    seed = _ff_int(b.get('seed'), 7, 0, 9999)
+    spin = _ff_int(b.get('spin'), 40, 0, 180)
+    out_fall = b.get('fall') == 'out'
+    og = b.get('origin')
+    if isinstance(og, dict):
+        ox, oy = _lt_coord(og.get('x')), _lt_coord(og.get('y'))
+    else:
+        e = _LT_EDGE[og] if isinstance(og, str) and og in _LT_EDGE else _LT_EDGE['top']
+        ox, oy = float(e[0]), float(e[1])
+    st = [(seed * 7919 + 104729) % 2147483646 + 1]
+
+    def rnd():
+        st[0] = st[0] * 16807 % 2147483647
+        return st[0] / 2147483647
+    gx, gy = ox * 1.6, oy * 0.9   # the partition is made in a fixed 160 x 90 space (like the lightning bolts) so shards are not stretched in a 16:9 box; the output is in percent of the box
+    sites = []
+    for i in range(n):
+        r1, r2 = rnd(), rnd()
+        if i == 0:
+            sites.append((_sh_fold(gx + (r1 - 0.5) * 6, 160), _sh_fold(gy + (r2 - 0.5) * 6, 90)))
+        else:
+            a = i * 137.5 + r1 * 40
+            rr = 6 + 100 * (i / n) * (0.75 + 0.5 * r2)
+            sites.append((_sh_fold(gx + _lt_sin(a + 90) * rr, 160), _sh_fold(gy + _lt_sin(a) * rr, 90)))
+    box = [(0.0, 0.0), (160.0, 0.0), (160.0, 90.0), (0.0, 90.0)]
+    kids = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
+    has = bool(kids.strip())
+    face = ('<div data-sh="face" style="--p:1;position:relative;overflow-wrap:anywhere;">' + kids + '</div>') if has else \
+        '<div data-sh="face" style="--p:1;position:relative;box-sizing:border-box;width:100%;height:100%;border:1px solid var(--border,#cbd5e1);border-radius:12px;background:var(--surface,#f1f5f9);"></div>'
+    copy = re.sub(r'[ \t\n\r](?:id|data-mt-id)="[^"]*"', '', face)
+    shards, seen, edges = '', set(), []
+    for i in range(n):
+        poly = box
+        for j in range(n):
+            if j != i and poly:
+                dx, dy = sites[j][0] - sites[i][0], sites[j][1] - sites[i][1]
+                poly = _sh_clip(poly, (sites[i][0] + sites[j][0]) / 2, (sites[i][1] + sites[j][1]) / 2, dx, dy)
+        if len(poly) < 3:
+            continue
+        pts = [(_ff_num(x / 1.6, 0, 0, 100, 1), _ff_num(y / 0.9, 0, 0, 100, 1)) for x, y in poly]
+        cx = sum(x for x, _ in poly) / len(poly)
+        cy = sum(y for _, y in poly) / len(poly)
+        for k in range(len(pts)):
+            a, c = pts[k], pts[(k + 1) % len(pts)]
+            if a == c or (a[0] == c[0] and a[0] in ('0', '100')) or (a[1] == c[1] and a[1] in ('0', '100')):
+                continue
+            key = (a, c) if a <= c else (c, a)
+            if key in seen:
+                continue
+            seen.add(key)
+            edges.append('M' + a[0] + ',' + a[1] + ' L' + c[0] + ',' + c[1])
+        r_tx, r_ty, r_rot, r_rx, r_ry, r_dl = rnd(), rnd(), rnd(), rnd(), rnd(), rnd()
+        dist = math.sqrt((cx - gx) * (cx - gx) + (cy - gy) * (cy - gy))
+        if out_fall:
+            vx, vy = cx - gx, cy - gy
+            ln = math.sqrt(vx * vx + vy * vy)
+            if ln < 0.000001:
+                vx, vy, ln = _lt_sin(r_tx * 360 + 90), _lt_sin(r_tx * 360), 1.0
+            k = (40 + r_ty * 40) / ln
+            tx, ty = vx * k, vy * k * 1.7778
+        else:
+            tx, ty = (r_tx - 0.5) * 30, 60 + r_ty * 70
+        rz = (1 if r_rot < 0.5 else -1) * spin * (0.35 + 0.65 * r_dl)
+        d = 0.05 + 0.25 * min(1.0, dist / 110) + r_dl * 0.05
+        kf = 1 / (1 - d)
+        shards += ('<div data-sh="shard" style="position:absolute;inset:0;pointer-events:none;user-select:none;--u:clamp(0,calc((var(--sh-t) - ' + _ff_num(d, 0, 0, 1, 3) + ')*' + _ff_num(kf, 1, 1, 2, 3)
+                   + '),1);--tx:' + _ff_num(tx, 0, -300, 300, 1) + ';--ty:' + _ff_num(ty, 0, -300, 300, 1) + ';--rz:' + _ff_num(rz, 0, -180, 180, 1)
+                   + ';--rx:' + _ff_num((r_rx - 0.5) * 60, 0, -30, 30, 1) + ';--ry:' + _ff_num((r_ry - 0.5) * 60, 0, -30, 30, 1)
+                   + ';clip-path:polygon(' + ','.join(x + '% ' + y + '%' for x, y in pts) + ');transform-origin:' + _ff_num(cx / 1.6, 50, 0, 100, 1) + '% ' + _ff_num(cy / 0.9, 50, 0, 100, 1)
+                   + '%;opacity:clamp(0,calc(var(--sh-on)*(0.9 - var(--u))*2.5),1);transform:perspective(900px) translate(calc(var(--tx)*var(--u)*var(--u)*1%),calc(var(--ty)*var(--u)*var(--u)*1%)) '
+                   'rotate(calc(var(--rz)*var(--u)*var(--u)*1deg)) rotateX(calc(var(--rx)*var(--u)*1deg)) rotateY(calc(var(--ry)*var(--u)*1deg));">'
+                   '<div style="--p:1;width:100%;height:100%;">' + copy + '</div></div>')
+    cracks = ''
+    if b.get('cracks') is not False and edges:
+        dd = ' '.join(edges)
+        cracks = ('<svg class="sh-cracks" data-sh="cracks" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;'
+                  'clip-path:circle(calc(clamp(0,calc(var(--p,1)*3.5),1)*150%) at ' + _ff_num(ox, 50, 0, 100, 1) + '% ' + _ff_num(oy, 50, 0, 100, 1) + '%) view-box;opacity:clamp(0,calc((0.42 - var(--p,1))*8),1);">'
+                  '<path d="' + dd + '" fill="none" stroke="var(--bg,#0b1020)" stroke-opacity="0.55" stroke-width="2.6" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>'
+                  '<path d="' + dd + '" fill="none" stroke="var(--text,#e8ecf4)" stroke-width="1.2" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>')
+    css = ('<style>@keyframes sh-gone{from{visibility:visible}to{visibility:hidden}}'
+           '.sh-body{opacity:clamp(0,calc((0.301 - var(--p,1))*1000),1);animation:sh-gone 1s linear paused both;animation-delay:calc(var(--p,1)*-1s)}'
+           '@media (prefers-reduced-motion:reduce){.sh-shards,.sh-cracks{display:none!important}.sh-body{opacity:clamp(0,calc((1 - var(--p,1))*1.4286),1)}}'
+           '@media print{.sh-shards,.sh-cracks{display:none!important}.sh-body{opacity:1!important;animation:none!important}}</style>')
+    return (css + '<div data-sh="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;overflow-x:clip;isolation:isolate;'
+            '--sh-t:clamp(0,calc((var(--p,1) - 0.3)*1.4286),1);--sh-on:clamp(0,calc((var(--p,1) - 0.299)*1000),1);' + ('' if has else 'aspect-ratio:16/9;') + '">'
+            '<div class="sh-body" data-sh="body" style="position:relative;' + ('' if has else 'height:100%;') + '">' + face + '</div>'
+            '<div class="sh-shards" data-sh="shards" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;">' + shards + '</div>' + cracks + '</div>'
+            + _hg_version_note(b, 'motion_shatter'))
+
+
+_RENDERERS['motion_shatter'] = _render_motion_shatter
+
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
 _gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()
