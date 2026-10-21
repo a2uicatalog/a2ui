@@ -21680,6 +21680,24 @@ blocks:
     color: "\"#rrggbb\" (optional). Default #ffffff."
   notes: "One pass, soft edges, no repeat: nothing flashes. Movement comes from the film's step key, never a CSS loop."
   source: *mla002
+- type: motion_build
+  stage: preview
+  description: "The generic build wrapper for the chart atoms: wraps one to four chart blocks and draws them on the film's progress dial p, reading the build contract every chart atom emits (data-cb kinds, pathLength=1, --k, --n). Tiles and bars grow, links and branches draw along their path, labels fade in, the reference line arrives last. Pure CSS inside the reduced-motion gate: with reduced motion on, on static surfaces, or when no timeline sets p, the chart renders exactly as it does alone. A block that emits no contract passes through untouched. No script."
+  compact_description: "a wrapper that draws any chart atom on the film's p dial"
+  routing_text: "Animate a chart building up (bars growing, links drawing, labels appearing) driven by a motion_timeline p track."
+  intent_phrases:
+  - "Build the treemap tile by tile as the film plays."
+  - "Draw the org chart's branches, then fade the labels in."
+  surfaces: *mla001
+  fields:
+    blocks: "array (required, 1 to 4) of chart atoms (treemap, org_chart, sankey_flow, ...). Only elements carrying data-cb move; anything else passes through untouched."
+    order: "\"stagger\" | \"together\" | \"by-kind\" (optional, default stagger). stagger follows the chart's own build order one element after another (a sankey's nodes, then its links, then its labels). together builds every element at once on p: the escape hatch for a chart with many elements. by-kind draws geometry first, then links and branches, then labels, then the reference line, each kind as a group: use it to explain a chart in layers."
+    from: "\"baseline\" | \"origin\" | \"center\" (optional, default baseline). Where tiles and bars grow from: the bottom edge (a bar chart rising from its axis), the element's own top-left corner (treemap tiles unfolding from their corner), or the middle (a tile swelling into place)."
+    span: "integer (optional). How many elements are in flight at once in stagger order, 1 to 8. Default 4. 1 is strictly one after another; 8 is close to a wave. Honoured when the chart marks each element with its build index (--i next to --k); otherwise the chart's own one-at-a-time sequence applies."
+    ink_last: "boolean (optional, default true). true: labels fade in only after their geometry has built, so the picture settles before the words. false: labels fade in over the first third of p alongside the geometry, for a chart the viewer must read while it builds."
+    version: "integer (optional, default 1). Contract version."
+  notes: "Reads the dial p that a motion_timeline p track sets on an ancestor; never sets it. Give the motion_build block an id and target it with the p track: the chart_summary count-up spans inside are then in the track's scope. The chart's own sequence is re-timed through --n so it ends at p = 1. Labels only fade, never transform (SVG text blurs under transforms on Android WebView). Links, branches and reference lines draw along their path when they carry pathLength=1 and are solid; a dashed path (a reference line, a waterfall connector) keeps its dash and fades instead. Arcs and ribbons scale out from the chart's centre; bars and sankey node rects grow from their base; other nodes (org cards with their own rise) only fade. Keep a chart under about 60 moving elements (compositor-only transforms, opacity and dash); above that the wrapper leaves an HTML comment and order together is the cheap path. The chart's hidden table is untouched; the wrapper is a plain div, not aria-hidden."
+  source: *mla002
 - type: motion_capsule
   stage: preview
   description: "A rounded capsule that widens as words land in it, one after another as p goes 0 to 1, so a sentence builds inside its own outline. Each word fades in (and, with resolve blur or scramble, comes out of blur or noise). Outline, solid or glass. The words are real text. Plain HTML and CSS, no script."

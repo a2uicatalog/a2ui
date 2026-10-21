@@ -321,6 +321,50 @@ _RENDERERS['motion_sweep'] = function(b) {
     + 'transform:rotate(' + ang + 'deg);pointer-events:none;background:linear-gradient(90deg,transparent,' + col + ',transparent);opacity:' + str + ';"></div></div>';
 };
 
+// motion_build (2026-10-21, decision D9): draws any chart atom that emits the build contract on the film's --p dial.
+// Contract (a2ui-private pm/evidence/2026-10-21-build-contract.md): data-cb="tile|bar|link|branch|arc|ribbon|node|label|ref" on each
+// moving element, --k:clamp(0,calc(var(--p,1)*N - i),1) on it (the chart's own index space), --n on the chart root, pathLength="1" on
+// every path that draws, opacity in a .cb-fade class rule. One div + one quote-free stylesheet keyed on data-cb; every rule sits inside
+// the reduced-motion gate; it never sets --p (a motion_timeline p track does); a child without the contract passes through untouched.
+// --cb-r is the ramp each element consumes: the child's --k, or the span-widened window clamp(0,(p*(n+span) - i)/span,1) when the
+// element also carries --i (--sw switches between the two without a script). The child's own sequence (N = n+1) is re-timed through
+// --n so it ends at p = 1 (max() with 2p-1 keeps the static path complete whatever N the child used). Design input from the four
+// contract builders (2026-10-21): bars and sankey node rects grow from their base; dashed paths (ref lines, waterfall connectors)
+// keep their dash and fade instead of drawing; arcs and ribbons scale from the viewBox centre (a true angular sweep is a follow-up);
+// other nodes (org cards with their own rise) only fade. Labels only ever fade. Twin: web_article.py _render_motion_build.
+var _MOB_ORDER = {stagger: 'stagger', together: 'together', 'by-kind': 'by-kind'};
+var _MOB_FROM = {baseline: '50% 100%', origin: '0 0', center: '50% 50%'};
+var _MOB_CSS = '@media (prefers-reduced-motion:no-preference){.mo-build{--pb:var(--p,1)}'
+  + '.mo-build [data-cb]{--p:max(calc(var(--pb,1)*var(--n,1e9)/(var(--n,1e9) + 1)),calc(var(--pb,1)*2 - 1));--sw:clamp(0,calc(var(--i,-1) + 1),1);--kb:clamp(0,calc((var(--pb,1)*(var(--n,1) + var(--cb-span,4)) - var(--i,-1))/var(--cb-span,4)),1);--cb-r:calc(var(--sw)*var(--kb) + (1 - var(--sw))*var(--k,1))}'
+  + '.mo-build[data-mob=together] [data-cb]{--cb-r:clamp(0,calc(var(--pb,1)*1.25),1)}'
+  + '.mo-build[data-mob=together] [data-cb=label],.mo-build[data-mob=together] [data-cb=ref]{--cb-r:clamp(0,calc((var(--pb,1) - 0.8)*5),1)}'
+  + '.mo-build[data-mob=by-kind] [data-cb]{--cb-r:clamp(0,calc(var(--pb,1)*2.5),1)}'
+  + '.mo-build[data-mob=by-kind] [data-cb=link],.mo-build[data-mob=by-kind] [data-cb=branch]{--cb-r:clamp(0,calc((var(--pb,1) - 0.4)/0.3),1)}'
+  + '.mo-build[data-mob=by-kind] [data-cb=label]{--cb-r:clamp(0,calc((var(--pb,1) - 0.7)*5),1)}'
+  + '.mo-build[data-mob=by-kind] [data-cb=ref]{--cb-r:clamp(0,calc((var(--pb,1) - 0.9)*10),1)}'
+  + '.mo-build[data-mob-ink=first] [data-cb=label]{--cb-r:clamp(0,calc(var(--pb,1)*3),1)}'
+  + '.mo-build [data-cb=tile]{transform:scale(var(--cb-r));transform-box:fill-box;transform-origin:var(--cb-org,50% 100%)}'
+  + '.mo-build [data-cb=bar],.mo-build rect[data-cb=node]{transform:scaleY(var(--cb-r));transform-box:fill-box;transform-origin:var(--cb-org,50% 100%)}'
+  + '.mo-build [data-cb=arc],.mo-build [data-cb=ribbon]{transform:scale(var(--cb-r));transform-box:view-box;transform-origin:50% 50%}'
+  + '.mo-build [data-cb=link][pathLength]:not([stroke-dasharray]):not([style*=dasharray]),.mo-build [data-cb=branch][pathLength]:not([stroke-dasharray]):not([style*=dasharray]),.mo-build [data-cb=ref][pathLength]:not([stroke-dasharray]):not([style*=dasharray]){stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--cb-r))}'
+  + '.mo-build [data-cb].cb-fade{opacity:var(--cb-r)}'
+  + '.mo-build [data-cb=link][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade,.mo-build [data-cb=branch][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade,.mo-build [data-cb=ref][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade{opacity:1}'
+  + '.mo-build [data-cb=label]{opacity:var(--cb-r)}}';
+_RENDERERS['motion_build'] = function(b) {
+  var all = Array.isArray(b.blocks) ? b.blocks : [], blocks = all.slice(0, 4), i, h, n, inner = '', note = '';
+  var order = _ffPick(b.order, _MOB_ORDER, 'stagger'), org = _ffPick(b['from'], _MOB_FROM, 'baseline'), span = _ffInt(b.span, 4, 1, 8), ver = _ffInt(b.version, 1, 1, 1);
+  var ink = b.ink_last === false ? 'first' : 'last'; // attribute values are identifiers: [data-mob-ink=0] is not a valid selector
+  for (i = 0; i < blocks.length; i++) {
+    h = _moChild(blocks[i]);
+    n = (h.match(/data-cb="/g) || []).length;
+    if (n > 60) note += '<!-- a2ui: motion_build block ' + i + ' has ' + n + ' moving elements (budget 60): use order together -->';
+    inner += h;
+  }
+  if (all.length > 4) note += '<!-- a2ui: motion_build showed 4 of ' + all.length + ' blocks (max 4) -->';
+  return '<div class="mo-build" data-mob="' + order + '" data-mob-ink="' + ink + '" data-mob-v="' + ver + '" style="--cb-span:' + span + ';--cb-org:' + org + ';"><style>'
+    + _MOB_CSS + '</style>' + inner + '</div>' + note;
+};
+
 // ── fourth batch from a brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag ───────────────────────────────────────────
 // Same rules as the earlier batches: decorative layers aria-hidden, words are real text, every dial defaults to the finished picture, no endless loops, no flashing.
 // Width that follows content ("a pill that grows as words land in it") cannot use calc() with fr units, so a box grows with max-width = progress x an estimated width,

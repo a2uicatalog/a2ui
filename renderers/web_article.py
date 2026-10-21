@@ -31296,6 +31296,59 @@ for _m3_name, _m3_fn in (('motion_theme', _render_motion_theme), ('motion_dialog
     _RENDERERS[_m3_name] = _m3_fn
 
 
+# ─── motion_build (2026-10-21, decision D9): draws any chart atom that emits the build contract on the film's --p dial ───
+# Contract (pm/evidence/2026-10-21-build-contract.md): data-cb="tile|bar|link|branch|arc|ribbon|node|label|ref" on each moving element,
+# --k:clamp(0,calc(var(--p,1)*N - i),1) on it (the chart's own index space), --n on the chart root, pathLength="1" on every path that
+# draws, opacity in a .cb-fade class rule. The wrapper is one div + one quote-free stylesheet keyed on data-cb; every rule sits inside
+# the reduced-motion gate; it never sets --p (a motion_timeline p track does); a child without the contract passes through untouched.
+# --cb-r is the ramp each element consumes: the child's --k, or the span-widened window clamp(0,(p*(n+span) - i)/span,1) when the
+# element also carries --i (--sw switches between the two without a script). The child's own sequence (N = n+1) is re-timed through
+# --n so it ends at p = 1 (max() with 2p-1 keeps the static path complete whatever N the child used). Design input from the four
+# contract builders (2026-10-21): bars and sankey node rects grow from their base; dashed paths (ref lines, waterfall connectors)
+# keep their dash and fade instead of drawing; arcs and ribbons scale from the viewBox centre (a true angular sweep is a follow-up);
+# other nodes (org cards with their own rise) only fade. Labels only ever fade. Twin of atoms_motion_candidates.gs.
+_MOB_ORDER = {'stagger': 'stagger', 'together': 'together', 'by-kind': 'by-kind'}
+_MOB_FROM = {'baseline': '50% 100%', 'origin': '0 0', 'center': '50% 50%'}
+_MOB_CSS = ('@media (prefers-reduced-motion:no-preference){.mo-build{--pb:var(--p,1)}'
+            + '.mo-build [data-cb]{--p:max(calc(var(--pb,1)*var(--n,1e9)/(var(--n,1e9) + 1)),calc(var(--pb,1)*2 - 1));--sw:clamp(0,calc(var(--i,-1) + 1),1);--kb:clamp(0,calc((var(--pb,1)*(var(--n,1) + var(--cb-span,4)) - var(--i,-1))/var(--cb-span,4)),1);--cb-r:calc(var(--sw)*var(--kb) + (1 - var(--sw))*var(--k,1))}'
+            + '.mo-build[data-mob=together] [data-cb]{--cb-r:clamp(0,calc(var(--pb,1)*1.25),1)}'
+            + '.mo-build[data-mob=together] [data-cb=label],.mo-build[data-mob=together] [data-cb=ref]{--cb-r:clamp(0,calc((var(--pb,1) - 0.8)*5),1)}'
+            + '.mo-build[data-mob=by-kind] [data-cb]{--cb-r:clamp(0,calc(var(--pb,1)*2.5),1)}'
+            + '.mo-build[data-mob=by-kind] [data-cb=link],.mo-build[data-mob=by-kind] [data-cb=branch]{--cb-r:clamp(0,calc((var(--pb,1) - 0.4)/0.3),1)}'
+            + '.mo-build[data-mob=by-kind] [data-cb=label]{--cb-r:clamp(0,calc((var(--pb,1) - 0.7)*5),1)}'
+            + '.mo-build[data-mob=by-kind] [data-cb=ref]{--cb-r:clamp(0,calc((var(--pb,1) - 0.9)*10),1)}'
+            + '.mo-build[data-mob-ink=first] [data-cb=label]{--cb-r:clamp(0,calc(var(--pb,1)*3),1)}'
+            + '.mo-build [data-cb=tile]{transform:scale(var(--cb-r));transform-box:fill-box;transform-origin:var(--cb-org,50% 100%)}'
+            + '.mo-build [data-cb=bar],.mo-build rect[data-cb=node]{transform:scaleY(var(--cb-r));transform-box:fill-box;transform-origin:var(--cb-org,50% 100%)}'
+            + '.mo-build [data-cb=arc],.mo-build [data-cb=ribbon]{transform:scale(var(--cb-r));transform-box:view-box;transform-origin:50% 50%}'
+            + '.mo-build [data-cb=link][pathLength]:not([stroke-dasharray]):not([style*=dasharray]),.mo-build [data-cb=branch][pathLength]:not([stroke-dasharray]):not([style*=dasharray]),.mo-build [data-cb=ref][pathLength]:not([stroke-dasharray]):not([style*=dasharray]){stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--cb-r))}'
+            + '.mo-build [data-cb].cb-fade{opacity:var(--cb-r)}'
+            + '.mo-build [data-cb=link][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade,.mo-build [data-cb=branch][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade,.mo-build [data-cb=ref][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade{opacity:1}'
+            + '.mo-build [data-cb=label]{opacity:var(--cb-r)}}')
+
+
+def _render_motion_build(b: dict) -> str:
+    allb = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    blocks = allb[:4]
+    order, org = _ff_pick(b.get('order'), _MOB_ORDER, 'stagger'), _ff_pick(b.get('from'), _MOB_FROM, 'baseline')
+    span, ver = _ff_int(b.get('span'), 4, 1, 8), _ff_int(b.get('version'), 1, 1, 1)
+    ink = 'first' if b.get('ink_last') is False else 'last'  # attribute values are identifiers: [data-mob-ink=0] is not a valid selector
+    inner, note = '', ''
+    for i, x in enumerate(blocks):
+        h = _mo_child(x)
+        n = h.count('data-cb="')
+        if n > 60:
+            note += '<!-- a2ui: motion_build block ' + str(i) + ' has ' + str(n) + ' moving elements (budget 60): use order together -->'
+        inner += h
+    if len(allb) > 4:
+        note += '<!-- a2ui: motion_build showed 4 of ' + str(len(allb)) + ' blocks (max 4) -->'
+    return ('<div class="mo-build" data-mob="' + order + '" data-mob-ink="' + ink + '" data-mob-v="' + str(ver) + '" style="--cb-span:' + str(span) + ';--cb-org:' + org + ';"><style>'
+            + _MOB_CSS + '</style>' + inner + '</div>' + note)
+
+
+_RENDERERS['motion_build'] = _render_motion_build
+
+
 # ─── twins of the keynote motion candidates (atoms_motion_candidates.gs, 2026-10-10): lit, arcs, lockup, collage, bubbles, beats, pattern, dock, fit ───
 _IF_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
 _CL_FILLS = ['#2c3e66', '#7a3b6e', '#2f7d63', '#9a6120', '#3b4a6b', '#5a3d2b', '#1f5f7a', '#6b2d3c']
