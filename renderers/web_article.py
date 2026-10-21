@@ -29154,7 +29154,7 @@ for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens
     _RENDERERS[_mo_name] = _mo_fn
 
 
-_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1, 'reel': 1, 'pop': 1, 'decode': 1}
+_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1, 'flap': 1, 'reel': 1, 'pop': 1, 'decode': 1, 'bloom': 1}
 _MO_ORDER = {'forward': 1, 'reverse': 1, 'centre': 1, 'random': 1}
 _MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'
 _MO_ALIGN = {'start': 'left', 'middle': 'center', 'end': 'right'}
@@ -29403,6 +29403,8 @@ def _render_motion_text(b: dict) -> str:
         if reveal == 'decode':  # each unit resolves out of seeded noise
             nz = ''.join(_CP_NOISE[math.floor(_bx_seed(ord_seed, n * 61 + zi, 4) * len(_CP_NOISE))] for zi in range(min(ln or 1, 60)))
             return ('<span style="' + uvar(n) + 'position:relative;' + inl + '"><span style="opacity:clamp(0,calc(var(--u)*1.6 - 0.3),1);">' + inner + '</span><span aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;opacity:clamp(0,calc(1.2 - var(--u)*1.6),1);">' + _cv_esc(nz) + '</span></span>')
+        if reveal == 'bloom':  # condenses in place out of a bright, glowing blur (no slide): brightness and halo fall away as it sharpens
+            return '<span style="' + uvar(n) + inl + 'opacity:clamp(0,calc(var(--u)*3),1);filter:brightness(calc(1 + (1 - var(--u))*1.6)) drop-shadow(0 0 calc((1 - var(--u))*0.5em) currentColor) blur(calc((1 - var(--u))*0.4em));transform:scale(calc(0.9 + 0.1*var(--u)));">' + inner + '</span>'
         fx = ('' if reveal == 'fade' else 'transform:translateY(calc((1 - var(--u))*-0.6em));' if reveal == 'drop'
               else 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' if reveal == 'blur'
               else 'transform:translateY(calc((1 - var(--u))*0.6em));')

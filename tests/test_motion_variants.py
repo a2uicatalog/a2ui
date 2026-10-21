@@ -113,3 +113,43 @@ def test_collapse_squeezes_the_old_scene_to_a_thin_band_then_shows_the_new_one()
     assert late.startswith("inset(") and late != mid, (mid, late)
     assert _probe(_col(), 4, clip % "s2")[1] == 0, "the new scene waits while the old one collapses"
     assert _probe(_col(), 5.5, clip % "s2")[1] == 1, "and is whole once the collapse is done"
+
+
+# ─── 3. motion_text reveal "bloom" ─────────────────────────────────────────────────────────────────────────────────────────────────
+CASES["text"] = [
+    dict(TEXT, reveal="bloom"), dict(TEXT, reveal="bloom", mode="words"), dict(TEXT, reveal="bloom", mode="chars", text="HELLO"), dict(TEXT, reveal="bloom", mode="block"),
+    dict(TEXT, reveal="bloom", glow=20, accent_gradient=["#ff2d6f", "#19d3ff"], overlap=6, order="centre"), dict(TEXT, reveal="Bloom"), dict(TEXT, reveal="bloom<x>"),
+    dict(TEXT, reveal="bloom", text="<img src=x onerror=alert(1)> & \"q\""),
+]
+ALL = [b for bs in CASES.values() for b in bs]
+
+
+def test_bloom_python_matches_gas_exactly(core_js):
+    cs = CASES["text"]
+    got = _gas_batch(core_js, cs)
+    bad = [str(b)[:90] for b, g in zip(cs, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_bloom_is_opt_in_and_unknown_names_still_mean_rise():
+    assert _norm(_py(dict(TEXT, reveal="Bloom"))) == _norm(_py(TEXT)) == _norm(_py(dict(TEXT, reveal="rise")))
+    assert "brightness" not in _py(TEXT) and "brightness" not in _py(dict(TEXT, reveal="blur"))
+
+
+def test_bloom_differs_from_blur_and_decode_and_is_hostile_safe():
+    bloom, blur, dec = (_py(dict(TEXT, reveal=r)) for r in ("bloom", "blur", "decode"))
+    assert len({bloom, blur, dec}) == 3
+    assert "brightness(" in bloom and "drop-shadow(" in bloom and "blur(" in bloom and "scale(" in bloom
+    assert "translateY" not in bloom.split("<br>")[0], "bloom does not slide: it condenses in place"
+    h = _py(dict(TEXT, reveal="bloom", text="<img src=x onerror=alert(1)>"))
+    assert "<img" not in h
+
+
+@browser
+def test_bloom_starts_blurred_glowing_and_bright_and_ends_clean():
+    blk = _scene([dict(TEXT, id="t", reveal="bloom", mode="block", text="Hello", place={"x": 5, "y": 5, "w": 80})], [{"target": "t", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "var u=document.querySelector('[data-mt-id=t] span[aria-hidden] > span');var c=getComputedStyle(u);return [+c.opacity, c.filter];"
+    early = _probe(blk, 1.6, js)
+    assert "blur(" in early[1] and "brightness(" in early[1] and "drop-shadow(" in early[1], early
+    done = _probe(blk, 4, js)
+    assert done[0] == 1 and ("blur(0px)" in done[1] or done[1] == "none"), done

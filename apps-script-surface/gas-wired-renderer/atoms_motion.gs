@@ -845,7 +845,7 @@ _RENDERERS['motion_timeline'] = function(b) {
 // motion_layer groups children into a scene; motion_text, motion_shape and motion_counter draw type, forms and numbers
 // from the stage theme (--mt-ink / --mt-acc / --mt-mute, set by motion_timeline) and move with --p like the demo kit.
 // Standalone they render their FINAL state.
-var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1, flap: 1, reel: 1, pop: 1, decode: 1};
+var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1, flap: 1, reel: 1, pop: 1, decode: 1, bloom: 1};
 var _MO_ORDER = {forward: 1, reverse: 1, centre: 1, random: 1};
 var _MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
 var _MO_ALIGN = {start: 'left', middle: 'center', end: 'right'};
@@ -1018,6 +1018,7 @@ _RENDERERS['motion_text'] = function(b) {
       for (zi = 0; zi < zl; zi++) nz += _CP_NOISE.charAt(Math.floor(_bxSeed(ordSeed, n * 61 + zi, 4) * _CP_NOISE.length));
       return '<span style="' + uvar(n) + 'position:relative;' + inl + '"><span style="opacity:clamp(0,calc(var(--u)*1.6 - 0.3),1);">' + inner + '</span><span aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;opacity:clamp(0,calc(1.2 - var(--u)*1.6),1);">' + _esc(nz) + '</span></span>';
     }
+    if (reveal === 'bloom') return '<span style="' + uvar(n) + inl + 'opacity:clamp(0,calc(var(--u)*3),1);filter:brightness(calc(1 + (1 - var(--u))*1.6)) drop-shadow(0 0 calc((1 - var(--u))*0.5em) currentColor) blur(calc((1 - var(--u))*0.4em));transform:scale(calc(0.9 + 0.1*var(--u)));">' + inner + '</span>';
     var fx = reveal === 'fade' ? '' : reveal === 'drop' ? 'transform:translateY(calc((1 - var(--u))*-0.6em));' : reveal === 'blur' ? 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' : 'transform:translateY(calc((1 - var(--u))*0.6em));';
     return '<span style="' + uvar(n) + inl + 'opacity:var(--u);' + fx + '">' + inner + '</span>';
   }
