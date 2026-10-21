@@ -8,14 +8,11 @@
 //   GET /  Accept: text/markdown      -> the markdown twin, with a correct Vary header
 //   GET /  UA: a known AI crawler     -> the markdown twin, even if it sent Accept: text/html
 //
-// SCOPE IS THE WHOLE POINT. wrangler.toml sets:
-//     run_worker_first = ["/"]
-// so this code runs for the bare homepage and nothing else. The 474 atom pages,
-// their .md twins, /.well-known/*, openapi.json and every other asset keep the
-// direct-from-assets path with no Worker in front of them — no added latency,
-// no new failure mode on the rest of the site. Requests that reach here for any
-// other reason (an unmatched path falling through) are handed straight to
-// env.ASSETS, which reproduces the pre-Worker behaviour exactly, 404s included.
+// SCOPE: wrangler.toml sets run_worker_first = true (2026-10-21) so a MISS on
+// any path can be answered as a Markdown 404 for Accept: text/markdown clients
+// (see withMarkdown404). Every hit other than the homepage negotiation below is
+// handed straight to env.ASSETS and comes back exactly as the assets runtime
+// served it; HTML 404s keep their 404 status and body.
 //
 // Both special cases are served BY FETCHING A REAL ASSET rather than by
 // generating a body here. agent-view.json is built by scripts/gen_openapi.py
@@ -48,13 +45,58 @@ async function serveAsset(env, request, path, headers) {
   return new Response(res.body, { status: 200, headers });
 }
 
+// ── Agent-friendly 404 ──────────────────────────────────────────────────────
+// Every non-homepage path reaches this Worker (wrangler.toml run_worker_first)
+// only so that a MISS can be answered in Markdown for a client that prefers it.
+// Hits are returned exactly as the assets runtime produced them.
+
+/** True when text/markdown outranks text/html in the Accept header (q-values honoured). */
+function prefersMarkdown(accept) {
+  let md = -1, html = -1;
+  for (const part of (accept || '').split(',')) {
+    const [type, ...params] = part.trim().toLowerCase().split(';');
+    const qp = params.map((x) => x.trim()).find((x) => x.startsWith('q='));
+    const q = qp ? parseFloat(qp.slice(2)) : 1;
+    if (Number.isNaN(q)) continue;
+    if (type === 'text/markdown') md = Math.max(md, q);
+    else if (type === 'text/html') html = Math.max(html, q);
+  }
+  return md > 0 && md > html;
+}
+
+const NOT_FOUND_MD = `# 404 - Page not found
+
+The page you requested does not exist on a2uicatalog.ai.
+
+Start from one of these machine-readable entry points:
+
+- [llms.txt](https://a2uicatalog.ai/llms.txt) - site summary and index for agents
+- [agents.md](https://a2uicatalog.ai/agents.md) - how agents should use this site and its API
+- [Documentation](https://a2uicatalog.ai/docs/) - API and developer docs
+- [sitemap.xml](https://a2uicatalog.ai/sitemap.xml) - every published page
+`;
+
+async function withMarkdown404(request, env) {
+  const res = await env.ASSETS.fetch(request);
+  if (res.status !== 404 || !prefersMarkdown(request.headers.get('Accept'))) return res;
+  return new Response(request.method === 'HEAD' ? null : NOT_FOUND_MD, {
+    status: 404,
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      'Vary': 'Accept',
+      'Cache-Control': 'public, max-age=60',
+      'X-API-Version': '1',
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
     // Only ever act on the bare homepage. Anything else is passed through
     // untouched, so this Worker can never change another page's behaviour.
-    if (url.pathname !== '/') return env.ASSETS.fetch(request);
+    if (url.pathname !== '/') return withMarkdown404(request, env);
 
     // ── ?mode=agent — structured view instead of the marketing page ──────────
     if (url.searchParams.get('mode') === 'agent') {
