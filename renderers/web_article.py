@@ -7,7 +7,7 @@ No markdown conversion. No Quill. No stripping surprises.
 """
 
 from typing import List, Dict, Any
-import decimal, re, math, base64, urllib.request, urllib.error, json as _json
+import array as _cn_array, decimal, re, math, base64, urllib.request, urllib.error, json as _json
 from datetime import datetime, timezone
 from pathlib import Path
 import markdown as _md_lib
@@ -32995,6 +32995,526 @@ def _render_arc_diagram(b: dict) -> str:
                     + _hg_note('Arc thickness shows the link value. In a narrow container only some node names are drawn; the table lists every node and link.') + notes + _hg_version_note(b, 'arc_diagram') + tables)
 
 
+# ── contour_plot (I57 contours of a value grid, I51 density contours of points) ──────────────────────────────────────────────────────────────────
+# d3-contour 4.0.2 (ISC, Mike Bostock) ported by hand: contours() (marching squares, rings stitched, smoothed linearly, holes given to the polygon that holds
+# them) and contourDensity() (points splatted bilinearly onto a Float32Array grid of 4 px cells, padded by 3 blur radii, blurred with d3-array 3.2.4 blur2,
+# then the same contours at thresholds scaled by 16). The order of every floating-point operation follows the JavaScript so the output is identical to d3,
+# bit for bit; the density grid is array('f') (float32), as d3's Float32Array. Twin of _cnContours / _cnDensity / _RENDERERS['contour_plot'] in atoms_infographic.gs.
+_CN_CASES = [
+    [], [[[1.0, 1.5], [0.5, 1.0]]], [[[1.5, 1.0], [1.0, 1.5]]], [[[1.5, 1.0], [0.5, 1.0]]], [[[1.0, 0.5], [1.5, 1.0]]],
+    [[[1.0, 1.5], [0.5, 1.0]], [[1.0, 0.5], [1.5, 1.0]]], [[[1.0, 0.5], [1.0, 1.5]]], [[[1.0, 0.5], [0.5, 1.0]]], [[[0.5, 1.0], [1.0, 0.5]]],
+    [[[1.0, 1.5], [1.0, 0.5]]], [[[0.5, 1.0], [1.0, 0.5]], [[1.5, 1.0], [1.0, 1.5]]], [[[1.5, 1.0], [1.0, 0.5]]], [[[0.5, 1.0], [1.5, 1.0]]],
+    [[[1.0, 1.5], [1.5, 1.0]]], [[[0.5, 1.0], [1.0, 1.5]]], []]
+_CN_W, _CN_H, _CN_MAXPTS, _CN_MAXROWS, _CN_BUDGET = 600, 400, 2000, 200, 40000
+_CN_MIN_VALUE = 5e-324
+_CN_STOPS = [(0xCF, 0xE3, 0xF5), (0x8F, 0xBB, 0xE0), (0x4E, 0x8F, 0xC9), (0x25, 0x6B, 0xAA), (0x0B, 0x3C, 0x73)]
+_CN_NAMES = ['pale blue', 'light blue', 'mid blue', 'deep blue', 'dark blue']
+
+
+def _cn_sign(a):
+    return a if a != a else (1.0 if a > 0 else -1.0 if a < 0 else a)
+
+
+def _cn_ring_area(ring):
+    n = len(ring)
+    area = ring[n - 1][1] * ring[0][0] - ring[n - 1][0] * ring[0][1]
+    for i in range(1, n):
+        area += ring[i - 1][1] * ring[i][0] - ring[i - 1][0] * ring[i][1]
+    return area
+
+
+def _cn_within(p, q, r):
+    return (p <= q and q <= r) or (r <= q and q <= p)
+
+
+def _cn_ring_contains(ring, point):
+    x, y, contains = point[0], point[1], -1
+    n = len(ring)
+    j = n - 1
+    for i in range(n):
+        pi, pj = ring[i], ring[j]
+        xi, yi, xj, yj = pi[0], pi[1], pj[0], pj[1]
+        if (pj[0] - pi[0]) * (point[1] - pi[1]) == (point[0] - pi[0]) * (pj[1] - pi[1]):          # collinear(a=pi, b=pj, c=point)
+            k = 1 if pi[0] == pj[0] else 0
+            if _cn_within(pi[k], point[k], pj[k]):
+                return 0
+        if (yi > y) != (yj > y) and x < _cp_div((xj - xi) * (y - yi), (yj - yi)) + xi:
+            contains = -contains
+        j = i
+    return contains
+
+
+def _cn_contains(ring, hole):
+    for pt in hole:
+        c = _cn_ring_contains(ring, pt)
+        if c:
+            return c
+    return 0
+
+
+def _cn_at(values, i):
+    return values[i] if 0 <= i < len(values) else None
+
+
+def _cn_valid(v):
+    return -float('inf') if v is None or v != v else v
+
+
+def _cn_smooth1(x, v0, v1, value):
+    a = value - v0
+    b = v1 - v0
+    d = _cp_div(a, b) if (a == a and abs(a) != float('inf')) or (b == b and abs(b) != float('inf')) else _cp_div(_cn_sign(a), _cn_sign(b))
+    return x if d != d else x + d - 0.5
+
+
+def _cn_isorings(values, dx, dy, value, callback):
+    by_start, by_end = {}, {}
+    st = [0, 0]
+
+    def above(v):
+        return 1 if v is not None and v >= value else 0
+
+    def stitch(line):
+        start = [line[0][0] + st[0], line[0][1] + st[1]]
+        end = [line[1][0] + st[0], line[1][1] + st[1]]
+        si = start[0] * 2 + start[1] * (dx + 1) * 4
+        ei = end[0] * 2 + end[1] * (dx + 1) * 4
+        f = by_end.get(si)
+        if f:
+            g = by_start.get(ei)
+            if g:
+                del by_end[f['end']]
+                del by_start[g['start']]
+                if f is g:
+                    f['ring'].append(end)
+                    callback(f['ring'])
+                else:
+                    nf = {'start': f['start'], 'end': g['end'], 'ring': f['ring'] + g['ring']}
+                    by_start[f['start']] = nf
+                    by_end[g['end']] = nf
+            else:
+                del by_end[f['end']]
+                f['ring'].append(end)
+                f['end'] = ei
+                by_end[ei] = f
+            return
+        f = by_start.get(ei)
+        if f:
+            g = by_end.get(si)
+            if g:
+                del by_start[f['start']]
+                del by_end[g['end']]
+                if f is g:
+                    f['ring'].append(end)
+                    callback(f['ring'])
+                else:
+                    nf = {'start': g['start'], 'end': f['end'], 'ring': g['ring'] + f['ring']}
+                    by_start[g['start']] = nf
+                    by_end[f['end']] = nf
+            else:
+                del by_start[f['start']]
+                f['ring'].insert(0, start)
+                f['start'] = si
+                by_start[si] = f
+            return
+        nf = {'start': si, 'end': ei, 'ring': [start, end]}
+        by_start[si] = nf
+        by_end[ei] = nf
+
+    def run(c):
+        for line in _CN_CASES[c]:
+            stitch(line)
+    st[0] = st[1] = -1
+    t1 = above(values[0])
+    run(t1 << 1)
+    st[0] += 1
+    while st[0] < dx - 1:
+        t0, t1 = t1, above(values[st[0] + 1])
+        run(t0 | t1 << 1)
+        st[0] += 1
+    run(t1)
+    st[1] += 1
+    while st[1] < dy - 1:
+        y = st[1]
+        st[0] = -1
+        t1 = above(values[y * dx + dx])
+        t2 = above(values[y * dx])
+        run(t1 << 1 | t2 << 2)
+        st[0] += 1
+        while st[0] < dx - 1:
+            x = st[0]
+            t0, t1 = t1, above(values[y * dx + dx + x + 1])
+            t3, t2 = t2, above(values[y * dx + x + 1])
+            run(t0 | t1 << 1 | t2 << 2 | t3 << 3)
+            st[0] += 1
+        run(t1 | t2 << 3)
+        st[1] += 1
+    y = st[1]
+    st[0] = -1
+    lv = values[y * dx]
+    t2 = 1 if (0 if lv is None else lv) >= value else 0                           # d3 compares this one cell without its null check
+    run(t2 << 2)
+    st[0] += 1
+    while st[0] < dx - 1:
+        x = st[0]
+        t3, t2 = t2, above(values[y * dx + x + 1])
+        run(t2 << 2 | t3 << 3)
+        st[0] += 1
+    run(t2 << 3)
+
+
+def _cn_contour(values, dx, dy, value):
+    polygons, holes = [], []
+
+    def ring_done(ring):
+        for pt in ring:                                                             # smoothLinear
+            x, y = pt[0], pt[1]
+            xt, yt = int(x), int(y)
+            v1 = _cn_valid(_cn_at(values, yt * dx + xt))
+            if x > 0 and x < dx and xt == x:
+                pt[0] = _cn_smooth1(x, _cn_valid(_cn_at(values, yt * dx + xt - 1)), v1, value)
+            if y > 0 and y < dy and yt == y:
+                pt[1] = _cn_smooth1(y, _cn_valid(_cn_at(values, (yt - 1) * dx + xt)), v1, value)
+        if _cn_ring_area(ring) > 0:
+            polygons.append([ring])
+        else:
+            holes.append(ring)
+    _cn_isorings(values, dx, dy, value, ring_done)
+    for hole in holes:
+        for polygon in polygons:
+            if _cn_contains(polygon[0], hole) != -1:
+                polygon.append(hole)
+                break
+    return polygons
+
+
+def _cn_sturges(count):
+    return max(1, math.ceil(math.log(count) / math.log(2)) + 1) if count > 0 else 1
+
+
+def _cn_contours(values, dx, dy, thresholds):
+    """d3.contours().size([dx, dy]).thresholds(thresholds)(values): [(value, [polygon, ...]), ...]. thresholds: None (Sturges), a count, or a list of values.
+    values: floats or None, row-major."""
+    if isinstance(thresholds, list):
+        tz = sorted(thresholds)
+    else:
+        fin = [v for v in values if v is not None and v == v and abs(v) != float('inf')]
+        if not fin:
+            return []
+        cnt = _cn_sturges(sum(1 for v in values if v is not None and v == v)) if thresholds is None else thresholds
+        e0, e1 = min(fin), max(fin)
+        n0, n1 = _hg_nice(e0, e1, cnt)
+        tz = _hg_ticks(n0, n1, cnt)
+        while tz and tz[-1] >= e1:
+            tz.pop()
+        while len(tz) > 1 and tz[1] < e0:
+            tz.pop(0)
+    return [(v, _cn_contour(values, dx, dy, v)) for v in tz]
+
+
+def _cn_blurf(radius):
+    radius0 = math.floor(radius)
+    if radius0 == radius:
+        w = 2 * radius + 1
+
+        def bluri(T, S, start, stop, step):
+            stop -= step
+            if not stop >= start:
+                return
+            s = radius * S[start]
+            sp = step * radius
+            i, j = start, start + sp
+            while i < j:
+                s += S[min(stop, i)]
+                i += step
+            i, j = start, stop
+            while i <= j:
+                s += S[min(stop, i + sp)]
+                T[i] = s / w
+                s -= S[max(start, i - sp)]
+                i += step
+        return bluri
+    t = radius - radius0
+    w = 2 * radius + 1
+
+    def blur(T, S, start, stop, step):
+        stop -= step
+        if not stop >= start:
+            return
+        s = radius0 * S[start]
+        s0 = step * radius0
+        s1 = s0 + step
+        i, j = start, start + s0
+        while i < j:
+            s += S[min(stop, i)]
+            i += step
+        i, j = start, stop
+        while i <= j:
+            s += S[min(stop, i + s0)]
+            T[i] = (s + t * (S[max(start, i - s1)] + S[min(stop, i + s1)])) / w
+            s -= S[max(start, i - s0)]
+            i += step
+    return blur
+
+
+def _cn_blur2(values, width, height, rx):
+    """d3.blur2({data: values, width, height}, rx) on a float32 array('f'), in place (rx = ry)."""
+    if not width or not height or not rx:
+        return
+    blur = _cn_blurf(rx)
+    temp = _cn_array.array('f', values)
+
+    def blurh(T, S):
+        for y in range(0, width * height, width):
+            blur(T, S, y, y + width, 1)
+
+    def blurv(T, S):
+        n = width * height
+        for x in range(width):
+            blur(T, S, x, x + n, width)
+    blurh(temp, values)
+    blurh(values, temp)
+    blurh(temp, values)
+    blurv(values, temp)
+    blurv(temp, values)
+    blurv(values, temp)
+
+
+def _cn_density_grid(points, W, H, bandwidth):
+    """d3.contourDensity().size([W, H]).bandwidth(bandwidth) up to its float32 grid: (values, n, m, o). points: [x, y] pairs."""
+    r = (math.sqrt(4 * bandwidth * bandwidth + 1) - 1) / 2
+    o = r * 3
+    n = int(W + o * 2) >> 2
+    m = int(H + o * 2) >> 2
+    values = _cn_array.array('f', bytes(4 * n * m))
+    ln = n * m
+    pow2k = 0.25
+    for p in points:
+        xi = (p[0] + o) * pow2k
+        yi = (p[1] + o) * pow2k
+        if xi >= 0 and xi < n and yi >= 0 and yi < m:
+            x0, y0 = math.floor(xi), math.floor(yi)
+            xt, yt = xi - x0 - 0.5, yi - y0 - 0.5
+            for idx, wt in ((x0 + y0 * n, (1 - xt) * (1 - yt) * 1.0), (x0 + 1 + y0 * n, xt * (1 - yt) * 1.0),
+                            (x0 + 1 + (y0 + 1) * n, xt * yt * 1.0), (x0 + (y0 + 1) * n, (1 - xt) * yt * 1.0)):
+                if idx < ln:
+                    values[idx] = values[idx] + wt
+    _cn_blur2(values, n, m, r * pow2k)
+    return values, n, m, o
+
+
+def _cn_density_levels(values, count):
+    mx = max(values) / 16
+    return mx, _hg_ticks(_CN_MIN_VALUE, mx, 20 if count is None else count)
+
+
+def _cn_density_full(points, W, H, bandwidth, count):
+    """The density contours with the grid they came from: ([(value, polygons)], max density, values, n, m, o, levels in the grid's own units)."""
+    values, n, m, o = _cn_density_grid(points, W, H, bandwidth)
+    mx, tz = _cn_density_levels(values, count)
+    out = _cn_contours(values, n, m, [d * 16 for d in tz])
+    for _, polys in out:
+        for poly in polys:
+            for ring in poly:
+                for pt in ring:
+                    pt[0] = pt[0] * 4 - o
+                    pt[1] = pt[1] * 4 - o
+    return [(tz[i], out[i][1]) for i in range(len(tz))], mx, values, n, m, o, [d * 16 for d in tz]
+
+
+def _cn_density(points, W, H, bandwidth, count):
+    """d3.contourDensity().x().y().size([W, H]).bandwidth(bandwidth)[.thresholds(count)](points): ([(value, polygons), ...], max density)."""
+    r = _cn_density_full(points, W, H, bandwidth, count)
+    return r[0], r[1]
+
+
+def _cn_ramp(i, m):
+    t = 0.5 if m == 1 else i / (m - 1)
+    pos = t * 4
+    j = min(3, math.floor(pos))
+    f = pos - j
+    a, b = _CN_STOPS[j], _CN_STOPS[j + 1]
+    return '#' + ''.join('%02X' % math.floor(a[c] + (b[c] - a[c]) * f + 0.5) for c in range(3))
+
+
+def _cn_line(color):
+    r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
+    return '#FFFFFF' if 299 * r + 587 * g + 114 * b < 128000 else '#04182B'
+
+
+def _cn_name(i, m):
+    return _CN_NAMES[math.floor((0.5 if m == 1 else i / (m - 1)) * 4 + 0.5)]
+
+
+def _cn_r(x):
+    s = _if_fixed(x, 2)
+    if '.' in s:
+        s = s.rstrip('0').rstrip('.')
+    return '0' if s == '-0' else s
+
+
+def _cn_path(polys, sx, sy):
+    return ''.join('M' + 'L'.join(_cn_r(p[0] * sx) + ',' + _cn_r(p[1] * sy) for p in ring) + 'Z' for poly in polys for ring in poly)
+
+
+def _cn_num(v, lo, hi):
+    """A finite number (not a boolean) clamped to [lo, hi], or None."""
+    return min(hi, max(lo, v)) if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf') else None
+
+
+def _cn_usable(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _render_contour_plot(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
+    g, pts = _if_g(b, 'grid'), _if_g(b, 'points')
+    notes = ''
+
+    def plural(c, one, many):
+        return str(c) + ' ' + (one if c == 1 else many)
+
+    def fail(msg):
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">' + msg + '</div>' + notes + _hg_version_note(b, 'contour_plot'))
+    if not isinstance(g, dict) and not isinstance(pts, list):
+        return fail('A contour plot needs either a grid (width, height and values) or points.')
+    grid_mode = isinstance(g, dict)
+    if grid_mode and isinstance(pts, list):
+        notes += _hg_note('Both a grid and points were given; the grid is drawn.')
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:30] if _if_truthy(_if_g(b, 'x_label')) else ''
+    yl = _if_str(_if_g(b, 'y_label'))[:30] if _if_truthy(_if_g(b, 'y_label')) else ''
+    levels, rows_note = [], ''
+    if grid_mode:
+        gw, gh = _if_g(g, 'width'), _if_g(g, 'height')
+        okd = lambda v: _cn_num(v, -1e18, 1e18) is not None and v == math.floor(v) and 2 <= v <= 100
+        if not (okd(gw) and okd(gh)):
+            return fail('The grid needs a width and a height that are whole numbers from 2 to 100.')
+        gw, gh = int(gw), int(gh)
+        raw = _if_g(g, 'values')
+        raw = raw if isinstance(raw, list) else []
+        if len(raw) != gw * gh:
+            return fail('The grid needs width times height numbers: ' + str(gw * gh) + ' expected, ' + str(len(raw)) + ' given.')
+        vals = [float(v) if _cn_usable(v) else None for v in raw]
+        bad = sum(1 for v in vals if v is None)
+        if bad:
+            notes += _hg_note(plural(bad, 'grid value was', 'grid values were') + ' not a usable number and ' + ('was' if bad == 1 else 'were') + ' left empty.')
+        usable = [v for v in vals if v is not None]
+        tn = _cn_num(_if_g(b, 'thresholds'), 3, 20)
+        out = _cn_contours(vals, gw, gh, None if tn is None else math.floor(tn))
+        sx, sy = _CN_W / gw, _CN_H / gh
+        for v, polys in out:
+            if polys:
+                levels.append((v, polys))
+        total = len(usable)
+        shares = [sum(1 for x in usable if x >= v) for v, _ in levels]
+        vlab = _if_str(_if_g(b, 'value_label'))[:30] if _if_truthy(_if_g(b, 'value_label')) else 'Value'
+        xl, yl = xl or 'Column', yl or 'Row'
+        X0, X1, Y0, Y1 = 0.0, float(gw), 0.0, float(gh)
+        flip = False
+        dots = ''
+        disp = [v for v, _ in levels]
+        lo_v, hi_v = (min(usable), max(usable)) if usable else (0, 0)
+    else:
+        lst = pts[:_CN_MAXPTS]
+        beyond = len(pts) - _CN_MAXPTS
+        xy = [(p['x'], p['y']) for p in lst if isinstance(p, dict) and _cn_usable(_if_g(p, 'x')) and _cn_usable(_if_g(p, 'y'))]
+        bad = len(lst) - len(xy)
+        if beyond > 0:
+            notes += _hg_note(plural(beyond, 'point', 'points') + ' beyond the first 2000 ' + ('was' if beyond == 1 else 'were') + ' not used.')
+        if bad:
+            notes += _hg_note(plural(bad, 'point was', 'points were') + ' not an object with a numeric x and y and ' + ('was' if bad == 1 else 'were') + ' skipped.')
+        if len(xy) < 3:
+            return fail('A density contour plot needs at least 3 points with a numeric x and y; this list has ' + str(len(xy)) + '.')
+        xs, ys = [float(p[0]) for p in xy], [float(p[1]) for p in xy]
+        X0, X1 = _hg_nice(min(xs) - 1, max(xs) + 1, 6) if min(xs) == max(xs) else _hg_nice(min(xs), max(xs), 6)
+        Y0, Y1 = _hg_nice(min(ys) - 1, max(ys) + 1, 6) if min(ys) == max(ys) else _hg_nice(min(ys), max(ys), 6)
+        px = [(x - X0) * _CN_W / (X1 - X0) for x in xs]
+        py = [(Y1 - y) * _CN_H / (Y1 - Y0) for y in ys]
+        bw = _cn_num(_if_g(b, 'bandwidth'), 5, 60)
+        bw = 20 if bw is None else bw
+        tn = _cn_num(_if_g(b, 'thresholds'), 3, 20)
+        cnt = None if tn is None else math.floor(tn)
+        res, mx, values, gn, gm, go, thr = _cn_density_full([[a, c] for a, c in zip(px, py)], _CN_W, _CN_H, bw, cnt)
+        levels = [(res[k][0], res[k][1], thr[k]) for k in range(len(res)) if res[k][1]]
+        sx = sy = 1.0
+        cells = []
+        for a, c in zip(px, py):
+            xi, yi = (a + go) * 0.25, (c + go) * 0.25
+            cells.append(values[math.floor(xi) + math.floor(yi) * gn] if 0 <= xi < gn and 0 <= yi < gm else None)
+        total = len(xy)
+        shares = [sum(1 for c in cells if c is not None and c >= lv[2]) for lv in levels]
+        levels = [(lv[0], lv[1]) for lv in levels]
+        vlab = 'Density (points per 10,000 px² of the drawing)'
+        flip = True
+        dots = 'M' + 'M'.join(_cn_r(a) + ',' + _cn_r(c) + 'h0' for a, c in zip(px, py)) if px else ''
+        disp = [v * 10000 for v, _ in levels]
+    if not levels:
+        return fail('No contour level could be drawn from this data.')
+    # the outline budget: levels are kept from the lowest while their points fit
+    budget, keep = _CN_BUDGET, 0
+    for v, polys in levels:
+        c = sum(len(r) for poly in polys for r in poly)
+        if c > budget and keep:
+            break
+        budget -= c
+        keep += 1
+    if keep < len(levels):
+        notes += _hg_note(plural(len(levels) - keep, 'highest level was', 'highest levels were') + ' not drawn to keep the picture small (limit 40,000 outline points).')
+        levels, shares, disp = levels[:keep], shares[:keep], disp[:keep]
+    m = len(levels)
+    d = _hg_decimals(disp)
+    lab = [_hg_num(v, d) for v in disp]
+    cols = [_cn_ramp(i, m) for i in range(m)]
+    bands = ''
+    for i, (v, polys) in enumerate(levels):
+        rng = lab[i] + (' to ' + lab[i + 1] + us if i + 1 < m else us + ' and above')
+        bands += ('<path class="cnb" d="' + _cn_path(polys, sx, sy) + '" fill="' + cols[i] + '" stroke="' + _cn_line(cols[i]) + '" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" '
+                  'vector-effect="non-scaling-stroke" style="' + _if_k(i, m) + 'opacity:var(--k,1);"><title>' + _cv_esc(rng) + '</title></path>')
+    if dots:
+        bands += '<path class="cnp" d="' + dots + '" fill="none" style="stroke:var(--text,#0F172A);" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
+    svg = ('<svg viewBox="0 0 ' + str(_CN_W) + ' ' + str(_CN_H) + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">'
+           '<rect x="0" y="0" width="' + str(_CN_W) + '" height="' + str(_CN_H) + '" style="fill:var(--surface,#F8FAFC);"/>' + bands
+           + '<rect x="0" y="0" width="' + str(_CN_W) + '" height="' + str(_CN_H) + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>')
+    ex = _hg_ticks(X0, X1, 6)
+    ey = _hg_ticks(Y0, Y1, 6)
+    xaxis = _hg_axis(ex, X0, X1 - X0, [_hg_num(v, _hg_decimals(ex)) for v in ex]) if ex else ''
+    yaxis = ''
+    if ey:
+        ylab = [_hg_num(v, _hg_decimals(ey)) for v in ey]
+        for v, t in zip(ey, ylab):
+            yaxis += ('<div class="cny" style="position:absolute;right:100%;margin-right:6px;top:' + _tm_pct((Y1 - v) if flip else (v - Y0), Y1 - Y0)
+                      + ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + t + '</div>')
+    if grid_mode:
+        aria = ('Contour plot of a ' + str(gw) + ' by ' + str(gh) + ' grid, values from ' + _bp_fmt(lo_v, 2) + ' to ' + _bp_fmt(hi_v, 2) + us + ', ' + str(m) + ' level' + ('' if m == 1 else 's')
+                + '. Darker bands are higher values.')
+    else:
+        aria = ('Density contour plot of ' + str(total) + ' points, ' + str(m) + ' level' + ('' if m == 1 else 's') + ' from ' + lab[0] + ' to ' + lab[-1]
+                + ' points per 10,000 px². Darker bands are denser areas.')
+    css = '<style>@container (max-width:560px){.ifcn .hgx:not(.hgc){display:none}}</style>'
+    chart = ('<div class="ifcn" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
+             + ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">' + _cv_esc(yl) + '</div>' if yl else '')
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 14px 34px 46px;">' + svg + yaxis + xaxis + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 14px 0 46px;">' + _cv_esc(xl) + '</div>' if xl else '') + '</div>')
+    ent = [('Below ' + lab[0] + us, 'var(--surface,#F8FAFC)')] + [(lab[i] + (' to ' + lab[i + 1] + us if i + 1 < m else us + ' and above'), cols[i]) for i in range(m)]
+    legend = ('<div class="cnleg" style="margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);"><div style="color:' + _IF_MUTED + ';margin-bottom:4px;">' + _cv_esc(vlab) + '</div>'
+              '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;">'
+              + ''.join('<span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:1px solid #64748B;background:' + c + ';"></span>' + _cv_esc(t) + '</span>' for t, c in ent)
+              + '</div></div>')
+    if grid_mode:
+        tables = _if_table(['Level from', 'Band colour', 'Cells at or above'], [[lab[i] + us, _cn_name(i, m), _if_fixed(shares[i] / total * 100, 1) + '%'] for i in range(m)])
+    else:
+        tables = _if_table(['Density from (points per 10,000 px²)', 'Band colour', 'Points in cells at or above'],
+                           [[lab[i], _cn_name(i, m), _if_fixed(shares[i] / total * 100, 1) + '% (' + str(shares[i]) + ' of ' + str(total) + ')'] for i in range(m)])
+        tables += _if_table(['Point', 'x', 'y'], [[str(k + 1), _if_numstr(xy[k][0]), _if_numstr(xy[k][1])] for k in range(min(total, _CN_MAXROWS))])
+        if total > _CN_MAXROWS:
+            notes += _hg_note('Table of points shows the first ' + str(_CN_MAXROWS) + ' of ' + str(total) + '.')
+    return _if_wrap(_if_title(b) + chart + legend
+                    + _hg_note('Each band is the area at or above its level; the outline between two bands is the level.' + (' Density is smoothed (bandwidth ' + _bp_fmt(bw, 2) + ' px).' if not grid_mode else ''))
+                    + notes + _hg_version_note(b, 'contour_plot') + tables)
+
+
 # ── chord_diagram (I47) and its directed mode (I62) ────────────────────────────────────────────────────────────────────────────────────────────
 # d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape 3.2.0 arc() (the sunburst's
 # _sb_arc, via _D3Path) for the group arcs. Twin of _chChord / _chRibbon / _RENDERERS['chord_diagram'] in atoms_infographic.gs.
@@ -34561,7 +35081,7 @@ def _render_waterfall(b: dict) -> str:
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot)):
     _RENDERERS[_if_name] = _if_fn
 
 

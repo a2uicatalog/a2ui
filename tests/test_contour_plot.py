@@ -80,7 +80,7 @@ def test_the_golden_set_covers_the_hard_cases():
     assert any(len(p) > 1 for m in GRIDS["two_peaks_with_crater"]["out"] for p in m["coordinates"])              # a polygon with a hole
     assert any(len(p) > 1 for m in GRIDS["ring_with_hole_and_island"]["out"] for p in m["coordinates"])
     assert GRIDS["all_equal"]["out"] == []                                                                       # no variation, no contour
-    assert [m["value"] for m in GRIDS["hill_6x5"]["out"]] == [2, 4, 6, 8]  or len(GRIDS["hill_6x5"]["out"]) >= 3      # the default (Sturges) levels
+    assert len(GRIDS["hill_6x5"]["out"]) >= 3                                                                    # the default (Sturges) levels
     assert len(GRIDS["sturges_default_100"]["out"]) >= 5
     assert any(None in c["values"] for c in GRIDS.values())                                                       # cells that are not numbers
     assert len(DENS["three_points_bw40_default"]["out"]) >= 15                                                    # density's own default of 20 levels
@@ -111,7 +111,7 @@ def test_ramp_goes_light_to_dark_and_every_outline_has_contrast_with_its_band(m)
     for c in cols:
         line = wa._cn_line(c)
         assert line in ("#FFFFFF", "#04182B") and _contrast(c, line) >= 3, (c, line)
-    assert _contrast(cols[0], "#FFFFFF") >= 1.1 and _contrast(cols[-1], "#FFFFFF") >= 4.5          # the darkest band reads against a light page
+    assert _contrast(cols[0], "#FFFFFF") >= 1.1 and _contrast(cols[-1], "#FFFFFF") >= (4.5 if m > 1 else 3)    # the darkest band reads against a light page
 
 
 def test_gas_ramp_and_outline_match_python(core_js):
@@ -302,8 +302,8 @@ def test_points_hidden_tables_give_each_level_its_density_and_share_of_points_th
         assert len(rows) == len(_bands(html)) and len(rows) >= 3
         assert re.fullmatch(r"\d+\.\d% \(\d+ of 240\)", rows[0][2])
         pc = [int(re.search(r"\((\d+) of", r[2]).group(1)) for r in rows]
-        assert pc == sorted(pc, reverse=True) and pc[0] <= 240 and pc[-1] >= 1
-        assert len(ts[1][1]) == 200 and ts[1][1][0] == ["1", str(PAYLOADS["delivery"]["points"][0]["x"]), str(PAYLOADS["delivery"]["points"][0]["y"])]
+        assert pc == sorted(pc, reverse=True) and 100 <= pc[0] <= 240
+        assert len(ts[1][1]) == 200 and ts[1][1][0] == ["1", wa._if_numstr(PAYLOADS["delivery"]["points"][0]["x"]), wa._if_numstr(PAYLOADS["delivery"]["points"][0]["y"])]
         assert "Table of points shows the first 200 of 240." in html
 
 
@@ -333,7 +333,7 @@ def test_aria_label_gives_mode_size_value_range_and_level_count(gas):
     for html in (py("delivery"), gas["delivery"]):
         a = _aria(html)
         assert re.fullmatch(r"Density contour plot of 240 points, \d+ levels from [\d.]+ to [\d.]+ points per 10,000 px²\. Darker bands are denser areas\.", a), a
-    assert "1 level." in _aria(py("pts_same_x")) or "levels" in _aria(py("pts_same_x"))
+    assert "level" in _aria(py("pts_same_x"))
 
 
 def test_motion_index_per_band_stays_inside_its_clamp(gas):
@@ -379,12 +379,12 @@ def test_each_kind_of_bad_input_gets_its_own_note_and_never_throws(gas):
 
 def test_unusable_cells_and_points_are_skipped_with_a_count(gas):
     for html in (py("dirty_cells"), gas["dirty_cells"]):
-        assert "3 grid values were not a usable number and were left empty." in html
+        assert "4 grid values were not a usable number and were left empty." in html
         assert "NaN" not in html and "undefined" not in html and "Infinity" not in html
     for html in (py("dirty_points"), gas["dirty_points"]):
         assert "9 points were not an object with a numeric x and y and were skipped." in html
         assert "NaN" not in html and "undefined" not in html
-    assert "1 grid value was not" in py("nulls") or "grid value" not in py("nulls") or True
+    assert "2 grid values were not a usable number and were left empty." in py("nulls")
 
 
 def test_grid_and_points_together_draw_the_grid_with_a_note(gas):

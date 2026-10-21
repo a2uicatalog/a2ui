@@ -20,7 +20,7 @@ grids.smooth_30x20 = {w: 30, h: 20, values: field(30, 20, (x, y) => 20 + 12 * Ma
 grids.negatives_and_nulls = {w: 7, h: 6, values: field(7, 6, (x, y) => ((x * 7 + y * 3) % 11) - 5).map((v, i) => (i === 35 || i === 8 ? null : v)), thresholds: 7};
 grids.null_first_of_last_row = {w: 5, h: 4, values: field(5, 4, (x, y) => x - 2 + y * 0.5).map((v, i) => (i === 15 ? null : v)), thresholds: 6};
 grids.ring_with_hole_and_island = {w: 12, h: 12, values: field(12, 12, (x, y) => { const r = Math.hypot(x - 5.5, y - 5.5); return r < 1.2 ? 9 : r < 3.5 ? 1 : r < 5 ? 5 : 0; }), thresholds: 4};
-grids.one_row_high = {w: 10, h: 2, values: [1, 5, 2, 8, 3, 9, 4, 7, 6, 0], thresholds: 5};
+grids.one_row_high = {w: 10, h: 2, values: [1, 5, 2, 8, 3, 9, 4, 7, 6, 0, 4, 2, 7, 1, 8, 3, 6, 5, 0, 9], thresholds: 5};
 grids.sturges_default_100 = {w: 10, h: 10, values: field(10, 10, (x, y) => x * x + y), thresholds: null};
 const r = lcg(4242);
 for (let k = 0; k < 14; k++) {
