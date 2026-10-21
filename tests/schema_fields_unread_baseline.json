@@ -520,6 +520,9 @@
   "size",
   "weight"
  ],
+ "motion_lightning": [
+  "version"
+ ],
  "motion_reveal": [
   "align",
   "color",
