@@ -32860,6 +32860,141 @@ def _render_circle_pack(b: dict) -> str:
                     + _if_table(['Item', 'Path', 'Value', 'Share of total'], [[i['n'], ' / '.join(i['chain']) or 'Top level', f(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
 
 
+# ── arc_diagram (I61) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Nodes on one horizontal line, each link a semicircle above it. No d3 layout module draws it; the node positions are d3-scale 4.0.2 scalePoint() with
+# padding 0.5 over [0, 800] (_ad_point, checked against the real scale). Labels hang below the line rotated -90 degrees and are thinned by halves in a narrow
+# container (the chart has 8 px of padding each side, which keeps the first and last label inside it): a node's label needs 16 px of chart width per node to stand beside its neighbours, and node i keeps its label when the stride 2^k that the width
+# allows divides i, so label i hides below a single container width (the gate), and the first node always keeps its label. Twin of _adPoint /
+# _RENDERERS['arc_diagram'] in atoms_infographic.gs.
+_AD_W, _AD_MAXN, _AD_MAXL, _AD_STEP, _AD_MINW, _AD_NONE = 800, 40, 120, 16, 160, '#64748B'
+
+
+def _ad_point(n, r0, r1):
+    """d3.scalePoint().domain(n distinct values).range([r0, r1]).padding(0.5): the position of each of the n values."""
+    if n <= 0:
+        return []
+    step = _cp_div(r1 - r0, max(1, n - 1 + 0.5 * 2))
+    start = r0 + (r1 - r0 - step * (n - 1)) * 0.5
+    return [start + step * i for i in range(n)]
+
+
+def _ad_u16(s):
+    """A sort key that compares by UTF-16 code unit, as JavaScript's < does."""
+    return s.encode('utf-16-be', 'surrogatepass')
+
+
+def _render_arc_diagram(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
+    lst = _if_g(b, 'nodes')
+    lst = lst if isinstance(lst, list) else []
+    nodes, ids, left_out = [], {}, 0
+    for it in lst[:_AD_MAXN]:
+        i = _if_g(it, 'id') if isinstance(it, dict) else None
+        if not (isinstance(i, str) and i) or i[:40] in ids:
+            left_out += 1
+            continue
+        lab, grp = _if_g(it, 'label'), _if_g(it, 'group')
+        ids[i[:40]] = len(nodes)
+        nodes.append({'id': i[:40], 'l': lab[:24] if isinstance(lab, str) and lab else i[:24], 'g': grp[:20] if isinstance(grp, str) and grp.strip(' \t\r\n') != '' else '', 'deg': 0})
+    nbeyond = len(lst) - _AD_MAXN
+    ll = _if_g(b, 'links')
+    ll = ll if isinstance(ll, list) else []
+    links, dropped = [], 0
+    for it in ll[:_AD_MAXL]:
+        s, t, v = (_if_g(it, 'source'), _if_g(it, 'target'), _if_g(it, 'value')) if isinstance(it, dict) else (None, None, None)
+        v = 1 if v is None or v is _IF_UNDEF else v
+        if not (isinstance(s, str) and isinstance(t, str) and s[:40] in ids and t[:40] in ids and s[:40] != t[:40]
+                and isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf') and v > 0):
+            dropped += 1
+            continue
+        links.append({'s': ids[s[:40]], 't': ids[t[:40]], 'v': min(v, 1e12)})
+    lbeyond = len(ll) - _AD_MAXL
+    for k in links:
+        nodes[k['s']]['deg'] += 1
+        nodes[k['t']]['deg'] += 1
+
+    def plural(c, one, many):
+        return str(c) + ' ' + (one if c == 1 else many)
+    notes = ((_hg_note(plural(left_out, 'node entry was', 'node entries were') + ' left out (not a node, no id, or an id already used).') if left_out else '')
+             + (_hg_note(plural(nbeyond, 'node beyond the first 40 was', 'nodes beyond the first 40 were') + ' not drawn.') if nbeyond > 0 else '')
+             + (_hg_note(plural(dropped, 'link was', 'links were') + ' dropped (not a link, a self-link, an unknown node id or a value not above 0).') if dropped else '')
+             + (_hg_note(plural(lbeyond, 'link beyond the first 120 was', 'links beyond the first 120 were') + ' not drawn.') if lbeyond > 0 else ''))
+    if len(nodes) < 2:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">An arc diagram needs at least 2 nodes.</div>' + notes + _hg_version_note(b, 'arc_diagram'))
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+
+    def f(v):
+        return _bp_fmt(v, 2) + us
+    groups = []
+    for nd in nodes:
+        if nd['g'] and nd['g'] not in groups:
+            groups.append(nd['g'])
+    for nd in nodes:
+        nd['c'] = _SB_PALETTE[groups.index(nd['g']) % 8] if nd['g'] else _AD_NONE
+    order = _if_pick(_if_g(b, 'order'), ['input', 'group', 'degree'], 'input')
+    idx = list(range(len(nodes)))
+    if order == 'group':
+        idx.sort(key=lambda i: (_ad_u16(nodes[i]['g']), _ad_u16(nodes[i]['l'])))
+    elif order == 'degree':
+        idx.sort(key=lambda i: -nodes[i]['deg'])
+    n = len(nodes)
+    xs = [0.0] * n
+    for pos, x in zip(idx, _ad_point(n, 0, _AD_W)):
+        xs[pos] = x
+    span = 0.0
+    for k in links:
+        span = max(span, abs(xs[k['t']] - xs[k['s']]))
+    base = span / 2 + 10
+    vals = [k['v'] for k in links]
+    vmin, vmax = (min(vals), max(vals)) if vals else (0, 0)
+    dr = _if_fixed(min(7, _AD_W / n * 0.33), 2)
+    arcs = ''
+    for k in links:
+        lo, hi = min(xs[k['s']], xs[k['t']]), max(xs[k['s']], xs[k['t']])
+        w = 2.0 if vmin == vmax else 1 + 5 * (k['v'] - vmin) / (vmax - vmin)
+        rr = _if_fixed((hi - lo) / 2, 2)
+        arcs += ('<path class="ada" d="M' + _if_fixed(lo, 2) + ',' + _if_fixed(base, 2) + 'A' + rr + ',' + rr + ',0,0,1,' + _if_fixed(hi, 2) + ',' + _if_fixed(base, 2) + '" fill="none" stroke="' + nodes[k['s']]['c']
+                 + '" stroke-width="' + _if_fixed(w, 2) + '" stroke-opacity="0.6" stroke-linecap="round" vector-effect="non-scaling-stroke"><title>' + _if_s(nodes[k['s']]['l'], 24) + ' to ' + _if_s(nodes[k['t']]['l'], 24)
+                 + ': ' + _cv_esc(f(k['v'])) + '</title></path>')
+    dots = ''
+    for i in idx:
+        nd = nodes[i]
+        dots += ('<circle class="adn" cx="' + _if_fixed(xs[i], 2) + '" cy="' + _if_fixed(base, 2) + '" r="' + dr + '" fill="' + nd['c'] + '"><title>' + _if_s(nd['l'], 24) + (' (' + _if_s(nd['g'], 20) + ')' if nd['g'] else '')
+                 + ': ' + plural(nd['deg'], 'link', 'links') + '</title></circle>')
+    maxc = max(_oc_chars(nd['l']) for nd in nodes)
+    lh = int(math.ceil(maxc * _CP_K)) + 8
+    labs, ws = '', []
+    for pos, i in enumerate(idx):
+        lvl = 99 if pos == 0 else min((pos & -pos).bit_length() - 1, 6)
+        wm = 0 if pos == 0 else _cp_q(_AD_STEP * n / 2 ** lvl + 16)
+        wm = wm if wm > _AD_MINW else 0
+        ws.append(wm)
+        labs += ('<div class="adl' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;left:' + _tm_pct(xs[i], _AD_W) + ';top:0;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;max-height:' + str(lh)
+                 + 'px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _if_k(1, 2) + 'opacity:var(--k,1);">' + _if_s(nodes[i]['l'], 24) + '</div>')
+    uw = sorted(set(w for w in ws if w))
+    css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
+    top = nodes[idx[0]]
+    for i in idx:
+        if nodes[i]['deg'] > top['deg']:
+            top = nodes[i]
+    aria = 'Arc diagram of ' + str(n) + ' nodes and ' + plural(len(links), 'link', 'links') + '.' + (' Most connected: ' + top['l'] + ', ' + plural(top['deg'], 'link', 'links') + '.' if links else '')
+    svg = ('<svg viewBox="0 0 ' + str(_AD_W) + ' ' + _if_fixed(base + 14, 2) + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">'
+           '<line x1="0" y1="' + _if_fixed(base, 2) + '" x2="' + str(_AD_W) + '" y2="' + _if_fixed(base, 2) + '" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+           '<g class="adr" style="' + _if_k(0, 2) + 'opacity:var(--k,1);">' + arcs + '</g><g class="adr" style="' + _if_k(1, 2) + 'opacity:var(--k,1);">' + dots + '</g></svg>')
+    legend = ''
+    if groups:
+        ent = [(g, _SB_PALETTE[j % 8]) for j, g in enumerate(groups)] + ([('No group', _AD_NONE)] if any(not nd['g'] for nd in nodes) else [])
+        legend = ('<div class="adleg" style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);">'
+                  + ''.join('<span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + c + ';"></span>' + _if_s(g, 20) + '</span>' for g, c in ent) + '</div>')
+    tables = _if_table(['Node', 'Group', 'Links'], [[nodes[i]['l'], nodes[i]['g'] or 'No group', str(nodes[i]['deg'])] for i in idx])
+    if links:
+        tables += _if_table(['From', 'To', 'Value'], [[nodes[k['s']]['l'], nodes[k['t']]['l'], f(k['v'])] for k in links])
+    return _if_wrap(_if_title(b) + '<div role="img" aria-label="' + _if_s(aria, 400) + '" style="position:relative;width:100%;max-width:800px;margin:0 auto;padding:0 8px;box-sizing:border-box;container-type:inline-size;">' + css + svg
+                    + '<div style="position:relative;height:' + str(lh) + 'px;margin-top:2px;">' + labs + '</div></div>' + legend
+                    + _hg_note('Arc thickness shows the link value. In a narrow container only some node names are drawn; the table lists every node and link.') + notes + _hg_version_note(b, 'arc_diagram') + tables)
+
+
 # ── chord_diagram (I47) and its directed mode (I62) ────────────────────────────────────────────────────────────────────────────────────────────
 # d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape 3.2.0 arc() (the sunburst's
 # _sb_arc, via _D3Path) for the group arcs. Twin of _chChord / _chRibbon / _RENDERERS['chord_diagram'] in atoms_infographic.gs.
@@ -34426,7 +34561,7 @@ def _render_waterfall(b: dict) -> str:
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram)):
     _RENDERERS[_if_name] = _if_fn
 
 

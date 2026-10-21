@@ -118,6 +118,19 @@ just looks plainer.
 
 ---
 
+## d3-scale (Mike Bostock)
+
+- **Project:** d3-scale 4.0.2 — `scalePoint` (a band scale with no inner padding: n evenly spaced positions in a range, with `padding` 0.5 of a step at each end)
+- **Website:** https://github.com/d3/d3-scale
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; the position arithmetic is ported by hand into `_ad_point` in `renderers/web_article.py` and its twin `_adPoint` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real library's output (every position with ==) by
+  `tests/test_arc_diagram.py` (golden vectors from `tests/fixtures/arc_diagram_d3_golden_gen.mjs`)
+- **Used by:** the `arc_diagram` atom's node positions in both renderers. No script is shipped to the page; the arcs are static SVG semicircles.
+
+---
+
 ## d3-geo (Mike Bostock)
 
 - **Project:** d3-geo 3.1.1 — `geoOrthographic`, `geoMercator` (with the projection `rotate`), `geoGraticule` and `geoInterpolate` (great-circle interpolation)

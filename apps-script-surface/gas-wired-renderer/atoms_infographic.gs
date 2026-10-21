@@ -680,6 +680,100 @@ _RENDERERS['circle_pack'] = function(b) {
     _ifTable(['Item', 'Path', 'Value', 'Share of total'], items.map(function(it) { return [it.n, it.chain.join(' / ') || 'Top level', f(it.v), (it.v / tot * 100).toFixed(1) + '%']; })));
 };
 
+// ── arc_diagram (I61) ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// Nodes on one horizontal line, each link a semicircle above it; node positions are d3-scale 4.0.2 scalePoint() with padding 0.5 (ISC, Mike Bostock).
+// Twin of _ad_point / _render_arc_diagram in renderers/web_article.py, where the notes on the label thinning are.
+var _AD_W = 800, _AD_MAXN = 40, _AD_MAXL = 120, _AD_STEP = 16, _AD_MINW = 160, _AD_NONE = '#64748B';
+function _adPoint(n, r0, r1) {
+  if (n <= 0) return [];
+  var step = (r1 - r0) / Math.max(1, n - 1 + 0.5 * 2), start = r0 + (r1 - r0 - step * (n - 1)) * 0.5, out = [], i;
+  for (i = 0; i < n; i++) out.push(start + step * i);
+  return out;
+}
+_RENDERERS['arc_diagram'] = function(b) {
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var lst = Array.isArray(b.nodes) ? b.nodes : [], nodes = [], ids = {}, leftOut = 0, i, k;
+  lst.slice(0, _AD_MAXN).forEach(function(it) {
+    var o = it && typeof it === 'object' && !Array.isArray(it) ? it : null, id = o ? o.id : null;
+    if (!(typeof id === 'string' && id) || Object.prototype.hasOwnProperty.call(ids, id.slice(0, 40))) { leftOut++; return; }
+    ids[id.slice(0, 40)] = nodes.length;
+    nodes.push({ id: id.slice(0, 40), l: typeof o.label === 'string' && o.label ? o.label.slice(0, 24) : id.slice(0, 24), g: typeof o.group === 'string' && o.group.replace(/[ \t\r\n]/g, '') !== '' ? o.group.slice(0, 20) : '', deg: 0 });
+  });
+  var nbeyond = lst.length - _AD_MAXN, ll = Array.isArray(b.links) ? b.links : [], links = [], dropped = 0;
+  ll.slice(0, _AD_MAXL).forEach(function(it) {
+    var o = it && typeof it === 'object' && !Array.isArray(it) ? it : null, s = o ? o.source : null, t = o ? o.target : null, v = o ? o.value : null;
+    if (v === undefined || v === null) v = 1;
+    if (!(typeof s === 'string' && typeof t === 'string' && Object.prototype.hasOwnProperty.call(ids, s.slice(0, 40)) && Object.prototype.hasOwnProperty.call(ids, t.slice(0, 40)) && s.slice(0, 40) !== t.slice(0, 40) &&
+          typeof v === 'number' && isFinite(v) && v > 0)) { dropped++; return; }
+    links.push({ s: ids[s.slice(0, 40)], t: ids[t.slice(0, 40)], v: Math.min(v, 1e12) });
+  });
+  var lbeyond = ll.length - _AD_MAXL;
+  links.forEach(function(l) { nodes[l.s].deg++; nodes[l.t].deg++; });
+  function plural(c, one, many) { return c + ' ' + (c === 1 ? one : many); }
+  var notes = (leftOut ? _hgNote(plural(leftOut, 'node entry was', 'node entries were') + ' left out (not a node, no id, or an id already used).') : '') +
+    (nbeyond > 0 ? _hgNote(plural(nbeyond, 'node beyond the first 40 was', 'nodes beyond the first 40 were') + ' not drawn.') : '') +
+    (dropped ? _hgNote(plural(dropped, 'link was', 'links were') + ' dropped (not a link, a self-link, an unknown node id or a value not above 0).') : '') +
+    (lbeyond > 0 ? _hgNote(plural(lbeyond, 'link beyond the first 120 was', 'links beyond the first 120 were') + ' not drawn.') : '');
+  if (nodes.length < 2) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">An arc diagram needs at least 2 nodes.</div>' + notes + _hgVersionNote(b, 'arc_diagram'));
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var f = function(v) { return _bpFmt(v, 2) + us; };
+  var groups = [], n = nodes.length;
+  nodes.forEach(function(nd) { if (nd.g && groups.indexOf(nd.g) < 0) groups.push(nd.g); });
+  nodes.forEach(function(nd) { nd.c = nd.g ? _SB_PALETTE[groups.indexOf(nd.g) % 8] : _AD_NONE; });
+  var order = _ifPick(b.order, ['input', 'group', 'degree'], 'input'), idx = [];
+  for (i = 0; i < n; i++) idx.push(i);
+  if (order === 'group') idx = idx.map(function(v, p) { return [v, p]; }).sort(function(a, c) {
+    var x = nodes[a[0]], y = nodes[c[0]];
+    return (x.g < y.g ? -1 : x.g > y.g ? 1 : 0) || (x.l < y.l ? -1 : x.l > y.l ? 1 : 0) || a[1] - c[1];
+  }).map(function(e) { return e[0]; });
+  else if (order === 'degree') idx = idx.map(function(v, p) { return [v, p]; }).sort(function(a, c) { return (nodes[c[0]].deg - nodes[a[0]].deg) || a[1] - c[1]; }).map(function(e) { return e[0]; });
+  var xs = [], pts = _adPoint(n, 0, _AD_W), span = 0, base, vals = links.map(function(l) { return l.v; }), vmin = vals.length ? Math.min.apply(null, vals) : 0, vmax = vals.length ? Math.max.apply(null, vals) : 0;
+  idx.forEach(function(p, j) { xs[p] = pts[j]; });
+  links.forEach(function(l) { span = Math.max(span, Math.abs(xs[l.t] - xs[l.s])); });
+  base = span / 2 + 10;
+  var dr = _cpF(Math.min(7, _AD_W / n * 0.33)), arcs = '', dots = '';
+  links.forEach(function(l) {
+    var lo = Math.min(xs[l.s], xs[l.t]), hi = Math.max(xs[l.s], xs[l.t]), w = vmin === vmax ? 2 : 1 + 5 * (l.v - vmin) / (vmax - vmin), rr = _cpF((hi - lo) / 2);
+    arcs += '<path class="ada" d="M' + _cpF(lo) + ',' + _cpF(base) + 'A' + rr + ',' + rr + ',0,0,1,' + _cpF(hi) + ',' + _cpF(base) + '" fill="none" stroke="' + nodes[l.s].c + '" stroke-width="' + _cpF(w) +
+      '" stroke-opacity="0.6" stroke-linecap="round" vector-effect="non-scaling-stroke"><title>' + _ifS(nodes[l.s].l, 24) + ' to ' + _ifS(nodes[l.t].l, 24) + ': ' + _esc(f(l.v)) + '</title></path>';
+  });
+  idx.forEach(function(p) {
+    var nd = nodes[p];
+    dots += '<circle class="adn" cx="' + _cpF(xs[p]) + '" cy="' + _cpF(base) + '" r="' + dr + '" fill="' + nd.c + '"><title>' + _ifS(nd.l, 24) + (nd.g ? ' (' + _ifS(nd.g, 20) + ')' : '') + ': ' + plural(nd.deg, 'link', 'links') + '</title></circle>';
+  });
+  var maxc = 0;
+  nodes.forEach(function(nd) { maxc = Math.max(maxc, nd.l.length); });
+  var lh = Math.ceil(maxc * _CP_K) + 8, labs = '', ws = [];
+  idx.forEach(function(p, pos) {
+    var lvl = pos === 0 ? 99 : Math.min(31 - Math.clz32(pos & -pos), 6), wm = pos === 0 ? 0 : _cpQ(_AD_STEP * n / Math.pow(2, lvl) + 16);
+    wm = wm > _AD_MINW ? wm : 0; ws.push(wm);
+    labs += '<div class="adl' + (wm ? ' tmw' + wm : '') + '" style="position:absolute;left:' + _tmPct(xs[p], _AD_W) + ';top:0;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;max-height:' + lh +
+      'px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _ifK(1, 2) + 'opacity:var(--k,1);">' + _ifS(nodes[p].l, 24) + '</div>';
+  });
+  var uw = [];
+  ws.forEach(function(w) { if (w && uw.indexOf(w) < 0) uw.push(w); });
+  uw.sort(function(a, c) { return a - c; });
+  var css = uw.length ? '<style>' + uw.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>' : '';
+  var top = nodes[idx[0]];
+  idx.forEach(function(p) { if (nodes[p].deg > top.deg) top = nodes[p]; });
+  var aria = 'Arc diagram of ' + n + ' nodes and ' + plural(links.length, 'link', 'links') + '.' + (links.length ? ' Most connected: ' + top.l + ', ' + plural(top.deg, 'link', 'links') + '.' : '');
+  var svg = '<svg viewBox="0 0 ' + _AD_W + ' ' + _cpF(base + 14) + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">' +
+    '<line x1="0" y1="' + _cpF(base) + '" x2="' + _AD_W + '" y2="' + _cpF(base) + '" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/>' +
+    '<g class="adr" style="' + _ifK(0, 2) + 'opacity:var(--k,1);">' + arcs + '</g><g class="adr" style="' + _ifK(1, 2) + 'opacity:var(--k,1);">' + dots + '</g></svg>';
+  var legend = '';
+  if (groups.length) {
+    var ent = groups.map(function(g, j) { return [g, _SB_PALETTE[j % 8]]; });
+    if (nodes.some(function(nd) { return !nd.g; })) ent.push(['No group', _AD_NONE]);
+    legend = '<div class="adleg" style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12px;line-height:16px;color:var(--text,#0F172A);">' +
+      ent.map(function(e) { return '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + e[1] + ';"></span>' + _ifS(e[0], 20) + '</span>'; }).join('') + '</div>';
+  }
+  var tables = _ifTable(['Node', 'Group', 'Links'], idx.map(function(p) { return [nodes[p].l, nodes[p].g || 'No group', String(nodes[p].deg)]; }));
+  if (links.length) tables += _ifTable(['From', 'To', 'Value'], links.map(function(l) { return [nodes[l.s].l, nodes[l.t].l, f(l.v)]; }));
+  return _ifWrap(_ifTitle(b) + '<div role="img" aria-label="' + _ifS(aria, 400) + '" style="position:relative;width:100%;max-width:800px;margin:0 auto;padding:0 8px;box-sizing:border-box;container-type:inline-size;">' + css + svg +
+    '<div style="position:relative;height:' + lh + 'px;margin-top:2px;">' + labs + '</div></div>' + legend +
+    _hgNote('Arc thickness shows the link value. In a narrow container only some node names are drawn; the table lists every node and link.') + notes + _hgVersionNote(b, 'arc_diagram') + tables);
+};
+
 // ── chord_diagram (I47) and its directed mode (I62) ───────────────────────────────────────────────────────────────────────────────────────────
 // d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape arc() (_sbArc, via _D3Path) for
 // the group arcs. Twin of _ch_chord / _ch_ribbon / _render_chord_diagram in renderers/web_article.py.
