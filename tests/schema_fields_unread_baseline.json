@@ -533,6 +533,9 @@
  "motion_selection": [
   "version"
  ],
+ "motion_shatter": [
+  "version"
+ ],
  "motion_streak": [
   "align",
   "color",
