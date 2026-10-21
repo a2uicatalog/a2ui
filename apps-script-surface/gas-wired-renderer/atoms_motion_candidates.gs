@@ -743,3 +743,74 @@ _RENDERERS['motion_selection'] = function(b) {
     '<div style="position:relative;box-sizing:border-box;max-width:100%;padding:max(4px,0.1em) max(8px,0.2em);">' + tint + frame + handles +
     '<div data-sel="body" style="--p:1;position:relative;overflow-wrap:anywhere;">' + inner + '</div></div></div>' + _hgVersionNote(b, 'motion_selection');
 };
+
+// motion_lightning (I68): forked, jagged bolts that strike across a block from a point. Twin of _render_motion_lightning in web_article.py (read its header for the
+// WCAG 2.3.1 reasoning): bolts are seeded midpoint-displacement paths, drawn in with p, one shared flicker sinusoid of at most 5.5 rad, one optional pale flash pulse.
+var _LT_EDGE = {top: [50, 0, 0], bottom: [50, 100, 180], left: [0, 50, 90], right: [100, 50, 270], center: [50, 50, -1]};
+function _ltSin(a) {
+  a = a - 360 * Math.floor(a / 360);
+  if (a < 180) return 4 * a * (180 - a) / (40500 - a * (180 - a));
+  a -= 180;
+  return -(4 * a * (180 - a) / (40500 - a * (180 - a)));
+}
+function _ltCoord(v) { return (typeof v === 'number' && isFinite(v)) ? Math.max(0, Math.min(100, v)) : 50; }
+function _ltPath(pts) {
+  var out = [], i;
+  for (i = 0; i < pts.length; i++) out.push(_ffNum(pts[i][0], 0, -200, 300, 1) + ',' + _ffNum(pts[i][1], 0, -200, 300, 1));
+  return 'M' + out.join(' L');
+}
+_RENDERERS['motion_lightning'] = function(b) {
+  var col = _moInk(b, 'color', '#e6f0ff'), n = _ffInt(b.bolts, 3, 1, 6), nb = _ffInt(b.branches, 3, 0, 4), seed = _ffInt(b.seed, 7, 0, 9999), og = b.origin, ox, oy, base, i, k;
+  if (og && typeof og === 'object' && !Array.isArray(og)) {
+    ox = _ltCoord(og.x); oy = _ltCoord(og.y);
+    var dx = ox - 50, dy = oy - 50;
+    base = (Math.abs(dx) <= 10 && Math.abs(dy) <= 10) ? -1 : (Math.abs(dy) >= Math.abs(dx) ? (dy < 0 ? 0 : 180) : (dx < 0 ? 90 : 270));
+  } else {
+    var e = (typeof og === 'string' && Object.prototype.hasOwnProperty.call(_LT_EDGE, og)) ? _LT_EDGE[og] : _LT_EDGE.top;
+    ox = e[0]; oy = e[1]; base = e[2];
+  }
+  var st = (seed * 7919 + 104729) % 2147483646 + 1;
+  function rnd() { st = st * 16807 % 2147483647; return st / 2147483647; }
+  function jag(ax, ay, bx, by, depth) {
+    var pts = [[ax, ay], [bx, by]], d, j;
+    for (d = 0; d < depth; d++) {
+      var nw = [pts[0]];
+      for (j = 0; j < pts.length - 1; j++) {
+        var x0 = pts[j][0], y0 = pts[j][1], x1 = pts[j + 1][0], y1 = pts[j + 1][1], r = rnd() * 2 - 1;
+        nw.push([(x0 + x1) / 2 - (y1 - y0) * r * 0.17, (y0 + y1) / 2 + (x1 - x0) * r * 0.17]);
+        nw.push([x1, y1]);
+      }
+      pts = nw;
+    }
+    return pts;
+  }
+  var freq = 3 + rnd() * 2.5, ff = _ffNum(freq, 4, 3, 5.5, 1), circle = base < 0, spread = Math.min(100, 20 + 16 * (n - 1)), rgb = _ffRgb(col), groups = '';
+  for (i = 0; i < n; i++) {
+    var a;
+    if (circle) a = i * 360 / n + (rnd() - 0.5) * 20;
+    else a = base + ((i - (n - 1) / 2) * spread / (n > 1 ? n - 1 : 1)) + (rnd() - 0.5) * 16;
+    var ln = 70 + rnd() * 25, pts = jag(ox, oy, ox + _ltSin(a) * ln, oy + _ltSin(a + 90) * ln, 4), d0 = i * 0.04, d0s = _ffNum(d0, 0, 0, 1, 2), ph = _ffNum(rnd() * 6.2, 0, 0, 7, 1);
+    var inner = '<path data-lt="bolt" d="' + _ltPath(pts) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>';
+    for (k = 0; k < nb; k++) {
+      var jx = 4 + Math.floor(rnd() * 9), sg = k % 2 === 0 ? 1 : -1, ba = a + sg * (25 + Math.floor(rnd() * 25)), bl = 18 + rnd() * 14, q = pts[jx];
+      var bp = jag(q[0], q[1], q[0] + _ltSin(ba) * bl, q[1] + _ltSin(ba + 90) * bl, 3);
+      inner += '<path data-lt="branch" d="' + _ltPath(bp) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>';
+    }
+    groups += '<g class="lt-g" data-lt="grow" style="clip-path:circle(calc(clamp(0,calc((var(--p,1) - ' + d0s + ')*3),1)*110%) at ' + _ffNum(ox, 50, 0, 100, 1) + '% ' + _ffNum(oy, 50, 0, 100, 1) + '%) view-box;opacity:calc(1 - 0.45*(1 - clamp(0,var(--p,1),1))*(0.5 + 0.5*sin(calc(var(--p,1)*' + ff + ' + ' + ph + '))));">' + inner + '</g>';
+  }
+  var glow = b.glow !== false ? 'filter:drop-shadow(0 0 3px rgba(' + rgb + ',0.9)) drop-shadow(0 0 9px rgba(' + rgb + ',0.6));' : '';
+  var svg = '<svg aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;' + glow + '">' + groups + '</svg>';
+  var flash = '';
+  if (b.flash === true) {
+    var fcs = rgb.split(','), fc = [];
+    for (i = 0; i < 3; i++) fc.push(Math.floor(parseInt(fcs[i], 10) + (255 - parseInt(fcs[i], 10)) * 0.85 + 0.5));
+    flash = '<span class="lt-flash" data-lt="flash" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;background:rgb(' + fc.join(',') + ');' +
+      'opacity:calc(0.3*clamp(0,min(calc((var(--p,1) - 0.04)*12),calc((0.2 - var(--p,1))*12)),1));"></span>';
+  }
+  var kids = _bxList(b.blocks, 3), inner2 = '';
+  for (i = 0; i < kids.length; i++) inner2 += _moChild(kids[i]);
+  var body = inner2.trim() ? '<div data-lt="body" style="--p:1;position:relative;overflow-wrap:anywhere;">' + inner2 + '</div>' : '';
+  return '<style>@media (prefers-reduced-motion:reduce),print{.lt-flash{display:none!important}.lt-g{clip-path:none!important;opacity:1!important}}</style>' +
+    '<div data-lt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;' + (body ? '' : 'aspect-ratio:16/9;') + '">' +
+    body + flash + svg + '</div>' + _hgVersionNote(b, 'motion_lightning');
+};

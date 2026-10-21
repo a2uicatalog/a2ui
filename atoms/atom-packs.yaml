@@ -382,6 +382,7 @@ a2ui-effects-v1:
 - motion_reveal
 - motion_streak
 - motion_selection
+- motion_lightning
 - motion_orbit
 - motion_code
 - motion_mark

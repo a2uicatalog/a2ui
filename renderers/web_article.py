@@ -38628,6 +38628,106 @@ def _render_motion_selection(b: dict) -> str:
 _RENDERERS['motion_selection'] = _render_motion_selection
 
 
+# ─── motion_lightning (I68, owner's video review 2026-10-21, event 3): forked, jagged bolts that strike across a block from a point ───
+# Twin of the motion_lightning block in atoms_motion_candidates.gs. Bolts are SVG paths made by a seeded midpoint displacement (a fixed LCG, never a random
+# call), drawn in with p (stroke-dashoffset on a pathLength of 1) with an optional glow (drop-shadow on the svg) and an optional brief flash. The bolts and the
+# flash are aria-hidden; the optional children (up to 3) are held at p = 1 and stay readable. WCAG 2.3.1: the flicker is ONE sinusoid of at most 6 rad over
+# p 0..1 (under one cycle, so one flash) shared by every bolt, the flash is one pulse, so a strike of any duration makes at most 2 flashes; the flash is a pale tint
+# (the colour mixed 85% toward white) at most 0.3 strong, never a saturated red area. Sines use a pure-arithmetic approximation so both twins agree to the bit.
+_LT_EDGE = {'top': (50, 0, 0), 'bottom': (50, 100, 180), 'left': (0, 50, 90), 'right': (100, 50, 270), 'center': (50, 50, -1)}
+
+
+def _lt_sin(a):
+    a = a - 360 * math.floor(a / 360)
+    if a < 180:
+        return 4 * a * (180 - a) / (40500 - a * (180 - a))
+    a -= 180
+    return -(4 * a * (180 - a) / (40500 - a * (180 - a)))
+
+
+def _lt_coord(v):
+    return float(max(0, min(100, v))) if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) else 50.0
+
+
+def _lt_path(pts):
+    return 'M' + ' L'.join(_ff_num(x, 0, -200, 300, 1) + ',' + _ff_num(y, 0, -200, 300, 1) for x, y in pts)
+
+
+def _render_motion_lightning(b: dict) -> str:
+    col = _mo_ink(b, 'color', '#e6f0ff')
+    n = _ff_int(b.get('bolts'), 3, 1, 6)
+    nb = _ff_int(b.get('branches'), 3, 0, 4)
+    seed = _ff_int(b.get('seed'), 7, 0, 9999)
+    og = b.get('origin')
+    if isinstance(og, dict):
+        ox, oy = _lt_coord(og.get('x')), _lt_coord(og.get('y'))
+        dx, dy = ox - 50, oy - 50
+        base = -1 if (abs(dx) <= 10 and abs(dy) <= 10) else ((0 if dy < 0 else 180) if abs(dy) >= abs(dx) else (90 if dx < 0 else 270))
+    else:
+        e = _LT_EDGE[og] if isinstance(og, str) and og in _LT_EDGE else _LT_EDGE['top']
+        ox, oy, base = float(e[0]), float(e[1]), e[2]
+    st = [(seed * 7919 + 104729) % 2147483646 + 1]
+
+    def rnd():
+        st[0] = st[0] * 16807 % 2147483647
+        return st[0] / 2147483647
+
+    def jag(ax, ay, bx, by, depth):
+        pts = [(ax, ay), (bx, by)]
+        for _ in range(depth):
+            nw = [pts[0]]
+            for i in range(len(pts) - 1):
+                x0, y0 = pts[i]
+                x1, y1 = pts[i + 1]
+                r = rnd() * 2 - 1
+                nw.append(((x0 + x1) / 2 - (y1 - y0) * r * 0.17, (y0 + y1) / 2 + (x1 - x0) * r * 0.17))
+                nw.append((x1, y1))
+            pts = nw
+        return pts
+    freq = 3 + rnd() * 2.5
+    ff = _ff_num(freq, 4, 3, 5.5, 1)
+    circle = base < 0
+    spread = min(100, 20 + 16 * (n - 1))
+    rgb = _ff_rgb(col)
+    groups = ''
+    for i in range(n):
+        if circle:
+            a = i * 360 / n + (rnd() - 0.5) * 20
+        else:
+            a = base + ((i - (n - 1) / 2) * spread / (n - 1 if n > 1 else 1)) + (rnd() - 0.5) * 16
+        ln = 70 + rnd() * 25
+        pts = jag(ox, oy, ox + _lt_sin(a) * ln, oy + _lt_sin(a + 90) * ln, 4)
+        d0 = i * 0.04
+        ph = _ff_num(rnd() * 6.2, 0, 0, 7, 1)
+        inner = ('<path data-lt="bolt" d="' + _lt_path(pts) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>')
+        for k in range(nb):
+            j = 4 + int(rnd() * 9)
+            sg = 1 if k % 2 == 0 else -1
+            ba = a + sg * (25 + int(rnd() * 25))
+            bl = 18 + rnd() * 14
+            q = pts[j]
+            bp = jag(q[0], q[1], q[0] + _lt_sin(ba) * bl, q[1] + _lt_sin(ba + 90) * bl, 3)
+            inner += ('<path data-lt="branch" d="' + _lt_path(bp) + '" class="lt-p" fill="none" stroke="' + col + '" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>')
+        groups += ('<g class="lt-g" data-lt="grow" style="clip-path:circle(calc(clamp(0,calc((var(--p,1) - ' + _ff_num(d0, 0, 0, 1, 2) + ')*3),1)*110%) at ' + _ff_num(ox, 50, 0, 100, 1) + '% ' + _ff_num(oy, 50, 0, 100, 1) + '%) view-box;opacity:calc(1 - 0.45*(1 - clamp(0,var(--p,1),1))*(0.5 + 0.5*sin(calc(var(--p,1)*' + ff + ' + ' + ph + '))));">' + inner + '</g>')
+    glow = ('filter:drop-shadow(0 0 3px rgba(' + rgb + ',0.9)) drop-shadow(0 0 9px rgba(' + rgb + ',0.6));') if b.get('glow') is not False else ''
+    svg = ('<svg aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;' + glow + '">'
+           + groups + '</svg>')
+    flash = ''
+    if b.get('flash') is True:
+        fc = ','.join(str(math.floor(int(c) + (255 - int(c)) * 0.85 + 0.5)) for c in rgb.split(','))
+        flash = ('<span class="lt-flash" data-lt="flash" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;background:rgb(' + fc + ');'
+                 'opacity:calc(0.3*clamp(0,min(calc((var(--p,1) - 0.04)*12),calc((0.2 - var(--p,1))*12)),1));"></span>')
+    kids = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
+    body = ('<div data-lt="body" style="--p:1;position:relative;overflow-wrap:anywhere;">' + kids + '</div>') if kids.strip() else ''
+    return ('<style>@media (prefers-reduced-motion:reduce),print{.lt-flash{display:none!important}.lt-g{clip-path:none!important;opacity:1!important}}</style>'
+            '<div data-lt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;' + ('' if body else 'aspect-ratio:16/9;') + '">'
+            + body + flash + svg + '</div>' + _hg_version_note(b, 'motion_lightning'))
+
+
+_RENDERERS['motion_lightning'] = _render_motion_lightning
+
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
 _gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()
+

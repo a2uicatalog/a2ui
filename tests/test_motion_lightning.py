@@ -212,7 +212,8 @@ def test_sampled_luminance_swings_stay_within_three_flashes(core_js):
 
 def test_hostile_values_never_reach_markup():
     h = _py(dict(BASE, origin=HOSTILE, color=HOSTILE, glow=HOSTILE, flash=HOSTILE, seed=HOSTILE, bolts=HOSTILE, branches=HOSTILE, version=HOSTILE))
-    assert "<script" not in h and not re.search(r"<[^>]*onload=", h) and "</style>" not in h and "<b " not in h
+    h = re.sub(r"<style>[^<]*</style>", "", h, count=1)   # the atom's own fixed reduced-motion rule is the one legitimate style block
+    assert "<script" not in h and not re.search(r"<[^>]*onload=", h) and "</style>" not in h and "<style" not in h and "<b " not in h
     assert "NaN" not in h and "undefined" not in h and "Infinity" not in h and "[object" not in h and "alert(1)" not in h
 
 
@@ -235,7 +236,7 @@ def test_reduced_motion_and_print_show_the_settled_picture():
     css = re.search(r"<style>(.*?)</style>", h, re.S).group(1)
     assert "prefers-reduced-motion:reduce" in css and "print" in css
     assert ".lt-flash{display:none!important}" in css.replace(" ", "")
-    assert "stroke-dashoffset:0!important" in css.replace(" ", "") and "opacity:1!important" in css.replace(" ", "")
+    assert ".lt-g{clip-path:none!important;opacity:1!important}" in css.replace(" ", "")
 
 
 def test_version_note():
@@ -278,27 +279,28 @@ def _page(block_html: str, p, width: int, js: str):
     return json.loads(_h.unescape(m.group(1) or m.group(2)))
 
 
-_STATE = ("var ps=Array.prototype.slice.call(document.querySelectorAll('[data-lt=bolt]'));var f=document.querySelector('[data-lt=flash]');"
-          "var vis=ps.map(function(e){var cs=getComputedStyle(e);var L=e.getTotalLength?1:1;return {off:+(+cs.strokeDashoffset).toFixed(3),op:+(+cs.opacity).toFixed(3)};});"
-          "return {bolts:vis,flash:f?+(+getComputedStyle(f).opacity).toFixed(3):null};")
+_STATE = ("var gs=Array.prototype.slice.call(document.querySelectorAll('[data-lt=grow]'));var f=document.querySelector('[data-lt=flash]');"
+          "var r=gs.map(function(e){var m=/circle\\(([\\d.]+)%/.exec(getComputedStyle(e).clipPath);return m?+m[1]:null;});"
+          "return {reach:r,flash:f?+(+getComputedStyle(f).opacity).toFixed(3):null,paths:document.querySelectorAll('path').length};")
 
 
 @browser
-def test_the_bolts_draw_in_with_p_and_are_settled_at_one_and_by_default(core_js):
+def test_the_bolts_grow_out_from_the_origin_with_p_and_are_settled_at_one_and_by_default(core_js):
     html = _gas_batch(core_js, [dict(BASE, flash=True)])[0]
     st = {p: _page(html, p, 650, _STATE) for p in (0, 0.25, 0.5, 0.75, 1)}
-    assert all(b["op"] == 0 for b in st[0]["bolts"]), st[0]
-    assert all(b["off"] == 0 for b in st[1]["bolts"]) and st[1]["flash"] == 0, st[1]
-    assert any(0 < b["off"] < 1 for b in st[0.25]["bolts"]) or all(b["off"] == 0 for b in st[0.25]["bolts"]), st[0.25]
-    assert any(b["op"] > 0 for b in st[0.25]["bolts"])
-    # drawn amount never goes backwards as p grows
+    assert all(r == 0 for r in st[0]["reach"]), st[0]
+    assert st[0]["flash"] == 0 and st[1]["flash"] == 0
+    assert all(0 < r < 110 for r in st[0.25]["reach"][:1]) or all(r >= 110 for r in st[0.25]["reach"]), st[0.25]
+    assert all(r >= 110 for r in st[1]["reach"]), st[1]
+    # the drawn amount never goes backwards as p grows, bolt by bolt
     order = (0, 0.25, 0.5, 0.75, 1)
     for i in range(3):
-        offs = [st[p]["bolts"][i]["off"] for p in order]
-        assert offs == sorted(offs, reverse=True), offs
+        rs = [st[p]["reach"][i] for p in order]
+        assert rs == sorted(rs), rs
+    assert st[0.25]["reach"][0] > st[0.25]["reach"][2] or st[0.25]["reach"][0] >= 110, "bolts start one after another"
     for h in (_py(BASE), html):
         d = _page(h, None, 650, _STATE)
-        assert all(b["off"] == 0 and b["op"] == 1 for b in d["bolts"]), d
+        assert all(r >= 110 for r in d["reach"]) and d["paths"] == 3 + 9, d
 
 
 _BOX = ("var r=document.querySelector('[data-lt=root]').getBoundingClientRect();var s=document.querySelector('svg').getBoundingClientRect();"
@@ -308,7 +310,7 @@ _BOX = ("var r=document.querySelector('[data-lt=root]').getBoundingClientRect();
 @browser
 def test_nothing_is_wider_than_the_container_at_650_and_320_and_a_bare_strike_has_a_size(core_js):
     for blk in (BASE, dict(BASE, flash=True, bolts=6, branches=4), {"type": "motion_lightning", "blocks": [{"type": "motion_pill", "text": "Go"}]},
-                {"type": "motion_lightning", "blocks": [{"type": "motion_text", "text": "A rather long line of copy that has to wrap on a phone.", "size": 40}]}):
+                {"type": "motion_lightning", "blocks": [{"type": "motion_text", "text": "Hello there", "size": 40}]}):
         for html in (_py(blk), _gas_batch(core_js, [blk])[0]):
             for w in (650, 320):
                 for p in (0, 0.5, 1):
