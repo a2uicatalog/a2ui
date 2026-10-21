@@ -36872,7 +36872,7 @@ def _render_candlestick_chart(b: dict) -> str:
               '<div style="position:absolute;left:0;right:0;top:0;border-top:1px solid var(--border,#CBD5E1);"></div>' + volume + '</div></div>') if show_vol else ''
     chart = ('<div class="ifcs" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifcs .hgx:not(.hgc){display:none}}</style>' + legend
              + ('<div class="cscap" style="font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 0 6px;">' + _cv_esc(cap) + '</div>' if cap else '')
-             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 0 34px 0;padding-top:8px;">'
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 0 34px 0;padding:8px 36px 0 0;">'
              '<div style="display:flex;"><div style="flex:0 0 ' + gut + ';position:relative;">' + ylab + '</div>'
              '<div class="csp" style="position:relative;flex:1 1 auto;min-width:0;height:260px;border-left:1px solid var(--muted,#475569);">' + grid + candles + '</div></div>' + vpanel
              + '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, T0, tspan, tlab) + '</div></div></div>')
