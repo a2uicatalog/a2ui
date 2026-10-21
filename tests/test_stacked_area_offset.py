@@ -16,8 +16,6 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -28,8 +26,9 @@ from test_motion_atoms import wa  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 D = json.loads((ROOT / "tests/fixtures/stacked_area_d3_golden.json").read_text())
 CASES = {**D["golden"], **{f"fuzz{i}": c for i, c in enumerate(D["fuzz"])}}
-GAS_DIRS = ["gas-wired-renderer", "gas-schema-renderer", "gas-fakes-schema-renderer-private"]
-GAS_FILES = [f"apps-script-surface/{d}/atoms_unstub.gs" for d in GAS_DIRS] + [f"apps-script-surface/{d}/atoms_unstub.js" for d in GAS_DIRS[1:]]
+GAS_DIRS = ["gas-wired-renderer"]   # apps-script-surface/gas-schema-renderer and gas-fakes-schema-renderer-private are frozen (project.yaml known_debt.frozen_renderer_dirs, owner 2026-10-20: listed, not patched)
+GAS_FILES = [f"apps-script-surface/{d}/atoms_unstub.gs" for d in GAS_DIRS]
+FROZEN_DIRS = ["gas-schema-renderer", "gas-fakes-schema-renderer-private"]
 ATTACK = '"><img src=x onerror=alert(1)>\'"><svg onload=alert(1)></script><script>alert(4)</script> onmouseover=alert(2)'
 OFFSETS = ["expand", "silhouette", "wiggle"]
 
@@ -70,16 +69,6 @@ def test_gas_stack_matches_d3_exactly_in_every_copy(core_js):
         assert order == g["order"] and lo == g["lo"] and hi == g["hi"], (n, mode)
 
 
-@pytest.mark.parametrize("gas_dir", GAS_DIRS[1:])
-def test_gas_stack_matches_d3_in_the_schema_renderer_copies(gas_dir):
-    jobs = [[CASES[n]["values"], m, n] for n in ("three_by_four", "peaks_late", "ties_in_peaks", "zero_series", "huge_and_tiny", "fuzz3", "fuzz9") for m in OFFSETS]
-    body = "var G = " + json.dumps(jobs) + "; console.log(JSON.stringify(G.map(function(g){ var r = _saStack(g[0], g[1]); return [r.order, r.lo, r.hi]; })));"
-    res = _run_standalone(gas_dir, body)
-    for (vals, mode, n), (order, lo, hi) in zip(jobs, res):
-        g = CASES[n][mode]
-        assert order == g["order"] and lo == g["lo"] and hi == g["hi"], (n, mode)
-
-
 def test_the_golden_set_covers_the_hard_cases():
     g = D["golden"]
     assert g["zero_series"]["expand"]["hi"][0] == [0, 0, 0, 0]                           # a series of zeros stays flat
@@ -102,22 +91,6 @@ def test_every_apps_script_copy_carries_the_identical_offset_block():
     for p in GAS_FILES:
         s = (ROOT / p).read_text()
         assert "var _sa = _saGate(b);" in s and "+ _sa.tail;" in s, p
-
-
-def _run_standalone(gas_dir, body):
-    """gas-schema-renderer and the private fakes copy have no bundle: the file is loaded alone against a bare _RENDERERS and its own _esc."""
-    esc = re.search(r"function _esc\(str\) \{.*?\n\}\n", (ROOT / "apps-script-surface" / gas_dir / "atom.gs").read_text(), re.S).group(0)
-    src = (ROOT / "apps-script-surface" / gas_dir / "atoms_unstub.gs").read_text()
-    with tempfile.TemporaryDirectory() as td:
-        p = Path(td) / "d.js"
-        p.write_text("var _RENDERERS = {};\n" + esc + "\n" + src + "\n" + body)
-        proc = subprocess.run(["node", str(p)], capture_output=True, text=True, timeout=60)
-        assert proc.returncode == 0, proc.stderr[-1500:]
-        return json.loads(proc.stdout.strip().split("\n")[-1])
-
-
-def _standalone_render(gas_dir, blocks):
-    return _run_standalone(gas_dir, "var B = " + json.dumps(blocks) + "; console.log(JSON.stringify(B.map(function(b){ return _RENDERERS.stacked_area(b); })));")
 
 
 # ─── today's output, byte for byte ─────────────────────────────────────────────
@@ -169,19 +142,11 @@ def test_absent_offset_is_byte_for_byte_todays_output_in_gas(core_js):
     assert dict(zip(BASE, out)) == BASELINE["gas"]
 
 
-@pytest.mark.parametrize("gas_dir", GAS_DIRS[1:])
-def test_absent_offset_is_byte_for_byte_todays_output_in_the_schema_copies(gas_dir):
-    out = _standalone_render(gas_dir, list(BASE.values()))
-    assert dict(zip(BASE, out)) == BASELINE["gas_schema"]
-
-
 @pytest.mark.parametrize("junk", JUNK, ids=lambda j: json.dumps(j))
 def test_none_and_unknown_offsets_render_todays_output_in_every_twin(junk, core_js):
     blocks = [{**b, "offset": junk} for b in BASE.values()]
     assert [_pyx(b) for b in blocks] == [BASELINE["python"][n] for n in BASE]
     assert _gas_batch(core_js, blocks) == [BASELINE["gas"][n] for n in BASE]
-    for d in GAS_DIRS[1:]:
-        assert _standalone_render(d, blocks) == [BASELINE["gas_schema"][n] for n in BASE]
 
 
 def test_version_one_and_junk_versions_change_nothing(core_js):
@@ -229,13 +194,6 @@ FALLBACKS = ("too_few_labels", "no_labels", "no_series", "series_not_a_list", "l
 @pytest.mark.parametrize("name", list(PAYLOADS))
 def test_python_and_gas_emit_identical_html(name, core_js):
     assert _py(PAYLOADS[name]) == _gas_batch(core_js, [PAYLOADS[name]])[0]
-
-
-@pytest.mark.parametrize("gas_dir", GAS_DIRS[1:])
-def test_the_schema_copies_emit_the_same_chart(gas_dir):
-    names = [n for n in PAYLOADS if n in CHARTS]
-    out = _standalone_render(gas_dir, [PAYLOADS[n] for n in names])
-    assert out == [_py(PAYLOADS[n]) for n in names]
 
 
 @pytest.mark.parametrize("name", list(PAYLOADS))
@@ -368,7 +326,6 @@ def test_unusable_data_gets_a_message_never_an_exception(core_js):
         assert msg in _py(PAYLOADS[n])
 
 
-
 def test_malformed_series_are_counted_not_silently_dropped():
     h = _py(PAYLOADS["series_not_objects"])
     assert "4 series were not an object and were left out." in h and h.count("<polygon") == 1
@@ -412,3 +369,11 @@ def test_long_x_labels_end_in_an_ellipsis_and_the_last_label_is_always_shown(cor
             marks = _re.findall(r'<div class="sax( sac)?" style="position:absolute;top:100%;left:([\d.]+)%;', h)
             assert marks[-1][1] == "100.00" and marks[-1][0] == " sac", marks       # the last point is labelled in both tiers
             assert marks[0][1] == "0.00" and marks[0][0] == " sac"
+
+
+def test_the_frozen_copies_are_untouched():
+    for d in FROZEN_DIRS:
+        for ext in ("gs", "js"):
+            f = ROOT / "apps-script-surface" / d / ("atoms_unstub." + ext)
+            if f.exists():
+                assert "_saStack" not in f.read_text(), f

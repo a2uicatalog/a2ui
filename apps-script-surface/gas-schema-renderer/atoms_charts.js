@@ -2403,7 +2403,7 @@ _RENDERERS['decision_tree'] = function(b) {
     if (!children.length) {
       return '<div style="padding:10px 14px;margin:4px 0;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;font-size:0.875rem;color:#166534;font-weight:500;">✓ ' + _esc(node.text || node.label || '') + '</div>';
     }
-    return '<details style="margin:4px 0;"' + ' open' + '>'
+    return '<details style="margin:4px 0;"' + (depth === 0 ? ' open' : '') + '>'
       + '<summary style="cursor:pointer;list-style:none;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:0.875rem;font-weight:600;color:#0f172a;user-select:none;">'
       + '▸ ' + _esc(node.text || node.label || node.question || '')
       + '</summary>'

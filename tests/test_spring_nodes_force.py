@@ -55,12 +55,10 @@ def test_every_maintained_gas_copy_carries_the_same_spring_nodes_code():
     # the only script is the opt-in live layer (interactive: true); the settled layout itself runs no physics at render time
     base = re.sub(r"var _SN_LIVE_JS = '.*?';\n", "", wired).replace("if (live) out += '<script>' + _SN_LIVE_JS + '<\\/script>';", "")
     assert "_snLayout" in wired and "Math.random" not in wired and "<script" not in base and "requestAnimationFrame" not in base
-    for f in ("gas-schema-renderer/atoms_canvas.gs", "gas-schema-renderer/atoms_canvas.js"):
-        assert _block(ROOT / "apps-script-surface" / f) == wired, f
 
 
 def test_frozen_copies_are_untouched():
-    for d in ("gas-fakes-schema-renderer-private", "gas-wired-renderer-starter"):
+    for d in ("gas-schema-renderer", "gas-fakes-schema-renderer-private", "gas-wired-renderer-starter"):
         p = ROOT / "apps-script-surface" / d / "atoms_canvas.gs"
         if p.exists():
             assert "_snLayout" not in p.read_text()
