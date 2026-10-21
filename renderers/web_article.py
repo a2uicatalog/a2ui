@@ -33843,6 +33843,1269 @@ def _render_contour_plot(b: dict) -> str:
                     + notes + _hg_version_note(b, 'contour_plot') + tables)
 
 
+# ── voronoi (I56 nearest-site regions of a set of points) ───────────────────────────────────────────────────────────────────────────────────────
+# Three modules ported by hand, each function keeping the name and the order of operations of its source so the output is identical to the real modules:
+#   robust-predicates 3.0.3 (Unlicense / public domain, Vladimir Agafonkin): orient2d with its adaptive stages (fast filter, stage B, tails stage C, full expansion D).
+#   delaunator 5.1.0 (ISC, Mapbox): Delaunator update() (seed triangle, radial sort by quicksort, advancing hull with its angular hash), _legalize, _link, _addTriangle,
+#     pseudoAngle, dist, inCircle, circumradius, circumcenter.
+#   d3-delaunay 6.0.4 (ISC, Mike Bostock, Observable): Delaunay _init (inedges, hull index, the collinear check and its jitter) and _step; Voronoi _init (circumcenters
+#     and exterior rays), _cell, _clip, _clipFinite, _clipSegment, _clipInfinite, _edge, _project, _edgecode, _regioncode, _simplify, contains, and
+#     renderCell (the cellPolygon of Polygon).
+# d3-delaunay's collinear fallback jitters the points with Math.sin, Math.cos and Math.hypot, which are not correctly rounded and differ between libms: V8's are
+# ported too (fdlibm sin/cos for |x| <= 2^19*pi/2 with the host libm beyond, and V8's Kahan-summed hypot). Python floats are IEEE doubles and never fuse a
+# multiply-add, so the arithmetic is the JavaScript's, operation for operation. Typed arrays are lists (the lists that orient2d reads past the length of an
+# expansion carry one spare element). Twin of the _vo* functions and _RENDERERS['voronoi'] in atoms_infographic.gs.
+_VO_R_EPS = 1.1102230246251565e-16
+_VO_SPLIT = 134217729
+_VO_RESERR = (3 + 8 * _VO_R_EPS) * _VO_R_EPS
+_VO_CCWA = (3 + 16 * _VO_R_EPS) * _VO_R_EPS
+_VO_CCWB = (2 + 12 * _VO_R_EPS) * _VO_R_EPS
+_VO_CCWC = (9 + 64 * _VO_R_EPS) * _VO_R_EPS * _VO_R_EPS
+_VO_STAGE = ['']   # which return the last orient2d took (A, B, Bz, C, D): read by the tests to show every adaptive stage is reached
+_vo_o_b = [0.0] * 5
+_vo_o_c1 = [0.0] * 9
+_vo_o_c2 = [0.0] * 13
+_vo_o_d = [0.0] * 17
+_vo_o_u = [0.0] * 5
+
+
+def _vo_sum(elen, e, flen, f, h):
+    """util.js sum (fast_expansion_sum_zeroelim)."""
+    enow = e[0]
+    fnow = f[0]
+    eindex = 0
+    findex = 0
+    if (fnow > enow) == (fnow > -enow):
+        Q = enow
+        eindex += 1
+        enow = e[eindex]
+    else:
+        Q = fnow
+        findex += 1
+        fnow = f[findex]
+    hindex = 0
+    if eindex < elen and findex < flen:
+        if (fnow > enow) == (fnow > -enow):
+            Qnew = enow + Q
+            hh = Q - (Qnew - enow)
+            eindex += 1
+            enow = e[eindex]
+        else:
+            Qnew = fnow + Q
+            hh = Q - (Qnew - fnow)
+            findex += 1
+            fnow = f[findex]
+        Q = Qnew
+        if hh != 0:
+            h[hindex] = hh
+            hindex += 1
+        while eindex < elen and findex < flen:
+            if (fnow > enow) == (fnow > -enow):
+                Qnew = Q + enow
+                bvirt = Qnew - Q
+                hh = Q - (Qnew - bvirt) + (enow - bvirt)
+                eindex += 1
+                enow = e[eindex]
+            else:
+                Qnew = Q + fnow
+                bvirt = Qnew - Q
+                hh = Q - (Qnew - bvirt) + (fnow - bvirt)
+                findex += 1
+                fnow = f[findex]
+            Q = Qnew
+            if hh != 0:
+                h[hindex] = hh
+                hindex += 1
+    while eindex < elen:
+        Qnew = Q + enow
+        bvirt = Qnew - Q
+        hh = Q - (Qnew - bvirt) + (enow - bvirt)
+        eindex += 1
+        enow = e[eindex]
+        Q = Qnew
+        if hh != 0:
+            h[hindex] = hh
+            hindex += 1
+    while findex < flen:
+        Qnew = Q + fnow
+        bvirt = Qnew - Q
+        hh = Q - (Qnew - bvirt) + (fnow - bvirt)
+        findex += 1
+        fnow = f[findex]
+        Q = Qnew
+        if hh != 0:
+            h[hindex] = hh
+            hindex += 1
+    if Q != 0 or hindex == 0:
+        h[hindex] = Q
+        hindex += 1
+    return hindex
+
+
+def _vo_estimate(elen, e):
+    """util.js estimate."""
+    Q = e[0]
+    for i in range(1, elen):
+        Q += e[i]
+    return Q
+
+
+def _vo_orient2d_adapt(ax, ay, bx, by, cx, cy, detsum):
+
+    acx = ax - cx
+    bcx = bx - cx
+    acy = ay - cy
+    bcy = by - cy
+
+    s1 = acx * bcy
+    c = _VO_SPLIT * acx
+    ahi = c - (c - acx)
+    alo = acx - ahi
+    c = _VO_SPLIT * bcy
+    bhi = c - (c - bcy)
+    blo = bcy - bhi
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
+    t1 = acy * bcx
+    c = _VO_SPLIT * acy
+    ahi = c - (c - acy)
+    alo = acy - ahi
+    c = _VO_SPLIT * bcx
+    bhi = c - (c - bcx)
+    blo = bcx - bhi
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
+    _i = s0 - t0
+    bvirt = s0 - _i
+    _vo_o_b[0] = s0 - (_i + bvirt) + (bvirt - t0)
+    _j = s1 + _i
+    bvirt = _j - s1
+    _0 = s1 - (_j - bvirt) + (_i - bvirt)
+    _i = _0 - t1
+    bvirt = _0 - _i
+    _vo_o_b[1] = _0 - (_i + bvirt) + (bvirt - t1)
+    u3 = _j + _i
+    bvirt = u3 - _j
+    _vo_o_b[2] = _j - (u3 - bvirt) + (_i - bvirt)
+    _vo_o_b[3] = u3
+
+    det = _vo_estimate(4, _vo_o_b)
+    errbound = _VO_CCWB * detsum
+    if det >= errbound or -det >= errbound:
+        _VO_STAGE[0] = 'B'
+        return det
+
+    bvirt = ax - acx
+    acxtail = ax - (acx + bvirt) + (bvirt - cx)
+    bvirt = bx - bcx
+    bcxtail = bx - (bcx + bvirt) + (bvirt - cx)
+    bvirt = ay - acy
+    acytail = ay - (acy + bvirt) + (bvirt - cy)
+    bvirt = by - bcy
+    bcytail = by - (bcy + bvirt) + (bvirt - cy)
+
+    if acxtail == 0 and acytail == 0 and bcxtail == 0 and bcytail == 0:
+        _VO_STAGE[0] = 'Bz'
+        return det
+
+    errbound = _VO_CCWC * detsum + _VO_RESERR * abs(det)
+    det += (acx * bcytail + bcy * acxtail) - (acy * bcxtail + bcx * acytail)
+    if det >= errbound or -det >= errbound:
+        _VO_STAGE[0] = 'C'
+        return det
+
+    s1 = acxtail * bcy
+    c = _VO_SPLIT * acxtail
+    ahi = c - (c - acxtail)
+    alo = acxtail - ahi
+    c = _VO_SPLIT * bcy
+    bhi = c - (c - bcy)
+    blo = bcy - bhi
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
+    t1 = acytail * bcx
+    c = _VO_SPLIT * acytail
+    ahi = c - (c - acytail)
+    alo = acytail - ahi
+    c = _VO_SPLIT * bcx
+    bhi = c - (c - bcx)
+    blo = bcx - bhi
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
+    _i = s0 - t0
+    bvirt = s0 - _i
+    _vo_o_u[0] = s0 - (_i + bvirt) + (bvirt - t0)
+    _j = s1 + _i
+    bvirt = _j - s1
+    _0 = s1 - (_j - bvirt) + (_i - bvirt)
+    _i = _0 - t1
+    bvirt = _0 - _i
+    _vo_o_u[1] = _0 - (_i + bvirt) + (bvirt - t1)
+    u3 = _j + _i
+    bvirt = u3 - _j
+    _vo_o_u[2] = _j - (u3 - bvirt) + (_i - bvirt)
+    _vo_o_u[3] = u3
+    C1len = _vo_sum(4, _vo_o_b, 4, _vo_o_u, _vo_o_c1)
+
+    s1 = acx * bcytail
+    c = _VO_SPLIT * acx
+    ahi = c - (c - acx)
+    alo = acx - ahi
+    c = _VO_SPLIT * bcytail
+    bhi = c - (c - bcytail)
+    blo = bcytail - bhi
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
+    t1 = acy * bcxtail
+    c = _VO_SPLIT * acy
+    ahi = c - (c - acy)
+    alo = acy - ahi
+    c = _VO_SPLIT * bcxtail
+    bhi = c - (c - bcxtail)
+    blo = bcxtail - bhi
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
+    _i = s0 - t0
+    bvirt = s0 - _i
+    _vo_o_u[0] = s0 - (_i + bvirt) + (bvirt - t0)
+    _j = s1 + _i
+    bvirt = _j - s1
+    _0 = s1 - (_j - bvirt) + (_i - bvirt)
+    _i = _0 - t1
+    bvirt = _0 - _i
+    _vo_o_u[1] = _0 - (_i + bvirt) + (bvirt - t1)
+    u3 = _j + _i
+    bvirt = u3 - _j
+    _vo_o_u[2] = _j - (u3 - bvirt) + (_i - bvirt)
+    _vo_o_u[3] = u3
+    C2len = _vo_sum(C1len, _vo_o_c1, 4, _vo_o_u, _vo_o_c2)
+
+    s1 = acxtail * bcytail
+    c = _VO_SPLIT * acxtail
+    ahi = c - (c - acxtail)
+    alo = acxtail - ahi
+    c = _VO_SPLIT * bcytail
+    bhi = c - (c - bcytail)
+    blo = bcytail - bhi
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
+    t1 = acytail * bcxtail
+    c = _VO_SPLIT * acytail
+    ahi = c - (c - acytail)
+    alo = acytail - ahi
+    c = _VO_SPLIT * bcxtail
+    bhi = c - (c - bcxtail)
+    blo = bcxtail - bhi
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
+    _i = s0 - t0
+    bvirt = s0 - _i
+    _vo_o_u[0] = s0 - (_i + bvirt) + (bvirt - t0)
+    _j = s1 + _i
+    bvirt = _j - s1
+    _0 = s1 - (_j - bvirt) + (_i - bvirt)
+    _i = _0 - t1
+    bvirt = _0 - _i
+    _vo_o_u[1] = _0 - (_i + bvirt) + (bvirt - t1)
+    u3 = _j + _i
+    bvirt = u3 - _j
+    _vo_o_u[2] = _j - (u3 - bvirt) + (_i - bvirt)
+    _vo_o_u[3] = u3
+    Dlen = _vo_sum(C2len, _vo_o_c2, 4, _vo_o_u, _vo_o_d)
+
+    _VO_STAGE[0] = 'D'
+    return _vo_o_d[Dlen - 1]
+
+
+def _vo_orient2d(ax, ay, bx, by, cx, cy):
+    """robust-predicates orient2d."""
+    detleft = (ay - cy) * (bx - cx)
+    detright = (ax - cx) * (by - cy)
+    det = detleft - detright
+    detsum = abs(detleft + detright)
+    if abs(det) >= _VO_CCWA * detsum:
+        _VO_STAGE[0] = 'A'
+        return det
+    return -_vo_orient2d_adapt(ax, ay, bx, by, cx, cy, detsum)
+
+# ---- V8's Math.sin / Math.cos (fdlibm: __kernel_sin, __kernel_cos, __ieee754_rem_pio2) and Math.hypot
+_VO_NPIO2_HW = [0x3FF921FB, 0x400921FB, 0x4012D97C, 0x401921FB, 0x401F6A7A, 0x4022D97C, 0x4025FDBB, 0x402921FB, 0x402C463A, 0x402F6A7A, 0x4031475C, 0x4032D97C,
+                0x40346B9C, 0x4035FDBB, 0x40378FDB, 0x403921FB, 0x403AB41B, 0x403C463A, 0x403DD85A, 0x403F6A7A, 0x40407E4C, 0x4041475C, 0x4042106C, 0x4042D97C,
+                0x4043A28C, 0x40446B9C, 0x404534AC, 0x4045FDBB, 0x4046C6CB, 0x40478FDB, 0x404858EB, 0x404921FB]
+_VO_PIO2_1, _VO_PIO2_1T = 1.57079632673412561417e+00, 6.07710050650619224932e-11
+_VO_PIO2_2, _VO_PIO2_2T = 6.07710050630396597660e-11, 2.02226624879595063154e-21
+_VO_PIO2_3, _VO_PIO2_3T = 2.02226624871116645580e-21, 8.47842766036889956997e-32
+_VO_INVPIO2 = 6.36619772367581382433e-01
+
+
+def _vo_hi(x):
+    import struct
+    return struct.unpack('>i', struct.pack('>d', x)[:4])[0]
+
+
+def _vo_kernel_sin(x, y, iy):
+    S1, S2, S3, S4, S5, S6 = -1.66666666666666324348e-01, 8.33333333332248946124e-03, -1.98412698298579493134e-04, 2.75573137070700676789e-06, -2.50507602534068634195e-08, 1.58969099521155010221e-10
+    ix = _vo_hi(x) & 0x7fffffff
+    if ix < 0x3e400000:
+        if int(x) == 0:
+            return x
+    z = x * x
+    v = z * x
+    r = S2 + z * (S3 + z * (S4 + z * (S5 + z * S6)))
+    if iy == 0:
+        return x + v * (S1 + z * r)
+    return x - ((z * (0.5 * y - v * r) - y) - v * S1)
+
+
+def _vo_kernel_cos(x, y):
+    C1, C2, C3, C4, C5, C6 = 4.16666666666666019037e-02, -1.38888888888741095749e-03, 2.48015872894767294178e-05, -2.75573143513906633035e-07, 2.08757232129817482790e-09, -1.13596475577881948265e-11
+    ix = _vo_hi(x) & 0x7fffffff
+    if ix < 0x3e400000:
+        if int(x) == 0:
+            return 1.0
+    z = x * x
+    r = z * (C1 + z * (C2 + z * (C3 + z * (C4 + z * (C5 + z * C6)))))
+    if ix < 0x3FD33333:
+        return 1.0 - (0.5 * z - (z * r - x * y))
+    if ix > 0x3fe90000:
+        qx = 0.28125
+    else:
+        import struct
+        qx = struct.unpack('>d', struct.pack('>II', ix - 0x00200000, 0))[0]
+    hz = 0.5 * z - qx
+    a = 1.0 - qx
+    return a - (hz - (z * r - x * y))
+
+
+def _vo_rem_pio2(x):
+    """__ieee754_rem_pio2 for |x| <= 2^19*pi/2 (the medium sizes): returns (n, y0, y1), or None beyond."""
+    hx = _vo_hi(x)
+    ix = hx & 0x7fffffff
+    if ix <= 0x3fe921fb:
+        return 0, x, 0.0
+    if ix < 0x4002d97c:
+        if hx > 0:
+            z = x - _VO_PIO2_1
+            if ix != 0x3ff921fb:
+                y0 = z - _VO_PIO2_1T
+                y1 = (z - y0) - _VO_PIO2_1T
+            else:
+                z -= _VO_PIO2_2
+                y0 = z - _VO_PIO2_2T
+                y1 = (z - y0) - _VO_PIO2_2T
+            return 1, y0, y1
+        z = x + _VO_PIO2_1
+        if ix != 0x3ff921fb:
+            y0 = z + _VO_PIO2_1T
+            y1 = (z - y0) + _VO_PIO2_1T
+        else:
+            z += _VO_PIO2_2
+            y0 = z + _VO_PIO2_2T
+            y1 = (z - y0) + _VO_PIO2_2T
+        return -1, y0, y1
+    if ix <= 0x413921fb:
+        t = abs(x)
+        n = int(t * _VO_INVPIO2 + 0.5)
+        fn = float(n)
+        r = t - fn * _VO_PIO2_1
+        w = fn * _VO_PIO2_1T
+        if n < 32 and ix != _VO_NPIO2_HW[n - 1]:
+            y0 = r - w
+        else:
+            j = ix >> 20
+            y0 = r - w
+            i = j - ((_vo_hi(y0) >> 20) & 0x7ff)
+            if i > 16:
+                t = r
+                w = fn * _VO_PIO2_2
+                r = t - w
+                w = fn * _VO_PIO2_2T - ((t - r) - w)
+                y0 = r - w
+                i = j - ((_vo_hi(y0) >> 20) & 0x7ff)
+                if i > 49:
+                    t = r
+                    w = fn * _VO_PIO2_3
+                    r = t - w
+                    w = fn * _VO_PIO2_3T - ((t - r) - w)
+                    y0 = r - w
+        y1 = (r - y0) - w
+        if hx < 0:
+            return -n, -y0, -y1
+        return n, y0, y1
+    return None
+
+
+def _vo_sin(x):
+    """V8 Math.sin (fdlibm)."""
+    ix = _vo_hi(x) & 0x7fffffff
+    if ix <= 0x3fe921fb:
+        return _vo_kernel_sin(x, 0.0, 0)
+    if ix >= 0x7ff00000:
+        return x - x
+    r = _vo_rem_pio2(x)
+    if r is None:
+        return math.sin(x)
+    n, y0, y1 = r
+    k = n & 3
+    return _vo_kernel_sin(y0, y1, 1) if k == 0 else _vo_kernel_cos(y0, y1) if k == 1 else -_vo_kernel_sin(y0, y1, 1) if k == 2 else -_vo_kernel_cos(y0, y1)
+
+
+def _vo_cos(x):
+    """V8 Math.cos (fdlibm)."""
+    ix = _vo_hi(x) & 0x7fffffff
+    if ix <= 0x3fe921fb:
+        return _vo_kernel_cos(x, 0.0)
+    if ix >= 0x7ff00000:
+        return x - x
+    r = _vo_rem_pio2(x)
+    if r is None:
+        return math.cos(x)
+    n, y0, y1 = r
+    k = n & 3
+    return _vo_kernel_cos(y0, y1) if k == 0 else -_vo_kernel_sin(y0, y1, 1) if k == 1 else -_vo_kernel_cos(y0, y1) if k == 2 else _vo_kernel_sin(y0, y1, 1)
+
+
+def _vo_hypot(a, b):
+    """V8 Math.hypot(a, b): the largest magnitude scales the terms, which are summed with Kahan compensation."""
+    a, b = abs(a), abs(b)
+    mx = a if a > b else b
+    if mx == float('inf'):
+        return mx
+    if a != a or b != b:
+        return float('nan')
+    if mx == 0:
+        return 0.0
+    s = 0.0
+    comp = 0.0
+    for v in (a, b):
+        n = v / mx
+        summand = n * n - comp
+        pre = s + summand
+        comp = (pre - s) - summand
+        s = pre
+    return math.sqrt(s) * mx
+
+
+# ---- delaunator 5.1.0
+_VO_EPSILON = 2.220446049250313e-16   # 2^-52
+_VO_EDGE_STACK = [0] * 512
+
+
+def _vo_pseudo_angle(dx, dy):
+    p = _hg_div(dx, abs(dx) + abs(dy))
+    return ((3 - p) if dy > 0 else (1 + p)) / 4
+
+
+def _vo_dist(ax, ay, bx, by):
+    dx = ax - bx
+    dy = ay - by
+    return dx * dx + dy * dy
+
+
+def _vo_in_circle(ax, ay, bx, by, cx, cy, px, py):
+    dx = ax - px
+    dy = ay - py
+    ex = bx - px
+    ey = by - py
+    fx = cx - px
+    fy = cy - py
+    ap = dx * dx + dy * dy
+    bp = ex * ex + ey * ey
+    cp = fx * fx + fy * fy
+    return dx * (ey * cp - bp * fy) - dy * (ex * cp - bp * fx) + ap * (ex * fy - ey * fx) < 0
+
+
+def _vo_circumradius(ax, ay, bx, by, cx, cy):
+    dx = bx - ax
+    dy = by - ay
+    ex = cx - ax
+    ey = cy - ay
+    bl = dx * dx + dy * dy
+    cl = ex * ex + ey * ey
+    d = _hg_div(0.5, dx * ey - dy * ex)
+    x = (ey * bl - dy * cl) * d
+    y = (dx * cl - ex * bl) * d
+    return x * x + y * y
+
+
+def _vo_circumcenter(ax, ay, bx, by, cx, cy):
+    dx = bx - ax
+    dy = by - ay
+    ex = cx - ax
+    ey = cy - ay
+    bl = dx * dx + dy * dy
+    cl = ex * ex + ey * ey
+    d = _hg_div(0.5, dx * ey - dy * ex)
+    x = ax + (ey * bl - dy * cl) * d
+    y = ay + (dx * cl - ex * bl) * d
+    return x, y
+
+
+def _vo_swap(arr, i, j):
+    arr[i], arr[j] = arr[j], arr[i]
+
+
+def _vo_quicksort(ids, dists, left, right):
+    if right - left <= 20:
+        for i in range(left + 1, right + 1):
+            temp = ids[i]
+            temp_dist = dists[temp]
+            j = i - 1
+            while j >= left and dists[ids[j]] > temp_dist:
+                ids[j + 1] = ids[j]
+                j -= 1
+            ids[j + 1] = temp
+    else:
+        median = (left + right) >> 1
+        i = left + 1
+        j = right
+        _vo_swap(ids, median, i)
+        if dists[ids[left]] > dists[ids[right]]:
+            _vo_swap(ids, left, right)
+        if dists[ids[i]] > dists[ids[right]]:
+            _vo_swap(ids, i, right)
+        if dists[ids[left]] > dists[ids[i]]:
+            _vo_swap(ids, left, i)
+        temp = ids[i]
+        temp_dist = dists[temp]
+        while True:
+            i += 1
+            while dists[ids[i]] < temp_dist:
+                i += 1
+            j -= 1
+            while dists[ids[j]] > temp_dist:
+                j -= 1
+            if j < i:
+                break
+            _vo_swap(ids, i, j)
+        ids[left + 1] = ids[j]
+        ids[j] = temp
+        if right - i + 1 >= j - left:
+            _vo_quicksort(ids, dists, i, right)
+            _vo_quicksort(ids, dists, left, j - 1)
+        else:
+            _vo_quicksort(ids, dists, left, j - 1)
+            _vo_quicksort(ids, dists, i, right)
+
+
+class _VoDelaunator:
+    """Delaunator: coords is a flat list [x0, y0, x1, y1, ...]; .triangles, .halfedges and .hull are lists."""
+
+    def __init__(self, coords):
+        n = len(coords) >> 1
+        self.coords = coords
+        max_triangles = max(2 * n - 5, 0)
+        self._triangles = [0] * (max_triangles * 3)
+        self._halfedges = [0] * (max_triangles * 3)
+        self._hash_size = int(math.ceil(math.sqrt(n)))
+        self._hull_prev = [0] * n
+        self._hull_next = [0] * n
+        self._hull_tri = [0] * n
+        self._hull_hash = [-1] * self._hash_size
+        self._ids = [0] * n
+        self._dists = [0.0] * n
+        self.triangles_len = 0
+        self._cx = 0.0
+        self._cy = 0.0
+        self._hull_start = 0
+        self.hull = self._triangles
+        self.triangles = self._triangles
+        self.halfedges = self._halfedges
+        self.update()
+
+    def update(self):
+        coords, hull_prev, hull_next, hull_tri, hull_hash = self.coords, self._hull_prev, self._hull_next, self._hull_tri, self._hull_hash
+        n = len(coords) >> 1
+        inf = float('inf')
+        min_x = inf
+        min_y = inf
+        max_x = -inf
+        max_y = -inf
+        for i in range(n):
+            x = coords[2 * i]
+            y = coords[2 * i + 1]
+            if x < min_x:
+                min_x = x
+            if y < min_y:
+                min_y = y
+            if x > max_x:
+                max_x = x
+            if y > max_y:
+                max_y = y
+            self._ids[i] = i
+        cx = (min_x + max_x) / 2
+        cy = (min_y + max_y) / 2
+        i0 = i1 = i2 = 0
+        # pick a seed point close to the center
+        min_dist = inf
+        for i in range(n):
+            d = _vo_dist(cx, cy, coords[2 * i], coords[2 * i + 1])
+            if d < min_dist:
+                i0 = i
+                min_dist = d
+        i0x = coords[2 * i0]
+        i0y = coords[2 * i0 + 1]
+        # find the point closest to the seed
+        min_dist = inf
+        for i in range(n):
+            if i == i0:
+                continue
+            d = _vo_dist(i0x, i0y, coords[2 * i], coords[2 * i + 1])
+            if d < min_dist and d > 0:
+                i1 = i
+                min_dist = d
+        i1x = coords[2 * i1]
+        i1y = coords[2 * i1 + 1]
+        min_radius = inf
+        # find the third point which forms the smallest circumcircle with the first two
+        for i in range(n):
+            if i == i0 or i == i1:
+                continue
+            r = _vo_circumradius(i0x, i0y, i1x, i1y, coords[2 * i], coords[2 * i + 1])
+            if r < min_radius:
+                i2 = i
+                min_radius = r
+        i2x = coords[2 * i2]
+        i2y = coords[2 * i2 + 1]
+        if min_radius == inf:
+            # order collinear points by dx (or dy if all x are identical) and return the list as a hull
+            for i in range(n):
+                self._dists[i] = (coords[2 * i] - coords[0]) or (coords[2 * i + 1] - coords[1])
+            _vo_quicksort(self._ids, self._dists, 0, n - 1)
+            hull = [0] * n
+            j = 0
+            d0 = -inf
+            for i in range(n):
+                idn = self._ids[i]
+                d = self._dists[idn]
+                if d > d0:
+                    hull[j] = idn
+                    j += 1
+                    d0 = d
+            self.hull = hull[:j]
+            self.triangles = []
+            self.halfedges = []
+            return
+        # swap the order of the seed points for counter-clockwise orientation
+        if _vo_orient2d(i0x, i0y, i1x, i1y, i2x, i2y) < 0:
+            i = i1
+            x = i1x
+            y = i1y
+            i1 = i2
+            i1x = i2x
+            i1y = i2y
+            i2 = i
+            i2x = x
+            i2y = y
+        ccx, ccy = _vo_circumcenter(i0x, i0y, i1x, i1y, i2x, i2y)
+        self._cx = ccx
+        self._cy = ccy
+        for i in range(n):
+            self._dists[i] = _vo_dist(coords[2 * i], coords[2 * i + 1], ccx, ccy)
+        # sort the points by distance from the seed triangle circumcenter
+        _vo_quicksort(self._ids, self._dists, 0, n - 1)
+        # set up the seed triangle as the starting hull
+        self._hull_start = i0
+        hull_size = 3
+        hull_next[i0] = hull_prev[i2] = i1
+        hull_next[i1] = hull_prev[i0] = i2
+        hull_next[i2] = hull_prev[i1] = i0
+        hull_tri[i0] = 0
+        hull_tri[i1] = 1
+        hull_tri[i2] = 2
+        for k in range(len(hull_hash)):
+            hull_hash[k] = -1
+        hull_hash[self._hash_key(i0x, i0y)] = i0
+        hull_hash[self._hash_key(i1x, i1y)] = i1
+        hull_hash[self._hash_key(i2x, i2y)] = i2
+        self.triangles_len = 0
+        self._add_triangle(i0, i1, i2, -1, -1, -1)
+        xp = 0
+        yp = 0
+        for k in range(len(self._ids)):
+            i = self._ids[k]
+            x = coords[2 * i]
+            y = coords[2 * i + 1]
+            # skip near-duplicate points
+            if k > 0 and abs(x - xp) <= _VO_EPSILON and abs(y - yp) <= _VO_EPSILON:
+                continue
+            xp = x
+            yp = y
+            # skip seed triangle points
+            if i == i0 or i == i1 or i == i2:
+                continue
+            # find a visible edge on the convex hull using edge hash
+            start = 0
+            key = self._hash_key(x, y)
+            for j in range(self._hash_size):
+                start = hull_hash[(key + j) % self._hash_size]
+                if start != -1 and start != hull_next[start]:
+                    break
+            start = hull_prev[start]
+            e = start
+            while True:
+                q = hull_next[e]
+                if not (_vo_orient2d(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]) >= 0):
+                    break
+                e = q
+                if e == start:
+                    e = -1
+                    break
+            if e == -1:
+                continue  # likely a near-duplicate point; skip it
+            # add the first triangle from the point
+            t = self._add_triangle(e, i, hull_next[e], -1, -1, hull_tri[e])
+            # recursively flip triangles from the point until they satisfy the Delaunay condition
+            hull_tri[i] = self._legalize(t + 2)
+            hull_tri[e] = t  # keep track of boundary triangles on the hull
+            hull_size += 1
+            # walk forward through the hull, adding more triangles and flipping recursively
+            nb = hull_next[e]
+            while True:
+                q = hull_next[nb]
+                if not (_vo_orient2d(x, y, coords[2 * nb], coords[2 * nb + 1], coords[2 * q], coords[2 * q + 1]) < 0):
+                    break
+                t = self._add_triangle(nb, i, q, hull_tri[i], -1, hull_tri[nb])
+                hull_tri[i] = self._legalize(t + 2)
+                hull_next[nb] = nb  # mark as removed
+                hull_size -= 1
+                nb = q
+            # walk backward from the other side, adding more triangles and flipping
+            if e == start:
+                while True:
+                    q = hull_prev[e]
+                    if not (_vo_orient2d(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]) < 0):
+                        break
+                    t = self._add_triangle(q, i, e, -1, hull_tri[e], hull_tri[q])
+                    self._legalize(t + 2)
+                    hull_tri[q] = t
+                    hull_next[e] = e  # mark as removed
+                    hull_size -= 1
+                    e = q
+            # update the hull indices
+            self._hull_start = hull_prev[i] = e
+            hull_next[e] = hull_prev[nb] = i
+            hull_next[i] = nb
+            # save the two new edges in the hash table
+            hull_hash[self._hash_key(x, y)] = i
+            hull_hash[self._hash_key(coords[2 * e], coords[2 * e + 1])] = e
+        self.hull = [0] * hull_size
+        e = self._hull_start
+        for i in range(hull_size):
+            self.hull[i] = e
+            e = hull_next[e]
+        # trim typed triangle mesh arrays
+        self.triangles = self._triangles[:self.triangles_len]
+        self.halfedges = self._halfedges[:self.triangles_len]
+
+    def _hash_key(self, x, y):
+        return int(math.floor(_vo_pseudo_angle(x - self._cx, y - self._cy) * self._hash_size)) % self._hash_size
+
+    def _legalize(self, a):
+        triangles, halfedges, coords = self._triangles, self._halfedges, self.coords
+        i = 0
+        ar = 0
+        # recursion eliminated with a fixed-size stack
+        while True:
+            b = halfedges[a]
+            # if the pair of triangles doesn't satisfy the Delaunay condition (p1 is inside the circumcircle of [p0, pl, pr]), flip them,
+            # then do the same check/flip recursively for the new pair of triangles
+            a0 = a - a % 3
+            ar = a0 + (a + 2) % 3
+            if b == -1:  # convex hull edge
+                if i == 0:
+                    break
+                i -= 1
+                a = _VO_EDGE_STACK[i]
+                continue
+            b0 = b - b % 3
+            al = a0 + (a + 1) % 3
+            bl = b0 + (b + 2) % 3
+            p0 = triangles[ar]
+            pr = triangles[a]
+            pl = triangles[al]
+            p1 = triangles[bl]
+            illegal = _vo_in_circle(coords[2 * p0], coords[2 * p0 + 1], coords[2 * pr], coords[2 * pr + 1], coords[2 * pl], coords[2 * pl + 1], coords[2 * p1], coords[2 * p1 + 1])
+            if illegal:
+                triangles[a] = p1
+                triangles[b] = p0
+                hbl = halfedges[bl]
+                # edge swapped on the other side of the hull (rare); fix the half-edge reference
+                if hbl == -1:
+                    e = self._hull_start
+                    while True:
+                        if self._hull_tri[e] == bl:
+                            self._hull_tri[e] = a
+                            break
+                        e = self._hull_prev[e]
+                        if e == self._hull_start:
+                            break
+                self._link(a, hbl)
+                self._link(b, halfedges[ar])
+                self._link(ar, bl)
+                br = b0 + (b + 1) % 3
+                # don't worry about hitting the cap: it can only happen on extremely degenerate input
+                if i < len(_VO_EDGE_STACK):
+                    _VO_EDGE_STACK[i] = br
+                    i += 1
+            else:
+                if i == 0:
+                    break
+                i -= 1
+                a = _VO_EDGE_STACK[i]
+        return ar
+
+    def _link(self, a, b):
+        self._halfedges[a] = b
+        if b != -1:
+            self._halfedges[b] = a
+
+    def _add_triangle(self, i0, i1, i2, a, b, c):
+        t = self.triangles_len
+        self._triangles[t] = i0
+        self._triangles[t + 1] = i1
+        self._triangles[t + 2] = i2
+        self._link(t, a)
+        self._link(t + 1, b)
+        self._link(t + 2, c)
+        self.triangles_len += 3
+        return t
+
+
+# ---- d3-delaunay 6.0.4: Delaunay
+def _vo_collinear(d):
+    """A triangulation is collinear if all its triangles have a non-null area."""
+    triangles, coords = d.triangles, d.coords
+    for i in range(0, len(triangles), 3):
+        a = 2 * triangles[i]
+        b = 2 * triangles[i + 1]
+        c = 2 * triangles[i + 2]
+        cross = (coords[c] - coords[a]) * (coords[b + 1] - coords[a + 1]) - (coords[b] - coords[a]) * (coords[c + 1] - coords[a + 1])
+        if cross > 1e-10:
+            return False
+    return True
+
+
+def _vo_jitter(x, y, r):
+    return x + _vo_sin(x + y) * r, y + _vo_cos(x - y) * r
+
+
+class _VoDelaunay:
+    """Delaunay: points is a flat list [x0, y0, ...] (the jitter of collinear input changes it in place, as in d3-delaunay)."""
+
+    def __init__(self, points):
+        self._delaunator = _VoDelaunator(points)
+        self.inedges = [0] * (len(points) // 2)
+        self._hull_index = [0] * (len(points) // 2)
+        self.points = self._delaunator.coords
+        self.collinear = None
+        self._init()
+
+    def _init(self):
+        d = self._delaunator
+        points = self.points
+        # check for collinear
+        if d.hull is not None and len(d.hull) > 2 and _vo_collinear(d):
+            n = len(points) // 2
+            self.collinear = sorted(range(n), key=lambda i: (points[2 * i], points[2 * i + 1]))  # for exact neighbors
+            e = self.collinear[0]
+            f = self.collinear[-1]
+            bounds = [points[2 * e], points[2 * e + 1], points[2 * f], points[2 * f + 1]]
+            r = 1e-8 * _vo_hypot(bounds[3] - bounds[1], bounds[2] - bounds[0])
+            for i in range(n):
+                p = _vo_jitter(points[2 * i], points[2 * i + 1], r)
+                points[2 * i] = p[0]
+                points[2 * i + 1] = p[1]
+            self._delaunator = _VoDelaunator(points)
+        else:
+            self.collinear = None
+        halfedges = self.halfedges = self._delaunator.halfedges
+        hull = self.hull = self._delaunator.hull
+        triangles = self.triangles = self._delaunator.triangles
+        inedges = self.inedges
+        hull_index = self._hull_index
+        for k in range(len(inedges)):
+            inedges[k] = -1
+            hull_index[k] = -1
+        # Compute an index from each point to an (arbitrary) incoming halfedge. Used to give the first neighbor of each point; for this reason,
+        # on the hull we give priority to exterior halfedges
+        for e in range(len(halfedges)):
+            p = triangles[e - 2 if e % 3 == 2 else e + 1]
+            if halfedges[e] == -1 or inedges[p] == -1:
+                inedges[p] = e
+        for i in range(len(hull)):
+            hull_index[hull[i]] = i
+        # degenerate case: 1 or 2 (distinct) points
+        if len(hull) <= 2 and len(hull) > 0:
+            self.triangles = [-1, -1, -1]
+            self.halfedges = [-1, -1, -1]
+            self.triangles[0] = hull[0]
+            inedges[hull[0]] = 1
+            if len(hull) == 2:
+                inedges[hull[1]] = 0
+                self.triangles[1] = hull[1]
+                self.triangles[2] = hull[1]
+
+    def _step(self, i, x, y):
+        inedges, hull, hull_index, halfedges, triangles, points = self.inedges, self.hull, self._hull_index, self.halfedges, self.triangles, self.points
+        if inedges[i] == -1 or not len(points):
+            return (i + 1) % (len(points) >> 1)
+        c = i
+        dc = (x - points[i * 2]) * (x - points[i * 2]) + (y - points[i * 2 + 1]) * (y - points[i * 2 + 1])
+        e0 = inedges[i]
+        e = e0
+        while True:
+            t = triangles[e]
+            dt = (x - points[t * 2]) * (x - points[t * 2]) + (y - points[t * 2 + 1]) * (y - points[t * 2 + 1])
+            if dt < dc:
+                dc = dt
+                c = t
+            e = e - 2 if e % 3 == 2 else e + 1
+            if triangles[e] != i:
+                break  # bad triangulation
+            e = halfedges[e]
+            if e == -1:
+                e = hull[(hull_index[i] + 1) % len(hull)]
+                if e != t:
+                    if (x - points[e * 2]) * (x - points[e * 2]) + (y - points[e * 2 + 1]) * (y - points[e * 2 + 1]) < dc:
+                        return e
+                break
+            if e == e0:
+                break
+        return c
+
+
+def _vo_at(a, k):
+    """a[k] as JavaScript reads it: NaN (undefined) past either end."""
+    return a[k] if 0 <= k < len(a) else float('nan')
+
+
+def _vo_sign(v):
+    return v if (v != v or v == 0) else (1.0 if v > 0 else -1.0)
+
+
+# ---- d3-delaunay 6.0.4: Voronoi
+class _VoVoronoi:
+    def __init__(self, delaunay, bounds):
+        xmin, ymin, xmax, ymax = bounds
+        if not (xmax >= xmin) or not (ymax >= ymin):
+            raise ValueError('invalid bounds')
+        self.delaunay = delaunay
+        self.xmax, self.xmin = xmax, xmin
+        self.ymax, self.ymin = ymax, ymin
+        self._init()
+
+    def _init(self):
+        points, hull, triangles = self.delaunay.points, self.delaunay.hull, self.delaunay.triangles
+        vectors = self.vectors = [0.0] * (len(points) * 2)
+        bx = by = None  # lazily computed barycenter of the hull
+        # Compute circumcenters.
+        circumcenters = self.circumcenters = [0.0] * (len(triangles) // 3 * 2)
+        j = 0
+        for i in range(0, len(triangles), 3):
+            t1 = triangles[i] * 2
+            t2 = triangles[i + 1] * 2
+            t3 = triangles[i + 2] * 2
+            x1 = _vo_at(points, t1)
+            y1 = _vo_at(points, t1 + 1)
+            x2 = _vo_at(points, t2)
+            y2 = _vo_at(points, t2 + 1)
+            x3 = _vo_at(points, t3)
+            y3 = _vo_at(points, t3 + 1)
+            dx = x2 - x1
+            dy = y2 - y1
+            ex = x3 - x1
+            ey = y3 - y1
+            ab = (dx * ey - dy * ex) * 2
+            if abs(ab) < 1e-9:
+                # For a degenerate triangle, the circumcenter is at the infinity, in a direction orthogonal to the halfedge and away from the "center" of
+                # the diagram <bx, by>, defined as the hull's barycenter.
+                if bx is None:
+                    bx = by = 0.0
+                    for h in hull:
+                        bx += points[h * 2]
+                        by += points[h * 2 + 1]
+                    bx /= len(hull)
+                    by /= len(hull)
+                a = 1e9 * _vo_sign((bx - x1) * ey - (by - y1) * ex)
+                x = (x1 + x3) / 2 - a * ey
+                y = (y1 + y3) / 2 + a * ex
+            else:
+                d = 1 / ab
+                bl = dx * dx + dy * dy
+                cl = ex * ex + ey * ey
+                x = x1 + (ey * bl - dy * cl) * d
+                y = y1 + (dx * cl - ex * bl) * d
+            circumcenters[j] = x
+            circumcenters[j + 1] = y
+            j += 2
+        # Compute exterior cell rays.
+        h = hull[-1]
+        p1 = h * 4
+        x1 = points[2 * h]
+        y1 = points[2 * h + 1]
+        for i in range(len(hull)):
+            h = hull[i]
+            p0, x0, y0 = p1, x1, y1
+            p1, x1, y1 = h * 4, points[2 * h], points[2 * h + 1]
+            vectors[p0 + 2] = vectors[p1] = y0 - y1
+            vectors[p0 + 3] = vectors[p1 + 1] = x1 - x0
+
+    def contains(self, i, x, y):
+        if x != x or y != y:
+            return False
+        return self.delaunay._step(i, x, y) == i
+
+    def cell_polygon(self, i):
+        """cellPolygon(i): renderCell into a Polygon (moveTo, lineTo without repeats, closePath), as a list of [x, y], or None."""
+        points = self._clip(i)
+        if points is None or not len(points):
+            return None
+        polygon = [[points[0], points[1]]]
+        n = len(points)
+        while points[0] == points[n - 2] and points[1] == points[n - 1] and n > 1:
+            n -= 2
+        for i in range(2, n, 2):
+            if points[i] != points[i - 2] or points[i + 1] != points[i - 1]:
+                polygon.append([points[i], points[i + 1]])
+        polygon.append(list(polygon[0]))
+        return polygon
+
+    def _cell(self, i):
+        circumcenters, inedges, halfedges, triangles = self.circumcenters, self.delaunay.inedges, self.delaunay.halfedges, self.delaunay.triangles
+        e0 = inedges[i]
+        if e0 == -1:
+            return None  # coincident point
+        points = []
+        e = e0
+        while True:
+            t = e // 3
+            points.append(circumcenters[t * 2])
+            points.append(circumcenters[t * 2 + 1])
+            e = e - 2 if e % 3 == 2 else e + 1
+            if triangles[e] != i:
+                break  # bad triangulation
+            e = halfedges[e]
+            if not (e != e0 and e != -1):
+                break
+        return points
+
+    def _clip(self, i):
+        # degenerate case (1 valid point: return the box)
+        if i == 0 and len(self.delaunay.hull) == 1:
+            return [self.xmax, self.ymin, self.xmax, self.ymax, self.xmin, self.ymax, self.xmin, self.ymin]
+        points = self._cell(i)
+        if points is None:
+            return None
+        V = self.vectors
+        v = i * 4
+        return self._simplify(self._clip_infinite(i, points, V[v], V[v + 1], V[v + 2], V[v + 3]) if (V[v] or V[v + 1]) else self._clip_finite(i, points))
+
+    def _clip_finite(self, i, points):
+        n = len(points)
+        P = None
+        x1 = points[n - 2]
+        y1 = points[n - 1]
+        c1 = self._regioncode(x1, y1)
+        e1 = 0
+        for j in range(0, n, 2):
+            x0, y0 = x1, y1
+            x1, y1 = points[j], points[j + 1]
+            c0 = c1
+            c1 = self._regioncode(x1, y1)
+            if c0 == 0 and c1 == 0:
+                e0, e1 = e1, 0
+                if P is not None:
+                    P.extend((x1, y1))
+                else:
+                    P = [x1, y1]
+            else:
+                if c0 == 0:
+                    S = self._clip_segment(x0, y0, x1, y1, c0, c1)
+                    if S is None:
+                        continue
+                    sx0, sy0, sx1, sy1 = S
+                else:
+                    S = self._clip_segment(x1, y1, x0, y0, c1, c0)
+                    if S is None:
+                        continue
+                    sx1, sy1, sx0, sy0 = S
+                    e0, e1 = e1, self._edgecode(sx0, sy0)
+                    if e0 and e1:
+                        self._edge(i, e0, e1, P, len(P))
+                    if P is not None:
+                        P.extend((sx0, sy0))
+                    else:
+                        P = [sx0, sy0]
+                e0, e1 = e1, self._edgecode(sx1, sy1)
+                if e0 and e1:
+                    self._edge(i, e0, e1, P, len(P))
+                if P is not None:
+                    P.extend((sx1, sy1))
+                else:
+                    P = [sx1, sy1]
+        if P is not None:
+            e0, e1 = e1, self._edgecode(P[0], P[1])
+            if e0 and e1:
+                self._edge(i, e0, e1, P, len(P))
+        elif self.contains(i, (self.xmin + self.xmax) / 2, (self.ymin + self.ymax) / 2):
+            return [self.xmax, self.ymin, self.xmax, self.ymax, self.xmin, self.ymax, self.xmin, self.ymin]
+        return P
+
+    def _clip_segment(self, x0, y0, x1, y1, c0, c1):
+        # for more robustness, always consider the segment in the same order
+        flip = c0 < c1
+        if flip:
+            x0, y0, x1, y1, c0, c1 = x1, y1, x0, y0, c1, c0
+        while True:
+            if c0 == 0 and c1 == 0:
+                return [x1, y1, x0, y0] if flip else [x0, y0, x1, y1]
+            if c0 & c1:
+                return None
+            c = c0 or c1
+            if c & 0b1000:
+                x = x0 + (x1 - x0) * (self.ymax - y0) / (y1 - y0)
+                y = self.ymax
+            elif c & 0b0100:
+                x = x0 + (x1 - x0) * (self.ymin - y0) / (y1 - y0)
+                y = self.ymin
+            elif c & 0b0010:
+                y = y0 + (y1 - y0) * (self.xmax - x0) / (x1 - x0)
+                x = self.xmax
+            else:
+                y = y0 + (y1 - y0) * (self.xmin - x0) / (x1 - x0)
+                x = self.xmin
+            if c0:
+                x0, y0 = x, y
+                c0 = self._regioncode(x0, y0)
+            else:
+                x1, y1 = x, y
+                c1 = self._regioncode(x1, y1)
+
+    def _clip_infinite(self, i, points, vx0, vy0, vxn, vyn):
+        P = list(points)
+        p = self._project(P[0], P[1], vx0, vy0)
+        if p:
+            P[0:0] = [p[0], p[1]]
+        p = self._project(P[len(P) - 2], P[len(P) - 1], vxn, vyn)
+        if p:
+            P.extend((p[0], p[1]))
+        P = self._clip_finite(i, P)
+        if P is not None:
+            n = len(P)
+            c1 = self._edgecode(P[n - 2], P[n - 1])
+            j = 0
+            while j < n:
+                c0 = c1
+                c1 = self._edgecode(P[j], P[j + 1])
+                if c0 and c1:
+                    j = self._edge(i, c0, c1, P, j)
+                    n = len(P)
+                j += 2
+        elif self.contains(i, (self.xmin + self.xmax) / 2, (self.ymin + self.ymax) / 2):
+            P = [self.xmin, self.ymin, self.xmax, self.ymin, self.xmax, self.ymax, self.xmin, self.ymax]
+        return P
+
+    def _edge(self, i, e0, e1, P, j):
+        while e0 != e1:
+            if e0 == 0b0101:
+                e0 = 0b0100  # top-left
+                continue
+            elif e0 == 0b0100:
+                e0 = 0b0110
+                x, y = self.xmax, self.ymin  # top
+            elif e0 == 0b0110:
+                e0 = 0b0010  # top-right
+                continue
+            elif e0 == 0b0010:
+                e0 = 0b1010
+                x, y = self.xmax, self.ymax  # right
+            elif e0 == 0b1010:
+                e0 = 0b1000  # bottom-right
+                continue
+            elif e0 == 0b1000:
+                e0 = 0b1001
+                x, y = self.xmin, self.ymax  # bottom
+            elif e0 == 0b1001:
+                e0 = 0b0001  # bottom-left
+                continue
+            elif e0 == 0b0001:
+                e0 = 0b0101
+                x, y = self.xmin, self.ymin  # left
+            # Note: this implicitly checks for out of bounds: if P[j] or P[j+1] are undefined, the conditional statement will be executed.
+            if (_vo_at(P, j) != x or _vo_at(P, j + 1) != y) and self.contains(i, x, y):
+                P[j:j] = [x, y]
+                j += 2
+        return j
+
+    def _project(self, x0, y0, vx, vy):
+        t = float('inf')
+        x = y = None
+        if vy < 0:  # top
+            if y0 <= self.ymin:
+                return None
+            c = (self.ymin - y0) / vy
+            if c < t:
+                y = self.ymin
+                t = c
+                x = x0 + t * vx
+        elif vy > 0:  # bottom
+            if y0 >= self.ymax:
+                return None
+            c = (self.ymax - y0) / vy
+            if c < t:
+                y = self.ymax
+                t = c
+                x = x0 + t * vx
+        if vx > 0:  # right
+            if x0 >= self.xmax:
+                return None
+            c = (self.xmax - x0) / vx
+            if c < t:
+                x = self.xmax
+                t = c
+                y = y0 + t * vy
+        elif vx < 0:  # left
+            if x0 <= self.xmin:
+                return None
+            c = (self.xmin - x0) / vx
+            if c < t:
+                x = self.xmin
+                t = c
+                y = y0 + t * vy
+        return [x, y]
+
+    def _edgecode(self, x, y):
+        return ((1 if x == self.xmin else 2 if x == self.xmax else 0) | (4 if y == self.ymin else 8 if y == self.ymax else 0))
+
+    def _regioncode(self, x, y):
+        return ((1 if x < self.xmin else 2 if x > self.xmax else 0) | (4 if y < self.ymin else 8 if y > self.ymax else 0))
+
+    def _simplify(self, P):
+        if P is not None and len(P) > 4:
+            i = 0
+            while i < len(P):
+                j = (i + 2) % len(P)
+                k = (i + 4) % len(P)
+                if (P[i] == P[j] and P[j] == P[k]) or (P[i + 1] == P[j + 1] and P[j + 1] == P[k + 1]):
+                    del P[j:j + 2]
+                    i -= 2
+                i += 2
+            if not len(P):
+                P = None
+        return P
+
+
+def _vo_delaunator(coords):
+    """Delaunator on a flat coordinate list: the raw triangles, halfedges and hull."""
+    d = _VoDelaunator([float(v) for v in coords])
+    return {'triangles': list(d.triangles), 'halfedges': list(d.halfedges), 'hull': list(d.hull)}
+
+
+def _vo_voronoi(points, bounds):
+    """Delaunay.from(points).voronoi(bounds) and every cellPolygon: points is [[x, y], ...]. Returns the (jittered) points, triangles, halfedges, hull and cells."""
+    flat = []
+    for p in points:
+        flat.append(float(p[0]))
+        flat.append(float(p[1]))
+    dl = _VoDelaunay(flat)
+    v = _VoVoronoi(dl, [float(b) for b in bounds])
+    return {'points': list(dl.points), 'triangles': list(dl.triangles), 'halfedges': list(dl.halfedges), 'hull': list(dl.hull),
+            'cells': [v.cell_polygon(i) for i in range(len(points))]}
+
+
 # ── chord_diagram (I47) and its directed mode (I62) ────────────────────────────────────────────────────────────────────────────────────────────
 # d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape 3.2.0 arc() (the sunburst's
 # _sb_arc, via _D3Path) for the group arcs. Twin of _chChord / _chRibbon / _RENDERERS['chord_diagram'] in atoms_infographic.gs.
