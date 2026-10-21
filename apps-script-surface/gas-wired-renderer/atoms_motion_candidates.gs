@@ -710,3 +710,34 @@ _RENDERERS['motion_streak'] = function(b) {
   return '<div style="' + _tfBox(f) + '">' + _moSr(text) + '<span aria-hidden="true" style="position:relative;display:inline-block;white-space:nowrap;">' + out +
     '<span style="position:relative;display:inline-block;transform:translate(calc(' + dr[0] + '*' + D + 'em*' + e + '),calc(' + dr[1] + '*' + D + 'em*' + e + '));opacity:clamp(0,calc(' + k + '*4),1);">' + _esc(text) + '</span></span></div>';
 };
+
+// motion_selection (I73): a design-tool selection frame round its own content. Frame, tint, handles and toolbar are decorative (aria-hidden); the content is real text or up to 3 child atoms.
+// p draws the frame, brings up the tint, pops the handles and raises the toolbar; p = 1 is the settled picture.
+var _SL_TOOLS = ['B', 'I', 'U', 'Aa', '…'];
+var _SL_FONT = 'ui-sans-serif,system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif';
+_RENDERERS['motion_selection'] = function(b) {
+  var acc = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)'), kids = _bxList(b.blocks, 3), inner = '', i;
+  for (i = 0; i < kids.length; i++) inner += _moChild(kids[i]);
+  if (!inner.trim()) inner = _esc(_moStr(b.text, 120) || 'Selected text');
+  var tools = _SL_TOOLS;
+  if (Array.isArray(b.toolbar)) { tools = []; var raw = b.toolbar.slice(0, 6); for (i = 0; i < raw.length; i++) { var t = _moStr(raw[i], 6); if (t) tools.push(t); } }
+  var hide = 'aria-hidden="true" ', nop = 'pointer-events:none;', bar = '', cells = '';
+  if (tools.length) {
+    for (i = 0; i < tools.length; i++) cells += '<span data-sel="tool" style="box-sizing:border-box;min-width:24px;height:24px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;' +
+      'font:600 12px/1 ' + _SL_FONT + ';color:var(--text,#0f172a);">' + _esc(tools[i]) + '</span>';
+    bar = '<div ' + hide + 'data-sel="bar" style="' + nop + 'box-sizing:border-box;max-width:100%;display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:7px;background:var(--surface,#ffffff);' +
+      'border:1px solid var(--border,#cbd5e1);box-shadow:0 2px 8px rgba(0,0,0,0.18);opacity:var(--k4);transform:translateY(calc((1 - var(--k4))*8px));">' + cells + '</div>';
+  }
+  var tint = b.tint !== false ? '<span ' + hide + 'data-sel="tint" style="' + nop + 'position:absolute;inset:0;background:' + acc + ';opacity:calc(0.22*var(--k2));"></span>' : '';
+  var handles = '';
+  if (b.handles !== false) {
+    var pos = ['left:-5px;top:-5px;', 'right:-5px;top:-5px;', 'left:-5px;bottom:-5px;', 'right:-5px;bottom:-5px;'];
+    for (i = 0; i < 4; i++) handles += '<span ' + hide + 'data-sel="handle" style="' + nop + 'position:absolute;' + pos[i] + 'box-sizing:border-box;width:10px;height:10px;border-radius:50%;background:var(--surface,#ffffff);' +
+      'border:1.5px solid ' + acc + ';opacity:var(--k3);transform:scale(var(--k3));"></span>';
+  }
+  var frame = '<span ' + hide + 'data-sel="frame" style="' + nop + 'position:absolute;inset:0;box-sizing:border-box;border:1px solid ' + acc + ';clip-path:inset(calc((1 - var(--k1))*50%));"></span>';
+  return '<div style="--k1:clamp(0,calc(var(--p,1)*2.5),1);--k2:clamp(0,calc((var(--p,1) - 0.15)*4),1);--k3:clamp(0,calc((var(--p,1) - 0.3)*4),1);--k4:clamp(0,calc((var(--p,1) - 0.5)*2),1);' +
+    'box-sizing:border-box;display:inline-flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:100%;padding:6px;">' + bar +
+    '<div style="position:relative;box-sizing:border-box;max-width:100%;padding:4px 8px;">' + tint + frame + handles +
+    '<div data-sel="body" style="position:relative;overflow-wrap:anywhere;">' + inner + '</div></div></div>' + _hgVersionNote(b, 'motion_selection');
+};

@@ -38562,6 +38562,43 @@ for _sp_name, _sp_fn in (('motion_foil', _render_motion_foil), ('motion_wrap', _
 
 
 
+# ─── motion_selection (I73, owner's video review 2026-10-21, event 40): a design-tool selection frame round its own content ───
+# Twin of the motion_selection block in atoms_motion_candidates.gs. Frame, tint, handles and toolbar are decorative (aria-hidden); the content is real text or up to 3 child atoms.
+_SL_TOOLS = ['B', 'I', 'U', 'Aa', '…']
+_SL_FONT = 'ui-sans-serif,system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif'
+
+
+def _render_motion_selection(b: dict) -> str:
+    acc = _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)')
+    inner = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
+    if not inner.strip():
+        inner = _cv_esc(_cv_str(b.get('text'), 120) or 'Selected text')
+    raw = b.get('toolbar')
+    tools = [t for t in (_cv_str(x, 6) for x in raw[:6]) if t] if isinstance(raw, list) else _SL_TOOLS
+    hide = 'aria-hidden="true" '
+    nop = 'pointer-events:none;'
+    bar = ''
+    if tools:
+        cells = ''.join('<span data-sel="tool" style="box-sizing:border-box;min-width:24px;height:24px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;'
+                        'font:600 12px/1 ' + _SL_FONT + ';color:var(--text,#0f172a);">' + _cv_esc(t) + '</span>' for t in tools)
+        bar = ('<div ' + hide + 'data-sel="bar" style="' + nop + 'box-sizing:border-box;max-width:100%;display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:7px;background:var(--surface,#ffffff);'
+               'border:1px solid var(--border,#cbd5e1);box-shadow:0 2px 8px rgba(0,0,0,0.18);opacity:var(--k4);transform:translateY(calc((1 - var(--k4))*8px));">' + cells + '</div>')
+    tint = ('<span ' + hide + 'data-sel="tint" style="' + nop + 'position:absolute;inset:0;background:' + acc + ';opacity:calc(0.22*var(--k2));"></span>') if b.get('tint') is not False else ''
+    handles = ''
+    if b.get('handles') is not False:
+        for pos in ('left:-5px;top:-5px;', 'right:-5px;top:-5px;', 'left:-5px;bottom:-5px;', 'right:-5px;bottom:-5px;'):
+            handles += ('<span ' + hide + 'data-sel="handle" style="' + nop + 'position:absolute;' + pos + 'box-sizing:border-box;width:10px;height:10px;border-radius:50%;background:var(--surface,#ffffff);'
+                        'border:1.5px solid ' + acc + ';opacity:var(--k3);transform:scale(var(--k3));"></span>')
+    frame = '<span ' + hide + 'data-sel="frame" style="' + nop + 'position:absolute;inset:0;box-sizing:border-box;border:1px solid ' + acc + ';clip-path:inset(calc((1 - var(--k1))*50%));"></span>'
+    return ('<div style="--k1:clamp(0,calc(var(--p,1)*2.5),1);--k2:clamp(0,calc((var(--p,1) - 0.15)*4),1);--k3:clamp(0,calc((var(--p,1) - 0.3)*4),1);--k4:clamp(0,calc((var(--p,1) - 0.5)*2),1);'
+            'box-sizing:border-box;display:inline-flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:100%;padding:6px;">' + bar
+            + '<div style="position:relative;box-sizing:border-box;max-width:100%;padding:4px 8px;">' + tint + frame + handles
+            + '<div data-sel="body" style="position:relative;overflow-wrap:anywhere;">' + inner + '</div></div></div>' + _hg_version_note(b, 'motion_selection'))
+
+
+_RENDERERS['motion_selection'] = _render_motion_selection
+
+
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
 _mo_install()
 _gd_install()  # payload guard wraps OUTSIDE the motion wrapper; must stay after _mo_install()
