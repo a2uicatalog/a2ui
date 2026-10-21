@@ -219,13 +219,13 @@ def test_scatter_without_a_valid_origin_is_unchanged_including_the_8_card_cap():
     for off in ("Center", "nowhere", 5, [1, 2], None, True, False, ""):
         assert _py(dict(SCATTER, origin=off)) == plain, off
         assert _py(dict(SCATTER, items=MANY, origin=off)) == many, off
-    assert many.count("Card ") == 8 and "Card 8" not in many
+    assert many.count("800;\">Card ") == 8 and "Card 8" not in many
     assert "scale(calc(0.3" not in plain
 
 
 def test_scatter_origin_lifts_the_cap_to_12_and_no_further():
     h = _py(dict(SCATTER, origin="center", items=MANY))
-    assert h.count("Card ") == 12 and "Card 11" in h and "Card 12" not in h
+    assert h.count("800;\">Card ") == 12 and "Card 11" in h and "Card 12" not in h
 
 
 def test_scatter_origin_bursts_from_the_point_and_clamps_it():
