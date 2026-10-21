@@ -12025,6 +12025,11 @@ def _sa_gate(b):
     return (_sa_card(b, 'A stacked area chart with an offset needs at least two labels and one series with numbers.') if h is None else h), ''
 
 
+def _sa_bar_num(v):
+    """I64: a cell that is not a finite number draws as 0 instead of raising (text, null, booleans, lists, NaN)."""
+    return v if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float("inf") else 0
+
+
 def _render_stacked_area(b: dict) -> str:
     _sa_html, _sa_tail = _sa_gate(b)
     if _sa_html:
@@ -12032,11 +12037,11 @@ def _render_stacked_area(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:12px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     labels, series = b.get("labels",[]), b.get("series",[])
     colors = ["#4f46e5","#10b981","#f59e0b","#ef4444","#8b5cf6","#0ea5e9"]
-    totals = [sum(s.get("data",[0]*99)[i] if i<len(s.get("data",[])) else 0 for s in series) for i,_ in enumerate(labels)]
-    max_t = max(totals) if totals else 1
+    totals = [sum(_sa_bar_num(s.get("data",[0]*99)[i]) if i<len(s.get("data",[])) else 0 for s in series) for i,_ in enumerate(labels)]
+    max_t = (max(totals) if totals else 1) or 1    # I64: all-zero data divided by zero
     rows = ""
     for i, lbl in enumerate(labels):
-        segs = "".join(f'<div style="width:{s.get("data",[0]*99)[i]/max_t*100:.1f}%;height:100%;background:{_cv_esc(s.get("color",colors[si%len(colors)]))};display:inline-block;" title="{_cv_esc(s.get("label",""))}: {_cv_esc(s.get("data",[0]*99)[i])}"></div>' for si,s in enumerate(series) if i<len(s.get("data",[])))
+        segs = "".join(f'<div style="width:{_sa_bar_num(s.get("data",[0]*99)[i])/max_t*100:.1f}%;height:100%;background:{_cv_esc(s.get("color",colors[si%len(colors)]))};display:inline-block;" title="{_cv_esc(s.get("label",""))}: {_cv_esc(s.get("data",[0]*99)[i])}"></div>' for si,s in enumerate(series) if i<len(s.get("data",[])))
         rows += f'<div style="margin-bottom:8px;"><div style="font-size:.75rem;color:var(--muted,#5f6368);margin-bottom:2px;">{_cv_esc(lbl)}</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;">{segs}</div></div>'
     legend = "".join(f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:{_cv_esc(s.get("color",colors[si%len(colors)]))}"></span>{_cv_esc(s.get("label",""))}</span>' for si,s in enumerate(series))
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">{title}{rows}<div style="margin-top:10px;">{legend}</div></div>' + _sa_tail
