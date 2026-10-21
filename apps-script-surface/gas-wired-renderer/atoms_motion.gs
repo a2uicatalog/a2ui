@@ -188,6 +188,54 @@ function _moEnter(b, html) {
   var s = _moEnterSpec(b.enter);
   return s ? _moEnterWrap(s, html, 0) : html;
 }
+// ─── glitch: a digital tear on any block (2026-10-21, from a video review: thin slices of a headline shift sideways for ~0.1 s) ────────────────
+// The block is drawn once for real (shown only when the dial is at rest) and once per slice as an aria-hidden, inert copy clipped to a horizontal
+// band and displaced sideways by amp * (1 - p) * sin(p * f + phase): zero at p = 1, a jitter on the way. Band heights, directions, amplitudes,
+// frequencies and phases come from a fixed seeded sequence (never Math.random). dial "s" tears with the step dial instead (clean at 0). An optional
+// red/cyan fringe is a drop-shadow pair on the slices. Off unless `glitch` is true or a non-empty object. Twin of _mo_glitch in web_article.py.
+function _moGlOn(v) { return v === true || (!!v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length > 0); }
+function _moGlitch(spec, html) {
+  if (!_moGlOn(spec)) return html;
+  var o = spec === true ? {} : spec;
+  var n = _ffInt(o.slices, 7, 2, 12), shift = _ffNum(o.shift, 8, 0, 40, 2), fr = _ffInt(o.fringe, 0, 0, 20), seed = _ffInt(o.seed, 7, 0, 9999);
+  if (parseFloat(shift) === 0 && fr === 0) return html;
+  if (html.toLowerCase().indexOf('<script') >= 0) return html;
+  var dialS = o.dial === 's';
+  var ca = _ffRgb(_ffHex(o.fringe_a, '#ff2d6f')), cb = _ffRgb(_ffHex(o.fringe_b, '#19d3ff'));
+  var x, i, ob, os;
+  if (dialS) {
+    x = 'var(--s,0)'; i = 'clamp(0,var(--s,0),1)';
+    ob = 'clamp(0,calc(1 - var(--s,0)*1000),1)'; os = 'clamp(0,calc(var(--s,0)*1000),1)';
+  } else {
+    x = 'var(--p,1)'; i = '(1 - clamp(0,var(--p,1),1))';
+    ob = 'clamp(0,calc((clamp(0,var(--p,1),1) - 0.999)*1000),1)'; os = 'clamp(0,calc((1 - clamp(0,var(--p,1),1))*1000),1)';
+  }
+  var st = (seed * 7919 + 104729) % 2147483646 + 1;
+  function nxt() { st = st * 16807 % 2147483647; return st; }
+  var sl = [], tot = 0, j;
+  for (j = 0; j < n; j++) {
+    var w = 1 + nxt() % 3, sg = nxt() % 2 ? 1 : -1, amp = (4 + nxt() % 7) / 10, f = 18 + nxt() % 23, ph = (nxt() % 63) / 10;
+    sl.push([w, sg, amp, f, ph]); tot += w;
+  }
+  var fil = '';
+  if (fr > 0) {
+    var d = 'calc(' + fr + 'px*' + i + ')';
+    fil = 'filter:drop-shadow(calc(-1*' + d + ') 0 0 rgba(' + ca + ',0.85)) drop-shadow(' + d + ' 0 0 rgba(' + cb + ',0.85));';
+  }
+  var copy = html.replace(/[ \t\n\r]id="[^"]*"/g, '');
+  var out = [], acc = 0;
+  for (j = 0; j < n; j++) {
+    var r = sl[j], top = acc * 100 / tot;
+    acc += r[0];
+    var bot = acc < tot ? Math.min(100, acc * 100 / tot + 0.2) : 100;
+    var k = _ffNum(r[1] * r[2] * parseFloat(shift), 0, -40, 40, 2);
+    out.push('<div class="mo-gl-s" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;user-select:none;opacity:' + os
+      + ';clip-path:inset(' + _ffNum(top, 0, 0, 100, 2) + '% -50% ' + _ffNum(100 - bot, 0, 0, 100, 2) + '% -50%);transform:translateX(calc(' + k + '% * ' + i
+      + ' * sin(calc(' + x + '*' + r[3] + ' + ' + _ffNum(r[4], 0, 0, 7, 1) + '))));' + fil + '">' + copy + '</div>');
+  }
+  return '<style>@media (prefers-reduced-motion:reduce),print{.mo-gl-s{display:none!important}.mo-gl-b{opacity:1!important}}</style>'
+    + '<div class="mo-glitch" style="position:relative;overflow-x:clip;"><div class="mo-gl-b" style="opacity:' + ob + ';">' + html + '</div>' + out.join('') + '</div>';
+}
 // ─── halo: a soft bloom behind any block (2026-10-10, from a keynote demo's glowing input card) ─────────────
 // halo = "#rrggbb" | true | {color, size 0-60 px, strength 0-1}. A drop-shadow on a wrapper follows the block's own alpha, so a rounded card gets a
 // rounded bloom. It scales with --p (default 1), so inside a film the halo blooms in as the block builds; it does not pulse (an endless
@@ -227,6 +275,7 @@ function _moInstall() {
     _RENDERERS[k] = (function(f) {
       var w = function(b) {
         var h = f(b);
+        if (b && typeof b === 'object' && _moGlOn(b.glitch)) h = _moGlitch(b.glitch, h);
         if (b && typeof b === 'object' && b.halo) h = _moHalo(b.halo, h);
         if (b && typeof b === 'object' && b.smear) h = _moSmear(b.smear, h);
         if (b && typeof b === 'object' && b.tilt) h = _moTilt(b.tilt, h);
