@@ -1326,7 +1326,8 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .entry-path{display:block;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
 .entry-path:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-1px)}
 .entry-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
-.entry-path h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.1px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.entry-path h2{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.1px}
 .entry-path p{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0}
 .entry-path code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:11.5px;background:var(--code-bg);padding:1px 5px;border-radius:4px}
 @media(max-width:760px){.entry-paths{grid-template-columns:1fr}}
@@ -2148,17 +2149,17 @@ def generate_index(atoms):
     <div class="entry-paths">
       <a class="entry-path" href="#grid">
         <span class="entry-kicker">Browse</span>
-        <h3>Explore the catalog</h3>
+        <h2>Explore the catalog</h2>
         <p>Search and preview {atom_count_rounded} atoms live, right on this page.</p>
       </a>
       <a class="entry-path" href="/surfaces/mcp-apps">
         <span class="entry-kicker">Integrate</span>
-        <h3>Connect an agent</h3>
+        <h2>Connect an agent</h2>
         <p>MCP server at <code>a2uicatalog.ai/mcp</code> — an agent composes real UI from this vocabulary.</p>
       </a>
       <a class="entry-path" href="/renderer">
         <span class="entry-kicker">Self-host</span>
-        <h3>Deploy your own renderer</h3>
+        <h2>Deploy your own renderer</h2>
         <p>Apps Script web app, 4 commands — you own the URL.</p>
       </a>
     </div>
@@ -2191,6 +2192,9 @@ def generate_index(atoms):
       <span class="count" id="count">{atom_count_rounded} atoms</span>
     </div>
   </header>
+  <!-- Heading hierarchy: cards are <h3>, so they need an <h2> parent (a card
+       grid straight under the <h1> skipped a level; tests/test_homepage_headings.py). -->
+  <h2 class="sr-only" id="atoms-h">All atoms</h2>
   <div class="grid" id="grid">
 {cards_html}  </div>
   <footer>
