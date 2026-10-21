@@ -229,6 +229,10 @@ def test_existing_motion_payloads_render_byte_for_byte_as_before_the_glitch_prop
             # the timeline's shared player script grew a branch for the `collapse` transition (I71): existing films behave the
             # same and only that script's text changed, so compare everything outside the <script> exactly
             a, n = (re.sub(r"<script>.*?</script>", "<script/>", x, flags=re.S) for x in (a, n))
+        if k == "motion_scatter" and ' class="mosf' in n:
+            # I74: from 3 cards up the scatter deliberately gained its fit stylesheet; 1-2 cards stay byte for byte (still compared here, and
+            # in test_motion_scatter_fit.py against origin/main)
+            continue
         if a != n:
             bad.append(k)
     assert not bad, bad[:10]

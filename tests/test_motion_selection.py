@@ -335,6 +335,8 @@ def test_existing_motion_payloads_are_unchanged():
         if k == "motion_timeline":
             # later, deliberate change: the shared player script grew a `collapse` branch (I71); compare outside the <script>
             a, n = (re.sub(r"<script>.*?</script>", "<script/>", x, flags=re.S) for x in (a, n))
+        if k == "motion_scatter" and ' class="mosf' in n:
+            continue  # later, deliberate change (I74): scatters of 3+ cards gained the fit stylesheet; 1-2 cards still compared, see test_motion_scatter_fit.py
         if a != n:
             bad.append(k)
     assert not bad, bad[:10]
