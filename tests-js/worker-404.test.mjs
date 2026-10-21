@@ -22,7 +22,8 @@ const env = {
       const p = new URL(req.url).pathname;
       if (p === '/') return new Response('<h1>home</h1>', { status: 200, headers: { 'Content-Type': 'text/html' } });
       if (p === '/llms.txt') return new Response('llms', { status: 200, headers: { 'Content-Type': 'text/plain' } });
-      return new Response(HTML_404, { status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      if (p === '/404.html') return new Response(HTML_404, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      return new Response(null, { status: 404 });   // not_found_handling = "none": a miss is a bare 404
     },
   },
 };
@@ -65,4 +66,11 @@ test('existing asset with markdown Accept is passed through untouched', async ()
   const res = await get('/llms.txt', 'text/markdown');
   assert.equal(res.status, 200);
   assert.equal(res.headers.get('Content-Type'), 'text/plain');
+});
+
+test('wrangler.toml: the Worker runs only for "/" and for misses, never in front of existing files', async () => {
+  const { readFileSync } = await import('node:fs');
+  const toml = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  assert.match(toml, /^not_found_handling = "none"$/m);
+  assert.match(toml, /^run_worker_first = \["\/"\]$/m);
 });

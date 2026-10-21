@@ -13,10 +13,9 @@ binding = "ASSETS"
 # 404 status) for any unmatched path, instead of the platform default —
 # an empty body, no Content-Type, on every miss (an agent-readiness
 # finding, 2026-08-16: "404s ... lack markdown recovery guidance").
-not_found_handling = "404-page"
-# The Worker now runs first for every path (2026-10-21) so a miss can be
-# answered as a Markdown 404 for clients sending Accept: text/markdown (the
-# platform's 404-page handling cannot vary by header). Hits pass straight
-# through to env.ASSETS unchanged; only "/" does any negotiation. Cost: one
-# Worker invocation per request instead of only for "/".
-run_worker_first = true
+not_found_handling = "none"
+# The Worker runs FIRST only for the bare homepage (Accept negotiation). Every existing file is served straight from
+# assets with no Worker in front of it. With not_found_handling = "none", a path NO asset matches falls through to the
+# Worker, which answers a Markdown 404 for Accept: text/markdown clients and the site's 404.html (status 404) for
+# everyone else (2026-10-21, is-agentic agent-friendly-404). Cost: a Worker invocation per miss and per "/", not per hit.
+run_worker_first = ["/"]

@@ -76,9 +76,19 @@ Start from one of these machine-readable entry points:
 - [sitemap.xml](https://a2uicatalog.ai/sitemap.xml) - every published page
 `;
 
+// With not_found_handling = "none" the Worker only runs for "/" and for paths no asset matches, so a miss arrives here
+// as a bare 404: answer it in Markdown when the client prefers that, else with the site's HTML 404 page (status kept).
 async function withMarkdown404(request, env) {
   const res = await env.ASSETS.fetch(request);
-  if (res.status !== 404 || !prefersMarkdown(request.headers.get('Accept'))) return res;
+  if (res.status !== 404) return res;
+  if (!prefersMarkdown(request.headers.get('Accept'))) {
+    const page = await env.ASSETS.fetch(new URL('/404.html', request.url));
+    if (!page.ok) return res;
+    return new Response(request.method === 'HEAD' ? null : page.body, {
+      status: 404,
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Vary': 'Accept', 'Cache-Control': 'public, max-age=60' },
+    });
+  }
   return new Response(request.method === 'HEAD' ? null : NOT_FOUND_MD, {
     status: 404,
     headers: {
