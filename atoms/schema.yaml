@@ -22125,3 +22125,24 @@ blocks:
     align: "string (optional). start, middle or end. Default middle."
   notes: "At p = 1 the ghosts are invisible and the line is in place. Run p over at least 0.3 s: a faster whip of a very large line is a big sudden change."
   source: *mla002
+
+- type: motion_selection
+  stage: preview
+  description: "A design-tool selection frame that appears round its own content: a hairline rectangle, four round corner handles, a tint over the selected content and a small floating toolbar of text-labelled buttons above it. p draws the frame in, brings up the tint, pops the handles and raises the toolbar; p = 1 is the settled picture. The content is real text (or up to 3 child atoms); the frame, handles, tint and toolbar are decorative and hidden from screen readers. Plain HTML and CSS."
+  compact_description: "a selection frame with corner handles, tint and a floating toolbar round some text"
+  routing_text: "A selection box with resize handles and a mini toolbar appearing round a line of text, as when something is selected in a design tool. Not the pointer itself (use demo_cursor), not a marker swipe behind words (use motion_highlight), not a working text editor or toolbar."
+  intent_phrases:
+  - "A selection box with corner handles and a little toolbar appears round the headline."
+  - "Show a line of text being selected in a design tool."
+  - "Draw a bounding box with handles round this element, with a formatting toolbar above it."
+  surfaces: *mla001
+  fields:
+    text: "string (optional, max 120). The selected content. Default Selected text. Ignored when blocks gives something to draw."
+    blocks: "array (optional, up to 3) of atoms to select instead of text, same convention as motion_meters and motion_glass. A frame round a card, a pill or a motion_text."
+    toolbar: "array (optional, up to 6) of short text labels, each max 6 characters (B, I, U, Aa, Link). Default B, I, U, Aa and an ellipsis. An empty array shows no toolbar. Labels are plain text, never icons."
+    handles: "bool (optional, default true). false leaves the four corner handles out."
+    color: "\"#rrggbb\" (optional). Frame, handle and tint colour. Default the stage accent."
+    tint: "bool (optional, default true). A translucent accent wash behind the selected content. Text keeps its own colour so it stays readable."
+    version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
+  notes: "Compose with demo_cursor for the click that lands first: put both in a motion_timeline and key the cursor to arrive just before p starts. The frame takes p 0 to 0.4, the tint 0.15 to 0.4, the handles 0.3 to 0.55 and the toolbar 0.5 to 1. The toolbar space is reserved from the start, so nothing shifts as p builds. The source event lasts about 0.13 s, so a short run of p is right; there is nothing to loop."
+  source: *mla002

@@ -133,7 +133,7 @@ def test_registered_everywhere():
     root = Path(__file__).resolve().parent.parent
     import yaml
     schema = yaml.safe_load((root / "atoms" / "schema.yaml").read_text())
-    atoms = schema["atoms"] if isinstance(schema, dict) and "atoms" in schema else schema
+    atoms = schema["blocks"]
     ent = [a for a in atoms if isinstance(a, dict) and a.get("type") == "motion_selection"]
     assert len(ent) == 1 and ent[0]["stage"] == "preview"
     for k in ("description", "compact_description", "routing_text", "intent_phrases", "fields", "notes", "surfaces", "source"):
