@@ -523,6 +523,9 @@
  "motion_orbit": [
   "shape"
  ],
+ "motion_rays": [
+  "angle"
+ ],
  "motion_reveal": [
   "align",
   "color",

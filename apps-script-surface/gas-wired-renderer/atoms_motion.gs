@@ -1592,7 +1592,13 @@ _RENDERERS['motion_rays'] = function(b) {
   var fade = 'clamp(0,calc(var(--p,1)*3),1)';
   if (kind === 'speed') {
     var lines = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + _ffNum(100 / n * th, 1, 0.05, 50, 3) + '%,transparent ' + _ffNum(100 / n * th, 1, 0.05, 50, 3) + '%,transparent ' + _ffNum(100 / n, 4, 0.1, 50, 3) + '%)';
-    var mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)';
+    var mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)', ang = _ffInt(b.angle, 0, -180, 180);
+    if (ang) { // opt-in direction: the stripes and their travel turn inside a clipping 16:9 frame (the inner layer is twice the frame so no corner is left bare)
+      var lt2 = _ffNum(50 / n * th, 1, 0.025, 25, 3), ls2 = _ffNum(50 / n, 4, 0.05, 25, 3);
+      var lines2 = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + lt2 + '%,transparent ' + lt2 + '%,transparent ' + ls2 + '%)';
+      return '<div aria-hidden="true" style="position:relative;overflow:hidden;width:100%;aspect-ratio:16/9;opacity:calc(' + fade + '*' + st + ');"><div style="position:absolute;left:-50%;top:-50%;width:200%;height:200%;transform:rotate(' + ang + 'deg);background:' + lines2 + ';-webkit-mask-image:' + mk + ';mask-image:' + mk
+        + ';-webkit-mask-size:25% 100%;mask-size:25% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-16.667%) 0;mask-position:calc(var(--s,0)*-16.667%) 0;"></div></div>';
+    }
     return '<div aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:' + lines + ';-webkit-mask-image:' + mk + ';mask-image:' + mk + ';-webkit-mask-size:50% 100%;mask-size:50% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-50%) 0;mask-position:calc(var(--s,0)*-50%) 0;opacity:calc(' + fade + '*' + st + ');"></div>';
   }
   var mr = 'radial-gradient(circle,#000 0%,transparent 70%)';

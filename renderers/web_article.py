@@ -30109,6 +30109,12 @@ def _render_motion_rays(b: dict) -> str:
         lt, ls = _ff_num(100 / n * th, 1, 0.05, 50, 3), _ff_num(100 / n, 4, 0.1, 50, 3)
         lines = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + lt + '%,transparent ' + lt + '%,transparent ' + ls + '%)'
         mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)'
+        ang = _ff_int(b.get('angle'), 0, -180, 180)
+        if ang:  # opt-in direction: the stripes and their travel turn inside a clipping 16:9 frame (the inner layer is twice the frame so no corner is left bare)
+            lt2, ls2 = _ff_num(50 / n * th, 1, 0.025, 25, 3), _ff_num(50 / n, 4, 0.05, 25, 3)
+            lines2 = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + lt2 + '%,transparent ' + lt2 + '%,transparent ' + ls2 + '%)'
+            return ('<div aria-hidden="true" style="position:relative;overflow:hidden;width:100%;aspect-ratio:16/9;opacity:calc(' + fade + '*' + st + ');"><div style="position:absolute;left:-50%;top:-50%;width:200%;height:200%;transform:rotate(' + str(ang) + 'deg);background:' + lines2 + ';-webkit-mask-image:' + mk + ';mask-image:' + mk
+                    + ';-webkit-mask-size:25% 100%;mask-size:25% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-16.667%) 0;mask-position:calc(var(--s,0)*-16.667%) 0;"></div></div>')
         return ('<div aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:' + lines + ';-webkit-mask-image:' + mk + ';mask-image:' + mk + ';-webkit-mask-size:50% 100%;mask-size:50% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-50%) 0;mask-position:calc(var(--s,0)*-50%) 0;opacity:calc(' + fade + '*' + st + ');"></div>')
     mr = 'radial-gradient(circle,#000 0%,transparent 70%)'
     return ('<div aria-hidden="true" style="width:100%;aspect-ratio:1/1;background:repeating-conic-gradient(from calc(var(--s,0)*' + str(spin) + 'deg),' + acc + ' 0deg,' + acc + ' ' + ray + 'deg,transparent ' + ray + 'deg,transparent ' + seg + 'deg);-webkit-mask-image:' + mr + ';mask-image:' + mr

@@ -153,3 +153,43 @@ def test_bloom_starts_blurred_glowing_and_bright_and_ends_clean():
     assert "blur(" in early[1] and "brightness(" in early[1] and "drop-shadow(" in early[1], early
     done = _probe(blk, 4, js)
     assert done[0] == 1 and ("blur(0px)" in done[1] or done[1] == "none"), done
+
+
+# ─── 4. motion_rays angle (kind speed) ─────────────────────────────────────────────────────────────────────────────────────────────
+CASES["rays"] = [
+    dict(RAYS, angle=30), dict(RAYS, angle=-45, count=12, thickness=0.3, strength=0.6, accent="#ff6a2b"), dict(RAYS, angle=90), dict(RAYS, angle=999), dict(RAYS, angle=-999),
+    dict(RAYS, angle="x"), dict(RAYS, angle=None), dict(RAYS, angle=12.7), dict(RAYS, angle=0), dict(RAYS, angle="30deg;}</style>"),
+    dict(RAYS, kind="burst", angle=40), {"type": "motion_rays", "angle": 20},
+]
+ALL = [b for bs in CASES.values() for b in bs]
+
+
+def test_rays_python_matches_gas_exactly(core_js):
+    cs = CASES["rays"]
+    got = _gas_batch(core_js, cs)
+    bad = [str(b)[:90] for b, g in zip(cs, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_rays_angle_is_inert_when_off_or_not_speed():
+    plain = _py(RAYS)
+    for off in (dict(RAYS, angle=0), dict(RAYS, angle="x"), dict(RAYS, angle=None), dict(RAYS, angle=[]), dict(RAYS, angle=True)):
+        assert _py(off) == plain, off
+    assert _py(dict(RAYS, kind="burst", angle=40)) == _py(dict(RAYS, kind="burst")) and _py({"type": "motion_rays", "angle": 20}) == _py({"type": "motion_rays"})
+    assert "rotate(" not in plain
+
+
+def test_rays_angle_rotates_inside_a_clipping_frame_and_clamps():
+    html = _py(dict(RAYS, angle=30))
+    assert "rotate(30deg)" in html and "overflow:hidden" in html
+    assert "rotate(180deg)" in _py(dict(RAYS, angle=999)) and "rotate(-180deg)" in _py(dict(RAYS, angle=-999))
+    assert "}</style>" not in _py(dict(RAYS, angle="30deg;}</style>")) and "rotate(" not in _py(dict(RAYS, angle="30deg;}</style>"))
+
+
+@browser
+def test_rays_angle_turns_the_lines_and_the_frame_stays_16_9():
+    blk = _scene([dict(RAYS, id="r", angle=30, place={"x": 0, "y": 0, "w": 100})], [{"target": "r", "keys": [{"t": 0, "p": 1}, {"t": 4, "p": 1}]}])
+    js = ("var f=document.querySelector('[data-mt-id=r] > div'),i=f.firstElementChild;var m=new DOMMatrix(getComputedStyle(i).transform);var r=f.getBoundingClientRect();"
+          "return [Math.round(Math.atan2(m.b,m.a)*180/Math.PI), Math.round(r.width/r.height*100)/100];")
+    ang, aspect = _probe(blk, 2, js)
+    assert ang == 30 and aspect == pytest.approx(1.78, abs=0.01)
