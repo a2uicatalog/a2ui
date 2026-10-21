@@ -82,7 +82,7 @@ async function withMarkdown404(request, env) {
   const res = await env.ASSETS.fetch(request);
   if (res.status !== 404) return res;
   if (!prefersMarkdown(request.headers.get('Accept'))) {
-    const page = await env.ASSETS.fetch(new URL('/404.html', request.url));
+    const page = await env.ASSETS.fetch(new Request(new URL('/404.html', request.url)));
     if (!page.ok) return res;
     return new Response(request.method === 'HEAD' ? null : page.body, {
       status: 404,
