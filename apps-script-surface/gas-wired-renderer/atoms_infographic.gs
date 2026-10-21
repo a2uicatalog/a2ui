@@ -3069,6 +3069,138 @@ _RENDERERS['box_plot'] = function(b) {
       used.map(function(u, k) { var s = stats[k]; return [u[0], String(s.n), f(s.min) + us, f(s.q1) + us, f(s.median) + us, f(s.q3) + us, f(s.max) + us, String(s.outliers.length)]; })));
 };
 
+// ── ternary_plot and quiver (Plotly wave A, package ternary-quiver) ── the twin of _render_ternary_plot / _render_quiver in renderers/web_article.py.
+// Plain trigonometry on top of d3-scale's linear scale: the axis is nice(min, max, 5) and ticks(5), a value is placed by d3's normalize then
+// interpolateNumber, a*(1-t) + b*t. A ternary point is normalised to shares that sum to 1 and sits at x = c + a/2, y = 1 - a (fractions of the triangle box).
+var _TP_VB_H = 866, _QV_W = 1000, _QV_H = 620, _QV_INSET = 65, _QV_LMAX = 120, _QV_MAX = 200;
+var _QV_COS = 0.9063077870366499, _QV_SIN = 0.42261826174069944;     // cos and sin of 25 degrees: the arrowhead's barbs
+function _qvAxis(vals) {
+  var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), d = _hgNice(lo, hi, 5);
+  return [d, _hgTicks(d[0], d[1], 5)];
+}
+function _qvPlace(v, dom, r0, r1) {
+  var span = dom[1] - dom[0], t = span ? (v - dom[0]) / span : 0.5;
+  return r0 * (1 - t) + r1 * t;
+}
+function _qvNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+function _qvText(v, mx, d) { var s = typeof v === 'string' ? v : (typeof v === 'number' && isFinite(v) ? String(v) : ''); return s ? s.slice(0, mx) : d; }
+function _qvC(f) { return Math.min(1, Math.max(0, f)); }
+function _qvF(v) { return _hgNum(v, Math.min(_hgDecimals([v]), 3)); }
+function _qv2(x) { var s = x.toFixed(2); return s === '-0.00' ? '0.00' : s; }
+function _qvNote(lst, cap, leftOut, noun) {
+  var beyond = lst.length - cap;
+  return (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' ' + noun + ' was not a usable ' + noun + ' and was' : ' ' + noun + 's were not a usable ' + noun + ' and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' ' + noun + ' beyond the first ' + cap + ' was' : ' ' + noun + 's beyond the first ' + cap + ' were') + ' not drawn.') : '');
+}
+_RENDERERS['ternary_plot'] = function(b) {
+  var lst = Array.isArray(b.points) ? b.points : [], used = [], leftOut = 0;
+  lst.slice(0, _QV_MAX).forEach(function(p, k) {
+    if (!(p && typeof p === 'object' && !Array.isArray(p)) || !(_qvNum(p.a) && p.a >= 0 && _qvNum(p.b) && p.b >= 0 && _qvNum(p.c) && p.c >= 0)) { leftOut++; return; }
+    var s = p.a + p.b + p.c;
+    if (!(s > 0)) { leftOut++; return; }
+    used.push([_qvText(p.label, 30, 'Point ' + (k + 1)), p.a / s, p.b / s, p.c / s]);
+  });
+  var notes = _qvNote(lst, _QV_MAX, leftOut, 'point'), ver = _hgVersionNote(b, 'ternary_plot');
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A ternary plot needs at least one point with three non-negative numbers.</div>' + notes + ver);
+  var names = [_qvText(b.a_label, 20, 'A'), _qvText(b.b_label, 20, 'B'), _qvText(b.c_label, 20, 'C')], n = used.length;
+  var pct = [];
+  used.forEach(function(u) { pct.push(u[1] * 100, u[2] * 100, u[3] * 100); });
+  var d = Math.min(_hgDecimals(pct), 2), mean = [], i;
+  for (i = 1; i <= 3; i++) { var tot = 0; used.forEach(function(u) { tot += u[i]; }); mean.push(tot / n * 100); }
+  var aria = 'Ternary plot of ' + n + (n === 1 ? ' point' : ' points') + '. ' + names[0] + ', ' + names[1] + ' and ' + names[2] + ' shares sum to 100%. Average: ' +
+    [0, 1, 2].map(function(j) { return names[j] + ' ' + _hgNum(mean[j], 1) + '%'; }).join(', ') + '.';
+  var ticks = _hgTicks(0, 1, 5).filter(function(t) { return t > 0 && t < 1; });
+  var xy = function(fa, fb, fc) { return [_qvC(fc + fa / 2), _qvC(1 - fa)]; };
+  var svg = '';
+  ticks.forEach(function(t) {
+    [[[t, 1 - t, 0], [t, 0, 1 - t]], [[1 - t, t, 0], [0, t, 1 - t]], [[1 - t, 0, t], [0, 1 - t, t]]].forEach(function(pp) {
+      var p1 = xy(pp[0][0], pp[0][1], pp[0][2]), p2 = xy(pp[1][0], pp[1][1], pp[1][2]);
+      svg += '<line class="tpg" x1="' + _qv2(p1[0] * 1000) + '" y1="' + _qv2(p1[1] * _TP_VB_H) + '" x2="' + _qv2(p2[0] * 1000) + '" y2="' + _qv2(p2[1] * _TP_VB_H) +
+        '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+    });
+  });
+  var line = '';
+  if (b.connect === true && n > 1) {
+    line = '<polyline class="tpl" fill="none" stroke="var(--accent,#0369A1)" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" points="' +
+      used.map(function(u) { var q = xy(u[1], u[2], u[3]); return _qv2(q[0] * 1000) + ',' + _qv2(q[1] * _TP_VB_H); }).join(' ') + '"/>';
+  }
+  var tri = '<polygon points="500,0 0,' + _TP_VB_H + ' 1000,' + _TP_VB_H + '" fill="var(--surface,#F8FAFC)" stroke="var(--muted,#475569)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>';
+  var dots = used.map(function(u, k) {
+    var q = xy(u[1], u[2], u[3]);
+    return '<div class="tpd" style="position:absolute;left:' + _tmPct(q[0], 1) + ';top:' + _tmPct(q[1], 1) + ';width:10px;height:10px;box-sizing:border-box;border-radius:50%;' +
+      'border:1.5px solid var(--bg,#fff);background:var(--accent,#0369A1);transform:translate(-50%,-50%);' + _ifK(k, n) + 'opacity:var(--k,1);"></div>';
+  }).join('');
+  var tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);', labs = '';
+  ticks.forEach(function(t) {
+    var lab = _hgNum(t * 100, 0) + '%', pa = xy(t, 1 - t, 0), pb = xy(0, t, 1 - t), pc = xy(1 - t, 0, t);
+    labs += '<div class="tpt" style="' + tl + 'left:' + _tmPct(pa[0], 1) + ';top:' + _tmPct(pa[1], 1) + ';transform:translate(calc(-100% - 6px),-50%);">' + lab + '</div>' +
+      '<div class="tpt" style="' + tl + 'left:' + _tmPct(pb[0], 1) + ';top:' + _tmPct(pb[1], 1) + ';transform:translate(-50%,6px);">' + lab + '</div>' +
+      '<div class="tpt" style="' + tl + 'left:' + _tmPct(pc[0], 1) + ';top:' + _tmPct(pc[1], 1) + ';transform:translate(6px,-50%);">' + lab + '</div>';
+  });
+  var vl = 'font-size:0.8rem;font-weight:700;line-height:1.2;overflow-wrap:anywhere;';
+  var chart = '<div class="iftp" style="container-type:inline-size;max-width:100%;overflow:hidden;">' +
+    '<div role="img" aria-label="' + _esc(aria) + '">' +
+    '<div class="tpv" style="' + vl + 'text-align:center;margin:0 0 14px;">' + _esc(names[0]) + '</div>' +
+    '<div style="margin:0 52px;"><div class="tpp" style="position:relative;width:100%;aspect-ratio:1000/' + _TP_VB_H + ';">' +
+    '<svg aria-hidden="true" viewBox="0 0 1000 ' + _TP_VB_H + '" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">' +
+    tri + svg + line + '</svg>' + dots + labs + '</div></div>' +
+    '<div style="display:flex;justify-content:space-between;gap:8px;margin:30px 0 0;">' +
+    '<div class="tpv" style="' + vl + 'max-width:45%;">' + _esc(names[1]) + '</div><div class="tpv" style="' + vl + 'max-width:45%;text-align:right;">' + _esc(names[2]) + '</div></div></div></div>';
+  var hint = _hgNote('Gridlines every 20%: ' + _esc(names[0]) + ' counts up the left edge, ' + _esc(names[1]) + ' along the bottom edge towards the left, ' + _esc(names[2]) + ' up the right edge.');
+  return _ifWrap(_ifTitle(b) + chart + hint + notes + ver +
+    _ifTable(['Point'].concat(names), used.map(function(u) { return [u[0], _hgNum(u[1] * 100, d) + '%', _hgNum(u[2] * 100, d) + '%', _hgNum(u[3] * 100, d) + '%']; })));
+};
+_RENDERERS['quiver'] = function(b) {
+  var lst = Array.isArray(b.arrows) ? b.arrows : [], used = [], leftOut = 0;
+  lst.slice(0, _QV_MAX).forEach(function(p, k) {
+    if (!(p && typeof p === 'object' && !Array.isArray(p)) || !(_qvNum(p.x) && _qvNum(p.y) && _qvNum(p.u) && _qvNum(p.v))) { leftOut++; return; }
+    used.push([_qvText(p.label, 30, 'Arrow ' + (k + 1)), p.x, p.y, p.u, p.v, Math.sqrt(p.u * p.u + p.v * p.v)]);
+  });
+  var notes = _qvNote(lst, _QV_MAX, leftOut, 'arrow'), ver = _hgVersionNote(b, 'quiver');
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A quiver plot needs at least one arrow with x, y, u and v numbers.</div>' + notes + ver);
+  var n = used.length, unit = _qvText(b.unit, 12, ''), us = unit ? ' ' + unit : '', xn = _qvText(b.x_label, 40, 'x'), yn = _qvText(b.y_label, 40, 'y');
+  var ax = _qvAxis(used.map(function(a) { return a[1]; })), ay = _qvAxis(used.map(function(a) { return a[2]; }));
+  var X0 = ax[0][0], X1 = ax[0][1], xt = ax[1], Y0 = ay[0][0], Y1 = ay[0][1], yt = ay[1];
+  var sc = (typeof b.arrow_scale === 'number' && _qvNum(b.arrow_scale)) ? Math.min(1, Math.max(0.1, b.arrow_scale)) : 1;
+  var big = 0;
+  used.forEach(function(a) { if (a[5] > big) big = a[5]; });
+  var R = _QV_W - _QV_INSET, B = _QV_H - _QV_INSET;
+  var px = function(v) { return _qvPlace(v, [X0, X1], _QV_INSET, R); }, py = function(v) { return _qvPlace(v, [Y0, Y1], B, _QV_INSET); };
+  var grid = xt.map(function(t) { return '<line class="qvg" x1="' + _qv2(px(t)) + '" y1="0" x2="' + _qv2(px(t)) + '" y2="' + _QV_H + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>'; }).join('') +
+    yt.map(function(t) { return '<line class="qvg" x1="0" y1="' + _qv2(py(t)) + '" x2="' + _QV_W + '" y2="' + _qv2(py(t)) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>'; }).join('');
+  var marks = used.map(function(a, k) {
+    var cx = px(a[1]), cy = py(a[2]), mag = a[5], st = _ifK(k, n) + 'opacity:var(--k,1);';
+    if (!(mag > 0 && big > 0)) return '<circle class="qvz" cx="' + _qv2(cx) + '" cy="' + _qv2(cy) + '" r="5" fill="var(--accent,#0369A1)" style="' + st + '"/>';
+    var ln = _QV_LMAX * sc * mag / big, dx = a[3] / mag, dy = -a[4] / mag;
+    var x0 = cx - 0.5 * ln * dx, y0 = cy - 0.5 * ln * dy, x1 = cx + 0.5 * ln * dx, y1 = cy + 0.5 * ln * dy, hl = Math.min(0.35 * ln, 28);
+    var b1x = x1 - hl * (dx * _QV_COS - dy * _QV_SIN), b1y = y1 - hl * (dx * _QV_SIN + dy * _QV_COS);
+    var b2x = x1 - hl * (dx * _QV_COS + dy * _QV_SIN), b2y = y1 - hl * (-dx * _QV_SIN + dy * _QV_COS);
+    return '<path class="qva" d="M' + _qv2(x0) + ' ' + _qv2(y0) + 'L' + _qv2(x1) + ' ' + _qv2(y1) + 'M' + _qv2(b1x) + ' ' + _qv2(b1y) + 'L' + _qv2(x1) + ' ' + _qv2(y1) + 'L' + _qv2(b2x) + ' ' + _qv2(b2y) +
+      '" fill="none" stroke="var(--accent,#0369A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="' + st + '"/>';
+  }).join('');
+  var tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);';
+  var xd = _hgDecimals(xt), yd = _hgDecimals(yt), xl = xt.map(function(t) { return _hgNum(t, xd); });
+  var stride = Math.ceil(xt.length / Math.max(2, Math.min(8, Math.floor(48 / Math.max.apply(null, xl.map(function(s) { return s.length; })))))), xlabs = '';
+  xt.forEach(function(t, i) {
+    if (i % stride === 0) xlabs += '<div class="qvx' + (i % (2 * stride) === 0 ? ' qvc' : '') + '" style="' + tl + 'top:100%;margin-top:6px;left:' + _tmPct(px(t), _QV_W) + ';transform:translateX(-50%);">' + xl[i] + '</div>';
+  });
+  var ylabs = yt.map(function(t) { return '<div class="qvy" style="' + tl + 'left:0;margin-left:-6px;top:' + _tmPct(py(t), _QV_H) + ';transform:translate(-100%,-50%);">' + _hgNum(t, yd) + '</div>'; }).join('');
+  var xe = _hgDecimals([X0, X1]), ye = _hgDecimals([Y0, Y1]), lg = used[0];
+  used.forEach(function(a) { if (a[5] > lg[5]) lg = a; });
+  var aria = 'Quiver plot of ' + n + (n === 1 ? ' arrow' : ' arrows') + ', ' + xn + ' ' + _hgNum(X0, xe) + ' to ' + _hgNum(X1, xe) + ', ' + yn + ' ' + _hgNum(Y0, ye) + ' to ' + _hgNum(Y1, ye) + '. ' +
+    (big > 0 ? 'Longest arrow: ' + lg[0] + ' at (' + _qvF(lg[1]) + ', ' + _qvF(lg[2]) + '), across ' + _qvF(lg[3]) + us + ', up ' + _qvF(lg[4]) + us + ', length ' + _qvF(lg[5]) + us + '.' : 'Every arrow has length 0.');
+  var cap = _hgNote('Each arrow is centred on its point and points the way its across and up numbers say; lengths are in proportion to the vector length' + (unit ? ' (' + _esc(unit) + ')' : '') + ', the longest drawn at a fixed size.');
+  var chart = '<div class="ifqv" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifqv .qvx:not(.qvc){display:none}}</style>' +
+    '<div style="font-size:0.78rem;color:var(--muted,#475569);margin:0 0 6px 4px;">' + _esc(yn) + ' (up)</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="margin:0 12px 38px 56px;"><div class="qvp" style="position:relative;width:100%;aspect-ratio:' + _QV_W + '/' + _QV_H + ';">' +
+    '<svg aria-hidden="true" viewBox="0 0 ' + _QV_W + ' ' + _QV_H + '" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">' +
+    '<rect x="0" y="0" width="' + _QV_W + '" height="' + _QV_H + '" fill="var(--surface,#F8FAFC)" stroke="var(--muted,#475569)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>' +
+    grid + marks + '</svg>' + xlabs + ylabs + '</div></div>' +
+    '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 12px 0 56px;">' + _esc(xn) + ' (across)</div></div>';
+  return _ifWrap(_ifTitle(b) + chart + cap + notes + ver +
+    _ifTable(['Arrow', xn, yn, 'Across', 'Up', 'Length'], used.map(function(a) { return [a[0], _qvF(a[1]), _qvF(a[2]), _qvF(a[3]) + us, _qvF(a[4]) + us, _qvF(a[5]) + us]; })));
+};
+
 // ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
 // running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
 // and every bar end, and its ticks. Twin of _wf_layout / _render_waterfall in renderers/web_article.py.
