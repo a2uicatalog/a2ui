@@ -1319,6 +1319,961 @@ _RENDERERS['contour_plot'] = function(b) {
     notes + _hgVersionNote(b, 'contour_plot') + tables);
 };
 
+// ── voronoi (I56 nearest-site regions of a set of points) ───────────────────────────────────────────────────────────────────────────────────
+// Three modules ported by hand, each function keeping the name and the order of operations of its source so the output is identical to the real modules:
+//   robust-predicates 3.0.3 (Unlicense / public domain, Vladimir Agafonkin): orient2d with its adaptive stages (fast filter, stage B, tails stage C, full expansion D).
+//   delaunator 5.1.0 (ISC, Mapbox): Delaunator update() (seed triangle, radial sort by quicksort, advancing hull with its angular hash), _legalize, _link, _addTriangle,
+//     pseudoAngle, dist, inCircle, circumradius, circumcenter.
+//   d3-delaunay 6.0.4 (ISC, Mike Bostock, Observable): Delaunay _init (inedges, hull index, the collinear check and its jitter) and _step; Voronoi _init (circumcenters
+//     and exterior rays), _cell, _clip, _clipFinite, _clipSegment, _clipInfinite, _edge, _project, _edgecode, _regioncode, _simplify, contains, and
+//     renderCell (the cellPolygon of Polygon).
+// d3-delaunay's collinear fallback jitters the points with Math.sin, Math.cos and Math.hypot, which are not correctly rounded and differ between engines and
+// libms: V8's (as in Node) are ported too (fdlibm sin/cos for |x| <= 2^19*pi/2 with the engine's own beyond, and V8's Kahan-summed hypot) so both twins agree to
+// the bit. Twin of the _vo_* functions and _render_voronoi in renderers/web_article.py.
+var _VO_R_EPS = 1.1102230246251565e-16, _VO_SPLIT = 134217729;
+var _VO_RESERR = (3 + 8 * _VO_R_EPS) * _VO_R_EPS;
+// fast_expansion_sum_zeroelim routine from original code
+function _voSum(elen, e, flen, f, h) {
+    var Q, Qnew, hh, bvirt;
+    var enow = e[0];
+    var fnow = f[0];
+    var eindex = 0;
+    var findex = 0;
+    if ((fnow > enow) === (fnow > -enow)) {
+        Q = enow;
+        enow = e[++eindex];
+    } else {
+        Q = fnow;
+        fnow = f[++findex];
+    }
+    var hindex = 0;
+    if (eindex < elen && findex < flen) {
+        if ((fnow > enow) === (fnow > -enow)) {
+            Qnew = enow + Q;
+            hh = Q - (Qnew - enow);
+            enow = e[++eindex];
+        } else {
+            Qnew = fnow + Q;
+            hh = Q - (Qnew - fnow);
+            fnow = f[++findex];
+        }
+        Q = Qnew;
+        if (hh !== 0) {
+            h[hindex++] = hh;
+        }
+        while (eindex < elen && findex < flen) {
+            if ((fnow > enow) === (fnow > -enow)) {
+                Qnew = Q + enow;
+                bvirt = Qnew - Q;
+                hh = Q - (Qnew - bvirt) + (enow - bvirt);
+                enow = e[++eindex];
+            } else {
+                Qnew = Q + fnow;
+                bvirt = Qnew - Q;
+                hh = Q - (Qnew - bvirt) + (fnow - bvirt);
+                fnow = f[++findex];
+            }
+            Q = Qnew;
+            if (hh !== 0) {
+                h[hindex++] = hh;
+            }
+        }
+    }
+    while (eindex < elen) {
+        Qnew = Q + enow;
+        bvirt = Qnew - Q;
+        hh = Q - (Qnew - bvirt) + (enow - bvirt);
+        enow = e[++eindex];
+        Q = Qnew;
+        if (hh !== 0) {
+            h[hindex++] = hh;
+        }
+    }
+    while (findex < flen) {
+        Qnew = Q + fnow;
+        bvirt = Qnew - Q;
+        hh = Q - (Qnew - bvirt) + (fnow - bvirt);
+        fnow = f[++findex];
+        Q = Qnew;
+        if (hh !== 0) {
+            h[hindex++] = hh;
+        }
+    }
+    if (Q !== 0 || hindex === 0) {
+        h[hindex++] = Q;
+    }
+    return hindex;
+}
+
+
+function _voEstimate(elen, e) {
+    var Q = e[0];
+    for (var i = 1; i < elen; i++) Q += e[i];
+    return Q;
+}
+
+
+var _VO_CCWA = (3 + 16 * _VO_R_EPS) * _VO_R_EPS;
+var _VO_CCWB = (2 + 12 * _VO_R_EPS) * _VO_R_EPS;
+var _VO_CCWC = (9 + 64 * _VO_R_EPS) * _VO_R_EPS * _VO_R_EPS;
+
+var _VO_O_B = new Float64Array(4);
+var _VO_O_C1 = new Float64Array(8);
+var _VO_O_C2 = new Float64Array(12);
+var _VO_O_D = new Float64Array(16);
+var _VO_O_u = new Float64Array(4);
+
+function _voOrient2dAdapt(ax, ay, bx, by, cx, cy, detsum) {
+    var acxtail, acytail, bcxtail, bcytail;
+    var bvirt, c, ahi, alo, bhi, blo, _i, _j, _0, s1, s0, t1, t0, u3;
+
+    var acx = ax - cx;
+    var bcx = bx - cx;
+    var acy = ay - cy;
+    var bcy = by - cy;
+
+    s1 = acx * bcy;
+    c = _VO_SPLIT * acx;
+    ahi = c - (c - acx);
+    alo = acx - ahi;
+    c = _VO_SPLIT * bcy;
+    bhi = c - (c - bcy);
+    blo = bcy - bhi;
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo);
+    t1 = acy * bcx;
+    c = _VO_SPLIT * acy;
+    ahi = c - (c - acy);
+    alo = acy - ahi;
+    c = _VO_SPLIT * bcx;
+    bhi = c - (c - bcx);
+    blo = bcx - bhi;
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo);
+    _i = s0 - t0;
+    bvirt = s0 - _i;
+    _VO_O_B[0] = s0 - (_i + bvirt) + (bvirt - t0);
+    _j = s1 + _i;
+    bvirt = _j - s1;
+    _0 = s1 - (_j - bvirt) + (_i - bvirt);
+    _i = _0 - t1;
+    bvirt = _0 - _i;
+    _VO_O_B[1] = _0 - (_i + bvirt) + (bvirt - t1);
+    u3 = _j + _i;
+    bvirt = u3 - _j;
+    _VO_O_B[2] = _j - (u3 - bvirt) + (_i - bvirt);
+    _VO_O_B[3] = u3;
+
+    var det = _voEstimate(4, _VO_O_B);
+    var errbound = _VO_CCWB * detsum;
+    if (det >= errbound || -det >= errbound) {
+        return det;
+    }
+
+    bvirt = ax - acx;
+    acxtail = ax - (acx + bvirt) + (bvirt - cx);
+    bvirt = bx - bcx;
+    bcxtail = bx - (bcx + bvirt) + (bvirt - cx);
+    bvirt = ay - acy;
+    acytail = ay - (acy + bvirt) + (bvirt - cy);
+    bvirt = by - bcy;
+    bcytail = by - (bcy + bvirt) + (bvirt - cy);
+
+    if (acxtail === 0 && acytail === 0 && bcxtail === 0 && bcytail === 0) {
+        return det;
+    }
+
+    errbound = _VO_CCWC * detsum + _VO_RESERR * Math.abs(det);
+    det += (acx * bcytail + bcy * acxtail) - (acy * bcxtail + bcx * acytail);
+    if (det >= errbound || -det >= errbound) return det;
+
+    s1 = acxtail * bcy;
+    c = _VO_SPLIT * acxtail;
+    ahi = c - (c - acxtail);
+    alo = acxtail - ahi;
+    c = _VO_SPLIT * bcy;
+    bhi = c - (c - bcy);
+    blo = bcy - bhi;
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo);
+    t1 = acytail * bcx;
+    c = _VO_SPLIT * acytail;
+    ahi = c - (c - acytail);
+    alo = acytail - ahi;
+    c = _VO_SPLIT * bcx;
+    bhi = c - (c - bcx);
+    blo = bcx - bhi;
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo);
+    _i = s0 - t0;
+    bvirt = s0 - _i;
+    _VO_O_u[0] = s0 - (_i + bvirt) + (bvirt - t0);
+    _j = s1 + _i;
+    bvirt = _j - s1;
+    _0 = s1 - (_j - bvirt) + (_i - bvirt);
+    _i = _0 - t1;
+    bvirt = _0 - _i;
+    _VO_O_u[1] = _0 - (_i + bvirt) + (bvirt - t1);
+    u3 = _j + _i;
+    bvirt = u3 - _j;
+    _VO_O_u[2] = _j - (u3 - bvirt) + (_i - bvirt);
+    _VO_O_u[3] = u3;
+    var C1len = _voSum(4, _VO_O_B, 4, _VO_O_u, _VO_O_C1);
+
+    s1 = acx * bcytail;
+    c = _VO_SPLIT * acx;
+    ahi = c - (c - acx);
+    alo = acx - ahi;
+    c = _VO_SPLIT * bcytail;
+    bhi = c - (c - bcytail);
+    blo = bcytail - bhi;
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo);
+    t1 = acy * bcxtail;
+    c = _VO_SPLIT * acy;
+    ahi = c - (c - acy);
+    alo = acy - ahi;
+    c = _VO_SPLIT * bcxtail;
+    bhi = c - (c - bcxtail);
+    blo = bcxtail - bhi;
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo);
+    _i = s0 - t0;
+    bvirt = s0 - _i;
+    _VO_O_u[0] = s0 - (_i + bvirt) + (bvirt - t0);
+    _j = s1 + _i;
+    bvirt = _j - s1;
+    _0 = s1 - (_j - bvirt) + (_i - bvirt);
+    _i = _0 - t1;
+    bvirt = _0 - _i;
+    _VO_O_u[1] = _0 - (_i + bvirt) + (bvirt - t1);
+    u3 = _j + _i;
+    bvirt = u3 - _j;
+    _VO_O_u[2] = _j - (u3 - bvirt) + (_i - bvirt);
+    _VO_O_u[3] = u3;
+    var C2len = _voSum(C1len, _VO_O_C1, 4, _VO_O_u, _VO_O_C2);
+
+    s1 = acxtail * bcytail;
+    c = _VO_SPLIT * acxtail;
+    ahi = c - (c - acxtail);
+    alo = acxtail - ahi;
+    c = _VO_SPLIT * bcytail;
+    bhi = c - (c - bcytail);
+    blo = bcytail - bhi;
+    s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo);
+    t1 = acytail * bcxtail;
+    c = _VO_SPLIT * acytail;
+    ahi = c - (c - acytail);
+    alo = acytail - ahi;
+    c = _VO_SPLIT * bcxtail;
+    bhi = c - (c - bcxtail);
+    blo = bcxtail - bhi;
+    t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo);
+    _i = s0 - t0;
+    bvirt = s0 - _i;
+    _VO_O_u[0] = s0 - (_i + bvirt) + (bvirt - t0);
+    _j = s1 + _i;
+    bvirt = _j - s1;
+    _0 = s1 - (_j - bvirt) + (_i - bvirt);
+    _i = _0 - t1;
+    bvirt = _0 - _i;
+    _VO_O_u[1] = _0 - (_i + bvirt) + (bvirt - t1);
+    u3 = _j + _i;
+    bvirt = u3 - _j;
+    _VO_O_u[2] = _j - (u3 - bvirt) + (_i - bvirt);
+    _VO_O_u[3] = u3;
+    var Dlen = _voSum(C2len, _VO_O_C2, 4, _VO_O_u, _VO_O_D);
+
+    return _VO_O_D[Dlen - 1];
+}
+
+function _voOrient2d(ax, ay, bx, by, cx, cy) {
+    var detleft = (ay - cy) * (bx - cx);
+    var detright = (ax - cx) * (by - cy);
+    var det = detleft - detright;
+
+    var detsum = Math.abs(detleft + detright);
+    if (Math.abs(det) >= _VO_CCWA * detsum) return det;
+
+    return -_voOrient2dAdapt(ax, ay, bx, by, cx, cy, detsum);
+}
+
+// ---- V8's Math.sin / Math.cos (fdlibm: __kernel_sin, __kernel_cos, __ieee754_rem_pio2) and Math.hypot
+var _VO_NPIO2_HW = [0x3FF921FB, 0x400921FB, 0x4012D97C, 0x401921FB, 0x401F6A7A, 0x4022D97C, 0x4025FDBB, 0x402921FB, 0x402C463A, 0x402F6A7A, 0x4031475C, 0x4032D97C,
+  0x40346B9C, 0x4035FDBB, 0x40378FDB, 0x403921FB, 0x403AB41B, 0x403C463A, 0x403DD85A, 0x403F6A7A, 0x40407E4C, 0x4041475C, 0x4042106C, 0x4042D97C,
+  0x4043A28C, 0x40446B9C, 0x404534AC, 0x4045FDBB, 0x4046C6CB, 0x40478FDB, 0x404858EB, 0x404921FB];
+var _VO_PIO2_1 = 1.57079632673412561417e+00, _VO_PIO2_1T = 6.07710050650619224932e-11;
+var _VO_PIO2_2 = 6.07710050630396597660e-11, _VO_PIO2_2T = 2.02226624879595063154e-21;
+var _VO_PIO2_3 = 2.02226624871116645580e-21, _VO_PIO2_3T = 8.47842766036889956997e-32;
+var _VO_INVPIO2 = 6.36619772367581382433e-01;
+var _VO_F64 = new Float64Array(1), _VO_U32 = new Uint32Array(_VO_F64.buffer), _VO_LE = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
+function _voHi(x) { _VO_F64[0] = x; return _VO_U32[_VO_LE ? 1 : 0] | 0; }
+function _voKernelSin(x, y, iy) {
+  var S1 = -1.66666666666666324348e-01, S2 = 8.33333333332248946124e-03, S3 = -1.98412698298579493134e-04, S4 = 2.75573137070700676789e-06, S5 = -2.50507602534068634195e-08, S6 = 1.58969099521155010221e-10;
+  var ix = _voHi(x) & 0x7fffffff;
+  if (ix < 0x3e400000) { if (Math.trunc(x) === 0) return x; }
+  var z = x * x, v = z * x, r = S2 + z * (S3 + z * (S4 + z * (S5 + z * S6)));
+  if (iy === 0) return x + v * (S1 + z * r);
+  return x - ((z * (0.5 * y - v * r) - y) - v * S1);
+}
+function _voKernelCos(x, y) {
+  var C1 = 4.16666666666666019037e-02, C2 = -1.38888888888741095749e-03, C3 = 2.48015872894767294178e-05, C4 = -2.75573143513906633035e-07, C5 = 2.08757232129817482790e-09, C6 = -1.13596475577881948265e-11;
+  var ix = _voHi(x) & 0x7fffffff;
+  if (ix < 0x3e400000) { if (Math.trunc(x) === 0) return 1; }
+  var z = x * x, r = z * (C1 + z * (C2 + z * (C3 + z * (C4 + z * (C5 + z * C6)))));
+  if (ix < 0x3FD33333) return 1 - (0.5 * z - (z * r - x * y));
+  var qx;
+  if (ix > 0x3fe90000) qx = 0.28125;
+  else { _VO_U32[_VO_LE ? 1 : 0] = ix - 0x00200000; _VO_U32[_VO_LE ? 0 : 1] = 0; qx = _VO_F64[0]; }
+  var hz = 0.5 * z - qx, a = 1 - qx;
+  return a - (hz - (z * r - x * y));
+}
+// __ieee754_rem_pio2 for |x| <= 2^19*pi/2 (the medium sizes): [n, y0, y1], or null beyond.
+function _voRemPio2(x) {
+  var hx = _voHi(x), ix = hx & 0x7fffffff, z, y0, y1;
+  if (ix <= 0x3fe921fb) return [0, x, 0];
+  if (ix < 0x4002d97c) {
+    if (hx > 0) {
+      z = x - _VO_PIO2_1;
+      if (ix !== 0x3ff921fb) { y0 = z - _VO_PIO2_1T; y1 = (z - y0) - _VO_PIO2_1T; }
+      else { z -= _VO_PIO2_2; y0 = z - _VO_PIO2_2T; y1 = (z - y0) - _VO_PIO2_2T; }
+      return [1, y0, y1];
+    }
+    z = x + _VO_PIO2_1;
+    if (ix !== 0x3ff921fb) { y0 = z + _VO_PIO2_1T; y1 = (z - y0) + _VO_PIO2_1T; }
+    else { z += _VO_PIO2_2; y0 = z + _VO_PIO2_2T; y1 = (z - y0) + _VO_PIO2_2T; }
+    return [-1, y0, y1];
+  }
+  if (ix <= 0x413921fb) {
+    var t = Math.abs(x), n = Math.trunc(t * _VO_INVPIO2 + 0.5), fn = n, r = t - fn * _VO_PIO2_1, w = fn * _VO_PIO2_1T, j, i;
+    if (n < 32 && ix !== _VO_NPIO2_HW[n - 1]) { y0 = r - w; }
+    else {
+      j = ix >> 20;
+      y0 = r - w;
+      i = j - ((_voHi(y0) >> 20) & 0x7ff);
+      if (i > 16) {
+        t = r; w = fn * _VO_PIO2_2; r = t - w; w = fn * _VO_PIO2_2T - ((t - r) - w); y0 = r - w;
+        i = j - ((_voHi(y0) >> 20) & 0x7ff);
+        if (i > 49) { t = r; w = fn * _VO_PIO2_3; r = t - w; w = fn * _VO_PIO2_3T - ((t - r) - w); y0 = r - w; }
+      }
+    }
+    y1 = (r - y0) - w;
+    if (hx < 0) return [-n, -y0, -y1];
+    return [n, y0, y1];
+  }
+  return null;
+}
+function _voSin(x) {
+  var ix = _voHi(x) & 0x7fffffff;
+  if (ix <= 0x3fe921fb) return _voKernelSin(x, 0, 0);
+  if (ix >= 0x7ff00000) return x - x;
+  var r = _voRemPio2(x);
+  if (r === null) return Math.sin(x);
+  var k = r[0] & 3;
+  return k === 0 ? _voKernelSin(r[1], r[2], 1) : k === 1 ? _voKernelCos(r[1], r[2]) : k === 2 ? -_voKernelSin(r[1], r[2], 1) : -_voKernelCos(r[1], r[2]);
+}
+function _voCos(x) {
+  var ix = _voHi(x) & 0x7fffffff;
+  if (ix <= 0x3fe921fb) return _voKernelCos(x, 0);
+  if (ix >= 0x7ff00000) return x - x;
+  var r = _voRemPio2(x);
+  if (r === null) return Math.cos(x);
+  var k = r[0] & 3;
+  return k === 0 ? _voKernelCos(r[1], r[2]) : k === 1 ? -_voKernelSin(r[1], r[2], 1) : k === 2 ? -_voKernelCos(r[1], r[2]) : _voKernelSin(r[1], r[2], 1);
+}
+// V8 Math.hypot(a, b): the largest magnitude scales the terms, which are summed with Kahan compensation.
+function _voHypot(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  var mx = a > b ? a : b;
+  if (mx === Infinity) return mx;
+  if (a !== a || b !== b) return NaN;
+  if (mx === 0) return 0;
+  var s = 0, comp = 0, v = [a, b], k, n, summand, pre;
+  for (k = 0; k < 2; k++) { n = v[k] / mx; summand = n * n - comp; pre = s + summand; comp = (pre - s) - summand; s = pre; }
+  return Math.sqrt(s) * mx;
+}
+
+// ---- delaunator 5.1.0
+var _VO_EPSILON = 2.220446049250313e-16;   // 2^-52
+var _VO_EDGE_STACK = new Uint32Array(512);
+function _voPseudoAngle(dx, dy) {
+  var p = dx / (Math.abs(dx) + Math.abs(dy));
+  return (dy > 0 ? 3 - p : 1 + p) / 4;   // [0..1]
+}
+function _voDist(ax, ay, bx, by) { var dx = ax - bx, dy = ay - by; return dx * dx + dy * dy; }
+function _voInCircle(ax, ay, bx, by, cx, cy, px, py) {
+  var dx = ax - px, dy = ay - py, ex = bx - px, ey = by - py, fx = cx - px, fy = cy - py;
+  var ap = dx * dx + dy * dy, bp = ex * ex + ey * ey, cp = fx * fx + fy * fy;
+  return dx * (ey * cp - bp * fy) - dy * (ex * cp - bp * fx) + ap * (ex * fy - ey * fx) < 0;
+}
+function _voCircumradius(ax, ay, bx, by, cx, cy) {
+  var dx = bx - ax, dy = by - ay, ex = cx - ax, ey = cy - ay;
+  var bl = dx * dx + dy * dy, cl = ex * ex + ey * ey, d = 0.5 / (dx * ey - dy * ex);
+  var x = (ey * bl - dy * cl) * d, y = (dx * cl - ex * bl) * d;
+  return x * x + y * y;
+}
+function _voCircumcenter(ax, ay, bx, by, cx, cy) {
+  var dx = bx - ax, dy = by - ay, ex = cx - ax, ey = cy - ay;
+  var bl = dx * dx + dy * dy, cl = ex * ex + ey * ey, d = 0.5 / (dx * ey - dy * ex);
+  return {x: ax + (ey * bl - dy * cl) * d, y: ay + (dx * cl - ex * bl) * d};
+}
+function _voSwap(arr, i, j) { var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp; }
+function _voQuicksort(ids, dists, left, right) {
+  var i, j, temp, tempDist;
+  if (right - left <= 20) {
+    for (i = left + 1; i <= right; i++) {
+      temp = ids[i]; tempDist = dists[temp]; j = i - 1;
+      while (j >= left && dists[ids[j]] > tempDist) ids[j + 1] = ids[j--];
+      ids[j + 1] = temp;
+    }
+  } else {
+    var median = (left + right) >> 1;
+    i = left + 1; j = right;
+    _voSwap(ids, median, i);
+    if (dists[ids[left]] > dists[ids[right]]) _voSwap(ids, left, right);
+    if (dists[ids[i]] > dists[ids[right]]) _voSwap(ids, i, right);
+    if (dists[ids[left]] > dists[ids[i]]) _voSwap(ids, left, i);
+    temp = ids[i]; tempDist = dists[temp];
+    while (true) {
+      do i++; while (dists[ids[i]] < tempDist);
+      do j--; while (dists[ids[j]] > tempDist);
+      if (j < i) break;
+      _voSwap(ids, i, j);
+    }
+    ids[left + 1] = ids[j];
+    ids[j] = temp;
+    if (right - i + 1 >= j - left) { _voQuicksort(ids, dists, i, right); _voQuicksort(ids, dists, left, j - 1); }
+    else { _voQuicksort(ids, dists, left, j - 1); _voQuicksort(ids, dists, i, right); }
+  }
+}
+// Delaunator: coords is a Float64Array [x0, y0, x1, y1, ...]; .triangles, .halfedges and .hull are typed arrays.
+function _VoDelaunator(coords) {
+  var n = coords.length >> 1;
+  this.coords = coords;
+  var maxTriangles = Math.max(2 * n - 5, 0);
+  this._triangles = new Uint32Array(maxTriangles * 3);
+  this._halfedges = new Int32Array(maxTriangles * 3);
+  this._hashSize = Math.ceil(Math.sqrt(n));
+  this._hullPrev = new Uint32Array(n);
+  this._hullNext = new Uint32Array(n);
+  this._hullTri = new Uint32Array(n);
+  this._hullHash = new Int32Array(this._hashSize);
+  this._ids = new Uint32Array(n);
+  this._dists = new Float64Array(n);
+  this.trianglesLen = 0;
+  this._cx = 0; this._cy = 0; this._hullStart = 0;
+  this.hull = this._triangles;
+  this.triangles = this._triangles;
+  this.halfedges = this._halfedges;
+  this.update();
+}
+_VoDelaunator.prototype.update = function() {
+  var coords = this.coords, hullPrev = this._hullPrev, hullNext = this._hullNext, hullTri = this._hullTri, hullHash = this._hullHash;
+  var n = coords.length >> 1, i, j, k, d, x, y, r;
+  var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (i = 0; i < n; i++) {
+    x = coords[2 * i]; y = coords[2 * i + 1];
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+    this._ids[i] = i;
+  }
+  var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+  var i0 = 0, i1 = 0, i2 = 0, minDist;
+  // pick a seed point close to the center
+  for (i = 0, minDist = Infinity; i < n; i++) {
+    d = _voDist(cx, cy, coords[2 * i], coords[2 * i + 1]);
+    if (d < minDist) { i0 = i; minDist = d; }
+  }
+  var i0x = coords[2 * i0], i0y = coords[2 * i0 + 1];
+  // find the point closest to the seed
+  for (i = 0, minDist = Infinity; i < n; i++) {
+    if (i === i0) continue;
+    d = _voDist(i0x, i0y, coords[2 * i], coords[2 * i + 1]);
+    if (d < minDist && d > 0) { i1 = i; minDist = d; }
+  }
+  var i1x = coords[2 * i1], i1y = coords[2 * i1 + 1];
+  var minRadius = Infinity;
+  // find the third point which forms the smallest circumcircle with the first two
+  for (i = 0; i < n; i++) {
+    if (i === i0 || i === i1) continue;
+    r = _voCircumradius(i0x, i0y, i1x, i1y, coords[2 * i], coords[2 * i + 1]);
+    if (r < minRadius) { i2 = i; minRadius = r; }
+  }
+  var i2x = coords[2 * i2], i2y = coords[2 * i2 + 1];
+  if (minRadius === Infinity) {
+    // order collinear points by dx (or dy if all x are identical) and return the list as a hull
+    for (i = 0; i < n; i++) this._dists[i] = (coords[2 * i] - coords[0]) || (coords[2 * i + 1] - coords[1]);
+    _voQuicksort(this._ids, this._dists, 0, n - 1);
+    var hull0 = new Uint32Array(n), j0 = 0, d0, id0;
+    for (i = 0, d0 = -Infinity; i < n; i++) {
+      id0 = this._ids[i]; d = this._dists[id0];
+      if (d > d0) { hull0[j0++] = id0; d0 = d; }
+    }
+    this.hull = hull0.subarray(0, j0);
+    this.triangles = new Uint32Array(0);
+    this.halfedges = new Int32Array(0);
+    return;
+  }
+  // swap the order of the seed points for counter-clockwise orientation
+  if (_voOrient2d(i0x, i0y, i1x, i1y, i2x, i2y) < 0) {
+    var sw = i1, swx = i1x, swy = i1y;
+    i1 = i2; i1x = i2x; i1y = i2y;
+    i2 = sw; i2x = swx; i2y = swy;
+  }
+  var center = _voCircumcenter(i0x, i0y, i1x, i1y, i2x, i2y);
+  this._cx = center.x; this._cy = center.y;
+  for (i = 0; i < n; i++) this._dists[i] = _voDist(coords[2 * i], coords[2 * i + 1], center.x, center.y);
+  // sort the points by distance from the seed triangle circumcenter
+  _voQuicksort(this._ids, this._dists, 0, n - 1);
+  // set up the seed triangle as the starting hull
+  this._hullStart = i0;
+  var hullSize = 3;
+  hullNext[i0] = hullPrev[i2] = i1;
+  hullNext[i1] = hullPrev[i0] = i2;
+  hullNext[i2] = hullPrev[i1] = i0;
+  hullTri[i0] = 0; hullTri[i1] = 1; hullTri[i2] = 2;
+  hullHash.fill(-1);
+  hullHash[this._hashKey(i0x, i0y)] = i0;
+  hullHash[this._hashKey(i1x, i1y)] = i1;
+  hullHash[this._hashKey(i2x, i2y)] = i2;
+  this.trianglesLen = 0;
+  this._addTriangle(i0, i1, i2, -1, -1, -1);
+  var xp = 0, yp = 0, start, key, e, q, t, nb, id;
+  for (k = 0; k < this._ids.length; k++) {
+    id = this._ids[k];
+    x = coords[2 * id]; y = coords[2 * id + 1];
+    // skip near-duplicate points
+    if (k > 0 && Math.abs(x - xp) <= _VO_EPSILON && Math.abs(y - yp) <= _VO_EPSILON) continue;
+    xp = x; yp = y;
+    // skip seed triangle points
+    if (id === i0 || id === i1 || id === i2) continue;
+    // find a visible edge on the convex hull using edge hash
+    start = 0;
+    for (j = 0, key = this._hashKey(x, y); j < this._hashSize; j++) {
+      start = hullHash[(key + j) % this._hashSize];
+      if (start !== -1 && start !== hullNext[start]) break;
+    }
+    start = hullPrev[start];
+    e = start;
+    while (q = hullNext[e], _voOrient2d(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]) >= 0) {
+      e = q;
+      if (e === start) { e = -1; break; }
+    }
+    if (e === -1) continue;   // likely a near-duplicate point; skip it
+    // add the first triangle from the point
+    t = this._addTriangle(e, id, hullNext[e], -1, -1, hullTri[e]);
+    // recursively flip triangles from the point until they satisfy the Delaunay condition
+    hullTri[id] = this._legalize(t + 2);
+    hullTri[e] = t;   // keep track of boundary triangles on the hull
+    hullSize++;
+    // walk forward through the hull, adding more triangles and flipping recursively
+    nb = hullNext[e];
+    while (q = hullNext[nb], _voOrient2d(x, y, coords[2 * nb], coords[2 * nb + 1], coords[2 * q], coords[2 * q + 1]) < 0) {
+      t = this._addTriangle(nb, id, q, hullTri[id], -1, hullTri[nb]);
+      hullTri[id] = this._legalize(t + 2);
+      hullNext[nb] = nb;   // mark as removed
+      hullSize--;
+      nb = q;
+    }
+    // walk backward from the other side, adding more triangles and flipping
+    if (e === start) {
+      while (q = hullPrev[e], _voOrient2d(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]) < 0) {
+        t = this._addTriangle(q, id, e, -1, hullTri[e], hullTri[q]);
+        this._legalize(t + 2);
+        hullTri[q] = t;
+        hullNext[e] = e;   // mark as removed
+        hullSize--;
+        e = q;
+      }
+    }
+    // update the hull indices
+    this._hullStart = hullPrev[id] = e;
+    hullNext[e] = hullPrev[nb] = id;
+    hullNext[id] = nb;
+    // save the two new edges in the hash table
+    hullHash[this._hashKey(x, y)] = id;
+    hullHash[this._hashKey(coords[2 * e], coords[2 * e + 1])] = e;
+  }
+  this.hull = new Uint32Array(hullSize);
+  for (i = 0, e = this._hullStart; i < hullSize; i++) { this.hull[i] = e; e = hullNext[e]; }
+  // trim typed triangle mesh arrays
+  this.triangles = this._triangles.subarray(0, this.trianglesLen);
+  this.halfedges = this._halfedges.subarray(0, this.trianglesLen);
+};
+_VoDelaunator.prototype._hashKey = function(x, y) { return Math.floor(_voPseudoAngle(x - this._cx, y - this._cy) * this._hashSize) % this._hashSize; };
+_VoDelaunator.prototype._legalize = function(a) {
+  var triangles = this._triangles, halfedges = this._halfedges, coords = this.coords;
+  var i = 0, ar = 0, b, a0, b0, al, bl, p0, pr, pl, p1, illegal, hbl, e, br;
+  // recursion eliminated with a fixed-size stack
+  while (true) {
+    b = halfedges[a];
+    // if the pair of triangles doesn't satisfy the Delaunay condition (p1 is inside the circumcircle of [p0, pl, pr]), flip them,
+    // then do the same check/flip recursively for the new pair of triangles
+    a0 = a - a % 3;
+    ar = a0 + (a + 2) % 3;
+    if (b === -1) {   // convex hull edge
+      if (i === 0) break;
+      a = _VO_EDGE_STACK[--i];
+      continue;
+    }
+    b0 = b - b % 3;
+    al = a0 + (a + 1) % 3;
+    bl = b0 + (b + 2) % 3;
+    p0 = triangles[ar]; pr = triangles[a]; pl = triangles[al]; p1 = triangles[bl];
+    illegal = _voInCircle(coords[2 * p0], coords[2 * p0 + 1], coords[2 * pr], coords[2 * pr + 1], coords[2 * pl], coords[2 * pl + 1], coords[2 * p1], coords[2 * p1 + 1]);
+    if (illegal) {
+      triangles[a] = p1;
+      triangles[b] = p0;
+      hbl = halfedges[bl];
+      // edge swapped on the other side of the hull (rare); fix the half-edge reference
+      if (hbl === -1) {
+        e = this._hullStart;
+        do {
+          if (this._hullTri[e] === bl) { this._hullTri[e] = a; break; }
+          e = this._hullPrev[e];
+        } while (e !== this._hullStart);
+      }
+      this._link(a, hbl);
+      this._link(b, halfedges[ar]);
+      this._link(ar, bl);
+      br = b0 + (b + 1) % 3;
+      // don't worry about hitting the cap: it can only happen on extremely degenerate input
+      if (i < _VO_EDGE_STACK.length) _VO_EDGE_STACK[i++] = br;
+    } else {
+      if (i === 0) break;
+      a = _VO_EDGE_STACK[--i];
+    }
+  }
+  return ar;
+};
+_VoDelaunator.prototype._link = function(a, b) {
+  this._halfedges[a] = b;
+  if (b !== -1) this._halfedges[b] = a;
+};
+_VoDelaunator.prototype._addTriangle = function(i0, i1, i2, a, b, c) {
+  var t = this.trianglesLen;
+  this._triangles[t] = i0; this._triangles[t + 1] = i1; this._triangles[t + 2] = i2;
+  this._link(t, a); this._link(t + 1, b); this._link(t + 2, c);
+  this.trianglesLen += 3;
+  return t;
+};
+
+// ---- d3-delaunay 6.0.4: Delaunay
+// A triangulation is collinear if all its triangles have a non-null area
+function _voCollinear(d) {
+  var triangles = d.triangles, coords = d.coords, i, a, b, c, cross;
+  for (i = 0; i < triangles.length; i += 3) {
+    a = 2 * triangles[i]; b = 2 * triangles[i + 1]; c = 2 * triangles[i + 2];
+    cross = (coords[c] - coords[a]) * (coords[b + 1] - coords[a + 1]) - (coords[b] - coords[a]) * (coords[c + 1] - coords[a + 1]);
+    if (cross > 1e-10) return false;
+  }
+  return true;
+}
+function _voJitter(x, y, r) { return [x + _voSin(x + y) * r, y + _voCos(x - y) * r]; }
+// Delaunay: points is a Float64Array [x0, y0, ...] (the jitter of collinear input changes it in place, as in d3-delaunay).
+function _VoDelaunay(points) {
+  this._delaunator = new _VoDelaunator(points);
+  this.inedges = new Int32Array(points.length / 2);
+  this._hullIndex = new Int32Array(points.length / 2);
+  this.points = this._delaunator.coords;
+  this.collinear = null;
+  this._init();
+}
+_VoDelaunay.prototype._init = function() {
+  var d = this._delaunator, points = this.points, i, e, f, n, p;
+  // check for collinear
+  if (d.hull && d.hull.length > 2 && _voCollinear(d)) {
+    n = points.length / 2;
+    this.collinear = Int32Array.from({length: n}, function(_, k) { return k; })
+      .sort(function(a, b) { return points[2 * a] - points[2 * b] || points[2 * a + 1] - points[2 * b + 1]; });   // for exact neighbors
+    e = this.collinear[0]; f = this.collinear[this.collinear.length - 1];
+    var bounds = [points[2 * e], points[2 * e + 1], points[2 * f], points[2 * f + 1]];
+    var r = 1e-8 * _voHypot(bounds[3] - bounds[1], bounds[2] - bounds[0]);
+    for (i = 0; i < n; ++i) {
+      p = _voJitter(points[2 * i], points[2 * i + 1], r);
+      points[2 * i] = p[0];
+      points[2 * i + 1] = p[1];
+    }
+    this._delaunator = new _VoDelaunator(points);
+  } else {
+    this.collinear = null;
+  }
+  var halfedges = this.halfedges = this._delaunator.halfedges;
+  var hull = this.hull = this._delaunator.hull;
+  var triangles = this.triangles = this._delaunator.triangles;
+  var inedges = this.inedges.fill(-1);
+  var hullIndex = this._hullIndex.fill(-1);
+  // Compute an index from each point to an (arbitrary) incoming halfedge. Used to give the first neighbor of each point; for this reason,
+  // on the hull we give priority to exterior halfedges
+  for (e = 0, n = halfedges.length; e < n; ++e) {
+    p = triangles[e % 3 === 2 ? e - 2 : e + 1];
+    if (halfedges[e] === -1 || inedges[p] === -1) inedges[p] = e;
+  }
+  for (i = 0, n = hull.length; i < n; ++i) hullIndex[hull[i]] = i;
+  // degenerate case: 1 or 2 (distinct) points
+  if (hull.length <= 2 && hull.length > 0) {
+    this.triangles = new Int32Array(3).fill(-1);
+    this.halfedges = new Int32Array(3).fill(-1);
+    this.triangles[0] = hull[0];
+    inedges[hull[0]] = 1;
+    if (hull.length === 2) {
+      inedges[hull[1]] = 0;
+      this.triangles[1] = hull[1];
+      this.triangles[2] = hull[1];
+    }
+  }
+};
+_VoDelaunay.prototype._step = function(i, x, y) {
+  var inedges = this.inedges, hull = this.hull, hullIndex = this._hullIndex, halfedges = this.halfedges, triangles = this.triangles, points = this.points;
+  if (inedges[i] === -1 || !points.length) return (i + 1) % (points.length >> 1);
+  var c = i, dc = (x - points[i * 2]) * (x - points[i * 2]) + (y - points[i * 2 + 1]) * (y - points[i * 2 + 1]);
+  var e0 = inedges[i], e = e0, t, dt;
+  do {
+    t = triangles[e];
+    dt = (x - points[t * 2]) * (x - points[t * 2]) + (y - points[t * 2 + 1]) * (y - points[t * 2 + 1]);
+    if (dt < dc) { dc = dt; c = t; }
+    e = e % 3 === 2 ? e - 2 : e + 1;
+    if (triangles[e] !== i) break;   // bad triangulation
+    e = halfedges[e];
+    if (e === -1) {
+      e = hull[(hullIndex[i] + 1) % hull.length];
+      if (e !== t) {
+        if ((x - points[e * 2]) * (x - points[e * 2]) + (y - points[e * 2 + 1]) * (y - points[e * 2 + 1]) < dc) return e;
+      }
+      break;
+    }
+  } while (e !== e0);
+  return c;
+};
+
+// ---- d3-delaunay 6.0.4: Voronoi
+function _voAt(a, k) { return a[k]; }   // out of range reads give undefined, which arithmetic turns into NaN, as in the source
+function _VoVoronoi(delaunay, b) {
+  var xmin = b[0], ymin = b[1], xmax = b[2], ymax = b[3];
+  if (!(xmax >= xmin) || !(ymax >= ymin)) throw new Error('invalid bounds');
+  this.delaunay = delaunay;
+  this.xmax = xmax; this.xmin = xmin;
+  this.ymax = ymax; this.ymin = ymin;
+  this._init();
+}
+_VoVoronoi.prototype._init = function() {
+  var points = this.delaunay.points, hull = this.delaunay.hull, triangles = this.delaunay.triangles;
+  var vectors = this.vectors = new Float64Array(points.length * 2);
+  var bx, by;   // lazily computed barycenter of the hull
+  // Compute circumcenters.
+  var circumcenters = this.circumcenters = new Float64Array(triangles.length / 3 * 2);
+  var i, j, n, x, y, t1, t2, t3, x1, y1, x2, y2, x3, y3, dx, dy, ex, ey, ab, a, d, bl, cl, h, k;
+  for (i = 0, j = 0, n = triangles.length; i < n; i += 3, j += 2) {
+    t1 = triangles[i] * 2; t2 = triangles[i + 1] * 2; t3 = triangles[i + 2] * 2;
+    x1 = points[t1]; y1 = points[t1 + 1];
+    x2 = points[t2]; y2 = points[t2 + 1];
+    x3 = points[t3]; y3 = points[t3 + 1];
+    dx = x2 - x1; dy = y2 - y1; ex = x3 - x1; ey = y3 - y1;
+    ab = (dx * ey - dy * ex) * 2;
+    if (Math.abs(ab) < 1e-9) {
+      // For a degenerate triangle, the circumcenter is at the infinity, in a direction orthogonal to the halfedge and away from the "center" of
+      // the diagram <bx, by>, defined as the hull's barycenter.
+      if (bx === undefined) {
+        bx = by = 0;
+        for (k = 0; k < hull.length; k++) { bx += points[hull[k] * 2]; by += points[hull[k] * 2 + 1]; }
+        bx /= hull.length; by /= hull.length;
+      }
+      a = 1e9 * Math.sign((bx - x1) * ey - (by - y1) * ex);
+      x = (x1 + x3) / 2 - a * ey;
+      y = (y1 + y3) / 2 + a * ex;
+    } else {
+      d = 1 / ab;
+      bl = dx * dx + dy * dy;
+      cl = ex * ex + ey * ey;
+      x = x1 + (ey * bl - dy * cl) * d;
+      y = y1 + (dx * cl - ex * bl) * d;
+    }
+    circumcenters[j] = x;
+    circumcenters[j + 1] = y;
+  }
+  // Compute exterior cell rays.
+  h = hull[hull.length - 1];
+  var p0, p1 = h * 4, x0, y0;
+  x1 = points[2 * h]; y1 = points[2 * h + 1];
+  vectors.fill(0);
+  for (i = 0; i < hull.length; ++i) {
+    h = hull[i];
+    p0 = p1; x0 = x1; y0 = y1;
+    p1 = h * 4; x1 = points[2 * h]; y1 = points[2 * h + 1];
+    vectors[p0 + 2] = vectors[p1] = y0 - y1;
+    vectors[p0 + 3] = vectors[p1 + 1] = x1 - x0;
+  }
+};
+_VoVoronoi.prototype.contains = function(i, x, y) {
+  if (x !== x || y !== y) return false;
+  return this.delaunay._step(i, x, y) === i;
+};
+// cellPolygon(i): renderCell into a Polygon (moveTo, lineTo without repeats, closePath), as an array of [x, y], or null.
+_VoVoronoi.prototype.cellPolygon = function(i) {
+  var points = this._clip(i);
+  if (points === null || !points.length) return null;
+  var polygon = [[points[0], points[1]]], n = points.length, k;
+  while (points[0] === points[n - 2] && points[1] === points[n - 1] && n > 1) n -= 2;
+  for (k = 2; k < n; k += 2) {
+    if (points[k] !== points[k - 2] || points[k + 1] !== points[k - 1]) polygon.push([points[k], points[k + 1]]);
+  }
+  polygon.push(polygon[0].slice());
+  return polygon;
+};
+_VoVoronoi.prototype._cell = function(i) {
+  var circumcenters = this.circumcenters, inedges = this.delaunay.inedges, halfedges = this.delaunay.halfedges, triangles = this.delaunay.triangles;
+  var e0 = inedges[i];
+  if (e0 === -1) return null;   // coincident point
+  var points = [], e = e0, t;
+  do {
+    t = Math.floor(e / 3);
+    points.push(circumcenters[t * 2], circumcenters[t * 2 + 1]);
+    e = e % 3 === 2 ? e - 2 : e + 1;
+    if (triangles[e] !== i) break;   // bad triangulation
+    e = halfedges[e];
+  } while (e !== e0 && e !== -1);
+  return points;
+};
+_VoVoronoi.prototype._clip = function(i) {
+  // degenerate case (1 valid point: return the box)
+  if (i === 0 && this.delaunay.hull.length === 1) return [this.xmax, this.ymin, this.xmax, this.ymax, this.xmin, this.ymax, this.xmin, this.ymin];
+  var points = this._cell(i);
+  if (points === null) return null;
+  var V = this.vectors, v = i * 4;
+  return this._simplify(V[v] || V[v + 1] ? this._clipInfinite(i, points, V[v], V[v + 1], V[v + 2], V[v + 3]) : this._clipFinite(i, points));
+};
+_VoVoronoi.prototype._clipFinite = function(i, points) {
+  var n = points.length, P = null, x0, y0, x1 = points[n - 2], y1 = points[n - 1], c0, c1 = this._regioncode(x1, y1), e0, e1 = 0, j, S, sx0, sy0, sx1, sy1;
+  for (j = 0; j < n; j += 2) {
+    x0 = x1; y0 = y1; x1 = points[j]; y1 = points[j + 1];
+    c0 = c1; c1 = this._regioncode(x1, y1);
+    if (c0 === 0 && c1 === 0) {
+      e0 = e1; e1 = 0;
+      if (P) P.push(x1, y1);
+      else P = [x1, y1];
+    } else {
+      if (c0 === 0) {
+        if ((S = this._clipSegment(x0, y0, x1, y1, c0, c1)) === null) continue;
+        sx0 = S[0]; sy0 = S[1]; sx1 = S[2]; sy1 = S[3];
+      } else {
+        if ((S = this._clipSegment(x1, y1, x0, y0, c1, c0)) === null) continue;
+        sx1 = S[0]; sy1 = S[1]; sx0 = S[2]; sy0 = S[3];
+        e0 = e1; e1 = this._edgecode(sx0, sy0);
+        if (e0 && e1) this._edge(i, e0, e1, P, P.length);
+        if (P) P.push(sx0, sy0);
+        else P = [sx0, sy0];
+      }
+      e0 = e1; e1 = this._edgecode(sx1, sy1);
+      if (e0 && e1) this._edge(i, e0, e1, P, P.length);
+      if (P) P.push(sx1, sy1);
+      else P = [sx1, sy1];
+    }
+  }
+  if (P) {
+    e0 = e1; e1 = this._edgecode(P[0], P[1]);
+    if (e0 && e1) this._edge(i, e0, e1, P, P.length);
+  } else if (this.contains(i, (this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2)) {
+    return [this.xmax, this.ymin, this.xmax, this.ymax, this.xmin, this.ymax, this.xmin, this.ymin];
+  }
+  return P;
+};
+_VoVoronoi.prototype._clipSegment = function(x0, y0, x1, y1, c0, c1) {
+  // for more robustness, always consider the segment in the same order
+  var flip = c0 < c1, tmp, x, y, c;
+  if (flip) { tmp = [x1, y1, x0, y0, c1, c0]; x0 = tmp[0]; y0 = tmp[1]; x1 = tmp[2]; y1 = tmp[3]; c0 = tmp[4]; c1 = tmp[5]; }
+  while (true) {
+    if (c0 === 0 && c1 === 0) return flip ? [x1, y1, x0, y0] : [x0, y0, x1, y1];
+    if (c0 & c1) return null;
+    c = c0 || c1;
+    if (c & 8) { x = x0 + (x1 - x0) * (this.ymax - y0) / (y1 - y0); y = this.ymax; }
+    else if (c & 4) { x = x0 + (x1 - x0) * (this.ymin - y0) / (y1 - y0); y = this.ymin; }
+    else if (c & 2) { y = y0 + (y1 - y0) * (this.xmax - x0) / (x1 - x0); x = this.xmax; }
+    else { y = y0 + (y1 - y0) * (this.xmin - x0) / (x1 - x0); x = this.xmin; }
+    if (c0) { x0 = x; y0 = y; c0 = this._regioncode(x0, y0); }
+    else { x1 = x; y1 = y; c1 = this._regioncode(x1, y1); }
+  }
+};
+_VoVoronoi.prototype._clipInfinite = function(i, points, vx0, vy0, vxn, vyn) {
+  var P = Array.prototype.slice.call(points), p, j, n, c0, c1;
+  if (p = this._project(P[0], P[1], vx0, vy0)) P.unshift(p[0], p[1]);
+  if (p = this._project(P[P.length - 2], P[P.length - 1], vxn, vyn)) P.push(p[0], p[1]);
+  if (P = this._clipFinite(i, P)) {
+    for (j = 0, n = P.length, c1 = this._edgecode(P[n - 2], P[n - 1]); j < n; j += 2) {
+      c0 = c1; c1 = this._edgecode(P[j], P[j + 1]);
+      if (c0 && c1) { j = this._edge(i, c0, c1, P, j); n = P.length; }
+    }
+  } else if (this.contains(i, (this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2)) {
+    P = [this.xmin, this.ymin, this.xmax, this.ymin, this.xmax, this.ymax, this.xmin, this.ymax];
+  }
+  return P;
+};
+_VoVoronoi.prototype._edge = function(i, e0, e1, P, j) {
+  var x, y;
+  while (e0 !== e1) {
+    x = undefined; y = undefined;
+    switch (e0) {
+      case 5: e0 = 4; continue;   // top-left
+      case 4: e0 = 6; x = this.xmax; y = this.ymin; break;   // top
+      case 6: e0 = 2; continue;   // top-right
+      case 2: e0 = 10; x = this.xmax; y = this.ymax; break;   // right
+      case 10: e0 = 8; continue;   // bottom-right
+      case 8: e0 = 9; x = this.xmin; y = this.ymax; break;   // bottom
+      case 9: e0 = 1; continue;   // bottom-left
+      case 1: e0 = 5; x = this.xmin; y = this.ymin; break;   // left
+    }
+    // Note: this implicitly checks for out of bounds: if P[j] or P[j+1] are undefined, the conditional statement will be executed.
+    if ((P[j] !== x || P[j + 1] !== y) && this.contains(i, x, y)) {
+      P.splice(j, 0, x, y); j += 2;
+    }
+  }
+  return j;
+};
+_VoVoronoi.prototype._project = function(x0, y0, vx, vy) {
+  var t = Infinity, c, x, y;
+  if (vy < 0) {   // top
+    if (y0 <= this.ymin) return null;
+    if ((c = (this.ymin - y0) / vy) < t) { y = this.ymin; t = c; x = x0 + t * vx; }
+  } else if (vy > 0) {   // bottom
+    if (y0 >= this.ymax) return null;
+    if ((c = (this.ymax - y0) / vy) < t) { y = this.ymax; t = c; x = x0 + t * vx; }
+  }
+  if (vx > 0) {   // right
+    if (x0 >= this.xmax) return null;
+    if ((c = (this.xmax - x0) / vx) < t) { x = this.xmax; t = c; y = y0 + t * vy; }
+  } else if (vx < 0) {   // left
+    if (x0 <= this.xmin) return null;
+    if ((c = (this.xmin - x0) / vx) < t) { x = this.xmin; t = c; y = y0 + t * vy; }
+  }
+  return [x, y];
+};
+_VoVoronoi.prototype._edgecode = function(x, y) {
+  return (x === this.xmin ? 1 : x === this.xmax ? 2 : 0) | (y === this.ymin ? 4 : y === this.ymax ? 8 : 0);
+};
+_VoVoronoi.prototype._regioncode = function(x, y) {
+  return (x < this.xmin ? 1 : x > this.xmax ? 2 : 0) | (y < this.ymin ? 4 : y > this.ymax ? 8 : 0);
+};
+_VoVoronoi.prototype._simplify = function(P) {
+  var i, j, k;
+  if (P && P.length > 4) {
+    for (i = 0; i < P.length; i += 2) {
+      j = (i + 2) % P.length; k = (i + 4) % P.length;
+      if (P[i] === P[j] && P[j] === P[k] || P[i + 1] === P[j + 1] && P[j + 1] === P[k + 1]) { P.splice(j, 2); i -= 2; }
+    }
+    if (!P.length) P = null;
+  }
+  return P;
+};
+// Delaunator on a flat coordinate array: the raw triangles, halfedges and hull.
+function _voDelaunator(coords) {
+  var d = new _VoDelaunator(Float64Array.from(coords));
+  return {triangles: Array.from(d.triangles), halfedges: Array.from(d.halfedges), hull: Array.from(d.hull)};
+}
+// Delaunay.from(points).voronoi(bounds) and every cellPolygon: points is [[x, y], ...]. Returns the (jittered) points, triangles, halfedges, hull and cells.
+function _voVoronoi(points, bounds) {
+  var flat = new Float64Array(points.length * 2), i;
+  for (i = 0; i < points.length; i++) { flat[2 * i] = points[i][0]; flat[2 * i + 1] = points[i][1]; }
+  var dl = new _VoDelaunay(flat), v = new _VoVoronoi(dl, bounds), cells = [];
+  for (i = 0; i < points.length; i++) cells.push(v.cellPolygon(i));
+  return {points: Array.from(dl.points), triangles: Array.from(dl.triangles), halfedges: Array.from(dl.halfedges), hull: Array.from(dl.hull), cells: cells};
+}
+
+
 // ── chord_diagram (I47) and its directed mode (I62) ───────────────────────────────────────────────────────────────────────────────────────────
 // d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape arc() (_sbArc, via _D3Path) for
 // the group arcs. Twin of _ch_chord / _ch_ribbon / _render_chord_diagram in renderers/web_article.py.
