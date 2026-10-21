@@ -62,7 +62,7 @@ def test_gas_layout_matches_d3_exactly(core_js):
 def test_the_golden_set_covers_the_hard_cases():
     g = D["golden"]
     assert g["constant_axis"]["domains"][0] == [4, 4] and g["constant_axis"]["ticks"][0] == [4]
-    assert g["reversed"]["ys"][0][0] < g["reversed"]["ys"][0][2]                          # reversed: bigger value sits lower
+    assert g["reversed"]["ys"][0][0] < g["reversed"]["ys"][2][0]                          # reversed: bigger value sits lower
     assert g["explicit_range"]["domains"] == [[0, 10], [0, 1]]
     assert len(g["eight_dims"]["xs"]) == 8 and len(D["fuzz"]) == 24
 

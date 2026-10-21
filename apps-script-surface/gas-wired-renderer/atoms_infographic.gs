@@ -3146,3 +3146,103 @@ _RENDERERS['waterfall'] = function(b) {
   return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'waterfall') + _ifTable(['Step', 'Change', 'Running total'],
     steps.map(function(st, k) { return [labels[k], st.kind === 'total' ? 'Total' : sg(st.value) + us, f(bars[k][1]) + us]; })));
 };
+
+// ── parallel_coords (Plotly parcoords) ── each dimension is a d3 scaleLinear (domain nice(min, max, 5), or the explicit [min, max]) on a vertical
+// axis; the axes sit at d3 scalePoint().padding(0.5); each row is d3.line().digits(2) through its value on every axis. Drawn in a 1000 x 260 viewBox
+// stretched to the box (preserveAspectRatio none, non-scaling strokes) so every label is real 12px HTML text. Twin of _pc_layout and
+// _render_parallel_coords in renderers/web_article.py.
+var _PC_W = 1000, _PC_TOP = 16, _PC_BOT = 244, _PC_H = 260;
+function _pcLayout(dims) {
+  var n = dims.length, step = _PC_W / Math.max(1, n - 1 + 0.5 * 2), start = 0 + (_PC_W - 0 - step * (n - 1)) * 0.5, xs = [], domains = [], ticks = [], tickY = [], scales = [], i;
+  for (i = 0; i < n; i++) xs.push(start + step * i);
+  dims.forEach(function(d) {
+    var v = d.values, d0, d1, r0, r1;
+    if (typeof d.min === 'number' && typeof d.max === 'number' && d.min < d.max) { d0 = d.min; d1 = d.max; }
+    else { var nn = _hgNice(Math.min.apply(null, v), Math.max.apply(null, v), 5); d0 = nn[0]; d1 = nn[1]; }
+    if (d.reverse) { r0 = _PC_TOP; r1 = _PC_BOT; } else { r0 = _PC_BOT; r1 = _PC_TOP; }
+    var bw = d1 - d0, sc = function(x) { var t = bw ? (x - d0) / bw : 0.5; return r0 * (1 - t) + r1 * t; }, tk = _hgTicks(d0, d1, 5);
+    domains.push([d0, d1]); ticks.push(tk); tickY.push(tk.map(sc)); scales.push(sc);
+  });
+  var rows = dims[0].values.length, ys = [], paths = [], r, k;
+  for (r = 0; r < rows; r++) {
+    var ry = [], p = '';
+    for (k = 0; k < n; k++) {
+      ry.push(scales[k](dims[k].values[r]));
+      p += (k === 0 ? 'M' : 'L') + String(Math.round(xs[k] * 100) / 100) + ',' + String(Math.round(ry[k] * 100) / 100);
+    }
+    ys.push(ry); paths.push(p);
+  }
+  return {xs: xs, domains: domains, ticks: ticks, tickY: tickY, ys: ys, paths: paths};
+}
+function _pcNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+function _pcPlural(c, one, many) { return c + ' ' + (c === 1 ? one : many); }
+_RENDERERS['parallel_coords'] = function(b) {
+  var raw = Array.isArray(b.dimensions) ? b.dimensions : [], dims = [], leftD = 0;
+  raw.slice(0, 8).forEach(function(d, k) {
+    if (!(d && typeof d === 'object' && !Array.isArray(d)) || !Array.isArray(d.values)) { leftD++; return; }
+    var ok = _pcNum(d.min) && _pcNum(d.max) && d.min < d.max;
+    dims.push({label: d.label ? String(d.label).slice(0, 24) : 'Dimension ' + (k + 1), raw: d.values, min: ok ? d.min : null, max: ok ? d.max : null, reverse: d.reverse === true});
+  });
+  var beyondD = raw.length - 8, longest = dims.reduce(function(m, d) { return Math.max(m, d.raw.length); }, 0), nrows = Math.min(200, longest), keep = [], i;
+  for (i = 0; i < nrows; i++) if (dims.every(function(d) { return i < d.raw.length && _pcNum(d.raw[i]); })) keep.push(i);
+  var leftR = nrows - keep.length, beyondR = longest - 200;
+  var notes = (leftD ? _hgNote(_pcPlural(leftD, 'dimension was', 'dimensions were') + ' not a usable dimension and ' + (leftD === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (beyondD > 0 ? _hgNote(_pcPlural(beyondD, 'dimension', 'dimensions') + ' beyond the first 8 ' + (beyondD === 1 ? 'was' : 'were') + ' not drawn.') : '') +
+    (leftR ? _hgNote(_pcPlural(leftR, 'row had', 'rows had') + ' a missing or non-numeric value and ' + (leftR === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (beyondR > 0 ? _hgNote(_pcPlural(beyondR, 'row', 'rows') + ' beyond the first 200 ' + (beyondR === 1 ? 'was' : 'were') + ' not drawn.') : '');
+  if (dims.length < 2 || !keep.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">Parallel coordinates need at least 2 dimensions with numbers, and at least 1 complete row.</div>' + notes + _hgVersionNote(b, 'parallel_coords'));
+  var n = dims.length, clamped = 0;
+  dims.forEach(function(d) {
+    d.real = keep.map(function(r) { return d.raw[r]; });
+    d.values = d.real.map(function(v) {
+      if (d.min !== null && (v < d.min || v > d.max)) { clamped++; v = Math.min(d.max, Math.max(d.min, v)); }
+      return v;
+    });
+    d.lo = Math.min.apply(null, d.real); d.hi = Math.max.apply(null, d.real);
+  });
+  var L = _pcLayout(dims), cb = b.color_by, cbi = null, cd = null, cols = [];
+  if (typeof cb === 'string' && cb !== '') { for (i = 0; i < n; i++) if (dims[i].label === cb) { cbi = i; break; } }
+  else if (typeof cb === 'number' && cb === Math.floor(cb) && cb >= 0 && cb < n) cbi = cb;
+  if (cbi === null && cb) notes += _hgNote('color_by "' + _esc(String(cb).slice(0, 40)) + '" matches no dimension; the lines are drawn in one colour.');
+  if (clamped) notes += _hgNote(_pcPlural(clamped, 'value was', 'values were') + ' outside ' + (clamped === 1 ? 'its' : 'their') + ' axis range and ' + (clamped === 1 ? 'is' : 'are') + ' drawn on its edge.');
+  var rl = Array.isArray(b.row_labels) ? b.row_labels : [];
+  var names = keep.map(function(r) { return r < rl.length && rl[r] ? String(rl[r]).slice(0, 30) : 'Row ' + (r + 1); });
+  var f = function(v) { return _bpFmt(v, 6); };
+  var tl = L.ticks.map(function(tk) { var dc = _hgDecimals(tk); return tk.map(function(t) { return _hgNum(t, dc); }); });
+  var pitch = Math.max(72, Math.max.apply(null, [].concat.apply([], tl).map(function(s) { return s.length; })) * 8 + 16), ACC = 'var(--accent,#0369A1)';
+  var ramp = function(p) { return 'color-mix(in srgb,' + ACC + ' ' + p + '%,var(--surface,#F8FAFC))'; };
+  if (cbi !== null) {
+    cd = dims[cbi];
+    var span = cd.hi - cd.lo;
+    cols = cd.real.map(function(v) { return ramp(30 + Math.floor(70 * (span ? (v - cd.lo) / span : 0.5) + 0.5)); });
+  }
+  var heads = dims.map(function(d) {
+    return '<div class="pch" style="flex:1 1 0;min-width:0;box-sizing:border-box;padding:0 3px;text-align:center;font-size:0.75rem;line-height:1.15;font-weight:600;overflow-wrap:anywhere;">' + _esc(d.label) +
+      (d.reverse ? '<span style="display:block;font-weight:400;color:var(--muted,#475569);">reversed</span>' : '') + '</div>';
+  }).join('');
+  var r2 = function(x) { return String(Math.round(x * 100) / 100); };
+  var axes = L.xs.map(function(x) { return '<line class="pca" x1="' + r2(x) + '" x2="' + r2(x) + '" y1="' + _PC_TOP + '" y2="' + _PC_BOT + '" style="stroke:var(--muted,#475569);stroke-width:1.5;"/>'; }).join('');
+  var lines = L.paths.map(function(p, r) { return '<path class="pcr" d="' + p + '"' + (cbi !== null ? ' style="stroke:' + cols[r] + ';"' : '') + '/>'; }).join('');
+  var tickl = '';
+  L.xs.forEach(function(x, k) {
+    L.tickY[k].forEach(function(y, j) {
+      tickl += '<div class="pct" style="position:absolute;left:' + _tmPct(x, _PC_W) + ';top:' + _tmPct(y, _PC_H) + ';transform:translate(calc(-100% - 5px),-50%);font-size:0.75rem;line-height:1;white-space:nowrap;' +
+        'font-variant-numeric:tabular-nums;color:var(--muted,#475569);text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff);">' + tl[k][j] + '</div>';
+    });
+  });
+  var legend = cbi === null ? '' : '<div class="pcl" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:8px;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);"><span>Line colour: ' + _esc(cd.label) + '</span>' +
+    '<span>' + f(cd.lo) + '</span><span style="display:inline-block;width:96px;height:10px;border:1px solid var(--muted,#475569);background:linear-gradient(to right,' + ramp(30) + ',' + ramp(100) + ');"></span>' +
+    '<span>' + f(cd.hi) + '</span></div>';
+  var aria = 'Parallel coordinates of ' + _pcPlural(keep.length, 'row', 'rows') + ' across ' + n + ' dimensions.' +
+    dims.map(function(d) { return ' ' + d.label + ' from ' + f(d.lo) + ' to ' + f(d.hi) + (d.reverse ? ', drawn upside down' : '') + '.'; }).join('') +
+    (cbi !== null ? ' Lines are coloured by ' + cd.label + ', light for low and dark for high.' : '');
+  var chart = '<div class="ifpc" role="region" aria-label="Parallel coordinates chart" tabindex="0" style="container-type:inline-size;max-width:100%;overflow-x:auto;">' +
+    '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}</style>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;min-width:' + (n * pitch) + 'px;">' +
+    '<div style="display:flex;">' + heads + '</div>' +
+    '<div style="position:relative;height:' + _PC_H + 'px;margin-top:4px;">' +
+    '<svg viewBox="0 0 ' + _PC_W + ' ' + _PC_H + '" preserveAspectRatio="none" width="100%" height="' + _PC_H + '" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;display:block;">' +
+    axes + '<g fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.75" style="stroke:' + ACC + ';' + _ifK(0, 1) + _IF_FADE + '">' + lines + '</g></svg>' + tickl + '</div>' + legend + '</div></div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'parallel_coords') +
+    _ifTable(['Row'].concat(dims.map(function(d) { return d.label; })), keep.map(function(r, j) { return [names[j]].concat(dims.map(function(d) { return f(d.real[j]); })); })));
+};
