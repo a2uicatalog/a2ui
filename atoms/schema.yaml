@@ -5703,11 +5703,11 @@ blocks:
     - android
     degraded_on:
     - surface: google-meet-stage
-      note: Chart.js canvas rendering inconsistent in stage iframe.
+      note: Bars are positioned HTML with container queries; a stage iframe that drops them shows the hidden table only.
     - surface: google-chat
-      note: Canvas not supported.
+      note: HTML is not rendered; only the text of the hidden table is shown.
     - surface: email
-      note: Canvas stripped.
+      note: Style blocks, container queries and absolute positioning are stripped by most clients; the table is what survives.
   fields:
     labels: array of strings. Category labels (up to 40 drawn; the hidden table lists all).
     datasets: array of {label, data, color}. One series each (up to 8 drawn); data is numbers, anything else is skipped with a note; color is an optional #rrggbb.

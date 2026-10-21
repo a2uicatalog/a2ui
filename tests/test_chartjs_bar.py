@@ -244,3 +244,35 @@ def test_the_description_is_honest_and_the_fields_are_declared():
     assert "interactive" not in txt.replace("no interactivity", "") and "chart.js" not in txt.replace("no chart.js", "")        # I84: it is static HTML
     for f in ("mode", "orientation", "show_values", "value_format", "legend_position", "y_scale", "y_range", "y_format", "gap", "version"):
         assert f in a["fields"], f
+
+
+def test_high_precision_formats_on_large_values_never_throw_and_twins_agree(core_js):
+    """CB-1: `.20f` / `.18%` on |v| up to 1e12 used to raise decimal.InvalidOperation in the Python twin only."""
+    b = B(labels=["a", "b", "c"], datasets=[{"label": "S", "data": [1e12, -1e12, 1e-12]}], mode="relative", show_values=True,
+          value_format=".30f", y_format=".20f")
+    b2 = B(datasets=[{"label": "S", "data": [999999999.0, 1e9, 5, 7]}], show_values=True, value_format=".18%", y_format=".16f")
+    for blk in (b, b2):
+        h = _py(blk)
+        assert "No numbers" not in h
+        assert h == _gas_batch(core_js, [blk])[0]
+
+
+def test_caps_note_counts_what_was_given_not_what_was_read(core_js):
+    """CB-2: 500 categories x 40 series used to say 'first 40 of 200 ... the table has all of them'."""
+    blk = B(labels=[f"c{i}" for i in range(500)], datasets=[{"label": f"s{k}", "data": list(range(500))} for k in range(40)])
+    h = _py(blk)
+    assert "The first 40 of 500 categories are drawn; the table has the first 200." in h
+    assert "The first 8 of 40 series are drawn; the table has the first 24." in h
+    assert len(table(h)) == 201 and len(table(h)[0]) == 25
+    assert h == _gas_batch(core_js, [blk])[0]
+    legacy = {"type": "chartjs_bar", "data": [{"label": f"r{i}", "value": i} for i in range(300)]}
+    assert "The first 40 of 300 categories are drawn; the table has the first 200." in _py(legacy)
+
+
+def test_an_unusable_y_range_says_so_in_both_twins(core_js):
+    for rr in ([1e308, -1e308], ["0", 1], [3, 3], "wide"):
+        blk = B(y_range=rr)
+        h = _py(blk)
+        assert "y_range was not two different numbers; it was ignored." in h
+        assert h == _gas_batch(core_js, [blk])[0]
+    assert "y_range was not" not in _py(B())

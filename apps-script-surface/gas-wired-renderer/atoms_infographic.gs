@@ -2921,19 +2921,22 @@ function _cbPc(f) { var s = (f * 100).toFixed(3); if (/^-0\.0+$/.test(s)) s = s.
 function _cbSpec(v) { return typeof v === 'string' && v !== '' && _axParse(v) !== null ? v : null; }
 function _cbObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
 function _cbData(b) {
-  var ds = b.datasets, labs = _ifArr(b.labels, 200), skipped = 0, series = [], rows, i, k;
+  var ds = b.datasets, labs = _ifArr(b.labels, 200), skipped = 0, series = [], rows, i, k, givenN = Array.isArray(b.labels) ? b.labels.length : 0, givenS;
   if (!(Array.isArray(ds) && ds.length)) {
     rows = _ifArr(b.data, 200);
+    givenN = Array.isArray(b.data) ? b.data.length : 0;
     if (rows.length) {
       labs = rows.map(function(r) { return _cbObj(r) ? _cbStr(r.label, 40) : ''; });
       ds = [{label: _cbStr(b.title, 40) || 'Value', data: rows.map(function(r) { return _cbObj(r) ? r.value : null; })}];
     } else ds = [];
   }
+  givenS = Array.isArray(ds) ? ds.length : 0;
   ds = _ifArr(ds, 24);
   for (k = 0; k < ds.length; k++) {
     var d = ds[k];
     if (!_cbObj(d)) { skipped++; continue; }
     var vals = _ifArr(d.data, 200).map(_cbNum), col = d.color;
+    if (Array.isArray(d.data) && d.data.length > givenN) givenN = d.data.length;
     vals.forEach(function(x) { if (x === null) skipped++; });
     series.push([_cbStr(d.label, 40) || 'Series ' + (k + 1), typeof col === 'string' && /^#[0-9a-fA-F]{6}$/.test(col) ? col : null, vals]);
   }
@@ -2941,17 +2944,17 @@ function _cbData(b) {
   series.forEach(function(s) { if (s[2].length > n) n = s[2].length; });
   var labels = [];
   for (i = 0; i < n; i++) labels.push((i < labs.length && labs[i] !== null && labs[i] !== undefined ? _cbStr(labs[i], 40) : '') || String(i + 1));
-  return [labels, series, skipped];
+  return [labels, series, skipped, [Math.max(givenN, n), Math.max(givenS, series.length)]];
 }
 _RENDERERS['chartjs_bar'] = function(b) {
-  var dt = _cbData(b), labels = dt[0], series = dt[1], skipped = dt[2], n = labels.length, S = series.length, i, k, j, q;
+  var dt = _cbData(b), labels = dt[0], series = dt[1], skipped = dt[2], given = dt[3], n = labels.length, S = series.length, i, k, j, q;
   var anyv = false;
   series.forEach(function(s) { s[2].forEach(function(v) { if (v !== null) anyv = true; }); });
   if (n === 0 || !anyv) return _ifWrap(_ifTitle(b) + _hgNote('No numbers to draw as bars.'));
   var notes = skipped ? _hgSkipNote(skipped) : '';
   var nd = Math.min(n, _CB_CATS), sd = Math.min(S, _CB_SERIES);
-  if (n > nd) notes += _hgNote('The first ' + nd + ' of ' + n + ' categories are drawn; the table has all of them.');
-  if (S > sd) notes += _hgNote('The first ' + sd + ' of ' + S + ' series are drawn; the table has all of them.');
+  if (given[0] > nd) notes += _hgNote('The first ' + nd + ' of ' + given[0] + ' categories are drawn; ' + (given[0] === n ? 'the table has all of them.' : 'the table has the first ' + n + '.'));
+  if (given[1] > sd) notes += _hgNote('The first ' + sd + ' of ' + given[1] + ' series are drawn; ' + (given[1] === S ? 'the table has all of them.' : 'the table has the first ' + S + '.'));
   var horiz = b.orientation === 'h' || b.orientation === 'horizontal';
   var mode = _ifPick(b.mode, ['group', 'stack', 'relative', 'overlay'], 'group');
   var log = b.y_scale === 'log';
@@ -2973,6 +2976,7 @@ _RENDERERS['chartjs_bar'] = function(b) {
   }
   var rng = b.y_range;
   rng = Array.isArray(rng) && rng.length === 2 && _cbNum(rng[0]) !== null && _cbNum(rng[1]) !== null && rng[0] !== rng[1] ? [rng[0], rng[1]] : null;
+  if (rng === null && b.y_range) notes += _hgNote('y_range was not two different numbers; it was ignored.');
   if (rng && rng[0] > rng[1]) rng = [rng[1], rng[0]];
   if (rng && log && rng[0] <= 0) { rng = null; notes += _hgNote('y_range must be above zero on a log axis; it was ignored.'); }
   var segs = [], drop = 0, lo = 0, hi = 0;

@@ -3854,15 +3854,18 @@ def _cb_spec(v):
 
 
 def _cb_data(b):
-    """-> (labels, [(name, color or None, [value or None, ...])], skipped); at most 200 categories and 24 series are read."""
+    """-> (labels, [(name, color or None, [value or None, ...])], skipped, (categories given, series given)); at most 200 categories and 24 series are read."""
     ds, labs, skipped, series = _if_g(b, 'datasets'), _if_arr(_if_g(b, 'labels'), 200), 0, []
+    given_n = len(_if_g(b, 'labels')) if isinstance(_if_g(b, 'labels'), list) else 0
     if not (isinstance(ds, list) and ds):
         rows = _if_arr(_if_g(b, 'data'), 200)
+        given_n = len(_if_g(b, 'data')) if isinstance(_if_g(b, 'data'), list) else 0
         if rows:
             labs = [_cb_str(_if_g(r, 'label'), 40) if isinstance(r, dict) else '' for r in rows]
             ds = [{'label': _cb_str(_if_g(b, 'title'), 40) or 'Value', 'data': [_if_g(r, 'value') if isinstance(r, dict) else None for r in rows]}]
         else:
             ds = []
+    given_s = len(ds) if isinstance(ds, list) else 0
     for k, d in enumerate(_if_arr(ds, 24)):
         if not isinstance(d, dict):
             skipped += 1
@@ -3870,25 +3873,26 @@ def _cb_data(b):
         raw = _if_arr(_if_g(d, 'data'), 200)
         vals = [_cb_num(x) for x in raw]
         skipped += sum(1 for x in vals if x is None)
+        given_n = max(given_n, len(_if_g(d, 'data')) if isinstance(_if_g(d, 'data'), list) else 0)
         col = _if_g(d, 'color')
         series.append((_cb_str(_if_g(d, 'label'), 40) or 'Series ' + str(k + 1),
                        col if isinstance(col, str) and re.fullmatch(r'#[0-9a-fA-F]{6}', col) else None, vals))
     n = max([len(labs)] + [len(s[2]) for s in series])
     labels = [(_cb_str(labs[i], 40) if i < len(labs) and labs[i] is not None else '') or str(i + 1) for i in range(n)]
-    return labels, series, skipped
+    return labels, series, skipped, (max(given_n, n), max(given_s, len(series)))
 
 
 def _render_chartjs_bar(b: dict) -> str:
-    labels, series, skipped = _cb_data(b)
+    labels, series, skipped, given = _cb_data(b)
     n, S = len(labels), len(series)
     if n == 0 or not any(v is not None for s in series for v in s[2]):
         return _if_wrap(_if_title(b) + _hg_note('No numbers to draw as bars.'))
     notes = _hg_skip_note(skipped) if skipped else ''
     nd, sd = min(n, _CB_CATS), min(S, _CB_SERIES)
-    if n > nd:
-        notes += _hg_note('The first ' + str(nd) + ' of ' + str(n) + ' categories are drawn; the table has all of them.')
-    if S > sd:
-        notes += _hg_note('The first ' + str(sd) + ' of ' + str(S) + ' series are drawn; the table has all of them.')
+    if given[0] > nd:
+        notes += _hg_note('The first ' + str(nd) + ' of ' + str(given[0]) + ' categories are drawn; ' + ('the table has all of them.' if given[0] == n else 'the table has the first ' + str(n) + '.'))
+    if given[1] > sd:
+        notes += _hg_note('The first ' + str(sd) + ' of ' + str(given[1]) + ' series are drawn; ' + ('the table has all of them.' if given[1] == S else 'the table has the first ' + str(S) + '.'))
     horiz = _if_g(b, 'orientation') in ('h', 'horizontal')
     mode = _if_pick(_if_g(b, 'mode'), ('group', 'stack', 'relative', 'overlay'), 'group')
     log = _if_g(b, 'y_scale') == 'log'
@@ -3909,6 +3913,8 @@ def _render_chartjs_bar(b: dict) -> str:
         notes += _hg_note('Stacked bars need a linear axis; the bars are drawn grouped on the log axis.')
     rng = _if_g(b, 'y_range')
     rng = [float(rng[0]), float(rng[1])] if isinstance(rng, list) and len(rng) == 2 and _cb_num(rng[0]) is not None and _cb_num(rng[1]) is not None and rng[0] != rng[1] else None
+    if rng is None and _if_truthy(_if_g(b, 'y_range')):
+        notes += _hg_note('y_range was not two different numbers; it was ignored.')
     if rng and rng[0] > rng[1]:
         rng = [rng[1], rng[0]]
     if rng and log and rng[0] <= 0:
@@ -32099,10 +32105,13 @@ def _if_fmt(n):
     return _if_numstr(_if_round(n * 100) / 100)
 
 
+_IF_DEC_CTX = decimal.Context(prec=80)
+
+
 def _if_fixed(x, d):
     """JavaScript toFixed: exact binary value, ties away from zero."""
     q = decimal.Decimal(1).scaleb(-d)
-    s = format(decimal.Decimal(abs(x)).quantize(q, rounding=decimal.ROUND_HALF_UP), 'f')
+    s = format(decimal.Decimal(abs(x)).quantize(q, rounding=decimal.ROUND_HALF_UP, context=_IF_DEC_CTX), 'f')
     return ('-' if x < 0 and float(s) != 0 else '') + s
 
 
