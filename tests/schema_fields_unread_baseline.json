@@ -36,6 +36,9 @@
  "api_reference": [
   "deprecated"
  ],
+ "arc_diagram": [
+  "title"
+ ],
  "article_series_nav": [
   "current_part",
   "series_id"
@@ -74,6 +77,10 @@
   "direction",
   "speed"
  ],
+ "box_plot": [
+  "title",
+  "version"
+ ],
  "bullet_graph": [
   "title"
  ],
@@ -106,6 +113,12 @@
   "items",
   "multiple",
   "submit_label"
+ ],
+ "chord_diagram": [
+  "title"
+ ],
+ "circle_pack": [
+  "title"
  ],
  "clipart": [
   "alt",
@@ -141,6 +154,9 @@
  ],
  "confidence_bar": [
   "items"
+ ],
+ "contour_plot": [
+  "title"
  ],
  "conversation_snippet": [
   "accent"
@@ -184,10 +200,6 @@
  "deadline_ticker": [
   "label",
   "target_date"
- ],
- "decision_tree": [
-  "layout",
-  "version"
  ],
  "demo_chart": [
   "accent"
@@ -367,6 +379,11 @@
  ],
  "highlighted_text": [
   "annotation_color"
+ ],
+ "histogram": [
+  "series",
+  "title",
+  "version"
  ],
  "hover_card": [
   "card_content",
@@ -571,9 +588,7 @@
   "total_expr"
  ],
  "org_chart": [
-  "layout",
-  "title",
-  "version"
+  "title"
  ],
  "pagination": [
   "base_url",
@@ -735,16 +750,8 @@
   "height",
   "width"
  ],
- "spring_nodes": [
-  "interactive",
-  "rest_length"
- ],
  "sprint_board": [
   "sprint_name"
- ],
- "stacked_area": [
-  "offset",
-  "version"
  ],
  "status_pill": [
   "color",
@@ -755,6 +762,9 @@
  ],
  "sun_path": [
   "theme"
+ ],
+ "sunburst": [
+  "title"
  ],
  "svg_path_draw": [
   "duration",
@@ -791,8 +801,7 @@
   "theme"
  ],
  "treemap": [
-  "title",
-  "version"
+  "title"
  ],
  "typewriter": [
   "background",
@@ -831,7 +840,6 @@
   "intersection_ac",
   "intersection_bc",
   "set_c_exclusive",
-  "set_c_name",
   "title",
   "version"
  ],
@@ -850,10 +858,17 @@
  "video_pair": [
   "caption"
  ],
+ "voronoi": [
+  "title"
+ ],
  "vote_button_group": [
   "allow_multi",
   "style",
   "title"
+ ],
+ "waterfall": [
+  "title",
+  "version"
  ],
  "word_flip": [
   "size",

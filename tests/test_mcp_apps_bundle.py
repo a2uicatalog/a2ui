@@ -417,7 +417,13 @@ def test_bundle_size_guard(bundle):
     # Ceiling raised 3.65 -> 3.8 MB on 2026-10-10 (confirmed by Curtis 2026-10-10; the fallback if it creeps again is to leave bulky GAS-only atoms out of the MCP bundle via EXCLUDE_FILES): twelve infographic atoms,
     # nine motion atoms (lit, collage, arcs, lockup, bubbles, beats, pattern, dock, fit) and the halo/smear/tilt props, bundle 3,651,473 -> 3,736,474
     # characters, plus the a11y wrapper growth. All GAS-only preview atoms; the base commit was already over scene_stage's 3.6 MB.
-    assert len(bundle) < 3_800_000, f"bundle ballooned to {len(bundle)} bytes"
+    # Ceiling raised 3.8 -> 4.5 MB on 2026-10-21 (Curtis: "raise to 4.5") for the D3 release (branch
+    # d3-release-2026-10-21): new atoms histogram, box_plot, waterfall, sunburst, chord_diagram, circle_pack,
+    # arc_diagram, contour_plot, voronoi, plus spring_nodes on d3-force (alone 3,790,999 -> 3,804,392) and geo
+    # radar/globe. Measured 3,790,999 (origin/main) -> 4,008,035 characters before regeneration; per-stage table in
+    # a2ui-private pm/evidence/2026-10-21-bundle-size.txt. The choropleth branch (+~135 KB geometry) is not in it.
+    # Same OPEN QUESTION as above: still our own guard, not a measured host limit.
+    assert len(bundle) < 4_500_000, f"bundle ballooned to {len(bundle)} bytes"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
 
 
