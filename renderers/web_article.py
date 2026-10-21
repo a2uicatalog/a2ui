@@ -30244,6 +30244,29 @@ def _render_motion_bounce(b: dict) -> str:
             + '<div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:2px;background:' + _MO_MIX_LINE + ';"></div></div>')
 
 
+_MO_SC_JIT = [0, 0.6, -0.6, 0.3, -0.3, 0.6, 0, -0.6, 0.3, 0, -0.3, 0.6]
+
+
+def _mo_scatter_fit(n: int, org) -> tuple:
+    """Fit layout for motion_scatter (backlog I74): from 3 cards up, a stylesheet keyed on the stage's own width (container query) settles the
+    cards on a tidy grid with a little deterministic jitter and sizes the type to the cell, so no card hides another's text. Above 1100 px
+    with up to 8 cards and no origin the original scattered slots stay (they are clean there). Returns (class, css)."""
+    wide = bool(org) or n > 8
+    cls = 'mosf' + str(n) + ('d' if wide else '')
+
+    def band(cols):
+        rows = -(-n // cols)
+        cw, ch = 100.0 / cols, 100.0 / rows
+        rules = '.' + cls + '>div{font-size:min(1em,' + _ff_num(cw / 11, 0, 0, 100, 2) + 'cqw,' + _ff_num(ch / 8.5, 0, 0, 100, 2) + 'cqh);--w:' + _ff_num(cw - 2, 0, 0, 100, 2) + '%}'
+        for i in range(n):
+            rules += ('.' + cls + '>div:nth-child(' + str(i + 1) + '){--x:' + _ff_num((i % cols) * cw + 1 + _MO_SC_JIT[i], 0, -100, 200, 2) + '%;--y:' + _ff_num((i // cols) * ch + 1, 0, -100, 200, 2) + '%;--r:' + _ff_num(_MO_SCATTER[i][2] * 0.25, 0, -10, 10, 2) + 'deg}')
+        return rules
+    c_narrow, c_mid, c_wide = (2 if n <= 8 else 3), (2 if n <= 4 else 3), (2 if n <= 4 else (3 if n <= 6 else 4))
+    css = ('@container (width<480px){' + band(c_narrow) + '}@container (width>=480px) and (width<900px){' + band(c_mid) + '}'
+           + ('@container (width>=900px){' if wide else '@container (width>=900px) and (width<1100px){') + band(c_wide) + '}')
+    return cls, '<style>' + css + '</style>'
+
+
 def _render_motion_scatter(b: dict) -> str:
     items = []
     og = b.get('origin')  # opt-in: 'center' or {x, y} (percent of the box, a missing coordinate is 50); the cards burst out from that point and the cap rises from 8 to 12
@@ -30259,18 +30282,20 @@ def _render_motion_scatter(b: dict) -> str:
         items = [('Card', '')]
     size, w = _ff_int(b.get('size'), 18, 8, 60), _ff_int(b.get('card_w'), 24, 10, 50)
     acc, fill, ink, out = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'fill', '#ffffff'), _mo_ink(b, 'color', '#14161c'), ''
+    fit, css = ('', '') if len(items) < 3 else _mo_scatter_fit(len(items), org)
     for i, (t, x) in enumerate(items):
         P = _MO_SCATTER[i]
+        L, T, W, R = (('var(--x,' + str(P[0]) + '%)', 'var(--y,' + str(P[1]) + '%)', 'var(--w,' + str(w) + '%)', 'var(--r,' + str(P[2]) + 'deg)') if fit else (str(P[0]) + '%', str(P[1]) + '%', str(w) + '%', str(P[2]) + 'deg'))
         dx, dy = (1 if i % 2 else -1) * (60 + i * 7), -40 - i * 5
         if org:  # centre of the card starts on the origin and slides to its slot, growing and straightening as it goes
-            out += ('<div style="--u:clamp(0,calc((var(--p,1) - ' + _ff_num(0.3 * i / max(1, len(items) - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + str(P[0]) + '%*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + str(P[1]) + '%*var(--u) - ' + org[1] + '%*var(--u));width:' + str(w) + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
-                    + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:clamp(0,calc(var(--u)*4),1);transform:translate(calc((1 - var(--u))*-50%),calc((1 - var(--u))*-50%)) scale(calc(0.3 + 0.7*var(--u))) rotate(calc(' + str(P[2]) + 'deg + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
+            out += ('<div style="--u:clamp(0,calc((var(--p,1) - ' + _ff_num(0.3 * i / max(1, len(items) - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + L + '*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + T + '*var(--u) - ' + org[1] + '%*var(--u));width:' + W + ';box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+                    + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:clamp(0,calc(var(--u)*4),1);transform:translate(calc((1 - var(--u))*-50%),calc((1 - var(--u))*-50%)) scale(calc(0.3 + 0.7*var(--u))) rotate(calc(' + R + ' + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
                     + '<div style="font-weight:800;">' + _cv_esc(t) + '</div>' + ('<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')
             continue
-        out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(len(items) + 2) + ' - ' + str(i) + '),1);position:absolute;left:' + str(P[0]) + '%;top:' + str(P[1]) + '%;width:' + str(w) + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
-                + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + str(dx) + '%),calc((1 - var(--u))*' + str(dy) + '%)) rotate(calc(' + str(P[2]) + 'deg + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
+        out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(len(items) + 2) + ' - ' + str(i) + '),1);position:absolute;left:' + L + ';top:' + T + ';width:' + W + ';box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+                + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + str(dx) + '%),calc((1 - var(--u))*' + str(dy) + '%)) rotate(calc(' + R + ' + (1 - var(--u))*' + str(P[2] * 6) + 'deg));">'
                 + '<div style="font-weight:800;">' + _cv_esc(t) + '</div>' + ('<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')
-    return '<div style="position:relative;width:100%;height:100%;min-height:12em;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">' + out + '</div>'
+    return '<div' + (' class="' + fit + '"' if fit else '') + ' style="position:relative;width:100%;height:100%;min-height:12em;' + ('container-type:size;' if fit else '') + 'font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">' + out + css + '</div>'
 
 
 def _render_motion_contours(b: dict) -> str:

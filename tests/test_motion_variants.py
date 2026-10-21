@@ -235,7 +235,8 @@ def test_scatter_origin_bursts_from_the_point_and_clamps_it():
     far = _py(dict(SCATTER, origin={"x": -50, "y": 999}))
     assert "calc(0%" in far and "calc(100%" in far
     hostile = _py(dict(SCATTER, origin={"x": "30;}</style>", "y": "1e400"}))  # (Python only: _ff_num reads "30;}" as junk, JS parseFloat as 30, a pre-existing helper difference)
-    assert "</style>" not in hostile and "Infinity" not in hostile and "NaN" not in hostile
+    assert hostile.count("</style>") == 1 and "30;}</style>" not in hostile  # (the one </style> is the fit stylesheet's own; none comes from the origin value)
+    assert "Infinity" not in hostile and "NaN" not in hostile
     assert "<img" not in _py(CASES["scatter"][15])
 
 
