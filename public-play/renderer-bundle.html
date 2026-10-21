@@ -29641,7 +29641,7 @@ function _moGlOn(v) { return v === true || (!!v && typeof v === 'object' && !Arr
 function _moGlitch(spec, html) {
   if (!_moGlOn(spec)) return html;
   var o = spec === true ? {} : spec;
-  var n = _ffInt(o.slices, 7, 2, 12), shift = _ffNum(o.shift, 8, 0, 40, 2), fr = _ffInt(o.fringe, 0, 0, 20), seed = _ffInt(o.seed, 7, 0, 9999);
+  var n = _ffInt(o.slices, 7, 2, 12), shift = _ffNum(o.shift, 8, 0, 40, 2), fr = _ffInt(o.fringe, 2, 0, 20), seed = _ffInt(o.seed, 7, 0, 9999);
   if (parseFloat(shift) === 0 && fr === 0) return html;
   if (html.toLowerCase().indexOf('<script') >= 0) return html;
   var dialS = o.dial === 's';
@@ -29658,7 +29658,7 @@ function _moGlitch(spec, html) {
   function nxt() { st = st * 16807 % 2147483647; return st; }
   var sl = [], tot = 0, j;
   for (j = 0; j < n; j++) {
-    var w = 1 + nxt() % 3, sg = nxt() % 2 ? 1 : -1, amp = (4 + nxt() % 7) / 10, f = 18 + nxt() % 23, ph = (nxt() % 63) / 10;
+    var w = 1 + nxt() % 3, sg = nxt() % 2 ? 1 : -1, amp = (4 + nxt() % 7) / 10, f = 4 + nxt() % 6, ph = (nxt() % 63) / 10;
     sl.push([w, sg, amp, f, ph]); tot += w;
   }
   var fil = '';
@@ -30028,7 +30028,7 @@ var _MO_TIMELINE_JS =
   'if(tr)e.style.transform=tr;' +
   'if(v.opacity!==undefined)e.style.opacity=Math.max(0,Math.min(1,v.opacity)).toFixed(3);' +
   'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";' +
-  'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999||cs===5){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else if(cs===9)cpp=lz(g.i,cl);else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}' +
+  'if(v.clip!==undefined){var cl=Math.max(0,Math.min(1,v.clip)),cs=v.cs===undefined?0:Math.round(v.cs),cpp="",mk="";if(cl<0.999||cs===5){if(cs===1)cpp="circle("+(cl*75).toFixed(2)+"% at 50% 50%)";else if(cs===2)mk="conic-gradient(#000 "+(cl*360).toFixed(2)+"deg,transparent 0)";else if(cs===3)mk="repeating-linear-gradient(90deg,#000 0,#000 "+(cl*10).toFixed(3)+"%,transparent "+(cl*10).toFixed(3)+"%,transparent 10%)";else if(cs===4)cpp="polygon(0 0,"+(cl*140).toFixed(2)+"% 0,"+(cl*140-40).toFixed(2)+"% 100%,0 100%)";else if(cs===5){var e5=cl*170-15;cpp="polygon("+(e5-14).toFixed(2)+"% 0,"+(e5+8).toFixed(2)+"% 0,"+(e5-32).toFixed(2)+"% 100%,"+(e5-54).toFixed(2)+"% 100%)";}else if(cs===6)cpp="polygon(0 0,"+(cl*170-15).toFixed(2)+"% 0,"+(cl*170-55).toFixed(2)+"% 100%,0 100%)";else if(cs===7){var h7=((1-cl)*50).toFixed(3);cpp="inset(0 "+h7+"% 0 "+h7+"%)";}else if(cs===9)cpp=lz(g.i,cl);else cpp="inset(0 "+((1-cl)*100).toFixed(2)+"% 0 0)";}e.style.clipPath=cpp;e.style.webkitMaskImage=mk;e.style.maskImage=mk;}' +
   'if(v.p!==undefined){e.style.setProperty("--p",v.p.toFixed(4));for(var j=0;j<o.nums.length;j++){var q=o.nums[j],a=parseFloat(q.getAttribute("data-from")),b=parseFloat(q.getAttribute("data-to"));q.textContent=fm(a+(b-a)*v.p,parseInt(q.getAttribute("data-dec"),10)||0,q.getAttribute("data-pre")||"",q.getAttribute("data-suf")||"");}}' +
   'if(v.step!==undefined)e.style.setProperty("--s",v.step.toFixed(4));}' +
   'function cp(t){if(!C.cam||!cam)return;var c=C.cam;function g(k,d){return c[k]?at(c[k],t):d;}' +
@@ -30289,7 +30289,7 @@ _RENDERERS['motion_timeline'] = function(b) {
 // motion_layer groups children into a scene; motion_text, motion_shape and motion_counter draw type, forms and numbers
 // from the stage theme (--mt-ink / --mt-acc / --mt-mute, set by motion_timeline) and move with --p like the demo kit.
 // Standalone they render their FINAL state.
-var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1, flap: 1, reel: 1, pop: 1, decode: 1};
+var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1, flap: 1, reel: 1, pop: 1, decode: 1, bloom: 1};
 var _MO_ORDER = {forward: 1, reverse: 1, centre: 1, random: 1};
 var _MO_FLAP = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
 var _MO_ALIGN = {start: 'left', middle: 'center', end: 'right'};
@@ -30462,6 +30462,7 @@ _RENDERERS['motion_text'] = function(b) {
       for (zi = 0; zi < zl; zi++) nz += _CP_NOISE.charAt(Math.floor(_bxSeed(ordSeed, n * 61 + zi, 4) * _CP_NOISE.length));
       return '<span style="' + uvar(n) + 'position:relative;' + inl + '"><span style="opacity:clamp(0,calc(var(--u)*1.6 - 0.3),1);">' + inner + '</span><span aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;opacity:clamp(0,calc(1.2 - var(--u)*1.6),1);">' + _esc(nz) + '</span></span>';
     }
+    if (reveal === 'bloom') return '<span style="' + uvar(n) + inl + 'opacity:clamp(0,calc(var(--u)*3),1);filter:brightness(calc(1 + (1 - var(--u))*1.6)) drop-shadow(0 0 calc((1 - var(--u))*0.5em) currentColor) blur(calc((1 - var(--u))*0.4em));transform:scale(calc(0.9 + 0.1*var(--u)));">' + inner + '</span>';
     var fx = reveal === 'fade' ? '' : reveal === 'drop' ? 'transform:translateY(calc((1 - var(--u))*-0.6em));' : reveal === 'blur' ? 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' : 'transform:translateY(calc((1 - var(--u))*0.6em));';
     return '<span style="' + uvar(n) + inl + 'opacity:var(--u);' + fx + '">' + inner + '</span>';
   }
@@ -30663,8 +30664,8 @@ _RENDERERS['motion_stepper'] = function(b) {
 // Tiles that fly out from the centre onto an ellipse and swing round it as --s goes 0..1. Text tiles only (letters, glyphs, short
 // labels): never brand logos. Put the product shot in the same layer, centred.
 _RENDERERS['motion_orbit'] = function(b) {
-  var size = _ffInt(b.size, 64, 24, 160), src = Array.isArray(b.items) ? b.items : [], items = [], i;
-  for (i = 0; i < src.length && items.length < 12; i++) { var t = _moStr(typeof src[i] === 'string' ? src[i] : (src[i] && typeof src[i] === 'object' ? src[i].text : ''), 8); if (t) items.push(t); }
+  var size = _ffInt(b.size, 64, 24, 160), pill = b.shape === 'pill', src = Array.isArray(b.items) ? b.items : [], items = [], i;
+  for (i = 0; i < src.length && items.length < 12; i++) { var t = _moStr(typeof src[i] === 'string' ? src[i] : (src[i] && typeof src[i] === 'object' ? src[i].text : ''), pill ? 24 : 8); if (t) items.push(t); }
   if (!items.length) items = ['A'];
   var n = items.length, rx = _ffInt(b.rx, 40, 5, 60), ry = _ffInt(b.ry, 36, 5, 60), start = _ffInt(b.start, -90, -360, 360), spin = _ffInt(b.spin, 40, -360, 360);
   var fill = _moInk(b, 'fill', '#ffffff'), ink = _moInk(b, 'ink', '#111827');
@@ -30673,6 +30674,11 @@ _RENDERERS['motion_orbit'] = function(b) {
   for (i = 0; i < n; i++) {
     var a = start + Math.floor(i * 360 / n + 0.5), len = Array.from(items[i]).length, fs = len > 2 ? Math.floor(size * 22 / 100) : Math.floor(size * 42 / 100);
     var ang = 'calc(' + a + 'deg + var(--s,0)*' + spin + 'deg)';
+    if (pill) {
+      var ph = Math.floor(size * 55 / 100), pf = Math.max(12, Math.floor(size * 26 / 100));
+      html += '<div style="--u:clamp(0,calc((var(--p,1)*' + (n + 3) + ' - ' + i + ')/3),1);position:absolute;left:calc(50% + ' + rx + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + ry + '%*var(--u)*sin(' + ang + '));width:auto;height:' + ph + 'px;padding:0 ' + Math.floor(ph * 45 / 100) + 'px;box-sizing:border-box;white-space:nowrap;display:flex;align-items:center;justify-content:center;border-radius:999px;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + pf + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:translate(-50%,-50%) scale(var(--u));opacity:var(--u);">' + _esc(items[i]) + '</div>';
+      continue;
+    }
     html += '<div style="--u:clamp(0,calc((var(--p,1)*' + (n + 3) + ' - ' + i + ')/3),1);position:absolute;left:calc(50% + ' + rx + '%*var(--u)*cos(' + ang + '));top:calc(50% + ' + ry + '%*var(--u)*sin(' + ang + '));width:' + size + 'px;height:' + size + 'px;margin:-' + Math.floor(size / 2) + 'px 0 0 -' + Math.floor(size / 2) + 'px;display:flex;align-items:center;justify-content:center;border-radius:28%;background:' + fill + ';color:' + ink + ';font-family:' + _MO_SANS + ';font-size:' + fs + 'px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.35);transform:scale(var(--u));opacity:var(--u);">' + _esc(items[i]) + '</div>';
   }
   return html + '</div>';
@@ -30862,7 +30868,7 @@ _RENDERERS['motion_mask'] = function(b) {
 // scene's start and `overlap` seconds later is the hand-over: the old scene leaves while the new one arrives. Your own tracks
 // on the same layer are applied after, and win.
 var _MO_STITCH = {
-  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'letter': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1
+  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'letter': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1, 'collapse': 1, 'collapse': 1
 };
 var _MO_STITCH_IN = {
   'letter': {clip: 0, cs: 9}, 'fade-through': {opacity: 0, scale: 0.92}, 'shared-x': {opacity: 0, x: 8}, 'shared-y': {opacity: 0, y: 6}, 'shared-z': {opacity: 0, scale: 0.8}, 'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}, 'iris': {clip: 0, cs: 1}, 'clock': {clip: 0, cs: 2}, 'slice': {clip: 0, cs: 3}, 'ribbon': {clip: 0, cs: 6}, 'flip': {opacity: 0, ry: -90}, 'spin': {opacity: 0, rotate: -14, scale: 0.8, blur: 6}
@@ -30933,6 +30939,9 @@ function _moStitch(b, ids, bpm, dur, st) {
         _moStitchKey(keys, 0, {opacity: 0, x: P.x - 50, y: P.y - 50, scale: s0}); _moStitchKey(keys, cur.t, {opacity: 1, x: P.x - 50, y: P.y - 50, scale: s0}, 'hold');
         _moStitchKey(keys, cur.t + ov, {x: 0, y: 0, scale: 1}, 'quart-in-out');
       }
+      else if (fin === 'collapse') { // waits, whole and invisible, until the old scene has squeezed away, then appears
+        _moStitchKey(keys, 0, {opacity: 0}); _moStitchKey(keys, cur.t + ov, {opacity: 1}, 'hold');
+      }
       else if (fin === 'letter') { // hidden until its start (clip 0 is the word at reading size, not nothing), then dives through the word
         _moStitchKey(keys, 0, {opacity: 0, clip: 0, cs: 9}); _moStitchKey(keys, cur.t, {opacity: 1, clip: 0, cs: 9}, 'hold'); _moStitchKey(keys, cur.t + Math.max(ov, 1.4), _MO_REST, 'linear');
       }
@@ -30944,6 +30953,9 @@ function _moStitch(b, ids, bpm, dur, st) {
         var Q = nxt.pb, kq = 100 / Q.w;
         _moStitchKey(keys, nxt.t, {opacity: 1, x: 0, y: 0, scale: 1}); _moStitchKey(keys, nxt.t + ov, {x: -(Q.x - 50) * kq, y: -(Q.y - 50) * kq, scale: kq}, 'quart-in-out');
         _moStitchKey(keys, nxt.t + ov + 0.02, {opacity: 0}, 'hold');
+      }
+      else if (fout === 'collapse') { // the old scene is clipped to a band that narrows to nothing (clip shape 7)
+        _moStitchKey(keys, nxt.t, {opacity: 1, clip: 1, cs: 7}, 'hold'); _moStitchKey(keys, nxt.t + ov, {clip: 0, cs: 7}, 'quart-in-out');
       }
       else if (fout === 'wipe' || fout === 'iris' || fout === 'clock' || fout === 'slice' || fout === 'ribbon' || fout === 'letter') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + (fout === 'letter' ? Math.max(ov, 1.4) : ov), {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
       else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + (own.call(_MO_SEQ, fout) ? ov * 0.3 : ov), _MO_STITCH_OUT[fout], 'accelerate'); }
@@ -31024,7 +31036,13 @@ _RENDERERS['motion_rays'] = function(b) {
   var fade = 'clamp(0,calc(var(--p,1)*3),1)';
   if (kind === 'speed') {
     var lines = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + _ffNum(100 / n * th, 1, 0.05, 50, 3) + '%,transparent ' + _ffNum(100 / n * th, 1, 0.05, 50, 3) + '%,transparent ' + _ffNum(100 / n, 4, 0.1, 50, 3) + '%)';
-    var mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)';
+    var mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)', ang = _ffInt(b.angle, 0, -180, 180);
+    if (ang) { // opt-in direction: the stripes and their travel turn inside a clipping 16:9 frame (the inner layer is twice the frame so no corner is left bare)
+      var lt2 = _ffNum(50 / n * th, 1, 0.025, 25, 3), ls2 = _ffNum(50 / n, 4, 0.05, 25, 3);
+      var lines2 = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + lt2 + '%,transparent ' + lt2 + '%,transparent ' + ls2 + '%)';
+      return '<div aria-hidden="true" style="position:relative;overflow:hidden;width:100%;aspect-ratio:16/9;opacity:calc(' + fade + '*' + st + ');"><div style="position:absolute;left:-50%;top:-50%;width:200%;height:200%;transform:rotate(' + ang + 'deg);background:' + lines2 + ';-webkit-mask-image:' + mk + ';mask-image:' + mk
+        + ';-webkit-mask-size:25% 100%;mask-size:25% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-16.667%) 0;mask-position:calc(var(--s,0)*-16.667%) 0;"></div></div>';
+    }
     return '<div aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:' + lines + ';-webkit-mask-image:' + mk + ';mask-image:' + mk + ';-webkit-mask-size:50% 100%;mask-size:50% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-50%) 0;mask-position:calc(var(--s,0)*-50%) 0;opacity:calc(' + fade + '*' + st + ');"></div>';
   }
   var mr = 'radial-gradient(circle,#000 0%,transparent 70%)';
@@ -31097,7 +31115,7 @@ _RENDERERS['motion_flash'] = function(b) {
 };
 
 // ─── fourth reference batch (2026-10-01, five LinkedIn/YouTube motion pieces): marquee rows, glitch type, bounce, scatter, contours, rail ───
-var _MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4]];
+var _MO_SCATTER = [[8, 14, -9], [52, 6, 6], [24, 46, 11], [62, 40, -7], [10, 70, 5], [46, 72, -12], [74, 66, 8], [34, 22, -4], [76, 24, 7], [2, 42, -6], [80, 44, 9], [28, 84, -8]];
 var _MO_WAVE = [14, -22, 30, -10, 24, -30, 8, -18];
 
 // Rows of big text that slide sideways forever (--s is the travel), alternate rows going opposite ways: the ticker behind a headline.
@@ -31130,12 +31148,19 @@ _RENDERERS['motion_bounce'] = function(b) {
 
 // Cards that fly in from outside the frame and settle at scattered, tilted rest positions: the pile of tickets, labels or notes.
 _RENDERERS['motion_scatter'] = function(b) {
-  var src = Array.isArray(b.items) ? b.items : [], items = [], i;
-  for (i = 0; i < src.length && items.length < 8; i++) { var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30); if (t) items.push({t: t, x: obj ? _moStr(it.text, 50) : ''}); }
+  var src = Array.isArray(b.items) ? b.items : [], items = [], i, og = b.origin; // opt-in: 'center' or {x, y} (percent of the box, a missing coordinate is 50); the cards burst out from that point and the cap rises from 8 to 12
+  var org = (og && typeof og === 'object' && !Array.isArray(og)) ? [_ffNum(og.x, 50, 0, 100, 2), _ffNum(og.y, 50, 0, 100, 2)] : (og === 'center' ? ['50', '50'] : null);
+  for (i = 0; i < src.length && items.length < (org ? 12 : 8); i++) { var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30); if (t) items.push({t: t, x: obj ? _moStr(it.text, 50) : ''}); }
   if (!items.length) items = [{t: 'Card', x: ''}];
   var size = _ffInt(b.size, 18, 8, 60), w = _ffInt(b.card_w, 24, 10, 50), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), fill = _moInk(b, 'fill', '#ffffff'), ink = _moInk(b, 'color', '#14161c'), out = '';
   for (i = 0; i < items.length; i++) {
     var P = _MO_SCATTER[i], dx = (i % 2 ? 1 : -1) * (60 + i * 7), dy = -40 - i * 5;
+    if (org) { // centre of the card starts on the origin and slides to its slot, growing and straightening as it goes
+      out += '<div style="--u:clamp(0,calc((var(--p,1) - ' + _ffNum(0.3 * i / Math.max(1, items.length - 1), 0, 0, 1, 3) + ')/0.7),1);position:absolute;left:calc(' + org[0] + '% + ' + P[0] + '%*var(--u) - ' + org[0] + '%*var(--u));top:calc(' + org[1] + '% + ' + P[1] + '%*var(--u) - ' + org[1] + '%*var(--u));width:' + w + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
+        + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:clamp(0,calc(var(--u)*4),1);transform:translate(calc((1 - var(--u))*-50%),calc((1 - var(--u))*-50%)) scale(calc(0.3 + 0.7*var(--u))) rotate(calc(' + P[2] + 'deg + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
+        + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';
+      continue;
+    }
     out += '<div style="--u:clamp(0,calc(var(--p,1)*' + (items.length + 2) + ' - ' + i + '),1);position:absolute;left:' + P[0] + '%;top:' + P[1] + '%;width:' + w + '%;box-sizing:border-box;padding:0.7em 0.9em;border-radius:0.5em;background:' + fill + ';color:' + ink + ';border-top:0.25em solid ' + acc
       + ';box-shadow:0 10px 26px rgba(0,0,0,0.3);opacity:var(--u);transform:translate(calc((1 - var(--u))*' + dx + '%),calc((1 - var(--u))*' + dy + '%)) rotate(calc(' + P[2] + 'deg + (1 - var(--u))*' + (P[2] * 6) + 'deg));">'
       + '<div style="font-weight:800;">' + _esc(items[i].t) + '</div>' + (items[i].x ? '<div style="font-size:0.8em;opacity:0.7;margin-top:0.25em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';

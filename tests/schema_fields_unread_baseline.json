@@ -520,21 +520,12 @@
   "size",
   "weight"
  ],
- "motion_orbit": [
-  "shape"
- ],
- "motion_rays": [
-  "angle"
- ],
  "motion_reveal": [
   "align",
   "color",
   "font",
   "size",
   "weight"
- ],
- "motion_scatter": [
-  "origin"
  ],
  "motion_selection": [
   "version"

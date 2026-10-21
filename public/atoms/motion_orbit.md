@@ -10,7 +10,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| items | array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label). |
+| items | array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label), or max 24 with shape pill. |
+| shape | "pill" (optional). Rectangular pill tiles that size to their label (text up to 24 characters, one line, no wrapping) instead of square tiles. Anything else keeps the square tile and the 8-character limit. Tile height is 55% of size, so size sets the pill height; allow room around the ring for long labels. |
 | size | integer (optional). Tile px, 24-160. Default 64. |
 | rx | integer (optional). Horizontal radius, percent of the placed box, 5-60. Default 40. |
 | ry | integer (optional). Vertical radius, percent of the placed box, 5-60. Default 36. |

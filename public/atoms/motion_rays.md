@@ -11,6 +11,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | Field | Type |
 |---|---|
 | kind | "burst" | "speed" (optional, default "burst") |
+| angle | integer (optional). Kind speed only: the direction the lines run, in degrees clockwise from horizontal, -180 to 180. Default 0 (horizontal lines streaming left to right as step advances). The lines and their travel turn together inside the same 16:9 frame, clipped to it. Ignored by burst; 0 or a non-number keeps the horizontal look exactly. |
 | count | integer (optional). Rays or lines, 4-64. Default 24. |
 | thickness | number (optional). Share of each step that is ray, 0.1-0.9. Default 0.5. |
 | spin | integer (optional). Degrees turned at --s = 1 (burst), -360 to 360. Default 45. |
