@@ -28363,6 +28363,67 @@ def _gd_install():
         _RENDERERS[k] = make(f)
 
 
+def _mo_gl_on(v):
+    """True for the glitch specs that switch it on: true, or a non-empty object (an empty one is off in both twins)."""
+    return v is True or (isinstance(v, dict) and len(v) > 0)
+
+
+def _mo_glitch(spec, html):
+    """Twin of atoms_motion.gs _moGlitch: a digital tear. The block is drawn once for real (shown only when the dial is at rest) and once per
+    slice as an aria-hidden, inert copy clipped to a horizontal band and displaced sideways by amp * (1 - p) * sin(p * f + phase), which is
+    zero at p = 1 and jitters on the way. Band heights, directions, amplitudes, frequencies and phases come from a fixed seeded sequence, never
+    Math.random. `dial` "s" tears with the step dial instead (clean at 0). Optional red/cyan fringe is a drop-shadow pair on the slices."""
+    if not _mo_gl_on(spec):
+        return html
+    o = spec if isinstance(spec, dict) else {}
+    n = _ff_int(o.get('slices'), 7, 2, 12)
+    shift = _ff_num(o.get('shift'), 8, 0, 40, 2)
+    fr = _ff_int(o.get('fringe'), 0, 0, 20)
+    seed = _ff_int(o.get('seed'), 7, 0, 9999)
+    if float(shift) == 0 and fr == 0:
+        return html
+    if '<script' in html.lower():
+        return html
+    dial_s = o.get('dial') == 's'
+    ca, cb = _ff_rgb(_ff_hex(o.get('fringe_a'), '#ff2d6f')), _ff_rgb(_ff_hex(o.get('fringe_b'), '#19d3ff'))
+    if dial_s:
+        x, i = 'var(--s,0)', 'clamp(0,var(--s,0),1)'
+        ob, os_ = 'clamp(0,calc(1 - var(--s,0)*1000),1)', 'clamp(0,calc(var(--s,0)*1000),1)'
+    else:
+        x, i = 'var(--p,1)', '(1 - clamp(0,var(--p,1),1))'
+        ob, os_ = 'clamp(0,calc((clamp(0,var(--p,1),1) - 0.999)*1000),1)', 'clamp(0,calc((1 - clamp(0,var(--p,1),1))*1000),1)'
+    st = [(seed * 7919 + 104729) % 2147483646 + 1]
+
+    def nxt():
+        st[0] = st[0] * 16807 % 2147483647
+        return st[0]
+    sl = []
+    for _ in range(n):
+        w = 1 + nxt() % 3
+        sg = 1 if nxt() % 2 else -1
+        amp = (4 + nxt() % 7) / 10
+        f = 18 + nxt() % 23
+        ph = (nxt() % 63) / 10
+        sl.append((w, sg, amp, f, ph))
+    tot = sum(r[0] for r in sl)
+    fil = ''
+    if fr > 0:
+        d = 'calc(' + str(fr) + 'px*' + i + ')'
+        fil = 'filter:drop-shadow(calc(-1*' + d + ') 0 0 rgba(' + ca + ',0.85)) drop-shadow(' + d + ' 0 0 rgba(' + cb + ',0.85));'
+    copy = re.sub(r'[ \t\n\r]id="[^"]*"', '', html)
+    out, acc = [], 0
+    for w, sg, amp, f, ph in sl:
+        top = acc * 100 / tot
+        acc += w
+        bot = min(100, acc * 100 / tot + 0.2) if acc < tot else 100
+        k = _ff_num(sg * amp * float(shift), 0, -40, 40, 2)
+        out.append('<div class="mo-gl-s" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;user-select:none;opacity:' + os_
+                   + ';clip-path:inset(' + _ff_num(top, 0, 0, 100, 2) + '% -50% ' + _ff_num(100 - bot, 0, 0, 100, 2) + '% -50%);transform:translateX(calc(' + k + '% * ' + i
+                   + ' * sin(calc(' + x + '*' + str(f) + ' + ' + _ff_num(ph, 0, 0, 7, 1) + '))));' + fil + '">' + copy + '</div>')
+    return ('<style>@media (prefers-reduced-motion:reduce),print{.mo-gl-s{display:none!important}.mo-gl-b{opacity:1!important}}</style>'
+            '<div class="mo-glitch" style="position:relative;overflow-x:clip;"><div class="mo-gl-b" style="opacity:' + ob + ';">' + html + '</div>' + ''.join(out) + '</div>')
+
+
 def _mo_halo(spec, html):
     """Twin of atoms_motion.gs _moHalo: a soft bloom behind any block, scaled by --p, off unless `halo` is set."""
     if isinstance(spec, str):
@@ -28427,6 +28488,8 @@ def _mo_install():
         def make(f):
             def w(b):
                 h = f(b)
+                if isinstance(b, dict) and _mo_gl_on(b.get('glitch')):
+                    h = _mo_glitch(b['glitch'], h)
                 if isinstance(b, dict) and b.get('halo'):
                     h = _mo_halo(b['halo'], h)
                 if isinstance(b, dict) and b.get('smear'):
