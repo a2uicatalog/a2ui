@@ -2382,8 +2382,8 @@ _RENDERERS['voronoi'] = function(b) {
     } else {
       tip += 'no region of its own';
     }
-    cellsvg += '<g class="vog" style="' + _ifK(i, n) + 'opacity:var(--k,1);">' + path + '<circle class="vod" cx="' + _cnR(cx) + '" cy="' + _cnR(cy) + '" r="4" fill="' + s.c +
-      '" style="stroke:var(--surface,#F8FAFC);" stroke-width="1.5"/><title>' + _esc(tip) + '</title></g>';
+    cellsvg += '<g class="vog" style="' + _ifK(i, n) + 'opacity:var(--k,1);">' + path + '<path class="vod" d="M' + _cnR(cx) + ',' + _cnR(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="9" vector-effect="non-scaling-stroke" style="stroke:var(--surface,#F8FAFC);"/>' +
+      '<path class="vod" d="M' + _cnR(cx) + ',' + _cnR(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="6" vector-effect="non-scaling-stroke" stroke="' + s.c + '"/><title>' + _esc(tip) + '</title></g>';
   }
   var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">' +
     '<rect x="0" y="0" width="' + W + '" height="' + H + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg +

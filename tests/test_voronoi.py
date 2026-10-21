@@ -285,7 +285,7 @@ def _aria(html):
 
 
 def _cells(html):
-    return re.findall(r'<g class="vog" style="([^"]*)"><path class="voc" d="([^"]*)" fill="([^"]*)" fill-opacity="([^"]*)" style="([^"]*)"[^>]*/><circle class="vod" cx="([^"]*)" cy="([^"]*)"[^>]*/><title>(.*?)</title></g>', html)
+    return re.findall(r'<g class="vog" style="([^"]*)"><path class="voc" d="([^"]*)" fill="([^"]*)" fill-opacity="([^"]*)" style="([^"]*)"[^>]*/><path class="vod" d="M([^,"]*),([^h"]*)h0"[^>]*/><path class="vod"[^>]*/><title>(.*?)</title></g>', html)
 
 
 def _bounds(sites):

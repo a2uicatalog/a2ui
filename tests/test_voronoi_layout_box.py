@@ -31,7 +31,7 @@ window.addEventListener('load', function () {
     var cells = Array.prototype.slice.call(svg.querySelectorAll('g.vog')), dots = [], shown = [];
     if (!cells.length) errs.push('no regions');
     cells.forEach(function (g, k) {
-      var p = g.querySelector('path.voc'), r = p.getBoundingClientRect(), d = g.querySelector('circle.vod').getBoundingClientRect();
+      var p = g.querySelector('path.voc'), r = p.getBoundingClientRect(), d = g.querySelector('path.vod').getBoundingClientRect();
       if (r.width < 0.5 || r.height < 0.5) errs.push('region ' + k + ' has no size');
       if (r.left < sr.left - 1 || r.right > sr.right + 1 || r.top < sr.top - 1 || r.bottom > sr.bottom + 1) errs.push('region ' + k + ' outside the drawing');
       var dcx = (d.left + d.right) / 2, dcy = (d.top + d.bottom) / 2;   // a dot may cover a region edge when sites are crowded; its centre may not leave the region

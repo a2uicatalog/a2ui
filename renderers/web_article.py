@@ -35257,8 +35257,8 @@ def _render_voronoi(b: dict) -> str:
                              + ';transform:translate(-50%,7px);white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _if_k(i, n) + 'opacity:var(--k,1);">' + _cv_esc(s['l']) + '</div>')
         else:
             tip += 'no region of its own'
-        cellsvg += ('<g class="vog" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + path + '<circle class="vod" cx="' + _cn_r(cx) + '" cy="' + _cn_r(cy) + '" r="4" fill="' + s['c']
-                    + '" style="stroke:var(--surface,#F8FAFC);" stroke-width="1.5"/><title>' + _cv_esc(tip) + '</title></g>')
+        cellsvg += ('<g class="vog" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + path + '<path class="vod" d="M' + _cn_r(cx) + ',' + _cn_r(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="9" vector-effect="non-scaling-stroke" style="stroke:var(--surface,#F8FAFC);"/>'
+                    '<path class="vod" d="M' + _cn_r(cx) + ',' + _cn_r(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="6" vector-effect="non-scaling-stroke" stroke="' + s['c'] + '"/><title>' + _cv_esc(tip) + '</title></g>')
     svg = ('<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">'
            '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg
            + '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>')
