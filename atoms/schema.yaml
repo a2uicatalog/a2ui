@@ -21346,6 +21346,43 @@ blocks:
     to 40,000 points; a noisy 100 by 100 grid can pass that and then the highest levels are noted and not drawn. Bands are drawn in one hue family only; there is no
     colour scale choice.
   source: *ifg002
+- type: voronoi
+  stage: preview
+  description: 'Nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that is closer to its site than to any
+    other site (a catchment or service area: which store, depot, sensor or office is nearest). Regions come from a Delaunay triangulation and its Voronoi cells (d3-delaunay,
+    with delaunator and robust-predicates), clipped to the sites'' extent plus a margin, with nice axis ticks in the data''s own units. Each region is filled with a light colour
+    by group (a legend names every group, never colour alone) or with one light fill and a visible outline when there are no groups; the site is a dot, and its label sits under the
+    dot when the region is wide enough for it (otherwise the label is hidden; the full label is in the region''s tooltip and in the table). Static SVG, no script, scaled to its
+    container. The hidden table lists every site with x, y, group, value and its share of the area. The aria label gives the number of sites, the number of groups and the site
+    with the largest region. Motion-ready: each region reads --p through a --k so a motion_timeline track on p fades the regions in one after another; the standalone render is
+    the finished picture.'
+  compact_description: 'voronoi: nearest-site regions of a set of points (catchments, service areas)'
+  routing_text: 'The nearest-site region of each of a set of points: which store, depot, sensor or office is closest to every spot of an area (catchments, service areas,
+    coverage). It is not a map of real borders or regions (no coordinates, projection or base map; use a choropleth), not for finding clusters or the density of points
+    (use a contour plot or a scatter plot), and distances are straight lines in the x and y units, not travel time along roads. 3 to 200 sites.'
+  intent_phrases:
+  - Show which of my depots is the nearest to each part of the city.
+  - Draw the service area of each store as nearest-site regions.
+  - Split this area into catchments, one per sensor, by closest distance.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    sites: 'array (required, 3 to 200) of {x, y (numbers, required), label (optional, max 24), group (optional, max 20), value (optional number)}. A site whose position equals an earlier
+      site''s is merged into the first, with a note. An entry that is not an object with finite numeric x and y (or beyond 1e12) is left out and counted in a note; entries beyond the first 200
+      are noted and not used; fewer than 3 sites at different positions gets a note instead of the chart. A label or group that is a number is shown as that number; a list, object
+      or boolean is no text (the site is called "Site 1", "Site 2" ... by its place in the list, and has no group). value is shown in the table and in the region''s tooltip only, never drawn.'
+    x_label: string (optional, max 30). Under the plot.
+    y_label: string (optional, max 30). Above the plot.
+    unit: string (optional, max 12). Appended to the values in the table and the tooltips.
+    version: integer (optional, default 1). The voronoi contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note.
+  notes: 'The bounds are the sites'' extent on each axis plus 5% of it on each side, niced to round numbers (so no site touches the border), and the regions are worked out in those
+    x and y units and clipped to them. The plot is 600 units wide and as high as the bounds'' shape asks, kept between a third of its width and its width; when that clamp applies
+    a note says the x and y scales differ. The share of the area is each region''s polygon area (shoelace formula) over the bounds'' area, so the shares add up to 100% (a site that
+    is a hair from another can have no region of its own; it is noted and shown as 0.0%). A label is drawn under its site only when the circle around the site that just touches the
+    nearest region edge holds it; in a narrower container more labels are hidden, and a label that would not fit in any container up to 820 px is not drawn at all. Groups use the
+    same eight hues as sunburst (a ninth group repeats a hue; the table names the group). Sites that lie in a straight line, or sites on a very small scale (all differences below
+    about 1e-5), are moved by up to one hundred-millionth of their spread before triangulating, as d3-delaunay does, so a region edge can differ from the exact bisector by that much.'
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

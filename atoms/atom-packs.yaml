@@ -193,6 +193,7 @@ a2ui-charts-v1:
 - circle_pack
 - arc_diagram
 - contour_plot
+- voronoi
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

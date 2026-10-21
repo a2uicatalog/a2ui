@@ -170,7 +170,7 @@ def _inside(poly, x, y):
     return c
 
 
-@pytest.mark.parametrize("name", ["three_points", "square_grid_4x4", "octagon_and_centre", "random_200", "points_outside_bounds", "right_triangle_with_circumcentre_big"] + ["fuzz%02d" % i for i in (1, 2, 5, 6, 9, 14, 20, 33)])
+@pytest.mark.parametrize("name", ["three_points", "square_grid_4x4", "octagon_and_centre", "random_200", "points_outside_bounds", "right_triangle_with_circumcentre_big"] + ["fuzz%02d" % i for i in (1, 2, 3, 4, 6, 9, 14, 20, 33, 36)])
 def test_cells_are_nearest_site_regions_and_tile_the_bounds(name):
     c = CASES[name]
     r = _py_run(c)
