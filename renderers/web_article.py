@@ -36736,7 +36736,8 @@ def _render_parallel_coords(b: dict) -> str:
     names = [_if_str(rl[i])[:30] if i < len(rl) and _if_truthy(rl[i]) else 'Row ' + str(i + 1) for i in keep]
     f = lambda v: _bp_fmt(v, 6)
     tl = [[_hg_num(t, _hg_decimals(tk)) for t in tk] for tk in L['ticks']]
-    pitch = max(72, max(len(s) for ls in tl for s in ls) * 8 + 16)
+    lw = max(len(s) for ls in tl for s in ls) * 8 + 6
+    pitch, pad = max(92, lw + 8), max(0, lw - max(92, lw + 8) // 2)
     ACC = 'var(--accent,#0369A1)'
 
     def ramp(p):
@@ -36744,7 +36745,7 @@ def _render_parallel_coords(b: dict) -> str:
     if cbi is not None:
         cd = dims[cbi]
         span = cd['hi'] - cd['lo']
-        cols = [ramp(30 + _if_round(70 * ((v - cd['lo']) / span if span else 0.5))) for v in cd['real']]
+        cols = [ramp(40 + _if_round(60 * ((v - cd['lo']) / span if span else 0.5))) for v in cd['real']]
     heads = ''.join('<div class="pch" style="flex:1 1 0;min-width:0;box-sizing:border-box;padding:0 3px;text-align:center;font-size:0.75rem;line-height:1.15;font-weight:600;overflow-wrap:anywhere;">'
                     + _cv_esc(d['label']) + ('<span style="display:block;font-weight:400;color:' + _IF_MUTED + ';">reversed</span>' if d['reverse'] else '') + '</div>' for d in dims)
     axes = ''.join('<line class="pca" x1="' + _if_numstr(_hg_round(x * 100) / 100) + '" x2="' + _if_numstr(_hg_round(x * 100) / 100) + '" y1="' + str(_PC_TOP) + '" y2="' + str(_PC_BOT)
@@ -36756,18 +36757,20 @@ def _render_parallel_coords(b: dict) -> str:
     legend = ''
     if cbi is not None:
         legend = ('<div class="pcl" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:8px;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED + ';"><span>Line colour: ' + _cv_esc(cd['label']) + '</span>'
-                  '<span>' + f(cd['lo']) + '</span><span style="display:inline-block;width:96px;height:10px;border:1px solid var(--muted,#475569);background:linear-gradient(to right,' + ramp(30) + ',' + ramp(100) + ');"></span>'
+                  '<span>' + f(cd['lo']) + '</span><span style="display:inline-block;width:96px;height:10px;border:1px solid var(--muted,#475569);background:linear-gradient(to right,' + ramp(40) + ',' + ramp(100) + ');"></span>'
                   '<span>' + f(cd['hi']) + '</span></div>')
     aria = ('Parallel coordinates of ' + _pc_plural(len(keep), 'row', 'rows') + ' across ' + str(n) + ' dimensions.'
             + ''.join(' ' + d['label'] + ' from ' + f(d['lo']) + ' to ' + f(d['hi']) + (', drawn upside down' if d['reverse'] else '') + '.' for d in dims)
             + (' Lines are coloured by ' + cd['label'] + ', light for low and dark for high.' if cbi is not None else ''))
-    chart = ('<div class="ifpc" role="region" aria-label="Parallel coordinates chart" tabindex="0" style="container-type:inline-size;max-width:100%;overflow-x:auto;">'
-             '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}</style>'
-             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;min-width:' + str(n * pitch) + 'px;">'
+    chart = ('<div class="ifpc" style="container-type:inline-size;max-width:100%;">'
+             '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + str(n * pitch + pad - 1) + 'px){.ifpc .pcs{display:block!important}}</style>'
+             '<div class="pcs" style="display:none;font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 4px;">Scroll sideways to see every axis.</div>'
+             '<div role="region" aria-label="Parallel coordinates chart" tabindex="0" style="overflow-x:auto;">'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;box-sizing:content-box;padding-left:' + str(pad) + 'px;min-width:' + str(n * pitch) + 'px;">'
              '<div style="display:flex;">' + heads + '</div>'
              '<div style="position:relative;height:' + str(_PC_H) + 'px;margin-top:4px;">'
              '<svg viewBox="0 0 ' + str(_PC_W) + ' ' + str(_PC_H) + '" preserveAspectRatio="none" width="100%" height="' + str(_PC_H) + '" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;display:block;">'
-             + axes + '<g fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.75" style="stroke:' + ACC + ';' + _if_k(0, 1) + _IF_FADE + '">' + lines + '</g></svg>' + tickl + '</div>' + legend + '</div></div>')
+             + axes + '<g fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.75" style="stroke:' + ACC + ';' + _if_k(0, 1) + _IF_FADE + '">' + lines + '</g></svg>' + tickl + '</div>' + legend + '</div></div></div>')
     return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'parallel_coords')
                     + _if_table(['Row'] + [d['label'] for d in dims], [[names[r]] + [f(d['real'][r]) for d in dims] for r in range(len(keep))]))
 

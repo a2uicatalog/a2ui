@@ -21,9 +21,11 @@ window.addEventListener('load', function () {
   function hit(a, b, g) { return a.left < b.right + g && b.left < a.right + g && a.top < b.bottom + g && b.top < a.bottom + g; }
   document.querySelectorAll('.case').forEach(function (c) {
     var errs = [], root = c.querySelector('.ifpc'), cs = c.firstElementChild.getBoundingClientRect(), rr = root.getBoundingClientRect(), i, j;
+    var note = root.querySelector('.pcs'), sc = root.querySelector('[role=region]');
+    if (sc.scrollWidth > sc.clientWidth + 1 && getComputedStyle(note).display === 'none') errs.push('scrolls sideways with no hint');
     if (rr.right > cs.right + 0.5 || rr.left < cs.left - 0.5) errs.push('chart widens its container: ' + rr.width + ' in ' + cs.width);
     var inner = root.querySelector('[role=img]'), ir = inner.getBoundingClientRect();
-    var sx = root.scrollLeft; // labels are measured inside the scrolling box: they must sit inside the image box, not the viewport
+    // header cells are columns that touch edge to edge, so only a real overlap counts for them
     var plot = root.querySelector('svg').getBoundingClientRect();
     var paths = root.querySelectorAll('path.pcr');
     if (!paths.length) errs.push('no lines');
@@ -38,7 +40,7 @@ window.addEventListener('load', function () {
       if (r.width < 1) errs.push('label "' + labs[k].textContent + '" has no box');
       if (parseFloat(getComputedStyle(labs[k]).fontSize) < 11.5) errs.push('label font below 12px: ' + getComputedStyle(labs[k]).fontSize);
     });
-    for (i = 0; i < rects.length; i++) for (j = i + 1; j < rects.length; j++) if (hit(rects[i], rects[j], 1)) errs.push('labels overlap: "' + labs[i].textContent + '" and "' + labs[j].textContent + '"');
+    for (i = 0; i < rects.length; i++) for (j = i + 1; j < rects.length; j++) if (hit(rects[i], rects[j], labs[i].className === 'pch' && labs[j].className === 'pch' ? -0.5 : 1)) errs.push('labels overlap: "' + labs[i].textContent + '" and "' + labs[j].textContent + '"');
     if (document.documentElement.scrollWidth > document.documentElement.clientWidth + 1) errs.push('the page scrolls sideways');
     res.push({id: c.id, lines: paths.length, errs: errs, w: rr.width});
   });

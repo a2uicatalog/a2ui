@@ -3209,12 +3209,12 @@ _RENDERERS['parallel_coords'] = function(b) {
   var names = keep.map(function(r) { return r < rl.length && rl[r] ? String(rl[r]).slice(0, 30) : 'Row ' + (r + 1); });
   var f = function(v) { return _bpFmt(v, 6); };
   var tl = L.ticks.map(function(tk) { var dc = _hgDecimals(tk); return tk.map(function(t) { return _hgNum(t, dc); }); });
-  var pitch = Math.max(72, Math.max.apply(null, [].concat.apply([], tl).map(function(s) { return s.length; })) * 8 + 16), ACC = 'var(--accent,#0369A1)';
+  var lw = Math.max.apply(null, [].concat.apply([], tl).map(function(s) { return s.length; })) * 8 + 6, pitch = Math.max(92, lw + 8), pad = Math.max(0, lw - Math.floor(pitch / 2)), ACC = 'var(--accent,#0369A1)';
   var ramp = function(p) { return 'color-mix(in srgb,' + ACC + ' ' + p + '%,var(--surface,#F8FAFC))'; };
   if (cbi !== null) {
     cd = dims[cbi];
     var span = cd.hi - cd.lo;
-    cols = cd.real.map(function(v) { return ramp(30 + Math.floor(70 * (span ? (v - cd.lo) / span : 0.5) + 0.5)); });
+    cols = cd.real.map(function(v) { return ramp(40 + Math.floor(60 * (span ? (v - cd.lo) / span : 0.5) + 0.5)); });
   }
   var heads = dims.map(function(d) {
     return '<div class="pch" style="flex:1 1 0;min-width:0;box-sizing:border-box;padding:0 3px;text-align:center;font-size:0.75rem;line-height:1.15;font-weight:600;overflow-wrap:anywhere;">' + _esc(d.label) +
@@ -3231,18 +3231,20 @@ _RENDERERS['parallel_coords'] = function(b) {
     });
   });
   var legend = cbi === null ? '' : '<div class="pcl" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:8px;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);"><span>Line colour: ' + _esc(cd.label) + '</span>' +
-    '<span>' + f(cd.lo) + '</span><span style="display:inline-block;width:96px;height:10px;border:1px solid var(--muted,#475569);background:linear-gradient(to right,' + ramp(30) + ',' + ramp(100) + ');"></span>' +
+    '<span>' + f(cd.lo) + '</span><span style="display:inline-block;width:96px;height:10px;border:1px solid var(--muted,#475569);background:linear-gradient(to right,' + ramp(40) + ',' + ramp(100) + ');"></span>' +
     '<span>' + f(cd.hi) + '</span></div>';
   var aria = 'Parallel coordinates of ' + _pcPlural(keep.length, 'row', 'rows') + ' across ' + n + ' dimensions.' +
     dims.map(function(d) { return ' ' + d.label + ' from ' + f(d.lo) + ' to ' + f(d.hi) + (d.reverse ? ', drawn upside down' : '') + '.'; }).join('') +
     (cbi !== null ? ' Lines are coloured by ' + cd.label + ', light for low and dark for high.' : '');
-  var chart = '<div class="ifpc" role="region" aria-label="Parallel coordinates chart" tabindex="0" style="container-type:inline-size;max-width:100%;overflow-x:auto;">' +
-    '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}</style>' +
-    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;min-width:' + (n * pitch) + 'px;">' +
+  var chart = '<div class="ifpc" style="container-type:inline-size;max-width:100%;">' +
+    '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + (n * pitch + pad - 1) + 'px){.ifpc .pcs{display:block!important}}</style>' +
+    '<div class="pcs" style="display:none;font-size:0.75rem;color:var(--muted,#475569);margin:0 0 4px;">Scroll sideways to see every axis.</div>' +
+    '<div role="region" aria-label="Parallel coordinates chart" tabindex="0" style="overflow-x:auto;">' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;box-sizing:content-box;padding-left:' + pad + 'px;min-width:' + (n * pitch) + 'px;">' +
     '<div style="display:flex;">' + heads + '</div>' +
     '<div style="position:relative;height:' + _PC_H + 'px;margin-top:4px;">' +
     '<svg viewBox="0 0 ' + _PC_W + ' ' + _PC_H + '" preserveAspectRatio="none" width="100%" height="' + _PC_H + '" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;display:block;">' +
-    axes + '<g fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.75" style="stroke:' + ACC + ';' + _ifK(0, 1) + _IF_FADE + '">' + lines + '</g></svg>' + tickl + '</div>' + legend + '</div></div>';
+    axes + '<g fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.75" style="stroke:' + ACC + ';' + _ifK(0, 1) + _IF_FADE + '">' + lines + '</g></svg>' + tickl + '</div>' + legend + '</div></div></div>';
   return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'parallel_coords') +
     _ifTable(['Row'].concat(dims.map(function(d) { return d.label; })), keep.map(function(r, j) { return [names[j]].concat(dims.map(function(d) { return f(d.real[j]); })); })));
 };
