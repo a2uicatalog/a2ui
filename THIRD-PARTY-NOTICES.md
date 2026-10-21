@@ -129,6 +129,22 @@ just looks plainer.
   `tests/test_arc_diagram.py` (golden vectors from `tests/fixtures/arc_diagram_d3_golden_gen.mjs`)
 - **Used by:** the `arc_diagram` atom's node positions in both renderers. No script is shipped to the page; the arcs are static SVG semicircles.
 
+  Also d3-scale 4.0.2 `scaleLog` (base 10: `ticks` and `nice`), ported by hand into `_ax_log_ticks` / `_ax_log_nice` (Python) and `_axLogTicks` / `_axLogNice` (GAS) for the
+  value axis of `chartjs_bar`, checked against the real library by `tests/test_chart_axis.py` (golden vectors from `tests/fixtures/chart_axis_d3_golden_gen.mjs`).
+
+---
+
+## d3-format (Mike Bostock)
+
+- **Project:** d3-format 3.1.0 — `format` (the specifier mini-language, subset: fill and align, sign, `$`, zero pad, width, `,` grouping, precision, `~` trim; types `d f e g s % n`)
+- **Website:** https://github.com/d3/d3-format
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2015 Mike Bostock
+- **Vendored as:** nothing is vendored; ported by hand into `_ax_format` in `renderers/web_article.py` and its twin `_axFormat` in
+  `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real library's output (every string with ==) by
+  `tests/test_chart_axis.py`. Types `b c o p r x X` are not ported; such a specifier is rejected and plain numbers are shown.
+- **Used by:** the `y_format` and `value_format` fields of `chartjs_bar` in both renderers. No script is shipped to the page.
+
 ---
 
 ## d3-geo (Mike Bostock)

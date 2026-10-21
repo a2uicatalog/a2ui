@@ -3972,6 +3972,8 @@ def _render_chartjs_bar(b: dict) -> str:
     colr = [(series[k][1] or _CB_COL[k % 8]) for k in range(sd)]
     chip_w = max([len(vf(s[4])) for s in segs] + [1]) * 7 + 10
     slot_px = max(34, (sd if mode in ('group', 'overlay') else 1) * 24 + 10)
+    if horiz:      # a category label wraps in the narrowest label column (about 69px of text), so the row is as tall as its longest label needs
+        slot_px = max(slot_px, min(6, math.ceil(max([len(x) for x in labels[:nd]] + [1]) * 6.6 / 69)) * 15 + 6)
     outside = show and mode in ('group', 'overlay')
     pad_top = (22 + (sd - 1) * 18 if mode == 'overlay' else 22) if (outside and not horiz) else 8
     pad_right = (chip_w + 6 if outside else 12) if horiz else 12
@@ -4040,7 +4042,7 @@ def _render_chartjs_bar(b: dict) -> str:
         for i in range(nd):
             xs += ('<div style="position:absolute;right:100%;top:' + _cb_pc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
                    + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
-                   + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(labels[i]) + '</div>')
+                   + ';overflow-wrap:anywhere;">' + _cv_esc(labels[i]) + '</div>')
         axis = ''
         for j, (t, tl) in enumerate(zip(ax['ticks'], tlab)):
             f = pos(t)

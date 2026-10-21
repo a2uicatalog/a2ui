@@ -3014,6 +3014,11 @@ _RENDERERS['chartjs_bar'] = function(b) {
   segs.forEach(function(s) { var l = vf(s[4]).length; if (l > chipW) chipW = l; });
   chipW = chipW * 7 + 10;
   var slotPx = Math.max(34, ((mode === 'group' || mode === 'overlay') ? sd : 1) * 24 + 10);
+  if (horiz) {
+    var ml = 1;
+    labels.slice(0, nd).forEach(function(x) { if (x.length > ml) ml = x.length; });
+    slotPx = Math.max(slotPx, Math.min(6, Math.ceil(ml * 6.6 / 69)) * 15 + 6);
+  }
   var outside = show && (mode === 'group' || mode === 'overlay');
   var padTop = (outside && !horiz) ? (mode === 'overlay' ? 22 + (sd - 1) * 18 : 22) : 8;
   var padRight = horiz ? (outside ? chipW + 6 : 12) : 12;
@@ -3074,7 +3079,7 @@ _RENDERERS['chartjs_bar'] = function(b) {
     for (i = 0; i < nd; i++) {
       xs += '<div style="position:absolute;right:100%;top:' + _cbPc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
         + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _CB_MUTED
-        + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(labels[i]) + '</div>';
+        + ';overflow-wrap:anywhere;">' + _esc(labels[i]) + '</div>';
     }
     var axis = '';
     for (j = 0; j < ax.ticks.length; j++) {
