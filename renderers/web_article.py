@@ -3998,7 +3998,10 @@ def _render_chartjs_bar(b: dict) -> str:
     bars, thresholds = '', {}
     for i in range(nd):
         inner_html = ''
-        for (_, k, a, e, v) in byc.get(i, []):
+        lst = byc.get(i, [])
+        if mode == 'overlay':      # the largest is drawn first so the smaller ones stay in front of it
+            lst = sorted(lst, key=lambda t: (-t[4], t[1]))
+        for (_, k, a, e, v) in lst:
             f0, f1 = fr(a if a is not None else base), fr(e)
             low, size = min(f0, f1), abs(f1 - f0)
             gw = inner / kk if mode == 'group' else inner
@@ -4033,7 +4036,7 @@ def _render_chartjs_bar(b: dict) -> str:
                         thresholds[wk] = True
                     chip = '<div class="cbv' + (' cbw' + str(wk) if wk is not None else '') + '" style="' + _CB_CHIP + col + ';' + place + '">' + _cv_esc(txt) + '</div>'
             inner_html += ('<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cb_fill(k, col) + geo
-                           + ('opacity:0.8;' if mode == 'overlay' else '') + '">' + chip + '</div>')
+                           + '">' + chip + '</div>')
         bars += '<div style="position:absolute;inset:0;' + _if_k(i, nd) + _IF_FADE + '">' + inner_html + '</div>'
     css = '<style>' + ''.join('@container (max-width:' + str(w) + 'px){.ifcb .cbw' + str(w) + '{display:none}}' for w in sorted(thresholds)) + '@container (max-width:560px){.ifcb .cbx:not(.cbc){display:none}}</style>'
     gut = _CB_LABW if horiz else str(gut_px) + 'px'

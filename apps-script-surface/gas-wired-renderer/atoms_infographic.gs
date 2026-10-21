@@ -3041,6 +3041,7 @@ _RENDERERS['chartjs_bar'] = function(b) {
   var bars = '', thr = {};
   for (i = 0; i < nd; i++) {
     var ih = '', list = byc[i] || [];
+    if (mode === 'overlay') list = list.slice().sort(function(x, y) { return (y[4] - x[4]) || (x[1] - y[1]); });
     for (q = 0; q < list.length; q++) {
       var s = list[q], kx = s[1], f0 = fr(s[2] !== null ? s[2] : base), f1 = fr(s[3]);
       var low = Math.min(f0, f1), size = Math.abs(f1 - f0), gw = mode === 'group' ? inner / kk : inner;
@@ -3069,7 +3070,7 @@ _RENDERERS['chartjs_bar'] = function(b) {
           chip = '<div class="cbv' + (wk !== null ? ' cbw' + wk : '') + '" style="' + _CB_CHIP + col + ';' + place + '">' + _esc(txt) + '</div>';
         }
       }
-      ih += '<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cbFill(kx, col) + geo + (mode === 'overlay' ? 'opacity:0.8;' : '') + '">' + chip + '</div>';
+      ih += '<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cbFill(kx, col) + geo + '">' + chip + '</div>';
     }
     bars += '<div style="position:absolute;inset:0;' + _ifK(i, nd) + _IF_FADE + '">' + ih + '</div>';
   }
