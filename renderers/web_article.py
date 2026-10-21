@@ -35110,8 +35110,10 @@ def _vo_voronoi(points, bounds):
 # Sites are drawn on a 600-unit-wide plot whose height follows the bounds' shape (between 200 and 600), cells in data space (Delaunay.from(points).voronoi(bounds)), bounds the sites'
 # extent plus 5% niced with _hg_nice. A label is drawn at its site only if the circle around the site that touches the nearest cell edge (the inscribed circle, in drawing units)
 # holds the label placed 7 px below the dot: the circle's corner distance sqrt((w/2)^2 + 21^2) must be <= d * the plot's scale, which gives the narrowest container (class tmwN) at
-# which the label is shown, by the same character arithmetic as the other atoms (7.2 px a character plus 8 px of padding at 12 px).
-_VO_W, _VO_MAXN, _VO_MINH, _VO_MAXH, _VO_PADX, _VO_LY, _VO_MAXWM = 600, 200, 200, 600, 84, 21, 820
+# which the label is shown, by the same character arithmetic as the other atoms (7.2 px a character plus 8 px of padding at 12 px). The plot's side margins (the width of the
+# widest y label at the left, half that of the widest x label at the right, never under 54 and 30 px) are taken off the container to get the plot's width. The y labels are thinned the
+# same way: label i is shown from the container at which every 2^k-th label (k = the trailing zeros of i, at most 3) is 16 px apart.
+_VO_W, _VO_MAXN, _VO_MINH, _VO_MAXH, _VO_LY, _VO_MAXWM, _VO_YGAP = 600, 200, 200, 600, 21, 820, 16
 
 
 def _vo_text(v, mx):
@@ -35227,6 +35229,12 @@ def _render_voronoi(b: dict) -> str:
 
     def val(s):
         return _bp_fmt(s['v'], 2) + us if s['v'] is not None else ''
+    ex, ey = _hg_ticks(X0, X1, 6), _hg_ticks(Y0, Y1, 6)
+    xlab = [_hg_num(v, _hg_decimals(ex)) for v in ex]
+    ylab = [_hg_num(v, _hg_decimals(ey)) for v in ey]
+    ml = max(54, int(math.ceil(max([len(t) for t in ylab] or [0]) * 7.2)) + 14)
+    mr = max(30, int(math.ceil(max([len(t) for t in xlab] or [0]) * 7.2 / 2)) + 8)
+    padx = ml + mr
     cellsvg, labs, wms = '', '', []
     for i, s in enumerate(sites):
         cx, cy = (s['x'] - X0) * W / (X1 - X0), (Y1 - s['y']) * H / (Y1 - Y0)
@@ -35241,7 +35249,7 @@ def _render_voronoi(b: dict) -> str:
                 wt = _oc_chars(s['l']) * 7.2 + 8
                 hw = wt / 2
                 d = _vo_inscribed(cx, cy, ring)
-                wm = _cp_q(math.sqrt(hw * hw + _VO_LY * _VO_LY) * W / d + _VO_PADX) if d > 0 else 10 ** 9
+                wm = _cp_q(math.sqrt(hw * hw + _VO_LY * _VO_LY) * W / d + padx) if d > 0 else 10 ** 9
                 if wm <= _VO_MAXWM:
                     wm = wm if wm > _CP_MINW else 0
                     wms.append(wm)
@@ -35254,21 +35262,22 @@ def _render_voronoi(b: dict) -> str:
     svg = ('<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">'
            '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg
            + '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>')
-    ex, ey = _hg_ticks(X0, X1, 6), _hg_ticks(Y0, Y1, 6)
-    xaxis = _hg_axis(ex, X0, X1 - X0, [_hg_num(v, _hg_decimals(ex)) for v in ex]) if ex else ''
+    xaxis = _hg_axis(ex, X0, X1 - X0, xlab) if ex else ''
     yaxis = ''
-    if ey:
-        dys = _hg_decimals(ey)
-        for v in ey:
-            yaxis += ('<div class="voy" style="position:absolute;right:100%;margin-right:6px;top:' + _tm_pct(Y1 - v, Y1 - Y0)
-                      + ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _hg_num(v, dys) + '</div>')
+    for i, v in enumerate(ey):
+        k = 0 if i == 0 else min((i & -i).bit_length() - 1, 3)
+        wm = 0 if (i == 0 or len(ey) < 2) else _cp_q(padx + _VO_YGAP * (len(ey) - 1) * W / ((1 << k) * H))
+        wm = wm if wm > _CP_MINW else 0
+        wms.append(wm)
+        yaxis += ('<div class="voy' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;right:100%;margin-right:6px;top:' + _tm_pct(Y1 - v, Y1 - Y0)
+                  + ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + ylab[i] + '</div>')
     aria = ('Nearest-site regions of ' + plural(n, 'site', 'sites') + (' in ' + plural(len(groups), 'group', 'groups') if groups else '') + '. Largest region: ' + name(best) + ', '
             + _if_fixed(areas[best] * 100, 1) + '% of the area.')
     css = '<style>@container (max-width:560px){.ifvo .hgx:not(.hgc){display:none}}' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in sorted(set(w for w in wms if w))) + '</style>'
     chart = ('<div class="ifvo" style="container-type:inline-size;max-width:' + str(_VO_MAXWM) + 'px;overflow:hidden;">' + css
              + ('<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 2px 0;">' + _cv_esc(yl) + '</div>' if yl else '')
-             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:8px 30px 34px 54px;">' + svg + yaxis + xaxis + labs + '</div>'
-             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 30px 0 54px;">' + _cv_esc(xl) + '</div>' if xl else '') + '</div>')
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:8px ' + str(mr) + 'px 34px ' + str(ml) + 'px;">' + svg + yaxis + xaxis + labs + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 ' + str(mr) + 'px 0 ' + str(ml) + 'px;">' + _cv_esc(xl) + '</div>' if xl else '') + '</div>')
     legend = ''
     if groups:
         ent = [(g, _SB_PALETTE[j % 8]) for j, g in enumerate(groups)] + ([('No group', _AD_NONE)] if any(not s['g'] for s in sites) else [])

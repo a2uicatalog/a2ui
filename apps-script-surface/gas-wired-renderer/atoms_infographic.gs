@@ -2275,7 +2275,7 @@ function _voVoronoi(points, bounds) {
 
 
 // ---- the voronoi atom (twin of _render_voronoi in renderers/web_article.py; see the comment there for the label rule)
-var _VO_W = 600, _VO_MAXN = 200, _VO_MINH = 200, _VO_MAXH = 600, _VO_PADX = 84, _VO_LY = 21, _VO_MAXWM = 820;
+var _VO_W = 600, _VO_MAXN = 200, _VO_MINH = 200, _VO_MAXH = 600, _VO_LY = 21, _VO_MAXWM = 820, _VO_YGAP = 16;
 // A label or group: text, or a finite number as JavaScript prints it; anything else (an array, an object, a boolean, null) is no text.
 function _voText(v, mx) {
   if (typeof v === 'string') return v.slice(0, mx);
@@ -2352,6 +2352,11 @@ _RENDERERS['voronoi'] = function(b) {
   if (nocell) notes += _hgNote(plural(nocell, 'site is', 'sites are') + ' too close to another site to have a region of its own.');
   function name(k) { return sites[k].l || ('Site ' + (k + 1)); }
   function val(s) { return s.v !== null ? _bpFmt(s.v, 2) + us : ''; }
+  var ex = _hgTicks(X0, X1, 6), ey = _hgTicks(Y0, Y1, 6);
+  var dxs = ex.length ? _hgDecimals(ex) : 0, dys = ey.length ? _hgDecimals(ey) : 0;
+  var xlab = ex.map(function(v) { return _hgNum(v, dxs); }), ylab = ey.map(function(v) { return _hgNum(v, dys); });
+  var ml = Math.max(54, Math.ceil(Math.max.apply(null, [0].concat(ylab.map(function(t) { return t.length; }))) * 7.2) + 14);
+  var mr = Math.max(30, Math.ceil(Math.max.apply(null, [0].concat(xlab.map(function(t) { return t.length; }))) * 7.2 / 2) + 8), padx = ml + mr;
   var cellsvg = '', labs = '', wms = [], s, cx, cy, tip, path, ring, wt, hw, d, wm;
   for (i = 0; i < n; i++) {
     s = sites[i];
@@ -2366,7 +2371,7 @@ _RENDERERS['voronoi'] = function(b) {
       if (s.l) {
         wt = s.l.length * 7.2 + 8; hw = wt / 2;
         d = _voInscribed(cx, cy, ring);
-        wm = d > 0 ? _cpQ(Math.sqrt(hw * hw + _VO_LY * _VO_LY) * W / d + _VO_PADX) : 1e9;
+        wm = d > 0 ? _cpQ(Math.sqrt(hw * hw + _VO_LY * _VO_LY) * W / d + padx) : 1e9;
         if (wm <= _VO_MAXWM) {
           wm = wm > _CP_MINW ? wm : 0;
           wms.push(wm);
@@ -2383,15 +2388,15 @@ _RENDERERS['voronoi'] = function(b) {
   var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">' +
     '<rect x="0" y="0" width="' + W + '" height="' + H + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg +
     '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="none" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>';
-  var ex = _hgTicks(X0, X1, 6), ey = _hgTicks(Y0, Y1, 6), xaxis = '', yaxis = '';
-  if (ex.length) { var dxs = _hgDecimals(ex); xaxis = _hgAxis(ex, X0, X1 - X0, ex.map(function(v) { return _hgNum(v, dxs); })); }
-  if (ey.length) {
-    var dys = _hgDecimals(ey);
-    ey.forEach(function(v) {
-      yaxis += '<div class="voy" style="position:absolute;right:100%;margin-right:6px;top:' + _tmPct(Y1 - v, Y1 - Y0) +
-        ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgNum(v, dys) + '</div>';
-    });
-  }
+  var xaxis = ex.length ? _hgAxis(ex, X0, X1 - X0, xlab) : '', yaxis = '', k, wy;
+  ey.forEach(function(v, i) {
+    k = i === 0 ? 0 : Math.min(31 - Math.clz32(i & -i), 3);
+    wy = (i === 0 || ey.length < 2) ? 0 : _cpQ(padx + _VO_YGAP * (ey.length - 1) * W / (Math.pow(2, k) * H));
+    wy = wy > _CP_MINW ? wy : 0;
+    wms.push(wy);
+    yaxis += '<div class="voy' + (wy ? ' tmw' + wy : '') + '" style="position:absolute;right:100%;margin-right:6px;top:' + _tmPct(Y1 - v, Y1 - Y0) +
+      ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + ylab[i] + '</div>';
+  });
   var aria = 'Nearest-site regions of ' + plural(n, 'site', 'sites') + (groups.length ? ' in ' + plural(groups.length, 'group', 'groups') : '') + '. Largest region: ' + name(best) + ', ' + (areas[best] * 100).toFixed(1) + '% of the area.';
   var gates = [];
   wms.forEach(function(w) { if (w && gates.indexOf(w) < 0) gates.push(w); });
@@ -2399,8 +2404,8 @@ _RENDERERS['voronoi'] = function(b) {
   var css = '<style>@container (max-width:560px){.ifvo .hgx:not(.hgc){display:none}}' + gates.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>';
   var chart = '<div class="ifvo" style="container-type:inline-size;max-width:' + _VO_MAXWM + 'px;overflow:hidden;">' + css +
     (yl ? '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 2px 0;">' + _esc(yl) + '</div>' : '') +
-    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:8px 30px 34px 54px;">' + svg + yaxis + xaxis + labs + '</div>' +
-    (xl ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 30px 0 54px;">' + _esc(xl) + '</div>' : '') + '</div>';
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:8px ' + mr + 'px 34px ' + ml + 'px;">' + svg + yaxis + xaxis + labs + '</div>' +
+    (xl ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 ' + mr + 'px 0 ' + ml + 'px;">' + _esc(xl) + '</div>' : '') + '</div>';
   var legend = '';
   if (groups.length) {
     var ent = groups.map(function(g, j) { return [g, _SB_PALETTE[j % 8]]; });

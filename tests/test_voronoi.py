@@ -478,7 +478,7 @@ def test_a_flat_axis_and_far_coordinates_still_draw_without_nan(gas):
 
 def test_axes_use_nice_ticks_in_data_units(gas):
     for html in (py("depots"), gas["depots"]):
-        yl = re.findall(r'<div class="voy"[^>]*>(.*?)</div>', html)
+        yl = re.findall(r'<div class="voy[^"]*"[^>]*>(.*?)</div>', html)
         sites, (X0, X1, Y0, Y1), _, _ = _model("depots")
         ty = wa._hg_ticks(Y0, Y1, 6)
         assert yl == [wa._hg_num(v, wa._hg_decimals(ty)) for v in ty]
@@ -510,7 +510,39 @@ def _expected_gate(name, i):
     chars = len(str(sites[i]["label"]).encode("utf-16-le")) // 2
     wt = chars * 7.2 + 8
     need = math.sqrt((wt / 2) ** 2 + 21 ** 2)
-    return wa._cp_q(need * 600 / best + 84)
+    return wa._cp_q(need * 600 / best + sum(_margins(name)))
+
+
+def _margins(name):
+    """The plot's left and right margins: the widest y label (and half the widest x label) in 7.2 px a character, never under 54 and 30 px."""
+    sites, (X0, X1, Y0, Y1), _, _ = _model(name)
+    ex, ey = wa._hg_ticks(X0, X1, 6), wa._hg_ticks(Y0, Y1, 6)
+    xl = [wa._hg_num(v, wa._hg_decimals(ex)) for v in ex]
+    yl = [wa._hg_num(v, wa._hg_decimals(ey)) for v in ey]
+    return max(54, math.ceil(max(len(t) for t in yl) * 7.2) + 14), max(30, math.ceil(max(len(t) for t in xl) * 7.2 / 2) + 8)
+
+
+def test_the_plot_margins_grow_with_the_widest_axis_label_so_none_is_clipped(gas):
+    assert _margins("depots") == (54, 30) and _margins("far")[0] > 54 and _margins("far")[1] > 30
+    for html in (py("far"), gas["far"]):
+        ml, mr = _margins("far")
+        assert 'style="position:relative;margin:8px %dpx 34px %dpx;"' % (mr, ml) in html
+
+
+def test_y_labels_are_thinned_by_the_plot_height_in_both_twins(gas):
+    for name in ("stretched", "depots", "far"):
+        sites, (X0, X1, Y0, Y1), _, _ = _model(name)
+        H = wa._if_round(min(600, max(200, 600 * (Y1 - Y0) / (X1 - X0))))
+        n = len(wa._hg_ticks(Y0, Y1, 6))
+        padx = sum(_margins(name))
+        exp = []
+        for i in range(n):
+            k = 0 if i == 0 else min((i & -i).bit_length() - 1, 3)
+            wm = 0 if (i == 0 or n < 2) else wa._cp_q(padx + 16 * (n - 1) * 600 / ((1 << k) * H))
+            exp.append(" tmw%d" % wm if wm > 240 else "")
+        for html in (py(name), gas[name]):
+            assert re.findall(r'<div class="voy( tmw\d+)?"', html) == exp, name
+    assert re.findall(r'<div class="voy( tmw\d+)?"', py("stretched"))[1] != ""        # a flat plot hides its odd labels in a narrow container
 
 
 def test_labels_are_gated_by_the_inscribed_circle_and_hidden_when_they_can_never_fit(gas):
