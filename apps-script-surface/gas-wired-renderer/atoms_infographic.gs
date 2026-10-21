@@ -2893,6 +2893,10 @@ function _axScale(lo, hi, log, rng, reverse, count) {
     nz = _hgNice(lo, hi, count); lo = nz[0]; hi = nz[1];
   }
   ticks = log ? _axLogTicks(lo, hi, count) : _hgTicks(lo, hi, count);
+  if (log) {
+    var major = ticks.filter(function(t) { return t === _hgP10(Math.round(Math.log10(t))); });
+    if (major.length >= 2) ticks = major;
+  }
   if (log) { var l0 = Math.log10(lo), l1 = Math.log10(hi); f = function(v) { return (Math.log10(v) - l0) / (l1 - l0); }; }
   else f = function(v) { return (v - lo) / (hi - lo); };
   return {lo: lo, hi: hi, ticks: ticks, log: log, pos: reverse ? function(v) { return 1 - f(v); } : f};

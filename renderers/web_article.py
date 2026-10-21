@@ -3806,6 +3806,10 @@ def _ax_scale(lo, hi, log, rng, reverse, count):
         lo, hi = _hg_nice(lo, hi, count)
     ticks = _ax_log_ticks(lo, hi, count) if log else _hg_ticks(lo, hi, count)
     if log:
+        major = [t for t in ticks if t == _hg_pow10(int(round(math.log10(t))))]      # d3 gives 1..9 of each decade; the axis labels the powers of ten
+        if len(major) >= 2:
+            ticks = major
+    if log:
         l0, l1 = math.log10(lo), math.log10(hi)
         f = lambda v: (math.log10(v) - l0) / (l1 - l0)
     else:
