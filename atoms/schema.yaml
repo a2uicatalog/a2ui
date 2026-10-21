@@ -20793,40 +20793,25 @@ blocks:
   source: *ifg002
 - type: swimlane
   stage: preview
-  description: 'Rows are roles (lanes), columns are phases. Each task is a numbered card placed in its role and phase. Optional links draw
-    an arrow from one numbered task to another, with a short label, so the same atom shows a simple architecture or hand-off diagram.
-    With layout "auto" the columns are worked out from the links and tasks need no phase. Motion-ready: every moving value reads --p
-    (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone
-    render is the finished picture; reduced motion shows the end state.'
-  compact_description: 'swimlane: who does which step, or which part calls which, across lanes; optional labelled arrows'
-  routing_text: A grid of roles (lanes) by phases (columns) with the numbered tasks placed where a role does a step, with optional
-    labelled arrows between tasks. Shows hand-offs, order, and simple architecture diagrams (device, server, cloud with the calls between
-    them). Up to 4 lanes and 12 tasks. Not for message sequences over time (use sequence_diagram), not a flowchart with branches and
-    decisions, and not a free-form network graph.
+  description: 'Rows are roles, columns are phases. Each task is a card with a number that gives the order, placed in its role and phase.
+    At most two tasks share a cell. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item
+    --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows
+    the end state.'
+  compact_description: 'swimlane: who does which step, in order, across phases'
+  routing_text: A grid of roles (lanes) by phases (columns) with the numbered tasks placed where a role does a step. Shows hand-offs
+    and order. Not a message-passing sequence diagram and not a flowchart with branches.
   intent_phrases:
   - Show who does what in the review process.
   - I need a swimlane of security, engineering and QA across triage, fix and verify.
-  - Draw the architecture, phone to API to model to store, with the device, server and cloud as lanes.
   - Map the hand-offs between teams.
   surfaces: *ifg001
   fields:
     title: string (optional, max 80).
-    roles: array (required, 2 to 4 strings, max 24 each), the lanes from top to bottom.
-    phases: array (required in layout "grid", 2 to 5 strings, max 24 each). In layout "auto" it is optional (up to 6) and, when given,
-      names the columns in order.
-    tasks: array (required, up to 12) of {role, phase, task (max 60)}. role must be listed in roles. In layout "grid", phase must be
-      listed in phases; in layout "auto", phase is optional and ignored. The list order is the order of the steps and gives the numbers.
-    links: array (optional, 0 to 24) of {from, to, label (optional, max 24)}. from and to are the task numbers shown on the cards (1 for the
-      first task in the list). A link to an unknown or unplaced number, from a task to itself, or a repeat is dropped, with a note.
-    layout: '"grid" (default; columns are the phases) or "auto" (columns are worked out from the links: a task with no incoming link is in
-      column 1, any other task one column after the latest task that links to it; at most 6 columns, later tasks go in the last column with a
-      note). In "auto", tasks in a cell are ordered by where their linked neighbours sit. Anything else is "grid".'
-    version: integer (optional, default 1). A number above 1 is drawn as version 1 with a note.
-  notes: Use sequence_diagram for messages between actors over time; use this for ownership, phases and simple architecture. With links or
-    layout "auto" the diagram has a fixed size and scrolls sideways inside its own box on a narrow screen. Arrows leave the right edge of
-    a card and enter the left edge of the next column; a link back to an earlier column, or across a column, runs along a channel above
-    or below the lanes. A cycle in the links is drawn, but one arrow of it is ignored when placing the columns (noted). A hidden table
-    lists every drawn link as From, To and Label. Tasks and arrows appear in list order as p builds.
+    roles: array (required, 2 to 4 strings, max 24 each).
+    phases: array (required, 2 to 5 strings, max 24 each).
+    tasks: array (required, up to 12) of {role, phase, task (max 60)}. role and phase must be listed in roles and phases. The list order
+      is the order of the steps and gives the numbers.
+  notes: Use sequence_diagram for messages between actors; use this for ownership and phases. Tasks appear in list order as p builds.
   source: *ifg002
 - type: gantt
   stage: preview
