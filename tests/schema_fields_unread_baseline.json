@@ -762,7 +762,10 @@
   "width"
  ],
  "swimlane": [
-  "title"
+  "layout",
+  "links",
+  "title",
+  "version"
  ],
  "tabs": [
   "accent"
