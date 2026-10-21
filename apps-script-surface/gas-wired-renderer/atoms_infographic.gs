@@ -502,6 +502,184 @@ _RENDERERS['sunburst'] = function(b) {
     _ifTable(['Item', 'Path', 'Value', 'Share of total'], items.map(function(it) { return [it.n, it.chain.join(' / ') || 'Top level', f(it.v), (it.v / tot * 100).toFixed(1) + '%']; })));
 };
 
+// ── circle_pack (I46) ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// d3-hierarchy 3.1.2 pack() (ISC, Mike Bostock) on the same hierarchy().sum().sort(by value, descending) as the sunburst (_tmBuild): packSiblings (the front
+// chain) and packEnclose with d3's fixed LCG (seed 1, one generator per pack() call), ported line by line. Twin of _cp_pack / _render_circle_pack in
+// renderers/web_article.py, where the notes on the layout are.
+var _CP_SIZE = 600, _CP_PAD = 3, _CP_MAX = 60, _CP_K = 7.2, _CP_MINW = 240;
+function _cpLcg() { var s = 1; return function() { s = (1664525 * s + 1013904223) % 4294967296; return s / 4294967296; }; }
+function _cpEnclosesNot(a, b) { var dr = a.r - b.r, dx = b.x - a.x, dy = b.y - a.y; return dr < 0 || dr * dr < dx * dx + dy * dy; }
+function _cpEnclosesWeak(a, b) { var dr = a.r - b.r + Math.max(a.r, b.r, 1) * 1e-9, dx = b.x - a.x, dy = b.y - a.y; return dr > 0 && dr * dr > dx * dx + dy * dy; }
+function _cpEnclosesWeakAll(a, B) { for (var i = 0; i < B.length; ++i) if (!_cpEnclosesWeak(a, B[i])) return false; return true; }
+function _cpBasis2(a, b) {
+  var x1 = a.x, y1 = a.y, r1 = a.r, x2 = b.x, y2 = b.y, r2 = b.r, x21 = x2 - x1, y21 = y2 - y1, r21 = r2 - r1, l = Math.sqrt(x21 * x21 + y21 * y21);
+  return { x: (x1 + x2 + x21 / l * r21) / 2, y: (y1 + y2 + y21 / l * r21) / 2, r: (l + r1 + r2) / 2 };
+}
+function _cpBasis3(a, b, c) {
+  var x1 = a.x, y1 = a.y, r1 = a.r, x2 = b.x, y2 = b.y, r2 = b.r, x3 = c.x, y3 = c.y, r3 = c.r, a2 = x1 - x2, a3 = x1 - x3, b2 = y1 - y2, b3 = y1 - y3, c2 = r2 - r1, c3 = r3 - r1,
+    d1 = x1 * x1 + y1 * y1 - r1 * r1, d2 = d1 - x2 * x2 - y2 * y2 + r2 * r2, d3 = d1 - x3 * x3 - y3 * y3 + r3 * r3, ab = a3 * b2 - a2 * b3,
+    xa = (b2 * d3 - b3 * d2) / (ab * 2) - x1, xb = (b3 * c2 - b2 * c3) / ab, ya = (a3 * d2 - a2 * d3) / (ab * 2) - y1, yb = (a2 * c3 - a3 * c2) / ab,
+    A = xb * xb + yb * yb - 1, B = 2 * (r1 + xa * xb + ya * yb), C = xa * xa + ya * ya - r1 * r1,
+    r = -(Math.abs(A) > 1e-6 ? (B + Math.sqrt(B * B - 4 * A * C)) / (2 * A) : C / B);
+  return { x: x1 + xa + xb * r, y: y1 + ya + yb * r, r: r };
+}
+function _cpBasis(B) { return B.length === 1 ? { x: B[0].x, y: B[0].y, r: B[0].r } : B.length === 2 ? _cpBasis2(B[0], B[1]) : _cpBasis3(B[0], B[1], B[2]); }
+function _cpExtend(B, p) {
+  var i, j;
+  if (_cpEnclosesWeakAll(p, B)) return [p];
+  for (i = 0; i < B.length; ++i) if (_cpEnclosesNot(p, B[i]) && _cpEnclosesWeakAll(_cpBasis2(B[i], p), B)) return [B[i], p];
+  for (i = 0; i < B.length - 1; ++i) for (j = i + 1; j < B.length; ++j) {
+    if (_cpEnclosesNot(_cpBasis2(B[i], B[j]), p) && _cpEnclosesNot(_cpBasis2(B[i], p), B[j]) && _cpEnclosesNot(_cpBasis2(B[j], p), B[i]) && _cpEnclosesWeakAll(_cpBasis3(B[i], B[j], p), B)) return [B[i], B[j], p];
+  }
+  return [p];                                                              // d3 throws here ("something is very wrong"); a renderer must not
+}
+function _cpEnclose(circles, random) {
+  var cs = circles.slice(), m = cs.length, i, t, n, B = [], p, e = null;
+  while (m) { i = random() * m-- | 0; t = cs[m]; cs[m] = cs[i]; cs[i] = t; }
+  i = 0; n = cs.length;
+  while (i < n) {
+    p = cs[i];
+    if (e && _cpEnclosesWeak(e, p)) ++i;
+    else { B = _cpExtend(B, p); e = _cpBasis(B); i = 0; }
+  }
+  return e;
+}
+function _cpPlace(b, a, c) {
+  var dx = b.x - a.x, x, a2, dy = b.y - a.y, y, b2, d2 = dx * dx + dy * dy;
+  if (d2) {
+    a2 = a.r + c.r; a2 *= a2; b2 = b.r + c.r; b2 *= b2;
+    if (a2 > b2) { x = (d2 + b2 - a2) / (2 * d2); y = Math.sqrt(Math.max(0, b2 / d2 - x * x)); c.x = b.x - x * dx - y * dy; c.y = b.y - x * dy + y * dx; }
+    else { x = (d2 + a2 - b2) / (2 * d2); y = Math.sqrt(Math.max(0, a2 / d2 - x * x)); c.x = a.x + x * dx - y * dy; c.y = a.y + x * dy + y * dx; }
+  } else { c.x = a.x + c.r; c.y = a.y; }
+}
+function _cpIntersects(a, b) { var dr = a.r + b.r - 1e-6, dx = b.x - a.x, dy = b.y - a.y; return dr > 0 && dr * dr > dx * dx + dy * dy; }
+function _cpScore(nd) { var a = nd.v, b = nd.next.v, ab = a.r + b.r, dx = (a.x * b.r + b.x * a.r) / ab, dy = (a.y * b.r + b.y * a.r) / ab; return dx * dx + dy * dy; }
+function _cpSiblings(circles, random) {
+  var n = circles.length, a, b, c, aa, ca, i, j, k, sj, sk, again, old, ring, e;
+  if (!n) return 0;
+  a = circles[0]; a.x = 0; a.y = 0;
+  if (!(n > 1)) return a.r;
+  b = circles[1]; a.x = -b.r; b.x = a.r; b.y = 0;
+  if (!(n > 2)) return a.r + b.r;
+  c = circles[2]; _cpPlace(b, a, c);
+  a = { v: a, next: null, previous: null }; b = { v: b, next: null, previous: null }; c = { v: c, next: null, previous: null };
+  a.next = c.previous = b; b.next = a.previous = c; c.next = b.previous = a;
+  i = 3;
+  while (i < n) {
+    c = circles[i]; _cpPlace(a.v, b.v, c); c = { v: c, next: null, previous: null };
+    j = b.next; k = a.previous; sj = b.v.r; sk = a.v.r; again = false;
+    for (;;) {
+      if (sj <= sk) {
+        if (_cpIntersects(j.v, c.v)) { b = j; a.next = b; b.previous = a; again = true; break; }
+        sj += j.v.r; j = j.next;
+      } else {
+        if (_cpIntersects(k.v, c.v)) { a = k; a.next = b; b.previous = a; again = true; break; }
+        sk += k.v.r; k = k.previous;
+      }
+      if (j === k.next) break;
+    }
+    if (again) continue;
+    c.previous = a; c.next = b; old = b; b = c; old.previous = c; a.next = c;
+    aa = _cpScore(a);
+    while ((c = c.next) !== b) { if ((ca = _cpScore(c)) < aa) { a = c; aa = ca; } }
+    b = a.next;
+    i++;
+  }
+  ring = [b.v]; c = b; while ((c = c.next) !== b) ring.push(c.v);
+  e = _cpEnclose(ring, random);
+  for (i = 0; i < n; ++i) { circles[i].x -= e.x; circles[i].y -= e.y; }
+  return e.r;
+}
+function _cpPack(root, dx, dy, padding) {
+  var top = _tmBuild(root, 0), random = _cpLcg(), before = [], stack = [top], after = [], nodes = [top], nd, i, k, r, p;
+  top.x = dx / 2; top.y = dy / 2; top.parent = null;
+  while (stack.length) {
+    nd = stack.pop(); before.push(nd);
+    if (nd.kids) for (i = nd.kids.length - 1; i >= 0; i--) { nd.kids[i].parent = nd; stack.push(nd.kids[i]); }
+  }
+  while (nodes.length) { nd = nodes.pop(); after.push(nd); if (nd.kids) for (i = 0; i < nd.kids.length; i++) nodes.push(nd.kids[i]); }
+  after.reverse();
+  before.forEach(function(q) { if (!q.kids) { r = Math.sqrt(q.value); q.r = r > 0 ? r : 0; } });
+  function group(g, pad, kk) {
+    var rr = pad * kk, e, j;
+    if (rr !== rr) rr = 0;
+    if (rr) for (j = 0; j < g.kids.length; ++j) g.kids[j].r += rr;
+    e = _cpSiblings(g.kids, random);
+    if (rr) for (j = 0; j < g.kids.length; ++j) g.kids[j].r -= rr;
+    g.r = e + rr;
+  }
+  after.forEach(function(g) { if (g.kids) group(g, 0, 1); });
+  k = top.r / Math.min(dx, dy);
+  after.forEach(function(g) { if (g.kids) group(g, padding, k); });
+  k = Math.min(dx, dy) / (2 * top.r);
+  before.forEach(function(q) { p = q.parent; q.r *= k; if (p) { q.x = p.x + k * q.x; q.y = p.y + k * q.y; } });
+  return before;
+}
+function _cpRows(spec, dx, dy, padding) { return _cpPack(spec, dx, dy, padding).map(function(n) { return [n.depth, n.x, n.y, n.r, n.value, n.src.n]; }); }
+function _cpQ(w) { return Math.ceil(w / 10) * 10; }
+function _cpGate(wm) { return wm > _CP_MINW ? [' tmw' + wm, wm] : ['', 0]; }
+function _cpF(x) { return x.toFixed(2).replace(/^-0\.00$/, '0.00'); }
+_RENDERERS['circle_pack'] = function(b) {
+  // the optional 'version' field is read by _hgVersionNote at the end
+  var lst = Array.isArray(b.items) ? b.items : [], items = [], leftOut = 0;
+  lst.slice(0, _CP_MAX).forEach(function(it, k) {
+    var v = (it && typeof it === 'object' && !Array.isArray(it)) ? _ifNum(it.value, 0, 1e12, 0) : 0;
+    if (!(v > 0)) { leftOut++; return; }
+    items.push({ n: it.name ? String(it.name).slice(0, 24) : 'Item ' + (k + 1), v: v, chain: _tmPath(it.path) });
+  });
+  var beyond = lst.length - _CP_MAX;
+  var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' entry had no value above 0 or was not an item and was' : ' entries had no value above 0 or were not an item and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' item beyond the first ' + _CP_MAX + ' was' : ' items beyond the first ' + _CP_MAX + ' were') + ' not drawn.') : '');
+  if (items.length < 2) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A circle pack needs at least 2 items with a value above 0.</div>' + notes + _hgVersionNote(b, 'circle_pack'));
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var f = function(v) { return _bpFmt(v, 2) + us; };
+  var tr = _tmTree(items), root = tr[0], tops = tr[1], height = Math.max.apply(null, items.map(function(i) { return i.chain.length; })) + 1;
+  var nodes = _cpPack(root, _CP_SIZE, _CP_SIZE, _CP_PAD), tot = nodes[0].value, S = _CP_SIZE, M = _CP_SIZE + 4, ws = [], glabs = '', llabs = '', rings = [], big = null, i;
+  for (i = 0; i < height; i++) rings.push('');
+  nodes.slice(1).forEach(function(nd) {
+    var sp = nd.src, dp = nd.depth, x = nd.x, y = nd.y, r = nd.r;
+    if (!(isFinite(x) && isFinite(y) && isFinite(r) && r > 0)) return;
+    var base = _SB_PALETTE[sp.topc % 8], kk = _ifK(dp - 1, height), c = Math.min(sp.n.length, 6), left = _tmPct(x + 2, M), top = _tmPct(y + 2, M), fill, ink, half, rn, wn, vt, hv, wv, cn, gn, cv, gv, vline, wm, cl;
+    var title = _ifS((nd.kids ? sp.chain : sp.item.chain.concat([sp.n])).join(' / '), 160) + ': ' + _esc(f(nd.value)) + ' (' + (nd.value / tot * 100).toFixed(1) + '%)';
+    var pos = 'cx="' + _cpF(x) + '" cy="' + _cpF(y) + '" r="' + _cpF(r) + '" ';
+    if (nd.kids) {
+      rings[dp - 1] += '<circle ' + pos + 'fill="none" stroke="' + _sbFill(base, Math.min(dp, 2)) + '" stroke-width="1.5" vector-effect="non-scaling-stroke"><title>' + title + '</title></circle>';
+      wm = _cpQ(Math.max((c * _CP_K + 8) / 0.8, 40) * S / r);
+      if (wm <= 640) {
+        cl = _cpGate(wm); ws.push(cl[1]);
+        glabs += '<div class="cpg' + cl[0] + '" style="position:absolute;left:' + left + ';top:calc(' + _tmPct(y - r + 2, M) + ' + 10px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tmPct(0.8 * r, M).slice(0, -1) +
+          'cqw - 4px),120px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);' +
+          'text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff),0 0 2px var(--bg,#fff);pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _ifS(sp.n, 24) + '</div>';
+      }
+    } else {
+      fill = _sbFill(base, dp); ink = _sbInk(fill);
+      rings[dp - 1] += '<circle ' + pos + 'fill="' + fill + '"><title>' + title + '</title></circle>';
+      if (big === null || nd.value > big.value) big = nd;
+      half = c * _CP_K / 2; rn = Math.max(Math.sqrt(half * half + 49) + 2, (c * _CP_K + 4) / 1.4, 21); wn = _cpQ(rn * S / r);
+      if (wn <= 640) {
+        vt = f(nd.value); hv = vt.length * _CP_K / 2;
+        wv = _cpQ(Math.max(Math.sqrt(Math.pow(Math.max(half, hv), 2) + 196) + 2, (vt.length * _CP_K + 4) / 1.4) * S / r);
+        cn = _cpGate(wn); ws.push(cn[1]); vline = '';
+        if (wv <= 640) { cv = _cpGate(wv); ws.push(cv[1]); vline = '<div class="cpv' + cv[0] + '" style="opacity:0.85;">' + _ifS(vt, 40) + '</div>'; }
+        llabs += '<div class="cpl" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tmPct(1.4 * r, M).slice(0, -1) +
+          'cqw - 4px);text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' +
+          '<div class="cpn' + cn[0] + '" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _ifS(sp.n, 24) + '</div>' + vline + '</div>';
+      }
+    }
+  });
+  var aria = 'Circle packing of ' + items.length + ' items in ' + tops.length + ' top-level group' + (tops.length === 1 ? '' : 's') + ', total ' + f(tot) + '. Largest item: ' +
+    big.src.n + ', ' + f(big.value) + ', ' + (big.value / tot * 100).toFixed(1) + '% of the total.';
+  var svg = '<svg viewBox="-2 -2 ' + M + ' ' + M + '" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
+    rings.map(function(g, j) { return '<g class="cpr" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>';
+  var uw = [];
+  ws.forEach(function(w) { if (w && uw.indexOf(w) < 0) uw.push(w); });
+  uw.sort(function(a, c) { return a - c; });
+  var css = uw.length ? '<style>' + uw.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>' : '';
+  return _ifWrap(_ifTitle(b) + '<div role="img" aria-label="' + _ifS(aria, 400) + '" style="position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;">' +
+    css + svg + glabs + llabs + '</div>' + _hgNote('Circle area shows share of the total; an outlined circle is a group.') + notes + _hgVersionNote(b, 'circle_pack') +
+    _ifTable(['Item', 'Path', 'Value', 'Share of total'], items.map(function(it) { return [it.n, it.chain.join(' / ') || 'Top level', f(it.v), (it.v / tot * 100).toFixed(1) + '%']; })));
+};
+
 // ── chord_diagram (I47) and its directed mode (I62) ───────────────────────────────────────────────────────────────────────────────────────────
 // d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape arc() (_sbArc, via _D3Path) for
 // the group arcs. Twin of _ch_chord / _ch_ribbon / _render_chord_diagram in renderers/web_article.py.

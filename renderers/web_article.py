@@ -32467,6 +32467,399 @@ def _render_sunburst(b: dict) -> str:
                     + _if_table(['Item', 'Path', 'Value', 'Share of total'], [[i['n'], ' / '.join(i['chain']) or 'Top level', f(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
 
 
+# ── circle_pack (I46) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# d3-hierarchy 3.1.2 pack() on the same hierarchy().sum().sort(by value, descending) as the sunburst (_tm_build): packSiblings (the front chain) and
+# packEnclose with d3's fixed LCG (seed 1; one generator per pack() call, so its state runs on through every group in eachAfter order), ported line by
+# line, float operation order included. x / 0 and sqrt(negative) give Infinity and NaN as in JavaScript. Twin of _cpRows / _RENDERERS['circle_pack'] in
+# atoms_infographic.gs.
+_CP_SIZE, _CP_PAD, _CP_MAX = 600, 3, 60
+_CP_K, _CP_MINW = 7.2, 240
+
+
+def _cp_lcg():
+    s = [1]
+
+    def rnd():
+        s[0] = (1664525 * s[0] + 1013904223) % 4294967296
+        return s[0] / 4294967296
+    return rnd
+
+
+def _cp_div(a, b):
+    """JavaScript a / b."""
+    if b == 0:
+        if a != a or a == 0:
+            return float('nan')
+        return float('-inf') if (a < 0) != (math.copysign(1.0, b) < 0) else float('inf')
+    return a / b
+
+
+def _cp_sqrt(x):
+    return math.sqrt(x) if x >= 0 else float('nan')
+
+
+def _cp_enclose_not(a, b):
+    dr = a['r'] - b['r']
+    dx = b['x'] - a['x']
+    dy = b['y'] - a['y']
+    return dr < 0 or dr * dr < dx * dx + dy * dy
+
+
+def _cp_enclose_weak(a, b):
+    dr = a['r'] - b['r'] + max(a['r'], b['r'], 1) * 1e-9
+    dx = b['x'] - a['x']
+    dy = b['y'] - a['y']
+    return dr > 0 and dr * dr > dx * dx + dy * dy
+
+
+def _cp_enclose_weak_all(a, B):
+    for q in B:
+        if not _cp_enclose_weak(a, q):
+            return False
+    return True
+
+
+def _cp_basis2(a, b):
+    x1, y1, r1, x2, y2, r2 = a['x'], a['y'], a['r'], b['x'], b['y'], b['r']
+    x21, y21, r21 = x2 - x1, y2 - y1, r2 - r1
+    l = _cp_sqrt(x21 * x21 + y21 * y21)
+    return {'x': (x1 + x2 + _cp_div(x21, l) * r21) / 2, 'y': (y1 + y2 + _cp_div(y21, l) * r21) / 2, 'r': (l + r1 + r2) / 2}
+
+
+def _cp_basis3(a, b, c):
+    x1, y1, r1, x2, y2, r2, x3, y3, r3 = a['x'], a['y'], a['r'], b['x'], b['y'], b['r'], c['x'], c['y'], c['r']
+    a2, a3, b2, b3, c2, c3 = x1 - x2, x1 - x3, y1 - y2, y1 - y3, r2 - r1, r3 - r1
+    d1 = x1 * x1 + y1 * y1 - r1 * r1
+    d2 = d1 - x2 * x2 - y2 * y2 + r2 * r2
+    d3 = d1 - x3 * x3 - y3 * y3 + r3 * r3
+    ab = a3 * b2 - a2 * b3
+    xa = _cp_div(b2 * d3 - b3 * d2, ab * 2) - x1
+    xb = _cp_div(b3 * c2 - b2 * c3, ab)
+    ya = _cp_div(a3 * d2 - a2 * d3, ab * 2) - y1
+    yb = _cp_div(a2 * c3 - a3 * c2, ab)
+    A = xb * xb + yb * yb - 1
+    B = 2 * (r1 + xa * xb + ya * yb)
+    C = xa * xa + ya * ya - r1 * r1
+    r = -(_cp_div(B + _cp_sqrt(B * B - 4 * A * C), 2 * A) if abs(A) > 1e-6 else _cp_div(C, B))
+    return {'x': x1 + xa + xb * r, 'y': y1 + ya + yb * r, 'r': r}
+
+
+def _cp_basis(B):
+    return {'x': B[0]['x'], 'y': B[0]['y'], 'r': B[0]['r']} if len(B) == 1 else _cp_basis2(B[0], B[1]) if len(B) == 2 else _cp_basis3(B[0], B[1], B[2])
+
+
+def _cp_extend(B, p):
+    if _cp_enclose_weak_all(p, B):
+        return [p]
+    for q in B:
+        if _cp_enclose_not(p, q) and _cp_enclose_weak_all(_cp_basis2(q, p), B):
+            return [q, p]
+    for i in range(len(B) - 1):
+        for j in range(i + 1, len(B)):
+            if (_cp_enclose_not(_cp_basis2(B[i], B[j]), p) and _cp_enclose_not(_cp_basis2(B[i], p), B[j]) and _cp_enclose_not(_cp_basis2(B[j], p), B[i])
+                    and _cp_enclose_weak_all(_cp_basis3(B[i], B[j], p), B)):
+                return [B[i], B[j], p]
+    return [p]                                                               # d3 throws here ("something is very wrong"); a renderer must not
+
+
+def _cp_enclose(circles, random):
+    """packEncloseRandom: the smallest circle enclosing `circles` (dicts x, y, r), after d3's shuffle with `random`."""
+    cs = list(circles)
+    m = len(cs)
+    while m:
+        i = int(random() * m)
+        m -= 1
+        cs[m], cs[i] = cs[i], cs[m]
+    i, n, B, e = 0, len(cs), [], None
+    while i < n:
+        p = cs[i]
+        if e is not None and _cp_enclose_weak(e, p):
+            i += 1
+        else:
+            B = _cp_extend(B, p)
+            e = _cp_basis(B)
+            i = 0
+    return e
+
+
+def _cp_place(b, a, c):
+    dx = b['x'] - a['x']
+    dy = b['y'] - a['y']
+    d2 = dx * dx + dy * dy
+    if d2:
+        a2 = a['r'] + c['r']
+        a2 *= a2
+        b2 = b['r'] + c['r']
+        b2 *= b2
+        if a2 > b2:
+            x = (d2 + b2 - a2) / (2 * d2)
+            y = _cp_sqrt(max(0.0, b2 / d2 - x * x))
+            c['x'] = b['x'] - x * dx - y * dy
+            c['y'] = b['y'] - x * dy + y * dx
+        else:
+            x = (d2 + a2 - b2) / (2 * d2)
+            y = _cp_sqrt(max(0.0, a2 / d2 - x * x))
+            c['x'] = a['x'] + x * dx - y * dy
+            c['y'] = a['y'] + x * dy + y * dx
+    else:
+        c['x'] = a['x'] + c['r']
+        c['y'] = a['y']
+
+
+def _cp_intersects(a, b):
+    dr = a['r'] + b['r'] - 1e-6
+    dx = b['x'] - a['x']
+    dy = b['y'] - a['y']
+    return dr > 0 and dr * dr > dx * dx + dy * dy
+
+
+class _CpLink:
+    __slots__ = ('v', 'next', 'previous')
+
+    def __init__(self, v):
+        self.v, self.next, self.previous = v, None, None
+
+
+def _cp_score(nd):
+    a, b = nd.v, nd.next.v
+    ab = a['r'] + b['r']
+    dx = (a['x'] * b['r'] + b['x'] * a['r']) / ab
+    dy = (a['y'] * b['r'] + b['y'] * a['r']) / ab
+    return dx * dx + dy * dy
+
+
+def _cp_siblings(circles, random):
+    """packSiblingsRandom: places `circles` (dicts with r; x and y are set) round the origin and returns the radius of the circle that encloses them."""
+    n = len(circles)
+    if not n:
+        return 0.0
+    a = circles[0]
+    a['x'] = 0.0
+    a['y'] = 0.0
+    if not n > 1:
+        return a['r']
+    b = circles[1]
+    a['x'] = -b['r']
+    b['x'] = a['r']
+    b['y'] = 0.0
+    if not n > 2:
+        return a['r'] + b['r']
+    c = circles[2]
+    _cp_place(b, a, c)
+    a, b, c = _CpLink(a), _CpLink(b), _CpLink(c)
+    a.next = c.previous = b
+    b.next = a.previous = c
+    c.next = b.previous = a
+    i = 3
+    while i < n:
+        c = circles[i]
+        _cp_place(a.v, b.v, c)
+        c = _CpLink(c)
+        j, k, sj, sk = b.next, a.previous, b.v['r'], a.v['r']
+        again = False
+        while True:
+            if sj <= sk:
+                if _cp_intersects(j.v, c.v):
+                    b = j
+                    a.next = b
+                    b.previous = a
+                    again = True
+                    break
+                sj += j.v['r']
+                j = j.next
+            else:
+                if _cp_intersects(k.v, c.v):
+                    a = k
+                    a.next = b
+                    b.previous = a
+                    again = True
+                    break
+                sk += k.v['r']
+                k = k.previous
+            if j is k.next:
+                break
+        if again:
+            continue
+        c.previous = a
+        c.next = b
+        old = b
+        b = c
+        old.previous = c
+        a.next = c
+        aa = _cp_score(a)
+        c = c.next
+        while c is not b:
+            ca = _cp_score(c)
+            if ca < aa:
+                a, aa = c, ca
+            c = c.next
+        b = a.next
+        i += 1
+    ring = [b.v]
+    c = b.next
+    while c is not b:
+        ring.append(c.v)
+        c = c.next
+    e = _cp_enclose(ring, random)
+    for q in circles:
+        q['x'] -= e['x']
+        q['y'] -= e['y']
+    return e['r']
+
+
+def _cp_pack(root, dx, dy, padding):
+    """pack().size([dx, dy]).padding(padding) of the tree `root` ({'n', 'c': [...]} / {'n', 'v'}) after hierarchy().sum().sort(by value, descending): every node in
+    pre-order (eachBefore) as a dict with depth, x, y, r, value, kids and src."""
+    top = _tm_build(root, 0)
+    random = _cp_lcg()
+    top['x'], top['y'] = dx / 2, dy / 2
+    top['parent'] = None
+    before, stack = [], [top]
+    while stack:
+        nd = stack.pop()
+        before.append(nd)
+        if nd['kids']:
+            for k in reversed(nd['kids']):
+                k['parent'] = nd
+                stack.append(k)
+    after, nodes = [], [top]
+    while nodes:
+        nd = nodes.pop()
+        after.append(nd)
+        if nd['kids']:
+            for k in nd['kids']:
+                nodes.append(k)
+    after.reverse()
+    for nd in before:
+        if not nd['kids']:
+            r = _cp_sqrt(nd['value'])
+            nd['r'] = r if r > 0 else 0.0
+
+    def group(nd, pad, k):
+        r = pad * k
+        if r != r:
+            r = 0.0
+        if r:
+            for q in nd['kids']:
+                q['r'] += r
+        e = _cp_siblings(nd['kids'], random)
+        if r:
+            for q in nd['kids']:
+                q['r'] -= r
+        nd['r'] = e + r
+    for nd in after:
+        if nd['kids']:
+            group(nd, 0, 1)
+    k = _cp_div(top['r'], min(dx, dy))
+    for nd in after:
+        if nd['kids']:
+            group(nd, padding, k)
+    k = _cp_div(min(dx, dy), 2 * top['r'])
+    for nd in before:
+        p = nd['parent']
+        nd['r'] *= k
+        if p is not None:
+            nd['x'] = p['x'] + k * nd['x']
+            nd['y'] = p['y'] + k * nd['y']
+    return before
+
+
+def _cp_rows(spec, dx, dy, padding):
+    return [[n['depth'], n['x'], n['y'], n['r'], n['value'], n['src'].get('n')] for n in _cp_pack(spec, dx, dy, padding)]
+
+
+def _cp_q(w):
+    return int(math.ceil(w / 10)) * 10
+
+
+def _cp_gate(wm):
+    return (' tmw' + str(wm), wm) if wm > _CP_MINW else ('', 0)
+
+
+def _render_circle_pack(b: dict) -> str:
+    # the optional 'version' field is read by _hg_version_note at the end
+    lst = _if_g(b, 'items')
+    lst = lst if isinstance(lst, list) else []
+    items, left_out = [], 0
+    for k, it in enumerate(lst[:_CP_MAX]):
+        v = _if_n(_if_g(it, 'value'), 0, 1e12, 0) if isinstance(it, dict) else 0
+        if not v > 0:
+            left_out += 1
+            continue
+        nm = _if_g(it, 'name')
+        items.append({'n': _if_str(nm)[:24] if _if_truthy(nm) else 'Item ' + str(k + 1), 'v': v, 'chain': _tm_path(_if_g(it, 'path'))})
+    beyond = len(lst) - _CP_MAX
+    notes = ((_hg_note(str(left_out) + (' entry had no value above 0 or was not an item and was' if left_out == 1 else ' entries had no value above 0 or were not an item and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' item beyond the first ' + str(_CP_MAX) + ' was' if beyond == 1 else ' items beyond the first ' + str(_CP_MAX) + ' were') + ' not drawn.') if beyond > 0 else ''))
+    if len(items) < 2:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A circle pack needs at least 2 items with a value above 0.</div>' + notes + _hg_version_note(b, 'circle_pack'))
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+
+    def f(v):
+        return _bp_fmt(v, 2) + us
+    root, tops = _tm_tree(items)
+    height = max(len(i['chain']) for i in items) + 1
+    nodes = _cp_pack(root, float(_CP_SIZE), float(_CP_SIZE), float(_CP_PAD))
+    tot = nodes[0]['value']
+    S, M = _CP_SIZE, _CP_SIZE + 4
+    ws, glabs, llabs, rings = [], '', '', [''] * height
+    big = None
+    for nd in nodes[1:]:
+        sp, dp = nd['src'], nd['depth']
+        x, y, r = nd['x'], nd['y'], nd['r']
+        if not (math.isfinite(x) and math.isfinite(y) and math.isfinite(r) and r > 0):
+            continue
+        base = _SB_PALETTE[sp['topc'] % 8]
+        title = _if_s(' / '.join(sp['chain'] if nd['kids'] else sp['item']['chain'] + [sp['n']]), 160) + ': ' + _cv_esc(f(nd['value'])) + ' (' + _if_fixed(nd['value'] / tot * 100, 1) + '%)'
+        pos = 'cx="' + _if_fixed(x, 2) + '" cy="' + _if_fixed(y, 2) + '" r="' + _if_fixed(r, 2) + '" '
+        kk = _if_k(dp - 1, height)
+        c = min(_oc_chars(sp['n']), 6)
+        left, top = _tm_pct(x + 2, M), _tm_pct(y + 2, M)
+        if nd['kids']:
+            rings[dp - 1] += '<circle ' + pos + 'fill="none" stroke="' + _sb_fill(base, min(dp, 2)) + '" stroke-width="1.5" vector-effect="non-scaling-stroke"><title>' + title + '</title></circle>'
+            wm = _cp_q(max((c * _CP_K + 8) / 0.8, 40) * S / r)
+            if wm <= 640:
+                cls, g = _cp_gate(wm)
+                ws.append(g)
+                glabs += ('<div class="cpg' + cls + '" style="position:absolute;left:' + left + ';top:calc(' + _tm_pct(y - r + 2, M) + ' + 10px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tm_pct(0.8 * r, M)[:-1]
+                          + 'cqw - 4px),120px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);'
+                          'text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff),0 0 2px var(--bg,#fff);pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _if_s(sp['n'], 24) + '</div>')
+        else:
+            fill = _sb_fill(base, dp)
+            ink = _sb_ink(fill)
+            rings[dp - 1] += '<circle ' + pos + 'fill="' + fill + '"><title>' + title + '</title></circle>'
+            if big is None or nd['value'] > big['value']:
+                big = nd
+            half = c * _CP_K / 2
+            rn = max(_cp_sqrt(half * half + 49) + 2, (c * _CP_K + 4) / 1.4, 21)
+            wn = _cp_q(rn * S / r)
+            if wn <= 640:
+                vt = f(nd['value'])
+                hv = len(vt) * _CP_K / 2
+                wv = _cp_q(max(_cp_sqrt(max(half, hv) ** 2 + 196) + 2, (len(vt) * _CP_K + 4) / 1.4) * S / r)
+                cn, gn = _cp_gate(wn)
+                ws.append(gn)
+                vline = ''
+                if wv <= 640:
+                    cv, gv = _cp_gate(wv)
+                    ws.append(gv)
+                    vline = '<div class="cpv' + cv + '" style="opacity:0.85;">' + _if_s(vt, 40) + '</div>'
+                llabs += ('<div class="cpl" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tm_pct(1.4 * r, M)[:-1]
+                          + 'cqw - 4px);text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">'
+                          '<div class="cpn' + cn + '" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _if_s(sp['n'], 24) + '</div>' + vline + '</div>')
+    aria = ('Circle packing of ' + str(len(items)) + ' items in ' + str(len(tops)) + ' top-level group' + ('' if len(tops) == 1 else 's') + ', total ' + f(tot) + '. Largest item: '
+            + big['src']['n'] + ', ' + f(big['value']) + ', ' + _if_fixed(big['value'] / tot * 100, 1) + '% of the total.')
+    svg = ('<svg viewBox="-2 -2 ' + str(M) + ' ' + str(M) + '" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
+           + ''.join('<g class="cpr" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
+    uw = sorted(set(w for w in ws if w))
+    css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
+    return _if_wrap(_if_title(b) + '<div role="img" aria-label="' + _if_s(aria, 400) + '" style="position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;">'
+                    + css + svg + glabs + llabs + '</div>'
+                    + _hg_note('Circle area shows share of the total; an outlined circle is a group.') + notes + _hg_version_note(b, 'circle_pack')
+                    + _if_table(['Item', 'Path', 'Value', 'Share of total'], [[i['n'], ' / '.join(i['chain']) or 'Top level', f(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items]))
+
+
 # ── chord_diagram (I47) and its directed mode (I62) ────────────────────────────────────────────────────────────────────────────────────────────
 # d3-chord 3.0.1 chord() / chordDirected() (padAngle 0.05, sortSubgroups descending) and ribbon() / ribbonArrow(), with d3-shape 3.2.0 arc() (the sunburst's
 # _sb_arc, via _D3Path) for the group arcs. Twin of _chChord / _chRibbon / _RENDERERS['chord_diagram'] in atoms_infographic.gs.
@@ -34033,7 +34426,7 @@ def _render_waterfall(b: dict) -> str:
 
 
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack)):
     _RENDERERS[_if_name] = _if_fn
 
 
