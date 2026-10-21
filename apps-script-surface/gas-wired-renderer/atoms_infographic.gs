@@ -2774,6 +2774,129 @@ function _hgNice(start, stop, count) {
     pre = step;
   }
 }
+// ── shared chart-axis helper (plotly core-bar) ──
+// d3-format 3.1.0 subset (d f e g s % n; fill/align, sign, $, 0, width, comma, precision, ~) and d3-scale 4.0.2 scaleLog ticks / nice (base 10).
+// Types b c o p r x X are NOT ported: _axParse returns null for them. Twin of _ax_* in renderers/web_article.py.
+var _AX_SPEC = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?([0-9]+)?(,)?(\.[0-9]+)?(~)?([a-z%])?$/i;
+var _AX_SI = ['y', 'z', 'a', 'f', 'p', 'n', 'µ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+function _axParse(spec) {
+  if (typeof spec !== 'string' || spec.length > 24 || spec.indexOf('\n') >= 0 || spec.indexOf('\r') >= 0) return null;
+  var m = _AX_SPEC.exec(spec);
+  if (!m) return null;
+  var typ = m[10] || '';
+  if (['d', 'f', 'e', 'g', 's', '%', 'n', ''].indexOf(typ) < 0) return null;
+  return {fill: m[1] || ' ', align: m[2] || '>', sign: m[3] || '-', symbol: m[4] || '', zero: !!m[5], width: m[6] === undefined ? null : +m[6],
+          comma: !!m[7], precision: m[8] ? +m[8].slice(1) : null, trim: !!m[9], type: typ};
+}
+function _axDparts(x, p) {
+  var s = p ? x.toExponential(p - 1) : x.toExponential(), i = s.indexOf('e'), c = s.slice(0, i);
+  return [c.length > 1 ? c.charAt(0) + c.slice(2) : c, +s.slice(i + 1)];
+}
+function _axPrefixAuto(x, p) {
+  var d = _axDparts(x, p), coef = d[0], ex = d[1], pe = Math.max(-8, Math.min(8, Math.floor(ex / 3))) * 3, i = ex - pe + 1, n = coef.length, out;
+  if (i === n) out = coef;
+  else if (i > n) out = coef + new Array(i - n + 1).join('0');
+  else if (i > 0) out = coef.slice(0, i) + '.' + coef.slice(i);
+  else out = '0.' + new Array(1 - i).join('0') + _axDparts(x, Math.max(0, p + i - 1))[0];
+  return [out, pe];
+}
+function _axTrim(s) {
+  var n = s.length, i, i0 = -1, i1 = 0, c;
+  for (i = 1; i < n; ++i) {
+    c = s.charAt(i);
+    if (c === '.') { i0 = i1 = i; }
+    else if (c === '0') { if (i0 === 0) i0 = i; i1 = i; }
+    else { if ('123456789'.indexOf(c) < 0) break; if (i0 > 0) i0 = 0; }
+  }
+  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
+}
+function _axGroup(value, width) {
+  var i = value.length, t = [], g = 3, length = 0;
+  while (i > 0 && g > 0) {
+    if (length + g + 1 > width) g = Math.max(1, width - length);
+    t.push(value.substring(i -= g, i + g));
+    if ((length += g + 1) > width) break;
+  }
+  return t.reverse().join(',');
+}
+function _axFixed(x, d) { return x >= 1e21 ? String(x) : x.toFixed(d); }
+function _axDecimal(x) {
+  var r = Math.round(x);
+  if (r < 1e21) return String(r);
+  var p = _axDparts(r, 0), c = p[0];
+  return c + new Array(p[1] - c.length + 2).join('0');
+}
+function _axFormat(spec, v) {
+  var s = _axParse(spec);
+  v = +v;
+  if (s === null || v !== v || v === Infinity || v === -Infinity) return v !== v ? 'NaN' : v > 0 ? 'Infinity' : '−Infinity';
+  var typ = s.type, prec = s.precision, trim = s.trim, comma = s.comma, fill = s.fill, align = s.align, sign = s.sign, zero = s.zero, width = s.width;
+  if (typ === 'n') { comma = true; typ = 'g'; }
+  else if (['d', 'f', 'e', 'g', 's', '%'].indexOf(typ) < 0) { if (prec === null) prec = 12; trim = true; typ = 'g'; }
+  if (zero || (fill === '0' && align === '=')) { zero = true; fill = '0'; align = '='; }
+  prec = prec === null ? 6 : (typ === 'g' || typ === 's') ? Math.max(1, Math.min(21, prec)) : Math.max(0, Math.min(20, prec));
+  var cur = s.symbol === '$', prefix = cur ? '$' : '', suffix = cur ? '' : typ === '%' ? '%' : '';
+  var neg = v < 0 || 1 / v < 0, a = Math.abs(v), pe = 0, body;
+  if (typ === '%') body = _axFixed(a * 100, prec);
+  else if (typ === 'd') body = _axDecimal(a);
+  else if (typ === 'e') body = a.toExponential(prec);
+  else if (typ === 'f') body = _axFixed(a, prec);
+  else if (typ === 'g') body = a.toPrecision(prec);
+  else { var pa = _axPrefixAuto(a, prec); body = pa[0]; pe = pa[1]; }
+  if (trim) body = _axTrim(body);
+  if (neg && +body === 0 && sign !== '+') neg = false;
+  var pre = (neg ? (sign === '(' ? '(' : '−') : (sign === '-' || sign === '(' ? '' : sign)) + prefix;
+  var suf = (typ === 's' ? _AX_SI[8 + pe / 3] : '') + suffix + (neg && sign === '(' ? ')' : ''), i, c;
+  for (i = 0; i < body.length; ++i) {
+    c = body.charCodeAt(i);
+    if (c < 48 || c > 57) { suf = (c === 46 ? '.' + body.slice(i + 1) : body.slice(i)) + suf; body = body.slice(0, i); break; }
+  }
+  if (comma && !zero) body = _axGroup(body, Infinity);
+  var length = pre.length + body.length + suf.length, pad = width !== null && length < width ? new Array(width - length + 1).join(fill) : '';
+  if (comma && zero) { body = _axGroup(pad + body, pad.length ? width - suf.length : Infinity); pad = ''; }
+  if (align === '<') return pre + body + suf + pad;
+  if (align === '=') return pre + pad + body + suf;
+  if (align === '^') { var h = pad.length >> 1; return pad.slice(0, h) + pre + body + suf + pad.slice(h); }
+  return pad + pre + body + suf;
+}
+function _axLogTicks(u, v, n) {
+  var rev = v < u, i, j, k, t, z = [];
+  if (rev) { t = u; u = v; v = t; }
+  i = Math.log10(u); j = Math.log10(v);
+  if (j - i < n) {
+    i = Math.floor(i); j = Math.ceil(j);
+    for (; i <= j; ++i) {
+      for (k = 1; k < 10; ++k) {
+        t = i < 0 ? k / _hgP10(-i) : k * _hgP10(i);
+        if (t < u) continue;
+        if (t > v) break;
+        z.push(t);
+      }
+    }
+    if (z.length * 2 < n) z = _hgTicks(u, v, n);
+  } else {
+    z = _hgTicks(i, j, Math.min(j - i, n)).map(function(q) { return _hgP10(q); });
+  }
+  return rev ? z.reverse() : z;
+}
+function _axLogNice(u, v) {
+  var rev = v < u, a = rev ? v : u, b = rev ? u : v;
+  a = _hgP10(Math.floor(Math.log10(a))); b = _hgP10(Math.ceil(Math.log10(b)));
+  return rev ? [b, a] : [a, b];
+}
+function _axScale(lo, hi, log, rng, reverse, count) {
+  var nz, ticks, f;
+  if (rng) { lo = rng[0]; hi = rng[1]; }
+  else if (log) { nz = _axLogNice(lo, hi); lo = nz[0]; hi = nz[1]; if (lo === hi) hi = lo * 10; }
+  else {
+    if (lo === hi) { if (lo !== 0) { lo = lo - 1; hi = hi + 1; } else { lo = 0; hi = 1; } }
+    nz = _hgNice(lo, hi, count); lo = nz[0]; hi = nz[1];
+  }
+  ticks = log ? _axLogTicks(lo, hi, count) : _hgTicks(lo, hi, count);
+  if (log) { var l0 = Math.log10(lo), l1 = Math.log10(hi); f = function(v) { return (Math.log10(v) - l0) / (l1 - l0); }; }
+  else f = function(v) { return (v - lo) / (hi - lo); };
+  return {lo: lo, hi: hi, ticks: ticks, log: log, pos: reverse ? function(v) { return 1 - f(v); } : f};
+}
 function _hgBin(values, target) {
   var n = values.length, mx = Math.max.apply(null, values), x0 = Math.min.apply(null, values), x1 = mx, i, x;
   var tn = target === null ? Math.max(1, Math.ceil(Math.log(n) / Math.LN2) + 1) : target, nz = _hgNice(x0, x1, tn), step;

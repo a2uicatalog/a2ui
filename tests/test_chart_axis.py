@@ -86,7 +86,8 @@ def test_linear_nice_and_ticks_match_d3_in_both_twins(core_js):
 
 def test_the_golden_covers_the_hard_log_cases():
     by = {(tuple(c["domain"]), c["count"]): c for c in D["logTicks"]}
-    assert by[((1, 1000), 10)]["ticks"][:4] == [1, 2, 3, 4]                                   # fewer decades than ticks: 1..9 of each decade
-    assert by[((1, 1e15), 5)]["ticks"] == [1, 1e3, 1e6, 1e9, 1e12, 1e15][:len(by[((1, 1e15), 5)]["ticks"])] or True
-    assert by[((1, 1000), 2)]["ticks"] == [1, 100]                                            # too few ticks asked: the linear ticks of the decades
-    assert by[((1e3, 1), 5)] if ((1e3, 1), 5) in by else True
+    assert by[((1, 1000), 10)]["ticks"][:4] == [1, 2, 3, 4]       # fewer decades than ticks asked: 1..9 of each decade
+    assert by[((1, 1000), 2)]["ticks"] == [1, 100]                # too few ticks: the linear ticks of the exponents
+    assert by[((1000, 1), 5)]["ticks"] == by[((1, 1000), 5)]["ticks"][::-1]       # a reversed domain reverses the ticks
+    assert by[((1, 1e15), 5)]["ticks"][0] == 1 and by[((1, 1e15), 5)]["ticks"][-1] <= 1e15
+    assert by[((0.001, 0.1), 10)]["ticks"][0] == 0.001            # negative exponents
