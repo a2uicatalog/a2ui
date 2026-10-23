@@ -31356,7 +31356,9 @@ _RENDERERS['motion_build'] = _render_motion_build
 # matched B element the FLIP offsets that put it on its A partner's box (--mtr-dx/-dy/-sx/-sy; SVG shapes in their own user units).
 # The join: the same key; else (match "path") a B key that is the path prefix of A keys starts on the union of those boxes (a breakdown
 # collapses into its total), and a B key under an A key starts on that ancestor's box (a total splits into its parts); key_map renames
-# A keys first. Box to box (HTML, rect) the element starts exactly on its partner's box; where either side is a curved shape (an arc,
+# A keys first. Provenance is one relation, B key -> the A keys it continues from (data-mtr-src): key_map fills it, and so does a
+# "patch" (RFC 6902, applied to A in place of a "to" block: a copy grows out of its source, a replaced id continues from the old
+# one, a moved item keeps its key). Box to box (HTML, rect) the element starts exactly on its partner's box; where either side is a curved shape (an arc,
 # a circle) it keeps its proportions: scaled uniformly to fit inside the partner's box, centred on it, so nothing curved is stretched.
 # Pure CSS then runs everything on the film dial --p: B fades in over the first third, matched elements travel over p 0.15-0.85, B-only
 # elements fade in late, labels only fade (never transform). At p = 1 every offset is 0 and A is transparent: the page paints B.
@@ -31379,17 +31381,18 @@ _MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .m
             + '.mo-tr .mtr-b [data-cb=label]{opacity:clamp(0,calc((var(--mtr-p) - 0.7)/0.3),1)}'
             + '.mo-tr.mtr-measure .mtr-m{translate:none;scale:none}}')
 _MTR_JS = ('(function(){var w=document.currentScript&&document.currentScript.parentNode;if(!w||!w.querySelector)return;'
-           "var A=w.querySelector('.mtr-a'),B=w.querySelector('.mtr-b'),map={},exact=w.getAttribute('data-mtr-match')==='exact';"
-           "try{map=JSON.parse(w.getAttribute('data-mtr-map')||'{}')}catch(e){}"
+           "var A=w.querySelector('.mtr-a'),B=w.querySelector('.mtr-b'),rel={},exact=w.getAttribute('data-mtr-match')==='exact';"
+           "try{rel=JSON.parse(w.getAttribute('data-mtr-src')||'{}')}catch(e){}"
            "function keyed(r){var o={},l=r.querySelectorAll('[data-cb][data-key],[data-cb] [data-key]');"
            "for(var i=0;i<l.length;i++){var e=l[i],c=e.closest('[data-cb]');if(c&&c.getAttribute('data-cb')==='label')continue;"
            "if(e.querySelector('[data-key]'))continue;var k=e.getAttribute('data-key');"
-           'if(r===A&&Object.prototype.hasOwnProperty.call(map,k))k=String(map[k]);(o[k]=o[k]||[]).push(e)}return o}'
+           '(o[k]=o[k]||[]).push(e)}return o}'
            'function box(l){var x0=1/0,y0=1/0,x1=-1/0,y1=-1/0;for(var i=0;i<l.length;i++){var b=l[i].getBoundingClientRect();'
            'if(b.width<=0&&b.height<=0)continue;x0=Math.min(x0,b.left);y0=Math.min(y0,b.top);x1=Math.max(x1,b.right);y1=Math.max(y1,b.bottom)}'
            'return x0<x1||y0<y1?{x:x0,y:y0,w:x1-x0,h:y1-y0}:null}'
            'function rectish(e){return !e.ownerSVGElement||/^(rect|polygon|g)$/i.test(e.tagName)}'
-           "function src(a,k){if(a[k])return a[k];if(exact)return null;var l=[],p=k+'/';"
+           "function src(a,k){var l=[],p,r=rel[k]||[];for(var j=0;j<r.length;j++)if(a[r[j]])l=l.concat(a[r[j]]);if(l.length)return l;"
+           "if(a[k])return a[k];if(exact)return null;p=k+'/';"
            'for(var q in a)if(q.indexOf(p)===0)l=l.concat(a[q]);if(l.length)return l;'
            "var s=k.split('/');for(var j=s.length-1;j>0;j--){var u=s.slice(0,j).join('/');if(a[u])return a[u]}return null}"
            'function run(){if(!A||!B||!A.getClientRects().length)return;'
@@ -31418,17 +31421,222 @@ def _mtr_map(v):
     return out
 
 
+# ─── RFC 6902 JSON Patch, conformant (I75, 2026-10-23): motion_transition's "patch" applies it ───
+# Every op of RFC 6902 section 4 with its error rules: add inserts into an array (or appends at "-") and needs an existing parent;
+# remove and replace need an existing target; move may not move a value into its own child; test compares by JSON value
+# (object member order ignored, true is not 1, 1 equals 1.0). Pointers follow RFC 6901 (~1 before ~0; array indexes have no leading
+# zeros). Any error rejects the whole patch: the document is patched on a copy. Gated by the RFC's own Appendix A examples
+# (tests/fixtures/rfc6902_appendix_a.json). Twin: atoms_motion_candidates.gs.
+class _JpError(ValueError):
+    pass
+
+
+def _jp_ptr(p):
+    if not isinstance(p, str) or (p and not p.startswith('/')):
+        raise _JpError('not a JSON Pointer: %r' % (p,))
+    return [] if p == '' else [s.replace('~1', '/').replace('~0', '~') for s in p[1:].split('/')]
+
+
+def _jp_idx(arr, s, insert):
+    if s == '-' and insert:
+        return len(arr)
+    if not re.fullmatch(r'0|[1-9][0-9]*', s):
+        raise _JpError('bad array index: %r' % (s,))
+    i = int(s)
+    if i > len(arr) or (i == len(arr) and not insert):
+        raise _JpError('array index out of range: %s' % s)
+    return i
+
+
+def _jp_parent(doc, segs):
+    cur = doc
+    for s in segs[:-1]:
+        if isinstance(cur, list):
+            cur = cur[_jp_idx(cur, s, False)]
+        elif isinstance(cur, dict) and s in cur:
+            cur = cur[s]
+        else:
+            raise _JpError('path does not exist: /' + '/'.join(segs))
+    return cur
+
+
+def _jp_get(doc, segs):
+    if not segs:
+        return doc
+    par, last = _jp_parent(doc, segs), segs[-1]
+    if isinstance(par, list):
+        return par[_jp_idx(par, last, False)]
+    if isinstance(par, dict) and last in par:
+        return par[last]
+    raise _JpError('path does not exist: /' + '/'.join(segs))
+
+
+def _jp_eq(a, b):
+    """RFC 6902 4.6 equality: same JSON type and value; booleans are not numbers."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return isinstance(a, bool) and isinstance(b, bool) and a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return a == b
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_jp_eq(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_jp_eq(x, y) for x, y in zip(a, b))
+    return type(a) is type(b) and a == b
+
+
+def _jp_apply(doc, ops, hook=None, inplace=False):
+    """The patched document. doc is copied first unless inplace (the provenance walk needs the objects themselves).
+    hook(kind, old, new) sees each copy and replace."""
+    import copy as _copy
+    if not isinstance(ops, list):
+        raise _JpError('a JSON Patch is an array of operations')
+    root = [doc if inplace else _copy.deepcopy(doc)]   # a box, so a root path can be replaced
+    for o in ops:
+        if not isinstance(o, dict) or o.get('op') not in ('add', 'remove', 'replace', 'move', 'copy', 'test'):
+            raise _JpError('unknown operation: %r' % (o,))
+        op, segs = o['op'], _jp_ptr(o.get('path'))
+        if op in ('add', 'replace', 'test') and 'value' not in o:
+            raise _JpError(op + ' needs a value')
+        if op in ('move', 'copy'):
+            frm = _jp_ptr(o.get('from'))
+            if op == 'move' and len(segs) > len(frm) and segs[:len(frm)] == frm:
+                raise _JpError('cannot move a value into its own child')
+            val = _jp_get(root[0], frm)
+            if op == 'move':
+                if frm == segs:
+                    continue
+                _jp_remove(root, frm)
+            else:
+                new = _copy.deepcopy(val)
+                if hook:
+                    hook('copy', val, new)
+                val = new
+            _jp_add(root, segs, val)
+        elif op == 'add':
+            _jp_add(root, segs, _copy.deepcopy(o['value']))
+        elif op == 'remove':
+            _jp_remove(root, segs)
+        elif op == 'replace':
+            old, new = _jp_get(root[0], segs), _copy.deepcopy(o['value'])
+            if not segs:
+                root[0] = new
+            else:   # in place: an object member keeps its position (renderers draw fields in member order)
+                par, last = _jp_parent(root[0], segs), segs[-1]
+                if isinstance(par, list):
+                    par[_jp_idx(par, last, False)] = new
+                else:
+                    par[last] = new
+            if hook:
+                hook('replace', old, new)
+        elif not _jp_eq(_jp_get(root[0], segs), o['value']):
+            raise _JpError('test failed at ' + o['path'])
+    return root[0]
+
+
+def _jp_add(root, segs, val):
+    if not segs:
+        root[0] = val
+        return
+    par, last = _jp_parent(root[0], segs), segs[-1]
+    if isinstance(par, list):
+        par.insert(_jp_idx(par, last, True), val)
+    elif isinstance(par, dict):
+        par[last] = val
+    else:
+        raise _JpError('cannot add to a non-container at /' + '/'.join(segs))
+
+
+def _jp_remove(root, segs):
+    if not segs:
+        raise _JpError('cannot remove the whole document')
+    par, last = _jp_parent(root[0], segs), segs[-1]
+    if isinstance(par, list):
+        del par[_jp_idx(par, last, False)]
+    elif isinstance(par, dict) and last in par:
+        del par[last]
+    else:
+        raise _JpError('path does not exist: /' + '/'.join(segs))
+
+
+def _mtr_ident(d):
+    """An item's data key as the build contract forms it: its id; else its category path and name; else its name, label, title or
+    text. None where the object has no identity."""
+    if not isinstance(d, dict):
+        return None
+    if isinstance(d.get('id'), (str, int, float)) and not isinstance(d.get('id'), bool) and d.get('id') != '':
+        return _if_str(d['id'])
+    nm = next((d[k] for k in ('name', 'label', 'title', 'text') if isinstance(d.get(k), (str, int, float)) and not isinstance(d.get(k), bool) and d.get(k) != ''), None)
+    if nm is None:
+        return None
+    pth = d.get('path')
+    if isinstance(pth, list) and pth and all(isinstance(x, str) for x in pth):
+        return '/'.join(pth + [_if_str(nm)])
+    return _if_str(nm)
+
+
+def _mtr_dicts(v, out):
+    if isinstance(v, dict):
+        out.append(v)
+        for x in v.values():
+            _mtr_dicts(x, out)
+    elif isinstance(v, list):
+        for x in v:
+            _mtr_dicts(x, out)
+    return out
+
+
+def _mtr_from_patch(before, ops):
+    """(after, src): apply an RFC 6902 patch to block A and derive provenance by object identity through the ops. src maps a
+    B key to the A keys it continues from, where the key changed: a copy grows out of its source, a replaced item or id
+    continues from the old one; a moved item keeps its key and needs nothing."""
+    import copy as _copy
+    work = _copy.deepcopy(before)
+    origin = {id(d): _mtr_ident(d) for d in _mtr_dicts(work, [])}   # the A key of every object A had
+    keep = _mtr_dicts(work, [])                                      # objects stay alive, so their id() stays theirs
+    lineage = {}
+
+    def hook(kind, old, new):
+        olds, news = _mtr_dicts(old, []), _mtr_dicts(new, [])
+        if kind == 'replace' and not isinstance(new, dict):   # a field replaced (an id): the item is unchanged as an object
+            return
+        for o, n in zip(olds, news):
+            lineage[id(n)] = o
+        keep.extend(news)
+
+    after = _jp_apply(work, ops, hook, inplace=True)
+    src = {}
+    for d in _mtr_dicts(after, []):
+        o = d
+        while id(o) in lineage:
+            o = lineage[id(o)]
+        a_key, b_key = origin.get(id(o)), _mtr_ident(d)
+        if a_key and b_key and a_key != b_key:
+            src.setdefault(b_key, [])
+            if a_key not in src[b_key]:
+                src[b_key].append(a_key)
+    del keep
+    return after, src
+
 def _render_motion_transition(b: dict) -> str:
-    fa, tb = b.get('from'), b.get('to')
+    fa, tb, ops = b.get('from'), b.get('to'), b.get('patch')
+    rel, note = {}, ''
+    if not isinstance(tb, dict) and isinstance(ops, list) and isinstance(fa, dict):
+        try:   # B is A with the RFC 6902 patch applied; provenance comes from the ops (a copy grows out of its source)
+            tb, rel = _mtr_from_patch(fa, ops[:500])
+        except _JpError as e:
+            tb, note = fa, '<!-- a2ui: motion_transition patch not applied (' + _cv_esc(str(e))[:160] + '): showing "from" -->'
     if not isinstance(tb, dict):
-        return '<!-- a2ui: motion_transition needs a "to" block -->'
+        return '<!-- a2ui: motion_transition needs a "to" block, or a "from" block and a "patch" -->'
     ha = _mo_child(fa) if isinstance(fa, dict) else ''
     hb = _mo_child(tb)
     match, ver = _ff_pick(b.get('match'), _MTR_MATCH, 'path'), _ff_int(b.get('version'), 1, 1, 1)
-    km = _mtr_map(b.get('key_map'))
-    attr = (' data-mtr-map="' + _cv_esc(_json.dumps(km, ensure_ascii=False, separators=(',', ':'))) + '"') if km else ''
+    for ak, bk in _mtr_map(b.get('key_map')).items():   # key_map renames A keys: B key bk continues from A key ak
+        rel.setdefault(bk, [])
+        if ak not in rel[bk]:
+            rel[bk].append(ak)
+    attr = (' data-mtr-src="' + _cv_esc(_json.dumps(rel, ensure_ascii=False, separators=(',', ':'))) + '"') if rel else ''
     return ('<div class="mo-tr" data-mtr-match="' + match + '" data-mtr-v="' + str(ver) + '"' + attr + '><style>' + _MTR_CSS + '</style>'
-            + '<div class="mtr-b">' + hb + '</div><div class="mtr-a" aria-hidden="true" inert>' + ha + '</div><script>' + _MTR_JS + '</script></div>')
+            + '<div class="mtr-b">' + hb + '</div><div class="mtr-a" aria-hidden="true" inert>' + ha + '</div><script>' + _MTR_JS + '</script></div>' + note)
 
 
 _RENDERERS['motion_transition'] = _render_motion_transition

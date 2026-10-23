@@ -1,0 +1,633 @@
+{
+ "note": "RFC 6902 Appendix A (A.13 is about duplicate member names, resolved by the JSON parser before a patch exists) plus conformance cases from sections 4 and RFC 6901. expected \"error\" means the whole patch is rejected.",
+ "cases": [
+  {
+   "id": "A.1",
+   "doc": {
+    "foo": "bar"
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/baz",
+     "value": "qux"
+    }
+   ],
+   "expected": {
+    "baz": "qux",
+    "foo": "bar"
+   },
+   "source": "RFC 6902 Appendix A.1"
+  },
+  {
+   "id": "A.2",
+   "doc": {
+    "foo": [
+     "bar",
+     "baz"
+    ]
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/foo/1",
+     "value": "qux"
+    }
+   ],
+   "expected": {
+    "foo": [
+     "bar",
+     "qux",
+     "baz"
+    ]
+   },
+   "source": "RFC 6902 Appendix A.2"
+  },
+  {
+   "id": "A.3",
+   "doc": {
+    "baz": "qux",
+    "foo": "bar"
+   },
+   "patch": [
+    {
+     "op": "remove",
+     "path": "/baz"
+    }
+   ],
+   "expected": {
+    "foo": "bar"
+   },
+   "source": "RFC 6902 Appendix A.3"
+  },
+  {
+   "id": "A.4",
+   "doc": {
+    "foo": [
+     "bar",
+     "qux",
+     "baz"
+    ]
+   },
+   "patch": [
+    {
+     "op": "remove",
+     "path": "/foo/1"
+    }
+   ],
+   "expected": {
+    "foo": [
+     "bar",
+     "baz"
+    ]
+   },
+   "source": "RFC 6902 Appendix A.4"
+  },
+  {
+   "id": "A.5",
+   "doc": {
+    "baz": "qux",
+    "foo": "bar"
+   },
+   "patch": [
+    {
+     "op": "replace",
+     "path": "/baz",
+     "value": "boo"
+    }
+   ],
+   "expected": {
+    "baz": "boo",
+    "foo": "bar"
+   },
+   "source": "RFC 6902 Appendix A.5"
+  },
+  {
+   "id": "A.6",
+   "doc": {
+    "foo": {
+     "bar": "baz",
+     "waldo": "fred"
+    },
+    "qux": {
+     "corge": "grault"
+    }
+   },
+   "patch": [
+    {
+     "op": "move",
+     "from": "/foo/waldo",
+     "path": "/qux/thud"
+    }
+   ],
+   "expected": {
+    "foo": {
+     "bar": "baz"
+    },
+    "qux": {
+     "corge": "grault",
+     "thud": "fred"
+    }
+   },
+   "source": "RFC 6902 Appendix A.6"
+  },
+  {
+   "id": "A.7",
+   "doc": {
+    "foo": [
+     "all",
+     "grass",
+     "cows",
+     "eat"
+    ]
+   },
+   "patch": [
+    {
+     "op": "move",
+     "from": "/foo/1",
+     "path": "/foo/3"
+    }
+   ],
+   "expected": {
+    "foo": [
+     "all",
+     "cows",
+     "eat",
+     "grass"
+    ]
+   },
+   "source": "RFC 6902 Appendix A.7"
+  },
+  {
+   "id": "A.8",
+   "doc": {
+    "baz": "qux",
+    "foo": [
+     "a",
+     2,
+     "c"
+    ]
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/baz",
+     "value": "qux"
+    },
+    {
+     "op": "test",
+     "path": "/foo/1",
+     "value": 2
+    }
+   ],
+   "expected": {
+    "baz": "qux",
+    "foo": [
+     "a",
+     2,
+     "c"
+    ]
+   },
+   "source": "RFC 6902 Appendix A.8"
+  },
+  {
+   "id": "A.9",
+   "doc": {
+    "baz": "qux"
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/baz",
+     "value": "bar"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 Appendix A.9"
+  },
+  {
+   "id": "A.10",
+   "doc": {
+    "foo": "bar"
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/child",
+     "value": {
+      "grandchild": {}
+     }
+    }
+   ],
+   "expected": {
+    "foo": "bar",
+    "child": {
+     "grandchild": {}
+    }
+   },
+   "source": "RFC 6902 Appendix A.10"
+  },
+  {
+   "id": "A.11",
+   "doc": {
+    "foo": "bar"
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/baz",
+     "value": "qux",
+     "xyz": 123
+    }
+   ],
+   "expected": {
+    "foo": "bar",
+    "baz": "qux"
+   },
+   "source": "RFC 6902 Appendix A.11"
+  },
+  {
+   "id": "A.12",
+   "doc": {
+    "foo": "bar"
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/baz/bat",
+     "value": "qux"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 Appendix A.12"
+  },
+  {
+   "id": "A.14",
+   "doc": {
+    "/": 9,
+    "~1": 10
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/~01",
+     "value": 10
+    }
+   ],
+   "expected": {
+    "/": 9,
+    "~1": 10
+   },
+   "source": "RFC 6902 Appendix A.14"
+  },
+  {
+   "id": "A.15",
+   "doc": {
+    "/": 9,
+    "~1": 10
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/~01",
+     "value": "10"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 Appendix A.15"
+  },
+  {
+   "id": "A.16",
+   "doc": {
+    "foo": [
+     "bar"
+    ]
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/foo/-",
+     "value": [
+      "abc",
+      "def"
+     ]
+    }
+   ],
+   "expected": {
+    "foo": [
+     "bar",
+     [
+      "abc",
+      "def"
+     ]
+    ]
+   },
+   "source": "RFC 6902 Appendix A.16"
+  },
+  {
+   "id": "replace-missing",
+   "doc": {
+    "a": 1
+   },
+   "patch": [
+    {
+     "op": "replace",
+     "path": "/b",
+     "value": 2
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "remove-missing",
+   "doc": {
+    "a": 1
+   },
+   "patch": [
+    {
+     "op": "remove",
+     "path": "/b"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "add-root",
+   "doc": {
+    "a": 1
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "",
+     "value": [
+      1
+     ]
+    }
+   ],
+   "expected": [
+    1
+   ],
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "replace-root",
+   "doc": {
+    "a": 1
+   },
+   "patch": [
+    {
+     "op": "replace",
+     "path": "",
+     "value": {
+      "b": 2
+     }
+    }
+   ],
+   "expected": {
+    "b": 2
+   },
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "add-index-past-end",
+   "doc": {
+    "a": [
+     1
+    ]
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/a/2",
+     "value": 3
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "add-at-end-index",
+   "doc": {
+    "a": [
+     1
+    ]
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/a/1",
+     "value": 2
+    }
+   ],
+   "expected": {
+    "a": [
+     1,
+     2
+    ]
+   },
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "leading-zero",
+   "doc": {
+    "a": [
+     1,
+     2
+    ]
+   },
+   "patch": [
+    {
+     "op": "remove",
+     "path": "/a/01"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "dash-remove",
+   "doc": {
+    "a": [
+     1
+    ]
+   },
+   "patch": [
+    {
+     "op": "remove",
+     "path": "/a/-"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "move-into-child",
+   "doc": {
+    "a": {
+     "b": 1
+    }
+   },
+   "patch": [
+    {
+     "op": "move",
+     "from": "/a",
+     "path": "/a/b/c"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "test-key-order",
+   "doc": {
+    "o": {
+     "x": 1,
+     "y": 2
+    }
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/o",
+     "value": {
+      "y": 2,
+      "x": 1
+     }
+    }
+   ],
+   "expected": {
+    "o": {
+     "x": 1,
+     "y": 2
+    }
+   },
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "test-true-is-not-1",
+   "doc": {
+    "v": 1
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/v",
+     "value": true
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "test-1-equals-1.0",
+   "doc": {
+    "v": 1
+   },
+   "patch": [
+    {
+     "op": "test",
+     "path": "/v",
+     "value": 1.0
+    }
+   ],
+   "expected": {
+    "v": 1
+   },
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "copy-is-deep",
+   "doc": {
+    "a": {
+     "b": [
+      1
+     ]
+    }
+   },
+   "patch": [
+    {
+     "op": "copy",
+     "from": "/a",
+     "path": "/c"
+    },
+    {
+     "op": "add",
+     "path": "/c/b/-",
+     "value": 2
+    }
+   ],
+   "expected": {
+    "a": {
+     "b": [
+      1
+     ]
+    },
+    "c": {
+     "b": [
+      1,
+      2
+     ]
+    }
+   },
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "atomic",
+   "doc": {
+    "a": 1
+   },
+   "patch": [
+    {
+     "op": "add",
+     "path": "/b",
+     "value": 2
+    },
+    {
+     "op": "test",
+     "path": "/a",
+     "value": 9
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "unknown-op",
+   "doc": {
+    "a": 1
+   },
+   "patch": [
+    {
+     "op": "frob",
+     "path": "/a"
+    }
+   ],
+   "expected": "error",
+   "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "replace-keeps-member-order",
+   "doc": {
+    "a": 1,
+    "b": 2,
+    "c": 3
+   },
+   "patch": [
+    {
+     "op": "replace",
+     "path": "/a",
+     "value": 9
+    }
+   ],
+   "expected": {
+    "a": 9,
+    "b": 2,
+    "c": 3
+   },
+   "source": "RFC 6902 section 4 / RFC 6901"
+  }
+ ]
+}

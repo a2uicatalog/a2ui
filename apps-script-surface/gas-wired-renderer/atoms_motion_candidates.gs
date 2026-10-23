@@ -372,7 +372,9 @@ _RENDERERS['motion_build'] = function(b) {
 // matched B element the FLIP offsets that put it on its A partner's box (--mtr-dx/-dy/-sx/-sy; SVG shapes in their own user units).
 // The join: the same key; else (match "path") a B key that is the path prefix of A keys starts on the union of those boxes (a breakdown
 // collapses into its total), and a B key under an A key starts on that ancestor's box (a total splits into its parts); key_map renames
-// A keys first. Box to box (HTML, rect) the element starts exactly on its partner's box; where either side is a curved shape (an arc,
+// A keys first. Provenance is one relation, B key -> the A keys it continues from (data-mtr-src): key_map fills it, and so does a
+// "patch" (RFC 6902, applied to A in place of a "to" block: a copy grows out of its source, a replaced id continues from the old
+// one, a moved item keeps its key). Box to box (HTML, rect) the element starts exactly on its partner's box; where either side is a curved shape (an arc,
 // a circle) it keeps its proportions: scaled uniformly to fit inside the partner's box, centred on it, so nothing curved is stretched.
 // Pure CSS then runs everything on the film dial --p: B fades in over the first third, matched elements travel over p 0.15-0.85, B-only
 // elements fade in late, labels only fade (never transform). At p = 1 every offset is 0 and A is transparent: the page paints B.
@@ -393,23 +395,23 @@ var _MTR_CSS = ".mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr
   + "acity:clamp(0,calc((var(--mtr-p) - 0.7)/0.3),1)}.mo-tr.mtr-measure .mtr-m{translate:none;scale:none}}";
 // generated from web_article.py _MTR_JS (keep byte-identical: scripts copy it, a test compares the twins)
 var _MTR_JS = "(function(){var w=document.currentScript&&document.currentScript.parentNode;if(!w||!w.querySelector)return;var A=w.querySelector('.mtr-a'),B=w.querySe"
-  + "lector('.mtr-b'),map={},exact=w.getAttribute('data-mtr-match')==='exact';try{map=JSON.parse(w.getAttribute('data-mtr-map')||'{}')}catch(e){}function k"
+  + "lector('.mtr-b'),rel={},exact=w.getAttribute('data-mtr-match')==='exact';try{rel=JSON.parse(w.getAttribute('data-mtr-src')||'{}')}catch(e){}function k"
   + "eyed(r){var o={},l=r.querySelectorAll('[data-cb][data-key],[data-cb] [data-key]');for(var i=0;i<l.length;i++){var e=l[i],c=e.closest('[data-cb]');if(c"
-  + "&&c.getAttribute('data-cb')==='label')continue;if(e.querySelector('[data-key]'))continue;var k=e.getAttribute('data-key');if(r===A&&Object.prototype.h"
-  + "asOwnProperty.call(map,k))k=String(map[k]);(o[k]=o[k]||[]).push(e)}return o}function box(l){var x0=1/0,y0=1/0,x1=-1/0,y1=-1/0;for(var i=0;i<l.length;i"
-  + "++){var b=l[i].getBoundingClientRect();if(b.width<=0&&b.height<=0)continue;x0=Math.min(x0,b.left);y0=Math.min(y0,b.top);x1=Math.max(x1,b.right);y1=Mat"
-  + "h.max(y1,b.bottom)}return x0<x1||y0<y1?{x:x0,y:y0,w:x1-x0,h:y1-y0}:null}function rectish(e){return !e.ownerSVGElement||/^(rect|polygon|g)$/i.test(e.ta"
-  + "gName)}function src(a,k){if(a[k])return a[k];if(exact)return null;var l=[],p=k+'/';for(var q in a)if(q.indexOf(p)===0)l=l.concat(a[q]);if(l.length)ret"
-  + "urn l;var s=k.split('/');for(var j=s.length-1;j>0;j--){var u=s.slice(0,j).join('/');if(a[u])return a[u]}return null}function run(){if(!A||!B||!A.getCl"
-  + "ientRects().length)return;w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];for(var k in b)for(var i=0;i<b[k].length;i++){var e=b[k][i]"
-  + ",l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}w.classList.remove('mtr-measure');for(var t=0;t<plan.length;t++){var e"
-  + "=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n');if(!s||!o){e.classList.add('mtr-n');continue}var fx=1,fy=1,m=e.ow"
-  + "nerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-o.x,dy=s.y-o.y;if(!plan"
-  + "[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}st.setProperty('--mtr-dx',(dx/fx).toFixed(2)+'px');st"
-  + ".setProperty('--mtr-dy',(dy/fy).toFixed(2)+'px');st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed(4));e.classList.add('mt"
-  + "r-m')}}run();window.addEventListener('load',run);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);if(window.ResizeObserver){var "
-  + "ro=new ResizeObserver(function(){run()});[w,A,B].concat([].slice.call(w.querySelectorAll('[data-cb-root]'))).forEach(function(e){if(e)ro.observe(e)})}"
-  + "})();";
+  + "&&c.getAttribute('data-cb')==='label')continue;if(e.querySelector('[data-key]'))continue;var k=e.getAttribute('data-key');(o[k]=o[k]||[]).push(e)}retu"
+  + "rn o}function box(l){var x0=1/0,y0=1/0,x1=-1/0,y1=-1/0;for(var i=0;i<l.length;i++){var b=l[i].getBoundingClientRect();if(b.width<=0&&b.height<=0)conti"
+  + "nue;x0=Math.min(x0,b.left);y0=Math.min(y0,b.top);x1=Math.max(x1,b.right);y1=Math.max(y1,b.bottom)}return x0<x1||y0<y1?{x:x0,y:y0,w:x1-x0,h:y1-y0}:null"
+  + "}function rectish(e){return !e.ownerSVGElement||/^(rect|polygon|g)$/i.test(e.tagName)}function src(a,k){var l=[],p,r=rel[k]||[];for(var j=0;j<r.length"
+  + ";j++)if(a[r[j]])l=l.concat(a[r[j]]);if(l.length)return l;if(a[k])return a[k];if(exact)return null;p=k+'/';for(var q in a)if(q.indexOf(p)===0)l=l.conca"
+  + "t(a[q]);if(l.length)return l;var s=k.split('/');for(var j=s.length-1;j>0;j--){var u=s.slice(0,j).join('/');if(a[u])return a[u]}return null}function ru"
+  + "n(){if(!A||!B||!A.getClientRects().length)return;w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];for(var k in b)for(var i=0;i<b[k].le"
+  + "ngth;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}w.classList.remove('mtr-measure');for(var t=0;t"
+  + "<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n');if(!s||!o){e.classList.add('mtr-n');contin"
+  + "ue}var fx=1,fy=1,m=e.ownerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-"
+  + "o.x,dy=s.y-o.y;if(!plan[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}st.setProperty('--mtr-dx',(dx/"
+  + "fx).toFixed(2)+'px');st.setProperty('--mtr-dy',(dy/fy).toFixed(2)+'px');st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed("
+  + "4));e.classList.add('mtr-m')}}run();window.addEventListener('load',run);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);if(wind"
+  + "ow.ResizeObserver){var ro=new ResizeObserver(function(){run()});[w,A,B].concat([].slice.call(w.querySelectorAll('[data-cb-root]'))).forEach(function(e"
+  + "){if(e)ro.observe(e)})}})();";
 
 function _mtrMap(v) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return {};
@@ -424,19 +426,288 @@ function _mtrMap(v) {
   return out;
 }
 
+function _jpError(msg) {
+  var e = new Error(msg);
+  e.name = 'JpError';
+  return e;
+}
+
+function _jpPtr(p) {
+  if (typeof p !== 'string' || (p && p.charAt(0) !== '/')) {
+    throw _jpError('not a JSON Pointer: ' + JSON.stringify(p));
+  }
+  if (p === '') return [];
+  var parts = p.substring(1).split('/');
+  for (var i = 0; i < parts.length; i++) {
+    parts[i] = parts[i].replace(/~1/g, '/').replace(/~0/g, '~');
+  }
+  return parts;
+}
+
+function _jpIdx(arr, s, insert) {
+  if (s === '-' && insert) {
+    return arr.length;
+  }
+  if (!/^(0|[1-9][0-9]*)$/.test(s)) {
+    throw _jpError('bad array index: ' + JSON.stringify(s));
+  }
+  var i = parseInt(s, 10);
+  if (i > arr.length || (i === arr.length && !insert)) {
+    throw _jpError('array index out of range: ' + s);
+  }
+  return i;
+}
+
+function _jpParent(doc, segs) {
+  var cur = doc;
+  for (var i = 0; i < segs.length - 1; i++) {
+    var s = segs[i];
+    if (Array.isArray(cur)) {
+      cur = cur[_jpIdx(cur, s, false)];
+    } else if (cur && typeof cur === 'object' && Object.prototype.hasOwnProperty.call(cur, s)) {
+      cur = cur[s];
+    } else {
+      throw _jpError('path does not exist: /' + segs.join('/'));
+    }
+  }
+  return cur;
+}
+
+function _jpGet(doc, segs) {
+  if (!segs.length) return doc;
+  var par = _jpParent(doc, segs), last = segs[segs.length - 1];
+  if (Array.isArray(par)) {
+    return par[_jpIdx(par, last, false)];
+  }
+  if (par && typeof par === 'object' && Object.prototype.hasOwnProperty.call(par, last)) {
+    return par[last];
+  }
+  throw _jpError('path does not exist: /' + segs.join('/'));
+}
+
+function _jpEq(a, b) {
+  if (typeof a === 'boolean' || typeof b === 'boolean') {
+    return typeof a === 'boolean' && typeof b === 'boolean' && a === b;
+  }
+  if (typeof a === 'number' && typeof b === 'number') {
+    return a === b;
+  }
+  if (a === null || b === null) {
+    return a === b;
+  }
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (!_jpEq(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (typeof a === 'object' && typeof b === 'object') {
+    var ka = Object.keys(a), kb = Object.keys(b);
+    if (ka.length !== kb.length) return false;
+    for (var j = 0; j < ka.length; j++) {
+      var k = ka[j];
+      if (!Object.prototype.hasOwnProperty.call(b, k) || !_jpEq(a[k], b[k])) return false;
+    }
+    return true;
+  }
+  return typeof a === typeof b && a === b;
+}
+
+function _jpAdd(root, segs, val) {
+  if (!segs.length) {
+    root[0] = val;
+    return;
+  }
+  var par = _jpParent(root[0], segs), last = segs[segs.length - 1];
+  if (Array.isArray(par)) {
+    par.splice(_jpIdx(par, last, true), 0, val);
+  } else if (par && typeof par === 'object') {
+    par[last] = val;
+  } else {
+    throw _jpError('cannot add to a non-container at /' + segs.join('/'));
+  }
+}
+
+function _jpRemove(root, segs) {
+  if (!segs.length) {
+    throw _jpError('cannot remove the whole document');
+  }
+  var par = _jpParent(root[0], segs), last = segs[segs.length - 1];
+  if (Array.isArray(par)) {
+    par.splice(_jpIdx(par, last, false), 1);
+  } else if (par && typeof par === 'object' && Object.prototype.hasOwnProperty.call(par, last)) {
+    delete par[last];
+  } else {
+    throw _jpError('path does not exist: /' + segs.join('/'));
+  }
+}
+
+function _jpApply(doc, ops, hook, inplace) {
+  if (!Array.isArray(ops)) {
+    throw _jpError('a JSON Patch is an array of operations');
+  }
+  var root = [inplace ? doc : JSON.parse(JSON.stringify(doc))];
+  for (var i = 0; i < ops.length; i++) {
+    var o = ops[i];
+    if (!o || typeof o !== 'object' || ['add', 'remove', 'replace', 'move', 'copy', 'test'].indexOf(o.op) === -1) {
+      throw _jpError('unknown operation: ' + JSON.stringify(o));
+    }
+    var op = o.op, segs = _jpPtr(o.path);
+    if ((op === 'add' || op === 'replace' || op === 'test') && !Object.prototype.hasOwnProperty.call(o, 'value')) {
+      throw _jpError(op + ' needs a value');
+    }
+    if (op === 'move' || op === 'copy') {
+      var frm = _jpPtr(o['from']);
+      if (op === 'move' && segs.length > frm.length) {
+        var isPrefix = true;
+        for (var p = 0; p < frm.length; p++) {
+          if (segs[p] !== frm[p]) { isPrefix = false; break; }
+        }
+        if (isPrefix) throw _jpError('cannot move a value into its own child');
+      }
+      var val = _jpGet(root[0], frm);
+      if (op === 'move') {
+        if (o['from'] === o.path) continue;
+        _jpRemove(root, frm);
+      } else {
+        var nVal = JSON.parse(JSON.stringify(val));
+        if (hook) hook('copy', val, nVal);
+        val = nVal;
+      }
+      _jpAdd(root, segs, val);
+    } else if (op === 'add') {
+      _jpAdd(root, segs, JSON.parse(JSON.stringify(o.value)));
+    } else if (op === 'remove') {
+      _jpRemove(root, segs);
+    } else if (op === 'replace') {
+      var old = _jpGet(root[0], segs), nVal = JSON.parse(JSON.stringify(o.value));
+      if (!segs.length) {
+        root[0] = nVal;
+      } else {
+        var par = _jpParent(root[0], segs), last = segs[segs.length - 1];
+        if (Array.isArray(par)) {
+          par[_jpIdx(par, last, false)] = nVal;
+        } else {
+          par[last] = nVal;
+        }
+      }
+      if (hook) hook('replace', old, nVal);
+    } else if (!_jpEq(_jpGet(root[0], segs), o.value)) {
+      throw _jpError('test failed at ' + o.path);
+    }
+  }
+  return root[0];
+}
+
+function _mtrIdent(d) {
+  if (!d || typeof d !== 'object' || Array.isArray(d)) return null;
+  var id = d.id;
+  if ((typeof id === 'string' || typeof id === 'number') && typeof id !== 'boolean' && id !== '') {
+    return String(id);
+  }
+  var names = ['name', 'label', 'title', 'text'], nm = null;
+  for (var i = 0; i < names.length; i++) {
+    var k = names[i], v = d[k];
+    if ((typeof v === 'string' || typeof v === 'number') && typeof v !== 'boolean' && v !== '') {
+      nm = v;
+      break;
+    }
+  }
+  if (nm === null) return null;
+  var pth = d.path;
+  if (Array.isArray(pth) && pth.length && pth.every(function(x) { return typeof x === 'string'; })) {
+    return pth.concat([String(nm)]).join('/');
+  }
+  return String(nm);
+}
+
+function _mtrDicts(v, out) {
+  if (v && typeof v === 'object' && !Array.isArray(v)) {
+    out.push(v);
+    var keys = Object.keys(v);
+    for (var i = 0; i < keys.length; i++) {
+      _mtrDicts(v[keys[i]], out);
+    }
+  } else if (Array.isArray(v)) {
+    for (var j = 0; j < v.length; j++) {
+      _mtrDicts(v[j], out);
+    }
+  }
+  return out;
+}
+
+function _mtrFromPatch(before, ops) {
+  var work = JSON.parse(JSON.stringify(before));
+  var origin = new Map();
+  var workDicts = _mtrDicts(work, []);
+  for (var i = 0; i < workDicts.length; i++) {
+    origin.set(workDicts[i], _mtrIdent(workDicts[i]));
+  }
+  var lineage = new Map();
+  function hook(kind, old, nVal) {
+    var olds = _mtrDicts(old, []), news = _mtrDicts(nVal, []);
+    if (kind === 'replace' && (!nVal || typeof nVal !== 'object' || Array.isArray(nVal))) {
+      return;
+    }
+    for (var j = 0; j < olds.length && j < news.length; j++) {
+      lineage.set(news[j], olds[j]);
+    }
+  }
+  var after = _jpApply(work, ops, hook, true);
+  var src = {};
+  var afterDicts = _mtrDicts(after, []);
+  for (var k = 0; k < afterDicts.length; k++) {
+    var d = afterDicts[k], o = d;
+    while (lineage.has(o)) {
+      o = lineage.get(o);
+    }
+    var aKey = origin.get(o), bKey = _mtrIdent(d);
+    if (aKey && bKey && aKey !== bKey) {
+      if (!src[bKey]) src[bKey] = [];
+      if (src[bKey].indexOf(aKey) === -1) {
+        src[bKey].push(aKey);
+      }
+    }
+  }
+  return [after, src];
+}
+
 _RENDERERS['motion_transition'] = function(b) {
-  var fa = b['from'], tb = b['to'];
+  var fa = b['from'], tb = b['to'], ops = b['patch'];
+  var rel = {}, note = '';
+  if ((!tb || typeof tb !== 'object' || Array.isArray(tb)) && Array.isArray(ops) && (fa && typeof fa === 'object' && !Array.isArray(fa))) {
+    try {
+      var res = _mtrFromPatch(fa, ops.slice(0, 500));
+      tb = res[0];
+      rel = res[1];
+    } catch (e) {
+      if (e && e.name === 'JpError') {
+        tb = fa;
+        note = '<!-- a2ui: motion_transition patch not applied (' + _esc(String(e.message || e)).slice(0, 160) + '): showing "from" -->';
+      } else {
+        throw e;
+      }
+    }
+  }
   if (!tb || typeof tb !== 'object' || Array.isArray(tb)) {
-    return '<!-- a2ui: motion_transition needs a "to" block -->';
+    return '<!-- a2ui: motion_transition needs a "to" block, or a "from" block and a "patch" -->';
   }
   var ha = (fa && typeof fa === 'object' && !Array.isArray(fa)) ? _moChild(fa) : '';
   var hb = _moChild(tb);
   var match = _ffPick(b.match, _MTR_MATCH, 'path'), ver = _ffInt(b.version, 1, 1, 1);
   var km = _mtrMap(b.key_map);
-  var hasKm = Object.keys(km).length > 0;
-  var attr = hasKm ? (' data-mtr-map="' + _esc(JSON.stringify(km)) + '"') : '';
+  var kmKeys = Object.keys(km);
+  for (var i = 0; i < kmKeys.length; i++) {
+    var ak = kmKeys[i], bk = km[ak];
+    if (!rel[bk]) rel[bk] = [];
+    if (rel[bk].indexOf(ak) === -1) {
+      rel[bk].push(ak);
+    }
+  }
+  var attr = Object.keys(rel).length > 0 ? (' data-mtr-src="' + _esc(JSON.stringify(rel)) + '"') : '';
   return '<div class="mo-tr" data-mtr-match="' + match + '" data-mtr-v="' + ver + '"' + attr + '><style>' + _MTR_CSS + '</style>'
-    + '<div class="mtr-b">' + hb + '</div><div class="mtr-a" aria-hidden="true" inert>' + ha + '</div><script>' + _MTR_JS + '<\/script></div>';
+    + '<div class="mtr-b">' + hb + '</div><div class="mtr-a" aria-hidden="true" inert>' + ha + '</div><script>' + _MTR_JS + '<\/script></div>' + note;
 };
 
 // ── fourth batch from a brand film (2026-10-12): capsule, arrow, swatches, glass, wall, tag ───────────────────────────────────────────

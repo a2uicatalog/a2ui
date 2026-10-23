@@ -18,6 +18,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from test_motion_atoms import _node_raw as _node, _norm, _py_keyed as _py, core_js  # noqa: E402,F401
 from test_motion_build import CHROMIUM, browser  # noqa: E402
 
@@ -216,3 +217,36 @@ def test_the_gas_twin_never_writes_a_literal_closing_script_tag():
     src = (Path(__file__).parent.parent / "apps-script-surface/gas-wired-renderer/atoms_motion_candidates.gs").read_text()
     section = src[src.index("// motion_transition (I75"):src.index("_RENDERERS['motion_transition']") + 2000]
     assert "</script>" not in section
+
+
+TEAM = {"type": "org_chart", "title": "The team", "nodes": [
+    {"id": "curtis", "label": "Curtis", "parent_id": ""}, {"id": "curtis/sonnet", "label": "Sonnet", "parent_id": "curtis"},
+    {"id": "curtis/opus", "label": "Opus", "parent_id": "curtis"}, {"id": "curtis/gemini", "label": "Gemini", "parent_id": "curtis"}]}
+PATCH = [{"op": "copy", "from": "/nodes/2", "path": "/nodes/-"},                       # Opus is copied ...
+         {"op": "replace", "path": "/nodes/4/id", "value": "curtis/opus2"},           # ... into a second reviewer
+         {"op": "replace", "path": "/nodes/4/label", "value": "Opus 2"},
+         {"op": "move", "from": "/nodes/1", "path": "/nodes/3"},                      # Sonnet changes seat
+         {"op": "add", "path": "/nodes/-", "value": {"id": "curtis/pm", "label": "PM", "parent_id": "curtis"}}]
+
+
+@browser
+def test_a_patch_animates_as_its_own_diff():
+    """from + an RFC 6902 patch: the copy starts on its source, the moved node on its old seat, the new node on its parent."""
+    got = _page({"type": "motion_transition", "from": TEAM, "patch": PATCH}, 0, 900)
+    a, b = got["a"], got["b"]
+    assert _close(b["curtis/opus2"], a["curtis/opus"], 2.5), "the copy grows out of its source"
+    assert _close(b["curtis/sonnet"], a["curtis/sonnet"], 2.5), "the moved node starts where it was"
+    assert _close(b["curtis/pm"], a["curtis"], 2.5), "the added node comes out of its parent (path rule)"
+    end = _page({"type": "motion_transition", "from": TEAM, "patch": PATCH}, 1, 900)
+    alone = _page(wa_after(), None, 900)["b"]
+    assert set(end["b"]) == set(alone) and all(_close(r, alone[k], 0.6) for k, r in end["b"].items())
+
+
+def wa_after():
+    import renderers.web_article as wa
+    return wa._mtr_from_patch(TEAM, PATCH)[0]
+
+
+def test_a_rejected_patch_shows_from_and_says_why():
+    out = _py({"type": "motion_transition", "from": TEAM, "patch": [{"op": "remove", "path": "/nodes/9"}]})
+    assert "patch not applied" in out and ' data-mtr-src="' not in out.split('>', 1)[0]   # no provenance attribute on the wrapper
