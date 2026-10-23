@@ -8311,7 +8311,7 @@
   "parity": false
  },
  "diagram": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "diagram",
@@ -8342,7 +8342,7 @@
   "parity": false
  },
  "closing": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "closing",
@@ -8984,7 +8984,7 @@
   "parity": false
  },
  "deprecation_notice": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "deprecation_notice",
@@ -9013,7 +9013,7 @@
   "parity": false
  },
  "cli_command": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "cli_command",
@@ -9055,7 +9055,7 @@
   "parity": false
  },
  "changelog_entry": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "changelog_entry",
@@ -9115,7 +9115,7 @@
   "parity": false
  },
  "difficulty_badge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "difficulty_badge",
@@ -9129,7 +9129,7 @@
   "parity": false
  },
  "caution_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "caution_block",
@@ -9514,7 +9514,7 @@
   "parity": false
  },
  "conversation_snippet": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "conversation_snippet",
@@ -9580,7 +9580,7 @@
   "parity": false
  },
  "confidence_bar": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "confidence_bar",
@@ -10128,7 +10128,7 @@
   "parity": false
  },
  "countdown_timer": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "countdown_timer",
@@ -10333,7 +10333,7 @@
   "parity": false
  },
  "drive_file_list": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "drive_file_list",
@@ -10379,7 +10379,7 @@
   "parity": false
  },
  "calendar_upcoming": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "calendar_upcoming",
@@ -10447,7 +10447,7 @@
   "parity": false
  },
  "drive_storage_usage": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "drive_storage_usage",
@@ -10523,7 +10523,7 @@
   "parity": false
  },
  "display_quote": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "display_quote",
@@ -10597,7 +10597,7 @@
   "parity": false
  },
  "count_up_stat": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "count_up_stat",
@@ -10682,7 +10682,7 @@
   "parity": false
  },
  "blockquote": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "blockquote",
@@ -10741,7 +10741,7 @@
   "parity": false
  },
  "code_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "code_block",
@@ -10772,7 +10772,7 @@
   "parity": false
  },
  "cta_button": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "cta_button",
@@ -10822,7 +10822,7 @@
   "parity": false
  },
  "dark_hero": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "dark_hero",
@@ -11378,7 +11378,7 @@
   "parity": false
  },
  "drive_file_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "drive_file_card",
@@ -11465,7 +11465,7 @@
   "parity": false
  },
  "case_study_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "case_study_card",
@@ -11532,7 +11532,7 @@
   "parity": false
  },
  "drive_image": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "drive_image",
@@ -11671,7 +11671,7 @@
   "parity": false
  },
  "countdown_ring": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "countdown_ring",
@@ -11747,7 +11747,7 @@
   "parity": false
  },
  "command_step": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "command_step",
@@ -11959,7 +11959,7 @@
   "parity": false
  },
  "concept_rung": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "concept_rung",

@@ -1984,7 +1984,7 @@ _RENDERERS['confidence_bar'] = function(b) {
   var pct = Math.round(value * 100);
   var color = b.color || '#7c3aed';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="margin:0.75rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
     + '<span style="font-size:0.875rem;font-weight:500;color:#374151;">' + _esc(b.label || '') + '</span>'
     + '<span style="font-size:0.875rem;font-weight:700;color:' + color + ';">' + pct + '%</span>'
@@ -2202,7 +2202,7 @@ _RENDERERS['conversation_snippet'] = function(b) {
     {role: 'user', content: b.user || '', label: b.user_label || 'You'},
     {role: 'assistant', content: b.response || '', label: b.ai_label || 'Assistant'}
   ] : []);
-  var html = '<div style="display:flex;flex-direction:column;gap:10px;margin:1rem 0;">';
+  var html = '<div data-cb="node" data-key="' + _ckey(b.user_label, 'conversation_snippet') + '" style="display:flex;flex-direction:column;gap:10px;margin:1rem 0;">';
   for (var i = 0; i < messages.length; i++) {
     var msg = messages[i];
     var role = msg.role || 'user';
@@ -2642,7 +2642,7 @@ _RENDERERS['countdown_timer'] = function(b) {
   var label  = b.label || b.title || '';
   var uid = Math.random().toString(36).substr(2, 6);
   if (!target) {
-    return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;text-align:center;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return '<div data-cb="node" data-key="' + _ckey(b.label, 'countdown_timer') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;text-align:center;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
       + (label ? '<div style="font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⏱ ' + _esc(label) + '</div>' : '')
       + '<div id="cd-' + uid + '" style="font-size:2.2rem;font-weight:800;color:#1f2937;font-family:monospace;">00:00:00</div>'
       + '<script>(function(){var s=0,el=document.getElementById("cd-' + uid + '");setInterval(function(){s++;var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el.textContent=[h,m,sec].map(function(n){return n<10?"0"+n:n}).join(":");},1000);})();<\/script>'

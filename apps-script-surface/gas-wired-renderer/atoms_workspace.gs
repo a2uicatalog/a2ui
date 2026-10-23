@@ -222,7 +222,7 @@ _RENDERERS['drive_storage_usage'] = function(b) {
 
   var colour = pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : _esc(accent);
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'drive_storage_usage') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">💾</span> ' + _esc(label) + '</div>' +
          '<div style="margin-top:8px;">' +
          '<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:6px;">' +
@@ -774,7 +774,7 @@ _RENDERERS['drive_file_card'] = function(b) {
   var mi = MIME[mime] || { l:'FILE', c:'#64748b' };
 
   return (
-    '<div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:10px;' +
+    '<div data-cb="node" data-key="' + _ckey(b.name, 'drive_file_card') + '" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:10px;' +
       'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
     '<div style="flex:1;min-width:0;">' +
@@ -819,7 +819,7 @@ _RENDERERS['command_step'] = function(b) {
   var checkBg     = done ? '#f0fdf4' : '#f8fafc';
   var cmdOpacity  = done ? '0.5' : '1';
 
-  return '<div style="font-family:system-ui,sans-serif;margin:8px 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.command, 'command_step') + '" style="font-family:system-ui,sans-serif;margin:8px 0;">' +
     (label ? '<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
     '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:' + cmdOpacity + ';">' +
       '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">' +

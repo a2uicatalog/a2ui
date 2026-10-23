@@ -808,6 +808,6 @@ _RENDERERS['countdown_ring'] = function(b) {
     + 'var iv=setInterval(function(){t--;el.textContent=t;if(t<=0){clearInterval(iv);el.textContent="✓";}},1000);'
     + '})();<\/script>';
 
-  return css + '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'countdown_ring') + '" style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + svg + label + '</div>' + script;
 };

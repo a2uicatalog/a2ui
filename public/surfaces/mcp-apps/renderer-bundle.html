@@ -1091,6 +1091,11 @@ function include(filename) {
 }
 
 // ── HTML Escape Helper ────────────────────────────────────────────────────────
+/** Contract key (twin of Python _ck): a non-empty string value, else the fallback d, escaped for an attribute. */
+function _ckey(v, d) {
+  return _esc(typeof v === 'string' && v ? v : d);
+}
+
 function _esc(str) {
   if (str === undefined || str === null) return '';
   return String(str)
@@ -1399,7 +1404,7 @@ _RENDERERS['subheading'] = function(b) {
 
 _RENDERERS['blockquote'] = function(b) {
   var cite = b.attribution ? '<cite style="display:block;margin-top:6px;font-size:0.8rem;text-align:right;">— ' + _esc(b.attribution) + '</cite>' : '';
-  return '<blockquote>' + _markdownToHtml(b.text) + cite + '</blockquote>';
+  return '<blockquote data-cb="node" data-key="' + _ckey(b.text, 'blockquote') + '">' + _markdownToHtml(b.text) + cite + '</blockquote>';
 };
 
 _RENDERERS['divider'] = function(b) {
@@ -1450,7 +1455,7 @@ _RENDERERS['info_card'] = function(b) {
 };
 
 _RENDERERS['code_block'] = function(b) {
-  return '<pre><code class="language-' + _esc(b.language || 'text') + '">' + _esc(b.content) + '</code></pre>';
+  return '<pre data-cb="node" data-key="' + _ckey(b.content, 'code_block') + '"><code class="language-' + _esc(b.language || 'text') + '">' + _esc(b.content) + '</code></pre>';
 };
 
 _RENDERERS['code'] = function(b) {
@@ -1638,7 +1643,7 @@ _RENDERERS['link_button'] = function(b) {
 
 _RENDERERS['cta_button'] = function(b) {
   var target = b.same_tab ? '_top' : '_blank';
-  return '<div style="margin:16px 0;text-align:center;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'cta_button') + '" style="margin:16px 0;text-align:center;">' +
          '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" style="padding:10px 24px;font-size:0.85rem;" target="' + target + '">' + _esc(b.label) + '</a>' +
          '</div>';
 };
@@ -1952,7 +1957,7 @@ _RENDERERS['drive_file_list'] = function(b) {
     listHtml += '</ul>';
   }
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.folder_id, 'drive_file_list') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">📁</span> Google Drive Folder</div>' +
          listHtml +
          '</div>';
@@ -2117,7 +2122,7 @@ _RENDERERS['calendar_upcoming'] = function(b) {
     listHtml += '</ul>';
   }
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'calendar_upcoming') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">📅</span> Calendar Schedule</div>' +
          listHtml +
          '</div>';
@@ -2274,7 +2279,7 @@ _RENDERERS['diagram'] = function(b) {
   var caption = _esc(b.caption || '');
   var capHtml = caption ? '<p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:4px">' + caption + '</p>' : '';
   if (!url) return '<!-- diagram: no url -->';
-  return '<figure style="margin:16px 0"><img src="' + _esc(url) + '" alt="' + alt + '" style="max-width:100%;border-radius:6px">' + capHtml + '</figure>';
+  return '<figure data-cb="node" data-key="' + _ckey(b.url, 'diagram') + '" style="margin:16px 0"><img src="' + _esc(url) + '" alt="' + alt + '" style="max-width:100%;border-radius:6px">' + capHtml + '</figure>';
 };
 
 _RENDERERS['video_pair'] = function(b) {
@@ -2419,7 +2424,7 @@ _RENDERERS['closing'] = function(b) {
   var tags = b.tags || [];
   var tagsHtml = tags.length ? '<p style="color:var(--muted,#5f6368);font-size:0.82rem;margin-top:8px;">' +
     tags.map(function(t){ return '#' + _esc(t); }).join(' ') + '</p>' : '';
-  return '<div style="margin:1.5rem 0;">' + text + tagsHtml + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'closing') + '" style="margin:1.5rem 0;">' + text + tagsHtml + '</div>';
 };
 
 _RENDERERS['pipeline'] = function(b) {
@@ -2625,7 +2630,7 @@ _RENDERERS['changelog_entry'] = function(b) {
       '<span style="font-size:0.7rem;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;background:' + color + '22;color:' + color + ';">' + type.toUpperCase() + '</span>' +
       '<span style="font-size:0.85rem;color:#374151;">' + _esc(c.text||'') + '</span></div>';
   }).join('');
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.version, 'changelog_entry') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">' +
     '<span style="font-family:monospace;font-weight:700;font-size:0.95rem;color:#374151;">v' + _esc(version) + '</span>' +
     (date ? '<span style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc(date) + '</span>' : '') +
@@ -2686,11 +2691,11 @@ _RENDERERS['difficulty_badge'] = function(b) {
   var level = b.level || 'beginner';
   var cfg = {beginner:['#11813b','#f0fdf4','Beginner','⚡'], intermediate:['#d97706','#fffbeb','Intermediate','🔧'], advanced:['#dc2626','#fef2f2','Advanced','🚀']};
   var c = cfg[level] || cfg.beginner;
-  return '<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c[0] + '44;border-radius:100px;padding:3px 12px;font-size:0.75rem;font-weight:700;color:' + c[0] + ';background:' + c[1] + ';">' + c[3] + ' ' + c[2] + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.level, 'difficulty_badge') + '" style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c[0] + '44;border-radius:100px;padding:3px 12px;font-size:0.75rem;font-weight:700;color:' + c[0] + ';background:' + c[1] + ';">' + c[3] + ' ' + c[2] + '</span>';
 };
 
 _RENDERERS['caution_block'] = function(b) {
-  return '<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'caution_block') + '" style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#991b1b;margin-bottom:6px;">⚠ Caution</div>' +
     '<p style="margin:0;font-size:0.88rem;color:#7f1d1d;">' + _markdownToHtml(b.message||b.text||'') + '</p></div>';
 };
@@ -3294,7 +3299,7 @@ _RENDERERS['deprecation_notice'] = function(b) {
   var rv = b.removal_version || '';
   var altHtml = alt ? '<div style="margin-top:4px;font-size:0.85rem;">Use instead: <code style="background:#fef2f2;padding:1px 6px;border-radius:4px;">' + _esc(alt) + '</code></div>' : '';
   var rvHtml = rv ? '<div style="margin-top:6px;font-size:0.8rem;color:#991b1b;">Removed in: <code>' + _esc(rv) + '</code></div>' : '';
-  return '<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.removal_version, 'deprecation_notice') + '" style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#991b1b;margin-bottom:4px;">⚠ Deprecated</div>' + altHtml + rvHtml + '</div>';
 };
 
@@ -3307,7 +3312,7 @@ _RENDERERS['experimental_banner'] = function(b) {
 
 _RENDERERS['cli_command'] = function(b) {
   var cmd = (b.command || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="display:flex;align-items:center;background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 16px;margin:0.8rem 0;font-family:monospace;font-size:0.85rem;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.command, 'cli_command') + '" style="display:flex;align-items:center;background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 16px;margin:0.8rem 0;font-family:monospace;font-size:0.85rem;">' +
     '<span style="color:#a78bfa;margin-right:10px;user-select:none;">$</span>' +
     '<code style="color:#4f6e99;flex:1;">' + cmd + '</code></div>';
 };
@@ -5850,7 +5855,7 @@ _RENDERERS['drive_image'] = function(b) {
   var caption = b.caption ? '<figcaption style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:8px;font-style:italic;">' + _esc(b.caption) + '</figcaption>' : '';
   var radius = b.rounded !== false ? 'border-radius:8px;' : '';
   var w = b.width ? 'width:' + _esc(String(b.width)) + ';' : 'max-width:100%;';
-  return '<figure style="margin:1.2rem 0;text-align:center;">' +
+  return '<figure data-cb="node" data-key="' + _ckey(b.id, 'drive_image') + '" style="margin:1.2rem 0;text-align:center;">' +
     '<img src="' + src + '" alt="' + alt + '" style="' + w + radius + 'display:block;margin:0 auto;" loading="lazy">' +
     caption + '</figure>';
 };
@@ -9053,7 +9058,7 @@ _RENDERERS['countdown_ring'] = function(b) {
     + 'var iv=setInterval(function(){t--;el.textContent=t;if(t<=0){clearInterval(iv);el.textContent="✓";}},1000);'
     + '})();<\/script>';
 
-  return css + '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'countdown_ring') + '" style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + svg + label + '</div>' + script;
 };
 
@@ -18528,7 +18533,7 @@ _RENDERERS['confidence_bar'] = function(b) {
   var pct = Math.round(value * 100);
   var color = b.color || '#7c3aed';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="margin:0.75rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
     + '<span style="font-size:0.875rem;font-weight:500;color:#374151;">' + _esc(b.label || '') + '</span>'
     + '<span style="font-size:0.875rem;font-weight:700;color:' + color + ';">' + pct + '%</span>'
@@ -18746,7 +18751,7 @@ _RENDERERS['conversation_snippet'] = function(b) {
     {role: 'user', content: b.user || '', label: b.user_label || 'You'},
     {role: 'assistant', content: b.response || '', label: b.ai_label || 'Assistant'}
   ] : []);
-  var html = '<div style="display:flex;flex-direction:column;gap:10px;margin:1rem 0;">';
+  var html = '<div data-cb="node" data-key="' + _ckey(b.user_label, 'conversation_snippet') + '" style="display:flex;flex-direction:column;gap:10px;margin:1rem 0;">';
   for (var i = 0; i < messages.length; i++) {
     var msg = messages[i];
     var role = msg.role || 'user';
@@ -19186,7 +19191,7 @@ _RENDERERS['countdown_timer'] = function(b) {
   var label  = b.label || b.title || '';
   var uid = Math.random().toString(36).substr(2, 6);
   if (!target) {
-    return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;text-align:center;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return '<div data-cb="node" data-key="' + _ckey(b.label, 'countdown_timer') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;text-align:center;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
       + (label ? '<div style="font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⏱ ' + _esc(label) + '</div>' : '')
       + '<div id="cd-' + uid + '" style="font-size:2.2rem;font-weight:800;color:#1f2937;font-family:monospace;">00:00:00</div>'
       + '<script>(function(){var s=0,el=document.getElementById("cd-' + uid + '");setInterval(function(){s++;var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el.textContent=[h,m,sec].map(function(n){return n<10?"0"+n:n}).join(":");},1000);})();<\/script>'
@@ -20934,7 +20939,7 @@ _RENDERERS['concept_rung'] = function(b) {
       + 'margin-right:0.5em;">&gt;</span>' + _journeyMdCode(b.takeaway) + '</blockquote>';
   }
 
-  return '<div style="padding-bottom:1.6rem;font-family:' + _CF_BODY + ';min-width:0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'concept_rung') + '" style="padding-bottom:1.6rem;font-family:' + _CF_BODY + ';min-width:0;">'
     + '<div style="margin-bottom:0.5rem;"><span style="font-family:' + _CF_LABEL + ';font-weight:700;'
     + 'font-size:0.72rem;letter-spacing:0.07em;padding:0.18em 0.6em;border-radius:4px;'
     + 'background:' + chipBg + ';color:' + chipFg + ';">' + label + '</span></div>'
@@ -21072,7 +21077,7 @@ _RENDERERS['dark_hero'] = function(b) {
   var align    = b.align     || 'center';
   var isCenter = align === 'center';
 
-  return '<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.heading, 'dark_hero') + '" style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
     (badge
       ? '<div style="display:inline-block;margin-bottom:18px;padding:5px 14px;' +
         'border:1px solid rgba(255,255,255,0.18);border-radius:99px;' +
@@ -29378,7 +29383,7 @@ _RENDERERS['case_study_card'] = function(b) {
   }
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
+    '<div data-cb="node" data-key="' + _ckey(b.title, 'case_study_card') + '" style="font-family:\'Inter\',system-ui,sans-serif;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
     // Header
     '<div style="padding:4px 20px;background:' + _esc(accent) + '18;border-bottom:1px solid rgba(255,255,255,0.06);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:6px;margin-top:16px;">📋 Case Study</div>' +
@@ -36151,7 +36156,7 @@ _RENDERERS['display_quote'] = function(b) {
   var size        = b.size        || 'clamp(1.4rem,3vw,2.2rem)';
   var align       = b.align       || 'center';
 
-  return '<div style="padding:40px 24px;text-align:' + _esc(align) + ';position:relative;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'display_quote') + '" style="padding:40px 24px;text-align:' + _esc(align) + ';position:relative;">' +
     '<div style="font-size:5rem;line-height:0.6;color:' + _esc(colour) + ';' +
       'opacity:0.35;font-family:Georgia,serif;margin-bottom:16px;' +
       (align === 'center' ? 'text-align:center;' : '') +
@@ -36298,7 +36303,7 @@ _RENDERERS['count_up_stat'] = function(b) {
   var size     = b.size     || '4rem';
   var uid      = 'cu' + Math.random().toString(36).substr(2, 5);
 
-  return '<div style="text-align:center;padding:32px 16px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'count_up_stat') + '" style="text-align:center;padding:32px 16px;">' +
     '<div style="font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;' +
       'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '55;">' +
     (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
@@ -39211,7 +39216,7 @@ _RENDERERS['drive_storage_usage'] = function(b) {
 
   var colour = pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : _esc(accent);
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'drive_storage_usage') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">💾</span> ' + _esc(label) + '</div>' +
          '<div style="margin-top:8px;">' +
          '<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:6px;">' +
@@ -39763,7 +39768,7 @@ _RENDERERS['drive_file_card'] = function(b) {
   var mi = MIME[mime] || { l:'FILE', c:'#64748b' };
 
   return (
-    '<div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:10px;' +
+    '<div data-cb="node" data-key="' + _ckey(b.name, 'drive_file_card') + '" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:10px;' +
       'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
     '<div style="flex:1;min-width:0;">' +
@@ -39808,7 +39813,7 @@ _RENDERERS['command_step'] = function(b) {
   var checkBg     = done ? '#f0fdf4' : '#f8fafc';
   var cmdOpacity  = done ? '0.5' : '1';
 
-  return '<div style="font-family:system-ui,sans-serif;margin:8px 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.command, 'command_step') + '" style="font-family:system-ui,sans-serif;margin:8px 0;">' +
     (label ? '<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
     '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:' + cmdOpacity + ';">' +
       '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">' +

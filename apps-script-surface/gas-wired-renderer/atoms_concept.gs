@@ -195,7 +195,7 @@ _RENDERERS['concept_rung'] = function(b) {
       + 'margin-right:0.5em;">&gt;</span>' + _journeyMdCode(b.takeaway) + '</blockquote>';
   }
 
-  return '<div style="padding-bottom:1.6rem;font-family:' + _CF_BODY + ';min-width:0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'concept_rung') + '" style="padding-bottom:1.6rem;font-family:' + _CF_BODY + ';min-width:0;">'
     + '<div style="margin-bottom:0.5rem;"><span style="font-family:' + _CF_LABEL + ';font-weight:700;'
     + 'font-size:0.72rem;letter-spacing:0.07em;padding:0.18em 0.6em;border-radius:4px;'
     + 'background:' + chipBg + ';color:' + chipFg + ';">' + label + '</span></div>'

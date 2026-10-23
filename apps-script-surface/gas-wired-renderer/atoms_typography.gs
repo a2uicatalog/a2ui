@@ -48,7 +48,7 @@ _RENDERERS['display_quote'] = function(b) {
   var size        = b.size        || 'clamp(1.4rem,3vw,2.2rem)';
   var align       = b.align       || 'center';
 
-  return '<div style="padding:40px 24px;text-align:' + _esc(align) + ';position:relative;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'display_quote') + '" style="padding:40px 24px;text-align:' + _esc(align) + ';position:relative;">' +
     '<div style="font-size:5rem;line-height:0.6;color:' + _esc(colour) + ';' +
       'opacity:0.35;font-family:Georgia,serif;margin-bottom:16px;' +
       (align === 'center' ? 'text-align:center;' : '') +
@@ -195,7 +195,7 @@ _RENDERERS['count_up_stat'] = function(b) {
   var size     = b.size     || '4rem';
   var uid      = 'cu' + Math.random().toString(36).substr(2, 5);
 
-  return '<div style="text-align:center;padding:32px 16px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'count_up_stat') + '" style="text-align:center;padding:32px 16px;">' +
     '<div style="font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;' +
       'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '55;">' +
     (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
