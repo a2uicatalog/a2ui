@@ -189,7 +189,7 @@ def test_radial_draws_one_arc_per_node_with_a_title_and_a_hidden_table(core_js):
 def test_icicle_draws_one_rectangle_per_node(core_js):
     for html in (_py(PAYLOADS["budget_icicle"]), _gas_batch(core_js, [PAYLOADS["budget_icicle"]])[0]):
         assert "<svg" not in html and "<script" not in html
-        cells = re.findall(r'<div title="([^"]*)" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:([\d.]+)%;', html)
+        cells = re.findall(r'<div data-cb="tile" title="([^"]*)" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:([\d.]+)%;', html)
         assert len(cells) == 25
         assert len(_table(html)[1]) == 16
         # the first column (the top-level groups) sits at the left edge, the deepest at the right
@@ -246,7 +246,7 @@ def test_text_is_never_below_12px_and_nothing_has_a_script():
 def test_motion_index_per_ring_stays_inside_its_clamp(core_js):
     for name, rings in (("budget", 3), ("deep", 4), ("flat", 1)):
         for html in (_py(PAYLOADS[name]), _gas_batch(core_js, [PAYLOADS[name]])[0]):
-            ks = re.findall(r'<g class="sbr" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+            ks = re.findall(r'<g class="sbr[^"]*"[^>]*style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
             assert [int(i) for _, i in ks] == list(range(rings)) and all(int(n) == rings + 1 for n, _ in ks), name
     for html in (_py(PAYLOADS["budget_icicle"]), _gas_batch(core_js, [PAYLOADS["budget_icicle"]])[0]):
         idx = {int(i) for _, i in re.findall(r'--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)}
@@ -306,7 +306,7 @@ def test_version_above_one_is_noted_and_otherwise_silent(core_js):
 
 # ─── the label rule ────────────────────────────────────────────────────────────────────────────────────────────
 def _labels(html):
-    return re.findall(r'<div class="sbl(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;transform:translate\(-50%,-50%\) rotate\((-?[\d.]+)deg\);', html)
+    return re.findall(r'<div data-cb="label" class="sbl(?: tmw(\d+))?(?: cb-fade)?" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;transform:translate\(-50%,-50%\) rotate\((-?[\d.]+)deg\);', html)
 
 
 def test_labels_are_rotated_to_read_outward_and_never_upside_down(core_js):

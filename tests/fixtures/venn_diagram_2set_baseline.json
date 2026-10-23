@@ -1,118 +1,118 @@
 {
- "example": {
-  "payload": {
-   "type": "venn_diagram",
-   "title": "Core competencies",
-   "set_a_name": "Product management",
-   "set_b_name": "Technical leadership",
-   "set_a_exclusive": [
-    "Market research",
-    "Roadmap priorities"
-   ],
-   "set_b_exclusive": [
-    "System design",
-    "Code review"
-   ],
-   "intersection": [
-    "Sprint planning",
-    "Feature scoping"
-   ]
-  },
-  "sha256": "15906ab021f02a53a21ac4bd35f5fc7a6de1746615960f25579609ac4fcce007"
- },
- "title": {
-  "payload": {
-   "type": "venn_diagram",
-   "title": "Skills",
-   "set_a_name": "Product management",
-   "set_b_name": "Technical leadership",
-   "set_a_exclusive": [
-    "Market research",
-    "Roadmap priorities"
-   ],
-   "set_b_exclusive": [
-    "System design",
-    "Code review"
-   ],
-   "intersection": [
-    "Sprint planning",
-    "Feature scoping"
-   ]
-  },
-  "sha256": "bac1e149079abeffe17567da73ebe60bc75b511b7a55f56c2e39d1d6da5135e2"
- },
- "empty": {
-  "payload": {
-   "type": "venn_diagram"
-  },
-  "sha256": "a015368f8cf74ca574b7a1a1f39dc546894024c0887989742c6930d89df2556b"
- },
- "long": {
-  "payload": {
-   "type": "venn_diagram",
-   "set_a_name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-   "set_b_name": "B",
-   "set_a_exclusive": [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g"
-   ],
-   "set_b_exclusive": [
-    1,
-    null,
-    {
-     "x": 1
+  "example": {
+    "payload": {
+      "type": "venn_diagram",
+      "title": "Core competencies",
+      "set_a_name": "Product management",
+      "set_b_name": "Technical leadership",
+      "set_a_exclusive": [
+        "Market research",
+        "Roadmap priorities"
+      ],
+      "set_b_exclusive": [
+        "System design",
+        "Code review"
+      ],
+      "intersection": [
+        "Sprint planning",
+        "Feature scoping"
+      ]
     },
-    "z"
-   ],
-   "intersection": [
-    "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-   ]
+    "sha256": "57df9bc8ea3059fc0d906e5e5a0a76379532024f8c2f3e0bf3b7fe4d6b44043c"
   },
-  "sha256": "1f161cf078d5d65fc195287be5e4ee3cfb73c97b55c4b89921ff4625ee28154b"
- },
- "hostile": {
-  "payload": {
-   "type": "venn_diagram",
-   "title": "\"><img src=x onerror=alert(1)>",
-   "set_a_name": "\"><img src=x onerror=alert(1)>",
-   "set_b_name": "\"><img src=x onerror=alert(1)>",
-   "set_a_exclusive": [
-    "\"><img src=x onerror=alert(1)>"
-   ],
-   "intersection": [
-    "\"><img src=x onerror=alert(1)>"
-   ]
+  "title": {
+    "payload": {
+      "type": "venn_diagram",
+      "title": "Skills",
+      "set_a_name": "Product management",
+      "set_b_name": "Technical leadership",
+      "set_a_exclusive": [
+        "Market research",
+        "Roadmap priorities"
+      ],
+      "set_b_exclusive": [
+        "System design",
+        "Code review"
+      ],
+      "intersection": [
+        "Sprint planning",
+        "Feature scoping"
+      ]
+    },
+    "sha256": "3b7dae82248d14de5e51b104155f9ffd7282667a1be8c35a244991a3c4653266"
   },
-  "sha256": "f5cf04611a8d0b7583f3f198b1afb206d47a5f49f66d36bcb2d8f506876e5914"
- },
- "nonlist": {
-  "payload": {
-   "type": "venn_diagram",
-   "set_a_name": "A",
-   "set_b_name": "B",
-   "set_a_exclusive": "abc",
-   "intersection": 5
+  "empty": {
+    "payload": {
+      "type": "venn_diagram"
+    },
+    "sha256": "7cdbe9227798a6adb918054a9d111b0a56c280a779c5b6471bc2c2f24ecd27be"
   },
-  "sha256": "57780ae6206d518986a374d869243a7dd3ea8ec1789a39d61429c04a64a43631"
- },
- "set_c_empty": {
-  "payload": {
-   "type": "venn_diagram",
-   "set_a_name": "A",
-   "set_b_name": "B",
-   "set_c_name": "",
-   "set_c_exclusive": [
-    "x"
-   ],
-   "intersection_abc": [
-    "y"
-   ]
+  "long": {
+    "payload": {
+      "type": "venn_diagram",
+      "set_a_name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "set_b_name": "B",
+      "set_a_exclusive": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g"
+      ],
+      "set_b_exclusive": [
+        1,
+        null,
+        {
+          "x": 1
+        },
+        "z"
+      ],
+      "intersection": [
+        "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+      ]
+    },
+    "sha256": "1f31163bfc3433097cf87641a60009a62eead44fa75c5f4e5a0a2c040684b23b"
   },
-  "sha256": "57780ae6206d518986a374d869243a7dd3ea8ec1789a39d61429c04a64a43631"
- }
+  "hostile": {
+    "payload": {
+      "type": "venn_diagram",
+      "title": "\"><img src=x onerror=alert(1)>",
+      "set_a_name": "\"><img src=x onerror=alert(1)>",
+      "set_b_name": "\"><img src=x onerror=alert(1)>",
+      "set_a_exclusive": [
+        "\"><img src=x onerror=alert(1)>"
+      ],
+      "intersection": [
+        "\"><img src=x onerror=alert(1)>"
+      ]
+    },
+    "sha256": "1b5126753d9846f1d8c0e2afd73c5a5a51411264ffe53bb01c1efaae40f5b248"
+  },
+  "nonlist": {
+    "payload": {
+      "type": "venn_diagram",
+      "set_a_name": "A",
+      "set_b_name": "B",
+      "set_a_exclusive": "abc",
+      "intersection": 5
+    },
+    "sha256": "a199f8237c471f923d452e90f71a9ab178e711c2fd800cfea185b8be53afe649"
+  },
+  "set_c_empty": {
+    "payload": {
+      "type": "venn_diagram",
+      "set_a_name": "A",
+      "set_b_name": "B",
+      "set_c_name": "",
+      "set_c_exclusive": [
+        "x"
+      ],
+      "intersection_abc": [
+        "y"
+      ]
+    },
+    "sha256": "a199f8237c471f923d452e90f71a9ab178e711c2fd800cfea185b8be53afe649"
+  }
 }

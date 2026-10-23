@@ -72,4 +72,4 @@ def test_drawing_labels_and_legend_never_overlap_or_widen_the_container(renderer
     assert not bad, json.dumps(bad, indent=1)[:3000]
     by = {r["id"]: r for r in res}
     assert by["temp-w320"]["xlabels"] < by["temp-w1200"]["xlabels"]                      # the narrow tier thins the x labels
-    assert all(r["bands"] == html[r["id"].split("-")[0]].count('class="cnb"') for r in res)
+    assert all(r["bands"] == html[r["id"].split("-")[0]].count('class="cnb') for r in res)

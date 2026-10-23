@@ -160,7 +160,7 @@ def test_no_script_and_bars_match_the_counts(core_js):
         _, counts = wa._hg_bin([float(v) for v in b["values"]], b.get("bins"))
         for html in (_py(b), _gas_batch(core_js, [b])[0]):
             assert "<script" not in html and "onload" not in html.replace("\\", "") and "javascript:" not in html
-            hs = [float(x) for x in re.findall(r'<rect class="hgb"[^>]* height="([\d.]+)"', html)]
+            hs = [float(x) for x in re.findall(r'<rect class="hgb[^"]*"[^>]* height="([\d.]+)"', html)]
             assert len(hs) == len(counts)
             # bar heights are proportional to the counts (the y axis starts at 0): h = count / top * 1000 for one common top, to two decimals
             tops = {round(c / h * 1000, 0) for h, c in zip(hs, counts) if c >= max(counts) / 2 and h}
@@ -174,7 +174,7 @@ def test_motion_index_stays_inside_its_clamp_at_the_largest_bin_counts(name, exp
     # an earlier infographic bug: the index ran past the clamp, so late items rendered at opacity 0 in a static render.
     b = PAYLOADS[name] if name in PAYLOADS else _block(CASES["two_values@40"])
     for html in (_py(b), _gas_batch(core_js, [b])[0]):
-        ks = re.findall(r'<rect class="hgb"[^>]*style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);transform:scaleY\(var\(--k,1\)\);"', html)
+        ks = re.findall(r'<rect class="hgb[^"]*"[^>]*style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);"', html)
         assert len(ks) == expect_bins
         assert [int(i) for _, i in ks] == list(range(expect_bins))
         assert all(int(n) - int(i) >= 1 for n, i in ks), "a bar would still be at k < 1 when p is 1"

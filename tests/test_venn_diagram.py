@@ -98,7 +98,7 @@ def test_aria_label_names_the_sets_and_counts_every_region(core_js):
 def test_line_caps_per_region_and_a_plus_n_more_line(core_js):
     # lines per region: exclusive 5, pairwise 3, all three 4; over that, (lines - 1) items and "+k more" where k is what is left over
     for html in (_py(PAYLOADS["over_caps"]), _gas_batch(core_js, [PAYLOADS["over_caps"]])[0]):
-        box = lambda r: re.search(r'<div class="v3t v3%s" data-r="%s".*?(?=<div class="v3t|</div></div><div style="display:flex;justify-content:center)' % (r, r), html, re.S).group(0)
+        box = lambda r: re.search(r'<div class="v3t v3%s cb-fade" data-cb="label" data-r="%s".*?(?=<div class="v3t|</div></div><div style="display:flex;justify-content:center)' % (r, r), html, re.S).group(0)
         assert box("a").count('class="v3i"') == 5 and "+5 more" in box("a") and "a3" in box("a") and "a4" not in box("a")
         assert box("c").count('class="v3i"') == 5 and "c4" in box("c") and "more" not in box("c")      # exactly 5 items: all shown, no "+1 more"
         assert box("ab").count('class="v3i"') == 3 and "+2 more" in box("ab") and "ab1" in box("ab") and "ab2" not in box("ab")
@@ -111,7 +111,7 @@ def test_line_caps_per_region_and_a_plus_n_more_line(core_js):
 
 def test_empty_regions_draw_no_text_box_and_every_circle_is_drawn(core_js):
     for html in (_py(PAYLOADS["sparse"]), _gas_batch(core_js, [PAYLOADS["sparse"]])[0]):
-        assert re.findall(r'class="v3t v3(\w+)"', html) == ["abc"] and html.count('class="v3o"') == 3
+        assert re.findall(r'class="v3t v3(\w+)(?: cb-fade)?"', html) == ["abc"] and html.count('class="v3o cb-fade"') == 3
         assert "Only the middle" in html
 
 

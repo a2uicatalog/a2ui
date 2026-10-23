@@ -268,7 +268,7 @@ def test_the_picture_reproduces_the_stack_it_was_computed_from():
     c = CASES["three_by_four"]
     for mode in OFFSETS:
         h = _py(_block(c["values"], offset=mode))
-        polys = re.findall(r'<polygon points="([^"]*)"', h)
+        polys = re.findall(r'<polygon (?:data-cb="bar" )?points="([^"]*)"', h)
         assert len(polys) == 3
         g = c[mode]
         ymin = 0.0 if mode == "expand" else min(min(r) for r in g["lo"])
@@ -284,10 +284,10 @@ def test_the_picture_reproduces_the_stack_it_was_computed_from():
 
 def test_expand_fills_the_plot_and_wiggle_leaves_the_baseline_free():
     h = _py(PAYLOADS["expand"])
-    polys = [[tuple(float(t) for t in q.split(",")) for q in p.split()] for p in re.findall(r'<polygon points="([^"]*)"', h)]
+    polys = [[tuple(float(t) for t in q.split(",")) for q in p.split()] for p in re.findall(r'<polygon (?:data-cb="bar" )?points="([^"]*)"', h)]
     assert min(y for p in polys for _, y in p) == 0.0 and max(y for p in polys for _, y in p) == 100.0
     w = _py(PAYLOADS["wiggle"])
-    ys = [float(q.split(",")[1]) for p in re.findall(r'<polygon points="([^"]*)"', w) for q in p.split()]
+    ys = [float(q.split(",")[1]) for p in re.findall(r'<polygon (?:data-cb="bar" )?points="([^"]*)"', w) for q in p.split()]
     assert min(ys) == 0.0 and max(ys) == 100.0                                                 # the extent is fitted to the plot
 
 

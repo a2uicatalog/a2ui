@@ -44,7 +44,7 @@ def _aria(h):
 
 
 def _polys(h):
-    return [[tuple(float(t) for t in q.split(",")) for q in p.split()] for p in re.findall(r'<polygon points="([^"]*)"', h)]
+    return [[tuple(float(t) for t in q.split(",")) for q in p.split()] for p in re.findall(r'<polygon (?:data-cb="bar" )?points="([^"]*)"', h)]
 
 
 # ─── the default is the area chart ────────────────────────────────────────────

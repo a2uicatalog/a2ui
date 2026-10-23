@@ -19,7 +19,7 @@ from test_motion_atoms import _gas_batch, _node, _py, core_js  # noqa: F401  (co
 from test_motion_atoms import wa  # noqa: E402
 
 GOLDEN = json.loads((Path(__file__).parent / "fixtures" / "treemap_d3_golden.json").read_text())
-CELL = r'<div(?: title="[^"]*")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:([\d.]+)%;box-sizing:border-box;border:1px solid transparent;'
+CELL = r'<div(?: data-cb="tile")?(?: title="[^"]*")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:([\d.]+)%;box-sizing:border-box;border:1px solid transparent;'
 
 
 def _items(rows):
@@ -127,7 +127,7 @@ K = 0.6 * 12.48
 def _check_labels(html, items):
     """every cell label is either always visible or gated by a container rule at exactly the width it needs"""
     rules = {int(n): int(n) for n in re.findall(r"@container \(width<(\d+)px\)\{\.tmw\d+\{display:none\}\}", html)}
-    cells = re.findall(CELL + r'[^"]*">(.*?)</div>', html)
+    cells = re.findall(CELL + r'[^"]*"(?: class="cb-fade")?>(.*?)</div>', html)
     assert len(cells) == len(items)
     seen = set()
     for (x, y, w, h, text), (n, v) in zip(cells, items):
@@ -166,7 +166,7 @@ def test_i31_pill_never_sits_over_the_first_items_label(core_js):
     for html in (_py(I31), _gas_batch(core_js, [I31])[0]):
         pills = re.findall(r'<div(?: class="tmw\d+")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;max-width', html)
         assert pills
-        cells = re.findall(CELL + r'[^"]*padding:(\d+)px 8px 6px[^"]*">', html)
+        cells = re.findall(CELL + r'[^"]*padding:(\d+)px 8px 6px[^"]*"(?: class="cb-fade")?>', html)
         for px, py_ in pills:
             below = [c for c in cells if abs(float(c[0]) - float(px)) < 1e-6 and abs(float(c[1]) - float(py_)) < 1e-6]
             assert below and all(int(c[4]) >= 24 for c in below), (px, py_, below)       # the lead cell's text starts below the 24px pill band
@@ -185,7 +185,7 @@ def test_payloads_without_a_usable_path_render_exactly_as_without_the_field(core
 def test_a_chart_whose_labels_all_fit_at_320px_carries_no_gating_markup(core_js):
     b = {"type": "treemap", "items": [{"category": "A", "name": "Alpha", "value": 50}, {"category": "A", "name": "Beta", "value": 50}]}
     for html in (_py(b), _gas_batch(core_js, [b])[0]):
-        assert "tmw" not in html and "<style" not in html and "container-type" not in html and 'height:300px;">' in html
+        assert "tmw" not in html and "<style" not in html.replace(wa._CB_RULES, "") and "container-type" not in html and 'height:300px;">' in html
 
 
 def test_schema_describes_the_squarified_chart_and_the_new_fields():

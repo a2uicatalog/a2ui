@@ -137,7 +137,7 @@ def test_one_ridge_per_series_drawn_top_to_bottom_with_heights_as_shares(core_js
 
 def test_motion_index_per_ridge_stays_inside_its_clamp(core_js):
     for html in (_py(PAYLOADS["eight"]), _gas_batch(core_js, [PAYLOADS["eight"]])[0]):
-        ks = re.findall(r'<g class="hgrg" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+        ks = re.findall(r'<g class="hgrg[^"]*"[^>]*style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
         assert [int(i) for _, i in ks] == list(range(8)) and all(int(n) == 9 for n, _ in ks)
 
 

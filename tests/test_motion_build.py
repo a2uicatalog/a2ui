@@ -134,7 +134,7 @@ def _page(block, p, extra_flags=(), js=""):
         f = Path(td) / "p.html"
         f.write_text(html)
         out = subprocess.run([CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage", "--window-size=1000,700",
-                              "--virtual-time-budget=1500", *extra_flags, "--dump-dom", f"file://{f}"], capture_output=True, text=True, timeout=90).stdout
+                              "--virtual-time-budget=1500", "--use-angle=swiftshader", "--user-data-dir=" + td + "/prof", *extra_flags, "--dump-dom", f"file://{f}"], capture_output=True, text=True, timeout=90).stdout
     m = re.search(r"data-probe='([^']*)'|data-probe=\"([^\"]*)\"", out)
     assert m, out[:400]
     return json.loads(_h.unescape(m.group(1) or m.group(2)))
@@ -239,8 +239,8 @@ def test_kinds_from_the_real_atoms_get_the_right_treatment():
               "out.br=[g('[data-cb=branch]').strokeDasharray,g('[data-cb=branch]').strokeDashoffset,+g('[data-cb=branch]').opacity];")
         r = _page({"type": "motion_build", "blocks": [{"type": "cb_test_kinds"}]}, 0.0625, js=js)  # p' = max(0.0547, -0.875) -> k = 0.4375
         k = 0.4375
-        assert r["arc"][0] == "matrix(%g, 0, 0, %g, 0, 0)" % (k, k) and r["arc"][1] == "100px 50px" and r["arc"][2] == "view-box" and r["arc"][3] == pytest.approx(k, abs=0.01)
-        assert r["rib"][0] == r["arc"][0] and r["rib"][1] == "100px 50px", "arcs and ribbons scale out from the viewBox centre"
+        assert r["arc"][0] == "matrix(%g, 0, 0, %g, 0, 0)" % (k, k) and r["arc"][2] == "fill-box" and r["arc"][3] == pytest.approx(k, abs=0.01)
+        assert r["rib"][0] == r["arc"][0], "arcs and ribbons scale out from their own centre (fill-box)"
         assert r["rect"][0] == "matrix(1, 0, 0, %g, 0, 0)" % k and r["rect"][1] == "10px 60px", "a sankey node rect grows from its base"
         # the card sits outside the chart root, so no --n reaches it and the re-time is the identity: k = 0.5, rise 4px
         assert r["card"][0] == "matrix(1, 0, 0, 1, 0, 4)" and r["card"][1] == pytest.approx(0.5, abs=0.01), "a card node keeps its own rise and only fades"

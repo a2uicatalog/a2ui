@@ -158,7 +158,7 @@ def test_the_radial_golden_covers_the_hard_cases():
 
 
 # ─── what is drawn ─────────────────────────────────────────────────────────────
-BOX = re.compile(r'<div style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:(\d+)px;')
+BOX = re.compile(r'<div (?:data-cb="node" )?style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:(\d+)px;')
 LABEL = re.compile(r'>(L\d+x*[^<]*)</div>')
 KEY = re.compile(r'var\(--p,1\)\*(\d+)\s*-\s*(\d+)\)')
 BAD = re.compile(r"NaN|undefined|Infinity|\[object|<script")
@@ -166,7 +166,7 @@ BAD = re.compile(r"NaN|undefined|Infinity|\[object|<script")
 
 def _labels_in_order(html):
     """The text of every node, in document order: what a screen reader reads from the nested list."""
-    got = re.findall(r'<div (?:class="ocr-l"[^>]*|style="position:absolute;left:[^"]*line-height:1\.25[^"]*")>([^<]*)</div>', html)
+    got = re.findall(r'<div (?:data-cb="label" class="ocr-l(?: cb-fade)?"[^>]*|(?:data-cb="node" )?style="position:absolute;left:[^"]*line-height:1\.25[^"]*"(?: class="cb-fade")?)>([^<]*)</div>', html)
     return got[:len(got) // 2] if 'data-oc="both"' in html else got          # a wide tree carries a second, left-to-right copy of the boxes
 
 
@@ -213,7 +213,7 @@ def test_cluster_boxes_follow_the_d3_cluster_layout_in_both_twins(name, core_js)
 def test_cluster_puts_every_leaf_on_the_last_tier_and_trees_do_not():
     nodes = [("r", "Root", ""), ("a", "Shallow leaf", "r"), ("b", "Branch", "r"), ("c", "Deeper", "b"), ("d", "Deepest", "c")]
     blk = {"type": "org_chart", "nodes": [{"id": i, "label": l, "parent_id": p} for i, l, p in nodes]}
-    tops = lambda h: {re.search(r">([^<]*)</div>", m).group(1): float(t) for m, t in re.findall(r'(<div style="position:absolute;left:[\d.]+%;top:([\d.]+)%[^>]*>[^<]*</div>)', h)}
+    tops = lambda h: {re.search(r">([^<]*)</div>", m).group(1): float(t) for m, t in re.findall(r'(<div (?:data-cb="node" )?style="position:absolute;left:[\d.]+%;top:([\d.]+)%[^>]*>[^<]*</div>)', h)}
     tree, clu = tops(_py(blk)), tops(_py(dict(blk, layout="cluster")))
     assert tree["Shallow leaf"] < tree["Deepest"] and clu["Shallow leaf"] == clu["Deepest"] == max(clu.values())
     assert clu["Root"] == 0
@@ -232,7 +232,7 @@ def test_cluster_links_never_run_through_a_box():
             continue
         cw, ch = float(m.group(1)), float(m.group(2))
         boxes = [(float(l) / 100 * cw, float(t) / 100 * ch, float(w) / 100 * cw, int(h)) for l, t, w, h in BOX.findall(td)]
-        for d in re.findall(r'<path d="M([\d.]+) ([\d.]+)V([\d.]+)H([\d.]+)V([\d.]+)"', td):
+        for d in re.findall(r'<path (?:data-cb="branch" )?d="M([\d.]+) ([\d.]+)V([\d.]+)H([\d.]+)V([\d.]+)"', td):
             x0, y0, yb, x1, y1 = map(float, d)
             for bx, by, bw, bh in boxes:       # the vertical at x1 from yb to y1, and the bus at yb from x0 to x1
                 if bx + 0.01 < x1 < bx + bw - 0.01 and by + 0.01 < y1 and by + bh > yb + 0.01 and by < y1 - 0.01:
@@ -279,7 +279,7 @@ def test_wide_clusters_carry_both_orientations_like_the_tree():
 
 
 # ─── radial ────────────────────────────────────────────────────────────────────
-LBL = re.compile(r'<div class="ocr-l"[^>]*?(?: title="([^"]*)")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;[^"]*?--la:(\d+)px;--lb:(\d+)px;transform-origin:0 0;transform:rotate\((-?[\d.]+)deg\) translate\(([^)]*\)?[^)]*)\)[^"]*">([^<]*)</div>')
+LBL = re.compile(r'<div (?:data-cb="label" )?class="ocr-l(?: cb-fade)?"[^>]*?(?: title="([^"]*)")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;[^"]*?--la:(\d+)px;--lb:(\d+)px;transform-origin:0 0;transform:rotate\((-?[\d.]+)deg\) translate\(([^)]*\)?[^)]*)\)[^"]*">([^<]*)</div>')
 DOT = re.compile(r'<div aria-hidden="true" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:(\d+)px;')
 
 

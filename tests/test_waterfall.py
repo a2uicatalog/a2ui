@@ -143,7 +143,7 @@ def test_zero_width_axis_draws_without_nan(core_js):
 
 def test_motion_index_per_step_stays_inside_its_clamp(core_js):
     for html in (_py(PAYLOADS["twenty_four"]), _gas_batch(core_js, [PAYLOADS["twenty_four"]])[0]):
-        ks = re.findall(r'<div class="wfg" style="position:absolute;inset:0;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+        ks = re.findall(r'<div class="wfg[^"]*"[^>]*style="position:absolute;inset:0;--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
         assert [int(i) for _, i in ks] == list(range(24)) and all(int(n) == 25 for n, _ in ks)
 
 

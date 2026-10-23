@@ -218,7 +218,7 @@ def _tables(html):
 
 
 def _bands(html):
-    return re.findall(r'<path class="cnb" d="([^"]*)" fill="(#[0-9A-F]{6})" stroke="(#[0-9A-F]{6})" [^>]*?><title>(.*?)</title></path>', html)
+    return re.findall(r'<path class="cnb cb-fade" data-cb="arc" d="([^"]*)" fill="(#[0-9A-F]{6})" stroke="(#[0-9A-F]{6})" [^>]*?><title>(.*?)</title></path>', html)
 
 
 def _aria(html):
@@ -344,7 +344,7 @@ def test_aria_label_gives_mode_size_value_range_and_level_count(gas):
 
 def test_motion_index_per_band_stays_inside_its_clamp(gas):
     for html in (py("temp"), gas["temp"]):
-        ks = re.findall(r'--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);opacity:var\(--k,1\);', html)
+        ks = re.findall(r'--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
         m = len(_bands(html))
         assert [int(i) for _, i in ks] == list(range(m)) and all(int(n) == m + 1 for n, _ in ks)
 

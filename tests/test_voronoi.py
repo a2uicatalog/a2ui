@@ -285,7 +285,7 @@ def _aria(html):
 
 
 def _cells(html):
-    return re.findall(r'<g class="vog" style="([^"]*)"><path class="voc" d="([^"]*)" fill="([^"]*)" fill-opacity="([^"]*)" style="([^"]*)"[^>]*/><path class="vod" d="M([^,"]*),([^h"]*)h0"[^>]*/><path class="vod"[^>]*/><title>(.*?)</title></g>', html)
+    return re.findall(r'<g class="vog cb-fade" data-cb="node" style="([^"]*)"><path class="voc" d="([^"]*)" fill="([^"]*)" fill-opacity="([^"]*)" style="([^"]*)"[^>]*/><path class="vod" d="M([^,"]*),([^h"]*)h0"[^>]*/><path class="vod"[^>]*/><title>(.*?)</title></g>', html)
 
 
 def _bounds(sites):
@@ -487,7 +487,7 @@ def test_axes_use_nice_ticks_in_data_units(gas):
 
 def test_motion_index_per_site_stays_inside_its_clamp(gas):
     for html in (py("depots"), gas["depots"]):
-        ks = re.findall(r'<g class="vog" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);opacity:var\(--k,1\);"', html)
+        ks = re.findall(r'<g class="vog cb-fade" data-cb="node" style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);"', html)
         assert [int(i) for _, i in ks] == list(range(12)) and all(int(n) == 13 for n, _ in ks)
 
 
@@ -548,7 +548,7 @@ def test_y_labels_are_thinned_by_the_plot_height_in_both_twins(gas):
 def test_labels_are_gated_by_the_inscribed_circle_and_hidden_when_they_can_never_fit(gas):
     for name in ("depots", "no_groups", "many"):
         for html in (py(name), gas[name]):
-            labs = re.findall(r'<div class="vol( tmw\d+)?" style="[^"]*">(.*?)</div>', html)
+            labs = re.findall(r'<div data-cb="label" class="vol( tmw\d+)?(?: cb-fade)?" style="[^"]*">(.*?)</div>', html)
             by_label = {t: g for g, t in labs}
             sites = PAYLOADS[name]["sites"]
             shown = 0

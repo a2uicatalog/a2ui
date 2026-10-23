@@ -97,7 +97,7 @@ def test_bars_and_labels_never_overlap_or_widen_the_container(renderer, core_js)
     assert by["normalish-w320"]["xlabels"] < by["normalish-w1200"]["xlabels"]
     # every bar in the markup is laid out. Count from the markup, not by re-binning the raw payload: odd_options asks
     # for bins=1e9, which the renderer clamps to 40 but a bare _hg_bin call would honour (a billion ticks, out of memory).
-    assert all(r["bars"] == html[r["id"].split("-")[0]].count('class="hgb"') for r in res)
+    assert all(r["bars"] == html[r["id"].split("-")[0]].count('class="hgb') for r in res)
 
 
 def test_a_leaking_page_stylesheet_does_not_break_the_chart(core_js):

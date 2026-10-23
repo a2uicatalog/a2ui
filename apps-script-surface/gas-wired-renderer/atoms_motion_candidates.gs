@@ -330,7 +330,7 @@ _RENDERERS['motion_sweep'] = function(b) {
 // element also carries --i (--sw switches between the two without a script). The child's own sequence (N = n+1) is re-timed through
 // --n so it ends at p = 1 (max() with 2p-1 keeps the static path complete whatever N the child used). Design input from the four
 // contract builders (2026-10-21): bars and sankey node rects grow from their base; dashed paths (ref lines, waterfall connectors)
-// keep their dash and fade instead of drawing; arcs and ribbons scale from the viewBox centre (a true angular sweep is a follow-up);
+// keep their dash and fade instead of drawing; arcs and ribbons scale out from their own centre (fill-box: Chrome ignores a negative viewBox origin under view-box, which sent a centred chord diagram off to a corner; a true angular sweep is a follow-up);
 // other nodes (org cards with their own rise) only fade. Labels only ever fade. Twin: web_article.py _render_motion_build.
 var _MOB_ORDER = {stagger: 'stagger', together: 'together', 'by-kind': 'by-kind'};
 var _MOB_FROM = {baseline: '50% 100%', origin: '0 0', center: '50% 50%'};
@@ -345,7 +345,7 @@ var _MOB_CSS = '@media (prefers-reduced-motion:no-preference){.mo-build{--pb:var
   + '.mo-build[data-mob-ink=first] [data-cb=label]{--cb-r:clamp(0,calc(var(--pb,1)*3),1)}'
   + '.mo-build [data-cb=tile]{transform:scale(var(--cb-r));transform-box:fill-box;transform-origin:var(--cb-org,50% 100%)}'
   + '.mo-build [data-cb=bar],.mo-build rect[data-cb=node]{transform:scaleY(var(--cb-r));transform-box:fill-box;transform-origin:var(--cb-org,50% 100%)}'
-  + '.mo-build [data-cb=arc],.mo-build [data-cb=ribbon]{transform:scale(var(--cb-r));transform-box:view-box;transform-origin:50% 50%}'
+  + '.mo-build [data-cb=arc],.mo-build [data-cb=ribbon]{transform:scale(var(--cb-r));transform-box:fill-box;transform-origin:50% 50%}'
   + '.mo-build [data-cb=link][pathLength]:not([stroke-dasharray]):not([style*=dasharray]),.mo-build [data-cb=branch][pathLength]:not([stroke-dasharray]):not([style*=dasharray]),.mo-build [data-cb=ref][pathLength]:not([stroke-dasharray]):not([style*=dasharray]){stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--cb-r))}'
   + '.mo-build [data-cb].cb-fade{opacity:var(--cb-r)}'
   + '.mo-build [data-cb=link][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade,.mo-build [data-cb=branch][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade,.mo-build [data-cb=ref][pathLength]:not([stroke-dasharray]):not([style*=dasharray]).cb-fade{opacity:1}'

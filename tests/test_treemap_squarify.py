@@ -67,7 +67,7 @@ GOLDEN = {
 }
 
 TOL = 1e-9
-CELL = re.compile(r'<div(?: title="[^"]*")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:([\d.]+)%;box-sizing:border-box;border:1px solid transparent;')
+CELL = re.compile(r'<div(?: data-cb="tile")?(?: title="[^"]*")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:([\d.]+)%;box-sizing:border-box;border:1px solid transparent;')
 
 
 def _close(a, b, tol=TOL):

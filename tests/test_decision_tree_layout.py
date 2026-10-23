@@ -177,7 +177,7 @@ def _first(h):
 
 def _boxes(h):
     h = _first(h)
-    return re.findall(r'<div style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:(\d+)px;[^"]*">([^<]*)</div>', h)
+    return re.findall(r'<div (?:data-cb="node" )?style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:(\d+)px;[^"]*"(?: class="cb-fade")?>([^<]*)</div>', h)   # the org_chart drawer carries build contract v1.1
 
 
 @pytest.mark.parametrize("name", DRAWN)

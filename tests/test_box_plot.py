@@ -140,7 +140,7 @@ def test_zero_width_axis_draws_in_the_middle_without_nan(core_js):
 
 def test_motion_index_per_group_stays_inside_its_clamp(core_js):
     for html in (_py(PAYLOADS["twelve"]), _gas_batch(core_js, [PAYLOADS["twelve"]])[0]):
-        ks = re.findall(r'<div class="bpg" style="position:absolute;inset:0;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+        ks = re.findall(r'<div class="bpg[^"]*"[^>]*style="position:absolute;inset:0;--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
         assert [int(i) for _, i in ks] == list(range(12)) and all(int(n) == 13 for n, _ in ks)
 
 

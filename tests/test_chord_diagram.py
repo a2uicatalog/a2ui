@@ -244,7 +244,7 @@ def test_text_is_never_below_12px_and_nothing_has_a_script_or_nan():
 def test_motion_index_per_group_stays_inside_its_clamp(core_js):
     for name, n in (("migration", 5), ("traffic_directed", 6), ("two", 2), ("twelve", 12)):
         for html in (_py(PAYLOADS[name]), _gas_batch(core_js, [PAYLOADS[name]])[0]):
-            ks = re.findall(r'<g class="(chk|chg)" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+            ks = re.findall(r'<g class="(chk|chg)[^"]*"[^>]*style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
             for cls in ("chk", "chg"):
                 mine = [(int(a), int(i)) for c, a, i in ks if c == cls]
                 assert [i for _, i in mine] == list(range(n)) and all(a == n + 1 for a, _ in mine), (name, cls)
@@ -315,7 +315,7 @@ def test_a_group_with_no_flow_has_no_arc_and_no_label_but_is_in_the_legend_and_t
 
 # ─── the label rule ────────────────────────────────────────────────────────────────────────────────────────────
 def _labels(html):
-    return re.findall(r'<div class="chl(?: tmw(\d+))?" style="position:absolute;(?:left|right):([\d.]+)%;top:([\d.]+)%;[^"]*?rotate\((-?[\d.]+)deg\)', html)
+    return re.findall(r'<div data-cb="label" class="chl(?: tmw(\d+))?(?: cb-fade)?" style="position:absolute;(?:left|right):([\d.]+)%;top:([\d.]+)%;[^"]*?rotate\((-?[\d.]+)deg\)', html)
 
 
 def test_labels_are_outside_the_ring_rotated_to_read_outward_and_never_upside_down(core_js):

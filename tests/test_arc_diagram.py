@@ -223,7 +223,7 @@ def test_text_is_never_below_12px_and_nothing_has_a_script():
 
 def test_motion_index_stays_inside_its_clamp(core_js):
     for html in (_py(AUTHORS), _gas_batch(core_js, [AUTHORS])[0]):
-        ks = re.findall(r'<g class="adr" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+        ks = re.findall(r'<g class="adr[^"]*"[^>]*style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
         assert [(int(n), int(i)) for n, i in ks] == [(3, 0), (3, 1)]
 
 
@@ -278,7 +278,7 @@ def test_version_above_one_is_noted_and_otherwise_silent(core_js):
 
 # ─── the label rule ────────────────────────────────────────────────────────────────────────────────────────────
 def _labels(html):
-    return [(int(m.group(1) or 0), float(m.group(2)), m.group(3)) for m in re.finditer(r'<div class="adl(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:0;[^"]*">(.*?)</div>', html)]
+    return [(int(m.group(1) or 0), float(m.group(2)), m.group(3)) for m in re.finditer(r'<div data-cb="label" class="adl(?: tmw(\d+))?(?: cb-fade)?" style="position:absolute;left:([\d.]+)%;top:0;[^"]*">(.*?)</div>', html)]
 
 
 def test_every_node_has_a_label_and_the_gate_thins_them_by_halves():

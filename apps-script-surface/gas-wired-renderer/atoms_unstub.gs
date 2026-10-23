@@ -748,7 +748,7 @@ function _saChart(b, offset) {
     var pts = [];
     for (j = 0; j < m; j++) pts.push(X(j) + ',' + Y(ST.hi[i][j]));
     for (j = m - 1; j >= 0; j--) pts.push(X(j) + ',' + Y(ST.lo[i][j]));
-    polys += '<polygon points="' + pts.join(' ') + '" fill="' + ser[i].col + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>';
+    polys += '<polygon data-cb="bar" points="' + pts.join(' ') + '" fill="' + ser[i].col + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="' + _ifK(i, ser.length) + 'opacity:var(--k,1);"/>';
   }
   var full = labels.slice(0, m).map(function(l) { return _saStr(l); }), lab = full.map(function(t) { return t.length > 14 ? t.slice(0, 13).replace(/\s+$/, '') + '\u2026' : t; });
   var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; }).concat([1]));
@@ -816,7 +816,7 @@ function _saGate(b) {   // D22: the default layout is the area chart; html is th
 // The default layout is the area chart above (_saGate); `layout: "bars"` renders stacked horizontal bars (CSS approximation — no canvas/JS charting needed).
 _RENDERERS['stacked_area'] = function(b) {
   var _sa = _saGate(b);   // reads b.layout, b.offset and b.version (and b.labels, b.series, b.title, b.data, b.color) for the area chart
-  if (_sa.html) return _sa.html;
+  if (_sa.html) return _cbPass(_sa.html);
   try { return _saBars(b) + _sa.tail; } catch (e) { return _saCard(b, 'The bar list could not be drawn from this data.') + _sa.tail; }
 };
 function _saBars(b) {

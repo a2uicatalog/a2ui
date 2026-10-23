@@ -183,7 +183,7 @@ def test_text_is_never_below_12px_and_nothing_has_a_script():
 def test_motion_index_per_depth_stays_inside_its_clamp(core_js):
     for name, depths in (("budget", 3), ("deep", 4), ("flat", 1)):
         for html in (_py(PAYLOADS[name]), _gas_batch(core_js, [PAYLOADS[name]])[0]):
-            ks = re.findall(r'<g class="cpr" style="--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+            ks = re.findall(r'<g class="cpr[^"]*"[^>]*style="--i:\d+;--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
             assert [int(i) for _, i in ks] == list(range(depths)) and all(int(n) == depths + 1 for n, _ in ks), name
 
 
@@ -241,14 +241,14 @@ K = wa._CP_K
 def _leaf_labels(html):
     """(gate of the name, gate of the value or 0, left %, top %, name, value or None) of every leaf label."""
     return [(int(m.group(1) or 0), int(m.group(5) or 0), float(m.group(2)), float(m.group(3)), m.group(4), m.group(6))
-            for m in re.finditer(r'<div class="cpl(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;[^"]*"><div class="cpn" style="[^"]*">(.*?)</div>'
+            for m in re.finditer(r'<div data-cb="label" class="cpl(?: tmw(\d+))?(?: cb-fade)?" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;[^"]*"><div class="cpn" style="[^"]*">(.*?)</div>'
                                  r'(?:<div class="cpv(?: tmw(\d+))?" style="[^"]*">(.*?)</div>)?</div>', html)]
 
 
 def _group_labels(html):
     """(gate, left %, top %, name) of every group label."""
     return [(int(m.group(1) or 0), float(m.group(2)), float(m.group(3)), m.group(4))
-            for m in re.finditer(r'<div class="cpg(?: tmw(\d+))?" style="position:absolute;left:([\d.]+)%;top:calc\(([\d.]+)% \+ 18px\);[^"]*">(.*?)</div>', html)]
+            for m in re.finditer(r'<div data-cb="label" class="cpg(?: tmw(\d+))?(?: cb-fade)?" style="position:absolute;left:([\d.]+)%;top:calc\(([\d.]+)% \+ 18px\);[^"]*">(.*?)</div>', html)]
 
 
 def _radius_at(circles, left, top):

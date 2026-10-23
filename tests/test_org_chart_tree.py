@@ -35,7 +35,7 @@ GOLDEN = {
 FOREST = "forest_virtual_root"
 
 TOL = 1e-9
-BOX = re.compile(r'<div style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:(\d+)px;')
+BOX = re.compile(r'<div (?:data-cb="node" )?style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;width:([\d.]+)%;height:(\d+)px;')
 KEY = re.compile(r'var\(--p,1\)\*(\d+)\s*-\s*(\d+)\)')
 LABEL = re.compile(r'>(L\d+x*[^<]*)</div>')
 
@@ -173,7 +173,7 @@ def test_wide_trees_carry_both_layouts_and_css_picks_one():
     assert "@container (min-width:%spx)" % w in html and "@media print" in html and "container-type:inline-size" in html
     assert ".oc-w%s .oct{display:none}" % w in html and ".oc-w%s .ocl{display:none}" % w in html
     narrow = _py(_payload(GOLDEN["full_cap_10"], False))
-    assert "@container" not in narrow and "<style" not in narrow and 'class="ocl"' not in narrow
+    assert "@container" not in narrow and "<style" not in narrow.replace(wa._CB_RULES, "") and 'class="ocl"' not in narrow
 
 
 def test_nesting_is_still_a_real_list_in_document_order():
