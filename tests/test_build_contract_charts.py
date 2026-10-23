@@ -50,11 +50,29 @@ CASES = {
 }
 
 
+def _safe_pairs(core_js, cases):
+    """Render every case on its own, in Python and in GAS, so one crash fails only its own case (with the error text)."""
+    import json as _j
+    from test_motion_atoms import _node_raw as _node, _py_keyed as _py
+    names = list(cases)
+    body = "var B = %s; console.log(JSON.stringify(B.map(function(b){ try { return renderAtoms([b], {}); } catch (e) { return 'GAS ERROR: ' + (e && e.stack || e); } })));" % _j.dumps([cases[n][0] for n in names])
+    try:
+        gas = _node(core_js, body)
+    except Exception as e:  # the GAS source itself does not load
+        gas = ["GAS ERROR: " + str(e)[:2000]] * len(names)
+    out = {}
+    for i, n in enumerate(names):
+        try:
+            py = _py(cases[n][0])
+        except Exception as e:
+            py = "PY ERROR: %s: %s" % (type(e).__name__, e)
+        out[n] = (py, gas[i])
+    return out
+
+
 @pytest.fixture(scope="module")
 def pairs(core_js):
-    names = list(CASES)
-    gas = _gas_batch(core_js, [CASES[n][0] for n in names])
-    return {n: (_py(CASES[n][0]), gas[i]) for i, n in enumerate(names)}
+    return _safe_pairs(core_js, CASES)
 
 
 @pytest.mark.parametrize("name", list(CASES))
@@ -91,7 +109,7 @@ def test_settled_picture_is_the_old_inline_form():
     """Undoing the contract markup gives the previous inline opacity/scale, i.e. nothing visual moved."""
     h = _py(_first(test_histogram))
     assert 'class="hgb cb-grow"' in h and "transform:scaleY(var(--k,1))" not in h.replace(".cb-grow{transform:scaleY(var(--k,1))", "")
-    assert re.search(r'<rect class="hgb cb-grow" data-cb="bar" x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" style="--i:0;--k:clamp', h)
+    assert re.search(r'<rect class="hgb cb-grow" data-cb="bar"(?: data-key="[^"]*")? x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" style="--i:0;--k:clamp', h)
 
 
 def test_atoms_without_data_pass_through_untouched():

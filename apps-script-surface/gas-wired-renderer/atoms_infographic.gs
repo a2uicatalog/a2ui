@@ -38,6 +38,9 @@ var _CB_DC = / data-cb="(\w+)"/;
 var _CB_STY = / style="([^"]*)"/;
 var _CB_CLS = / class="([^"]*)"/;
 var _CB_RULES = '<style>:where([data-cb-root]) .cb-fade{opacity:var(--k,1)}:where([data-cb-root]) .cb-grow{transform:scaleY(var(--k,1));transform-box:fill-box;transform-origin:50% 100%}</style>';
+// A tree node's contract v1.2 key: its id, or its label where the tree has no ids (decision_tree shares the org_chart drawer).
+function _cbKid(f) { return f.id !== undefined ? f.id : f.l; }
+
 function _cbPass(html) {
   if (html.indexOf(' data-cb="') < 0) return html;
   var nmax = 0, m, kg = new RegExp(_CB_KRE.source, 'g'), first = true;
@@ -359,7 +362,7 @@ _RENDERERS['treemap'] = function(b) {
           ';box-sizing:border-box;padding:1px 7px 0;overflow:hidden;white-space:nowrap;font-size:0.78rem;font-weight:700;line-height:18px;color:var(--text,#0F172A);">' + txt + '</div>';
       } else {
         name = _ifS(sp.item.n, 24) + ' ' + _ifFmt(sp.item.v); wm = _tmWmin(name.length, 18, w); show = h >= 30 && wm <= _TM_MAXW; gt = _tmGate(wm); cls = gt[0]; g = show ? gt[1] : 0; gates.push(g); hid.push(!show);
-        cells += '<div data-cb="tile"' + (show && !g ? '' : ' title="' + name + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + col + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? '6px 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(sp.k, items.length) + 'opacity:var(--k,1);">' + _tmLabel(show, g, cls, name) + '</div>';
+        cells += '<div data-cb="tile" data-key="' + _esc((sp.item.chain || []).concat([sp.item.n]).join('/')) + '"' + (show && !g ? '' : ' title="' + name + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + col + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? '6px 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(sp.k, items.length) + 'opacity:var(--k,1);">' + _tmLabel(show, g, cls, name) + '</div>';
       }
     });
     var shown = tops.slice(0, 6).map(function(t) { return t.n + ' ' + _ifFmt(items.reduce(function(s, i) { return i.chain[0] === t.n ? s + i.v : s; }, 0)); }).join(', ');
@@ -374,7 +377,7 @@ _RENDERERS['treemap'] = function(b) {
       m.forEach(function(i, k) {
         var lead = pill && k === 0, name = _ifS(i.n, 24) + ' ' + _ifFmt(i.v), r = ir[ci][k], wm = _tmWmin(name.length, 18, r[2] - r[0]), show = r[3] - r[1] >= (lead ? 48 : 30) && wm <= _TM_MAXW, gt = _tmGate(wm), cls = gt[0], g = show ? gt[1] : 0;
         gates.push(g); hid.push(!show);
-        cells += '<div data-cb="tile"' + (show && !g ? '' : ' title="' + name + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? (lead ? '24px' : '6px') + ' 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g_) { return s + g_.length; }, 0) + k, items.length) + 'opacity:var(--k,1);">' + _tmLabel(show, g, cls, name) + '</div>';
+        cells += '<div data-cb="tile" data-key="' + _esc(c + '/' + i.n) + '"' + (show && !g ? '' : ' title="' + name + '"') + ' style="' + _tmBox(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (show ? (lead ? '24px' : '6px') + ' 8px 6px' : '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _ifK(groups.slice(0, ci).reduce(function(s, g_) { return s + g_.length; }, 0) + k, items.length) + 'opacity:var(--k,1);">' + _tmLabel(show, g, cls, name) + '</div>';
       });
       if (pill) tags += '<div' + pcls + ' style="position:absolute;left:' + _tmPct(cr[ci][0], _TM_W) + ';top:' + _tmPct(cr[ci][1], _TM_H) + ';max-width:' + _tmPct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>';
     });
@@ -506,7 +509,7 @@ _RENDERERS['sunburst'] = function(b) {
         if (wm <= _SB_MAXW) {
           cl = _sbCls(wm); ws.push(cl[1]);
           rm = (y0 + ro) / 2; th = (x0 + x1) / 2; deg = th * 180 / Math.PI - 90; if (deg > 90) deg -= 180;
-          labels += '<div data-cb="label" class="sbl' + cl[0] + '" style="position:absolute;left:' + _tmPct(_SB_BOX / 2 + rm * Math.sin(th), _SB_BOX) + ';top:' + _tmPct(_SB_BOX / 2 - rm * Math.cos(th), _SB_BOX) +
+          labels += '<div data-cb="label" data-key="' + _esc((nd.kids ? sp.chain : sp.item.chain.concat([sp.n])).join('/')) + '" class="sbl' + cl[0] + '" style="position:absolute;left:' + _tmPct(_SB_BOX / 2 + rm * Math.sin(th), _SB_BOX) + ';top:' + _tmPct(_SB_BOX / 2 - rm * Math.cos(th), _SB_BOX) +
             ';transform:translate(-50%,-50%) rotate(' + deg.toFixed(2).replace(/^-0\.00$/, '0.00') + 'deg);width:max-content;max-width:calc(' + _tmPct(t, _SB_BOX).slice(0, -1) + 'cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;' +
             'text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _ifS(sp.n, 24) + '</div>';
         }
@@ -514,7 +517,7 @@ _RENDERERS['sunburst'] = function(b) {
     } else {
       left = y0 - nodes[0].y1; w = y1 - y0; hh = x1 - x0;
       wm = w > 0 ? _sbQ((c * _SB_K + 12) * _SB_IW / w) : 1e9; show = hh >= 20 && wm <= _SB_IMAXW; cl = _sbCls(wm); g = show ? cl[1] : 0; ws.push(g);
-      cells += '<div data-cb="tile" title="' + title + '" style="' + _sbBox(left, x0, w, hh) + 'box-sizing:border-box;border:1px solid transparent;background:' + fill + ';background-clip:padding-box;border-radius:3px;color:' + ink +
+      cells += '<div data-cb="tile" data-key="' + _esc((nd.kids ? sp.chain : sp.item.chain.concat([sp.n])).join('/')) + '" title="' + title + '" style="' + _sbBox(left, x0, w, hh) + 'box-sizing:border-box;border:1px solid transparent;background:' + fill + ';background-clip:padding-box;border-radius:3px;color:' + ink +
         ';padding:1px 5px 0;font-size:12px;line-height:17px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;' + kk + 'opacity:var(--k,1);">' +
         (show ? (g ? '<span class="' + cl[0].replace(/^ /, '') + '">' + _ifS(sp.n, 24) + '</span>' : _ifS(sp.n, 24)) : '') + '</div>';
     }
@@ -531,7 +534,7 @@ _RENDERERS['sunburst'] = function(b) {
         '<div style="font-weight:700;">' + _ifS(f(tot), 40) + '</div><div style="color:var(--muted,#475569);">total</div></div>';
     }
     body = '<svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
-      rings.map(function(g, j) { return '<g class="sbr" data-cb="arc" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>' + labels + centre;
+      rings.map(function(g, j) { return '<g class="sbr" data-cb="arc" data-key="ring-' + (j + 1) + '" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>' + labels + centre;
     boxcss = 'position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;';
     cap = 'Angle shows share of the total; each ring out is one level deeper.';
   } else {
@@ -692,7 +695,7 @@ _RENDERERS['circle_pack'] = function(b) {
       wm = _cpQ(Math.max((c * _CP_K + 8) / 0.8, 40) * S / r);
       if (wm <= 640) {
         cl = _cpGate(wm); ws.push(cl[1]);
-        glabs += '<div data-cb="label" class="cpg' + cl[0] + '" style="position:absolute;left:' + left + ';top:calc(' + _tmPct(y - r + 2, M) + ' + 18px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tmPct(0.8 * r, M).slice(0, -1) +
+        glabs += '<div data-cb="label" data-key="' + _esc(sp.chain.join('/')) + '" class="cpg' + cl[0] + '" style="position:absolute;left:' + left + ';top:calc(' + _tmPct(y - r + 2, M) + ' + 18px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tmPct(0.8 * r, M).slice(0, -1) +
           'cqw - 4px),100px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);' +
           'text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff),0 0 2px var(--bg,#fff);pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _ifS(sp.n, 24) + '</div>';
       }
@@ -706,7 +709,7 @@ _RENDERERS['circle_pack'] = function(b) {
         wv = _cpQ(Math.max(Math.sqrt(Math.pow(Math.max(half, hv), 2) + 196) + 2, (vt.length * _CP_K + 4) / 1.4) * S / r);
         cn = _cpGate(wn); ws.push(cn[1]); vline = '';
         if (wv <= 640) { cv = _cpGate(wv); ws.push(cv[1]); vline = '<div class="cpv' + cv[0] + '" style="opacity:0.85;">' + _ifS(vt, 40) + '</div>'; }
-        llabs += '<div data-cb="label" class="cpl' + cn[0] + '" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tmPct(1.4 * r, M).slice(0, -1) +
+        llabs += '<div data-cb="label" data-key="' + _esc(sp.item.chain.concat([sp.n]).join('/')) + '" class="cpl' + cn[0] + '" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tmPct(1.4 * r, M).slice(0, -1) +
           'cqw - 4px);text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' +
           '<div class="cpn" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _ifS(sp.n, 24) + '</div>' + vline + '</div>';
       }
@@ -715,7 +718,7 @@ _RENDERERS['circle_pack'] = function(b) {
   var aria = 'Circle packing of ' + items.length + ' items in ' + tops.length + ' top-level group' + (tops.length === 1 ? '' : 's') + ', total ' + f(tot) + '. Largest item: ' +
     big.src.n + ', ' + f(big.value) + ', ' + (big.value / tot * 100).toFixed(1) + '% of the total.';
   var svg = '<svg viewBox="-2 -2 ' + M + ' ' + M + '" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
-    rings.map(function(g, j) { return '<g class="cpr" data-cb="arc" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>';
+    rings.map(function(g, j) { return '<g class="cpr" data-cb="arc" data-key="ring-' + (j + 1) + '" style="' + _ifK(j, height) + 'opacity:var(--k,1);">' + g + '</g>'; }).join('') + '</svg>';
   var uw = [];
   ws.forEach(function(w) { if (w && uw.indexOf(w) < 0) uw.push(w); });
   uw.sort(function(a, c) { return a - c; });
@@ -750,7 +753,7 @@ _RENDERERS['arc_diagram'] = function(b) {
     if (v === undefined || v === null) v = 1;
     if (!(typeof s === 'string' && typeof t === 'string' && Object.prototype.hasOwnProperty.call(ids, s.slice(0, 40)) && Object.prototype.hasOwnProperty.call(ids, t.slice(0, 40)) && s.slice(0, 40) !== t.slice(0, 40) &&
           typeof v === 'number' && isFinite(v) && v > 0)) { dropped++; return; }
-    links.push({ s: ids[s.slice(0, 40)], t: ids[t.slice(0, 40)], v: Math.min(v, 1e12) });
+    links.push({ s: ids[s.slice(0, 40)], t: ids[t.slice(0, 40)], v: Math.min(v, 1e12), sid: s.slice(0, 40), tid: t.slice(0, 40) });
   });
   var lbeyond = ll.length - _AD_MAXL;
   links.forEach(function(l) { nodes[l.s].deg++; nodes[l.t].deg++; });
@@ -779,12 +782,12 @@ _RENDERERS['arc_diagram'] = function(b) {
   var dr = _cpF(Math.min(7, _AD_W / n * 0.33)), arcs = '', dots = '';
   links.forEach(function(l) {
     var lo = Math.min(xs[l.s], xs[l.t]), hi = Math.max(xs[l.s], xs[l.t]), w = vmin === vmax ? 2 : 1 + 5 * (l.v - vmin) / (vmax - vmin), rr = _cpF((hi - lo) / 2);
-    arcs += '<path class="ada" d="M' + _cpF(lo) + ',' + _cpF(base) + 'A' + rr + ',' + rr + ',0,0,1,' + _cpF(hi) + ',' + _cpF(base) + '" fill="none" stroke="' + nodes[l.s].c + '" stroke-width="' + _cpF(w) +
+    arcs += '<path class="ada" data-key="' + _esc(l.sid + '→' + l.tid) + '" d="M' + _cpF(lo) + ',' + _cpF(base) + 'A' + rr + ',' + rr + ',0,0,1,' + _cpF(hi) + ',' + _cpF(base) + '" fill="none" stroke="' + nodes[l.s].c + '" stroke-width="' + _cpF(w) +
       '" stroke-opacity="0.6" stroke-linecap="round" vector-effect="non-scaling-stroke"><title>' + _ifS(nodes[l.s].l, 24) + ' to ' + _ifS(nodes[l.t].l, 24) + ': ' + _esc(f(l.v)) + '</title></path>';
   });
   idx.forEach(function(p) {
     var nd = nodes[p];
-    dots += '<circle class="adn" cx="' + _cpF(xs[p]) + '" cy="' + _cpF(base) + '" r="' + dr + '" fill="' + nd.c + '"><title>' + _ifS(nd.l, 24) + (nd.g ? ' (' + _ifS(nd.g, 20) + ')' : '') + ': ' + plural(nd.deg, 'link', 'links') + '</title></circle>';
+    dots += '<circle class="adn" data-key="' + _esc(nd.id) + '" cx="' + _cpF(xs[p]) + '" cy="' + _cpF(base) + '" r="' + dr + '" fill="' + nd.c + '"><title>' + _ifS(nd.l, 24) + (nd.g ? ' (' + _ifS(nd.g, 20) + ')' : '') + ': ' + plural(nd.deg, 'link', 'links') + '</title></circle>';
   });
   var maxc = 0;
   nodes.forEach(function(nd) { maxc = Math.max(maxc, nd.l.length); });
@@ -792,7 +795,7 @@ _RENDERERS['arc_diagram'] = function(b) {
   idx.forEach(function(p, pos) {
     var lvl = pos === 0 ? 99 : Math.min(31 - Math.clz32(pos & -pos), 6), wm = pos === 0 ? 0 : _cpQ(_AD_STEP * n / Math.pow(2, lvl) + 16);
     wm = wm > _AD_MINW ? wm : 0; ws.push(wm);
-    labs += '<div data-cb="label" class="adl' + (wm ? ' tmw' + wm : '') + '" style="position:absolute;left:' + _tmPct(xs[p], _AD_W) + ';top:0;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;max-height:' + lh +
+    labs += '<div data-cb="label" data-key="' + _esc(nodes[p].id) + '" class="adl' + (wm ? ' tmw' + wm : '') + '" style="position:absolute;left:' + _tmPct(xs[p], _AD_W) + ';top:0;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;max-height:' + lh +
       'px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _ifK(1, 2) + 'opacity:var(--k,1);">' + _ifS(nodes[p].l, 24) + '</div>';
   });
   var uw = [];
@@ -804,7 +807,7 @@ _RENDERERS['arc_diagram'] = function(b) {
   var aria = 'Arc diagram of ' + n + ' nodes and ' + plural(links.length, 'link', 'links') + '.' + (links.length ? ' Most connected: ' + top.l + ', ' + plural(top.deg, 'link', 'links') + '.' : '');
   var svg = '<svg viewBox="0 0 ' + _AD_W + ' ' + _cpF(base + 14) + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">' +
     '<line x1="0" y1="' + _cpF(base) + '" x2="' + _AD_W + '" y2="' + _cpF(base) + '" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/>' +
-    '<g class="adr" data-cb="link" style="' + _ifK(0, 2) + 'opacity:var(--k,1);">' + arcs + '</g><g class="adr" data-cb="node" style="' + _ifK(1, 2) + 'opacity:var(--k,1);">' + dots + '</g></svg>';
+    '<g class="adr" data-cb="link" data-key="links" style="' + _ifK(0, 2) + 'opacity:var(--k,1);">' + arcs + '</g><g class="adr" data-cb="node" data-key="nodes" style="' + _ifK(1, 2) + 'opacity:var(--k,1);">' + dots + '</g></svg>';
   var legend = '';
   if (groups.length) {
     var ent = groups.map(function(g, j) { return [g, _SB_PALETTE[j % 8]]; });
@@ -1084,7 +1087,7 @@ _RENDERERS['contour_plot'] = function(b) {
   for (i = 0; i < m; i++) cols.push(_cnRamp(i, m));
   var rng = function(j) { return lab[j] + (j + 1 < m ? ' to ' + lab[j + 1] + us : us + ' and above'); };
   for (i = 0; i < m; i++) {
-    bands += '<path class="cnb" data-cb="arc" d="' + _cnPath(levels[i][1], sx, sy) + '" fill="' + cols[i] + '" stroke="' + _cnLine(cols[i]) + '" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" ' +
+    bands += '<path class="cnb" data-cb="arc" data-key="' + _esc(rng(i)) + '" d="' + _cnPath(levels[i][1], sx, sy) + '" fill="' + cols[i] + '" stroke="' + _cnLine(cols[i]) + '" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" ' +
       'vector-effect="non-scaling-stroke" style="' + _ifK(i, m) + 'opacity:var(--k,1);"><title>' + _esc(rng(i)) + '</title></path>';
   }
   if (dots) bands += '<path class="cnp" d="' + dots + '" fill="none" style="stroke:var(--text,#0F172A);" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
@@ -2187,14 +2190,14 @@ _RENDERERS['voronoi'] = function(b) {
         if (wm <= _VO_MAXWM) {
           wm = wm > _CP_MINW ? wm : 0;
           wms.push(wm);
-          labs += '<div data-cb="label" class="vol' + (wm ? ' tmw' + wm : '') + '" style="position:absolute;left:' + _tmPct(cx, W) + ';top:' + _tmPct(cy, H) +
+          labs += '<div data-cb="label" data-key="' + _esc(name(i)) + '" class="vol' + (wm ? ' tmw' + wm : '') + '" style="position:absolute;left:' + _tmPct(cx, W) + ';top:' + _tmPct(cy, H) +
             ';transform:translate(-50%,7px);white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _ifK(i, n) + 'opacity:var(--k,1);">' + _esc(s.l) + '</div>';
         }
       }
     } else {
       tip += 'no region of its own';
     }
-    cellsvg += '<g class="vog" data-cb="node" style="' + _ifK(i, n) + 'opacity:var(--k,1);">' + path + '<path class="vod" d="M' + _cnR(cx) + ',' + _cnR(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="9" vector-effect="non-scaling-stroke" style="stroke:var(--surface,#F8FAFC);"/>' +
+    cellsvg += '<g class="vog" data-cb="node" data-key="' + _esc(name(i)) + '" style="' + _ifK(i, n) + 'opacity:var(--k,1);">' + path + '<path class="vod" d="M' + _cnR(cx) + ',' + _cnR(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="9" vector-effect="non-scaling-stroke" style="stroke:var(--surface,#F8FAFC);"/>' +
       '<path class="vod" d="M' + _cnR(cx) + ',' + _cnR(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="6" vector-effect="non-scaling-stroke" stroke="' + s.c + '"/><title>' + _esc(tip) + '</title></g>';
   }
   var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">' +
@@ -2330,7 +2333,7 @@ _RENDERERS['chord_diagram'] = function(b) {
   var col = names.map(function(_, q) { return _SB_PALETTE[q % 8]; }), ribs = names.map(function() { return ''; });
   chords.forEach(function(rw) {
     var s = rw[0], t = rw[4], title = _ifS(names[s], 20) + ' → ' + _ifS(names[t], 20) + ': ' + _esc(f(rw[3])) + (directed ? '' : ' (' + _ifS(names[t], 20) + ' → ' + _ifS(names[s], 20) + ': ' + _esc(f(rw[7])) + ')');
-    ribs[s] += '<path class="chd" d="' + _chRibbon(rw, _CH_RR, _CH_RPAD, directed, 3) + '" fill="' + col[s] + '" fill-opacity="0.55" stroke="' + col[s] + '" stroke-width="0.6"><title>' + title + '</title></path>';
+    ribs[s] += '<path class="chd" data-key="' + _esc(_ifS(names[s], 20) + '→' + _ifS(names[t], 20)) + '" d="' + _chRibbon(rw, _CH_RR, _CH_RPAD, directed, 3) + '" fill="' + col[s] + '" fill-opacity="0.55" stroke="' + col[s] + '" stroke-width="0.6"><title>' + title + '</title></path>';
   });
   var arcs = '', labels = '', legend = '', ws = [];
   var order = groups.filter(function(g) { return g[2] > g[1]; }).sort(function(a, c) { return a[1] - c[1]; }), need = {};
@@ -2345,20 +2348,20 @@ _RENDERERS['chord_diagram'] = function(b) {
     var nm = _ifS(names[q], 20), kk = _ifK(q, n);
     legend += '<span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + col[q] + ';margin-right:5px;"></span>' + nm + '</span>';
     if (!(g[2] > g[1])) return;
-    arcs += '<g class="chg" data-cb="arc" style="' + kk + 'opacity:var(--k,1);"><path class="cha" d="' + _sbArc(g[1], g[2], _CH_IN, _CH_OUT, 0, null, 3) + '" fill="' + col[q] + '"><title>' + nm + ': sends ' + _esc(f(outT[q])) + ', receives ' + _esc(f(inT[q])) + '</title></path></g>';
+    arcs += '<g class="chg" data-cb="arc" data-key="' + _esc(nm) + '" style="' + kk + 'opacity:var(--k,1);"><path class="cha" d="' + _sbArc(g[1], g[2], _CH_IN, _CH_OUT, 0, null, 3) + '" fill="' + col[q] + '"><title>' + nm + ': sends ' + _esc(f(outT[q])) + ', receives ' + _esc(f(inT[q])) + '</title></path></g>';
     var wm = need[q];
     if (wm > _CH_MAXW) return;
     var cl = _sbCls(wm), th = (g[1] + g[2]) / 2, x = _CH_LAB * Math.sin(th), y = -_CH_LAB * Math.cos(th), right = Math.sin(th) >= 0;
     ws.push(cl[1]);
     var deg = right ? th * 180 / Math.PI - 90 : th * 180 / Math.PI - 270, ty = 'top:' + _tmPct(_CH_BOX / 2 + y, _CH_BOX) + ';';
     var anchor = right ? 'left:' + _tmPct(_CH_BOX / 2 + x, _CH_BOX) + ';' + ty + 'transform-origin:0 7px;' : 'right:' + _tmPct(_CH_BOX / 2 - x, _CH_BOX) + ';' + ty + 'transform-origin:100% 7px;';
-    labels += '<div data-cb="label" class="chl' + cl[0] + '" style="position:absolute;' + anchor + 'margin-top:-7px;transform:rotate(' + deg.toFixed(2).replace(/^-0\.00$/, '0.00') + 'deg);width:max-content;max-width:calc(' +
+    labels += '<div data-cb="label" data-key="' + _esc(nm) + '" class="chl' + cl[0] + '" style="position:absolute;' + anchor + 'margin-top:-7px;transform:rotate(' + deg.toFixed(2).replace(/^-0\.00$/, '0.00') + 'deg);width:max-content;max-width:calc(' +
       _tmPct(_CH_BOX / 2 - _CH_LAB, _CH_BOX).slice(0, -1) + 'cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:' + (right ? 'left' : 'right') +
       ';font-size:12px;line-height:14px;font-weight:600;color:' + col[q] + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + nm + '</div>';
   });
   var aria = (directed ? 'Directed chord diagram' : 'Chord diagram') + ' of ' + n + ' groups, total flow ' + f(total) + '. Largest flow: ' + names[best[0]] + ' to ' + names[best[1]] + ', ' + f(mat[best[0]][best[1]]) + '.';
   var svg = '<svg viewBox="-300 -300 600 600" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">' +
-    ribs.map(function(rs, q) { return '<g class="chk" data-cb="ribbon" style="' + _ifK(q, n) + 'opacity:var(--k,1);">' + rs + '</g>'; }).join('') + arcs + '</svg>';
+    ribs.map(function(rs, q) { return '<g class="chk" data-cb="ribbon" data-key="' + _esc(names[q]) + '" style="' + _ifK(q, n) + 'opacity:var(--k,1);">' + rs + '</g>'; }).join('') + arcs + '</svg>';
   var uw = [];
   ws.forEach(function(w) { if (w && uw.indexOf(w) < 0) uw.push(w); });
   uw.sort(function(a, c) { return a - c; });
@@ -2402,7 +2405,7 @@ function _vdRender3(b) {
   var swatch = function(i) { return '<span style="flex:0 0 auto;width:10px;height:10px;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';background:' + _VD_COL[i] + ';opacity:0.6;box-sizing:border-box;"></span>'; };
   var nm = function(i, xs) { return '<div style="display:flex;align-items:center;gap:6px;min-width:0;font-weight:700;font-size:13px;line-height:16px;' + xs + '">' + swatch(i) + '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _ifS(names[i], 28) + '</span></div>'; };
   var circ = [['0', '0'], ['33.333', '0'], ['16.667', '30.218']].map(function(p, i) {
-    return '<div class="v3o" data-cb="node" style="position:absolute;left:' + p[0] + '%;top:' + p[1] + '%;width:66.667%;aspect-ratio:1;box-sizing:border-box;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';opacity:var(--k,1);' + _ifK(i, 10) +
+    return '<div class="v3o" data-cb="node" data-key="' + _esc(names[i]) + '" style="position:absolute;left:' + p[0] + '%;top:' + p[1] + '%;width:66.667%;aspect-ratio:1;box-sizing:border-box;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';opacity:var(--k,1);' + _ifK(i, 10) +
       '"><div style="position:absolute;inset:0;border-radius:50%;background:' + _VD_COL[i] + ';opacity:0.16;"></div></div>';
   }).join('');
   var boxes = '';
@@ -2410,7 +2413,7 @@ function _vdRender3(b) {
     var its = items[i], lim = r[2], shown = its.length <= lim ? its : its.slice(0, lim - 1);
     var lines = shown.map(function(x) { return '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">• ' + _vdCut(x) + '</div>'; }).join('');
     if (its.length > lim) lines += '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-style:italic;color:var(--muted,#475569);">+' + (its.length - shown.length) + ' more</div>';
-    if (lines) boxes += '<div class="v3t v3' + r[0] + '" data-cb="label" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _ifK(3 + i, 10) + '">' + lines + '</div>';
+    if (lines) boxes += '<div class="v3t v3' + r[0] + '" data-cb="label" data-key="' + _esc(labels[i]) + '" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _ifK(3 + i, 10) + '">' + lines + '</div>';
   });
   var aria = 'Venn diagram of three sets: ' + names[0] + ', ' + names[1] + ' and ' + names[2] + '. ' + labels.map(function(l, i) { return l + ': ' + items[i].length + (items[i].length === 1 ? ' item. ' : ' items. '); }).join('').replace(/\s+$/, '') + ' The circles are not drawn to scale. Every item is in the table.';
   var rows = labels.map(function(l, i) { return '<tr><th scope="row">' + _ifS(l, 90) + '</th><td>' + (items[i].length ? items[i].map(function(x) { return _ifS(x, 60); }).join('; ') : 'none') + '</td></tr>'; }).join('');
@@ -2429,7 +2432,7 @@ _RENDERERS['venn_diagram'] = function(b) {
   var list = function(v) { return _ifArr(v, 4).map(function(i) { return '<div>• ' + _ifS(i, 28) + '</div>'; }).join(''); }, c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));';
   return _ifWrap(_ifTitle(b) + '<div style="position:relative;max-width:640px;margin:0 auto;aspect-ratio:1.5;font-size:0.82rem;">' +
     '<div style="position:absolute;left:4%;top:0;font-weight:700;">' + _ifS(b.set_a_name, 28) + '</div><div style="position:absolute;right:4%;top:0;font-weight:700;text-align:right;">' + _ifS(b.set_b_name, 28) + '</div>' +
-    '<div data-cb="node" style="' + c + 'left:4%;background:#BFDBFE;' + _ifK(0, 2) + '"></div><div data-cb="node" style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _ifK(1, 2) + '"></div>' +
+    '<div data-cb="node" data-key="' + _esc(_vdTrim(_vdRaw(b.set_a_name, 60)) || 'Set A') + '" style="' + c + 'left:4%;background:#BFDBFE;' + _ifK(0, 2) + '"></div><div data-cb="node" data-key="' + _esc(_vdTrim(_vdRaw(b.set_b_name, 60)) || 'Set B') + '" style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _ifK(1, 2) + '"></div>' +
     '<div style="position:absolute;left:10%;top:48%;width:24%;transform:translateY(-50%);">' + list(b.set_a_exclusive) + '</div>' +
     '<div style="position:absolute;left:38%;top:48%;width:24%;transform:translateY(-50%);text-align:center;">' + list(b.intersection) + '</div>' +
     '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + list(b.set_b_exclusive) + '</div></div>' + _hgVersionNote(b, 'venn_diagram'));
@@ -2680,14 +2683,14 @@ function _ocRenderRadial(b, flat, kids, top, root, virt, note) {
       cnt++;
       var left = (50 + 100 * fx[i]).toFixed(3) + '%', tp = (50 + 100 * fy[i]).toFixed(3) + '%', deg = labX[i] * 180 / Math.PI - 90, flip = ux[i] < -1e-9;
       var tf = flip ? 'rotate(' + (deg - 180).toFixed(2) + 'deg) translate(calc(-100% - ' + _OC_RAD_PAD + 'px),-50%)' : 'rotate(' + deg.toFixed(2) + 'deg) translate(' + _OC_RAD_PAD + 'px,-50%)';
-      out = '<li style="position:static;padding:0;"><div aria-hidden="true" data-cb="node" style="position:absolute;left:' + left + ';top:' + tp + ';width:' + (2 * dr) + 'px;height:' + (2 * dr) + 'px;margin:-' + dr + 'px 0 0 -' + dr + 'px;box-sizing:border-box;border-radius:50%;' +
+      out = '<li style="position:static;padding:0;"><div aria-hidden="true" data-cb="node" data-key="' + _esc(_cbKid(f)) + '" style="position:absolute;left:' + left + ';top:' + tp + ';width:' + (2 * dr) + 'px;height:' + (2 * dr) + 'px;margin:-' + dr + 'px 0 0 -' + dr + 'px;box-sizing:border-box;border-radius:50%;' +
         (isroot ? 'background:#E0E7FF;border:2px solid #1E1B4B;' : 'background:var(--surface,#F8FAFC);border:2px solid #64748B;') + kk + 'opacity:var(--k,1);"></div>' +
-        '<div data-cb="label" class="ocr-l"' + (nat[i] > Lb[i] ? ' title="' + _ifS(f.l, 28) + '"' : '') + ' style="position:absolute;left:' + left + ';top:' + tp + ';width:max-content;max-width:var(--la);height:' + _OC_RAD_TH + 'px;--la:' + La[i] + 'px;--lb:' + Lb[i] + 'px;transform-origin:0 0;transform:' + tf +
+        '<div data-cb="label" data-key="' + _esc(_cbKid(f)) + '" class="ocr-l"' + (nat[i] > Lb[i] ? ' title="' + _ifS(f.l, 28) + '"' : '') + ' style="position:absolute;left:' + left + ';top:' + tp + ';width:max-content;max-width:var(--la);height:' + _OC_RAD_TH + 'px;--la:' + La[i] + 'px;--lb:' + Lb[i] + 'px;transform-origin:0 0;transform:' + tf +
         ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:' + _OC_RAD_TH + 'px;color:var(--text,#0F172A);' + (isroot ? 'font-weight:700;' : '') +
         'text-shadow:0 0 2px var(--bg,#fff),0 0 2px var(--bg,#fff),0 0 3px var(--bg,#fff);' + kk + 'opacity:var(--k,1);">' + _ifS(f.l, 28) + '</div>';
       if (f.par >= 0) {
         p = f.par; c = _ocLinkRadial(ang[p], rad[p], ang[i], rad[i]);
-        paths.push('<path data-cb="branch" d="M' + (500 + 1000 * c[0]).toFixed(3) + ' ' + (500 + 1000 * c[1]).toFixed(3) + 'C' + c.slice(2).map(function(v) { return (500 + 1000 * v).toFixed(3); }).join(' ') + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + kk + 'opacity:var(--k,1);"/>');
+        paths.push('<path data-cb="branch" data-key="' + _esc(_cbKid(flat[p])) + '→' + _esc(_cbKid(f)) + '" d="M' + (500 + 1000 * c[0]).toFixed(3) + ' ' + (500 + 1000 * c[1]).toFixed(3) + 'C' + c.slice(2).map(function(v) { return (500 + 1000 * v).toFixed(3); }).join(' ') + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + kk + 'opacity:var(--k,1);"/>');
       }
       if (f.kids.length) out += emit(f.kids);
       return out + '</li>';
@@ -2708,7 +2711,7 @@ _RENDERERS['org_chart'] = function(b) {
     if (depth > _OC_MAX_DEPTH) return out;
     nodes.forEach(function(n) {
       if (n.p === pid && n.id !== pid && out.length < _OC_MAX_KIDS) {
-        var f = { l: n.l, t: _ocText(n.l), depth: depth, par: par, kids: [] };
+        var f = { id: n.id || n.l, l: n.l, t: _ocText(n.l), depth: depth, par: par, kids: [] };
         flat.push(f); out.push(flat.length - 1);
         f.kids = build(n.id, depth + 1, flat.length - 1);
       }
@@ -2737,9 +2740,9 @@ function _ocRenderFlat(b, flat, top, note, mode, lmax) {
       return '<ul style="position:static;display:block;list-style:none;margin:0;padding:0;">' + ids.map(function(i) {
         var f = flat[i], k = _ifK(cnt, total), out;
         cnt++;
-        out = '<li style="position:static;padding:0;"><div data-cb="node" style="position:absolute;left:' + _tmPct(Math.max(0, box[i][0]), cw) + ';top:' + _tmPct(Math.max(0, box[i][1]), ch) + ';width:' + _tmPct(ws[i], cw) + ';height:' + nh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
+        out = '<li style="position:static;padding:0;"><div data-cb="node" data-key="' + _esc(_cbKid(f)) + '" style="position:absolute;left:' + _tmPct(Math.max(0, box[i][0]), cw) + ';top:' + _tmPct(Math.max(0, box[i][1]), ch) + ';width:' + _tmPct(ws[i], cw) + ';height:' + nh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
           + _ifCard('padding:2px 6px;' + (f.depth === 0 ? 'background:#E0E7FF;color:#1E1B4B;font-weight:700;' : '') + k + _IF_FADE) + '">' + _ifS(f.l, lmax) + '</div>';
-        if (link[i] !== undefined) paths.push('<path data-cb="branch" d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>');
+        if (link[i] !== undefined) paths.push('<path data-cb="branch" data-key="' + _esc(_cbKid(flat[flat[i].par])) + '→' + _esc(_cbKid(f)) + '" d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>');
         if (f.kids.length) out += emit(f.kids);
         return out + '</li>';
       }).join('') + '</ul>';
@@ -2925,7 +2928,7 @@ function _hgRenderRidge(b) {
       ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _esc(u[0]) + '</div>' +
       '<div class="hgrp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;border-bottom:1px solid var(--muted,#475569);">' +
       '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;bottom:0;width:100%;height:72px;display:block;overflow:visible;">' +
-      '<g class="hgrg" data-cb="bar" style="' + _ifK(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _esc(u[0] + ': ' + u[1].length + ' values') + '</title>' +
+      '<g class="hgrg" data-cb="bar" data-key="' + _esc(u[0]) + '" style="' + _ifK(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _esc(u[0] + ': ' + u[1].length + ' values') + '</title>' +
       '<path class="hgrb" d="' + path + '"/><path class="hgr" d="' + path + '"/></g></svg></div></div>';
   });
   var css = '<style>.ifhg .hgrb{fill:var(--bg,#fff)}' +
@@ -2956,7 +2959,7 @@ _RENDERERS['histogram'] = function(b) {
   var rects = '', grid = '', xs = _hgAxis(ev, X0, span, lab);
   for (i = 0; i < m; i++) {
     var x = span > 0 ? (edges[i][0] - X0) / span * 1000 : 0, w = span > 0 ? (edges[i][1] - edges[i][0]) / span * 1000 : 1000, h = top > 0 ? counts[i] / top * 1000 : 0;
-    rects += '<rect class="hgb" data-cb="bar" x="' + x.toFixed(2) + '" y="' + (1000 - h).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" style="' + _ifK(i, m) +
+    rects += '<rect class="hgb" data-cb="bar" data-key="' + _esc(lab[i] + ' to ' + lab[i + 1] + us) + '" x="' + x.toFixed(2) + '" y="' + (1000 - h).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" style="' + _ifK(i, m) +
       'transform:scaleY(var(--k,1));"><title>' + _esc(lab[i] + ' to ' + lab[i + 1] + us + ': ' + counts[i]) + '</title></rect>';
   }
   yt.forEach(function(t) {
@@ -3094,7 +3097,7 @@ _RENDERERS['box_plot'] = function(b) {
       '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
       ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(u[0]) + '</div>' +
       '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
-      '<div class="bpg" data-cb="node" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' + strip +
+      '<div class="bpg" data-cb="node" data-key="' + _esc(u[0]) + '" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' + strip +
       '<div class="bpw" style="position:absolute;left:' + pos(s.lo) + ';width:' + wid(s.lo, s.hi) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>' +
       '<div style="position:absolute;left:' + pos(s.lo) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>' +
       '<div style="position:absolute;left:' + pos(s.hi) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>' +
@@ -3169,7 +3172,7 @@ _RENDERERS['waterfall'] = function(b) {
       '<div class="wfl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569)' +
       ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _esc(labels[k]) + '</div>' +
       '<div class="wfp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid +
-      '<div class="wfg" data-cb="node" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
+      '<div class="wfg" data-cb="node" data-key="' + _esc(labels[k]) + '" style="position:absolute;inset:0;' + _ifK(k, n) + _IF_FADE + '">' +
       '<div class="wfb ' + kind + '" style="position:absolute;left:' + pos(Math.min(a, e)) + ';width:' + wid(Math.min(a, e), Math.max(a, e)) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;background:' + col + ';border-radius:2px;"></div>' +
       (k < n - 1 ? '<div class="wfc" style="position:absolute;left:' + pos(e) + ';top:78%;height:44%;border-left:1px dashed var(--muted,#475569);"></div>' : '') +
       '</div></div>' +

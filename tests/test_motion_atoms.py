@@ -67,7 +67,26 @@ def core_js():
     return [b for b in blocks if "a2ui-core" in b[:300]][0]
 
 
+_DATA_KEY = re.compile(r' data-key="[^"]*"')
+
+
+def _unkey(x):
+    """Contract v1.2 (I75) data-key attributes removed: layout tests read the markup they were written for; the keys
+    themselves are tested in test_build_contract_v12.py on the unstripped output (_py_keyed, _node_raw)."""
+    if isinstance(x, str):
+        return _DATA_KEY.sub("", x)
+    if isinstance(x, list):
+        return [_unkey(i) for i in x]
+    if isinstance(x, dict):
+        return {k: _unkey(v) for k, v in x.items()}
+    return x
+
+
 def _node(core_js: str, body: str):
+    return _unkey(_node_raw(core_js, body))
+
+
+def _node_raw(core_js: str, body: str):
     with tempfile.TemporaryDirectory() as td:
         d = Path(td) / "d.js"
         d.write_text("global.window = global;\n" + core_js + "\n" + body)
@@ -80,9 +99,13 @@ def _gas_batch(core_js: str, blocks: list[dict]) -> list[str]:
     return _node(core_js, f"var B = {json.dumps(blocks)}; console.log(JSON.stringify(B.map(function(b){{ return renderAtoms([b], {{}}); }})));")
 
 
-def _py(block: dict) -> str:
+def _py_keyed(block: dict) -> str:
     wa._mo_install()
     return wa._RENDERERS[block.get("component") or block["type"]](dict(block))
+
+
+def _py(block: dict) -> str:
+    return _unkey(_py_keyed(block))
 
 
 # ─── payloads ─────────────────────────────────────────────────────────────────

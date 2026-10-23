@@ -748,7 +748,7 @@ function _saChart(b, offset) {
     var pts = [];
     for (j = 0; j < m; j++) pts.push(X(j) + ',' + Y(ST.hi[i][j]));
     for (j = m - 1; j >= 0; j--) pts.push(X(j) + ',' + Y(ST.lo[i][j]));
-    polys += '<polygon data-cb="bar" points="' + pts.join(' ') + '" fill="' + ser[i].col + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="' + _ifK(i, ser.length) + 'opacity:var(--k,1);"/>';
+    polys += '<polygon data-cb="bar" data-key="' + _esc(ser[i].name) + '" points="' + pts.join(' ') + '" fill="' + ser[i].col + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="' + _ifK(i, ser.length) + 'opacity:var(--k,1);"/>';
   }
   var full = labels.slice(0, m).map(function(l) { return _saStr(l); }), lab = full.map(function(t) { return t.length > 14 ? t.slice(0, 13).replace(/\s+$/, '') + '\u2026' : t; });
   var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; }).concat([1]));

@@ -11868,7 +11868,7 @@ def _sa_chart(b, offset):
     polys = ''
     for i in range(len(ser)):
         pts = [X(j) + ',' + Y(HI[i][j]) for j in range(m)] + [X(j) + ',' + Y(LO[i][j]) for j in range(m - 1, -1, -1)]
-        polys += '<polygon data-cb="bar" points="' + ' '.join(pts) + '" fill="' + ser[i]['col'] + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="' + _if_k(i, len(ser)) + 'opacity:var(--k,1);"/>'
+        polys += '<polygon data-cb="bar" data-key="' + _cb_key(ser[i]['name']) + '" points="' + ' '.join(pts) + '" fill="' + ser[i]['col'] + '" fill-opacity="0.92" stroke="var(--bg,#fff)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="' + _if_k(i, len(ser)) + 'opacity:var(--k,1);"/>'
     full = [_sa_str(l) for l in labels[:m]]
     lab = [t[:13].rstrip() + '\u2026' if len(t) > 14 else t for t in full]
     maxlen = max([len(s) for s in lab] + [1])
@@ -31772,6 +31772,21 @@ _CB_CLS = re.compile(r' class="([^"]*)"')
 _CB_RULES = '<style>:where([data-cb-root]) .cb-fade{opacity:var(--k,1)}:where([data-cb-root]) .cb-grow{transform:scaleY(var(--k,1));transform-box:fill-box;transform-origin:50% 100%}</style>'
 
 
+def _cb_key(v):
+    """A contract v1.2 data-key value as the GAS twin's _esc(v) gives it: '' for null or undefined, else String(v), escaped."""
+    return '' if (v is None or v is _IF_UNDEF) else _cv_esc(_if_str(v))
+
+
+def _cb_kj(parts):
+    """A category-path key: JavaScript Array.join('/') (null and undefined become empty), attribute-escaped."""
+    return _cv_esc('/'.join('' if (x is None or x is _IF_UNDEF) else _if_str(x) for x in parts))
+
+
+def _cb_kid(f):
+    """A tree node's key: its id, or its label where the tree has no ids (decision_tree shares the org_chart drawer)."""
+    return f['id'] if 'id' in f else f['l']
+
+
 def _cb_pass(html):
     if ' data-cb="' not in html:
         return html
@@ -32342,7 +32357,7 @@ def _render_treemap(b: dict) -> str:
                 g = g if show else 0
                 gates.append(g)
                 hid.append(not show)
-                cells += ('<div data-cb="tile"' + ('' if show and not g else ' title="' + name + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + col + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:'
+                cells += ('<div data-cb="tile" data-key="' + _cb_kj(it['chain'] + [it['n']]) + '"' + ('' if show and not g else ' title="' + name + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + col + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:'
                           + ('6px 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sp['k'], len(items)) + 'opacity:var(--k,1);">' + _tm_label(show, g, cls, name) + '</div>')
         shown = ', '.join(t['n'] + ' ' + _if_fmt(sum(i['v'] for i in items if i['chain'][0] == t['n'])) for t in tops[:6])
         aria = ' role="img" aria-label="' + _if_s('Nested treemap of ' + str(len(items)) + ' items in ' + str(len(tops)) + ' top-level group' + ('' if len(tops) == 1 else 's') + ', area shows share of the total ' + _if_fmt(tot) + ': ' + shown + ('' if len(tops) <= 6 else ', and ' + str(len(tops) - 6) + ' more') + '.', 400) + '"'
@@ -32370,7 +32385,7 @@ def _render_treemap(b: dict) -> str:
                 g = g if show else 0
                 gates.append(g)
                 hid.append(not show)
-                cells += ('<div data-cb="tile"' + ('' if show and not g else ' title="' + name + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (('24px' if lead else '6px') + ' 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sum(len(g_) for g_ in groups[:ci]) + k, len(items)) + 'opacity:var(--k,1);">' + _tm_label(show, g, cls, name) + '</div>')
+                cells += ('<div data-cb="tile" data-key="' + _cb_key(_if_str(c) + '/' + _if_str(i['n'])) + '"' + ('' if show and not g else ' title="' + name + '"') + ' style="' + _tm_box(r) + 'box-sizing:border-box;border:1px solid transparent;background:' + _IF_CAT[ci] + ';background-clip:padding-box;color:#fff;border-radius:4px;padding:' + (('24px' if lead else '6px') + ' 8px 6px' if show else '0') + ';font-size:0.78rem;font-weight:700;overflow:hidden;' + _if_k(sum(len(g_) for g_ in groups[:ci]) + k, len(items)) + 'opacity:var(--k,1);">' + _tm_label(show, g, cls, name) + '</div>')
             if pill:
                 tags += ('<div' + pcls + ' style="position:absolute;left:' + _tm_pct(cr[ci][0], _TM_W) + ';top:' + _tm_pct(cr[ci][1], _TM_H) + ';max-width:' + _tm_pct(cr[ci][2] - cr[ci][0], _TM_W) + ';box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(15,23,42,0.6);color:#fff;border-radius:0 0 4px 0;padding:2px 6px;font-size:0.78rem;font-weight:700;">' + ptxt + '</div>')
     ws = sorted(set(g for g in gates if g))
@@ -32650,7 +32665,7 @@ def _render_sunburst(b: dict) -> str:
                     deg = th * 180 / math.pi - 90
                     if deg > 90:
                         deg -= 180
-                    labels += ('<div data-cb="label" class="sbl' + cls + '" style="position:absolute;left:' + _tm_pct(_SB_BOX / 2 + rm * math.sin(th), _SB_BOX) + ';top:' + _tm_pct(_SB_BOX / 2 - rm * math.cos(th), _SB_BOX)
+                    labels += ('<div data-cb="label" data-key="' + _cb_kj(sp['chain'] if nd['kids'] else sp['item']['chain'] + [sp['n']]) + '" class="sbl' + cls + '" style="position:absolute;left:' + _tm_pct(_SB_BOX / 2 + rm * math.sin(th), _SB_BOX) + ';top:' + _tm_pct(_SB_BOX / 2 - rm * math.cos(th), _SB_BOX)
                                + ';transform:translate(-50%,-50%) rotate(' + _if_fixed(deg, 2) + 'deg);width:max-content;max-width:calc(' + _tm_pct(t, _SB_BOX)[:-1] + 'cqw - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;'
                                + 'text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _if_s(sp['n'], 24) + '</div>')
         else:
@@ -32660,7 +32675,7 @@ def _render_sunburst(b: dict) -> str:
             cls, g = _sb_cls(wm)
             g = g if show else 0
             ws.append(g)
-            cells += ('<div data-cb="tile" title="' + title + '" style="' + _sb_box(left, x0, w, hh) + 'box-sizing:border-box;border:1px solid transparent;background:' + fill + ';background-clip:padding-box;border-radius:3px;color:' + ink
+            cells += ('<div data-cb="tile" data-key="' + _cb_kj(sp['chain'] if nd['kids'] else sp['item']['chain'] + [sp['n']]) + '" title="' + title + '" style="' + _sb_box(left, x0, w, hh) + 'box-sizing:border-box;border:1px solid transparent;background:' + fill + ';background-clip:padding-box;border-radius:3px;color:' + ink
                       + ';padding:1px 5px 0;font-size:12px;line-height:17px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;' + kk + 'opacity:var(--k,1);">'
                       + (('<span class="' + cls.strip() + '">' + _if_s(sp['n'], 24) + '</span>' if g else _if_s(sp['n'], 24)) if show else '') + '</div>')
     top = nodes[0]['kids'][0]
@@ -32678,7 +32693,7 @@ def _render_sunburst(b: dict) -> str:
             centre = ('<div class="sbc' + cls + '" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;">'
                       '<div style="font-weight:700;">' + _if_s(f(tot), 40) + '</div><div style="color:' + _IF_MUTED + ';">total</div></div>')
         svg = ('<svg viewBox="-302 -302 604 604" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
-               + ''.join('<g class="sbr" data-cb="arc" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
+               + ''.join('<g class="sbr" data-cb="arc" data-key="ring-' + str(i + 1) + '" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
         body, boxcss = svg + labels + centre, 'position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;'
         cap = 'Angle shows share of the total; each ring out is one level deeper.'
     else:
@@ -33046,7 +33061,7 @@ def _render_circle_pack(b: dict) -> str:
             if wm <= 640:
                 cls, g = _cp_gate(wm)
                 ws.append(g)
-                glabs += ('<div data-cb="label" class="cpg' + cls + '" style="position:absolute;left:' + left + ';top:calc(' + _tm_pct(y - r + 2, M) + ' + 18px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tm_pct(0.8 * r, M)[:-1]
+                glabs += ('<div data-cb="label" data-key="' + _cb_kj(sp['chain']) + '" class="cpg' + cls + '" style="position:absolute;left:' + left + ';top:calc(' + _tm_pct(y - r + 2, M) + ' + 18px);transform:translate(-50%,-50%);width:max-content;max-width:min(calc(' + _tm_pct(0.8 * r, M)[:-1]
                           + 'cqw - 4px),100px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:12px;line-height:14px;font-weight:700;color:var(--text,#0F172A);'
                           'text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff),0 0 2px var(--bg,#fff);pointer-events:none;' + kk + 'opacity:var(--k,1);">' + _if_s(sp['n'], 24) + '</div>')
         else:
@@ -33069,13 +33084,13 @@ def _render_circle_pack(b: dict) -> str:
                     cv, gv = _cp_gate(wv)
                     ws.append(gv)
                     vline = '<div class="cpv' + cv + '" style="opacity:0.85;">' + _if_s(vt, 40) + '</div>'
-                llabs += ('<div data-cb="label" class="cpl' + cn + '" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tm_pct(1.4 * r, M)[:-1]
+                llabs += ('<div data-cb="label" data-key="' + _cb_kj(sp['item']['chain'] + [sp['n']]) + '" class="cpl' + cn + '" style="position:absolute;left:' + left + ';top:' + top + ';transform:translate(-50%,-50%);width:max-content;max-width:calc(' + _tm_pct(1.4 * r, M)[:-1]
                           + 'cqw - 4px);text-align:center;font-size:12px;line-height:14px;font-weight:600;color:' + ink + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">'
                           '<div class="cpn" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">' + _if_s(sp['n'], 24) + '</div>' + vline + '</div>')
     aria = ('Circle packing of ' + str(len(items)) + ' items in ' + str(len(tops)) + ' top-level group' + ('' if len(tops) == 1 else 's') + ', total ' + f(tot) + '. Largest item: '
             + big['src']['n'] + ', ' + f(big['value']) + ', ' + _if_fixed(big['value'] / tot * 100, 1) + '% of the total.')
     svg = ('<svg viewBox="-2 -2 ' + str(M) + ' ' + str(M) + '" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
-           + ''.join('<g class="cpr" data-cb="arc" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
+           + ''.join('<g class="cpr" data-cb="arc" data-key="ring-' + str(i + 1) + '" style="' + _if_k(i, height) + 'opacity:var(--k,1);">' + g + '</g>' for i, g in enumerate(rings)) + '</svg>')
     uw = sorted(set(w for w in ws if w))
     css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
     return _if_wrap(_if_title(b) + '<div role="img" aria-label="' + _if_s(aria, 400) + '" style="position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;container-type:inline-size;overflow:hidden;">'
@@ -33131,7 +33146,7 @@ def _render_arc_diagram(b: dict) -> str:
                 and isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf') and v > 0):
             dropped += 1
             continue
-        links.append({'s': ids[s[:40]], 't': ids[t[:40]], 'v': min(v, 1e12)})
+        links.append({'s': ids[s[:40]], 't': ids[t[:40]], 'v': min(v, 1e12), 'sid': s[:40], 'tid': t[:40]})
     lbeyond = len(ll) - _AD_MAXL
     for k in links:
         nodes[k['s']]['deg'] += 1
@@ -33178,13 +33193,13 @@ def _render_arc_diagram(b: dict) -> str:
         lo, hi = min(xs[k['s']], xs[k['t']]), max(xs[k['s']], xs[k['t']])
         w = 2.0 if vmin == vmax else 1 + 5 * (k['v'] - vmin) / (vmax - vmin)
         rr = _if_fixed((hi - lo) / 2, 2)
-        arcs += ('<path class="ada" d="M' + _if_fixed(lo, 2) + ',' + _if_fixed(base, 2) + 'A' + rr + ',' + rr + ',0,0,1,' + _if_fixed(hi, 2) + ',' + _if_fixed(base, 2) + '" fill="none" stroke="' + nodes[k['s']]['c']
+        arcs += ('<path class="ada" data-key="' + _cb_key(k['sid'] + '→' + k['tid']) + '" d="M' + _if_fixed(lo, 2) + ',' + _if_fixed(base, 2) + 'A' + rr + ',' + rr + ',0,0,1,' + _if_fixed(hi, 2) + ',' + _if_fixed(base, 2) + '" fill="none" stroke="' + nodes[k['s']]['c']
                  + '" stroke-width="' + _if_fixed(w, 2) + '" stroke-opacity="0.6" stroke-linecap="round" vector-effect="non-scaling-stroke"><title>' + _if_s(nodes[k['s']]['l'], 24) + ' to ' + _if_s(nodes[k['t']]['l'], 24)
                  + ': ' + _cv_esc(f(k['v'])) + '</title></path>')
     dots = ''
     for i in idx:
         nd = nodes[i]
-        dots += ('<circle class="adn" cx="' + _if_fixed(xs[i], 2) + '" cy="' + _if_fixed(base, 2) + '" r="' + dr + '" fill="' + nd['c'] + '"><title>' + _if_s(nd['l'], 24) + (' (' + _if_s(nd['g'], 20) + ')' if nd['g'] else '')
+        dots += ('<circle class="adn" data-key="' + _cb_key(nd['id']) + '" cx="' + _if_fixed(xs[i], 2) + '" cy="' + _if_fixed(base, 2) + '" r="' + dr + '" fill="' + nd['c'] + '"><title>' + _if_s(nd['l'], 24) + (' (' + _if_s(nd['g'], 20) + ')' if nd['g'] else '')
                  + ': ' + plural(nd['deg'], 'link', 'links') + '</title></circle>')
     maxc = max(_oc_chars(nd['l']) for nd in nodes)
     lh = int(math.ceil(maxc * _CP_K)) + 8
@@ -33194,7 +33209,7 @@ def _render_arc_diagram(b: dict) -> str:
         wm = 0 if pos == 0 else _cp_q(_AD_STEP * n / 2 ** lvl + 16)
         wm = wm if wm > _AD_MINW else 0
         ws.append(wm)
-        labs += ('<div data-cb="label" class="adl' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;left:' + _tm_pct(xs[i], _AD_W) + ';top:0;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;max-height:' + str(lh)
+        labs += ('<div data-cb="label" data-key="' + _cb_key(nodes[i]['id']) + '" class="adl' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;left:' + _tm_pct(xs[i], _AD_W) + ';top:0;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;max-height:' + str(lh)
                  + 'px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _if_k(1, 2) + 'opacity:var(--k,1);">' + _if_s(nodes[i]['l'], 24) + '</div>')
     uw = sorted(set(w for w in ws if w))
     css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
@@ -33205,7 +33220,7 @@ def _render_arc_diagram(b: dict) -> str:
     aria = 'Arc diagram of ' + str(n) + ' nodes and ' + plural(len(links), 'link', 'links') + '.' + (' Most connected: ' + top['l'] + ', ' + plural(top['deg'], 'link', 'links') + '.' if links else '')
     svg = ('<svg viewBox="0 0 ' + str(_AD_W) + ' ' + _if_fixed(base + 14, 2) + '" width="100%" style="display:block;height:auto;" aria-hidden="true" focusable="false">'
            '<line x1="0" y1="' + _if_fixed(base, 2) + '" x2="' + str(_AD_W) + '" y2="' + _if_fixed(base, 2) + '" style="stroke:var(--border,#CBD5E1);" stroke-width="1" vector-effect="non-scaling-stroke"/>'
-           '<g class="adr" data-cb="link" style="' + _if_k(0, 2) + 'opacity:var(--k,1);">' + arcs + '</g><g class="adr" data-cb="node" style="' + _if_k(1, 2) + 'opacity:var(--k,1);">' + dots + '</g></svg>')
+           '<g class="adr" data-cb="link" data-key="links" style="' + _if_k(0, 2) + 'opacity:var(--k,1);">' + arcs + '</g><g class="adr" data-cb="node" data-key="nodes" style="' + _if_k(1, 2) + 'opacity:var(--k,1);">' + dots + '</g></svg>')
     legend = ''
     if groups:
         ent = [(g, _SB_PALETTE[j % 8]) for j, g in enumerate(groups)] + ([('No group', _AD_NONE)] if any(not nd['g'] for nd in nodes) else [])
@@ -33694,7 +33709,7 @@ def _render_contour_plot(b: dict) -> str:
     bands = ''
     for i, (v, polys) in enumerate(levels):
         rng = lab[i] + (' to ' + lab[i + 1] + us if i + 1 < m else us + ' and above')
-        bands += ('<path class="cnb" data-cb="arc" d="' + _cn_path(polys, sx, sy) + '" fill="' + cols[i] + '" stroke="' + _cn_line(cols[i]) + '" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" '
+        bands += ('<path class="cnb" data-cb="arc" data-key="' + _cb_key(rng) + '" d="' + _cn_path(polys, sx, sy) + '" fill="' + cols[i] + '" stroke="' + _cn_line(cols[i]) + '" stroke-width="1" stroke-linejoin="round" fill-rule="evenodd" '
                   'vector-effect="non-scaling-stroke" style="' + _if_k(i, m) + 'opacity:var(--k,1);"><title>' + _cv_esc(rng) + '</title></path>')
     if dots:
         bands += '<path class="cnp" d="' + dots + '" fill="none" style="stroke:var(--text,#0F172A);" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
@@ -35149,11 +35164,11 @@ def _render_voronoi(b: dict) -> str:
                 if wm <= _VO_MAXWM:
                     wm = wm if wm > _CP_MINW else 0
                     wms.append(wm)
-                    labs += ('<div data-cb="label" class="vol' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;left:' + _tm_pct(cx, W) + ';top:' + _tm_pct(cy, H)
+                    labs += ('<div data-cb="label" data-key="' + _cb_key(name(i)) + '" class="vol' + (' tmw' + str(wm) if wm else '') + '" style="position:absolute;left:' + _tm_pct(cx, W) + ';top:' + _tm_pct(cy, H)
                              + ';transform:translate(-50%,7px);white-space:nowrap;font-size:12px;line-height:14px;color:var(--text,#0F172A);pointer-events:none;' + _if_k(i, n) + 'opacity:var(--k,1);">' + _cv_esc(s['l']) + '</div>')
         else:
             tip += 'no region of its own'
-        cellsvg += ('<g class="vog" data-cb="node" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + path + '<path class="vod" d="M' + _cn_r(cx) + ',' + _cn_r(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="9" vector-effect="non-scaling-stroke" style="stroke:var(--surface,#F8FAFC);"/>'
+        cellsvg += ('<g class="vog" data-cb="node" data-key="' + _cb_key(name(i)) + '" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + path + '<path class="vod" d="M' + _cn_r(cx) + ',' + _cn_r(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="9" vector-effect="non-scaling-stroke" style="stroke:var(--surface,#F8FAFC);"/>'
                     '<path class="vod" d="M' + _cn_r(cx) + ',' + _cn_r(cy) + 'h0" fill="none" stroke-linecap="round" stroke-width="6" vector-effect="non-scaling-stroke" stroke="' + s['c'] + '"/><title>' + _cv_esc(tip) + '</title></g>')
     svg = ('<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" width="100%" style="display:block;height:auto;overflow:hidden;" aria-hidden="true" focusable="false">'
            '<rect x="0" y="0" width="' + str(W) + '" height="' + str(H) + '" style="fill:var(--surface,#F8FAFC);"/>' + cellsvg
@@ -35374,7 +35389,7 @@ def _render_chord_diagram(b: dict) -> str:
             title = _if_s(names[s], 20) + ' → ' + _if_s(names[t], 20) + ': ' + _cv_esc(f(row[3]))
         else:
             title = _if_s(names[s], 20) + ' → ' + _if_s(names[t], 20) + ': ' + _cv_esc(f(row[3])) + ' (' + _if_s(names[t], 20) + ' → ' + _if_s(names[s], 20) + ': ' + _cv_esc(f(row[7])) + ')'
-        ribs[s] += ('<path class="chd" d="' + _ch_ribbon(row, _CH_RR, _CH_RPAD, directed) + '" fill="' + col[s] + '" fill-opacity="0.55" stroke="' + col[s]
+        ribs[s] += ('<path class="chd" data-key="' + _cb_key(_if_s(names[s], 20) + '→' + _if_s(names[t], 20)) + '" d="' + _ch_ribbon(row, _CH_RR, _CH_RPAD, directed) + '" fill="' + col[s] + '" fill-opacity="0.55" stroke="' + col[s]
                     + '" stroke-width="0.6"><title>' + title + '</title></path>')
     arcs, labels, legend = '', '', ''
     drawn = [g for g in groups if g[2] > g[1]]
@@ -35395,7 +35410,7 @@ def _render_chord_diagram(b: dict) -> str:
         legend += '<span class="chs" style="white-space:nowrap;"><span aria-hidden="true" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + col[i] + ';margin-right:5px;"></span>' + nm + '</span>'
         if not g[2] > g[1]:
             continue
-        arcs += ('<g class="chg" data-cb="arc" style="' + kk + 'opacity:var(--k,1);"><path class="cha" d="' + _sb_arc(g[1], g[2], _CH_IN, _CH_OUT, 0, None) + '" fill="' + col[i] + '"><title>' + nm + ': sends '
+        arcs += ('<g class="chg" data-cb="arc" data-key="' + _cb_key(nm) + '" style="' + kk + 'opacity:var(--k,1);"><path class="cha" d="' + _sb_arc(g[1], g[2], _CH_IN, _CH_OUT, 0, None) + '" fill="' + col[i] + '"><title>' + nm + ': sends '
                  + _cv_esc(f(out_t[i])) + ', receives ' + _cv_esc(f(in_t[i])) + '</title></path></g>')
         wm = need[i]
         if wm > _CH_MAXW:
@@ -35410,13 +35425,13 @@ def _render_chord_diagram(b: dict) -> str:
             anchor, align = 'left:' + _tm_pct(_CH_BOX / 2 + x, _CH_BOX) + ';' + ty + 'transform-origin:0 7px;', 'left'
         else:                                                                  # left half: ends at the ring (right-aligned), turned so it is never upside down
             anchor, align = 'right:' + _tm_pct(_CH_BOX / 2 - x, _CH_BOX) + ';' + ty + 'transform-origin:100% 7px;', 'right'
-        labels += ('<div data-cb="label" class="chl' + cls + '" style="position:absolute;' + anchor + 'margin-top:-7px;transform:rotate(' + _if_fixed(deg, 2) + 'deg);width:max-content;max-width:calc('
+        labels += ('<div data-cb="label" data-key="' + _cb_key(nm) + '" class="chl' + cls + '" style="position:absolute;' + anchor + 'margin-top:-7px;transform:rotate(' + _if_fixed(deg, 2) + 'deg);width:max-content;max-width:calc('
                    + _tm_pct(_CH_BOX / 2 - _CH_LAB, _CH_BOX)[:-1] + 'cqw - 4px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:' + align
                    + ';font-size:12px;line-height:14px;font-weight:600;color:' + col[i] + ';pointer-events:none;' + kk + 'opacity:var(--k,1);">' + nm + '</div>')
     big = names[best[0]], names[best[1]]
     aria = ('Directed chord diagram' if directed else 'Chord diagram') + ' of ' + str(n) + ' groups, total flow ' + f(total) + '. Largest flow: ' + big[0] + ' to ' + big[1] + ', ' + f(mat[best[0]][best[1]]) + '.'
     svg = ('<svg viewBox="-300 -300 600 600" width="100%" height="100%" style="display:block;" aria-hidden="true" focusable="false">'
-           + ''.join('<g class="chk" data-cb="ribbon" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + r + '</g>' for i, r in enumerate(ribs)) + arcs + '</svg>')
+           + ''.join('<g class="chk" data-cb="ribbon" data-key="' + _cb_key(names[i]) + '" style="' + _if_k(i, n) + 'opacity:var(--k,1);">' + r + '</g>' for i, r in enumerate(ribs)) + arcs + '</svg>')
     uw = sorted(set(w for w in ws if w))
     css = '<style>' + ''.join('@container (width<' + str(w) + 'px){.tmw' + str(w) + '{display:none}}' for w in uw) + '</style>' if uw else ''
     cap = ('Each ribbon is an arrow from the group that sends the flow to the group that receives it; its width shows the amount. A group\'s arc covers what it sends and what it receives.' if directed
@@ -35477,7 +35492,7 @@ def _render_venn_diagram3(b: dict) -> str:
     swatch = lambda i: '<span style="flex:0 0 auto;width:10px;height:10px;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';background:' + _VD_COL[i] + ';opacity:0.6;box-sizing:border-box;"></span>'
     nm = lambda i, extra_style='': ('<div style="display:flex;align-items:center;gap:6px;min-width:0;font-weight:700;font-size:13px;line-height:16px;' + extra_style + '">' + swatch(i)
                                     + '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _if_s(names[i], 28) + '</span></div>')
-    circ = ''.join('<div class="v3o" data-cb="node" style="position:absolute;left:' + l + '%;top:' + t + '%;width:66.667%;aspect-ratio:1;box-sizing:border-box;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';opacity:var(--k,1);' + _if_k(i, 10)
+    circ = ''.join('<div class="v3o" data-cb="node" data-key="' + _cb_key(names[i]) + '" style="position:absolute;left:' + l + '%;top:' + t + '%;width:66.667%;aspect-ratio:1;box-sizing:border-box;border-radius:50%;border:2px solid ' + _VD_COL[i] + ';opacity:var(--k,1);' + _if_k(i, 10)
                    + '"><div style="position:absolute;inset:0;border-radius:50%;background:' + _VD_COL[i] + ';opacity:0.16;"></div></div>' for i, (l, t) in enumerate((('0', '0'), ('33.333', '0'), ('16.667', '30.218'))))
     boxes = ''
     for i, r in enumerate(_VD_REGIONS):
@@ -35487,7 +35502,7 @@ def _render_venn_diagram3(b: dict) -> str:
         if len(its) > lim:
             lines += '<div class="v3i" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-style:italic;color:' + _IF_MUTED + ';">+' + str(len(its) - len(shown)) + ' more</div>'
         if lines:
-            boxes += '<div class="v3t v3' + r[0] + '" data-cb="label" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _if_k(3 + i, 10) + '">' + lines + '</div>'
+            boxes += '<div class="v3t v3' + r[0] + '" data-cb="label" data-key="' + _cb_key(labels[i]) + '" data-r="' + r[0] + '" style="position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px;line-height:14px;opacity:var(--k,1);' + _if_k(3 + i, 10) + '">' + lines + '</div>'
     aria = 'Venn diagram of three sets: ' + names[0] + ', ' + names[1] + ' and ' + names[2] + '. ' + ''.join(labels[i] + ': ' + str(len(items[i])) + (' item. ' if len(items[i]) == 1 else ' items. ') for i in range(7)).rstrip() + ' The circles are not drawn to scale. Every item is in the table.'
     rows = ''.join('<tr><th scope="row">' + _if_s(labels[i], 90) + '</th><td>' + ('; '.join(_if_s(x, 60) for x in items[i]) if items[i] else 'none') + '</td></tr>' for i in range(7))
     note = (_hg_note(str(bad) + (' entry was' if bad == 1 else ' entries were') + ' not text or a number and ' + ('was' if bad == 1 else 'were') + ' skipped.') if bad else '') \
@@ -35508,7 +35523,7 @@ def _render_venn_diagram(b: dict) -> str:
     c = 'position:absolute;top:34px;width:56%;aspect-ratio:1;border-radius:50%;border:' + _IF_BORDER + ';opacity:calc(0.55 + 0.45*var(--k,1));'
     return _if_wrap(_if_title(b) + '<div style="position:relative;max-width:640px;margin:0 auto;aspect-ratio:1.5;font-size:0.82rem;">'
                     + '<div style="position:absolute;left:4%;top:0;font-weight:700;">' + _if_s(_if_g(b, 'set_a_name'), 28) + '</div><div style="position:absolute;right:4%;top:0;font-weight:700;text-align:right;">' + _if_s(_if_g(b, 'set_b_name'), 28) + '</div>'
-                    + '<div data-cb="node" style="' + c + 'left:4%;background:#BFDBFE;' + _if_k(0, 2) + '"></div><div data-cb="node" style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _if_k(1, 2) + '"></div>'
+                    + '<div data-cb="node" data-key="' + _cb_key(_vd_trim(_vd_raw(_if_g(b, 'set_a_name'), 60)) or 'Set A') + '" style="' + c + 'left:4%;background:#BFDBFE;' + _if_k(0, 2) + '"></div><div data-cb="node" data-key="' + _cb_key(_vd_trim(_vd_raw(_if_g(b, 'set_b_name'), 60)) or 'Set B') + '" style="' + c + 'right:4%;background:#FDE68A;mix-blend-mode:multiply;' + _if_k(1, 2) + '"></div>'
                     + '<div style="position:absolute;left:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_a_exclusive')) + '</div>'
                     + '<div style="position:absolute;left:38%;top:48%;width:24%;transform:translateY(-50%);text-align:center;">' + lst(_if_g(b, 'intersection')) + '</div>'
                     + '<div style="position:absolute;right:10%;top:48%;width:24%;transform:translateY(-50%);">' + lst(_if_g(b, 'set_b_exclusive')) + '</div></div>' + _hg_version_note(b, 'venn_diagram'))
@@ -35951,15 +35966,15 @@ def _oc_render_radial(b, flat, kids, top, root, virt, note):
             deg = lab_x[i] * 180 / math.pi - 90
             flip = ux[i] < -1e-9
             tf = ('rotate(' + _if_fixed(deg - 180, 2) + 'deg) translate(calc(-100% - ' + str(_OC_RAD_PAD) + 'px),-50%)') if flip else ('rotate(' + _if_fixed(deg, 2) + 'deg) translate(' + str(_OC_RAD_PAD) + 'px,-50%)')
-            out += ('<li style="position:static;padding:0;"><div aria-hidden="true" data-cb="node" style="position:absolute;left:' + left + ';top:' + topp + ';width:' + str(2 * dr) + 'px;height:' + str(2 * dr) + 'px;margin:-' + str(dr) + 'px 0 0 -' + str(dr) + 'px;box-sizing:border-box;border-radius:50%;'
+            out += ('<li style="position:static;padding:0;"><div aria-hidden="true" data-cb="node" data-key="' + _cb_key(_cb_kid(f)) + '" style="position:absolute;left:' + left + ';top:' + topp + ';width:' + str(2 * dr) + 'px;height:' + str(2 * dr) + 'px;margin:-' + str(dr) + 'px 0 0 -' + str(dr) + 'px;box-sizing:border-box;border-radius:50%;'
                     + ('background:#E0E7FF;border:2px solid #1E1B4B;' if isroot else 'background:var(--surface,#F8FAFC);border:2px solid #64748B;') + k + 'opacity:var(--k,1);"></div>'
-                    + '<div data-cb="label" class="ocr-l"' + (' title="' + _if_s(f['l'], 28) + '"' if nat[i] > Lb[i] else '') + ' style="position:absolute;left:' + left + ';top:' + topp + ';width:max-content;max-width:var(--la);height:' + str(_OC_RAD_TH) + 'px;--la:' + str(La[i]) + 'px;--lb:' + str(Lb[i]) + 'px;transform-origin:0 0;transform:' + tf
+                    + '<div data-cb="label" data-key="' + _cb_key(_cb_kid(f)) + '" class="ocr-l"' + (' title="' + _if_s(f['l'], 28) + '"' if nat[i] > Lb[i] else '') + ' style="position:absolute;left:' + left + ';top:' + topp + ';width:max-content;max-width:var(--la);height:' + str(_OC_RAD_TH) + 'px;--la:' + str(La[i]) + 'px;--lb:' + str(Lb[i]) + 'px;transform-origin:0 0;transform:' + tf
                     + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:' + str(_OC_RAD_TH) + 'px;color:var(--text,#0F172A);' + ('font-weight:700;' if isroot else '')
                     + 'text-shadow:0 0 2px var(--bg,#fff),0 0 2px var(--bg,#fff),0 0 3px var(--bg,#fff);' + k + 'opacity:var(--k,1);">' + _if_s(f['l'], 28) + '</div>')
             if f['par'] >= 0:
                 p = f['par']
                 c = _oc_link_radial(ang[p], rad[p], ang[i], rad[i])
-                paths_l.append('<path data-cb="branch" d="M' + _if_fixed(500 + 1000 * c[0], 3) + ' ' + _if_fixed(500 + 1000 * c[1], 3) + 'C' + ' '.join(_if_fixed(500 + 1000 * v, 3) for v in c[2:]) + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
+                paths_l.append('<path data-cb="branch" data-key="' + _cb_key(_cb_kid(flat[p])) + '→' + _cb_key(_cb_kid(f)) + '" d="M' + _if_fixed(500 + 1000 * c[0], 3) + ' ' + _if_fixed(500 + 1000 * c[1], 3) + 'C' + ' '.join(_if_fixed(500 + 1000 * v, 3) for v in c[2:]) + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
             if f['kids']:
                 out += emit(f['kids'])
             out += '</li>'
@@ -35986,7 +36001,7 @@ def _render_org_chart(b: dict) -> str:
             return out
         for n in nodes:
             if n['p'] == pid and n['id'] != pid and len(out) < _OC_MAX_KIDS:
-                f = {'l': n['l'], 't': _oc_text(n['l']), 'depth': depth, 'par': par, 'kids': []}
+                f = {'id': n['id'] or n['l'], 'l': n['l'], 't': _oc_text(n['l']), 'depth': depth, 'par': par, 'kids': []}
                 flat.append(f)
                 out.append(len(flat) - 1)
                 f['kids'] = build(n['id'], depth + 1, len(flat) - 1)
@@ -36038,10 +36053,10 @@ def _oc_render_flat(b, flat, top, note, mode, lmax):
                 f = flat[i]
                 k = _if_k(cnt[0], total)
                 cnt[0] += 1
-                out += ('<li style="position:static;padding:0;"><div data-cb="node" style="position:absolute;left:' + _tm_pct(max(0, box[i][0]), cw) + ';top:' + _tm_pct(max(0, box[i][1]), ch) + ';width:' + _tm_pct(ws[i], cw) + ';height:' + str(nh) + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
+                out += ('<li style="position:static;padding:0;"><div data-cb="node" data-key="' + _cb_key(_cb_kid(f)) + '" style="position:absolute;left:' + _tm_pct(max(0, box[i][0]), cw) + ';top:' + _tm_pct(max(0, box[i][1]), ch) + ';width:' + _tm_pct(ws[i], cw) + ';height:' + str(nh) + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;line-height:1.25;'
                         + _if_card('padding:2px 6px;' + ('background:#E0E7FF;color:#1E1B4B;font-weight:700;' if f['depth'] == 0 else '') + k + _IF_FADE) + '">' + _if_s(f['l'], lmax) + '</div>')
                 if link[i] is not None:
-                    paths_l.append('<path data-cb="branch" d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
+                    paths_l.append('<path data-cb="branch" data-key="' + _cb_key(_cb_kid(flat[flat[i]['par']])) + '→' + _cb_key(_cb_kid(f)) + '" d="' + link[i] + '" fill="none" stroke="#64748B" stroke-width="2" vector-effect="non-scaling-stroke" style="' + k + 'opacity:var(--k,1);"/>')
                 if f['kids']:
                     out += emit(f['kids'])
                 out += '</li>'
@@ -36363,7 +36378,7 @@ def _render_histogram_ridge(b: dict) -> str:
                  + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _cv_esc(nm) + '</div>'
                  '<div class="hgrp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;border-bottom:1px solid var(--muted,#475569);">'
                  '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;bottom:0;width:100%;height:72px;display:block;overflow:visible;">'
-                 '<g class="hgrg" data-cb="bar" style="' + _if_k(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(nm + ': ' + str(len(v)) + ' values') + '</title>'
+                 '<g class="hgrg" data-cb="bar" data-key="' + _cb_key(nm) + '" style="' + _if_k(k, n) + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(nm + ': ' + str(len(v)) + ' values') + '</title>'
                  '<path class="hgrb" d="' + path + '"/><path class="hgr" d="' + path + '"/></g></svg></div></div>')
     css = ('<style>.ifhg .hgrb{fill:var(--bg,#fff)}'
            '.ifhg .hgr{fill:var(--accent,#0369A1);fill-opacity:0.35;stroke:var(--accent,#0369A1);stroke-width:1.5px;vector-effect:non-scaling-stroke;stroke-linejoin:round}'
@@ -36411,7 +36426,7 @@ def _render_histogram(b: dict) -> str:
         x = (edges[i][0] - X0) / span * 1000 if span > 0 else 0.0
         w = (edges[i][1] - edges[i][0]) / span * 1000 if span > 0 else 1000.0
         h = counts[i] / top * 1000 if top > 0 else 0.0
-        rects += ('<rect class="hgb" data-cb="bar" x="' + _if_fixed(x, 2) + '" y="' + _if_fixed(1000 - h, 2) + '" width="' + _if_fixed(w, 2) + '" height="' + _if_fixed(h, 2) + '" style="' + _if_k(i, m)
+        rects += ('<rect class="hgb" data-cb="bar" data-key="' + _cb_key(lab[i] + ' to ' + lab[i + 1] + (' ' + unit if unit else '')) + '" x="' + _if_fixed(x, 2) + '" y="' + _if_fixed(1000 - h, 2) + '" width="' + _if_fixed(w, 2) + '" height="' + _if_fixed(h, 2) + '" style="' + _if_k(i, m)
                   + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(lab[i] + ' to ' + lab[i + 1] + (' ' + unit if unit else '') + ': ' + str(counts[i])) + '</title></rect>')
     grid = ''
     for t in yt:
@@ -36626,7 +36641,7 @@ def _render_box_plot(b: dict) -> str:
                  '<div class="bpl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
                  + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(nm) + '</div>'
                  '<div class="bpp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
-                 + '<div class="bpg" data-cb="node" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">' + strip
+                 + '<div class="bpg" data-cb="node" data-key="' + _cb_key(nm) + '" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">' + strip
                  + '<div class="bpw" style="position:absolute;left:' + pos(s['lo']) + ';width:' + wid(s['lo'], s['hi']) + ';top:50%;border-top:1.5px solid var(--muted,#475569);"></div>'
                  '<div style="position:absolute;left:' + pos(s['lo']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);"></div>'
                  '<div style="position:absolute;left:' + pos(s['hi']) + ';top:32%;height:36%;border-left:1.5px solid var(--muted,#475569);transform:translateX(-1.5px);"></div>'
@@ -36731,7 +36746,7 @@ def _render_waterfall(b: dict) -> str:
                  '<div class="wfl" style="flex:0 0 ' + _HG_LABW + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
                  + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">' + _cv_esc(labels[k]) + '</div>'
                  '<div class="wfp" style="position:relative;flex:1 1 auto;min-width:0;height:100%;">' + grid
-                 + '<div class="wfg" data-cb="node" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
+                 + '<div class="wfg" data-cb="node" data-key="' + _cb_key(labels[k]) + '" style="position:absolute;inset:0;' + _if_k(k, n) + _IF_FADE + '">'
                  '<div class="wfb ' + kind + '" style="position:absolute;left:' + pos(min(a, e)) + ';width:' + wid(min(a, e), max(a, e)) + ';top:22%;height:56%;min-width:2px;box-sizing:border-box;background:' + col + ';border-radius:2px;"></div>'
                  + ('<div class="wfc" style="position:absolute;left:' + pos(e) + ';top:78%;height:44%;border-left:1px dashed var(--muted,#475569);"></div>' if k < n - 1 else '')
                  + '</div></div>'
