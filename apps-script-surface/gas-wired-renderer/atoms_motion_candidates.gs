@@ -516,6 +516,11 @@ function _jpEq(a, b) {
   return typeof a === typeof b && a === b;
 }
 
+function _jpSet(obj, k, v) {
+  // an own member whatever its name: par[k] = v with k "__proto__" would change the object's prototype (Python keeps it a member)
+  Object.defineProperty(obj, k, {value: v, writable: true, enumerable: true, configurable: true});
+}
+
 function _jpAdd(root, segs, val) {
   if (!segs.length) {
     root[0] = val;
@@ -525,7 +530,7 @@ function _jpAdd(root, segs, val) {
   if (Array.isArray(par)) {
     par.splice(_jpIdx(par, last, true), 0, val);
   } else if (par && typeof par === 'object') {
-    par[last] = val;
+    _jpSet(par, last, val);
   } else {
     throw _jpError('cannot add to a non-container at /' + segs.join('/'));
   }
@@ -591,7 +596,7 @@ function _jpApply(doc, ops, hook, inplace) {
         if (Array.isArray(par)) {
           par[_jpIdx(par, last, false)] = nVal;
         } else {
-          par[last] = nVal;
+          _jpSet(par, last, nVal);
         }
       }
       if (hook) hook('replace', old, nVal);

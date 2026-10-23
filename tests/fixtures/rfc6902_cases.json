@@ -628,6 +628,31 @@
     "c": 3
    },
    "source": "RFC 6902 section 4 / RFC 6901"
+  },
+  {
+   "id": "proto-member",
+   "doc": {},
+   "patch": [
+    {
+     "op": "add",
+     "path": "/__proto__",
+     "value": {
+      "x": 1
+     }
+    },
+    {
+     "op": "add",
+     "path": "/__proto__/y",
+     "value": 2
+    }
+   ],
+   "expected": {
+    "__proto__": {
+     "x": 1,
+     "y": 2
+    }
+   },
+   "source": "RFC 6902 section 4.1: any member name; in JavaScript __proto__ must stay an own member"
   }
  ]
 }
