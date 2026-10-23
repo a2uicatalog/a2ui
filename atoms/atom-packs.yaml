@@ -420,6 +420,7 @@ a2ui-effects-v1:
 - motion_iso
 - motion_particles
 - motion_morph
+- motion_build
 - motion_shader
 - motion_video
 - motion_arch
