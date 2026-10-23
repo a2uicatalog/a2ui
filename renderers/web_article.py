@@ -31349,6 +31349,88 @@ def _render_motion_build(b: dict) -> str:
 _RENDERERS['motion_build'] = _render_motion_build
 
 
+# ─── motion_transition (I75, owner 2026-10-22 name, 2026-10-23 go): T(A, B, p) over the build contract's data keys ───
+# The A-to-B motion atom. Block B renders in flow (the page's layout is B's); block A sits over it, aria-hidden and inert, still, and
+# fades out over the first 40% of p. Only B moves: one small script measures, once (and on resize), every keyed element of B and of A
+# ([data-cb][data-key], or the keyed shapes inside a data-cb group such as a sunburst ring), joins them BY KEY and writes on each
+# matched B element the FLIP offsets that put it on its A partner's box (--mtr-dx/-dy/-sx/-sy; SVG shapes in their own user units).
+# The join: the same key; else (match "path") a B key that is the path prefix of A keys starts on the union of those boxes (a breakdown
+# collapses into its total), and a B key under an A key starts on that ancestor's box (a total splits into its parts); key_map renames
+# A keys first. Box to box (HTML, rect) the element starts exactly on its partner's box; where either side is a curved shape (an arc,
+# a circle) it keeps its proportions: scaled uniformly to fit inside the partner's box, centred on it, so nothing curved is stretched.
+# Pure CSS then runs everything on the film dial --p: B fades in over the first third, matched elements travel over p 0.15-0.85, B-only
+# elements fade in late, labels only fade (never transform). At p = 1 every offset is 0 and A is transparent: the page paints B.
+# Reduced motion, no script or no dial: A is not shown and B is static. The children's own build (--k on --p) is held at p = 1. The scale
+# origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
+# first block loses its top margin (!important: atoms set it inline; B's collapses out of the wrapper, A's would not, and the titles
+# would not line up).
+# Known gap: text inside a moving box (a treemap or icicle tile) scales with it in flight. Twin: atoms_motion_candidates.gs.
+_MTR_MATCH = {'path': 'path', 'exact': 'exact'}
+_MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr [data-cb-root]{--p:1}.mo-tr .mtr-a{display:none}'
+            + '@media (prefers-reduced-motion:no-preference){.mo-tr .mtr-a{display:block;position:absolute;left:0;top:0;width:100%;pointer-events:none;opacity:clamp(0,calc(1 - var(--mtr-p)*2.5),1)}'
+            + '.mo-tr .mtr-a>*,.mo-tr .mtr-a>[data-mt-id]>*{margin-top:0!important}'
+            + '.mo-tr .mtr-b{opacity:clamp(0,calc(var(--mtr-p)*3.4),1)}'
+            + '.mo-tr .mtr-b .mtr-m{--mtr-q:clamp(0,calc((var(--mtr-p) - 0.15)/0.7),1);translate:calc(var(--mtr-dx,0px)*(1 - var(--mtr-q))) calc(var(--mtr-dy,0px)*(1 - var(--mtr-q)));'
+            + 'scale:calc(1 + (var(--mtr-sx,1) - 1)*(1 - var(--mtr-q))) calc(1 + (var(--mtr-sy,1) - 1)*(1 - var(--mtr-q)));transform-origin:0 0;transform-box:border-box}'
+            + '.mo-tr .mtr-b svg .mtr-m{transform-box:fill-box}'
+            + '.mo-tr .mtr-b .mtr-n{opacity:clamp(0,calc((var(--mtr-p) - 0.55)/0.35),1)}'
+            + '.mo-tr .mtr-b [data-cb=label]{opacity:clamp(0,calc((var(--mtr-p) - 0.7)/0.3),1)}'
+            + '.mo-tr.mtr-measure .mtr-m{translate:none;scale:none}}')
+_MTR_JS = ('(function(){var w=document.currentScript&&document.currentScript.parentNode;if(!w||!w.querySelector)return;'
+           "var A=w.querySelector('.mtr-a'),B=w.querySelector('.mtr-b'),map={},exact=w.getAttribute('data-mtr-match')==='exact';"
+           "try{map=JSON.parse(w.getAttribute('data-mtr-map')||'{}')}catch(e){}"
+           "function keyed(r){var o={},l=r.querySelectorAll('[data-cb][data-key],[data-cb] [data-key]');"
+           "for(var i=0;i<l.length;i++){var e=l[i],c=e.closest('[data-cb]');if(c&&c.getAttribute('data-cb')==='label')continue;"
+           "if(e.querySelector('[data-key]'))continue;var k=e.getAttribute('data-key');"
+           'if(r===A&&Object.prototype.hasOwnProperty.call(map,k))k=String(map[k]);(o[k]=o[k]||[]).push(e)}return o}'
+           'function box(l){var x0=1/0,y0=1/0,x1=-1/0,y1=-1/0;for(var i=0;i<l.length;i++){var b=l[i].getBoundingClientRect();'
+           'if(b.width<=0&&b.height<=0)continue;x0=Math.min(x0,b.left);y0=Math.min(y0,b.top);x1=Math.max(x1,b.right);y1=Math.max(y1,b.bottom)}'
+           'return x0<x1||y0<y1?{x:x0,y:y0,w:x1-x0,h:y1-y0}:null}'
+           'function rectish(e){return !e.ownerSVGElement||/^(rect|polygon|g)$/i.test(e.tagName)}'
+           "function src(a,k){if(a[k])return a[k];if(exact)return null;var l=[],p=k+'/';"
+           'for(var q in a)if(q.indexOf(p)===0)l=l.concat(a[q]);if(l.length)return l;'
+           "var s=k.split('/');for(var j=s.length-1;j>0;j--){var u=s.slice(0,j).join('/');if(a[u])return a[u]}return null}"
+           'function run(){if(!A||!B||!A.getClientRects().length)return;'
+           "w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];"
+           'for(var k in b)for(var i=0;i<b[k].length;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}'
+           "w.classList.remove('mtr-measure');"
+           "for(var t=0;t<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n');"
+           "if(!s||!o){e.classList.add('mtr-n');continue}"
+           'var fx=1,fy=1,m=e.ownerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}'
+           'var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-o.x,dy=s.y-o.y;'
+           'if(!plan[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}'
+           "st.setProperty('--mtr-dx',(dx/fx).toFixed(2)+'px');st.setProperty('--mtr-dy',(dy/fy).toFixed(2)+'px');"
+           "st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed(4));e.classList.add('mtr-m')}}"
+           "run();window.addEventListener('load',run);if(window.ResizeObserver)new ResizeObserver(function(){run()}).observe(w)})();")
+
+
+def _mtr_map(v):
+    """key_map: A key -> B key, up to 200 string pairs; anything else is dropped."""
+    if not isinstance(v, dict):
+        return {}
+    out = {}
+    for k, x in list(v.items())[:200]:
+        if isinstance(x, str) and x:
+            out[str(k)[:200]] = x[:200]
+    return out
+
+
+def _render_motion_transition(b: dict) -> str:
+    fa, tb = b.get('from'), b.get('to')
+    if not isinstance(tb, dict):
+        return '<!-- a2ui: motion_transition needs a "to" block -->'
+    ha = _mo_child(fa) if isinstance(fa, dict) else ''
+    hb = _mo_child(tb)
+    match, ver = _ff_pick(b.get('match'), _MTR_MATCH, 'path'), _ff_int(b.get('version'), 1, 1, 1)
+    km = _mtr_map(b.get('key_map'))
+    attr = (' data-mtr-map="' + _cv_esc(_json.dumps(km, ensure_ascii=False, separators=(',', ':'))) + '"') if km else ''
+    return ('<div class="mo-tr" data-mtr-match="' + match + '" data-mtr-v="' + str(ver) + '"' + attr + '><style>' + _MTR_CSS + '</style>'
+            + '<div class="mtr-b">' + hb + '</div><div class="mtr-a" aria-hidden="true" inert>' + ha + '</div><script>' + _MTR_JS + '</script></div>')
+
+
+_RENDERERS['motion_transition'] = _render_motion_transition
+
+
 # ─── twins of the keynote motion candidates (atoms_motion_candidates.gs, 2026-10-10): lit, arcs, lockup, collage, bubbles, beats, pattern, dock, fit ───
 _IF_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
 _CL_FILLS = ['#2c3e66', '#7a3b6e', '#2f7d63', '#9a6120', '#3b4a6b', '#5a3d2b', '#1f5f7a', '#6b2d3c']

@@ -21698,6 +21698,23 @@ blocks:
     version: "integer (optional, default 1). Contract version."
   notes: "Reads the dial p that a motion_timeline p track sets on an ancestor; never sets it. Give the motion_build block an id and target it with the p track: the chart_summary count-up spans inside are then in the track's scope. The chart's own sequence is re-timed through --n so it ends at p = 1. Labels only fade, never transform (SVG text blurs under transforms on Android WebView). Links, branches and reference lines draw along their path when they carry pathLength=1 and are solid; a dashed path (a reference line, a waterfall connector) keeps its dash and fades instead. Arcs and ribbons scale out from their own centre; bars and sankey node rects grow from their base; other nodes (org cards with their own rise) only fade. Keep a chart under about 60 moving elements (compositor-only transforms, opacity and dash); above that the wrapper leaves an HTML comment and order together is the cheap path. The chart's hidden table is untouched; the wrapper is a plain div, not aria-hidden."
   source: *mla002
+- type: motion_transition
+  stage: preview
+  description: "Morphs one atom into another on the film's progress dial p, joining their elements by data key: two views of the same data (a treemap and a sunburst, a table and an org chart) hand over element by element instead of cross-fading. Each element of the second block that shares a key with the first starts on its partner's box and travels to its own place; with path keys a total starts on the union of its parts (Cloud collects Cloud/VMs and Cloud/Storage) and a part starts on its total; elements only in one block fade. Labels only fade. With reduced motion, on static surfaces or when no timeline sets p, the page shows the second block exactly as it renders alone."
+  compact_description: "a key-joined morph from one atom to another on the film's p dial"
+  routing_text: "Animate a hand-over from one chart or list to another showing the same data (treemap to sunburst, table to org chart), elements moving by their data key, driven by a motion_timeline p track."
+  intent_phrases:
+  - "Morph the treemap into a sunburst of the same budget."
+  - "Collapse the breakdown into its totals as the film plays."
+  surfaces: *mla001
+  fields:
+    from: "object (optional). The block shown at p = 0 (any atom). Its elements that carry the build contract (data-cb with data-key) are the start positions; it fades out over the first part of p. Missing: every element of to enters."
+    to: "object (required). The block shown at p = 1 (any atom): the page is exactly this block when p is 1, with reduced motion, and on surfaces without script."
+    match: "\"path\" | \"exact\" (optional, default path). exact joins identical keys only. path also joins along category paths: a key that is the prefix of others (Cloud, of Cloud/VMs) starts on the union of their boxes, and a key under another (Cloud/VMs, under Cloud) starts on its parent's box."
+    key_map: "object (optional, up to 200 pairs). Renames keys of from before the join, from-key to to-key, for two atoms that name the same things differently (a team table keyed by employee id to an org chart keyed by name)."
+    version: "integer (optional, default 1). Contract version."
+  notes: "Reads the dial p that a motion_timeline p track sets on an ancestor; never sets it. Only the to block moves: a small script measures both blocks once (and again on resize), joins their keyed elements and writes each matched element's start offsets as CSS variables; pure CSS then interpolates them on p (translate and scale from the border-box corner; SVG shapes in their own user units). The children's own build is held at p = 1. The from block is aria-hidden and inert. Elements are matched within one level of build-contract keys: a sunburst or circle pack joins arc by arc. Shapes move and resize as boxes; they do not bend into each other. Keep each block under about 60 keyed elements."
+  source: *mla002
 - type: motion_capsule
   stage: preview
   description: "A rounded capsule that widens as words land in it, one after another as p goes 0 to 1, so a sentence builds inside its own outline. Each word fades in (and, with resolve blur or scramble, comes out of blur or noise). Outline, solid or glass. The words are real text. Plain HTML and CSS, no script."
