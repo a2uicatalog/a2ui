@@ -21646,7 +21646,12 @@ def _render_flow_connector(b: dict) -> str:
         # and nothing is ever clipped — it just reflows to more rows.
         units = []
         for i, node in enumerate(nodes):
+            k = _esc(str(node.get('id') or node.get('name') or node.get('label') or node.get('title', '')) if isinstance(node, dict) else str(node))
             node_html = _flow_connector_node(node, color, theme)
+            if node_html.startswith('<div '):
+                node_html = f'<div data-cb="node" data-key="{k}"' + node_html[4:]
+            elif node_html.startswith('<div>'):
+                node_html = f'<div data-cb="node" data-key="{k}">' + node_html[5:]
             if i < len(nodes) - 1:
                 mid_label = _esc(connectors[i]) if i < len(connectors) else ""
                 mid = ('→ ' + mid_label + ' →') if mid_label else '→'
@@ -21663,12 +21668,24 @@ def _render_flow_connector(b: dict) -> str:
 
     frm = b.get('from', '')
     to = b.get('to', '')
+    k_frm = _esc(str(frm.get('id') or frm.get('name') or frm.get('label') or frm.get('title', '')) if isinstance(frm, dict) else str(frm))
+    k_to = _esc(str(to.get('id') or to.get('name') or to.get('label') or to.get('title', '')) if isinstance(to, dict) else str(to))
+    frm_html = _flow_connector_node(frm, color, theme)
+    if frm_html.startswith('<div '):
+        frm_html = f'<div data-cb="node" data-key="{k_frm}"' + frm_html[4:]
+    elif frm_html.startswith('<div>'):
+        frm_html = f'<div data-cb="node" data-key="{k_frm}">' + frm_html[5:]
+    to_html = _flow_connector_node(to, color, theme)
+    if to_html.startswith('<div '):
+        to_html = f'<div data-cb="node" data-key="{k_to}"' + to_html[4:]
+    elif to_html.startswith('<div>'):
+        to_html = f'<div data-cb="node" data-key="{k_to}">' + to_html[5:]
     label = _esc(b.get('label', ''))
     mid = ('→ ' + label + ' →') if label else '→'
     return ('<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
-            + _flow_connector_node(frm, color, theme)
+            + frm_html
             + '<span style="color:#9ca3af;font-size:0.82rem;">' + mid + '</span>'
-            + _flow_connector_node(to, color, theme)
+            + to_html
             + '</div>')
 _RENDERERS["flow_connector"] = _render_flow_connector
 

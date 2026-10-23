@@ -2198,7 +2198,7 @@
   "parity": false
  },
  "flow_connector": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "flow_connector",
    "color": "#0ea5e9",

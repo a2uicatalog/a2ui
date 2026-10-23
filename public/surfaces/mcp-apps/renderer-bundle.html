@@ -19332,7 +19332,13 @@ _RENDERERS['flow_connector'] = function(b) {
     // happens BETWEEN complete units, so nothing is ever clipped or left
     // disconnected — it just reflows to more rows.
     var units = nodes.map(function(node, i) {
+      var k = _esc(String((node && typeof node === 'object') ? (node.id || node.name || node.label || node.title || '') : (node || '')));
       var nodeHtml = _flowConnectorNode(node, color, theme);
+      if (nodeHtml.indexOf('<div ') === 0) {
+        nodeHtml = '<div data-cb="node" data-key="' + k + '"' + nodeHtml.substring(4);
+      } else if (nodeHtml.indexOf('<div>') === 0) {
+        nodeHtml = '<div data-cb="node" data-key="' + k + '">' + nodeHtml.substring(5);
+      }
       if (i < nodes.length - 1) {
         var midLabel = connectors[i] ? _esc(connectors[i]) : '';
         var mid = midLabel ? ('→ ' + midLabel + ' →') : '→';
@@ -19347,12 +19353,28 @@ _RENDERERS['flow_connector'] = function(b) {
       + units.join('') + '</div>';
   }
 
+  var frm = b.from || '';
+  var to = b.to || '';
+  var kFrm = _esc(String((frm && typeof frm === 'object') ? (frm.id || frm.name || frm.label || frm.title || '') : (frm || '')));
+  var kTo = _esc(String((to && typeof to === 'object') ? (to.id || to.name || to.label || to.title || '') : (to || '')));
+  var frmHtml = _flowConnectorNode(frm, color, theme);
+  if (frmHtml.indexOf('<div ') === 0) {
+    frmHtml = '<div data-cb="node" data-key="' + kFrm + '"' + frmHtml.substring(4);
+  } else if (frmHtml.indexOf('<div>') === 0) {
+    frmHtml = '<div data-cb="node" data-key="' + kFrm + '">' + frmHtml.substring(5);
+  }
+  var toHtml = _flowConnectorNode(to, color, theme);
+  if (toHtml.indexOf('<div ') === 0) {
+    toHtml = '<div data-cb="node" data-key="' + kTo + '"' + toHtml.substring(4);
+  } else if (toHtml.indexOf('<div>') === 0) {
+    toHtml = '<div data-cb="node" data-key="' + kTo + '">' + toHtml.substring(5);
+  }
   var label = b.label || '';
   var mid = label ? ('→ ' + _esc(label) + ' →') : '→';
   return '<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
-    + _flowConnectorNode(b.from || '', color, theme)
+    + frmHtml
     + '<span style="color:#9ca3af;font-size:0.82rem;">' + mid + '</span>'
-    + _flowConnectorNode(b.to || '', color, theme)
+    + toHtml
     + '</div>';
 };
 
