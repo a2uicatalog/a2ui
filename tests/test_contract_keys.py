@@ -78,3 +78,18 @@ def test_a_reply_with_raw_newlines_in_strings_parses():
     reply = '```json\n{"edits": [{"atom": "alpha", "find": "a\nb", "replace": "a\nc"}], "notes": "ok"}\n```'
     ans = ck.parse_reply(reply)
     assert ans["edits"][0]["find"] == "a\nb" and ans["notes"] == "ok"
+
+
+def test_a_syntax_error_inside_one_atoms_code_fails_that_atom_alone():
+    out = ('E     File "/repo/renderers/web_article.py", line 1008\n'
+           "E       '<div style=\"display:flex\">%s</div>'\n"
+           'E   IndentationError: unexpected indent\n'
+           'ERROR tests/test_contract_sweep.py\nERROR tests/test_gas_twins.py\n')
+    seen = []
+
+    def locate(f, line):
+        seen.append((f, line))
+        return "beta" if line == 1008 else None
+    assert ck.attribute_failures(out, ATOMS, REL, 2, locate) == {"beta"}
+    assert seen == [("/repo/renderers/web_article.py", 1008)]
+    assert ck.attribute_failures(out, ATOMS, REL, 2, lambda f, n: None) == set(ATOMS)

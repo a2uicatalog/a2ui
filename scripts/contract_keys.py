@@ -224,10 +224,16 @@ def accept_now_read(atoms, detail, unread=UNREAD):
     return changed
 
 
-def attribute_failures(out, atoms, rel, returncode=1):
+def attribute_failures(out, atoms, rel, returncode=1, locate=None):
     """The atoms a pytest run's failures belong to. A failure is pinned to the atom its test id or line names, else (for a
     cross-atom check) to the atoms its message names, else to the atoms its file names; a collection or syntax error with no
-    FAILED line fails the whole batch (it once passed as "no failures")."""
+    FAILED line fails the whole batch (it once passed as "no failures"). A Python syntax error that locate(file, line) can
+    place inside one atom's code fails that atom alone: every other error in the run is its consequence."""
+    if locate:
+        at = {locate(f, int(n)) for f, n in re.findall(r'File "([^"]+)", line (\d+)\n(?:E?\s+.*\n)*?E?\s*(?:Indentation|Syntax|Tab)Error', out)}
+        at = {a for a in at if a}
+        if at:
+            return at
     fails = set()
     for line in re.findall(r'^(?:FAILED|ERROR) .*$', out, re.M):
         named = [x for x in atoms if re.search(r'[\[\-]%s\]|\b%s\b' % (re.escape(x), re.escape(x)), line)]
@@ -243,7 +249,7 @@ def attribute_failures(out, atoms, rel, returncode=1):
     return fails
 
 
-def gate(atoms):
+def gate(atoms, locate=None):
     """The sweep gate for these atoms, then their own tests and the cross-atom checks."""
     subprocess.run([PYTHON, 'scripts/gen_mcp_apps_bundle.py'], capture_output=True)
     rel = related(atoms)
@@ -251,10 +257,10 @@ def gate(atoms):
                         'A2UI_SWEEP_ATOMS=' + ','.join(atoms), PYTHON, '-m', 'pytest', '-q', '--no-header', '-p', 'no:cacheprovider',
                         '-k', 'not registered and not well_formed', 'tests/test_contract_sweep.py'] + list(rel), capture_output=True, text=True)
     out = r.stdout + r.stderr
-    fails = attribute_failures(out, atoms, rel, r.returncode)
+    fails = attribute_failures(out, atoms, rel, r.returncode, locate)
     detail = '\n'.join(l for l in out.splitlines() if l.startswith(('E ', 'FAILED', 'ERROR')))[:10000]
     if 'now read, so delete from' in detail and accept_now_read(atoms, detail):
-        return gate(atoms)   # the baseline now records the newly read field: judge the batch again
+        return gate(atoms, locate)   # the baseline now records the newly read field: judge the batch again
     if r.returncode != 0 and not detail:
         detail = '\n'.join('E ' + l for l in out.splitlines()[-25:])
     summary = ([l.strip('= ') for l in out.splitlines() if re.search(r'\d+ (?:passed|failed|error)', l)] or ['(no summary)'])[-1]
@@ -288,6 +294,18 @@ def apply(edits, files, scope=None):
 def parse_reply(text):
     """The reply's JSON object; fences are stripped and raw newlines inside strings are accepted (Gemini writes them)."""
     return json.loads(re.sub(r'^```(?:json)?\s*|\s*```$', '', text.strip()), strict=False)
+
+
+def call_gemini(ge, cfg, prompt, waits=(60, 120, 240, 240)):
+    """ge.call_full, waiting longer between attempts when the endpoint says HTTP 429 or 5xx (a large batch hits quota)."""
+    for w in waits + (None,):
+        try:
+            return ge.call_full(cfg, prompt, max_tokens=65536)
+        except RuntimeError as e:
+            if w is None or not re.match(r'HTTP (429|5\d\d)', str(e)):
+                raise
+            print('gemini: %s; waiting %ds' % (str(e)[:40], w), flush=True)
+            time.sleep(w)
 
 
 def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
@@ -343,19 +361,38 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
                 out.append((i, i + len(g)))
         return out
 
+    def locate(f, line):
+        """The batch atom whose live Python definition holds this line of file f (None if no atom's)."""
+        try:
+            f = os.path.relpath(f)
+            text = open(f).read()
+        except OSError:
+            return None
+        pos = sum(len(l) + 1 for l in text.split('\n')[:line - 1])
+        for t in atoms:
+            for a0, b0 in scope(t, f, text):
+                if a0 <= pos < b0:
+                    return t
+        return None
+
     files[UNREAD] = 1   # restored with the renderers if the batch is put back
     snapshot = {f: open(f).read() for f in files}
     history, total, applied = [], {'prompt': 0, 'answer': 0, 'thinking': 0}, []
     calls = 0
     t0 = time.time()
-    fails, summary, detail = gate(atoms)
+    fails, summary, detail = gate(atoms, locate)
     for rnd in range(1, rounds + 1):
         if not fails:
             break
         todo = fails
         p = '\n\n'.join([SPEC_SINGLE if single else SPEC, 'ATOMS IN THIS CALL: ' + ', '.join(todo)] + sources(todo) +
                         (['=== THE PREVIOUS ROUND: your edits were applied (the files above already include them); the gate then said ===\n' + history[-1]] if history else []) + [FORMAT])
-        r = ge.call_full(cfg, p, max_tokens=65536)
+        try:
+            r = call_gemini(ge, cfg, p)
+        except RuntimeError:   # the endpoint gave up: put every file back before the batch ends
+            for f, s0 in snapshot.items():
+                open(f, 'w').write(s0)
+            raise
         calls += 1
         u = r['usage']
         for k, uk in (('prompt', 'promptTokenCount'), ('answer', 'candidatesTokenCount'), ('thinking', 'thoughtsTokenCount')):
@@ -369,7 +406,7 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
         edits = [e for e in ans.get('edits', []) if e.get('atom') in todo]
         done, refused, _ = apply(edits, files, scope)
         applied += edits
-        fails, summary, detail = gate(atoms)
+        fails, summary, detail = gate(atoms, locate)
         print('round %d: %d edits, %d refused; gate %s; failing %s' % (rnd, done, len(refused), summary, fails), flush=True)
         with open(log, 'a') as fh:
             fh.write(json.dumps({'round': rnd, 'applied': done, 'refused': refused, 'fails': fails, 'summary': summary, 'detail': detail[:4000], 'notes': ans.get('notes', ''), 'usage': u}) + '\n')
@@ -379,7 +416,7 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
         for f, s0 in snapshot.items():
             open(f, 'w').write(s0)
         apply([e for e in applied if e.get('atom') in keep], files, scope)
-        f2, summary, _ = gate(keep) if keep else ([], '', '')
+        f2, summary, _ = gate(keep, locate) if keep else ([], '', '')
         if f2:
             for f, s0 in snapshot.items():
                 open(f, 'w').write(s0)
