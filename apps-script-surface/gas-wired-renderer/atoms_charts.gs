@@ -1858,29 +1858,48 @@ _RENDERERS['roadmap_card'] = function(b) {
 };
 
 _RENDERERS['notification_stack'] = function(b) {
-  var notifications = b.notifications || [];
-  var typeConfig = {
-    info:    {bg:'#eff6ff',border:'#93c5fd',icon:'ℹ️',color:'#1d4ed8'},
-    success: {bg:'#f0fdf4',border:'#86efac',icon:'✅',color:'#166534'},
-    warning: {bg:'#fffbeb',border:'#fcd34d',icon:'⚠️',color:'#92400e'},
-    error:   {bg:'#fef2f2',border:'#fca5a5',icon:'❌',color:'#991b1b'}
-  };
-  var html = '<div style="display:flex;flex-direction:column;gap:8px;margin:1rem 0;">';
-  for (var i = 0; i < notifications.length; i++) {
-    var n = notifications[i];
-    var tc = typeConfig[n.type] || typeConfig['info'];
-    html += '<div style="background:' + tc.bg + ';border:1px solid ' + tc.border + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">'
-      + '<span style="font-size:1rem;flex-shrink:0;">' + tc.icon + '</span>'
-      + '<div style="flex:1;">'
-      + (n.title ? '<div style="font-weight:700;font-size:0.875rem;color:#111827;">' + _esc(n.title) + '</div>' : '')
-      + (n.body ? '<div style="font-size:0.82rem;color:#374151;margin-top:2px;">' + _esc(n.body) + '</div>' : '')
+  var title = b.title || '';
+  var items = b.items || b.notifications || [];
+  var titleHtml = title
+    ? '<div style="font-size:0.82rem;font-weight:700;color:#374151;padding:0 14px 8px;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' + _esc(title) + '</div>'
+    : '';
+  var rows = '';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var icon = item.icon !== undefined ? item.icon : '🔔';
+    var ntitle = item.title !== undefined ? item.title : '';
+    var body = item.body !== undefined ? item.body : '';
+    var time = item.time !== undefined ? item.time : '';
+    var unread = item.unread || false;
+    var nkey = _esc(item.id || item.title || (i + 1));
+    var bodyHtml = body
+      ? '<div style="font-size:0.75rem;color:#6b7280;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(body) + '</div>'
+      : '';
+    var timeHtml = time
+      ? '<div style="font-size:0.7rem;color:#9ca3af;white-space:nowrap;flex-shrink:0;">' + _esc(time) + '</div>'
+      : '';
+    var dot = unread
+      ? '<div style="width:8px;height:8px;border-radius:50%;background:#1a73e8;flex-shrink:0;margin-top:4px;"></div>'
+      : '<div style="width:8px;"></div>';
+    rows += '<div data-cb="item" data-key="' + nkey + '" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;'
+      + 'background:' + (unread ? '#f0f7ff' : '#fff') + ';'
+      + 'border-bottom:1px solid #f3f4f6;">'
+      + '<span style="font-size:1.2rem;line-height:1;flex-shrink:0;">' + _esc(icon) + '</span>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;">'
+      + '<span data-cb="label" data-key="' + nkey + '" style="font-size:0.82rem;font-weight:' + (unread ? '700' : '500') + ';'
+      + 'color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(ntitle) + '</span>'
+      + timeHtml
       + '</div>'
-      + (n.time ? '<span style="font-size:0.72rem;color:var(--muted,#5f6368);flex-shrink:0;">' + _esc(n.time) + '</span>' : '')
-      + '<button style="background:none;border:none;cursor:pointer;color:var(--muted,#5f6368);font-size:1rem;padding:0;line-height:1;flex-shrink:0;" aria-label="Dismiss">×</button>'
+      + bodyHtml
+      + '</div>'
+      + dot
       + '</div>';
   }
-  html += '</div>';
-  return html;
+  return '<div style="margin:1rem 0;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">'
+    + titleHtml
+    + rows
+    + '</div>';
 };
 
 _RENDERERS['inline_alert'] = function(b) {

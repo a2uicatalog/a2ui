@@ -7070,12 +7070,13 @@ def _render_notification_stack(b: dict) -> str:
     ) if title else ""
 
     rows = ""
-    for item in items:
+    for idx, item in enumerate(items):
         icon   = item.get("icon", "🔔")
         ntitle = item.get("title", "")
         body   = item.get("body", "")
         time   = item.get("time", "")
         unread = item.get("unread", False)
+        nkey = _cv_esc(item.get("id") or item.get("title") or (idx + 1))
 
         body_html = (
             f'<div style="font-size:0.75rem;color:#6b7280;margin-top:1px;'
@@ -7090,13 +7091,13 @@ def _render_notification_stack(b: dict) -> str:
         ) if unread else '<div style="width:8px;"></div>'
 
         rows += (
-            f'<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;'
+            f'<div data-cb="item" data-key="{nkey}" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;'
             f'background:{"#f0f7ff" if unread else "#fff"};'
             f'border-bottom:1px solid #f3f4f6;">'
             f'<span style="font-size:1.2rem;line-height:1;flex-shrink:0;">{_cv_esc(icon)}</span>'
             f'<div style="flex:1;min-width:0;">'
             f'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;">'
-            f'<span style="font-size:0.82rem;font-weight:{"700" if unread else "500"};'
+            f'<span data-cb="label" data-key="{nkey}" style="font-size:0.82rem;font-weight:{"700" if unread else "500"};'
             f'color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{_cv_esc(ntitle)}</span>'
             f'{time_html}'
             f'</div>'

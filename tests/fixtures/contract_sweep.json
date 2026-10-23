@@ -4352,7 +4352,7 @@
   "parity": false
  },
  "notification_stack": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "notification_stack",
    "title": "Recent Alerts",
@@ -4387,8 +4387,8 @@
   "label_kind": "label",
   "key": "items[].id",
   "py_sha": "6ea2cd2aa06f40feae51a417a97c8c6d7da518a42c740fdcc77640a5e01eb362",
-  "gas_sha": "28766f3ef5167678a7d7cefb27623a602a655cc202f8b49d2627b224a91e1b00",
-  "parity": false
+  "gas_sha": "6ea2cd2aa06f40feae51a417a97c8c6d7da518a42c740fdcc77640a5e01eb362",
+  "parity": true
  },
  "numbered_list": {
   "status": "keyed",
