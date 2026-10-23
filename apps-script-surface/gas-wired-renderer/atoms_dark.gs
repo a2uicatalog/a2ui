@@ -236,7 +236,7 @@ _RENDERERS['neon_text'] = function(b) {
     : 'text-shadow:0 0 4px #fff,0 0 10px ' + colour + ',0 0 24px ' + colour + ',0 0 50px ' + colour + '66,0 0 80px ' + colour + '33;';
 
   return keyframes +
-    '<div style="text-align:' + align + ';padding:20px 12px;background:#0f172a;border-radius:12px;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.text, 'neon_text') + '" style="text-align:' + align + ';padding:20px 12px;background:#0f172a;border-radius:12px;">' +
     '<span style="' +
     'font-size:' + _esc(size) + ';' +
     'font-weight:' + weight + ';' +

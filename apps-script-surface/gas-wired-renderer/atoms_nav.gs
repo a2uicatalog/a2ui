@@ -107,7 +107,7 @@ _RENDERERS['nav_link'] = function(b) {
   }[style] || btnBase;
 
   return (
-    '<div style="text-align:' + _esc(align) + ';font-family:\'Inter\',system-ui,sans-serif;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.nav_slug, 'nav_link') + '" style="text-align:' + _esc(align) + ';font-family:\'Inter\',system-ui,sans-serif;">' +
     '<a id="' + uid + '" href="#" style="' + btnStyle + '">' +
       (icon ? '<span>' + _esc(icon) + '</span>' : '') +
       '<span>' + _esc(label) + '</span>' +
@@ -454,7 +454,7 @@ _RENDERERS['tab_group'] = function(b) {
 _RENDERERS['quiet_link'] = function(b) {
   var uid = 'ql' + Math.random().toString(36).substr(2, 6);
   return (
-    '<div style="text-align:center;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.text, 'quiet_link') + '" style="text-align:center;">' +
     '<button id="' + uid + '" type="button" style="background:none;border:none;' +
     'color:var(--muted,#5f6368);font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;' +
     'text-underline-offset:2px;padding:4px;">' + _esc(b.text || '') + '</button>' +

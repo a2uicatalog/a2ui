@@ -219,7 +219,7 @@ _RENDERERS['review_callout'] = function(b) {
   for (var i = 1; i <= max; i++) {
     stars += '<span style="color:' + (i <= rating ? '#fbbf24' : '#e5e7eb') + ';font-size:1rem;">★</span>';
   }
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.author_name, 'review_callout') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + (b.product_name ? '<div style="font-size:0.75rem;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">' + _esc(b.product_name) + '</div>' : '')
     + '<div style="margin-bottom:10px;">' + stars + '</div>'
     + '<blockquote style="margin:0;font-size:0.9rem;line-height:1.6;color:var(--text,#374151);font-style:italic;">"' + _esc(b.review_text || '') + '"</blockquote>'

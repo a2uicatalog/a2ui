@@ -37,7 +37,7 @@ _RENDERERS['schema_reveal'] = function(b) {
     + '#srev-pre-' + uid + '{margin:0;font-family:monospace;font-size:0.78rem;line-height:1.65;color:#e2e8f0;white-space:pre;}'
     + '#srev-none-' + uid + '{padding:16px;font-size:0.85rem;color:#64748b;font-family:monospace;}'
     + '</style>'
-    + '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">' + _esc(title) + '</div>'
+    + '<div data-cb="node" data-key="' + _ckey(undefined, 'schema_reveal') + '" style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">' + _esc(title) + '</div>'
     + '<div id="srev-' + uid + '">'
     + '<div id="srev-hd-' + uid + '"><span>schema.json</span><button id="srev-copy-' + uid + '">Copy</button></div>'
     + '<div id="srev-body-' + uid + '"><pre id="srev-pre-' + uid + '"></pre><div id="srev-none-' + uid + '" style="display:none;">Schema not available.</div></div>'
@@ -160,7 +160,7 @@ _RENDERERS['schema_qr'] = function(b) {
       + '})();<\/script>';
   }
 
-  return '<div style="text-align:center;padding:24px 16px;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'schema_qr') + '" style="text-align:center;padding:24px 16px;">'
     + '<div id="qr-svg-' + uid + '">' + staticSvg + '</div>'
     + inputHtml
     + (label ? '<div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-top:12px;">' + _esc(label) + '</div>' : '')
@@ -543,7 +543,7 @@ _RENDERERS['raise_hand'] = function(b) {
   var poll     = parseInt(b.poll_interval || b.poll || 4000, 10);
   var accent   = b.accent || '#4f46e5';
 
-  return '<div style="text-align:center;padding:28px 20px;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.question, 'raise_hand') + '" style="text-align:center;padding:28px 20px;margin:1rem 0;">'
     + '<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:20px;">' + _esc(question) + '</div>'
     + '<button id="rh-btn-' + uid + '" style="font-size:1.5rem;padding:16px 32px;background:var(--surface);border:2px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text);display:inline-block;">' + _esc(label) + '</button>'
     + '<div style="margin-top:16px;font-size:2rem;font-weight:900;color:' + accent + ';" id="rh-count-' + uid + '">0</div>'

@@ -638,7 +638,7 @@ _RENDERERS['metric_comparison_card'] = function(b) {
   var arrow      = cVal >= bVal ? '↑' : '↓';
   var deltaTxt   = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
 
-  var html = '<div class="a2ui-metric-comparison">';
+  var html = '<div data-cb="node" data-key="' + _ckey(b.label, 'metric_comparison_card') + '" class="a2ui-metric-comparison">';
   if (title) html += '<div class="a2ui-metric-cmp-title">' + _esc(title) + '</div>';
   html += '<div class="a2ui-metric-cmp-body">';
 
@@ -918,7 +918,7 @@ _RENDERERS['search_result_card'] = function(b) {
   var date       = b.date || '';
   var faviconUrl = b.favicon_url || '';
 
-  var html = '<div class="a2ui-search-result">';
+  var html = '<div data-cb="node" data-key="' + _ckey(b.url, 'search_result_card') + '" class="a2ui-search-result">';
 
   // URL / breadcrumb row
   html += '<div class="a2ui-sr-url-row">';
@@ -1817,7 +1817,7 @@ _RENDERERS['order_status_card'] = function(b) {
     var item = items[i];
     itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || item.title || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:var(--muted,#5f6368);text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.order_number, 'order_status_card') + '" style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
     + '<span style="font-weight:700;color:#111827;font-size:1rem;">Order ' + _esc(b.order_id || b.order_number || '') + '</span>'
     + (b.customer || b.date ? '<span style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc([b.customer, b.date].filter(Boolean).join(' · ')) + '</span>' : '')
@@ -2188,7 +2188,7 @@ _RENDERERS['model_card'] = function(b) {
   }).join('');
   var badgesHtml = badges ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">' + badges + '</div>' : '';
 
-  return '<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.name, 'model_card') + '" style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
     + providerHtml
     + '<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">' + _esc(name) + '</div>'
     + badgesHtml
@@ -2236,7 +2236,7 @@ _RENDERERS['prompt_template'] = function(b) {
       + '<td style="padding:8px 10px;font-size:0.78rem;color:#6b7280;font-style:italic;">' + _esc(v.example || '') + '</td>'
       + '</tr>';
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'prompt_template') + '" style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;margin:1rem 0;">'
     + '<div style="background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
     + '<span style="font-weight:700;font-size:0.9rem;color:#111827;">' + _esc(b.title || 'Prompt Template') + '</span>'
     + (b.use_case ? '<span style="font-size:0.78rem;color:#6b7280;">' + _esc(b.use_case) + '</span>' : '')
@@ -2422,7 +2422,7 @@ _RENDERERS['neon_glow'] = function(b) {
     + '.ng-' + uid + '{font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';text-shadow:0 0 8px ' + _esc(color) + ',0 0 24px ' + _esc(color) + ';animation:ng-pulse-' + uid + ' 2.2s ease-in-out infinite alternate;display:inline-block;}'
     + '@keyframes ng-pulse-' + uid + '{from{text-shadow:0 0 4px ' + _esc(color) + ',0 0 10px ' + _esc(color) + ';}to{text-shadow:0 0 10px ' + _esc(color) + ',0 0 32px ' + _esc(color) + ',0 0 64px ' + _esc(color) + ';opacity:0.88;}}'
     + '</style>'
-    + '<div style="background:#090909;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;text-align:center;margin:1rem 0;"><span class="ng-' + uid + '">' + _esc(text) + '</span></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'neon_glow') + '" style="background:#090909;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;text-align:center;margin:1rem 0;"><span class="ng-' + uid + '">' + _esc(text) + '</span></div>';
 };
 
 _RENDERERS['skeleton_stage_card'] = function(b) {
@@ -3470,7 +3470,7 @@ _RENDERERS['mesh_gradient'] = function(b) {
   var gradients = colors.map(function(c, i) {
     return 'radial-gradient(ellipse 55% 45% at ' + positions[i % positions.length] + ',' + _esc(c) + '44,transparent)';
   }).join(',');
-  return '<div style="border-radius:20px;overflow:hidden;padding:44px 36px;margin:1rem 0;background:' + _esc(bg) + ';background-image:' + gradients + ';">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'mesh_gradient') + '" style="border-radius:20px;overflow:hidden;padding:44px 36px;margin:1rem 0;background:' + _esc(bg) + ';background-image:' + gradients + ';">'
     + (title ? '<div style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
     + (text  ? '<div style="color:rgba(255,255,255,0.82);line-height:1.75;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div>';
@@ -3629,7 +3629,7 @@ _RENDERERS['noise_card'] = function(b) {
   var bg    = b.bg    || '#1e1b4b';
   var color = b.color || '#fff';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + _esc(bg) + ';">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'noise_card') + '" style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + _esc(bg) + ';">'
     + '<svg width="0" height="0" style="position:absolute;pointer-events:none;">'
     + '<defs><filter id="nf-' + uid + '" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="saturate" values="0" result="grey"/><feBlend in="SourceGraphic" in2="grey" mode="overlay" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>'
     + '</svg>'

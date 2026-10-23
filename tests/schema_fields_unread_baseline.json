@@ -643,8 +643,7 @@
  ],
  "prompt_template": [
   "accent",
-  "copyable",
-  "label"
+  "copyable"
  ],
  "pull_stat": [
   "color",

@@ -1372,7 +1372,7 @@ _RENDERERS['body'] = function(b) {
 };
 
 _RENDERERS['paragraph'] = function(b) {
-  return '<p class="asw-paragraph">' + _markdownToHtml(b.text) + '</p>';
+  return '<p data-cb="node" data-key="' + _ckey(b.text, 'paragraph') + '" class="asw-paragraph">' + _markdownToHtml(b.text) + '</p>';
 };
 
 _RENDERERS['text_block'] = function(b) {
@@ -1872,7 +1872,7 @@ _RENDERERS['score_summary'] = function(b) {
     ctas = '<div class="asw-score-ctas">' + retry + cont + '</div>';
   }
 
-  return '<div class="asw-score">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'score_summary') + '" class="asw-score">' +
          '<div class="asw-score-pct' + classPct + '">' + pct + '%</div>' +
          '<div class="asw-score-label">' + label + '</div>' +
          '<div class="asw-score-row">' +
@@ -2227,7 +2227,7 @@ _RENDERERS['lottie_animation'] = function(b) {
 
 _RENDERERS['parallax_card'] = function(b) {
   // Degrades to static card presentation
-  return '<div class="asw-native-card" style="background-image:linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05));">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'parallax_card') + '" class="asw-native-card" style="background-image:linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05));">' +
          '<div style="font-weight:700;margin-bottom:8px;">' + _esc(b.title || 'Parallax Card') + '</div>' +
          '<div style="font-size:0.88rem;color:var(--muted);">' + _esc(b.subtitle || '') + '</div>' +
          '</div>';
@@ -2644,7 +2644,7 @@ _RENDERERS['release_notes'] = function(b) {
     var lis = items.map(function(i){ return '<li style="font-size:0.85rem;color:#374151;margin-bottom:3px;">' + _esc(i) + '</li>'; }).join('');
     return '<div style="margin-bottom:14px;"><div style="font-weight:700;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:' + color + ';margin-bottom:6px;">' + label + '</div><ul style="margin:0;padding-left:1.2em;">' + lis + '</ul></div>';
   }
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'release_notes') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.2rem 0;">' +
     '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:14px;">' + _esc(title) + '</div>' +
     section('Added', b.added, '#16a34a') +
     section('Fixed', b.fixed, '#2563eb') +
@@ -2730,7 +2730,7 @@ _RENDERERS['progress_checkpoint'] = function(b) {
   for (var i = 1; i <= total; i++) {
     steps += '<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;background:' + (i < current ? '#7c3aed' : '#e5e7eb') + ';color:' + (i < current ? '#fff' : '#9ca3af') + ';">' + i + '</div>';
   }
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.current_step, 'progress_checkpoint') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;">' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' + steps + '</div>' +
     '<div style="background:#f3f4f6;border-radius:100px;height:6px;overflow:hidden;">' +
     '<div style="height:100%;background:#7c3aed;width:' + pct + '%;border-radius:100px;"></div></div>' +
@@ -2989,7 +2989,7 @@ _RENDERERS['progress_bar'] = function(b) {
   var pctHtml = showPct ? '<span style="font-size:0.8rem;font-weight:700;color:' + accent + ';">' + value + '%</span>' : '';
   var captionHtml = caption ? '<p style="font-size:0.78rem;opacity:0.5;margin-top:4px;">' + _esc(caption) + '</p>' : '';
   return '<style>@keyframes pb' + uid + '-glow{0%,100%{box-shadow:0 0 6px ' + accent + '88;}50%{box-shadow:0 0 16px ' + accent + ';}}</style>' +
-    '<div style="margin:1rem 0;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_bar') + '" style="margin:1rem 0;">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
     '<span style="font-size:0.85rem;font-weight:600;">' + _esc(label) + '</span>' + pctHtml + '</div>' +
     '<div style="background:rgba(255,255,255,0.08);border-radius:100px;height:10px;overflow:hidden;">' +
@@ -3486,7 +3486,7 @@ _RENDERERS['pull_stat'] = function(b) {
   var value = b.value || b.stat || '';
   var label = b.label || '';
   var context = b.context || '';
-  return '<div style="border-left:4px solid #7c3aed;padding:16px 20px;margin:1.5rem 0;background:#faf5ff;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'pull_stat') + '" style="border-left:4px solid #7c3aed;padding:16px 20px;margin:1.5rem 0;background:#faf5ff;">' +
     '<div style="font-size:2.5rem;font-weight:900;color:#7c3aed;line-height:1;">' + _esc(String(value)) + '</div>' +
     (label ? '<div style="font-size:0.88rem;font-weight:600;color:#374151;margin-top:6px;">' + _esc(label) + '</div>' : '') +
     (context ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:4px;">' + _esc(context) + '</div>' : '') + '</div>';
@@ -4059,7 +4059,7 @@ _RENDERERS['rating_stars'] = function(b) {
   var full = Math.min(Math.floor(rating), maxRating);
   var stars = Array(full).fill('<span style="color:#facc15;">★</span>').join('') +
     Array(maxRating-full).fill('<span style="color:#d1d5db;">★</span>').join('');
-  return '<div style="margin:0.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.rating, 'rating_stars') + '" style="margin:0.5rem 0;">' +
     (label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:4px;">' + _esc(label) + '</div>' : '') +
     '<div>' + stars + '<span style="font-size:0.85rem;color:#374151;margin-left:6px;">' + rating + '</span></div></div>';
 };
@@ -8436,7 +8436,7 @@ _RENDERERS['pulse_dot'] = function(b) {
     + '#' + uid + '{width:' + size + ';height:' + size + ';border-radius:50%;background:' + color + ';animation:' + uid + ' ' + speed + 's ease infinite;flex-shrink:0;}'
     + '</style>';
 
-  return css + '<span style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;margin:' + (inline ? '0 4px' : 'var(--a2ui-block-gap,1.25rem) 0') + ';">'
+  return css + '<span data-cb="node" data-key="' + _ckey(b.label, 'pulse_dot') + '" style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;margin:' + (inline ? '0 4px' : 'var(--a2ui-block-gap,1.25rem) 0') + ';">'
     + '<span id="' + uid + '"></span>' + label + '</span>';
 };
 
@@ -8489,7 +8489,7 @@ _RENDERERS['progress_ring'] = function(b) {
     + (showVal ? '<text x="' + (size/2) + '" y="' + (size/2 + 6) + '" text-anchor="middle" style="font-size:' + (size*0.2) + 'px;font-weight:700;fill:var(--text,#111827);">' + value + unit + '</text>' : '')
     + '</svg>';
 
-  return css + '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + svg + label + '</div>';
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_ring') + '" style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + svg + label + '</div>';
 };
 
 // ─── confetti_burst ───────────────────────────────────────────────────────────
@@ -8571,7 +8571,7 @@ _RENDERERS['ripple_button'] = function(b) {
     + '})();<\/script>';
 
   var icon = b.icon ? _esc(b.icon) + ' ' : '';
-  return css + '<div style="display:flex;justify-content:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'ripple_button') + '" style="display:flex;justify-content:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<button id="' + uid + '">' + icon + label + '</button></div>' + script;
 };
 
@@ -8730,7 +8730,7 @@ _RENDERERS['number_flip'] = function(b) {
     return '<span class="' + uid + '-d"><span class="' + uid + '-v" style="animation-delay:' + (i * 80 + 200) + 'ms;">' + _esc(ch) + '</span></span>';
   }).join('');
 
-  return css + '<div style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'number_flip') + '" style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + color + ';line-height:1;font-family:inherit;">'
     + (pre ? '<span>' + pre + '</span>' : '')
     + digits
@@ -17187,7 +17187,7 @@ _RENDERERS['metric_comparison_card'] = function(b) {
   var arrow      = cVal >= bVal ? '↑' : '↓';
   var deltaTxt   = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
 
-  var html = '<div class="a2ui-metric-comparison">';
+  var html = '<div data-cb="node" data-key="' + _ckey(b.label, 'metric_comparison_card') + '" class="a2ui-metric-comparison">';
   if (title) html += '<div class="a2ui-metric-cmp-title">' + _esc(title) + '</div>';
   html += '<div class="a2ui-metric-cmp-body">';
 
@@ -17467,7 +17467,7 @@ _RENDERERS['search_result_card'] = function(b) {
   var date       = b.date || '';
   var faviconUrl = b.favicon_url || '';
 
-  var html = '<div class="a2ui-search-result">';
+  var html = '<div data-cb="node" data-key="' + _ckey(b.url, 'search_result_card') + '" class="a2ui-search-result">';
 
   // URL / breadcrumb row
   html += '<div class="a2ui-sr-url-row">';
@@ -18366,7 +18366,7 @@ _RENDERERS['order_status_card'] = function(b) {
     var item = items[i];
     itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || item.title || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:var(--muted,#5f6368);text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.order_number, 'order_status_card') + '" style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
     + '<span style="font-weight:700;color:#111827;font-size:1rem;">Order ' + _esc(b.order_id || b.order_number || '') + '</span>'
     + (b.customer || b.date ? '<span style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc([b.customer, b.date].filter(Boolean).join(' · ')) + '</span>' : '')
@@ -18737,7 +18737,7 @@ _RENDERERS['model_card'] = function(b) {
   }).join('');
   var badgesHtml = badges ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">' + badges + '</div>' : '';
 
-  return '<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.name, 'model_card') + '" style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
     + providerHtml
     + '<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">' + _esc(name) + '</div>'
     + badgesHtml
@@ -18785,7 +18785,7 @@ _RENDERERS['prompt_template'] = function(b) {
       + '<td style="padding:8px 10px;font-size:0.78rem;color:#6b7280;font-style:italic;">' + _esc(v.example || '') + '</td>'
       + '</tr>';
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'prompt_template') + '" style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;margin:1rem 0;">'
     + '<div style="background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
     + '<span style="font-weight:700;font-size:0.9rem;color:#111827;">' + _esc(b.title || 'Prompt Template') + '</span>'
     + (b.use_case ? '<span style="font-size:0.78rem;color:#6b7280;">' + _esc(b.use_case) + '</span>' : '')
@@ -18971,7 +18971,7 @@ _RENDERERS['neon_glow'] = function(b) {
     + '.ng-' + uid + '{font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';text-shadow:0 0 8px ' + _esc(color) + ',0 0 24px ' + _esc(color) + ';animation:ng-pulse-' + uid + ' 2.2s ease-in-out infinite alternate;display:inline-block;}'
     + '@keyframes ng-pulse-' + uid + '{from{text-shadow:0 0 4px ' + _esc(color) + ',0 0 10px ' + _esc(color) + ';}to{text-shadow:0 0 10px ' + _esc(color) + ',0 0 32px ' + _esc(color) + ',0 0 64px ' + _esc(color) + ';opacity:0.88;}}'
     + '</style>'
-    + '<div style="background:#090909;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;text-align:center;margin:1rem 0;"><span class="ng-' + uid + '">' + _esc(text) + '</span></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'neon_glow') + '" style="background:#090909;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;text-align:center;margin:1rem 0;"><span class="ng-' + uid + '">' + _esc(text) + '</span></div>';
 };
 
 _RENDERERS['skeleton_stage_card'] = function(b) {
@@ -20019,7 +20019,7 @@ _RENDERERS['mesh_gradient'] = function(b) {
   var gradients = colors.map(function(c, i) {
     return 'radial-gradient(ellipse 55% 45% at ' + positions[i % positions.length] + ',' + _esc(c) + '44,transparent)';
   }).join(',');
-  return '<div style="border-radius:20px;overflow:hidden;padding:44px 36px;margin:1rem 0;background:' + _esc(bg) + ';background-image:' + gradients + ';">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'mesh_gradient') + '" style="border-radius:20px;overflow:hidden;padding:44px 36px;margin:1rem 0;background:' + _esc(bg) + ';background-image:' + gradients + ';">'
     + (title ? '<div style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
     + (text  ? '<div style="color:rgba(255,255,255,0.82);line-height:1.75;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div>';
@@ -20178,7 +20178,7 @@ _RENDERERS['noise_card'] = function(b) {
   var bg    = b.bg    || '#1e1b4b';
   var color = b.color || '#fff';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + _esc(bg) + ';">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'noise_card') + '" style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + _esc(bg) + ';">'
     + '<svg width="0" height="0" style="position:absolute;pointer-events:none;">'
     + '<defs><filter id="nf-' + uid + '" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="saturate" values="0" result="grey"/><feBlend in="SourceGraphic" in2="grey" mode="overlay" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>'
     + '</svg>'
@@ -21292,7 +21292,7 @@ _RENDERERS['neon_text'] = function(b) {
     : 'text-shadow:0 0 4px #fff,0 0 10px ' + colour + ',0 0 24px ' + colour + ',0 0 50px ' + colour + '66,0 0 80px ' + colour + '33;';
 
   return keyframes +
-    '<div style="text-align:' + align + ';padding:20px 12px;background:#0f172a;border-radius:12px;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.text, 'neon_text') + '" style="text-align:' + align + ';padding:20px 12px;background:#0f172a;border-radius:12px;">' +
     '<span style="' +
     'font-size:' + _esc(size) + ';' +
     'font-weight:' + weight + ';' +
@@ -21818,7 +21818,7 @@ _RENDERERS['schema_reveal'] = function(b) {
     + '#srev-pre-' + uid + '{margin:0;font-family:monospace;font-size:0.78rem;line-height:1.65;color:#e2e8f0;white-space:pre;}'
     + '#srev-none-' + uid + '{padding:16px;font-size:0.85rem;color:#64748b;font-family:monospace;}'
     + '</style>'
-    + '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">' + _esc(title) + '</div>'
+    + '<div data-cb="node" data-key="' + _ckey(undefined, 'schema_reveal') + '" style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">' + _esc(title) + '</div>'
     + '<div id="srev-' + uid + '">'
     + '<div id="srev-hd-' + uid + '"><span>schema.json</span><button id="srev-copy-' + uid + '">Copy</button></div>'
     + '<div id="srev-body-' + uid + '"><pre id="srev-pre-' + uid + '"></pre><div id="srev-none-' + uid + '" style="display:none;">Schema not available.</div></div>'
@@ -21941,7 +21941,7 @@ _RENDERERS['schema_qr'] = function(b) {
       + '})();<\/script>';
   }
 
-  return '<div style="text-align:center;padding:24px 16px;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'schema_qr') + '" style="text-align:center;padding:24px 16px;">'
     + '<div id="qr-svg-' + uid + '">' + staticSvg + '</div>'
     + inputHtml
     + (label ? '<div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-top:12px;">' + _esc(label) + '</div>' : '')
@@ -22324,7 +22324,7 @@ _RENDERERS['raise_hand'] = function(b) {
   var poll     = parseInt(b.poll_interval || b.poll || 4000, 10);
   var accent   = b.accent || '#4f46e5';
 
-  return '<div style="text-align:center;padding:28px 20px;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.question, 'raise_hand') + '" style="text-align:center;padding:28px 20px;margin:1rem 0;">'
     + '<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:20px;">' + _esc(question) + '</div>'
     + '<button id="rh-btn-' + uid + '" style="font-size:1.5rem;padding:16px 32px;background:var(--surface);border:2px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text);display:inline-block;">' + _esc(label) + '</button>'
     + '<div style="margin-top:16px;font-size:2rem;font-weight:900;color:' + accent + ';" id="rh-count-' + uid + '">0</div>'
@@ -33384,7 +33384,7 @@ _RENDERERS['nav_link'] = function(b) {
   }[style] || btnBase;
 
   return (
-    '<div style="text-align:' + _esc(align) + ';font-family:\'Inter\',system-ui,sans-serif;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.nav_slug, 'nav_link') + '" style="text-align:' + _esc(align) + ';font-family:\'Inter\',system-ui,sans-serif;">' +
     '<a id="' + uid + '" href="#" style="' + btnStyle + '">' +
       (icon ? '<span>' + _esc(icon) + '</span>' : '') +
       '<span>' + _esc(label) + '</span>' +
@@ -33731,7 +33731,7 @@ _RENDERERS['tab_group'] = function(b) {
 _RENDERERS['quiet_link'] = function(b) {
   var uid = 'ql' + Math.random().toString(36).substr(2, 6);
   return (
-    '<div style="text-align:center;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.text, 'quiet_link') + '" style="text-align:center;">' +
     '<button id="' + uid + '" type="button" style="background:none;border:none;' +
     'color:var(--muted,#5f6368);font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;' +
     'text-underline-offset:2px;padding:4px;">' + _esc(b.text || '') + '</button>' +
@@ -36389,7 +36389,7 @@ _RENDERERS['reveal_line'] = function(b) {
       'to{clip-path:inset(0 0% 0 0);}' +
     '}' +
     '</style>' +
-    '<div style="overflow:hidden;padding:4px 0;">' +
+    '<div data-cb="node" data-key="' + _ckey(undefined, 'reveal_line') + '" style="overflow:hidden;padding:4px 0;">' +
     '<div style="' +
       'font-size:' + _esc(size) + ';' +
       'font-weight:' + weight + ';' +
@@ -37081,7 +37081,7 @@ _RENDERERS['review_callout'] = function(b) {
   for (var i = 1; i <= max; i++) {
     stars += '<span style="color:' + (i <= rating ? '#fbbf24' : '#e5e7eb') + ';font-size:1rem;">★</span>';
   }
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.author_name, 'review_callout') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + (b.product_name ? '<div style="font-size:0.75rem;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">' + _esc(b.product_name) + '</div>' : '')
     + '<div style="margin-bottom:10px;">' + stars + '</div>'
     + '<blockquote style="margin:0;font-size:0.9rem;line-height:1.6;color:var(--text,#374151);font-style:italic;">"' + _esc(b.review_text || '') + '"</blockquote>'

@@ -370,7 +370,7 @@ _RENDERERS['body'] = function(b) {
 };
 
 _RENDERERS['paragraph'] = function(b) {
-  return '<p class="asw-paragraph">' + _markdownToHtml(b.text) + '</p>';
+  return '<p data-cb="node" data-key="' + _ckey(b.text, 'paragraph') + '" class="asw-paragraph">' + _markdownToHtml(b.text) + '</p>';
 };
 
 _RENDERERS['text_block'] = function(b) {
@@ -870,7 +870,7 @@ _RENDERERS['score_summary'] = function(b) {
     ctas = '<div class="asw-score-ctas">' + retry + cont + '</div>';
   }
 
-  return '<div class="asw-score">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'score_summary') + '" class="asw-score">' +
          '<div class="asw-score-pct' + classPct + '">' + pct + '%</div>' +
          '<div class="asw-score-label">' + label + '</div>' +
          '<div class="asw-score-row">' +
@@ -1225,7 +1225,7 @@ _RENDERERS['lottie_animation'] = function(b) {
 
 _RENDERERS['parallax_card'] = function(b) {
   // Degrades to static card presentation
-  return '<div class="asw-native-card" style="background-image:linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05));">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'parallax_card') + '" class="asw-native-card" style="background-image:linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05));">' +
          '<div style="font-weight:700;margin-bottom:8px;">' + _esc(b.title || 'Parallax Card') + '</div>' +
          '<div style="font-size:0.88rem;color:var(--muted);">' + _esc(b.subtitle || '') + '</div>' +
          '</div>';
@@ -1642,7 +1642,7 @@ _RENDERERS['release_notes'] = function(b) {
     var lis = items.map(function(i){ return '<li style="font-size:0.85rem;color:#374151;margin-bottom:3px;">' + _esc(i) + '</li>'; }).join('');
     return '<div style="margin-bottom:14px;"><div style="font-weight:700;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:' + color + ';margin-bottom:6px;">' + label + '</div><ul style="margin:0;padding-left:1.2em;">' + lis + '</ul></div>';
   }
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'release_notes') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.2rem 0;">' +
     '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:14px;">' + _esc(title) + '</div>' +
     section('Added', b.added, '#16a34a') +
     section('Fixed', b.fixed, '#2563eb') +
@@ -1728,7 +1728,7 @@ _RENDERERS['progress_checkpoint'] = function(b) {
   for (var i = 1; i <= total; i++) {
     steps += '<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;background:' + (i < current ? '#7c3aed' : '#e5e7eb') + ';color:' + (i < current ? '#fff' : '#9ca3af') + ';">' + i + '</div>';
   }
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.current_step, 'progress_checkpoint') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;">' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' + steps + '</div>' +
     '<div style="background:#f3f4f6;border-radius:100px;height:6px;overflow:hidden;">' +
     '<div style="height:100%;background:#7c3aed;width:' + pct + '%;border-radius:100px;"></div></div>' +
@@ -1987,7 +1987,7 @@ _RENDERERS['progress_bar'] = function(b) {
   var pctHtml = showPct ? '<span style="font-size:0.8rem;font-weight:700;color:' + accent + ';">' + value + '%</span>' : '';
   var captionHtml = caption ? '<p style="font-size:0.78rem;opacity:0.5;margin-top:4px;">' + _esc(caption) + '</p>' : '';
   return '<style>@keyframes pb' + uid + '-glow{0%,100%{box-shadow:0 0 6px ' + accent + '88;}50%{box-shadow:0 0 16px ' + accent + ';}}</style>' +
-    '<div style="margin:1rem 0;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_bar') + '" style="margin:1rem 0;">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
     '<span style="font-size:0.85rem;font-weight:600;">' + _esc(label) + '</span>' + pctHtml + '</div>' +
     '<div style="background:rgba(255,255,255,0.08);border-radius:100px;height:10px;overflow:hidden;">' +
@@ -2484,7 +2484,7 @@ _RENDERERS['pull_stat'] = function(b) {
   var value = b.value || b.stat || '';
   var label = b.label || '';
   var context = b.context || '';
-  return '<div style="border-left:4px solid #7c3aed;padding:16px 20px;margin:1.5rem 0;background:#faf5ff;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'pull_stat') + '" style="border-left:4px solid #7c3aed;padding:16px 20px;margin:1.5rem 0;background:#faf5ff;">' +
     '<div style="font-size:2.5rem;font-weight:900;color:#7c3aed;line-height:1;">' + _esc(String(value)) + '</div>' +
     (label ? '<div style="font-size:0.88rem;font-weight:600;color:#374151;margin-top:6px;">' + _esc(label) + '</div>' : '') +
     (context ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:4px;">' + _esc(context) + '</div>' : '') + '</div>';
@@ -3057,7 +3057,7 @@ _RENDERERS['rating_stars'] = function(b) {
   var full = Math.min(Math.floor(rating), maxRating);
   var stars = Array(full).fill('<span style="color:#facc15;">★</span>').join('') +
     Array(maxRating-full).fill('<span style="color:#d1d5db;">★</span>').join('');
-  return '<div style="margin:0.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.rating, 'rating_stars') + '" style="margin:0.5rem 0;">' +
     (label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:4px;">' + _esc(label) + '</div>' : '') +
     '<div>' + stars + '<span style="font-size:0.85rem;color:#374151;margin-left:6px;">' + rating + '</span></div></div>';
 };

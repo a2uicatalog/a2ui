@@ -186,7 +186,7 @@ _RENDERERS['pulse_dot'] = function(b) {
     + '#' + uid + '{width:' + size + ';height:' + size + ';border-radius:50%;background:' + color + ';animation:' + uid + ' ' + speed + 's ease infinite;flex-shrink:0;}'
     + '</style>';
 
-  return css + '<span style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;margin:' + (inline ? '0 4px' : 'var(--a2ui-block-gap,1.25rem) 0') + ';">'
+  return css + '<span data-cb="node" data-key="' + _ckey(b.label, 'pulse_dot') + '" style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;margin:' + (inline ? '0 4px' : 'var(--a2ui-block-gap,1.25rem) 0') + ';">'
     + '<span id="' + uid + '"></span>' + label + '</span>';
 };
 
@@ -239,7 +239,7 @@ _RENDERERS['progress_ring'] = function(b) {
     + (showVal ? '<text x="' + (size/2) + '" y="' + (size/2 + 6) + '" text-anchor="middle" style="font-size:' + (size*0.2) + 'px;font-weight:700;fill:var(--text,#111827);">' + value + unit + '</text>' : '')
     + '</svg>';
 
-  return css + '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + svg + label + '</div>';
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_ring') + '" style="display:inline-flex;flex-direction:column;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + svg + label + '</div>';
 };
 
 // ─── confetti_burst ───────────────────────────────────────────────────────────
@@ -321,7 +321,7 @@ _RENDERERS['ripple_button'] = function(b) {
     + '})();<\/script>';
 
   var icon = b.icon ? _esc(b.icon) + ' ' : '';
-  return css + '<div style="display:flex;justify-content:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'ripple_button') + '" style="display:flex;justify-content:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<button id="' + uid + '">' + icon + label + '</button></div>' + script;
 };
 
@@ -480,7 +480,7 @@ _RENDERERS['number_flip'] = function(b) {
     return '<span class="' + uid + '-d"><span class="' + uid + '-v" style="animation-delay:' + (i * 80 + 200) + 'ms;">' + _esc(ch) + '</span></span>';
   }).join('');
 
-  return css + '<div style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'number_flip') + '" style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + color + ';line-height:1;font-family:inherit;">'
     + (pre ? '<span>' + pre + '</span>' : '')
     + digits

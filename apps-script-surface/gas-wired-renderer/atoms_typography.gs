@@ -281,7 +281,7 @@ _RENDERERS['reveal_line'] = function(b) {
       'to{clip-path:inset(0 0% 0 0);}' +
     '}' +
     '</style>' +
-    '<div style="overflow:hidden;padding:4px 0;">' +
+    '<div data-cb="node" data-key="' + _ckey(undefined, 'reveal_line') + '" style="overflow:hidden;padding:4px 0;">' +
     '<div style="' +
       'font-size:' + _esc(size) + ';' +
       'font-weight:' + weight + ';' +
