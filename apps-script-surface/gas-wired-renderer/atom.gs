@@ -1712,7 +1712,7 @@ _RENDERERS['checklist_interactive'] = function(b) {
 
 _RENDERERS['glossary_inline'] = function(b) {
   var defn = (b.definition || '').replace(/"/g,'&quot;');
-  return '<span style="position:relative;display:inline-block;">' +
+  return '<span data-cb="node" data-key="' + _ckey(b.term, 'glossary_inline') + '" style="position:relative;display:inline-block;">' +
     '<span style="border-bottom:2px dotted #7c3aed;cursor:help;color:#7c3aed;font-weight:600;" title="' + defn + '">' + _esc(b.term||'') + '</span></span>';
 };
 
@@ -2055,7 +2055,7 @@ _RENDERERS['faq_accordion'] = function(b) {
 
 _RENDERERS['footnote'] = function(b) {
   var fid = b.id || '1';
-  return '<div style="margin:0.5rem 0;font-size:0.78rem;color:var(--muted,#5f6368);padding-left:1.2rem;border-left:2px solid #e5e7eb;"><sup style="color:#7c3aed;font-weight:600;">[' + _esc(String(fid)) + ']</sup> ' + _markdownToHtml(b.text||'') + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.id, 'footnote') + '" style="margin:0.5rem 0;font-size:0.78rem;color:var(--muted,#5f6368);padding-left:1.2rem;border-left:2px solid #e5e7eb;"><sup style="color:#7c3aed;font-weight:600;">[' + _esc(String(fid)) + ']</sup> ' + _markdownToHtml(b.text||'') + '</div>';
 };
 
 _RENDERERS['footnote_group'] = function(b) {
@@ -2842,7 +2842,7 @@ _RENDERERS['flip_card'] = function(b) {
     + '.fcb' + uid + '{background:' + backBg + ';color:#fff;transform:rotateY(180deg);}'
     + '.fch' + uid + '{position:absolute;bottom:10px;right:14px;font-size:0.62rem;opacity:0.45;pointer-events:none;}'
     + '</style>'
-    + '<div id="fco' + uid + '" role="button" tabindex="0" aria-label="Flip card — press to reveal" onclick="this.classList.toggle(\'flp\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.classList.toggle(\'flp\');}">'
+    + '<div data-cb="node" data-key="' + _ckey(null, 'flip_card') + '" id="fco' + uid + '" role="button" tabindex="0" aria-label="Flip card — press to reveal" onclick="this.classList.toggle(\'flp\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.classList.toggle(\'flp\');}">'
     + '<div id="fci' + uid + '">'
     + '<div class="fcf' + uid + '">' + frontHtml + '<span class="fch' + uid + '">tap to flip ↺</span></div>'
     + '<div class="fcb' + uid + '">' + backHtml  + '<span class="fch' + uid + '">tap to flip ↺</span></div>'
@@ -4224,7 +4224,7 @@ _RENDERERS['gradient_hero'] = function(b) {
     '.gh-sub-' + uid + '{font-size:17px;color:var(--muted,#4b5563);line-height:1.6;margin-bottom:20px;max-width:600px;' + (align==='center'?'margin-left:auto;margin-right:auto;':'') + '}' +
     '.gh-cta-' + uid + '{display:inline-block;background:' + accent + ';color:#fff;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:700;text-decoration:none;}' +
     '</style>' +
-    '<div class="gh-' + uid + '">' +
+    '<div data-cb="node" data-key="' + _ckey(b.title, 'gradient_hero') + '" class="gh-' + uid + '">' +
     (b.badge ? '<div class="gh-badge-' + uid + '">' + _esc(b.badge) + '</div>' : '') +
     '<div class="gh-title-' + uid + '">' + _markdownToHtml(b.title || b.heading || '') + '</div>' +
     (b.subtitle || b.subtext ? '<div class="gh-sub-' + uid + '">' + _markdownToHtml(b.subtitle || b.subtext) + '</div>' : '') +

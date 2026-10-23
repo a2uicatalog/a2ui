@@ -141,7 +141,7 @@ _RENDERERS['feed_status'] = function(b) {
   var size  = b.size  || '0.6rem';
 
   var pill =
-    '<span id="' + uid + '" style="display:inline-flex;align-items:center;gap:5px;' +
+    '<span data-cb="node" data-key="' + _ckey(b.name, 'feed_status') + '" id="' + uid + '" style="display:inline-flex;align-items:center;gap:5px;' +
       'font-family:\'Courier New\',monospace;font-size:' + size + ';letter-spacing:0.08em;' +
       'padding:3px 9px;border-radius:100px;vertical-align:middle;' +
       'background:rgba(255,59,48,0.12);border:1px solid rgba(255,59,48,0.3);color:#d30b00;">' +

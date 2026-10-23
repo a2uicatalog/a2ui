@@ -8540,7 +8540,7 @@
   "parity": false
  },
  "footnote": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "footnote",
@@ -8761,7 +8761,7 @@
   "parity": false
  },
  "expandable_text": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "expandable_text",
@@ -8777,7 +8777,7 @@
   "parity": false
  },
  "flip_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "flip_card",
@@ -9143,7 +9143,7 @@
   "parity": false
  },
  "glossary_inline": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "glossary_inline",
@@ -9268,7 +9268,7 @@
   "parity": false
  },
  "drop_cap": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "drop_cap",
@@ -9398,7 +9398,7 @@
   "parity": false
  },
  "gauge_sla": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "gauge_sla",
@@ -9725,7 +9725,7 @@
   "parity": false
  },
  "gradient_hero": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "gradient_hero",
@@ -10147,7 +10147,7 @@
   "parity": false
  },
  "gradient_text": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "gradient_text",
@@ -10862,7 +10862,7 @@
   "parity": false
  },
  "glass_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "glass_card",
@@ -11226,7 +11226,7 @@
   "parity": false
  },
  "feed_status": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "feed_status",

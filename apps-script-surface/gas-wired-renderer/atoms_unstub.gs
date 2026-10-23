@@ -77,7 +77,7 @@ _RENDERERS['expandable_text'] = function(b) {
   var summary = _esc(b.summary || 'Read more');
   var details = _markdownToHtml(b.details || b.content || '');
   var open    = b.initial_state_expanded ? ' open' : '';
-  return '<details' + open + ' style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:8px;overflow:hidden;">'
+  return '<details data-cb="node" data-key="' + _ckey(b.summary, 'expandable_text') + '"' + open + ' style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:8px;overflow:hidden;">'
     + '<summary style="padding:10px 14px;font-size:0.875rem;font-weight:600;color:var(--text,#111827);cursor:pointer;background:var(--surface,#f9fafb);list-style:none;">'
     + '▶ ' + summary + '</summary>'
     + '<div style="padding:14px 16px;font-size:0.875rem;line-height:1.6;color:var(--text,#374151);">' + details + '</div></details>';
@@ -509,7 +509,7 @@ _RENDERERS['gauge_sla'] = function(b) {
     + '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" style="font-size:20px;font-weight:700;fill:' + color + ';">' + value + unit + '</text>'
     + (label ? '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" style="font-size:10px;fill:#9ca3af;">' + label + '</text>' : '')
     + '</svg>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
     + title + svg + '</div>';
 };
 

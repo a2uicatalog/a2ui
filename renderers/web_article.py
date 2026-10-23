@@ -1939,7 +1939,7 @@ def _render_gradient_hero(b: dict) -> str:
     align   = "center" if b.get("align") == "center" else "left"
     mx      = "margin-left:auto;margin-right:auto;" if align == "center" else ""
     return (
-        f'<div style="padding:48px 32px;border-radius:16px;background:{_cv_esc(grad)};margin:0 0 1.5rem;text-align:{align};">'
+        f'<div data-cb="node" data-key="{_ck(b.get("title"), "gradient_hero")}" style="padding:48px 32px;border-radius:16px;background:{_cv_esc(grad)};margin:0 0 1.5rem;text-align:{align};">'
         + (f'<div style="display:inline-block;background:{_cv_esc(accent)};color:#fff;border-radius:99px;padding:3px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">{_cv_esc(b["badge"])}</div>' if b.get("badge") else "")
         + f'<div style="font-size:36px;font-weight:900;line-height:1.15;color:#111827;margin-bottom:12px;letter-spacing:-0.02em;">{_md_inline(b.get("title", b.get("heading","")))}</div>'
         + (f'<div style="font-size:17px;color:#4b5563;line-height:1.6;margin-bottom:20px;max-width:600px;{mx}">{_md_inline(b["subtitle"] if b.get("subtitle") else b.get("subtext",""))}</div>' if b.get("subtitle") or b.get("subtext") else "")
@@ -2427,7 +2427,7 @@ def _render_expandable_text(b: dict) -> str:
 def _render_flip_card(b: dict) -> str:
     front = render(b.get("front_blocks", []))
     back  = render(b.get("back_blocks", []))
-    return (f'<div style="margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    return (f'<div data-cb="node" data-key="{_ck(None, "flip_card")}" style="margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
             f'<div style="padding:12px;border:2px solid #7c3aed;border-radius:8px;background:#faf5ff;">'
             f'<div style="font-size:0.7rem;font-weight:600;color:#7c3aed;margin-bottom:6px;text-transform:uppercase;">Front</div>'
             f'{front}</div>'
@@ -11711,7 +11711,7 @@ def _render_expandable_text(b: dict) -> str:
     summary = b.get("summary","Read more")
     details = _md_inline(b.get("details") or b.get("content",""))
     open_attr = " open" if b.get("initial_state_expanded") else ""
-    return f'<details{open_attr} style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><summary style="padding:10px 14px;font-size:.875rem;font-weight:600;color:#111827;cursor:pointer;background:#f9fafb;list-style:none;">▶ {_cv_esc(summary)}</summary><div style="padding:14px 16px;font-size:.875rem;line-height:1.6;">{details}</div></details>'
+    return f'<details data-cb="node" data-key="{_ck(b.get("summary"), "expandable_text")}"{open_attr} style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><summary style="padding:10px 14px;font-size:.875rem;font-weight:600;color:#111827;cursor:pointer;background:#f9fafb;list-style:none;">▶ {_cv_esc(summary)}</summary><div style="padding:14px 16px;font-size:.875rem;line-height:1.6;">{details}</div></details>'
 
 def _render_conversion_funnel(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
@@ -13346,7 +13346,7 @@ _RENDERERS['follow_cta'] = _render_follow_cta
 def _render_footnote(b: dict) -> str:
     number = b.get('number', 1)
     text = b.get('text', '')
-    return (f'<div id="fn{_cv_esc(number)}" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("id"), "footnote")}" id="fn{_cv_esc(number)}" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;'
             f'font-size:0.82rem;color:var(--muted,#5f6368);display:flex;gap:8px;align-items:flex-start;">'
             f'<span style="font-weight:700;flex-shrink:0;">[{_cv_esc(number)}]</span>'
             f'<span>{_md_inline(text)}</span></div>')
@@ -13431,7 +13431,7 @@ _RENDERERS['gallery'] = _render_gallery
 def _render_glossary_inline(b: dict) -> str:
     term = b.get('term', '')
     def_text = b.get('definition') or b.get('text', '')
-    return (f'<abbr title="{_esc(def_text)}" style="text-decoration:underline dotted #9ca3af;'
+    return (f'<abbr data-cb="node" data-key="{_ck(b.get("term"), "glossary_inline")}" title="{_esc(def_text)}" style="text-decoration:underline dotted #9ca3af;'
             f'cursor:help;color:inherit;">{_esc(term)}</abbr>')
 
 _RENDERERS['glossary_inline'] = _render_glossary_inline
@@ -13460,7 +13460,7 @@ def _render_gradient_text(b: dict) -> str:
     style = (f'background:linear-gradient(135deg,{_esc(from_color)},{_esc(to_color)});'
              f'-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
              f'background-clip:text;font-size:{_esc(size)};font-weight:800;display:inline-block;')
-    return f'<{_esc(tag)} style="{style}">{_esc(text)}</{_esc(tag)}>'
+    return f'<{_esc(tag)} data-cb="node" data-key="{_ck(b.get("text"), "gradient_text")}" style="{style}">{_esc(text)}</{_esc(tag)}>'
 
 _RENDERERS['gradient_text'] = _render_gradient_text
 
@@ -17669,7 +17669,7 @@ def _render_gauge_sla(b: dict) -> str:
     """
 
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div data-cb="node" data-key="{_ck(b.get("title"), "gauge_sla")}" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {svg_html}
     </div>
@@ -20721,7 +20721,7 @@ def _render_drop_cap(b: dict) -> str:
         cap_css = f'float:left;font-size:{_js_num(lines * 1.25)}em;line-height:0.82;padding:0.06em 0.3em 0.05em 0;margin:0.06em 0.34em 0 0;font-style:italic;color:{accent};border-right:1px solid {accent};'
     else:
         cap_css = f'float:left;font-size:{_js_num(lines * 1.25)}em;line-height:0.82;padding-top:0.08em;margin:0 0.14em 0 0;color:{accent};'
-    return _cv_card(th, f'<p style="margin:0;font-family:{_CV_VOICES["serif"]};font-size:1.05rem;line-height:1.65;color:{th["ink"]};"><span style="font-family:{cap_font};font-weight:700;{cap_css}">{_cv_esc(cap)}</span>{_cv_esc(rest)}</p>')
+    return _cv_card(th, f'<p data-cb="node" data-key="{_ck(None, "drop_cap")}" style="margin:0;font-family:{_CV_VOICES["serif"]};font-size:1.05rem;line-height:1.65;color:{th["ink"]};"><span style="font-family:{cap_font};font-weight:700;{cap_css}">{_cv_esc(cap)}</span>{_cv_esc(rest)}</p>')
 
 
 def _ca_lum(h):
@@ -22610,7 +22610,7 @@ _RENDERERS["ai_build_trace"] = _render_ai_build_trace
 def _render_feed_status(b: dict) -> str:
     name = _esc(b.get('name', b.get('label', 'Feed')))
     size = _esc(str(b.get('size', '')))
-    return ('<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('name'), 'feed_status') + '" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;'
             'border-radius:20px;background:#f0fdf4;border:1px solid #86efac;">'
             '<span style="width:8px;height:8px;border-radius:50%;background:#10b981;'
             'animation:pulse 2s infinite;display:inline-block;"></span>'
@@ -22736,7 +22736,7 @@ def _render_glass_card(b: dict) -> str:
     radius = _esc(b.get('radius', '16px'))
     title_html = ('<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.9);'
                   'margin-bottom:14px;">' + title + '</div>') if title else ''
-    return ('<div style="background:' + bg + ';backdrop-filter:blur(' + str(blur) + 'px);'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('title'), 'glass_card') + '" style="background:' + bg + ';backdrop-filter:blur(' + str(blur) + 'px);'
             '-webkit-backdrop-filter:blur(' + str(blur) + 'px);border:1px solid ' + border + ';'
             'border-radius:' + radius + ';padding:' + padding + ';position:relative;overflow:hidden;">'
             + title_html + _cv_esc(content) + '</div>')

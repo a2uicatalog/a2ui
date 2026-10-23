@@ -2396,7 +2396,7 @@ _RENDERERS['glow_button'] = function(b) {
 _RENDERERS['gradient_text'] = function(b) {
   var text = b.text || b.label || b.title || '';
   var grad = b.gradient || 'linear-gradient(135deg,#4f46e5,#a855f7,#ec4899)';
-  return '<div style="margin:0.5rem 0;"><span style="background:' + _esc(grad) + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;font-size:' + _esc(b.size || '1.5rem') + ';">' + _esc(text) + '</span></div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'gradient_text') + '" style="margin:0.5rem 0;"><span style="background:' + _esc(grad) + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;font-size:' + _esc(b.size || '1.5rem') + ';">' + _esc(text) + '</span></div>';
 };
 
 _RENDERERS['glitch_text'] = function(b) {

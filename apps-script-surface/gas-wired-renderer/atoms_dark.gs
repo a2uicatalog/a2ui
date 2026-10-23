@@ -107,7 +107,7 @@ _RENDERERS['glass_card'] = function(b) {
   var padding = b.padding || '28px';
   var radius  = b.radius  || '16px';
 
-  return '<div style="' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'glass_card') + '" style="' +
     'background:' + bg + ';' +
     'backdrop-filter:blur(' + blur + 'px);' +
     '-webkit-backdrop-filter:blur(' + blur + 'px);' +

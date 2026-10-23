@@ -693,7 +693,7 @@ _RENDERERS['drop_cap'] = function(b) {
   else if (style === 'boxed') capCss = 'float:left;font-size:' + (lines * 1.05) + 'em;line-height:1;padding:0.12em 0.2em;margin:0.08em 0.28em 0 0;background:' + accent + ';color:' + th.bg + ';border-radius:0.08em;';
   else if (style === 'ornament') capCss = 'float:left;font-size:' + (lines * 1.25) + 'em;line-height:0.82;padding:0.06em 0.3em 0.05em 0;margin:0.06em 0.34em 0 0;font-style:italic;color:' + accent + ';border-right:1px solid ' + accent + ';';
   else capCss = 'float:left;font-size:' + (lines * 1.25) + 'em;line-height:0.82;padding-top:0.08em;margin:0 0.14em 0 0;color:' + accent + ';';
-  return _cvCard(th, '<p style="margin:0;font-family:' + _CV_VOICES.serif + ';font-size:1.05rem;line-height:1.65;color:' + th.ink + ';"><span style="font-family:' + capFont + ';font-weight:700;' + capCss + '">' + _esc(cap) + '</span>' + _esc(rest) + '</p>');
+  return _cvCard(th, '<p data-cb="node" data-key="' + _ckey(null, 'drop_cap') + '" style="margin:0;font-family:' + _CV_VOICES.serif + ';font-size:1.05rem;line-height:1.65;color:' + th.ink + ';"><span style="font-family:' + capFont + ';font-weight:700;' + capCss + '">' + _esc(cap) + '</span>' + _esc(rest) + '</p>');
 };
 
 function _caLum(hex) {
