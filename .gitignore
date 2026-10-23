@@ -114,3 +114,6 @@ scripts/_threejs_cache/
 
 # Python virtual environment (local only)
 .venv/
+
+# Gemini reply cache of scripts/gemini_endpoint.py
+scripts/cache/

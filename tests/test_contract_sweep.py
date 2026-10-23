@@ -6,7 +6,7 @@ keyed later as a whole block), exempt (with a reason) or todo. A new atom fails 
 it is classified: that is the onboarding check.
 
 A sweep atom whose status is "keyed" (or named in A2UI_SWEEP_ATOMS, the batch being worked on) must, in Python and in
-GAS: render; put data-cb with a kind from the registry's list on at least two elements; give each a non-empty data-key,
+GAS: render; put data-cb with a kind from the registry's list on at least two elements (one for an atom whose fixture entry has "class": "S", a single visual unit); give each a non-empty data-key,
 unique among the shapes and among the labels; and be purely additive (stripping data-cb, data-key and the cb-fade class
 gives the pre-sweep hash). Twins that were byte-identical before stay byte-identical.
 """
@@ -111,9 +111,9 @@ def pairs(core_js):
     return out
 
 
-def _check(html, kinds):
+def _check(html, kinds, need=2):
     tags = [(m.group(1), m.group(0)) for m in TAG.finditer(html)]
-    assert len(tags) >= 2, "fewer than two data-cb elements"
+    assert len(tags) >= need, "fewer than %d data-cb element%s" % (need, "" if need == 1 else "s")
     bad = [k for k, _ in tags if k not in kinds]
     assert not bad, "kinds outside the contract: %s" % sorted(set(bad))
     nokey = [t[:160] for _, t in tags if not (KEY.search(t) and KEY.search(t).group(1).strip())]
@@ -130,7 +130,7 @@ def _check(html, kinds):
 def test_contract_and_keys(name, twin, pairs):
     html = pairs[name][twin]
     assert not html.startswith(("PY ERROR", "GAS ERROR")), html[:600]
-    _check(html, REG["kinds"])
+    _check(html, REG["kinds"], 1 if SWEEP[name].get("class") == "S" else 2)
 
 
 @pytest.mark.parametrize("name", sorted(SWEEP))
