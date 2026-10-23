@@ -32654,7 +32654,7 @@ def _render_sunburst(b: dict) -> str:
         x0, y0, x1, y1 = nd['x0'], nd['y0'], nd['x1'], nd['y1']
         if not icicle:
             ro = max(y0, y1 - 1)
-            rings[dp - 1] += '<path d="' + _sb_arc(x0, x1, y0, ro, min((x1 - x0) / 2, _SB_PAD), _SB_PADR) + '" fill="' + fill + '"><title>' + title + '</title></path>'
+            rings[dp - 1] += '<path data-key="' + _cb_kj(sp['chain'] if nd['kids'] else sp['item']['chain'] + [sp['n']]) + '" d="' + _sb_arc(x0, x1, y0, ro, min((x1 - x0) / 2, _SB_PAD), _SB_PADR) + '" fill="' + fill + '"><title>' + title + '</title></path>'
             t, dth = ro - y0, x1 - x0
             if t > 0 and dth > 0:
                 wm = _sb_q(max((c * _SB_K + 8) * _SB_BOX / t, _SB_LINE * _SB_BOX / ((y0 + 4) * dth)))
@@ -33056,7 +33056,7 @@ def _render_circle_pack(b: dict) -> str:
         c = min(_oc_chars(sp['n']), 6)
         left, top = _tm_pct(x + 2, M), _tm_pct(y + 2, M)
         if nd['kids']:
-            rings[dp - 1] += '<circle ' + pos + 'fill="none" stroke="' + _sb_fill(base, min(dp, 2)) + '" stroke-width="1.5" vector-effect="non-scaling-stroke"><title>' + title + '</title></circle>'
+            rings[dp - 1] += '<circle data-key="' + _cb_kj(sp['chain']) + '" ' + pos + 'fill="none" stroke="' + _sb_fill(base, min(dp, 2)) + '" stroke-width="1.5" vector-effect="non-scaling-stroke"><title>' + title + '</title></circle>'
             wm = _cp_q(max((c * _CP_K + 8) / 0.8, 40) * S / r)
             if wm <= 640:
                 cls, g = _cp_gate(wm)
@@ -33067,7 +33067,7 @@ def _render_circle_pack(b: dict) -> str:
         else:
             fill = _sb_fill(base, dp)
             ink = _sb_ink(fill)
-            rings[dp - 1] += '<circle ' + pos + 'fill="' + fill + '"><title>' + title + '</title></circle>'
+            rings[dp - 1] += '<circle data-key="' + _cb_kj(sp['item']['chain'] + [sp['n']]) + '" ' + pos + 'fill="' + fill + '"><title>' + title + '</title></circle>'
             if big is None or nd['value'] > big['value']:
                 big = nd
             half = c * _CP_K / 2

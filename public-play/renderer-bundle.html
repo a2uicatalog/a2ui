@@ -24869,7 +24869,7 @@ _RENDERERS['sunburst'] = function(b) {
     var ro, t, dth, wm, cl, rm, th, deg, left, w, hh, show, g;
     if (!icicle) {
       ro = Math.max(y0, y1 - 1);
-      rings[dp - 1] += '<path d="' + _sbArc(x0, x1, y0, ro, Math.min((x1 - x0) / 2, _SB_PAD), _SB_PADR, 3) + '" fill="' + fill + '"><title>' + title + '</title></path>';
+      rings[dp - 1] += '<path data-key="' + _esc((nd.kids ? sp.chain : sp.item.chain.concat([sp.n])).join('/')) + '" d="' + _sbArc(x0, x1, y0, ro, Math.min((x1 - x0) / 2, _SB_PAD), _SB_PADR, 3) + '" fill="' + fill + '"><title>' + title + '</title></path>';
       t = ro - y0; dth = x1 - x0;
       if (t > 0 && dth > 0) {
         wm = _sbQ(Math.max((c * _SB_K + 8) * _SB_BOX / t, _SB_LINE * _SB_BOX / ((y0 + 4) * dth)));
@@ -25058,7 +25058,7 @@ _RENDERERS['circle_pack'] = function(b) {
     var title = _ifS((nd.kids ? sp.chain : sp.item.chain.concat([sp.n])).join(' / '), 160) + ': ' + _esc(f(nd.value)) + ' (' + (nd.value / tot * 100).toFixed(1) + '%)';
     var pos = 'cx="' + _cpF(x) + '" cy="' + _cpF(y) + '" r="' + _cpF(r) + '" ';
     if (nd.kids) {
-      rings[dp - 1] += '<circle ' + pos + 'fill="none" stroke="' + _sbFill(base, Math.min(dp, 2)) + '" stroke-width="1.5" vector-effect="non-scaling-stroke"><title>' + title + '</title></circle>';
+      rings[dp - 1] += '<circle data-key="' + _esc(sp.chain.join('/')) + '" ' + pos + 'fill="none" stroke="' + _sbFill(base, Math.min(dp, 2)) + '" stroke-width="1.5" vector-effect="non-scaling-stroke"><title>' + title + '</title></circle>';
       wm = _cpQ(Math.max((c * _CP_K + 8) / 0.8, 40) * S / r);
       if (wm <= 640) {
         cl = _cpGate(wm); ws.push(cl[1]);
@@ -25068,7 +25068,7 @@ _RENDERERS['circle_pack'] = function(b) {
       }
     } else {
       fill = _sbFill(base, dp); ink = _sbInk(fill);
-      rings[dp - 1] += '<circle ' + pos + 'fill="' + fill + '"><title>' + title + '</title></circle>';
+      rings[dp - 1] += '<circle data-key="' + _esc(sp.item.chain.concat([sp.n]).join('/')) + '" ' + pos + 'fill="' + fill + '"><title>' + title + '</title></circle>';
       if (big === null || nd.value > big.value) big = nd;
       half = c * _CP_K / 2; rn = Math.max(Math.sqrt(half * half + 49) + 2, (c * _CP_K + 4) / 1.4, 21); wn = _cpQ(rn * S / r);
       if (wn <= 640) {
