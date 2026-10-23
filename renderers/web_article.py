@@ -551,7 +551,7 @@ def _render_callout(b: dict) -> str:
     text = _md_inline(b.get("text", ""))
     title_html = f'<strong style="color:{text_color};display:block;margin-bottom:4px;">{emoji} {_cv_esc(title)}</strong>' if title else f'<strong style="color:{text_color};">{emoji} </strong>'
     return (
-        f'<div style="background:{bg};border-left:4px solid {border};border-radius:0 8px 8px 0;'
+        f'<div data-cb="node" data-key="{_ck(b.get("title"), "callout")}" style="background:{bg};border-left:4px solid {border};border-radius:0 8px 8px 0;'
         f'padding:16px 20px;margin:1.5rem 0;">'
         f'{title_html}'
         f'<span style="color:#3c4043;line-height:1.6;">{text}</span>'
@@ -12198,7 +12198,7 @@ def _wa_oid(b):
 def _render_abbr_tooltip(b: dict) -> str:
     text = b.get('text', '')
     title = b.get('title') or b.get('definition', '')
-    return (f'<abbr title="{_esc(title)}" style="text-decoration:underline dotted #7c3aed;'
+    return (f'<abbr data-cb="node" data-key="{_ck(b.get("text"), "abbr_tooltip")}" title="{_esc(title)}" style="text-decoration:underline dotted #7c3aed;'
             f'text-underline-offset:4px;cursor:help;font-weight:600;color:#4338ca;">'
             f'{_esc(text)}</abbr>')
 
@@ -17888,7 +17888,7 @@ def _render_call_mood_board(b: dict) -> str:
     """ if themes else ""
     
     return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+    <div data-cb="node" data-key="{_ck(b.get('title'), 'call_mood_board')}" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
       {moods_section}
       {themes_section}
@@ -21185,7 +21185,7 @@ def _render_certification_card(b: dict) -> str:
     req_html = (f'<div style="margin-top:12px;padding:8px 12px;background:#f9fafb;border-radius:8px;'
                 f'font-size:0.78rem;color:var(--muted,#5f6368);">Requires: {req}</div>') if req else ''
     return (
-        f'<div style="font-family:system-ui,sans-serif;padding:28px;border-radius:16px;'
+        f'<div data-cb="node" data-key="{_ck(b.get("course"), "certification_card")}" style="font-family:system-ui,sans-serif;padding:28px;border-radius:16px;'
         f'background:linear-gradient(135deg,#fff,#f8fafc);border:2px solid {_esc(accent)}44;'
         f'text-align:center;position:relative;overflow:hidden;">'
         f'<div style="font-size:2.5rem;margin-bottom:8px;">🎓</div>'
@@ -37326,7 +37326,7 @@ def _render_cert_disclaimer(b: dict) -> str:
     cert, holder, url = _gx_or(_if_g(b, 'cert'), ''), _gx_or(_if_g(b, 'holder'), ''), _gx_or(_if_g(b, 'url'), '')
     holder_link = ('<a href="' + _gx_esc(url) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">' + _gx_esc(holder) + '</a>') if _if_truthy(url) else _gx_esc(holder)
     cert_ref = ('<strong>' + _gx_esc(cert) + '</strong> is a registered trademark of ' + holder_link + '. ') if _if_truthy(cert) else ''
-    return ('<div style="margin:16px 0 8px;padding:10px 14px;border-left:3px solid rgba(148,163,184,0.3);border-radius:0 6px 6px 0;background:rgba(148,163,184,0.06);">'
+    return ('<div data-cb="node" data-key="' + _ck(_gx_or(_if_g(b, 'cert'), ''), 'cert_disclaimer') + '" style="margin:16px 0 8px;padding:10px 14px;border-left:3px solid rgba(148,163,184,0.3);border-radius:0 6px 6px 0;background:rgba(148,163,184,0.06);">'
             '<p style="margin:0;font-size:11px;line-height:1.6;color:rgba(148,163,184,0.75);font-family:JetBrains Mono,monospace;letter-spacing:0.02em;">'
             '© ' + holder_link + '. ' + cert_ref + 'This study material is an independent work and is not affiliated with, endorsed by, or sponsored by ' + _gx_esc(holder) + '. '
             'All trademarks remain the property of their respective holders.</p></div>')

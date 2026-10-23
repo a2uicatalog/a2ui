@@ -14,7 +14,7 @@ _RENDERERS['cert_disclaimer'] = function(b) {
   var certRef = cert ? '<strong>' + _esc(cert) + '</strong> is a registered trademark of ' + holderLink + '. ' : '';
 
   return (
-    '<div style="' +
+    '<div data-cb="node" data-key="' + _ckey(b.cert, 'cert_disclaimer') + '" style="' +
       'margin:16px 0 8px;' +
       'padding:10px 14px;' +
       'border-left:3px solid rgba(148,163,184,0.3);' +

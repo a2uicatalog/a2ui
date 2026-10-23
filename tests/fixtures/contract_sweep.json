@@ -8361,7 +8361,7 @@
   "parity": false
  },
  "callout": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "callout",
@@ -9383,7 +9383,7 @@
   "parity": false
  },
  "abbr_tooltip": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "abbr_tooltip",
@@ -9440,7 +9440,7 @@
   "parity": false
  },
  "call_mood_board": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "call_mood_board",
@@ -11446,7 +11446,7 @@
   "parity": false
  },
  "certification_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "certification_card",
@@ -11816,7 +11816,7 @@
   "parity": false
  },
  "cert_disclaimer": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "cert_disclaimer",

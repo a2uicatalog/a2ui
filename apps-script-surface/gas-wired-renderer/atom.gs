@@ -417,7 +417,7 @@ _RENDERERS['spacer'] = function(b) {
 _RENDERERS['callout'] = function(b) {
   var icon = b.icon || '💡';
   var color = b.color || 'var(--accent)';
-  return '<div class="asw-callout" style="border-left-color:' + color + ';">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'callout') + '" class="asw-callout" style="border-left-color:' + color + ';">' +
          '<span class="asw-callout-icon">' + icon + '</span>' +
          '<div class="asw-callout-content">' + _markdownToHtml(b.text) + '</div>' +
          '</div>';
@@ -2640,7 +2640,7 @@ _RENDERERS['poll_block'] = function(b) {
 _RENDERERS['abbr_tooltip'] = function(b) {
   var text = b.text || '';
   var title = b.title || b.definition || '';
-  return '<abbr title="' + _esc(title) + '" style="text-decoration:underline dotted #7c3aed;text-underline-offset:4px;cursor:help;font-weight:600;color:#4338ca;">' + _esc(text) + '</abbr>';
+  return '<abbr data-cb="node" data-key="' + _ckey(b.text, 'abbr_tooltip') + '" title="' + _esc(title) + '" style="text-decoration:underline dotted #7c3aed;text-underline-offset:4px;cursor:help;font-weight:600;color:#4338ca;">' + _esc(text) + '</abbr>';
 };
 
 _RENDERERS['copy_to_clipboard'] = function(b) {

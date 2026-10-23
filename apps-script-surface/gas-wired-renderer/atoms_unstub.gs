@@ -287,7 +287,7 @@ _RENDERERS['call_mood_board'] = function(b) {
     var wt = Math.max(0.8, Math.min(1.6, (t.count || 5) / 10 + 0.8));
     return '<span style="padding:3px 10px;border-radius:12px;background:var(--surface,#f3f4f6);font-size:' + (wt * 0.8) + 'rem;color:var(--text,#374151);">' + _esc(t.term || t.label || '') + '</span>';
   }).join('');
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'call_mood_board') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + title
     + (moods ? '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">' + moods + '</div>' : '')
     + (themes ? '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + themes + '</div>' : '')

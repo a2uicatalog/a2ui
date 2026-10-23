@@ -406,7 +406,7 @@ _RENDERERS['certification_card'] = function(b) {
     '</div>';
 
   return (
-    '<div id="' + uid + 'wrap" style="font-family:\'Inter\',system-ui,sans-serif;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.course, 'certification_card') + '" id="' + uid + 'wrap" style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div id="' + uid + 'cert" style="' + (req ? 'display:none;' : '') + '">' + cert + '</div>' +
     (req ? locked : '') +
     '<script>(function(){' +
