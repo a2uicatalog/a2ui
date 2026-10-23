@@ -384,16 +384,17 @@ _RENDERERS['motion_build'] = function(b) {
 // move without the wrapper changing size). The scale origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
 // first block loses its top margin (!important: atoms set it inline; B's collapses out of the wrapper, A's would not, and the titles
 // would not line up).
-// Text inside a moving element hides while moving and fades in once at rest (p >= 0.85) via relative colour -webkit-text-fill-color. Twin: web_article.py _render_motion_transition.
+// Text inside an element that is resized on its way (scale off 1 by more than 4%: class mtr-s) hides while it moves and fades in once
+// at rest (p >= 0.85) via relative colour -webkit-text-fill-color; an element that only travels keeps its text visible. Twin: web_article.py _render_motion_transition.
 var _MTR_MATCH = {'path': 'path', 'exact': 'exact'};
 var _MTR_CSS = ".mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .mtr-a,.mo-tr .mtr-b{--p:1}.mo-tr .mtr-a{display:none}@media (prefers-reduced-motion:"
   + "no-preference){.mo-tr .mtr-a{display:block;position:absolute;left:0;top:0;width:100%;pointer-events:none;opacity:clamp(0,calc(1 - var(--mtr-p)*2.5),1)"
   + "}.mo-tr .mtr-a>*,.mo-tr .mtr-a>[data-mt-id]>*{margin-top:0!important}.mo-tr .mtr-b{opacity:clamp(0,calc(var(--mtr-p)*3.4),1)}.mo-tr .mtr-b .mtr-m{--mt"
   + "r-q:clamp(0,calc((var(--mtr-p) - 0.15)/0.7),1);translate:calc(var(--mtr-dx,0px)*(1 - var(--mtr-q))) calc(var(--mtr-dy,0px)*(1 - var(--mtr-q)));scale:c"
   + "alc(1 + (var(--mtr-sx,1) - 1)*(1 - var(--mtr-q))) calc(1 + (var(--mtr-sy,1) - 1)*(1 - var(--mtr-q)));transform-origin:0 0;transform-box:border-box}.mo"
-  + "-tr .mtr-b .mtr-m,.mo-tr .mtr-b .mtr-m *{-webkit-text-fill-color:rgb(from currentColor r g b / clamp(0,calc((var(--mtr-p) - 0.85)/0.15),1))}.mo-tr .mt"
-  + "r-b svg .mtr-m{transform-box:fill-box}.mo-tr .mtr-b .mtr-n{opacity:clamp(0,calc((var(--mtr-p) - 0.55)/0.35),1)}.mo-tr .mtr-b [data-cb=label]{opacity:c"
-  + "lamp(0,calc((var(--mtr-p) - 0.7)/0.3),1)}.mo-tr.mtr-measure .mtr-m{translate:none;scale:none}}";
+  + "-tr .mtr-b .mtr-m.mtr-s,.mo-tr .mtr-b .mtr-m.mtr-s *{-webkit-text-fill-color:rgb(from currentColor r g b / clamp(0,calc((var(--mtr-p) - 0.85)/0.15),1)"
+  + ")}.mo-tr .mtr-b svg .mtr-m{transform-box:fill-box}.mo-tr .mtr-b .mtr-n{opacity:clamp(0,calc((var(--mtr-p) - 0.55)/0.35),1)}.mo-tr .mtr-b [data-cb=labe"
+  + "l]{opacity:clamp(0,calc((var(--mtr-p) - 0.7)/0.3),1)}.mo-tr.mtr-measure .mtr-m{translate:none;scale:none}}";
 // generated from web_article.py _MTR_JS (keep byte-identical: scripts copy it, a test compares the twins)
 var _MTR_JS = "(function(){var w=document.currentScript&&document.currentScript.parentNode;if(!w||!w.querySelector)return;var A=w.querySelector('.mtr-a'),B=w.querySe"
   + "lector('.mtr-b'),rel={},exact=w.getAttribute('data-mtr-match')==='exact';try{rel=JSON.parse(w.getAttribute('data-mtr-src')||'{}')}catch(e){}function k"
@@ -406,13 +407,13 @@ var _MTR_JS = "(function(){var w=document.currentScript&&document.currentScript.
   + "t(a[q]);if(l.length)return l;var s=k.split('/');for(var j=s.length-1;j>0;j--){var u=s.slice(0,j).join('/');if(a[u])return a[u]}return null}function ru"
   + "n(){if(!A||!B||!A.getClientRects().length)return;w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];for(var k in b)for(var i=0;i<b[k].le"
   + "ngth;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}w.classList.remove('mtr-measure');for(var t=0;t"
-  + "<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n');if(!s||!o){e.classList.add('mtr-n');contin"
-  + "ue}var fx=1,fy=1,m=e.ownerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-"
-  + "o.x,dy=s.y-o.y;if(!plan[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}st.setProperty('--mtr-dx',(dx/"
-  + "fx).toFixed(2)+'px');st.setProperty('--mtr-dy',(dy/fy).toFixed(2)+'px');st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed("
-  + "4));e.classList.add('mtr-m')}}run();window.addEventListener('load',run);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);if(wind"
-  + "ow.ResizeObserver){var ro=new ResizeObserver(function(){run()});[w,A,B].concat([].slice.call(w.querySelectorAll('[data-cb-root]'))).forEach(function(e"
-  + "){if(e)ro.observe(e)})}})();";
+  + "<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n','mtr-s');if(!s||!o){e.classList.add('mtr-n'"
+  + ");continue}var fx=1,fy=1,m=e.ownerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1"
+  + ",dx=s.x-o.x,dy=s.y-o.y;if(!plan[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}st.setProperty('--mtr-"
+  + "dx',(dx/fx).toFixed(2)+'px');st.setProperty('--mtr-dy',(dy/fy).toFixed(2)+'px');st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy."
+  + "toFixed(4));e.classList.add('mtr-m');e.classList.toggle('mtr-s',Math.abs(sx-1)>0.04||Math.abs(sy-1)>0.04)}}run();window.addEventListener('load',run);i"
+  + "f(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);if(window.ResizeObserver){var ro=new ResizeObserver(function(){run()});[w,A,B].c"
+  + "oncat([].slice.call(w.querySelectorAll('[data-cb-root]'))).forEach(function(e){if(e)ro.observe(e)})}})();";
 
 function _mtrMap(v) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return {};
