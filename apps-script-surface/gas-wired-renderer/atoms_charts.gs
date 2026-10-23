@@ -2738,7 +2738,7 @@ _RENDERERS['reveal_on_scroll'] = function(b) {
   var dir   = b.direction || 'up';
   var uid = Math.random().toString(36).substr(2, 6);
   var startT = dir==='left'?'translateX(-28px)':dir==='right'?'translateX(28px)':dir==='down'?'translateY(-18px)':'translateY(20px)';
-  return '<div id="ros-' + uid + '" style="margin:1rem 0;opacity:0;transform:' + startT + ';transition:opacity 0.65s ease ' + delay + 's,transform 0.65s ease ' + delay + 's;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'reveal_on_scroll') + '" id="ros-' + uid + '" style="margin:1rem 0;opacity:0;transform:' + startT + ';transition:opacity 0.65s ease ' + delay + 's,transform 0.65s ease ' + delay + 's;">'
     + (title ? '<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
     + (text  ? '<div style="color:#374151;line-height:1.7;">' + _markdownToHtml(text) + '</div>' : '')
     + '<script>(function(){'
@@ -3370,7 +3370,7 @@ _RENDERERS['progress_reveal'] = function(b) {
   var suffix = b.suffix !== undefined ? b.suffix : '%';
   var height = parseInt(b.height || 10, 10);
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div id="pr-wrap-' + uid + '" style="margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label || b.title, 'progress_reveal') + '" id="pr-wrap-' + uid + '" style="margin:1rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">'
     + (label ? '<span style="font-size:0.875rem;font-weight:600;color:#374151;">' + _esc(label) + '</span>' : '<span></span>')
     + '<span id="pr-val-' + uid + '" style="font-size:0.875rem;font-weight:700;color:' + _esc(color) + ';">0' + _esc(String(suffix)) + '</span>'

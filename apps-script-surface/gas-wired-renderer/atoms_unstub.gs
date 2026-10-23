@@ -262,7 +262,7 @@ _RENDERERS['sentiment_summary'] = function(b) {
       + '<div style="background:' + bg + ';border-radius:4px;height:8px;"><div style="background:' + color + ';width:' + pct + '%;height:100%;border-radius:4px;"></div></div></div>';
   }
   var score = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#0c855d;">' + index + '%</div><div style="font-size:0.78rem;color:var(--muted,#6b7280);">Positive sentiment</div></div>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'sentiment_summary') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + title + score
     + bar('Positive', index, '#0c855d', '#d1fae5')
     + bar('Neutral', neu, '#6b7280', '#f3f4f6')
@@ -429,7 +429,7 @@ _RENDERERS['product_thumbnail'] = function(b) {
   var img   = b.image_url ? '<div style="position:relative;"><img src="' + _esc(b.image_url) + '" alt="' + _esc(b.title||'') + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">' + badge + '</div>' : '';
   var compare = b.compare_at_price ? '<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">' + _esc(b.compare_at_price) + '</span>' : '';
   var status = b.status ? '<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:' + (b.status === 'in_stock' ? '#d1fae5' : '#fee2e2') + ';color:' + (b.status === 'in_stock' ? '#10b981' : '#ef4444') + ';margin-left:6px;">' + _esc(b.status.replace(/_/g,' ')) + '</span>' : '';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.sku, 'product_thumbnail') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">'
     + img
     + '<div style="padding:10px 12px;">'
     + (b.vendor ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.vendor) + '</div>' : '')

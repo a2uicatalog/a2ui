@@ -9602,7 +9602,7 @@ def _render_reveal_on_scroll(b: dict) -> str:
         f'.ros_{uid}{{opacity:0;transform:{from_t};transition:opacity {dur}s ease,transform {dur}s ease;}}'
         f'.ros_{uid}.visible{{opacity:1;transform:translate(0);}}'
         f'</style>'
-        f'<div class="ros_{uid}" style="padding:24px 28px;background:{_cv_esc(bg)};border-left:3px solid {_cv_esc(accent)};'
+        f'<div data-cb="node" data-key="{_ck(b.get("title"), "reveal_on_scroll")}" class="ros_{uid}" style="padding:24px 28px;background:{_cv_esc(bg)};border-left:3px solid {_cv_esc(accent)};'
         f'border-radius:0 10px 10px 0;margin:1rem 0;">'
         f'<div style="font-weight:700;color:#0f172a;margin-bottom:6px;">{_cv_esc(title)}</div>'
         f'<div style="font-size:0.9rem;color:var(--muted,#5f6368);line-height:1.6;">{_cv_esc(body)}</div>'
@@ -11229,7 +11229,7 @@ def _render_section_label(b: dict) -> str:
     color  = b.get("colour", b.get("color", "var(--a2ui-accent,#4f46e5)"))
     margin = b.get("margin", "24px 0 12px")
     return (
-        f'<div style="display:inline-flex;align-items:center;gap:8px;margin:{_cv_esc(margin)};">'
+        f'<div data-cb="node" data-key="{_ck(b.get("text"), "section_label")}" style="display:inline-flex;align-items:center;gap:8px;margin:{_cv_esc(margin)};">'
         f'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;'
         f'background:{_cv_esc(color)};box-shadow:0 0 8px {_cv_esc(color)};"></span>'
         f'<span style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;'
@@ -11705,7 +11705,7 @@ def _render_sentiment_summary(b: dict) -> str:
     title = f'<div style="font-weight:700;font-size:.9rem;color:#111827;margin-bottom:14px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
     def bar(lbl, pct, col, bg): return f'<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted,#5f6368);margin-bottom:3px;"><span>{lbl}</span><span>{_cv_esc(pct)}%</span></div><div style="background:{bg};border-radius:4px;height:8px;"><div style="background:{col};width:{_cv_esc(pct)}%;height:100%;border-radius:4px;"></div></div></div>'
     score = f'<div style="text-align:center;margin-bottom:16px;"><div style="font-size:2.5rem;font-weight:700;color:#0c855d;">{_cv_esc(idx)}%</div><div style="font-size:.78rem;color:var(--muted,#5f6368);">Positive sentiment</div></div>'
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{title}{score}{bar("Positive",idx,"#0c855d","#d1fae5")}{bar("Neutral",neu,"#6b7280","#f3f4f6")}{bar("Negative",neg,"#ef4444","#fee2e2")}</div>'
+    return f'<div data-cb="node" data-key="{_ck(b.get("title"), "sentiment_summary")}" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{title}{score}{bar("Positive",idx,"#0c855d","#d1fae5")}{bar("Neutral",neu,"#6b7280","#f3f4f6")}{bar("Negative",neg,"#ef4444","#fee2e2")}</div>'
 
 def _render_expandable_text(b: dict) -> str:
     summary = b.get("summary","Read more")
@@ -14315,7 +14315,7 @@ def _render_share_quote(b: dict) -> str:
     tw_url = f'https://twitter.com/intent/tweet?text={_esc(twitter_text)}'
     if url:
         tw_url += f'&url={_esc(url)}'
-    return (f'<blockquote style="border:1.5px solid #0a71b1;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
+    return (f'<blockquote data-cb="node" data-key="{_ck(b.get("author"), "share_quote")}" style="border:1.5px solid #0a71b1;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
             f'margin:1.5rem 0;background:#e8f5fd;">'
             f'<p style="font-style:italic;font-size:0.95rem;color:#14171a;margin:0 0 10px;">'
             f'"{_esc(text)}"</p>'
@@ -15203,7 +15203,7 @@ def _render_product_thumbnail(b: dict) -> str:
     badge_html = (f'<div style="position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;'
                   f'font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);">{_esc(badge)}</div>'
                   if badge else '')
-    return (f'<a href="{_esc(url)}" style="display:block;text-decoration:none;border:1px solid #e5e7eb;'
+    return (f'<a data-cb="node" data-key="{_ck(b.get("sku"), "product_thumbnail")}" href="{_esc(url)}" style="display:block;text-decoration:none;border:1px solid #e5e7eb;'
             f'border-radius:10px;overflow:hidden;max-width:180px;margin:1rem 0;">'
             f'<div style="position:relative;">'
             f'{"<img src="+chr(34)+_esc(image)+chr(34)+" alt="+chr(34)+_esc(name)+chr(34)+" style=width:100%;aspect-ratio:1;object-fit:cover;>" if image else "<div style=background:#f3f4f6;aspect-ratio:1;></div>"}'
@@ -17495,7 +17495,7 @@ def _render_progress_circle(atom: dict) -> str:
         f'animation:pc_{uid} 1.2s ease-out forwards;}}'
         f'@keyframes pc_{uid}{{to{{stroke-dashoffset:{offset};}}}}'
         f'</style>'
-        f'<div style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(atom.get("label"), "progress_circle")}" style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">'
         f'<div style="position:relative;width:{px}px;height:{px}px;">'
         f'<svg role="img" aria-label="Progress indicator" width="{px}" height="{px}" viewBox="0 0 100 100" '
         f'style="transform:rotate(-90deg);display:block;">'
@@ -18008,7 +18008,7 @@ _RENDERERS["intro"] = _render_intro
 # same class of bug as numbered_list/color_section. Removed 2026-07-24.
 
 def _render_quote(b: dict) -> str:
-    html = f'<blockquote><p>{_md_inline(b.get("text", ""))}</p>'
+    html = f'<blockquote data-cb="node" data-key="{_ck(b.get("attribution"), "quote")}"><p>{_md_inline(b.get("text", ""))}</p>'
     if b.get("attribution"):
         html += f'<footer>— {_cv_esc(b["attribution"])}</footer>'
     html += '</blockquote>'
@@ -19022,7 +19022,7 @@ def _render_quiz_result_summary(b: dict) -> str:
                  f'letter-spacing:0.08em;margin-bottom:8px;">Question breakdown</div>'
                  f'<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">{dots}</div></div>') if dots else ''
     return (
-        f'<div{quiz_id_attr} style="font-family:system-ui,sans-serif;padding:28px;border-radius:14px;'
+        f'<div data-cb="node" data-key="{_ck(b.get("quiz_id"), "quiz_result_summary")}"{quiz_id_attr} style="font-family:system-ui,sans-serif;padding:28px;border-radius:14px;'
         f'background:{bg};border:1px solid {col};text-align:center;">'
         f'<div style="font-size:3rem;font-weight:800;color:{col};">{pct}%</div>'
         f'<div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">{verdict}</div>'
@@ -22415,7 +22415,7 @@ def _render_sheet_preview(b: dict) -> str:
     sheet = _esc(b.get('sheet_name', 'Sheet1'))
     rng = _esc(b.get('range', 'A1:E10'))
     url = ('https://docs.google.com/spreadsheets/d/' + sid) if sid else '#'
-    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("spreadsheet_id"), "sheet_preview")}" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.82rem;color:#374151;">'
             '📊 Sheets preview — <a href="' + url + '" target="_blank" rel="noopener noreferrer" '
             'style="color:#4f46e5;">' + (sid[:20] + '…' if len(sid) > 20 else sid) + '</a>'
@@ -23094,7 +23094,7 @@ def _render_scramble_reveal(b: dict) -> str:
     uid = 'scr' + hashlib.md5((text + title).encode()).hexdigest()[:5]
     raw = b.get('text', b.get('title', 'Hello'))
     raw_esc = _js_json(str(raw))
-    return ('<div style="padding:16px 0;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("text"), "scramble_reveal")}" style="padding:16px 0;">'
             + ('<div style="font-size:0.82rem;font-weight:700;color:var(--muted,#5f6368);margin-bottom:6px;">'
                + title + '</div>' if title else '')
             + '<div id="' + uid + '" style="font-size:1.4rem;font-weight:700;font-family:ui-monospace,monospace;'
@@ -23218,7 +23218,7 @@ def _render_scroll_trigger(b: dict) -> str:
     import hashlib
     uid = 'st' + hashlib.md5((text + title).encode()).hexdigest()[:5]
     tx = {'up': '0,24px', 'down': '0,-24px', 'left': '-24px,0', 'right': '24px,0'}.get(direction, '0,24px')
-    return ('<div id="' + uid + '" style="opacity:0;transform:translate(' + tx + ');transition:opacity 0.6s ease '
+    return ('<div data-cb="node" data-key="' + _ck(b.get('title'), 'scroll_trigger') + '" id="' + uid + '" style="opacity:0;transform:translate(' + tx + ');transition:opacity 0.6s ease '
             + f'{delay:.2f}' + 's,transform 0.6s ease ' + f'{delay:.2f}' + 's;margin:1rem 0;">'
             + ('<div style="font-weight:700;font-size:1rem;margin-bottom:6px;">' + title + '</div>' if title else '')
             + ('<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div>' if text else '')
@@ -23363,7 +23363,7 @@ def _render_progress_reveal(b: dict) -> str:
     height = int(b.get('height', 10))
     import hashlib
     uid = 'pr' + hashlib.md5(label.encode()).hexdigest()[:5]
-    return ('<div style="margin:1rem 0;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("label"), "progress_reveal")}" style="margin:1rem 0;">'
             + ('<div style="display:flex;justify-content:space-between;font-size:0.82rem;'
                'color:#374151;margin-bottom:6px;">'
                '<span>' + label + '</span>'

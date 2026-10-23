@@ -1006,7 +1006,7 @@ _RENDERERS['sheet_preview'] = function(b) {
     tableHtml += '</table></div>';
   }
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(spreadsheetId, 'sheet_preview') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">📊</span> Google Sheet Live Preview (' + _esc(sheetName || 'Sheet1') + '!' + _esc(rangeStr) + ')</div>' +
          tableHtml +
          '</div>';
@@ -1414,7 +1414,7 @@ _RENDERERS['intro'] = function(b) {
 
 _RENDERERS['quote'] = function(b) {
   var cite = b.attribution ? '<footer style="font-size:0.8rem;margin-top:6px;">— ' + _esc(b.attribution) + '</footer>' : '';
-  return '<blockquote><p>' + _markdownToHtml(b.text || '') + '</p>' + cite + '</blockquote>';
+  return '<blockquote data-cb="node" data-key="' + _ckey(b.attribution, 'quote') + '"><p>' + _markdownToHtml(b.text || '') + '</p>' + cite + '</blockquote>';
 };
 
 _RENDERERS['closing'] = function(b) {
@@ -2574,7 +2574,7 @@ _RENDERERS['share_quote'] = function(b) {
   var text = b.text || '';
   var author = b.author || '';
   var tweetText = encodeURIComponent(String(text).substring(0,200) + (author ? ' — ' + author : ''));
-  return '<div style="border-left:4px solid #7c3aed;padding:16px 20px;background:#faf5ff;border-radius:0 10px 10px 0;margin:1.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.author, 'share_quote') + '" style="border-left:4px solid #7c3aed;padding:16px 20px;background:#faf5ff;border-radius:0 10px 10px 0;margin:1.5rem 0;">' +
     '<p style="font-size:1rem;font-style:italic;color:#1e1b4b;line-height:1.6;margin:0 0 10px;">"' + _esc(text) + '"</p>' +
     (author ? '<div style="font-size:0.8rem;color:#7c3aed;font-weight:600;">— ' + _esc(author) + '</div>' : '') +
     '<a href="https://twitter.com/intent/tweet?text=' + tweetText + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:0.75rem;color:#6b7280;text-decoration:none;margin-top:8px;">Share this →</a></div>';
@@ -3071,7 +3071,7 @@ _RENDERERS['progress_circle'] = function(b) {
   var circ = parseFloat((2 * Math.PI * r).toFixed(2));
   var offset = parseFloat((circ * (1 - value/100)).toFixed(2));
   return '<style>.pc' + uid + '{stroke-dasharray:' + circ + ';stroke-dashoffset:' + circ + ';animation:pca' + uid + ' 1.2s ease-out forwards;}@keyframes pca' + uid + '{to{stroke-dashoffset:' + offset + ';}}</style>' +
-    '<div style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_circle') + '" style="display:inline-flex;flex-direction:column;align-items:center;margin:1rem 0;">' +
     '<div style="position:relative;width:120px;height:120px;">' +
     '<svg role="img" aria-label="Progress indicator" width="120" height="120" viewBox="0 0 100 100" style="transform:rotate(-90deg);display:block;">' +
     '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="#1e293b" stroke-width="9"/>' +

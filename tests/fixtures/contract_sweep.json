@@ -8264,7 +8264,7 @@
   "parity": false
  },
  "quote": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "quote",
@@ -8477,7 +8477,7 @@
   "parity": false
  },
  "sentiment_summary": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sentiment_summary",
@@ -8744,7 +8744,7 @@
   "parity": false
  },
  "progress_circle": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "progress_circle",
@@ -9287,7 +9287,7 @@
   "parity": false
  },
  "share_quote": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "share_quote",
@@ -9627,7 +9627,7 @@
   "parity": false
  },
  "product_thumbnail": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "product_thumbnail",
@@ -10167,7 +10167,7 @@
   "parity": false
  },
  "reveal_on_scroll": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "reveal_on_scroll",
@@ -10348,7 +10348,7 @@
   "parity": false
  },
  "sheet_preview": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sheet_preview",
@@ -10581,7 +10581,7 @@
   "parity": false
  },
  "section_label": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "section_label",
@@ -10924,7 +10924,7 @@
   "parity": false
  },
  "scramble_reveal": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "scramble_reveal",
@@ -10939,7 +10939,7 @@
   "parity": false
  },
  "scroll_trigger": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "scroll_trigger",
@@ -11100,7 +11100,7 @@
   "parity": false
  },
  "progress_reveal": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "progress_reveal",
@@ -11396,7 +11396,7 @@
   "parity": false
  },
  "quiz_result_summary": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "quiz_result_summary",

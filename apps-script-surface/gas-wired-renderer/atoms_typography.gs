@@ -167,7 +167,7 @@ _RENDERERS['section_label'] = function(b) {
   var colour = b.colour || '#4f46e5';
   var margin = b.margin || '24px 0 12px';
 
-  return '<div style="margin:' + _esc(margin) + ';display:flex;align-items:center;gap:12px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'section_label') + '" style="margin:' + _esc(margin) + ';display:flex;align-items:center;gap:12px;">' +
     '<div style="width:24px;height:2px;border-radius:99px;' +
       'background:' + _esc(colour) + ';box-shadow:0 0 8px ' + _esc(colour) + ';flex-shrink:0;"></div>' +
     '<span style="font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;' +

@@ -237,7 +237,7 @@ _RENDERERS['quiz_result_summary'] = function(b) {
   if (nextUrl)  btns += '<a href="' + _esc(nextUrl)  + '" target="_top" style="padding:10px 22px;border-radius:9px;background:' + col + ';color:#0f172a;font-size:0.8rem;font-weight:700;text-decoration:none;">Continue →</a>';
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:16px;background:' + bgCol + ';border:1px solid ' + bdCol + ';">' +
+    '<div data-cb="node" data-key="' + _ckey(b.quiz_id, 'quiz_result_summary') + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:16px;background:' + bgCol + ';border:1px solid ' + bdCol + ';">' +
     '<div style="text-align:center;margin-bottom:24px;">' +
       '<div style="font-size:2.8rem;margin-bottom:10px;">' + (passed ? '🎉' : '📚') + '</div>' +
       '<div style="font-size:1.5rem;font-weight:800;color:' + col + ';">' + (passed ? 'Passed!' : 'Keep Going') + '</div>' +
