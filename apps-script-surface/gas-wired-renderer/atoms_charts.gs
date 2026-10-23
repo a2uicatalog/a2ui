@@ -726,7 +726,7 @@ _RENDERERS['donut_stat'] = function(b) {
 
   var html = '';
   html += '<style>@keyframes donut-spin-' + uid + '{from{stroke-dashoffset:' + circ.toFixed(2) + '}to{stroke-dashoffset:' + dashOffset.toFixed(2) + '}}</style>';
-  html += '<div class="a2ui-donut-stat" style="display:inline-block;text-align:center;">';
+  html += '<div data-cb="node" data-key="' + _ckey(b.label, 'donut_stat') + '" class="a2ui-donut-stat" style="display:inline-block;text-align:center;">';
   html += '<svg role="img" aria-label="Donut statistic" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
   // Track
   html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#e2e8f0" stroke-width="12"/>';

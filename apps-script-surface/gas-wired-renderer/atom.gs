@@ -2817,7 +2817,7 @@ _RENDERERS['code_diff'] = function(b) {
   var header = (label || language) ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #1e293b;">' +
     (label ? '<span style="font-size:13px;font-weight:600;color:#94a3b8;">' + _esc(label) + '</span>' : '') +
     (language ? '<span style="font-size:11px;color:#64748b;background:#1e293b;padding:2px 8px;border-radius:4px;">' + _esc(language) + '</span>' : '') + '</div>' : '';
-  return '<div style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin:1rem 0;overflow:hidden;font-family:monospace;font-size:0.82rem;">' + header + '<div style="padding:6px 0;">' + rows.join('') + '</div></div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'code_diff') + '" style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin:1rem 0;overflow:hidden;font-family:monospace;font-size:0.82rem;">' + header + '<div style="padding:6px 0;">' + rows.join('') + '</div></div>';
 };
 
 _RENDERERS['flip_card'] = function(b) {
@@ -2937,7 +2937,7 @@ _RENDERERS['document_link'] = function(b) {
   var title = b.label || b.title || 'Document';
   var ext = /\.([a-z0-9]{2,5})(?:[?#]|$)/i.exec(url);
   var type = (b.icon_type || (ext && ext[1]) || 'doc').toUpperCase();
-  return '<a href="' + _safeUrl(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:var(--muted,#5f6368);">[' + _esc(type) + ']</span></a>';
+  return '<a data-cb="node" data-key="' + _ckey(b.document_url || b.url, 'document_link') + '" href="' + _safeUrl(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:var(--muted,#5f6368);">[' + _esc(type) + ']</span></a>';
 };
 
 _RENDERERS['code_snippet_pair'] = function(b) {

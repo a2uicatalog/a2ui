@@ -61,7 +61,7 @@ _RENDERERS['domain_brief'] = function(b) {
   var image_url = b.image_url || '';
 
   return (
-    '<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:' + (image_url ? '0' : '1.5rem') + ' 0;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.title, 'domain_brief') + '" id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:' + (image_url ? '0' : '1.5rem') + ' 0;">' +
     '<div style="background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.07);' +
       (image_url ? '' : 'border-top:3px solid ' + _esc(accent) + ';') +
       'border-radius:' + (image_url ? '0 0 14px 14px' : '14px') + ';overflow:hidden;">' +

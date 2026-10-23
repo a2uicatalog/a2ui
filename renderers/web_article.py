@@ -4012,7 +4012,7 @@ def _render_donut_stat(b: dict) -> str:
     """
     
     return f"""
-    <div style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
+    <div data-cb="node" data-key="{_ck(b.get('label'), 'donut_stat')}" style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
       <div style="width:{_cv_esc(size)};height:{_cv_esc(size)};flex-shrink:0;">
         {svg_html}
       </div>
@@ -13102,7 +13102,7 @@ def _render_document_link(b: dict) -> str:
     ext = (b.get('icon_type') or (url.rsplit('.', 1)[-1] if '.' in url.rsplit('/', 1)[-1] else 'DOC')).upper()
     icons = {'PDF': '📄', 'DOCX': '📝', 'XLSX': '📊', 'PPTX': '📊', 'ZIP': '📦'}
     icon = b.get('icon') or icons.get(ext, '📄')
-    return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
+    return (f'<a data-cb="node" data-key="{_ck(b.get("document_url") or b.get("url"), "document_link")}" href="{_esc(url)}" target="_blank" rel="noopener" '
             f'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
             f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 16px;text-decoration:none;color:#374151;'
             f'font-size:0.86rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:0.5rem 0;">'
@@ -17444,7 +17444,7 @@ def _render_code_diff(atom: dict) -> str:
             f'padding:10px 14px;border-bottom:1px solid #1e293b;">{lbl}{lang}</div>'
         )
     return (
-        f'<div style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;'
+        f'<div data-cb="node" data-key="{_ck(atom.get("label"), "code_diff")}" style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;'
         f'margin:1rem 0;overflow:hidden;font-family:\'JetBrains Mono\',monospace;font-size:0.82rem;">'
         f'{header}<div style="padding:6px 0;">{"".join(rows)}</div></div>'
     )
@@ -18840,7 +18840,7 @@ def _render_completion_gate(b: dict) -> str:
     msg = _esc(b.get('message', 'Complete the previous section to unlock this content.'))
     label = _esc(b.get('label', 'Locked'))
     return (
-        f'<div style="font-family:system-ui,sans-serif;padding:28px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+        f'<div data-cb="node" data-key="{_ck(b.get("requires"), "completion_gate")}" style="font-family:system-ui,sans-serif;padding:28px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'border:2px dashed rgba(0,0,0,0.12);text-align:center;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
         f'<div style="font-size:2rem;margin-bottom:10px;">🔒</div>'
         f'<div style="font-weight:700;margin-bottom:6px;">{label}</div>'
@@ -22469,7 +22469,7 @@ def _render_copy_prompt(b: dict) -> str:
     label = _esc(b.get('label', 'Copy prompt'))
     accent = _esc(b.get('accent', '#4f46e5'))
     raw_prompt = _cv_esc(_js_json(str(b.get('prompt', ''))))
-    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid ' + accent + '44;'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('label'), 'copy_prompt') + '" style="margin:1rem 0;padding:14px 18px;border:1px solid ' + accent + '44;'
             'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + accent + '08;">'
             '<div style="font-size:0.82rem;color:#374151;margin-bottom:10px;font-style:italic;">'
             + prompt + '</div>'
@@ -38048,7 +38048,7 @@ def _render_domain_brief(b: dict) -> str:
         areas_html += '</div>'
     image_url = _gx_or(_if_g(b, 'image_url'), '')
     img = _if_truthy(image_url)
-    return ('<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:' + ('0' if img else '1.5rem') + ' 0;">'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('title'), 'domain_brief') + '" id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;margin:' + ('0' if img else '1.5rem') + ' 0;">'
             '<div style="background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.07);' + ('' if img else 'border-top:3px solid ' + _gx_esc(accent) + ';')
             + 'border-radius:' + ('0 0 14px 14px' if img else '14px') + ';overflow:hidden;">'
             + (('<div style="width:100%;height:220px;overflow:hidden;position:relative;"><img src="' + _gx_esc(image_url) + '" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;" onerror="this.parentElement.style.display=\'none\'" />'

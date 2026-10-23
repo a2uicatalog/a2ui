@@ -351,7 +351,7 @@ _RENDERERS['completion_gate'] = function(b) {
   var label   = b.label    || 'Locked';
 
   return (
-    '<div id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:14px;' +
+    '<div data-cb="node" data-key="' + _ckey(b.requires, 'completion_gate') + '" id="' + uid + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:14px;' +
       'border:2px dashed rgba(255,255,255,0.08);text-align:center;background:rgba(255,255,255,0.01);">' +
     '<div style="font-size:2rem;margin-bottom:10px;">🔒</div>' +
     '<div style="font-size:0.88rem;font-weight:700;color:#334155;margin-bottom:6px;">' + _esc(label) + '</div>' +

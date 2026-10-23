@@ -8439,7 +8439,7 @@
   "parity": false
  },
  "donut_stat": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "donut_stat",
@@ -8590,7 +8590,7 @@
   "parity": false
  },
  "document_link": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "document_link",
@@ -8641,7 +8641,7 @@
   "parity": false
  },
  "code_diff": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "code_diff",
@@ -11327,7 +11327,7 @@
   "parity": false
  },
  "copy_prompt": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "copy_prompt",
@@ -11430,7 +11430,7 @@
   "parity": false
  },
  "completion_gate": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "completion_gate",
@@ -11779,7 +11779,7 @@
   "parity": false
  },
  "domain_brief": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "domain_brief",

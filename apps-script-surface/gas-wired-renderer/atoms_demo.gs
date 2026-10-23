@@ -220,7 +220,7 @@ _RENDERERS['copy_prompt'] = function(b) {
     + '#cp-btn-' + uid + '{padding:4px 12px;background:' + accent + ';color:#fff;border:none;border-radius:5px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;}'
     + '#cp-body-' + uid + '{padding:16px;font-family:monospace;font-size:0.82rem;color:#e2e8f0;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;}'
     + '</style>'
-    + '<div id="cp-wrap-' + uid + '">'
+    + '<div data-cb="node" data-key="' + _ckey(b.label, 'copy_prompt') + '" id="cp-wrap-' + uid + '">'
     + '<div id="cp-hd-' + uid + '"><span id="cp-lbl-' + uid + '">' + _esc(label) + '</span><button id="cp-btn-' + uid + '">Copy</button></div>'
     + '<div id="cp-body-' + uid + '" data-text="' + _esc(prompt) + '">' + _esc(prompt) + '</div>'
     + '</div>'
