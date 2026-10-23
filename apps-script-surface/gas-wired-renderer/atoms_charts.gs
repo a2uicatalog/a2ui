@@ -2309,7 +2309,7 @@ _RENDERERS['animated_border_card'] = function(b) {
     + '.abc-inner-' + uid + '{position:relative;z-index:1;background:#fff;border-radius:14px;padding:24px;}'
     + '@keyframes abc-spin-' + uid + '{to{transform:rotate(360deg);}}'
     + '</style>'
-    + '<div class="abc-' + uid + '"><div class="abc-inner-' + uid + '">'
+    + '<div data-cb="tile" data-key="' + (b.title ? _esc(String(b.title)) : 'animated_border_card') + '" class="abc-' + uid + '"><div class="abc-inner-' + uid + '">'
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
     + (text ? '<div style="color:#374151;font-size:0.9rem;line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div></div>';
@@ -2751,8 +2751,9 @@ _RENDERERS['animated_beam'] = function(b) {
   var label = b.label || b.text || '';
   var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
+  var k = b.label ? _esc(String(b.label)) : 'animated_beam';
   return '<style>@keyframes beam-' + uid + '{to{stroke-dashoffset:-20;}}</style>'
-    + '<div style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
+    + '<div data-cb="link" data-key="' + k + '" style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
     + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(from) + '</div>'
     + '<div style="flex:1;position:relative;height:32px;">'
     + '<svg role="img" aria-label="Animated beam diagram" width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
@@ -3382,8 +3383,9 @@ _RENDERERS['big_reveal'] = function(b) {
   var size  = b.size  || '5rem';
   var delay = parseFloat(b.delay !== undefined ? b.delay : 0.1);
   var uid = Math.random().toString(36).substr(2, 6);
+  var k = b.text ? _esc(String(b.text)) : 'big_reveal';
   return '<style>@keyframes br-' + uid + '{from{opacity:0;transform:scale(0.35);}to{opacity:1;transform:scale(1);}}</style>'
-    + '<div style="text-align:center;padding:44px 24px;margin:1rem 0;">'
+    + '<div data-cb="label" data-key="' + k + '" style="text-align:center;padding:44px 24px;margin:1rem 0;">'
     + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + _esc(color) + ';line-height:1.05;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + delay + 's both;">' + _esc(text) + '</div>'
     + (sub ? '<div style="font-size:1.05rem;color:#6b7280;margin-top:14px;font-weight:500;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + (delay+0.18) + 's both;">' + _esc(sub) + '</div>' : '')
     + '</div>';

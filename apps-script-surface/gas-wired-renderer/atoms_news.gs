@@ -51,7 +51,8 @@ _RENDERERS['breaking_banner'] = function(b) {
   var sourceLine = (b.source || b.time)
     ? '<p style="margin:8px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + [b.source, b.time].filter(Boolean).map(_esc).join(' · ') + '</p>'
     : '';
-  return '<div style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">' +
+  var k = b.title ? _esc(String(b.title)) : 'breaking_banner';
+  return '<div data-cb="tile" data-key="' + k + '" style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">' +
     '<p style="margin:0 0 7px;font-size:0.63rem;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:' + accent + '">' + _esc(label) + '</p>' +
     '<p style="margin:0;font-size:1.15rem;font-weight:800;line-height:1.4;color:var(--text,#f9fafb)">' + _esc(b.title || '') + '</p>' +
     summary + sourceLine +

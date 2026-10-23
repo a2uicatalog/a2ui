@@ -40,7 +40,8 @@ _RENDERERS['action_required_card'] = function(b) {
     ? '<a href="' + _safeUrl(b.action_url) + '" target="_top" style="display:inline-block;margin-top:14px;padding:8px 20px;background:' + cfg[1] + ';color:#fff;border-radius:8px;font-size:0.85rem;font-weight:600;text-decoration:none;">' + _esc(b.action_label) + '</a>'
     : '';
   var deadline = b.deadline ? '<div style="font-size:0.75rem;color:' + cfg[1] + ';font-weight:600;margin-top:8px;">Due: ' + _esc(b.deadline) + '</div>' : '';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid ' + cfg[1] + ';border-radius:0 10px 10px 0;background:' + cfg[2] + ';">'
+  var k = b.title ? _esc(String(b.title)) : 'action_required_card';
+  return '<div data-cb="tile" data-key="' + k + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid ' + cfg[1] + ';border-radius:0 10px 10px 0;background:' + cfg[2] + ';">'
     + '<div style="display:flex;align-items:flex-start;gap:12px;">'
     + '<span style="font-size:1.4rem;">' + icon + '</span>'
     + '<div style="flex:1;">'

@@ -7805,5 +7805,403 @@
   "py_sha": "0aaecf7eab0c184ae2756cd605efdda703852f2a6157ac94cc9b559f55af684e",
   "gas_sha": "3ff53fe49165b650c5c5e541ff587e00f402c7f66279a5b69a39b31aa6dc971b",
   "parity": false
+ },
+ "accordion_item": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "accordion_item",
+   "header": "How is tenant data isolated?",
+   "content": "Every tenant uses dedicated schema partitions encrypted with separate keys."
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "header",
+  "py_sha": "e4c67b08ec456821b36d6276e1587830b675de8f0963456bf616854d6feed511",
+  "gas_sha": "1d4d0f96372297304d1d662b06f8b9cb92f8123c4856e57d4405009d7fbdf253",
+  "parity": false
+ },
+ "achievement_badge": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "achievement_badge",
+   "title": "Sprint Master",
+   "description": "Completed all 10 story tasks on time.",
+   "icon": "🚀",
+   "locked": false,
+   "unlocked_at": "2026-03-30T10:00:00Z",
+   "color": "#f59e0b",
+   "size": "card"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "7528fd95daa26af1a80105780e4d5c4d026e7111a407ba6aaaf7333ea6410fb1",
+  "gas_sha": "5436f1c4d64155b96a214801e335f74c4c87043f13da662c5a2e52cee9a33eda",
+  "parity": false
+ },
+ "action_required_card": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "action_required_card",
+   "title": "Verify Domain Ownership",
+   "description": "Add the specified TXT record to continue sending outbound emails.",
+   "action_label": "Update DNS",
+   "action_url": "https://example.com/domains",
+   "icon": "shield-alert"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "de5ed73ce104f42cd713f5c4b8658f2caa9fa75ff6c2b29631cef74588e4ea81",
+  "gas_sha": "0ee27abecbbb2808347c2ac56753649c579b78389878d17a43e979e8bf427836",
+  "parity": false
+ },
+ "actual_vs_estimate": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "actual_vs_estimate",
+   "label": "Infrastructure Spend",
+   "actual": 12400,
+   "estimate": 3500,
+   "unit": "$",
+   "show_total": true,
+   "actual_label": "Spent to date",
+   "estimate_label": "Remaining budget",
+   "total_label": "Total Allocated",
+   "caption": "Current burn is within the quarterly projection.",
+   "accent": "#10b981"
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "2bc1b9d1de5c2996d3eca331310e89fed0ce6635109a5147196589f151326048",
+  "gas_sha": "2bc1b9d1de5c2996d3eca331310e89fed0ce6635109a5147196589f151326048",
+  "parity": true
+ },
+ "ai_build_trace": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "ai_build_trace",
+   "model": "gemini-2.5-flash",
+   "prompt_tokens": 512,
+   "thinking_tokens": 128,
+   "output_tokens": 256,
+   "total_tokens": 896
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "model",
+  "py_sha": "3b99982165a713417939a672055474b8bd60bf3185c07c083cb62ca581285ec7",
+  "gas_sha": "3d34c6533b6369b23d50f69f28c4cf94e17150d58368fba0c4308fb8e2f825f7",
+  "parity": false
+ },
+ "airspace_command_deck": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "airspace_command_deck",
+   "chyron_title": "TOULOUSE TMA ACTIVE",
+   "chyron_subtitle": "LFBO APPR RUNWAY 32L",
+   "ticker_text": "AIRSPACE NORMAL — WIND 310/12KT VIS 10KM+",
+   "ticker_speed": 45,
+   "panel_type": "supervisor",
+   "panel_title": "Traffic Monitor",
+   "lockedCallsign": "AFR1234",
+   "zoom": 35,
+   "height": 520,
+   "show_slate": false,
+   "slate_title": "Radar Calibrating",
+   "slate_description": "Initialising transponder feeds.",
+   "poll_question": "Vector AFR1234 to hold?",
+   "poll_options": [
+    "Yes",
+    "No"
+   ],
+   "poll_values": [
+    12,
+    3
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "chyron_title",
+  "py_sha": "ff1887ff8ba272b2cde7e3a50291c7783082752c52ff624f286522d570fedb7f",
+  "gas_sha": "1d20cefdf536a6a481bc7a9d2dc16895c71e068194e324c7e276a1da1a0b9d51",
+  "parity": false
+ },
+ "alert_banner": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "alert_banner",
+   "text": "Scheduled maintenance starts Sunday at 02:00 UTC.",
+   "variant": "warning",
+   "icon": "alert-triangle",
+   "action_label": "View Schedule",
+   "action_url": "https://example.com/status"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "variant",
+  "py_sha": "85b4019983d5a0e15a910e52cd26ddf1318a8a02a306c8e459b27b0d0ece223c",
+  "gas_sha": "a8cf1067486bbbbe1f4a9d77a90451334fe89dcd98f734585197183fb538de2b",
+  "parity": false
+ },
+ "animated_beam": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "animated_beam",
+   "from_label": "Auth Service",
+   "to_label": "Data Vault",
+   "label": "Handshake",
+   "body": "End-to-end mTLS session active.",
+   "active": true,
+   "color": "#38bdf8",
+   "speed": "normal",
+   "curved": true
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "7591c77b616a09f56306a7e2f7132d8ba5c5d6ffbf9244cee870958e24183b22",
+  "gas_sha": "39bb6af5952d013b7d7ab2a62b32f117e65d950074efc3819d45288c7a849711",
+  "parity": false
+ },
+ "animated_border_card": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "animated_border_card",
+   "title": "Priority Broadcast",
+   "body": "Network upgrade scheduled for Saturday 02:00 UTC.",
+   "accent": "#38bdf8",
+   "accent2": "#818cf8",
+   "background": "#ffffff",
+   "speed": "normal",
+   "border_width": 2
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "395eb6f87feecb532fb33053c22d893c67b698e62083e35a411b0f25a5e86fb9",
+  "gas_sha": "856bcbbed0af2d0d26e3cfd88164e37947a1103fb46a1386408f94d6a60bc586",
+  "parity": false
+ },
+ "api_reference": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "api_reference",
+   "name": "getUserSession",
+   "kind": "function",
+   "method": "GET",
+   "description": "Fetches active session payload.",
+   "deprecated": false,
+   "parameters": [
+    {
+     "name": "session_id",
+     "type": "string",
+     "required": true,
+     "description": "Unique session token",
+     "default": "sess_default"
+    }
+   ],
+   "returns": "SessionObject",
+   "example": {
+    "label": "cURL",
+    "language": "bash",
+    "code": "curl https://example.com/api/v1/session"
+   }
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "a295ab2f465a944ff9cb7a4ef5d0e534d5401f22eb53946513d69646b2473c71",
+  "gas_sha": "c2eab89d5caeff8f6993ef86d2c224c8224e48f010665753417b7f662edeca70",
+  "parity": false
+ },
+ "article_hero": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "article_hero",
+   "title": "Zero-Downtime Migration Architecture",
+   "subtitle": "Moving 40 million records across live clusters.",
+   "image_url": "https://example.com/a.png"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "f2ff10063ec11742786f303c6abcfe4bb43a9674b369cfe2a0820e34fb9df1f1",
+  "gas_sha": "f2ff10063ec11742786f303c6abcfe4bb43a9674b369cfe2a0820e34fb9df1f1",
+  "parity": true
+ },
+ "article_series_nav": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "article_series_nav",
+   "series_id": "kafka-internals",
+   "current_part": 2
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "series_id",
+  "py_sha": "cd1d6d11b42f426ee0693cadf2dc21d12afcc4ebeb1507bb441ad6c39d3a4e62",
+  "gas_sha": "cd1d6d11b42f426ee0693cadf2dc21d12afcc4ebeb1507bb441ad6c39d3a4e62",
+  "parity": true
+ },
+ "atom_anatomy": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "atom_anatomy",
+   "label": "Button Atom",
+   "schema": {
+    "type": "ripple_button",
+    "label": "Deploy"
+   },
+   "accent": "#6366f1"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "010284445013184f9965633c8ff349dcc8837bcaebaec7c91af952a18b2f144e",
+  "gas_sha": "b68a1da396c4c61b003afd17acbaeb8f6fa2673685eed15640080f0b226c7e17",
+  "parity": false
+ },
+ "audio_link": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "audio_link",
+   "audio_url": "https://example.com/audio.mp3",
+   "label": "Listen to earnings call clip",
+   "icon_type": "headphones"
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "audio_url",
+  "py_sha": "3cd9114e32798f8a4e396355bcdba3a06eb57b9735428467145cb5a26f54a9b6",
+  "gas_sha": "3cd9114e32798f8a4e396355bcdba3a06eb57b9735428467145cb5a26f54a9b6",
+  "parity": true
+ },
+ "author_bio_card": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "author_bio_card",
+   "name": "Elena Rostova",
+   "avatar_url": "https://example.com/a.png",
+   "bio": "Systems architect focusing on distributed telemetry and resilient queuing.",
+   "links": {
+    "github": "https://example.com/elena"
+   }
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "4ad3d932876eb4a522c54d234c3d84c15eb5ba1d68280556e3e3f76f8fcd74be",
+  "gas_sha": "4ad3d932876eb4a522c54d234c3d84c15eb5ba1d68280556e3e3f76f8fcd74be",
+  "parity": true
+ },
+ "bezier_easing": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "bezier_easing",
+   "preset": "standard",
+   "x1": 0.2,
+   "y1": 0.0,
+   "x2": 0.0,
+   "y2": 1.0,
+   "duration": 1200,
+   "editable": true,
+   "label": "ease-standard",
+   "theme": "dark",
+   "accent": "#38bdf8",
+   "height": 300
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "preset",
+  "py_sha": "dfa85967a93c7ca772f5383eddd13207ef2510195ca909236671a27f46591fb8",
+  "gas_sha": "05b81ea44d386e4b2a6bd12c5d9d8c77170af4d68c787e55ead410f8e8d72efa",
+  "parity": false
+ },
+ "big_reveal": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "big_reveal",
+   "text": "99.9%",
+   "sub": "Monthly system uptime achieved",
+   "color": "#10b981",
+   "size": "5rem",
+   "delay": 0.2
+  },
+  "kind": "label",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "0afdbd619c1c13ea352bed94d8fa9b3e51ba1b68cc6191aa80822f7d7bdd26f6",
+  "gas_sha": "78f8fb310663bb5458939a4b6beb029edf5167130745da989b8daab21eecf7ad",
+  "parity": false
+ },
+ "blockquote_with_avatar": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "blockquote_with_avatar",
+   "quote": "This cut our release cycle from days to under ten minutes.",
+   "author_name": "Elena Rostova",
+   "author_title": "VP of Engineering",
+   "avatar_url": "https://example.com/a.png"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "author_name",
+  "py_sha": "15495122994e6257c4c967d8cdd45ee06b43769ed95416440564931c72a9162f",
+  "gas_sha": "d054ac07314a78a989be341b76f67f0d0464cc02d5b103cd5dacb230489a73ff",
+  "parity": false
+ },
+ "breaking_banner": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "breaking_banner",
+   "label": "CRITICAL INCIDENT",
+   "title": "Degraded Latency in EU-Central-1",
+   "summary": "Elevated error rates on auth endpoints under active investigation.",
+   "source": "SRE Incident Command",
+   "time": "14:22 UTC",
+   "accent": "#ef4444"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "1e560a40db7aaf1df37be849fbeff251c3f1a90e374bf176a89857eb479b9211",
+  "gas_sha": "1e560a40db7aaf1df37be849fbeff251c3f1a90e374bf176a89857eb479b9211",
+  "parity": true
+ },
+ "calendar_today": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "calendar_today",
+   "title": "Daily Standup & Schedule",
+   "max_results": 6
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "0458194df4ba00a857b28bab80cad9d79b1e397645626aacc56f4f9da8da3c5a",
+  "gas_sha": "67a850ca8c7b8f90938fa0db2e479e8b65abdbeccb08e168c699ce40afbee6fa",
+  "parity": false
  }
 }

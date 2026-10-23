@@ -1,7 +1,4 @@
 {
- "accordion_item": [
-  "header"
- ],
  "adsb_feed": [
   "lat_max",
   "lat_min",
@@ -40,11 +37,9 @@
   "title"
  ],
  "article_series_nav": [
-  "current_part",
-  "series_id"
+  "current_part"
  ],
  "audio_link": [
-  "audio_url",
   "icon_type"
  ],
  "audio_player": [

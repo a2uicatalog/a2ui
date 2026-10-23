@@ -58,7 +58,8 @@ _RENDERERS['calendar_today'] = function(b) {
     rows += '</ul>';
   }
 
-  return '<div class="asw-native-card">' +
+  var k = b.title ? _esc(String(b.title)) : 'calendar_today';
+  return '<div data-cb="tile" data-key="' + k + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">📅</span> ' + _esc(title) + '<span style="margin-left:auto;font-size:0.75rem;font-weight:400;color:var(--muted);">' + _esc(dateLabel) + '</span></div>' +
          rows +
          '</div>';

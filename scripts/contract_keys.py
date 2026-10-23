@@ -314,12 +314,14 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
 
     def sources(only):
         out = []
+        fallback = ('(when that field is empty or missing, the key is the atom type as a literal string)' if single
+                    else '(fall back to the name/label/title field when the item has no id)')
         for t in only:
             pn, gp, gh = meta[t]
             gtxt = open(gp).read() if gp else ''
             pys = '\n'.join('=== FILE %s (function %s, the live definition, as the file is NOW) ===\n%s' % (f, n, py_def(open(f).read(), n, occ)) for f, occ, n in pn)
-            out.append('##### ATOM %s  kind=%s  label kind=label  key hint=%s (fall back to the name/label/title field when the item has no id)\nSAMPLE BLOCK: %s\n%s\n=== FILE %s (this atom\'s GAS block only, as the file is NOW) ===\n%s' % (
-                t, fx[t]['kind'], fx[t]['key'], json.dumps(fx[t]['block'], ensure_ascii=False), pys, gp, gas_text(gtxt, t, gh)))
+            out.append('##### ATOM %s  kind=%s  label kind=label  key hint=%s %s\nSAMPLE BLOCK: %s\n%s\n=== FILE %s (this atom\'s GAS block only, as the file is NOW) ===\n%s' % (
+                t, fx[t]['kind'], fx[t]['key'], fallback, json.dumps(fx[t]['block'], ensure_ascii=False), pys, gp, gas_text(gtxt, t, gh)))
         return out
 
     def scope(atom, f, text):
