@@ -10712,7 +10712,7 @@
   "parity": false
  },
  "badge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "badge",

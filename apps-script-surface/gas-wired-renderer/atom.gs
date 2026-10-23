@@ -471,7 +471,7 @@ _RENDERERS['tag_chip'] = function(b) {
 
 _RENDERERS['badge'] = function(b) {
   var color = b.color || 'var(--muted)';
-  return '<span class="asw-badge" style="border:1px solid ' + color + ';color:' + color + ';padding:2px 6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.7rem;font-weight:600;text-transform:uppercase;">' + _esc(b.text) + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.text, 'badge') + '" class="asw-badge" style="border:1px solid ' + color + ';color:' + color + ';padding:2px 6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.7rem;font-weight:600;text-transform:uppercase;">' + _esc(b.text) + '</span>';
 };
 
 _RENDERERS['image'] = function(b) {

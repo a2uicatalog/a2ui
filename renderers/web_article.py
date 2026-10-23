@@ -21553,7 +21553,7 @@ _RENDERERS["tag_chip"] = _render_tag_chip
 def _render_badge(b: dict) -> str:
     text = _esc(b.get('text', ''))
     color = _esc(b.get('color', '#4f46e5'))
-    return ('<span style="display:inline-block;padding:2px 10px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.72rem;'
+    return (f'<span data-cb="node" data-key="{_ck(b.get("text"), "badge")}" style="display:inline-block;padding:2px 10px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.72rem;'
             'font-weight:700;background:' + color + ';color:#fff;letter-spacing:0.04em;">'
             + text + '</span>')
 _RENDERERS["badge"] = _render_badge
