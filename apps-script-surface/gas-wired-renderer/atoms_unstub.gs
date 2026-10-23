@@ -41,7 +41,7 @@ _RENDERERS['action_required_card'] = function(b) {
     : '';
   var deadline = b.deadline ? '<div style="font-size:0.75rem;color:' + cfg[1] + ';font-weight:600;margin-top:8px;">Due: ' + _esc(b.deadline) + '</div>' : '';
   var k = b.title ? _esc(String(b.title)) : 'action_required_card';
-  return '<div data-cb="tile" data-key="' + k + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid ' + cfg[1] + ';border-radius:0 10px 10px 0;background:' + cfg[2] + ';">'
+  return '<div data-cb="node" data-key="' + k + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid ' + cfg[1] + ';border-radius:0 10px 10px 0;background:' + cfg[2] + ';">'
     + '<div style="display:flex;align-items:flex-start;gap:12px;">'
     + '<span style="font-size:1.4rem;">' + icon + '</span>'
     + '<div style="flex:1;">'

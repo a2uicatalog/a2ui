@@ -3756,7 +3756,7 @@ _RENDERERS['bezier_easing'] = function(b) {
   var cfg = '{x1:' + P[0] + ',y1:' + P[1] + ',x2:' + P[2] + ',y2:' + P[3] + ',dur:' + dur + ',edit:' + edit + ',bg:"' + th.bg + '",ink:"' + _ffRgb(th.ink) + '",acc:"' + _ffRgb(acc) + '"}';
   var cssStr = 'cubic-bezier(' + P.join(', ') + ')';
   var k = b.preset ? _esc(String(b.preset)) : 'bezier_easing';
-  return '<div data-cb="branch" data-key="' + k + '" style="margin:1rem 0;border-radius:16px;overflow:hidden;background:' + th.bg + ';border:1px solid ' + th.line + ';">'
+  return '<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;border-radius:16px;overflow:hidden;background:' + th.bg + ';border:1px solid ' + th.line + ';">'
     + '<div id="bz-' + uid + '" style="position:relative;height:' + height + 'px;touch-action:none;cursor:' + (edit === 'true' ? 'crosshair' : 'default') + ';">' + _ffCanvas('bzc-' + uid) + '</div>'
     + '<div style="padding:12px 16px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:' + th.ink + ';">'
     + '<div style="flex:1 1 180px;height:10px;border-radius:5px;background:' + th.line + ';position:relative;"><div id="bzb-' + uid + '" style="position:absolute;top:-5px;left:0;width:calc(100% - 20px);height:20px;pointer-events:none;"><div style="width:20px;height:20px;border-radius:50%;background:' + acc + ';"></div></div></div>'

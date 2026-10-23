@@ -100,7 +100,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
   // ── Slate mode ────────────────────────────────────────────────────────────
   var k = b.chyron_title ? _esc(String(b.chyron_title)) : 'airspace_command_deck';
   if (showSlate) {
-    return breakout + '<div data-cb="tile" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
+    return breakout + '<div data-cb="node" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
       'style="background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';height:' + h + ';' +
       'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
       'font-family:\'Courier New\',monospace;position:relative;overflow:hidden;">' +
@@ -259,7 +259,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
     '@keyframes ' + uid + 'blink{0%,100%{opacity:1;}50%{opacity:0.2;}}' +
     '@keyframes ' + uid + 'reticle{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}' +
     '</style>' +
-    '<div data-cb="tile" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
+    '<div data-cb="node" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
     'style="position:relative;background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';overflow:hidden;height:' + h + ';font-family:\'Courier New\',monospace;">' +
 
     // Canvas — radar layer

@@ -56,7 +56,8 @@ SPEC = """BUILD CONTRACT (owner-approved, a2uicatalog, MIT). Add it to each atom
 SPEC_SINGLE = """BUILD CONTRACT (owner-approved, a2uicatalog, MIT). Each atom below shows ONE visual unit. Add the contract to
 each, in BOTH its Python renderer and its GAS (Apps Script) twin:
 - data-cb="<kind>" on the ROOT element of the atom's render (the outermost element it emits; if it emits several
-  siblings, the one that carries the content), using the kind given for the atom.
+  siblings, the one that carries the content). The kind is ALWAYS "node" for the root of a single-unit atom (never tile, bar, link,
+  branch or label), whatever kind the atom header shows.
 - data-key="<key>" right after data-cb on the same element: the unit's identity from the data (the key hint names the
   field); where the block has no identity field the key hint is the atom type itself, written as a literal string.
   Escape a data value with the SAME escape helper the surrounding code uses for attribute text.

@@ -206,7 +206,7 @@ _RENDERERS['ai_build_trace'] = function(b) {
   chips += _aiBuildChip('total', fmt(ptotal), 'var(--muted,#94a3b8)');
 
   var k = b.model ? _esc(String(b.model)) : 'ai_build_trace';
-  return '<div data-cb="tile" data-key="' + k + '" style="margin-top:32px;padding:14px 16px;background:rgba(99,102,241,0.04);' +
+  return '<div data-cb="node" data-key="' + k + '" style="margin-top:32px;padding:14px 16px;background:rgba(99,102,241,0.04);' +
          'border:1px solid rgba(99,102,241,0.12);border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
 
          // Row 1: icon + model + bar legend

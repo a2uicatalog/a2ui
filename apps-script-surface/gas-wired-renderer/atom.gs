@@ -427,7 +427,7 @@ _RENDERERS['alert_banner'] = function(b) {
   colors.error = colors.critical;
   
   var k = b.variant ? _esc(String(b.variant)) : 'alert_banner';
-  return '<div data-cb="tile" data-key="' + k + '" class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
+  return '<div data-cb="node" data-key="' + k + '" class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
          '<span class="asw-callout-icon">' + (b.icon || icons[variant]) + '</span>' +
          '<div class="asw-callout-content" style="font-weight:500;">' + _markdownToHtml(b.text) +
          // action_label + action_url (schema fields): a link button, opened outside the
@@ -1490,7 +1490,7 @@ _RENDERERS['api_reference'] = function(b) {
   var exampleHtml = example ? '<div style="margin-top:14px;"><div style="font-size:0.72rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Example</div>' +
     '<pre style="background:#1e1e2e;color:#cdd6f4;padding:12px;border-radius:6px;overflow-x:auto;font-size:0.8rem;"><code>' + _esc(example) + '</code></pre></div>' : '';
   var k = b.name ? _esc(String(b.name)) : 'api_reference';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin:1.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin:1.5rem 0;">' +
     '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">' + kindHtml + sigHtml + '</div>' +
     descHtml + paramsHtml + returnsHtml + exampleHtml + '</div>';
 };
@@ -1776,7 +1776,7 @@ _RENDERERS['article_hero'] = function(b) {
   var imgHtml = imgUrl ? '<img src="' + _esc(imgUrl) + '" alt="' + _esc(title) + '" style="width:100%;height:220px;object-fit:cover;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin-bottom:16px;display:block;">' : '';
   var subHtml = subtitle ? '<p style="margin:0 0 4px;font-size:0.78rem;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(subtitle) + '</p>' : '';
   var k = b.title ? _esc(String(b.title)) : 'article_hero';
-  return '<div data-cb="tile" data-key="' + k + '" style="margin:1.5rem 0;">' + imgHtml + subHtml + '<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">' + _esc(title) + '</h1></div>';
+  return '<div data-cb="node" data-key="' + k + '" style="margin:1.5rem 0;">' + imgHtml + subHtml + '<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">' + _esc(title) + '</h1></div>';
 };
 
 _RENDERERS['table_of_contents'] = function(b) {
@@ -1953,7 +1953,7 @@ _RENDERERS['actual_vs_estimate'] = function(b) {
   var cap = b.caption ? '<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">'
       + _esc(String(b.caption)) + '</div>' : '';
   var k = b.label ? _esc(String(b.label)) : 'actual_vs_estimate';
-  return '<div data-cb="bar" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
       + 'margin:1.5rem 0;overflow:hidden;">' + head
       + '<div style="display:flex;flex-wrap:wrap;">' + tiles + '</div>' + cap + '</div>';
 };
@@ -2076,7 +2076,7 @@ _RENDERERS['accordion_item'] = function(b) {
   var label = b.label || b.title || '';
   var text = b.text || b.content || b.body || '';
   var k = b.header ? _esc(String(b.header)) : 'accordion_item';
-  return '<details data-cb="tile" data-key="' + k + '" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
+  return '<details data-cb="node" data-key="' + k + '" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     '<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;color:#374151;cursor:pointer;list-style:none;"' + (label ? '' : ' aria-label="Details"') + '><span aria-hidden="true">▶</span> ' + _esc(label) + '</summary>' +
     '<div style="padding:12px 14px;font-size:0.85rem;">' + _markdownToHtml(text) + '</div></details>';
 };
@@ -2468,7 +2468,7 @@ _RENDERERS['blockquote_with_avatar'] = function(b) {
   var avatarHtml = b.avatar_url ? '<img src="' + _esc(b.avatar_url) + '" alt="' + _esc(author) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">' :
     '<div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">' + _esc(initial) + '</div>';
   var k = b.author_name ? _esc(String(b.author_name)) : 'blockquote_with_avatar';
-  return '<blockquote data-cb="tile" data-key="' + k + '" style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;background:#f9fafb;border-radius:0 10px 10px 0;">' +
+  return '<blockquote data-cb="node" data-key="' + k + '" style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;background:#f9fafb;border-radius:0 10px 10px 0;">' +
     '<p style="margin:0 0 12px;font-style:italic;color:#374151;">"' + _markdownToHtml(text) + '"</p>' +
     '<div style="display:flex;align-items:center;gap:10px;">' + avatarHtml +
     '<div><div style="font-size:0.87rem;font-weight:700;color:#111827;">' + _esc(author) + '</div>' +
@@ -2499,7 +2499,7 @@ _RENDERERS['article_series_nav'] = function(b) {
   if (prev && nxt) nav += '<span style="margin:0 8px;color:#d1d5db;">|</span>';
   if (nxt) nav += '<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">' + _esc(nxt) + ' →</a>';
   var k = b.series_id ? _esc(String(b.series_id)) : 'article_series_nav';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
     '<div style="font-weight:600;color:#7c3aed;font-size:0.85rem;">📚 <a href="' + _esc(url) + '" style="color:#7c3aed;text-decoration:none;">' + _esc(title) + '</a></div>' +
     '<div>' + nav + '</div></div>';
 };
@@ -2522,7 +2522,7 @@ _RENDERERS['author_bio_card'] = function(b) {
     '<div style="width:56px;height:56px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👤</div>';
   var linksHtml = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="font-size:0.78rem;color:var(--muted,#5f6368);text-decoration:none;margin-right:10px;">' + _esc(k) + '</a>'; }).join('');
   var k = b.name ? _esc(String(b.name)) : 'author_bio_card';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">' +
     avatarHtml + '<div>' +
     '<div style="font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(name) + '</div>' +
     '<p style="margin:0 0 8px;font-size:0.85rem;color:var(--muted,#5f6368);line-height:1.5;">' + _markdownToHtml(bio) + '</p>' +
@@ -2914,7 +2914,7 @@ _RENDERERS['audio_link'] = function(b) {
   var url = b.url || '';
   var label = b.label || b.title || 'Audio file';
   var k = b.audio_url ? _esc(String(b.audio_url)) : 'audio_link';
-  return '<a data-cb="link" data-key="' + k + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 ' + _esc(label) + '</a>';
+  return '<a data-cb="node" data-key="' + k + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 ' + _esc(label) + '</a>';
 };
 
 _RENDERERS['pdf_preview'] = function(b) {

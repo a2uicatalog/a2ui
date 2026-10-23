@@ -1002,7 +1002,7 @@ def _render_actual_vs_estimate(b: dict) -> str:
     cap = ('<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">%s</div>'
            % _esc(str(b["caption"]))) if b.get("caption") else ""
     k = _esc(str(b['label'])) if b.get('label') else 'actual_vs_estimate'
-    return ('<div data-cb="bar" data-key="%s" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+    return ('<div data-cb="node" data-key="%s" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
             'margin:1.5rem 0;overflow:hidden;">%s'
             '<div style="display:flex;flex-wrap:wrap;">%s</div>%s</div>'
             % (k, head, tiles, cap))
@@ -6535,7 +6535,7 @@ def _render_animated_border_card(b: dict) -> str:
         f'border-radius:{12 - pad}px;padding:20px 22px;}}'
         f'@keyframes {cid}-spin{{to{{transform:rotate(360deg)}}}}'
         f'</style>'
-        f'<div data-cb="tile" data-key="{_cv_esc(str(b["title"])) if b.get("title") else "animated_border_card"}" class="{cid}-wrap">'
+        f'<div data-cb="node" data-key="{_cv_esc(str(b["title"])) if b.get("title") else "animated_border_card"}" class="{cid}-wrap">'
         f'<div class="{cid}-inner">'
         f'{title_html}'
         f'<div style="font-size:0.92rem;color:#3c4043;line-height:1.6;">{body_html}</div>'
@@ -9308,7 +9308,7 @@ def _render_animated_beam(atom: dict) -> str:
     k = _cv_esc(str(atom['label'])) if atom.get('label') else 'animated_beam'
     return (
         f'<style>{anim_css}</style>'
-        f'<div data-cb="link" data-key="{k}" style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;'
+        f'<div data-cb="node" data-key="{k}" style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;'
         f'padding:20px 24px;margin:1rem 0;">'
         f'{label_html}'
         f'<svg role="img" aria-label="Animated beam diagram" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
@@ -12066,7 +12066,7 @@ def _render_action_required_card(b: dict) -> str:
     icon = b.get("icon",di)
     btn = f'<a href="{_cv_esc(b.get("action_url","#"))}" target="_top" style="display:inline-block;margin-top:14px;padding:8px 20px;background:{col};color:#fff;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">{_cv_esc(b.get("action_label","Take action"))}</a>' if b.get("action_label") and b.get("action_url") else ""
     k = _cv_esc(str(b['title'])) if b.get('title') else 'action_required_card'
-    return f'<div data-cb="tile" data-key="{k}" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid {col};border-radius:0 10px 10px 0;background:{bg};"><div style="display:flex;align-items:flex-start;gap:12px;"><span style="font-size:1.4rem;">{_cv_esc(icon)}</span><div><div style="font-weight:700;font-size:.95rem;">{_cv_esc(b.get("title","Action Required"))}</div>{"<div style=font-size:.85rem;color:var(--muted,#5f6368);margin-top:4px;line-height:1.5>"+_cv_esc(b.get("description",""))+"</div>" if b.get("description") else ""}{btn}</div></div></div>'
+    return f'<div data-cb="node" data-key="{k}" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid {col};border-radius:0 10px 10px 0;background:{bg};"><div style="display:flex;align-items:flex-start;gap:12px;"><span style="font-size:1.4rem;">{_cv_esc(icon)}</span><div><div style="font-weight:700;font-size:.95rem;">{_cv_esc(b.get("title","Action Required"))}</div>{"<div style=font-size:.85rem;color:var(--muted,#5f6368);margin-top:4px;line-height:1.5>"+_cv_esc(b.get("description",""))+"</div>" if b.get("description") else ""}{btn}</div></div></div>'
 
 # Lightweight dispatch for remaining stubs — they all follow the same pattern
 def _render_avatar_group(b: dict) -> str:
@@ -12208,7 +12208,7 @@ def _render_accordion_item(b: dict) -> str:
     label = b.get('label') or b.get('title', '')
     text = b.get('text') or b.get('content') or b.get('body', '')
     k = _esc(str(b['header'])) if b.get('header') else 'accordion_item'
-    return (f'<details data-cb="tile" data-key="{k}" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
+    return (f'<details data-cb="node" data-key="{k}" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
             f'<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;'
             f'color:#374151;cursor:pointer;list-style:none;">▶ {_esc(label)}</summary>'
             f'<div style="padding:12px 14px;font-size:0.85rem;">{_md_inline(text)}</div></details>')
@@ -12310,7 +12310,7 @@ def _render_alert_banner(b: dict) -> str:
     col = colors.get(variant, '#3b82f6')
     ico = b.get('icon') or icons.get(variant, 'ℹ️')
     k = _cv_esc(str(b['variant'])) if b.get('variant') else 'alert_banner'
-    return (f'<div data-cb="tile" data-key="{k}" style="border-left:4px solid {col};background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:12px 16px;'
+    return (f'<div data-cb="node" data-key="{k}" style="border-left:4px solid {col};background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:12px 16px;'
             f'border-radius:0 8px 8px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;">'
             f'<span style="font-size:1.1rem;">{_cv_esc(ico)}</span>'
             f'<div style="font-weight:500;">{_md_inline(b.get("text",""))}{_alert_banner_action(b, col)}</div></div>')
@@ -12418,7 +12418,7 @@ def _render_article_hero(b: dict) -> str:
     sub_html = (f'<p style="margin:0 0 4px;font-size:0.78rem;font-weight:600;color:#7c3aed;'
                 f'text-transform:uppercase;letter-spacing:0.05em;">{_esc(subtitle)}</p>' if subtitle else '')
     k = _esc(str(b['title'])) if b.get('title') else 'article_hero'
-    return (f'<div data-cb="tile" data-key="{k}" style="margin:1.5rem 0;">{img_html}{sub_html}'
+    return (f'<div data-cb="node" data-key="{k}" style="margin:1.5rem 0;">{img_html}{sub_html}'
             f'<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">{_esc(title)}</h1></div>')
 
 _RENDERERS['article_hero'] = _render_article_hero
@@ -12437,7 +12437,7 @@ def _render_article_series_nav(b: dict) -> str:
     if nxt:
         nav += f'<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">{_esc(nxt)} →</a>'
     k = _esc(str(b['series_id'])) if b.get('series_id') else 'article_series_nav'
-    return (f'<div data-cb="tile" data-key="{k}" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;'
+    return (f'<div data-cb="node" data-key="{k}" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;'
             f'margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
             f'<div style="font-weight:600;color:#7c3aed;font-size:0.85rem;">📚 <a href="{_esc(url)}" style="color:#7c3aed;text-decoration:none;">{_esc(title)}</a></div>'
             f'<div>{nav}</div></div>')
@@ -12449,7 +12449,7 @@ def _render_audio_link(b: dict) -> str:
     url = b.get('url', '')
     label = b.get('label') or b.get('title', 'Audio file')
     k = _esc(str(b['audio_url'])) if b.get('audio_url') else 'audio_link'
-    return (f'<a data-cb="link" data-key="{k}" href="{_esc(url)}" target="_blank" rel="noopener" style="display:inline-flex;'
+    return (f'<a data-cb="node" data-key="{k}" href="{_esc(url)}" target="_blank" rel="noopener" style="display:inline-flex;'
             f'align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 {_esc(label)}</a>')
 
@@ -12480,7 +12480,7 @@ def _render_author_bio_card(b: dict) -> str:
     links_html = ''.join(f'<a href="{_esc(v)}" target="_blank" rel="noopener" style="font-size:0.78rem;color:var(--muted,#5f6368);text-decoration:none;margin-right:10px;">{_esc(k)}</a>'
                          for k, v in links.items())
     k = _esc(str(b['name'])) if b.get('name') else 'author_bio_card'
-    return (f'<div data-cb="tile" data-key="{k}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;'
+    return (f'<div data-cb="node" data-key="{k}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;'
             f'display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">'
             f'{avatar_html}<div>'
             f'<div style="font-weight:700;color:#111827;margin-bottom:4px;">{_esc(name)}</div>'
@@ -12570,7 +12570,7 @@ def _render_blockquote_with_avatar(b: dict) -> str:
                         f'display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;'
                         f'color:#1a73e8;flex-shrink:0;">{_esc(initial)}</div>')
     k = _esc(str(b['author_name'])) if b.get('author_name') else 'blockquote_with_avatar'
-    return (f'<blockquote data-cb="tile" data-key="{k}" style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;'
+    return (f'<blockquote data-cb="node" data-key="{k}" style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;'
             f'background:#f9fafb;border-radius:0 10px 10px 0;">'
             f'<p style="margin:0 0 12px;font-style:italic;color:#374151;">"{_md_inline(text)}"</p>'
             f'<div style="display:flex;align-items:center;gap:10px;">{avatar_html}'
@@ -18731,7 +18731,7 @@ def _render_api_reference(b: dict) -> str:
 
     k = _cv_esc(str(b['name'])) if b.get('name') else 'api_reference'
     return (
-        f'<div data-cb="tile" data-key="{k}" style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
+        f'<div data-cb="node" data-key="{k}" style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
         f'<div style="background:{bg};padding:14px 18px;border-bottom:1px solid #e0e0e0;">'
         f'{method_badge}'
         f'<code style="font-size:1rem;font-weight:700;color:{color};">{_cv_esc(name)}</code>'
@@ -20996,7 +20996,7 @@ def _render_bezier_easing(b: dict) -> str:
            + ',bg:"' + th['bg'] + '",ink:"' + _ff_rgb(th['ink']) + '",acc:"' + _ff_rgb(acc) + '"}')
     css_str = 'cubic-bezier(' + ', '.join(P) + ')'
     k = _cv_esc(str(b['preset'])) if b.get('preset') else 'bezier_easing'
-    return (f'<div data-cb="branch" data-key="{k}" style="margin:1rem 0;border-radius:16px;overflow:hidden;background:{th["bg"]};border:1px solid {th["line"]};">'
+    return (f'<div data-cb="node" data-key="{k}" style="margin:1rem 0;border-radius:16px;overflow:hidden;background:{th["bg"]};border:1px solid {th["line"]};">'
             f'<div id="bz-{uid}" style="position:relative;height:{height}px;touch-action:none;cursor:{"crosshair" if edit == "true" else "default"};">{_ff_canvas("bzc-" + uid)}</div>'
             f'<div style="padding:12px 16px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:{th["ink"]};">'
             f'<div style="flex:1 1 180px;height:10px;border-radius:5px;background:{th["line"]};position:relative;"><div id="bzb-{uid}" style="position:absolute;top:-5px;left:0;width:calc(100% - 20px);height:20px;pointer-events:none;"><div style="width:20px;height:20px;border-radius:50%;background:{acc};"></div></div></div>'
@@ -22593,7 +22593,7 @@ def _render_ai_build_trace(b: dict) -> str:
                      '<span style="color:var(--muted,#5f6368);">' + k + '</span>'
                      '<span style="font-weight:600;color:#374151;">' + _esc(str(v)) + '</span></div>')
     k = _esc(str(b['model'])) if b.get('model') else 'ai_build_trace'
-    return ('<div data-cb="tile" data-key="' + k + '" style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;'
+    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;'
             'background:#f9fafb;">'
             '<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);letter-spacing:0.1em;'
             'text-transform:uppercase;margin-bottom:8px;">🤖 AI Build Trace</div>'
@@ -22649,7 +22649,7 @@ def _render_calendar_today(b: dict) -> str:
     title = _esc(b.get('title', "Today's Calendar"))
     max_r = int(b.get('max_results', 5))
     k = _esc(str(b['title'])) if b.get('title') else 'calendar_today'
-    return ('<div data-cb="tile" data-key="' + k + '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">'
             '📅 ' + title + '</div>'
             '<div style="color:var(--muted,#5f6368);font-size:0.82rem;font-style:italic;">'
@@ -23015,7 +23015,7 @@ def _render_big_reveal(b: dict) -> str:
     kf = '@keyframes ' + uid + '{from{opacity:0;transform:scale(0.8) translateY(20px);}to{opacity:1;transform:none;}}'
     k = _esc(str(b['text'])) if b.get('text') else 'big_reveal'
     return ('<style>' + kf + '</style>'
-            '<div data-cb="label" data-key="' + k + '" style="padding:40px 20px;text-align:center;">'
+            '<div data-cb="node" data-key="' + k + '" style="padding:40px 20px;text-align:center;">'
             '<div style="font-size:' + size + ';font-weight:900;line-height:1.1;color:' + color + ';'
             'animation:' + uid + ' 0.7s cubic-bezier(0.22,1,0.36,1) ' + dly + ' both;">'
             + text + '</div>'
@@ -24966,7 +24966,7 @@ def _render_airspace_command_deck(b: dict) -> str:
     kf = '@keyframes ' + uid + 'tk{from{transform:translateX(100%);}to{transform:translateX(-100%);}}'
     k = _esc(str(b['chyron_title'])) if b.get('chyron_title') else 'airspace_command_deck'
     return ('<style>' + kf + '</style>'
-            '<div data-cb="tile" data-key="' + k + '" style="margin:1rem 0;background:#0a1628;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #1e40af;">'
+            '<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;background:#0a1628;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #1e40af;">'
             '<div style="padding:16px 20px;border-bottom:1px solid #1e3a5f;">'
             '<div style="font-size:1.2rem;font-weight:900;color:#00f2ff;letter-spacing:0.06em;">'
             + chyron_title + '</div>'
@@ -25018,7 +25018,7 @@ def _render_atom_anatomy(b: dict) -> str:
         rendered = '<em style="color:#6c7586;">Could not render preview</em>'
     schema_str = _esc(_js_json(schema_data, indent=2))
     k = _esc(str(b['label'])) if b.get('label') else 'atom_anatomy'
-    return ('<div data-cb="tile" data-key="' + k + '" style="margin:1rem 0;border:1px solid ' + accent + '33;'
+    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;border:1px solid ' + accent + '33;'
             'border-radius:12px;overflow:hidden;">'
             '<div style="padding:8px 16px;background:' + accent + '06;font-size:0.7rem;font-weight:700;'
             'color:' + accent + ';letter-spacing:0.1em;text-transform:uppercase;'
@@ -37289,7 +37289,7 @@ def _render_breaking_banner(b: dict) -> str:
     summary = ('<p style="margin:8px 0 0;font-size:0.875rem;color:var(--muted,#9ca3af);line-height:1.65">' + _gx_esc(_if_g(b, 'summary')) + '</p>') if _if_truthy(_if_g(b, 'summary')) else ''
     source_line = ('<p style="margin:8px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + _gx_join_truthy([_if_g(b, 'source'), _if_g(b, 'time')], ' · ') + '</p>') if (_if_truthy(_if_g(b, 'source')) or _if_truthy(_if_g(b, 'time'))) else ''
     k = _gx_esc(str(_if_g(b, 'title'))) if _if_truthy(_if_g(b, 'title')) else 'breaking_banner'
-    return ('<div data-cb="tile" data-key="' + k + '" style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">'
+    return ('<div data-cb="node" data-key="' + k + '" style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">'
             '<p style="margin:0 0 7px;font-size:0.63rem;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:' + accent + '">' + _gx_esc(label) + '</p>'
             '<p style="margin:0;font-size:1.15rem;font-weight:800;line-height:1.4;color:var(--text,#f9fafb)">' + _gx_esc(_gx_or(_if_g(b, 'title'), '')) + '</p>'
             + summary + source_line + '</div>')

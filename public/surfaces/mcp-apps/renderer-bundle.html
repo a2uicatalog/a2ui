@@ -1429,7 +1429,7 @@ _RENDERERS['alert_banner'] = function(b) {
   colors.error = colors.critical;
   
   var k = b.variant ? _esc(String(b.variant)) : 'alert_banner';
-  return '<div data-cb="tile" data-key="' + k + '" class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
+  return '<div data-cb="node" data-key="' + k + '" class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
          '<span class="asw-callout-icon">' + (b.icon || icons[variant]) + '</span>' +
          '<div class="asw-callout-content" style="font-weight:500;">' + _markdownToHtml(b.text) +
          // action_label + action_url (schema fields): a link button, opened outside the
@@ -2492,7 +2492,7 @@ _RENDERERS['api_reference'] = function(b) {
   var exampleHtml = example ? '<div style="margin-top:14px;"><div style="font-size:0.72rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Example</div>' +
     '<pre style="background:#1e1e2e;color:#cdd6f4;padding:12px;border-radius:6px;overflow-x:auto;font-size:0.8rem;"><code>' + _esc(example) + '</code></pre></div>' : '';
   var k = b.name ? _esc(String(b.name)) : 'api_reference';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin:1.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin:1.5rem 0;">' +
     '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">' + kindHtml + sigHtml + '</div>' +
     descHtml + paramsHtml + returnsHtml + exampleHtml + '</div>';
 };
@@ -2778,7 +2778,7 @@ _RENDERERS['article_hero'] = function(b) {
   var imgHtml = imgUrl ? '<img src="' + _esc(imgUrl) + '" alt="' + _esc(title) + '" style="width:100%;height:220px;object-fit:cover;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin-bottom:16px;display:block;">' : '';
   var subHtml = subtitle ? '<p style="margin:0 0 4px;font-size:0.78rem;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(subtitle) + '</p>' : '';
   var k = b.title ? _esc(String(b.title)) : 'article_hero';
-  return '<div data-cb="tile" data-key="' + k + '" style="margin:1.5rem 0;">' + imgHtml + subHtml + '<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">' + _esc(title) + '</h1></div>';
+  return '<div data-cb="node" data-key="' + k + '" style="margin:1.5rem 0;">' + imgHtml + subHtml + '<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">' + _esc(title) + '</h1></div>';
 };
 
 _RENDERERS['table_of_contents'] = function(b) {
@@ -2955,7 +2955,7 @@ _RENDERERS['actual_vs_estimate'] = function(b) {
   var cap = b.caption ? '<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">'
       + _esc(String(b.caption)) + '</div>' : '';
   var k = b.label ? _esc(String(b.label)) : 'actual_vs_estimate';
-  return '<div data-cb="bar" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
       + 'margin:1.5rem 0;overflow:hidden;">' + head
       + '<div style="display:flex;flex-wrap:wrap;">' + tiles + '</div>' + cap + '</div>';
 };
@@ -3078,7 +3078,7 @@ _RENDERERS['accordion_item'] = function(b) {
   var label = b.label || b.title || '';
   var text = b.text || b.content || b.body || '';
   var k = b.header ? _esc(String(b.header)) : 'accordion_item';
-  return '<details data-cb="tile" data-key="' + k + '" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
+  return '<details data-cb="node" data-key="' + k + '" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     '<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;color:#374151;cursor:pointer;list-style:none;"' + (label ? '' : ' aria-label="Details"') + '><span aria-hidden="true">▶</span> ' + _esc(label) + '</summary>' +
     '<div style="padding:12px 14px;font-size:0.85rem;">' + _markdownToHtml(text) + '</div></details>';
 };
@@ -3470,7 +3470,7 @@ _RENDERERS['blockquote_with_avatar'] = function(b) {
   var avatarHtml = b.avatar_url ? '<img src="' + _esc(b.avatar_url) + '" alt="' + _esc(author) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">' :
     '<div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">' + _esc(initial) + '</div>';
   var k = b.author_name ? _esc(String(b.author_name)) : 'blockquote_with_avatar';
-  return '<blockquote data-cb="tile" data-key="' + k + '" style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;background:#f9fafb;border-radius:0 10px 10px 0;">' +
+  return '<blockquote data-cb="node" data-key="' + k + '" style="border-left:4px solid #e5e7eb;padding:14px 18px;margin:1.5rem 0;background:#f9fafb;border-radius:0 10px 10px 0;">' +
     '<p style="margin:0 0 12px;font-style:italic;color:#374151;">"' + _markdownToHtml(text) + '"</p>' +
     '<div style="display:flex;align-items:center;gap:10px;">' + avatarHtml +
     '<div><div style="font-size:0.87rem;font-weight:700;color:#111827;">' + _esc(author) + '</div>' +
@@ -3501,7 +3501,7 @@ _RENDERERS['article_series_nav'] = function(b) {
   if (prev && nxt) nav += '<span style="margin:0 8px;color:#d1d5db;">|</span>';
   if (nxt) nav += '<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">' + _esc(nxt) + ' →</a>';
   var k = b.series_id ? _esc(String(b.series_id)) : 'article_series_nav';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
     '<div style="font-weight:600;color:#7c3aed;font-size:0.85rem;">📚 <a href="' + _esc(url) + '" style="color:#7c3aed;text-decoration:none;">' + _esc(title) + '</a></div>' +
     '<div>' + nav + '</div></div>';
 };
@@ -3524,7 +3524,7 @@ _RENDERERS['author_bio_card'] = function(b) {
     '<div style="width:56px;height:56px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👤</div>';
   var linksHtml = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="font-size:0.78rem;color:var(--muted,#5f6368);text-decoration:none;margin-right:10px;">' + _esc(k) + '</a>'; }).join('');
   var k = b.name ? _esc(String(b.name)) : 'author_bio_card';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">' +
     avatarHtml + '<div>' +
     '<div style="font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(name) + '</div>' +
     '<p style="margin:0 0 8px;font-size:0.85rem;color:var(--muted,#5f6368);line-height:1.5;">' + _markdownToHtml(bio) + '</p>' +
@@ -3916,7 +3916,7 @@ _RENDERERS['audio_link'] = function(b) {
   var url = b.url || '';
   var label = b.label || b.title || 'Audio file';
   var k = b.audio_url ? _esc(String(b.audio_url)) : 'audio_link';
-  return '<a data-cb="link" data-key="' + k + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 ' + _esc(label) + '</a>';
+  return '<a data-cb="node" data-key="' + k + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 ' + _esc(label) + '</a>';
 };
 
 _RENDERERS['pdf_preview'] = function(b) {
@@ -6614,7 +6614,7 @@ _RENDERERS['ai_build_trace'] = function(b) {
   chips += _aiBuildChip('total', fmt(ptotal), 'var(--muted,#94a3b8)');
 
   var k = b.model ? _esc(String(b.model)) : 'ai_build_trace';
-  return '<div data-cb="tile" data-key="' + k + '" style="margin-top:32px;padding:14px 16px;background:rgba(99,102,241,0.04);' +
+  return '<div data-cb="node" data-key="' + k + '" style="margin-top:32px;padding:14px 16px;background:rgba(99,102,241,0.04);' +
          'border:1px solid rgba(99,102,241,0.12);border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
 
          // Row 1: icon + model + bar legend
@@ -6962,7 +6962,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
   // ── Slate mode ────────────────────────────────────────────────────────────
   var k = b.chyron_title ? _esc(String(b.chyron_title)) : 'airspace_command_deck';
   if (showSlate) {
-    return breakout + '<div data-cb="tile" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
+    return breakout + '<div data-cb="node" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
       'style="background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';height:' + h + ';' +
       'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
       'font-family:\'Courier New\',monospace;position:relative;overflow:hidden;">' +
@@ -7121,7 +7121,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
     '@keyframes ' + uid + 'blink{0%,100%{opacity:1;}50%{opacity:0.2;}}' +
     '@keyframes ' + uid + 'reticle{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}' +
     '</style>' +
-    '<div data-cb="tile" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
+    '<div data-cb="node" data-key="' + k + '" class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
     'style="position:relative;background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';overflow:hidden;height:' + h + ';font-family:\'Courier New\',monospace;">' +
 
     // Canvas — radar layer
@@ -16474,7 +16474,7 @@ _RENDERERS['bezier_easing'] = function(b) {
   var cfg = '{x1:' + P[0] + ',y1:' + P[1] + ',x2:' + P[2] + ',y2:' + P[3] + ',dur:' + dur + ',edit:' + edit + ',bg:"' + th.bg + '",ink:"' + _ffRgb(th.ink) + '",acc:"' + _ffRgb(acc) + '"}';
   var cssStr = 'cubic-bezier(' + P.join(', ') + ')';
   var k = b.preset ? _esc(String(b.preset)) : 'bezier_easing';
-  return '<div data-cb="branch" data-key="' + k + '" style="margin:1rem 0;border-radius:16px;overflow:hidden;background:' + th.bg + ';border:1px solid ' + th.line + ';">'
+  return '<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;border-radius:16px;overflow:hidden;background:' + th.bg + ';border:1px solid ' + th.line + ';">'
     + '<div id="bz-' + uid + '" style="position:relative;height:' + height + 'px;touch-action:none;cursor:' + (edit === 'true' ? 'crosshair' : 'default') + ';">' + _ffCanvas('bzc-' + uid) + '</div>'
     + '<div style="padding:12px 16px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:' + th.ink + ';">'
     + '<div style="flex:1 1 180px;height:10px;border-radius:5px;background:' + th.line + ';position:relative;"><div id="bzb-' + uid + '" style="position:absolute;top:-5px;left:0;width:calc(100% - 20px);height:20px;pointer-events:none;"><div style="width:20px;height:20px;border-radius:50%;background:' + acc + ';"></div></div></div>'
@@ -18853,7 +18853,7 @@ _RENDERERS['animated_border_card'] = function(b) {
     + '.abc-inner-' + uid + '{position:relative;z-index:1;background:#fff;border-radius:14px;padding:24px;}'
     + '@keyframes abc-spin-' + uid + '{to{transform:rotate(360deg);}}'
     + '</style>'
-    + '<div data-cb="tile" data-key="' + (b.title ? _esc(String(b.title)) : 'animated_border_card') + '" class="abc-' + uid + '"><div class="abc-inner-' + uid + '">'
+    + '<div data-cb="node" data-key="' + (b.title ? _esc(String(b.title)) : 'animated_border_card') + '" class="abc-' + uid + '"><div class="abc-inner-' + uid + '">'
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
     + (text ? '<div style="color:#374151;font-size:0.9rem;line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div></div>';
@@ -19297,7 +19297,7 @@ _RENDERERS['animated_beam'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var k = b.label ? _esc(String(b.label)) : 'animated_beam';
   return '<style>@keyframes beam-' + uid + '{to{stroke-dashoffset:-20;}}</style>'
-    + '<div data-cb="link" data-key="' + k + '" style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
+    + '<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
     + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(from) + '</div>'
     + '<div style="flex:1;position:relative;height:32px;">'
     + '<svg role="img" aria-label="Animated beam diagram" width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
@@ -19929,7 +19929,7 @@ _RENDERERS['big_reveal'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var k = b.text ? _esc(String(b.text)) : 'big_reveal';
   return '<style>@keyframes br-' + uid + '{from{opacity:0;transform:scale(0.35);}to{opacity:1;transform:scale(1);}}</style>'
-    + '<div data-cb="label" data-key="' + k + '" style="text-align:center;padding:44px 24px;margin:1rem 0;">'
+    + '<div data-cb="node" data-key="' + k + '" style="text-align:center;padding:44px 24px;margin:1rem 0;">'
     + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + _esc(color) + ';line-height:1.05;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + delay + 's both;">' + _esc(text) + '</div>'
     + (sub ? '<div style="font-size:1.05rem;color:#6b7280;margin-top:14px;font-weight:500;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + (delay+0.18) + 's both;">' + _esc(sub) + '</div>' : '')
     + '</div>';
@@ -21997,7 +21997,7 @@ _RENDERERS['atom_anatomy'] = function(b) {
   var rendered  = '';
   try { rendered = renderAtoms([schema]); } catch(e) { rendered = '<em style="color:var(--muted);">Could not render preview</em>'; }
   var k = b.label ? _esc(String(b.label)) : 'atom_anatomy';
-  return '<div data-cb="tile" data-key="' + k + '" style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
     + '<div style="padding:8px 16px;background:var(--surface2);font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border);">' + _esc(label) + '</div>'
     + '<div style="display:flex;gap:0;">'
     + '<div style="flex:1;padding:20px;border-right:1px solid var(--border);min-width:0;">'
@@ -33804,7 +33804,7 @@ _RENDERERS['breaking_banner'] = function(b) {
     ? '<p style="margin:8px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + [b.source, b.time].filter(Boolean).map(_esc).join(' · ') + '</p>'
     : '';
   var k = b.title ? _esc(String(b.title)) : 'breaking_banner';
-  return '<div data-cb="tile" data-key="' + k + '" style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">' +
+  return '<div data-cb="node" data-key="' + k + '" style="border-left:4px solid ' + accent + ';background:' + accent + '18;border-radius:0 10px 10px 0;padding:18px 20px;margin:12px 0">' +
     '<p style="margin:0 0 7px;font-size:0.63rem;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:' + accent + '">' + _esc(label) + '</p>' +
     '<p style="margin:0;font-size:1.15rem;font-weight:800;line-height:1.4;color:var(--text,#f9fafb)">' + _esc(b.title || '') + '</p>' +
     summary + sourceLine +
@@ -36879,7 +36879,7 @@ _RENDERERS['action_required_card'] = function(b) {
     : '';
   var deadline = b.deadline ? '<div style="font-size:0.75rem;color:' + cfg[1] + ';font-weight:600;margin-top:8px;">Due: ' + _esc(b.deadline) + '</div>' : '';
   var k = b.title ? _esc(String(b.title)) : 'action_required_card';
-  return '<div data-cb="tile" data-key="' + k + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid ' + cfg[1] + ';border-radius:0 10px 10px 0;background:' + cfg[2] + ';">'
+  return '<div data-cb="node" data-key="' + k + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:18px 20px;border-left:4px solid ' + cfg[1] + ';border-radius:0 10px 10px 0;background:' + cfg[2] + ';">'
     + '<div style="display:flex;align-items:flex-start;gap:12px;">'
     + '<span style="font-size:1.4rem;">' + icon + '</span>'
     + '<div style="flex:1;">'
@@ -39029,7 +39029,7 @@ _RENDERERS['calendar_today'] = function(b) {
   }
 
   var k = b.title ? _esc(String(b.title)) : 'calendar_today';
-  return '<div data-cb="tile" data-key="' + k + '" class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + k + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">📅</span> ' + _esc(title) + '<span style="margin-left:auto;font-size:0.75rem;font-weight:400;color:var(--muted);">' + _esc(dateLabel) + '</span></div>' +
          rows +
          '</div>';

@@ -7814,7 +7814,7 @@
    "header": "How is tenant data isolated?",
    "content": "Every tenant uses dedicated schema partitions encrypted with separate keys."
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "header",
   "py_sha": "e4c67b08ec456821b36d6276e1587830b675de8f0963456bf616854d6feed511",
@@ -7852,7 +7852,7 @@
    "action_url": "https://example.com/domains",
    "icon": "shield-alert"
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "title",
   "py_sha": "de5ed73ce104f42cd713f5c4b8658f2caa9fa75ff6c2b29631cef74588e4ea81",
@@ -7875,7 +7875,7 @@
    "caption": "Current burn is within the quarterly projection.",
    "accent": "#10b981"
   },
-  "kind": "bar",
+  "kind": "node",
   "label_kind": "label",
   "key": "label",
   "py_sha": "2bc1b9d1de5c2996d3eca331310e89fed0ce6635109a5147196589f151326048",
@@ -7893,7 +7893,7 @@
    "output_tokens": 256,
    "total_tokens": 896
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "model",
   "py_sha": "3b99982165a713417939a672055474b8bd60bf3185c07c083cb62ca581285ec7",
@@ -7927,7 +7927,7 @@
     3
    ]
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "chyron_title",
   "py_sha": "ff1887ff8ba272b2cde7e3a50291c7783082752c52ff624f286522d570fedb7f",
@@ -7945,7 +7945,7 @@
    "action_label": "View Schedule",
    "action_url": "https://example.com/status"
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "variant",
   "py_sha": "85b4019983d5a0e15a910e52cd26ddf1318a8a02a306c8e459b27b0d0ece223c",
@@ -7966,7 +7966,7 @@
    "speed": "normal",
    "curved": true
   },
-  "kind": "link",
+  "kind": "node",
   "label_kind": "label",
   "key": "label",
   "py_sha": "7591c77b616a09f56306a7e2f7132d8ba5c5d6ffbf9244cee870958e24183b22",
@@ -7986,7 +7986,7 @@
    "speed": "normal",
    "border_width": 2
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "title",
   "py_sha": "395eb6f87feecb532fb33053c22d893c67b698e62083e35a411b0f25a5e86fb9",
@@ -8019,7 +8019,7 @@
     "code": "curl https://example.com/api/v1/session"
    }
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "name",
   "py_sha": "a295ab2f465a944ff9cb7a4ef5d0e534d5401f22eb53946513d69646b2473c71",
@@ -8035,7 +8035,7 @@
    "subtitle": "Moving 40 million records across live clusters.",
    "image_url": "https://example.com/a.png"
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "title",
   "py_sha": "f2ff10063ec11742786f303c6abcfe4bb43a9674b369cfe2a0820e34fb9df1f1",
@@ -8050,7 +8050,7 @@
    "series_id": "kafka-internals",
    "current_part": 2
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "series_id",
   "py_sha": "cd1d6d11b42f426ee0693cadf2dc21d12afcc4ebeb1507bb441ad6c39d3a4e62",
@@ -8069,7 +8069,7 @@
    },
    "accent": "#6366f1"
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "label",
   "py_sha": "010284445013184f9965633c8ff349dcc8837bcaebaec7c91af952a18b2f144e",
@@ -8085,7 +8085,7 @@
    "label": "Listen to earnings call clip",
    "icon_type": "headphones"
   },
-  "kind": "link",
+  "kind": "node",
   "label_kind": "label",
   "key": "audio_url",
   "py_sha": "3cd9114e32798f8a4e396355bcdba3a06eb57b9735428467145cb5a26f54a9b6",
@@ -8104,7 +8104,7 @@
     "github": "https://example.com/elena"
    }
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "name",
   "py_sha": "4ad3d932876eb4a522c54d234c3d84c15eb5ba1d68280556e3e3f76f8fcd74be",
@@ -8128,7 +8128,7 @@
    "accent": "#38bdf8",
    "height": 300
   },
-  "kind": "branch",
+  "kind": "node",
   "label_kind": "label",
   "key": "preset",
   "py_sha": "dfa85967a93c7ca772f5383eddd13207ef2510195ca909236671a27f46591fb8",
@@ -8146,7 +8146,7 @@
    "size": "5rem",
    "delay": 0.2
   },
-  "kind": "label",
+  "kind": "node",
   "label_kind": "label",
   "key": "text",
   "py_sha": "0afdbd619c1c13ea352bed94d8fa9b3e51ba1b68cc6191aa80822f7d7bdd26f6",
@@ -8163,7 +8163,7 @@
    "author_title": "VP of Engineering",
    "avatar_url": "https://example.com/a.png"
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "author_name",
   "py_sha": "15495122994e6257c4c967d8cdd45ee06b43769ed95416440564931c72a9162f",
@@ -8182,7 +8182,7 @@
    "time": "14:22 UTC",
    "accent": "#ef4444"
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "title",
   "py_sha": "1e560a40db7aaf1df37be849fbeff251c3f1a90e374bf176a89857eb479b9211",
@@ -8197,7 +8197,7 @@
    "title": "Daily Standup & Schedule",
    "max_results": 6
   },
-  "kind": "tile",
+  "kind": "node",
   "label_kind": "label",
   "key": "title",
   "py_sha": "0458194df4ba00a857b28bab80cad9d79b1e397645626aacc56f4f9da8da3c5a",

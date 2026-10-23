@@ -130,7 +130,11 @@ def _check(html, kinds, need=2):
 def test_contract_and_keys(name, twin, pairs):
     html = pairs[name][twin]
     assert not html.startswith(("PY ERROR", "GAS ERROR")), html[:600]
-    _check(html, REG["kinds"], 1 if SWEEP[name].get("class") == "S" else 2)
+    single = SWEEP[name].get("class") == "S"
+    _check(html, REG["kinds"], 1 if single else 2)
+    if single:
+        kinds = [m.group(1) for m in TAG.finditer(html)]
+        assert kinds[0] == "node", "the root of a single atom must be data-cb=\"node\", got %s" % kinds[0]
 
 
 @pytest.mark.parametrize("name", sorted(SWEEP))

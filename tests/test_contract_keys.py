@@ -93,3 +93,10 @@ def test_a_syntax_error_inside_one_atoms_code_fails_that_atom_alone():
     assert ck.attribute_failures(out, ATOMS, REL, 2, locate) == {"beta"}
     assert seen == [("/repo/renderers/web_article.py", 1008)]
     assert ck.attribute_failures(out, ATOMS, REL, 2, lambda f, n: None) == set(ATOMS)
+
+
+def test_the_single_atom_prompt_demands_a_node_root_and_the_fixture_agrees():
+    assert 'ALWAYS "node"' in ck.SPEC_SINGLE
+    fx = json.loads((ROOT / "tests/fixtures/contract_sweep.json").read_text())
+    wrong = sorted(n for n, v in fx.items() if v.get("class") == "S" and v["kind"] != "node")
+    assert not wrong, "class S atoms must carry kind node: %s" % wrong
