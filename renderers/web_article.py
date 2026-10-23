@@ -31360,13 +31360,15 @@ _RENDERERS['motion_build'] = _render_motion_build
 # a circle) it keeps its proportions: scaled uniformly to fit inside the partner's box, centred on it, so nothing curved is stretched.
 # Pure CSS then runs everything on the film dial --p: B fades in over the first third, matched elements travel over p 0.15-0.85, B-only
 # elements fade in late, labels only fade (never transform). At p = 1 every offset is 0 and A is transparent: the page paints B.
-# Reduced motion, no script or no dial: A is not shown and B is static. The children's own build (--k on --p) is held at p = 1. The scale
-# origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
+# Reduced motion, no script or no dial: A is not shown and B is static. The children's own build (--k on --p) is held at p = 1 on
+# both layers (not only on chart roots: a decision tree has none, and its nodes' own rise moved A off its true layout). The scale
+# script re-measures on load, when fonts are ready and when the wrapper, either layer or a chart root resizes (a centred chart can
+# move without the wrapper changing size). The scale origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
 # first block loses its top margin (!important: atoms set it inline; B's collapses out of the wrapper, A's would not, and the titles
 # would not line up).
 # Known gap: text inside a moving box (a treemap or icicle tile) scales with it in flight. Twin: atoms_motion_candidates.gs.
 _MTR_MATCH = {'path': 'path', 'exact': 'exact'}
-_MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr [data-cb-root]{--p:1}.mo-tr .mtr-a{display:none}'
+_MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .mtr-a,.mo-tr .mtr-b{--p:1}.mo-tr .mtr-a{display:none}'
             + '@media (prefers-reduced-motion:no-preference){.mo-tr .mtr-a{display:block;position:absolute;left:0;top:0;width:100%;pointer-events:none;opacity:clamp(0,calc(1 - var(--mtr-p)*2.5),1)}'
             + '.mo-tr .mtr-a>*,.mo-tr .mtr-a>[data-mt-id]>*{margin-top:0!important}'
             + '.mo-tr .mtr-b{opacity:clamp(0,calc(var(--mtr-p)*3.4),1)}'
@@ -31401,7 +31403,8 @@ _MTR_JS = ('(function(){var w=document.currentScript&&document.currentScript.par
            'if(!plan[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}'
            "st.setProperty('--mtr-dx',(dx/fx).toFixed(2)+'px');st.setProperty('--mtr-dy',(dy/fy).toFixed(2)+'px');"
            "st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed(4));e.classList.add('mtr-m')}}"
-           "run();window.addEventListener('load',run);if(window.ResizeObserver)new ResizeObserver(function(){run()}).observe(w)})();")
+           "run();window.addEventListener('load',run);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);"
+           "if(window.ResizeObserver){var ro=new ResizeObserver(function(){run()});[w,A,B].concat([].slice.call(w.querySelectorAll('[data-cb-root]'))).forEach(function(e){if(e)ro.observe(e)})}})();")
 
 
 def _mtr_map(v):

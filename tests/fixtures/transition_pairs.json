@@ -1,0 +1,921 @@
+[
+ {
+  "id": "arc_diagram-to-chord_diagram",
+  "title": "arc_diagram → chord_diagram",
+  "story": "Wrap a linear network of service dependencies into an interactive circular chord flow.",
+  "from": {
+   "type": "arc_diagram",
+   "title": "Service Mesh Calls",
+   "nodes": [
+    {
+     "id": "Auth",
+     "label": "Auth"
+    },
+    {
+     "id": "API",
+     "label": "API"
+    },
+    {
+     "id": "DB",
+     "label": "DB"
+    },
+    {
+     "id": "Cache",
+     "label": "Cache"
+    }
+   ],
+   "links": [
+    {
+     "source": "Auth",
+     "target": "API",
+     "value": 10
+    },
+    {
+     "source": "API",
+     "target": "DB",
+     "value": 25
+    },
+    {
+     "source": "API",
+     "target": "Cache",
+     "value": 15
+    }
+   ]
+  },
+  "to": {
+   "type": "chord_diagram",
+   "title": "Service Traffic Flow",
+   "groups": [
+    "Auth",
+    "API",
+    "DB",
+    "Cache"
+   ],
+   "matrix": [
+    [
+     0,
+     10,
+     0,
+     0
+    ],
+    [
+     10,
+     0,
+     25,
+     15
+    ],
+    [
+     0,
+     25,
+     0,
+     0
+    ],
+    [
+     0,
+     15,
+     0,
+     0
+    ]
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 7
+ },
+ {
+  "id": "box_plot-to-histogram",
+  "title": "box_plot → histogram",
+  "story": "Transition from comparing summary cohort distributions to a multi-series wait time ridge.",
+  "from": {
+   "type": "box_plot",
+   "title": "Wait times by phase",
+   "groups": [
+    {
+     "label": "Before",
+     "values": [
+      25,
+      28,
+      30,
+      32,
+      35,
+      40,
+      42,
+      45
+     ]
+    },
+    {
+     "label": "During",
+     "values": [
+      35,
+      38,
+      42,
+      45,
+      50,
+      52,
+      55,
+      60
+     ]
+    },
+    {
+     "label": "After",
+     "values": [
+      20,
+      22,
+      25,
+      26,
+      28,
+      30,
+      31,
+      33
+     ]
+    }
+   ]
+  },
+  "to": {
+   "type": "histogram",
+   "title": "Wait times by phase",
+   "layout": "ridge",
+   "series": [
+    {
+     "label": "Before",
+     "values": [
+      25,
+      28,
+      30,
+      32,
+      35,
+      40,
+      42,
+      45
+     ]
+    },
+    {
+     "label": "During",
+     "values": [
+      35,
+      38,
+      42,
+      45,
+      50,
+      52,
+      55,
+      60
+     ]
+    },
+    {
+     "label": "After",
+     "values": [
+      20,
+      22,
+      25,
+      26,
+      28,
+      30,
+      31,
+      33
+     ]
+    }
+   ]
+  },
+  "match": "exact",
+  "key_map": {
+   "Before": "Before",
+   "During": "During",
+   "After": "After"
+  },
+  "measured_joins": 3
+ },
+ {
+  "id": "chord_diagram-to-arc_diagram",
+  "title": "chord_diagram → arc_diagram",
+  "story": "Unfold our cyclical regional traffic ring into an ordered linear network of arcs.",
+  "from": {
+   "type": "chord_diagram",
+   "title": "Traffic Matrix",
+   "groups": [
+    "US-East",
+    "US-West",
+    "EU-Central",
+    "AP-South"
+   ],
+   "matrix": [
+    [
+     0,
+     50,
+     30,
+     10
+    ],
+    [
+     40,
+     0,
+     20,
+     15
+    ],
+    [
+     25,
+     15,
+     0,
+     35
+    ],
+    [
+     10,
+     10,
+     20,
+     0
+    ]
+   ]
+  },
+  "to": {
+   "type": "arc_diagram",
+   "title": "Inter-Region Connectivity",
+   "nodes": [
+    {
+     "id": "US-East",
+     "label": "US-East"
+    },
+    {
+     "id": "US-West",
+     "label": "US-West"
+    },
+    {
+     "id": "EU-Central",
+     "label": "EU-Central"
+    },
+    {
+     "id": "AP-South",
+     "label": "AP-South"
+    }
+   ],
+   "links": [
+    {
+     "source": "US-East",
+     "target": "US-West",
+     "value": 50
+    },
+    {
+     "source": "US-East",
+     "target": "EU-Central",
+     "value": 30
+    },
+    {
+     "source": "EU-Central",
+     "target": "AP-South",
+     "value": 35
+    }
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 7
+ },
+ {
+  "id": "chord_diagram-to-venn_diagram",
+  "title": "chord_diagram → venn_diagram",
+  "story": "Group mutual data exchanges among core teams into shared organizational spheres.",
+  "from": {
+   "type": "chord_diagram",
+   "title": "Inter-Team Exchanges",
+   "groups": [
+    "Product",
+    "Design",
+    "Engineering"
+   ],
+   "matrix": [
+    [
+     0,
+     30,
+     20
+    ],
+    [
+     25,
+     0,
+     35
+    ],
+    [
+     15,
+     40,
+     0
+    ]
+   ]
+  },
+  "to": {
+   "type": "venn_diagram",
+   "title": "Functional Overlap",
+   "set_a_name": "Product",
+   "set_b_name": "Design",
+   "set_c_name": "Engineering",
+   "set_a_exclusive": [
+    "Roadmap"
+   ],
+   "set_b_exclusive": [
+    "Typography"
+   ],
+   "set_c_exclusive": [
+    "Backend"
+   ],
+   "intersection": [
+    "Prototyping"
+   ],
+   "intersection_ac": [
+    "Telemetry"
+   ],
+   "intersection_bc": [
+    "Design system"
+   ],
+   "intersection_abc": [
+    "Core App"
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 3
+ },
+ {
+  "id": "circle_pack-to-treemap",
+  "title": "circle_pack → treemap",
+  "story": "Compact circular clusters pack into rectangular area allocations for rectangular space efficiency.",
+  "from": {
+   "type": "circle_pack",
+   "title": "Resource Allocation",
+   "items": [
+    {
+     "path": [
+      "Infra"
+     ],
+     "name": "Core",
+     "value": 40
+    },
+    {
+     "path": [
+      "Infra"
+     ],
+     "name": "Edge",
+     "value": 20
+    },
+    {
+     "path": [
+      "App"
+     ],
+     "name": "Frontend",
+     "value": 30
+    },
+    {
+     "path": [
+      "App"
+     ],
+     "name": "Backend",
+     "value": 50
+    }
+   ]
+  },
+  "to": {
+   "type": "treemap",
+   "title": "Resource Allocation Matrix",
+   "items": [
+    {
+     "category": "Infra",
+     "name": "Core",
+     "value": 40
+    },
+    {
+     "category": "Infra",
+     "name": "Edge",
+     "value": 20
+    },
+    {
+     "category": "App",
+     "name": "Frontend",
+     "value": 30
+    },
+    {
+     "category": "App",
+     "name": "Backend",
+     "value": 50
+    }
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 4
+ },
+ {
+  "id": "decision_tree-to-org_chart",
+  "title": "decision_tree → org_chart",
+  "story": "Transform our nested team decision workflow into an executive management hierarchy.",
+  "from": {
+   "type": "decision_tree",
+   "title": "Reporting Tree",
+   "layout": "tree",
+   "nodes": [
+    {
+     "text": "CEO",
+     "children": [
+      {
+       "text": "CTO",
+       "children": [
+        {
+         "text": "Lead Dev"
+        }
+       ]
+      },
+      {
+       "text": "CPO",
+       "children": [
+        {
+         "text": "Design Lead"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "to": {
+   "type": "org_chart",
+   "title": "Executive Structure",
+   "layout": "tree",
+   "nodes": [
+    {
+     "id": "CEO",
+     "label": "CEO",
+     "parent_id": ""
+    },
+    {
+     "id": "CTO",
+     "label": "CTO",
+     "parent_id": "CEO"
+    },
+    {
+     "id": "CPO",
+     "label": "CPO",
+     "parent_id": "CEO"
+    },
+    {
+     "id": "Lead Dev",
+     "label": "Lead Dev",
+     "parent_id": "CTO"
+    },
+    {
+     "id": "Design Lead",
+     "label": "Design Lead",
+     "parent_id": "CPO"
+    }
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 9
+ },
+ {
+  "id": "histogram-to-box_plot",
+  "title": "histogram → box_plot",
+  "story": "Condense our multi-phase wait distributions into standard quartile and median comparisons.",
+  "from": {
+   "type": "histogram",
+   "title": "Wait times by phase",
+   "layout": "ridge",
+   "series": [
+    {
+     "label": "Before",
+     "values": [
+      25,
+      28,
+      30,
+      32,
+      35,
+      40,
+      42,
+      45
+     ]
+    },
+    {
+     "label": "During",
+     "values": [
+      35,
+      38,
+      42,
+      45,
+      50,
+      52,
+      55,
+      60
+     ]
+    },
+    {
+     "label": "After",
+     "values": [
+      20,
+      22,
+      25,
+      26,
+      28,
+      30,
+      31,
+      33
+     ]
+    }
+   ]
+  },
+  "to": {
+   "type": "box_plot",
+   "title": "Wait times by phase",
+   "groups": [
+    {
+     "label": "Before",
+     "values": [
+      25,
+      28,
+      30,
+      32,
+      35,
+      40,
+      42,
+      45
+     ]
+    },
+    {
+     "label": "During",
+     "values": [
+      35,
+      38,
+      42,
+      45,
+      50,
+      52,
+      55,
+      60
+     ]
+    },
+    {
+     "label": "After",
+     "values": [
+      20,
+      22,
+      25,
+      26,
+      28,
+      30,
+      31,
+      33
+     ]
+    }
+   ]
+  },
+  "match": "exact",
+  "key_map": {
+   "Before": "Before",
+   "During": "During",
+   "After": "After"
+  },
+  "measured_joins": 3
+ },
+ {
+  "id": "stacked_area-to-waterfall",
+  "title": "stacked_area → waterfall",
+  "story": "Summarize continuous quarterly product line revenues into net cumulative contribution steps.",
+  "from": {
+   "type": "stacked_area",
+   "title": "Quarterly Streams",
+   "labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+   ],
+   "series": [
+    {
+     "label": "Subscriptions",
+     "data": [
+      20,
+      30,
+      40,
+      50
+     ]
+    },
+    {
+     "label": "Services",
+     "data": [
+      10,
+      15,
+      20,
+      25
+     ]
+    },
+    {
+     "label": "Licensing",
+     "data": [
+      5,
+      8,
+      10,
+      12
+     ]
+    }
+   ]
+  },
+  "to": {
+   "type": "waterfall",
+   "title": "Total Revenue Contribution",
+   "steps": [
+    {
+     "label": "Subscriptions",
+     "value": 50
+    },
+    {
+     "label": "Services",
+     "value": 25
+    },
+    {
+     "label": "Licensing",
+     "value": 12
+    },
+    {
+     "label": "Total",
+     "kind": "total"
+    }
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 3
+ },
+ {
+  "id": "sunburst-to-circle_pack",
+  "title": "sunburst → circle_pack",
+  "story": "Revisualize our departmental cost distribution from radial slices into nested circular clusters.",
+  "from": {
+   "type": "sunburst",
+   "title": "Department Costs",
+   "layout": "radial",
+   "items": [
+    {
+     "path": [
+      "Engineering"
+     ],
+     "name": "Compute",
+     "value": 350
+    },
+    {
+     "path": [
+      "Engineering"
+     ],
+     "name": "Tools",
+     "value": 120
+    },
+    {
+     "path": [
+      "Marketing"
+     ],
+     "name": "Ads",
+     "value": 240
+    },
+    {
+     "path": [
+      "Marketing"
+     ],
+     "name": "Events",
+     "value": 160
+    }
+   ]
+  },
+  "to": {
+   "type": "circle_pack",
+   "title": "Department Cost Clusters",
+   "items": [
+    {
+     "path": [
+      "Engineering"
+     ],
+     "name": "Compute",
+     "value": 350
+    },
+    {
+     "path": [
+      "Engineering"
+     ],
+     "name": "Tools",
+     "value": 120
+    },
+    {
+     "path": [
+      "Marketing"
+     ],
+     "name": "Ads",
+     "value": 240
+    },
+    {
+     "path": [
+      "Marketing"
+     ],
+     "name": "Events",
+     "value": 160
+    }
+   ]
+  },
+  "match": "path",
+  "measured_joins": 6
+ },
+ {
+  "id": "treemap-to-sunburst",
+  "title": "treemap → sunburst",
+  "story": "We break our cloud infrastructure budget down from high-level blocks into nested orbital rings.",
+  "from": {
+   "type": "treemap",
+   "title": "Cloud Spend Breakdown",
+   "items": [
+    {
+     "category": "Cloud",
+     "name": "Compute",
+     "value": 450
+    },
+    {
+     "category": "Cloud",
+     "name": "Storage",
+     "value": 200
+    },
+    {
+     "category": "Cloud",
+     "name": "Network",
+     "value": 150
+    },
+    {
+     "category": "Offices",
+     "name": "Rent",
+     "value": 300
+    },
+    {
+     "category": "Offices",
+     "name": "Utilities",
+     "value": 100
+    }
+   ]
+  },
+  "to": {
+   "type": "sunburst",
+   "title": "Cloud Spend Hierarchy",
+   "layout": "radial",
+   "items": [
+    {
+     "path": [
+      "Cloud"
+     ],
+     "name": "Compute",
+     "value": 450
+    },
+    {
+     "path": [
+      "Cloud"
+     ],
+     "name": "Storage",
+     "value": 200
+    },
+    {
+     "path": [
+      "Cloud"
+     ],
+     "name": "Network",
+     "value": 150
+    },
+    {
+     "path": [
+      "Offices"
+     ],
+     "name": "Rent",
+     "value": 300
+    },
+    {
+     "path": [
+      "Offices"
+     ],
+     "name": "Utilities",
+     "value": 100
+    }
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 5
+ },
+ {
+  "id": "venn_diagram-to-chord_diagram",
+  "title": "venn_diagram → chord_diagram",
+  "story": "Translate cross-functional responsibilities into bidirectional communication traffic.",
+  "from": {
+   "type": "venn_diagram",
+   "title": "Department Overlap",
+   "set_a_name": "Product",
+   "set_b_name": "Design",
+   "set_c_name": "Engineering",
+   "set_a_exclusive": [
+    "Roadmap"
+   ],
+   "set_b_exclusive": [
+    "Typography"
+   ],
+   "set_c_exclusive": [
+    "Backend"
+   ],
+   "intersection": [
+    "Prototyping"
+   ],
+   "intersection_ac": [
+    "Telemetry"
+   ],
+   "intersection_bc": [
+    "Design system"
+   ],
+   "intersection_abc": [
+    "Core App"
+   ]
+  },
+  "to": {
+   "type": "chord_diagram",
+   "title": "Cross-Team Hand-offs",
+   "groups": [
+    "Product",
+    "Design",
+    "Engineering"
+   ],
+   "matrix": [
+    [
+     0,
+     15,
+     20
+    ],
+    [
+     15,
+     0,
+     25
+    ],
+    [
+     20,
+     25,
+     0
+    ]
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 3
+ },
+ {
+  "id": "waterfall-to-stacked_area",
+  "title": "waterfall → stacked_area",
+  "story": "Morph step-by-step annual financial variance components into quarterly stacked trend lines.",
+  "from": {
+   "type": "waterfall",
+   "title": "Revenue Bridge",
+   "steps": [
+    {
+     "label": "Base",
+     "value": 100,
+     "kind": "total"
+    },
+    {
+     "label": "Expansion",
+     "value": 40
+    },
+    {
+     "label": "Services",
+     "value": 25
+    },
+    {
+     "label": "Hardware",
+     "value": 15
+    }
+   ]
+  },
+  "to": {
+   "type": "stacked_area",
+   "title": "Revenue Growth Layers",
+   "labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+   ],
+   "series": [
+    {
+     "label": "Expansion",
+     "data": [
+      10,
+      20,
+      30,
+      40
+     ]
+    },
+    {
+     "label": "Services",
+     "data": [
+      5,
+      10,
+      15,
+      25
+     ]
+    },
+    {
+     "label": "Hardware",
+     "data": [
+      5,
+      8,
+      12,
+      15
+     ]
+    }
+   ]
+  },
+  "match": "exact",
+  "measured_joins": 3
+ }
+]
