@@ -32,7 +32,7 @@ UNREAD = 'tests/schema_fields_unread_baseline.json'
 PYTHON = '/home/ck/a2ui/.venv/bin/python'
 GEMINI = ('type=gemini-enterprise;project=179011472094;region=global;model=gemini-3.8-flash;'
           'account=a2uitestbench@krygier.co.uk;thinking=low')
-TRAILER = 'Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>'
+TRAILER = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 ALWAYS = ['tests/test_gas_twins.py', 'tests/test_surface_parity.py', 'tests/test_schema_fields_read.py']
 
 SPEC = """BUILD CONTRACT (owner-approved, a2uicatalog, MIT). Add it to each atom below, in BOTH its Python renderer and its GAS
