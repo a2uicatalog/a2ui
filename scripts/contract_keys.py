@@ -70,7 +70,11 @@ each, in BOTH its Python renderer and its GAS (Apps Script) twin:
 - NEVER key by a value the page must keep secret or that the user is meant to find (a quiz answer, a password).
 - The key must come out the same in Python and GAS for ANY input (numbers, null, nested objects, hostile strings): convert
   with the twin's own string rules (Python str() vs JS String() differ for floats, None/null, booleans) using the helpers the
-  surrounding code already uses for that atom's text."""
+  surrounding code already uses for that atom's text.
+- USE THE EXISTING KEY HELPERS: Python `_ck(value, "atom_name")` and GAS `_ckey(value, 'atom_name')` (they return the value
+  if it is a non-empty string, else the atom-name literal, already escaped). Write data-key="{_ck(b.get("field"), "atom_name")}"
+  in Python f-strings (or the concatenation equivalent) and the same through _ckey in GAS. Never key by a secret or hidden
+  value (quiz answer, password, hidden reveal): use _ck(None, "atom_name") / _ckey(null, 'atom_name')."""
 FORMAT = """Answer with ONE JSON object and nothing else (no code fences):
 {"edits": [{"atom": "<the atom this edit keys>", "file": "<path as given in a FILE header>", "find": "<exact text copied from that file>", "replace": "<new text>"}],
  "notes": "<per atom: element keyed and key field; any atom you could not key and why>"}
@@ -297,16 +301,23 @@ def parse_reply(text):
     return json.loads(re.sub(r'^```(?:json)?\s*|\s*```$', '', text.strip()), strict=False)
 
 
-def call_gemini(ge, cfg, prompt, waits=(60, 120, 240, 240)):
-    """ge.call_full, waiting longer between attempts when the endpoint says HTTP 429 or 5xx (a large batch hits quota)."""
+def call_gemini(ge, cfg, prompt, waits=(60, 120, 240, 240), timeout=120):
+    """ge.call_full with a per-call timeout (one retry on a timeout, then RuntimeError so the batch is put back); it waits
+    longer between attempts when the endpoint says HTTP 429 or 5xx (a large batch hits quota)."""
+    timeouts = 0
     for w in waits + (None,):
         try:
-            return ge.call_full(cfg, prompt, max_tokens=65536)
+            return ge.call_full(cfg, prompt, max_tokens=65536, timeout=timeout)
         except RuntimeError as e:
             if w is None or not re.match(r'HTTP (429|5\d\d)', str(e)):
                 raise
             print('gemini: %s; waiting %ds' % (str(e)[:40], w), flush=True)
             time.sleep(w)
+        except OSError as e:   # socket.timeout, URLError
+            timeouts += 1
+            if timeouts > 1:
+                raise RuntimeError('gemini: timed out twice (%ds): %s' % (timeout, str(e)[:60]))
+            print('gemini: timeout after %ds; retrying once' % timeout, flush=True)
 
 
 def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):

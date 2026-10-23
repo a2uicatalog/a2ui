@@ -159,7 +159,7 @@ def call(cfg, prompt, max_tokens=65536):
     return call_full(cfg, prompt, max_tokens)['reply']
 
 
-def call_full(cfg, prompt, max_tokens=65536, live=True):
+def call_full(cfg, prompt, max_tokens=65536, live=True, timeout=600):
     """{reply, usage, finish, cached}: usage is Gemini's usageMetadata (prompt, answer and thinking tokens),
     kept in the cache so a replayed reply still reports what it cost. live=False never calls the endpoint."""
     p = cache_path(cache_key(cfg), prompt)
@@ -177,7 +177,7 @@ def call_full(cfg, prompt, max_tokens=65536, live=True):
     req = urllib.request.Request(url, data=json.dumps(body).encode(), headers=dict(headers, **{'Content-Type': 'application/json'}))
     for attempt in range(4):
         try:
-            d = json.load(urllib.request.urlopen(req, timeout=600))
+            d = json.load(urllib.request.urlopen(req, timeout=timeout))
             break
         except urllib.error.HTTPError as e:
             msg = e.read().decode('utf-8', 'ignore')[:300]

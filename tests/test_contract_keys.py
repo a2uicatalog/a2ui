@@ -100,3 +100,24 @@ def test_the_single_atom_prompt_demands_a_node_root_and_the_fixture_agrees():
     fx = json.loads((ROOT / "tests/fixtures/contract_sweep.json").read_text())
     wrong = sorted(n for n, v in fx.items() if v.get("class") == "S" and v["kind"] != "node")
     assert not wrong, "class S atoms must carry kind node: %s" % wrong
+
+
+def test_a_gemini_call_that_times_out_twice_gives_up_after_one_retry():
+    calls = []
+
+    class Ge:
+        @staticmethod
+        def call_full(cfg, prompt, max_tokens=0, timeout=None):
+            calls.append(timeout)
+            raise TimeoutError("timed out")
+
+    try:
+        ck.call_gemini(Ge, {}, "p")
+        raise AssertionError("expected RuntimeError")
+    except RuntimeError as e:
+        assert "timed out twice" in str(e)
+    assert calls == [120, 120]
+
+
+def test_the_single_atom_prompt_names_the_key_helpers():
+    assert "_ck(" in ck.SPEC_SINGLE and "_ckey(" in ck.SPEC_SINGLE
