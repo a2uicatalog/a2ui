@@ -2239,7 +2239,7 @@
   "parity": true
  },
  "follow_up_chips": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "follow_up_chips",
    "label": "Suggested next actions:",
@@ -2288,7 +2288,7 @@
   "parity": false
  },
  "further_reading": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "further_reading",
    "links": [

@@ -2648,7 +2648,7 @@ _RENDERERS['further_reading'] = function(b) {
   var links = b.links || [];
   var items = links.map(function(l){
     var annotation = l.annotation ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(l.annotation) + '</div>' : '';
-    return '<a href="' + _esc(l.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
+    return '<a data-cb="link" data-key="' + _esc((l.url && l.url !== '#') ? l.url : (l.title || l.label || l.name || l.url || '#')) + '" href="' + _esc(l.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
       '<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
       '<div><div style="font-size:0.88rem;font-weight:600;color:var(--accent,#1d4ed8);">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
   }).join('');
@@ -4609,7 +4609,7 @@ _RENDERERS['follow_up_chips'] = function(b) {
     if (action) {
       onclick = ' onclick="google.script.run.withFailureHandler(function(){}).withSuccessHandler(function(){}).handleChipAction(' + _jsJson(action) + ')"';
     }
-    chipsHtml += '<button class="fuc-chip-' + uid + '"' + onclick + (action ? ' style="cursor:pointer;"' : '') + '>' + _esc(text) + '</button>';
+    chipsHtml += '<button data-cb="item" data-key="' + _esc(text) + '" class="fuc-chip-' + uid + '"' + onclick + (action ? ' style="cursor:pointer;"' : '') + '>' + _esc(text) + '</button>';
   }
 
   return '<style>' +

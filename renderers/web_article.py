@@ -6188,7 +6188,7 @@ def _render_follow_up_chips(b: dict) -> str:
     ) if label else ""
 
     chips = "".join(
-        f'<span style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;'
+        f'<span data-cb="item" data-key="{_cv_esc(item if isinstance(item, str) else (item.get("text") or item.get("label") or ""))}" style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;'
         f'border-radius:100px;border:1px solid {border};background:{bg};'
         f'color:{_cv_esc(accent)};font-size:0.85rem;font-weight:500;cursor:pointer;white-space:nowrap;">'
         f'{_cv_esc(item)}'
@@ -13385,7 +13385,7 @@ def _render_further_reading(b: dict) -> str:
             text = item.get('title') or item.get('text') or item.get('label', '')
             url = item.get('url', '#')
         rows += (f'<li style="margin:4px 0;">'
-                 f'<a href="{_esc(url)}" style="color:#7c3aed;text-decoration:none;font-size:0.88rem;">→ {_esc(text)}</a></li>')
+                 f'<a data-cb="link" data-key="{_esc(url if url != "#" else (text or "#"))}" href="{_esc(url)}" style="color:#7c3aed;text-decoration:none;font-size:0.88rem;">→ {_esc(text)}</a></li>')
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;">'
             f'<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">📚 {_esc(title)}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></div>')
