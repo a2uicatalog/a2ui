@@ -147,7 +147,9 @@ def test_the_mcp_apps_bundle_itself_renders_scenes_and_clipart():
     # 2026-10-03 with Curtis's go-ahead for the motion_bricks GPU flight-motion capability — kept in
     # sync here since this test builds the same bundle independently rather than importing that guard.
     # 3.6 -> 3.8 MB on 2026-10-10, same raise, confirmed by Curtis, as test_mcp_apps_bundle.py (the bundle was already 3.65 MB at the base commit)
-    assert len(bundle) < 3_800_000
+    # 3.8 -> 4.5 MB on 2026-10-23: the 2026-10-21 raise in test_mcp_apps_bundle.py ("raise to 4.5", D3 release) never reached this
+    # copy, so main failed here at 4.09 MB. Curtis, 2026-10-23: "we dont know what the ceiling is for mcp apps bundle - push it a bit".
+    assert len(bundle) < 4_500_000
 
 
 def test_published_scene_assets_match_the_data_the_renderer_embeds():
