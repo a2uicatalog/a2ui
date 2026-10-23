@@ -8203,5 +8203,4003 @@
   "py_sha": "0458194df4ba00a857b28bab80cad9d79b1e397645626aacc56f4f9da8da3c5a",
   "gas_sha": "67a850ca8c7b8f90938fa0db2e479e8b65abdbeccb08e168c699ce40afbee6fa",
   "parity": false
+ },
+ "intro": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "intro",
+   "series_label": "Cloud Migration Playbook",
+   "series_url": "https://example.com/series",
+   "continuation": "Part 3 of 5",
+   "note": "Updated for Q3."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "series_label",
+  "py_sha": "ed3f3bea78bd01401e45ad417b3416c2add790a3313cc8d2f982de6fe4f00c33",
+  "gas_sha": "ed3f3bea78bd01401e45ad417b3416c2add790a3313cc8d2f982de6fe4f00c33",
+  "parity": false
+ },
+ "body": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "body",
+   "text": "Our edge deployment strategy reduced latency across European regions by forty percent."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "450610b1b961fb7d57dd9055d248953a4e53d68945d90a4664e18992c192a4b2",
+  "gas_sha": "dfcf7e43d0edb679628eaecce21343a698c39617430045659f44bceea2f5e6c7",
+  "parity": false
+ },
+ "heading": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "heading",
+   "text": "Architecture Overview"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "e1b5215c8f19a2a5c4bd15d92acc455d7be2190a06ab45dfe186af1025135dee",
+  "gas_sha": "96ee32d3a46d934278133aa41f79f439145f25682af32409e34951c5775fa354",
+  "parity": false
+ },
+ "subheading": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "subheading",
+   "text": "Data Pipeline Synchronization"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "717a09ed8843e5a988499a62a9720a0f5ca9c03ce3042793d145a9f89269b652",
+  "gas_sha": "61d777e25e93448010045450754f3b5f6ee9ce9bf92ecd48c983b7eae01cc74c",
+  "parity": false
+ },
+ "quote": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "quote",
+   "text": "Simplicity is prerequisite for reliability.",
+   "attribution": "Edsger W. Dijkstra"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "attribution",
+  "py_sha": "f8a9cc2fa969090ed46b7ed7c28f14978a21b6d2047dacec9ad7f582df4751c7",
+  "gas_sha": "2b9396f1adccaafdaa23caf2f6cfdef62747c77d712fae453516a62bb8fe4682",
+  "parity": false
+ },
+ "code": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "code",
+   "language": "python",
+   "content": "def health_check():\n    return {'status': 'ok'}"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "language",
+  "py_sha": "528ed8f44f9a5206c90f141fdb073aa82fec264fa9aebc9095d2ad751b58ea85",
+  "gas_sha": "ae1ae72568584a1ab92bad39a25f78e21439416094c9f5c42f010a4e280958cc",
+  "parity": false
+ },
+ "image": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "image",
+   "url": "https://example.com/a.png",
+   "alt": "System topology",
+   "caption": "Primary cluster layout",
+   "width": "100%"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "url",
+  "py_sha": "545c879b4a337d8f223ae3dcdef39e15ee205250411fd5d692113db2d1e6f703",
+  "gas_sha": "9fc745bd43e242dcf6bf064e68c2f01900ef700fb4e21a81b9ddb48b8b3cf8c3",
+  "parity": false
+ },
+ "diagram": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "diagram",
+   "url": "https://example.com/diagram.svg",
+   "caption": "Event-driven message routing"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "url",
+  "py_sha": "e9ff1af52f93c5eea8093b001861fd02e25fb12d00f1161ddb5bddf683bef221",
+  "gas_sha": "81381a989ea57affbc27a2af9283a7257772b42482089cd6b18abb4cd42d93e5",
+  "parity": false
+ },
+ "github_repo_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "github_repo_card",
+   "repo": "acme/stream-engine",
+   "label": "Stream Engine",
+   "description": "High-throughput real-time telemetry processing daemon."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "repo",
+  "py_sha": "d1bd0a7007e3187f0b717d77e5a96aae7cd642421c26479a323a689531f42d4c",
+  "gas_sha": "fd875839dac04d133fbff71f3c475c8d3cf51fcb0202bbe7594dae1918a5aabc",
+  "parity": false
+ },
+ "closing": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "closing",
+   "text": "Deploying these primitives ensures continuous cluster uptime.",
+   "tags": [
+    "devops",
+    "cloud",
+    "reliability"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "c6cb83be9b26bf25533ab12b7008fd6072044c0180a9fba054c71da2eae028e3",
+  "gas_sha": "131715b7a9f721f25b156796c45f33290e6ecca545e119c9c1d1e44545b078a1",
+  "parity": false
+ },
+ "callout": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "callout",
+   "kind": "tip",
+   "title": "Index Optimization",
+   "text": "Add a composite index on tenant_id and created_at to speed up dashboard queries."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "053da02ae409ea02c350b7ba03286bf2be443a5701a00f1beb78ec3dd5bef7cb",
+  "gas_sha": "cd31485a68fd68bdd99e2218225dd36e99e135bf089cd668dbdeba4b1d60d622",
+  "parity": false
+ },
+ "stat_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "stat_card",
+   "value": "99.98%",
+   "label": "Core API Uptime",
+   "delta": "+0.04%",
+   "is_up": true,
+   "accent": "#22c55e"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "ff560f54c2c558a9dae3439d6db105a4588e7a0c9cb197b637d2374b70367964",
+  "gas_sha": "ff560f54c2c558a9dae3439d6db105a4588e7a0c9cb197b637d2374b70367964",
+  "parity": false
+ },
+ "progress_bar": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "progress_bar",
+   "value": 72,
+   "label": "Database Migration",
+   "accent": "#3b82f6",
+   "show_percent": true,
+   "caption": "7.2M of 10M rows synced"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "4c2ec016cdec63b708fcbdadbc41b05232f5e0cef8cb8ea6ea926202de7f9cfe",
+  "gas_sha": "ffa1a7f1e898f0554da19f8d3df8abe0282f59aa6664f4e26749b1f4148d4dbc",
+  "parity": false
+ },
+ "sparkline": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sparkline",
+   "data": [
+    45,
+    52,
+    49,
+    60,
+    58,
+    64,
+    71
+   ],
+   "color": "#06b6d4",
+   "line_width": 2,
+   "height": "24px",
+   "width": "96px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "9f4aefbecd903b4a1a03c10f9e21df4011662a09ef274c1a5e61ee4531352feb",
+  "gas_sha": "9f4aefbecd903b4a1a03c10f9e21df4011662a09ef274c1a5e61ee4531352feb",
+  "parity": false
+ },
+ "donut_stat": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "donut_stat",
+   "value": 84,
+   "max_value": 100,
+   "label": "Quota Used",
+   "unit": "%",
+   "color": "#f59e0b",
+   "size": "120px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "3385e2c888147179ff6f15d1a77650189cf1231255771ce8c73bc10f0d89fc4f",
+  "gas_sha": "c0d84f1839db56a409d2b03e10c890fbd84331e56405a01e4a72b3725a4678c4",
+  "parity": false
+ },
+ "metric_delta": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "metric_delta",
+   "label": "Monthly Active Users",
+   "current_value": "142,800",
+   "delta_value": "+12.4%",
+   "delta_type": "increase",
+   "unit": "users",
+   "previous_period_label": "vs. previous month"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "3967e35d26982a5b970e5fb8fdc5a9b08dc265a10000a61fb3fa5df34b4bd9e6",
+  "gas_sha": "0d70b395bee9820d802b49b0cb851596c3c547a9aa73e37b66c1e753e19d6c71",
+  "parity": false
+ },
+ "sentiment_summary": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sentiment_summary",
+   "title": "Customer Feedback Call",
+   "sentiment_index": 82,
+   "emotional_journey": [
+    0.2,
+    0.4,
+    0.8,
+    0.7,
+    0.9
+   ],
+   "themes": [
+    {
+     "theme": "Onboarding",
+     "mood": "Optimistic",
+     "score": 88
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "fcc5038e4cd04950cb1777b81ff790ddedf4e2628ce093d8b3d00bbb2d508e22",
+  "gas_sha": "f6f5f35e355f76229f96465b5807718c5c2e4b7daca38f25c209a9c11afb5966",
+  "parity": false
+ },
+ "trend_indicator": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "trend_indicator",
+   "trend_direction": "up",
+   "label": "Conversion Rate",
+   "context": "over last 14 days",
+   "color": "#16a34a"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "0d97d22c48fa8764c009925db2a9b76dbf7d408596fc36c8d13f11c182ed7092",
+  "gas_sha": "0fb7845c97854cb04834f60e390a57abeb6f7eec5fb040740be00c542e6deb55",
+  "parity": false
+ },
+ "glossary_term": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "glossary_term",
+   "term": "Idempotency",
+   "definition": "An operation that produces the same result when executed multiple times.",
+   "link_text": "View API specs",
+   "link_url": "https://example.com/idempotency"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "term",
+  "py_sha": "72f4aa0155886708db240756e099aafeb6900e01acd92aa8d2353d7a10d40a15",
+  "gas_sha": "de21f9ea7f7f40186a6584c120e33c23593ee064ecc696b88b32d4d4f4a61adc",
+  "parity": false
+ },
+ "footnote": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "footnote",
+   "number": 1,
+   "text": "Measured on AWS c6i.4xlarge instances across 10,000 requests.",
+   "id": "fn-perf-1"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "id",
+  "py_sha": "955bba8b7c5ce7bcb4256ec59cba77c143f4113b114c759364cfc82104d04647",
+  "gas_sha": "ae6bc29c0d3cf989ef99ec3f1e4a0c69bd820d50b26ec7a1aad1c4ad37e43a94",
+  "parity": false
+ },
+ "pull_stat": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "pull_stat",
+   "value": "1.2ms",
+   "label": "Average query latency",
+   "unit": "ms",
+   "color": "#6366f1"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "f359b07e61be16dfeb746a41ee8d1d7a6604be824a863bd2a8dbe855f30c3ed9",
+  "gas_sha": "3b6f07e32b0f7924558d7581fdcb9447e490950979e6f0f12e53372bac07b51e",
+  "parity": false
+ },
+ "pdf_preview": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "pdf_preview",
+   "pdf_url": "https://example.com/report.pdf",
+   "thumbnail_url": "https://example.com/a.png",
+   "title": "Annual SOC2 Compliance Audit",
+   "alt_text": "Audit cover page thumbnail"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "pdf_url",
+  "py_sha": "6339d76f92765706066284790dc97228d5653171dfae283d08c4c6906269c8da",
+  "gas_sha": "6721ee607f7c9f13276456db48d5a8a530885a845195e77e42e847658d1f9f09",
+  "parity": false
+ },
+ "document_link": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "document_link",
+   "document_url": "https://example.com/specs.docx",
+   "label": "Download technical specification",
+   "icon_type": "file-text"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "document_url",
+  "py_sha": "617d5821b910b82d7f3259994efc77b7ffa61eb7f1eceda157b8017ff80e40f8",
+  "gas_sha": "72b6015c3c9efd64dcae09e523801d315eb07f600ad470eedb8a33e355c4c20d",
+  "parity": false
+ },
+ "video_thumbnail": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "video_thumbnail",
+   "video_url": "https://example.com/demo.mp4",
+   "thumbnail_url": "https://example.com/a.png",
+   "alt_text": "Product demo screencast",
+   "title": "Watch the 2-minute overview"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "video_url",
+  "py_sha": "740ba98c0a7ca9025e0efa2d8af921edf654735fced8627d9dcf9d72db136227",
+  "gas_sha": "9f23b5c40f4f31ebe3946c553c976c6d7520abe8b94096bdee499ad01e510105",
+  "parity": false
+ },
+ "video_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "video_card",
+   "video_url": "https://example.com/webinar.mp4",
+   "thumbnail_url": "https://example.com/a.png",
+   "title": "Scaling Distributed Microservices",
+   "description": "Learn patterns for zero-downtime database failovers.",
+   "alt_text": "Webinar speaker slide"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "video_url",
+  "py_sha": "79dafabb9dcb184ab57a9510a8b406564e42cef46b9d8a90d83bdcddffe9c9de",
+  "gas_sha": "21e69f87c937320e2752a86c3f5c9203eed31a8496a361566bc69cd0beed2cb8",
+  "parity": false
+ },
+ "code_diff": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "code_diff",
+   "old_code": "const timeout = 1000;\nconnect(timeout);",
+   "new_code": "const timeout = 3000;\nconnect(timeout, { retry: true });",
+   "label": "Connection Resiliency Patch",
+   "language": "typescript",
+   "show_line_numbers": true,
+   "context_lines": 2
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "5a51c4dc976a79108c840066508dacf03e246fac2a45525e5a6935f664bb4ac7",
+  "gas_sha": "4c6c77c061ce811e6a90a69f7828348ae016d00293372b3c83a7b721a451d7f3",
+  "parity": false
+ },
+ "framed_screenshot": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "framed_screenshot",
+   "image_url": "https://example.com/a.png",
+   "alt_text": "Analytics view on mobile",
+   "device_type": "phone",
+   "caption": "Live telemetry monitor"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "image_url",
+  "py_sha": "d0054348e520b8ab1273adad693d840ec36d70c7beec4facab620fd3fff89999",
+  "gas_sha": "172b05e18f310ac2e2ae076a890ac95cab306c5164ef102090d4e95b61bf1970",
+  "parity": false
+ },
+ "image_with_caption": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "image_with_caption",
+   "image_url": "https://example.com/a.png",
+   "alt_text": "Server rack cluster",
+   "caption": "Frankfurt datacenter node assembly",
+   "link_url": "https://example.com/infra"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "image_url",
+  "py_sha": "e7b3ac9523fd7bc126c392a3bee6b5bed774e4b1da3f82c83af1b99aae324cb1",
+  "gas_sha": "a0245ec23f1cf9ab36c71f2d340979cc0043bfcf0fc9125f51688bb1797cfae3",
+  "parity": false
+ },
+ "empty_state": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "empty_state",
+   "image_url": "https://example.com/a.png",
+   "title": "No active webhooks",
+   "description": "Configure an endpoint to receive real-time event updates.",
+   "action_label": "Add Endpoint",
+   "action_url": "https://example.com/webhooks/new"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "9a90bd08e3f8895b66d5073c848733e2052caa18931314fb971aa770f7f02b7a",
+  "gas_sha": "44e791768e6de39d314b72ea2d93ee77782d0fbda53991669a837012734f2b37",
+  "parity": false
+ },
+ "status_pill": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "status_pill",
+   "label": "Operational",
+   "color": "success",
+   "icon": "check-circle"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "995576d21fb5ffd08684bffab12a7c8adec9dab478a9b6a72f75d80e5f878063",
+  "gas_sha": "03de11065eacac57d3ef939f567611fd94d7990a9d8d4ce4bcb1ca7f0e485dd7",
+  "parity": false
+ },
+ "rating_stars": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "rating_stars",
+   "rating": 4,
+   "max_rating": 5,
+   "is_interactive": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "rating",
+  "py_sha": "8fc4c464223ca6289bd0dfa4ad76ac211b7ff892712328bca63b80d9b710f073",
+  "gas_sha": "98dca5a77c705939a9b21284b73d0f786827e5df5f2122efaa8aaa8b33852933",
+  "parity": false
+ },
+ "progress_circle": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "progress_circle",
+   "value": 78,
+   "label": "Storage Capacity",
+   "color": "#0ea5e9",
+   "size": "md"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "927a78ade9c21de7c7c55c49c9689a0e906e72715107d3e231963740f86da485",
+  "gas_sha": "bffedf961ddf0cd2e475bb7e8a90717238e468c1c4766ff0f0c3d29a123f2a45",
+  "parity": false
+ },
+ "expandable_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "expandable_text",
+   "summary": "Read detailed deployment prerequisites",
+   "details": "Requires Kubernetes v1.28+, Helm 3.12, and an active TLS wildcard certificate.",
+   "initial_state_expanded": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "summary",
+  "py_sha": "e8f492eec54165ecb22287a2205d533e20bcc5773c65a9b2890e79d7367561c4",
+  "gas_sha": "e5b01b2300cc1f95fe98d333f8fb1af93d80b45d0d120b524ef8fb94483a41a8",
+  "parity": false
+ },
+ "flip_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "flip_card",
+   "front_content": "Click to view disaster recovery protocol.",
+   "back_content": "Automated failover routes traffic to us-west within 15 seconds.",
+   "trigger_on_hover": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "d0ab424b7c0828f212ae36639397c53c55cedddb89efdfc0344ba55b4f92630e",
+  "gas_sha": "162bccc9ab81e96437fadf1afc78616d10e27345b80a8e92ef30147d2b54f275",
+  "parity": false
+ },
+ "zoomable_image": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "zoomable_image",
+   "image_url": "https://example.com/a.png",
+   "alt_text": "High-density motherboard schematic",
+   "zoom_factor": 2.5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "image_url",
+  "py_sha": "db79bd24920c765bc73083c7a2a14b355e1cc6b6e688b22bbfa2a5f7c04ab230",
+  "gas_sha": "f78c8d4353a99cae0f1448e9fbcbb611652f0f42057bdf0605c5f0aa4ce67b74",
+  "parity": false
+ },
+ "testimonial_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "testimonial_card",
+   "text": "Our incident response time improved immediately after rollout.",
+   "author_name": "Marcus Vance",
+   "author_title": "Site Reliability Lead",
+   "author_avatar_url": "https://example.com/a.png",
+   "rating": 5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "author_name",
+  "py_sha": "f44dc7e66566f022edae905a6312c41f9bc1663c31cac24ee658b976c0f10510",
+  "gas_sha": "f44dc7e66566f022edae905a6312c41f9bc1663c31cac24ee658b976c0f10510",
+  "parity": false
+ },
+ "star_rating_display": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "star_rating_display",
+   "rating": 4.8,
+   "max_rating": 5,
+   "review_count": 312
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "rating",
+  "py_sha": "4b7471b4f2c3f044e8d09873fab5762bb8a1a20c9e2da656eb5932e39cbc3a7c",
+  "gas_sha": "c8de2c035b96c5571b6f38fd3f6538a6d653d6dbe2476422d67782ae8fdcd5d8",
+  "parity": false
+ },
+ "social_proof_banner": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "social_proof_banner",
+   "metric_value": "500M+",
+   "metric_label": "API events ingested daily across global nodes",
+   "icon_url": "https://example.com/a.png",
+   "link_url": "https://example.com/metrics"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "metric_label",
+  "py_sha": "1ddb33794febedd2026c4479dea25968980f05bbb3e801c27ae0bf74c2cdb467",
+  "gas_sha": "53185d2795f05a1b8c0bb7f96176c3ac781ac276ea9ebc7dfd5e51acff527f2e",
+  "parity": false
+ },
+ "media_mention_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "media_mention_card",
+   "publication_name": "TechDispatch",
+   "publication_logo_url": "https://example.com/a.png",
+   "headline": "How NextGen Streamlines Enterprise Microservices",
+   "article_url": "https://example.com/press/1",
+   "date": "2024-05-18"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "publication_name",
+  "py_sha": "d50cbc7b541c66ed3d687856501a3bfe32554678eeb04192e06a1cfd37a65f3b",
+  "gas_sha": "a31b781e5bba6af1515efe3e763d7b28601afd6c29f704c4ad160d6e681bfe62",
+  "parity": false
+ },
+ "expert_endorsement": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "expert_endorsement",
+   "quote": "The gold standard for distributed consensus engines.",
+   "expert_name": "Dr. Sarah Chen",
+   "expert_title": "Principal Architect",
+   "expert_organization": "Cloud Foundation",
+   "expert_avatar_url": "https://example.com/a.png"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "expert_name",
+  "py_sha": "6f128161b4013bb59f9f75aa76460546d1acadb1741ca3643b88b96ccfcfe807",
+  "gas_sha": "aa51b323f02f7115523b175bb3b9014bd92fd6b96cf6baf3026f235d5551aee5",
+  "parity": false
+ },
+ "review_callout": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "review_callout",
+   "review_text": "Rock-solid stability under extreme peak traffic.",
+   "author_name": "Liam K.",
+   "rating": 5.0,
+   "max_rating": 5,
+   "product_name": "Edge Gateway"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "author_name",
+  "py_sha": "a4a02e9c6cbd2cdd3c662ea93e1a7d680ed92f310c9f62eef6ec7b91e52f6afa",
+  "gas_sha": "a4d4c942587d0c85f991db557cd12a198f19f621768e36dae2b9f9cefc7ffa98",
+  "parity": false
+ },
+ "terminal_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "terminal_block",
+   "command": "docker compose up -d",
+   "output": "[+] Running 3/3\n ✔ Network app_default Created\n ✔ Container app-db-1 Started\n ✔ Container app-web-1 Started",
+   "shell": "bash"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "command",
+  "py_sha": "19c9e28f2b9bbd240184dde9c20828b7213062d83389a96b21a01175a914c51e",
+  "gas_sha": "11764da4427b50b2bbf0b0de9a275162a3963ab2ac1b41fef0c5d25696d77ecf",
+  "parity": false
+ },
+ "http_request_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "http_request_block",
+   "method": "POST",
+   "url": "https://example.com/api/v2/ingest",
+   "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer tok_demo"
+   },
+   "body": "{\"batch_size\": 250}"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "url",
+  "py_sha": "057db5b10c692335ac5af68b5d9825fc2d9d57dd6cadb0f8a5121ad7fef63961",
+  "gas_sha": "3637b21d24bba2165a732c5e2f421901415e16599a5e51ebc45aa53ba18571b3",
+  "parity": false
+ },
+ "keyboard_shortcut": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "keyboard_shortcut",
+   "keys": [
+    "Ctrl",
+    "Shift",
+    "P"
+   ],
+   "action": "Open Command Palette"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "action",
+  "py_sha": "e874e58874ec9a2eb1ff25bed773d0af625cc60cd05f417dc1192be768cd617d",
+  "gas_sha": "b717c67b4baed84936eb02c168b8f7a1c522930b7dc13f97e0bce12f2837415e",
+  "parity": false
+ },
+ "version_badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "version_badge",
+   "version": "v2.4.1",
+   "status": "stable"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "version",
+  "py_sha": "3fc00c2c4988fec5928b071217f025475851b117450fab91924482e8d236a3d9",
+  "gas_sha": "3fc00c2c4988fec5928b071217f025475851b117450fab91924482e8d236a3d9",
+  "parity": false
+ },
+ "deprecation_notice": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "deprecation_notice",
+   "alternative": "Use v2/auth/verify endpoint instead.",
+   "removal_version": "v3.0.0"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "removal_version",
+  "py_sha": "ed150692880a386b6a0a3891d43431202b2da32353bdf99cc9689903599c8028",
+  "gas_sha": "1ffb0ef9270f93fc713d0864652ef2095df16e8ba706a90ba0258460f695b18c",
+  "parity": false
+ },
+ "experimental_banner": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "experimental_banner",
+   "message": "Zero-copy streaming is in preview. APIs may evolve prior to stable release."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "83aefcf72dda73bfa690c98580b294068710c67f618170a8539eb9d2375e8afd",
+  "gas_sha": "0feff3a96306666c76aecceff2aba7f539eeaae7ac0e35c75c11638a77ff9c80",
+  "parity": false
+ },
+ "cli_command": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "cli_command",
+   "command": "npx create-cloud-agent@latest my-service"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "command",
+  "py_sha": "0160d56a183f61bc8ddd9fcaa9b81711b7c1172cdfb083188683075c98220f82",
+  "gas_sha": "77ff936dc28afbbe9a43ad8a550da934309b1c73927cd0faf676c97a3d631679",
+  "parity": false
+ },
+ "log_output": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "log_output",
+   "logs": "2024-06-01T10:14:02Z INFO Worker node pool scaled to 8 replicas.\n2024-06-01T10:14:05Z INFO Health checks passing across all pods."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "086231352cb665b6d247374f1508237980b04d1e58d74298195d101199923dc5",
+  "gas_sha": "925e494488d6534ea237f2a31c237f9873b72e8157662ca9bb08e47bb72a938d",
+  "parity": false
+ },
+ "summary_box": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "summary_box",
+   "text": "This guide explains how to configure multi-region data replication with sub-second failover guarantees."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "eecdc105625954e19e73e0fea2967ac2015109cfa20e229c88af8f69de043edd",
+  "gas_sha": "769d29acc1ec1d437a5fc919a9d5df30896489b6795d1f177c3a863af681f9a5",
+  "parity": false
+ },
+ "changelog_entry": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "changelog_entry",
+   "version": "v1.8.0",
+   "date": "2024-06-15",
+   "changes": [
+    {
+     "type": "feature",
+     "description": "Added Prometheus metrics exporter endpoint."
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "version",
+  "py_sha": "d935d05f48796212c822ab8a8920630b76816e2f6bab7fb327033d330d8e1594",
+  "gas_sha": "640b1ec9988d5e6a0c078835a0e1b0144842cf8b0a3d3e9a69a7d94b4a84ecd6",
+  "parity": false
+ },
+ "release_notes": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "release_notes",
+   "title": "v2.4.0 Core Engine Update",
+   "added": [
+    "Automated rollback support",
+    "Webhook retry policies"
+   ],
+   "fixed": [
+    "Memory leak in connection pool"
+   ],
+   "changed": [
+    "Default timeout increased to 30s"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "77c9ea17ccfe07b2836cdc34779753768fb69bb457f937322f33d34a638bb448",
+  "gas_sha": "b71806424cec587902ba6af92d8cba7f2284bb1a20a7cbdbf3a4f814f7f11600",
+  "parity": false
+ },
+ "sidebar_note": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sidebar_note",
+   "title": "Implementation Caveat",
+   "content": "Database locks will persist until the current transaction block commits."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "ddc411739d76bb719969ea9e31721e553eb16f412edc62cc3ce80a209a0aa6cc",
+  "gas_sha": "76feb17798212cd7962b88c329d692d583d9de2eeb088bcb2687cb32e8a26b3b",
+  "parity": false
+ },
+ "difficulty_badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "difficulty_badge",
+   "level": "intermediate"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "level",
+  "py_sha": "090ce6ba28c11de45466c07de0e512bf945f6e8c70da39f3c944a40ab7db027c",
+  "gas_sha": "5b20ecd9d5110259724cfcc506b7caefe4f8332ec62516c199b55e6cd5672f81",
+  "parity": false
+ },
+ "caution_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "caution_block",
+   "message": "Purging cache directories will trigger high backend load during warm-up."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "fe79a936710bf921a388afead6197ffd2a9b70e1824467cf94017b148470775b",
+  "gas_sha": "ec4d759bee8d4159c632f15a7ce38b4e910b62e8470eaefc6ff3aaac66756e8e",
+  "parity": false
+ },
+ "glossary_inline": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "glossary_inline",
+   "term": "Idempotency",
+   "definition": "An operation that can be applied multiple times without changing the result beyond the initial execution."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "term",
+  "py_sha": "517e7cdb0a84811805bbe61a30a736407e7c0918230905c37a25e77f71a46537",
+  "gas_sha": "2ebb44fa155a852af3f4f7e2b009a274e4a7967781d7ab26253c2196d84866c4",
+  "parity": false
+ },
+ "time_estimate": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "time_estimate",
+   "minutes": 6
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "minutes",
+  "py_sha": "925317c8ca3776aca384752f09f37f632724c5c82cf426d38ce5152197e34e29",
+  "gas_sha": "634cd9f793c291a0cdc302edd31d7d14e7eeaa5caaf58b305425c21a9872192d",
+  "parity": false
+ },
+ "progress_checkpoint": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "progress_checkpoint",
+   "current_step": 3,
+   "total_steps": 5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "current_step",
+  "py_sha": "ffe07835abfc9928cb822ac04ca9cac60654a9bad8a8236ba6e5f7317a3ec8f6",
+  "gas_sha": "9541aa5eeb24efa79b2f13ec3cd22aaa6576371078411babb61a886f3e94e7d9",
+  "parity": false
+ },
+ "linkedin_post_image": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "linkedin_post_image",
+   "mode": "stat_card",
+   "accent": "#7c3aed",
+   "value": "99.99%",
+   "label": "Pipeline Availability",
+   "quote": "Reliability is earned one incident at a time.",
+   "attribution": "DevOps Daily",
+   "title": "Modern Resiliency",
+   "body": "Designing fault-tolerant microservices from scratch."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "f6ddf62a8068a8897b0f37906acbf8d1fff8c00025e078da481ab985128c6d47",
+  "gas_sha": "e3f6e73a3c5efb5acc0b29e04ca674c69d4b8ee13c3c2313bec2a73518c92ff5",
+  "parity": false
+ },
+ "stance": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "stance",
+   "claim": "Consensus protocols should favor partition tolerance over throughput in edge networks.",
+   "confidence": 0.85,
+   "because": "Node turnover is inherently unpredictable on mobile gateways.",
+   "unless": "hardware-secured local state sync becomes globally ubiquitous.",
+   "voice": "display",
+   "theme": "dark",
+   "accent": "#38bdf8",
+   "interactive": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "claim",
+  "py_sha": "dd7c94f5e36d8113129b3397c44beb7b1f0a3921447e5b3c49f60037dce083c9",
+  "gas_sha": "4f2594ad3ff4df65a8cb9867aa84509609e508365996abc27268044d4e0712c8",
+  "parity": false
+ },
+ "changed_mind": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "changed_mind",
+   "before": "Micro-frontends solve organizational velocity bottlenecks.",
+   "after": "Shared design systems within unified repos yield faster releases.",
+   "since": "benchmarking integration overhead across ten product squads.",
+   "voice": "serif",
+   "theme": "light",
+   "accent": "#0e7bb8",
+   "animate": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "since",
+  "py_sha": "6ad34cfd8dcd8d5fe57e8e6497aefd4269c2dc7441a0cbbe4163da5ee640ff2d",
+  "gas_sha": "f44a3a765d2917b547f719853cbebb42e584497d6b49da022e18d894a27abea2",
+  "parity": false
+ },
+ "readability_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "readability_card",
+   "text": "Our continuous delivery process safely validates deployment gates before applying canary routes. Traffic migration proceeds incrementally.",
+   "title": "Readability Index",
+   "wpm": 240,
+   "highlight_longest": true,
+   "theme": "light",
+   "accent": "#0e7bb8"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "d61e669c368f30ca384316185bf85543754a596b68fedebf7a19d7ff835f57a3",
+  "gas_sha": "d61e669c368f30ca384316185bf85543754a596b68fedebf7a19d7ff835f57a3",
+  "parity": false
+ },
+ "drop_cap": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "drop_cap",
+   "text": "Distributed ledgers represent an immutable paradigm shift for tracking transactional integrity across loosely coupled business boundaries.",
+   "style": "dropped",
+   "lines": 3,
+   "voice": "serif",
+   "theme": "light",
+   "accent": "#0e7bb8"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "f61af3d215ad61032b408fc6943ad6f7e383bcf0950ecedaa61c707863c1a7c1",
+  "gas_sha": "f61af3d215ad61032b408fc6943ad6f7e383bcf0950ecedaa61c707863c1a7c1",
+  "parity": false
+ },
+ "share_quote": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "share_quote",
+   "text": "Simplicity is prerequisite for reliability.",
+   "author": "Edsger W. Dijkstra"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "author",
+  "py_sha": "536a383404da8416d3393862cac682a569c80b8bace5a1594cadc0f204df7de8",
+  "gas_sha": "725afd761a1bcec7e8218e180ff9ee77ce8de9cba8a81df93c1339081149a648",
+  "parity": false
+ },
+ "follow_cta": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "follow_cta",
+   "message": "Get notified when new engineering deep dives are published.",
+   "platform_links": {
+    "bluesky": "https://example.com/devfeed"
+   }
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "message",
+  "py_sha": "56944b4951912bbeb8648920d459705f41fe72eacb7a9e11368b82bed166dfa5",
+  "gas_sha": "8f00e95152b9317c2f27ec1e75783a5e11a200f29d9386400d0c9a0e0866733d",
+  "parity": false
+ },
+ "metric_comparison_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "metric_comparison_card",
+   "label": "P99 API Latency",
+   "value": 42.5,
+   "previous": 58.1,
+   "lower_is_better": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "a18315fb0194007b4c0de23d7c1b27a3e7917d5a2a92e02f7e0bf4aec3322d05",
+  "gas_sha": "43178fea4149a3b7268cd9d055ce71582429f501ae91957ae35b2566740ea580",
+  "parity": false
+ },
+ "search_result_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "search_result_card",
+   "title": "Configuring Redis Replicas",
+   "description": "Step-by-step instructions on setting up read replicas for high availability.",
+   "url": "https://example.com/docs/redis"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "url",
+  "py_sha": "d9a1aeb3c2fe3637cf9e6e40a8fa39ce27c4149cdce03bdf14cf9b1422e73504",
+  "gas_sha": "35371b250c8eb0637456bac97adb5d31966f61ac987e64d2a63a0e9eb800f89c",
+  "parity": false
+ },
+ "post_metadata_bar": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "post_metadata_bar",
+   "author": "Marcus Vance",
+   "date": "2025-02-14",
+   "readTime": 5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "date",
+  "py_sha": "8fd7e5fe46cbfe061aab7e76b91e7d62e00efb9cf15c041862eaabbb15052926",
+  "gas_sha": "1a0a7d1955ea6eb6718ab0009cd858b8b0f876f0c44a18ea748ef65d8df23e4f",
+  "parity": false
+ },
+ "notification_badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "notification_badge",
+   "text": "12",
+   "color": "#ef4444"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "e25338b5498d888b248b606f61e55e90e8059716d40d913677625d3cff765601",
+  "gas_sha": "4fcc72f7c22acd3497a7e786e2c0cfd21d94d7d306f1c82cac434ec9bc78f453",
+  "parity": false
+ },
+ "abbr_tooltip": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "abbr_tooltip",
+   "text": "MTTR",
+   "title": "Mean Time To Recovery"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "b284e981c6206e5c06e67f5ff88e4681aba18afa61e747381c9c415423d0a0ac",
+  "gas_sha": "b284e981c6206e5c06e67f5ff88e4681aba18afa61e747381c9c415423d0a0ac",
+  "parity": false
+ },
+ "gauge_sla": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "gauge_sla",
+   "title": "Uptime SLA",
+   "value": 99.95,
+   "max_value": 100,
+   "unit": "%",
+   "label": "Operational"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "8d25f9cc15d34ddd618e9cd7dfd9b01462913882ffe47de5a55631a0a2a7c86f",
+  "gas_sha": "067fe9837523c65120098ac508807447ef178435a05c1524f878ded405a1cedf",
+  "parity": false
+ },
+ "masonry_elevation": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "masonry_elevation",
+   "width_mm": 2400,
+   "height_mm": 1200,
+   "unit_l_mm": 400,
+   "course_h_mm": 200,
+   "courses": 6,
+   "per_course": 6,
+   "pattern": "running",
+   "colour": "#d97706",
+   "label": "South Pier Elevation",
+   "stats_line": "6 courses · 36 units total · 480 kg",
+   "render_style": "blueprint"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "1d06701d741394c2abc7a6c1e7575427aabe80a25b956b60599ccc2bd15ed099",
+  "gas_sha": "1d06701d741394c2abc7a6c1e7575427aabe80a25b956b60599ccc2bd15ed099",
+  "parity": false
+ },
+ "call_mood_board": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "call_mood_board",
+   "title": "Discovery Call Sentiment",
+   "moods": [
+    {
+     "mood": "Receptive",
+     "intensity": 80,
+     "color": "#10b981"
+    },
+    {
+     "mood": "Cautious",
+     "intensity": 35,
+     "color": "#f59e0b"
+    }
+   ],
+   "themes": [
+    {
+     "term": "Integration Timelines",
+     "weight": 90,
+     "sentiment": "neutral"
+    }
+   ],
+   "summary": "Prospective team was engaged and focused on API integration security."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "c22e75b76d4a434012421ebad9ef2e1f66bfe2b9ff5e79b0eb74ad8154890397",
+  "gas_sha": "195b09f7777c031c1d19ce49b93ade910c7f4f3d8d088d747bd13401ba882135",
+  "parity": false
+ },
+ "prompt_template": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "prompt_template",
+   "template": "Translate the following query into SQL dialect {dialect}:\n\n{query}",
+   "accent": "#6366f1",
+   "copyable": true,
+   "label": "Query Parser Template"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "ac5dd7b2d75e87adb56acd0cb2fbdfa8368033aeb5a779b85b9928a0ff4c3dee",
+  "gas_sha": "0e44b1690583526ad8c3c4a18a343c75514260a74950e30e218b2dd2762f6b84",
+  "parity": false
+ },
+ "model_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "model_card",
+   "name": "DeepSeek-V3",
+   "provider": "DeepSeek",
+   "context_window": "64k tokens",
+   "pricing": "$0.27 / M tokens in",
+   "capabilities": [
+    "coding",
+    "reasoning",
+    "streaming"
+   ],
+   "accent": "#7c3aed"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "30ca1acdb17719a024defb149dc2c443039fe9d33b91159a4166560dc37b787b",
+  "gas_sha": "b7c7ef093959d312e4cd9a55fd42950713da4e9f3dce24867a34f7578fbfee44",
+  "parity": false
+ },
+ "conversation_snippet": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "conversation_snippet",
+   "user_label": "Dev",
+   "user": "How do I optimize Docker image layers?",
+   "ai_label": "Bot",
+   "response": "Order statements from least to most frequently modified.",
+   "accent": "#0ea5e9"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "user_label",
+  "py_sha": "37f4c845b8ee0a94e2787e57038e9b192a69e256aed1a0a74b65990415ed06c7",
+  "gas_sha": "c53e88e15538a107cee673e9474d8de4381e4894aed23cc55c28fce806da28df",
+  "parity": false
+ },
+ "inline_alert": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "inline_alert",
+   "variant": "warning",
+   "message": "Disk capacity exceeding threshold.",
+   "detail": "Volume /data is currently at 88% capacity.",
+   "icon": "alert-triangle"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "variant",
+  "py_sha": "52f24cd8cf8062f69a74d8ae4054b175c78df466d708976607bcb11ee84e028d",
+  "gas_sha": "163225153096e8f478ab3d06ceecd7bebe510bf5bb1164ab7351d47c32afe10a",
+  "parity": false
+ },
+ "markdown_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "markdown_block",
+   "content": "Deployments are automatically monitored for `5xx` errors. Review **runbook** before modifying.",
+   "variant": "compact"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "10b724e1f5644a2f41f680e4772c8ae006f609b9c060aa7f3614c1ab3319e77e",
+  "gas_sha": "6998b75f70cc4ee3fc96c7ef0f1f384904a8d1b1e1d4a316d0c5ef9b4da415c0",
+  "parity": false
+ },
+ "text_callout": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "text_callout",
+   "variant": "info",
+   "title": "Note",
+   "description": "Bearer tokens rotate automatically every twenty-four hours."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "bb3f459496ff6165bad35ee566a0391ac1627916235777491e58fc8f59a85806",
+  "gas_sha": "7ca215dd4b5a0464b5c94dcadcc31497c7954b4c680d9b5bf851ce90d3f4ae39",
+  "parity": false
+ },
+ "confidence_bar": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "confidence_bar",
+   "label": "Intent: Account Upgrade",
+   "value": 94.2,
+   "items": [
+    {
+     "label": "Upgrade",
+     "value": 94
+    },
+    {
+     "label": "Support",
+     "value": 6
+    }
+   ],
+   "color": "#22c55e"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "ff16fd847f4400ef294339dc9064f5ff0041653425eec0cd6bdffa4f5d90cd0b",
+  "gas_sha": "7b9a86783658a77d575e4bddfcc7407b68f20827ef434fedd7ae51d58e28743d",
+  "parity": false
+ },
+ "token_budget_meter": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "token_budget_meter",
+   "used": 42000,
+   "total": 128000,
+   "model": "gpt-4o",
+   "label": "Context Utilization",
+   "warn_at": 75,
+   "critical_at": 90,
+   "animate": false,
+   "duration": 2.0
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "model",
+  "py_sha": "5c1d13d33f53e15eff276e70a81008997c3026cdb646de807ad6494ecb857cc9",
+  "gas_sha": "637ea9e405f0fdb68bc6270c2c657c505092bfb34eaef41a3551fc5891a0586c",
+  "parity": false
+ },
+ "product_thumbnail": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "product_thumbnail",
+   "title": "Smart Gateway Hub",
+   "vendor": "Nordic IoT",
+   "sku": "GW-901",
+   "price": "$129.00",
+   "compare_at_price": "$149.00",
+   "status": "active",
+   "image_url": "https://example.com/a.png",
+   "tags": [
+    "Hardware",
+    "Zigbee"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "sku",
+  "py_sha": "bd9b3cc7f8f2a5a56c23d2f30fd9730e8da7cc8ddf68f82815044fdd233d614d",
+  "gas_sha": "7efb6525471d06c8af43e6d9ce0486ac4253441fc042b332234b557a4a42f33b",
+  "parity": false
+ },
+ "order_status_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "order_status_card",
+   "order_number": "#5812",
+   "date": "2025-02-18",
+   "status": "fulfilled",
+   "customer": "Aria Jensen",
+   "items": [
+    {
+     "title": "Mesh Gateway",
+     "qty": 1,
+     "price": "$129.00"
+    }
+   ],
+   "total": "$129.00"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "order_number",
+  "py_sha": "8eadc519bb55e3f3a3997b9335ce16a0e4734dbb9e6a68a717dbdc7948b036ee",
+  "gas_sha": "7ffb73b69ff8423bd8ddc29030e8029aff31784ffd598a7a0e173b0070bbca23",
+  "parity": false
+ },
+ "jira_ticket": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "jira_ticket",
+   "key": "OPS-402",
+   "issue_type": "bug",
+   "summary": "Fix TLS handshake errors on edge ingress",
+   "status": "In Progress",
+   "priority": "high",
+   "assignee": "Sarah Connor",
+   "description": "Cert-manager renewal failed to inject wildcards.",
+   "labels": [
+    "infrastructure",
+    "security"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "key",
+  "py_sha": "42f82b7ddc70528c9aad07f83e8141a9d95244ea8ebfe4d63795204e082ade33",
+  "gas_sha": "5302f64799075204f66895b7f5350752138155eb9e914dfdd4663ede79b65351",
+  "parity": false
+ },
+ "lozenge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "lozenge",
+   "text": "READY",
+   "appearance": "success",
+   "items": [
+    {
+     "text": "READY",
+     "appearance": "success"
+    },
+    {
+     "text": "STAGING",
+     "appearance": "inprogress"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "f76de4872d92d286f74f4be7bdf07cfb1ca0d3b2d92b2fe00d3282ceedac915d",
+  "gas_sha": "649e854414ae2bf02c774ca4c43d3b9bd781e7e7a00c2776d90a979948f93546",
+  "parity": false
+ },
+ "gradient_hero": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "gradient_hero",
+   "title": "Observability Unified",
+   "subtitle": "Distributed tracing across your entire fleet.",
+   "badge": "New Release",
+   "accent": "#4f46e5",
+   "accent2": "#8b5cf6",
+   "align": "center",
+   "cta_label": "Deploy Agent",
+   "cta_url": "https://example.com/deploy"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "6a5b35fa48480fa7c6b30e9c480a49e5b08809ffb19899505ad636f3dff84ae2",
+  "gas_sha": "1f2fec59d09da1e8fb753b606fd133e54a9cc0866cd9e1b68671869ff3d66763",
+  "parity": false
+ },
+ "highlight_box": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "highlight_box",
+   "title": "Zero-Trust Architecture",
+   "text": "Every service request is authenticated and authorized individually.",
+   "icon": "🔐",
+   "accent": "#4f46e5",
+   "style": "gradient"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "0abaa4d58b08da9a81a0b03a51172104f2b028c4b54b108b171f5744903561da",
+  "gas_sha": "2ff13f4a4061b5d79ba62c8147580bbfa4eb617ccdadc79f4174dfdb900b602f",
+  "parity": false
+ },
+ "page_header": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "page_header",
+   "title": "API Gateway Metrics",
+   "subtitle": "Live telemetry and error budgets across all regions.",
+   "icon": "📊",
+   "tag": "Production",
+   "accent": "#4f46e5",
+   "theme": "dark",
+   "meta": [
+    {
+     "label": "Region",
+     "value": "us-east-1"
+    },
+    {
+     "label": "Active Nodes",
+     "value": "48"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "83928a71bea1314b71ac8d485cd3796af58016e3dba5ebcb9683793ff5433f54",
+  "gas_sha": "d3d4de58030661d9c916025e08d35ed1444c562a55d2dba190a65cdfb624fa7d",
+  "parity": false
+ },
+ "person_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "person_card",
+   "name": "Sofia Chen",
+   "role": "Principal Security Engineer",
+   "photo_url": "https://example.com/a.png",
+   "bio": "Specializes in identity federation and cryptographic boundary defense.",
+   "email": "schen@example.com",
+   "linkedin": "https://example.com/in/schen",
+   "tags": [
+    "Cryptography",
+    "IAM"
+   ],
+   "accent": "#4f46e5"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "1b5999587c48c2c4b046a998c6daf8b19ac98cf9c73906e800d05ec5388c91f4",
+  "gas_sha": "ac531acfb42f2f33af2bae93e369d999014234928f1ad38794e581c622d3213c",
+  "parity": false
+ },
+ "cta_section": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "cta_section",
+   "heading": "Ready to scale your clusters?",
+   "body": "Spin up a dedicated dev environment in under five minutes.",
+   "primary_cta": {
+    "label": "Start Trial",
+    "url": "https://example.com/start"
+   },
+   "secondary_cta": {
+    "label": "Contact Sales",
+    "url": "https://example.com/sales"
+   },
+   "background": "#0f172a"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "heading",
+  "py_sha": "4d0d5a5e4a2f3317be2cde23001f6f5a63af4303958c1dc8b30e7a293b9c6274",
+  "gas_sha": "33742c2aa81173be582d04a1074b6d37f1e733e3ea943fbf31d2dc0b1625b97e",
+  "parity": false
+ },
+ "typewriter_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "typewriter_text",
+   "text": "System booted successfully.",
+   "size": "28px",
+   "weight": "700",
+   "color": "#1a1a1a",
+   "speed": "normal",
+   "cursor": true,
+   "delay": "0s"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "1ffa8cbb7d1b36e5e4259755c240e4a1ec46b4156c77125ed93bc2a5f8805c09",
+  "gas_sha": "323e38e364f34f0474d1668cff3153ef1ca9b497b5c875ba2392e50e990fdccc",
+  "parity": false
+ },
+ "particle_type": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "particle_type",
+   "text": "HORIZON",
+   "font": "sans",
+   "weight": "black",
+   "colors": [
+    "#38bdf8",
+    "#818cf8",
+    "#f472b6"
+   ],
+   "background": "#070a12",
+   "height": 240,
+   "interactive": true,
+   "density": "normal",
+   "dot": "normal"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "729471a6f379b20ec970fac68cb7748ab76a4931365fe5c25147f7262d48831b",
+  "gas_sha": "e524bc0f29d55cac94e38f83c87dcdea96c51e348fff61bca93d500676b2c8a8",
+  "parity": false
+ },
+ "light_type": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "light_type",
+   "text": "PHOTON",
+   "font": "display",
+   "weight": "bold",
+   "colors": [
+    "#38bdf8",
+    "#818cf8"
+   ],
+   "background": "#070a12",
+   "height": 260,
+   "interactive": true,
+   "density": "normal",
+   "speed": "normal",
+   "trail": "normal",
+   "scale": "normal",
+   "glow": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "d6289235155e51d17644a219866cea699560b73d242cb5a1198e48a59552447c",
+  "gas_sha": "e0484e3aa69a3956f0d254b40b0728561272aadbcb29a531bb4eb9aafb68f288",
+  "parity": false
+ },
+ "living_type": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "living_type",
+   "text": "STREAM",
+   "font": "mono",
+   "weight": "bold",
+   "colors": [
+    "#38bdf8",
+    "#818cf8"
+   ],
+   "background": "#070a12",
+   "height": 220,
+   "interactive": true,
+   "motion": "subtle",
+   "speed": "normal"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "ce4e30f1f7fb37f40e198f1230e45a83e4e828877996b39f261c694cabcec7ce",
+  "gas_sha": "5df1682efac278816f2f2b2f0329f5c868386bcf1f914e19644ef57f1921a15f",
+  "parity": false
+ },
+ "sun_path": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sun_path",
+   "lat": 37.7749,
+   "lon": -122.4194,
+   "date": "2025-06-21",
+   "tz": -7,
+   "label": "San Francisco",
+   "live": true,
+   "theme": "dark",
+   "accent": "#38bdf8",
+   "height": 300
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "68648565f3a671e648ff1e36863ba54dd56ae7dbb7ea2d5887293f9ea7218785",
+  "gas_sha": "156d7e90da3c154a735d50199306a4f26e106a58156b7416cc2e3ed4513055e2",
+  "parity": false
+ },
+ "great_circle": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "great_circle",
+   "from": {
+    "lat": 51.47,
+    "lon": -0.4543,
+    "label": "LHR"
+   },
+   "to": {
+    "lat": 40.6413,
+    "lon": -73.7781,
+    "label": "JFK"
+   },
+   "units": "nm",
+   "theme": "dark",
+   "accent": "#38bdf8",
+   "height": 320
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "units",
+  "py_sha": "a9477650a3202edefd8f5e6535cc9d49b82ae0e868dbe7106e01d0b331f5db4d",
+  "gas_sha": "d25e4b47734d5bb4e23e868a201cd8208d38ee5a17c790fdcb15cf04657b6f1a",
+  "parity": false
+ },
+ "shimmer_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "shimmer_button",
+   "label": "Initialize System",
+   "href": "https://example.com/init",
+   "size": "md",
+   "accent": "#38bdf8",
+   "background": "#1e293b",
+   "speed": "normal",
+   "description": "Requires admin authentication"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "f0ba794322b91c8d914df5ef063d747fa5009ecfaac61a708803aaafd5bc1d25",
+  "gas_sha": "f44fad904141e14fd58072b287845da0075d4b83748ff855cedcdc93fb00bb7b",
+  "parity": false
+ },
+ "glow_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "glow_button",
+   "label": "Authorize Transfer",
+   "state": "ready",
+   "href": "https://example.com/auth",
+   "color_ready": "#38bdf8",
+   "color_fired": "#34d399",
+   "size": "md",
+   "description": "Single-use authorization"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "cdd809322f0dce70157315e5b65c822a5226b222dce55e45d5580d88f2fa9bb5",
+  "gas_sha": "83a9f9be89eeb515309ec19b68f7c845ac6efb49c621b78e569c7cdd914199f7",
+  "parity": false
+ },
+ "encrypted_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "encrypted_reveal",
+   "text": "DECRYPTED_PAYLOAD",
+   "size": "28px",
+   "weight": "700",
+   "color": "#f1f5f9",
+   "scramble_color": "#38bdf8",
+   "speed": "normal",
+   "delay": "0s",
+   "frames": 8,
+   "background": "#0f172a"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "82187baf5ca394a5d902998254afc56581d1f5222f8b1babac24dd80cd7477e8",
+  "gas_sha": "504b2f5f7003effc73e21c81276bd5385ec1c15b061cd38c486c0993fcce3850",
+  "parity": false
+ },
+ "word_flip": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "word_flip",
+   "words": [
+    "Speed",
+    "Scale",
+    "Safety"
+   ],
+   "prefix": "Engineered for ",
+   "suffix": " in enterprise clusters.",
+   "speed": "normal",
+   "color": "#38bdf8",
+   "size": "32px",
+   "weight": "700"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "words[0]",
+  "py_sha": "17328ba61eb196cbfd79405ef157a162e4f3a3c9c8b95efce58bc3d6b87165a6",
+  "gas_sha": "8f7c44783ed64dbc5b4f1871879269c69694adf551cd36341085508ae7fa4116",
+  "parity": false
+ },
+ "sonar_pulse": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sonar_pulse",
+   "variant": "critical",
+   "active": true,
+   "label": "ALERT",
+   "size": "md",
+   "body": "Immediate intervention required on secondary master."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "0f0b15555c11eb86545e1bb3b06b1f36ded4ee8d78cc3d09befc1bc68e0f5a89",
+  "gas_sha": "94190b94e81b87381460572c19d1797fff4e59a906bd6d99b5d4b695f591bf9b",
+  "parity": false
+ },
+ "typewriter": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "typewriter",
+   "text": "Connecting to edge-proxy-04...",
+   "speed": "normal",
+   "cursor": true,
+   "color": "#0f172a",
+   "size": "1.4rem",
+   "weight": "600",
+   "background": "#f8fafc"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "1bb8541ef913082be52810fac4f1a1cccfef9ae2fe0dca021c96a3470c396e6f",
+  "gas_sha": "729278fab293dccf8cf36c27fb198a64fcaa4cbf48beec3f80fda944dba54ee3",
+  "parity": false
+ },
+ "typing_indicator": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "typing_indicator",
+   "name": "Sentinel Bot",
+   "variant": "dark"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "81fa91d24e0876a4e42c436265dd35a3c0321548ca3895d4177b40c0717b866a",
+  "gas_sha": "2943333f11c9c2b997351afcbee5b15be29b991bd76fca3a6e8ac873a637a740",
+  "parity": false
+ },
+ "countdown_timer": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "countdown_timer",
+   "hours": 0,
+   "minutes": 15,
+   "seconds": 30,
+   "label": "Deployment Freeze Window",
+   "variant": "dark",
+   "accent": "#00f2ff"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "00cadd08d9a2106eed57e09d4c748c75db78b1245f910d8c346f61e05efed70a",
+  "gas_sha": "a459d72f084b818991d225c5466d31f0efad02f1cf7ed4e3fbcc572a795d10da",
+  "parity": false
+ },
+ "gradient_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "gradient_text",
+   "text": "Scale Your Systems",
+   "from": "#4f46e5",
+   "to": "#06b6d4",
+   "via": "#9333ea",
+   "size": "2.5rem",
+   "weight": "800",
+   "duration": 4
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "20696dedebcbd77995dceb4b1833e2f6a911bfd6e17ada4a7141438ef864d6b4",
+  "gas_sha": "72cdd0294def120d5ef02fd87faa66c54f8fc336d2dc26844d1fc0595c5d366f",
+  "parity": false
+ },
+ "reveal_on_scroll": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "reveal_on_scroll",
+   "title": "Automated Deployments",
+   "body": "Ship faster with zero-downtime canary updates.",
+   "direction": "up",
+   "duration": 0.7,
+   "accent": "#4f46e5",
+   "background": "#f8fafc"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "1a891848bcca4c60399d774db2b37e26a0d6b721d4f894d71f40f44f2d78e7d8",
+  "gas_sha": "0f205c92bc17bfa106cec4c31c9007e1763d7f257b86fc679093ab4f681dd3a8",
+  "parity": false
+ },
+ "word_scramble": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "word_scramble",
+   "text": "SYSTEM ONLINE",
+   "duration": 2.0,
+   "color": "#0f172a",
+   "scramble_color": "#4f46e5",
+   "size": "2.5rem",
+   "weight": "800"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "e86ce4bfd4f7546987ed1040540fdee4b97bbe786a97ca19f43a346d4f4b4d52",
+  "gas_sha": "c4cc639b91d3080d740e72338e588e1afd64b9d59bb13675d26daaa0eb939519",
+  "parity": false
+ },
+ "svg_path_draw": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "svg_path_draw",
+   "shape": "check",
+   "color": "#10b981",
+   "width": 3,
+   "duration": 1.5,
+   "label": "Verification Successful"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "c69cd331cf17f5e82982378a479fc2a7ae8660120a2cd4a007fedf916bd4d596",
+  "gas_sha": "26c9880f28f119d93cdef7ba43da4aef753f9923ba2617f57fca095f9c66bd66",
+  "parity": false
+ },
+ "parallax_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "parallax_card",
+   "title": "Enterprise Cloud",
+   "body": "Next-gen edge computing infrastructure.",
+   "badge": "Pro",
+   "accent": "#4f46e5",
+   "background": "#0f172a",
+   "depth": 15
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "c6023884a331857dce3f7b7e73497281c565016f1bcb087b34bcff4043814947",
+  "gas_sha": "0a253965db504d16af926a5620b326fd62e751af3db7807f4bd3758a72da7c73",
+  "parity": false
+ },
+ "hint_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "hint_reveal",
+   "hint": "Check index configuration in config.yaml.",
+   "label": "Show hint",
+   "accent": "#4f46e5"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "f468fabf8e011f78bfc29c40fe413c1e33bef3833813c69adf19dd644ec33d2c",
+  "gas_sha": "08a987ebc56424f1555fb427e0cf7e768af985a7d414d142542f85346e9d8e1a",
+  "parity": false
+ },
+ "score_summary": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "score_summary",
+   "correct": 18,
+   "total": 20,
+   "time_taken": "4m 12s",
+   "pass_threshold": 80,
+   "retry_label": "Try Again",
+   "continue_label": "Next Module",
+   "continue_url": "https://example.com/next"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "1553ec241dfeb255162df1dde2f31cae395f96048dd7a134e51bb25fb805f646",
+  "gas_sha": "eb35dc724078208f1009b0b5e61d2dfe9f80960cae1d13e674f73bb72f8cedec",
+  "parity": false
+ },
+ "xp_bar": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "xp_bar",
+   "level_label": "Level 4 — Architect",
+   "xp_current": 750,
+   "xp_next": 1000,
+   "accent": "#4f46e5",
+   "show_flash": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "level_label",
+  "py_sha": "2469cef2fabae6a96e91aba440847d66984e785dd5d38d5d582a1b7defba8a64",
+  "gas_sha": "da2d6e32d4d9db7af03b16e4478043658da003516b3957d0ba53eb9c4738f9bd",
+  "parity": false
+ },
+ "lesson_nav": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "lesson_nav",
+   "module_label": "Data Structures",
+   "current_title": "Binary Search Trees",
+   "prev_title": "Linked Lists",
+   "prev_url": "https://example.com/prev",
+   "next_title": "Graph Traversal",
+   "next_url": "https://example.com/next",
+   "show_completion": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "current_title",
+  "py_sha": "e471bf8cafed1cd119a561d686009b938956cb059e099aafdcd23767deb4fa71",
+  "gas_sha": "e06019c82c8f7b5fc16e7f17ebadd919470a535c83c6f3a777e84f426c620190",
+  "parity": false
+ },
+ "highlighted_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "highlighted_text",
+   "text": "Revenue increased by 42% year-over-year.",
+   "annotation": "Record high",
+   "color": "#fef08a",
+   "annotation_color": "#fbbf24"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "09881ab4767a79c34d567342bfdf4e71a1ab842893d89c84583d28606c69ed0c",
+  "gas_sha": "949dc72f1683977a2cdbb75a2444a14ad85986e097bb8ff86e71a1bb9a91a7dd",
+  "parity": false
+ },
+ "drive_file_list": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "drive_file_list",
+   "folder_id": "1A2B3C4D5E6F7G8H9",
+   "max_results": 5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "folder_id",
+  "py_sha": "980ec7b05daeafdb927536cf875bec07c2b77f7cea2a4405700cc9f00f907f73",
+  "gas_sha": "7383d590fbb46b68e3ab86d9d244f409683752cf24801f0cf8c30377ef5f4219",
+  "parity": false
+ },
+ "sheet_preview": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sheet_preview",
+   "spreadsheet_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+   "sheet_name": "Q1 Metrics",
+   "range": "A1:D10"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "spreadsheet_id",
+  "py_sha": "6fabdd4b56eccf0eea38b625786a9ca96eea3beba14cab9bc59cf7d7f217cca0",
+  "gas_sha": "b8d844c2d8f7a70649a1d1e04e5a6b485df6f4a30a6f38ced18a9ca55ffde467",
+  "parity": false
+ },
+ "gmail_summary": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "gmail_summary",
+   "query": "is:unread label:urgent",
+   "max_results": 5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "query",
+  "py_sha": "7e35a8fd6b53a70bb256c72973f0acef138f5944e1022fc4f1ea2aa53645cf79",
+  "gas_sha": "6f3bfa964ecf121ac6e9b2022d177950483135b734678b91b77cab98a62dcb52",
+  "parity": false
+ },
+ "calendar_upcoming": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "calendar_upcoming",
+   "max_results": 4
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "18c8e16e436a9ad7b96be62b4ff6dfd5fcb6fae30f0cec723f2c19c636273803",
+  "gas_sha": "4c77b91469dffbf77eee08556c656c1143dcd734b2df840cc34eb880f997cad3",
+  "parity": false
+ },
+ "user_greeting": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "user_greeting",
+   "prefix": "Welcome back"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "prefix",
+  "py_sha": "7e6f573aecfb6a9dd4d97a2659a1eadcf2294014146d575447c66b39072cf3f6",
+  "gas_sha": "895876cb1e94670d69273832a0455d132bbddcc2bee8f70a227194af366d59dd",
+  "parity": false
+ },
+ "sheet_stats": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sheet_stats",
+   "spreadsheet_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+   "sheet_name": "Pipeline",
+   "range": "C2:C50",
+   "label": "Pipeline ARR",
+   "show": [
+    "sum",
+    "average",
+    "count"
+   ],
+   "accent": "#0ea5e9"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "16ffe3c8caab763da26a0cf3323175f28ddd29064e20b6e45975f9379c68860b",
+  "gas_sha": "cd09d62d3d252bc004f104fdbd301c5e8de412ca7adc3929cbb0d01a727c47de",
+  "parity": false
+ },
+ "user_profile_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "user_profile_card",
+   "name": "Alex Rivera",
+   "email": "alex.rivera@example.com",
+   "accent": "#6366f1",
+   "subtitle": "Lead Infrastructure Engineer"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "email",
+  "py_sha": "f2dc0caeb5458f4b1f862414a9f4970787c90f1c0cf45723324b17981edff6b1",
+  "gas_sha": "f3020b4d28dc609594f29906c34d2f1d1a99e4baa05a3fab628e665c449dce2b",
+  "parity": false
+ },
+ "drive_storage_usage": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "drive_storage_usage",
+   "label": "Drive Storage",
+   "accent": "#10b981",
+   "used_gb": 45.2,
+   "total_gb": 100.0,
+   "auth_token": "ya29.sample_oauth_token"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "bb70e87ba737ac980b6214544968cc9bdc6852378ba7d8951321bdd5aeeae048",
+  "gas_sha": "4189bf0f273157f75faae63c485de33214a64d4b3ec7c4510c50c838e494b077",
+  "parity": false
+ },
+ "tilt_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "tilt_card",
+   "title": "Server Health",
+   "content": "<p>All 12 microservices operational.</p>",
+   "max_tilt": 14,
+   "glare": true,
+   "accent": "rgba(255,255,255,0.2)",
+   "padding": "24px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "a214b47de6f904c8f1f9e28bc908581105b5a16a1bace5d644685bbb2bc41f70",
+  "gas_sha": "888840ae0a472c6dfff88f4ca1ae1981e50e9d242305ca6206dbbcc18ab21086",
+  "parity": false
+ },
+ "doc_ai_summary": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "doc_ai_summary",
+   "doc_id": "195Zgg8hV74Q3c19b9Uym5A2WE60LsZNJl8wM00D3",
+   "prompt": "Extract key deliverables and blockers.",
+   "title": "Q2 Strategy Brief",
+   "model": "gemini-1.5-pro",
+   "max_chars": 8000,
+   "accent": "#4f46e5",
+   "show_meta": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "doc_id",
+  "py_sha": "a4532ce9d87e3075e6d45f8a032f8a81b08e53a0c451bb19c37ab266b7fb52a1",
+  "gas_sha": "1b428cdb9a04de68bbcaf0094a937eff0b36675ac87a8da75397b3c48a97c683",
+  "parity": false
+ },
+ "gradient_heading": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "gradient_heading",
+   "text": "Next Generation API",
+   "gradient": "linear-gradient(to right, #4f46e5, #06b6d4)",
+   "size": "2.2rem",
+   "weight": 900,
+   "align": "left",
+   "margin": "16px 0 6px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "4856ed78cf47f01b490dfed15c8d12519a159a4e7e0be783097a586841b9afc9",
+  "gas_sha": "1343950810537cd751ead0c3eeb3e65ac5c6c6e28c2cc16103dea7c95de1716a",
+  "parity": false
+ },
+ "display_quote": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "display_quote",
+   "text": "Simplicity is prerequisite for reliability.",
+   "attribution": "Edsger W. Dijkstra",
+   "colour": "#38bdf8",
+   "size": "1.8rem",
+   "align": "center"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "4ac316fa95a3dd0dd8bd99e7e3e645ae99558ed7a0b5f9c65b4815a35ac5c46b",
+  "gas_sha": "591f81282c5372d08aba36d37f77a6aa99fc12ecb22b732c4fc816e5ada23fd4",
+  "parity": false
+ },
+ "split_stat": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "split_stat",
+   "value": "99.99",
+   "prefix": "",
+   "suffix": "%",
+   "heading": "Service Uptime",
+   "body": "Global SLA maintained throughout FY25.",
+   "colour": "#10b981",
+   "flip": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "heading",
+  "py_sha": "4cafefd853e5966df8605c7b82aa650d0dfbf6bb7811c38ae849958c520dd04f",
+  "gas_sha": "86b5fb194ea1f930250247bb5dbe3f95381871a8868ba95e8fa27b60675f3376",
+  "parity": false
+ },
+ "word_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "word_reveal",
+   "text": "Build Ship Scale Repeat",
+   "colour": "rgba(255,255,255,0.92)",
+   "gradient": "linear-gradient(90deg, #38bdf8, #818cf8)",
+   "size": "2.5rem",
+   "weight": 800,
+   "delay": 0.15,
+   "align": "center"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "dcebf5c4758f8a6fe893659094cdbe5d4edb87ada346dd0b3fb11862bb4713ce",
+  "gas_sha": "fadb326c58d92f2f78dda5557944a865cf8c3d79f7e35046d041c69c33edfeb4",
+  "parity": false
+ },
+ "section_label": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "section_label",
+   "text": "Architecture Overview",
+   "colour": "#6366f1",
+   "margin": "24px 0 12px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "a35654027873e17778bbc548edf20114480c4ef6690973333c2f733925d8d4b8",
+  "gas_sha": "983d7d4b4d9487bb04128ef85b6628e837731a31ae302f4e20319f77abad78b9",
+  "parity": false
+ },
+ "count_up_stat": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "count_up_stat",
+   "value": 14200,
+   "label": "Active Deployments",
+   "prefix": "",
+   "suffix": "+",
+   "colour": "#22d3ee",
+   "duration": 1800,
+   "size": "4rem"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "5042f2a29b9c352794e213d4511f8451946a72a773c500013221d8728db9ca6e",
+  "gas_sha": "d8aa9743119818a02907f1b9d3f5575cf0a92f25bfcdedf3674bade7386699af",
+  "parity": false
+ },
+ "text_highlight": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "text_highlight",
+   "text": "Ensure your cluster has **adequate compute** before launching jobs.",
+   "size": "1.2rem",
+   "colour": "#38bdf8",
+   "weight": 600,
+   "align": "left"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "78a378786f518198d7b35d4867f8fff9f947fdd7a59caa8ee076d33c024e50f4",
+  "gas_sha": "013589d813db08b730b1679b85f3e932a45bb91d70639d2ec88c49c04d0e824a",
+  "parity": false
+ },
+ "reveal_line": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "reveal_line",
+   "text": "Introducing v3.0 Core",
+   "gradient": "linear-gradient(135deg, #6366f1, #ec4899)",
+   "size": "3rem",
+   "weight": 900,
+   "duration": 800,
+   "delay": 200
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "e69fec36dba1c30830f26adde47ac293147ddac99081033d3afc4363ff522aa0",
+  "gas_sha": "da67203298992a276a5a33e27dfed51d8e08e457c798bb0ecee1240a8a1c4b41",
+  "parity": false
+ },
+ "paragraph": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "paragraph",
+   "text": "Telemetry metrics are logged every sixty seconds across all regions."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "433a1ee56effaa9101eb0f3f29d0c9c9ff3b59beb9e4ddcbc31a97a1629a533e",
+  "gas_sha": "43318f2c826e6dac9747143184595d3b8c2fcf9118854a71fc5485c5162ae135",
+  "parity": false
+ },
+ "text_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "text_block",
+   "text": "Standard deployment finished with status code 0."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "29e33ad5f19fb8c5f869ec455f911faea145062a7031fafe8e146907f9bdc8bc",
+  "gas_sha": "f1fb5126b99c70bf970ef34ccae332ff495c694665e2c29e144ce549c684abd7",
+  "parity": false
+ },
+ "blockquote": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "blockquote",
+   "text": "Make it work, make it right, make it fast.",
+   "attribution": "Kent Beck"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "576e6b2bad1a385bb76c7c1fc2ec7f6b362465ce700b0af20571797d084be802",
+  "gas_sha": "1b53710d321305469d401a41bea94bf38d0c68a7b9f33dde6575c29a9fc96576",
+  "parity": false
+ },
+ "tag_chip": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "tag_chip",
+   "text": "Production",
+   "color": "#10b981"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "5b4f32354989bee22bb479b1d48f04516b2e65b154fa7120768cec4b5b07bf2a",
+  "gas_sha": "4991c0df2d6230a785c5c96fcd8042a36905ebbb4e8e252eec9ff8b7fefa7b7e",
+  "parity": false
+ },
+ "badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "badge",
+   "text": "Critical",
+   "color": "#ef4444"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "da4644221a9990d1449d2d28a082ed4002173ab784781a8d55bf56a46404b915",
+  "gas_sha": "abf3783f488ada2cb09e072cccf62431bd645fe53e26c1b1085ca293ebb8c53b",
+  "parity": false
+ },
+ "inline_code": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "inline_code",
+   "text": "kubectl get pods -n kube-system"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "ed9de0fc96a4950a5bc10426f241d41fca39bf73b1a04a57ad9b8333029ae6a5",
+  "gas_sha": "9c2f7e1ef44d3458e1aa5585ade4f1563a9c27866a230a198ded96e5bf2bd153",
+  "parity": false
+ },
+ "code_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "code_block",
+   "language": "python",
+   "content": "def run():\n    return 'connected'"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "content",
+  "py_sha": "9e3e14f17dc622436f11fee1800b89e595fda7c8c7757fe59f4a0d40c0221335",
+  "gas_sha": "302fc3438a93559952997e3bc5467938e9578d1cfc9fc893df2aeee53d9fcc1e",
+  "parity": false
+ },
+ "link_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "link_button",
+   "url": "https://example.com/docs",
+   "label": "API Docs",
+   "same_tab": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "edaa1469d93280567663c79e1827bb3f913372dfb96ffdffd41701ea2b45b8c0",
+  "gas_sha": "e25b821cab9c0a058998f96ce5beea208e0fc49b394c5383c1a8330d97db43df",
+  "parity": false
+ },
+ "cta_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "cta_button",
+   "url": "https://example.com/register",
+   "label": "Create Account",
+   "color": "#4f46e5",
+   "same_tab": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "b58a92e64538b2ce09bf583ed065bbaec6fa09bdf69c9b14c0bbc3f190a755d9",
+  "gas_sha": "5bd3b98fd03dde890a78a7c182bf008045aa8b897452beec585ec9a91c5b4a58",
+  "parity": false
+ },
+ "nav_link": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "nav_link",
+   "nav_slug": "settings",
+   "label": "Account Settings",
+   "icon": "⚙️",
+   "style": "primary",
+   "align": "left"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nav_slug",
+  "py_sha": "2adbee0061063edf0df1d3a3299e24d03d94356afd6607c91cbd8d219f282886",
+  "gas_sha": "bf6eb8fa1f021688619306e80787b03ecc92646f7ad12896f16994043978f465",
+  "parity": false
+ },
+ "info_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "info_card",
+   "title": "Scheduled Maintenance",
+   "text": "Routine maintenance windows occur Tuesdays at 03:00 UTC."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "1b8c6a83a8a604d51d54299050e53f64dc1a8a960e90837edddfbc8e430ee8e0",
+  "gas_sha": "d423664bcfb09badce178c356d7e5e85b61707ef1aa2c6c2835492a2801a6d46",
+  "parity": false
+ },
+ "dark_hero": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "dark_hero",
+   "heading": "Real-time Edge Analytics",
+   "subtext": "Ingest and process events with single-digit latency.",
+   "badge": "New Release",
+   "gradient": "linear-gradient(135deg, #1e1b4b, #312e81)",
+   "cta_label": "Start Sandbox",
+   "cta_url": "https://example.com/sandbox",
+   "align": "center"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "heading",
+  "py_sha": "44d735a9e6773e8c669d98dd74c40f956755594b0e102eb6d3c09d61b3f39798",
+  "gas_sha": "eee16df2e6339705f286e228214c1dab04726d4c7677e933d8d544d857d68c84",
+  "parity": false
+ },
+ "glowing_stat": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "glowing_stat",
+   "value": "2.4",
+   "label": "Queries Per Second",
+   "colour": "#22d3ee",
+   "size": "3rem",
+   "prefix": "",
+   "suffix": "M",
+   "glow": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "730f9448600d96538543ac6822e4252d43c8524a3182ed518592a60c14f55071",
+  "gas_sha": "68d0a318f71ecba6954118e4d0b8d8883ed9b6d61edaf9d0222b11e1253aa761",
+  "parity": false
+ },
+ "glass_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "glass_card",
+   "title": "Node Status",
+   "content": "<p>12 replicas healthy in us-east-1.</p>",
+   "blur": 18,
+   "bg": "rgba(255,255,255,0.05)",
+   "border": "rgba(255,255,255,0.1)",
+   "padding": "28px",
+   "radius": "16px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "94d3deb16dda055c01c6c4bc78c47be3a5af88845f5054738e8ab3c0d02c4c34",
+  "gas_sha": "94d3deb16dda055c01c6c4bc78c47be3a5af88845f5054738e8ab3c0d02c4c34",
+  "parity": false
+ },
+ "gradient_border_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "gradient_border_card",
+   "title": "Tier 1 Priority",
+   "content": "Dedicated routing lane with lowest latency.",
+   "colours": [
+    "#4f46e5",
+    "#ec4899"
+   ],
+   "bg": "#0f172a",
+   "angle": 45,
+   "padding": "24px",
+   "radius": "12px"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "aafc22e575db3c99850dc54611a461362eb6867bbe221d3c60677fc4a362f256",
+  "gas_sha": "aafc22e575db3c99850dc54611a461362eb6867bbe221d3c60677fc4a362f256",
+  "parity": false
+ },
+ "neon_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "neon_text",
+   "text": "SYSTEM ARMED",
+   "colour": "#22d3ee",
+   "size": "2rem",
+   "weight": "700",
+   "align": "center",
+   "flicker": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "0ad16e254c540c4f0e5e65a5cdc2e30b0cc7d3643ced3f3f311c612bdab87197",
+  "gas_sha": "0ad16e254c540c4f0e5e65a5cdc2e30b0cc7d3643ced3f3f311c612bdab87197",
+  "parity": false
+ },
+ "scramble_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "scramble_reveal",
+   "text": "TRANSMISSION RECEIVED",
+   "title": "Decrypted Signal"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "4ea0dcbcc5127ecb88a5196c9596f1e0b14381a0b12d260f6c2ef4d23df73648",
+  "gas_sha": "b60268f0aca11108b904af9fe2dd053ec0f8861f86d10bb08581bf6ffe9343e9",
+  "parity": false
+ },
+ "scroll_trigger": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "scroll_trigger",
+   "text": "Data automatically partitions across distributed stores.",
+   "title": "Auto-scaling Storage",
+   "delay": 0.2,
+   "direction": "up"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "c8713bc62bfc882da3079c1148d0401dd3615bb21cbc5000125c83906360a814",
+  "gas_sha": "08d57acc5bff16aa921d9819220289a8c134b2619ff721da0258ee18f951dff6",
+  "parity": false
+ },
+ "live_metric": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "live_metric",
+   "value": 98.4,
+   "start": 0,
+   "duration": 2.5,
+   "prefix": "",
+   "suffix": "%",
+   "label": "Cache Hit Rate",
+   "decimals": 1
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "22cdae5cc546efe0182330141db6d03d5dcd2de91672be82320091f905371bad",
+  "gas_sha": "feeb105bec9353c3510777aa28337594e218eb44353b164b7f1d8daec1b38fe8",
+  "parity": false
+ },
+ "deadline_ticker": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "deadline_ticker",
+   "target_date": "2026-12-31T23:59:59Z",
+   "label": "Launch Window"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "486f8b6e62d356e320e8e044434275625d7f769aec05f69e8d92e711175d48f1",
+  "gas_sha": "39a396f2d0f81e9f8f579c2ce11f4b96585d5db4ff5a8ce4799702d0b6bb858f",
+  "parity": false
+ },
+ "glitch_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "glitch_text",
+   "text": "CYBERNETIC CORE",
+   "size": "2.2rem"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "e9ebd6c56e6842c8b909441c73ad0cb5aa30fafdcd371165285259a5b094b582",
+  "gas_sha": "d6634a8caa49032fc6d79ca9aa5d65c6b0c357d75c08a2ef59ad82dba448b487",
+  "parity": false
+ },
+ "neon_glow": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "neon_glow",
+   "text": "HIGH VOLTAGE",
+   "color": "#22d3ee",
+   "size": "2rem"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "b658b0c6d699c42a3db82b171d6fbdc000d77e6748564d7bdf5b353253ed4561",
+  "gas_sha": "ae5447904c14e4f1d8371038c14f06854813b68b2072790d82944f0ccb4b03b2",
+  "parity": false
+ },
+ "magnetic_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "magnetic_button",
+   "text": "Explore Core",
+   "color": "#4f46e5"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "612501c297b548b4c49ff975fdc632b0a43af026cc1cc8431046b8583f3d514c",
+  "gas_sha": "ff959532de13974cabbbfafa52eaa24a55aa77902dc20d258a04edd0d4882820",
+  "parity": false
+ },
+ "live_clock": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "live_clock",
+   "label": "Mission Elapsed",
+   "format": "24h",
+   "timezone": "UTC"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "67d9f95959f4ad45a6deaa60061d3aac4fac5f35f4e30c0b2ba078c4bd665dfe",
+  "gas_sha": "a8b0a0c27d82d6f432376ea37d8d4b84a76f3b4f848f0190b5ecb0d35f3d96b8",
+  "parity": false
+ },
+ "focus_lens": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "focus_lens",
+   "title": "Critical Path",
+   "text": "Bottleneck detected at database read replica."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "a58ed23b141d01ce9ccb0f6129e0d3fe9aaf9ef2b7a1dbc50b70efe989910e3d",
+  "gas_sha": "49938a1444049e895b42cc5fdaac47bd12fd044fe7b9e09efeff0e9120708f5a",
+  "parity": false
+ },
+ "liquid_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "liquid_button",
+   "text": "Trigger Sync",
+   "color": "#2563eb"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "1309bc1a33d18944e33039506fc92dc5b6fe743468a4bdac61b612364b5c9ae4",
+  "gas_sha": "cd1f7616acdc7e54a222065d8fdbd52bb83a260d3a9c8bd4b4fa33b31c31e6c3",
+  "parity": false
+ },
+ "highlight_sweep": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "highlight_sweep",
+   "text": "Zero breaches detected in 365 days.",
+   "color": "#fef08a",
+   "delay": 0.3,
+   "size": "1.5rem"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "85d5142d970be9df7cd97e5837a801061486ffdb9f19777b3415145116ae5ec0",
+  "gas_sha": "7764c58a17a8f8ce03a2ea9f3d37e4300841f69b5bddb21dd1d255c2bbed048e",
+  "parity": false
+ },
+ "progress_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "progress_reveal",
+   "value": 85,
+   "label": "Migration Progress",
+   "color": "#10b981",
+   "suffix": "%",
+   "height": 8
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "7bae1f2eb0ad5930adf245e598c262394dd3bd7445a901927ad81354417edb1b",
+  "gas_sha": "6332ae31b47b033c87381e07f7c53781828e9e36966a0045d5ef737ef16a444b",
+  "parity": false
+ },
+ "kinetic_headline": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "kinetic_headline",
+   "text": "The Next Generation of Cloud Infrastructure",
+   "size": "2.5rem",
+   "color": "#1e293b",
+   "stagger": 0.08,
+   "style": "up"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "b5b4622857165d30829c56ae538766e25052ac3f1e1d50b9005dc3d25881653f",
+  "gas_sha": "350ab843e03ad281d793565449d688337c1d18a1ba13546efc76f8dd12664637",
+  "parity": false
+ },
+ "text_reveal_mask": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "text_reveal_mask",
+   "text": "Unlocking enterprise velocity",
+   "size": "2rem",
+   "color": "#0f172a",
+   "delay": 0.3
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "c601edef57974ae0c34de79261fd8efd79d473695a8f22d11bc4b330d930fd1e",
+  "gas_sha": "c8034f202637e4866b330731db1b7e818ea2ce40b008ac08a5606ccf819d1b52",
+  "parity": false
+ },
+ "split_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "split_reveal",
+   "title": "Confidential Project Titan",
+   "text": "Production deployment scheduled for Q3 across all core clusters.",
+   "color": "#3b82f6",
+   "delay": 0.5
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "569be36b7331f468fbf3c3280eaba381bfdb0edfd1a54abb691193859160cdc3",
+  "gas_sha": "c1ba6d2b78291efe2551222d1ecef620fd1adfa6b1c922f8fbce858e657a9f0a",
+  "parity": false
+ },
+ "mesh_gradient": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "mesh_gradient",
+   "title": "Aurora Engine v2",
+   "text": "Real-time edge compute with ultra-low tail latency.",
+   "bg": "#090d16",
+   "colors": [
+    "#4f46e5",
+    "#ec4899",
+    "#06b6d4"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "496e11ff3c19b11ac062ced285aee95c226ac264f6facb34be070ceca9a10526",
+  "gas_sha": "5be64b771753fcc032a7814af2053ffc8b5b59340156dc71e99f2475f5e8d431",
+  "parity": false
+ },
+ "stripe_background": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "stripe_background",
+   "title": "Scheduled Maintenance",
+   "text": "Database migrations running in standby region.",
+   "color1": "#f59e0b",
+   "color2": "#d97706",
+   "speed": 4
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "8c01bd74ecad9122f45419ff0d49041276d42bf768a2bc613828d238df50cdb6",
+  "gas_sha": "2ed44e220bb41ae3f8a82896a4cf6b7e4bf8c53abe88507637f5ab9b3ada63ca",
+  "parity": false
+ },
+ "noise_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "noise_card",
+   "title": "System Audit Log",
+   "text": "All cryptographic assertions verified successfully.",
+   "bg": "#18181b",
+   "color": "#fafafa"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "b8c94dd81dcd76b9f22929d56a87b91a3773e58c42c77da2e5a40be45faafaf1",
+  "gas_sha": "fd6764875c22c6200f0a032680bb37937fd1e00343d55cc60beffe3172944285",
+  "parity": false
+ },
+ "feed_status": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "feed_status",
+   "name": "telemetry-stream-us-east",
+   "label": "INGEST",
+   "size": "0.6rem"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "004db1c42d1a37ccf2479fd6e48710b66e82558255bff0c857e1a5a6b80236c0",
+  "gas_sha": "f494a683a9589db5f6df441f0ab89fe638a6a57c5f2a83d086db8047cfc798f2",
+  "parity": false
+ },
+ "surface_unlocked": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "surface_unlocked",
+   "icon": "⚡",
+   "surface": "Admin Console",
+   "sub": "NEW SURFACE UNLOCKED",
+   "accent": "#f59e0b"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "surface",
+  "py_sha": "a14cac6cd614a7d7796fff16db12ad82f20a4f1a476f179759b51eb605760256",
+  "gas_sha": "66edff54aaad81420fcc1973eed1ade00e72707352fcb06ea22c4ab978389c2a",
+  "parity": false
+ },
+ "schema_reveal": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "schema_reveal",
+   "title": "Page Blueprint",
+   "accent": "#6366f1"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "402afc9e81e820567ee2023418d05ce2a5d4761d1537f5094cddd26e69c92ed2",
+  "gas_sha": "f7d6b13c3d8fedecc7a42f345b1b84c99a203c76238802e60e3a24290711ed29",
+  "parity": false
+ },
+ "url_anatomy": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "url_anatomy",
+   "accent": "#0ea5e9"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "080587a942a18142c56ebc7106320a8b56510648564ddf2e95337b2ac598942b",
+  "gas_sha": "e5e033d51750a7779d0777994d59887edf142af12f2a0b9e057dc6d91d28a76b",
+  "parity": false
+ },
+ "schema_qr": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "schema_qr",
+   "url": "https://example.com/verify-badge",
+   "label": "Scan to verify",
+   "sub": "Direct link to production signature",
+   "size": 220,
+   "is_interactive": false
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "url",
+  "py_sha": "29b0bc77b13d902451397eaefae78e033e0a211ffc2abdf2cf053c8efa968007",
+  "gas_sha": "9e10a179493480faa1bb5cec9320b1bf1ce6c7bf6d93c8f53a971c45c045fb5b",
+  "parity": false
+ },
+ "take_away_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "take_away_card",
+   "headline": "Premature abstraction is the root of architectural debt.",
+   "sub": "Staff Engineering Handbook",
+   "accent": "#ec4899",
+   "size": "1.5rem",
+   "gradient": [
+    "#1e1b4b",
+    "#312e81"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "headline",
+  "py_sha": "0d63fd62135ef2709ba405bce668cdfe918380d8d4e317b1afbfa764054fe6d1",
+  "gas_sha": "1e3b2cc4600cf259f8b89bb006457e40019999d466bb4d613c13fff1bcc459ae",
+  "parity": false
+ },
+ "copy_prompt": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "copy_prompt",
+   "prompt": "Analyze this incident postmortem and identify the top three systemic risks.",
+   "label": "Gemini Triage Prompt",
+   "accent": "#4f46e5"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "0322fd1dbf64ba1c8c7d925cd8f7e51b05e7313b7272f1d2b278c5ce300c6038",
+  "gas_sha": "37dc5a9250bd3fc0e61cc5491943d92907901a29d3da55e59db6059c1b9ad4b5",
+  "parity": false
+ },
+ "raise_hand": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "raise_hand",
+   "question": "Are you using automated canary rollouts?",
+   "label": "✋ Raise hand",
+   "write_url": "https://example.com/record",
+   "sheet_url": "https://example.com/data.csv",
+   "poll": 3000,
+   "accent": "#2563eb"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "question",
+  "py_sha": "4081153dfa8c054ef08e886b6fe0e3d2110ec81415f756bdd96f03f9c46904ee",
+  "gas_sha": "d2cced6c115711d03712047b00abe4b3d6094310580715460d0951fcc9dea3cc",
+  "parity": false
+ },
+ "speed_counter": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "speed_counter",
+   "label": "Page loaded in",
+   "sub": "Time to first interactive paint",
+   "accent": "#10b981"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "b5053e858d499eb72eb6856be09a6ed862bbe5b634b479f82298cb369ad75e7a",
+  "gas_sha": "8cafb0037069f38f7bf9759fc0017906d8eaf9d2a913ff971b52c59928d6fc32",
+  "parity": false
+ },
+ "drive_file_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "drive_file_card",
+   "file_id": "1A2B3C4D5E6F7G8H9I",
+   "name": "Q3-Infrastructure-Roadmap.pdf",
+   "mime": "application/pdf",
+   "url": "https://example.com/drive/roadmap",
+   "description": "Executive summary and budget allocation plan."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "f5e353c699d51bcc1114d2792128321fb5f157fdd9b6f2c9470a2980c5f3690e",
+  "gas_sha": "66ed28c93f750e9007e62b51bd19eafc38055f206b5b66c24669514abe7d8358",
+  "parity": false
+ },
+ "quiz_result_summary": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "quiz_result_summary",
+   "score": 9,
+   "total": 10,
+   "quiz_id": "sre-foundations-101",
+   "pass_mark": 80,
+   "time_secs": 145,
+   "questions": [
+    {
+     "label": "Q1: Incident Severity",
+     "correct": true
+    },
+    {
+     "label": "Q2: SLO Calculation",
+     "correct": true
+    },
+    {
+     "label": "Q3: Error Budget Drain",
+     "correct": false
+    }
+   ],
+   "next_url": "https://example.com/module-2",
+   "retry_url": "https://example.com/retry-1"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "quiz_id",
+  "py_sha": "dc2f6b418d711215a75d7947d7e10a6120f47ef237f069f6b7a772ce671020db",
+  "gas_sha": "ff3de41ce97679522462463612bea916b044b674c4cd51d60f0bcdc3c7ea79af",
+  "parity": false
+ },
+ "completion_gate": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "completion_gate",
+   "requires": "mod-intro-security",
+   "label": "Module Locked",
+   "message": "Complete the Baseline Security module to unlock advanced mitigation drills."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "requires",
+  "py_sha": "66e2381df171adfd2c547376f25e6e08d98190b7af004d44a0804d160b1a58be",
+  "gas_sha": "d14085a97d6774bddcbc69878308f729eba8175cb48dbebc4362a323cb67dfac",
+  "parity": false
+ },
+ "certification_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "certification_card",
+   "course": "Distributed Systems Architect",
+   "issuer": "A2UI Learning",
+   "requires": "course-dist-sys-complete",
+   "earner": "Alex Morgan",
+   "date": "2025-05-15",
+   "accent": "#6366f1"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "course",
+  "py_sha": "6004720a612c3c662fe03b23f0c5efbfe6582970ff179908ae477238af6c7dd6",
+  "gas_sha": "eef29df3b973dd3a06692c53f6f104be99cbde59f25a1f819643144e6a3d45cd",
+  "parity": false
+ },
+ "case_study_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "case_study_card",
+   "title": "Mitigating Tail Latency in Edge Caches",
+   "situation": "Global CDN cache hits dropped 14% during flash traffic events, triggering database connection saturation.",
+   "data_points": [
+    {
+     "label": "Cache Hit Rate",
+     "value": "78%",
+     "note": "Target: >92%"
+    },
+    {
+     "label": "P99 Latency",
+     "value": "1.8s",
+     "note": "Baseline: 220ms"
+    }
+   ],
+   "questions": [
+    "What caching invalidation policy caused the thundering herd problem?",
+    "How does probabilistic early expiration resolve the hotspot?"
+   ],
+   "model_answer": "Implemented X-Fetch probabilistic refresh 30 seconds before TTL expiry.",
+   "accent": "#ef4444"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "3a275d063c4e56ae839d621fcdeec697a24ddc0f6ab500a1e5d95b18138790ca",
+  "gas_sha": "995fb7e84719969a93db4f9e342f6fae5ac68c9c3bcb452fdfeb46f46070d406",
+  "parity": false
+ },
+ "study_timer": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "study_timer",
+   "label": "Deep Work Sprint",
+   "focus_mins": 25,
+   "break_mins": 5,
+   "accent": "#f97316"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "d92098d6316c448c14da2e5e8773a12d21d2b3f05e49bb71c4c369d6a2b59694",
+  "gas_sha": "565a22c4392873585713c8f7eb731b6c68b1a8fb8a904348ab7124dd8476748f",
+  "parity": false
+ },
+ "spaced_repetition_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "spaced_repetition_card",
+   "front": "What defines the CAP Theorem's partition tolerance?",
+   "back": "The system continues to operate despite an arbitrary number of dropped or delayed network messages.",
+   "card_id": "srs-cap-partition-tolerance",
+   "accent": "#8b5cf6"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "card_id",
+  "py_sha": "d1fd6823133589e7a1db321ec91d9da8eeb6079518b9255ab1b78fdfbed903cf",
+  "gas_sha": "0ef24a01ed04c984f82ee1619e0b86b630045940aa735e5382a20e438f1da35b",
+  "parity": false
+ },
+ "drive_image": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "drive_image",
+   "url": "https://example.com/drive-img-token",
+   "id": "1abcXYZDriveAssetId",
+   "alt": "Network topology diagram",
+   "caption": "Figure 1: Cross-region replication topology.",
+   "rounded": true,
+   "width": "100%"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "id",
+  "py_sha": "0d9bbd59eb8fae580ad38709e671307e26896988e75a53661b20990baaa2327f",
+  "gas_sha": "6cb007bd3509603867e256becded8d4a42c5058ebe50de387ad5860f6be2b474",
+  "parity": false
+ },
+ "pulse_dot": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "pulse_dot",
+   "color": "#10b981",
+   "size": "md",
+   "label": "Systems Operational",
+   "speed": 1.8,
+   "inline": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "3d85aebd564f0b10d4893307d32b49322fc39d7cc8031858f091d1a9ebd0341e",
+  "gas_sha": "4c134ef184f64029b474baec2c1724c430c98f4a14a5ef88650c8a67c08606f2",
+  "parity": false
+ },
+ "progress_ring": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "progress_ring",
+   "value": 84,
+   "size": 100,
+   "stroke_width": 8,
+   "color": "#3b82f6",
+   "track_color": "#e2e8f0",
+   "label": "Migration Completed",
+   "show_value": true,
+   "unit": "%"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "1ca7ced4ae2b2f5d9d33d822e7de88e8d99c1c4e4b4420f6a1699313a7ea8c38",
+  "gas_sha": "eb06b68ec5a615540c41d1472f387929b3992180fc7fdc2ae0790302f92b5c80",
+  "parity": false
+ },
+ "ripple_button": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "ripple_button",
+   "label": "Promote to Production",
+   "url": "https://example.com/deploy",
+   "icon": "🚀",
+   "accent": "#2563eb",
+   "size": "md",
+   "full_width": false,
+   "align": "flex-start"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "3435ad207fd045277709e42e44ac2802e265a65a17a651c60ff3b2152dfdb02d",
+  "gas_sha": "a32b6590c9e4bb3144242cdcc19aab30d9ab5b32bb18d963977e2ebf9554a326",
+  "parity": false
+ },
+ "floating_badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "floating_badge",
+   "icon": "🏆",
+   "label": "Sprint Milestone Reached",
+   "size": "md",
+   "speed": 3,
+   "shadow": true,
+   "align": "center"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "aeafcdfa0dbe2c4ba109251d5c2f335e9926d72c5ea26b463ca0a8e724208c09",
+  "gas_sha": "cc8caad13c44a281798962c0c8776638c89c7811ce587ebd01b977587beb3491",
+  "parity": false
+ },
+ "shimmer_text": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "shimmer_text",
+   "text": "Engineered for Extreme Resilience",
+   "size": "2rem",
+   "from": "#3b82f6",
+   "to": "#ec4899",
+   "via": "#ffffff",
+   "speed": 2.5,
+   "weight": 800,
+   "align": "left"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "68b60c6ba719aa678a771f921aa027275f80cabcc2bfaadb2ba37d795dfd9375",
+  "gas_sha": "a3d68224225fd9dcd105f264c5342ec518e4275ea20d9d72124d551850aae393",
+  "parity": false
+ },
+ "number_flip": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "number_flip",
+   "value": "128",
+   "prefix": "$",
+   "suffix": "M",
+   "label": "Annual Recurring Revenue",
+   "size": "3rem",
+   "color": "#059669",
+   "duration": 1200,
+   "align": "center"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "0164da203d902e44ea91c6f1191053b593eed54470ff2f9e632fc32772957114",
+  "gas_sha": "5df36ebdf23559628f4ed2e5d59ab28fbb9e473176b15c1dc3f658f1d06fd2d5",
+  "parity": false
+ },
+ "countdown_ring": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "countdown_ring",
+   "duration_sec": 60,
+   "size": 80,
+   "color": "#dc2626",
+   "label": "Session Timeout"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "4c00ca130784aa195b5a89426daa930d1d8d685e2ffd8fe64e191f2891675fe2",
+  "gas_sha": "4046c4b6bb99db8e7deabab6282213548d18239588fe83e04b15c5b46710ad2f",
+  "parity": false
+ },
+ "google_icon": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "google_icon",
+   "name": "rocket_launch",
+   "size": "24px",
+   "color": "#2563eb",
+   "filled": true,
+   "weight": 500,
+   "style": "rounded",
+   "label": "Release Ready",
+   "inline": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "a9e7b4d9a67ed2cafdd88ea4b1d85153ea367be39ac1f7e26e773fd4d229a31e",
+  "gas_sha": "a9e7b4d9a67ed2cafdd88ea4b1d85153ea367be39ac1f7e26e773fd4d229a31e",
+  "parity": false
+ },
+ "icon_badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "icon_badge",
+   "name": "verified",
+   "icon_size": 24,
+   "bg": "#dbeafe",
+   "color": "#1d4ed8",
+   "padding": "12px",
+   "radius": "50%",
+   "filled": true,
+   "label": "Signed Build"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "1ee925c14422fb1459aeb6685199176201f724985164b7bef7f0df86684ba3d2",
+  "gas_sha": "1ee925c14422fb1459aeb6685199176201f724985164b7bef7f0df86684ba3d2",
+  "parity": false
+ },
+ "workspace_logo": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "workspace_logo",
+   "app": "sheets",
+   "size": 48,
+   "label": "Google Sheets",
+   "inline": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "app",
+  "py_sha": "89eea4eee4e7c55128f9e6a0054b1a6caf96b4876d74b4d3693824c996b03883",
+  "gas_sha": "1099c427c5618ea966f5267f3e07949dc54d77ffffe91f0e83ebc613eed80685",
+  "parity": false
+ },
+ "command_step": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "command_step",
+   "label": "Sync Cluster Configuration",
+   "command": "kubectl apply -f ./manifests/production.yaml",
+   "hint": "Ensure your context points to prod-east before running."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "command",
+  "py_sha": "760b9601b191093d4301db9a4419164c14c40bc316cc8ccba3a02aeeb309b27d",
+  "gas_sha": "7bd8ada3590f09bd1d4cbc7ec18fa4229dc0e0ff6e6c058a907395a1db2a51d8",
+  "parity": false
+ },
+ "sla_timer_display": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "sla_timer_display",
+   "title": "Active Outage Triage",
+   "severity": "P0",
+   "sla_label": "3 min SLA"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "8992bfadf4751b1640622286216adfc125185b866577186d0cf929b9bfef946e",
+  "gas_sha": "8992bfadf4751b1640622286216adfc125185b866577186d0cf929b9bfef946e",
+  "parity": false
+ },
+ "domain_brief": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "domain_brief",
+   "title": "Edge Compute Fabric",
+   "badge": "Core Architecture",
+   "description": "Distributed node orchestration layer for zero-egress workloads.",
+   "image_url": "https://example.com/a.png",
+   "key_facts": [
+    {
+     "icon": "⚡",
+     "label": "Cold Start",
+     "detail": "<5ms"
+    },
+    {
+     "icon": "🌐",
+     "label": "PoPs",
+     "detail": "320 global locations"
+    }
+   ],
+   "areas": [
+    "Request Routing",
+    "Wasm Runtime",
+    "TLS Termination"
+   ],
+   "areas_label": "Scope Areas",
+   "context": "Provides consistent sub-millisecond dispatch across all edge clusters.",
+   "accent": "#4f46e5"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "cc15f87d39bfda16245e5ad2fcf976ec284a953d0a2ee5816694017fc9aa6d67",
+  "gas_sha": "6268f0813386a8a1f4a2556954d0bbec45e293785c94423bb06c8f61d4c1e03a",
+  "parity": false
+ },
+ "cert_disclaimer": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "cert_disclaimer",
+   "cert": "Professional Cloud Architect",
+   "holder": "Google LLC",
+   "url": "https://example.com/cert-terms"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "cert",
+  "py_sha": "2bec186d04ad4a2262b936fe88719c02beed1fae1ae7342e6b6a9a6391e35d08",
+  "gas_sha": "2bec186d04ad4a2262b936fe88719c02beed1fae1ae7342e6b6a9a6391e35d08",
+  "parity": false
+ },
+ "tool_tile": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "tool_tile",
+   "icon": "folder",
+   "label": "Asset Manager",
+   "count": 42,
+   "badge": "V2",
+   "variant": "indigo"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "40e314905a782f6477ea285a846a68836c2f329d2fc4b71144f15ceb4973a42a",
+  "gas_sha": "908d9507ea6959055f948431d867c5ce21d5c311b982aea31c3a8946b81a464b",
+  "parity": false
+ },
+ "quiet_link": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "quiet_link",
+   "text": "Skip configuration and continue with defaults"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "text",
+  "py_sha": "3fc72abde5483cd41f8098f02c0f9355f2a5cf49090ab3ead5a2da88cabb5eba",
+  "gas_sha": "ef4582a94ac2683f8abb2436e71e7f575bccfbe572d85fcf33daed67815f2135",
+  "parity": false
+ },
+ "math_block": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "math_block",
+   "mathml": "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup></mrow></math>",
+   "caption": "Mass-energy equivalence formula",
+   "number": "(1)",
+   "align": "center",
+   "size": "1.3rem"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "caption",
+  "py_sha": "88af824d553b146108328d4993f4d63bc8675deac558ca07e9e21241405bd9b9",
+  "gas_sha": "074475f9824b27da2b7f86bc9c4df2e5206dbc303584075c505d6ea85c80df3c",
+  "parity": false
+ },
+ "weather_now": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "weather_now",
+   "city_line": "SEATTLE — HEADQUARTERS",
+   "stamp": "Wed 15 Oct · 09:30",
+   "temp": 16,
+   "condition": "Overcast",
+   "code": "cloud",
+   "hi": 19,
+   "lo": 11,
+   "stats": [
+    {
+     "label": "Precip",
+     "value": "15%"
+    },
+    {
+     "label": "Wind",
+     "value": "14 km/h"
+    },
+    {
+     "label": "UV Index",
+     "value": "2"
+    },
+    {
+     "label": "Humidity",
+     "value": "78%"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "city_line",
+  "py_sha": "ddf7cab1866ecf48eb67b681c95bf92494bbde723403db51f7c1609ac2e4bd15",
+  "gas_sha": "cc214ad07472a87c8ef1a78637361349529b108eaa0d3acb4339591624e24518",
+  "parity": false
+ },
+ "lens_eli5": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "lens_eli5",
+   "source_excerpt": "Distributed consensus protocols ensure data consistency but may increase write latency under network jitter.",
+   "text": "The system makes sure everyone agrees on the facts, but this can slow things down when the network gets bumpy.",
+   "evidence": [
+    "may increase write latency under network jitter"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "type",
+  "py_sha": "12d61384089a5fd403f95d4b2f15da9fa18a9b5bda21a075ce39b28cfaa33cf5",
+  "gas_sha": "12d61384089a5fd403f95d4b2f15da9fa18a9b5bda21a075ce39b28cfaa33cf5",
+  "parity": false
+ },
+ "lens_freeform": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "lens_freeform",
+   "source_excerpt": "EU regulations mandate strict data residency controls across sovereign member states.",
+   "label": "Regulatory Impact",
+   "tier": "interpreted",
+   "text": "Cross-border database replication requires strict geopolitical policy fences.",
+   "evidence": [
+    "mandate strict data residency controls"
+   ],
+   "off_template": true
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "f3adb4e581986546c162bf50a0eccdb358e36e1624e0541c3e1b7826f9bffe92",
+  "gas_sha": "f3adb4e581986546c162bf50a0eccdb358e36e1624e0541c3e1b7826f9bffe92",
+  "parity": false
+ },
+ "concept_rung": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "concept_rung",
+   "badge": "1",
+   "kind": "depth",
+   "label": "DEPTH 1",
+   "title": "Atomic Commit Log",
+   "body": "Every transaction is written sequentially to disk before acknowledgement.",
+   "code": "wal.append(tx_bytes); wal.sync();",
+   "code_caption": "Basic write-ahead logging operation",
+   "takeaway": "Durability guarantees precede memory state updates."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "6fc82549c8cbe31625f8965850482575c46fe8252f0247bcf9716883fe57cf4a",
+  "gas_sha": "6fc82549c8cbe31625f8965850482575c46fe8252f0247bcf9716883fe57cf4a",
+  "parity": false
+ },
+ "stack_layer": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "stack_layer",
+   "name": "Transport",
+   "badge": "L4",
+   "field": "gRPC over HTTP/2",
+   "note": "Multiplexed binary streaming with bi-directional backpressure.",
+   "examples": [
+    "HTTP/2",
+    "QUIC"
+   ],
+   "status": "present",
+   "cells": [
+    {
+     "field": "TCP",
+     "note": "Connection oriented",
+     "status": "present"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "bc09d5d24c057c599e8b842b208a918df3f451ba5bb9b8d2f8ed0e93d8f29696",
+  "gas_sha": "f22873e3c2b6bee035826929974629e7610c8ccf2c64a7b5fa1b1c2634168639",
+  "parity": false
+ },
+ "constraint_fix_triad": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "constraint_fix_triad",
+   "constraint": "Idempotent event dispatching is mandatory.",
+   "breaks": "Duplicate webhooks cause double billing during gateway timeouts.",
+   "fix": "Pass a unique idempotency key inside `X-Request-Id` and cache execution state in Redis."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "constraint",
+  "py_sha": "43cb4654616756c7da1c19971ddf1a199e4dcf1dd6e917aa45733f2a04d7e56b",
+  "gas_sha": "3fd9877f42e555c95781f7789ef5dfb9dfc6eb6df96d0037d44ffc251d7592cb",
+  "parity": false
+ },
+ "incident_finding": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "incident_finding",
+   "headline": "Connection pool exhaustion triggered cascading timeout spirals.",
+   "detail": "Slow analytical queries held database locks, exhausting available application worker slots.",
+   "synthesis": "Strict query budgets and read-replica segregation prevent upstream connection starvation."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "headline",
+  "py_sha": "5c15ff5b52140ef36fbd73224124e19b732dcd26e81987cf8432f743b6883fbc",
+  "gas_sha": "223bba3faea9031ca8a733c9f405160e78d4d5d37af13c826bc5c2e32e9e6706",
+  "parity": false
+ },
+ "agent_demo_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "agent_demo_card",
+   "name": "AuditBot Alpha",
+   "description": "Scans workspace drives for public file shares and revokes insecure access.",
+   "primitives_used": [
+    "drive_file_card",
+    "pulse_dot",
+    "command_step"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "name",
+  "py_sha": "ebc0a5c32bde4f660af01a7bce9e73ba1a39af00f93605f0affc870573c37910",
+  "gas_sha": "0afe03eaad7eec85185086d2163eff692ca820b4a00a6c73da8086f60ddc8a77",
+  "parity": false
+ },
+ "trace_step": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "trace_step",
+   "step_number": 1,
+   "title": "Ingress Dispatch",
+   "body": "API gateway terminates TLS and checks token signature against public keys.",
+   "code": "GET /api/v1/orders HTTP/1.1\nHost: api.example.com"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "step_number",
+  "py_sha": "b3b7ac5fbea1c4b61c61c38174df972064f060efbc1370007b84103ef23bc916",
+  "gas_sha": "0d7f28b425faeb65cbfa1c48ecb1be38c20004106814318b8c551d9152899422",
+  "parity": false
+ },
+ "stat_inline_badge": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "stat_inline_badge",
+   "value": "99.99%",
+   "label": "availability target"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "a80d7876724ac91d624a3799cbe46a348dbd402666852705b667bb755e7b9e5a",
+  "gas_sha": "a26f2666df001555d7eb93f3d64b690e438d523e9ab7249373e87cdab758eed1",
+  "parity": false
+ },
+ "problem_chapter": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "problem_chapter",
+   "number": 1,
+   "headline": "Unbounded Cache Invalidation",
+   "body": "Secondary indexing caused cascading updates across `cluster-b`, triggering read timeouts under peak load.",
+   "angle_label": "Reliability angle",
+   "angle_text": "TTL jitter prevents cascading cache collapse."
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "number",
+  "py_sha": "665a745126ecbd54b01579569d5f0dcb2aa6d131df69f3ccb99332dd83b03654",
+  "gas_sha": "9752f5e9a5664f7dc1853c176dc975a75bae152fc1d1488128936aaedac7d84b",
+  "parity": false
+ },
+ "resource_link_row": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "resource_link_row",
+   "label": "Live MCP Catalog",
+   "url": "https://example.com/catalog",
+   "note": "Production registry of vetted agent endpoints"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "label",
+  "py_sha": "4020b4f8d421d2a534d6caaea80ea468619cf9f87f53f6ad4cb75b0aebf3b93c",
+  "gas_sha": "3bdd256c19e15c92c237c40f513e94d22ef648091db9922260b3f2ed36eec50f",
+  "parity": false
+ },
+ "tool_call_card": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "tool_call_card",
+   "tool_name": "query_inventory",
+   "status": "success",
+   "args": "{\"sku\": \"A-402\", \"warehouse\": \"us-east\"}",
+   "result": "{\"available\": 142, \"reserved\": 18}",
+   "latency_ms": 128
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "tool_name",
+  "py_sha": "f6882d7f499a4f8f9338ac92195c28c859417be7f3804069d86cdbf7bb3d2929",
+  "gas_sha": "570acaccb1519b4c768734500b87a990f2b21a17cf61f45fc150c0bebeb61fa0",
+  "parity": false
+ },
+ "freeform_canvas": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "freeform_canvas",
+   "summary": "Direct network path between edge gateway and primary cache node",
+   "justification": "Requires a custom node-link diagram with labeled directional vectors not represented by any catalog atom.",
+   "viewbox": "0 0 800 500",
+   "background": "#f8fafc",
+   "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"200\" cy=\"250\" r=\"40\" fill=\"#2563eb\"/><line x1=\"240\" y1=\"250\" x2=\"560\" y2=\"250\" stroke=\"#64748b\" stroke-width=\"4\"/><circle cx=\"600\" cy=\"250\" r=\"40\" fill=\"#16a34a\"/></svg>"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "summary",
+  "py_sha": "56c17e39cea86a4a42f1a0810878d99ea5e6acc2d2b2bd9dc25b77f961c2861f",
+  "gas_sha": "9914739578b19155eb16e0359f76e6f8ae188a3859b81569e4b509e0a5578aab",
+  "parity": false
+ },
+ "wall_elevation": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "wall_elevation",
+   "height_m": 2.4,
+   "width_m": 4.8,
+   "block_id": "parpaing200",
+   "pattern": "running",
+   "load_bearing": true,
+   "include_dpc": true,
+   "builders": 3
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "block_id",
+  "py_sha": "2a6001c4044b3a099f2f9b1660ce21d42ed9075351d11aed7063c4f9f50fbbe2",
+  "gas_sha": "8d618eaa414eb17177a13cfa727619d39aa4b67a05ae134f0c023d0b2783b028",
+  "parity": false
+ },
+ "clipart": {
+  "status": "pending",
+  "class": "S",
+  "block": {
+   "type": "clipart",
+   "asset": "person-standing",
+   "variant": "hard-hat",
+   "scale": 1.2,
+   "flip": false,
+   "time": "day",
+   "label": "Site Safety Inspector",
+   "alt": "Inspector wearing high-visibility vest and hard hat"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "asset",
+  "py_sha": "e061e3485c3c86eb50a9f8e52c355a7d1b17cfb222a6e9717742e253e2d33f3f",
+  "gas_sha": "6375a6ae763933093154f755153640ebba0c4b924ccbf862e8a2cac2fa4cf202",
+  "parity": false
  }
 }

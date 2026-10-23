@@ -15,8 +15,7 @@
  "note": "Build contract coverage (I75). Every schema atom is listed: keyed, sweep (in contract_sweep), single, exempt or todo. A new atom must be added here (tests/test_contract_sweep.py).",
  "atoms": {
   "abbr_tooltip": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "accordion_item": {
    "status": "sweep"
@@ -41,8 +40,7 @@
    "status": "sweep"
   },
   "agent_demo_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "agent_narrator": {
    "status": "sweep"
@@ -130,8 +128,7 @@
    "reason": "interactive navigation button"
   },
   "badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "badge_group": {
    "status": "sweep"
@@ -159,8 +156,7 @@
    "status": "sweep"
   },
   "blockquote": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "blockquote_with_avatar": {
    "status": "sweep"
@@ -170,8 +166,7 @@
    "reason": "layout container wrapper for child elements"
   },
   "body": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "box_plot": {
    "status": "keyed",
@@ -203,19 +198,16 @@
    "status": "sweep"
   },
   "calendar_upcoming": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "calibration_plot": {
    "status": "sweep"
   },
   "call_mood_board": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "callout": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "callout_anatomy": {
    "status": "sweep"
@@ -235,34 +227,28 @@
    "status": "sweep"
   },
   "case_study_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "catalogue_provenance": {
    "status": "sweep"
   },
   "caution_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "cert_disclaimer": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "certification_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "change_chart": {
    "status": "sweep"
   },
   "changed_mind": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "changelog_entry": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "chartjs_bar": {
    "status": "sweep"
@@ -274,8 +260,8 @@
    "status": "sweep"
   },
   "chat_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "chat_send_button": {
    "status": "exempt",
@@ -310,28 +296,22 @@
    "by": "tests/test_build_contract_v12.py"
   },
   "cli_command": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "clipart": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "closing": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "code": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "code_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "code_diff": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "code_snippet_pair": {
    "status": "todo",
@@ -367,8 +347,7 @@
    "reason": "interactive keyboard palette overlay"
   },
   "command_step": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "comparison_grid": {
    "status": "sweep"
@@ -378,15 +357,13 @@
    "reason": "interactive split comparison slider"
   },
   "completion_gate": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "concept_ladder": {
    "status": "sweep"
   },
   "concept_rung": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "confetti_burst": {
    "status": "exempt",
@@ -397,12 +374,10 @@
    "reason": "interactive trigger button for effects"
   },
   "confidence_bar": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "constraint_fix_triad": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "content_tabs": {
    "status": "exempt",
@@ -419,8 +394,7 @@
    "status": "sweep"
   },
   "conversation_snippet": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "conversion_funnel": {
    "status": "sweep"
@@ -430,24 +404,20 @@
    "reason": "interactive clipboard utility button"
   },
   "copy_prompt": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "copy_to_clipboard": {
    "status": "exempt",
    "reason": "interactive click-to-copy utility element"
   },
   "count_up_stat": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "countdown_ring": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "countdown_timer": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "counter_group": {
    "status": "sweep"
@@ -472,12 +442,10 @@
    "reason": "interactive file upload and parse form"
   },
   "cta_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "cta_section": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "cursor_glow": {
    "status": "exempt",
@@ -505,8 +473,7 @@
    "status": "sweep"
   },
   "dark_hero": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "data_grid": {
    "status": "sweep"
@@ -519,8 +486,7 @@
    "status": "sweep"
   },
   "deadline_ticker": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "decision_tree": {
    "status": "keyed",
@@ -571,77 +537,64 @@
    "reason": "demo motion decorative typography overlay"
   },
   "deprecation_notice": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "depth_stack": {
    "status": "sweep"
   },
   "diagram": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "difficulty_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "display_quote": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "divider": {
    "status": "exempt",
    "reason": "pure visual separator with no bound data payload"
   },
   "doc_ai_summary": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "document_link": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "domain_brief": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "domain_picker": {
    "status": "exempt",
    "reason": "interactive domain selection and input atom"
   },
   "donut_stat": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "dot_grid_background": {
    "status": "exempt",
    "reason": "decorative CSS background pattern layer"
   },
   "drive_file_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "drive_file_list": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "drive_folder_contents": {
    "status": "sweep"
   },
   "drive_image": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "drive_recent_files": {
    "status": "sweep"
   },
   "drive_storage_usage": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "drop_cap": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "effect_overlay": {
    "status": "exempt",
@@ -668,12 +621,10 @@
    "reason": "external Twitter embed iframe/widget"
   },
   "empty_state": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "encrypted_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "entity_list": {
    "status": "sweep"
@@ -686,16 +637,13 @@
    "reason": "collection atom whose sample did not render; fix the sample, then sweep"
   },
   "expandable_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "experimental_banner": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "expert_endorsement": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "faq_accordion": {
    "status": "sweep"
@@ -707,8 +655,7 @@
    "status": "sweep"
   },
   "feed_status": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "feedback_prompt": {
    "status": "exempt",
@@ -745,12 +692,10 @@
    "status": "sweep"
   },
   "flip_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "floating_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "floating_orbs": {
    "status": "exempt",
@@ -768,23 +713,20 @@
    "reason": "canvas particle motion field background"
   },
   "focus_lens": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "follow_button": {
    "status": "exempt",
    "reason": "interactive follow trigger button"
   },
   "follow_cta": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "follow_up_chips": {
    "status": "sweep"
   },
   "footnote": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "footnote_group": {
    "status": "sweep"
@@ -830,12 +772,10 @@
    "reason": "interactive textarea input atom"
   },
   "framed_screenshot": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "freeform_canvas": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "further_reading": {
    "status": "sweep"
@@ -847,16 +787,15 @@
    "status": "sweep"
   },
   "gauge_sla": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gdm_rocket_panel": {
    "status": "exempt",
    "reason": "fixed canvas launch animation overlay"
   },
   "gemini_handoff": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "gemini_prompt": {
    "status": "exempt",
@@ -892,82 +831,67 @@
    "status": "sweep"
   },
   "github_repo_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "glass_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "glitch_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "globe_3d": {
    "status": "exempt",
    "reason": "interactive 3D canvas visualization"
   },
   "glossary_inline": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "glossary_term": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "glow_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "glowing_stat": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gmail_inbox": {
    "status": "sweep"
   },
   "gmail_summary": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gmail_unread_count": {
    "status": "sweep"
   },
   "google_icon": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gradient_border_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gradient_heading": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gradient_hero": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "gradient_mesh_live": {
    "status": "exempt",
    "reason": "live generative background gradient canvas"
   },
   "gradient_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "great_circle": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "halftone_wave": {
    "status": "exempt",
    "reason": "canvas procedural wave animation hero"
   },
   "heading": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "headline_list": {
    "status": "sweep"
@@ -980,20 +904,16 @@
    "status": "sweep"
   },
   "highlight_box": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "highlight_sweep": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "highlighted_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "hint_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "histogram": {
    "status": "keyed",
@@ -1004,8 +924,7 @@
    "reason": "interactive hover trigger overlay"
   },
   "http_request_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "hub": {
    "status": "exempt",
@@ -1016,8 +935,7 @@
    "reason": "full-screen deck navigation container"
   },
   "icon_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "icon_checklist": {
    "status": "sweep"
@@ -1039,8 +957,7 @@
    "status": "sweep"
   },
   "image": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "image_hotspots": {
    "status": "sweep"
@@ -1049,35 +966,29 @@
    "status": "sweep"
   },
   "image_with_caption": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "incident_finding": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "incident_log": {
    "status": "sweep"
   },
   "info_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "inline_alert": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "inline_code": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "inline_feedback_message": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "intro": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "inventory_table": {
    "status": "sweep"
@@ -1091,8 +1002,7 @@
    "reason": "procedural 3D height-field visualization"
   },
   "jira_ticket": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "journey_map": {
    "status": "sweep"
@@ -1110,12 +1020,10 @@
    "status": "sweep"
   },
   "keyboard_shortcut": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "kinetic_headline": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "knowledge_check": {
    "status": "sweep"
@@ -1136,12 +1044,10 @@
    "status": "sweep"
   },
   "lens_eli5": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "lens_freeform": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "lens_grid": {
    "status": "sweep"
@@ -1162,31 +1068,25 @@
    "status": "sweep"
   },
   "lesson_nav": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "light_type": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "link_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "linkedin_post_image": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "liquid_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "live_aggregator": {
    "status": "sweep"
   },
   "live_clock": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "live_demo_embed": {
    "status": "exempt",
@@ -1197,8 +1097,7 @@
    "reason": "interactive schema editor input atom"
   },
   "live_metric": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "live_refresh": {
    "status": "exempt",
@@ -1208,8 +1107,7 @@
    "status": "sweep"
   },
   "living_type": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "llm_comparison_table": {
    "status": "sweep"
@@ -1223,20 +1121,17 @@
    "reason": "placeholder loading animation utility"
   },
   "log_output": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "lottie_animation": {
    "status": "exempt",
    "reason": "self-running Lottie vector animation runtime"
   },
   "lozenge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "magnetic_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "magnetic_element": {
    "status": "exempt",
@@ -1247,8 +1142,7 @@
    "reason": "interactive iframe embed container"
   },
   "markdown_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "marquee": {
    "status": "sweep"
@@ -1257,8 +1151,7 @@
    "status": "sweep"
   },
   "masonry_elevation": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "match_exercise": {
    "status": "sweep"
@@ -1267,35 +1160,32 @@
    "status": "sweep"
   },
   "math_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "maturity_ladder": {
    "status": "sweep"
   },
   "me": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "media_mention_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "media_stream_card": {
    "status": "exempt",
    "reason": "external iframe media stream embed"
   },
   "meet_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "menu": {
    "status": "exempt",
    "reason": "interactive menu navigation control"
   },
   "mesh_gradient": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "message_lanes": {
    "status": "sweep"
@@ -1309,12 +1199,10 @@
    "reason": "decorative animated background effect layer"
   },
   "metric_comparison_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "metric_delta": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "metric_row": {
    "status": "sweep"
@@ -1327,8 +1215,7 @@
    "reason": "layout modal overlay container for children"
   },
   "model_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "module_map": {
    "status": "sweep"
@@ -1711,20 +1598,17 @@
    "status": "sweep"
   },
   "nav_link": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "navigation_menu": {
    "status": "exempt",
    "reason": "interactive site navigation component"
   },
   "neon_glow": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "neon_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "news_digest": {
    "status": "sweep"
@@ -1737,23 +1621,20 @@
    "status": "sweep"
   },
   "noise_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "notification_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "notification_stack": {
    "status": "sweep"
   },
   "number_flip": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "number_odometer": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "numbered_list": {
    "status": "sweep"
@@ -1775,8 +1656,7 @@
    "status": "sweep"
   },
   "order_status_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "org_chart": {
    "status": "keyed",
@@ -1787,8 +1667,7 @@
    "reason": "interactive OTP verification input"
   },
   "page_header": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "pagination": {
    "status": "exempt",
@@ -1799,12 +1678,10 @@
    "reason": "page-level CSS variable configuration block"
   },
   "paragraph": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "parallax_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "parallax_section": {
    "status": "exempt",
@@ -1815,24 +1692,21 @@
    "reason": "decorative click interaction animation effect"
   },
   "particle_type": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "pattern_background": {
    "status": "exempt",
    "reason": "decorative pattern background layer"
   },
   "pdf_preview": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "people_picker": {
    "status": "exempt",
    "reason": "interactive directory search and picker form"
   },
   "person_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "photo_grid": {
    "status": "sweep"
@@ -1855,15 +1729,14 @@
    "status": "sweep"
   },
   "post_metadata_bar": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "prerequisite_checklist": {
    "status": "sweep"
   },
   "presence_bar": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "presence_surface": {
    "status": "exempt",
@@ -1874,8 +1747,8 @@
    "reason": "interactive iframe client preview"
   },
   "pricing_tier_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "exempt",
+   "reason": "clean output already carries native data-cb/data-key (cannot be stripped to a pre-sweep baseline); review by hand"
   },
   "pricing_tier_group": {
    "status": "sweep"
@@ -1888,58 +1761,48 @@
    "reason": "interactive print utility trigger"
   },
   "problem_chapter": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "product_spec_table": {
    "status": "sweep"
   },
   "product_thumbnail": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "progress_bar": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "progress_checkpoint": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "progress_circle": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "progress_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "progress_ring": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "progress_store": {
    "status": "exempt",
    "reason": "invisible application state connector"
   },
   "prompt_template": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "prompt_to_schema": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "pros_cons_list": {
    "status": "sweep"
   },
   "pull_stat": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "pulse_dot": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "punch_card": {
    "status": "sweep"
@@ -1948,33 +1811,28 @@
    "status": "sweep"
   },
   "quiet_link": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "quiz_question": {
    "status": "sweep"
   },
   "quiz_result_summary": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "quiz_set": {
    "status": "sweep"
   },
   "quote": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "raise_hand": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "rating_comparison": {
    "status": "sweep"
   },
   "rating_stars": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "rating_summary_bar": {
    "status": "sweep"
@@ -1987,8 +1845,7 @@
    "status": "sweep"
   },
   "readability_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "reading_progress_bar": {
    "status": "exempt",
@@ -2005,8 +1862,7 @@
    "status": "sweep"
   },
   "release_notes": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "renderer_stats": {
    "status": "sweep"
@@ -2015,8 +1871,7 @@
    "status": "sweep"
   },
   "resource_link_row": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "resources_list": {
    "status": "sweep"
@@ -2026,20 +1881,16 @@
    "reason": "entrance animation wrapper for children"
   },
   "reveal_line": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "reveal_on_scroll": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "review_callout": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "ripple_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "risk_flag": {
    "status": "sweep"
@@ -2067,20 +1918,16 @@
    "reason": "procedural SVG pan/zoom scene engine"
   },
   "schema_qr": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "schema_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "score_summary": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "scramble_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "script_run_button": {
    "status": "exempt",
@@ -2099,12 +1946,10 @@
    "reason": "interactive scroll button utility"
   },
   "scroll_trigger": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "search_result_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "seat_map": {
    "status": "sweep"
@@ -2114,16 +1959,14 @@
    "reason": "section divider formatting utility"
   },
   "section_label": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "segmented_control": {
    "status": "exempt",
    "reason": "interactive selection form control"
   },
   "sentiment_summary": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "sequence_diagram": {
    "status": "sweep"
@@ -2135,12 +1978,11 @@
    "status": "sweep"
   },
   "share_quote": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "sheet_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "todo",
+   "reason": "single atom whose sample did not render; fix the sample, then sweep"
   },
   "sheet_form": {
    "status": "exempt",
@@ -2151,20 +1993,16 @@
    "reason": "interactive form submission control"
   },
   "sheet_preview": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "sheet_stats": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "shimmer_button": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "shimmer_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "shortcut_legend": {
    "status": "sweep"
@@ -2173,8 +2011,7 @@
    "status": "sweep"
   },
   "sidebar_note": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "signal_tunnel": {
    "status": "exempt",
@@ -2195,8 +2032,7 @@
    "status": "sweep"
   },
   "sla_timer_display": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "slot_scheduler": {
    "status": "sweep"
@@ -2206,15 +2042,13 @@
    "reason": "external social embed/iframe"
   },
   "social_proof_banner": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "social_share_bar": {
    "status": "sweep"
   },
   "sonar_pulse": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "sortable_list": {
    "status": "sweep"
@@ -2223,20 +2057,17 @@
    "status": "sweep"
   },
   "spaced_repetition_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "spacer": {
    "status": "exempt",
    "reason": "layout spacing utility atom without content"
   },
   "sparkline": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "speed_counter": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "spinner": {
    "status": "exempt",
@@ -2247,12 +2078,10 @@
    "reason": "two-panel layout container for children"
   },
   "split_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "split_stat": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "spotlight_card": {
    "status": "exempt",
@@ -2269,8 +2098,7 @@
    "status": "sweep"
   },
   "stack_layer": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "stacked_area": {
    "status": "keyed",
@@ -2280,27 +2108,23 @@
    "status": "sweep"
   },
   "stance": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "standings_table": {
    "status": "sweep"
   },
   "star_rating_display": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "star_rating_input": {
    "status": "exempt",
    "reason": "interactive form input control"
   },
   "stat_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "stat_inline_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "stat_pulse": {
    "status": "sweep"
@@ -2309,8 +2133,7 @@
    "status": "sweep"
   },
   "status_pill": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "status_timeline": {
    "status": "sweep"
@@ -2328,24 +2151,19 @@
    "status": "sweep"
   },
   "stripe_background": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "study_timer": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "subheading": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "summary_box": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "sun_path": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "sunburst": {
    "status": "keyed",
@@ -2355,12 +2173,10 @@
    "status": "sweep"
   },
   "surface_unlocked": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "svg_path_draw": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "swimlane": {
    "status": "sweep"
@@ -2388,15 +2204,13 @@
    "status": "sweep"
   },
   "tag_chip": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "tag_cloud": {
    "status": "sweep"
   },
   "take_away_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "task_list": {
    "status": "sweep"
@@ -2405,46 +2219,38 @@
    "status": "sweep"
   },
   "terminal_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "terminal_boot": {
    "status": "sweep"
   },
   "testimonial_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "text_analysis": {
    "status": "sweep"
   },
   "text_block": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "text_callout": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "text_highlight": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "text_reveal_mask": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "theme_toggle": {
    "status": "exempt",
    "reason": "interactive page theme switch control"
   },
   "tilt_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "time_estimate": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "timeline": {
    "status": "sweep"
@@ -2458,19 +2264,16 @@
    "reason": "interactive input control"
   },
   "token_budget_meter": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "tonal_scale": {
    "status": "sweep"
   },
   "tool_call_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "tool_tile": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "tooltip": {
    "status": "exempt",
@@ -2483,8 +2286,7 @@
    "status": "sweep"
   },
   "trace_step": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "tree_view": {
    "status": "sweep"
@@ -2494,8 +2296,7 @@
    "by": "tests/test_build_contract_v12.py"
   },
   "trend_indicator": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "two_tone_card": {
    "status": "exempt",
@@ -2505,31 +2306,25 @@
    "status": "sweep"
   },
   "typewriter": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "typewriter_text": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "typing_indicator": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "uptime_timeline": {
    "status": "sweep"
   },
   "url_anatomy": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "user_greeting": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "user_profile_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "variant_selector": {
    "status": "sweep"
@@ -2542,15 +2337,13 @@
    "status": "sweep"
   },
   "version_badge": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "versus_block": {
    "status": "sweep"
   },
   "video_card": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "video_checkpoint": {
    "status": "exempt",
@@ -2561,8 +2354,7 @@
    "reason": "embed/iframe pair player container"
   },
   "video_thumbnail": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "voronoi": {
    "status": "keyed",
@@ -2573,8 +2365,7 @@
    "reason": "interactive voting selection input group"
   },
   "wall_elevation": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "waterfall": {
    "status": "keyed",
@@ -2589,8 +2380,7 @@
    "reason": "generative terrain 3D canvas animation"
   },
   "weather_now": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "weather_outlook": {
    "status": "sweep"
@@ -2605,20 +2395,16 @@
    "status": "sweep"
   },
   "word_flip": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "word_reveal": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "word_scramble": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "workspace_logo": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "workspace_logo_grid": {
    "status": "sweep"
@@ -2630,16 +2416,14 @@
    "status": "sweep"
   },
   "xp_bar": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   },
   "youtube": {
    "status": "exempt",
    "reason": "external media embed/iframe player"
   },
   "zoomable_image": {
-   "status": "single",
-   "reason": "one visual unit: keyed later as a whole block (deferred)"
+   "status": "sweep"
   }
  }
 }
