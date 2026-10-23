@@ -250,3 +250,33 @@ def wa_after():
 def test_a_rejected_patch_shows_from_and_says_why():
     out = _py({"type": "motion_transition", "from": TEAM, "patch": [{"op": "remove", "path": "/nodes/9"}]})
     assert "patch not applied" in out and ' data-mtr-src="' not in out.split('>', 1)[0]   # no provenance attribute on the wrapper
+
+
+def test_the_patch_path_emits_the_same_markup_in_both_twins(core_js):
+    """The reviewer's gap: the patch path (applied patch, provenance attribute, rejection note) is byte-compared too."""
+    for blk in ({"type": "motion_transition", "from": TEAM, "patch": PATCH},
+                {"type": "motion_transition", "from": TEAM, "patch": PATCH, "key_map": {"curtis/gemini": "curtis/pm"}},
+                {"type": "motion_transition", "from": TEAM, "patch": [{"op": "remove", "path": "/nodes/9"}]}):
+        gas = _node(core_js, "console.log(JSON.stringify([renderAtoms([%s], {})]))" % json.dumps(blk))[0]
+        assert _norm(_py(blk)) == _norm(gas)
+
+
+TEXT_PROBE = r"""var w=document.querySelector('.mo-tr');var e=w.querySelector('.mtr-b .mtr-m');var s=getComputedStyle(e);
+return {fill:s.webkitTextFillColor,color:s.color,scale:s.scale,text:e.textContent.trim().slice(0,20)};"""
+
+
+@browser
+def test_text_inside_a_moving_box_is_hidden_until_the_box_has_landed():
+    """Text never transforms (it blurs on Android WebView): a moving tile's text is invisible while the tile is scaled, and
+    fades in only once it is at rest (p >= 0.85, where its scale is exactly 1)."""
+    import test_motion_transition as t
+    blk = {"type": "motion_transition", "from": TREEMAP, "to": ICICLE}
+    saved, t.PROBE = t.PROBE, TEXT_PROBE
+    try:
+        mid, rest, end = _page(blk, 0.5, 800), _page(blk, 0.85, 800), _page(blk, 1, 800)
+    finally:
+        t.PROBE = saved
+    alpha = lambda c: float(c.split("/")[-1].strip(" )")) if "/" in c else (float(c.rsplit(",", 1)[-1].strip(" )")) if c.startswith("rgba") else 1.0)
+    assert mid["text"] and alpha(mid["fill"]) == pytest.approx(0, abs=0.01) and mid["scale"] != "none", mid
+    assert rest["scale"] in ("none", "1", "1 1"), rest
+    assert alpha(end["fill"]) == pytest.approx(1, abs=0.01), end   # Chromium spells the colour color(srgb ...): compare alpha only

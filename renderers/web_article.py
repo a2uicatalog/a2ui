@@ -31368,7 +31368,7 @@ _RENDERERS['motion_build'] = _render_motion_build
 # move without the wrapper changing size). The scale origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
 # first block loses its top margin (!important: atoms set it inline; B's collapses out of the wrapper, A's would not, and the titles
 # would not line up).
-# Known gap: text inside a moving box (a treemap or icicle tile) scales with it in flight. Twin: atoms_motion_candidates.gs.
+# Text inside a moving element hides while moving and fades in once at rest (p >= 0.85) via relative colour -webkit-text-fill-color. Twin: atoms_motion_candidates.gs.
 _MTR_MATCH = {'path': 'path', 'exact': 'exact'}
 _MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .mtr-a,.mo-tr .mtr-b{--p:1}.mo-tr .mtr-a{display:none}'
             + '@media (prefers-reduced-motion:no-preference){.mo-tr .mtr-a{display:block;position:absolute;left:0;top:0;width:100%;pointer-events:none;opacity:clamp(0,calc(1 - var(--mtr-p)*2.5),1)}'
@@ -31376,6 +31376,7 @@ _MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .m
             + '.mo-tr .mtr-b{opacity:clamp(0,calc(var(--mtr-p)*3.4),1)}'
             + '.mo-tr .mtr-b .mtr-m{--mtr-q:clamp(0,calc((var(--mtr-p) - 0.15)/0.7),1);translate:calc(var(--mtr-dx,0px)*(1 - var(--mtr-q))) calc(var(--mtr-dy,0px)*(1 - var(--mtr-q)));'
             + 'scale:calc(1 + (var(--mtr-sx,1) - 1)*(1 - var(--mtr-q))) calc(1 + (var(--mtr-sy,1) - 1)*(1 - var(--mtr-q)));transform-origin:0 0;transform-box:border-box}'
+            + '.mo-tr .mtr-b .mtr-m,.mo-tr .mtr-b .mtr-m *{-webkit-text-fill-color:rgb(from currentColor r g b / clamp(0,calc((var(--mtr-p) - 0.85)/0.15),1))}'
             + '.mo-tr .mtr-b svg .mtr-m{transform-box:fill-box}'
             + '.mo-tr .mtr-b .mtr-n{opacity:clamp(0,calc((var(--mtr-p) - 0.55)/0.35),1)}'
             + '.mo-tr .mtr-b [data-cb=label]{opacity:clamp(0,calc((var(--mtr-p) - 0.7)/0.3),1)}'
