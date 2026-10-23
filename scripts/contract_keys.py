@@ -419,7 +419,7 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
         p = '\n\n'.join([SPEC_SINGLE if single else SPEC, 'ATOMS IN THIS CALL: ' + ', '.join(todo)] + sources(todo) +
                         (['=== THE PREVIOUS ROUND: your edits were applied (the files above already include them); the gate then said ===\n' + history[-1]] if history else []) + [FORMAT])
         try:
-            r = call_gemini(ge, cfg, p)
+            r = call_gemini(ge, cfg, p, timeout=int(os.environ.get('A2UI_GEMINI_TIMEOUT', 120)))
         except RuntimeError:   # the endpoint gave up: put every file back before the batch ends
             for f, s0 in snapshot.items():
                 open(f, 'w').write(s0)
