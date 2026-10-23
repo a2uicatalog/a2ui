@@ -23,7 +23,7 @@ def test_body(renderer):
 
 def test_heading(renderer):
     html = r(renderer, {"type": "heading", "text": "My Section"})
-    assert "<h2>" in html
+    assert re.search(r"<h2[ >]", html)   # the contract adds data-cb/data-key to the tag
     assert "My Section" in html
 
 
@@ -41,13 +41,13 @@ def test_subheading(renderer):
 
 def test_quote(renderer):
     html = r(renderer, {"type": "quote", "text": "The substrate is what compounds.", "attribution": "Curtis"})
-    assert "<blockquote>" in html
+    assert re.search(r"<blockquote[ >]", html)
     assert "Curtis" in html
 
 
 def test_code(renderer):
     html = r(renderer, {"type": "code", "language": "python", "content": "x = 1"})
-    assert "<pre>" in html
+    assert re.search(r"<pre[ >]", html)
     assert 'class="language-python"' in html
     assert "x = 1" in html
 

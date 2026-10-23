@@ -452,11 +452,16 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
     if fails and not keep_failing:   # put the files back, then replay only the passing atoms' edits, in order, and gate them again
         for f, s0 in snapshot.items():
             open(f, 'w').write(s0)
-        apply([e for e in applied if e.get('atom') in keep], files, scope)
-        f2, summary, _ = gate(keep, locate) if keep else ([], '', '')
-        if f2:
+        for _ in range(3):   # a replay that fails drops the atoms it blames and replays the rest, never the whole batch
+            apply([e for e in applied if e.get('atom') in keep], files, scope)
+            f2, summary, _ = gate(keep, locate) if keep else ([], '', '')
+            if not f2:
+                break
             for f, s0 in snapshot.items():
                 open(f, 'w').write(s0)
+            keep = [t for t in keep if t not in f2]
+            print('replay failed %s; replaying %s' % (f2, keep), flush=True)
+        else:
             keep = []
         print('failing atoms left pending: %s; kept: %s' % (fails, keep))
     fx = json.load(open(FIX))
