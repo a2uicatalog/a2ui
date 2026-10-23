@@ -112,7 +112,7 @@ _RENDERERS['google_icon'] = function(b) {
   var iconSpan = '<span class="ms-icon" style="' + cssVars + ';font-size:' + size + ';color:' + color + ';" aria-hidden="true">' + name + '</span>';
 
   return _materialSymbolsFont(style)
-    + '<span style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;' + (inline ? '' : 'margin:var(--a2ui-block-gap,1.25rem) 0;') + '">'
+    + '<span data-cb="node" data-key="' + _ckey(b.name, 'google_icon') + '" style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;' + (inline ? '' : 'margin:var(--a2ui-block-gap,1.25rem) 0;') + '">'
     + iconSpan + label + '</span>';
 };
 
@@ -132,7 +132,7 @@ _RENDERERS['icon_badge'] = function(b) {
   var cssVars = '--ms-fill:' + fill + ';--ms-w:' + weight + ';--ms-g:0;--ms-o:' + size;
 
   return _materialSymbolsFont(style)
-    + '<div style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.name, 'icon_badge') + '" style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<div style="display:flex;align-items:center;justify-content:center;background:' + bg + ';padding:' + pad + ';border-radius:' + radius + ';">'
     + '<span class="ms-icon" style="' + cssVars + ';font-size:' + size + 'px;color:' + color + ';" aria-hidden="true">' + name + '</span>'
     + '</div>' + label + '</div>';

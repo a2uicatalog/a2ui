@@ -2842,7 +2842,7 @@ def _render_http_request_block(b: dict) -> str:
         f'font-size:0.78rem;overflow:auto;color:#374151;">{_cv_esc(body)}</pre>'
     ) if body else ""
     return (
-        f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("url"), "http_request_block")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
         f'<div style="padding:10px 16px;display:flex;align-items:center;gap:10px;background:#f9fafb;">'
         f'<span style="background:{color};color:#fff;font-weight:700;font-size:0.75rem;'
         f'padding:3px 10px;border-radius:5px;font-family:monospace;">{_cv_esc(method)}</span>'
@@ -8446,7 +8446,7 @@ def _render_jira_ticket(b: dict) -> str:
     )
 
     return (
-        f'<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("key"), "jira_ticket")}" style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;">'
         f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
         f'<span style="font-size:15px;">{icon}</span>'
         f'<span style="font-size:12px;font-weight:600;color:#0052cc;">{_cv_esc(key)}</span>'
@@ -9274,7 +9274,7 @@ def _render_glow_button(atom: dict) -> str:
         f'border:1px solid {_cv_esc(text_color)}44;box-shadow:{shadow};cursor:{cursor};'
         f'text-decoration:none;transition:box-shadow 0.2s;}}'
         f'{pulse}</style>'
-        f'<div style="margin:1rem 0;display:inline-block;">'
+        f'<div data-cb="node" data-key="{_ck(atom.get("label"), "glow_button")}" style="margin:1rem 0;display:inline-block;">'
         f'<{tag} class="gb_{uid}"{href_attr}>{_cv_esc(label)}</{tag}>{desc_html}'
         f'</div>'
     )
@@ -9369,7 +9369,7 @@ def _render_encrypted_reveal(atom: dict) -> str:
         f'animation:er_{uid} {total_dur} steps(1,end) {_cv_esc(delay)} forwards;}}'
         f'.er_wrap_{uid}{{background:{_cv_esc(bg)};border-radius:{br};padding:{pad};margin:1rem 0;}}'
         f'</style>'
-        f'<div class="er_wrap_{uid}"><span class="er_{uid}"></span></div>'
+        f'<div data-cb="node" data-key="{_ck(None, "encrypted_reveal")}" class="er_wrap_{uid}"><span class="er_{uid}"></span></div>'
     )
 
 
@@ -10317,7 +10317,7 @@ def _render_linkedin_post_image(b: dict) -> str:
             f'{caption_html}'
         )
 
-    return f'<div style="color:#6e767d;font-style:italic;">Unknown linkedin_post_image mode: {_cv_esc(mode)}</div>'
+    return f'<div data-cb="node" data-key="{_ck(b.get("title"), "linkedin_post_image")}" style="color:#6e767d;font-style:italic;">Unknown linkedin_post_image mode: {_cv_esc(mode)}</div>'
 
 
 _RENDERERS["linkedin_post_image"] = _render_linkedin_post_image
@@ -10582,7 +10582,7 @@ def _render_floating_badge(b: dict) -> str:
         f'@keyframes fb_{uid}{{0%,100%{{transform:translateY(0);box-shadow:{shadow_css};}}'
         f'50%{{transform:translateY(-10px);box-shadow:0 16px 32px rgba(0,0,0,0.12);}}}}'
         f'</style>'
-        f'<div style="margin:1rem 0;text-align:center;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("label"), "floating_badge")}" style="margin:1rem 0;text-align:center;">'
         f'<div style="display:inline-block;font-size:{fsz};animation:fb_{uid} {_cv_esc(speed)}s ease-in-out infinite;">{_cv_esc(icon)}</div>'
         f'{label_html}</div>'
     )
@@ -11170,7 +11170,7 @@ def _render_gradient_heading(b: dict) -> str:
     weight = b.get("weight", 900)
     align  = b.get("align", "left")
     return (
-        f'<div style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};text-align:{_cv_esc(align)};margin:1rem 0;'
+        f'<div data-cb="node" data-key="{_ck(b.get("text"), "gradient_heading")}" style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};text-align:{_cv_esc(align)};margin:1rem 0;'
         f'background:{_cv_esc(grad)};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
         f'background-clip:text;line-height:1.2;">{text}</div>'
     )
@@ -11278,7 +11278,7 @@ def _render_math_block(b: dict) -> str:
         f'text-align:{align};line-height:1.5;">{caption}</div>'
     ) if caption else ""
     return (
-        f'<div class="a2ui-math" style="margin:1.5rem 0;position:relative;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("caption"), "math_block")}" class="a2ui-math" style="margin:1.5rem 0;position:relative;">'
         f'<div style="text-align:{align};font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;'
         f'font-size:{size};color:var(--text,#1f2937);overflow-x:auto;">{mathml}</div>'
         f'{num_html}{cap_html}</div>'
@@ -11530,7 +11530,7 @@ def _render_google_icon(b: dict) -> str:
     icon_span = f'<span class="ms-icon" style="{css_vars};font-size:{size};color:{_cv_esc(color)};" aria-hidden="true">{name}</span>'
     disp = "inline-flex" if inline else "flex"
     margin = "" if inline else "margin:var(--a2ui-block-gap,1.25rem) 0;"
-    return _ms_font(style) + f'<span style="display:{disp};align-items:center;{margin}">{icon_span}{label}</span>'
+    return _ms_font(style) + f'<span data-cb="node" data-key="{_ck(b.get("name"), "google_icon")}" style="display:{disp};align-items:center;{margin}">{icon_span}{label}</span>'
 
 _RENDERERS["google_icon"] = _render_google_icon
 
@@ -11550,7 +11550,7 @@ def _render_icon_badge(b: dict) -> str:
     css_vars = _ms_vars(fill, weight, 0, size)
     return (
         _ms_font(style)
-        + '<div style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+        + '<div data-cb="node" data-key="' f'{_ck(b.get("name"), "icon_badge")}' '" style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
         + f'<div style="display:flex;align-items:center;justify-content:center;background:{_cv_esc(bg)};padding:{pad};border-radius:{radius};">'
         + f'<span class="ms-icon" style="{css_vars};font-size:{size}px;color:{_cv_esc(color)};" aria-hidden="true">{name}</span>'
         + f'</div>{label}</div>'
@@ -13156,7 +13156,7 @@ def _render_empty_state(b: dict) -> str:
     btn = (f'<a href="{_esc(btn_url)}" style="display:inline-block;margin-top:12px;padding:8px 20px;'
            f'background:#4f46e5;color:#fff;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;font-size:0.85rem;font-weight:600;">'
            f'{_esc(btn_label)}</a>' if btn_label else '')
-    return (f'<div style="text-align:center;padding:40px 24px;color:var(--muted,#5f6368);">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("title"), "empty_state")}" style="text-align:center;padding:40px 24px;color:var(--muted,#5f6368);">'
             f'{icon_html}'
             f'<div style="font-size:1rem;font-weight:700;color:#374151;margin-bottom:6px;">{_esc(title)}</div>'
             f'{"<div style=font-size:0.88rem;>"+_md_inline(desc)+"</div>" if desc else ""}'
@@ -13198,7 +13198,7 @@ def _render_experimental_banner(b: dict) -> str:
     # b.message||b.text). 2026-09-27.
     text = b.get('message', b.get('text', 'This feature is experimental and may change.'))
     label = b.get('label', 'Experimental')
-    return (f'<div style="border-left:4px solid #f59e0b;background:#fffbeb;padding:10px 16px;'
+    return (f'<div data-cb="node" data-key="{_ck(None, "experimental_banner")}" style="border-left:4px solid #f59e0b;background:#fffbeb;padding:10px 16px;'
             f'border-radius:0 6px 6px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;">'
             f'<span style="font-size:1rem;">🧪</span>'
             f'<div><strong style="color:#92400e;">{_esc(label)}: </strong>'
@@ -13332,7 +13332,7 @@ def _render_follow_cta(b: dict) -> str:
     label = b.get('label', 'Follow')
     platform = b.get('platform', '')
     icon = {'twitter': '🐦', 'github': '🐙', 'linkedin': '💼'}.get(platform, '→')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("message"), "follow_cta")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
             f'display:flex;align-items:center;justify-content:space-between;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
             f'<span style="font-size:0.88rem;color:#374151;">{_md_inline(text)}</span>'
             f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
@@ -13375,7 +13375,7 @@ def _render_framed_screenshot(b: dict) -> str:
     alt = b.get('alt') or b.get('caption', 'Screenshot')
     caption = b.get('caption', '')
     shadow = 'box-shadow:0 20px 60px rgba(0,0,0,0.12);' if b.get('shadow', True) else ''
-    return (f'<div style="margin:1.5rem 0;text-align:center;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("image_url"), "framed_screenshot")}" style="margin:1.5rem 0;text-align:center;">'
             f'<div style="display:inline-block;border-radius:12px;overflow:hidden;{shadow}">'
             f'{"<img src="+chr(34)+_esc(url)+chr(34)+" alt="+chr(34)+_esc(alt)+chr(34)+" style=max-width:100%;height:auto;display:block;>" if url else "<div style=padding:40px;background:#f3f4f6;color:var(--muted,#5f6368);>No image</div>"}'
             f'</div>'
@@ -13443,7 +13443,7 @@ def _render_glossary_term(b: dict) -> str:
     also = b.get('also', [])
     also_html = (''.join(f'<span style="font-size:0.78rem;color:var(--muted,#5f6368);margin-right:6px;">{_esc(a)}</span>' for a in also)) if also else ''
     also_dd = ('<dd style="margin:4px 0 0;">Also: ' + also_html + '</dd>') if also_html else ''
-    return (f'<dl style="margin:0;border-bottom:1px solid #f3f4f6;padding:10px 0;">'
+    return (f'<dl data-cb="node" data-key="{_ck(b.get("term"), "glossary_term")}" style="margin:0;border-bottom:1px solid #f3f4f6;padding:10px 0;">'
             f'<dt style="font-weight:700;color:#111827;font-size:0.9rem;">{_esc(term)}</dt>'
             f'<dd style="margin:4px 0 0;font-size:0.86rem;color:#374151;">{_md_inline(definition)}</dd>'
             f'{also_dd}</dl>')
@@ -13511,7 +13511,7 @@ _RENDERERS['highlighted_text'] = _render_highlighted_text
 def _render_hint_reveal(b: dict) -> str:
     hint = b.get('hint') or b.get('text', '')
     label = b.get('label', 'Show hint')
-    return (f'<details style="border:1px dashed #d1d5db;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 12px;margin:1rem 0;">'
+    return (f'<details data-cb="node" data-key="{_ck(None, "hint_reveal")}" style="border:1px dashed #d1d5db;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 12px;margin:1rem 0;">'
             f'<summary style="cursor:pointer;font-size:0.84rem;color:#7c3aed;font-weight:600;'
             f'list-style:none;">💡 {_esc(label)}</summary>'
             f'<div style="margin-top:8px;font-size:0.86rem;color:#374151;">{_md_inline(hint)}</div></details>')
@@ -13561,7 +13561,7 @@ def _render_image(b: dict) -> str:
     caption = b.get('caption', '')
     width = b.get('width', '100%')
     cap_html = f'<p style="font-size:0.8rem;text-align:center;color:var(--muted,#5f6368);margin:6px 0 0;">{_esc(caption)}</p>' if caption else ''
-    return (f'<div style="margin:1.5rem 0;text-align:center;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("url"), "image")}" style="margin:1.5rem 0;text-align:center;">'
             f'<img src="{_esc(url)}" alt="{_esc(alt)}" style="max-width:{_esc(str(width))};height:auto;'
             f'border-radius:8px;display:block;margin:0 auto;">'
             f'{cap_html}</div>')
@@ -13601,7 +13601,7 @@ def _render_image_with_caption(b: dict) -> str:
     img_html = f'<img src="{_esc(url)}" alt="{_esc(alt)}" style="max-width:100%;height:auto;border-radius:8px;display:block;">'
     if link_url:
         img_html = f'<a href="{_esc(link_url)}">{img_html}</a>'
-    return (f'<figure style="margin:1.5rem 0;">'
+    return (f'<figure data-cb="node" data-key="{_ck(b.get("image_url"), "image_with_caption")}" style="margin:1.5rem 0;">'
             f'{img_html}'
             f'<figcaption style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:6px;font-style:italic;">'
             f'{_esc(caption)}{credit_html}</figcaption></figure>')
@@ -13626,7 +13626,7 @@ def _render_inline_alert(b: dict) -> str:
     icons = {'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'error': '❌'}
     icon = b.get('icon') or icons.get(variant, 'ℹ️')
     detail_html = f'<div style="font-size:0.76rem;opacity:0.85;margin-top:2px;">{_md_inline(detail)}</div>' if detail else ''
-    return (f'<div style="display:inline-flex;align-items:center;gap:6px;background:{col}18;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("variant"), "inline_alert")}" style="display:inline-flex;align-items:center;gap:6px;background:{col}18;'
             f'color:{tcol};border:1px solid {col}40;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:4px 12px;'
             f'font-size:0.83rem;font-weight:500;">{_cv_esc(icon)} <span>{_md_inline(text)}{detail_html}</span></div>')
 
@@ -13733,7 +13733,7 @@ def _render_keyboard_shortcut(b: dict) -> str:
     keys_html = '<span style="font-size:0.8rem;color:var(--muted,#5f6368);vertical-align:middle;margin:0 3px;">+</span>'.join(key_html(k) for k in keys)
     plat_html = f'<span style="font-size:0.72rem;color:var(--muted,#5f6368);margin-left:6px;">({_esc(platform)})</span>' if platform else ''
     desc_html = f'<span style="font-size:0.88rem;color:#374151;margin-left:10px;">{_esc(description)}</span>' if description else ''
-    return f'<span style="white-space:nowrap;">{keys_html}{plat_html}{desc_html}</span>'
+    return f'<span data-cb="node" data-key="{_ck(b.get("action"), "keyboard_shortcut")}" style="white-space:nowrap;">{keys_html}{plat_html}{desc_html}</span>'
 
 _RENDERERS['keyboard_shortcut'] = _render_keyboard_shortcut
 
@@ -13798,7 +13798,7 @@ def _render_log_output(b: dict) -> str:
     escaped = content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
     title_html = (f'<div style="padding:5px 12px;background:#1a1a2e;border-bottom:1px solid #303050;'
                   f'font-size:0.75rem;color:#7c7caa;font-family:monospace;">{_esc(title)}</div>' if title else '')
-    return (f'<div style="border:1px solid #1a1a2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
+    return (f'<div data-cb="node" data-key="{_ck(None, "log_output")}" style="border:1px solid #1a1a2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
             f'{title_html}<pre style="margin:0;padding:14px;background:#0f0f1a;color:#a6e3a1;'
             f'font-size:0.82rem;overflow-x:auto;"><code>{escaped}</code></pre></div>')
 
@@ -13828,7 +13828,7 @@ def _render_lozenge(b: dict) -> str:
         'default': ('#374151', '#f3f4f6'),
     }
     fg, bg = col_map.get(variant, col_map['default'])
-    return (f'<span style="display:inline-block;padding:2px 8px;border-radius:3px;'
+    return (f'<span data-cb="node" data-key="{_ck(b.get("text"), "lozenge")}" style="display:inline-block;padding:2px 8px;border-radius:3px;'
             f'background:{bg};color:{fg};font-size:0.72rem;font-weight:700;text-transform:uppercase;'
             f'letter-spacing:0.06em;">{_esc(text)}</span>')
 
@@ -13837,7 +13837,7 @@ _RENDERERS['lozenge'] = _render_lozenge
 
 def _render_markdown_block(b: dict) -> str:
     text = b.get('text') or b.get('content', '')
-    return f'<div class="markdown-content">{_md_inline(text)}</div>'
+    return f'<div data-cb="node" data-key="{_ck(None, "markdown_block")}" class="markdown-content">{_md_inline(text)}</div>'
 
 _RENDERERS['markdown_block'] = _render_markdown_block
 
@@ -14949,7 +14949,7 @@ def _render_expert_endorsement(b: dict) -> str:
           if avatar else
           f'<div style="width:48px;height:48px;border-radius:50%;background:#e8f0fe;display:flex;'
           f'align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;color:#1a73e8;">{_esc(initial)}</div>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("expert_name"), "expert_endorsement")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;'
             f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             f'<p style="font-style:italic;color:#374151;font-size:0.95rem;margin:0 0 14px;line-height:1.65;">'
             f'"{_md_inline(text)}"</p>'
@@ -14998,7 +14998,7 @@ def _render_github_repo_card(b: dict) -> str:
     stars = b.get('stars', '')
     lang = b.get('language', '')
     url = b.get('url') or (f'https://github.com/{_cv_esc(owner)}/{_cv_esc(repo)}' if owner and repo else '#')
-    return (f'<div style="border:1px solid #d0d7de;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 18px;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("repo"), "github_repo_card")}" style="border:1px solid #d0d7de;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 18px;'
             f'max-width:340px;margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
             f'<span style="font-size:1.1rem;">🐙</span>'
@@ -15124,7 +15124,7 @@ def _render_media_mention_card(b: dict) -> str:
     logo_html = (f'<img src="{_esc(logo)}" alt="{_esc(publication)}" style="max-height:28px;object-fit:contain;">'
                  if logo else
                  f'<span style="font-weight:800;font-size:0.9rem;color:#374151;">{_esc(publication)}</span>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("publication_name"), "media_mention_card")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
             f'<a href="{_esc(url)}" target="_blank" rel="noopener" style="text-decoration:none;">{logo_html}</a>'
             f'{"<span style=font-size:0.78rem;color:var(--muted,#5f6368);>"+_esc(date)+"</span>" if date else ""}</div>'
@@ -18754,7 +18754,7 @@ _RENDERERS["api_reference"] = _render_api_reference
 def _render_highlighted_text(b: dict) -> str:
     color = b.get('color', '#fef08a')
     note = f' title="{_esc(b["annotation"])}"' if b.get('annotation') else ''
-    return f'<mark style="background:{_esc(color)};padding:1px 3px;border-radius:3px;"{note}>{_esc(b.get("text",""))}</mark>'
+    return f'<mark data-cb="node" data-key="{_ck(b.get("text"), "highlighted_text")}" style="background:{_esc(color)};padding:1px 3px;border-radius:3px;"{note}>{_esc(b.get("text",""))}</mark>'
 _RENDERERS["highlighted_text"] = _render_highlighted_text
 
 
@@ -18829,7 +18829,7 @@ def _render_lesson_nav(b: dict) -> str:
                           f'Mark as complete</label>')
     center = f'<div style="flex:1;">{module}{current_title_html}{checkbox_html}</div>'
     return (
-        f'<nav style="font-family:system-ui,sans-serif;padding:16px 0;border-top:1px solid #e5e7eb;'
+        f'<nav data-cb="node" data-key="{_ck(b.get("current_title"), "lesson_nav")}" style="font-family:system-ui,sans-serif;padding:16px 0;border-top:1px solid #e5e7eb;'
         f'display:flex;align-items:center;gap:12px;">'
         f'{prev_html}{center}{next_html}</nav>'
     )
@@ -21487,7 +21487,7 @@ _RENDERERS["spacer"] = _render_spacer
 
 def _render_inline_code(b: dict) -> str:
     text = _esc(b.get('text', ''))
-    return ('<code style="background:#f3f4f6;color:#1e293b;padding:2px 7px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
+    return ('<code data-cb="node" data-key="' f'{_ck(b.get("text"), "inline_code")}' '" style="background:#f3f4f6;color:#1e293b;padding:2px 7px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             'font-size:0.875em;font-family:ui-monospace,monospace;">' + text + '</code>')
 _RENDERERS["inline_code"] = _render_inline_code
 
@@ -21564,7 +21564,7 @@ def _render_info_card(b: dict) -> str:
     text = _md_inline(b.get('text', ''))
     title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);'
                   'margin-bottom:6px;">' + title + '</div>') if title else ''
-    return ('<div style="margin:1.25rem 0;padding:16px 20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("title"), "info_card")}' '" style="margin:1.25rem 0;padding:16px 20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
             'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' + title_html
             + '<div style="font-size:0.875rem;line-height:1.65;color:var(--text,#374151);">'
             + text + '</div></div>')
@@ -21574,7 +21574,7 @@ _RENDERERS["info_card"] = _render_info_card
 def _render_link_button(b: dict) -> str:
     url = _esc(b.get('url', '#'))
     label = _esc(b.get('label', 'Link'))
-    return ('<div style="margin:1rem 0;"><a href="' + url + '" target="_blank" rel="noopener noreferrer" '
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("label"), "link_button")}' '" style="margin:1rem 0;"><a href="' + url + '" target="_blank" rel="noopener noreferrer" '
             'style="display:inline-block;padding:10px 24px;border-radius:8px;background:#4f46e5;'
             'color:#fff;font-weight:600;font-size:0.9rem;text-decoration:none;">'
             + label + '</a></div>')
@@ -21714,7 +21714,7 @@ def _render_focus_lens(b: dict) -> str:
     text = _md_inline(b.get('text', ''))
     title_div = ('<div style="font-weight:700;font-size:1rem;color:#4338ca;margin-bottom:8px;">'
                  '🔍 ' + title + '</div>') if title else ''
-    return ('<div style="margin:1.5rem 0;padding:20px 24px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("title"), "focus_lens")}' '" style="margin:1.5rem 0;padding:20px 24px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #c7d2fe;">'
             + title_div
             + '<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div></div>')
@@ -22361,7 +22361,7 @@ _RENDERERS["gmail_inbox"] = _render_gmail_inbox
 def _render_gmail_summary(b: dict) -> str:
     query = _esc(b.get('query', ''))
     max_r = int(b.get('max_results', 5))
-    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("query"), "gmail_summary")}' '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.82rem;color:#374151;">'
             '📧 Gmail summary — query: <code style="background:#e5e7eb;padding:1px 6px;border-radius:3px;">'
@@ -22718,7 +22718,7 @@ def _render_glowing_stat(b: dict) -> str:
                 + colour + ';box-shadow:0 0 20px ' + colour + ',0 0 40px ' + colour + '66;"></div>') if glow else ''
     label_html = ('<div style="margin-top:12px;font-size:0.78rem;color:rgba(255,255,255,0.4);'
                   'text-transform:uppercase;letter-spacing:0.12em;">' + label + '</div>') if label else ''
-    return ('<div style="text-align:center;padding:36px 20px;">'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("label"), "glowing_stat")}' '" style="text-align:center;padding:36px 20px;">'
             '<div style="' + glow_style + 'font-size:' + size + ';font-weight:900;line-height:1;'
             'color:#fff;letter-spacing:-0.02em;">'
             + prefix_html + value + suffix_html + '</div>'
@@ -22754,7 +22754,7 @@ def _render_gradient_border_card(b: dict) -> str:
     grad = 'linear-gradient(' + str(angle) + 'deg,' + ','.join(_esc(c) for c in colours) + ')'
     title_html = ('<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.92);'
                   'margin-bottom:12px;">' + title + '</div>') if title else ''
-    return ('<div style="padding:1.5px;border-radius:' + radius + ';background:' + grad + ';">'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("title"), "gradient_border_card")}' '" style="padding:1.5px;border-radius:' + radius + ';background:' + grad + ';">'
             '<div style="background:' + bg + ';border-radius:calc(' + radius + ' - 1.5px);padding:' + padding + ';">'
             + title_html + _cv_esc(content) + '</div></div>')
 _RENDERERS["gradient_border_card"] = _render_gradient_border_card
@@ -22967,7 +22967,7 @@ def _render_glitch_text(b: dict) -> str:
           '60%{clip-path:polygon(0 25%,100% 25%,100% 50%,0 50%);transform:translateX(-2px);}'
           '80%{clip-path:none;transform:none;}}')
     return ('<style>' + kf + '</style>'
-            '<div style="padding:20px 0;text-align:center;position:relative;">'
+            '<div data-cb="node" data-key="' f'{_ck(b.get("text"), "glitch_text")}' '" style="padding:20px 0;text-align:center;position:relative;">'
             '<span style="font-size:' + size + ';font-weight:900;color:#fff;position:relative;">'
             + text +
             '<span style="position:absolute;left:0;top:0;font-size:' + size + ';font-weight:900;'
@@ -23079,7 +23079,7 @@ def _render_highlight_sweep(b: dict) -> str:
     dly = f'{delay:.2f}s'
     kf = '@keyframes ' + uid + '{from{background-size:0% 40%;}to{background-size:100% 40%;}}'
     return ('<style>' + kf + '</style>'
-            '<span style="font-size:' + size + ';font-weight:700;'
+            '<span data-cb="node" data-key="' f'{_ck(b.get("text"), "highlight_sweep")}' '" style="font-size:' + size + ';font-weight:700;'
             'background-image:linear-gradient(' + color + '44,' + color + '44);'
             'background-repeat:no-repeat;background-position:0 85%;background-size:0% 40%;'
             'animation:' + uid + ' 0.6s ease ' + dly + 's forwards;display:inline;">'
@@ -23133,7 +23133,7 @@ def _render_kinetic_headline(b: dict) -> str:
         spans += ('<span style="display:inline-block;opacity:0;animation:' + uid + 'u 0.45s ease '
                   + dly + ' forwards;">' + _esc(w) + '&nbsp;</span>')
     return ('<style>' + kf + '</style>'
-            '<div style="padding:24px 0;font-size:' + size + ';font-weight:900;line-height:1.2;color:' + color + ';">'
+            '<div data-cb="node" data-key="' f'{_ck(b.get("text"), "kinetic_headline")}' '" style="padding:24px 0;font-size:' + size + ';font-weight:900;line-height:1.2;color:' + color + ';">'
             + spans + '</div>')
 _RENDERERS["kinetic_headline"] = _render_kinetic_headline
 
@@ -23168,7 +23168,7 @@ def _render_liquid_button(b: dict) -> str:
     uid = 'lb' + hashlib.md5(text.encode()).hexdigest()[:5]
     kf = '@keyframes ' + uid + 'rp{from{transform:scale(0);opacity:0.4;}to{transform:scale(4);opacity:0;}}'
     return ('<style>' + kf + ' #' + uid + '{position:relative;overflow:hidden;}</style>'
-            '<div style="margin:1rem 0;">'
+            '<div data-cb="node" data-key="' f'{_ck(b.get("text"), "liquid_button")}' '" style="margin:1rem 0;">'
             '<button id="' + uid + '" onclick="var r=document.createElement(\'span\');r.style.cssText='
             '"\'position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);pointer-events:none;width:40px;height:40px;margin-top:-20px;margin-left:-20px;animation:' + uid + 'rp 0.6s linear;top:\'+event.offsetY+\'px;left:\'+event.offsetX+\'px;\''
             ';this.appendChild(r);setTimeout(function(){r.remove();},600);" '
@@ -23181,7 +23181,7 @@ _RENDERERS["liquid_button"] = _render_liquid_button
 def _render_magnetic_button(b: dict) -> str:
     text = _esc(b.get('text', 'Hover me'))
     color = _esc(b.get('color', '#4f46e5'))
-    return ('<div style="margin:1rem 0;">'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("text"), "magnetic_button")}' '" style="margin:1rem 0;">'
             '<button onmousemove="var r=this.getBoundingClientRect();'
             'var x=(event.clientX-r.left-r.width/2)*0.3;'
             'var y=(event.clientY-r.top-r.height/2)*0.3;'
@@ -23242,7 +23242,7 @@ def _render_live_clock(b: dict) -> str:
     import hashlib
     uid = 'lc' + hashlib.md5((label + tz).encode()).hexdigest()[:5]
     tz_js = ('"' + tz + '"') if tz else '"UTC"'
-    return ('<div style="text-align:center;padding:20px;">'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("label"), "live_clock")}' '" style="text-align:center;padding:20px;">'
             + ('<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-bottom:4px;">' + label + '</div>' if label else '')
             + '<div id="' + uid + '" style="font-size:2.5rem;font-weight:700;font-family:ui-monospace,monospace;'
             'color:#4f46e5;letter-spacing:0.05em;">--:--:--</div>'
@@ -26912,7 +26912,7 @@ def _render_masonry_elevation(b: dict) -> str:
         )
     parts.append("</svg>")
 
-    return '<div class="a2ui-masonry-elevation">' + "".join(parts) + "</div>"
+    return '<div data-cb="node" data-key="' f'{_ck(b.get("label"), "masonry_elevation")}' '" class="a2ui-masonry-elevation">' + "".join(parts) + "</div>"
 
 
 _RENDERERS["masonry_elevation"] = _render_masonry_elevation
@@ -27639,7 +27639,7 @@ def _render_freeform_canvas(b):
     body = ''.join(render_freeform_canvas_element(e) for e in validated)
 
     return (
-        '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;'
+        '<div data-cb="node" data-key="' f'{_ck(b.get("summary"), "freeform_canvas")}' '" style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;'
         'border-radius:8px;background:#ffffff;">'
         f'<svg viewBox="{_esc(viewbox)}" role="img" aria-label="{_esc(summary)}" '
         'style="width:100%;height:auto;display:block;">'
@@ -37543,7 +37543,7 @@ def _render_lens_themes(b: dict) -> str:
 def _render_lens_eli5(b: dict) -> str:
     excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
     evidence = _gx_list(_if_g(b, 'evidence'))
-    html = '<div style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _gx_md(_gx_or(_if_g(b, 'text'), '')) + '</div>'
+    html = '<div data-cb="node" data-key="' f'{_ck(None, "lens_eli5")}' '" style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _gx_md(_gx_or(_if_g(b, 'text'), '')) + '</div>'
     if evidence:
         html += '<div style="font-size:0.75rem;font-weight:700;opacity:0.6;margin-bottom:4px;">DRAWN FROM</div>'
         for e in evidence:
@@ -37568,7 +37568,7 @@ def _render_lens_freeform(b: dict) -> str:
     tier = _gx_or(_if_g(b, 'tier'), 'interpreted')
     excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
     evidence = _gx_list(_if_g(b, 'evidence'))
-    html = ('<div style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;font-weight:700;text-transform:uppercase;background:rgba(0,0,0,0.06);margin-bottom:8px;">off-template · ' + _gx_esc(tier) + '</div>'
+    html = ('<div data-cb="node" data-key="' f'{_ck(b.get("label"), "lens_freeform")}' '" style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;font-weight:700;text-transform:uppercase;background:rgba(0,0,0,0.06);margin-bottom:8px;">off-template · ' + _gx_esc(tier) + '</div>'
             '<div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;">' + _gx_esc(_gx_or(_if_g(b, 'label'), '')) + '</div>'
             '<div style="font-size:0.9rem;line-height:1.6;margin-bottom:10px;">' + _gx_md(_gx_or(_if_g(b, 'text'), '')) + '</div>')
     if tier == 'extracted' or tier == 'interpreted':

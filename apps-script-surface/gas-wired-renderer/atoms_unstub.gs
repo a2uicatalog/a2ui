@@ -320,7 +320,7 @@ _RENDERERS['expert_endorsement'] = function(b) {
   var avatar = b.expert_avatar_url
     ? '<img src="' + _esc(b.expert_avatar_url) + '" alt="' + _esc(b.expert_name||'') + '" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
     : '<div style="width:56px;height:56px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;">' + initials + '</div>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border-left:4px solid var(--a2ui-accent,#4f46e5);border-radius:0 10px 10px 0;background:var(--surface,#f9fafb);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.expert_name, 'expert_endorsement') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border-left:4px solid var(--a2ui-accent,#4f46e5);border-radius:0 10px 10px 0;background:var(--surface,#f9fafb);">'
     + '<blockquote style="margin:0 0 16px 0;font-size:0.9rem;line-height:1.7;color:var(--text,#374151);font-style:italic;">"' + _esc(b.quote || '') + '"</blockquote>'
     + '<div style="display:flex;align-items:center;gap:12px;">' + avatar
     + '<div><div style="font-weight:700;font-size:0.875rem;color:var(--text,#111827);">' + _esc(b.expert_name || '') + '</div>'
@@ -337,7 +337,7 @@ _RENDERERS['media_mention_card'] = function(b) {
   var headline = b.article_url
     ? '<a href="' + _safeUrl(b.article_url) + '" target="_top" style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);text-decoration:none;line-height:1.4;">' + _esc(b.headline || '') + '</a>'
     : '<div style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;">' + _esc(b.headline || '') + '</div>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.publication_name, 'media_mention_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
     + logo
     + (b.date ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.date) + '</span>' : '')
@@ -475,7 +475,7 @@ _RENDERERS['github_repo_card'] = function(b) {
   var forksHtml  = b.forks !== undefined ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 ' + _esc(String(b.forks)) + '</span>' : '';
   var langHtml   = b.language ? '<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:' + langColor + ';display:inline-block;"></span>' + _esc(b.language) + '</span>' : '';
   var repoUrl    = b.url || (repo ? 'https://github.com/' + repo : '#');
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.repo, 'github_repo_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
     + '<span style="font-size:1rem;">📦</span>'
     + '<a href="' + _safeUrl(repoUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repo) + '</a>'

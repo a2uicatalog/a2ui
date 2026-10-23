@@ -69,7 +69,7 @@ _RENDERERS['glowing_stat'] = function(b) {
     ? 'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '66,0 0 100px ' + colour + '33;'
     : '';
 
-  return '<div style="text-align:center;padding:36px 20px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'glowing_stat') + '" style="text-align:center;padding:36px 20px;">' +
     '<div style="' + glowStyle +
     'font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;letter-spacing:-0.02em;">' +
     (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
@@ -144,7 +144,7 @@ _RENDERERS['gradient_border_card'] = function(b) {
   var radius  = b.radius  || '14px';
   var gradStr = 'linear-gradient(' + angle + 'deg,' + colours.join(',') + ')';
 
-  return '<div style="padding:1.5px;border-radius:' + radius + ';background:' + gradStr + ';">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'gradient_border_card') + '" style="padding:1.5px;border-radius:' + radius + ';background:' + gradStr + ';">' +
     '<div style="background:' + bg + ';border-radius:calc(' + radius + ' - 1.5px);padding:' + padding + ';">' +
     (title
       ? '<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:12px;">' +

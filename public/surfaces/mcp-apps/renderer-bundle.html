@@ -1448,7 +1448,7 @@ _RENDERERS['alert_banner'] = function(b) {
 };
 
 _RENDERERS['info_card'] = function(b) {
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'info_card') + '" class="asw-native-card">' +
          (b.title ? '<div style="font-weight:700;margin-bottom:8px;font-size:0.95rem;">' + _esc(b.title) + '</div>' : '') +
          '<div style="font-size:0.88rem;color:var(--muted);">' + _markdownToHtml(b.text) + '</div>' +
          '</div>';
@@ -1463,7 +1463,7 @@ _RENDERERS['code'] = function(b) {
 };
 
 _RENDERERS['inline_code'] = function(b) {
-  return '<code>' + _esc(b.text) + '</code>';
+  return '<code data-cb="node" data-key="' + _ckey(b.text, 'inline_code') + '">' + _esc(b.text) + '</code>';
 };
 
 _RENDERERS['tag_chip'] = function(b) {
@@ -1478,7 +1478,7 @@ _RENDERERS['badge'] = function(b) {
 
 _RENDERERS['image'] = function(b) {
   var caption = b.caption ? '<div style="font-size:0.8rem;color:var(--muted);text-align:center;margin-top:6px;">' + _esc(b.caption) + '</div>' : '';
-  return '<div style="margin:16px 0;text-align:center;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'image') + '" style="margin:16px 0;text-align:center;">' +
          '<img src="' + _esc(b.url) + '" alt="' + _esc(b.alt || '') + '" style="max-width:100%;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">' +
          caption +
          '</div>';
@@ -1487,7 +1487,7 @@ _RENDERERS['image'] = function(b) {
 _RENDERERS['highlighted_text'] = function(b) {
   var color = b.color || '#fef08a';
   var noteAttr = b.annotation ? ' data-note="' + _esc(b.annotation) + '"' : '';
-  return '<mark class="asw-highlight" style="background:' + color + '"' + noteAttr + '>' + _esc(b.text) + '</mark>';
+  return '<mark data-cb="node" data-key="' + _ckey(b.text, 'highlighted_text') + '" class="asw-highlight" style="background:' + color + '"' + noteAttr + '>' + _esc(b.text) + '</mark>';
 };
 
 _RENDERERS['table'] = function(b) {
@@ -1636,7 +1636,7 @@ _RENDERERS['preview_frame'] = function(b) {
 // suggestion links.
 _RENDERERS['link_button'] = function(b) {
   var target = b.same_tab ? '_top' : '_blank';
-  return '<div style="margin:12px 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'link_button') + '" style="margin:12px 0;">' +
          '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" target="' + target + '">' + _esc(b.label) + '</a>' +
          '</div>';
 };
@@ -1661,7 +1661,7 @@ _RENDERERS['lesson_nav'] = function(b) {
   var checkbox = b.show_completion ? 
     '<label class="asw-complete-row"><input type="checkbox" onchange="if(typeof localStorage !== \'undefined\'){localStorage.setItem(\'complete-\' + ' + _jsJson(b.current_title) + ', this.checked);}"> Mark as complete</label>' : '';
 
-  return '<div class="asw-lesson-nav">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.current_title, 'lesson_nav') + '" class="asw-lesson-nav">' +
          prevHtml +
          '<div class="asw-lesson-nav-center">' + moduleLabel + '<div class="asw-lesson-nav-title">' + _esc(b.current_title) + '</div>' + checkbox + '</div>' +
          nextHtml +
@@ -1821,7 +1821,7 @@ _RENDERERS['match_exercise'] = function(b) {
 _RENDERERS['hint_reveal'] = function(b) {
   var accent = b.accent || 'var(--accent)';
   var label = b.label || 'Show hint';
-  return '<details class="asw-hint" style="border-left-color:' + accent + ';">' +
+  return '<details data-cb="node" data-key="' + _ckey(undefined, 'hint_reveal') + '" class="asw-hint" style="border-left-color:' + accent + ';">' +
          '<summary style="color:' + accent + ';">' + _esc(label) + '</summary>' +
          '<div class="asw-hint-body">' + _markdownToHtml(b.hint) + '</div>' +
          '</details>';
@@ -2061,7 +2061,7 @@ _RENDERERS['gmail_summary'] = function(b) {
     listHtml += '</ul>';
   }
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.query, 'gmail_summary') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">✉️</span> Gmail Search: "' + _esc(query) + '"</div>' +
          listHtml +
          '</div>';
@@ -3305,7 +3305,7 @@ _RENDERERS['deprecation_notice'] = function(b) {
 
 _RENDERERS['experimental_banner'] = function(b) {
   var msg = b.message || b.text || '';
-  return '<div style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'experimental_banner') + '" style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#92400e;margin-bottom:4px;">🧪 Experimental</div>' +
     (msg ? '<p style="font-size:0.85rem;color:#78350f;margin:0;">' + _markdownToHtml(msg) + '</p>' : '') + '</div>';
 };
@@ -3375,7 +3375,7 @@ _RENDERERS['http_request_block'] = function(b) {
   var color = colors[method] || '#6b7280';
   var hdrsHtml = Object.keys(headers).map(function(k){ return '<div style="font-size:0.78rem;font-family:monospace;color:#374151;"><span style="color:var(--muted,#5f6368);">' + _esc(k) + ':</span> ' + _esc(headers[k]) + '</div>'; }).join('');
   var bodyHtml = body ? '<pre style="background:#f9fafb;border-radius:6px;padding:10px;margin-top:10px;font-size:0.78rem;overflow:auto;color:#374151;">' + _esc(body) + '</pre>' : '';
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'http_request_block') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">' +
     '<div style="padding:10px 16px;display:flex;align-items:center;gap:10px;background:#f9fafb;">' +
     '<span style="background:' + color + ';color:#fff;font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:5px;font-family:monospace;">' + method + '</span>' +
     '<span style="font-family:monospace;font-size:0.85rem;color:#374151;">' + _esc(url) + '</span></div>' +
@@ -3406,7 +3406,7 @@ _RENDERERS['keyboard_shortcut'] = function(b) {
   var action = b.action || '';
   var keyHtml = keys.map(function(k){ return '<kbd style="display:inline-block;padding:2px 8px;font-family:monospace;font-size:0.8rem;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:3px solid #9ca3af;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);color:#374151;">' + _esc(k) + '</kbd>'; }).join(' + ');
   var actionHtml = action ? '<span style="margin-left:10px;font-size:0.85rem;color:var(--muted,#5f6368);">' + _esc(action) + '</span>' : '';
-  return '<div style="margin:0.5rem 0;display:inline-flex;align-items:center;">' + keyHtml + actionHtml + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.action, 'keyboard_shortcut') + '" style="margin:0.5rem 0;display:inline-flex;align-items:center;">' + keyHtml + actionHtml + '</div>';
 };
 
 _RENDERERS['api_param_table'] = function(b) {
@@ -3462,7 +3462,7 @@ _RENDERERS['anchor_list'] = function(b) {
 _RENDERERS['glossary_term'] = function(b) {
   var term = b.term || b.name || '';
   var definition = b.definition || b.text || '';
-  return '<dl style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
+  return '<dl data-cb="node" data-key="' + _ckey(b.term, 'glossary_term') + '" style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
     '<dt style="font-weight:700;color:#7c3aed;font-size:0.9rem;">' + _esc(term) + '</dt>' +
     '<dd style="margin:4px 0 0 0;font-size:0.85rem;color:#374151;">' + _markdownToHtml(definition) + '</dd></dl>';
 };
@@ -3586,7 +3586,7 @@ _RENDERERS['follow_cta'] = function(b) {
   var msg = b.message || 'Follow for more';
   var links = b.platform_links || {};
   var btns = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="padding:8px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;">' + _esc(k) + '</a>'; }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:1.5rem 0;background:#f9fafb;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.message, 'follow_cta') + '" style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:1.5rem 0;background:#f9fafb;">' +
     '<span style="font-size:0.95rem;font-weight:600;color:#111827;">' + _esc(msg) + '</span>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + btns + '</div></div>';
 };
@@ -3661,7 +3661,7 @@ _RENDERERS['copy_code_button'] = function(b) {
 
 _RENDERERS['log_output'] = function(b) {
   var logs = (b.logs||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="background:#0d1117;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'log_output') + '" style="background:#0d1117;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
     '<pre style="margin:0;font-family:monospace;font-size:0.78rem;color:#656e7d;white-space:pre-wrap;word-break:break-all;">' + logs + '</pre></div>';
 };
 
@@ -3864,7 +3864,7 @@ _RENDERERS['image_with_caption'] = function(b) {
   // went unnoticed until read directly). 2026-09-27.
   var img = '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;">';
   if (b.link_url) img = '<a href="' + _safeUrl(b.link_url) + '" target="_top">' + img + '</a>';
-  return '<figure style="margin:1.2rem 0;text-align:center;">' + img +
+  return '<figure data-cb="node" data-key="' + _ckey(b.image_url, 'image_with_caption') + '" style="margin:1.2rem 0;text-align:center;">' + img +
     (caption ? '<figcaption style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:8px;font-style:italic;">' + _esc(caption) + '</figcaption>' : '') + '</figure>';
 };
 
@@ -3877,7 +3877,7 @@ _RENDERERS['framed_screenshot'] = function(b) {
     '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>' +
     (alt ? '<span style="flex:1;background:#fff;border-radius:4px;padding:2px 8px;font-size:0.72rem;color:#6b7280;">' + _esc(alt) + '</span>' : '') + '</div>';
-  return '<div style="margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + header + '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;"></div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.image_url, 'framed_screenshot') + '" style="margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + header + '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;"></div>';
 };
 
 _RENDERERS['video_thumbnail'] = function(b) {
@@ -3980,7 +3980,7 @@ _RENDERERS['empty_state'] = function(b) {
   // payload's actual content never appeared (surface-parity debt). 2026-09-27.
   var message = b.description || b.message || b.text || '';
   var action = b.action_label || '';
-  return '<div style="text-align:center;padding:40px 20px;margin:1rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'empty_state') + '" style="text-align:center;padding:40px 20px;margin:1rem 0;">' +
     '<div style="font-size:3rem;margin-bottom:12px;">' + icon + '</div>' +
     '<div style="font-weight:700;color:#111827;margin-bottom:6px;">' + _esc(title) + '</div>' +
     (message ? '<p style="font-size:0.88rem;color:var(--muted,#5f6368);">' + _esc(message) + '</p>' : '') +
@@ -5208,7 +5208,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
     );
   }
 
-  return '<div style="color:#6e767d;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'linkedin_post_image') + '" style="color:#6e767d;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
 };
 
 // ── Visual / Beauty ──────────────────────────────────────────────────────────
@@ -8676,7 +8676,7 @@ _RENDERERS['floating_badge'] = function(b) {
     + '#' + uid + '{animation:' + uid + ' ' + speed + 's ease-in-out infinite;display:inline-flex;flex-direction:column;align-items:center;}'
     + '</style>';
 
-  return css + '<div style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'floating_badge') + '" style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<div id="' + uid + '">'
     + '<span style="font-size:' + size + ';display:block;background:' + bg + ';line-height:1;">' + icon + '</span>'
     + label + '</div></div>';
@@ -17147,7 +17147,7 @@ _RENDERERS['masonry_elevation'] = function(b) {
     'font-family="Roboto,Arial,sans-serif" font-size="15" fill="' + subTextFill + '">' + _esc(statsLine) + '</text>');
   parts.push('</svg>');
 
-  return '<div class="a2ui-masonry-elevation">' + parts.join('') + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'masonry_elevation') + '" class="a2ui-masonry-elevation">' + parts.join('') + '</div>';
 };
 
 function _shadeHex(hex, percent) {
@@ -18123,7 +18123,7 @@ _RENDERERS['entity_list'] = function(b) {
 _RENDERERS['markdown_block'] = function(b) {
   var content = b.content || '';
   var html = _markdownToHtml(content);
-  return '<div class="asw-markdown-block">' + html + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'markdown_block') + '" class="asw-markdown-block">' + html + '</div>';
 };
 
 _RENDERERS['bento_grid'] = function(b) {
@@ -18184,7 +18184,7 @@ _RENDERERS['lozenge'] = function(b) {
     'info':     {bg:'#dbeafe',fg:'#1d4ed8'}
   };
   var c = colorMap[color] || colorMap['default'];
-  return '<span style="display:inline-block;background:' + c.bg + ';color:' + c.fg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:0.02em;">' + _esc(text) + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.text, 'lozenge') + '" style="display:inline-block;background:' + c.bg + ';color:' + c.fg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:0.02em;">' + _esc(text) + '</span>';
 };
 
 _RENDERERS['task_list'] = function(b) {
@@ -18284,7 +18284,7 @@ _RENDERERS['jira_ticket'] = function(b) {
     }
   }
   var assigneeHtml = b.assignee ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--muted,#5f6368);"><div style="width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + _esc(b.assignee.charAt(0).toUpperCase()) + '</div>' + _esc(b.assignee) + '</div>' : '';
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.key, 'jira_ticket') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
     + '<span style="font-size:1.2rem;background:' + bgColor + ';padding:6px;border-radius:8px;">' + icon + '</span>'
     + '<span style="font-size:0.82rem;font-weight:700;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(b.key || '') + '</span>'
@@ -18471,7 +18471,7 @@ _RENDERERS['inline_alert'] = function(b) {
   // discriminator instead. Matches alert_banner (atom.gs) and the Python
   // reference renderer, both of which already read `variant`.
   var tc = typeConfig[b.variant] || typeConfig['info'];
-  return '<div style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.variant, 'inline_alert') + '" style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
     + '<span style="font-size:0.95rem;flex-shrink:0;">' + tc.icon + '</span>'
     + '<div style="flex:1;font-size:0.875rem;color:' + tc.fg + ';">' + _esc(b.message || '') + '</div>'
     + (b.dismissible ? '<button style="background:none;border:none;cursor:pointer;color:var(--muted,#5f6368);font-size:1rem;padding:0;line-height:1;" aria-label="Dismiss">×</button>' : '')
@@ -18937,7 +18937,7 @@ _RENDERERS['shimmer_button'] = function(b) {
 _RENDERERS['glow_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Action';
   var color = b.color || '#7c3aed';
-  return '<div style="margin:1rem 0;text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'glow_button') + '" style="margin:1rem 0;text-align:center;">'
     + '<button style="background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;border-radius:10px;cursor:pointer;box-shadow:0 0 16px ' + _esc(color) + '88,0 0 36px ' + _esc(color) + '44;letter-spacing:0.02em;">' + _esc(label) + '</button>'
     + '</div>';
 };
@@ -18959,7 +18959,7 @@ _RENDERERS['glitch_text'] = function(b) {
     + '@keyframes gl-a-' + uid + '{0%,88%,100%{transform:none;}89%{transform:translateX(-3px);}92%{transform:translateX(3px);}95%{transform:translateX(-1px);}}'
     + '@keyframes gl-b-' + uid + '{0%,88%,100%{transform:none;}89%{transform:translateX(3px);}92%{transform:translateX(-3px);}95%{transform:translateX(1px);}}'
     + '</style>'
-    + '<div style="margin:1rem 0;"><span class="gl-' + uid + '" data-t="' + _esc(text) + '">' + _esc(text) + '</span></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'glitch_text') + '" style="margin:1rem 0;"><span class="gl-' + uid + '" data-t="' + _esc(text) + '">' + _esc(text) + '</span></div>';
 };
 
 _RENDERERS['neon_glow'] = function(b) {
@@ -19226,7 +19226,7 @@ _RENDERERS['encrypted_reveal'] = function(b) {
   var text  = b.text || b.content || b.label || '';
   var title = b.title || '';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="border:1px solid #1f2937;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#0f172a;">'
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'encrypted_reveal') + '" style="border:1px solid #1f2937;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#0f172a;">'
     + (title ? '<div style="font-size:0.75rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
     + '<div id="er-' + uid + '" data-text="' + _esc(text) + '" style="font-family:\'Courier New\',monospace;font-size:1.05rem;font-weight:600;color:#22d3ee;line-height:1.6;min-height:1.5em;cursor:pointer;" title="click to reveal"></div>'
     + '<div style="font-size:0.7rem;color:#475569;margin-top:8px;">↑ click to reveal</div>'
@@ -19303,7 +19303,7 @@ _RENDERERS['magnetic_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Click me';
   var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="margin:1rem 0;text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'magnetic_button') + '" style="margin:1rem 0;text-align:center;">'
     + '<button id="mag-' + uid + '" style="background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:1rem;padding:14px 36px;border:none;border-radius:50px;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease;box-shadow:0 4px 24px rgba(0,0,0,0.14);">' + _esc(label) + '</button>'
     + '<script>(function(){'
     + 'var el=document.getElementById("mag-' + uid + '");'
@@ -19525,7 +19525,7 @@ _RENDERERS['live_clock'] = function(b) {
   var format = b.format || '24h';
   var tz     = b.timezone || '';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="display:inline-flex;flex-direction:column;align-items:center;background:#0f172a;border-radius:16px;padding:24px 36px;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'live_clock') + '" style="display:inline-flex;flex-direction:column;align-items:center;background:#0f172a;border-radius:16px;padding:24px 36px;margin:1rem 0;">'
     + (label ? '<div style="font-size:0.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">' + _esc(label) + '</div>' : '')
     + '<div id="lc-' + uid + '" style="font-size:2.6rem;font-weight:800;font-family:monospace;color:#22d3ee;letter-spacing:0.07em;">--:--:--</div>'
     + (tz ? '<div style="font-size:0.7rem;color:#475569;margin-top:6px;">' + _esc(tz) + '</div>' : '')
@@ -19822,7 +19822,7 @@ _RENDERERS['focus_lens'] = function(b) {
     + '.fl-bg-' + uid + '{filter:blur(4px);padding:30px;background:#f3f4f6;opacity:0.7;user-select:none;font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.8;}'
     + '.fl-lens-' + uid + '{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.96);border-radius:14px;padding:22px 30px;box-shadow:0 6px 40px rgba(0,0,0,0.16);max-width:80%;text-align:center;z-index:2;}'
     + '</style>'
-    + '<div class="fl-wrap-' + uid + '">'
+    + '<div data-cb="node" data-key="' + _ckey(b.title, 'focus_lens') + '" class="fl-wrap-' + uid + '">'
     + '<div class="fl-bg-' + uid + '">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris.</div>'
     + '<div class="fl-lens-' + uid + '">'
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
@@ -19894,7 +19894,7 @@ _RENDERERS['liquid_button'] = function(b) {
     + '.lq-' + uid + ':hover{border-radius:14px;transform:scale(1.05);box-shadow:0 6px 30px ' + _esc(color) + '77;}'
     + '.lq-' + uid + ':active{transform:scale(0.96);border-radius:50%;}'
     + '</style>'
-    + '<div style="margin:1rem 0;text-align:center;"><button class="lq-' + uid + '">' + _esc(label) + '</button></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'liquid_button') + '" style="margin:1rem 0;text-align:center;"><button class="lq-' + uid + '">' + _esc(label) + '</button></div>';
 };
 
 _RENDERERS['highlight_sweep'] = function(b) {
@@ -19907,7 +19907,7 @@ _RENDERERS['highlight_sweep'] = function(b) {
     + '.hs-' + uid + '{background:linear-gradient(90deg,' + _esc(color) + ' 50%,transparent 50%);background-size:201% 100%;background-position:100% 0;animation:hs-' + uid + ' 0.75s ease ' + delay + 's forwards;padding:1px 3px;border-radius:3px;}'
     + '@keyframes hs-' + uid + '{to{background-position:0% 0;}}'
     + '</style>'
-    + '<div style="margin:1rem 0;font-size:' + _esc(size) + ';line-height:1.75;color:#1f2937;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'highlight_sweep') + '" style="margin:1rem 0;font-size:' + _esc(size) + ';line-height:1.75;color:#1f2937;">'
     + '<span class="hs-' + uid + '">' + _esc(text) + '</span>'
     + '</div>';
 };
@@ -19969,7 +19969,7 @@ _RENDERERS['kinetic_headline'] = function(b) {
   var fromT = style==='down'?'translateY(-22px)':style==='scale'?'scale(0.5)':style==='fade'?'none':'translateY(26px)';
   var words = text.split(' ');
   return '<style>@keyframes kh-' + uid + '{from{opacity:0;transform:' + fromT + ';}to{opacity:1;transform:none;}}</style>'
-    + '<div style="margin:1rem 0;font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';line-height:1.2;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'kinetic_headline') + '" style="margin:1rem 0;font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';line-height:1.2;">'
     + words.map(function(w, i) {
         return '<span style="display:inline-block;opacity:0;animation:kh-' + uid + ' 0.55s ease ' + (i*gap) + 's both;margin-right:0.22em;">' + _esc(w) + '</span>';
       }).join('')
@@ -21125,7 +21125,7 @@ _RENDERERS['glowing_stat'] = function(b) {
     ? 'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '66,0 0 100px ' + colour + '33;'
     : '';
 
-  return '<div style="text-align:center;padding:36px 20px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'glowing_stat') + '" style="text-align:center;padding:36px 20px;">' +
     '<div style="' + glowStyle +
     'font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;letter-spacing:-0.02em;">' +
     (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
@@ -21200,7 +21200,7 @@ _RENDERERS['gradient_border_card'] = function(b) {
   var radius  = b.radius  || '14px';
   var gradStr = 'linear-gradient(' + angle + 'deg,' + colours.join(',') + ')';
 
-  return '<div style="padding:1.5px;border-radius:' + radius + ';background:' + gradStr + ';">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'gradient_border_card') + '" style="padding:1.5px;border-radius:' + radius + ';background:' + gradStr + ';">' +
     '<div style="background:' + bg + ';border-radius:calc(' + radius + ' - 1.5px);padding:' + padding + ';">' +
     (title
       ? '<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:12px;">' +
@@ -23458,7 +23458,7 @@ _RENDERERS['freeform_canvas'] = function(b) {
     body += _freeformRenderElement(namespaced[j]);
   }
 
-  return '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;' +
+  return '<div data-cb="node" data-key="' + _ckey(b.summary, 'freeform_canvas') + '" style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;' +
     'border-radius:8px;background:var(--surface,#ffffff);">' +
     '<svg viewBox="' + _esc(viewbox) + '" role="img" aria-label="' + _esc(summary) + '" ' +
     'style="width:100%;height:auto;display:block;">' +
@@ -24276,7 +24276,7 @@ _RENDERERS['google_icon'] = function(b) {
   var iconSpan = '<span class="ms-icon" style="' + cssVars + ';font-size:' + size + ';color:' + color + ';" aria-hidden="true">' + name + '</span>';
 
   return _materialSymbolsFont(style)
-    + '<span style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;' + (inline ? '' : 'margin:var(--a2ui-block-gap,1.25rem) 0;') + '">'
+    + '<span data-cb="node" data-key="' + _ckey(b.name, 'google_icon') + '" style="display:' + (inline ? 'inline-flex' : 'flex') + ';align-items:center;' + (inline ? '' : 'margin:var(--a2ui-block-gap,1.25rem) 0;') + '">'
     + iconSpan + label + '</span>';
 };
 
@@ -24296,7 +24296,7 @@ _RENDERERS['icon_badge'] = function(b) {
   var cssVars = '--ms-fill:' + fill + ';--ms-w:' + weight + ';--ms-g:0;--ms-o:' + size;
 
   return _materialSymbolsFont(style)
-    + '<div style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.name, 'icon_badge') + '" style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<div style="display:flex;align-items:center;justify-content:center;background:' + bg + ';padding:' + pad + ';border-radius:' + radius + ';">'
     + '<span class="ms-icon" style="' + cssVars + ';font-size:' + size + 'px;color:' + color + ';" aria-hidden="true">' + name + '</span>'
     + '</div>' + label + '</div>';
@@ -28113,7 +28113,7 @@ _RENDERERS['lens_themes'] = function(b) {
 _RENDERERS['lens_eli5'] = function(b) {
   var excerpt = b.source_excerpt || '';
   var evidence = Array.isArray(b.evidence) ? b.evidence : [];
-  var html = '<div style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _markdownToHtml(b.text || '') + '</div>';
+  var html = '<div data-cb="node" data-key="' + _ckey(undefined, 'lens_eli5') + '" style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _markdownToHtml(b.text || '') + '</div>';
   if (evidence.length) {
     html += '<div style="font-size:0.75rem;font-weight:700;opacity:0.6;margin-bottom:4px;">DRAWN FROM</div>';
     for (var i = 0; i < evidence.length; i++) {
@@ -28144,7 +28144,7 @@ _RENDERERS['lens_freeform'] = function(b) {
   var tier = b.tier || 'interpreted';
   var excerpt = b.source_excerpt || '';
   var evidence = Array.isArray(b.evidence) ? b.evidence : [];
-  var html = '<div style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;' +
+  var html = '<div data-cb="node" data-key="' + _ckey(b.label, 'lens_freeform') + '" style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;' +
     'font-weight:700;text-transform:uppercase;background:rgba(0,0,0,0.06);margin-bottom:8px;">' +
     'off-template · ' + _esc(tier) + '</div>' +
     '<div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;">' + _esc(b.label || '') + '</div>' +
@@ -36128,7 +36128,7 @@ _RENDERERS['gradient_heading'] = function(b) {
   var align    = b.align    || 'left';
   var margin   = b.margin   || '16px 0 6px';
 
-  return '<div style="margin:' + _esc(margin) + ';text-align:' + _esc(align) + ';">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'gradient_heading') + '" style="margin:' + _esc(margin) + ';text-align:' + _esc(align) + ';">' +
     '<span style="' +
       'font-size:' + _esc(size) + ';' +
       'font-weight:' + weight + ';' +
@@ -36445,7 +36445,7 @@ _RENDERERS['math_block'] = function(b) {
       'text-align:' + align + ';line-height:1.5;">' + caption + '</div>'
     : '';
 
-  return '<div class="a2ui-math" style="margin:1.5rem 0;position:relative;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.caption, 'math_block') + '" class="a2ui-math" style="margin:1.5rem 0;position:relative;">' +
     '<div style="text-align:' + align + ';' +
       'font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;' +
       'font-size:' + _esc(size) + ';color:var(--text,#1f2937);overflow-x:auto;">' + mathml + '</div>' +
@@ -37182,7 +37182,7 @@ _RENDERERS['expert_endorsement'] = function(b) {
   var avatar = b.expert_avatar_url
     ? '<img src="' + _esc(b.expert_avatar_url) + '" alt="' + _esc(b.expert_name||'') + '" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
     : '<div style="width:56px;height:56px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;">' + initials + '</div>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border-left:4px solid var(--a2ui-accent,#4f46e5);border-radius:0 10px 10px 0;background:var(--surface,#f9fafb);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.expert_name, 'expert_endorsement') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border-left:4px solid var(--a2ui-accent,#4f46e5);border-radius:0 10px 10px 0;background:var(--surface,#f9fafb);">'
     + '<blockquote style="margin:0 0 16px 0;font-size:0.9rem;line-height:1.7;color:var(--text,#374151);font-style:italic;">"' + _esc(b.quote || '') + '"</blockquote>'
     + '<div style="display:flex;align-items:center;gap:12px;">' + avatar
     + '<div><div style="font-weight:700;font-size:0.875rem;color:var(--text,#111827);">' + _esc(b.expert_name || '') + '</div>'
@@ -37199,7 +37199,7 @@ _RENDERERS['media_mention_card'] = function(b) {
   var headline = b.article_url
     ? '<a href="' + _safeUrl(b.article_url) + '" target="_top" style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);text-decoration:none;line-height:1.4;">' + _esc(b.headline || '') + '</a>'
     : '<div style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;">' + _esc(b.headline || '') + '</div>';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.publication_name, 'media_mention_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
     + logo
     + (b.date ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.date) + '</span>' : '')
@@ -37337,7 +37337,7 @@ _RENDERERS['github_repo_card'] = function(b) {
   var forksHtml  = b.forks !== undefined ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 ' + _esc(String(b.forks)) + '</span>' : '';
   var langHtml   = b.language ? '<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:' + langColor + ';display:inline-block;"></span>' + _esc(b.language) + '</span>' : '';
   var repoUrl    = b.url || (repo ? 'https://github.com/' + repo : '#');
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.repo, 'github_repo_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
     + '<span style="font-size:1rem;">📦</span>'
     + '<a href="' + _safeUrl(repoUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repo) + '</a>'

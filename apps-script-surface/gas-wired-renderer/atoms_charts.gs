@@ -598,7 +598,7 @@ _RENDERERS['masonry_elevation'] = function(b) {
     'font-family="Roboto,Arial,sans-serif" font-size="15" fill="' + subTextFill + '">' + _esc(statsLine) + '</text>');
   parts.push('</svg>');
 
-  return '<div class="a2ui-masonry-elevation">' + parts.join('') + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'masonry_elevation') + '" class="a2ui-masonry-elevation">' + parts.join('') + '</div>';
 };
 
 function _shadeHex(hex, percent) {
@@ -1574,7 +1574,7 @@ _RENDERERS['entity_list'] = function(b) {
 _RENDERERS['markdown_block'] = function(b) {
   var content = b.content || '';
   var html = _markdownToHtml(content);
-  return '<div class="asw-markdown-block">' + html + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'markdown_block') + '" class="asw-markdown-block">' + html + '</div>';
 };
 
 _RENDERERS['bento_grid'] = function(b) {
@@ -1635,7 +1635,7 @@ _RENDERERS['lozenge'] = function(b) {
     'info':     {bg:'#dbeafe',fg:'#1d4ed8'}
   };
   var c = colorMap[color] || colorMap['default'];
-  return '<span style="display:inline-block;background:' + c.bg + ';color:' + c.fg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:0.02em;">' + _esc(text) + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.text, 'lozenge') + '" style="display:inline-block;background:' + c.bg + ';color:' + c.fg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:0.02em;">' + _esc(text) + '</span>';
 };
 
 _RENDERERS['task_list'] = function(b) {
@@ -1735,7 +1735,7 @@ _RENDERERS['jira_ticket'] = function(b) {
     }
   }
   var assigneeHtml = b.assignee ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--muted,#5f6368);"><div style="width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + _esc(b.assignee.charAt(0).toUpperCase()) + '</div>' + _esc(b.assignee) + '</div>' : '';
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
+  return '<div data-cb="node" data-key="' + _ckey(b.key, 'jira_ticket') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
     + '<span style="font-size:1.2rem;background:' + bgColor + ';padding:6px;border-radius:8px;">' + icon + '</span>'
     + '<span style="font-size:0.82rem;font-weight:700;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(b.key || '') + '</span>'
@@ -1922,7 +1922,7 @@ _RENDERERS['inline_alert'] = function(b) {
   // discriminator instead. Matches alert_banner (atom.gs) and the Python
   // reference renderer, both of which already read `variant`.
   var tc = typeConfig[b.variant] || typeConfig['info'];
-  return '<div style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.variant, 'inline_alert') + '" style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
     + '<span style="font-size:0.95rem;flex-shrink:0;">' + tc.icon + '</span>'
     + '<div style="flex:1;font-size:0.875rem;color:' + tc.fg + ';">' + _esc(b.message || '') + '</div>'
     + (b.dismissible ? '<button style="background:none;border:none;cursor:pointer;color:var(--muted,#5f6368);font-size:1rem;padding:0;line-height:1;" aria-label="Dismiss">×</button>' : '')
@@ -2388,7 +2388,7 @@ _RENDERERS['shimmer_button'] = function(b) {
 _RENDERERS['glow_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Action';
   var color = b.color || '#7c3aed';
-  return '<div style="margin:1rem 0;text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'glow_button') + '" style="margin:1rem 0;text-align:center;">'
     + '<button style="background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;border-radius:10px;cursor:pointer;box-shadow:0 0 16px ' + _esc(color) + '88,0 0 36px ' + _esc(color) + '44;letter-spacing:0.02em;">' + _esc(label) + '</button>'
     + '</div>';
 };
@@ -2410,7 +2410,7 @@ _RENDERERS['glitch_text'] = function(b) {
     + '@keyframes gl-a-' + uid + '{0%,88%,100%{transform:none;}89%{transform:translateX(-3px);}92%{transform:translateX(3px);}95%{transform:translateX(-1px);}}'
     + '@keyframes gl-b-' + uid + '{0%,88%,100%{transform:none;}89%{transform:translateX(3px);}92%{transform:translateX(-3px);}95%{transform:translateX(1px);}}'
     + '</style>'
-    + '<div style="margin:1rem 0;"><span class="gl-' + uid + '" data-t="' + _esc(text) + '">' + _esc(text) + '</span></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'glitch_text') + '" style="margin:1rem 0;"><span class="gl-' + uid + '" data-t="' + _esc(text) + '">' + _esc(text) + '</span></div>';
 };
 
 _RENDERERS['neon_glow'] = function(b) {
@@ -2677,7 +2677,7 @@ _RENDERERS['encrypted_reveal'] = function(b) {
   var text  = b.text || b.content || b.label || '';
   var title = b.title || '';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="border:1px solid #1f2937;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#0f172a;">'
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'encrypted_reveal') + '" style="border:1px solid #1f2937;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#0f172a;">'
     + (title ? '<div style="font-size:0.75rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
     + '<div id="er-' + uid + '" data-text="' + _esc(text) + '" style="font-family:\'Courier New\',monospace;font-size:1.05rem;font-weight:600;color:#22d3ee;line-height:1.6;min-height:1.5em;cursor:pointer;" title="click to reveal"></div>'
     + '<div style="font-size:0.7rem;color:#475569;margin-top:8px;">↑ click to reveal</div>'
@@ -2754,7 +2754,7 @@ _RENDERERS['magnetic_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Click me';
   var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="margin:1rem 0;text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'magnetic_button') + '" style="margin:1rem 0;text-align:center;">'
     + '<button id="mag-' + uid + '" style="background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:1rem;padding:14px 36px;border:none;border-radius:50px;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease;box-shadow:0 4px 24px rgba(0,0,0,0.14);">' + _esc(label) + '</button>'
     + '<script>(function(){'
     + 'var el=document.getElementById("mag-' + uid + '");'
@@ -2976,7 +2976,7 @@ _RENDERERS['live_clock'] = function(b) {
   var format = b.format || '24h';
   var tz     = b.timezone || '';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="display:inline-flex;flex-direction:column;align-items:center;background:#0f172a;border-radius:16px;padding:24px 36px;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'live_clock') + '" style="display:inline-flex;flex-direction:column;align-items:center;background:#0f172a;border-radius:16px;padding:24px 36px;margin:1rem 0;">'
     + (label ? '<div style="font-size:0.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">' + _esc(label) + '</div>' : '')
     + '<div id="lc-' + uid + '" style="font-size:2.6rem;font-weight:800;font-family:monospace;color:#22d3ee;letter-spacing:0.07em;">--:--:--</div>'
     + (tz ? '<div style="font-size:0.7rem;color:#475569;margin-top:6px;">' + _esc(tz) + '</div>' : '')
@@ -3273,7 +3273,7 @@ _RENDERERS['focus_lens'] = function(b) {
     + '.fl-bg-' + uid + '{filter:blur(4px);padding:30px;background:#f3f4f6;opacity:0.7;user-select:none;font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.8;}'
     + '.fl-lens-' + uid + '{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.96);border-radius:14px;padding:22px 30px;box-shadow:0 6px 40px rgba(0,0,0,0.16);max-width:80%;text-align:center;z-index:2;}'
     + '</style>'
-    + '<div class="fl-wrap-' + uid + '">'
+    + '<div data-cb="node" data-key="' + _ckey(b.title, 'focus_lens') + '" class="fl-wrap-' + uid + '">'
     + '<div class="fl-bg-' + uid + '">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris.</div>'
     + '<div class="fl-lens-' + uid + '">'
     + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
@@ -3345,7 +3345,7 @@ _RENDERERS['liquid_button'] = function(b) {
     + '.lq-' + uid + ':hover{border-radius:14px;transform:scale(1.05);box-shadow:0 6px 30px ' + _esc(color) + '77;}'
     + '.lq-' + uid + ':active{transform:scale(0.96);border-radius:50%;}'
     + '</style>'
-    + '<div style="margin:1rem 0;text-align:center;"><button class="lq-' + uid + '">' + _esc(label) + '</button></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'liquid_button') + '" style="margin:1rem 0;text-align:center;"><button class="lq-' + uid + '">' + _esc(label) + '</button></div>';
 };
 
 _RENDERERS['highlight_sweep'] = function(b) {
@@ -3358,7 +3358,7 @@ _RENDERERS['highlight_sweep'] = function(b) {
     + '.hs-' + uid + '{background:linear-gradient(90deg,' + _esc(color) + ' 50%,transparent 50%);background-size:201% 100%;background-position:100% 0;animation:hs-' + uid + ' 0.75s ease ' + delay + 's forwards;padding:1px 3px;border-radius:3px;}'
     + '@keyframes hs-' + uid + '{to{background-position:0% 0;}}'
     + '</style>'
-    + '<div style="margin:1rem 0;font-size:' + _esc(size) + ';line-height:1.75;color:#1f2937;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'highlight_sweep') + '" style="margin:1rem 0;font-size:' + _esc(size) + ';line-height:1.75;color:#1f2937;">'
     + '<span class="hs-' + uid + '">' + _esc(text) + '</span>'
     + '</div>';
 };
@@ -3420,7 +3420,7 @@ _RENDERERS['kinetic_headline'] = function(b) {
   var fromT = style==='down'?'translateY(-22px)':style==='scale'?'scale(0.5)':style==='fade'?'none':'translateY(26px)';
   var words = text.split(' ');
   return '<style>@keyframes kh-' + uid + '{from{opacity:0;transform:' + fromT + ';}to{opacity:1;transform:none;}}</style>'
-    + '<div style="margin:1rem 0;font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';line-height:1.2;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'kinetic_headline') + '" style="margin:1rem 0;font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';line-height:1.2;">'
     + words.map(function(w, i) {
         return '<span style="display:inline-block;opacity:0;animation:kh-' + uid + ' 0.55s ease ' + (i*gap) + 's both;margin-right:0.22em;">' + _esc(w) + '</span>';
       }).join('')

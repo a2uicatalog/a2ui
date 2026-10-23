@@ -20,7 +20,7 @@ _RENDERERS['gradient_heading'] = function(b) {
   var align    = b.align    || 'left';
   var margin   = b.margin   || '16px 0 6px';
 
-  return '<div style="margin:' + _esc(margin) + ';text-align:' + _esc(align) + ';">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'gradient_heading') + '" style="margin:' + _esc(margin) + ';text-align:' + _esc(align) + ';">' +
     '<span style="' +
       'font-size:' + _esc(size) + ';' +
       'font-weight:' + weight + ';' +
@@ -337,7 +337,7 @@ _RENDERERS['math_block'] = function(b) {
       'text-align:' + align + ';line-height:1.5;">' + caption + '</div>'
     : '';
 
-  return '<div class="a2ui-math" style="margin:1.5rem 0;position:relative;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.caption, 'math_block') + '" class="a2ui-math" style="margin:1.5rem 0;position:relative;">' +
     '<div style="text-align:' + align + ';' +
       'font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;' +
       'font-size:' + _esc(size) + ';color:var(--text,#1f2937);overflow-x:auto;">' + mathml + '</div>' +

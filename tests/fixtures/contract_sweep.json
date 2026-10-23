@@ -8294,7 +8294,7 @@
   "parity": false
  },
  "image": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "image",
@@ -8326,7 +8326,7 @@
   "parity": false
  },
  "github_repo_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "github_repo_card",
@@ -8523,7 +8523,7 @@
   "parity": false
  },
  "glossary_term": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "glossary_term",
@@ -8660,7 +8660,7 @@
   "parity": false
  },
  "framed_screenshot": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "framed_screenshot",
@@ -8677,7 +8677,7 @@
   "parity": false
  },
  "image_with_caption": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "image_with_caption",
@@ -8694,7 +8694,7 @@
   "parity": false
  },
  "empty_state": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "empty_state",
@@ -8860,7 +8860,7 @@
   "parity": false
  },
  "media_mention_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "media_mention_card",
@@ -8878,7 +8878,7 @@
   "parity": false
  },
  "expert_endorsement": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "expert_endorsement",
@@ -8930,7 +8930,7 @@
   "parity": false
  },
  "http_request_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "http_request_block",
@@ -8950,7 +8950,7 @@
   "parity": false
  },
  "keyboard_shortcut": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "keyboard_shortcut",
@@ -8999,7 +8999,7 @@
   "parity": false
  },
  "experimental_banner": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "experimental_banner",
@@ -9027,7 +9027,7 @@
   "parity": false
  },
  "log_output": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "log_output",
@@ -9187,7 +9187,7 @@
   "parity": false
  },
  "linkedin_post_image": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "linkedin_post_image",
@@ -9302,7 +9302,7 @@
   "parity": false
  },
  "follow_cta": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "follow_cta",
@@ -9416,7 +9416,7 @@
   "parity": false
  },
  "masonry_elevation": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "masonry_elevation",
@@ -9532,7 +9532,7 @@
   "parity": false
  },
  "inline_alert": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "inline_alert",
@@ -9549,7 +9549,7 @@
   "parity": false
  },
  "markdown_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "markdown_block",
@@ -9676,7 +9676,7 @@
   "parity": false
  },
  "jira_ticket": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "jira_ticket",
@@ -9700,7 +9700,7 @@
   "parity": false
  },
  "lozenge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "lozenge",
@@ -10009,7 +10009,7 @@
   "parity": false
  },
  "glow_button": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "glow_button",
@@ -10029,7 +10029,7 @@
   "parity": false
  },
  "encrypted_reveal": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "encrypted_reveal",
@@ -10242,7 +10242,7 @@
   "parity": false
  },
  "hint_reveal": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "hint_reveal",
@@ -10296,7 +10296,7 @@
   "parity": false
  },
  "lesson_nav": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "lesson_nav",
@@ -10316,7 +10316,7 @@
   "parity": false
  },
  "highlighted_text": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "highlighted_text",
@@ -10364,7 +10364,7 @@
   "parity": false
  },
  "gmail_summary": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "gmail_summary",
@@ -10504,7 +10504,7 @@
   "parity": false
  },
  "gradient_heading": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "gradient_heading",
@@ -10727,7 +10727,7 @@
   "parity": false
  },
  "inline_code": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "inline_code",
@@ -10756,7 +10756,7 @@
   "parity": false
  },
  "link_button": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "link_button",
@@ -10807,7 +10807,7 @@
   "parity": false
  },
  "info_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "info_card",
@@ -10842,7 +10842,7 @@
   "parity": false
  },
  "glowing_stat": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "glowing_stat",
@@ -10882,7 +10882,7 @@
   "parity": false
  },
  "gradient_border_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "gradient_border_card",
@@ -10991,7 +10991,7 @@
   "parity": false
  },
  "glitch_text": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "glitch_text",
@@ -11022,7 +11022,7 @@
   "parity": false
  },
  "magnetic_button": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "magnetic_button",
@@ -11037,7 +11037,7 @@
   "parity": false
  },
  "live_clock": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "live_clock",
@@ -11053,7 +11053,7 @@
   "parity": false
  },
  "focus_lens": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "focus_lens",
@@ -11068,7 +11068,7 @@
   "parity": false
  },
  "liquid_button": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "liquid_button",
@@ -11083,7 +11083,7 @@
   "parity": false
  },
  "highlight_sweep": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "highlight_sweep",
@@ -11118,7 +11118,7 @@
   "parity": false
  },
  "kinetic_headline": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "kinetic_headline",
@@ -11610,7 +11610,7 @@
   "parity": false
  },
  "floating_badge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "floating_badge",
@@ -11688,7 +11688,7 @@
   "parity": false
  },
  "google_icon": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "google_icon",
@@ -11709,7 +11709,7 @@
   "parity": false
  },
  "icon_badge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "icon_badge",
@@ -11864,7 +11864,7 @@
   "parity": false
  },
  "math_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "math_block",
@@ -11920,7 +11920,7 @@
   "parity": false
  },
  "lens_eli5": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "lens_eli5",
@@ -11938,7 +11938,7 @@
   "parity": false
  },
  "lens_freeform": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "lens_freeform",
@@ -12145,7 +12145,7 @@
   "parity": false
  },
  "freeform_canvas": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "freeform_canvas",

@@ -554,7 +554,7 @@ _RENDERERS['freeform_canvas'] = function(b) {
     body += _freeformRenderElement(namespaced[j]);
   }
 
-  return '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;' +
+  return '<div data-cb="node" data-key="' + _ckey(b.summary, 'freeform_canvas') + '" style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;' +
     'border-radius:8px;background:var(--surface,#ffffff);">' +
     '<svg viewBox="' + _esc(viewbox) + '" role="img" aria-label="' + _esc(summary) + '" ' +
     'style="width:100%;height:auto;display:block;">' +

@@ -91,7 +91,7 @@ _RENDERERS['lens_themes'] = function(b) {
 _RENDERERS['lens_eli5'] = function(b) {
   var excerpt = b.source_excerpt || '';
   var evidence = Array.isArray(b.evidence) ? b.evidence : [];
-  var html = '<div style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _markdownToHtml(b.text || '') + '</div>';
+  var html = '<div data-cb="node" data-key="' + _ckey(undefined, 'lens_eli5') + '" style="font-size:0.95rem;line-height:1.6;margin-bottom:14px;">' + _markdownToHtml(b.text || '') + '</div>';
   if (evidence.length) {
     html += '<div style="font-size:0.75rem;font-weight:700;opacity:0.6;margin-bottom:4px;">DRAWN FROM</div>';
     for (var i = 0; i < evidence.length; i++) {
@@ -122,7 +122,7 @@ _RENDERERS['lens_freeform'] = function(b) {
   var tier = b.tier || 'interpreted';
   var excerpt = b.source_excerpt || '';
   var evidence = Array.isArray(b.evidence) ? b.evidence : [];
-  var html = '<div style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;' +
+  var html = '<div data-cb="node" data-key="' + _ckey(b.label, 'lens_freeform') + '" style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;' +
     'font-weight:700;text-transform:uppercase;background:rgba(0,0,0,0.06);margin-bottom:8px;">' +
     'off-template · ' + _esc(tier) + '</div>' +
     '<div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;">' + _esc(b.label || '') + '</div>' +

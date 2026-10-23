@@ -426,7 +426,7 @@ _RENDERERS['floating_badge'] = function(b) {
     + '#' + uid + '{animation:' + uid + ' ' + speed + 's ease-in-out infinite;display:inline-flex;flex-direction:column;align-items:center;}'
     + '</style>';
 
-  return css + '<div style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'floating_badge') + '" style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<div id="' + uid + '">'
     + '<span style="font-size:' + size + ';display:block;background:' + bg + ';line-height:1;">' + icon + '</span>'
     + label + '</div></div>';

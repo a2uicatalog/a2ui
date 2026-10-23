@@ -446,7 +446,7 @@ _RENDERERS['alert_banner'] = function(b) {
 };
 
 _RENDERERS['info_card'] = function(b) {
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'info_card') + '" class="asw-native-card">' +
          (b.title ? '<div style="font-weight:700;margin-bottom:8px;font-size:0.95rem;">' + _esc(b.title) + '</div>' : '') +
          '<div style="font-size:0.88rem;color:var(--muted);">' + _markdownToHtml(b.text) + '</div>' +
          '</div>';
@@ -461,7 +461,7 @@ _RENDERERS['code'] = function(b) {
 };
 
 _RENDERERS['inline_code'] = function(b) {
-  return '<code>' + _esc(b.text) + '</code>';
+  return '<code data-cb="node" data-key="' + _ckey(b.text, 'inline_code') + '">' + _esc(b.text) + '</code>';
 };
 
 _RENDERERS['tag_chip'] = function(b) {
@@ -476,7 +476,7 @@ _RENDERERS['badge'] = function(b) {
 
 _RENDERERS['image'] = function(b) {
   var caption = b.caption ? '<div style="font-size:0.8rem;color:var(--muted);text-align:center;margin-top:6px;">' + _esc(b.caption) + '</div>' : '';
-  return '<div style="margin:16px 0;text-align:center;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'image') + '" style="margin:16px 0;text-align:center;">' +
          '<img src="' + _esc(b.url) + '" alt="' + _esc(b.alt || '') + '" style="max-width:100%;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">' +
          caption +
          '</div>';
@@ -485,7 +485,7 @@ _RENDERERS['image'] = function(b) {
 _RENDERERS['highlighted_text'] = function(b) {
   var color = b.color || '#fef08a';
   var noteAttr = b.annotation ? ' data-note="' + _esc(b.annotation) + '"' : '';
-  return '<mark class="asw-highlight" style="background:' + color + '"' + noteAttr + '>' + _esc(b.text) + '</mark>';
+  return '<mark data-cb="node" data-key="' + _ckey(b.text, 'highlighted_text') + '" class="asw-highlight" style="background:' + color + '"' + noteAttr + '>' + _esc(b.text) + '</mark>';
 };
 
 _RENDERERS['table'] = function(b) {
@@ -634,7 +634,7 @@ _RENDERERS['preview_frame'] = function(b) {
 // suggestion links.
 _RENDERERS['link_button'] = function(b) {
   var target = b.same_tab ? '_top' : '_blank';
-  return '<div style="margin:12px 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'link_button') + '" style="margin:12px 0;">' +
          '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" target="' + target + '">' + _esc(b.label) + '</a>' +
          '</div>';
 };
@@ -659,7 +659,7 @@ _RENDERERS['lesson_nav'] = function(b) {
   var checkbox = b.show_completion ? 
     '<label class="asw-complete-row"><input type="checkbox" onchange="if(typeof localStorage !== \'undefined\'){localStorage.setItem(\'complete-\' + ' + _jsJson(b.current_title) + ', this.checked);}"> Mark as complete</label>' : '';
 
-  return '<div class="asw-lesson-nav">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.current_title, 'lesson_nav') + '" class="asw-lesson-nav">' +
          prevHtml +
          '<div class="asw-lesson-nav-center">' + moduleLabel + '<div class="asw-lesson-nav-title">' + _esc(b.current_title) + '</div>' + checkbox + '</div>' +
          nextHtml +
@@ -819,7 +819,7 @@ _RENDERERS['match_exercise'] = function(b) {
 _RENDERERS['hint_reveal'] = function(b) {
   var accent = b.accent || 'var(--accent)';
   var label = b.label || 'Show hint';
-  return '<details class="asw-hint" style="border-left-color:' + accent + ';">' +
+  return '<details data-cb="node" data-key="' + _ckey(undefined, 'hint_reveal') + '" class="asw-hint" style="border-left-color:' + accent + ';">' +
          '<summary style="color:' + accent + ';">' + _esc(label) + '</summary>' +
          '<div class="asw-hint-body">' + _markdownToHtml(b.hint) + '</div>' +
          '</details>';
@@ -1059,7 +1059,7 @@ _RENDERERS['gmail_summary'] = function(b) {
     listHtml += '</ul>';
   }
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.query, 'gmail_summary') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">✉️</span> Gmail Search: "' + _esc(query) + '"</div>' +
          listHtml +
          '</div>';
@@ -2303,7 +2303,7 @@ _RENDERERS['deprecation_notice'] = function(b) {
 
 _RENDERERS['experimental_banner'] = function(b) {
   var msg = b.message || b.text || '';
-  return '<div style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'experimental_banner') + '" style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#92400e;margin-bottom:4px;">🧪 Experimental</div>' +
     (msg ? '<p style="font-size:0.85rem;color:#78350f;margin:0;">' + _markdownToHtml(msg) + '</p>' : '') + '</div>';
 };
@@ -2373,7 +2373,7 @@ _RENDERERS['http_request_block'] = function(b) {
   var color = colors[method] || '#6b7280';
   var hdrsHtml = Object.keys(headers).map(function(k){ return '<div style="font-size:0.78rem;font-family:monospace;color:#374151;"><span style="color:var(--muted,#5f6368);">' + _esc(k) + ':</span> ' + _esc(headers[k]) + '</div>'; }).join('');
   var bodyHtml = body ? '<pre style="background:#f9fafb;border-radius:6px;padding:10px;margin-top:10px;font-size:0.78rem;overflow:auto;color:#374151;">' + _esc(body) + '</pre>' : '';
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'http_request_block') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">' +
     '<div style="padding:10px 16px;display:flex;align-items:center;gap:10px;background:#f9fafb;">' +
     '<span style="background:' + color + ';color:#fff;font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:5px;font-family:monospace;">' + method + '</span>' +
     '<span style="font-family:monospace;font-size:0.85rem;color:#374151;">' + _esc(url) + '</span></div>' +
@@ -2404,7 +2404,7 @@ _RENDERERS['keyboard_shortcut'] = function(b) {
   var action = b.action || '';
   var keyHtml = keys.map(function(k){ return '<kbd style="display:inline-block;padding:2px 8px;font-family:monospace;font-size:0.8rem;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:3px solid #9ca3af;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);color:#374151;">' + _esc(k) + '</kbd>'; }).join(' + ');
   var actionHtml = action ? '<span style="margin-left:10px;font-size:0.85rem;color:var(--muted,#5f6368);">' + _esc(action) + '</span>' : '';
-  return '<div style="margin:0.5rem 0;display:inline-flex;align-items:center;">' + keyHtml + actionHtml + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.action, 'keyboard_shortcut') + '" style="margin:0.5rem 0;display:inline-flex;align-items:center;">' + keyHtml + actionHtml + '</div>';
 };
 
 _RENDERERS['api_param_table'] = function(b) {
@@ -2460,7 +2460,7 @@ _RENDERERS['anchor_list'] = function(b) {
 _RENDERERS['glossary_term'] = function(b) {
   var term = b.term || b.name || '';
   var definition = b.definition || b.text || '';
-  return '<dl style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
+  return '<dl data-cb="node" data-key="' + _ckey(b.term, 'glossary_term') + '" style="margin:0.5rem 0;padding:10px 14px;border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;">' +
     '<dt style="font-weight:700;color:#7c3aed;font-size:0.9rem;">' + _esc(term) + '</dt>' +
     '<dd style="margin:4px 0 0 0;font-size:0.85rem;color:#374151;">' + _markdownToHtml(definition) + '</dd></dl>';
 };
@@ -2584,7 +2584,7 @@ _RENDERERS['follow_cta'] = function(b) {
   var msg = b.message || 'Follow for more';
   var links = b.platform_links || {};
   var btns = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="padding:8px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;">' + _esc(k) + '</a>'; }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:1.5rem 0;background:#f9fafb;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.message, 'follow_cta') + '" style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:1.5rem 0;background:#f9fafb;">' +
     '<span style="font-size:0.95rem;font-weight:600;color:#111827;">' + _esc(msg) + '</span>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + btns + '</div></div>';
 };
@@ -2659,7 +2659,7 @@ _RENDERERS['copy_code_button'] = function(b) {
 
 _RENDERERS['log_output'] = function(b) {
   var logs = (b.logs||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="background:#0d1117;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
+  return '<div data-cb="node" data-key="' + _ckey(undefined, 'log_output') + '" style="background:#0d1117;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
     '<pre style="margin:0;font-family:monospace;font-size:0.78rem;color:#656e7d;white-space:pre-wrap;word-break:break-all;">' + logs + '</pre></div>';
 };
 
@@ -2862,7 +2862,7 @@ _RENDERERS['image_with_caption'] = function(b) {
   // went unnoticed until read directly). 2026-09-27.
   var img = '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;">';
   if (b.link_url) img = '<a href="' + _safeUrl(b.link_url) + '" target="_top">' + img + '</a>';
-  return '<figure style="margin:1.2rem 0;text-align:center;">' + img +
+  return '<figure data-cb="node" data-key="' + _ckey(b.image_url, 'image_with_caption') + '" style="margin:1.2rem 0;text-align:center;">' + img +
     (caption ? '<figcaption style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:8px;font-style:italic;">' + _esc(caption) + '</figcaption>' : '') + '</figure>';
 };
 
@@ -2875,7 +2875,7 @@ _RENDERERS['framed_screenshot'] = function(b) {
     '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>' +
     (alt ? '<span style="flex:1;background:#fff;border-radius:4px;padding:2px 8px;font-size:0.72rem;color:#6b7280;">' + _esc(alt) + '</span>' : '') + '</div>';
-  return '<div style="margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + header + '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;"></div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.image_url, 'framed_screenshot') + '" style="margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + header + '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;"></div>';
 };
 
 _RENDERERS['video_thumbnail'] = function(b) {
@@ -2978,7 +2978,7 @@ _RENDERERS['empty_state'] = function(b) {
   // payload's actual content never appeared (surface-parity debt). 2026-09-27.
   var message = b.description || b.message || b.text || '';
   var action = b.action_label || '';
-  return '<div style="text-align:center;padding:40px 20px;margin:1rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'empty_state') + '" style="text-align:center;padding:40px 20px;margin:1rem 0;">' +
     '<div style="font-size:3rem;margin-bottom:12px;">' + icon + '</div>' +
     '<div style="font-weight:700;color:#111827;margin-bottom:6px;">' + _esc(title) + '</div>' +
     (message ? '<p style="font-size:0.88rem;color:var(--muted,#5f6368);">' + _esc(message) + '</p>' : '') +
@@ -4206,7 +4206,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
     );
   }
 
-  return '<div style="color:#6e767d;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'linkedin_post_image') + '" style="color:#6e767d;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
 };
 
 // ── Visual / Beauty ──────────────────────────────────────────────────────────
