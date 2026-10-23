@@ -251,11 +251,12 @@ _RENDERERS['concept_ladder'] = function(b) {
     var fn = _RENDERERS[rung.component || rung.type] || _RENDERERS['concept_rung'];
     var cardHtml = fn(rung);
     var componentId = _esc(rung.id || ('rung-' + (i + 1)));
+    var rKey = _esc(rung.id || rung.title || ('rung-' + (i + 1)));
     var badge = _esc(rung.badge === undefined || rung.badge === null ? String(i + 1) : rung.badge);
-    rows += '<div data-component-id="' + componentId + '" style="display:grid;'
+    rows += '<div data-cb="item" data-key="' + rKey + '" data-component-id="' + componentId + '" style="display:grid;'
       + 'grid-template-columns:2.4rem minmax(0,1fr);gap:1rem;scroll-margin-top:1.5rem;">'
       + '<div style="display:flex;flex-direction:column;align-items:center;">'
-      + '<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
+      + '<div data-cb="label" data-key="' + rKey + '" style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
       + 'justify-content:center;font-family:' + _CF_LABEL + ';font-weight:600;font-size:0.85rem;'
       + 'flex-shrink:0;background:' + nodeBg + ';color:' + nodeFg + ';">' + badge + '</div>'
       + connector

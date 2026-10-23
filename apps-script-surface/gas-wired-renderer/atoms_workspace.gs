@@ -148,8 +148,9 @@ _RENDERERS['gmail_unread_count'] = function(b) {
       var lbl   = labels[i];
       var count = counts[lbl] || 0;
       var dim   = count === 0;
-      badges += '<div style="display:flex;align-items:center;gap:8px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 14px;">' +
-                '<span style="font-size:0.82rem;font-weight:600;color:var(--text);">' + _esc(lbl) + '</span>' +
+      var lblKey = _esc(lbl);
+      badges += '<div data-cb="tile" data-key="' + lblKey + '" style="display:flex;align-items:center;gap:8px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 14px;">' +
+                '<span data-cb="label" data-key="' + lblKey + '" style="font-size:0.82rem;font-weight:600;color:var(--text);">' + _esc(lbl) + '</span>' +
                 '<span style="min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:99px;font-size:0.75rem;font-weight:700;background:' + (dim ? 'var(--border,#e2e8f0)' : _esc(accent)) + ';color:' + (dim ? 'var(--muted)' : '#fff') + ';">' + count + '</span>' +
                 '</div>';
     }
@@ -447,8 +448,9 @@ _RENDERERS['gmail_inbox'] = function(b) {
     var bg      = em.unread ? 'rgba(99,102,241,0.07)' : 'rgba(255,255,255,0.03)';
     var bd      = em.unread ? 'rgba(99,102,241,0.25)'  : 'rgba(255,255,255,0.07)';
 
+    var itemKey = _esc(em.id || em.subject);
     cards +=
-      '<a href="' + _esc(gmailUrl) + '" target="_top" style="text-decoration:none;flex:0 0 260px;scroll-snap-align:start;">' +
+      '<a data-cb="item" data-key="' + itemKey + '" href="' + _esc(gmailUrl) + '" target="_top" style="text-decoration:none;flex:0 0 260px;scroll-snap-align:start;">' +
       '<div style="height:100%;padding:16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;box-sizing:border-box;' +
         'background:' + bg + ';border:1px solid ' + bd + ';' +
         'transition:background 0.15s,transform 0.15s;display:flex;flex-direction:column;gap:10px;"' +
@@ -463,7 +465,7 @@ _RENDERERS['gmail_inbox'] = function(b) {
         '</div>' +
         '<div style="font-size:0.62rem;color:#617087;white-space:nowrap;flex-shrink:0;">' + time + '</div>' +
       '</div>' +
-      '<div style="font-size:0.78rem;' + bold + 'color:#50709a;line-height:1.3;">' + subj + '</div>' +
+      '<div data-cb="label" data-key="' + itemKey + '" style="font-size:0.78rem;' + bold + 'color:#50709a;line-height:1.3;">' + subj + '</div>' +
       '<div style="font-size:0.7rem;color:#617087;line-height:1.5;flex:1;">' + snip + '</div>' +
       (em.count > 1 ? '<div style="font-size:0.6rem;color:#475569;">' + em.count + ' messages</div>' : '') +
       (em.unread ? '<div style="width:7px;height:7px;border-radius:50%;background:' + accentSafe + ';"></div>' : '') +
@@ -599,8 +601,9 @@ _RENDERERS['drive_recent_files'] = function(b) {
     var f  = files[i];
     var mi = mimeInfo(f.mime);
     var nm = f.name.length > 34 ? f.name.substring(0, 32) + '…' : f.name;
+    var k  = _esc(String(f.id || f.name || ''));
     cards +=
-      '<a href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;flex:0 0 200px;scroll-snap-align:start;">' +
+      '<a data-cb="item" data-key="' + k + '" href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;flex:0 0 200px;scroll-snap-align:start;">' +
       '<div style="height:100%;padding:14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);' +
         'transition:background 0.15s,transform 0.15s;display:flex;flex-direction:column;gap:10px;"' +
@@ -611,7 +614,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
           'display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;letter-spacing:0.04em;">' + mi.l + '</div>' +
         '<div style="font-size:0.6rem;color:#64748b;">' + relTime(f.modified) + '</div>' +
       '</div>' +
-      '<div style="font-size:0.75rem;font-weight:600;color:#5577a4;line-height:1.3;">' + _esc(nm) + '</div>' +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:0.75rem;font-weight:600;color:#5577a4;line-height:1.3;">' + _esc(nm) + '</div>' +
       (f.owner ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">' + _esc(f.owner) + '</div>' : '') +
       '</div></a>';
   }
@@ -718,15 +721,16 @@ _RENDERERS['drive_folder_contents'] = function(b) {
     var f  = files[i];
     var mi = mimeInfo(f.mime);
     var nm = f.name.length > 28 ? f.name.substring(0, 26) + '…' : f.name;
+    var k = _esc(String(f.id || f.name || ''));
     items +=
-      '<a href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;">' +
+      '<a data-cb="tile" data-key="' + k + '" href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;">' +
       '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
         'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);' +
         'transition:background 0.12s;cursor:pointer;"' +
         ' onmouseover="this.style.background=\'rgba(66,133,244,0.08)\'"' +
         ' onmouseout="this.style.background=\'rgba(255,255,255,0.02)\'">' +
         '<div style="width:26px;height:26px;border-radius:5px;background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
-        '<div style="font-size:0.75rem;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(nm) + '</div>' +
+        '<div data-cb="label" data-key="' + k + '" style="font-size:0.75rem;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(nm) + '</div>' +
       '</div></a>';
   }
 
@@ -792,7 +796,8 @@ _RENDERERS['jump_nav'] = function(b) {
   links.forEach(function(link) {
     var label  = link.label  || '';
     var target = link.target || '';
-    html += '<button onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
+    var lk     = _esc(link.id || link.target || label);
+    html += '<button data-cb="tile" data-key="' + lk + '" onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
           + ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
           + ' onmouseover="this.style.background=\'#e2e8f0\'" onmouseout="this.style.background=\'#f1f5f9\'">'
           + _esc(label)

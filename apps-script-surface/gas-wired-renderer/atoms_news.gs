@@ -23,10 +23,11 @@ _RENDERERS['headline_list'] = function(b) {
     var titleEl = item.url
       ? '<a href="' + _safeUrl(item.url) + '" target="_top" style="color:var(--text,#f9fafb);text-decoration:none">' + _esc(item.title) + '</a>'
       : _esc(item.title || '');
-    return '<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border,rgba(255,255,255,0.08))">' +
+    var itemKey = _esc(item.title || '');
+    return '<div data-cb="item" data-key="' + itemKey + '" style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border,rgba(255,255,255,0.08))">' +
       '<span style="flex:0 0 28px;height:28px;border-radius:50%;background:' + accent + ';color:#fff;font-size:0.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px">' + rank + '</span>' +
       '<div style="flex:1;min-width:0">' +
-      '<p style="margin:0;font-size:1rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb)">' + titleEl + '</p>' +
+      '<p data-cb="label" data-key="' + itemKey + '" style="margin:0;font-size:1rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb)">' + titleEl + '</p>' +
       (tagHtml || meta ? '<p style="margin:5px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + tagHtml + meta + '</p>' : '') +
       '</div></div>';
   }).join('');
@@ -80,10 +81,11 @@ _RENDERERS['news_digest'] = function(b) {
     var source = item.source
       ? '<p style="margin:6px 0 0;font-size:0.72rem;color:var(--muted,#9ca3af)">' + _esc(item.source) + '</p>'
       : '';
-    return '<div style="background:var(--surface2,#1a1a2e);border-radius:10px;padding:16px;position:relative">' +
+    var nk = _esc(String(item.title || item.id || i));
+    return '<div data-cb="item" data-key="' + nk + '" style="background:var(--surface2,#1a1a2e);border-radius:10px;padding:16px;position:relative">' +
       '<span style="position:absolute;top:14px;right:14px;font-size:1.1rem;font-weight:900;color:' + accent + ';opacity:0.3">' + (i + 1) + '</span>' +
       (tag ? '<p style="margin:0 0 8px">' + tag + '</p>' : '') +
-      '<p style="margin:0;font-size:0.92rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb);padding-right:24px">' + _esc(item.title || '') + '</p>' +
+      '<p data-cb="label" data-key="' + nk + '" style="margin:0;font-size:0.92rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb);padding-right:24px">' + _esc(item.title || '') + '</p>' +
       body + source +
       '</div>';
   }).join('');

@@ -166,10 +166,11 @@ _RENDERERS['photo_stepper'] = function(b) {
       ? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '" loading="lazy">'
       : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
         'justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>';
-    return '<div class="' + sid + '-slide" data-ps-slide="' + i + '" data-ps-id="' + _esc(String(img.id || '')) + '">' +
+    var imgK = img.id || img.name || img.alt || '';
+    return '<div data-cb="tile" data-key="' + _esc(String(imgK)) + '" class="' + sid + '-slide" data-ps-slide="' + i + '" data-ps-id="' + _esc(String(img.id || '')) + '">' +
       media +
       badge +
-      '<div class="' + sid + '-cap"><div class="ps-name">' + _esc(img.name || img.alt || '') + '</div>' +
+      '<div class="' + sid + '-cap"><div data-cb="label" data-key="' + _esc(String(imgK)) + '" class="ps-name">' + _esc(img.name || img.alt || '') + '</div>' +
       price + voters +
       '<button type="button" class="' + sid + '-vote" data-row-json="' + rowJson + '">' +
       (img.active ? '★ Starred — tap to unstar' : '☆ Star this one') + '</button>' +

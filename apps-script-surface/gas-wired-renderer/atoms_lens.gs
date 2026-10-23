@@ -41,7 +41,8 @@ _RENDERERS['lens_quotes'] = function(b) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
-    html += '<blockquote style="margin:0 0 14px 0;">' + _markdownToHtml(it.quote || '') +
+    var k = _esc(it.id || it.quote || '');
+    html += '<blockquote data-cb="item" data-key="' + k + '" style="margin:0 0 14px 0;">' + _markdownToHtml(it.quote || '') +
       (it.context ? '<div style="font-size:0.78rem;opacity:0.65;margin-top:4px;">' + _esc(it.context) + '</div>' : '') +
       '</blockquote>';
   }
@@ -54,8 +55,9 @@ _RENDERERS['lens_structure'] = function(b) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
-    html += '<div style="margin-bottom:14px;">' +
-      '<div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">' + _esc(it.heading || '') + '</div>' +
+    var k = _esc(it.id || it.heading || '');
+    html += '<div data-cb="item" data-key="' + k + '" style="margin-bottom:14px;">' +
+      '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">' + _esc(it.heading || '') + '</div>' +
       '<blockquote style="margin:0;">' + _markdownToHtml(it.quote || '') + '</blockquote>' +
       '</div>';
   }
@@ -72,7 +74,8 @@ _RENDERERS['lens_themes'] = function(b) {
   });
   var chipsHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">';
   for (var i = 0; i < sorted.length; i++) {
-    chipsHtml += '<span data-lens-theme="' + i + '" style="padding:5px 12px;border-radius:999px;' +
+    var k = _esc(sorted[i].id || sorted[i].theme || sorted[i].label || '');
+    chipsHtml += '<span data-cb="tile" data-key="' + k + '" data-lens-theme="' + i + '" style="padding:5px 12px;border-radius:999px;' +
       'background:rgba(124,58,237,0.12);color:#7c3aed;font-size:0.78rem;font-weight:700;">' +
       _esc(sorted[i].label || '') + '</span>';
   }
@@ -144,11 +147,12 @@ _RENDERERS['lens_similar'] = function(b) {
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
     var retrieved = !!it.retrieved;
+    var k = _esc(it.id || it.title || it.label || '');
     var titleHtml = (retrieved && it.url)
       ? '<a href="' + _safeUrl(it.url) + '" target="_blank" rel="noopener" style="color:inherit;">' + _esc(it.title || '') + '</a>'
       : _esc(it.title || '') + ' <span style="font-size:0.7rem;font-weight:700;color:#b91c1c;">· not retrieved</span>';
-    rowsHtml += '<div style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
-      '<div style="font-weight:700;font-size:0.88rem;">' + titleHtml + '</div>' +
+    rowsHtml += '<div data-cb="item" data-key="' + k + '" style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
+      '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:0.88rem;">' + titleHtml + '</div>' +
       '<div style="font-size:0.82rem;opacity:0.75;">' + _esc(it.why || '') + '</div>' +
       '</div>';
   }
@@ -162,11 +166,12 @@ _RENDERERS['lens_context'] = function(b) {
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
     var retrieved = !!it.retrieved;
+    var k = _esc(it.id || it.label || it.title || '');
     var labelHtml = (retrieved && it.url)
       ? '<a href="' + _safeUrl(it.url) + '" target="_blank" rel="noopener" style="color:inherit;">' + _esc(it.label || '') + '</a>'
       : _esc(it.label || '') + ' <span style="font-size:0.7rem;font-weight:700;color:#b91c1c;">· not retrieved</span>';
-    html += '<div style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
-      '<div style="font-weight:700;font-size:0.88rem;">' + labelHtml + '</div>' +
+    html += '<div data-cb="item" data-key="' + k + '" style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
+      '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:0.88rem;">' + labelHtml + '</div>' +
       '<div style="font-size:0.82rem;opacity:0.75;">' + _esc(it.note || '') + '</div>' +
       '</div>';
   }

@@ -146,8 +146,8 @@ _RENDERERS['cohort_progress_board'] = function(b) {
         '</td>';
     }).join('');
 
-    return '<tr>' +
-      '<td style="' + tdS + '">' +
+    return '<tr data-cb="item" data-key="' + _esc(r.id || r.email || '') + '">' +
+      '<td data-cb="label" data-key="' + _esc(r.id || r.email || '') + '" style="' + tdS + '">' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
           '<div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;flex-shrink:0;' +
             'display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:#fff;">' + init + '</div>' +
@@ -253,8 +253,9 @@ _RENDERERS['annotation_highlight'] = function(b) {
     var esc_term = n.term.replace(/[&<>"']/g, function(c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
+    var k = n.id || n.term;
     out = out.replace(esc_term,
-      '<span class="' + uid + 'a" data-i="' + i + '" onclick="' + uid + 'show(' + i + ',this)" ' +
+      '<span data-cb="ref" data-key="' + _esc(k) + '" class="' + uid + 'a" data-i="' + i + '" onclick="' + uid + 'show(' + i + ',this)" ' +
         'style="background:' + col + '22;border-bottom:2px solid ' + col + ';color:' + col + ';' +
           'cursor:pointer;border-radius:3px;padding:0 3px;font-weight:600;">' +
         esc_term + '</span>'
@@ -306,8 +307,10 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   var stepHtml = '';
   for (var i = 0; i < steps.length; i++) {
     var s = steps[i];
+    var rawKey = s.id || s.name || s.title || s.label || '';
+    var keyAttr = _esc(String(rawKey));
     stepHtml +=
-      '<div style="display:flex;gap:14px;padding:16px 0;' + (i < steps.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">' +
+      '<div data-cb="item" data-key="' + keyAttr + '" style="display:flex;gap:14px;padding:16px 0;' + (i < steps.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">' +
         '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;">' +
           '<div id="' + uid + 'ic' + i + '" style="width:36px;height:36px;border-radius:50%;transition:all 0.3s;' +
             'border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);' +
@@ -316,7 +319,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
           (i < steps.length - 1 ? '<div style="width:1px;flex:1;min-height:12px;margin-top:4px;background:rgba(255,255,255,0.06);"></div>' : '') +
         '</div>' +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:0.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">' + _esc(s.label || '') + '</div>' +
+          '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">' + _esc(s.label || '') + '</div>' +
           (s.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;margin-bottom:10px;">' + _esc(s.description) + '</div>' : '') +
           '<button id="' + uid + 'b' + i + '" aria-label="' + _esc((s.action_label || 'Mark complete') + ': ' + (s.label || ('step ' + (i + 1)))) + '" onclick="' + uid + 'done(' + i + ')" ' +
             'style="padding:7px 16px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);' +
@@ -638,10 +641,11 @@ _RENDERERS['leaderboard_card'] = function(b) {
     var isTop = i < 3;
     var barW  = rows[0] && rows[0].score > 0 ? Math.round((r.score / rows[0].score) * 100) : 0;
     var col   = i === 0 ? '#8c7103' : i === 1 ? '#617592' : i === 2 ? '#bb5604' : '#475569';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
+    var rowKey = _esc(r.id || r.name || String(i));
+    return '<div data-cb="item" data-key="' + rowKey + '" style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
       '<div style="width:24px;text-align:center;font-size:' + (isTop ? '1rem' : '0.72rem') + ';color:' + (isTop ? col : '#334155') + ';font-weight:700;flex-shrink:0;">' + (isTop ? MEDALS[i] : (i + 1)) + '</div>' +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
+        '<div data-cb="label" data-key="' + rowKey + '" style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
         '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:5px;">' +
           '<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>' +
         '</div>' +

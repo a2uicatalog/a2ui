@@ -1,0 +1,2665 @@
+{
+ "version": 1,
+ "kinds": [
+  "tile",
+  "bar",
+  "link",
+  "branch",
+  "arc",
+  "ribbon",
+  "node",
+  "label",
+  "ref",
+  "item"
+ ],
+ "note": "Build contract coverage (I75). Every schema atom is listed: keyed, sweep (in contract_sweep), single, exempt or todo. A new atom must be added here (tests/test_contract_sweep.py).",
+ "atoms": {
+  "abbr_tooltip": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "accordion_item": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "achievement_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "action_items": {
+   "status": "sweep"
+  },
+  "action_required_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "actual_vs_estimate": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "adsb_feed": {
+   "status": "exempt",
+   "reason": "invisible live data feed connector"
+  },
+  "agenda_block": {
+   "status": "sweep"
+  },
+  "agent_demo_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "agent_narrator": {
+   "status": "sweep"
+  },
+  "agent_sketchpad": {
+   "status": "sweep"
+  },
+  "ai_build_trace": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "airspace_command_deck": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "alert_banner": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "ambient_gradient": {
+   "status": "exempt",
+   "reason": "decorative aurora background layer"
+  },
+  "anchor_list": {
+   "status": "sweep"
+  },
+  "animated_beam": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "animated_border": {
+   "status": "exempt",
+   "reason": "presentational wrapper container for children"
+  },
+  "animated_border_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "animated_counter": {
+   "status": "sweep"
+  },
+  "annotated_code": {
+   "status": "sweep"
+  },
+  "annotation_highlight": {
+   "status": "sweep"
+  },
+  "api_param_table": {
+   "status": "sweep"
+  },
+  "api_reference": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "arc_diagram": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "article_hero": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "article_series_nav": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "atc_vectoring": {
+   "status": "exempt",
+   "reason": "full-screen interactive radar game canvas"
+  },
+  "atom_anatomy": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "audio_link": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "audio_player": {
+   "status": "exempt",
+   "reason": "embedded media player control"
+  },
+  "aurora_background": {
+   "status": "exempt",
+   "reason": "motion animated hero background effect"
+  },
+  "author_bio_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "avatar_group": {
+   "status": "sweep"
+  },
+  "back_button": {
+   "status": "exempt",
+   "reason": "interactive navigation button"
+  },
+  "badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "badge_group": {
+   "status": "sweep"
+  },
+  "badge_showcase": {
+   "status": "sweep"
+  },
+  "before_after": {
+   "status": "sweep"
+  },
+  "before_after_stack": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "benchmark_comparison": {
+   "status": "sweep"
+  },
+  "bento_grid": {
+   "status": "sweep"
+  },
+  "bezier_easing": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "big_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "blockquote": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "blockquote_with_avatar": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "blur_fade_in": {
+   "status": "exempt",
+   "reason": "layout container wrapper for child elements"
+  },
+  "body": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "box_plot": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "breadcrumb": {
+   "status": "sweep"
+  },
+  "breaking_banner": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "brevet_automatismes": {
+   "status": "sweep"
+  },
+  "brevet_timeline": {
+   "status": "sweep"
+  },
+  "brick_build_3d": {
+   "status": "exempt",
+   "reason": "3D WebGL assembly animation engine"
+  },
+  "bullet_graph": {
+   "status": "sweep"
+  },
+  "bullet_list": {
+   "status": "sweep"
+  },
+  "calendar_today": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "calendar_upcoming": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "calibration_plot": {
+   "status": "sweep"
+  },
+  "call_mood_board": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "callout": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "callout_anatomy": {
+   "status": "sweep"
+  },
+  "canvas_plexus": {
+   "status": "exempt",
+   "reason": "procedural full-viewport background animation"
+  },
+  "capability_checklist": {
+   "status": "sweep"
+  },
+  "card_stack": {
+   "status": "single",
+   "reason": "one front card is shown; the cards behind it carry no visible content, so keying them would only write hidden titles into the markup"
+  },
+  "carousel": {
+   "status": "sweep"
+  },
+  "case_study_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "catalogue_provenance": {
+   "status": "sweep"
+  },
+  "caution_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "cert_disclaimer": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "certification_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "change_chart": {
+   "status": "sweep"
+  },
+  "changed_mind": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "changelog_entry": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "chartjs_bar": {
+   "status": "sweep"
+  },
+  "chartjs_line": {
+   "status": "sweep"
+  },
+  "chartjs_pie": {
+   "status": "sweep"
+  },
+  "chat_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "chat_send_button": {
+   "status": "exempt",
+   "reason": "interactive webhook trigger button"
+  },
+  "chat_sequence": {
+   "status": "sweep"
+  },
+  "chat_space_button": {
+   "status": "exempt",
+   "reason": "interactive space creation button"
+  },
+  "chat_thread": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "checklist_interactive": {
+   "status": "sweep"
+  },
+  "chip_group": {
+   "status": "sweep"
+  },
+  "choicebox_group": {
+   "status": "sweep"
+  },
+  "chord_diagram": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "circle_pack": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "cli_command": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "clipart": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "closing": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "code": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "code_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "code_diff": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "code_snippet_pair": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "cohort_progress_board": {
+   "status": "sweep"
+  },
+  "cohort_retention": {
+   "status": "sweep"
+  },
+  "collapsible_panel": {
+   "status": "exempt",
+   "reason": "layout disclosure container"
+  },
+  "color_section": {
+   "status": "exempt",
+   "reason": "layout container styling children"
+  },
+  "color_swatch_grid": {
+   "status": "sweep"
+  },
+  "columns": {
+   "status": "exempt",
+   "reason": "generic multi-column layout container"
+  },
+  "combobox": {
+   "status": "exempt",
+   "reason": "interactive filterable dropdown input"
+  },
+  "command_palette": {
+   "status": "exempt",
+   "reason": "interactive keyboard palette overlay"
+  },
+  "command_step": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "comparison_grid": {
+   "status": "sweep"
+  },
+  "comparison_morph": {
+   "status": "exempt",
+   "reason": "interactive split comparison slider"
+  },
+  "completion_gate": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "concept_ladder": {
+   "status": "sweep"
+  },
+  "concept_rung": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "confetti_burst": {
+   "status": "exempt",
+   "reason": "procedural confetti animation primitive"
+  },
+  "confetti_trigger": {
+   "status": "exempt",
+   "reason": "interactive trigger button for effects"
+  },
+  "confidence_bar": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "constraint_fix_triad": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "content_tabs": {
+   "status": "exempt",
+   "reason": "multi-pane container for child blocks"
+  },
+  "contour_plot": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "contrast_audit": {
+   "status": "sweep"
+  },
+  "contributor_list": {
+   "status": "sweep"
+  },
+  "conversation_snippet": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "conversion_funnel": {
+   "status": "sweep"
+  },
+  "copy_code_button": {
+   "status": "exempt",
+   "reason": "interactive clipboard utility button"
+  },
+  "copy_prompt": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "copy_to_clipboard": {
+   "status": "exempt",
+   "reason": "interactive click-to-copy utility element"
+  },
+  "count_up_stat": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "countdown_ring": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "countdown_timer": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "counter_group": {
+   "status": "sweep"
+  },
+  "course_progress_card": {
+   "status": "sweep"
+  },
+  "css_dropdown_menu": {
+   "status": "exempt",
+   "reason": "interactive dropdown navigation control"
+  },
+  "css_modal": {
+   "status": "exempt",
+   "reason": "modal popup container dialog"
+  },
+  "css_slide_panel": {
+   "status": "exempt",
+   "reason": "interactive layout overlay container"
+  },
+  "csv_import": {
+   "status": "exempt",
+   "reason": "interactive file upload and parse form"
+  },
+  "cta_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "cta_section": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "cursor_glow": {
+   "status": "exempt",
+   "reason": "decorative mouse-tracking visual primitive"
+  },
+  "cursor_trail": {
+   "status": "exempt",
+   "reason": "decorative mouse-tracking visual primitive"
+  },
+  "custom_checkbox_group": {
+   "status": "exempt",
+   "reason": "interactive form selection inputs"
+  },
+  "customer_logo_grid": {
+   "status": "sweep"
+  },
+  "cycle_diagram": {
+   "status": "sweep"
+  },
+  "dark_divider": {
+   "status": "exempt",
+   "reason": "decorative layout visual separator"
+  },
+  "dark_feature_grid": {
+   "status": "sweep"
+  },
+  "dark_hero": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "data_grid": {
+   "status": "sweep"
+  },
+  "data_source": {
+   "status": "exempt",
+   "reason": "invisible data connector utility"
+  },
+  "data_table_sortable": {
+   "status": "sweep"
+  },
+  "deadline_ticker": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "decision_tree": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "demo_caption": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "demo_chart": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "demo_cursor": {
+   "status": "exempt",
+   "reason": "demo mouse cursor simulation overlay"
+  },
+  "demo_kpis": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "demo_orb": {
+   "status": "exempt",
+   "reason": "demo glowing presence orb graphic"
+  },
+  "demo_page": {
+   "status": "exempt",
+   "reason": "demo slide container page for child blocks"
+  },
+  "demo_panel": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "demo_progress": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "demo_toggle_grid": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "demo_window": {
+   "status": "exempt",
+   "reason": "demo container window wrapping atom blocks"
+  },
+  "demo_wordmark": {
+   "status": "exempt",
+   "reason": "demo motion decorative typography overlay"
+  },
+  "deprecation_notice": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "depth_stack": {
+   "status": "sweep"
+  },
+  "diagram": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "difficulty_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "display_quote": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "divider": {
+   "status": "exempt",
+   "reason": "pure visual separator with no bound data payload"
+  },
+  "doc_ai_summary": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "document_link": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "domain_brief": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "domain_picker": {
+   "status": "exempt",
+   "reason": "interactive domain selection and input atom"
+  },
+  "donut_stat": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "dot_grid_background": {
+   "status": "exempt",
+   "reason": "decorative CSS background pattern layer"
+  },
+  "drive_file_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "drive_file_list": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "drive_folder_contents": {
+   "status": "sweep"
+  },
+  "drive_image": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "drive_recent_files": {
+   "status": "sweep"
+  },
+  "drive_storage_usage": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "drop_cap": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "effect_overlay": {
+   "status": "exempt",
+   "reason": "motion particle overlay effect utility"
+  },
+  "embed_codepen": {
+   "status": "exempt",
+   "reason": "embedded CodePen sandbox iframe"
+  },
+  "embed_gist": {
+   "status": "exempt",
+   "reason": "external GitHub Gist embed iframe"
+  },
+  "embed_google_slides": {
+   "status": "exempt",
+   "reason": "embedded Google Slides iframe viewer"
+  },
+  "embed_stackblitz": {
+   "status": "exempt",
+   "reason": "embedded StackBlitz environment iframe"
+  },
+  "embed_tweet": {
+   "status": "exempt",
+   "reason": "external Twitter embed iframe/widget"
+  },
+  "empty_state": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "encrypted_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "entity_list": {
+   "status": "sweep"
+  },
+  "env_var_list": {
+   "status": "sweep"
+  },
+  "expandable_list": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "expandable_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "experimental_banner": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "expert_endorsement": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "faq_accordion": {
+   "status": "sweep"
+  },
+  "feature_grid": {
+   "status": "sweep"
+  },
+  "feature_matrix": {
+   "status": "sweep"
+  },
+  "feed_status": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "feedback_prompt": {
+   "status": "exempt",
+   "reason": "interactive feedback collection widget"
+  },
+  "fids_board": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "figma_embed": {
+   "status": "exempt",
+   "reason": "embedded Figma canvas preview iframe"
+  },
+  "file_tree": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "file_upload": {
+   "status": "exempt",
+   "reason": "interactive file picker input control"
+  },
+  "fill_in_blank": {
+   "status": "exempt",
+   "reason": "a quiz input: the only natural key of a blank is its answer, which must not be written into the markup"
+  },
+  "filterable_list": {
+   "status": "sweep"
+  },
+  "firestore_read": {
+   "status": "exempt",
+   "reason": "invisible database connector utility"
+  },
+  "flashcard_deck": {
+   "status": "sweep"
+  },
+  "flip_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "floating_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "floating_orbs": {
+   "status": "exempt",
+   "reason": "decorative background animation effect"
+  },
+  "floating_particles": {
+   "status": "exempt",
+   "reason": "procedural bokeh canvas background animation"
+  },
+  "flow_connector": {
+   "status": "sweep"
+  },
+  "flow_field": {
+   "status": "exempt",
+   "reason": "canvas particle motion field background"
+  },
+  "focus_lens": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "follow_button": {
+   "status": "exempt",
+   "reason": "interactive follow trigger button"
+  },
+  "follow_cta": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "follow_up_chips": {
+   "status": "sweep"
+  },
+  "footnote": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "footnote_group": {
+   "status": "sweep"
+  },
+  "form": {
+   "status": "exempt",
+   "reason": "interactive form container with submit handlers"
+  },
+  "form_checkbox_group": {
+   "status": "exempt",
+   "reason": "interactive checkbox selection group"
+  },
+  "form_date_picker": {
+   "status": "exempt",
+   "reason": "interactive date picker input control"
+  },
+  "form_field": {
+   "status": "exempt",
+   "reason": "interactive form input field wrapper"
+  },
+  "form_input": {
+   "status": "exempt",
+   "reason": "interactive text input element"
+  },
+  "form_radio_group": {
+   "status": "exempt",
+   "reason": "interactive radio selection group"
+  },
+  "form_select": {
+   "status": "exempt",
+   "reason": "interactive select input dropdown"
+  },
+  "form_slider": {
+   "status": "exempt",
+   "reason": "interactive range slider input"
+  },
+  "form_switch_group": {
+   "status": "exempt",
+   "reason": "interactive toggle switches control group"
+  },
+  "form_textarea": {
+   "status": "exempt",
+   "reason": "interactive textarea input atom"
+  },
+  "framed_screenshot": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "freeform_canvas": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "further_reading": {
+   "status": "sweep"
+  },
+  "gallery": {
+   "status": "sweep"
+  },
+  "gantt": {
+   "status": "sweep"
+  },
+  "gauge_sla": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gdm_rocket_panel": {
+   "status": "exempt",
+   "reason": "fixed canvas launch animation overlay"
+  },
+  "gemini_handoff": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gemini_prompt": {
+   "status": "exempt",
+   "reason": "interactive prompt input control"
+  },
+  "geo_contour_waves": {
+   "status": "exempt",
+   "reason": "procedural contour wave background canvas"
+  },
+  "geo_europe_airspace": {
+   "status": "sweep"
+  },
+  "geo_iso_fleet": {
+   "status": "exempt",
+   "reason": "canvas animation showcase switcher container"
+  },
+  "geo_iso_heli_hover": {
+   "status": "exempt",
+   "reason": "procedural 3D canvas animation"
+  },
+  "geo_iso_rocket_launch": {
+   "status": "exempt",
+   "reason": "procedural 3D canvas animation"
+  },
+  "geo_iso_takeoff": {
+   "status": "exempt",
+   "reason": "procedural 3D canvas animation"
+  },
+  "geo_mercator_radar": {
+   "status": "sweep"
+  },
+  "github_activity_grid": {
+   "status": "sweep"
+  },
+  "github_repo_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "glass_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "glitch_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "globe_3d": {
+   "status": "exempt",
+   "reason": "interactive 3D canvas visualization"
+  },
+  "glossary_inline": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "glossary_term": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "glow_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "glowing_stat": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gmail_inbox": {
+   "status": "sweep"
+  },
+  "gmail_summary": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gmail_unread_count": {
+   "status": "sweep"
+  },
+  "google_icon": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gradient_border_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gradient_heading": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gradient_hero": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "gradient_mesh_live": {
+   "status": "exempt",
+   "reason": "live generative background gradient canvas"
+  },
+  "gradient_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "great_circle": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "halftone_wave": {
+   "status": "exempt",
+   "reason": "canvas procedural wave animation hero"
+  },
+  "heading": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "headline_list": {
+   "status": "sweep"
+  },
+  "heatmap": {
+   "status": "todo",
+   "reason": "collection atom whose sample did not render; fix the sample, then sweep"
+  },
+  "heatmap_calendar": {
+   "status": "sweep"
+  },
+  "highlight_box": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "highlight_sweep": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "highlighted_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "hint_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "histogram": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "hover_card": {
+   "status": "exempt",
+   "reason": "interactive hover trigger overlay"
+  },
+  "http_request_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "hub": {
+   "status": "exempt",
+   "reason": "full-screen deck navigation container"
+  },
+  "hub_rail": {
+   "status": "exempt",
+   "reason": "full-screen deck navigation container"
+  },
+  "icon_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "icon_checklist": {
+   "status": "sweep"
+  },
+  "icon_feature_grid": {
+   "status": "sweep"
+  },
+  "icon_liftoff": {
+   "status": "exempt",
+   "reason": "decorative travelling icon CSS keyframe effect"
+  },
+  "icon_list": {
+   "status": "sweep"
+  },
+  "icon_row": {
+   "status": "sweep"
+  },
+  "icon_stat_row": {
+   "status": "sweep"
+  },
+  "image": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "image_hotspots": {
+   "status": "sweep"
+  },
+  "image_pair": {
+   "status": "sweep"
+  },
+  "image_with_caption": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "incident_finding": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "incident_log": {
+   "status": "sweep"
+  },
+  "info_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "inline_alert": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "inline_code": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "inline_feedback_message": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "intro": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "inventory_table": {
+   "status": "sweep"
+  },
+  "iso_fireworks_panel": {
+   "status": "exempt",
+   "reason": "fixed canvas particle animation overlay"
+  },
+  "isometric_mesh": {
+   "status": "exempt",
+   "reason": "procedural 3D height-field visualization"
+  },
+  "jira_ticket": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "journey_map": {
+   "status": "sweep"
+  },
+  "json_tree_viewer": {
+   "status": "sweep"
+  },
+  "jump_nav": {
+   "status": "sweep"
+  },
+  "key_takeaways": {
+   "status": "sweep"
+  },
+  "key_value": {
+   "status": "sweep"
+  },
+  "keyboard_shortcut": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "kinetic_headline": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "knowledge_check": {
+   "status": "sweep"
+  },
+  "layer_stack": {
+   "status": "sweep"
+  },
+  "leaderboard_card": {
+   "status": "sweep"
+  },
+  "learning_objectives": {
+   "status": "sweep"
+  },
+  "learning_path_selector": {
+   "status": "sweep"
+  },
+  "lens_context": {
+   "status": "sweep"
+  },
+  "lens_eli5": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "lens_freeform": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "lens_grid": {
+   "status": "sweep"
+  },
+  "lens_quotes": {
+   "status": "sweep"
+  },
+  "lens_similar": {
+   "status": "sweep"
+  },
+  "lens_structure": {
+   "status": "sweep"
+  },
+  "lens_synthesis": {
+   "status": "sweep"
+  },
+  "lens_themes": {
+   "status": "sweep"
+  },
+  "lesson_nav": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "light_type": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "link_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "linkedin_post_image": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "liquid_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "live_aggregator": {
+   "status": "sweep"
+  },
+  "live_clock": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "live_demo_embed": {
+   "status": "exempt",
+   "reason": "embedded interactive live demo iframe"
+  },
+  "live_edit": {
+   "status": "exempt",
+   "reason": "interactive schema editor input atom"
+  },
+  "live_metric": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "live_refresh": {
+   "status": "exempt",
+   "reason": "invisible polling action utility trigger"
+  },
+  "live_vote": {
+   "status": "sweep"
+  },
+  "living_type": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "llm_comparison_table": {
+   "status": "sweep"
+  },
+  "loading_dots": {
+   "status": "exempt",
+   "reason": "pure presentational animation loader"
+  },
+  "loading_skeleton": {
+   "status": "exempt",
+   "reason": "placeholder loading animation utility"
+  },
+  "log_output": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "lottie_animation": {
+   "status": "exempt",
+   "reason": "self-running Lottie vector animation runtime"
+  },
+  "lozenge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "magnetic_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "magnetic_element": {
+   "status": "exempt",
+   "reason": "motion wrapper handling cursor physics for wrapped content"
+  },
+  "maps_embed": {
+   "status": "exempt",
+   "reason": "interactive iframe embed container"
+  },
+  "markdown_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "marquee": {
+   "status": "sweep"
+  },
+  "marquee_strip": {
+   "status": "sweep"
+  },
+  "masonry_elevation": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "match_exercise": {
+   "status": "sweep"
+  },
+  "match_schedule": {
+   "status": "sweep"
+  },
+  "math_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "maturity_ladder": {
+   "status": "sweep"
+  },
+  "me": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "media_mention_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "media_stream_card": {
+   "status": "exempt",
+   "reason": "external iframe media stream embed"
+  },
+  "meet_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "menu": {
+   "status": "exempt",
+   "reason": "interactive menu navigation control"
+  },
+  "mesh_gradient": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "message_lanes": {
+   "status": "sweep"
+  },
+  "metar_feed": {
+   "status": "exempt",
+   "reason": "invisible weather data feed connector"
+  },
+  "meteor_shower": {
+   "status": "exempt",
+   "reason": "decorative animated background effect layer"
+  },
+  "metric_comparison_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "metric_delta": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "metric_row": {
+   "status": "sweep"
+  },
+  "mini_sparkline_set": {
+   "status": "sweep"
+  },
+  "modal": {
+   "status": "exempt",
+   "reason": "layout modal overlay container for children"
+  },
+  "model_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "module_map": {
+   "status": "sweep"
+  },
+  "motion_arch": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_arcs": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_arrow": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_assemble": {
+   "status": "exempt",
+   "reason": "motion layout assembly wrapper for children"
+  },
+  "motion_beats": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_blade": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_blueprint": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_bounce": {
+   "status": "exempt",
+   "reason": "bouncing ball animation graphic primitive"
+  },
+  "motion_bricks": {
+   "status": "exempt",
+   "reason": "motion/animation primitive driven by progress dial p"
+  },
+  "motion_browser": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_bubbles": {
+   "status": "exempt",
+   "reason": "decorative drifting bubble animation effect"
+  },
+  "motion_build": {
+   "status": "exempt",
+   "reason": "motion wrapper orchestrating chart build progress"
+  },
+  "motion_capsule": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_cells": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_chart": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_chat": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_checklist": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_code": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_collage": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_contours": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_counter": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_device": {
+   "status": "exempt",
+   "reason": "motion device frame container for child blocks"
+  },
+  "motion_dialog": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_discs": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_disperse": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_dock": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_dotgrid": {
+   "status": "exempt",
+   "reason": "decorative dot grid motion primitive"
+  },
+  "motion_dots": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_drop": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_envelope": {
+   "status": "exempt",
+   "reason": "envelope motion container wrapping child blocks"
+  },
+  "motion_finish": {
+   "status": "exempt",
+   "reason": "viewport post-processing filter overlay"
+  },
+  "motion_fit": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_flag": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_flash": {
+   "status": "exempt",
+   "reason": "transient screen flash animation effect"
+  },
+  "motion_foil": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_glass": {
+   "status": "exempt",
+   "reason": "frosted glass container wrapper for child blocks"
+  },
+  "motion_goo": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_group": {
+   "status": "exempt",
+   "reason": "motion stagger wrapper around child blocks"
+  },
+  "motion_highlight": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_hud": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_image": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_input": {
+   "status": "exempt",
+   "reason": "demo auto-typing input field simulation"
+  },
+  "motion_iso": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_layer": {
+   "status": "exempt",
+   "reason": "motion coordinate scene layer for child blocks"
+  },
+  "motion_leader": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_lightning": {
+   "status": "exempt",
+   "reason": "procedural lightning animation effect wrapper"
+  },
+  "motion_lit": {
+   "status": "exempt",
+   "reason": "motion wrapper highlighting child blocks"
+  },
+  "motion_lockup": {
+   "status": "exempt",
+   "reason": "motion wrapper assembling typographic layout"
+  },
+  "motion_lower_third": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_mark": {
+   "status": "exempt",
+   "reason": "animated logo motion graphic primitive"
+  },
+  "motion_marquee": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_mask": {
+   "status": "exempt",
+   "reason": "masking motion container for child blocks"
+  },
+  "motion_media": {
+   "status": "exempt",
+   "reason": "lazy iframe media player embed"
+  },
+  "motion_meters": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_morph": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_object3d": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_orbit": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_particles": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_path": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_pattern": {
+   "status": "exempt",
+   "reason": "decorative repeating pattern motion primitive"
+  },
+  "motion_pill": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_rail": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_rays": {
+   "status": "exempt",
+   "reason": "procedural background light rays effect"
+  },
+  "motion_repeat": {
+   "status": "exempt",
+   "reason": "motion repeater duplicate wrapper"
+  },
+  "motion_reveal": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_ring": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_scatter": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_selection": {
+   "status": "exempt",
+   "reason": "motion selection frame wrapper over children"
+  },
+  "motion_shader": {
+   "status": "exempt",
+   "reason": "procedural WebGL shader background"
+  },
+  "motion_shake": {
+   "status": "exempt",
+   "reason": "motion camera shake wrapper for child blocks"
+  },
+  "motion_shape": {
+   "status": "exempt",
+   "reason": "motion vector shape primitive"
+  },
+  "motion_shatter": {
+   "status": "exempt",
+   "reason": "procedural shatter animation effect wrapper"
+  },
+  "motion_sketch": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_stack3d": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_stepper": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_streak": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_swatches": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_sweep": {
+   "status": "exempt",
+   "reason": "motion wrapper applying light sweep over children"
+  },
+  "motion_tabs": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_tag": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_text": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_textpath": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_theme": {
+   "status": "exempt",
+   "reason": "motion wrapper morphing child themes"
+  },
+  "motion_timeline": {
+   "status": "exempt",
+   "reason": "master timeline motion container and orchestrator"
+  },
+  "motion_tokens": {
+   "status": "exempt",
+   "reason": "demo vocabulary motion reference atom"
+  },
+  "motion_tracking": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_video": {
+   "status": "exempt",
+   "reason": "video player media timeline embed"
+  },
+  "motion_wall": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_wave": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "motion_wiggle": {
+   "status": "exempt",
+   "reason": "wiggle motion wrapper for child blocks"
+  },
+  "motion_wrap": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself"
+  },
+  "multi_doc_ai_brief": {
+   "status": "sweep"
+  },
+  "multi_select_input": {
+   "status": "exempt",
+   "reason": "interactive multi-select input field"
+  },
+  "multi_surface": {
+   "status": "sweep"
+  },
+  "nav_bar": {
+   "status": "sweep"
+  },
+  "nav_link": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "navigation_menu": {
+   "status": "exempt",
+   "reason": "interactive site navigation component"
+  },
+  "neon_glow": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "neon_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "news_digest": {
+   "status": "sweep"
+  },
+  "newsletter_cta": {
+   "status": "exempt",
+   "reason": "interactive subscription form component"
+  },
+  "next_step_strip": {
+   "status": "sweep"
+  },
+  "noise_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "notification_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "notification_stack": {
+   "status": "sweep"
+  },
+  "number_flip": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "number_odometer": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "numbered_list": {
+   "status": "sweep"
+  },
+  "onboarding_stepper": {
+   "status": "sweep"
+  },
+  "option_plan_builder": {
+   "status": "sweep"
+  },
+  "orbit_diagram": {
+   "status": "sweep"
+  },
+  "orbit_mark": {
+   "status": "exempt",
+   "reason": "decorative animated canvas brand logo"
+  },
+  "orbit_rings": {
+   "status": "sweep"
+  },
+  "order_status_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "org_chart": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "otp_input": {
+   "status": "exempt",
+   "reason": "interactive OTP verification input"
+  },
+  "page_header": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "pagination": {
+   "status": "exempt",
+   "reason": "interactive navigation control"
+  },
+  "palette": {
+   "status": "exempt",
+   "reason": "page-level CSS variable configuration block"
+  },
+  "paragraph": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "parallax_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "parallax_section": {
+   "status": "exempt",
+   "reason": "depth-layered canvas background animation"
+  },
+  "particle_burst": {
+   "status": "exempt",
+   "reason": "decorative click interaction animation effect"
+  },
+  "particle_type": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "pattern_background": {
+   "status": "exempt",
+   "reason": "decorative pattern background layer"
+  },
+  "pdf_preview": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "people_picker": {
+   "status": "exempt",
+   "reason": "interactive directory search and picker form"
+  },
+  "person_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "photo_grid": {
+   "status": "sweep"
+  },
+  "photo_stepper": {
+   "status": "sweep"
+  },
+  "photo_upload": {
+   "status": "exempt",
+   "reason": "interactive photo upload input control"
+  },
+  "pipeline": {
+   "status": "sweep"
+  },
+  "playbook": {
+   "status": "exempt",
+   "reason": "presentation slide container atom"
+  },
+  "poll_block": {
+   "status": "sweep"
+  },
+  "post_metadata_bar": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "prerequisite_checklist": {
+   "status": "sweep"
+  },
+  "presence_bar": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "presence_surface": {
+   "status": "exempt",
+   "reason": "invisible presence heartbeat synchronization atom"
+  },
+  "preview_frame": {
+   "status": "exempt",
+   "reason": "interactive iframe client preview"
+  },
+  "pricing_tier_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "pricing_tier_group": {
+   "status": "sweep"
+  },
+  "primitive_plate": {
+   "status": "sweep"
+  },
+  "print_button": {
+   "status": "exempt",
+   "reason": "interactive print utility trigger"
+  },
+  "problem_chapter": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "product_spec_table": {
+   "status": "sweep"
+  },
+  "product_thumbnail": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "progress_bar": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "progress_checkpoint": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "progress_circle": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "progress_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "progress_ring": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "progress_store": {
+   "status": "exempt",
+   "reason": "invisible application state connector"
+  },
+  "prompt_template": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "prompt_to_schema": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "pros_cons_list": {
+   "status": "sweep"
+  },
+  "pull_stat": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "pulse_dot": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "punch_card": {
+   "status": "sweep"
+  },
+  "quadrant": {
+   "status": "sweep"
+  },
+  "quiet_link": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "quiz_question": {
+   "status": "sweep"
+  },
+  "quiz_result_summary": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "quiz_set": {
+   "status": "sweep"
+  },
+  "quote": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "raise_hand": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "rating_comparison": {
+   "status": "sweep"
+  },
+  "rating_stars": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "rating_summary_bar": {
+   "status": "sweep"
+  },
+  "reaction_group": {
+   "status": "exempt",
+   "reason": "interactive sentiment feedback buttons"
+  },
+  "reaction_shower": {
+   "status": "sweep"
+  },
+  "readability_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "reading_progress_bar": {
+   "status": "exempt",
+   "reason": "runtime scroll tracking indicator"
+  },
+  "receipt": {
+   "status": "sweep"
+  },
+  "reflection_prompt": {
+   "status": "exempt",
+   "reason": "interactive text input form atom"
+  },
+  "related_posts_grid": {
+   "status": "sweep"
+  },
+  "release_notes": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "renderer_stats": {
+   "status": "sweep"
+  },
+  "repo_links": {
+   "status": "sweep"
+  },
+  "resource_link_row": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "resources_list": {
+   "status": "sweep"
+  },
+  "reveal": {
+   "status": "exempt",
+   "reason": "entrance animation wrapper for children"
+  },
+  "reveal_line": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "reveal_on_scroll": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "review_callout": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "ripple_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "risk_flag": {
+   "status": "sweep"
+  },
+  "roadmap_card": {
+   "status": "sweep"
+  },
+  "rubric_card": {
+   "status": "sweep"
+  },
+  "sankey_flow": {
+   "status": "sweep"
+  },
+  "scatter_trend": {
+   "status": "sweep"
+  },
+  "scenario_branch": {
+   "status": "sweep"
+  },
+  "scenario_case": {
+   "status": "sweep"
+  },
+  "scene_stage": {
+   "status": "exempt",
+   "reason": "procedural SVG pan/zoom scene engine"
+  },
+  "schema_qr": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "schema_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "score_summary": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "scramble_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "script_run_button": {
+   "status": "exempt",
+   "reason": "interactive script runner control button"
+  },
+  "scroll_gallery": {
+   "status": "exempt",
+   "reason": "layout container organizing sections with sticky nav"
+  },
+  "scroll_progress": {
+   "status": "exempt",
+   "reason": "browser viewport scroll indicator"
+  },
+  "scroll_to_top": {
+   "status": "exempt",
+   "reason": "interactive scroll button utility"
+  },
+  "scroll_trigger": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "search_result_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "seat_map": {
+   "status": "sweep"
+  },
+  "section_break": {
+   "status": "exempt",
+   "reason": "section divider formatting utility"
+  },
+  "section_label": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "segmented_control": {
+   "status": "exempt",
+   "reason": "interactive selection form control"
+  },
+  "sentiment_summary": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sequence_diagram": {
+   "status": "sweep"
+  },
+  "series_overview_card": {
+   "status": "sweep"
+  },
+  "service_status_board": {
+   "status": "sweep"
+  },
+  "share_quote": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sheet_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sheet_form": {
+   "status": "exempt",
+   "reason": "interactive Google Sheet submission form"
+  },
+  "sheet_form_submit": {
+   "status": "exempt",
+   "reason": "interactive form submission control"
+  },
+  "sheet_preview": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sheet_stats": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "shimmer_button": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "shimmer_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "shortcut_legend": {
+   "status": "sweep"
+  },
+  "side_by_side_spec": {
+   "status": "sweep"
+  },
+  "sidebar_note": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "signal_tunnel": {
+   "status": "exempt",
+   "reason": "canvas generative tunnel animation hero"
+  },
+  "skeleton": {
+   "status": "exempt",
+   "reason": "pure presentational loading placeholder"
+  },
+  "skeleton_stage_card": {
+   "status": "exempt",
+   "reason": "placeholder loading animation skeleton"
+  },
+  "skill_bars": {
+   "status": "sweep"
+  },
+  "skill_radar": {
+   "status": "sweep"
+  },
+  "sla_timer_display": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "slot_scheduler": {
+   "status": "sweep"
+  },
+  "social_feed_embed": {
+   "status": "exempt",
+   "reason": "external social embed/iframe"
+  },
+  "social_proof_banner": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "social_share_bar": {
+   "status": "sweep"
+  },
+  "sonar_pulse": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sortable_list": {
+   "status": "sweep"
+  },
+  "source_citation": {
+   "status": "sweep"
+  },
+  "spaced_repetition_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "spacer": {
+   "status": "exempt",
+   "reason": "layout spacing utility atom without content"
+  },
+  "sparkline": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "speed_counter": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "spinner": {
+   "status": "exempt",
+   "reason": "loading spinner indicator"
+  },
+  "split_pane": {
+   "status": "exempt",
+   "reason": "two-panel layout container for children"
+  },
+  "split_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "split_stat": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "spotlight_card": {
+   "status": "exempt",
+   "reason": "interactive wrapper container for children"
+  },
+  "spotlight_cursor": {
+   "status": "exempt",
+   "reason": "decorative mouse-tracking overlay effect"
+  },
+  "spring_nodes": {
+   "status": "sweep"
+  },
+  "sprint_board": {
+   "status": "sweep"
+  },
+  "stack_layer": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "stacked_area": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "stagger_list": {
+   "status": "sweep"
+  },
+  "stance": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "standings_table": {
+   "status": "sweep"
+  },
+  "star_rating_display": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "star_rating_input": {
+   "status": "exempt",
+   "reason": "interactive form input control"
+  },
+  "stat_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "stat_inline_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "stat_pulse": {
+   "status": "sweep"
+  },
+  "status_dashboard": {
+   "status": "sweep"
+  },
+  "status_pill": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "status_timeline": {
+   "status": "sweep"
+  },
+  "step_progress": {
+   "status": "sweep"
+  },
+  "step_reveal_sequence": {
+   "status": "sweep"
+  },
+  "stepper": {
+   "status": "sweep"
+  },
+  "steps": {
+   "status": "sweep"
+  },
+  "stripe_background": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "study_timer": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "subheading": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "summary_box": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sun_path": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "sunburst": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "surface_map": {
+   "status": "sweep"
+  },
+  "surface_unlocked": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "svg_path_draw": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "swimlane": {
+   "status": "sweep"
+  },
+  "tab_bar": {
+   "status": "sweep"
+  },
+  "tab_group": {
+   "status": "exempt",
+   "reason": "interactive layout visibility switcher"
+  },
+  "tabbed_code": {
+   "status": "sweep"
+  },
+  "table": {
+   "status": "sweep"
+  },
+  "table_of_contents": {
+   "status": "sweep"
+  },
+  "tabs": {
+   "status": "sweep"
+  },
+  "tag_block": {
+   "status": "sweep"
+  },
+  "tag_chip": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "tag_cloud": {
+   "status": "sweep"
+  },
+  "take_away_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "task_list": {
+   "status": "sweep"
+  },
+  "tasks_today": {
+   "status": "sweep"
+  },
+  "terminal_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "terminal_boot": {
+   "status": "sweep"
+  },
+  "testimonial_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "text_analysis": {
+   "status": "sweep"
+  },
+  "text_block": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "text_callout": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "text_highlight": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "text_reveal_mask": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "theme_toggle": {
+   "status": "exempt",
+   "reason": "interactive page theme switch control"
+  },
+  "tilt_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "time_estimate": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "timeline": {
+   "status": "sweep"
+  },
+  "toast_notification": {
+   "status": "exempt",
+   "reason": "transient fixed notification wrapper"
+  },
+  "toggle_switch": {
+   "status": "exempt",
+   "reason": "interactive input control"
+  },
+  "token_budget_meter": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "tonal_scale": {
+   "status": "sweep"
+  },
+  "tool_call_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "tool_tile": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "tooltip": {
+   "status": "exempt",
+   "reason": "interactive hover overlay utility"
+  },
+  "tooltip_glossary": {
+   "status": "sweep"
+  },
+  "toulmin_argument": {
+   "status": "sweep"
+  },
+  "trace_step": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "tree_view": {
+   "status": "sweep"
+  },
+  "treemap": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "trend_indicator": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "two_tone_card": {
+   "status": "exempt",
+   "reason": "layout container card wrapping child blocks"
+  },
+  "type_scale": {
+   "status": "sweep"
+  },
+  "typewriter": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "typewriter_text": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "typing_indicator": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "uptime_timeline": {
+   "status": "sweep"
+  },
+  "url_anatomy": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "user_greeting": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "user_profile_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "variant_selector": {
+   "status": "sweep"
+  },
+  "venn_diagram": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "verdict_checklist": {
+   "status": "sweep"
+  },
+  "version_badge": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "versus_block": {
+   "status": "sweep"
+  },
+  "video_card": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "video_checkpoint": {
+   "status": "exempt",
+   "reason": "media video player embed"
+  },
+  "video_pair": {
+   "status": "exempt",
+   "reason": "embed/iframe pair player container"
+  },
+  "video_thumbnail": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "voronoi": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "vote_button_group": {
+   "status": "exempt",
+   "reason": "interactive voting selection input group"
+  },
+  "wall_elevation": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "waterfall": {
+   "status": "keyed",
+   "by": "tests/test_build_contract_v12.py"
+  },
+  "wave_divider": {
+   "status": "exempt",
+   "reason": "decorative SVG section separator"
+  },
+  "wave_terrain": {
+   "status": "exempt",
+   "reason": "generative terrain 3D canvas animation"
+  },
+  "weather_now": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "weather_outlook": {
+   "status": "sweep"
+  },
+  "weighted_words": {
+   "status": "sweep"
+  },
+  "wishlist_panel": {
+   "status": "sweep"
+  },
+  "word_cloud": {
+   "status": "sweep"
+  },
+  "word_flip": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "word_reveal": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "word_scramble": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "workspace_logo": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "workspace_logo_grid": {
+   "status": "sweep"
+  },
+  "workspace_logo_strip": {
+   "status": "sweep"
+  },
+  "wrong_vs_right": {
+   "status": "sweep"
+  },
+  "xp_bar": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  },
+  "youtube": {
+   "status": "exempt",
+   "reason": "external media embed/iframe player"
+  },
+  "zoomable_image": {
+   "status": "single",
+   "reason": "one visual unit: keyed later as a whole block (deferred)"
+  }
+ }
+}

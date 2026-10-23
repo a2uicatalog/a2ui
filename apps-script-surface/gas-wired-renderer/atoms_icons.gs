@@ -153,9 +153,10 @@ _RENDERERS['icon_row'] = function(b) {
     var ic  = _esc(item.name || item.icon || 'check');
     var lbl = item.label || item.text || '';
     var c   = item.color || item.accent || color;
-    return '<div style="display:flex;align-items:center;gap:8px;">'
+    var k   = _esc(item.name || item.label || item.text || item.icon || '');
+    return '<div data-cb="node" data-key="' + k + '" style="display:flex;align-items:center;gap:8px;">'
       + '<span class="ms-icon" style="' + cssVarsBase + ';font-size:' + size + 'px;color:' + c + ';flex-shrink:0;" aria-hidden="true">' + ic + '</span>'
-      + (lbl ? '<span style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(lbl) + '</span>' : '')
+      + (lbl ? '<span data-cb="label" data-key="' + k + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(lbl) + '</span>' : '')
       + '</div>';
   }).join('');
 
@@ -290,9 +291,10 @@ _RENDERERS['icon_feature_grid'] = function(b) {
     var c     = item.color || item.accent || accent;
     var ttl   = item.title || item.label || '';
     var txt   = item.text  || item.description || '';
-    return '<div style="padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">'
+    var k     = _esc(item.title || item.label || item.name || '');
+    return '<div data-cb="tile" data-key="' + k + '" style="padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">'
       + '<span class="ms-icon" style="' + cssVarsBase + ';font-size:' + size + 'px;color:' + c + ';display:block;margin-bottom:10px;" aria-hidden="true">' + icon + '</span>'
-      + (ttl ? '<div style="font-size:0.875rem;font-weight:700;color:var(--text,#111827);margin-bottom:4px;">' + _esc(ttl) + '</div>' : '')
+      + (ttl ? '<div data-cb="label" data-key="' + k + '" style="font-size:0.875rem;font-weight:700;color:var(--text,#111827);margin-bottom:4px;">' + _esc(ttl) + '</div>' : '')
       + (txt ? '<div style="font-size:0.8rem;color:var(--muted,#6b7280);line-height:1.5;">' + _esc(txt) + '</div>' : '')
       + '</div>';
   }).join('');
@@ -322,9 +324,10 @@ _RENDERERS['icon_checklist'] = function(b) {
     var icon  = typeof item === 'string' ? defIcon : (item.icon || defIcon);
     var c     = typeof item === 'string' ? accent : (item.color || item.accent || accent);
     var sub   = typeof item === 'object' && item.sublabel ? '<div style="font-size:0.75rem;color:var(--muted,#9ca3af);margin-top:2px;">' + _esc(item.sublabel) + '</div>' : '';
-    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f3f4f6);">'
+    var itemKey = _esc(text);
+    return '<div data-cb="item" data-key="' + itemKey + '" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f3f4f6);">'
       + '<span class="ms-icon" style="' + cssVarsBase + ';font-size:' + size + 'px;color:' + c + ';flex-shrink:0;margin-top:1px;" aria-hidden="true">' + _esc(icon) + '</span>'
-      + '<div><div style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(text) + '</div>' + sub + '</div>'
+      + '<div><div data-cb="label" data-key="' + itemKey + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(text) + '</div>' + sub + '</div>'
       + '</div>';
   }).join('');
 

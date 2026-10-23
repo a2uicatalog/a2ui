@@ -113,7 +113,8 @@ _RENDERERS['bullet_graph'] = function(b) {
     var track = rg.map(function(v, bi) { var s = 'position:absolute;top:0;bottom:0;left:' + pc(prev) + ';width:' + ((v - prev) / top * 100).toFixed(2) + '%;background:' + bands[bi] + ';'; prev = v; return '<div style="' + s + '"></div>'; }).join('') +
       '<div style="position:absolute;left:0;top:9px;height:10px;width:calc(var(--k,1)*' + (a / top * 100).toFixed(2) + '%);background:#0F172A;"></div>' +
       '<div style="position:absolute;left:calc(' + pc(t) + ' - 1.5px);top:-3px;width:3px;height:34px;background:#B91C1C;"></div>';
-    return '<div style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _ifK(i, all.length) + '"><div>' + _ifS(r.label, 40) + '</div>' +
+    var rKey = _ifS(r.label, 40);
+    return '<div data-cb="bar" data-key="' + rKey + '" style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _ifK(i, all.length) + '"><div data-cb="label" data-key="' + rKey + '">' + rKey + '</div>' +
       '<div style="position:relative;height:28px;border:' + _IF_BORDER + ';border-radius:4px;overflow:visible;">' + track + '</div>' +
       '<div style="font-weight:700;font-size:0.82rem;white-space:nowrap;">' + _ifFmt(a) + ' / ' + _ifFmt(t) + ' <span style="font-weight:400;color:var(--muted,#475569);">' + (a >= t ? 'target met' : 'below target') + '</span></div></div>';
   }).join('');
@@ -145,8 +146,9 @@ _RENDERERS['gantt'] = function(b) {
   var rows = tasks.map(function(t, i) {
     t = _ifObj(t);
     var s = Math.round(_ifNum(t.start_slot, 0, N - 1, 0)), d = Math.round(_ifNum(t.duration_slots, 1, N - s, 1)), ci = Math.max(0, cats.indexOf(String(t.category === undefined ? '' : t.category).slice(0, 16)));
-    return '<div style="padding:4px 8px 4px 0;align-self:center;grid-row:' + (i + 2) + ';">' + _ifS(t.task, 40) + '</div>' +
-      '<div style="grid-row:' + (i + 2) + ';grid-column:' + (s + 2) + ' / span ' + d + ';padding:3px 2px;"><div style="height:22px;border-radius:5px;background:' + _IF_CAT[ci] + ';transform:scaleX(var(--k,1));transform-origin:left;' + _ifK(i, tasks.length) + '"></div></div>';
+    var tKey = t.id !== undefined ? t.id : (t.task !== undefined ? t.task : '');
+    return '<div data-cb="label" data-key="' + _esc(tKey) + '" style="padding:4px 8px 4px 0;align-self:center;grid-row:' + (i + 2) + ';">' + _ifS(t.task, 40) + '</div>' +
+      '<div data-cb="bar" data-key="' + _esc(tKey) + '" style="grid-row:' + (i + 2) + ';grid-column:' + (s + 2) + ' / span ' + d + ';padding:3px 2px;"><div style="height:22px;border-radius:5px;background:' + _IF_CAT[ci] + ';transform:scaleX(var(--k,1));transform-origin:left;' + _ifK(i, tasks.length) + '"></div></div>';
   }).join('');
   var key = cats.map(function(c, ci) { return '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px;"><span style="width:12px;height:12px;border-radius:3px;background:' + _IF_CAT[ci] + ';display:inline-block;"></span>' + _ifS(c, 16) + '</span>'; }).join('');
   return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:minmax(120px,26%) repeat(' + N + ',1fr);row-gap:4px;">' + head + rows + '</div>' +
@@ -161,7 +163,8 @@ _RENDERERS['change_chart'] = function(b) {
   var top = Math.max.apply(null, rows.map(function(r) { return Math.max(r.a, r.c); }).concat([1])) * 1.05, n = rows.length, body = '', eq = _ifTable(['Item', names[0], names[1], 'Change'], rows.map(function(r) { return [r.l, _ifFmt(r.a), _ifFmt(r.c), r.a ? ((r.c - r.a) / r.a * 100).toFixed(1) + '%' : 'n/a']; }));
   if (mode === 'bars') {
     body = rows.map(function(r, i) {
-      return '<div style="display:grid;grid-template-columns:minmax(110px,26%) 1fr;gap:10px;margin:8px 0;' + _ifK(i, n) + '"><div>' + _ifS(r.l, 40) + '</div><div>' +
+      var k = _esc(_ifS(r.l, 40));
+      return '<div data-cb="bar" data-key="' + k + '" style="display:grid;grid-template-columns:minmax(110px,26%) 1fr;gap:10px;margin:8px 0;' + _ifK(i, n) + '"><div data-cb="label" data-key="' + k + '">' + _ifS(r.l, 40) + '</div><div>' +
         [[r.a, _IF_CAT[0], names[0]], [r.c, _IF_CAT[3], names[1]]].map(function(v) {
           return '<div style="display:flex;align-items:center;gap:6px;margin:2px 0;"><div style="height:14px;border-radius:3px;background:' + v[1] + ';width:calc(var(--k,1)*' + (v[0] / top * 78).toFixed(2) + '%);min-width:2px;"></div><span style="font-size:0.78rem;font-weight:700;white-space:nowrap;">' + _ifS(v[2], 20) + ' ' + _ifFmt(v[0]) + '</span></div>';
         }).join('') + '</div></div>';
@@ -172,8 +175,9 @@ _RENDERERS['change_chart'] = function(b) {
   if (mode === 'dumbbell') {
     var lw = 170, tw = W - lw - 150; H = n * rowH + 8;
     svg = rows.map(function(r, i) {
+      var k = _esc(_ifS(r.l, 28));
       var xa = lw + r.a / top * tw, xc = lw + r.c / top * tw, y = i * rowH + 17;
-      return '<g style="' + _ifK(i, n) + 'opacity:var(--k,1);"><text x="0" y="' + (y + 4) + '" font-size="12" fill="currentColor">' + _ifS(r.l, 28) + '</text><line x1="' + xa.toFixed(1) + '" y1="' + y + '" x2="' + xc.toFixed(1) + '" y2="' + y + '" stroke="#64748B" stroke-width="2"/>' +
+      return '<g data-cb="bar" data-key="' + k + '" style="' + _ifK(i, n) + 'opacity:var(--k,1);"><text data-cb="label" data-key="' + k + '" x="0" y="' + (y + 4) + '" font-size="12" fill="currentColor">' + _ifS(r.l, 28) + '</text><line x1="' + xa.toFixed(1) + '" y1="' + y + '" x2="' + xc.toFixed(1) + '" y2="' + y + '" stroke="#64748B" stroke-width="2"/>' +
         '<circle cx="' + xa.toFixed(1) + '" cy="' + y + '" r="7" fill="#475569"/><circle cx="' + xc.toFixed(1) + '" cy="' + y + '" r="7" fill="#0369A1"/>' +
         '<text x="' + (Math.max(xa, xc) + 14).toFixed(1) + '" y="' + (y + 4) + '" font-size="11" font-weight="700" fill="currentColor">' + _ifFmt(r.a) + ' → ' + _ifFmt(r.c) + '</text></g>';
     }).join('');
@@ -184,8 +188,9 @@ _RENDERERS['change_chart'] = function(b) {
     var L = spread(rows.map(function(r) { return ys(r.a); })), R = spread(rows.map(function(r) { return ys(r.c); }));
     svg = '<text x="' + lx + '" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">' + _ifS(names[0], 20) + '</text><text x="' + rx + '" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">' + _ifS(names[1], 20) + '</text>' +
       rows.map(function(r, i) {
-        return '<g style="' + _ifK(i, n) + '"><path d="M' + lx + ' ' + ys(r.a).toFixed(1) + ' L' + rx + ' ' + ys(r.c).toFixed(1) + '" pathLength="1" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:calc(1 - var(--k,1));"/>' +
-          '<text x="' + (lx - 10) + '" y="' + (L[i] + 4).toFixed(1) + '" font-size="11" text-anchor="end" fill="currentColor">' + _ifS(r.l, 20) + ' ' + _ifFmt(r.a) + '</text>' +
+        var k = _esc(_ifS(r.l, 20));
+        return '<g data-cb="bar" data-key="' + k + '" style="' + _ifK(i, n) + '"><path d="M' + lx + ' ' + ys(r.a).toFixed(1) + ' L' + rx + ' ' + ys(r.c).toFixed(1) + '" pathLength="1" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:calc(1 - var(--k,1));"/>' +
+          '<text data-cb="label" data-key="' + k + '" x="' + (lx - 10) + '" y="' + (L[i] + 4).toFixed(1) + '" font-size="11" text-anchor="end" fill="currentColor">' + _ifS(r.l, 20) + ' ' + _ifFmt(r.a) + '</text>' +
           '<text x="' + (rx + 10) + '" y="' + (R[i] + 4).toFixed(1) + '" font-size="11" fill="currentColor">' + _ifFmt(r.c) + ' ' + _ifS(r.l, 20) + '</text></g>';
       }).join('');
   }
@@ -199,7 +204,8 @@ _RENDERERS['cycle_diagram'] = function(b) {
   for (var i = 0; i < st.length; i++) { var a = -Math.PI / 2 + 2 * Math.PI * i / n; pos.push([50 + 34 * Math.cos(a), 50 + (n <= 4 ? 33 : 38) * Math.sin(a)]); }
   st.forEach(function(s, i) {
     s = _ifObj(s);
-    boxes += '<div style="position:absolute;left:' + pos[i][0].toFixed(2) + '%;top:' + pos[i][1].toFixed(2) + '%;width:26%;transform:translate(-50%,-50%);' + _ifCard(_ifK(i, n) + 'opacity:var(--k,1);') + '"><div style="font-weight:700;">' + (i + 1) + '. ' + _ifS(s.name, 24) + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(s.description, 60) + '</div></div>';
+    var sKey = _esc(String(s.name || ''));
+    boxes += '<div data-cb="item" data-key="' + sKey + '" style="position:absolute;left:' + pos[i][0].toFixed(2) + '%;top:' + pos[i][1].toFixed(2) + '%;width:26%;transform:translate(-50%,-50%);' + _ifCard(_ifK(i, n) + 'opacity:var(--k,1);') + '"><div data-cb="label" data-key="' + sKey + '" style="font-weight:700;">' + (i + 1) + '. ' + _ifS(s.name, 24) + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(s.description, 60) + '</div></div>';
     var q = pos[(i + 1) % n], p = pos[i], dx = (q[0] - p[0]) * 10, dy = (q[1] - p[1]) * VH / 100, px = p[0] * 10, py = p[1] * VH / 100;
     lines += '<line x1="' + (px + dx * 0.3).toFixed(1) + '" y1="' + (py + dy * 0.3).toFixed(1) + '" x2="' + (px + dx * 0.7).toFixed(1) + '" y2="' + (py + dy * 0.7).toFixed(1) + '" stroke="#64748B" stroke-width="2.5" marker-end="url(#ifarr)" style="opacity:var(--k,1);' + _ifK(i, n) + '"/>';
   });
@@ -214,7 +220,8 @@ _RENDERERS['journey_map'] = function(b) {
   var st = _ifArr(b.stages, 6), n = st.length || 1;
   var cols = st.map(function(s, i) {
     s = _ifObj(s); var se = _IF_SENT[_ifPick(s.sentiment, ['positive', 'neutral', 'negative'], 'neutral')];
-    return '<div style="display:flex;flex-direction:column;gap:6px;' + _ifK(i, n) + _IF_FADE + '"><div style="text-align:center;font-weight:700;padding:5px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _ifS(s.stage, 24) + '</div>' +
+    var stKey = _esc(s.stage || s.name || String(i));
+    return '<div data-cb="item" data-key="' + stKey + '" style="display:flex;flex-direction:column;gap:6px;' + _ifK(i, n) + _IF_FADE + '"><div data-cb="label" data-key="' + stKey + '" style="text-align:center;font-weight:700;padding:5px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _ifS(s.stage, 24) + '</div>' +
       '<div style="' + _ifCard() + '"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#475569);">Goal</div>' + _ifS(s.user_goal, 60) + '</div>' +
       '<div style="text-align:center;font-weight:700;padding:4px;border-radius:6px;background:' + se[0] + ';color:#fff;">' + se[1] + '</div>' +
       '<div style="' + _ifCard() + '"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#475569);">Friction</div>' + _ifS(s.friction_point, 80) + '</div></div>';
@@ -227,7 +234,8 @@ _RENDERERS['maturity_ladder'] = function(b) {
   var lv = _ifArr(b.levels, 6), n = lv.length || 1;
   var steps = lv.map(function(l, i) {
     l = _ifObj(l); var cur = l.is_current === true;
-    return '<div style="flex:1;min-width:0;min-height:' + (84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + (cur ? '#0369A1' : 'var(--surface,#F8FAFC)') + ';color:' + (cur ? '#fff' : 'var(--text,#0F172A)') + ';' + _ifK(i, n) + _IF_FADE + '">' +
+    var k = _ifS(l.name, 30);
+    return '<div data-cb="item" data-key="' + k + '" style="flex:1;min-width:0;min-height:' + (84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + (cur ? '#0369A1' : 'var(--surface,#F8FAFC)') + ';color:' + (cur ? '#fff' : 'var(--text,#0F172A)') + ';' + _ifK(i, n) + _IF_FADE + '">' +
       '<div style="font-weight:700;">Level ' + _ifS(l.level, 3) + ': ' + _ifS(l.name, 30) + (cur ? ' [CURRENT]' : '') + '</div><div style="font-size:0.78rem;margin-top:4px;' + (cur ? '' : 'color:var(--muted,#475569);') + '">' + _ifS(l.criteria, 120) + '</div></div>';
   }).join('');
   return _ifWrap(_ifTitle(b) + '<div style="display:flex;align-items:flex-end;gap:6px;">' + steps + '</div>');
@@ -2443,8 +2451,9 @@ _RENDERERS['callout_anatomy'] = function(b) {
   var co = _ifArr(b.callouts, 8).map(function(c) { c = _ifObj(c); return { id: Math.round(_ifNum(c.id, 1, 99, 1)), t: c.title, d: c.description, p: _ifPick(c.pin_position, ['top_left', 'top_right', 'bottom_left', 'bottom_right'], 'top_left') }; });
   var side = function(sfx) { return co.filter(function(c) { return c.p.slice(-sfx.length) === sfx; }).sort(function(x, y) { return (x.p.indexOf('top') === 0 ? 0 : 1) - (y.p.indexOf('top') === 0 ? 0 : 1); }); };
   var card = function(c, i, n) {
-    return '<div style="display:flex;gap:8px;align-items:flex-start;' + _ifCard(_ifK(c.id - 1, co.length) + _IF_FADE) + '"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:22px;">' + c.id + '</span>' +
-      '<div><div style="font-weight:700;">' + _ifS(c.t, 28) + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(c.d, 80) + '</div></div></div>';
+    var cKey = _ifS(c.t, 28);
+    return '<div data-cb="item" data-key="' + cKey + '" style="display:flex;gap:8px;align-items:flex-start;' + _ifCard(_ifK(c.id - 1, co.length) + _IF_FADE) + '"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:22px;">' + c.id + '</span>' +
+      '<div><div data-cb="label" data-key="' + cKey + '" style="font-weight:700;">' + cKey + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(c.d, 80) + '</div></div></div>';
   };
   var L = side('left'), R = side('right');
   return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;"><div style="display:flex;flex-direction:column;gap:8px;">' + L.map(card).join('') + '</div>' +

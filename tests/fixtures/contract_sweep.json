@@ -1,0 +1,7809 @@
+{
+ "action_items": {
+  "status": "keyed",
+  "block": {
+   "type": "action_items",
+   "title": "Retro Action Items",
+   "items": [
+    {
+     "action": "Upgrade ingress gateway helm charts",
+     "owner": "Marcus",
+     "due": "2026-03-20",
+     "status": "in_progress"
+    },
+    {
+     "action": "Rotate expired production API credentials",
+     "owner": "Elena",
+     "due": "2026-03-18",
+     "status": "open"
+    },
+    {
+     "action": "Document multi-region failover steps",
+     "owner": "Sarah",
+     "due": "2026-03-22",
+     "status": "open"
+    },
+    {
+     "action": "Deprecate legacy reporting endpoint",
+     "owner": "Devon",
+     "due": "2026-03-15",
+     "status": "done"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "551153dc2cd9edd381309729cc3e6f230c1e5f5b9b00bdf007a8549bc5026973",
+  "gas_sha": "f7e86247955acdaa195dce2aabf2d12d873ef5936b302536a05d3dcc747f081c",
+  "parity": false
+ },
+ "agenda_block": {
+  "status": "keyed",
+  "block": {
+   "type": "agenda_block",
+   "title": "Engineering Summit Day 1",
+   "date": "2026-04-12",
+   "slots": [
+    {
+     "time": "09:00",
+     "title": "Keynote: Next Gen Architecture",
+     "speaker": "Alex Mercer",
+     "type": "keynote"
+    },
+    {
+     "time": "10:30",
+     "title": "Distributed Tracing at Scale",
+     "speaker": "Devon Hayes",
+     "type": "workshop"
+    },
+    {
+     "time": "12:00",
+     "title": "Catered Lunch & Sync",
+     "type": "break"
+    },
+    {
+     "time": "13:30",
+     "title": "Zero-Downtime Migration Panel",
+     "speaker": "Core Infra Team",
+     "type": "panel"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "slots[].time",
+  "py_sha": "0979be21d3982d9bb07ff42470bfade49eab147a629a49be610044d6779abbac",
+  "gas_sha": "0b540006c4061f29ca4a0302617ca6c87751ac84b7d62cd1b2d17e62d1ddbb9a",
+  "parity": false
+ },
+ "agent_narrator": {
+  "status": "keyed",
+  "block": {
+   "type": "agent_narrator",
+   "title": "Incident Log Timeline",
+   "beats": [
+    {
+     "text": "Alert triggered: P99 latency exceeded 450ms across us-east.",
+     "label": "initial alert"
+    },
+    {
+     "text": "Autoscaler spawned 8 additional container workers to absorb spike.",
+     "label": "scaling action"
+    },
+    {
+     "text": "Root cause identified as unindexed query in **accounts** service.",
+     "label": "diagnostics"
+    },
+    {
+     "text": "Hotfix patch deployed; latency normalized to 35ms.",
+     "label": "resolution"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "beats[].id",
+  "py_sha": "2796808e8db81139c715e6b42189f7fa976e579d2233ab9524b12b38991728df",
+  "gas_sha": "583e02e9d6be0ff817370cce82a73cdcde8ee4cedce6ce97d64caaad0db3be57",
+  "parity": false
+ },
+ "agent_sketchpad": {
+  "status": "keyed",
+  "block": {
+   "type": "agent_sketchpad",
+   "label": "Network topology map",
+   "viewBox": "0 0 400 200",
+   "strokes": [
+    {
+     "element": "<circle cx='100' cy='100' r='30' fill='#38bdf8'/>",
+     "label": "primary coordinator"
+    },
+    {
+     "element": "<circle cx='300' cy='60' r='20' fill='#818cf8'/>",
+     "label": "secondary node 1"
+    },
+    {
+     "element": "<circle cx='300' cy='140' r='20' fill='#818cf8'/>",
+     "label": "secondary node 2"
+    },
+    {
+     "element": "<line x1='130' y1='100' x2='280' y2='60' stroke='#94a3b8' stroke-width='2'/>",
+     "label": "connecting mesh link"
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "strokes[].id",
+  "py_sha": "528b4ec189487718ed7a9e7b3d7d6355fa1b2965f7eb456ce76f5105e6595033",
+  "gas_sha": "a6a5a4b18e2db6630e005c642500787d83cfc4c2a4a358d5730cac8f41d594ad",
+  "parity": false
+ },
+ "anchor_list": {
+  "status": "pending",
+  "block": {
+   "type": "anchor_list",
+   "anchors": [
+    {
+     "label": "Overview",
+     "url": "https://example.com/doc#overview",
+     "target_id": "overview"
+    },
+    {
+     "label": "Installation",
+     "url": "https://example.com/doc#install",
+     "target_id": "install"
+    },
+    {
+     "label": "Configuration",
+     "url": "https://example.com/doc#config",
+     "target_id": "config"
+    },
+    {
+     "label": "Troubleshooting",
+     "url": "https://example.com/doc#faq",
+     "target_id": "faq"
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "anchors[].href",
+  "py_sha": "93398bb0a607a554eb91f2f4399783d9301019e8375ec85919b5585762d4f52b",
+  "gas_sha": "93398bb0a607a554eb91f2f4399783d9301019e8375ec85919b5585762d4f52b",
+  "parity": true
+ },
+ "animated_counter": {
+  "status": "pending",
+  "block": {
+   "type": "animated_counter",
+   "duration": 2,
+   "counters": [
+    {
+     "value": 1540,
+     "label": "Deployments Today",
+     "color": "#0284c7"
+    },
+    {
+     "value": 99,
+     "label": "Success Percentage",
+     "suffix": "%",
+     "color": "#16a34a"
+    },
+    {
+     "value": 12,
+     "label": "Avg Duration",
+     "suffix": "s",
+     "color": "#d97706"
+    },
+    {
+     "value": 450,
+     "label": "Active Workers",
+     "color": "#9333ea"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "counters[].label",
+  "py_sha": "63aff53e85747e68db218416d46badc9f45764848befcdaced4801cbee6127c9",
+  "gas_sha": "900e3c73860b3a9a3f362ef13ee4ba80066ce7ddd79d23613c64161a807d8d41",
+  "parity": false
+ },
+ "annotated_code": {
+  "status": "keyed",
+  "block": {
+   "type": "annotated_code",
+   "language": "python",
+   "code": "def process_payment(account_id, amount):\n    validate_account(account_id)\n    lock = acquire_distributed_lock(account_id)\n    charge_card(account_id, amount)\n    lock.release()",
+   "caption": "Transactional Payment Handler",
+   "annotations": [
+    {
+     "line": 1,
+     "text": "Entry point for financial transactions"
+    },
+    {
+     "line": 2,
+     "text": "Check validation and freeze status"
+    },
+    {
+     "line": 3,
+     "text": "Prevent race conditions across pods"
+    },
+    {
+     "line": 4,
+     "text": "Trigger gateway charge"
+    }
+   ]
+  },
+  "kind": "ref",
+  "label_kind": "label",
+  "key": "annotations[].line",
+  "py_sha": "bd92c2473131c2da62e985d3a6449ee9cd19ad242b42633281521701acb21da5",
+  "gas_sha": "d07ff3ff15dbcd51ad3d528d5c2ed5393beb909b5c45f757e989052ca6000175",
+  "parity": false
+ },
+ "annotation_highlight": {
+  "status": "keyed",
+  "block": {
+   "type": "annotation_highlight",
+   "text": "Our platform enforces strict zero-trust network boundaries, requiring mutual TLS authentication on all service mesh endpoints while verifying cryptographic JWT claims per transaction.",
+   "notes": [
+    {
+     "term": "zero-trust",
+     "explanation": "A security model where no perimeter device is implicitly trusted.",
+     "color": "#ef4444"
+    },
+    {
+     "term": "mutual TLS",
+     "explanation": "Dual cryptographic handshake authenticating both client and server certificates.",
+     "color": "#3b82f6"
+    },
+    {
+     "term": "JWT claims",
+     "explanation": "Signed JSON structures asserting granted user permissions and scope.",
+     "color": "#10b981"
+    }
+   ]
+  },
+  "kind": "ref",
+  "label_kind": "label",
+  "key": "notes[].id",
+  "py_sha": "fa368d7b041ce85d3a77b5ddf2d904da4df62d88c2e761b108d554ca3ae0c366",
+  "gas_sha": "c0327ac0dd0c5b360fbb89cdff42439a92c39361efec971afbc3b6a2cb3c9834",
+  "parity": false
+ },
+ "api_param_table": {
+  "status": "keyed",
+  "block": {
+   "type": "api_param_table",
+   "parameters": [
+    {
+     "name": "account_id",
+     "type": "string",
+     "required_flag": true,
+     "default_value": "null",
+     "description": "Unique identifier of the tenant"
+    },
+    {
+     "name": "limit",
+     "type": "integer",
+     "required_flag": false,
+     "default_value": "50",
+     "description": "Records to return per page"
+    },
+    {
+     "name": "status",
+     "type": "string",
+     "required_flag": false,
+     "default_value": "active",
+     "description": "Filter by entity state"
+    },
+    {
+     "name": "sort",
+     "type": "string",
+     "required_flag": false,
+     "default_value": "created_at:desc",
+     "description": "Field and direction for ordering"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "parameters[].name",
+  "py_sha": "7cd91e9e619e8d0904222ba5da5abf5049d608fb6051d8c9b108da38ca2bae2a",
+  "gas_sha": "96823a29becc6ec795f48ecb681953e5acaab43bdbae4f0fa13cb3ffe8f9d52c",
+  "parity": false
+ },
+ "avatar_group": {
+  "status": "keyed",
+  "block": {
+   "type": "avatar_group",
+   "total_count": 12,
+   "label": "Incident Responders",
+   "avatars": [
+    {
+     "url": "https://example.com/a.png",
+     "name": "Elena Rostova"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "name": "Marcus Chen"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "name": "Priya Patel"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "name": "Sarah Connor"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "avatars[].name",
+  "py_sha": "478427eaf2288e615b0ef7bd2f22cbf6fc910a69900e88b1a97f01971742a398",
+  "gas_sha": "b8f5c379018c6fe91158a4a87ea333f2317ec759547a82f7b37869dcffd0e9b2",
+  "parity": false
+ },
+ "badge_group": {
+  "status": "keyed",
+  "block": {
+   "type": "badge_group",
+   "title": "Cluster State",
+   "badges": [
+    {
+     "text": "API Gateway: Online",
+     "color": "green",
+     "pulse": true
+    },
+    {
+     "text": "Worker Node 01: Busy",
+     "color": "blue",
+     "pulse": false
+    },
+    {
+     "text": "Ingestion Queue: High",
+     "color": "yellow",
+     "pulse": true
+    },
+    {
+     "text": "Audit Service: Degraded",
+     "color": "red",
+     "pulse": false
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "badges[].text",
+  "py_sha": "cf5f05af1f08ef646cf285d7f0b53582c955498dc9d5f1bd1a0f00c22334e3b9",
+  "gas_sha": "cf5f05af1f08ef646cf285d7f0b53582c955498dc9d5f1bd1a0f00c22334e3b9",
+  "parity": true
+ },
+ "badge_showcase": {
+  "status": "keyed",
+  "block": {
+   "type": "badge_showcase",
+   "title": "Certified Platform Specialist Badges",
+   "columns": 4,
+   "badges": [
+    {
+     "id": "badge_git_ops",
+     "label": "GitOps Champion",
+     "icon": "🌿",
+     "description": "Automated 20 production pull request syncs",
+     "required_id": "req_gitops_cert"
+    },
+    {
+     "id": "badge_sec_guard",
+     "label": "Security Warden",
+     "icon": "🛡️",
+     "description": "Patched 5 zero-day vulnerabilities in staging",
+     "required_id": "req_security_cert"
+    },
+    {
+     "id": "badge_perf_ninja",
+     "label": "Latency Slayer",
+     "icon": "⚡",
+     "description": "Reduced p99 server response below 50ms",
+     "required_id": "req_perf_cert"
+    },
+    {
+     "id": "badge_cloud_arch",
+     "label": "Cloud Master",
+     "icon": "☁️",
+     "description": "Completed all three infrastructure certifications",
+     "required_id": "req_arch_cert"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "badges[].id",
+  "py_sha": "39f3dd23b377553770a4a447d41d73d719b33f61413b2e996c5abe120494e6eb",
+  "gas_sha": "fc4796472666dd50e2da5f1cf711fa88aa95663c9d192e55afc5d95c0aaf3aa6",
+  "parity": false
+ },
+ "before_after": {
+  "status": "keyed",
+  "block": {
+   "type": "before_after",
+   "language": "typescript",
+   "before": "function fetchUser(id: string) {\n  return db.query('SELECT * FROM users WHERE id = ' + id);\n}",
+   "after": "async function fetchUser(id: string) {\n  return await db.query('SELECT * FROM users WHERE id = $1', [id]);\n}",
+   "before_label": "Legacy (Vulnerable)",
+   "after_label": "Patched (Parameterized)",
+   "caption": "SQL injection remediation"
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "before_label, after_label",
+  "py_sha": "76075f5168e3552eeda81d032183bbf7769d8b9c5efebb03df379a4ef0386e3d",
+  "gas_sha": "57bba6a85d8fd16fad0242465f535c68bec3b1cdafd189db7dc7e834cc97d293",
+  "parity": false
+ },
+ "benchmark_comparison": {
+  "status": "pending",
+  "block": {
+   "type": "benchmark_comparison",
+   "items": [
+    {
+     "label": "Direct Memory",
+     "value": 12.4
+    },
+    {
+     "label": "Redis Cache",
+     "value": 45.1
+    },
+    {
+     "label": "Postgres Query",
+     "value": 138.2
+    },
+    {
+     "label": "Cold Storage",
+     "value": 410.8
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "items[].name",
+  "py_sha": "0959de4d1d14f5058b6cba3e7a5a3a17716c02157c61c0577b92aaeb2dd21139",
+  "gas_sha": "d443fe7b9ce22a5d4104d2ca4fa20fbcaff0503339c21f56cc9856bbbeb3e004",
+  "parity": false
+ },
+ "bento_grid": {
+  "status": "pending",
+  "block": {
+   "type": "bento_grid",
+   "heading": "DevOps Console Features",
+   "tiles": [
+    {
+     "title": "Automated Canary Deployments",
+     "subtitle": "Traffic splitting by request header",
+     "icon": "🚀",
+     "span": 2
+    },
+    {
+     "title": "Global Edge Secrets",
+     "subtitle": "Encrypted env distribution",
+     "icon": "🔐",
+     "span": 1
+    },
+    {
+     "title": "Telemetry Streaming",
+     "subtitle": "Sub-second logs",
+     "icon": "📡",
+     "span": 1
+    },
+    {
+     "title": "Self-Healing Clusters",
+     "subtitle": "Auto pod restarts",
+     "icon": "🔄",
+     "span": 2
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "tiles[].title",
+  "py_sha": "bf37177aa09d50d1d1bb25119220aafacb674a5547d81b6d0bd5ee1a8167bb0c",
+  "gas_sha": "c7e74647f74e1c945904e0c94734cd151e551f1d964f8c6cfbdc0ec02a1308e8",
+  "parity": false
+ },
+ "breadcrumb": {
+  "status": "pending",
+  "block": {
+   "type": "breadcrumb",
+   "items": [
+    {
+     "label": "Organizations",
+     "url": "https://example.com/orgs",
+     "is_current": false
+    },
+    {
+     "label": "Acme Corp",
+     "url": "https://example.com/orgs/acme",
+     "is_current": false
+    },
+    {
+     "label": "Engineering",
+     "url": "https://example.com/orgs/acme/eng",
+     "is_current": false
+    },
+    {
+     "label": "Telemetry",
+     "url": "https://example.com/orgs/acme/eng/telemetry",
+     "is_current": true
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "items[].label",
+  "py_sha": "d835d039857054f4f5888d0940c810ec16636b0a54d762c5ad3937c1068a6376",
+  "gas_sha": "7e90af7e1160fc003cbc05a6ef37196fdc42f584b3268406ad15a069b935a22d",
+  "parity": false
+ },
+ "brevet_automatismes": {
+  "status": "keyed",
+  "block": {
+   "type": "brevet_automatismes",
+   "duration": 600,
+   "questions": [
+    {
+     "question": "Convert binary 1101 to decimal.",
+     "answer": "13"
+    },
+    {
+     "question": "What is the default TCP port for encrypted HTTPS traffic?",
+     "answer": "443"
+    },
+    {
+     "question": "What does the 'P' stand for in the CAP theorem?",
+     "answer": "Partition tolerance"
+    },
+    {
+     "question": "Which Unix command displays current memory usage statistics?",
+     "answer": "free"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "questions[].text",
+  "py_sha": "1d617753a251f28c6c054bbe2678c41764c82aee6126c609872bff49b906121a",
+  "gas_sha": "301fb3869752d6c7d74d89c3b08f87ef280d1be1f88b3c3d1667bc5daab0e0ea",
+  "parity": false
+ },
+ "brevet_timeline": {
+  "status": "keyed",
+  "block": {
+   "type": "brevet_timeline",
+   "title": "Milestones of Distributed Systems",
+   "accent": "#3b82f6",
+   "events": [
+    {
+     "date": "1982",
+     "title": "Byzantine Generals Problem",
+     "desc": "Lamport, Shostak, and Pease publish foundational work on reaching consensus amidst node failure."
+    },
+    {
+     "date": "2000",
+     "title": "CAP Theorem Conjectured",
+     "desc": "Eric Brewer presents the trade-off between consistency, availability, and partition tolerance."
+    },
+    {
+     "date": "2006",
+     "title": "AWS S3 Launch",
+     "desc": "Introduction of commoditized, infinitely scalable cloud-native object storage at global scale."
+    },
+    {
+     "date": "2014",
+     "title": "Kubernetes Open Sourced",
+     "desc": "Google publishes the declarative container orchestration framework derived from internal Borg systems."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "events[].date",
+  "py_sha": "abc9ac9e22ead4509867044bc320ee10904f86480c8e633038ceeeffe0ff61eb",
+  "gas_sha": "de3d8e7ca8defe6910c86e8f606a50d8ece9d465ae8da090fa9e841201fe1b58",
+  "parity": false
+ },
+ "bullet_graph": {
+  "status": "keyed",
+  "block": {
+   "type": "bullet_graph",
+   "title": "QUARTERLY PERFORMANCE METRICS",
+   "rows": [
+    {
+     "label": "New Subscriptions",
+     "actual": 820,
+     "target": 750,
+     "ranges": [
+      400,
+      700,
+      1000
+     ]
+    },
+    {
+     "label": "Churn Rate (Inv)",
+     "actual": 92,
+     "target": 90,
+     "ranges": [
+      60,
+      85,
+      100
+     ]
+    },
+    {
+     "label": "Ticket Resolution",
+     "actual": 420,
+     "target": 500,
+     "ranges": [
+      250,
+      450,
+      600
+     ]
+    },
+    {
+     "label": "Feature Adoption",
+     "actual": 68,
+     "target": 65,
+     "ranges": [
+      30,
+      60,
+      90
+     ]
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "rows[].label",
+  "py_sha": "074a2773884ce898fa3ce435d5ce0289982af58192fa475407d22e9726bd8984",
+  "gas_sha": "074a2773884ce898fa3ce435d5ce0289982af58192fa475407d22e9726bd8984",
+  "parity": true
+ },
+ "bullet_list": {
+  "status": "keyed",
+  "block": {
+   "type": "bullet_list",
+   "items": [
+    {
+     "label": "Latency",
+     "text": "Under 50ms p95 across all edge regions"
+    },
+    {
+     "label": "Availability",
+     "text": "Maintained 99.99% uptime during Q3"
+    },
+    {
+     "label": "Throughput",
+     "text": "Handled peak 12,000 req/s with zero drop"
+    },
+    {
+     "label": "Cost",
+     "text": "Reduced data egress spend by 22%"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "items[]",
+  "py_sha": "dec59d67449709363ce262dc2a3669f1b2899049713793c828621c5ed920c874",
+  "gas_sha": "05181f99fda908f99694de62a5c988843c0b9e24824fae676f44ec2d29b14c7f",
+  "parity": false
+ },
+ "calibration_plot": {
+  "status": "pending",
+  "block": {
+   "type": "calibration_plot",
+   "title": "Triage Model Accuracy",
+   "x_label": "Predicted Confidence",
+   "y_label": "Observed Resolution Rate",
+   "series": [
+    {
+     "label": "SupportClassifier-v2",
+     "color": "#2563eb",
+     "points": [
+      {
+       "predicted": 0.2,
+       "observed": 0.22,
+       "n": 140
+      },
+      {
+       "predicted": 0.4,
+       "observed": 0.38,
+       "n": 220
+      },
+      {
+       "predicted": 0.6,
+       "observed": 0.64,
+       "n": 310
+      },
+      {
+       "predicted": 0.8,
+       "observed": 0.79,
+       "n": 190
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "series[].name",
+  "py_sha": "2f0742aa5708572e1677ab8441dd60c107093679455a5868340724d3381577a9",
+  "gas_sha": "d556f2528e16cc9c24ff447dca4bad71f1433919ecb771bdee43b12b67e11c67",
+  "parity": false
+ },
+ "callout_anatomy": {
+  "status": "keyed",
+  "block": {
+   "type": "callout_anatomy",
+   "title": "TOKEN PAYLOAD STRUCTURE",
+   "central_label": "JWT Structure",
+   "callouts": [
+    {
+     "id": 1,
+     "title": "Signature Algorithm",
+     "description": "Cryptographic method defined in JOSE header",
+     "pin_position": "top_left"
+    },
+    {
+     "id": 2,
+     "title": "Token Issuer",
+     "description": "Canonical authorization domain endpoint URL",
+     "pin_position": "bottom_left"
+    },
+    {
+     "id": 3,
+     "title": "Expiration Epoch",
+     "description": "Unix timestamp setting hard session expiry window",
+     "pin_position": "top_right"
+    },
+    {
+     "id": 4,
+     "title": "HMAC Verification",
+     "description": "Tamper-evident digest calculated over payload body",
+     "pin_position": "bottom_right"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "callouts[].label",
+  "py_sha": "38bec4dd0be860c945d07b14c4145e1a82b33ae103b57217ebb72a9bea124371",
+  "gas_sha": "38bec4dd0be860c945d07b14c4145e1a82b33ae103b57217ebb72a9bea124371",
+  "parity": true
+ },
+ "capability_checklist": {
+  "status": "keyed",
+  "block": {
+   "type": "capability_checklist",
+   "capability_names": [
+    "Zero Downtime",
+    "RBAC",
+    "SLA Guarantee",
+    "Audit Trails"
+   ],
+   "items": [
+    {
+     "name": "Standard Tier",
+     "capabilities": [
+      false,
+      true,
+      false,
+      false
+     ]
+    },
+    {
+     "name": "Professional Tier",
+     "capabilities": [
+      true,
+      true,
+      false,
+      true
+     ]
+    },
+    {
+     "name": "Enterprise Tier",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "name": "Dedicated Cloud",
+     "capabilities": [
+      true,
+      true,
+      true,
+      true
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].name",
+  "py_sha": "cd0e6c1c9e1b5fa7ef522356377249454a363e8af3514af4e2d8df65dbb9baeb",
+  "gas_sha": "8063d66c79123dedc40fc0ffc80dcfec48e8ce53cf16d1ae1a375f00e35629f7",
+  "parity": false
+ },
+ "carousel": {
+  "status": "keyed",
+  "block": {
+   "type": "carousel",
+   "accent": "#10b981",
+   "caption": "Product Walkthrough",
+   "slides": [
+    {
+     "url": "https://example.com/a.png",
+     "label": "Telemetry Dashboard",
+     "subtitle": "Real-time query metrics"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "label": "Alert Engine",
+     "subtitle": "Instant anomaly detection"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "label": "Cluster Health",
+     "subtitle": "Multi-region node tracking"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "label": "Audit Logs",
+     "subtitle": "Immutable security records"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "slides[].id",
+  "py_sha": "722c5a93dd45c83ea15221495cd2eccfebb2604291231bff841d9248a3ea2eb3",
+  "gas_sha": "130d0db4774dbb9fcb8c8e48b64dee227ea753a5fa6372c78cd0eb8487c77dca",
+  "parity": false
+ },
+ "catalogue_provenance": {
+  "status": "keyed",
+  "block": {
+   "type": "catalogue_provenance",
+   "label": "Built using components from",
+   "sources": [
+    {
+     "catalogue": "Core Platform UI",
+     "what": "Navigation shell and layout containers",
+     "icon": "layers",
+     "color": "#2563eb",
+     "target": "https://example.com/docs/core"
+    },
+    {
+     "catalogue": "Telemetry Kit",
+     "what": "Realtime metric graphs and latency counters",
+     "icon": "speed",
+     "color": "#10b981",
+     "target": "https://example.com/docs/telemetry"
+    },
+    {
+     "catalogue": "Workspace Connectors",
+     "what": "Drive and Gmail live integration blocks",
+     "icon": "workspaces",
+     "color": "#ea4335",
+     "target": "https://example.com/docs/workspace"
+    },
+    {
+     "catalogue": "Learning Primitives",
+     "what": "Assessment modules and rubric tables",
+     "icon": "school",
+     "color": "#f59e0b",
+     "target": "https://example.com/docs/learning"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "sources[].name",
+  "py_sha": "addb258951c5b8fdc62877778ed9c04858efdce749a2ffe23e73b6bce9670608",
+  "gas_sha": "26bcce7d18c904ec0a71355cc7bde36f82041c5ae2abfd347fa307c19f0903f4",
+  "parity": false
+ },
+ "change_chart": {
+  "status": "keyed",
+  "block": {
+   "type": "change_chart",
+   "title": "API LATENCY BENCHMARK (MS)",
+   "mode": "dumbbell",
+   "series": [
+    "Baseline",
+    "Optimized"
+   ],
+   "rows": [
+    {
+     "label": "Catalog Search",
+     "from": 320,
+     "to": 115
+    },
+    {
+     "label": "User Profile Load",
+     "from": 180,
+     "to": 65
+    },
+    {
+     "label": "Cart Calculation",
+     "from": 240,
+     "to": 90
+    },
+    {
+     "label": "Checkout Finalize",
+     "from": 410,
+     "to": 160
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "rows[].label",
+  "py_sha": "62a4f756f68f393cf1708edf07d3c613f5c7bcded840917c7e60e13913a6dac7",
+  "gas_sha": "62a4f756f68f393cf1708edf07d3c613f5c7bcded840917c7e60e13913a6dac7",
+  "parity": true
+ },
+ "chartjs_bar": {
+  "status": "keyed",
+  "block": {
+   "type": "chartjs_bar",
+   "labels": [
+    "Sprint 10",
+    "Sprint 11",
+    "Sprint 12",
+    "Sprint 13"
+   ],
+   "datasets": [
+    {
+     "label": "Completed Points",
+     "data": [
+      38,
+      42,
+      35,
+      49
+     ]
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "labels[]",
+  "py_sha": "10aa55bff74d9bb2dec6af4448219eab61339db0c104e1935ac695aec75a3d7d",
+  "gas_sha": "c504a38cfcea361cd8f9cbbc275840cea6ff1723bc5ce6cee2c2fb806f3c3add",
+  "parity": false
+ },
+ "chartjs_line": {
+  "status": "keyed",
+  "block": {
+   "type": "chartjs_line",
+   "labels": [
+    "00:00",
+    "06:00",
+    "12:00",
+    "18:00"
+   ],
+   "datasets": [
+    {
+     "label": "Active Requests/sec",
+     "data": [
+      120,
+      310,
+      890,
+      640
+     ]
+    }
+   ]
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "labels[]",
+  "py_sha": "60fefffce65a41d543c0d3d9e5290f2cb073c039a33e78b876ee6b5a12c60629",
+  "gas_sha": "4602e462ef3929df226c7a3c823d8527a8bed509baffc3a17b5ed50e13a8497a",
+  "parity": false
+ },
+ "chartjs_pie": {
+  "status": "keyed",
+  "block": {
+   "type": "chartjs_pie",
+   "title": "Cloud Infrastructure Spend",
+   "variant": "donut",
+   "data": [
+    {
+     "label": "Compute Nodes",
+     "value": 4800
+    },
+    {
+     "label": "Managed Storage",
+     "value": 2100
+    },
+    {
+     "label": "Data Egress",
+     "value": 1300
+    },
+    {
+     "label": "Monitoring Pipeline",
+     "value": 850
+    }
+   ]
+  },
+  "kind": "arc",
+  "label_kind": "label",
+  "key": "data[].label",
+  "py_sha": "01106304335d7239d8dd7d067c73086ade9b1a0dad986c3b12b49955088b5ee0",
+  "gas_sha": "341f77c73f6e801a0348ad4b961df25b3820354825a584c1de3cbb6d19d64e89",
+  "parity": false
+ },
+ "chat_sequence": {
+  "status": "keyed",
+  "block": {
+   "type": "chat_sequence",
+   "messages": [
+    {
+     "role": "user",
+     "name": "Devin Reed",
+     "text": "Can we deploy hotfix 2.4.1 directly to production cluster EU-West?"
+    },
+    {
+     "role": "assistant",
+     "name": "Release Bot",
+     "text": "Regression suites passed for 2.4.1. Rollout requires approval from @sarah."
+    },
+    {
+     "role": "user",
+     "name": "Sarah Chen",
+     "text": "Approved. Let us proceed with canary deployment on 10% traffic first."
+    },
+    {
+     "role": "assistant",
+     "name": "Release Bot",
+     "text": "Canary traffic allocated to EU-West. Error rate holding steady at 0.01%."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "messages[].id",
+  "py_sha": "29bff0ff7c074a1a71e6876515843d7441e73b3cf0f3d435c4e6bfec523cde6d",
+  "gas_sha": "82f00f4193dc756bee9b716edea96df876d6592b660bdcf7df297e9a0f735b55",
+  "parity": false
+ },
+ "checklist_interactive": {
+  "status": "keyed",
+  "block": {
+   "type": "checklist_interactive",
+   "items": [
+    "Verify database migrations completed",
+    "Flush and preheat Redis cache keys",
+    "Update DNS record aliases",
+    "Confirm error rates remain under 0.01%"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "9737ce1030fabd2720e9d7541a1f0c18fa5a8aecdd2ad926c15b04df7d87c091",
+  "gas_sha": "43f1bb08c933d55c0fa278bb51d312dea4a805a11db4246792447dae67a91474",
+  "parity": false
+ },
+ "chip_group": {
+  "status": "keyed",
+  "block": {
+   "type": "chip_group",
+   "label": "Filter Microservices",
+   "chips": [
+    {
+     "label": "All Services",
+     "active": true
+    },
+    {
+     "label": "Authentication",
+     "active": false,
+     "url": "https://example.com/auth"
+    },
+    {
+     "label": "Billing Fleet",
+     "active": false,
+     "url": "https://example.com/billing"
+    },
+    {
+     "label": "Core Search",
+     "active": false,
+     "url": "https://example.com/search"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "chips[].label",
+  "py_sha": "86358ea560bad205c0018a230ac47fbdf27554b4b3d5a0ff6167671af091f219",
+  "gas_sha": "f56b1bcde5be2d821e32f207c0f02c9b58b1ba9e85e5996f386cd7ba9cb307a6",
+  "parity": false
+ },
+ "choicebox_group": {
+  "status": "pending",
+  "block": {
+   "type": "choicebox_group",
+   "name": "deployment_env",
+   "label": "Select Cluster Target",
+   "accent": "#0284c7",
+   "submit_label": "Deploy Fleet",
+   "items": [
+    {
+     "value": "us-east-1",
+     "title": "US East Production",
+     "description": "High redundancy VPC"
+    },
+    {
+     "value": "eu-central-1",
+     "title": "EU Central Production",
+     "description": "GDPR-compliant enclave"
+    },
+    {
+     "value": "ap-southeast-1",
+     "title": "APAC Edge",
+     "description": "Low latency cache pool"
+    },
+    {
+     "value": "staging-us",
+     "title": "Staging Sandbox",
+     "description": "Pre-release testing"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "3a6b94d5280d1633f486d59b78137f9fb9a7d47887215aaba8036b9e7c6e5cf9",
+  "gas_sha": "ac69becc19538f8418d15f1b22af63121194b7d059efb5bf249f1c9e6c7ab949",
+  "parity": false
+ },
+ "cohort_progress_board": {
+  "status": "keyed",
+  "block": {
+   "type": "cohort_progress_board",
+   "course_id": "k8s-platform-2026",
+   "title": "Cohort Fall 2026 Progress",
+   "modules": [
+    {
+     "id": "mod_1",
+     "label": "Core Pods"
+    },
+    {
+     "id": "mod_2",
+     "label": "Networking"
+    },
+    {
+     "id": "mod_3",
+     "label": "Ingress & TLS"
+    },
+    {
+     "id": "mod_4",
+     "label": "Helm Deployments"
+    }
+   ],
+   "items": [
+    {
+     "email": "danielle.ross@example.com",
+     "progress": {
+      "mod_1": true,
+      "mod_2": true,
+      "mod_3": true,
+      "mod_4": false
+     },
+     "updated_at": "2026-10-10"
+    },
+    {
+     "email": "liam.vance@example.com",
+     "progress": {
+      "mod_1": true,
+      "mod_2": true,
+      "mod_3": false,
+      "mod_4": false
+     },
+     "updated_at": "2026-10-11"
+    },
+    {
+     "email": "sophia.martinez@example.com",
+     "progress": {
+      "mod_1": true,
+      "mod_2": true,
+      "mod_3": true,
+      "mod_4": true
+     },
+     "updated_at": "2026-10-09"
+    },
+    {
+     "email": "chen.wei@example.com",
+     "progress": {
+      "mod_1": true,
+      "mod_2": false,
+      "mod_3": false,
+      "mod_4": false
+     },
+     "updated_at": "2026-10-12"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "dfb3493df3a94694f797ca3040450ab9047f2dc920e3c3f823bc5d489a97cde3",
+  "gas_sha": "62b3847c0bd59d0ac64826be1459953816132f23729aee9e0346d5cc8e71bc1a",
+  "parity": false
+ },
+ "cohort_retention": {
+  "status": "pending",
+  "block": {
+   "type": "cohort_retention",
+   "title": "Customer Cohort Retention",
+   "periods": [
+    "Month 0",
+    "Month 1",
+    "Month 2",
+    "Month 3"
+   ],
+   "color_scale": [
+    "#1e293b",
+    "#10b981"
+   ],
+   "cohorts": [
+    {
+     "cohort_name": "Jan 2026",
+     "original_size": 1200,
+     "retention_rates": [
+      100.0,
+      84.5,
+      78.2,
+      74.0
+     ]
+    },
+    {
+     "cohort_name": "Feb 2026",
+     "original_size": 1450,
+     "retention_rates": [
+      100.0,
+      86.1,
+      80.4
+     ]
+    },
+    {
+     "cohort_name": "Mar 2026",
+     "original_size": 1600,
+     "retention_rates": [
+      100.0,
+      88.0
+     ]
+    },
+    {
+     "cohort_name": "Apr 2026",
+     "original_size": 1900,
+     "retention_rates": [
+      100.0
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "cohorts[].name",
+  "py_sha": "753e9927242e212a682a43565b04aeb213bba3d0606dfc96b4189e4f7e33359d",
+  "gas_sha": "401e88319751c444dd269ff7373f5ecdafe9551002879a28e86a348fa8bfe11e",
+  "parity": false
+ },
+ "color_swatch_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "color_swatch_grid",
+   "colors": [
+    {
+     "name": "Brand Slate",
+     "hex": "#0f172a"
+    },
+    {
+     "name": "Primary Indigo",
+     "hex": "#4f46e5"
+    },
+    {
+     "name": "Emerald Success",
+     "hex": "#10b981"
+    },
+    {
+     "name": "Amber Alert",
+     "hex": "#f59e0b"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "colors[].hex",
+  "py_sha": "cf87dc9ab3da8996b4522a0715722676a9f95445ef82dfc28e7dd7f840f065b1",
+  "gas_sha": "51c48ec2988cc853efc73045e17deadddc23ac95dc8785f0ce59fb07cf2467ce",
+  "parity": false
+ },
+ "comparison_grid": {
+  "status": "pending",
+  "block": {
+   "type": "comparison_grid",
+   "products": [
+    "Postgres",
+    "MongoDB",
+    "Redis",
+    "Elasticsearch"
+   ],
+   "features": [
+    {
+     "name": "ACID Compliance",
+     "values": [
+      "Full",
+      "Document",
+      "Optional",
+      "No"
+     ]
+    },
+    {
+     "name": "Primary Index",
+     "values": [
+      "B-Tree",
+      "WiredTiger",
+      "In-Memory Hash",
+      "Lucene Inverted"
+     ]
+    },
+    {
+     "name": "Query Language",
+     "values": [
+      "SQL",
+      "MQL",
+      "RESP Commands",
+      "JSON DSL"
+     ]
+    },
+    {
+     "name": "Typical Latency",
+     "values": [
+      "<5ms",
+      "<10ms",
+      "<1ms",
+      "<15ms"
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "features[].name",
+  "py_sha": "7f88e75eb6c4865415d15a49ae666f6ae6e2217573ea006f675f06d6e475adde",
+  "gas_sha": "44e581306daeb00a93c9a0fe1183e1944ca10626e3be3c6a0acd57f8048cc915",
+  "parity": false
+ },
+ "concept_ladder": {
+  "status": "keyed",
+  "block": {
+   "type": "concept_ladder",
+   "title": "Understanding Event Sourcing",
+   "eyebrow": "ARCHITECTURE",
+   "dek": "Deriving current state from an append-only sequence of immutable events.",
+   "hook": "Databases do not remember history; they overwrite it.",
+   "model": "Think of it as an accounting ledger, not a bank balance total.",
+   "model_note": "A balance is merely the folding sum of transactions across time.",
+   "rungs": [
+    {
+     "type": "concept_rung",
+     "title": "The Mutation Trap",
+     "body": "Classic CRUD deletes historical truth on every update."
+    },
+    {
+     "type": "concept_rung",
+     "title": "The Append Log",
+     "body": "Events capture business intent in immutable records."
+    },
+    {
+     "type": "concept_rung",
+     "title": "Materialized Projections",
+     "body": "Read models fold event streams into fast query shapes."
+    },
+    {
+     "type": "concept_rung",
+     "title": "Worked Example: Order Checkout",
+     "body": "OrderPlaced, PaymentReceived, and ItemsShipped replay into an active order."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "rungs[].title",
+  "py_sha": "2c2066762029fc15a4cc043f806651d8ff34b9144f45bae941678be50004a39f",
+  "gas_sha": "2c2066762029fc15a4cc043f806651d8ff34b9144f45bae941678be50004a39f",
+  "parity": true
+ },
+ "contrast_audit": {
+  "status": "keyed",
+  "block": {
+   "type": "contrast_audit",
+   "show_fix": true,
+   "theme": "light",
+   "pairs": [
+    {
+     "fg": "#0f172a",
+     "bg": "#f8fafc",
+     "label": "Body Text"
+    },
+    {
+     "fg": "#64748b",
+     "bg": "#f8fafc",
+     "label": "Subtle Caption"
+    },
+    {
+     "fg": "#ffffff",
+     "bg": "#2563eb",
+     "label": "Primary Button"
+    },
+    {
+     "fg": "#ef4444",
+     "bg": "#ffffff",
+     "label": "Destructive Notice"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "pairs[].label",
+  "py_sha": "acc27949074d7e1906d755b25d368c7365b0947738b6a9372b759dca25d8b2a6",
+  "gas_sha": "acc27949074d7e1906d755b25d368c7365b0947738b6a9372b759dca25d8b2a6",
+  "parity": true
+ },
+ "contributor_list": {
+  "status": "keyed",
+  "block": {
+   "type": "contributor_list",
+   "title": "Core Maintainers",
+   "contributors": [
+    {
+     "name": "Alex Rivera",
+     "role": "Lead Architect",
+     "avatar_url": "https://example.com/a.png"
+    },
+    {
+     "name": "Dana White",
+     "role": "Security Engineer",
+     "avatar_url": "https://example.com/a.png"
+    },
+    {
+     "name": "Taro Tanaka",
+     "role": "Compiler Maintainer",
+     "avatar_url": "https://example.com/a.png"
+    },
+    {
+     "name": "Zoe Barnes",
+     "role": "Docs & Developer Relations",
+     "avatar_url": "https://example.com/a.png"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "contributors[].name",
+  "py_sha": "52e91cf4ee89cd2c13f85adc79c461bea703d5077bdb7c42f19367c5bd300123",
+  "gas_sha": "29e77e6a29cc228d977e0ae3aa1dc9c2888c386b964af979fcc774eb27aa8367",
+  "parity": false
+ },
+ "conversion_funnel": {
+  "status": "keyed",
+  "block": {
+   "type": "conversion_funnel",
+   "title": "Trial Onboarding Funnel",
+   "steps": [
+    {
+     "stage": "Landing Visit",
+     "value": 14200
+    },
+    {
+     "stage": "Account Created",
+     "value": 6800
+    },
+    {
+     "stage": "Workspace Setup",
+     "value": 3100
+    },
+    {
+     "stage": "Paid Upgrade",
+     "value": 940
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "steps[].label",
+  "py_sha": "a9b1504086f9ebd53a8966ba9173328a145b19842315b9f1607051d7a66617b8",
+  "gas_sha": "ccd1f7847da45ab4269cc659e44eeda1f0c8096da6fb8773950e569890943518",
+  "parity": false
+ },
+ "counter_group": {
+  "status": "keyed",
+  "block": {
+   "type": "counter_group",
+   "stats": [
+    {
+     "value": 99.98,
+     "label": "Monthly Uptime",
+     "suffix": "%",
+     "decimals": 2,
+     "color": "#10b981"
+    },
+    {
+     "value": 1420,
+     "label": "Active Nodes",
+     "prefix": "#",
+     "color": "#3b82f6"
+    },
+    {
+     "value": 4.2,
+     "label": "P95 Latency",
+     "suffix": "ms",
+     "decimals": 1,
+     "color": "#f59e0b"
+    },
+    {
+     "value": 380,
+     "label": "PRs Merged",
+     "prefix": "+",
+     "color": "#8b5cf6"
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "stats[].label",
+  "py_sha": "a719c5dc5490fbf5c2bc07a0a4658ab730baba0287e0249dd592840511927326",
+  "gas_sha": "9e7e236d97e219114f046a79bbe3502163d0a506bcb52bc82007031c266720b6",
+  "parity": false
+ },
+ "course_progress_card": {
+  "status": "keyed",
+  "block": {
+   "type": "course_progress_card",
+   "course_title": "Distributed Systems Architecture",
+   "accent": "#6366f1",
+   "modules": [
+    {
+     "title": "Raft Consensus Protocol",
+     "lessons_total": 8,
+     "lessons_done": 8
+    },
+    {
+     "title": "Vector Clocks & Causality",
+     "lessons_total": 10,
+     "lessons_done": 7
+    },
+    {
+     "title": "Gossip Protocols & Membership",
+     "lessons_total": 6,
+     "lessons_done": 3
+    },
+    {
+     "title": "Distributed Transactions (2PC)",
+     "lessons_total": 12,
+     "lessons_done": 0
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "modules[].title",
+  "py_sha": "5e92be1ddd5c8bd924da1615d761f0ef88bd5a0ea2f14e7e84a363ca37076956",
+  "gas_sha": "004470b499dcca6c41546a9be4e1dad34e17c7a77697ced2b999eac7d79e7c4e",
+  "parity": false
+ },
+ "customer_logo_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "customer_logo_grid",
+   "title": "Trusted by Platform Leaders",
+   "logos": [
+    {
+     "name": "Vercel",
+     "url": "https://example.com/a.png"
+    },
+    {
+     "name": "Stripe",
+     "url": "https://example.com/a.png"
+    },
+    {
+     "name": "Shopify",
+     "url": "https://example.com/a.png"
+    },
+    {
+     "name": "Datadog",
+     "url": "https://example.com/a.png"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "logos[].name",
+  "py_sha": "0d1a9a1bb6b61580c00226bf4486bd71b788006d4b19308530e16b26c6470cda",
+  "gas_sha": "9d565d03c3cd6ad6cdd579c5fd37183fa05545725e4ac8a66e2f4b5f04552549",
+  "parity": false
+ },
+ "cycle_diagram": {
+  "status": "keyed",
+  "block": {
+   "type": "cycle_diagram",
+   "title": "RELEASE LIFECYCLE",
+   "stages": [
+    {
+     "name": "Plan",
+     "description": "Scope prioritized roadmaps and acceptance goals"
+    },
+    {
+     "name": "Build",
+     "description": "Implement features with continuous testing validation"
+    },
+    {
+     "name": "Verify",
+     "description": "Execute canary regression test suites"
+    },
+    {
+     "name": "Deploy",
+     "description": "Roll out incrementally to global edge fleet"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "stages[].name",
+  "py_sha": "f0593d22700f068b420cc040073377264b4fc763e986f0265702c7daa706dfa3",
+  "gas_sha": "f0593d22700f068b420cc040073377264b4fc763e986f0265702c7daa706dfa3",
+  "parity": true
+ },
+ "dark_feature_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "dark_feature_grid",
+   "columns": 2,
+   "accent": "#10b981",
+   "features": [
+    {
+     "icon": "shield",
+     "title": "Zero-Trust Identity",
+     "description": "Continuous device and token re-attestation at every hop.",
+     "colour": "#10b981"
+    },
+    {
+     "icon": "bolt",
+     "title": "Edge Caching",
+     "description": "Sub-millisecond static response caches in 300 locations.",
+     "colour": "#3b82f6"
+    },
+    {
+     "icon": "sync",
+     "title": "Conflict-Free Sync",
+     "description": "CRDT-backed background replication for offline mobile workers.",
+     "colour": "#8b5cf6"
+    },
+    {
+     "icon": "chart",
+     "title": "Realtime Telemetry",
+     "description": "P99 tracing with instant anomaly clustering and alerts.",
+     "colour": "#f59e0b"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "features[].title",
+  "py_sha": "e20dadaaa618bbb6ea9ab67bf62113635eaa727f3fda2815a65a6f0a6b13dd4d",
+  "gas_sha": "027169199f91bf8edeaa6c8066474daf7d71949c1af37b39d3387c235787ca28",
+  "parity": false
+ },
+ "data_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "data_grid",
+   "title": "Customer Accounts",
+   "columns": [
+    {
+     "header": "Organization",
+     "key": "org",
+     "type": "string"
+    },
+    {
+     "header": "Plan",
+     "key": "plan",
+     "type": "tag"
+    },
+    {
+     "header": "Seats",
+     "key": "seats",
+     "type": "number"
+    },
+    {
+     "header": "Health",
+     "key": "health",
+     "type": "status"
+    }
+   ],
+   "rows": [
+    {
+     "org": "Acme Corp",
+     "plan": "Enterprise",
+     "seats": 140,
+     "health": "healthy"
+    },
+    {
+     "org": "NorthStar Inc",
+     "plan": "Pro",
+     "seats": 35,
+     "health": "healthy"
+    },
+    {
+     "org": "Vanguard Labs",
+     "plan": "Business",
+     "seats": 60,
+     "health": "at_risk"
+    },
+    {
+     "org": "Helios Systems",
+     "plan": "Starter",
+     "seats": 8,
+     "health": "churning"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "rows[].id",
+  "py_sha": "3825087c234823eb23fed7a4e32195888ec07ef71f73dbf2b55fb3fe11c1b9ab",
+  "gas_sha": "39e29a85936727e5ccfa28ba8e89d245392b26fa6cd974c64c01ae80185974ad",
+  "parity": false
+ },
+ "data_table_sortable": {
+  "status": "keyed",
+  "block": {
+   "type": "data_table_sortable",
+   "headers": [
+    "Project",
+    "Lead",
+    "Budget",
+    "Status"
+   ],
+   "rows": [
+    [
+     "Atlas UI",
+     "Sarah T.",
+     "$45,000",
+     "Active"
+    ],
+    [
+     "Bifrost Bridge",
+     "Marcus R.",
+     "$120,000",
+     "Planning"
+    ],
+    [
+     "Chronos Engine",
+     "Elena V.",
+     "$82,000",
+     "Review"
+    ],
+    [
+     "DirectSync",
+     "Devon P.",
+     "$31,000",
+     "Shipped"
+    ]
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "rows[].id",
+  "py_sha": "426cd48ecb4176791455af601b00989471207e54ad4faa12b8c981d1d5aa6c32",
+  "gas_sha": "4d45398b507d55b312bfa21547750e01294f78e357882132d58943ef806fe59e",
+  "parity": false
+ },
+ "depth_stack": {
+  "status": "pending",
+  "block": {
+   "type": "depth_stack",
+   "count": 4,
+   "cards": [
+    {
+     "title": "Alpha Phase: Core Engine",
+     "text": "Delivered deterministic parser with baseline memory profiles under 20MB."
+    },
+    {
+     "title": "Beta Phase: Ecosystem Connectors",
+     "text": "Enabled OAuth handshake wrappers for Salesforce, Jira, and Slack integrations."
+    },
+    {
+     "title": "Release Candidate: Load Hardening",
+     "text": "Passed sustained 12,000 rps stress benchmarks across dual availability zones."
+    },
+    {
+     "title": "General Availability: Enterprise Rollout",
+     "text": "Activated SLA monitoring dashboards and multi-region failover automation."
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "cards[].title",
+  "py_sha": "486b9b576a351631e09875826d688843b6d2aa78eab6526c6a7f76e1260e6773",
+  "gas_sha": "5bb3b7f56b1652a7e6d7d78b73729cbb29d68a8c105b63cccdd65628aa6ef11c",
+  "parity": false
+ },
+ "drive_folder_contents": {
+  "status": "keyed",
+  "block": {
+   "type": "drive_folder_contents",
+   "folder_id": "folder_brand_assets_2026",
+   "title": "Corporate Design Assets",
+   "count": 4,
+   "auth_token": "ya29.sample_token_assets",
+   "items": [
+    {
+     "id": "fld_vector_logos",
+     "name": "Vector Master Logos",
+     "type": "FOLDER",
+     "owner": "Brand Studio"
+    },
+    {
+     "id": "fld_brand_guidelines",
+     "name": "Brand Guidelines 2026.pdf",
+     "type": "PDF",
+     "owner": "Elena Rostova"
+    },
+    {
+     "id": "fld_color_swatches",
+     "name": "Workspace Color Tokens.json",
+     "type": "DOC",
+     "owner": "Frontend Guild"
+    },
+    {
+     "id": "fld_font_spec",
+     "name": "Typography Hierarchy.docx",
+     "type": "DOC",
+     "owner": "Elena Rostova"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "1d454b3a604ecf393b1c9188e38735c79828c7b2ee41e0aa73f7d2b6d69a36de",
+  "gas_sha": "08e57ea290ecccfd196357957f85d2202b7c44a709027a206e7bb0c6a7effb4c",
+  "parity": false
+ },
+ "drive_recent_files": {
+  "status": "keyed",
+  "block": {
+   "type": "drive_recent_files",
+   "title": "Team Drive Documents",
+   "count": 4,
+   "accent": "#4285f4",
+   "auth_token": "ya29.sample_token_drive",
+   "items": [
+    {
+     "id": "file_q3_budget",
+     "name": "Q3 Platform Cost Breakdown.xlsx",
+     "type": "XLS",
+     "modified": "20 mins ago",
+     "owner": "Marcus Vance"
+    },
+    {
+     "id": "file_arch_rfc",
+     "name": "Event Bus Architecture Spec.docx",
+     "type": "DOC",
+     "modified": "2 hours ago",
+     "owner": "Sarah Jenkins"
+    },
+    {
+     "id": "file_board_deck",
+     "name": "Investor Update 2026.pptx",
+     "type": "PPT",
+     "modified": "Yesterday",
+     "owner": "Claire Dubois"
+    },
+    {
+     "id": "file_soc2_audit",
+     "name": "Final SOC2 Type II Attestation.pdf",
+     "type": "PDF",
+     "modified": "3 days ago",
+     "owner": "Audit Team"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "4eba0a8af5646485fefa733fd212e8a30f51ba1a060944f7e7964d3c3a61bb29",
+  "gas_sha": "fd3c1f9caa78ffc59aaa22e2ffe78a53c698b8e16c8765923ef6dc3d7eded647",
+  "parity": false
+ },
+ "entity_list": {
+  "status": "keyed",
+  "block": {
+   "type": "entity_list",
+   "items": [
+    {
+     "name": "auth-gateway",
+     "subtitle": "v2.14.0",
+     "status": "running",
+     "meta": "12 pods"
+    },
+    {
+     "name": "billing-worker",
+     "subtitle": "v1.8.2",
+     "status": "stopped",
+     "meta": "0 pods"
+    },
+    {
+     "name": "metrics-scraper",
+     "subtitle": "v3.0.1",
+     "status": "running",
+     "meta": "3 pods"
+    },
+    {
+     "name": "pdf-renderer",
+     "subtitle": "v0.9.4",
+     "status": "pending",
+     "meta": "1 pod"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "93c60746d27cc918d337b26b7415831dc5c9bc6abf49c421a01c53ee079073e3",
+  "gas_sha": "2ceffee3fc8440ae9e8ddb800a69513e6fb8334a7c49c9145d70c9c95269e056",
+  "parity": false
+ },
+ "env_var_list": {
+  "status": "pending",
+  "block": {
+   "type": "env_var_list",
+   "variables": [
+    {
+     "key_name": "NODE_ENV",
+     "description": "Active deployment runtime target",
+     "requirement_status": "required",
+     "default": "production"
+    },
+    {
+     "key_name": "API_SECRET",
+     "description": "HMAC token validation secret",
+     "requirement_status": "required",
+     "default": ""
+    },
+    {
+     "key_name": "MAX_CONCURRENCY",
+     "description": "Worker execution thread ceiling",
+     "requirement_status": "optional",
+     "default": "16"
+    },
+    {
+     "key_name": "ENABLE_TELEMETRY",
+     "description": "Toggle OpenTelemetry traces export",
+     "requirement_status": "optional",
+     "default": "true"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "variables[].name",
+  "py_sha": "84bc56fa780441a37a7786b7468370e2a153d40f7239d0eb7746bb96f4784d42",
+  "gas_sha": "4e53b5ac85fb3fc79d5a84cffdccfb786aae131cf3e963aba12e8c2779c03f61",
+  "parity": false
+ },
+ "faq_accordion": {
+  "status": "keyed",
+  "block": {
+   "type": "faq_accordion",
+   "items": [
+    {
+     "question": "What is the uptime SLA?",
+     "answer": "We guarantee 99.95% monthly uptime for enterprise tier clusters."
+    },
+    {
+     "question": "How are backups handled?",
+     "answer": "Snapshots are automatically taken hourly and retained for thirty days."
+    },
+    {
+     "question": "Can we bring our own keys?",
+     "answer": "Yes, customer-managed KMS integration is supported via AWS and GCP."
+    },
+    {
+     "question": "Where is data physically stored?",
+     "answer": "Tenants can select between US, EU, and AP regional isolation zones."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].question",
+  "py_sha": "d90c1a9ec5e184d7ec6f7cef98cb997212d5132911f9b915ad2f9abaeec51361",
+  "gas_sha": "b6a1796b5d7e8e6849db429a34c9055c6293c6d685a2fb54c894eb2341ba52ff",
+  "parity": false
+ },
+ "feature_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "feature_grid",
+   "heading": "Core Platform Capabilities",
+   "columns": 2,
+   "features": [
+    {
+     "icon": "⚡",
+     "title": "Real-time Pipelines",
+     "description": "Process sub-millisecond telemetry events directly on the edge."
+    },
+    {
+     "icon": "🔒",
+     "title": "Automated Zero-Trust",
+     "description": "End-to-end mTLS authentication applied to every private service."
+    },
+    {
+     "icon": "📊",
+     "title": "Granular Analytics",
+     "description": "Query raw operational metrics without managing database nodes."
+    },
+    {
+     "icon": "🧩",
+     "title": "Modular Connectors",
+     "description": "Pre-built sync hooks for third-party databases and webhooks."
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "features[].title",
+  "py_sha": "addd96d6d46a318e53421acf5bc48d47102b974af3085d4c9a589e7230c06141",
+  "gas_sha": "08d4b87e2ffd11b23f9cb9039edf60d69f8aee275662595cdb69786c41284f0e",
+  "parity": false
+ },
+ "feature_matrix": {
+  "status": "keyed",
+  "block": {
+   "type": "feature_matrix",
+   "product_names": [
+    "Community",
+    "Pro",
+    "Enterprise"
+   ],
+   "features": [
+    {
+     "name": "Single Sign-On",
+     "supported": [
+      false,
+      true,
+      true
+     ]
+    },
+    {
+     "name": "Audit Logging",
+     "supported": [
+      false,
+      false,
+      true
+     ]
+    },
+    {
+     "name": "Custom Domains",
+     "supported": [
+      false,
+      true,
+      true
+     ]
+    },
+    {
+     "name": "API Access",
+     "supported": [
+      true,
+      true,
+      true
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "features[].name",
+  "py_sha": "0df994dc0ca1140811c1b7980b55ca914e18a6fd1c680a85949874de82ed6851",
+  "gas_sha": "7b717da4d0904fc5aba35fccdcadffbdb3a892655967a631811b5197f986c5fc",
+  "parity": false
+ },
+ "filterable_list": {
+  "status": "keyed",
+  "block": {
+   "type": "filterable_list",
+   "title": "Incident Escalations",
+   "filter_field": "status",
+   "items": [
+    {
+     "title": "Memory leak on node-3",
+     "status": "critical",
+     "meta": "10m ago"
+    },
+    {
+     "title": "Webhook delay in billing",
+     "status": "medium",
+     "meta": "25m ago"
+    },
+    {
+     "title": "Certificate renewal due",
+     "status": "low",
+     "meta": "2h ago"
+    },
+    {
+     "title": "DNS resolve spike",
+     "status": "critical",
+     "meta": "5m ago"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "3475b5ca040a7ce47d7473225f7fba4ec80b50872c20c82fc7736d528f67d67b",
+  "gas_sha": "70aba934fe0af8b99cb487d7e0dc782e3c35a718ed29d7adcf290ce21d98b6c0",
+  "parity": false
+ },
+ "flashcard_deck": {
+  "status": "keyed",
+  "block": {
+   "type": "flashcard_deck",
+   "accent": "#4f46e5",
+   "label_front": "ARCHITECTURE TERM",
+   "label_back": "DEFINITION & USE",
+   "cards": [
+    {
+     "front": "Circuit Breaker Pattern",
+     "back": "A stability pattern preventing an app from repeatedly attempting an operation likely to fail."
+    },
+    {
+     "front": "Split-Brain Scenario",
+     "back": "Cluster partition where two sub-groups independently assume they are the master coordinator."
+    },
+    {
+     "front": "Write-Skew Anomaly",
+     "back": "A concurrency bug where two transactions read overlapping data and update disjoint sets inconsistently."
+    },
+    {
+     "front": "Eventual Consistency",
+     "back": "A model guaranteeing that all replicas will converge on identical values given enough time without new updates."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "cards[].front",
+  "py_sha": "b3fc10ca99325b1afe3ceda48a5283ee65eac25b6b0522102b3ed092a1bc2200",
+  "gas_sha": "80a794638dcea6ddc3b629a1cecc25d4b698bdf712c2e55c8c59dbea8f1c9904",
+  "parity": false
+ },
+ "flow_connector": {
+  "status": "pending",
+  "block": {
+   "type": "flow_connector",
+   "color": "#0ea5e9",
+   "theme": "dark",
+   "nodes": [
+    {
+     "role": "Client",
+     "name": "SPA Browser",
+     "detail": "Dispatches authenticated GraphQL mutation"
+    },
+    {
+     "role": "Edge Gateway",
+     "name": "Cloudflare Worker",
+     "detail": "Validates signature and routes traffic"
+    },
+    {
+     "role": "Application",
+     "name": "Payment Service",
+     "detail": "Processes card token against processor"
+    },
+    {
+     "role": "Storage",
+     "name": "Aurora PostgreSQL",
+     "detail": "Appends audit log and updates account balance"
+    }
+   ],
+   "connectors": [
+    "Mutual TLS",
+    "gRPC Request",
+    "Write Replica"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nodes[].id",
+  "py_sha": "00b92442aac6119bd6a58e5276defa824b2b5ff41ee9f0ddd6d02b66e5be0dc9",
+  "gas_sha": "00b92442aac6119bd6a58e5276defa824b2b5ff41ee9f0ddd6d02b66e5be0dc9",
+  "parity": true
+ },
+ "follow_up_chips": {
+  "status": "pending",
+  "block": {
+   "type": "follow_up_chips",
+   "label": "Suggested next actions:",
+   "items": [
+    "Compare regional breakdown",
+    "Export full report to CSV",
+    "View past quarter trends",
+    "Share dashboard with team"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].text",
+  "py_sha": "169c6bcbfb710384f575c5868c7e10ef7c8d0e39573704d86f9cdcfc1e61d1c9",
+  "gas_sha": "497cfeb79f5ee0830bc67fedfbc9d10626527c73c3f82f98e72e883200a73393",
+  "parity": false
+ },
+ "footnote_group": {
+  "status": "keyed",
+  "block": {
+   "type": "footnote_group",
+   "footnotes": [
+    {
+     "id": "fn-1",
+     "text": "Audited via third-party penetration report v3."
+    },
+    {
+     "id": "fn-2",
+     "text": "Excludes scheduled downtime during maintenance."
+    },
+    {
+     "id": "fn-3",
+     "text": "Derived from annualized run-rate calculations."
+    },
+    {
+     "id": "fn-4",
+     "text": "Reflects gross margins before capital expenditures."
+    }
+   ]
+  },
+  "kind": "ref",
+  "label_kind": "label",
+  "key": "footnotes[].id",
+  "py_sha": "0014e280ce178793211e419b432f7f657cfce5c50f5580420b95c71bfd645aa9",
+  "gas_sha": "b0d1f5e6a81221d4564fbf320111d1645ad05a5ca6c879cb32beb3d0da4afbd0",
+  "parity": false
+ },
+ "further_reading": {
+  "status": "pending",
+  "block": {
+   "type": "further_reading",
+   "links": [
+    {
+     "title": "Designing Data-Intensive Applications",
+     "url": "https://example.com/ddia",
+     "annotation": "Essential reading for scalable distributed systems."
+    },
+    {
+     "title": "Site Reliability Engineering Handbook",
+     "url": "https://example.com/sre",
+     "annotation": "Google best practices for production reliability."
+    },
+    {
+     "title": "PostgreSQL Internals Guide",
+     "url": "https://example.com/pg-internals",
+     "annotation": "Deep dive into MVCC and write-ahead logs."
+    },
+    {
+     "title": "The Twelve-Factor App",
+     "url": "https://example.com/12factor",
+     "annotation": "Standard architectural principles for cloud apps."
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "links[].url",
+  "py_sha": "3870627976ce13f08e8c565e36bd94aead2d297f852b449dee162e905bf5e07f",
+  "gas_sha": "26a4ed3a04431856baf3b2b3959ac84d365e7456cac4217c83e491d2ef2a31af",
+  "parity": false
+ },
+ "gallery": {
+  "status": "keyed",
+  "block": {
+   "type": "gallery",
+   "cols": 4,
+   "caption": "Hardware Prototypes",
+   "images": [
+    {
+     "url": "https://example.com/a.png",
+     "alt": "Revision A",
+     "caption": "Rev A PCB"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "alt": "Revision B",
+     "caption": "Rev B Enclosure"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "alt": "Revision C",
+     "caption": "Thermal Testing"
+    },
+    {
+     "url": "https://example.com/a.png",
+     "alt": "Production Unit",
+     "caption": "Final Assembly"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "images[].url",
+  "py_sha": "007252ffcdd2c1de973905924e52d81f24e12df1252551430920a303f8bd3693",
+  "gas_sha": "280f414d6344c95e6b1cc218fb788c87ac3d73a1c490ef142af4eb80c5d4a018",
+  "parity": false
+ },
+ "gantt": {
+  "status": "keyed",
+  "block": {
+   "type": "gantt",
+   "title": "MIGRATION TIMELINE",
+   "intervals": [
+    "Week 1",
+    "Week 2",
+    "Week 3",
+    "Week 4",
+    "Week 5",
+    "Week 6"
+   ],
+   "tasks": [
+    {
+     "task": "Schema Audit",
+     "start_slot": 0,
+     "duration_slots": 2,
+     "category": "Planning"
+    },
+    {
+     "task": "Replication Setup",
+     "start_slot": 1,
+     "duration_slots": 2,
+     "category": "Infra"
+    },
+    {
+     "task": "Dual-Write Ingestion",
+     "start_slot": 2,
+     "duration_slots": 3,
+     "category": "Development"
+    },
+    {
+     "task": "Traffic Cutover",
+     "start_slot": 4,
+     "duration_slots": 2,
+     "category": "Release"
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "tasks[].id",
+  "py_sha": "84f8b924e8c93d0afb65c57f0dc70bd7a410a1116153b68dffd7e2f1833f68c7",
+  "gas_sha": "84f8b924e8c93d0afb65c57f0dc70bd7a410a1116153b68dffd7e2f1833f68c7",
+  "parity": true
+ },
+ "geo_europe_airspace": {
+  "status": "pending",
+  "block": {
+   "type": "geo_europe_airspace",
+   "title": "Western Europe Sector Congestion",
+   "focus": "France",
+   "airports": true,
+   "sim_flights": [
+    {
+     "callsign": "AFR1420",
+     "from": [
+      49.0097,
+      2.5479
+     ],
+     "to": [
+      41.3851,
+      2.1734
+     ]
+    },
+    {
+     "callsign": "BAW512",
+     "from": [
+      51.47,
+      -0.4543
+     ],
+     "to": [
+      52.3676,
+      4.9041
+     ]
+    },
+    {
+     "callsign": "DLH402",
+     "from": [
+      50.0379,
+      8.5622
+     ],
+     "to": [
+      45.4642,
+      9.19
+     ]
+    },
+    {
+     "callsign": "IBE3104",
+     "from": [
+      40.4839,
+      -3.568
+     ],
+     "to": [
+      48.7262,
+      2.3597
+     ]
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "airports[].id",
+  "py_sha": "71d690864f50840735fffedf26452d415e91d7f9972b7dd006bfdef7d3bff0b9",
+  "gas_sha": "1e9fdc2c2c95f85b77f1fa033bc2f6ad25edc18e2372543a41d94be199c61655",
+  "parity": false
+ },
+ "geo_mercator_radar": {
+  "status": "pending",
+  "block": {
+   "type": "geo_mercator_radar",
+   "title": "Backbone Gateway Interconnects",
+   "color": "#00f2ff",
+   "height": 450,
+   "nodes": [
+    {
+     "id": "us-east",
+     "name": "Ashburn Core",
+     "lat": 39.0438,
+     "lon": -77.4874,
+     "value": 120
+    },
+    {
+     "id": "eu-central",
+     "name": "Frankfurt Hub",
+     "lat": 50.1109,
+     "lon": 8.6821,
+     "value": 95
+    },
+    {
+     "id": "ap-southeast",
+     "name": "Singapore Transit",
+     "lat": 1.3521,
+     "lon": 103.8198,
+     "value": 80
+    },
+    {
+     "id": "sa-east",
+     "name": "São Paulo Edge",
+     "lat": -23.5505,
+     "lon": -46.6333,
+     "value": 65
+    }
+   ],
+   "links": [
+    {
+     "from": "us-east",
+     "to": "eu-central"
+    },
+    {
+     "from": "eu-central",
+     "to": "ap-southeast"
+    },
+    {
+     "from": "us-east",
+     "to": "sa-east"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nodes[].id",
+  "py_sha": "5f87884fc46f6d717d32fa2a74517c79ae23f134daa8ea4d7f3dd90f2b400579",
+  "gas_sha": "093ca5fb4d37cc5445bbe56e9b95c2780342e96ae2e3003c39eb7c40b650817a",
+  "parity": false
+ },
+ "github_activity_grid": {
+  "status": "pending",
+  "block": {
+   "type": "github_activity_grid",
+   "title": "Core Runtime Commits",
+   "username": "core-engineers",
+   "total_contributions": 412,
+   "streak_days": 19,
+   "activity": [
+    1,
+    2,
+    4,
+    3,
+    0,
+    2,
+    4
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "activity[].date",
+  "py_sha": "6519d4a12046a5b30465ec01c2a96d5ad0b71ad56c17c00077741e0140f645c7",
+  "gas_sha": "3719db18f30f62d749fc2aab7f820e91ad6e055f0cb70af120577904c1b8bf32",
+  "parity": false
+ },
+ "gmail_inbox": {
+  "status": "keyed",
+  "block": {
+   "type": "gmail_inbox",
+   "title": "Urgent Threads",
+   "count": 4,
+   "accent": "#ea4335",
+   "auth_token": "ya29.sample_token_gmail",
+   "items": [
+    {
+     "id": "thread_sec_01",
+     "name": "Security Ops",
+     "subject": "Quarterly Key Rotation Deadline",
+     "snippet": "Please acknowledge updating your KMS keys by Thursday 17:00 UTC.",
+     "timestamp": "10:45 AM"
+    },
+    {
+     "id": "thread_prod_02",
+     "name": "Elena Rostova",
+     "subject": "Design Review: Mobile Navigation V3",
+     "snippet": "Attached are the final export slices for the unified header tabs.",
+     "timestamp": "09:30 AM"
+    },
+    {
+     "id": "thread_legal_03",
+     "name": "Legal Counsel",
+     "subject": "Vendor DPA Sign-off Request",
+     "snippet": "The mutual data privacy terms are approved. Ready for signature.",
+     "timestamp": "Yesterday"
+    },
+    {
+     "id": "thread_billing_04",
+     "name": "AWS Billing Alerts",
+     "subject": "Invoice for September Available",
+     "snippet": "Your account billing statement is ready for review in console.",
+     "timestamp": "Oct 10"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "81f3edc2cbc758bfa9b48dd35c811d371e2a298bdfd6ed3a9aa70e322e6b1ed4",
+  "gas_sha": "72bfbbd12aaae25d81c77ee0819bcc67d9baab2c55ec203b93119bd254ee3e3b",
+  "parity": false
+ },
+ "gmail_unread_count": {
+  "status": "keyed",
+  "block": {
+   "type": "gmail_unread_count",
+   "title": "Support Mailboxes",
+   "labels": [
+    "INBOX",
+    "Security Alerts",
+    "Escalations",
+    "Billing Inquiries"
+   ],
+   "counts": {
+    "INBOX": 14,
+    "Security Alerts": 3,
+    "Escalations": 1,
+    "Billing Inquiries": 0
+   }
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "labels[]",
+  "py_sha": "63aad3142e531939dbadff7e3ef1ae4f1959f6f85e97afbac86c8e59ba8d44c0",
+  "gas_sha": "2c73d56db8df375e75ce52e37254743f1bb57405cc188794c04c9aa700cb9495",
+  "parity": false
+ },
+ "headline_list": {
+  "status": "keyed",
+  "block": {
+   "type": "headline_list",
+   "title": "Tech Platform Digest",
+   "accent": "#4f46e5",
+   "items": [
+    {
+     "title": "PostgreSQL 17 Released with Enhanced Partitioning",
+     "url": "https://example.com/news/pg17",
+     "source": "Database Weekly",
+     "tag": "Database",
+     "time": "2 hours ago",
+     "rank": 1
+    },
+    {
+     "title": "Standardizing Passkey Recovery Across Web Browsers",
+     "url": "https://example.com/news/passkeys",
+     "source": "W3C Standards",
+     "tag": "Security",
+     "time": "4 hours ago",
+     "rank": 2
+    },
+    {
+     "title": "Zero-Copy Streaming In Cloud Native Kernels",
+     "url": "https://example.com/news/ebpf",
+     "source": "Kernel Log",
+     "tag": "Systems",
+     "time": "6 hours ago",
+     "rank": 3
+    },
+    {
+     "title": "Wasm Edge Functions Benchmark: 2026 Edition",
+     "url": "https://example.com/news/wasm",
+     "source": "Edge Watch",
+     "tag": "Compute",
+     "time": "8 hours ago",
+     "rank": 4
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "7715b08f1ac3d2bd915a32616f5ec30b7eadabd7c15c6698d355b337423b747e",
+  "gas_sha": "7715b08f1ac3d2bd915a32616f5ec30b7eadabd7c15c6698d355b337423b747e",
+  "parity": true
+ },
+ "heatmap_calendar": {
+  "status": "keyed",
+  "block": {
+   "type": "heatmap_calendar",
+   "title": "Security Log Ingestion",
+   "months": 3,
+   "unit": "events",
+   "data": [
+    {
+     "date": "2026-01-05",
+     "count": 120
+    },
+    {
+     "date": "2026-01-12",
+     "count": 480
+    },
+    {
+     "date": "2026-02-01",
+     "count": 210
+    },
+    {
+     "date": "2026-02-18",
+     "count": 890
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "data[].date",
+  "py_sha": "8b53340675daf446354545dd1f7b20f1cab326b4ef86060fa3eb05953c125d38",
+  "gas_sha": "8582268a9f5de3a30ac6a7f1cf84aa624b33effc41921a787d1b0060cbc974c8",
+  "parity": false
+ },
+ "icon_checklist": {
+  "status": "keyed",
+  "block": {
+   "type": "icon_checklist",
+   "title": "Production Deployment Gate",
+   "default_icon": "check_circle",
+   "icon_size": 20,
+   "filled": true,
+   "accent": "#10b981",
+   "items": [
+    {
+     "text": "Static code analysis security scan passed",
+     "icon": "verified_user",
+     "sublabel": "0 high or critical vulnerabilities",
+     "color": "#10b981"
+    },
+    {
+     "text": "Load testing thresholds verified",
+     "icon": "speed",
+     "sublabel": "P99 latency under 200ms at 5,000 rps",
+     "color": "#3b82f6"
+    },
+    {
+     "text": "Database migrations run in dry-run mode",
+     "icon": "storage",
+     "sublabel": "Backwards-compatible schema changes only",
+     "color": "#f59e0b"
+    },
+    {
+     "text": "Incident response lead paged and on-call",
+     "icon": "notifications_active",
+     "sublabel": "Escalation roster verified on PagerDuty",
+     "color": "#8b5cf6"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].label",
+  "py_sha": "891e24dddd4702910896421192a124d5aa54a0ed27ff928ac77390e5c59fc481",
+  "gas_sha": "891e24dddd4702910896421192a124d5aa54a0ed27ff928ac77390e5c59fc481",
+  "parity": false
+ },
+ "icon_feature_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "icon_feature_grid",
+   "title": "Core Developer Capabilities",
+   "cols": 2,
+   "icon_size": 28,
+   "filled": true,
+   "accent": "#4f46e5",
+   "style": "rounded",
+   "items": [
+    {
+     "icon": "terminal",
+     "title": "Unified CLI",
+     "text": "Execute zero-downtime rollouts directly from terminal workflows.",
+     "color": "#4f46e5"
+    },
+    {
+     "icon": "cloud_sync",
+     "title": "State Hydration",
+     "text": "Seamlessly sync local staging environments with sanitized production states.",
+     "color": "#0284c7"
+    },
+    {
+     "icon": "bug_report",
+     "title": "Automated Profiling",
+     "text": "Identify CPU and memory leaks with continuous eBPF sampling.",
+     "color": "#10b981"
+    },
+    {
+     "icon": "key",
+     "title": "Ephemeral Keys",
+     "text": "Issue short-lived signed SSH credentials for debug sessions.",
+     "color": "#f59e0b"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "3d03270f64617e91af62746d06705e0ace10ba02e349b1ef471bbfcf7d2a8626",
+  "gas_sha": "b6863d726dba5119e7c3358527f5f5a3092c733473f0da2139cb6e18fa1da607",
+  "parity": false
+ },
+ "icon_list": {
+  "status": "keyed",
+  "block": {
+   "type": "icon_list",
+   "title": "Deployment Requirements",
+   "items": [
+    {
+     "icon": "🔑",
+     "label": "TLS Secrets",
+     "text": "Valid certificates loaded into keyvault"
+    },
+    {
+     "icon": "🌐",
+     "label": "VPC Peering",
+     "text": "Bidirectional route tables configured"
+    },
+    {
+     "icon": "📋",
+     "label": "IAM Policies",
+     "text": "Least-privilege role assignments verified"
+    },
+    {
+     "icon": "💾",
+     "label": "EBS Volumes",
+     "text": "Persistent storage claims attached"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].label",
+  "py_sha": "1afbd6fe05aeafea73d7c85a9ad1bfd4c02a171489f3db72317cc76f9ec9606f",
+  "gas_sha": "b2b82d9b8ce7fbba837565128afd40be20fc96405ca46612821653ab151b129f",
+  "parity": false
+ },
+ "icon_row": {
+  "status": "keyed",
+  "block": {
+   "type": "icon_row",
+   "icon_size": 22,
+   "color": "#0ea5e9",
+   "filled": false,
+   "style": "outlined",
+   "gap": "16px",
+   "items": [
+    {
+     "name": "lock",
+     "label": "Encrypted at Rest"
+    },
+    {
+     "name": "speed",
+     "label": "Sub-5ms Edge Cache"
+    },
+    {
+     "name": "backup",
+     "label": "Point-in-Time Restore"
+    },
+    {
+     "name": "verified_user",
+     "label": "SOC2 Compliant"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "items[].name",
+  "py_sha": "aaa52f8d58614e5b6fb4085d387de44ca61a6095cc003bd756d6c7e62641416e",
+  "gas_sha": "aaa52f8d58614e5b6fb4085d387de44ca61a6095cc003bd756d6c7e62641416e",
+  "parity": true
+ },
+ "icon_stat_row": {
+  "status": "keyed",
+  "block": {
+   "type": "icon_stat_row",
+   "stats": [
+    {
+     "icon": "🚀",
+     "value": 99.98,
+     "label": "Uptime",
+     "suffix": "%"
+    },
+    {
+     "icon": "⚡",
+     "value": 14,
+     "label": "Mean Latency",
+     "suffix": "ms"
+    },
+    {
+     "icon": "🛡️",
+     "value": 0,
+     "label": "Security Breach",
+     "suffix": " incidents"
+    },
+    {
+     "icon": "👥",
+     "value": 45,
+     "label": "Daily Active Teams",
+     "suffix": "k"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "stats[].label",
+  "py_sha": "491b079897fd176537821e7eaacf2c20ecdf36e340803dfcee4bc1e1c4ef28e6",
+  "gas_sha": "946f2d751e019205bad4af2ebac2bc0aeb2815510044c31eedd8bfbc1f46237d",
+  "parity": false
+ },
+ "image_hotspots": {
+  "status": "keyed",
+  "block": {
+   "type": "image_hotspots",
+   "image_url": "https://example.com/a.png",
+   "alt_text": "Server Motherboard Architecture",
+   "hotspots": [
+    {
+     "label": "CPU Socket",
+     "x_position": "25%",
+     "y_position": "30%",
+     "content": "Supports 64-core processors"
+    },
+    {
+     "label": "DIMM Slots",
+     "x_position": "60%",
+     "y_position": "30%",
+     "content": "Octa-channel DDR5 ECC"
+    },
+    {
+     "label": "PCIe 5.0",
+     "x_position": "25%",
+     "y_position": "70%",
+     "content": "128 lanes total throughput"
+    },
+    {
+     "label": "VRM Cooler",
+     "x_position": "15%",
+     "y_position": "20%",
+     "content": "Dual-stage copper heat pipes"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "hotspots[].id",
+  "py_sha": "0715a496f9b1b626bf5397346da77beb0a488fabf36a6c20f534a5ddb37555c3",
+  "gas_sha": "89972bb72d68c2fa5c87a3cf9a8e86ca6f402e904d470445e6becab33f075a50",
+  "parity": false
+ },
+ "image_pair": {
+  "status": "pending",
+  "block": {
+   "type": "image_pair",
+   "left": {
+    "url": "https://example.com/a.png",
+    "alt": "Legacy Dashboard",
+    "caption": "Version 1.0 architecture"
+   },
+   "right": {
+    "url": "https://example.com/a.png",
+    "alt": "Modern Dashboard",
+    "caption": "Version 2.0 architecture"
+   }
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "left.url, right.url",
+  "py_sha": "626ed4e73d31217f5a0799c00eb1b7fa0784f067db378c6380797b3003a11e41",
+  "gas_sha": "4d2eaf5ed20546f4108d4d3dd7702d7d8505ed999ba8b22ab273009de633c5c4",
+  "parity": false
+ },
+ "incident_log": {
+  "status": "pending",
+  "block": {
+   "type": "incident_log",
+   "title": "LAST 7 DAYS — INCIDENT LOG",
+   "stamp": "12 – 18 Oct",
+   "week": [
+    {
+     "label": "Mon",
+     "count": 0,
+     "severity": "none"
+    },
+    {
+     "label": "Tue",
+     "count": 0,
+     "severity": "none"
+    },
+    {
+     "label": "Wed",
+     "count": 1,
+     "severity": "low"
+    },
+    {
+     "label": "Thu",
+     "count": 0,
+     "severity": "none"
+    },
+    {
+     "label": "Fri",
+     "count": 2,
+     "severity": "medium"
+    },
+    {
+     "label": "Sat",
+     "count": 0,
+     "severity": "none"
+    },
+    {
+     "label": "Sun",
+     "count": 0,
+     "severity": "none"
+    }
+   ],
+   "incidents": [
+    {
+     "service": "Ingestion Queue",
+     "summary": "Consumer lag exceeded threshold during backfill",
+     "severity": "medium",
+     "duration": "1h 45m",
+     "when": "Fri 16",
+     "ongoing": false
+    },
+    {
+     "service": "Auth Gateway",
+     "summary": "Elevated token refresh latency",
+     "severity": "low",
+     "duration": "25m",
+     "when": "Wed 14",
+     "ongoing": false
+    },
+    {
+     "service": "Edge CDN",
+     "summary": "TLS certificate rotation transient errors",
+     "severity": "low",
+     "duration": "15m",
+     "when": "Fri 16",
+     "ongoing": false
+    },
+    {
+     "service": "Notification Service",
+     "summary": "Webhook retry exhaustion",
+     "severity": "medium",
+     "duration": "40m",
+     "when": "Fri 16",
+     "ongoing": false
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "incidents[].id",
+  "py_sha": "bd069beace28bf6c3053b137c0dbca1201694bac1bd9f372741474496a23e77d",
+  "gas_sha": "9ed0254d01835cf5f9030c3f6d016111ce968fbbb06268a8099975891cfdf605",
+  "parity": false
+ },
+ "inventory_table": {
+  "status": "keyed",
+  "block": {
+   "type": "inventory_table",
+   "title": "Warehouse Logistics",
+   "items": [
+    {
+     "sku": "SKU-9021",
+     "product": "Thermal Barcode Printer",
+     "available": 4,
+     "committed": 2,
+     "location": "Aisle 4B",
+     "threshold": 10
+    },
+    {
+     "sku": "SKU-4412",
+     "product": "Standard Cardboard Mailer",
+     "available": 540,
+     "committed": 120,
+     "location": "Bay 1",
+     "threshold": 100
+    },
+    {
+     "sku": "SKU-7729",
+     "product": "Heavy Duty Packaging Tape",
+     "available": 18,
+     "committed": 5,
+     "location": "Aisle 2A",
+     "threshold": 25
+    },
+    {
+     "sku": "SKU-3108",
+     "product": "Reinforced Bubble Wrap",
+     "available": 85,
+     "committed": 10,
+     "location": "Aisle 8C",
+     "threshold": 20
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].sku",
+  "py_sha": "124fc481cb969c6df0eb8f7f15471c813f1c16e3a12dbc3fa51c507275e68fbc",
+  "gas_sha": "25cafc390cd537e8b97600bacf8a592ccac4534d87d51232a35326b869af29f5",
+  "parity": false
+ },
+ "journey_map": {
+  "status": "keyed",
+  "block": {
+   "type": "journey_map",
+   "title": "CUSTOMER ONBOARDING EXPERIENCE",
+   "stages": [
+    {
+     "stage": "Discovery",
+     "user_goal": "Evaluate plan tiers and feature matrices",
+     "friction_point": "Confusing licensing calculator table",
+     "sentiment": "neutral"
+    },
+    {
+     "stage": "Sign Up",
+     "user_goal": "Complete identity verification quickly",
+     "friction_point": "Lengthy corporate document uploads",
+     "sentiment": "negative"
+    },
+    {
+     "stage": "Configuration",
+     "user_goal": "Import workspace team members seamlessly",
+     "friction_point": "Automated CSV parser reported unclear column errors",
+     "sentiment": "neutral"
+    },
+    {
+     "stage": "Activation",
+     "user_goal": "Publish first production dashboard view",
+     "friction_point": "None; pre-built templates loaded instantly",
+     "sentiment": "positive"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "stages[].name",
+  "py_sha": "fceb0705cd61786d021145d588ec96dc2b4bb5a5e66a5bda4573810d998fcf62",
+  "gas_sha": "fceb0705cd61786d021145d588ec96dc2b4bb5a5e66a5bda4573810d998fcf62",
+  "parity": true
+ },
+ "json_tree_viewer": {
+  "status": "pending",
+  "block": {
+   "type": "json_tree_viewer",
+   "data": "{\"cluster\": \"prod-us-1\", \"replicas\": 4, \"status\": \"healthy\", \"metrics\": {\"cpu\": 42.5, \"memory\": 68.1}}"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "data[].key",
+  "py_sha": "0943e17f4d3cc5930ba970eb336d6b382a75c1c0ab795a0a432f3c0977bf5010",
+  "gas_sha": "f0ce41e05989f1f18678758ce38e6ff2c48d72e6af0d3127c066a1623e273bfb",
+  "parity": false
+ },
+ "jump_nav": {
+  "status": "keyed",
+  "block": {
+   "type": "jump_nav",
+   "links": [
+    {
+     "label": "Executive Summary",
+     "target": "block_summary"
+    },
+    {
+     "label": "Infrastructure Architecture",
+     "target": "block_arch"
+    },
+    {
+     "label": "Security Controls",
+     "target": "block_security"
+    },
+    {
+     "label": "Rollout Schedule",
+     "target": "block_schedule"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "links[].id",
+  "py_sha": "c45aa5f421b5ca94ab7bacd3b8214f6e7e153a460bd5b0bea81063b91bcacac4",
+  "gas_sha": "c45aa5f421b5ca94ab7bacd3b8214f6e7e153a460bd5b0bea81063b91bcacac4",
+  "parity": true
+ },
+ "key_takeaways": {
+  "status": "keyed",
+  "block": {
+   "type": "key_takeaways",
+   "points": [
+    "Serverless cold starts drop 80% with warm instance pools.",
+    "Connection pooling is mandatory to safeguard relational stores.",
+    "Regional read replicas dramatically slash global query latency.",
+    "Stateless tokens lower validation memory footprint by half."
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "points[]",
+  "py_sha": "2ef3b80917efcbb34ff35ce929acd80e9d82cdf55c491d2ebddd3cdf436eaec7",
+  "gas_sha": "0f7181ca9138b2f0e0efc068dfa66ab3e8244cd8e075315c92d6ff22c181b6c3",
+  "parity": false
+ },
+ "key_value": {
+  "status": "keyed",
+  "block": {
+   "type": "key_value",
+   "title": "Service Environment Variables",
+   "items": [
+    {
+     "key": "DATABASE_URL",
+     "description": "Primary PostgreSQL connection string",
+     "required": true,
+     "default": "postgresql://localhost:5432/db"
+    },
+    {
+     "key": "PORT",
+     "description": "Local HTTP bind port",
+     "required": false,
+     "default": "8080"
+    },
+    {
+     "key": "LOG_LEVEL",
+     "description": "Structured logging verbosity",
+     "required": false,
+     "default": "info"
+    },
+    {
+     "key": "CACHE_TTL",
+     "description": "Redis cache expiration in seconds",
+     "required": false,
+     "default": "3600"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].key",
+  "py_sha": "08a3304f15cebc07a5e8e6e9297102cf62132061c19a40bb1fb2274ce68c3c57",
+  "gas_sha": "886410bebbaa1630ccde5b4b981b7cfa1a9dde8fb7fc0eb7e1244faa011aad64",
+  "parity": false
+ },
+ "knowledge_check": {
+  "status": "keyed",
+  "block": {
+   "type": "knowledge_check",
+   "question": "What is the primary function of an ingress controller in Kubernetes?",
+   "options": [
+    "To distribute cluster secrets securely across worker nodes",
+    "To manage external HTTP/HTTPS access routing to internal services",
+    "To schedule stateful set pods onto dedicated node pools",
+    "To monitor cluster etcd database snapshot replication"
+   ],
+   "correct": 1,
+   "explanation": "An Ingress controller configures a reverse proxy to route outside traffic to cluster service endpoints."
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "options[].text",
+  "py_sha": "0e347bfc8fa004696432509c29f18b923d528b90d4af59a8482fa6224c72ac5d",
+  "gas_sha": "9fc77dfffd8708b1fe6ff538f09f35fa8fa74522716e1a23b83f206f1f4eed3c",
+  "parity": false
+ },
+ "layer_stack": {
+  "status": "keyed",
+  "block": {
+   "type": "layer_stack",
+   "title": "Protocol Stack",
+   "eyebrow": "OVERVIEW",
+   "dek": "Encapsulation boundaries across the ingest network.",
+   "order": "bottom_up",
+   "base_label": "Physical Wire",
+   "top_label": "Application Logic",
+   "layers": [
+    {
+     "type": "stack_layer",
+     "title": "Physical & Link",
+     "field": "Ethernet Frame",
+     "note": "Raw packet transport across optical fiber."
+    },
+    {
+     "type": "stack_layer",
+     "title": "Network",
+     "field": "IP Packet",
+     "note": "Datagram routing across cluster subnets."
+    },
+    {
+     "type": "stack_layer",
+     "title": "Transport",
+     "field": "TCP Stream",
+     "note": "Reliable ordered byte delivery and flow control."
+    },
+    {
+     "type": "stack_layer",
+     "title": "Application",
+     "field": "gRPC Request",
+     "note": "Protobuf serialization and remote procedural semantics."
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "layers[].name",
+  "py_sha": "0c604dd7032c556ab99bcf90a1aa6e77c8cb21e24ac5f492d173ab226041e467",
+  "gas_sha": "9140c0cdebbc9e47ef92896017bd21c4300b3d72e07f48bba5d1f4a3fc613ca6",
+  "parity": false
+ },
+ "leaderboard_card": {
+  "status": "keyed",
+  "block": {
+   "type": "leaderboard_card",
+   "course_id": "security-ctf-2026",
+   "score_key": "quiz1",
+   "limit": 4,
+   "title": "Security CTF Top Performers",
+   "items": [
+    {
+     "name": "Aria Thorne",
+     "score": 985
+    },
+    {
+     "name": "Kai Takahashi",
+     "score": 940
+    },
+    {
+     "name": "Nadia Osei",
+     "score": 890
+    },
+    {
+     "name": "Julian Weber",
+     "score": 845
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "c643646e26b1b98cfc87ada392e7e95bea06e79543120456370fdec36bd470a5",
+  "gas_sha": "382062e9b5721ea908312988a35e4bb946ec71c9236dcbc4b376cffb1a719292",
+  "parity": false
+ },
+ "learning_objectives": {
+  "status": "keyed",
+  "block": {
+   "type": "learning_objectives",
+   "objectives": [
+    "Provision an isolated VPC with private subnets",
+    "Deploy a containerized microservice to ECS Fargate",
+    "Configure an Application Load Balancer with SSL",
+    "Establish continuous delivery pipelines with actions"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "objectives[]",
+  "py_sha": "b1366edefedac2d0f05db5225d173abb719fb9e1911c9e328e8d2b3ae72320f7",
+  "gas_sha": "b399977c07e45fa2f846b9f7acd2edc6462082fdb8486e26321cded903e75fd0",
+  "parity": false
+ },
+ "learning_path_selector": {
+  "status": "keyed",
+  "block": {
+   "type": "learning_path_selector",
+   "title": "Choose Your Engineering Specialization",
+   "intro": "Select a personalized progression route tailored to your day-to-day responsibilities.",
+   "paths": [
+    {
+     "id": "path_backend",
+     "label": "Distributed Backend",
+     "description": "Focus on high-throughput microservices, event queues, and databases.",
+     "icon": "database",
+     "accent": "#3b82f6",
+     "duration": "14 weeks",
+     "url": "https://example.com/paths/backend"
+    },
+    {
+     "id": "path_frontend",
+     "label": "Modern Web Platforms",
+     "description": "Focus on web standards, reactive frameworks, and edge delivery.",
+     "icon": "code",
+     "accent": "#10b981",
+     "duration": "10 weeks",
+     "url": "https://example.com/paths/frontend"
+    },
+    {
+     "id": "path_devsecops",
+     "label": "Cloud & Site Reliability",
+     "description": "Focus on Terraform, Kubernetes orchestration, and runtime security.",
+     "icon": "terminal",
+     "accent": "#f59e0b",
+     "duration": "12 weeks",
+     "url": "https://example.com/paths/devsecops"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "paths[].id",
+  "py_sha": "1a26d99942706249be3016bd8c6d818ce50d45da93b01a55f2e2cb5a58a88317",
+  "gas_sha": "46afcb66c29e95a36a2b34e5a7943c24633f034acefdf8620b5712f22ee88c85",
+  "parity": false
+ },
+ "lens_context": {
+  "status": "keyed",
+  "block": {
+   "type": "lens_context",
+   "items": [
+    {
+     "label": "CAP Theorem",
+     "note": "Defines foundational trade-offs between consistency and partition tolerance.",
+     "url": "https://example.com/cap",
+     "retrieved": true
+    },
+    {
+     "label": "FLM Impossibility",
+     "note": "Proves asynchronous consensus limits in unreliable networks.",
+     "url": "https://example.com/flp",
+     "retrieved": true
+    },
+    {
+     "label": "Vector Clocks",
+     "note": "Precedes logical timestamp ordering in decentralized systems.",
+     "url": "https://example.com/vector",
+     "retrieved": false
+    },
+    {
+     "label": "Byzantine Faults",
+     "note": "Extends consensus beyond crash-stop failure assumptions.",
+     "url": "https://example.com/byzantine",
+     "retrieved": true
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "3167c12c4efbbe43114e0949b84ee9b0c52b8300927bfbc12c22f123ab8d09df",
+  "gas_sha": "3167c12c4efbbe43114e0949b84ee9b0c52b8300927bfbc12c22f123ab8d09df",
+  "parity": true
+ },
+ "lens_grid": {
+  "status": "keyed",
+  "block": {
+   "type": "lens_grid",
+   "target": "store_deploy_target",
+   "columns": 2,
+   "gap": 12,
+   "selected": "canary",
+   "options": [
+    {
+     "value": "canary",
+     "label": "Canary Rollout",
+     "caption": "Deploy to 5% of incoming traffic for 30 minutes to verify error rates."
+    },
+    {
+     "value": "blue_green",
+     "label": "Blue-Green Switch",
+     "caption": "Spin up a full parallel environment and cut traffic instantaneously."
+    },
+    {
+     "value": "rolling",
+     "label": "Rolling Update",
+     "caption": "Progressively replace running container instances one pod at a time."
+    },
+    {
+     "value": "shadow",
+     "label": "Traffic Shadowing",
+     "caption": "Mirror production traffic to new instances without serving responses."
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "options[].id",
+  "py_sha": "b78e729c282e48e7c7856cdd1665bb010fb9b8064b0006b47b2a178eaf8ccc09",
+  "gas_sha": "8bc9f5c9de75f2033f1741d59f66b2bbe72decb2c23ff7c727e798ee94c5aec9",
+  "parity": false
+ },
+ "lens_quotes": {
+  "status": "keyed",
+  "block": {
+   "type": "lens_quotes",
+   "items": [
+    {
+     "quote": "Latency is dominated by tail execution times.",
+     "context": "In the benchmark analysis section."
+    },
+    {
+     "quote": "Memory saturation causes cache thrashing.",
+     "context": "During workload peak tests."
+    },
+    {
+     "quote": "Batch sizes above 64 degrade throughput.",
+     "context": "Under network constraints."
+    },
+    {
+     "quote": "Zero-copy serialization removed the bottleneck.",
+     "context": "In concluding optimization findings."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].quote",
+  "py_sha": "934a959fb4ec598579f3b5c447d4a9ef3f91f49c5580d459899380927742dae8",
+  "gas_sha": "934a959fb4ec598579f3b5c447d4a9ef3f91f49c5580d459899380927742dae8",
+  "parity": true
+ },
+ "lens_similar": {
+  "status": "keyed",
+  "block": {
+   "type": "lens_similar",
+   "verified": true,
+   "items": [
+    {
+     "title": "Raft Consensus Protocol",
+     "why": "Establishes comparable leader election semantics.",
+     "url": "https://example.com/raft",
+     "retrieved": true
+    },
+    {
+     "title": "Paxos Made Moderately Complex",
+     "why": "Provides foundational state machine replication models.",
+     "url": "https://example.com/paxos",
+     "retrieved": true
+    },
+    {
+     "title": "Spanner Architecture Deep Dive",
+     "why": "Details real-world multi-datacenter quorum management.",
+     "url": "https://example.com/spanner",
+     "retrieved": true
+    },
+    {
+     "title": "Dynamo System Survey",
+     "why": "Contrasts loose consistency against strict coordination.",
+     "url": "https://example.com/dynamo",
+     "retrieved": true
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "08dd44bae4697bbac8835b5031d76cd789cf2c303d67768e5a741021c5c29e68",
+  "gas_sha": "08dd44bae4697bbac8835b5031d76cd789cf2c303d67768e5a741021c5c29e68",
+  "parity": true
+ },
+ "lens_structure": {
+  "status": "keyed",
+  "block": {
+   "type": "lens_structure",
+   "items": [
+    {
+     "heading": "Introduction",
+     "quote": "Modern telemetry systems face unprecedented volume growth."
+    },
+    {
+     "heading": "Architecture Bottlenecks",
+     "quote": "Memory saturation causes cache thrashing across worker nodes."
+    },
+    {
+     "heading": "Mitigation Strategy",
+     "quote": "Zero-copy serialization removed the bottleneck entirely."
+    },
+    {
+     "heading": "Experimental Results",
+     "quote": "Latency is dominated by tail execution times under sustained load."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].heading",
+  "py_sha": "a41aa54c6d31897a4c5f41c534e02bef3c53ec75b157a0945b5843536208ea51",
+  "gas_sha": "a41aa54c6d31897a4c5f41c534e02bef3c53ec75b157a0945b5843536208ea51",
+  "parity": true
+ },
+ "lens_synthesis": {
+  "status": "pending",
+  "block": {
+   "type": "lens_synthesis",
+   "source_excerpt": "Distributed coordinators fail under network partitions. Replicated state machines recover quickly when quorum holds. Persistent logs prevent data loss. Dynamic discovery reduces manual configuration errors.",
+   "points": [
+    {
+     "point": "Partition tolerance remains brittle without robust consensus.",
+     "evidence": "Distributed coordinators fail under network partitions."
+    },
+    {
+     "point": "Quorum preservation guarantees rapid failover.",
+     "evidence": "Replicated state machines recover quickly when quorum holds."
+    },
+    {
+     "point": "Log persistence is essential for safety guarantees.",
+     "evidence": "Persistent logs prevent data loss."
+    },
+    {
+     "point": "Service discovery minimizes operator mistake surfaces.",
+     "evidence": "Dynamic discovery reduces manual configuration errors."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "points[].text",
+  "py_sha": "87f347168187e17ed2809e200d95473805c262aa4ee619e15b77f0afb1535dc5",
+  "gas_sha": "517772cb9c8475573510d5d9e1d760a23b6c35eb7dbeba4ee115a80875feeda9",
+  "parity": false
+ },
+ "lens_themes": {
+  "status": "keyed",
+  "block": {
+   "type": "lens_themes",
+   "source_excerpt": "Distributed coordinators fail under network partitions. Replicated state machines recover quickly when quorum holds. Persistent logs prevent data loss. Dynamic discovery reduces manual configuration errors.",
+   "items": [
+    {
+     "label": "Coordinator Fragility",
+     "evidence": "Distributed coordinators fail under network partitions.",
+     "weight": 0.9
+    },
+    {
+     "label": "Quorum Recovery",
+     "evidence": "Replicated state machines recover quickly when quorum holds.",
+     "weight": 0.8
+    },
+    {
+     "label": "Durability",
+     "evidence": "Persistent logs prevent data loss.",
+     "weight": 0.6
+    },
+    {
+     "label": "Topology Automation",
+     "evidence": "Dynamic discovery reduces manual configuration errors.",
+     "weight": 0.4
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].theme",
+  "py_sha": "d37f7219c299a8993893631338f0ae8b04c8b32b71c56ee6956221192d8091b8",
+  "gas_sha": "d37f7219c299a8993893631338f0ae8b04c8b32b71c56ee6956221192d8091b8",
+  "parity": true
+ },
+ "live_aggregator": {
+  "status": "pending",
+  "block": {
+   "type": "live_aggregator",
+   "title": "Active Load Distribution",
+   "items": [
+    {
+     "label": "Worker Fleet A",
+     "value": 78,
+     "color": "#3b82f6"
+    },
+    {
+     "label": "Worker Fleet B",
+     "value": 45,
+     "color": "#10b981"
+    },
+    {
+     "label": "Worker Fleet C",
+     "value": 92,
+     "color": "#f59e0b"
+    },
+    {
+     "label": "Worker Fleet D",
+     "value": 24,
+     "color": "#6366f1"
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "items[].label",
+  "py_sha": "919a4bd7739fa2cf417e0bd9c20ae2dfb20bb16227311faf99d90b3e55f28c37",
+  "gas_sha": "67e4fd9d8cf55dd8de58610654009eb7ddac15d10fb360352cb10f52f8a4a1f6",
+  "parity": false
+ },
+ "live_vote": {
+  "status": "keyed",
+  "block": {
+   "type": "live_vote",
+   "question": "Which cloud provider should host the primary European data hub?",
+   "options": [
+    "GCP Europe-West3 (Frankfurt)",
+    "AWS eu-central-1 (Frankfurt)",
+    "Azure North Europe (Dublin)",
+    "OVHcloud (Gravelines)"
+   ],
+   "accent": "#4f46e5",
+   "poll": 3000,
+   "sheet_url": "https://example.com/sheets/vote_tally.csv",
+   "write_url": "https://example.com/gas/vote_submit"
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "options[].label",
+  "py_sha": "5964176ebdb0b7a7c3f022d5d5a7f3400f5e3cc0ac4750adf19813528508fd6a",
+  "gas_sha": "59e417cd3cad58c2dab50ed69d4ff0aca6d4aa3f65dd248dd09c3d9af5f88a03",
+  "parity": false
+ },
+ "llm_comparison_table": {
+  "status": "keyed",
+  "block": {
+   "type": "llm_comparison_table",
+   "prompt": "Summarize the failover strategy.",
+   "show_meta": true,
+   "models": [
+    {
+     "name": "Claude Sonnet",
+     "output": "Initiates active replication across zones within 3 seconds.",
+     "latency_ms": 280,
+     "cost_usd": 0.003,
+     "tokens": 82
+    },
+    {
+     "name": "GPT-4o",
+     "output": "Triggers DNS failover and reroutes edge requests automatically.",
+     "latency_ms": 310,
+     "cost_usd": 0.004,
+     "tokens": 90
+    },
+    {
+     "name": "Llama 3.3 70B",
+     "output": "Promotes standby replica to primary and notifies monitoring.",
+     "latency_ms": 210,
+     "cost_usd": 0.001,
+     "tokens": 76
+    },
+    {
+     "name": "Mistral Large",
+     "output": "Switches gateway route policies to secondary regional clusters.",
+     "latency_ms": 295,
+     "cost_usd": 0.002,
+     "tokens": 85
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "models[].name",
+  "py_sha": "4afdd54c80133c79723509eb60bb492a2823f05876dfc87caf2d412de2c1837d",
+  "gas_sha": "0f4664de449f211ce54657b11462cd85adc953021f3ce43718396e87f38a3a99",
+  "parity": false
+ },
+ "marquee": {
+  "status": "keyed",
+  "block": {
+   "type": "marquee",
+   "title": "Platform Health Updates",
+   "speed": 28,
+   "gap": 48,
+   "direction": "normal",
+   "separator": "•",
+   "pause_on_hover": true,
+   "bg": "var(--surface)",
+   "rounded": true,
+   "items": [
+    {
+     "text": "US-East VPC operational"
+    },
+    {
+     "text": "Scheduled maintenance: Sunday 02:00 UTC"
+    },
+    {
+     "text": "All synthetic probes reporting 100% success"
+    },
+    {
+     "text": "Kernel update applied across Frankfurt edge nodes"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[]",
+  "py_sha": "f155ff93e17d2a5b919d5fce56a6866f8f6b6d0595f5b532d68c78839919fd95",
+  "gas_sha": "da568bfb0fc96a07538f38d4cb141c0adcc10a1d981a3986f951fd3b84ff889a",
+  "parity": false
+ },
+ "marquee_strip": {
+  "status": "keyed",
+  "block": {
+   "type": "marquee_strip",
+   "label": "Trusted Infrastructure Partners",
+   "items": [
+    "Cloudflare",
+    "Supabase",
+    "Datadog",
+    "HashiCorp"
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].text",
+  "py_sha": "2edfac520f458db62adf8222461e8c7d998ae49b4c5d57cf2a18c78135f1e39e",
+  "gas_sha": "6f0ee6e9d8605448d88f598c19fec326faea22d1ebb27e968b8ec6f642ff68fa",
+  "parity": false
+ },
+ "match_exercise": {
+  "status": "keyed",
+  "block": {
+   "type": "match_exercise",
+   "pairs": [
+    {
+     "term": "DNS",
+     "definition": "Translates hostnames into IP addresses"
+    },
+    {
+     "term": "NAT",
+     "definition": "Remaps private IP addresses to public ones"
+    },
+    {
+     "term": "BGP",
+     "definition": "Routes traffic between autonomous systems"
+    },
+    {
+     "term": "TLS",
+     "definition": "Provides cryptographic communication security"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "pairs[].term",
+  "py_sha": "b4bc3ee46a6a3ba6d6c3594f9a6cfe5347b57bc9f1e65f500288b8cb3f804ee2",
+  "gas_sha": "741416b32b3d9e15c83dc0bf4aed6a6ae9edbf1c301a6c125a69826d206728c9",
+  "parity": false
+ },
+ "match_schedule": {
+  "status": "keyed",
+  "block": {
+   "type": "match_schedule",
+   "layout": "table",
+   "rounds": [
+    {
+     "label": "Round 1",
+     "matches": [
+      {
+       "court": "Court 1",
+       "team_a": [
+        "Apex Predators"
+       ],
+       "team_b": [
+        "Blue Orbit"
+       ],
+       "score_a": 21,
+       "score_b": 18
+      },
+      {
+       "court": "Court 2",
+       "team_b": [
+        "Delta Force"
+       ],
+       "team_a": [
+        "Cobalt Sky"
+       ],
+       "score_a": 15,
+       "score_b": 21
+      }
+     ]
+    },
+    {
+     "label": "Round 2",
+     "matches": [
+      {
+       "court": "Court 1",
+       "team_a": [
+        "Apex Predators"
+       ],
+       "team_b": [
+        "Cobalt Sky"
+       ],
+       "score_a": 21,
+       "score_b": 14
+      },
+      {
+       "court": "Court 2",
+       "team_a": [
+        "Blue Orbit"
+       ],
+       "team_b": [
+        "Delta Force"
+       ],
+       "score_a": 19,
+       "score_b": 21
+      }
+     ]
+    },
+    {
+     "label": "Round 3",
+     "matches": [
+      {
+       "court": "Court 1",
+       "team_a": [
+        "Apex Predators"
+       ],
+       "team_b": [
+        "Delta Force"
+       ],
+       "score_a": 22,
+       "score_b": 20
+      },
+      {
+       "court": "Court 2",
+       "team_a": [
+        "Blue Orbit"
+       ],
+       "team_b": [
+        "Cobalt Sky"
+       ],
+       "score_a": 21,
+       "score_b": 17
+      }
+     ]
+    },
+    {
+     "label": "Round 4",
+     "matches": [
+      {
+       "court": "Court 1",
+       "team_a": [
+        "Cobalt Sky"
+       ],
+       "team_b": [
+        "Apex Predators"
+       ],
+       "score_a": 16,
+       "score_b": 21
+      },
+      {
+       "court": "Court 2",
+       "team_a": [
+        "Delta Force"
+       ],
+       "team_b": [
+        "Blue Orbit"
+       ],
+       "score_a": 18,
+       "score_b": 21
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "rounds[].round",
+  "py_sha": "9c02d046949a208cafcbe475d26878034f00d1369152993a73bfffea8687aa81",
+  "gas_sha": "9c02d046949a208cafcbe475d26878034f00d1369152993a73bfffea8687aa81",
+  "parity": true
+ },
+ "maturity_ladder": {
+  "status": "keyed",
+  "block": {
+   "type": "maturity_ladder",
+   "title": "OBSERVABILITY MATURITY",
+   "levels": [
+    {
+     "level": 1,
+     "name": "Ad-hoc Logs",
+     "criteria": "Unstructured local logs accessed manually via SSH.",
+     "is_current": false
+    },
+    {
+     "level": 2,
+     "name": "Central Aggregation",
+     "criteria": "Ingested structured logs with basic search query parsing.",
+     "is_current": true
+    },
+    {
+     "level": 3,
+     "name": "Correlated Tracing",
+     "criteria": "OpenTelemetry spans unified with metrics and dashboards.",
+     "is_current": false
+    },
+    {
+     "level": 4,
+     "name": "Predictive Automation",
+     "criteria": "Automated canary analysis and adaptive self-healing policies.",
+     "is_current": false
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "levels[].name",
+  "py_sha": "6dcd0501953d7fa9c26717950a932d3342cda7b99ae2a6a004316a123e0cb201",
+  "gas_sha": "6dcd0501953d7fa9c26717950a932d3342cda7b99ae2a6a004316a123e0cb201",
+  "parity": true
+ },
+ "message_lanes": {
+  "status": "pending",
+  "block": {
+   "type": "message_lanes",
+   "title": "A2UI Event Bus Stream",
+   "lanes": 4,
+   "from_label": "agent",
+   "to_label": "surface"
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "lanes[].id",
+  "py_sha": "9afa2003a713143102ba720ce4c171dc02b4dedb26d8db25d6f108854e7f0357",
+  "gas_sha": "2b072bcaa5b0b6764402a0e008b0eb975ee0a73db0c8151c2b8a8053b16a146e",
+  "parity": false
+ },
+ "metric_row": {
+  "status": "keyed",
+  "block": {
+   "type": "metric_row",
+   "metrics": [
+    {
+     "value": "12.4M",
+     "label": "Total API Calls",
+     "trend": "up"
+    },
+    {
+     "value": "99.99%",
+     "label": "Availability",
+     "trend": "up"
+    },
+    {
+     "value": "18ms",
+     "label": "P95 Latency",
+     "trend": "down"
+    },
+    {
+     "value": "$4,200",
+     "label": "Cloud Run Rate",
+     "trend": "down"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "metrics[].label",
+  "py_sha": "976ea6f25b2d9fc470516bbdffefe00d04c4b8a9b28858e96f054d700fe8c080",
+  "gas_sha": "c9af4c8475adb6704b285846f37ae4dbbda1ea17f8c0b8e7026bd934b4a7c4a5",
+  "parity": false
+ },
+ "mini_sparkline_set": {
+  "status": "keyed",
+  "block": {
+   "type": "mini_sparkline_set",
+   "series": [
+    {
+     "label": "CPU Utilization",
+     "data": [
+      22,
+      35,
+      40,
+      58,
+      44
+     ]
+    },
+    {
+     "label": "Memory Saturation",
+     "data": [
+      60,
+      61,
+      63,
+      62,
+      65
+     ]
+    },
+    {
+     "label": "Disk IOPS",
+     "data": [
+      120,
+      340,
+      290,
+      450,
+      310
+     ]
+    },
+    {
+     "label": "Network Outflow",
+     "data": [
+      15,
+      28,
+      45,
+      90,
+      82
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "series[].name",
+  "py_sha": "ce3325996fa2822b10d7909ad647b25654b794c46fad9bb94681a2e6ffca0c49",
+  "gas_sha": "8084ebc1047edc5851b33fde0805ab69ae08fc3040c5cc5ea219642cc23a402b",
+  "parity": false
+ },
+ "module_map": {
+  "status": "keyed",
+  "block": {
+   "type": "module_map",
+   "title": "Kubernetes Administration Track",
+   "columns": 3,
+   "modules": [
+    {
+     "id": "mod_intro_k8s",
+     "title": "Core Architecture",
+     "description": "Master the control plane, kubelet, and etcd.",
+     "icon": "hub",
+     "duration": "45m",
+     "lessons": 4,
+     "required": [],
+     "url": "https://example.com/tracks/k8s/mod1"
+    },
+    {
+     "id": "mod_networking",
+     "title": "Service Networking",
+     "description": "Configure ingress controllers and CNI plugins.",
+     "icon": "settings_ethernet",
+     "duration": "1h 15m",
+     "lessons": 6,
+     "required": [
+      "mod_intro_k8s"
+     ],
+     "url": "https://example.com/tracks/k8s/mod2"
+    },
+    {
+     "id": "mod_storage",
+     "title": "Persistent Volumes",
+     "description": "Manage CSI drivers and storage classes.",
+     "icon": "dns",
+     "duration": "50m",
+     "lessons": 5,
+     "required": [
+      "mod_networking"
+     ],
+     "url": "https://example.com/tracks/k8s/mod3"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "modules[].id",
+  "py_sha": "a104a0c500467245c6a9e82471152370bd292700b241a5ef12f558c57469c0b7",
+  "gas_sha": "ce0f32d5e145950edc17062540fbaa62cfcb8dc229dfacea6c39196370dc93c6",
+  "parity": false
+ },
+ "multi_doc_ai_brief": {
+  "status": "pending",
+  "block": {
+   "type": "multi_doc_ai_brief",
+   "default_prompt": "Summarize blockers and owners into three bullets.",
+   "accent": "#0ea5e9",
+   "model": "gemini-1.5-pro",
+   "docs": [
+    {
+     "doc_id": "doc_sec_audit_2026",
+     "title": "SOC2 Audit Report",
+     "prompt": "Highlight open compliance findings and remediation dates."
+    },
+    {
+     "doc_id": "doc_arch_review_q3",
+     "title": "Data Pipeline Architecture RFC"
+    },
+    {
+     "doc_id": "doc_pricing_v2_final",
+     "title": "FY27 Pricing Strategy",
+     "prompt": "Extract proposed per-seat tiers and launch timeline."
+    },
+    {
+     "doc_id": "doc_partner_api_spec",
+     "title": "Partner Integrations Spec"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "docs[].id",
+  "py_sha": "17a6e8059d6760586c5c16e397bb84de8b035c74839dc8383c423b07407bdf82",
+  "gas_sha": "887995d1c82339c22490335614308973034253f9db4b1762113cca52780a694b",
+  "parity": false
+ },
+ "multi_surface": {
+  "status": "pending",
+  "block": {
+   "type": "multi_surface",
+   "title": "Fleet Device Telemetry",
+   "nodes": [
+    {
+     "id": "cam_gate_01",
+     "type": "sensor",
+     "label": "Gate Access Scanner",
+     "temp": 32,
+     "value": 104,
+     "intensity": 85,
+     "coords": {
+      "x": 20,
+      "y": 45
+     }
+    },
+    {
+     "id": "hvac_bldg_b",
+     "type": "climate",
+     "label": "Chiller Unit 4",
+     "temp": 18,
+     "value": 72,
+     "intensity": 45,
+     "coords": {
+      "x": 55,
+      "y": 30
+     }
+    },
+    {
+     "id": "pwr_feed_main",
+     "type": "grid",
+     "label": "Primary Substation",
+     "temp": 48,
+     "value": 480,
+     "intensity": 92,
+     "coords": {
+      "x": 75,
+      "y": 70
+     }
+    },
+    {
+     "id": "door_lock_lab",
+     "type": "access",
+     "label": "Cleanroom Hatch",
+     "temp": 21,
+     "value": 1,
+     "intensity": 10,
+     "coords": {
+      "x": 40,
+      "y": 80
+     }
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nodes[].id",
+  "py_sha": "a4dc3f4b6406287e4e03e2dc62c483691259043be559a915d8b5108d643d52f3",
+  "gas_sha": "40213d172fd3d7e991a9665ae06c0dd55ea8be4d8d89fdc90fe84c4b5a094742",
+  "parity": false
+ },
+ "nav_bar": {
+  "status": "pending",
+  "block": {
+   "type": "nav_bar",
+   "label": "Internal Portal",
+   "layout": "horizontal",
+   "sticky": true,
+   "top_offset": 52,
+   "accent": "#4f46e5",
+   "links": [
+    {
+     "nav_slug": "overview",
+     "label": "Dashboard",
+     "icon": "dashboard",
+     "active": true
+    },
+    {
+     "nav_slug": "deployments",
+     "label": "Deployments",
+     "icon": "rocket_launch",
+     "active": false
+    },
+    {
+     "nav_slug": "monitoring",
+     "label": "Observability",
+     "icon": "monitoring",
+     "active": false
+    },
+    {
+     "nav_slug": "security",
+     "label": "Compliance",
+     "icon": "gavel",
+     "active": false
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "links[].slug",
+  "py_sha": "cdb49fc9123475e30ac3386721f67b6abc41f08f84294cb760499c8495b50415",
+  "gas_sha": "6b8cfb43306b4e8043a3962c14b3569f81c1b84c35a7843af333e7f04f63e232",
+  "parity": false
+ },
+ "news_digest": {
+  "status": "keyed",
+  "block": {
+   "type": "news_digest",
+   "title": "Weekly Infrastructure Brief",
+   "accent": "#0ea5e9",
+   "items": [
+    {
+     "title": "Global Edge Mesh Reaches 99.999% SLA",
+     "body": "Network routing adjustments completed across twenty colocation hubs resulted in negligible packet drop.",
+     "source": "Ops Status",
+     "tag": "Infrastructure"
+    },
+    {
+     "title": "Zero-Trust Device Profiles Enforced",
+     "body": "All automated CI runner access now mandates short-lived machine credentials validated via internal CA.",
+     "source": "Security Team",
+     "tag": "Security"
+    },
+    {
+     "title": "Observability Stack Migrated to VictoriaMetrics",
+     "body": "Reduced monthly time-series storage costs by 45% while decreasing P95 query response latency.",
+     "source": "Platform Eng",
+     "tag": "Cost"
+    },
+    {
+     "title": "Release Automation CLI 3.0 Available",
+     "body": "Includes automated multi-region deployment rollbacks triggered by canary error threshold breaches.",
+     "source": "DevEx Guild",
+     "tag": "Tools"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "42573fe09fe8cc916b4cdc1b0ebb87757e41035c20d616b2ed33ee926dd1220f",
+  "gas_sha": "42573fe09fe8cc916b4cdc1b0ebb87757e41035c20d616b2ed33ee926dd1220f",
+  "parity": true
+ },
+ "next_step_strip": {
+  "status": "keyed",
+  "block": {
+   "type": "next_step_strip",
+   "accent": "#0284c7",
+   "steps": [
+    {
+     "number": 1,
+     "label": "Provision VPC",
+     "detail": "Create isolated subnets with CIDR blocks",
+     "url": "https://example.com/network/provision"
+    },
+    {
+     "number": 2,
+     "label": "Install Cert Manager",
+     "detail": "Automate Let's Encrypt TLS rotation",
+     "url": "https://example.com/sec/certs"
+    },
+    {
+     "number": 3,
+     "label": "Bind IAM Roles",
+     "detail": "Attach least-privilege policies to clusters",
+     "url": "https://example.com/iam/roles"
+    },
+    {
+     "number": 4,
+     "label": "Trigger Smoke Test",
+     "detail": "Run automated synthetic ping transactions",
+     "url": "https://example.com/ci/tests"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "steps[].title",
+  "py_sha": "3abb4fc9b96be1b97a8c4780fa5672c2cfee0fd59ccf3a066b7ffd3c81e244eb",
+  "gas_sha": "dc59e49e8789a591fcfd82e9003333d0337a2edaec63f29fab5a00b11dc6840c",
+  "parity": false
+ },
+ "notification_stack": {
+  "status": "pending",
+  "block": {
+   "type": "notification_stack",
+   "title": "Recent Alerts",
+   "items": [
+    {
+     "title": "Deploy Completed",
+     "body": "Release 2.4.1 live on us-east fleet.",
+     "time": "2m ago",
+     "unread": true
+    },
+    {
+     "title": "Quota Warning",
+     "body": "Blob storage reached 84% capacity.",
+     "time": "14m ago",
+     "unread": true
+    },
+    {
+     "title": "Invoice Generated",
+     "body": "Receipt ready for account #8812.",
+     "time": "1h ago",
+     "unread": false
+    },
+    {
+     "title": "New Team Invite",
+     "body": "Elena accepted the admin invitation.",
+     "time": "3h ago",
+     "unread": false
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "6ea2cd2aa06f40feae51a417a97c8c6d7da518a42c740fdcc77640a5e01eb362",
+  "gas_sha": "28766f3ef5167678a7d7cefb27623a602a655cc202f8b49d2627b224a91e1b00",
+  "parity": false
+ },
+ "numbered_list": {
+  "status": "keyed",
+  "block": {
+   "type": "numbered_list",
+   "title": "Rollout Protocol",
+   "style": "large",
+   "items": [
+    {
+     "label": "Provision VPC",
+     "text": "Create isolated network segments."
+    },
+    {
+     "label": "Spin Up Fleet",
+     "text": "Launch compute instances across zones."
+    },
+    {
+     "label": "Run Smoke Tests",
+     "text": "Validate synthetic traffic endpoints."
+    },
+    {
+     "label": "Switch Traffic",
+     "text": "Update load balancer routing weights."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "258d77c6744355da7c12e672ddc6bfa809cb3aed7f5cbf96da307fe58cbbd284",
+  "gas_sha": "adc7c6fbf5161e67115223b4403dbc27dab4bbbb0bbdd13644684b04904c5eb8",
+  "parity": false
+ },
+ "onboarding_stepper": {
+  "status": "keyed",
+  "block": {
+   "type": "onboarding_stepper",
+   "title": "Engineer Workspace Setup",
+   "accent": "#2563eb",
+   "steps": [
+    {
+     "id": "step_sso",
+     "icon": "badge",
+     "label": "Connect Okta Identity",
+     "description": "Configure single sign-on profile and setup hardware MFA key.",
+     "action_label": "Authenticate",
+     "action_url": "https://example.com/auth/sso"
+    },
+    {
+     "id": "step_git",
+     "icon": "key",
+     "label": "Add SSH Public Key",
+     "description": "Register hardware-bound SSH key to GitHub organization.",
+     "action_label": "Register Key",
+     "action_url": "https://example.com/settings/ssh"
+    },
+    {
+     "id": "step_vpn",
+     "icon": "vpn_lock",
+     "label": "Install WireGuard Client",
+     "description": "Obtain configuration bundle for internal network tunnel.",
+     "action_label": "Download Config",
+     "action_url": "https://example.com/net/vpn"
+    },
+    {
+     "id": "step_ide",
+     "icon": "integration_instructions",
+     "label": "Clone Starter Repos",
+     "description": "Run setup bootstrap script for local container development.",
+     "action_label": "View Commands",
+     "action_url": "https://example.com/docs/setup"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "steps[].id",
+  "py_sha": "38db71037f99344d6b23db56d0a960e7c3561367ea1e62b81ff13d5b1412b135",
+  "gas_sha": "bff61d6f98b58b7387d3170f6a7cbb2622f21a5b30cda69805d5aafc3860730c",
+  "parity": false
+ },
+ "option_plan_builder": {
+  "status": "keyed",
+  "block": {
+   "type": "option_plan_builder",
+   "total_label": "Monthly Subtotal",
+   "total_expr": "#plan_total.display",
+   "summary_template": "Current total is ${total}",
+   "options": [
+    {
+     "id": "opt_backup",
+     "label": "Automated Daily Backups",
+     "price_delta": 15,
+     "default_on": true
+    },
+    {
+     "id": "opt_support",
+     "label": "24/7 Dedicated Support",
+     "price_delta": 50,
+     "default_on": false
+    },
+    {
+     "id": "opt_sla",
+     "label": "99.99% Uptime SLA",
+     "price_delta": 40,
+     "default_on": false
+    },
+    {
+     "id": "opt_ip",
+     "label": "Dedicated Outbound IP",
+     "price_delta": 10,
+     "default_on": true
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "options[].id",
+  "py_sha": "030efce69643d3937fdf3fe63fe80f31bf20cdd00699e43241ffa5ce6ddcdf96",
+  "gas_sha": "2b6d3862a1592ac77d0020d51bd9c33a5204e96f6d604cad796d335013292cd6",
+  "parity": false
+ },
+ "orbit_diagram": {
+  "status": "keyed",
+  "block": {
+   "type": "orbit_diagram",
+   "center": "Identity Core",
+   "color": "#4f46e5",
+   "speed": 24,
+   "nodes": [
+    {
+     "label": "Single Sign-On",
+     "color": "#4f46e5"
+    },
+    {
+     "label": "RBAC Engine",
+     "color": "#06b6d4"
+    },
+    {
+     "label": "Audit Ledger",
+     "color": "#10b981"
+    },
+    {
+     "label": "MFA Challenge",
+     "color": "#f97316"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nodes[].label",
+  "py_sha": "de613f994b1654aef6cd1fdab614f16d2977f58cb8935c44c48ec5e184b21f4c",
+  "gas_sha": "09b46c27a815738c7a98313aa18603b89498e12c02ff567ecf40d20b1229b379",
+  "parity": false
+ },
+ "orbit_rings": {
+  "status": "pending",
+  "block": {
+   "type": "orbit_rings",
+   "title": "System Topology",
+   "center": "orchestrator",
+   "rings": [
+    {
+     "label": "Tools",
+     "items": [
+      "CLI",
+      "Debugger",
+      "SDK",
+      "Telemetry"
+     ]
+    },
+    {
+     "label": "Data",
+     "items": [
+      "Postgres",
+      "Redis",
+      "S3",
+      "Kafka"
+     ]
+    },
+    {
+     "label": "Surfaces",
+     "items": [
+      "Console",
+      "Mobile App",
+      "Admin Web",
+      "CLI"
+     ]
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "rings[].id",
+  "py_sha": "ac930838e44a50b548cf6d1e1da3b0a959fb5cc7e60f2a98eab47cb66ceb76e4",
+  "gas_sha": "181764ef7d0acbb98ddd71de32c8bde0e204932b8ec1c603d7a82fcbc880afd1",
+  "parity": false
+ },
+ "photo_grid": {
+  "status": "pending",
+  "block": {
+   "type": "photo_grid",
+   "cols": 4,
+   "images": [
+    {
+     "id": "img_01",
+     "url": "https://example.com/a.png",
+     "alt": "Nordic Armchair",
+     "caption": "Nordic Armchair",
+     "badge": "In Stock",
+     "active": true
+    },
+    {
+     "id": "img_02",
+     "url": "https://example.com/a.png",
+     "alt": "Walnut Desk",
+     "caption": "Walnut Desk",
+     "badge": "Sale",
+     "active": false
+    },
+    {
+     "id": "img_03",
+     "url": "https://example.com/a.png",
+     "alt": "Ceramic Lamp",
+     "caption": "Ceramic Lamp",
+     "badge": "Low Stock",
+     "active": false
+    },
+    {
+     "id": "img_04",
+     "url": "https://example.com/a.png",
+     "alt": "Wool Rug",
+     "caption": "Wool Rug",
+     "badge": "Popular",
+     "active": false
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "images[].id",
+  "py_sha": "e73f9badf42f6799be9d6dda6c39685af3066875279965160a895819a54b8ea8",
+  "gas_sha": "3afb0cb89bc2d1d0ffa8352c5e1dc2573035b61d018437afb3a62e115763d245",
+  "parity": false
+ },
+ "photo_stepper": {
+  "status": "keyed",
+  "block": {
+   "type": "photo_stepper",
+   "accent": "#0f766e",
+   "trigger_label": "Review Office Spaces",
+   "images": [
+    {
+     "id": "room_a",
+     "url": "https://example.com/a.png",
+     "alt": "Conference Room A",
+     "name": "Main Boardroom",
+     "price_display": "$120/hr",
+     "badge": "Featured",
+     "active": true,
+     "starred_by_display": "Sarah, David",
+     "source_url": "https://example.com/room-a"
+    },
+    {
+     "id": "room_b",
+     "url": "https://example.com/a.png",
+     "alt": "Huddle Pod 1",
+     "name": "Acoustic Pod",
+     "price_display": "$45/hr",
+     "badge": "Available",
+     "active": false,
+     "starred_by_display": "Marcus",
+     "source_url": "https://example.com/room-b"
+    },
+    {
+     "id": "room_c",
+     "url": "https://example.com/a.png",
+     "alt": "Focus Room B",
+     "name": "Quiet Lab",
+     "price_display": "$60/hr",
+     "badge": "Popular",
+     "active": false,
+     "starred_by_display": "Elena",
+     "source_url": "https://example.com/room-c"
+    },
+    {
+     "id": "room_d",
+     "url": "https://example.com/a.png",
+     "alt": "Open Studio",
+     "name": "Design Workshop",
+     "price_display": "$150/hr",
+     "badge": "Reserved",
+     "active": false,
+     "starred_by_display": "Alex, Priya",
+     "source_url": "https://example.com/room-d"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "images[].id",
+  "py_sha": "31bd1fbc4f6e735b96ec280c2679ffa5ba12e0a255682077d9306f4887c5811d",
+  "gas_sha": "ae84a88d0b3f1551f438509192087e903234a58abc3cf29e01401266e6e8435b",
+  "parity": false
+ },
+ "pipeline": {
+  "status": "keyed",
+  "block": {
+   "type": "pipeline",
+   "steps": [
+    "Checkout Code",
+    "Lint and Test",
+    "Build Container",
+    "Deploy Staging",
+    "Run Integration"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "steps[]",
+  "py_sha": "a50dfeb9d6d7c339acb9b11868e90ee58597d3643f98f95d7e9bd2d0e7768ffc",
+  "gas_sha": "175ef3e4451033c7e3ae3eb7c186583b347209c5faef09b0ce6a94ea6f60724f",
+  "parity": false
+ },
+ "poll_block": {
+  "status": "keyed",
+  "block": {
+   "type": "poll_block",
+   "question": "Preferred offsite retreat location?",
+   "options": [
+    {
+     "text": "Lake Tahoe Cabin",
+     "votes": 14
+    },
+    {
+     "text": "San Diego Coastal",
+     "votes": 22
+    },
+    {
+     "text": "Austin Downtown",
+     "votes": 9
+    },
+    {
+     "text": "Remote Virtual Day",
+     "votes": 5
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "options[].id",
+  "py_sha": "446fca8b929a3e31926cffd6bbc2f7a412a77c5dbda0d247a2959ec936f57bc4",
+  "gas_sha": "4c7c2fecf524fda32d4828144aedf0c57668ac1031eee335f022e7e2d948ee2d",
+  "parity": false
+ },
+ "prerequisite_checklist": {
+  "status": "keyed",
+  "block": {
+   "type": "prerequisite_checklist",
+   "title": "Prerequisites",
+   "items": [
+    "Docker Engine 24.0 or newer installed",
+    "Node.js v20.x LTS installed",
+    "Valid AWS IAM deployment credentials",
+    "PostgreSQL database running on port 5432"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].text",
+  "py_sha": "4a1e6db9d993d60ecdb15f4af7ff09c4723263830d0d313acb353656240e56cb",
+  "gas_sha": "1ff3981d3db912ebb0e1ec88c5f982673ea5a361bf3de9b455600e74b617ded6",
+  "parity": false
+ },
+ "pricing_tier_group": {
+  "status": "keyed",
+  "block": {
+   "type": "pricing_tier_group",
+   "tiers": [
+    {
+     "name": "Starter",
+     "price": "$0",
+     "frequency": "forever",
+     "description": "Basic tools for side projects"
+    },
+    {
+     "name": "Growth",
+     "price": "$49",
+     "frequency": "per month",
+     "description": "Accelerate fast-moving startups"
+    },
+    {
+     "name": "Scale",
+     "price": "$199",
+     "frequency": "per month",
+     "description": "High performance for large teams"
+    },
+    {
+     "name": "Enterprise",
+     "price": "Custom",
+     "frequency": "annual",
+     "description": "Dedicated infrastructure and support"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tiers[].plan_name",
+  "py_sha": "d266f5d30972a8a469835239a8311abb223c101b79355e64a0162d13cb5e85a3",
+  "gas_sha": "6933a4d4c2ebd66dc6dd02b1aca4fc23106178771b0f147ab6fefedefba5c4ec",
+  "parity": false
+ },
+ "primitive_plate": {
+  "status": "pending",
+  "block": {
+   "type": "primitive_plate",
+   "id": "plate_api_header",
+   "title": "API Request Inspector",
+   "kind": "inspector",
+   "caption": "Annotated inspection surface for outbound TLS payloads and tracing headers.",
+   "width": 480,
+   "repo_url": "https://example.com/repos/plate-inspector",
+   "equivalent_in": {
+    "surface": "Cards v2",
+    "status": "partial",
+    "note": "Header text blocks supported, but missing coordinate pin overlay."
+   },
+   "states": [
+    {
+     "label": "Default Header View",
+     "alt": "API Request Inspector - Default State",
+     "image": "https://example.com/a.png",
+     "pins": [
+      {
+       "x": 18,
+       "y": 24,
+       "field": "x-request-id",
+       "note": "UUID injected by ingress gateway for cross-service distributed tracing.",
+       "chrome": false,
+       "advance": false,
+       "badge": "client-only"
+      },
+      {
+       "x": 62,
+       "y": 48,
+       "field": "Authorization",
+       "note": "Short-lived Bearer token signed with RS256 private key.",
+       "chrome": false,
+       "advance": true,
+       "badge": "round-trip"
+      },
+      {
+       "x": 84,
+       "y": 14,
+       "field": "window_controls",
+       "note": "Native OS title bar controls for window minimization and closing.",
+       "chrome": true,
+       "advance": false
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "states[].id",
+  "py_sha": "9a3abdc5ed52da26702047d4355f091e5ad58ca3de045ed58f914fc778bdd6a4",
+  "gas_sha": "99640fbf31e5847c0f7d7938df21cc6d9b0b27d8f618f708d406a94f374baf47",
+  "parity": false
+ },
+ "product_spec_table": {
+  "status": "keyed",
+  "block": {
+   "type": "product_spec_table",
+   "product_name": "Edge Gateway Pro",
+   "specs": [
+    {
+     "name": "Processor",
+     "value": "Quad-Core ARM Cortex-A72"
+    },
+    {
+     "name": "Memory",
+     "value": "8 GB LPDDR4"
+    },
+    {
+     "name": "Network",
+     "value": "Dual Gigabit Ethernet"
+    },
+    {
+     "name": "Power Input",
+     "value": "12-24V DC Passive PoE"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "specs[].key",
+  "py_sha": "5dae1c5ec511811848a58697c2474d392db6ea9937a550760bf1aae9fb54ca3d",
+  "gas_sha": "4f7086ac093a9f404f793460098448862c253f6d474b61b19a07c6d9c05b2a31",
+  "parity": false
+ },
+ "pros_cons_list": {
+  "status": "keyed",
+  "block": {
+   "type": "pros_cons_list",
+   "subject": "GraphQL Migration",
+   "pros": [
+    "Avoids client over-fetching",
+    "Strong schema contract",
+    "Consolidated single endpoint",
+    "Rich developer tooling ecosystem"
+   ],
+   "cons": [
+    "Complex caching layers",
+    "N+1 query vulnerabilities",
+    "Increased server overhead",
+    "Steeper team learning curve"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "pros[], cons[]",
+  "py_sha": "e19a89d5375d1c1084427f7733ec77cf704293627c2b6290b03eac9342b837c1",
+  "gas_sha": "f5831c7a73abcaaccf233036e5fb59263b356b160d9eb4a09e3651c59429ace9",
+  "parity": false
+ },
+ "punch_card": {
+  "status": "pending",
+  "block": {
+   "type": "punch_card",
+   "title": "Commit Activity",
+   "subtitle": "org/core-engine",
+   "color": "#00f2ff",
+   "labels_days": [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+   ],
+   "data": [
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     4,
+     8,
+     12,
+     15,
+     10,
+     8,
+     9,
+     14,
+     16,
+     12,
+     8,
+     5,
+     2,
+     1,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2,
+     6,
+     14,
+     18,
+     12,
+     10,
+     8,
+     12,
+     15,
+     11,
+     7,
+     4,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     3,
+     9,
+     16,
+     22,
+     15,
+     12,
+     11,
+     15,
+     18,
+     14,
+     9,
+     3,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2,
+     8,
+     11,
+     14,
+     10,
+     9,
+     7,
+     10,
+     12,
+     10,
+     6,
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     5,
+     10,
+     12,
+     9,
+     8,
+     6,
+     9,
+     11,
+     8,
+     4,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     3,
+     2,
+     1,
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "data[].id",
+  "py_sha": "756ba78130597f5e6b5e8690c20c78c5a808543a9f4527274b746fcfc7752da9",
+  "gas_sha": "1afd0608b7e31597d0452b46357e04d635dd5b6d4465d2e0f20b8cb83edd6272",
+  "parity": false
+ },
+ "quadrant": {
+  "status": "pending",
+  "block": {
+   "type": "quadrant",
+   "title": "FEATURE PRIORITIZATION",
+   "x_axis": {
+    "low": "Low Impact",
+    "high": "High Impact"
+   },
+   "y_axis": {
+    "low": "Hard Effort",
+    "high": "Easy Effort"
+   },
+   "items": [
+    {
+     "item": "Auto Invoicing",
+     "quadrant": "top_right",
+     "note": "High value quick win"
+    },
+    {
+     "item": "Color Themes",
+     "quadrant": "top_left",
+     "note": "Low cost cosmetic tweak"
+    },
+    {
+     "item": "Legacy Database Rewrite",
+     "quadrant": "bottom_left",
+     "note": "High friction core migration"
+    },
+    {
+     "item": "SSO Provisioning",
+     "quadrant": "bottom_right",
+     "note": "Strategic customer requirement"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].name",
+  "py_sha": "32fb268f5135fec224962bd2e12eebc953af9b4afa2f0918edf8b322c5c5661a",
+  "gas_sha": "32fb268f5135fec224962bd2e12eebc953af9b4afa2f0918edf8b322c5c5661a",
+  "parity": true
+ },
+ "quiz_question": {
+  "status": "pending",
+  "block": {
+   "type": "quiz_question",
+   "question": "Which HTTP status code represents a permanent redirect?",
+   "correct": 1,
+   "explanation": "301 signals permanent move, while 302 represents a temporary move.",
+   "options": [
+    "200 OK",
+    "301 Moved Permanently",
+    "404 Not Found",
+    "503 Service Unavailable"
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "options[]",
+  "py_sha": "1e0f508c58a9a92ca27505ed94f290a050dfefdb846ee151ba300876a4ed7a3c",
+  "gas_sha": "407b14c3899c5875429b0b02ce918e2d7baa5e41ebf77dad0a1a16fc67f129ce",
+  "parity": false
+ },
+ "quiz_set": {
+  "status": "pending",
+  "block": {
+   "type": "quiz_set",
+   "title": "Data Privacy & GDPR Basics",
+   "pass_score": 75,
+   "accent": "#2563eb",
+   "questions": [
+    {
+     "question": "What is the standard response window for a GDPR Data Subject Access Request?",
+     "options": [
+      "24 hours",
+      "7 business days",
+      "30 calendar days",
+      "90 calendar days"
+     ],
+     "correct": 2,
+     "explanation": "Article 12 mandates that organizations respond within one calendar month."
+    },
+    {
+     "question": "Which legal basis requires an unambiguous affirmative action from the user?",
+     "options": [
+      "Consent",
+      "Contractual necessity",
+      "Legal obligation",
+      "Vital interests"
+     ],
+     "correct": 0,
+     "explanation": "Valid consent requires a clear affirmative act signifying agreement."
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "questions[].id",
+  "py_sha": "d853ef4ccf9d8b7d5b2277f9147b09d0997e7c307e775112b270eab1a205b2be",
+  "gas_sha": "29abe2fda610b03244dcc4d6c4acab6313413f1ce5adcc4862d88abf198a4288",
+  "parity": false
+ },
+ "rating_comparison": {
+  "status": "pending",
+  "block": {
+   "type": "rating_comparison",
+   "items": [
+    {
+     "name": "Auth0",
+     "score": 4.6,
+     "reviews_count": 820
+    },
+    {
+     "name": "Clerk",
+     "score": 4.8,
+     "reviews_count": 450
+    },
+    {
+     "name": "Supabase Auth",
+     "score": 4.5,
+     "reviews_count": 610
+    },
+    {
+     "name": "Firebase Auth",
+     "score": 4.2,
+     "reviews_count": 1200
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].name",
+  "py_sha": "726019ba3f156dc6f33e6de0b2fe9753d9b6a6f40d9824e0471e2b9220b6057f",
+  "gas_sha": "b73795400b0521418693c5ed1eb11920cbcd6ba56adce16b80b89e9ac32c80b0",
+  "parity": false
+ },
+ "rating_summary_bar": {
+  "status": "pending",
+  "block": {
+   "type": "rating_summary_bar",
+   "average": 4.6,
+   "total": 1280,
+   "accent": "#f59e0b",
+   "breakdown": [
+    {
+     "stars": 5,
+     "count": 890
+    },
+    {
+     "stars": 4,
+     "count": 260
+    },
+    {
+     "stars": 3,
+     "count": 75
+    },
+    {
+     "stars": 2,
+     "count": 35
+    },
+    {
+     "stars": 1,
+     "count": 20
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "breakdown[].stars",
+  "py_sha": "49a4384fc76d8f35dc524f1c3557fece4dfbb8428ab594f20866838cc1756a6a",
+  "gas_sha": "251857d302f34ce81ab7e3e7d5f451953844eaaa77a495b5161a8441fec56509",
+  "parity": false
+ },
+ "reaction_shower": {
+  "status": "pending",
+  "block": {
+   "type": "reaction_shower",
+   "accent": "#ec4899",
+   "poll": 4000,
+   "reactions": [
+    "🚀",
+    "🔥",
+    "💡",
+    "🎉"
+   ],
+   "sheet_url": "https://example.com/sheets/reactions.csv",
+   "write_url": "https://example.com/gas/react"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "reactions[].emoji",
+  "py_sha": "40387b15b6554d66238b14b1f5ed6259eb56c734f22c570ccd664b507c98a513",
+  "gas_sha": "39f27bca5440194555ef433f9b142fd11ca2cfc33bac982750d4a446f77bad56",
+  "parity": false
+ },
+ "receipt": {
+  "status": "pending",
+  "block": {
+   "type": "receipt",
+   "claim": "99.99% Reliability Met",
+   "total": 0.98,
+   "total_label": "CONFIDENCE",
+   "merchant": "SLA VERIFICATION",
+   "issued": "2026-08-01",
+   "footer": "Sources listed. No unsourced stats.",
+   "accent": "#4338ca",
+   "print_last": true,
+   "items": [
+    {
+     "text": "Grafana synthetic probes: zero errors",
+     "source": "synthetic-probes",
+     "url": "https://example.com/probes"
+    },
+    {
+     "text": "Cloudflare edge 5xx count: 0.001%",
+     "source": "edge-analytics",
+     "url": "https://example.com/edge"
+    },
+    {
+     "text": "Internal ping mesh: 100% reachability",
+     "source": "ping-mesh",
+     "url": "https://example.com/mesh"
+    },
+    {
+     "text": "Database failover drill: 1.2s switch",
+     "source": "chaos-drill",
+     "url": "https://example.com/chaos"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "3f02ccd2d797990f9a87dc008792f17d3cfaf4f9cee9bcac36d9353aa8655caf",
+  "gas_sha": "19f73dd0a77e6560655cc643208598749ccaae33014c048df980792b13b161fb",
+  "parity": false
+ },
+ "related_posts_grid": {
+  "status": "pending",
+  "block": {
+   "type": "related_posts_grid",
+   "posts": [
+    {
+     "title": "Scaling Distributed Caches",
+     "url": "https://example.com/scaling-caches",
+     "topic": "Architecture"
+    },
+    {
+     "title": "Zero-Downtime Schema Shifts",
+     "url": "https://example.com/zero-downtime",
+     "topic": "Database"
+    },
+    {
+     "title": "Kubernetes Ingress Patterns",
+     "url": "https://example.com/k8s-ingress",
+     "topic": "DevOps"
+    },
+    {
+     "title": "Profiling Go Routines",
+     "url": "https://example.com/profiling-go",
+     "topic": "Performance"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "posts[].title",
+  "py_sha": "66eaa08e5aab12707a3b180c63d24e7141d965e8a108a4234e32e8924caec792",
+  "gas_sha": "3e56489cd7793838d840e17e7fb3db5805a0cd4cc8458aa80f17bf951a658ea1",
+  "parity": false
+ },
+ "renderer_stats": {
+  "status": "pending",
+  "block": {
+   "type": "renderer_stats",
+   "accent": "#8b5cf6",
+   "sub": "Evaluated on Chrome 128 / macOS 15.0 ARM64",
+   "stats": [
+    {
+     "value": "120 FPS",
+     "label": "Compositor Rate"
+    },
+    {
+     "value": "2.4 ms",
+     "label": "DOM Paint Pass"
+    },
+    {
+     "value": "18.2 MB",
+     "label": "Heap Allocation"
+    },
+    {
+     "value": "0.00",
+     "label": "Layout Shifts (CLS)"
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "stats[].label",
+  "py_sha": "c854c1ceee17395a0d32a3fe59adf67f4b1c0b397a93c15def805c6d0698b50c",
+  "gas_sha": "01081adb888463a3d1334f83082b26a68de357fe0a09e605abb61912c72208f4",
+  "parity": false
+ },
+ "repo_links": {
+  "status": "pending",
+  "block": {
+   "type": "repo_links",
+   "links": [
+    {
+     "label": "Core Runtime",
+     "url": "https://example.com/runtime"
+    },
+    {
+     "label": "CLI Client",
+     "url": "https://example.com/cli"
+    },
+    {
+     "label": "SDK Python",
+     "url": "https://example.com/sdk-py"
+    },
+    {
+     "label": "Documentation",
+     "url": "https://example.com/docs"
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "links[].url",
+  "py_sha": "dd840a3fcee70e130fecb6dab8a03503f1718518f0e6bb60862a59e81f86de8b",
+  "gas_sha": "44413f356aeedbdc20fc9a9d80e887191c2db2bcc534c00723721504bab7832b",
+  "parity": false
+ },
+ "resources_list": {
+  "status": "pending",
+  "block": {
+   "type": "resources_list",
+   "items": [
+    {
+     "title": "Production Helm Chart",
+     "size": "42 KB",
+     "type": "tar.gz",
+     "url": "https://example.com/helm"
+    },
+    {
+     "title": "OpenAPI Specification",
+     "size": "115 KB",
+     "type": "json",
+     "url": "https://example.com/openapi"
+    },
+    {
+     "title": "Architecture Blueprint",
+     "size": "2.4 MB",
+     "type": "pdf",
+     "url": "https://example.com/blueprint"
+    },
+    {
+     "title": "Seed Database Dump",
+     "size": "8.1 MB",
+     "type": "sql",
+     "url": "https://example.com/seed"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].url",
+  "py_sha": "ef0e8e0fc29752be42ae39b03b845cf53d4c57cbfb472c6922254607fa21bf1d",
+  "gas_sha": "67cbb63b3580492739eed269947d481a4c51e1bc669beb3755e7316c8f01a2f5",
+  "parity": false
+ },
+ "risk_flag": {
+  "status": "pending",
+  "block": {
+   "type": "risk_flag",
+   "title": "Release Risk Evaluation",
+   "risks": [
+    {
+     "level": "critical",
+     "title": "Database Schema Locking",
+     "description": "Altering orders table could pause writes.",
+     "mitigation": "Perform dual-write with ghost migrations."
+    },
+    {
+     "level": "high",
+     "title": "Edge CDN Cache Invalidation",
+     "description": "Stale bundles could persist for hours.",
+     "mitigation": "Automate purge trigger on deploy completion."
+    },
+    {
+     "level": "medium",
+     "title": "Third-party Webhook Flakiness",
+     "description": "Payment provider undergoing maintenance.",
+     "mitigation": "Enable persistent fallback dead-letter queue."
+    },
+    {
+     "level": "low",
+     "title": "Asset Storage Compression",
+     "description": "Image compression increases CPU spike.",
+     "mitigation": "Offload compression to background workers."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "risks[].id",
+  "py_sha": "b50b51a01beb8263cbf5880146a2b12c889c9c6641bafd43498b79b21f9ff92d",
+  "gas_sha": "7b06acfded4c17c2da9ed972f8248e30d86de661b6f0f27f69f47f805306fe20",
+  "parity": false
+ },
+ "roadmap_card": {
+  "status": "pending",
+  "block": {
+   "type": "roadmap_card",
+   "title": "Product Roadmap 2026",
+   "periods": [
+    {
+     "label": "Q1 Alpha",
+     "items": [
+      {
+       "text": "OAuth Engine Rewrite",
+       "status": "done"
+      }
+     ]
+    },
+    {
+     "label": "Q2 Beta",
+     "items": [
+      {
+       "text": "Dynamic Role-Based Access",
+       "status": "in-progress"
+      }
+     ]
+    },
+    {
+     "label": "Q3 Scale",
+     "items": [
+      {
+       "text": "Global Multi-Region Sync",
+       "status": "planned"
+      }
+     ]
+    },
+    {
+     "label": "Q4 Enterprise",
+     "items": [
+      {
+       "text": "Self-Hosted Appliance Build",
+       "status": "planned"
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "periods[].name",
+  "py_sha": "b2db44f71b530bf12fa7970bae1022f84d5c88c402818e64501936f0c3e922be",
+  "gas_sha": "ea9e0ed1992603144aed811fbb8c27ef79ce865765a0c582352a54ef877e0d3c",
+  "parity": false
+ },
+ "rubric_card": {
+  "status": "pending",
+  "block": {
+   "type": "rubric_card",
+   "title": "System Design Evaluation Rubric",
+   "accent": "#059669",
+   "levels": [
+    "Beginning",
+    "Developing",
+    "Proficient",
+    "Exemplary"
+   ],
+   "criteria": [
+    {
+     "criterion": "Scalability Architecture",
+     "descriptors": [
+      "Single monolithic server with unmanaged state",
+      "Stateless application servers with read-only DB replicas",
+      "Autoscaling stateless pods with sharded partition cache",
+      "Multi-region active-active cluster with cell-based isolation"
+     ]
+    },
+    {
+     "criterion": "Fault Tolerance",
+     "descriptors": [
+      "No automated health restarts or backups",
+      "Basic server restarts with periodic daily snapshots",
+      "Automated AZ failover with zero manual intervention",
+      "Chaos-tested regional failover with sub-second data recovery"
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "criteria[].name",
+  "py_sha": "c9d20807563905b5c8dfbbe17e6c3604574b09b960a80b840052e55e9b563f26",
+  "gas_sha": "4941ff70ee4355b7ca9497a39fa3738f494050694a442f1dd5f9ab08a97518f6",
+  "parity": false
+ },
+ "sankey_flow": {
+  "status": "pending",
+  "block": {
+   "type": "sankey_flow",
+   "title": "Q3 Budget Allocation",
+   "nodes": [
+    {
+     "id": "revenue",
+     "label": "Total Revenue",
+     "column": 0,
+     "color": "#10b981"
+    },
+    {
+     "id": "rnd",
+     "label": "R&D",
+     "column": 1,
+     "color": "#3b82f6"
+    },
+    {
+     "id": "ops",
+     "label": "Operations",
+     "column": 1,
+     "color": "#f59e0b"
+    },
+    {
+     "id": "cloud",
+     "label": "Cloud Hosting",
+     "column": 2,
+     "color": "#8b5cf6"
+    }
+   ],
+   "links": [
+    {
+     "source": "revenue",
+     "target": "rnd",
+     "value": 500000,
+     "color": "#38bdf8"
+    },
+    {
+     "source": "revenue",
+     "target": "ops",
+     "value": 300000,
+     "color": "#cbd5e1"
+    },
+    {
+     "source": "ops",
+     "target": "cloud",
+     "value": 180000,
+     "color": "#c084fc"
+    },
+    {
+     "source": "rnd",
+     "target": "cloud",
+     "value": 80000,
+     "color": "#93c5fd"
+    }
+   ]
+  },
+  "kind": "ribbon",
+  "label_kind": "label",
+  "key": "links[].id",
+  "py_sha": "7a756fe13d3bd0df17e091e4ddbf736d3897b31c46e200b82d2862a2d97c6d0a",
+  "gas_sha": "7a756fe13d3bd0df17e091e4ddbf736d3897b31c46e200b82d2862a2d97c6d0a",
+  "parity": true
+ },
+ "scatter_trend": {
+  "status": "pending",
+  "block": {
+   "type": "scatter_trend",
+   "title": "Ticket Volume vs Resolution Time",
+   "label_x": "Queue Depth",
+   "label_y": "Resolution Minutes",
+   "data_points": [
+    [
+     5,
+     12
+    ],
+    [
+     12,
+     25
+    ],
+    [
+     20,
+     38
+    ],
+    [
+     28,
+     52
+    ]
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "data_points[].id",
+  "py_sha": "1cad6ed06df035e51af991a8c54f3041db28380e6e85e7a8397c692cd5ddb2e1",
+  "gas_sha": "dedea61d3acbee02c7e95779862e322221fe0de99c0f81e17b52ae14cf4b428e",
+  "parity": false
+ },
+ "scenario_branch": {
+  "status": "pending",
+  "block": {
+   "type": "scenario_branch",
+   "scenario": "A high-severity zero-day vulnerability is published affecting our public API framework.",
+   "context": "Production deployment is locked during annual freeze period.",
+   "accent": "#f59e0b",
+   "choices": [
+    {
+     "label": "Deploy patch directly to production immediately",
+     "consequence": "Vulnerability fixed but untested patch breaks customer billing webhook sync.",
+     "outcome": "bad"
+    },
+    {
+     "label": "Run standard regression tests on staging first",
+     "consequence": "Patch passes validation cleanly and rolls out with zero system downtime.",
+     "outcome": "good"
+    },
+    {
+     "label": "Disable public ingress endpoints completely",
+     "consequence": "Attack surface closed but causes full service outage for 6 hours.",
+     "outcome": "neutral"
+    }
+   ]
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "choices[].label",
+  "py_sha": "f135399cc8941163242fe6dab31489190bc40651d8aeb45be0ff145d998733fa",
+  "gas_sha": "8528f25eb8815bad0049e508946724e977b996ab1a05ecdb7ac24116191fde52",
+  "parity": false
+ },
+ "scenario_case": {
+  "status": "pending",
+  "block": {
+   "type": "scenario_case",
+   "domain": "Cloud Incident Triage",
+   "difficulty": "Intermediate",
+   "scenario": "A sudden burst of unauthenticated requests saturates the primary database connection pool, causing high 504 errors on critical APIs.",
+   "question": "What is the most immediate stabilizing action to restore availability?",
+   "rationale": "Applying aggressive rate limits at the edge cloud shield stops resource exhaustion before requests hit internal stateful infrastructure.",
+   "options": [
+    {
+     "id": "opt_rate_limit",
+     "text": "Activate rate-limiting challenge rules on the Cloudflare edge gateway",
+     "score": 100
+    },
+    {
+     "id": "opt_restart_db",
+     "text": "Immediately reboot the primary RDS PostgreSQL instance",
+     "score": 20
+    },
+    {
+     "id": "opt_scale_app",
+     "text": "Scale application web server instances to 50 replicas",
+     "score": 40
+    },
+    {
+     "id": "opt_ignore",
+     "text": "Wait for database connection pool timeout to clear stuck queries",
+     "score": 0
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "options[].text",
+  "py_sha": "d7b0e14c7e4d9211be2b8d81ebfcf758c8f3903979d4efe1039ce85027549578",
+  "gas_sha": "1f114bc23f5c62aece92ff967726c751b03fbc169bb3f27447e6c482ea3f1676",
+  "parity": false
+ },
+ "seat_map": {
+  "status": "pending",
+  "block": {
+   "type": "seat_map",
+   "name": "selected_seat",
+   "summary_template": "Selected seat {label}",
+   "rows": [
+    [
+     {
+      "id": "s1a",
+      "label": "1A",
+      "status": "premium",
+      "price": 45
+     },
+     {
+      "id": "s1b",
+      "label": "1B",
+      "status": "occupied",
+      "price": 45
+     }
+    ],
+    [
+     {
+      "id": "s2a",
+      "label": "2A",
+      "status": "available",
+      "price": 30
+     },
+     {
+      "id": "s2b",
+      "label": "2B",
+      "status": "selected",
+      "price": 30
+     }
+    ],
+    [
+     {
+      "id": "s3a",
+      "label": "3A",
+      "status": "available",
+      "price": 30
+     },
+     {
+      "id": "s3b",
+      "label": "3B",
+      "status": "available",
+      "price": 30
+     }
+    ],
+    [
+     {
+      "id": "s4a",
+      "label": "4A",
+      "status": "available",
+      "price": 30
+     },
+     {
+      "id": "s4b",
+      "label": "4B",
+      "status": "occupied",
+      "price": 30
+     }
+    ]
+   ],
+   "legend": [
+    {
+     "status": "available",
+     "label": "Standard"
+    },
+    {
+     "status": "premium",
+     "label": "First Class"
+    },
+    {
+     "status": "occupied",
+     "label": "Unavailable"
+    },
+    {
+     "status": "selected",
+     "label": "Your Choice"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "rows[].seats[].id",
+  "py_sha": "37b5f2ae94d62525ccaf3377d4978efcae71efeeca33325f19b2ba4d9821a345",
+  "gas_sha": "06a187111c8f81392a0ab2f5a8d4bbe1592c4a69faab399f2d78344c4f61705d",
+  "parity": false
+ },
+ "sequence_diagram": {
+  "status": "pending",
+  "block": {
+   "type": "sequence_diagram",
+   "accent": "#2563eb",
+   "theme": "dark",
+   "autonumber": true,
+   "actors": [
+    {
+     "id": "usr",
+     "label": "Browser Client"
+    },
+    {
+     "id": "gw",
+     "label": "API Gateway"
+    },
+    {
+     "id": "auth",
+     "label": "OIDC Provider"
+    },
+    {
+     "id": "db",
+     "label": "Customer DB"
+    }
+   ],
+   "messages": [
+    {
+     "from": "usr",
+     "to": "gw",
+     "text": "POST /v1/checkout"
+    },
+    {
+     "from": "gw",
+     "to": "auth",
+     "text": "Validate Bearer Token"
+    },
+    {
+     "from": "auth",
+     "to": "gw",
+     "text": "Token Claims Valid",
+     "kind": "return"
+    },
+    {
+     "from": "gw",
+     "to": "db",
+     "text": "Reserve Inventory Items"
+    },
+    {
+     "from": "db",
+     "to": "gw",
+     "text": "Items Reserved",
+     "kind": "return"
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "messages[].id",
+  "py_sha": "5ad573e10389af681df1e879ce29567d777db4317a81cff9b3c49177b6063e01",
+  "gas_sha": "5ad573e10389af681df1e879ce29567d777db4317a81cff9b3c49177b6063e01",
+  "parity": true
+ },
+ "series_overview_card": {
+  "status": "pending",
+  "block": {
+   "type": "series_overview_card",
+   "series_name": "Zero to Production in Go",
+   "parts": [
+    {
+     "title": "Project Setup & Domain Modeling",
+     "url": "https://example.com/series/p1",
+     "current": false
+    },
+    {
+     "title": "Implementing HTTP Transport & Middleware",
+     "url": "https://example.com/series/p2",
+     "current": true
+    },
+    {
+     "title": "Database Isolation and Transactions",
+     "url": "https://example.com/series/p3",
+     "current": false
+    },
+    {
+     "title": "Containerization and Cloud Deployment",
+     "url": "https://example.com/series/p4",
+     "current": false
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "parts[].title",
+  "py_sha": "3a02bf320582bd943a46ba0ba1c6eb14417b768e90f53e515d4ab640d328f836",
+  "gas_sha": "88fd0e77f65e237e003e23ed433728e5b43e65730cf48264381280828df38a1d",
+  "parity": false
+ },
+ "service_status_board": {
+  "status": "pending",
+  "block": {
+   "type": "service_status_board",
+   "title": "INFRASTRUCTURE HEALTH",
+   "stamp": "24 OCT 2026 · 14:00 UTC",
+   "verdict": {
+    "level": "warn",
+    "text": "Partial API Disruption",
+    "detail": "Core database cluster undergoing failover"
+   },
+   "services": [
+    {
+     "name": "Auth Gateway",
+     "state": "operational"
+    },
+    {
+     "name": "Billing Pipeline",
+     "state": "operational"
+    },
+    {
+     "name": "Query Engine",
+     "state": "disruption"
+    },
+    {
+     "name": "Static Assets CDN",
+     "state": "operational"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "services[].name",
+  "py_sha": "a85360dbb227b83c96086853a6e8752e1fa04e5bff1b48fa9f28c6aadad7a91b",
+  "gas_sha": "a7163586ffc8111ec8e4d7fec31ee5aec5aab700a97e33673725fefa15c7c4f7",
+  "parity": false
+ },
+ "shortcut_legend": {
+  "status": "pending",
+  "block": {
+   "type": "shortcut_legend",
+   "title": "Command Center Keys",
+   "items": [
+    {
+     "keys": [
+      "⌘",
+      "K"
+     ],
+     "action": "Open Command Palette"
+    },
+    {
+     "keys": [
+      "⌘",
+      "P"
+     ],
+     "action": "Quick Search Projects"
+    },
+    {
+     "keys": [
+      "⌥",
+      "R"
+     ],
+     "action": "Trigger Fleet Rebuild"
+    },
+    {
+     "keys": [
+      "⇧",
+      "Esc"
+     ],
+     "action": "Dismiss Active Drawer"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].key",
+  "py_sha": "f51c880bafd7987730b0af6f23a70ac56b256bd8e01121aa31625218c570a839",
+  "gas_sha": "55e8668b9c43759ab836e21d3715341b1e847177a277d803b8c17f5815a9b1fc",
+  "parity": false
+ },
+ "side_by_side_spec": {
+  "status": "pending",
+  "block": {
+   "type": "side_by_side_spec",
+   "item_a_name": "Aurora Serverless v2",
+   "item_b_name": "Standard Provisioned RDS",
+   "specs": [
+    {
+     "name": "Scaling Latency",
+     "item_a": "Under 2 seconds",
+     "item_b": "5-10 minutes"
+    },
+    {
+     "name": "Storage Limits",
+     "item_a": "128 TiB auto-grow",
+     "item_b": "64 TiB allocated"
+    },
+    {
+     "name": "Idle Cost",
+     "item_a": "Down to 0.5 ACU",
+     "item_b": "Flat instance rate"
+    },
+    {
+     "name": "Multi-AZ Failover",
+     "item_a": "Automatic within zone",
+     "item_b": "Synchronous replica"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "specs[].name",
+  "py_sha": "0d49a7415a636eb4907c0c91061645a0f69c1fda31288deaf3e9d06bfd1e5e25",
+  "gas_sha": "c414d56a45c311954c1b0bbca02507c3b81c5a4612378ea65e0b1d482c0278e9",
+  "parity": false
+ },
+ "skill_bars": {
+  "status": "pending",
+  "block": {
+   "type": "skill_bars",
+   "title": "Backend Engineering Competencies",
+   "skills": [
+    {
+     "label": "Distributed Systems",
+     "value": 92,
+     "color": "#3b82f6"
+    },
+    {
+     "label": "Database Tuning",
+     "value": 85,
+     "color": "#10b981"
+    },
+    {
+     "label": "Container Orchestration",
+     "value": 78,
+     "color": "#8b5cf6"
+    },
+    {
+     "label": "Application Security",
+     "value": 70,
+     "color": "#f59e0b"
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "skills[].name",
+  "py_sha": "769a150e011faa824ca4ed63968bb1bb4a59dfc0589d4ac2111f8450046d92a6",
+  "gas_sha": "719322edb687749e0a255eb18ea39e00860c74e796d78e6144f73c60fd978a67",
+  "parity": false
+ },
+ "skill_radar": {
+  "status": "pending",
+  "block": {
+   "type": "skill_radar",
+   "title": "DevOps Engineering Assessment",
+   "accent": "#6366f1",
+   "skills": [
+    {
+     "label": "CI/CD Pipelines",
+     "value": 85,
+     "before": 45
+    },
+    {
+     "label": "Infrastructure as Code",
+     "value": 90,
+     "before": 60
+    },
+    {
+     "label": "Container Security",
+     "value": 70,
+     "before": 40
+    },
+    {
+     "label": "Observability",
+     "value": 80,
+     "before": 55
+    },
+    {
+     "label": "Incident Triage",
+     "value": 75,
+     "before": 50
+    }
+   ]
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "skills[].name",
+  "py_sha": "c1c1f65ffbf9921a96ea05008ce752bfb946b48af039128145d60f48da787587",
+  "gas_sha": "6ab36ae1c5ef350400c65315dab4b68ab61572d304ad93c6ec3c79553e3a4246",
+  "parity": false
+ },
+ "slot_scheduler": {
+  "status": "pending",
+  "block": {
+   "type": "slot_scheduler",
+   "provider": "Dr. Sarah Stone",
+   "location": "Oak Health Clinic",
+   "timezone": "America/New_York",
+   "confirm_label": "Reserve Appointment",
+   "summary_template": "Appointment on {date} at {time}",
+   "dates": [
+    {
+     "date": "2026-11-02",
+     "slots": [
+      {
+       "time": "09:00",
+       "available": true
+      },
+      {
+       "time": "10:30",
+       "available": false
+      }
+     ]
+    },
+    {
+     "date": "2026-11-03",
+     "slots": [
+      {
+       "time": "11:00",
+       "available": true
+      },
+      {
+       "time": "14:00",
+       "available": true
+      }
+     ]
+    },
+    {
+     "date": "2026-11-04",
+     "slots": [
+      {
+       "time": "13:30",
+       "available": false
+      },
+      {
+       "time": "15:00",
+       "available": true
+      }
+     ]
+    },
+    {
+     "date": "2026-11-05",
+     "slots": [
+      {
+       "time": "10:00",
+       "available": true
+      },
+      {
+       "time": "16:00",
+       "available": true
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "dates[].slots[].id",
+  "py_sha": "4bb7082f45eb2168df1995406eecd02bc07d1d1aa5bdab5adbf87658072a6dfe",
+  "gas_sha": "af577d372c7b3d099ab2f7391e38ba224bf8406f8fcef19066485ba1860c5bd4",
+  "parity": false
+ },
+ "social_share_bar": {
+  "status": "pending",
+  "block": {
+   "type": "social_share_bar",
+   "url": "https://example.com/post-42",
+   "platforms": [
+    "twitter",
+    "linkedin",
+    "facebook",
+    "reddit"
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "platforms[]",
+  "py_sha": "b62510405f65b7bf459e4461494e51e6ba306bda13c20c3212ff037347a12be6",
+  "gas_sha": "9c07281943565c20d85af68c4b676073bdb9b924c6bc2b89683bf8d5d87445ea",
+  "parity": false
+ },
+ "sortable_list": {
+  "status": "pending",
+  "block": {
+   "type": "sortable_list",
+   "label": "Onboarding Workflow Steps",
+   "emptyMessage": "No steps configured.",
+   "items": [
+    {
+     "id": "step_1",
+     "label": "Verify Domain Identity",
+     "order": 0,
+     "group": "auth",
+     "note": "Required"
+    },
+    {
+     "id": "step_2",
+     "label": "Install SDK Collector",
+     "order": 1,
+     "group": "agent",
+     "note": "5 mins"
+    },
+    {
+     "id": "step_3",
+     "label": "Configure Slack Webhook",
+     "order": 2,
+     "group": "alerts",
+     "note": "Optional"
+    },
+    {
+     "id": "step_4",
+     "label": "Invite Team Engineers",
+     "order": 3,
+     "group": "admin",
+     "note": "Admin only"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "c59408f5ecd27d3450303530d45cf728f4b471c19f9253d4d25abd4fc54835ec",
+  "gas_sha": "c59408f5ecd27d3450303530d45cf728f4b471c19f9253d4d25abd4fc54835ec",
+  "parity": true
+ },
+ "source_citation": {
+  "status": "pending",
+  "block": {
+   "type": "source_citation",
+   "heading": "Retrieved Context",
+   "sources": [
+    {
+     "number": 1,
+     "title": "SOC2 Incident Response Guide",
+     "url": "https://example.com/soc2-playbook",
+     "excerpt": "Escalation to level 3 must take place within 15 minutes."
+    },
+    {
+     "number": 2,
+     "title": "Q4 Infrastructure Budget Plan",
+     "url": "https://example.com/budgets-2025",
+     "excerpt": "Compute overhead targeted for an 18% cost reduction."
+    },
+    {
+     "number": 3,
+     "title": "System Architecture Diagram",
+     "url": "https://example.com/arch-v4",
+     "excerpt": "All egress traffic routes through authenticated edge proxies."
+    },
+    {
+     "number": 4,
+     "title": "Customer Retention Audit",
+     "url": "https://example.com/audit-churn",
+     "excerpt": "Onboarding abandonment dropped 22% after instant sync."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "sources[].id",
+  "py_sha": "731267dc142adabeb453e5df8efc99dbd9c72045923c846044a7f577fbce3722",
+  "gas_sha": "ca07ad3efb0d067482c0eec5d2d147b04e5c08570b8d56fbda1bb6a58fa6b19b",
+  "parity": false
+ },
+ "spring_nodes": {
+  "status": "pending",
+  "block": {
+   "type": "spring_nodes",
+   "colour": "#6366f1",
+   "bg": "#0f172a",
+   "height": 420,
+   "rest_length": 120,
+   "interactive": true,
+   "nodes": [
+    {
+     "id": "node_auth",
+     "label": "Auth Gateway"
+    },
+    {
+     "id": "node_ledger",
+     "label": "Payment Ledger"
+    },
+    {
+     "id": "node_cache",
+     "label": "Redis Store"
+    },
+    {
+     "id": "node_notify",
+     "label": "Worker Dispatcher"
+    },
+    {
+     "id": "node_events",
+     "label": "Event Stream"
+    }
+   ],
+   "edges": [
+    {
+     "a": 0,
+     "b": 1
+    },
+    {
+     "a": 1,
+     "b": 2
+    },
+    {
+     "a": 1,
+     "b": 3
+    },
+    {
+     "a": 3,
+     "b": 4
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nodes[].id",
+  "py_sha": "8f44b4240e2d44b8b70b22ea97ff7dd1966bac2ee92c26a64541d552005b8503",
+  "gas_sha": "8f44b4240e2d44b8b70b22ea97ff7dd1966bac2ee92c26a64541d552005b8503",
+  "parity": true
+ },
+ "sprint_board": {
+  "status": "pending",
+  "block": {
+   "type": "sprint_board",
+   "sprint_name": "Sprint 48 Delivery",
+   "columns": [
+    {
+     "name": "Backlog",
+     "items": [
+      {
+       "key": "ENG-401",
+       "summary": "Fix connection pool leakage",
+       "priority": "high"
+      }
+     ]
+    },
+    {
+     "name": "In Progress",
+     "items": [
+      {
+       "key": "ENG-398",
+       "summary": "Add Stripe invoice webhook",
+       "priority": "urgent"
+      }
+     ]
+    },
+    {
+     "name": "In Review",
+     "items": [
+      {
+       "key": "ENG-387",
+       "summary": "Refactor token auth middleware",
+       "priority": "medium"
+      }
+     ]
+    },
+    {
+     "name": "Done",
+     "items": [
+      {
+       "key": "ENG-372",
+       "summary": "Deploy cluster autoscaler",
+       "priority": "low"
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "columns[].name",
+  "py_sha": "83600d2b6aac8f537195167e6dbd110a10be556464ab336f282079d2ec71cf20",
+  "gas_sha": "2f718ab68547cb798af546745f4fe50ecd5a42249671322ba74cac5d6c9ff393",
+  "parity": false
+ },
+ "stagger_list": {
+  "status": "pending",
+  "block": {
+   "type": "stagger_list",
+   "direction": "down",
+   "stagger": 0.15,
+   "items": [
+    {
+     "icon": "lock",
+     "text": "Rotate Production Secrets",
+     "sub": "Scheduled for all Cloud KMS asymmetric master keys"
+    },
+    {
+     "icon": "speed",
+     "text": "Optimize Bundle Size",
+     "sub": "Trim remaining vendor modules to hit sub-100kb baseline"
+    },
+    {
+     "icon": "storage",
+     "text": "Migrate Redis Clustered Keys",
+     "sub": "Move sessions to Redis 7.2 non-blocking instances"
+    },
+    {
+     "icon": "verified_user",
+     "text": "Verify Mutual TLS Handshake",
+     "sub": "Mandate client certificates across partner endpoints"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "ba7474c255f417d126972f8f43a321ea27c35697662bff450c0e992a20718c04",
+  "gas_sha": "6a8ed9dd2ed7d511c0cec71b0e5a4cb47f0bae49ed4b5c58235f835d0d7cfdac",
+  "parity": false
+ },
+ "standings_table": {
+  "status": "pending",
+  "block": {
+   "type": "standings_table",
+   "primary_label": "PTS",
+   "columns": [
+    "W",
+    "L",
+    "DIFF"
+   ],
+   "rows": [
+    {
+     "name": "Metro Stars",
+     "played": 10,
+     "primary": 24,
+     "values": [
+      8,
+      2,
+      42
+     ],
+     "highlight": "leader"
+    },
+    {
+     "name": "Harbor Bay FC",
+     "played": 10,
+     "primary": 21,
+     "values": [
+      7,
+      3,
+      18
+     ]
+    },
+    {
+     "name": "Valley United",
+     "played": 10,
+     "primary": 16,
+     "values": [
+      5,
+      5,
+      -4
+     ]
+    },
+    {
+     "name": "Summit Ridge",
+     "played": 10,
+     "primary": 12,
+     "values": [
+      4,
+      6,
+      -11
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "rows[].name",
+  "py_sha": "590cc73f98dcf33080b6cc7943effd90301dcb913fc6f8b6ff9b3e7d6a18bcb7",
+  "gas_sha": "590cc73f98dcf33080b6cc7943effd90301dcb913fc6f8b6ff9b3e7d6a18bcb7",
+  "parity": true
+ },
+ "stat_pulse": {
+  "status": "pending",
+  "block": {
+   "type": "stat_pulse",
+   "title": "30-DAY PULSE",
+   "stamp": "15 Sep – 14 Oct",
+   "stats": [
+    {
+     "value": "99.98%",
+     "label": "Uptime",
+     "delta": "+0.04%",
+     "tone": "good"
+    },
+    {
+     "value": "142ms",
+     "label": "p95 Latency",
+     "delta": "+18ms",
+     "tone": "bad"
+    },
+    {
+     "value": "4.2M",
+     "label": "Requests",
+     "delta": "0%",
+     "tone": "flat"
+    }
+   ],
+   "trend": {
+    "bars": [
+     82,
+     88,
+     91,
+     85,
+     96
+    ],
+    "labels": [
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5"
+    ],
+    "hot_index": 4
+   }
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "stats[].label",
+  "py_sha": "47f01f2f68dec414d9b58711e0e67a51f6541ccda943f0e81c72b30d114cd6a8",
+  "gas_sha": "496087b84d5cd9958002a3c9cce666cdcdbcdcc4711147fe080c67799dda7b1b",
+  "parity": false
+ },
+ "status_dashboard": {
+  "status": "pending",
+  "block": {
+   "type": "status_dashboard",
+   "title": "Platform Infrastructure",
+   "items": [
+    {
+     "name": "Auth Service",
+     "status": "operational",
+     "description": "Tokens issuing normally"
+    },
+    {
+     "name": "Search Cluster",
+     "status": "degraded",
+     "description": "High ingestion delay"
+    },
+    {
+     "name": "Payment Gateway",
+     "status": "operational",
+     "description": "Webhook traffic steady"
+    },
+    {
+     "name": "Edge CDN",
+     "status": "maintenance",
+     "description": "Regional node upgrade"
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "items[].name",
+  "py_sha": "cb771591a24d16d66d90a1db892820b3c27f863d69889476b07c21a61d45c449",
+  "gas_sha": "cc63757fdc97d59bc35c470e609f7a5144d638800d0ab45d3867d8fb91dde4a5",
+  "parity": false
+ },
+ "status_timeline": {
+  "status": "pending",
+  "block": {
+   "type": "status_timeline",
+   "title": "Infrastructure Migration Milestones",
+   "events": [
+    {
+     "title": "VPC Peering Configured",
+     "date": "08:00 AM",
+     "text": "Created secure transits between AWS and GCP VPC networks.",
+     "status": "done"
+    },
+    {
+     "title": "Data Pipeline Re-indexing",
+     "date": "10:30 AM",
+     "text": "Hydrating Elasticsearch indices with latest transaction logs.",
+     "status": "active"
+    },
+    {
+     "title": "Cutover DNS Nameservers",
+     "date": "01:00 PM",
+     "text": "Update apex record routing to weighted Cloudflare proxies.",
+     "status": "pending"
+    },
+    {
+     "title": "Decommission Legacy Hardware",
+     "date": "04:30 PM",
+     "text": "Wipe and power down bare metal racks in Frankfurt datacenter.",
+     "status": "pending"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "events[].title",
+  "py_sha": "dc3987c1c7f1a11a5ebf1faa0dfe30652d8680364deb429bc6193a26baddd272",
+  "gas_sha": "7f2c06b5cc05868372c3f5330ab93b712c4fbbfb9c0bb73568a8c15c8ade6ca6",
+  "parity": false
+ },
+ "step_progress": {
+  "status": "pending",
+  "block": {
+   "type": "step_progress",
+   "current": 2,
+   "steps": [
+    {
+     "label": "Domain Setup"
+    },
+    {
+     "label": "Cluster Config"
+    },
+    {
+     "label": "DNS Validation"
+    },
+    {
+     "label": "Fleet Activation"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "steps[].id",
+  "py_sha": "e09aba96d5a518a43f7317a39a1e99e6c8f0fd7cbbb780253dcd77235b597b95",
+  "gas_sha": "c1c27b6773601315d9d7dcab1ca90c838ea62892e9255803fb67c6727e967162",
+  "parity": false
+ },
+ "step_reveal_sequence": {
+  "status": "pending",
+  "block": {
+   "type": "step_reveal_sequence",
+   "steps": [
+    {
+     "title": "1. Ingest Manifest",
+     "text": "Upload the batch manifest JSON via secure signed bucket endpoint."
+    },
+    {
+     "title": "2. Run Sanitization",
+     "text": "Trigger automated schema checks and redact potential customer PII."
+    },
+    {
+     "title": "3. Compute Deltas",
+     "text": "Generate structural diffs against the latest canonical database snapshot."
+    },
+    {
+     "title": "4. Publish Artifacts",
+     "text": "Distribute versioned packages across international edge nodes."
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "steps[].title",
+  "py_sha": "07e04a91f9cc549f7aaf762a55ed4fc537d2dc318ef8436f7a0c1c2e936cc59b",
+  "gas_sha": "525ff536d85b4cfa89ee6f1f91ba0dd49f04b8da7b5fe9db8fada08684a43299",
+  "parity": false
+ },
+ "stepper": {
+  "status": "pending",
+  "block": {
+   "type": "stepper",
+   "active_index": 2,
+   "color": "#38bdf8",
+   "label": "Deployment Sequence",
+   "steps": [
+    {
+     "label": "Validation",
+     "description": "Verify environment manifests"
+    },
+    {
+     "label": "Provisioning",
+     "description": "Spin up cluster worker nodes"
+    },
+    {
+     "label": "Data Migration",
+     "description": "Run schema transform scripts"
+    },
+    {
+     "label": "Traffic Cutover",
+     "description": "Switch route 53 DNS records"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "steps[].label",
+  "py_sha": "e00c266948bec3ae857f6226559144bb6392acf843eeccc2049cfaf8ca25f551",
+  "gas_sha": "5b34aa2a81fe2156d86a2c5b8a1e6bced5ec8e2dbd63af5b099d2fc78cf7ad66",
+  "parity": false
+ },
+ "steps": {
+  "status": "pending",
+  "block": {
+   "type": "steps",
+   "items": [
+    {
+     "label": "Clone",
+     "text": "Pull the remote starter template"
+    },
+    {
+     "label": "Configure",
+     "text": "Populate the local env variables"
+    },
+    {
+     "label": "Migrate",
+     "text": "Apply database schema updates"
+    },
+    {
+     "label": "Start",
+     "text": "Launch local development daemon"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "7140d37a242d74ce8f6b7666cb7f0be65e1ab89086fc5cebebf9f003a3df32d2",
+  "gas_sha": "c09b44c042f7d534c3d605b433076b715d3a0cf54ec052aea28c1ac131b113c8",
+  "parity": false
+ },
+ "surface_map": {
+  "status": "pending",
+  "block": {
+   "type": "surface_map",
+   "title": "A2UI Unified Rendering Surfaces",
+   "accent": "#6366f1",
+   "surfaces": [
+    {
+     "name": "Google Sheets",
+     "icon": "table_chart",
+     "desc": "Custom sidebar and cell action dialogue render targets",
+     "color": "#0f9d58"
+    },
+    {
+     "name": "Google Chat",
+     "icon": "forum",
+     "desc": "Card v2 layout mapped to transactional bot messages",
+     "color": "#00ac47"
+    },
+    {
+     "name": "Google Meet",
+     "icon": "video_call",
+     "desc": "Interactive co-watching companion panel app",
+     "color": "#ea4335"
+    },
+    {
+     "name": "Google Sites",
+     "icon": "web",
+     "desc": "Embedded declarative responsive learning blocks",
+     "color": "#4285f4"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "surfaces[].name",
+  "py_sha": "90e533a251710f87bd843b40097a0ac73dcc6bd52313d9ba6a3a34be16232efc",
+  "gas_sha": "ce0987ea398cd98ebe767796a90364581806c36507a70e5d0492a2882c83e703",
+  "parity": false
+ },
+ "swimlane": {
+  "status": "pending",
+  "block": {
+   "type": "swimlane",
+   "title": "INCIDENT TRIAGE PROCESS",
+   "roles": [
+    "Support Lead",
+    "Engineer",
+    "Site Reliability"
+   ],
+   "phases": [
+    "Intake",
+    "Investigation",
+    "Resolution"
+   ],
+   "tasks": [
+    {
+     "role": "Support Lead",
+     "phase": "Intake",
+     "task": "Receive customer alert ticket"
+    },
+    {
+     "role": "Engineer",
+     "phase": "Investigation",
+     "task": "Reproduce regression locally"
+    },
+    {
+     "role": "Site Reliability",
+     "phase": "Resolution",
+     "task": "Deploy canary fix to edge fleet"
+    },
+    {
+     "role": "Support Lead",
+     "phase": "Resolution",
+     "task": "Confirm status on external dashboard"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tasks[].id",
+  "py_sha": "cfac3e7cb693e3ade2e75bd2867e625d4c7d509a83ec4f75429f31bd52c5b037",
+  "gas_sha": "cfac3e7cb693e3ade2e75bd2867e625d4c7d509a83ec4f75429f31bd52c5b037",
+  "parity": true
+ },
+ "tab_bar": {
+  "status": "pending",
+  "block": {
+   "type": "tab_bar",
+   "tabs": [
+    {
+     "label": "Overview",
+     "url": "https://example.com/overview",
+     "is_active": true,
+     "icon": "home"
+    },
+    {
+     "label": "Incidents",
+     "url": "https://example.com/incidents",
+     "is_active": false,
+     "icon": "alert"
+    },
+    {
+     "label": "Deployments",
+     "url": "https://example.com/deploys",
+     "is_active": false,
+     "icon": "server"
+    },
+    {
+     "label": "Settings",
+     "url": "https://example.com/settings",
+     "is_active": false,
+     "icon": "gear"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tabs[].id",
+  "py_sha": "407395eca6e7d3fb0d8571fd1b285a7d9da26367ee2871a9ce378fae001084f9",
+  "gas_sha": "98e34afc0bf64a45a856a4f5ac9a78f4983824467fe84c6f2bffa407bf76d0ae",
+  "parity": false
+ },
+ "tabbed_code": {
+  "status": "pending",
+  "block": {
+   "type": "tabbed_code",
+   "tabs": [
+    {
+     "tab_label": "Node.js",
+     "language": "javascript",
+     "code": "console.log('Engine starting');"
+    },
+    {
+     "tab_label": "Go",
+     "language": "go",
+     "code": "fmt.Println(\"Engine starting\")"
+    },
+    {
+     "tab_label": "Rust",
+     "language": "rust",
+     "code": "println!(\"Engine starting\");"
+    },
+    {
+     "tab_label": "Python",
+     "language": "python",
+     "code": "print('Engine starting')"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tabs[].title",
+  "py_sha": "fb099378b21acd45a70fa87230a060477baca660936c379c724f5527b8f2769f",
+  "gas_sha": "52902052b901c5fc7edb2e11509c13b537bbae47c18320da574dfe32daba33cf",
+  "parity": false
+ },
+ "table": {
+  "status": "pending",
+  "block": {
+   "type": "table",
+   "caption": "Regional Infrastructure Budget",
+   "headers": [
+    "Region",
+    "Compute",
+    "Storage",
+    "Bandwidth"
+   ],
+   "rows": [
+    [
+     "us-east-1",
+     "$4,200",
+     "$1,100",
+     "$950"
+    ],
+    [
+     "us-west-2",
+     "$3,100",
+     "$800",
+     "$620"
+    ],
+    [
+     "eu-west-1",
+     "$2,850",
+     "$750",
+     "$510"
+    ],
+    [
+     "ap-southeast-1",
+     "$1,900",
+     "$400",
+     "$330"
+    ]
+   ],
+   "col_widths": [
+    "40%",
+    "20%",
+    "20%",
+    "20%"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "rows[].id",
+  "py_sha": "7276b3bb6ce53aaf544fd0c1baa08b64618eeb622d70b44848c2621aa40e9b65",
+  "gas_sha": "bb0ed48efbb67a53130b760aa7ea36d1606e56e3947bed8f2818e99d7d3e5ff0",
+  "parity": false
+ },
+ "table_of_contents": {
+  "status": "pending",
+  "block": {
+   "type": "table_of_contents",
+   "headings": [
+    {
+     "title": "Introduction",
+     "anchor": "#intro"
+    },
+    {
+     "title": "Architecture Overview",
+     "anchor": "#arch"
+    },
+    {
+     "title": "Performance Benchmarks",
+     "anchor": "#benchmarks"
+    },
+    {
+     "title": "Migration Strategy",
+     "anchor": "#migration"
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "headings[].id",
+  "py_sha": "362c30ce162f3c7f748891bc006866c06ad59f28a75eb39b585adfcc9c91b2b0",
+  "gas_sha": "3b0924406d5b199e61bdf8d7b64f3eb905ead1be61456dcc1ee7c16ba810000e",
+  "parity": false
+ },
+ "tabs": {
+  "status": "pending",
+  "block": {
+   "type": "tabs",
+   "accent": "#3b82f6",
+   "tabs": [
+    {
+     "label": "cURL",
+     "language": "bash",
+     "content": "curl -X POST https://example.com/api/v1/auth"
+    },
+    {
+     "label": "Node.js",
+     "language": "javascript",
+     "content": "await client.auth.login({ token });"
+    },
+    {
+     "label": "Python",
+     "language": "python",
+     "content": "response = client.login(token=token)"
+    },
+    {
+     "label": "Go",
+     "language": "go",
+     "content": "res, err := client.Auth.Login(ctx, token)"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tabs[].label",
+  "py_sha": "245f55d3bb10d37dc7e50ada05423b55cce63124152a2d98794d6710a99645a5",
+  "gas_sha": "65d12f426223e77b612141902e3b86f291011681f69b5ca3673bf9b7fb27f322",
+  "parity": false
+ },
+ "tag_block": {
+  "status": "pending",
+  "block": {
+   "type": "tag_block",
+   "color": "#334155",
+   "tags": [
+    "TypeScript",
+    "Distributed Systems",
+    "Kubernetes",
+    "GraphQL"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tags[]",
+  "py_sha": "75727fb505b253fdd0033b36f0a8908b36303716cc83c9809e53621f2be67a87",
+  "gas_sha": "4d129e4b66ffbd9cc9558da13a71aec20ddc091e897bbf0d6de7fa115d187886",
+  "parity": false
+ },
+ "tag_cloud": {
+  "status": "pending",
+  "block": {
+   "type": "tag_cloud",
+   "title": "Architecture Domains",
+   "tags": [
+    {
+     "label": "Kubernetes",
+     "weight": 5
+    },
+    {
+     "label": "PostgreSQL",
+     "weight": 4
+    },
+    {
+     "label": "Observability",
+     "weight": 3
+    },
+    {
+     "label": "Kafka",
+     "weight": 2
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tags[].text",
+  "py_sha": "07596ce2503494bf1c8e0ca61e1e410d76c6fc0be39adbf140997c6476defbe0",
+  "gas_sha": "5505aadfdf7f97fa6446589c34284345e617ed0efaf4f55b3e25f406bf7027be",
+  "parity": false
+ },
+ "task_list": {
+  "status": "pending",
+  "block": {
+   "type": "task_list",
+   "title": "Sprint Deliverables",
+   "tasks": [
+    {
+     "id": "tsk_1",
+     "text": "Draft system architecture document",
+     "completed": true,
+     "priority": "high",
+     "due_date": "2026-08-01",
+     "assignee": "CK"
+    },
+    {
+     "id": "tsk_2",
+     "text": "Set up Redis caching clusters",
+     "completed": true,
+     "priority": "medium",
+     "due_date": "2026-08-03",
+     "assignee": "AL"
+    },
+    {
+     "id": "tsk_3",
+     "text": "Execute penetration benchmark test",
+     "completed": false,
+     "priority": "high",
+     "due_date": "2026-08-10",
+     "assignee": "TM"
+    },
+    {
+     "id": "tsk_4",
+     "text": "Review customer onboarding flow",
+     "completed": false,
+     "priority": "low",
+     "due_date": "2026-08-12",
+     "assignee": "SJ"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "tasks[].id",
+  "py_sha": "0ae6f0c1e10d71b015aee9f75d7624c9d3343ea524b9e555d48a1e8b026d2819",
+  "gas_sha": "64bf8d250c9fa0050225a3c4701ff207d0257ab344e673f2118429b20d751fad",
+  "parity": false
+ },
+ "tasks_today": {
+  "status": "pending",
+  "block": {
+   "type": "tasks_today",
+   "title": "Launch Readiness Checklist",
+   "max_results": 5,
+   "list_name": "Product Launch Q3",
+   "auth_token": "ya29.sample_token_tasks_readiness",
+   "items": [
+    {
+     "title": "Review staging infrastructure capacity",
+     "due": "2026-10-12T14:00:00Z",
+     "completed": false
+    },
+    {
+     "title": "Approve final copy for announcement email",
+     "due": "2026-10-12T16:00:00Z",
+     "completed": false
+    },
+    {
+     "title": "Verify Stripe webhook subscriptions",
+     "due": "2026-10-12T17:30:00Z",
+     "completed": true
+    },
+    {
+     "title": "Export support runbook to shared drive",
+     "due": "2026-10-12T18:00:00Z",
+     "completed": false
+    },
+    {
+     "title": "Sync with customer success leads",
+     "due": "2026-10-12T19:00:00Z",
+     "completed": false
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].title",
+  "py_sha": "5e721f654b27cc7fa92b591b234b106f3fa0defbaac9324fded80fb5d88c5cbc",
+  "gas_sha": "59fcf5355da7e9cc05ecb096009294ae22a9daad7c0f6df94c545bd6ea72bc61",
+  "parity": false
+ },
+ "terminal_boot": {
+  "status": "pending",
+  "block": {
+   "type": "terminal_boot",
+   "title": "edge-runtime-node-04b",
+   "speed": 220,
+   "lines": [
+    "[0.001] Initializing kernel memory protection rings",
+    "[0.142] Attaching NVMe block volumes: /dev/nvme0n1 mounted to /data",
+    "[0.318] Loading eBPF packet filters and wireguard interface wg0",
+    "[0.520] Syncing distributed consensus state from etcd cluster",
+    "[0.789] Health check passed: Ready to receive traffic on port 443"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "lines[]",
+  "py_sha": "223b4edbd6255c706f88c5f8f5d3c2359ebb1a6f584b4a171f7bde9ca532a262",
+  "gas_sha": "5dc922d4aa4f0917b27ee46a4c043d5133346b2e975c744a40f9a8b62f7241e1",
+  "parity": false
+ },
+ "text_analysis": {
+  "status": "pending",
+  "block": {
+   "type": "text_analysis",
+   "passage": "By decoupling the state storage from stateless worker threads, our architecture eliminates cascading failover storms. When ephemeral worker pods reboot, downstream queues retain message pointers.",
+   "source": "Engineering Post-Mortem #204, Cloud Platform Guild",
+   "highlights": [
+    {
+     "text": "decoupling the state storage",
+     "analysis": "Ensures processing nodes remain fully expendable without risking persistent record corruption."
+    },
+    {
+     "text": "cascading failover storms",
+     "analysis": "A critical failure cascade where recovering pods immediately overload under accumulated retry backpressure."
+    },
+    {
+     "text": "downstream queues retain message pointers",
+     "analysis": "Guarantees at-least-once delivery semantics even during extensive container reshuffling."
+    }
+   ]
+  },
+  "kind": "ref",
+  "label_kind": "label",
+  "key": "highlights[].id",
+  "py_sha": "5e0c4ad7e15439e81c7550b241fdb1042a1460e1991f1c28b2f0785273a3963e",
+  "gas_sha": "1815e10d05b05f2962a7b934e79bfbc373c09776a91c6afb72674425cd4158bf",
+  "parity": false
+ },
+ "timeline": {
+  "status": "pending",
+  "block": {
+   "type": "timeline",
+   "title": "Q3 Launch Milestones",
+   "accent": "#6366f1",
+   "events": [
+    {
+     "date": "2026-07-01",
+     "label": "Feature Freeze",
+     "text": "Core API stabilized for audit",
+     "tag": "Release"
+    },
+    {
+     "date": "2026-07-15",
+     "label": "Security Audit",
+     "text": "External pen testing concluded",
+     "tag": "Security"
+    },
+    {
+     "date": "2026-08-01",
+     "label": "Private Beta",
+     "text": "Invited 50 enterprise partners",
+     "tag": "Customers"
+    },
+    {
+     "date": "2026-08-20",
+     "label": "Public Launch",
+     "text": "General availability unlocked",
+     "tag": "Operations"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "events[].id",
+  "py_sha": "1b5f883eb55a05fdee2112a5a22636b3c462d47a94668afa6a16e0c9412d41a2",
+  "gas_sha": "6d3f6370118cb79fc4fce50341dbcc72ea046e2ff619f00d9bab5c0e120e7a97",
+  "parity": false
+ },
+ "tonal_scale": {
+  "status": "pending",
+  "block": {
+   "type": "tonal_scale",
+   "accent": "#0284c7",
+   "steps": 5,
+   "name": "brand-cyan"
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "steps[].tone",
+  "py_sha": "6d68ea91d6f8207dfc59a3bf12a56c92088f1a9ca0db3fa6917aa0364506720b",
+  "gas_sha": "9eedf4f66f478d7603e120aaa61220733afca83c27e629e9a4786e39353b06a8",
+  "parity": false
+ },
+ "tooltip_glossary": {
+  "status": "pending",
+  "block": {
+   "type": "tooltip_glossary",
+   "text": "Core terminology used across our distributed persistence engine.",
+   "terms": [
+    {
+     "term": "Two-Phase Commit",
+     "definition": "A distributed consensus algorithm guaranteeing coordinated atomic transaction commits."
+    },
+    {
+     "term": "Idempotency Key",
+     "definition": "A unique client payload token preventing duplicate side-effects on retry."
+    },
+    {
+     "term": "Tombstone",
+     "definition": "A soft-deletion marker used to synchronize deleted records in peer-to-peer storage."
+    },
+    {
+     "term": "Write-Ahead Log",
+     "definition": "An append-only disk ledger recording mutations prior to applying state changes."
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "terms[].term",
+  "py_sha": "e1134573cf636756d68cf2c7d1eb30d81eb80a4e45b6b03db4706814b8245640",
+  "gas_sha": "224ca21aa606318dfb6f0828cf4fc429d572b50ecaf4455b93b891629dc74bf1",
+  "parity": false
+ },
+ "toulmin_argument": {
+  "status": "pending",
+  "block": {
+   "type": "toulmin_argument",
+   "title": "DEPLOYMENT SAFETY",
+   "claim": "Service should defer the migration",
+   "qualifier": "probably",
+   "grounds": [
+    {
+     "quote": "Staging clusters exhibited 4% packet drop rates.",
+     "text": "Indicates network stability issues during heavy replication.",
+     "source": "Runbook Audit"
+    }
+   ],
+   "warrant": "Packet loss above 2% corrupts cluster coordination buffers.",
+   "backing": "Empirical SLA measurements recorded during Q2 benchmark validation.",
+   "rebuttals": [
+    {
+     "text": "Target subnet is migrated to dedicated fiber link before launch.",
+     "applies": false
+    },
+    {
+     "text": "Application fallback allows retry queue isolation.",
+     "applies": false
+    }
+   ],
+   "source_excerpt": "Staging clusters exhibited 4% packet drop rates during benchmark load tests."
+  },
+  "kind": "branch",
+  "label_kind": "label",
+  "key": "grounds[].id",
+  "py_sha": "fa7a464df14c230a1b6b712991c1180e2cec13738fbcc3fe6be180c24b997d5a",
+  "gas_sha": "fa7a464df14c230a1b6b712991c1180e2cec13738fbcc3fe6be180c24b997d5a",
+  "parity": true
+ },
+ "tree_view": {
+  "status": "pending",
+  "block": {
+   "type": "tree_view",
+   "title": "Access Hierarchy",
+   "nodes": [
+    {
+     "label": "Engineering Core",
+     "expanded": true,
+     "children": [
+      {
+       "label": "Platform Infra"
+      },
+      {
+       "label": "Web Applications"
+      }
+     ]
+    },
+    {
+     "label": "Security Operations",
+     "expanded": false,
+     "children": [
+      {
+       "label": "Incident Responders"
+      }
+     ]
+    },
+    {
+     "label": "Customer Success",
+     "expanded": false,
+     "children": [
+      {
+       "label": "Tier 1 Support"
+      }
+     ]
+    },
+    {
+     "label": "Finance Operations",
+     "expanded": false,
+     "children": [
+      {
+       "label": "Payroll Admins"
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "nodes[].id",
+  "py_sha": "5a7f1cc037dcea8e0ba3eb71f58c968fb62be5f16e2c793f9e099676f556800e",
+  "gas_sha": "9adca6a994d1e2861af7a5e8266eb96309e7f98bff722cdeebc6b689c7aa74d7",
+  "parity": false
+ },
+ "type_scale": {
+  "status": "pending",
+  "block": {
+   "type": "type_scale",
+   "base": 16,
+   "ratio": "major_third",
+   "steps_up": 4,
+   "steps_down": 2,
+   "sample": "Systematic Design Tokens",
+   "voice": "display",
+   "theme": "light",
+   "accent": "#0e7bb8",
+   "show_code": true
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "steps_up[].size",
+  "py_sha": "d318b4f164a2abd90e1825734676267e905c42db6d998f67d7a40cedbf977829",
+  "gas_sha": "d318b4f164a2abd90e1825734676267e905c42db6d998f67d7a40cedbf977829",
+  "parity": true
+ },
+ "uptime_timeline": {
+  "status": "pending",
+  "block": {
+   "type": "uptime_timeline",
+   "uptime": 99.94
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "uptime[].date",
+  "py_sha": "d3dc8c62177dd04846aba1ff613b3936473b78776027602161b5a53b369ae2ca",
+  "gas_sha": "b10dfce4959d360d0b27cf160b9de4bc6625b71b267593cfe83608568561e620",
+  "parity": false
+ },
+ "variant_selector": {
+  "status": "pending",
+  "block": {
+   "type": "variant_selector",
+   "name": "subscription_tier",
+   "label": "Choose Plan",
+   "default_value": "pro",
+   "items": [
+    {
+     "value": "starter",
+     "title": "Starter Tier",
+     "description": "Basic tools for solo builders"
+    },
+    {
+     "value": "pro",
+     "title": "Professional",
+     "description": "Unlimited seats and metrics"
+    },
+    {
+     "value": "business",
+     "title": "Business Grid",
+     "description": "Dedicated ingestion queues"
+    },
+    {
+     "value": "enterprise",
+     "title": "Custom Enclave",
+     "description": "Custom SLAs and compliance"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].id",
+  "py_sha": "b2ab09105276ddc18def7d9400d47bcdd4d22ebc95735006ab7e45ed86806a7b",
+  "gas_sha": "31ae7ee7462d283ac9f823fc8834d10808801fa0bc2fe9b0e6be38eeb9a298a4",
+  "parity": false
+ },
+ "verdict_checklist": {
+  "status": "pending",
+  "block": {
+   "type": "verdict_checklist",
+   "title": "Readiness Checklist",
+   "items": [
+    {
+     "label": "TLS 1.3 Strict Mode",
+     "verdict": "yes",
+     "note": "Verified across edge proxies."
+    },
+    {
+     "label": "Audit Log Retention",
+     "verdict": "yes",
+     "note": "Configured for 365-day cold archive."
+    },
+    {
+     "label": "Zero-Downtime Rollback",
+     "verdict": "partial",
+     "note": "Requires manual canary route teardown."
+    },
+    {
+     "label": "Multi-Region Replication",
+     "verdict": "no",
+     "note": "Cross-region sync remains disabled."
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "items[].claim",
+  "py_sha": "ff537adbcceac0bb1206bc27e932b5fb6666742679150c7328a5aa6050e0a205",
+  "gas_sha": "ed998d21bc7074205863176e6dcf509206127820a8cbd74af65519eb40a69cc3",
+  "parity": false
+ },
+ "versus_block": {
+  "status": "pending",
+  "block": {
+   "type": "versus_block",
+   "entity_a_name": "REST API",
+   "entity_a_description": "Resource-oriented standard HTTP transport",
+   "entity_a_image_url": "https://example.com/a.png",
+   "entity_b_name": "gRPC",
+   "entity_b_description": "High-performance binary protocol using HTTP/2",
+   "entity_b_image_url": "https://example.com/a.png",
+   "comparison_points": [
+    "Wire payload size",
+    "Transport protocol level",
+    "Code generation maturity",
+    "Browser native compatibility"
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "entity_a_name, entity_b_name",
+  "py_sha": "7d94f0cf4db70139eabf35967b36e51e9887019fb6cda9661d449f21c7be35aa",
+  "gas_sha": "9122d842c0ed53e445ecee6969068998b7624c39b49a832b7b2f01d74ec6e590",
+  "parity": false
+ },
+ "weather_outlook": {
+  "status": "pending",
+  "block": {
+   "type": "weather_outlook",
+   "title": "NEXT 4 DAYS — OUTLOOK",
+   "city": "Geneva",
+   "scale": {
+    "min": 5,
+    "max": 25
+   },
+   "days": [
+    {
+     "label": "THU",
+     "date": "22 Oct",
+     "code": "sun",
+     "hi": 21,
+     "lo": 11,
+     "precip": 5
+    },
+    {
+     "label": "FRI",
+     "date": "23 Oct",
+     "code": "partly",
+     "hi": 19,
+     "lo": 10,
+     "precip": 20
+    },
+    {
+     "label": "SAT",
+     "date": "24 Oct",
+     "code": "cloud",
+     "hi": 16,
+     "lo": 9,
+     "precip": 45
+    },
+    {
+     "label": "SUN",
+     "date": "25 Oct",
+     "code": "rain",
+     "hi": 12,
+     "lo": 7,
+     "precip": 85
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "days[].day",
+  "py_sha": "bc13425412bcfc80941b760578ccb3ac6ee588161be093c83dcc9ce97679dbed",
+  "gas_sha": "fa5d13cd1af7dcee5088debdc54dfb6496d571dcafe4cc51c53d2a7e71aa60ed",
+  "parity": false
+ },
+ "weighted_words": {
+  "status": "pending",
+  "block": {
+   "type": "weighted_words",
+   "voice": "display",
+   "theme": "dark",
+   "accent": "#38bdf8",
+   "align": "center",
+   "animate": true,
+   "words": [
+    {
+     "text": "Ship",
+     "weight": 5
+    },
+    {
+     "text": "reliable",
+     "weight": 4
+    },
+    {
+     "text": "software",
+     "weight": 3
+    },
+    {
+     "text": "faster",
+     "weight": 5
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "words[].text",
+  "py_sha": "b76dcbc909ec9643613d94b6465f0c558d5937ac320bbbb2bb96a6b5370232ab",
+  "gas_sha": "e1552c8146c3f3bf90a1623a08938a35a3acab264342bddab2cffcdecdebc2cc",
+  "parity": false
+ },
+ "wishlist_panel": {
+  "status": "pending",
+  "block": {
+   "type": "wishlist_panel",
+   "title": "Platform Gaps",
+   "groups": [
+    {
+     "heading": "Authentication",
+     "items": [
+      "SAML integration: Automated Okta SCIM sync for group provisioning.",
+      "Session limits: Configurable concurrent device session timeouts."
+     ]
+    },
+    {
+     "heading": "Developer Experience",
+     "items": [
+      "CLI autocomplete: Zsh and Bash completion scripts in package repos.",
+      "Mock server: Local offline testing harness for webhook contracts."
+     ]
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "groups[].title",
+  "py_sha": "58a8ec2c6450eddd3eeb66fc992a699afdcf515fb365403734b3467023153122",
+  "gas_sha": "02fb920708d60984283e68fd3e12b4215a25c7eb3390467492ece37834d931a1",
+  "parity": false
+ },
+ "word_cloud": {
+  "status": "pending",
+  "block": {
+   "type": "word_cloud",
+   "accent": "#ec4899",
+   "placeholder": "Enter topic keyword...",
+   "palette": [
+    "#4f46e5",
+    "#06b6d4",
+    "#10b981",
+    "#f59e0b",
+    "#ec4899"
+   ],
+   "words": [
+    {
+     "text": "Kubernetes",
+     "weight": 95
+    },
+    {
+     "text": "Observability",
+     "weight": 80
+    },
+    {
+     "text": "TypeScript",
+     "weight": 70
+    },
+    {
+     "text": "PostgreSQL",
+     "weight": 65
+    },
+    {
+     "text": "Terraform",
+     "weight": 50
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "words[].text",
+  "py_sha": "d5b2380a81a040f5e30c6efb31ead6d228388cb8708bfa06833cc5b4c5100bb4",
+  "gas_sha": "334e4cb8d10d1188132e919d021328b03b8c58896d52efdf6388c9f15f8c9b5b",
+  "parity": false
+ },
+ "workspace_logo_grid": {
+  "status": "pending",
+  "block": {
+   "type": "workspace_logo_grid",
+   "title": "Supported Enterprise Connectors",
+   "size": 44,
+   "cols": 4,
+   "greyscale": false,
+   "show_labels": true,
+   "apps": [
+    "gmail",
+    "drive",
+    "docs",
+    "sheets"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "apps[]",
+  "py_sha": "e6c55d84336ea61202d6a47ec80ab90f16dc7b2b32e4c353ce35de73846545a9",
+  "gas_sha": "81ddf3e534454b58106aed9c902a472ea8a5fdbfc6458f6da287aaeee2be2b81",
+  "parity": false
+ },
+ "workspace_logo_strip": {
+  "status": "pending",
+  "block": {
+   "type": "workspace_logo_strip",
+   "title": "Integrated Workspace Tools",
+   "size": 36,
+   "gap": 28,
+   "greyscale": true,
+   "bg": "transparent",
+   "align": "center",
+   "apps": [
+    "gmail",
+    "drive",
+    "docs",
+    "sheets",
+    "slides",
+    "meet"
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "apps[]",
+  "py_sha": "daf53d03cfab03cfaeb03fc688c1440c0412bae4d3b1651e12cc463fd19e22eb",
+  "gas_sha": "10416c1e7d8c1b872758ccf67168680640ea6a0490db49de795b5c26189c52a4",
+  "parity": false
+ },
+ "wrong_vs_right": {
+  "status": "pending",
+  "block": {
+   "type": "wrong_vs_right",
+   "title": "Configuration Field Naming",
+   "pairs": [
+    {
+     "wrong": "client_secret_token",
+     "right": "client_secret"
+    },
+    {
+     "wrong": "connection_retries",
+     "right": "max_reconnect_attempts"
+    },
+    {
+     "wrong": "read_timeout_ms",
+     "right": "socket_timeout_duration"
+    },
+    {
+     "wrong": "enable_telemetry",
+     "right": "metrics_collection_enabled"
+    }
+   ]
+  },
+  "kind": "item",
+  "label_kind": "label",
+  "key": "pairs[].wrong",
+  "py_sha": "0aaecf7eab0c184ae2756cd605efdda703852f2a6157ac94cc9b559f55af684e",
+  "gas_sha": "3ff53fe49165b650c5c5e541ff587e00f402c7f66279a5b69a39b31aa6dc971b",
+  "parity": false
+ }
+}

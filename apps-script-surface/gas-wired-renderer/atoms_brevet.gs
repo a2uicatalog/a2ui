@@ -118,9 +118,10 @@ _RENDERERS['brevet_timeline'] = function(b) {
   var evHtml = '';
   for (var i = 0; i < events.length; i++) {
     var ev = events[i];
+    var evKey = _esc(ev.date || '');
     evHtml +=
-      '<div class="' + uid + 'ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;">' +
-        '<div style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;' +
+      '<div data-cb="item" data-key="' + evKey + '" class="' + uid + 'ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;">' +
+        '<div data-cb="label" data-key="' + evKey + '" style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;' +
           'padding:3px 4px;background:' + _esc(accent) + ';color:#fff;' +
           'font-size:0.58rem;font-weight:800;text-align:center;border-radius:6px;' +
           'letter-spacing:0.01em;line-height:1.4;z-index:2;">' +
@@ -274,10 +275,11 @@ _RENDERERS['brevet_automatismes'] = function(b) {
   var rowsHtml = '';
   for (var i = 0; i < questions.length; i++) {
     var q = questions[i];
+    var qKey = _esc(q.question || '');
     rowsHtml +=
-      '<div style="display:flex;align-items:center;justify-content:space-between;' +
+      '<div data-cb="tile" data-key="' + qKey + '" style="display:flex;align-items:center;justify-content:space-between;' +
         'padding:0.7rem 1rem;border-bottom:1px solid rgba(16,185,129,0.1);">' +
-        '<span style="font-size:0.95rem;color:#335476;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">' +
+        '<span data-cb="label" data-key="' + qKey + '" style="font-size:0.95rem;color:#335476;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">' +
           '<span style="color:#085d41;font-weight:700;margin-right:0.4rem;">' + (i+1) + '.</span>' +
           _esc(q.question || '') +
         '</span>' +
@@ -766,10 +768,11 @@ _RENDERERS['catalogue_provenance'] = function(b) {
     var s = sources[i];
     var color = s.color || CATALOGUE_COLORS[s.catalogue] || '#64748b';
     var stemH = 40 + (i % 2 === 0 ? 0 : 20); // stagger stem heights so labels don't collide
+    var k = _esc(s.id || s.name || s.catalogue || s.what || '');
     cols +=
-      '<div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;">' +
+      '<div data-cb="item" data-key="' + k + '" style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;">' +
         // Target label at top (what in the card this points to)
-        '<div style="font-size:0.6rem;font-weight:700;color:' + color + ';text-align:center;' +
+        '<div data-cb="label" data-key="' + k + '" style="font-size:0.6rem;font-weight:700;color:' + color + ';text-align:center;' +
           'padding:2px 8px;border:1px solid ' + color + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
           'background:' + color + '0d;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;">' +
           _esc(s.target || s.what || '') +

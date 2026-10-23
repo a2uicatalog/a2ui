@@ -206,7 +206,8 @@ _RENDERERS['primitive_plate'] = function(b) {
     }).join('');
     var display = (idx === 0) ? 'display:block;' : 'display:none;';
     var altText = state.alt ? _esc(state.alt) : (title + ' primitive rendering in Gemini Enterprise');
-    return '<div class="pp-state' + (idx === 0 ? ' active' : '') + '" data-state="' + uid + '_' + idx +
+    var stateK = state.id || state.label || state.name || ('State ' + (idx + 1));
+    return '<div data-cb="node" data-key="' + _esc(String(stateK)) + '" class="pp-state' + (idx === 0 ? ' active' : '') + '" data-state="' + uid + '_' + idx +
       '" style="' + display + '">' +
       '<div class="pp-plate">' +
       '<div class="pp-imgwrap" style="width:' + width + 'px;">' +
@@ -233,7 +234,7 @@ _RENDERERS['primitive_plate'] = function(b) {
         (i === 0 ? ' checked' : '') + ' ' +
         'onchange="document.querySelectorAll(\'[data-state^=\\\'' + uid + '_\\\']\').forEach(function(el){' +
         'el.style.display = (el.dataset.state === \'' + uid + '_' + i + '\') ? \'block\' : \'none\';});">' +
-        '<label for="' + uid + '_t' + i + '">' + _esc(s.label || ('State ' + (i + 1))) + '</label>';
+        '<label data-cb="label" data-key="' + _esc(String(s.id || s.label || s.name || ('State ' + (i + 1)))) + '" for="' + uid + '_t' + i + '">' + _esc(s.label || ('State ' + (i + 1))) + '</label>';
     }).join('');
     togglesHtml = '<div class="pp-toggles">' + pairs + '</div>';
   }

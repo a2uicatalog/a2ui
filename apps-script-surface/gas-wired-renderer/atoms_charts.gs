@@ -57,8 +57,9 @@ _RENDERERS['chartjs_bar'] = function(b) {
       var bw    = _linScale(val, 0, maxVal, 0, chartW);
       var y     = padT + i * (barH + barGap);
       var color = d.color || barColor;
-      svg += '<text x="' + (padL - 6) + '" y="' + (y + barH/2 + 4) + '" text-anchor="end" font-size="11" fill="#334155">' + _esc((d.label||'').substr(0,16)) + '</text>';
-      svg += '<rect x="' + padL + '" y="' + y + '" width="' + bw + '" height="' + barH + '" rx="3" fill="' + _esc(color) + '"/>';
+      var k = _esc(d.label || '');
+      svg += '<text data-cb="label" data-key="' + k + '" x="' + (padL - 6) + '" y="' + (y + barH/2 + 4) + '" text-anchor="end" font-size="11" fill="#334155">' + _esc((d.label||'').substr(0,16)) + '</text>';
+      svg += '<rect data-cb="bar" data-key="' + k + '" x="' + padL + '" y="' + y + '" width="' + bw + '" height="' + barH + '" rx="3" fill="' + _esc(color) + '"/>';
       if (showVals) {
         svg += '<text x="' + (padL + bw + 4) + '" y="' + (y + barH/2 + 4) + '" font-size="10" fill="#475569">' + val + '</text>';
       }
@@ -94,12 +95,13 @@ _RENDERERS['chartjs_bar'] = function(b) {
       var x     = cx - barW / 2;
       var y     = padT + chartH - bh;
       var color = d.color || barColor;
-      svg += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + bh + '" rx="3" fill="' + _esc(color) + '"/>';
+      var k = _esc(d.label || '');
+      svg += '<rect data-cb="bar" data-key="' + k + '" x="' + x + '" y="' + y + '" width="' + barW + '" height="' + bh + '" rx="3" fill="' + _esc(color) + '"/>';
       if (showVals && bh > 12) {
         svg += '<text x="' + cx + '" y="' + (y - 3) + '" text-anchor="middle" font-size="9" fill="#475569">' + val + '</text>';
       }
       var lbl = (d.label||'').substr(0,10);
-      svg += '<text x="' + cx + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="10" fill="#64748b">' + _esc(lbl) + '</text>';
+      svg += '<text data-cb="label" data-key="' + k + '" x="' + cx + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="10" fill="#64748b">' + _esc(lbl) + '</text>';
     });
 
     svg += '</svg>';
@@ -164,7 +166,7 @@ _RENDERERS['chartjs_line'] = function(b) {
   // (surface-parity debt: chartjs_line). 2026-09-27.
   labels.forEach(function(lbl, i) {
     if (n <= 12 || i % Math.ceil(n / 10) === 0) {
-      svg += '<text x="' + px(i) + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="9" fill="#64748b">' + _esc(lbl||'') + '</text>';
+      svg += '<text data-cb="label" data-key="' + _esc(lbl||'') + '" x="' + px(i) + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="9" fill="#64748b">' + _esc(lbl||'') + '</text>';
     }
   });
 
@@ -195,7 +197,8 @@ _RENDERERS['chartjs_line'] = function(b) {
       svg += '<path d="' + areaD + '" fill="' + _esc(color) + '" fill-opacity="0.18" stroke="none"/>';
     }
 
-    svg += '<path d="' + pathD + '" fill="none" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    var dsKey = _esc(ds.label || ds.name || String(di));
+    svg += '<path data-cb="branch" data-key="' + dsKey + '" d="' + pathD + '" fill="none" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
 
     if (showPts) {
       pts.forEach(function(p) {
@@ -257,9 +260,10 @@ _RENDERERS['chartjs_pie'] = function(b) {
     var largeArc = pct > 0.5 ? 1 : 0;
     var color    = d.color || colors[i % colors.length];
 
+    var k = _esc(d.label || d.name || d.id || ('Slice ' + (i + 1)));
     var pathD = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 +
                 ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z';
-    svg += '<path d="' + pathD + '" fill="' + _esc(color) + '" stroke="#fff" stroke-width="1.5"/>';
+    svg += '<path data-cb="arc" data-key="' + k + '" d="' + pathD + '" fill="' + _esc(color) + '" stroke="#fff" stroke-width="1.5"/>';
     startAngle = endAngle;
   });
 
@@ -280,7 +284,8 @@ _RENDERERS['chartjs_pie'] = function(b) {
     var lx    = (i % legCols) * legW + 4;
     var ly    = height + Math.floor(i / legCols) * 16 + 8;
     svg += '<rect x="' + lx + '" y="' + (ly - 8) + '" width="10" height="10" rx="2" fill="' + _esc(color) + '"/>';
-    svg += '<text x="' + (lx + 13) + '" y="' + ly + '" font-size="9" fill="#64748b">' + _esc((d.label||'').substr(0,14)) + '</text>';
+    var k = _esc(d.label || d.name || d.id || ('Slice ' + (i + 1)));
+    svg += '<text data-cb="label" data-key="' + k + '" x="' + (lx + 13) + '" y="' + ly + '" font-size="9" fill="#64748b">' + _esc((d.label||'').substr(0,14)) + '</text>';
   });
 
   svg += '</svg>';
@@ -422,7 +427,8 @@ _RENDERERS['data_table_sortable'] = function(b) {
     // onRowClick wire has always been declarable, documented and INERT — it
     // bound to a selector no atom satisfied. Emitting it here makes the wire
     // real for every surface that declares it, not just the one that found it.
-    html += '<tr data-row-json="' + _esc(_jsJson(row)) + '"' +
+    var rKey = _esc(String(row && row.id !== undefined ? row.id : (row && (row.name || row.label || row.title || (columns.length > 0 && row[columns[0].key] !== undefined ? row[columns[0].key] : '')))));
+    html += '<tr data-cb="item" data-key="' + rKey + '" data-row-json="' + _esc(_jsJson(row)) + '"' +
       (rowId !== undefined ? ' data-row-id="' + _esc(String(rowId)) + '"' : '') +
       ' style="' + bg + '">';
     columns.forEach(function(col) {
@@ -664,12 +670,13 @@ _RENDERERS['mini_sparkline_set'] = function(b) {
 
   var html = '<div class="a2ui-sparkline-set">';
 
-  sparklines.forEach(function(sp) {
+  sparklines.forEach(function(sp, si) {
     var data  = (sp.data || []).map(function(v){ return parseFloat(v)||0; });
     var color = sp.color || '#4f46e5';
     var label = sp.label || '';
     var unit  = sp.unit  || '';
     var last  = data.length ? data[data.length-1] : 0;
+    var sk    = _esc(String(sp.name || sp.id || sp.label || sp.title || si));
 
     var svgW = 80, svgH = 30;
     var minV = Math.min.apply(null, data);
@@ -689,8 +696,8 @@ _RENDERERS['mini_sparkline_set'] = function(b) {
     }
     sparkSvg += '</svg>';
 
-    html += '<div class="a2ui-sparkline-row">';
-    html += '<span class="a2ui-sparkline-label">' + _esc(label) + '</span>';
+    html += '<div data-cb="item" data-key="' + sk + '" class="a2ui-sparkline-row">';
+    html += '<span data-cb="label" data-key="' + sk + '" class="a2ui-sparkline-label">' + _esc(label) + '</span>';
     html += sparkSvg;
     html += '<span class="a2ui-sparkline-val" style="color:' + _esc(color) + ';">' + _esc(String(last)) + (unit ? ' '+_esc(unit) : '') + '</span>';
     html += '</div>';
@@ -1519,11 +1526,12 @@ _RENDERERS['entity_list'] = function(b) {
   entities.forEach(function(entity) {
     var typeColor = typeColors[(entity.type||'').toLowerCase()] || '#94a3b8';
     var item = '';
+    var k = _esc(String(entity.id || entity.name || ''));
 
     if (entity.link) {
-      item += '<a class="a2ui-entity-card" href="' + _esc(entity.link) + '" target="_blank" rel="noopener" style="text-decoration:none;">';
+      item += '<a data-cb="item" data-key="' + k + '" class="a2ui-entity-card" href="' + _esc(entity.link) + '" target="_blank" rel="noopener" style="text-decoration:none;">';
     } else {
-      item += '<div class="a2ui-entity-card">';
+      item += '<div data-cb="item" data-key="' + k + '" class="a2ui-entity-card">';
     }
 
     // Avatar: icon (schema) beats avatar_url beats initials.
@@ -1540,7 +1548,7 @@ _RENDERERS['entity_list'] = function(b) {
 
     // Info
     item += '<div class="a2ui-entity-info">';
-    item += '<div class="a2ui-entity-name">' + _esc(entity.name || '') + '</div>';
+    item += '<div data-cb="label" data-key="' + k + '" class="a2ui-entity-name">' + _esc(entity.name || '') + '</div>';
     if (entity.type) item += '<span class="a2ui-entity-type" style="background:' + typeColor + '20;color:' + typeColor + ';border:1px solid ' + typeColor + '40;">' + _esc(entity.type) + '</span>';
     if (entity.status) {
       var sc = statusColors[entity.status] || ['#f3f4f6', '#6b7280'];
@@ -1745,9 +1753,10 @@ _RENDERERS['feature_grid'] = function(b) {
   var cardsHtml = '';
   for (var i = 0; i < features.length; i++) {
     var f = features[i];
-    cardsHtml += '<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
+    var k = _esc(String(f.title || ''));
+    cardsHtml += '<div data-cb="tile" data-key="' + k + '" style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
       + (f.icon ? '<div style="font-size:2rem;margin-bottom:12px;">' + _esc(f.icon) + '</div>' : '')
-      + (f.title ? '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:8px;">' + _esc(f.title) + '</div>' : '')
+      + (f.title ? '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:8px;">' + _esc(f.title) + '</div>' : '')
       + (f.description ? '<div style="font-size:0.875rem;color:#4b5563;line-height:1.6;">' + _esc(f.description) + '</div>' : '')
       + '</div>';
   }
@@ -1934,8 +1943,8 @@ _RENDERERS['llm_comparison_table'] = function(b) {
     var strengths = m.strengths ? m.strengths.join(', ') : '';
     var weaknesses = m.weaknesses ? m.weaknesses.join(', ') : '';
     var rowBg = i % 2 === 0 ? '#fff' : '#f9fafb';
-    rows += '<tr style="background:' + rowBg + ';">'
-      + '<td style="padding:10px 12px;font-weight:600;color:#111827;font-size:0.875rem;">' + _esc(m.name || '') + '</td>'
+    rows += '<tr data-cb="item" data-key="' + _esc(m.name || '') + '" style="background:' + rowBg + ';">'
+      + '<td data-cb="label" data-key="' + _esc(m.name || '') + '" style="padding:10px 12px;font-weight:600;color:#111827;font-size:0.875rem;">' + _esc(m.name || '') + '</td>'
       + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.params || '—') + '</td>'
       + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.context_window ? String(m.context_window) : '—') + '</td>'
       + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.price_per_1m_tokens ? String(m.price_per_1m_tokens) : '—') + '</td>'
@@ -2542,6 +2551,9 @@ _RENDERERS['agent_sketchpad'] = function(b) {
     var raw = (s && typeof s.element === 'string') ? s.element : '';
     var el = raw ? _validateSketchpadElement(raw) : null;
     if (!el) { elements += '<!-- agent_sketchpad: element ' + i + ' skipped, failed validation -->'; continue; }
+    var k = (s && (s.id || s.label || s.title)) || String(i);
+    el.attrs['data-cb'] = 'link';
+    el.attrs['data-key'] = k;
     if (i === lastIdx) {
       el.attrs['stroke-dasharray'] = '1000';
       el.attrs['stroke-dashoffset'] = '1000';
@@ -3055,8 +3067,9 @@ _RENDERERS['chat_sequence'] = function(b) {
   messages.forEach(function(msg, i) {
     var isUser = msg.role === 'user' || msg.align === 'right';
     var delay  = (i * 0.28) + 's';
-    html += '<div style="display:flex;flex-direction:column;align-items:' + (isUser?'flex-end':'flex-start') + ';animation:chat-in 0.4s ease ' + delay + ' both;">'
-      + '<div style="font-size:0.7rem;color:#6c7586;margin-bottom:4px;">' + _esc(msg.name || (isUser ? 'You' : 'Assistant')) + '</div>'
+    var k = _esc(msg.id || msg.text || msg.content || msg.name || msg.role || '');
+    html += '<div data-cb="item" data-key="' + k + '" style="display:flex;flex-direction:column;align-items:' + (isUser?'flex-end':'flex-start') + ';animation:chat-in 0.4s ease ' + delay + ' both;">'
+      + '<div data-cb="label" data-key="' + k + '" style="font-size:0.7rem;color:#6c7586;margin-bottom:4px;">' + _esc(msg.name || (isUser ? 'You' : 'Assistant')) + '</div>'
       + '<div style="max-width:82%;background:' + (isUser?'#4f46e5':'#fff') + ';color:' + (isUser?'#fff':'#1f2937') + ';border-radius:' + (isUser?'16px 4px 16px 16px':'4px 16px 16px 16px') + ';padding:10px 14px;font-size:0.875rem;line-height:1.55;' + (isUser?'':'box-shadow:0 1px 4px rgba(0,0,0,0.07);') + '">' + _markdownToHtml(msg.text || msg.content || '') + '</div>'
       + '</div>';
   });
@@ -3430,6 +3443,11 @@ _RENDERERS['marquee_strip'] = function(b) {
   var itemHtml = items.map(function(item) {
     var label = typeof item === 'string' ? item : (item.text || item.label || '');
     var icon  = typeof item === 'object' ? (item.icon || '') : '';
+    return '<span data-cb="tile" data-key="' + _esc(label) + '" style="padding:0 24px;white-space:nowrap;">' + (icon ? _esc(icon) + ' ' : '') + _esc(label) + ' <span style="opacity:0.3;margin-left:24px;">' + _esc(sep) + '</span></span>';
+  }).join('');
+  var itemHtmlDup = items.map(function(item) {
+    var label = typeof item === 'string' ? item : (item.text || item.label || '');
+    var icon  = typeof item === 'object' ? (item.icon || '') : '';
     return '<span style="padding:0 24px;white-space:nowrap;">' + (icon ? _esc(icon) + ' ' : '') + _esc(label) + ' <span style="opacity:0.3;margin-left:24px;">' + _esc(sep) + '</span></span>';
   }).join('');
   return '<style>'
@@ -3438,7 +3456,7 @@ _RENDERERS['marquee_strip'] = function(b) {
     + '@keyframes mq-' + uid + '{from{transform:translateX(0);}to{transform:translateX(-50%);}}'
     + '</style>'
     + '<div style="background:' + _esc(bg) + ';border-radius:12px;padding:14px 0;margin:1rem 0;overflow:hidden;color:' + _esc(color) + ';font-size:0.9rem;font-weight:500;">'
-    + '<div class="mq-' + uid + '">' + itemHtml + itemHtml + '</div>'
+    + '<div class="mq-' + uid + '">' + itemHtml + itemHtmlDup + '</div>'
     + '</div>';
 };
 
@@ -3504,9 +3522,10 @@ _RENDERERS['counter_group'] = function(b) {
     var label = stat.label   || stat.title || '';
     var color = stat.color   || '#4f46e5';
     var notLast = i < stats.length - 1;
-    return '<div style="flex:1;min-width:90px;text-align:center;padding:0 16px;' + (notLast?'border-right:1px solid #eaeaea;border-right:1px solid var(--a2ui-border,#eaeaea);':'') + '">'
+    var sKey = _esc(String(label));
+    return '<div data-cb="bar" data-key="' + sKey + '" style="flex:1;min-width:90px;text-align:center;padding:0 16px;' + (notLast?'border-right:1px solid #eaeaea;border-right:1px solid var(--a2ui-border,#eaeaea);':'') + '">'
       + '<div id="cg-' + uid + '-' + i + '" data-e="' + val + '" data-d="' + dec + '" data-p="' + _esc(pre) + '" data-s="' + _esc(suf) + '" style="font-size:2.4rem;font-weight:800;color:' + _esc(color) + ';line-height:1;">' + _esc(pre) + '0' + _esc(suf) + '</div>'
-      + (label ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);font-weight:500;margin-top:6px;">' + _esc(label) + '</div>' : '')
+      + (label ? '<div data-cb="label" data-key="' + sKey + '" style="font-size:0.78rem;color:var(--muted,#5f6368);font-weight:500;margin-top:6px;">' + _esc(label) + '</div>' : '')
       + '</div>';
   }).join('');
   return '<div id="cg-wrap-' + uid + '" style="border:1px solid #e5e7eb;border-radius:16px;padding:28px 8px;margin:1rem 0;display:flex;flex-wrap:wrap;gap:0;background:#fff;align-items:center;">'
@@ -3539,9 +3558,11 @@ _RENDERERS['orbit_diagram'] = function(b) {
     var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
     var x = Math.round(cx + Math.cos(angle) * radius);
     var y = Math.round(cy + Math.sin(angle) * radius);
+    var rawKey = typeof node === 'string' ? node : (node.label || node.text || '');
+    var keyAttr = _esc(String(rawKey));
     var label  = typeof node === 'string' ? node : (node.label || node.text || '');
     var nc     = typeof node === 'object' && node.color ? node.color : color;
-    return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + _esc(nc) + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
+    return '<div data-cb="node" data-key="' + keyAttr + '" style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + _esc(nc) + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
   }).join('');
   var svgLines = nodes.map(function(_, i) {
     var angle = (i / n) * 2 * Math.PI - Math.PI / 2;

@@ -555,13 +555,14 @@ _RENDERERS['agent_narrator'] = function(b) {
     var t = beats[i] && typeof beats[i].text === 'string' ? beats[i].text.trim() : '';
     if (!t) continue;
     if (kept.length >= 100 || t.length > 2000) { skipped++; continue; }
-    kept.push(t);
+    var k = beats[i].id || beats[i].label || beats[i].title || t;
+    kept.push({t: t, k: k});
   }
   var out = '';
   for (var j = 0; j < kept.length; j++) {
     var last = j === kept.length - 1;
-    out += '<p style="margin:0 0 0.9em;font-size:1.05rem;line-height:1.7;">'
-      + (last ? '<span id="an-' + uid + '">' + _anMd(kept[j]) + '</span><span id="anc-' + uid + '" style="display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:text-bottom;margin-left:2px;animation:an-blink-' + uid + ' 0.8s step-end infinite;"></span>' : _anMd(kept[j]))
+    out += '<p data-cb="item" data-key="' + _esc(kept[j].k) + '" style="margin:0 0 0.9em;font-size:1.05rem;line-height:1.7;">'
+      + (last ? '<span id="an-' + uid + '">' + _anMd(kept[j].t) + '</span><span id="anc-' + uid + '" style="display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:text-bottom;margin-left:2px;animation:an-blink-' + uid + ' 0.8s step-end infinite;"></span>' : _anMd(kept[j].t))
       + '</p>';
   }
   return '<div style="margin:1rem 0;">'
@@ -734,9 +735,9 @@ _RENDERERS['contrast_audit'] = function(b) {
     var q = pairs[j], r = _caRatio(q.fg, q.bg), rS = _cvFix(r, 2), aa = r >= 4.5, aaL = r >= 3, aaa = r >= 7;
     if (aa) passAA++;
     var fix = (!aa && showFix) ? _caFix(q.fg, q.bg) : null;
-    rows += '<div style="display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid ' + th.line + ';">'
+    rows += '<div data-cb="item" data-key="' + _esc(q.label || '') + '" style="display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid ' + th.line + ';">'
       + '<div style="background:' + q.bg + ';color:' + q.fg + ';border:1px solid ' + th.line + ';border-radius:8px;padding:10px 12px;font-weight:700;font-size:1.1rem;line-height:1;">Aa <span style="font-weight:400;font-size:0.8rem;">Text</span></div>'
-      + '<div><div style="font-weight:600;color:' + th.ink + ';font-size:0.9rem;">' + (q.label ? _esc(q.label) + ' · ' : '') + '<span style="font-family:' + _CV_VOICES.mono + ';color:' + th.mute + ';font-weight:400;font-size:0.78rem;">' + q.fg + ' on ' + q.bg + '</span></div>'
+      + '<div><div data-cb="label" data-key="' + _esc(q.label || '') + '" style="font-weight:600;color:' + th.ink + ';font-size:0.9rem;">' + (q.label ? _esc(q.label) + ' · ' : '') + '<span style="font-family:' + _CV_VOICES.mono + ';color:' + th.mute + ';font-weight:400;font-size:0.78rem;">' + q.fg + ' on ' + q.bg + '</span></div>'
       + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">' + badge(aa, 'AA') + badge(aaL, 'AA large') + badge(aaa, 'AAA') + '</div>'
       + (fix ? '<div style="margin-top:6px;font-size:0.76rem;color:' + th.mute + ';">nearest pass: <span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:' + fix + ';border:1px solid ' + th.line + ';"></span> <span style="font-family:' + _CV_VOICES.mono + ';">' + fix + '</span> (' + _cvFix(_caRatio(fix, q.bg), 2) + ':1)</div>' : '')
       + '</div>'

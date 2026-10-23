@@ -267,7 +267,8 @@ _RENDERERS['dark_feature_grid'] = function(b) {
   for (var i = 0; i < features.length; i++) {
     var f      = features[i];
     var colour = f.colour || accent;
-    cards += '<div style="' +
+    var fKey = _esc(String(f.title || ''));
+    cards += '<div data-cb="tile" data-key="' + fKey + '" style="' +
       'background:#0f1117;' +
       'border:1px solid rgba(255,255,255,0.07);' +
       'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:22px;' +
@@ -278,7 +279,7 @@ _RENDERERS['dark_feature_grid'] = function(b) {
       'display:flex;align-items:center;justify-content:center;font-size:1.2rem;">' +
       (f.icon ? _esc(f.icon) : '◆') +
       '</div>' +
-      '<div style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.9);">' + _esc(f.title || '') + '</div>' +
+      '<div data-cb="label" data-key="' + fKey + '" style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.9);">' + _esc(f.title || '') + '</div>' +
       '<div style="font-size:0.8rem;color:rgba(255,255,255,0.45);line-height:1.6;">' + _esc(f.description || '') + '</div>' +
       '</div>';
   }

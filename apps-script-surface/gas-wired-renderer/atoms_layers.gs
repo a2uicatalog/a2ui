@@ -259,7 +259,8 @@ _RENDERERS['layer_stack'] = function(b) {
     var layer = visual[v].layer;
     var fn = _RENDERERS[layer.component || layer.type] || _RENDERERS['stack_layer'];
     var componentId = _esc(layer.id || ('layer-' + (visual[v].index + 1)));
-    bands += '<div data-component-id="' + componentId + '" style="scroll-margin-top:1.5rem;">'
+    var barKey = _esc(layer.id || layer.name || layer.title || ('layer-' + (visual[v].index + 1)));
+    bands += '<div data-cb="bar" data-key="' + barKey + '" data-component-id="' + componentId + '" style="scroll-margin-top:1.5rem;">'
       + fn(layer) + '</div>';
   }
 

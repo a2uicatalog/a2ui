@@ -121,6 +121,21 @@ _RENDERERS['marquee'] = function(b) {
   var pause = b.pause_on_hover !== false;
 
   function renderItem(item) {
+    var k = typeof item === 'string' ? item : (item.text || item.label || item.image_url || item.icon || '');
+    if (typeof item === 'string') return '<span data-cb="tile" data-key="' + _esc(k) + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
+    var inner = '';
+    if (item.image_url) {
+      var imgStyle = 'height:32px;object-fit:contain;' + (b.color_icons ? '' : 'opacity:0.7;filter:grayscale(1);');
+      inner += '<img src="' + _esc(item.image_url) + '" alt="' + _esc(item.label||'') + '" style="' + imgStyle + '">';
+    }
+    if (item.icon)      inner += '<span style="font-size:1.1rem;">' + _esc(item.icon) + '</span>';
+    if (item.text || item.label) inner += '<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(item.text || item.label) + '</span>';
+    return item.url
+      ? '<a data-cb="tile" data-key="' + _esc(k) + '" href="' + _safeUrl(item.url) + '" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">' + inner + '</a>'
+      : '<span data-cb="tile" data-key="' + _esc(k) + '" style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
+  }
+
+  function renderItemDup(item) {
     if (typeof item === 'string') return '<span style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
     var inner = '';
     if (item.image_url) {
@@ -138,8 +153,11 @@ _RENDERERS['marquee'] = function(b) {
   var itemHtml = items.map(function(item) {
     return '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderItem(item) + sepHtml + '</span>';
   }).join('');
+  var itemHtmlDup = items.map(function(item) {
+    return '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderItemDup(item) + sepHtml + '</span>';
+  }).join('');
   // Duplicate for seamless loop
-  var track = itemHtml + itemHtml;
+  var track = itemHtml + itemHtmlDup;
 
   var css = '<style>'
     + '@keyframes ' + uid + '{from{transform:translateX(0)}to{transform:translateX(-50%)}}'

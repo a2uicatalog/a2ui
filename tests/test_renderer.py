@@ -1,5 +1,6 @@
 """Renderer tests — one test per atom, plus surface compatibility assertions."""
 
+import re
 import pytest
 
 
@@ -63,7 +64,7 @@ def test_bullet_list(renderer):
         {"text": "plain item"},
     ]})
     assert "<ul>" in html
-    assert "<strong>Key</strong>" in html
+    assert re.search(r"<strong[^>]*>Key</strong>", html)   # the build contract may add data-cb/data-key attributes
 
 
 def test_divider(renderer):
@@ -590,7 +591,7 @@ def test_marquee_strip_basic(renderer):
     assert "React" in html
     assert "Python" in html
     # items duplicated for seamless loop
-    assert html.count("React") == 2
+    assert html.count(">React<") == 2   # visible text: the data-key attribute also names the item
 
 
 def test_marquee_strip_with_label_and_image(renderer):

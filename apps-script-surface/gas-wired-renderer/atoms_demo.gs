@@ -195,9 +195,11 @@ _RENDERERS['next_step_strip'] = function(b) {
   var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
   steps.forEach(function(s, i) {
     var isLast = i === steps.length - 1;
-    html += '<div style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
+    var rawKey = typeof s === 'string' ? s : (s.title || s.label || '');
+    var keyAttr = _esc(String(rawKey));
+    html += '<div data-cb="item" data-key="' + keyAttr + '" style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
       + '<div style="font-size:1.4rem;font-weight:900;color:' + accent + ';margin-bottom:6px;">' + _esc(String(s.number || (i + 1))) + '</div>'
-      + '<div style="font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;">' + _esc(s.label || '') + '</div>'
+      + '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;">' + _esc(s.label || '') + '</div>'
       + '<div style="font-size:0.8rem;color:var(--muted);">' + _esc(s.detail || s.action || '') + '</div>'
       + (s.url ? '<a href="' + _esc(s.url) + '" target="_top" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:' + accent + ';text-decoration:none;">Open →</a>' : '')
       + '</div>';
@@ -391,8 +393,8 @@ _RENDERERS['live_vote'] = function(b) {
     + '<div id="lv-btns-' + uid + '">' + optBtns + '</div>'
     + '<div id="lv-results-' + uid + '">'
     + options.map(function(o, i) {
-        return '<div class="lv-bar-row-' + uid + '">'
-          + '<div class="lv-bar-label-' + uid + '">' + _esc(o) + '</div>'
+        return '<div data-cb="bar" data-key="' + _esc(o) + '" class="lv-bar-row-' + uid + '">'
+          + '<div data-cb="label" data-key="' + _esc(o) + '" class="lv-bar-label-' + uid + '">' + _esc(o) + '</div>'
           + '<div class="lv-bar-track-' + uid + '"><div id="lv-fill-' + uid + '-' + i + '" class="lv-bar-fill-' + uid + '" style="width:0%"><span class="lv-bar-pct-' + uid + '" id="lv-pct-' + uid + '-' + i + '">0%</span></div></div>'
           + '</div>';
       }).join('')

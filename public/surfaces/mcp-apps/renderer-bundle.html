@@ -1521,8 +1521,9 @@ _RENDERERS['bullet_list'] = function(b) {
   var html = '<ul>';
   for (var i = 0; i < b.items.length; i++) {
     var item = b.items[i];
-    var lead = item.label ? '<strong>' + _esc(item.label) + ': </strong>' : '';
-    html += '<li>' + lead + _markdownToHtml(item.text) + '</li>';
+    var key = _esc(item.label || item.text || '');
+    var lead = item.label ? '<strong data-cb="label" data-key="' + key + '">' + _esc(item.label) + ': </strong>' : '';
+    html += '<li data-cb="node" data-key="' + key + '">' + lead + _markdownToHtml(item.text) + '</li>';
   }
   html += '</ul>';
   return html;
@@ -1676,9 +1677,10 @@ _RENDERERS['course_progress_card'] = function(b) {
     lessonsDone += ld;
     var mpct = Math.min(100, Math.round((ld / lt) * 100));
     
-    modsHtml += '<div class="asw-course-module">' +
+    var mKey = _esc(String(m.title || ''));
+    modsHtml += '<div data-cb="item" data-key="' + mKey + '" class="asw-course-module">' +
                 '<div class="asw-course-mod-row">' +
-                '<span class="asw-course-mod-name">' + _esc(m.title) + '</span>' +
+                '<span data-cb="label" data-key="' + mKey + '" class="asw-course-mod-name">' + _esc(m.title) + '</span>' +
                 '<span class="asw-course-mod-pct">' + ld + '/' + lt + '</span>' +
                 '</div>' +
                 '<div class="asw-course-bar-track">' +
@@ -1788,7 +1790,7 @@ _RENDERERS['match_exercise'] = function(b) {
 
   var leftsHtml = '';
   for (var l = 0; l < lefts.length; l++) {
-    leftsHtml += '<div class="asw-match-item" id="' + uid + '-l-' + l + '" data-side="left" data-idx="' + l + '">' + _esc(lefts[l].text) + '</div>';
+    leftsHtml += '<div data-cb="item" data-key="' + _esc(lefts[l].text || '') + '" class="asw-match-item" id="' + uid + '-l-' + l + '" data-side="left" data-idx="' + l + '">' + _esc(lefts[l].text) + '</div>';
   }
 
   var rightsHtml = '';
@@ -2420,7 +2422,7 @@ _RENDERERS['closing'] = function(b) {
 
 _RENDERERS['pipeline'] = function(b) {
   var steps = b.steps || [];
-  var flow = steps.map(function(s){ return '<code>' + _esc(s) + '</code>'; }).join(' ──► ');
+  var flow = steps.map(function(s){ return '<code data-cb="node" data-key="' + _esc(s) + '">' + _esc(s) + '</code>'; }).join(' ──► ');
   return '<p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);overflow-x:auto;">' + flow + '</p>';
 };
 
@@ -2440,8 +2442,8 @@ _RENDERERS['before_after'] = function(b) {
   var afterCode = (b.after || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var caption = b.caption ? '<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">' + _esc(b.caption) + '</p>' : '';
   function panel(label, code, color, bg) {
-    return '<div style="flex:1;min-width:0;">' +
-      '<div style="background:' + color + ';color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">' + label + '</div>' +
+    return '<div data-cb="item" data-key="' + label + '" style="flex:1;min-width:0;">' +
+      '<div data-cb="label" data-key="' + label + '" style="background:' + color + ';color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:6px 6px 0 0;letter-spacing:0.08em;">' + label + '</div>' +
       '<pre tabindex="0" style="margin:0;padding:14px;background:' + bg + ';color:#e8eaed;overflow-x:auto;font-size:0.82rem;border-radius:0 0 6px 6px;"><code class="language-' + _esc(lang) + '">' + code + '</code></pre></div>';
   }
   return '<div style="margin:1.5rem 0;">' +
@@ -2510,8 +2512,9 @@ _RENDERERS['key_value'] = function(b) {
   var rows = items.map(function(item){
     var req = item.required ? '<span style="color:#dc2626;font-size:0.7rem;font-weight:700;margin-left:4px;">required</span>' : '';
     var def = item.default !== undefined ? '<span style="color:var(--muted,#5f6368);font-size:0.7rem;margin-left:4px;">default: ' + _esc(String(item.default)) + '</span>' : '';
-    return '<tr>' +
-      '<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#1a73e8;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(item.key||item.name||'') + req + def + '</td>' +
+    var kKey = _esc(item.key || item.name || '');
+    return '<tr data-cb="item" data-key="' + kKey + '">' +
+      '<td data-cb="label" data-key="' + kKey + '" style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#1a73e8;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(item.key||item.name||'') + req + def + '</td>' +
       '<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _markdownToHtml(item.description||item.value||'') + '</td></tr>';
   }).join('');
   return '<table style="width:100%;border-collapse:collapse;margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">' +
@@ -2564,7 +2567,8 @@ _RENDERERS['annotated_code'] = function(b) {
   }).join('');
   var captionHtml = caption ? '<p style="font-size:0.8rem;opacity:0.6;margin:6px 0 0;text-align:center;">' + _esc(caption) + '</p>' : '';
   var annotationItems = annotations.map(function(a, i){
-    return '<li style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">' +
+    var k = String(a.line !== undefined ? a.line : (a.id || a.text || ''));
+    return '<li data-cb="ref" data-key="' + _esc(k) + '" style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">' +
       '<span style="flex:0 0 22px;height:22px;border-radius:50%;background:#f9ab00;color:#fff;font-size:0.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;">' + (i+1) + '</span>' +
       '<span style="font-size:0.88rem;color:#3c4043;line-height:1.6;padding-top:2px;">' + _markdownToHtml(a.text||'') + '</span></li>';
   }).join('');
@@ -2579,7 +2583,7 @@ _RENDERERS['key_takeaways'] = function(b) {
   var raw = b.items || b.points || [];
   var lis = raw.map(function(p){
     var text = typeof p === 'object' ? (p.text || '') : p;
-    return '<li style="margin-bottom:6px;font-size:0.88rem;color:#1e3a5f;">' + _markdownToHtml(text) + '</li>';
+    return '<li data-cb="item" data-key="' + _esc(String(text)) + '" style="margin-bottom:6px;font-size:0.88rem;color:#1e3a5f;">' + _markdownToHtml(text) + '</li>';
   }).join('');
   return '<div style="border:1px solid #bfdbfe;border-left:4px solid #2563eb;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#1d4ed8;margin-bottom:10px;">🔑 Key takeaways</div>' +
@@ -2595,7 +2599,9 @@ _RENDERERS['summary_box'] = function(b) {
 _RENDERERS['learning_objectives'] = function(b) {
   var objs = b.objectives || [];
   var lis = objs.map(function(o){
-    return '<li style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:0.88rem;">' +
+    var txt = (typeof o === 'object') ? (o.text || '') : o;
+    var k = _esc(String((typeof o === 'object') ? (o.id || o.text || '') : o));
+    return '<li data-cb="item" data-key="' + k + '" style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:0.88rem;">' +
       '<span style="color:#2563eb;flex-shrink:0;margin-top:1px;">→</span>' +
       '<span style="color:#1e3a5f;">' + _esc(o) + '</span></li>';
   }).join('');
@@ -2690,9 +2696,10 @@ _RENDERERS['checklist_interactive'] = function(b) {
   var items = b.items || [];
   var lis = items.map(function(item){
     var text = typeof item === 'string' ? item : (item.text || item.label || '');
-    return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
+    var k = _esc((typeof item === 'object' && item ? item.id : '') || text);
+    return '<li data-cb="item" data-key="' + k + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
       '<input type="checkbox" aria-label="' + _esc(text) + '" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
-      '<span style="font-size:0.88rem;color:var(--text,#374151);">' + _esc(text) + '</span></li>';
+      '<span data-cb="label" data-key="' + k + '" style="font-size:0.88rem;color:var(--text,#374151);">' + _esc(text) + '</span></li>';
   }).join('');
   return '<ul style="list-style:none;padding:12px 18px;margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;">' + lis + '</ul>';
 };
@@ -2753,9 +2760,9 @@ _RENDERERS['color_swatch_grid'] = function(b) {
   var colors = b.colors || [];
   var cols = Math.min(colors.length || 4, 6);
   var items = colors.map(function(c){
-    return '<div style="display:flex;flex-direction:column;gap:4px;">' +
+    return '<div data-cb="item" data-key="' + _esc(c.hex||'') + '" style="display:flex;flex-direction:column;gap:4px;">' +
       '<div style="width:100%;height:40px;background:' + _esc(c.hex||'#e5e7eb') + ';border-radius:4px;"></div>' +
-      '<div style="font-size:0.65rem;color:var(--muted,#5f6368);text-align:center;">' + _esc(c.name||'') + '</div>' +
+      '<div data-cb="label" data-key="' + _esc(c.hex||'') + '" style="font-size:0.65rem;color:var(--muted,#5f6368);text-align:center;">' + _esc(c.name||'') + '</div>' +
       '<div style="font-size:0.6rem;color:var(--muted,#5f6368);text-align:center;font-family:monospace;">' + _esc(c.hex||'') + '</div></div>';
   }).join('');
   return '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:8px;margin:1rem 0;">' + items + '</div>';
@@ -2863,8 +2870,9 @@ _RENDERERS['gallery'] = function(b) {
     '</style>';
   var items = images.map(function(img, i){
     var lbId = gid + '-lb' + i;
-    var capHtml = img.caption ? '<figcaption style="position:absolute;bottom:0;left:0;right:0;padding:6px 10px;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:#fff;font-size:0.75rem;">' + _esc(img.caption) + '</figcaption>' : '';
-    return '<figure class="' + gid + '-item"><a href="#' + lbId + '" style="display:block;height:100%;"><img src="' + _esc(img.url||'') + '" alt="' + _esc(img.alt||'') + '" loading="lazy"></a>' + capHtml + '</figure>';
+    var imgKey = (typeof img === 'string') ? img : (img.id !== undefined ? img.id : (img.caption || img.alt || img.url || img.src || ''));
+    var capHtml = img.caption ? '<figcaption data-cb="label" data-key="' + _esc(imgKey) + '" style="position:absolute;bottom:0;left:0;right:0;padding:6px 10px;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:#fff;font-size:0.75rem;">' + _esc(img.caption) + '</figcaption>' : '';
+    return '<figure data-cb="tile" data-key="' + _esc(imgKey) + '" class="' + gid + '-item"><a href="#' + lbId + '" style="display:block;height:100%;"><img src="' + _esc(img.url||'') + '" alt="' + _esc(img.alt||'') + '" loading="lazy"></a>' + capHtml + '</figure>';
   }).join('');
   var lightboxes = images.map(function(img, i){
     var lbId = gid + '-lb' + i;
@@ -2898,8 +2906,9 @@ _RENDERERS['carousel'] = function(b) {
   }
   var inputs = slides.map(function(s,i){ return '<input type="radio" id="' + cid + '_s' + (i+1) + '" name="' + cid + '" aria-label="Slide ' + (i+1) + ' of ' + slides.length + '"' + (i===0?' checked':'') + '>'; }).join('');
   var slidesHtml = slides.map(function(slide){
-    var capHtml = slide.label ? '<div class="' + cid + '-cap"><strong>' + _esc(slide.label) + '</strong>' + (slide.subtitle ? '<span style="display:block;font-size:0.82rem;opacity:0.8;">' + _esc(slide.subtitle) + '</span>' : '') + '</div>' : '';
-    return '<div class="' + cid + '-slide"><img src="' + _esc(slide.url||'') + '" alt="' + _esc(slide.label||'') + '" loading="lazy">' + capHtml + '</div>';
+    var k = _esc(slide.id || slide.label || slide.name || slide.title || slide.url || '');
+    var capHtml = slide.label ? '<div data-cb="label" data-key="' + k + '" class="' + cid + '-cap"><strong>' + _esc(slide.label) + '</strong>' + (slide.subtitle ? '<span style="display:block;font-size:0.82rem;opacity:0.8;">' + _esc(slide.subtitle) + '</span>' : '') + '</div>' : '';
+    return '<div data-cb="item" data-key="' + k + '" class="' + cid + '-slide"><img src="' + _esc(slide.url||'') + '" alt="' + _esc(slide.label||'') + '" loading="lazy">' + capHtml + '</div>';
   }).join('');
   var dots = slides.map(function(s,i){ return '<label for="' + cid + '_s' + (i+1) + '" class="' + cid + '-dot"></label>'; }).join('');
   var captionHtml = b.caption ? '<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">' + _esc(b.caption) + '</p>' : '';
@@ -2987,7 +2996,7 @@ _RENDERERS['badge_group'] = function(b) {
     var colors = colorMap[badge.color||'grey'] || colorMap.grey;
     var fg = colors[0]; var bg = colors[1];
     var dot = badge.pulse ? '<span style="width:7px;height:7px;border-radius:50%;background:' + fg + ';display:inline-block;margin-right:6px;"></span>' : '';
-    return '<span style="display:inline-flex;align-items:center;background:' + bg + ';color:' + fg + ';border:1px solid ' + fg + '44;border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:700;letter-spacing:0.04em;margin:3px;">' + dot + _esc(badge.text||'') + '</span>';
+    return '<span data-cb="item" data-key="' + _esc(badge.text||'') + '" style="display:inline-flex;align-items:center;background:' + bg + ';color:' + fg + ';border:1px solid ' + fg + '44;border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:700;letter-spacing:0.04em;margin:3px;">' + dot + _esc(badge.text||'') + '</span>';
   }).join('');
   return '<div style="margin:1rem 0;">' + titleHtml + '<div style="display:flex;flex-wrap:wrap;gap:4px;">' + items + '</div></div>';
 };
@@ -3028,8 +3037,9 @@ _RENDERERS['faq_accordion'] = function(b) {
   var html = items.map(function(item){
     var q = item.question || item.label || '';
     var a = item.answer || item.text || item.body || '';
-    return '<details style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">' +
-      '<summary style="padding:14px 16px;cursor:pointer;font-weight:600;font-size:0.88rem;color:#111827;list-style:none;">' + _esc(q) + '</summary>' +
+    var k = _esc(String(q));
+    return '<details data-cb="item" data-key="' + k + '" style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">' +
+      '<summary data-cb="label" data-key="' + k + '" style="padding:14px 16px;cursor:pointer;font-weight:600;font-size:0.88rem;color:#111827;list-style:none;">' + _esc(q) + '</summary>' +
       '<div style="padding:0 16px 16px;font-size:0.85rem;color:#374151;line-height:1.6;">' + _markdownToHtml(a) + '</div></details>';
   }).join('');
   return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;">' + html + '</div>';
@@ -3043,7 +3053,7 @@ _RENDERERS['footnote'] = function(b) {
 _RENDERERS['footnote_group'] = function(b) {
   var footnotes = b.footnotes || [];
   var rows = footnotes.map(function(fn){
-    return '<div style="margin:4px 0;font-size:0.78rem;color:var(--muted,#5f6368);padding-left:1.2rem;"><sup style="color:#7c3aed;font-weight:600;">[' + _esc(String(fn.id||'?')) + ']</sup> ' + _markdownToHtml(fn.text||'') + '</div>';
+    return '<div data-cb="ref" data-key="' + _esc(String(fn.id||'?')) + '" style="margin:4px 0;font-size:0.78rem;color:var(--muted,#5f6368);padding-left:1.2rem;"><sup data-cb="label" data-key="' + _esc(String(fn.id||'?')) + '" style="color:#7c3aed;font-weight:600;">[' + _esc(String(fn.id||'?')) + ']</sup> ' + _markdownToHtml(fn.text||'') + '</div>';
   }).join('');
   return '<div style="margin:1.5rem 0;padding:12px 16px;border-top:1px solid #e5e7eb;"><div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Footnotes</div>' + rows + '</div>';
 };
@@ -3392,7 +3402,7 @@ _RENDERERS['api_param_table'] = function(b) {
   var params = b.parameters || [];
   var rows = params.map(function(p){
     var req = p.required ? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>' : '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>';
-    return '<tr><td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;border-bottom:1px solid #f3f4f6;">' + _esc(p.name||'') + '</td>' +
+    return '<tr data-cb="item" data-key="' + _esc(p.name||'') + '"><td data-cb="label" data-key="' + _esc(p.name||'') + '" style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;border-bottom:1px solid #f3f4f6;">' + _esc(p.name||'') + '</td>' +
       '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:#2563eb;border-bottom:1px solid #f3f4f6;">' + _esc(p.type||'') + '</td>' +
       '<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">' + req + '</td>' +
       '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + _esc(String(p.default||'—')) + '</td>' +
@@ -3604,9 +3614,10 @@ _RENDERERS['poll_block'] = function(b) {
   var totalVotes = options.reduce(function(sum, o){ return sum + (o.votes||0); }, 0) || 1;
   var optsHtml = options.map(function(opt){
     var pct = ((opt.votes||0) / totalVotes * 100).toFixed(1);
-    return '<div style="margin-bottom:12px;">' +
+    var k = opt.id || opt.text || '';
+    return '<div data-cb="bar" data-key="' + _esc(String(k)) + '" style="margin-bottom:12px;">' +
       '<div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:500;color:#374151;margin-bottom:4px;">' +
-      '<span>' + _esc(opt.text||'') + '</span><span>' + (opt.votes||0) + ' votes (' + pct + '%)</span></div>' +
+      '<span data-cb="label" data-key="' + _esc(String(k)) + '">' + _esc(opt.text||'') + '</span><span>' + (opt.votes||0) + ' votes (' + pct + '%)</span></div>' +
       '<div style="height:24px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">' +
       '<div style="width:' + pct + '%;height:100%;background:#7c3aed;opacity:0.15;border-radius:5px;"></div></div></div>';
   }).join('');
@@ -4738,12 +4749,12 @@ _RENDERERS['pros_cons_list'] = function(b) {
 
   var prosHtml = '';
   for (var i = 0; i < pros.length; i++) {
-    prosHtml += '<li class="pcl-pro-item-' + uid + '"><span class="pcl-pro-icon-' + uid + '">&#10003;</span><span>' + _esc(pros[i]) + '</span></li>';
+    prosHtml += '<li data-cb="item" data-key="' + _esc(String(pros[i])) + '" class="pcl-pro-item-' + uid + '"><span class="pcl-pro-icon-' + uid + '">&#10003;</span><span data-cb="label" data-key="' + _esc(String(pros[i])) + '">' + _esc(pros[i]) + '</span></li>';
   }
 
   var consHtml = '';
   for (var j = 0; j < cons.length; j++) {
-    consHtml += '<li class="pcl-con-item-' + uid + '"><span class="pcl-con-icon-' + uid + '">&#10007;</span><span>' + _esc(cons[j]) + '</span></li>';
+    consHtml += '<li data-cb="item" data-key="' + _esc(String(cons[j])) + '" class="pcl-con-item-' + uid + '"><span class="pcl-con-icon-' + uid + '">&#10007;</span><span data-cb="label" data-key="' + _esc(String(cons[j])) + '">' + _esc(cons[j]) + '</span></li>';
   }
 
   return '<style>' +
@@ -4824,7 +4835,8 @@ _RENDERERS['pricing_tier_group'] = function(b) {
   var tiersHtml = '';
   for (var i = 0; i < tiers.length; i++) {
     if (_RENDERERS['pricing_tier_card']) {
-      tiersHtml += '<div class="ptg-tier-' + uid + '">' + _RENDERERS['pricing_tier_card'](tiers[i]) + '</div>';
+      var planK = tiers[i].plan_name || tiers[i].name || '';
+      tiersHtml += '<div data-cb="item" data-key="' + _esc(String(planK)) + '" class="ptg-tier-' + uid + '">' + _RENDERERS['pricing_tier_card'](tiers[i]) + '</div>';
     }
   }
 
@@ -4900,8 +4912,9 @@ _RENDERERS['feature_matrix'] = function(b) {
   for (var i = 0; i < features.length; i++) {
     var feat = features[i];
     var featName = feat.name || '';
+    var k = _esc(String(featName));
     var tierVals = feat.tiers || {};
-    var rowHtml = '<td class="fm-td-' + uid + ' fm-td-feat-' + uid + '">' + _esc(featName) + '</td>';
+    var rowHtml = '<td data-cb="label" data-key="' + k + '" class="fm-td-' + uid + ' fm-td-feat-' + uid + '">' + _esc(featName) + '</td>';
     for (var j = 0; j < tiers.length; j++) {
       var tierName = tiers[j];
       var val = tierVals[tierName];
@@ -4915,7 +4928,7 @@ _RENDERERS['feature_matrix'] = function(b) {
       }
       rowHtml += '<td class="fm-td-' + uid + ' fm-td-center-' + uid + '">' + cell + '</td>';
     }
-    rowsHtml += '<tr class="fm-tr-' + uid + '">' + rowHtml + '</tr>';
+    rowsHtml += '<tr data-cb="item" data-key="' + k + '" class="fm-tr-' + uid + '">' + rowHtml + '</tr>';
   }
 
   return '<style>' +
@@ -4995,9 +5008,10 @@ _RENDERERS['product_spec_table'] = function(b) {
   for (var i = 0; i < specs.length; i++) {
     var s = specs[i];
     var note = s.note || '';
+    var specK = s.key || s.name || s.label || '';
     rowsHtml +=
-      '<tr class="pst-tr-' + uid + '">' +
-      '<td class="pst-td-label-' + uid + '">' + _esc(s.label || '') + '</td>' +
+      '<tr data-cb="item" data-key="' + _esc(String(specK)) + '" class="pst-tr-' + uid + '">' +
+      '<td data-cb="label" data-key="' + _esc(String(specK)) + '" class="pst-td-label-' + uid + '">' + _esc(s.label || '') + '</td>' +
       '<td class="pst-td-val-' + uid + '">' +
       _esc(s.value || '') +
       (note ? '<span class="pst-note-' + uid + '"> &mdash; ' + _esc(note) + '</span>' : '') +
@@ -5214,10 +5228,11 @@ _RENDERERS['icon_list'] = function(b) {
   var rowsHtml = items.map(function(item) {
     var color = item.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
     var icon  = item.icon || '•';
-    return '<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">' +
+    var k     = _esc(item.label || item.text || '');
+    return '<div data-cb="item" data-key="' + k + '" style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">' +
       '<div style="flex:0 0 ' + iconSize + ';height:' + iconSize + ';border-radius:50%;background:' + color + '18;display:flex;align-items:center;justify-content:center;font-size:' + (size==='lg'?'20px':size==='sm'?'13px':'16px') + ';">' + _esc(icon) + '</div>' +
       '<div style="flex:1;padding-top:' + (size==='lg'?'10px':'6px') + ';">' +
-      (item.label ? '<div style="font-size:' + fontSize + ';font-weight:700;color:var(--text,#111827);margin-bottom:2px;">' + _esc(item.label) + '</div>' : '') +
+      (item.label ? '<div data-cb="label" data-key="' + k + '" style="font-size:' + fontSize + ';font-weight:700;color:var(--text,#111827);margin-bottom:2px;">' + _esc(item.label) + '</div>' : '') +
       (item.text ? '<div style="font-size:' + fontSize + ';color:var(--muted,#4b5563);line-height:1.5;">' + _markdownToHtml(item.text) + '</div>' : '') +
       '</div></div>';
   }).join('');
@@ -5275,18 +5290,19 @@ _RENDERERS['metric_row'] = function(b) {
   var uid     = Math.random().toString(36).substr(2, 6);
   var metrics = b.metrics || b.items || [];
   var cols    = Math.min(metrics.length, b.cols || 4);
-  var metricsHtml = metrics.map(function(m) {
+  var metricsHtml = metrics.map(function(m, i) {
     var accent = m.accent || m.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
     var trend  = m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '';
     var trendC = m.trend === 'up' ? '#16a34a' : m.trend === 'down' ? '#dc2626' : '#6b7280';
-    return '<div style="text-align:center;padding:16px 8px;">' +
+    var mk = _esc(String(m.label || m.id || m.title || m.name || i));
+    return '<div data-cb="tile" data-key="' + mk + '" style="text-align:center;padding:16px 8px;">' +
       '<div style="font-size:32px;font-weight:900;color:' + accent + ';line-height:1;margin-bottom:4px;">' +
       (m.prefix ? '<span style="font-size:18px;">' + _esc(m.prefix) + '</span>' : '') +
       _esc(m.value || '') +
       (m.suffix ? '<span style="font-size:18px;">' + _esc(m.suffix) + '</span>' : '') +
       (trend ? '<span style="font-size:16px;color:' + trendC + ';margin-left:4px;">' + trend + '</span>' : '') +
       '</div>' +
-      '<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.04em;">' + _esc(m.label || '') + '</div>' +
+      '<div data-cb="label" data-key="' + mk + '" style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.04em;">' + _esc(m.label || '') + '</div>' +
       (m.sub ? '<div style="font-size:11px;color:var(--muted,#9ca3af);margin-top:2px;">' + _esc(m.sub) + '</div>' : '') +
       '</div>';
   }).join('<div style="width:1px;background:var(--border,#e5e7eb);margin:12px 0;"></div>');
@@ -5320,9 +5336,10 @@ _RENDERERS['numbered_list'] = function(b) {
       var tagsHtml = (item.tags || []).map(function(t) {
         return '<span style="font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.05em;padding:2px 8px;border:1px solid ' + accent + '55;color:' + accent + ';border-radius:3px;margin-right:6px;">' + _esc(t) + '</span>';
       }).join('');
-      return '<div style="display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;' + topBorder + '">'
+      var kCard = _esc(String(item.title || item.label || ''));
+      return '<div data-cb="item" data-key="' + kCard + '" style="display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;' + topBorder + '">'
         + '<div style="grid-row:span 2;font-size:30px;font-weight:800;color:' + numC + ';line-height:1;">' + num + '</div>'
-        + '<div style="font-weight:700;font-size:15px;color:' + textC + ';display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + _esc(item.title || '') + tagsHtml + '</div>'
+        + '<div data-cb="label" data-key="' + kCard + '" style="font-weight:700;font-size:15px;color:' + textC + ';display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + _esc(item.title || '') + tagsHtml + '</div>'
         + '<div style="color:' + dimC + ';font-size:13.5px;line-height:1.55;">' + _markdownToHtml(item.text || '') + '</div>'
         + '</div>';
     }).join('');
@@ -5338,9 +5355,10 @@ _RENDERERS['numbered_list'] = function(b) {
     var wrap = style === 'large'
       ? 'position:relative;padding-left:44px;margin-bottom:28px;'
       : 'display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;';
-    return '<div style="' + wrap + '">' + numEl +
+    var kRow = _esc(String(item.title || item.label || ''));
+    return '<div data-cb="item" data-key="' + kRow + '" style="' + wrap + '">' + numEl +
       '<div' + (style==='large'?' style="padding-top:4px;"':'') + '>' +
-      (item.label ? '<div style="font-size:15px;font-weight:700;color:var(--text,#111827);margin-bottom:3px;">' + _esc(item.label) + '</div>' : '') +
+      (item.label ? '<div data-cb="label" data-key="' + kRow + '" style="font-size:15px;font-weight:700;color:var(--text,#111827);margin-bottom:3px;">' + _esc(item.label) + '</div>' : '') +
       (item.text  ? '<div style="font-size:14px;color:var(--muted,#4b5563);line-height:1.6;">' + _markdownToHtml(item.text) + '</div>' : '') +
       '</div></div>';
   }).join('');
@@ -5448,7 +5466,7 @@ _RENDERERS['chip_group'] = function(b) {
     var tc     = c.active ? '#fff' : (c.color || '#374151');
     var tag    = c.url ? 'a href="' + _esc(c.url) + '" target="' + target + '" rel="noopener"' : 'span';
     var endTag = c.url ? 'a' : 'span';
-    return '<' + tag + ' style="display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (c.url ? 'pointer' : 'default') + ';">' + _esc(c.label || '') + '</' + endTag + '>';
+    return '<' + tag + ' data-cb="item" data-key="' + _esc(c.label || '') + '" style="display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (c.url ? 'pointer' : 'default') + ';">' + _esc(c.label || '') + '</' + endTag + '>';
   }).join('');
   var wrap = scroll
     ? 'display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none;'
@@ -5521,7 +5539,8 @@ _RENDERERS['agenda_block'] = function(b) {
   var typeColors = { break: '#f3f4f6', keynote: '#ede9fe', workshop: '#dbeafe', panel: '#d1fae5', social: '#fef3c7' };
   var slotsHtml = slots.map(function(s) {
     var bg = typeColors[s.type] || '#fff';
-    return '<div style="display:flex;gap:0;border-bottom:1px solid #f3f4f6;">' +
+    var k = s.time || s.title || '';
+    return '<div data-cb="item" data-key="' + _esc(k) + '" style="display:flex;gap:0;border-bottom:1px solid #f3f4f6;">' +
       '<div style="flex:0 0 72px;padding:12px 8px;font-size:12px;font-weight:600;color:' + accent + ';border-right:2px solid ' + accent + ';text-align:right;">' + _esc(s.time || '') + '</div>' +
       '<div style="flex:1;padding:10px 14px;background:' + bg + ';">' +
       '<div style="font-size:14px;font-weight:600;color:var(--text,#111827);">' + _esc(s.title || '') + '</div>' +
@@ -5575,7 +5594,8 @@ _RENDERERS['action_items'] = function(b) {
   };
   var rowsHtml = items.map(function(item, i) {
     var cfg = statusCfg[item.status] || statusCfg.open;
-    return '<tr style="background:' + (i % 2 === 0 ? '#fff' : '#f9fafb') + ';">' +
+    var key = item.id || item.action || item.owner || String(i);
+    return '<tr data-cb="item" data-key="' + _esc(key) + '" style="background:' + (i % 2 === 0 ? '#fff' : '#f9fafb') + ';">' +
       '<td style="padding:10px 14px;font-size:13px;color:var(--text,#111827);">' + _markdownToHtml(item.action || '') + '</td>' +
       '<td style="padding:10px 14px;font-size:12px;color:var(--muted,#6b7280);white-space:nowrap;">' + _esc(item.owner || '—') + '</td>' +
       '<td style="padding:10px 14px;font-size:12px;color:var(--muted,#6b7280);white-space:nowrap;">' + _esc(item.due || '—') + '</td>' +
@@ -5634,14 +5654,15 @@ _RENDERERS['icon_stat_row'] = function(b) {
   var cols  = Math.min(stats.length, b.cols || 4);
   var items = stats.map(function(s) {
     var color = s.accent || s.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
-    return '<div style="text-align:center;padding:20px 12px;">' +
+    var k     = _esc(s.label || s.value || s.icon || '');
+    return '<div data-cb="tile" data-key="' + k + '" style="text-align:center;padding:20px 12px;">' +
       (s.icon ? '<div style="font-size:32px;margin-bottom:8px;">' + _esc(s.icon) + '</div>' : '<div style="width:40px;height:40px;border-radius:50%;background:' + color + '18;margin:0 auto 8px;"></div>') +
       '<div style="font-size:28px;font-weight:900;color:' + color + ';line-height:1;margin-bottom:4px;">' +
       (s.prefix ? '<span style="font-size:16px;">' + _esc(s.prefix) + '</span>' : '') +
       _esc(s.value || '') +
       (s.suffix ? '<span style="font-size:16px;">' + _esc(s.suffix) + '</span>' : '') +
       '</div>' +
-      '<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.04em;">' + _esc(s.label || '') + '</div>' +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.04em;">' + _esc(s.label || '') + '</div>' +
       (s.sub ? '<div style="font-size:11px;color:var(--muted,#9ca3af);margin-top:2px;">' + _esc(s.sub) + '</div>' : '') +
       '</div>';
   }).join('');
@@ -6330,10 +6351,12 @@ _RENDERERS['option_plan_builder'] = function(b) {
     var defaultOn = !!opt.default_on;
     var cid = 'opb-' + uid + '-' + i;
     var sign = priceDelta >= 0 ? '+' : '';
+    var rawKey = opt.id || opt.label || '';
+    var keyAttr = _esc(String(rawKey));
     optionsHtml +=
-      '<label for="' + cid + '" style="display:flex;align-items:center;justify-content:space-between;' +
+      '<label data-cb="item" data-key="' + keyAttr + '" for="' + cid + '" style="display:flex;align-items:center;justify-content:space-between;' +
       'padding:8px 4px;border-bottom:1px solid #f1f3f4;cursor:pointer;font-size:0.85rem;color:#3c4043;">' +
-      '<span><input type="checkbox" id="' + cid + '" class="opb-input-' + uid + '" ' +
+      '<span data-cb="label" data-key="' + keyAttr + '"><input type="checkbox" id="' + cid + '" class="opb-input-' + uid + '" ' +
       'data-price="' + priceDelta + '" data-label="' + _esc(label) + '" ' +
       (defaultOn ? 'checked' : '') + ' style="margin-right:8px;">' + _esc(label) + '</span>' +
       '<span style="color:#5f6368;">' + sign + priceDelta + '</span>' +
@@ -8331,6 +8354,21 @@ _RENDERERS['marquee'] = function(b) {
   var pause = b.pause_on_hover !== false;
 
   function renderItem(item) {
+    var k = typeof item === 'string' ? item : (item.text || item.label || item.image_url || item.icon || '');
+    if (typeof item === 'string') return '<span data-cb="tile" data-key="' + _esc(k) + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
+    var inner = '';
+    if (item.image_url) {
+      var imgStyle = 'height:32px;object-fit:contain;' + (b.color_icons ? '' : 'opacity:0.7;filter:grayscale(1);');
+      inner += '<img src="' + _esc(item.image_url) + '" alt="' + _esc(item.label||'') + '" style="' + imgStyle + '">';
+    }
+    if (item.icon)      inner += '<span style="font-size:1.1rem;">' + _esc(item.icon) + '</span>';
+    if (item.text || item.label) inner += '<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(item.text || item.label) + '</span>';
+    return item.url
+      ? '<a data-cb="tile" data-key="' + _esc(k) + '" href="' + _safeUrl(item.url) + '" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">' + inner + '</a>'
+      : '<span data-cb="tile" data-key="' + _esc(k) + '" style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
+  }
+
+  function renderItemDup(item) {
     if (typeof item === 'string') return '<span style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
     var inner = '';
     if (item.image_url) {
@@ -8348,8 +8386,11 @@ _RENDERERS['marquee'] = function(b) {
   var itemHtml = items.map(function(item) {
     return '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderItem(item) + sepHtml + '</span>';
   }).join('');
+  var itemHtmlDup = items.map(function(item) {
+    return '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderItemDup(item) + sepHtml + '</span>';
+  }).join('');
   // Duplicate for seamless loop
-  var track = itemHtml + itemHtml;
+  var track = itemHtml + itemHtmlDup;
 
   var css = '<style>'
     + '@keyframes ' + uid + '{from{transform:translateX(0)}to{transform:translateX(-50%)}}'
@@ -9494,9 +9535,10 @@ _RENDERERS['brevet_timeline'] = function(b) {
   var evHtml = '';
   for (var i = 0; i < events.length; i++) {
     var ev = events[i];
+    var evKey = _esc(ev.date || '');
     evHtml +=
-      '<div class="' + uid + 'ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;">' +
-        '<div style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;' +
+      '<div data-cb="item" data-key="' + evKey + '" class="' + uid + 'ev" style="position:relative;margin-bottom:1.25rem;padding-left:62px;">' +
+        '<div data-cb="label" data-key="' + evKey + '" style="position:absolute;left:0;top:6px;min-width:54px;max-width:54px;' +
           'padding:3px 4px;background:' + _esc(accent) + ';color:#fff;' +
           'font-size:0.58rem;font-weight:800;text-align:center;border-radius:6px;' +
           'letter-spacing:0.01em;line-height:1.4;z-index:2;">' +
@@ -9650,10 +9692,11 @@ _RENDERERS['brevet_automatismes'] = function(b) {
   var rowsHtml = '';
   for (var i = 0; i < questions.length; i++) {
     var q = questions[i];
+    var qKey = _esc(q.question || '');
     rowsHtml +=
-      '<div style="display:flex;align-items:center;justify-content:space-between;' +
+      '<div data-cb="tile" data-key="' + qKey + '" style="display:flex;align-items:center;justify-content:space-between;' +
         'padding:0.7rem 1rem;border-bottom:1px solid rgba(16,185,129,0.1);">' +
-        '<span style="font-size:0.95rem;color:#335476;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">' +
+        '<span data-cb="label" data-key="' + qKey + '" style="font-size:0.95rem;color:#335476;font-family:\'Courier New\',monospace;flex:1;padding-right:1rem;">' +
           '<span style="color:#085d41;font-weight:700;margin-right:0.4rem;">' + (i+1) + '.</span>' +
           _esc(q.question || '') +
         '</span>' +
@@ -10142,10 +10185,11 @@ _RENDERERS['catalogue_provenance'] = function(b) {
     var s = sources[i];
     var color = s.color || CATALOGUE_COLORS[s.catalogue] || '#64748b';
     var stemH = 40 + (i % 2 === 0 ? 0 : 20); // stagger stem heights so labels don't collide
+    var k = _esc(s.id || s.name || s.catalogue || s.what || '');
     cols +=
-      '<div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;">' +
+      '<div data-cb="item" data-key="' + k + '" style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;">' +
         // Target label at top (what in the card this points to)
-        '<div style="font-size:0.6rem;font-weight:700;color:' + color + ';text-align:center;' +
+        '<div data-cb="label" data-key="' + k + '" style="font-size:0.6rem;font-weight:700;color:' + color + ';text-align:center;' +
           'padding:2px 8px;border:1px solid ' + color + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
           'background:' + color + '0d;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;">' +
           _esc(s.target || s.what || '') +
@@ -16544,8 +16588,9 @@ _RENDERERS['chartjs_bar'] = function(b) {
       var bw    = _linScale(val, 0, maxVal, 0, chartW);
       var y     = padT + i * (barH + barGap);
       var color = d.color || barColor;
-      svg += '<text x="' + (padL - 6) + '" y="' + (y + barH/2 + 4) + '" text-anchor="end" font-size="11" fill="#334155">' + _esc((d.label||'').substr(0,16)) + '</text>';
-      svg += '<rect x="' + padL + '" y="' + y + '" width="' + bw + '" height="' + barH + '" rx="3" fill="' + _esc(color) + '"/>';
+      var k = _esc(d.label || '');
+      svg += '<text data-cb="label" data-key="' + k + '" x="' + (padL - 6) + '" y="' + (y + barH/2 + 4) + '" text-anchor="end" font-size="11" fill="#334155">' + _esc((d.label||'').substr(0,16)) + '</text>';
+      svg += '<rect data-cb="bar" data-key="' + k + '" x="' + padL + '" y="' + y + '" width="' + bw + '" height="' + barH + '" rx="3" fill="' + _esc(color) + '"/>';
       if (showVals) {
         svg += '<text x="' + (padL + bw + 4) + '" y="' + (y + barH/2 + 4) + '" font-size="10" fill="#475569">' + val + '</text>';
       }
@@ -16581,12 +16626,13 @@ _RENDERERS['chartjs_bar'] = function(b) {
       var x     = cx - barW / 2;
       var y     = padT + chartH - bh;
       var color = d.color || barColor;
-      svg += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + bh + '" rx="3" fill="' + _esc(color) + '"/>';
+      var k = _esc(d.label || '');
+      svg += '<rect data-cb="bar" data-key="' + k + '" x="' + x + '" y="' + y + '" width="' + barW + '" height="' + bh + '" rx="3" fill="' + _esc(color) + '"/>';
       if (showVals && bh > 12) {
         svg += '<text x="' + cx + '" y="' + (y - 3) + '" text-anchor="middle" font-size="9" fill="#475569">' + val + '</text>';
       }
       var lbl = (d.label||'').substr(0,10);
-      svg += '<text x="' + cx + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="10" fill="#64748b">' + _esc(lbl) + '</text>';
+      svg += '<text data-cb="label" data-key="' + k + '" x="' + cx + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="10" fill="#64748b">' + _esc(lbl) + '</text>';
     });
 
     svg += '</svg>';
@@ -16651,7 +16697,7 @@ _RENDERERS['chartjs_line'] = function(b) {
   // (surface-parity debt: chartjs_line). 2026-09-27.
   labels.forEach(function(lbl, i) {
     if (n <= 12 || i % Math.ceil(n / 10) === 0) {
-      svg += '<text x="' + px(i) + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="9" fill="#64748b">' + _esc(lbl||'') + '</text>';
+      svg += '<text data-cb="label" data-key="' + _esc(lbl||'') + '" x="' + px(i) + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="9" fill="#64748b">' + _esc(lbl||'') + '</text>';
     }
   });
 
@@ -16682,7 +16728,8 @@ _RENDERERS['chartjs_line'] = function(b) {
       svg += '<path d="' + areaD + '" fill="' + _esc(color) + '" fill-opacity="0.18" stroke="none"/>';
     }
 
-    svg += '<path d="' + pathD + '" fill="none" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    var dsKey = _esc(ds.label || ds.name || String(di));
+    svg += '<path data-cb="branch" data-key="' + dsKey + '" d="' + pathD + '" fill="none" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
 
     if (showPts) {
       pts.forEach(function(p) {
@@ -16744,9 +16791,10 @@ _RENDERERS['chartjs_pie'] = function(b) {
     var largeArc = pct > 0.5 ? 1 : 0;
     var color    = d.color || colors[i % colors.length];
 
+    var k = _esc(d.label || d.name || d.id || ('Slice ' + (i + 1)));
     var pathD = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 +
                 ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z';
-    svg += '<path d="' + pathD + '" fill="' + _esc(color) + '" stroke="#fff" stroke-width="1.5"/>';
+    svg += '<path data-cb="arc" data-key="' + k + '" d="' + pathD + '" fill="' + _esc(color) + '" stroke="#fff" stroke-width="1.5"/>';
     startAngle = endAngle;
   });
 
@@ -16767,7 +16815,8 @@ _RENDERERS['chartjs_pie'] = function(b) {
     var lx    = (i % legCols) * legW + 4;
     var ly    = height + Math.floor(i / legCols) * 16 + 8;
     svg += '<rect x="' + lx + '" y="' + (ly - 8) + '" width="10" height="10" rx="2" fill="' + _esc(color) + '"/>';
-    svg += '<text x="' + (lx + 13) + '" y="' + ly + '" font-size="9" fill="#64748b">' + _esc((d.label||'').substr(0,14)) + '</text>';
+    var k = _esc(d.label || d.name || d.id || ('Slice ' + (i + 1)));
+    svg += '<text data-cb="label" data-key="' + k + '" x="' + (lx + 13) + '" y="' + ly + '" font-size="9" fill="#64748b">' + _esc((d.label||'').substr(0,14)) + '</text>';
   });
 
   svg += '</svg>';
@@ -16909,7 +16958,8 @@ _RENDERERS['data_table_sortable'] = function(b) {
     // onRowClick wire has always been declarable, documented and INERT — it
     // bound to a selector no atom satisfied. Emitting it here makes the wire
     // real for every surface that declares it, not just the one that found it.
-    html += '<tr data-row-json="' + _esc(_jsJson(row)) + '"' +
+    var rKey = _esc(String(row && row.id !== undefined ? row.id : (row && (row.name || row.label || row.title || (columns.length > 0 && row[columns[0].key] !== undefined ? row[columns[0].key] : '')))));
+    html += '<tr data-cb="item" data-key="' + rKey + '" data-row-json="' + _esc(_jsJson(row)) + '"' +
       (rowId !== undefined ? ' data-row-id="' + _esc(String(rowId)) + '"' : '') +
       ' style="' + bg + '">';
     columns.forEach(function(col) {
@@ -17151,12 +17201,13 @@ _RENDERERS['mini_sparkline_set'] = function(b) {
 
   var html = '<div class="a2ui-sparkline-set">';
 
-  sparklines.forEach(function(sp) {
+  sparklines.forEach(function(sp, si) {
     var data  = (sp.data || []).map(function(v){ return parseFloat(v)||0; });
     var color = sp.color || '#4f46e5';
     var label = sp.label || '';
     var unit  = sp.unit  || '';
     var last  = data.length ? data[data.length-1] : 0;
+    var sk    = _esc(String(sp.name || sp.id || sp.label || sp.title || si));
 
     var svgW = 80, svgH = 30;
     var minV = Math.min.apply(null, data);
@@ -17176,8 +17227,8 @@ _RENDERERS['mini_sparkline_set'] = function(b) {
     }
     sparkSvg += '</svg>';
 
-    html += '<div class="a2ui-sparkline-row">';
-    html += '<span class="a2ui-sparkline-label">' + _esc(label) + '</span>';
+    html += '<div data-cb="item" data-key="' + sk + '" class="a2ui-sparkline-row">';
+    html += '<span data-cb="label" data-key="' + sk + '" class="a2ui-sparkline-label">' + _esc(label) + '</span>';
     html += sparkSvg;
     html += '<span class="a2ui-sparkline-val" style="color:' + _esc(color) + ';">' + _esc(String(last)) + (unit ? ' '+_esc(unit) : '') + '</span>';
     html += '</div>';
@@ -18006,11 +18057,12 @@ _RENDERERS['entity_list'] = function(b) {
   entities.forEach(function(entity) {
     var typeColor = typeColors[(entity.type||'').toLowerCase()] || '#94a3b8';
     var item = '';
+    var k = _esc(String(entity.id || entity.name || ''));
 
     if (entity.link) {
-      item += '<a class="a2ui-entity-card" href="' + _esc(entity.link) + '" target="_blank" rel="noopener" style="text-decoration:none;">';
+      item += '<a data-cb="item" data-key="' + k + '" class="a2ui-entity-card" href="' + _esc(entity.link) + '" target="_blank" rel="noopener" style="text-decoration:none;">';
     } else {
-      item += '<div class="a2ui-entity-card">';
+      item += '<div data-cb="item" data-key="' + k + '" class="a2ui-entity-card">';
     }
 
     // Avatar: icon (schema) beats avatar_url beats initials.
@@ -18027,7 +18079,7 @@ _RENDERERS['entity_list'] = function(b) {
 
     // Info
     item += '<div class="a2ui-entity-info">';
-    item += '<div class="a2ui-entity-name">' + _esc(entity.name || '') + '</div>';
+    item += '<div data-cb="label" data-key="' + k + '" class="a2ui-entity-name">' + _esc(entity.name || '') + '</div>';
     if (entity.type) item += '<span class="a2ui-entity-type" style="background:' + typeColor + '20;color:' + typeColor + ';border:1px solid ' + typeColor + '40;">' + _esc(entity.type) + '</span>';
     if (entity.status) {
       var sc = statusColors[entity.status] || ['#f3f4f6', '#6b7280'];
@@ -18232,9 +18284,10 @@ _RENDERERS['feature_grid'] = function(b) {
   var cardsHtml = '';
   for (var i = 0; i < features.length; i++) {
     var f = features[i];
-    cardsHtml += '<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
+    var k = _esc(String(f.title || ''));
+    cardsHtml += '<div data-cb="tile" data-key="' + k + '" style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
       + (f.icon ? '<div style="font-size:2rem;margin-bottom:12px;">' + _esc(f.icon) + '</div>' : '')
-      + (f.title ? '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:8px;">' + _esc(f.title) + '</div>' : '')
+      + (f.title ? '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:8px;">' + _esc(f.title) + '</div>' : '')
       + (f.description ? '<div style="font-size:0.875rem;color:#4b5563;line-height:1.6;">' + _esc(f.description) + '</div>' : '')
       + '</div>';
   }
@@ -18421,8 +18474,8 @@ _RENDERERS['llm_comparison_table'] = function(b) {
     var strengths = m.strengths ? m.strengths.join(', ') : '';
     var weaknesses = m.weaknesses ? m.weaknesses.join(', ') : '';
     var rowBg = i % 2 === 0 ? '#fff' : '#f9fafb';
-    rows += '<tr style="background:' + rowBg + ';">'
-      + '<td style="padding:10px 12px;font-weight:600;color:#111827;font-size:0.875rem;">' + _esc(m.name || '') + '</td>'
+    rows += '<tr data-cb="item" data-key="' + _esc(m.name || '') + '" style="background:' + rowBg + ';">'
+      + '<td data-cb="label" data-key="' + _esc(m.name || '') + '" style="padding:10px 12px;font-weight:600;color:#111827;font-size:0.875rem;">' + _esc(m.name || '') + '</td>'
       + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.params || '—') + '</td>'
       + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.context_window ? String(m.context_window) : '—') + '</td>'
       + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.price_per_1m_tokens ? String(m.price_per_1m_tokens) : '—') + '</td>'
@@ -19029,6 +19082,9 @@ _RENDERERS['agent_sketchpad'] = function(b) {
     var raw = (s && typeof s.element === 'string') ? s.element : '';
     var el = raw ? _validateSketchpadElement(raw) : null;
     if (!el) { elements += '<!-- agent_sketchpad: element ' + i + ' skipped, failed validation -->'; continue; }
+    var k = (s && (s.id || s.label || s.title)) || String(i);
+    el.attrs['data-cb'] = 'link';
+    el.attrs['data-key'] = k;
     if (i === lastIdx) {
       el.attrs['stroke-dasharray'] = '1000';
       el.attrs['stroke-dashoffset'] = '1000';
@@ -19542,8 +19598,9 @@ _RENDERERS['chat_sequence'] = function(b) {
   messages.forEach(function(msg, i) {
     var isUser = msg.role === 'user' || msg.align === 'right';
     var delay  = (i * 0.28) + 's';
-    html += '<div style="display:flex;flex-direction:column;align-items:' + (isUser?'flex-end':'flex-start') + ';animation:chat-in 0.4s ease ' + delay + ' both;">'
-      + '<div style="font-size:0.7rem;color:#6c7586;margin-bottom:4px;">' + _esc(msg.name || (isUser ? 'You' : 'Assistant')) + '</div>'
+    var k = _esc(msg.id || msg.text || msg.content || msg.name || msg.role || '');
+    html += '<div data-cb="item" data-key="' + k + '" style="display:flex;flex-direction:column;align-items:' + (isUser?'flex-end':'flex-start') + ';animation:chat-in 0.4s ease ' + delay + ' both;">'
+      + '<div data-cb="label" data-key="' + k + '" style="font-size:0.7rem;color:#6c7586;margin-bottom:4px;">' + _esc(msg.name || (isUser ? 'You' : 'Assistant')) + '</div>'
       + '<div style="max-width:82%;background:' + (isUser?'#4f46e5':'#fff') + ';color:' + (isUser?'#fff':'#1f2937') + ';border-radius:' + (isUser?'16px 4px 16px 16px':'4px 16px 16px 16px') + ';padding:10px 14px;font-size:0.875rem;line-height:1.55;' + (isUser?'':'box-shadow:0 1px 4px rgba(0,0,0,0.07);') + '">' + _markdownToHtml(msg.text || msg.content || '') + '</div>'
       + '</div>';
   });
@@ -19917,6 +19974,11 @@ _RENDERERS['marquee_strip'] = function(b) {
   var itemHtml = items.map(function(item) {
     var label = typeof item === 'string' ? item : (item.text || item.label || '');
     var icon  = typeof item === 'object' ? (item.icon || '') : '';
+    return '<span data-cb="tile" data-key="' + _esc(label) + '" style="padding:0 24px;white-space:nowrap;">' + (icon ? _esc(icon) + ' ' : '') + _esc(label) + ' <span style="opacity:0.3;margin-left:24px;">' + _esc(sep) + '</span></span>';
+  }).join('');
+  var itemHtmlDup = items.map(function(item) {
+    var label = typeof item === 'string' ? item : (item.text || item.label || '');
+    var icon  = typeof item === 'object' ? (item.icon || '') : '';
     return '<span style="padding:0 24px;white-space:nowrap;">' + (icon ? _esc(icon) + ' ' : '') + _esc(label) + ' <span style="opacity:0.3;margin-left:24px;">' + _esc(sep) + '</span></span>';
   }).join('');
   return '<style>'
@@ -19925,7 +19987,7 @@ _RENDERERS['marquee_strip'] = function(b) {
     + '@keyframes mq-' + uid + '{from{transform:translateX(0);}to{transform:translateX(-50%);}}'
     + '</style>'
     + '<div style="background:' + _esc(bg) + ';border-radius:12px;padding:14px 0;margin:1rem 0;overflow:hidden;color:' + _esc(color) + ';font-size:0.9rem;font-weight:500;">'
-    + '<div class="mq-' + uid + '">' + itemHtml + itemHtml + '</div>'
+    + '<div class="mq-' + uid + '">' + itemHtml + itemHtmlDup + '</div>'
     + '</div>';
 };
 
@@ -19991,9 +20053,10 @@ _RENDERERS['counter_group'] = function(b) {
     var label = stat.label   || stat.title || '';
     var color = stat.color   || '#4f46e5';
     var notLast = i < stats.length - 1;
-    return '<div style="flex:1;min-width:90px;text-align:center;padding:0 16px;' + (notLast?'border-right:1px solid #eaeaea;border-right:1px solid var(--a2ui-border,#eaeaea);':'') + '">'
+    var sKey = _esc(String(label));
+    return '<div data-cb="bar" data-key="' + sKey + '" style="flex:1;min-width:90px;text-align:center;padding:0 16px;' + (notLast?'border-right:1px solid #eaeaea;border-right:1px solid var(--a2ui-border,#eaeaea);':'') + '">'
       + '<div id="cg-' + uid + '-' + i + '" data-e="' + val + '" data-d="' + dec + '" data-p="' + _esc(pre) + '" data-s="' + _esc(suf) + '" style="font-size:2.4rem;font-weight:800;color:' + _esc(color) + ';line-height:1;">' + _esc(pre) + '0' + _esc(suf) + '</div>'
-      + (label ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);font-weight:500;margin-top:6px;">' + _esc(label) + '</div>' : '')
+      + (label ? '<div data-cb="label" data-key="' + sKey + '" style="font-size:0.78rem;color:var(--muted,#5f6368);font-weight:500;margin-top:6px;">' + _esc(label) + '</div>' : '')
       + '</div>';
   }).join('');
   return '<div id="cg-wrap-' + uid + '" style="border:1px solid #e5e7eb;border-radius:16px;padding:28px 8px;margin:1rem 0;display:flex;flex-wrap:wrap;gap:0;background:#fff;align-items:center;">'
@@ -20026,9 +20089,11 @@ _RENDERERS['orbit_diagram'] = function(b) {
     var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
     var x = Math.round(cx + Math.cos(angle) * radius);
     var y = Math.round(cy + Math.sin(angle) * radius);
+    var rawKey = typeof node === 'string' ? node : (node.label || node.text || '');
+    var keyAttr = _esc(String(rawKey));
     var label  = typeof node === 'string' ? node : (node.label || node.text || '');
     var nc     = typeof node === 'object' && node.color ? node.color : color;
-    return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + _esc(nc) + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
+    return '<div data-cb="node" data-key="' + keyAttr + '" style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + _esc(nc) + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
   }).join('');
   var svgLines = nodes.map(function(_, i) {
     var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
@@ -20561,6 +20626,7 @@ _RENDERERS['match_schedule'] = function(b) {
 
   if ((b.layout || 'table') === 'cards') {
     var cards = rounds.map(function(r, ri) {
+      var rk = _esc(r.round || r.label || 'Round ' + (ri + 1));
       var label = _esc(r.label || 'Round ' + (ri + 1));
       var items = (r.matches || []).map(function(m) {
         return '<div style="border:1px solid var(--border,#e8eaed);border-radius:10px;padding:12px 14px;margin:8px 0;">' +
@@ -20573,8 +20639,8 @@ _RENDERERS['match_schedule'] = function(b) {
             '<span style="flex:1;font-weight:600;">' + team(m.team_b) + '</span>' +
           '</div></div>';
       }).join('');
-      return '<div style="margin:1rem 0;">' +
-        '<div style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#4f46e5);">' + label + '</div>' +
+      return '<div data-cb="item" data-key="' + rk + '" style="margin:1rem 0;">' +
+        '<div data-cb="label" data-key="' + rk + '" style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#4f46e5);">' + label + '</div>' +
         items + '</div>';
     }).join('');
     return '<div style="margin:1.2rem 0;">' + cards + '</div>';
@@ -20595,9 +20661,10 @@ _RENDERERS['match_schedule'] = function(b) {
   var head = '<tr><th style="' + th + '">Round</th>' +
     courts.map(function(c) { return '<th style="' + th + '">' + _esc(c) + '</th>'; }).join('') + '</tr>';
   var body = rounds.map(function(r, ri) {
+    var rk = _esc(r.round || r.label || ri + 1);
     var byCourt = {};
     (r.matches || []).forEach(function(m, i) { byCourt[m.court || 'Court ' + (i + 1)] = m; });
-    return '<tr><td style="' + td + 'font-weight:700;">' + _esc(r.label || ri + 1) + '</td>' +
+    return '<tr data-cb="item" data-key="' + rk + '"><td data-cb="label" data-key="' + rk + '" style="' + td + 'font-weight:700;">' + _esc(r.label || ri + 1) + '</td>' +
       courts.map(function(c) {
         var m = byCourt[c];
         if (!m) return '<td style="' + td + '"></td>';
@@ -20867,11 +20934,12 @@ _RENDERERS['concept_ladder'] = function(b) {
     var fn = _RENDERERS[rung.component || rung.type] || _RENDERERS['concept_rung'];
     var cardHtml = fn(rung);
     var componentId = _esc(rung.id || ('rung-' + (i + 1)));
+    var rKey = _esc(rung.id || rung.title || ('rung-' + (i + 1)));
     var badge = _esc(rung.badge === undefined || rung.badge === null ? String(i + 1) : rung.badge);
-    rows += '<div data-component-id="' + componentId + '" style="display:grid;'
+    rows += '<div data-cb="item" data-key="' + rKey + '" data-component-id="' + componentId + '" style="display:grid;'
       + 'grid-template-columns:2.4rem minmax(0,1fr);gap:1rem;scroll-margin-top:1.5rem;">'
       + '<div style="display:flex;flex-direction:column;align-items:center;">'
-      + '<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
+      + '<div data-cb="label" data-key="' + rKey + '" style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
       + 'justify-content:center;font-family:' + _CF_LABEL + ';font-weight:600;font-size:0.85rem;'
       + 'flex-shrink:0;background:' + nodeBg + ';color:' + nodeFg + ';">' + badge + '</div>'
       + connector
@@ -21194,7 +21262,8 @@ _RENDERERS['dark_feature_grid'] = function(b) {
   for (var i = 0; i < features.length; i++) {
     var f      = features[i];
     var colour = f.colour || accent;
-    cards += '<div style="' +
+    var fKey = _esc(String(f.title || ''));
+    cards += '<div data-cb="tile" data-key="' + fKey + '" style="' +
       'background:#0f1117;' +
       'border:1px solid rgba(255,255,255,0.07);' +
       'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:22px;' +
@@ -21205,7 +21274,7 @@ _RENDERERS['dark_feature_grid'] = function(b) {
       'display:flex;align-items:center;justify-content:center;font-size:1.2rem;">' +
       (f.icon ? _esc(f.icon) : '◆') +
       '</div>' +
-      '<div style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.9);">' + _esc(f.title || '') + '</div>' +
+      '<div data-cb="label" data-key="' + fKey + '" style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.9);">' + _esc(f.title || '') + '</div>' +
       '<div style="font-size:0.8rem;color:rgba(255,255,255,0.45);line-height:1.6;">' + _esc(f.description || '') + '</div>' +
       '</div>';
   }
@@ -21846,9 +21915,11 @@ _RENDERERS['next_step_strip'] = function(b) {
   var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
   steps.forEach(function(s, i) {
     var isLast = i === steps.length - 1;
-    html += '<div style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
+    var rawKey = typeof s === 'string' ? s : (s.title || s.label || '');
+    var keyAttr = _esc(String(rawKey));
+    html += '<div data-cb="item" data-key="' + keyAttr + '" style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
       + '<div style="font-size:1.4rem;font-weight:900;color:' + accent + ';margin-bottom:6px;">' + _esc(String(s.number || (i + 1))) + '</div>'
-      + '<div style="font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;">' + _esc(s.label || '') + '</div>'
+      + '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;">' + _esc(s.label || '') + '</div>'
       + '<div style="font-size:0.8rem;color:var(--muted);">' + _esc(s.detail || s.action || '') + '</div>'
       + (s.url ? '<a href="' + _esc(s.url) + '" target="_top" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:' + accent + ';text-decoration:none;">Open →</a>' : '')
       + '</div>';
@@ -22042,8 +22113,8 @@ _RENDERERS['live_vote'] = function(b) {
     + '<div id="lv-btns-' + uid + '">' + optBtns + '</div>'
     + '<div id="lv-results-' + uid + '">'
     + options.map(function(o, i) {
-        return '<div class="lv-bar-row-' + uid + '">'
-          + '<div class="lv-bar-label-' + uid + '">' + _esc(o) + '</div>'
+        return '<div data-cb="bar" data-key="' + _esc(o) + '" class="lv-bar-row-' + uid + '">'
+          + '<div data-cb="label" data-key="' + _esc(o) + '" class="lv-bar-label-' + uid + '">' + _esc(o) + '</div>'
           + '<div class="lv-bar-track-' + uid + '"><div id="lv-fill-' + uid + '-' + i + '" class="lv-bar-fill-' + uid + '" style="width:0%"><span class="lv-bar-pct-' + uid + '" id="lv-pct-' + uid + '-' + i + '">0%</span></div></div>'
           + '</div>';
       }).join('')
@@ -22722,9 +22793,10 @@ _RENDERERS['filterable_list'] = function(b) {
     var value = (it[field] !== undefined && it[field] !== null && String(it[field]).trim()) ? String(it[field]).trim() : '';
     var badge = (field === 'status' || value) && value
       ? '<span class="fl-badge" style="--c:' + _esc(c) + '">' + _esc(value) + '</span>' : '';
-    return '<div class="fl-row" data-fv="' + _esc(k) + '">' +
+    var itKey = it.id !== undefined ? it.id : title(it);
+    return '<div data-cb="item" data-key="' + _esc(itKey) + '" class="fl-row" data-fv="' + _esc(k) + '">' +
       (it.icon ? '<span class="fl-ic" aria-hidden="true">' + _esc(it.icon) + '</span>' : '') +
-      '<div class="fl-main"><div class="fl-t">' + _esc(title(it)) + '</div>' +
+      '<div class="fl-main"><div data-cb="label" data-key="' + _esc(itKey) + '" class="fl-t">' + _esc(title(it)) + '</div>' +
       (detail(it) ? '<div class="fl-d">' + _esc(detail(it)) + '</div>' : '') + '</div>' +
       (it.meta ? '<span class="fl-meta">' + _esc(it.meta) + '</span>' : '') + badge + '</div>';
   }).join('');
@@ -23543,7 +23615,8 @@ _RENDERERS['primitive_plate'] = function(b) {
     }).join('');
     var display = (idx === 0) ? 'display:block;' : 'display:none;';
     var altText = state.alt ? _esc(state.alt) : (title + ' primitive rendering in Gemini Enterprise');
-    return '<div class="pp-state' + (idx === 0 ? ' active' : '') + '" data-state="' + uid + '_' + idx +
+    var stateK = state.id || state.label || state.name || ('State ' + (idx + 1));
+    return '<div data-cb="node" data-key="' + _esc(String(stateK)) + '" class="pp-state' + (idx === 0 ? ' active' : '') + '" data-state="' + uid + '_' + idx +
       '" style="' + display + '">' +
       '<div class="pp-plate">' +
       '<div class="pp-imgwrap" style="width:' + width + 'px;">' +
@@ -23570,7 +23643,7 @@ _RENDERERS['primitive_plate'] = function(b) {
         (i === 0 ? ' checked' : '') + ' ' +
         'onchange="document.querySelectorAll(\'[data-state^=\\\'' + uid + '_\\\']\').forEach(function(el){' +
         'el.style.display = (el.dataset.state === \'' + uid + '_' + i + '\') ? \'block\' : \'none\';});">' +
-        '<label for="' + uid + '_t' + i + '">' + _esc(s.label || ('State ' + (i + 1))) + '</label>';
+        '<label data-cb="label" data-key="' + _esc(String(s.id || s.label || s.name || ('State ' + (i + 1)))) + '" for="' + uid + '_t' + i + '">' + _esc(s.label || ('State ' + (i + 1))) + '</label>';
     }).join('');
     togglesHtml = '<div class="pp-toggles">' + pairs + '</div>';
   }
@@ -24182,9 +24255,10 @@ _RENDERERS['icon_row'] = function(b) {
     var ic  = _esc(item.name || item.icon || 'check');
     var lbl = item.label || item.text || '';
     var c   = item.color || item.accent || color;
-    return '<div style="display:flex;align-items:center;gap:8px;">'
+    var k   = _esc(item.name || item.label || item.text || item.icon || '');
+    return '<div data-cb="node" data-key="' + k + '" style="display:flex;align-items:center;gap:8px;">'
       + '<span class="ms-icon" style="' + cssVarsBase + ';font-size:' + size + 'px;color:' + c + ';flex-shrink:0;" aria-hidden="true">' + ic + '</span>'
-      + (lbl ? '<span style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(lbl) + '</span>' : '')
+      + (lbl ? '<span data-cb="label" data-key="' + k + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(lbl) + '</span>' : '')
       + '</div>';
   }).join('');
 
@@ -24319,9 +24393,10 @@ _RENDERERS['icon_feature_grid'] = function(b) {
     var c     = item.color || item.accent || accent;
     var ttl   = item.title || item.label || '';
     var txt   = item.text  || item.description || '';
-    return '<div style="padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">'
+    var k     = _esc(item.title || item.label || item.name || '');
+    return '<div data-cb="tile" data-key="' + k + '" style="padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">'
       + '<span class="ms-icon" style="' + cssVarsBase + ';font-size:' + size + 'px;color:' + c + ';display:block;margin-bottom:10px;" aria-hidden="true">' + icon + '</span>'
-      + (ttl ? '<div style="font-size:0.875rem;font-weight:700;color:var(--text,#111827);margin-bottom:4px;">' + _esc(ttl) + '</div>' : '')
+      + (ttl ? '<div data-cb="label" data-key="' + k + '" style="font-size:0.875rem;font-weight:700;color:var(--text,#111827);margin-bottom:4px;">' + _esc(ttl) + '</div>' : '')
       + (txt ? '<div style="font-size:0.8rem;color:var(--muted,#6b7280);line-height:1.5;">' + _esc(txt) + '</div>' : '')
       + '</div>';
   }).join('');
@@ -24351,9 +24426,10 @@ _RENDERERS['icon_checklist'] = function(b) {
     var icon  = typeof item === 'string' ? defIcon : (item.icon || defIcon);
     var c     = typeof item === 'string' ? accent : (item.color || item.accent || accent);
     var sub   = typeof item === 'object' && item.sublabel ? '<div style="font-size:0.75rem;color:var(--muted,#9ca3af);margin-top:2px;">' + _esc(item.sublabel) + '</div>' : '';
-    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f3f4f6);">'
+    var itemKey = _esc(text);
+    return '<div data-cb="item" data-key="' + itemKey + '" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f3f4f6);">'
       + '<span class="ms-icon" style="' + cssVarsBase + ';font-size:' + size + 'px;color:' + c + ';flex-shrink:0;margin-top:1px;" aria-hidden="true">' + _esc(icon) + '</span>'
-      + '<div><div style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(text) + '</div>' + sub + '</div>'
+      + '<div><div data-cb="label" data-key="' + itemKey + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(text) + '</div>' + sub + '</div>'
       + '</div>';
   }).join('');
 
@@ -24480,7 +24556,8 @@ _RENDERERS['bullet_graph'] = function(b) {
     var track = rg.map(function(v, bi) { var s = 'position:absolute;top:0;bottom:0;left:' + pc(prev) + ';width:' + ((v - prev) / top * 100).toFixed(2) + '%;background:' + bands[bi] + ';'; prev = v; return '<div style="' + s + '"></div>'; }).join('') +
       '<div style="position:absolute;left:0;top:9px;height:10px;width:calc(var(--k,1)*' + (a / top * 100).toFixed(2) + '%);background:#0F172A;"></div>' +
       '<div style="position:absolute;left:calc(' + pc(t) + ' - 1.5px);top:-3px;width:3px;height:34px;background:#B91C1C;"></div>';
-    return '<div style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _ifK(i, all.length) + '"><div>' + _ifS(r.label, 40) + '</div>' +
+    var rKey = _ifS(r.label, 40);
+    return '<div data-cb="bar" data-key="' + rKey + '" style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _ifK(i, all.length) + '"><div data-cb="label" data-key="' + rKey + '">' + rKey + '</div>' +
       '<div style="position:relative;height:28px;border:' + _IF_BORDER + ';border-radius:4px;overflow:visible;">' + track + '</div>' +
       '<div style="font-weight:700;font-size:0.82rem;white-space:nowrap;">' + _ifFmt(a) + ' / ' + _ifFmt(t) + ' <span style="font-weight:400;color:var(--muted,#475569);">' + (a >= t ? 'target met' : 'below target') + '</span></div></div>';
   }).join('');
@@ -24512,8 +24589,9 @@ _RENDERERS['gantt'] = function(b) {
   var rows = tasks.map(function(t, i) {
     t = _ifObj(t);
     var s = Math.round(_ifNum(t.start_slot, 0, N - 1, 0)), d = Math.round(_ifNum(t.duration_slots, 1, N - s, 1)), ci = Math.max(0, cats.indexOf(String(t.category === undefined ? '' : t.category).slice(0, 16)));
-    return '<div style="padding:4px 8px 4px 0;align-self:center;grid-row:' + (i + 2) + ';">' + _ifS(t.task, 40) + '</div>' +
-      '<div style="grid-row:' + (i + 2) + ';grid-column:' + (s + 2) + ' / span ' + d + ';padding:3px 2px;"><div style="height:22px;border-radius:5px;background:' + _IF_CAT[ci] + ';transform:scaleX(var(--k,1));transform-origin:left;' + _ifK(i, tasks.length) + '"></div></div>';
+    var tKey = t.id !== undefined ? t.id : (t.task !== undefined ? t.task : '');
+    return '<div data-cb="label" data-key="' + _esc(tKey) + '" style="padding:4px 8px 4px 0;align-self:center;grid-row:' + (i + 2) + ';">' + _ifS(t.task, 40) + '</div>' +
+      '<div data-cb="bar" data-key="' + _esc(tKey) + '" style="grid-row:' + (i + 2) + ';grid-column:' + (s + 2) + ' / span ' + d + ';padding:3px 2px;"><div style="height:22px;border-radius:5px;background:' + _IF_CAT[ci] + ';transform:scaleX(var(--k,1));transform-origin:left;' + _ifK(i, tasks.length) + '"></div></div>';
   }).join('');
   var key = cats.map(function(c, ci) { return '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px;"><span style="width:12px;height:12px;border-radius:3px;background:' + _IF_CAT[ci] + ';display:inline-block;"></span>' + _ifS(c, 16) + '</span>'; }).join('');
   return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:minmax(120px,26%) repeat(' + N + ',1fr);row-gap:4px;">' + head + rows + '</div>' +
@@ -24528,7 +24606,8 @@ _RENDERERS['change_chart'] = function(b) {
   var top = Math.max.apply(null, rows.map(function(r) { return Math.max(r.a, r.c); }).concat([1])) * 1.05, n = rows.length, body = '', eq = _ifTable(['Item', names[0], names[1], 'Change'], rows.map(function(r) { return [r.l, _ifFmt(r.a), _ifFmt(r.c), r.a ? ((r.c - r.a) / r.a * 100).toFixed(1) + '%' : 'n/a']; }));
   if (mode === 'bars') {
     body = rows.map(function(r, i) {
-      return '<div style="display:grid;grid-template-columns:minmax(110px,26%) 1fr;gap:10px;margin:8px 0;' + _ifK(i, n) + '"><div>' + _ifS(r.l, 40) + '</div><div>' +
+      var k = _esc(_ifS(r.l, 40));
+      return '<div data-cb="bar" data-key="' + k + '" style="display:grid;grid-template-columns:minmax(110px,26%) 1fr;gap:10px;margin:8px 0;' + _ifK(i, n) + '"><div data-cb="label" data-key="' + k + '">' + _ifS(r.l, 40) + '</div><div>' +
         [[r.a, _IF_CAT[0], names[0]], [r.c, _IF_CAT[3], names[1]]].map(function(v) {
           return '<div style="display:flex;align-items:center;gap:6px;margin:2px 0;"><div style="height:14px;border-radius:3px;background:' + v[1] + ';width:calc(var(--k,1)*' + (v[0] / top * 78).toFixed(2) + '%);min-width:2px;"></div><span style="font-size:0.78rem;font-weight:700;white-space:nowrap;">' + _ifS(v[2], 20) + ' ' + _ifFmt(v[0]) + '</span></div>';
         }).join('') + '</div></div>';
@@ -24539,8 +24618,9 @@ _RENDERERS['change_chart'] = function(b) {
   if (mode === 'dumbbell') {
     var lw = 170, tw = W - lw - 150; H = n * rowH + 8;
     svg = rows.map(function(r, i) {
+      var k = _esc(_ifS(r.l, 28));
       var xa = lw + r.a / top * tw, xc = lw + r.c / top * tw, y = i * rowH + 17;
-      return '<g style="' + _ifK(i, n) + 'opacity:var(--k,1);"><text x="0" y="' + (y + 4) + '" font-size="12" fill="currentColor">' + _ifS(r.l, 28) + '</text><line x1="' + xa.toFixed(1) + '" y1="' + y + '" x2="' + xc.toFixed(1) + '" y2="' + y + '" stroke="#64748B" stroke-width="2"/>' +
+      return '<g data-cb="bar" data-key="' + k + '" style="' + _ifK(i, n) + 'opacity:var(--k,1);"><text data-cb="label" data-key="' + k + '" x="0" y="' + (y + 4) + '" font-size="12" fill="currentColor">' + _ifS(r.l, 28) + '</text><line x1="' + xa.toFixed(1) + '" y1="' + y + '" x2="' + xc.toFixed(1) + '" y2="' + y + '" stroke="#64748B" stroke-width="2"/>' +
         '<circle cx="' + xa.toFixed(1) + '" cy="' + y + '" r="7" fill="#475569"/><circle cx="' + xc.toFixed(1) + '" cy="' + y + '" r="7" fill="#0369A1"/>' +
         '<text x="' + (Math.max(xa, xc) + 14).toFixed(1) + '" y="' + (y + 4) + '" font-size="11" font-weight="700" fill="currentColor">' + _ifFmt(r.a) + ' → ' + _ifFmt(r.c) + '</text></g>';
     }).join('');
@@ -24551,8 +24631,9 @@ _RENDERERS['change_chart'] = function(b) {
     var L = spread(rows.map(function(r) { return ys(r.a); })), R = spread(rows.map(function(r) { return ys(r.c); }));
     svg = '<text x="' + lx + '" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">' + _ifS(names[0], 20) + '</text><text x="' + rx + '" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">' + _ifS(names[1], 20) + '</text>' +
       rows.map(function(r, i) {
-        return '<g style="' + _ifK(i, n) + '"><path d="M' + lx + ' ' + ys(r.a).toFixed(1) + ' L' + rx + ' ' + ys(r.c).toFixed(1) + '" pathLength="1" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:calc(1 - var(--k,1));"/>' +
-          '<text x="' + (lx - 10) + '" y="' + (L[i] + 4).toFixed(1) + '" font-size="11" text-anchor="end" fill="currentColor">' + _ifS(r.l, 20) + ' ' + _ifFmt(r.a) + '</text>' +
+        var k = _esc(_ifS(r.l, 20));
+        return '<g data-cb="bar" data-key="' + k + '" style="' + _ifK(i, n) + '"><path d="M' + lx + ' ' + ys(r.a).toFixed(1) + ' L' + rx + ' ' + ys(r.c).toFixed(1) + '" pathLength="1" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:calc(1 - var(--k,1));"/>' +
+          '<text data-cb="label" data-key="' + k + '" x="' + (lx - 10) + '" y="' + (L[i] + 4).toFixed(1) + '" font-size="11" text-anchor="end" fill="currentColor">' + _ifS(r.l, 20) + ' ' + _ifFmt(r.a) + '</text>' +
           '<text x="' + (rx + 10) + '" y="' + (R[i] + 4).toFixed(1) + '" font-size="11" fill="currentColor">' + _ifFmt(r.c) + ' ' + _ifS(r.l, 20) + '</text></g>';
       }).join('');
   }
@@ -24566,7 +24647,8 @@ _RENDERERS['cycle_diagram'] = function(b) {
   for (var i = 0; i < st.length; i++) { var a = -Math.PI / 2 + 2 * Math.PI * i / n; pos.push([50 + 34 * Math.cos(a), 50 + (n <= 4 ? 33 : 38) * Math.sin(a)]); }
   st.forEach(function(s, i) {
     s = _ifObj(s);
-    boxes += '<div style="position:absolute;left:' + pos[i][0].toFixed(2) + '%;top:' + pos[i][1].toFixed(2) + '%;width:26%;transform:translate(-50%,-50%);' + _ifCard(_ifK(i, n) + 'opacity:var(--k,1);') + '"><div style="font-weight:700;">' + (i + 1) + '. ' + _ifS(s.name, 24) + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(s.description, 60) + '</div></div>';
+    var sKey = _esc(String(s.name || ''));
+    boxes += '<div data-cb="item" data-key="' + sKey + '" style="position:absolute;left:' + pos[i][0].toFixed(2) + '%;top:' + pos[i][1].toFixed(2) + '%;width:26%;transform:translate(-50%,-50%);' + _ifCard(_ifK(i, n) + 'opacity:var(--k,1);') + '"><div data-cb="label" data-key="' + sKey + '" style="font-weight:700;">' + (i + 1) + '. ' + _ifS(s.name, 24) + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(s.description, 60) + '</div></div>';
     var q = pos[(i + 1) % n], p = pos[i], dx = (q[0] - p[0]) * 10, dy = (q[1] - p[1]) * VH / 100, px = p[0] * 10, py = p[1] * VH / 100;
     lines += '<line x1="' + (px + dx * 0.3).toFixed(1) + '" y1="' + (py + dy * 0.3).toFixed(1) + '" x2="' + (px + dx * 0.7).toFixed(1) + '" y2="' + (py + dy * 0.7).toFixed(1) + '" stroke="#64748B" stroke-width="2.5" marker-end="url(#ifarr)" style="opacity:var(--k,1);' + _ifK(i, n) + '"/>';
   });
@@ -24581,7 +24663,8 @@ _RENDERERS['journey_map'] = function(b) {
   var st = _ifArr(b.stages, 6), n = st.length || 1;
   var cols = st.map(function(s, i) {
     s = _ifObj(s); var se = _IF_SENT[_ifPick(s.sentiment, ['positive', 'neutral', 'negative'], 'neutral')];
-    return '<div style="display:flex;flex-direction:column;gap:6px;' + _ifK(i, n) + _IF_FADE + '"><div style="text-align:center;font-weight:700;padding:5px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _ifS(s.stage, 24) + '</div>' +
+    var stKey = _esc(s.stage || s.name || String(i));
+    return '<div data-cb="item" data-key="' + stKey + '" style="display:flex;flex-direction:column;gap:6px;' + _ifK(i, n) + _IF_FADE + '"><div data-cb="label" data-key="' + stKey + '" style="text-align:center;font-weight:700;padding:5px;border-radius:6px;background:#E0E7FF;color:#1E1B4B;">' + _ifS(s.stage, 24) + '</div>' +
       '<div style="' + _ifCard() + '"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#475569);">Goal</div>' + _ifS(s.user_goal, 60) + '</div>' +
       '<div style="text-align:center;font-weight:700;padding:4px;border-radius:6px;background:' + se[0] + ';color:#fff;">' + se[1] + '</div>' +
       '<div style="' + _ifCard() + '"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#475569);">Friction</div>' + _ifS(s.friction_point, 80) + '</div></div>';
@@ -24594,7 +24677,8 @@ _RENDERERS['maturity_ladder'] = function(b) {
   var lv = _ifArr(b.levels, 6), n = lv.length || 1;
   var steps = lv.map(function(l, i) {
     l = _ifObj(l); var cur = l.is_current === true;
-    return '<div style="flex:1;min-width:0;min-height:' + (84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + (cur ? '#0369A1' : 'var(--surface,#F8FAFC)') + ';color:' + (cur ? '#fff' : 'var(--text,#0F172A)') + ';' + _ifK(i, n) + _IF_FADE + '">' +
+    var k = _ifS(l.name, 30);
+    return '<div data-cb="item" data-key="' + k + '" style="flex:1;min-width:0;min-height:' + (84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + (cur ? '#0369A1' : 'var(--surface,#F8FAFC)') + ';color:' + (cur ? '#fff' : 'var(--text,#0F172A)') + ';' + _ifK(i, n) + _IF_FADE + '">' +
       '<div style="font-weight:700;">Level ' + _ifS(l.level, 3) + ': ' + _ifS(l.name, 30) + (cur ? ' [CURRENT]' : '') + '</div><div style="font-size:0.78rem;margin-top:4px;' + (cur ? '' : 'color:var(--muted,#475569);') + '">' + _ifS(l.criteria, 120) + '</div></div>';
   }).join('');
   return _ifWrap(_ifTitle(b) + '<div style="display:flex;align-items:flex-end;gap:6px;">' + steps + '</div>');
@@ -26810,8 +26894,9 @@ _RENDERERS['callout_anatomy'] = function(b) {
   var co = _ifArr(b.callouts, 8).map(function(c) { c = _ifObj(c); return { id: Math.round(_ifNum(c.id, 1, 99, 1)), t: c.title, d: c.description, p: _ifPick(c.pin_position, ['top_left', 'top_right', 'bottom_left', 'bottom_right'], 'top_left') }; });
   var side = function(sfx) { return co.filter(function(c) { return c.p.slice(-sfx.length) === sfx; }).sort(function(x, y) { return (x.p.indexOf('top') === 0 ? 0 : 1) - (y.p.indexOf('top') === 0 ? 0 : 1); }); };
   var card = function(c, i, n) {
-    return '<div style="display:flex;gap:8px;align-items:flex-start;' + _ifCard(_ifK(c.id - 1, co.length) + _IF_FADE) + '"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:22px;">' + c.id + '</span>' +
-      '<div><div style="font-weight:700;">' + _ifS(c.t, 28) + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(c.d, 80) + '</div></div></div>';
+    var cKey = _ifS(c.t, 28);
+    return '<div data-cb="item" data-key="' + cKey + '" style="display:flex;gap:8px;align-items:flex-start;' + _ifCard(_ifK(c.id - 1, co.length) + _IF_FADE) + '"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:22px;">' + c.id + '</span>' +
+      '<div><div data-cb="label" data-key="' + cKey + '" style="font-weight:700;">' + cKey + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(c.d, 80) + '</div></div></div>';
   };
   var L = side('left'), R = side('right');
   return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;"><div style="display:flex;flex-direction:column;gap:8px;">' + L.map(card).join('') + '</div>' +
@@ -27831,7 +27916,8 @@ _RENDERERS['layer_stack'] = function(b) {
     var layer = visual[v].layer;
     var fn = _RENDERERS[layer.component || layer.type] || _RENDERERS['stack_layer'];
     var componentId = _esc(layer.id || ('layer-' + (visual[v].index + 1)));
-    bands += '<div data-component-id="' + componentId + '" style="scroll-margin-top:1.5rem;">'
+    var barKey = _esc(layer.id || layer.name || layer.title || ('layer-' + (visual[v].index + 1)));
+    bands += '<div data-cb="bar" data-key="' + barKey + '" data-component-id="' + componentId + '" style="scroll-margin-top:1.5rem;">'
       + fn(layer) + '</div>';
   }
 
@@ -27915,7 +28001,8 @@ _RENDERERS['lens_quotes'] = function(b) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
-    html += '<blockquote style="margin:0 0 14px 0;">' + _markdownToHtml(it.quote || '') +
+    var k = _esc(it.id || it.quote || '');
+    html += '<blockquote data-cb="item" data-key="' + k + '" style="margin:0 0 14px 0;">' + _markdownToHtml(it.quote || '') +
       (it.context ? '<div style="font-size:0.78rem;opacity:0.65;margin-top:4px;">' + _esc(it.context) + '</div>' : '') +
       '</blockquote>';
   }
@@ -27928,8 +28015,9 @@ _RENDERERS['lens_structure'] = function(b) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
-    html += '<div style="margin-bottom:14px;">' +
-      '<div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">' + _esc(it.heading || '') + '</div>' +
+    var k = _esc(it.id || it.heading || '');
+    html += '<div data-cb="item" data-key="' + k + '" style="margin-bottom:14px;">' +
+      '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">' + _esc(it.heading || '') + '</div>' +
       '<blockquote style="margin:0;">' + _markdownToHtml(it.quote || '') + '</blockquote>' +
       '</div>';
   }
@@ -27946,7 +28034,8 @@ _RENDERERS['lens_themes'] = function(b) {
   });
   var chipsHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">';
   for (var i = 0; i < sorted.length; i++) {
-    chipsHtml += '<span data-lens-theme="' + i + '" style="padding:5px 12px;border-radius:999px;' +
+    var k = _esc(sorted[i].id || sorted[i].theme || sorted[i].label || '');
+    chipsHtml += '<span data-cb="tile" data-key="' + k + '" data-lens-theme="' + i + '" style="padding:5px 12px;border-radius:999px;' +
       'background:rgba(124,58,237,0.12);color:#7c3aed;font-size:0.78rem;font-weight:700;">' +
       _esc(sorted[i].label || '') + '</span>';
   }
@@ -28018,11 +28107,12 @@ _RENDERERS['lens_similar'] = function(b) {
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
     var retrieved = !!it.retrieved;
+    var k = _esc(it.id || it.title || it.label || '');
     var titleHtml = (retrieved && it.url)
       ? '<a href="' + _safeUrl(it.url) + '" target="_blank" rel="noopener" style="color:inherit;">' + _esc(it.title || '') + '</a>'
       : _esc(it.title || '') + ' <span style="font-size:0.7rem;font-weight:700;color:#b91c1c;">· not retrieved</span>';
-    rowsHtml += '<div style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
-      '<div style="font-weight:700;font-size:0.88rem;">' + titleHtml + '</div>' +
+    rowsHtml += '<div data-cb="item" data-key="' + k + '" style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
+      '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:0.88rem;">' + titleHtml + '</div>' +
       '<div style="font-size:0.82rem;opacity:0.75;">' + _esc(it.why || '') + '</div>' +
       '</div>';
   }
@@ -28036,11 +28126,12 @@ _RENDERERS['lens_context'] = function(b) {
   for (var i = 0; i < items.length; i++) {
     var it = items[i];
     var retrieved = !!it.retrieved;
+    var k = _esc(it.id || it.label || it.title || '');
     var labelHtml = (retrieved && it.url)
       ? '<a href="' + _safeUrl(it.url) + '" target="_blank" rel="noopener" style="color:inherit;">' + _esc(it.label || '') + '</a>'
       : _esc(it.label || '') + ' <span style="font-size:0.7rem;font-weight:700;color:#b91c1c;">· not retrieved</span>';
-    html += '<div style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
-      '<div style="font-weight:700;font-size:0.88rem;">' + labelHtml + '</div>' +
+    html += '<div data-cb="item" data-key="' + k + '" style="border-bottom:1px solid rgba(0,0,0,0.06);padding:8px 0;">' +
+      '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:0.88rem;">' + labelHtml + '</div>' +
       '<div style="font-size:0.82rem;opacity:0.75;">' + _esc(it.note || '') + '</div>' +
       '</div>';
   }
@@ -28161,16 +28252,17 @@ _RENDERERS['module_map'] = function(b) {
   var cards = '';
   for (var i = 0; i < modules.length; i++) {
     var m = modules[i];
+    var mk = _esc(String(m.id || m.name || m.title || m.label || i));
     cards +=
       '<a id="' + uid + 'a' + i + '" href="#" target="_top" style="text-decoration:none;">' +
-      '<div id="' + uid + 'c' + i + '" style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;' +
+      '<div data-cb="tile" data-key="' + mk + '" id="' + uid + 'c' + i + '" style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
         'display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;transition:all 0.2s;">' +
         '<div id="' + uid + 's' + i + '" style="position:absolute;top:12px;right:12px;"></div>' +
         '<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.12em;color:#334155;text-transform:uppercase;">Module ' + (i + 1) + '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;">' +
           '<span style="font-size:1.4rem;flex-shrink:0;">' + _esc(m.icon || '📚') + '</span>' +
-          '<div style="font-size:0.88rem;font-weight:700;color:#4878a8;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
+          '<div data-cb="label" data-key="' + mk + '" style="font-size:0.88rem;font-weight:700;color:#4878a8;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
         '</div>' +
         (m.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(m.description) + '</div>' : '') +
         '<div style="display:flex;gap:12px;margin-top:auto;">' +
@@ -28268,7 +28360,7 @@ _RENDERERS['knowledge_check'] = function(b) {
   var opts = '';
   for (var i = 0; i < options.length; i++) {
     opts +=
-      '<button id="' + uid + 'o' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
+      '<button data-cb="tile" data-key="' + _esc(options[i]) + '" id="' + uid + 'o' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="display:block;width:100%;text-align:left;padding:11px 14px;border-radius:9px;margin-bottom:7px;' +
           'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
           'color:#567295;font-size:0.8rem;cursor:pointer;transition:all 0.15s;"' +
@@ -28624,12 +28716,13 @@ _RENDERERS['badge_showcase'] = function(b) {
   for (var i = 0; i < badges.length; i++) {
     var bg = badges[i];
     var reqId = bg.required_id || bg.id || ('badge' + i);
+    var badgeK = _esc(bg.id || bg.label || ('badge' + i));
     items +=
-      '<div id="' + uid + 'b' + i + '" data-req="' + _esc(reqId) + '" ' +
+      '<div data-cb="node" data-key="' + badgeK + '" id="' + uid + 'b' + i + '" data-req="' + _esc(reqId) + '" ' +
         'style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;' +
           'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;">' +
         '<div id="' + uid + 'i' + i + '" style="font-size:2rem;filter:grayscale(1);opacity:0.25;transition:all 0.4s;">' + _esc(bg.icon || '🏅') + '</div>' +
-        '<div style="font-size:0.65rem;font-weight:700;color:#334155;">' + _esc(bg.label || '') + '</div>' +
+        '<div data-cb="label" data-key="' + badgeK + '" style="font-size:0.65rem;font-weight:700;color:#334155;">' + _esc(bg.label || '') + '</div>' +
         (bg.description ? '<div style="font-size:0.58rem;color:#1e293b;line-height:1.3;">' + _esc(bg.description) + '</div>' : '') +
       '</div>';
   }
@@ -28669,15 +28762,16 @@ _RENDERERS['learning_path_selector'] = function(b) {
   for (var i = 0; i < paths.length; i++) {
     var p  = paths[i];
     var ac = p.accent || '#4f46e5';
+    var pkey = _esc(p.id || p.label || p.name || '');
     cards +=
-      '<div id="' + uid + 'p' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
+      '<div data-cb="tile" data-key="' + pkey + '" id="' + uid + 'p' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="border-radius:14px;padding:22px 18px;cursor:pointer;transition:all 0.2s;' +
           'background:rgba(255,255,255,0.03);border:2px solid rgba(255,255,255,0.08);' +
           'display:flex;flex-direction:column;gap:10px;"' +
         ' onmouseover="if(!this.dataset.sel){this.style.borderColor=\'' + ac + '55\';this.style.background=\'' + ac + '0d\';}"' +
         ' onmouseout="if(!this.dataset.sel){this.style.borderColor=\'rgba(255,255,255,0.08)\';this.style.background=\'rgba(255,255,255,0.03)\'}">' +
         '<span style="font-size:2rem;">' + _esc(p.icon || '🎯') + '</span>' +
-        '<div style="font-size:0.92rem;font-weight:700;color:#4878a8;">' + _esc(p.label || '') + '</div>' +
+        '<div data-cb="label" data-key="' + pkey + '" style="font-size:0.92rem;font-weight:700;color:#4878a8;">' + _esc(p.label || '') + '</div>' +
         (p.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(p.description) + '</div>' : '') +
         (p.duration ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">⏱ ' + _esc(p.duration) + '</div>' : '') +
       '</div>';
@@ -28736,9 +28830,10 @@ _RENDERERS['flashcard_deck'] = function(b) {
   for (var i = 0; i < cards.length; i++) {
     var front = _esc(cards[i].front || '').replace(/\n/g, '<br>');
     var back  = _esc(cards[i].back  || '').replace(/\n/g, '<br>');
+    var cardKey = cards[i].id !== undefined ? cards[i].id : (cards[i].front || '');
     var show  = i === 0 ? 'opacity:1;pointer-events:auto;transform:scale(1);' : 'opacity:0;pointer-events:none;transform:scale(0.96);';
     cardsHtml +=
-      '<div class="' + uid + 'w" data-idx="' + i + '" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;' + show + '">' +
+      '<div data-cb="item" data-key="' + _esc(cardKey) + '" class="' + uid + 'w" data-idx="' + i + '" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;' + show + '">' +
         '<div class="' + uid + 'i" style="position:relative;width:100%;height:100%;' +
           'transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);cursor:pointer;">' +
           '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;' +
@@ -28747,7 +28842,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
             'background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.09);' +
             'box-shadow:0 24px 48px rgba(0,0,0,0.5);">' +
             '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:1.2rem;">' + _esc(lblFront) + '</div>' +
-            '<div style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;">' + front + '</div>' +
+            '<div data-cb="label" data-key="' + _esc(cardKey) + '" style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;">' + front + '</div>' +
             '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— space / click to flip —</div>' +
           '</div>' +
           '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;' +
@@ -28981,8 +29076,8 @@ _RENDERERS['cohort_progress_board'] = function(b) {
         '</td>';
     }).join('');
 
-    return '<tr>' +
-      '<td style="' + tdS + '">' +
+    return '<tr data-cb="item" data-key="' + _esc(r.id || r.email || '') + '">' +
+      '<td data-cb="label" data-key="' + _esc(r.id || r.email || '') + '" style="' + tdS + '">' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
           '<div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;flex-shrink:0;' +
             'display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:#fff;">' + init + '</div>' +
@@ -29088,8 +29183,9 @@ _RENDERERS['annotation_highlight'] = function(b) {
     var esc_term = n.term.replace(/[&<>"']/g, function(c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
+    var k = n.id || n.term;
     out = out.replace(esc_term,
-      '<span class="' + uid + 'a" data-i="' + i + '" onclick="' + uid + 'show(' + i + ',this)" ' +
+      '<span data-cb="ref" data-key="' + _esc(k) + '" class="' + uid + 'a" data-i="' + i + '" onclick="' + uid + 'show(' + i + ',this)" ' +
         'style="background:' + col + '22;border-bottom:2px solid ' + col + ';color:' + col + ';' +
           'cursor:pointer;border-radius:3px;padding:0 3px;font-weight:600;">' +
         esc_term + '</span>'
@@ -29141,8 +29237,10 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   var stepHtml = '';
   for (var i = 0; i < steps.length; i++) {
     var s = steps[i];
+    var rawKey = s.id || s.name || s.title || s.label || '';
+    var keyAttr = _esc(String(rawKey));
     stepHtml +=
-      '<div style="display:flex;gap:14px;padding:16px 0;' + (i < steps.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">' +
+      '<div data-cb="item" data-key="' + keyAttr + '" style="display:flex;gap:14px;padding:16px 0;' + (i < steps.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">' +
         '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;">' +
           '<div id="' + uid + 'ic' + i + '" style="width:36px;height:36px;border-radius:50%;transition:all 0.3s;' +
             'border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);' +
@@ -29151,7 +29249,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
           (i < steps.length - 1 ? '<div style="width:1px;flex:1;min-height:12px;margin-top:4px;background:rgba(255,255,255,0.06);"></div>' : '') +
         '</div>' +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:0.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">' + _esc(s.label || '') + '</div>' +
+          '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">' + _esc(s.label || '') + '</div>' +
           (s.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;margin-bottom:10px;">' + _esc(s.description) + '</div>' : '') +
           '<button id="' + uid + 'b' + i + '" aria-label="' + _esc((s.action_label || 'Mark complete') + ': ' + (s.label || ('step ' + (i + 1)))) + '" onclick="' + uid + 'done(' + i + ')" ' +
             'style="padding:7px 16px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);' +
@@ -29473,10 +29571,11 @@ _RENDERERS['leaderboard_card'] = function(b) {
     var isTop = i < 3;
     var barW  = rows[0] && rows[0].score > 0 ? Math.round((r.score / rows[0].score) * 100) : 0;
     var col   = i === 0 ? '#8c7103' : i === 1 ? '#617592' : i === 2 ? '#bb5604' : '#475569';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
+    var rowKey = _esc(r.id || r.name || String(i));
+    return '<div data-cb="item" data-key="' + rowKey + '" style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
       '<div style="width:24px;text-align:center;font-size:' + (isTop ? '1rem' : '0.72rem') + ';color:' + (isTop ? col : '#334155') + ';font-weight:700;flex-shrink:0;">' + (isTop ? MEDALS[i] : (i + 1)) + '</div>' +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
+        '<div data-cb="label" data-key="' + rowKey + '" style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
         '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:5px;">' +
           '<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>' +
         '</div>' +
@@ -33425,10 +33524,11 @@ _RENDERERS['lens_grid'] = function(b) {
 
   var cards = options.map(function(o) {
     var isSel = o.value === selected;
-    return '<button type="button" data-lg-value="' + _esc(o.value) + '" style="' +
+    var k = _esc(o.id || o.value || o.label || '');
+    return '<button data-cb="tile" data-key="' + k + '" type="button" data-lg-value="' + _esc(o.value) + '" style="' +
       'text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;' +
       'border:1.5px solid ' + (isSel ? '#4f46e5' : '#e2e5ea') + ';background:#fff;">' +
-      '<div style="font-size:14px;font-weight:700;color:#111827;">' + _esc(o.label || '') + '</div>' +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:14px;font-weight:700;color:#111827;">' + _esc(o.label || '') + '</div>' +
       (o.caption ? '<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(o.caption) + '</div>' : '') +
       '</button>';
   }).join('');
@@ -33637,10 +33737,11 @@ _RENDERERS['headline_list'] = function(b) {
     var titleEl = item.url
       ? '<a href="' + _safeUrl(item.url) + '" target="_top" style="color:var(--text,#f9fafb);text-decoration:none">' + _esc(item.title) + '</a>'
       : _esc(item.title || '');
-    return '<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border,rgba(255,255,255,0.08))">' +
+    var itemKey = _esc(item.title || '');
+    return '<div data-cb="item" data-key="' + itemKey + '" style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border,rgba(255,255,255,0.08))">' +
       '<span style="flex:0 0 28px;height:28px;border-radius:50%;background:' + accent + ';color:#fff;font-size:0.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px">' + rank + '</span>' +
       '<div style="flex:1;min-width:0">' +
-      '<p style="margin:0;font-size:1rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb)">' + titleEl + '</p>' +
+      '<p data-cb="label" data-key="' + itemKey + '" style="margin:0;font-size:1rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb)">' + titleEl + '</p>' +
       (tagHtml || meta ? '<p style="margin:5px 0 0;font-size:0.75rem;color:var(--muted,#9ca3af)">' + tagHtml + meta + '</p>' : '') +
       '</div></div>';
   }).join('');
@@ -33694,10 +33795,11 @@ _RENDERERS['news_digest'] = function(b) {
     var source = item.source
       ? '<p style="margin:6px 0 0;font-size:0.72rem;color:var(--muted,#9ca3af)">' + _esc(item.source) + '</p>'
       : '';
-    return '<div style="background:var(--surface2,#1a1a2e);border-radius:10px;padding:16px;position:relative">' +
+    var nk = _esc(String(item.title || item.id || i));
+    return '<div data-cb="item" data-key="' + nk + '" style="background:var(--surface2,#1a1a2e);border-radius:10px;padding:16px;position:relative">' +
       '<span style="position:absolute;top:14px;right:14px;font-size:1.1rem;font-weight:900;color:' + accent + ';opacity:0.3">' + (i + 1) + '</span>' +
       (tag ? '<p style="margin:0 0 8px">' + tag + '</p>' : '') +
-      '<p style="margin:0;font-size:0.92rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb);padding-right:24px">' + _esc(item.title || '') + '</p>' +
+      '<p data-cb="label" data-key="' + nk + '" style="margin:0;font-size:0.92rem;font-weight:700;line-height:1.45;color:var(--text,#f9fafb);padding-right:24px">' + _esc(item.title || '') + '</p>' +
       body + source +
       '</div>';
   }).join('');
@@ -33940,10 +34042,11 @@ _RENDERERS['photo_stepper'] = function(b) {
       ? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '" loading="lazy">'
       : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
         'justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>';
-    return '<div class="' + sid + '-slide" data-ps-slide="' + i + '" data-ps-id="' + _esc(String(img.id || '')) + '">' +
+    var imgK = img.id || img.name || img.alt || '';
+    return '<div data-cb="tile" data-key="' + _esc(String(imgK)) + '" class="' + sid + '-slide" data-ps-slide="' + i + '" data-ps-id="' + _esc(String(img.id || '')) + '">' +
       media +
       badge +
-      '<div class="' + sid + '-cap"><div class="ps-name">' + _esc(img.name || img.alt || '') + '</div>' +
+      '<div class="' + sid + '-cap"><div data-cb="label" data-key="' + _esc(String(imgK)) + '" class="ps-name">' + _esc(img.name || img.alt || '') + '</div>' +
       price + voters +
       '<button type="button" class="' + sid + '-vote" data-row-json="' + rowJson + '">' +
       (img.active ? '★ Starred — tap to unstar' : '☆ Star this one') + '</button>' +
@@ -36497,13 +36600,14 @@ _RENDERERS['agent_narrator'] = function(b) {
     var t = beats[i] && typeof beats[i].text === 'string' ? beats[i].text.trim() : '';
     if (!t) continue;
     if (kept.length >= 100 || t.length > 2000) { skipped++; continue; }
-    kept.push(t);
+    var k = beats[i].id || beats[i].label || beats[i].title || t;
+    kept.push({t: t, k: k});
   }
   var out = '';
   for (var j = 0; j < kept.length; j++) {
     var last = j === kept.length - 1;
-    out += '<p style="margin:0 0 0.9em;font-size:1.05rem;line-height:1.7;">'
-      + (last ? '<span id="an-' + uid + '">' + _anMd(kept[j]) + '</span><span id="anc-' + uid + '" style="display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:text-bottom;margin-left:2px;animation:an-blink-' + uid + ' 0.8s step-end infinite;"></span>' : _anMd(kept[j]))
+    out += '<p data-cb="item" data-key="' + _esc(kept[j].k) + '" style="margin:0 0 0.9em;font-size:1.05rem;line-height:1.7;">'
+      + (last ? '<span id="an-' + uid + '">' + _anMd(kept[j].t) + '</span><span id="anc-' + uid + '" style="display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:text-bottom;margin-left:2px;animation:an-blink-' + uid + ' 0.8s step-end infinite;"></span>' : _anMd(kept[j].t))
       + '</p>';
   }
   return '<div style="margin:1rem 0;">'
@@ -36676,9 +36780,9 @@ _RENDERERS['contrast_audit'] = function(b) {
     var q = pairs[j], r = _caRatio(q.fg, q.bg), rS = _cvFix(r, 2), aa = r >= 4.5, aaL = r >= 3, aaa = r >= 7;
     if (aa) passAA++;
     var fix = (!aa && showFix) ? _caFix(q.fg, q.bg) : null;
-    rows += '<div style="display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid ' + th.line + ';">'
+    rows += '<div data-cb="item" data-key="' + _esc(q.label || '') + '" style="display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid ' + th.line + ';">'
       + '<div style="background:' + q.bg + ';color:' + q.fg + ';border:1px solid ' + th.line + ';border-radius:8px;padding:10px 12px;font-weight:700;font-size:1.1rem;line-height:1;">Aa <span style="font-weight:400;font-size:0.8rem;">Text</span></div>'
-      + '<div><div style="font-weight:600;color:' + th.ink + ';font-size:0.9rem;">' + (q.label ? _esc(q.label) + ' · ' : '') + '<span style="font-family:' + _CV_VOICES.mono + ';color:' + th.mute + ';font-weight:400;font-size:0.78rem;">' + q.fg + ' on ' + q.bg + '</span></div>'
+      + '<div><div data-cb="label" data-key="' + _esc(q.label || '') + '" style="font-weight:600;color:' + th.ink + ';font-size:0.9rem;">' + (q.label ? _esc(q.label) + ' · ' : '') + '<span style="font-family:' + _CV_VOICES.mono + ';color:' + th.mute + ';font-weight:400;font-size:0.78rem;">' + q.fg + ' on ' + q.bg + '</span></div>'
       + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">' + badge(aa, 'AA') + badge(aaL, 'AA large') + badge(aaa, 'AAA') + '</div>'
       + (fix ? '<div style="margin-top:6px;font-size:0.76rem;color:' + th.mute + ';">nearest pass: <span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:' + fix + ';border:1px solid ' + th.line + ';"></span> <span style="font-family:' + _CV_VOICES.mono + ';">' + fix + '</span> (' + _cvFix(_caRatio(fix, q.bg), 2) + ':1)</div>' : '')
       + '</div>'
@@ -36839,9 +36943,9 @@ _RENDERERS['avatar_group'] = function(b) {
     var colors   = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
     var bg       = colors[i % colors.length];
     if (a.url || a.avatar_url) {
-      return '<img src="' + _esc(a.url || a.avatar_url) + '" alt="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">';
+      return '<img data-cb="item" data-key="' + _esc(a.name || '') + '" src="' + _esc(a.url || a.avatar_url) + '" alt="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">';
     }
-    return '<div title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;background:' + bg + ';border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">' + initials + '</div>';
+    return '<div data-cb="item" data-key="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;background:' + bg + ';border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">' + initials + '</div>';
   }).join('');
   return '<div style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + imgs + surplus + label + '</div>';
 };
@@ -36857,9 +36961,9 @@ _RENDERERS['contributor_list'] = function(b) {
       ? '<img src="' + _esc(c.avatar_url) + '" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
       : '<div style="width:36px;height:36px;border-radius:50%;background:' + bg + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">' + initials + '</div>';
     var meta = c.contributions ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-left:6px;">' + _esc(String(c.contributions)) + ' contributions</span>' : '';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#e5e7eb);">'
+    return '<div data-cb="item" data-key="' + _esc(c.name || '') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#e5e7eb);">'
       + avatar
-      + '<div style="flex:1;"><div style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">' + _esc(c.name || '') + meta + '</div>'
+      + '<div style="flex:1;"><div data-cb="label" data-key="' + _esc(c.name || '') + '" style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">' + _esc(c.name || '') + meta + '</div>'
       + (c.role ? '<div style="font-size:0.78rem;color:var(--muted,#6b7280);">' + _esc(c.role) + '</div>' : '')
       + '</div>'
       + (c.url ? '<a href="' + _safeUrl(c.url) + '" target="_top" style="font-size:0.75rem;color:var(--a2ui-accent,#4f46e5);">→</a>' : '')
@@ -36876,7 +36980,7 @@ _RENDERERS['prerequisite_checklist'] = function(b) {
     var done  = typeof item === 'object' ? item.done : false;
     var icon  = done ? '✅' : '⬜';
     var style = done ? 'text-decoration:line-through;color:var(--muted,#9ca3af);' : 'color:var(--text,#374151);';
-    return '<li style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.875rem;' + style + '">'
+    return '<li data-cb="item" data-key="' + _esc(String(text)) + '" style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.875rem;' + style + '">'
       + '<span style="flex-shrink:0;">' + icon + '</span>'
       + '<span>' + _markdownToHtml(String(text)) + '</span></li>';
   }).join('');
@@ -36890,13 +36994,14 @@ _RENDERERS['capability_checklist'] = function(b) {
   var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(b.title) + '</div>' : '';
   var names = b.capability_names || [];
   var items = (b.items || names).map(function(item) {
-    var label  = typeof item === 'object' ? (item.label || item.name || '') : item;
+    var label  = typeof item === 'object' ? (item.name || item.text || item.label || '') : item;
+    var key    = _esc(String(label));
     var status = typeof item === 'object' ? (item.status || 'available') : 'available';
     var map    = { available: ['✓', '#10b981', '#d1fae5'], unavailable: ['✗', '#ef4444', '#fee2e2'], partial: ['◐', '#f59e0b', '#fef3c7'], planned: ['○', '#6b7280', '#f3f4f6'] };
     var cfg    = map[status] || map.available;
-    return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
+    return '<div data-cb="item" data-key="' + key + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
       + '<span style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">' + cfg[0] + '</span>'
-      + '<span style="flex:1;color:var(--text,#374151);">' + _esc(String(label)) + '</span>'
+      + '<span data-cb="label" data-key="' + key + '" style="flex:1;color:var(--text,#374151);">' + _esc(String(label)) + '</span>'
       + (typeof item === 'object' && item.tier ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(item.tier) + '</span>' : '')
       + '</div>';
   }).join('');
@@ -37145,13 +37250,14 @@ _RENDERERS['customer_logo_grid'] = function(b) {
     var img = l.image_url || l.url || l.src || '';
     var name = l.name || l.alt || '';
     var linkUrl = l.link_url || (l.url && l.image_url ? l.url : '');
+    var lKey = _esc(String(name || img));
     if (linkUrl && img) {
-      return '<a href="' + _safeUrl(linkUrl) + '" target="_top" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"></a>';
+      return '<a data-cb="tile" data-key="' + lKey + '" href="' + _safeUrl(linkUrl) + '" target="_top" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"></a>';
     }
     if (img) {
-      return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);"></div>';
+      return '<div data-cb="tile" data-key="' + lKey + '" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);"></div>';
     }
-    return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);">' + _esc(name) + '</div>';
+    return '<div data-cb="tile" data-key="' + lKey + '" style="display:flex;align-items:center;justify-content:center;padding:12px;font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);"><span data-cb="label" data-key="' + lKey + '">' + _esc(name) + '</span></div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + title
@@ -37570,7 +37676,7 @@ _RENDERERS['heatmap_calendar'] = function(b) {
     var count = lookup[iso] || 0;
     var ci    = Math.min(colors.length - 1, Math.floor((count / maxVal) * (colors.length - 1)));
     var bg    = colors[ci];
-    cells += '<div title="' + iso + ': ' + count + '" style="width:10px;height:10px;border-radius:2px;background:' + bg + ';flex-shrink:0;"></div>';
+    cells += '<div data-cb="item" data-key="' + _esc(iso) + '" title="' + iso + ': ' + count + '" style="width:10px;height:10px;border-radius:2px;background:' + bg + ';flex-shrink:0;"></div>';
     d.setDate(d.getDate() + 1);
   }
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);overflow-x:auto;">'
@@ -37591,9 +37697,10 @@ _RENDERERS['image_hotspots'] = function(b) {
     var x   = _esc(String(h.x_position || h.x || 50));
     var y   = _esc(String(h.y_position || h.y || 50));
     var lbl = _esc(h.label || String(i + 1));
+    var k   = _esc(String(h.id || h.label || h.content || h.description || ''));
     var cnt = h.content ? '<div class="' + uid + '-tip" style="display:none;position:absolute;left:calc(' + x + '% + 18px);top:calc(' + y + '% - 10px);background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;font-size:0.78rem;color:#374151;min-width:120px;max-width:200px;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);">' + _esc(h.content) + '</div>' : '';
-    return '<div style="position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);" onmouseenter="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'block\';" onmouseleave="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'none\';">'
-      + '<div style="width:24px;height:24px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,0.2);animation:pulse 2s infinite;">' + lbl + '</div>'
+    return '<div data-cb="node" data-key="' + k + '" style="position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);" onmouseenter="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'block\';" onmouseleave="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'none\';">'
+      + '<div data-cb="label" data-key="' + k + '" style="width:24px;height:24px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,0.2);animation:pulse 2s infinite;">' + lbl + '</div>'
       + cnt + '</div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;position:relative;display:inline-block;width:100%;">'
@@ -37611,8 +37718,9 @@ _RENDERERS['inventory_table'] = function(b) {
     var low   = thresh && avail < thresh;
     var stockColor = avail === 0 ? '#ef4444' : low ? '#f59e0b' : '#10b981';
     var stockBg    = avail === 0 ? '#fee2e2' : low ? '#fef3c7' : '#d1fae5';
-    return '<tr style="border-bottom:1px solid var(--border,#f3f4f6);">'
-      + '<td style="padding:8px 10px;font-size:0.82rem;color:var(--text,#374151);">' + _esc(item.product || item.sku || '') + '</td>'
+    var k = _esc(String(item.sku || item.product || item.name || item.id || ''));
+    return '<tr data-cb="item" data-key="' + k + '" style="border-bottom:1px solid var(--border,#f3f4f6);">'
+      + '<td data-cb="label" data-key="' + k + '" style="padding:8px 10px;font-size:0.82rem;color:var(--text,#374151);">' + _esc(item.product || item.sku || '') + '</td>'
       + (item.sku && item.product ? '<td style="padding:8px 10px;font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(item.sku) + '</td>' : '')
       + '<td style="padding:8px 10px;text-align:right;"><span style="padding:2px 8px;border-radius:12px;font-size:0.78rem;font-weight:600;background:' + stockBg + ';color:' + stockColor + ';">' + avail + '</span></td>'
       + (item.committed !== undefined ? '<td style="padding:8px 10px;text-align:right;font-size:0.78rem;color:var(--muted,#6b7280);">' + _esc(String(item.committed)) + '</td>' : '')
@@ -37655,7 +37763,8 @@ _RENDERERS['data_grid'] = function(b) {
       }
       return '<td style="padding:8px 12px;font-size:0.82rem;color:var(--text,#374151);border-bottom:1px solid var(--border,#f3f4f6);">' + cell + '</td>';
     }).join('');
-    return '<tr style="background:' + (ri % 2 ? 'var(--surface,#f9fafb)' : 'var(--bg,#fff)') + ';">' + trs + '</tr>';
+    var rKey = _esc(String(row.id !== undefined ? row.id : (row.name || row.label || row.title || (columns.length > 0 && row[columns[0].key] !== undefined ? row[columns[0].key] : ''))));
+    return '<tr data-cb="item" data-key="' + rKey + '" style="background:' + (ri % 2 ? 'var(--surface,#f9fafb)' : 'var(--bg,#fff)') + ';">' + trs + '</tr>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;">'
     + title + '<div style="overflow-x:auto;">'
@@ -37674,7 +37783,8 @@ _RENDERERS['conversion_funnel'] = function(b) {
     var val = parseFloat(s.value || 0);
     var pct = (val / maxVal * 100).toFixed(0);
     var conv = i > 0 ? ((val / parseFloat(steps[i-1].value||1)) * 100).toFixed(0) + '% of prev' : '';
-    return '<div style="text-align:center;margin-bottom:4px;">'
+    var sKey = _esc(String(s.stage || s.label || ''));
+    return '<div data-cb="bar" data-key="' + sKey + '" style="text-align:center;margin-bottom:4px;">'
       + '<div style="display:inline-block;width:' + pct + '%;background:' + accent + ';opacity:' + (1 - i * 0.12) + ';color:#fff;padding:8px 12px;border-radius:4px;font-size:0.85rem;font-weight:600;min-width:140px;">'
       + _esc(s.stage || s.label || '') + ' — ' + _esc(s.value !== undefined ? String(s.value) : '') + '</div>'
       + (conv ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:2px;">' + conv + '</div>' : '')
@@ -38968,8 +39078,9 @@ _RENDERERS['gmail_unread_count'] = function(b) {
       var lbl   = labels[i];
       var count = counts[lbl] || 0;
       var dim   = count === 0;
-      badges += '<div style="display:flex;align-items:center;gap:8px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 14px;">' +
-                '<span style="font-size:0.82rem;font-weight:600;color:var(--text);">' + _esc(lbl) + '</span>' +
+      var lblKey = _esc(lbl);
+      badges += '<div data-cb="tile" data-key="' + lblKey + '" style="display:flex;align-items:center;gap:8px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 14px;">' +
+                '<span data-cb="label" data-key="' + lblKey + '" style="font-size:0.82rem;font-weight:600;color:var(--text);">' + _esc(lbl) + '</span>' +
                 '<span style="min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:99px;font-size:0.75rem;font-weight:700;background:' + (dim ? 'var(--border,#e2e8f0)' : _esc(accent)) + ';color:' + (dim ? 'var(--muted)' : '#fff') + ';">' + count + '</span>' +
                 '</div>';
     }
@@ -39267,8 +39378,9 @@ _RENDERERS['gmail_inbox'] = function(b) {
     var bg      = em.unread ? 'rgba(99,102,241,0.07)' : 'rgba(255,255,255,0.03)';
     var bd      = em.unread ? 'rgba(99,102,241,0.25)'  : 'rgba(255,255,255,0.07)';
 
+    var itemKey = _esc(em.id || em.subject);
     cards +=
-      '<a href="' + _esc(gmailUrl) + '" target="_top" style="text-decoration:none;flex:0 0 260px;scroll-snap-align:start;">' +
+      '<a data-cb="item" data-key="' + itemKey + '" href="' + _esc(gmailUrl) + '" target="_top" style="text-decoration:none;flex:0 0 260px;scroll-snap-align:start;">' +
       '<div style="height:100%;padding:16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;box-sizing:border-box;' +
         'background:' + bg + ';border:1px solid ' + bd + ';' +
         'transition:background 0.15s,transform 0.15s;display:flex;flex-direction:column;gap:10px;"' +
@@ -39283,7 +39395,7 @@ _RENDERERS['gmail_inbox'] = function(b) {
         '</div>' +
         '<div style="font-size:0.62rem;color:#617087;white-space:nowrap;flex-shrink:0;">' + time + '</div>' +
       '</div>' +
-      '<div style="font-size:0.78rem;' + bold + 'color:#50709a;line-height:1.3;">' + subj + '</div>' +
+      '<div data-cb="label" data-key="' + itemKey + '" style="font-size:0.78rem;' + bold + 'color:#50709a;line-height:1.3;">' + subj + '</div>' +
       '<div style="font-size:0.7rem;color:#617087;line-height:1.5;flex:1;">' + snip + '</div>' +
       (em.count > 1 ? '<div style="font-size:0.6rem;color:#475569;">' + em.count + ' messages</div>' : '') +
       (em.unread ? '<div style="width:7px;height:7px;border-radius:50%;background:' + accentSafe + ';"></div>' : '') +
@@ -39419,8 +39531,9 @@ _RENDERERS['drive_recent_files'] = function(b) {
     var f  = files[i];
     var mi = mimeInfo(f.mime);
     var nm = f.name.length > 34 ? f.name.substring(0, 32) + '…' : f.name;
+    var k  = _esc(String(f.id || f.name || ''));
     cards +=
-      '<a href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;flex:0 0 200px;scroll-snap-align:start;">' +
+      '<a data-cb="item" data-key="' + k + '" href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;flex:0 0 200px;scroll-snap-align:start;">' +
       '<div style="height:100%;padding:14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);' +
         'transition:background 0.15s,transform 0.15s;display:flex;flex-direction:column;gap:10px;"' +
@@ -39431,7 +39544,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
           'display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;letter-spacing:0.04em;">' + mi.l + '</div>' +
         '<div style="font-size:0.6rem;color:#64748b;">' + relTime(f.modified) + '</div>' +
       '</div>' +
-      '<div style="font-size:0.75rem;font-weight:600;color:#5577a4;line-height:1.3;">' + _esc(nm) + '</div>' +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:0.75rem;font-weight:600;color:#5577a4;line-height:1.3;">' + _esc(nm) + '</div>' +
       (f.owner ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">' + _esc(f.owner) + '</div>' : '') +
       '</div></a>';
   }
@@ -39538,15 +39651,16 @@ _RENDERERS['drive_folder_contents'] = function(b) {
     var f  = files[i];
     var mi = mimeInfo(f.mime);
     var nm = f.name.length > 28 ? f.name.substring(0, 26) + '…' : f.name;
+    var k = _esc(String(f.id || f.name || ''));
     items +=
-      '<a href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;">' +
+      '<a data-cb="tile" data-key="' + k + '" href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;">' +
       '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
         'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);' +
         'transition:background 0.12s;cursor:pointer;"' +
         ' onmouseover="this.style.background=\'rgba(66,133,244,0.08)\'"' +
         ' onmouseout="this.style.background=\'rgba(255,255,255,0.02)\'">' +
         '<div style="width:26px;height:26px;border-radius:5px;background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
-        '<div style="font-size:0.75rem;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(nm) + '</div>' +
+        '<div data-cb="label" data-key="' + k + '" style="font-size:0.75rem;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(nm) + '</div>' +
       '</div></a>';
   }
 
@@ -39612,7 +39726,8 @@ _RENDERERS['jump_nav'] = function(b) {
   links.forEach(function(link) {
     var label  = link.label  || '';
     var target = link.target || '';
-    html += '<button onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
+    var lk     = _esc(link.id || link.target || label);
+    html += '<button data-cb="tile" data-key="' + lk + '" onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
           + ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
           + ' onmouseover="this.style.background=\'#e2e8f0\'" onmouseout="this.style.background=\'#f1f5f9\'">'
           + _esc(label)

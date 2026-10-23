@@ -309,10 +309,11 @@ _RENDERERS['lens_grid'] = function(b) {
 
   var cards = options.map(function(o) {
     var isSel = o.value === selected;
-    return '<button type="button" data-lg-value="' + _esc(o.value) + '" style="' +
+    var k = _esc(o.id || o.value || o.label || '');
+    return '<button data-cb="tile" data-key="' + k + '" type="button" data-lg-value="' + _esc(o.value) + '" style="' +
       'text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;' +
       'border:1.5px solid ' + (isSel ? '#4f46e5' : '#e2e5ea') + ';background:#fff;">' +
-      '<div style="font-size:14px;font-weight:700;color:#111827;">' + _esc(o.label || '') + '</div>' +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:14px;font-weight:700;color:#111827;">' + _esc(o.label || '') + '</div>' +
       (o.caption ? '<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(o.caption) + '</div>' : '') +
       '</button>';
   }).join('');

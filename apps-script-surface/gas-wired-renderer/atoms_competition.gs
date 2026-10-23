@@ -210,6 +210,7 @@ _RENDERERS['match_schedule'] = function(b) {
 
   if ((b.layout || 'table') === 'cards') {
     var cards = rounds.map(function(r, ri) {
+      var rk = _esc(r.round || r.label || 'Round ' + (ri + 1));
       var label = _esc(r.label || 'Round ' + (ri + 1));
       var items = (r.matches || []).map(function(m) {
         return '<div style="border:1px solid var(--border,#e8eaed);border-radius:10px;padding:12px 14px;margin:8px 0;">' +
@@ -222,8 +223,8 @@ _RENDERERS['match_schedule'] = function(b) {
             '<span style="flex:1;font-weight:600;">' + team(m.team_b) + '</span>' +
           '</div></div>';
       }).join('');
-      return '<div style="margin:1rem 0;">' +
-        '<div style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#4f46e5);">' + label + '</div>' +
+      return '<div data-cb="item" data-key="' + rk + '" style="margin:1rem 0;">' +
+        '<div data-cb="label" data-key="' + rk + '" style="font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--a2ui-accent,#4f46e5);">' + label + '</div>' +
         items + '</div>';
     }).join('');
     return '<div style="margin:1.2rem 0;">' + cards + '</div>';
@@ -244,9 +245,10 @@ _RENDERERS['match_schedule'] = function(b) {
   var head = '<tr><th style="' + th + '">Round</th>' +
     courts.map(function(c) { return '<th style="' + th + '">' + _esc(c) + '</th>'; }).join('') + '</tr>';
   var body = rounds.map(function(r, ri) {
+    var rk = _esc(r.round || r.label || ri + 1);
     var byCourt = {};
     (r.matches || []).forEach(function(m, i) { byCourt[m.court || 'Court ' + (i + 1)] = m; });
-    return '<tr><td style="' + td + 'font-weight:700;">' + _esc(r.label || ri + 1) + '</td>' +
+    return '<tr data-cb="item" data-key="' + rk + '"><td data-cb="label" data-key="' + rk + '" style="' + td + 'font-weight:700;">' + _esc(r.label || ri + 1) + '</td>' +
       courts.map(function(c) {
         var m = byCourt[c];
         if (!m) return '<td style="' + td + '"></td>';

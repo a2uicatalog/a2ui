@@ -53,16 +53,17 @@ _RENDERERS['module_map'] = function(b) {
   var cards = '';
   for (var i = 0; i < modules.length; i++) {
     var m = modules[i];
+    var mk = _esc(String(m.id || m.name || m.title || m.label || i));
     cards +=
       '<a id="' + uid + 'a' + i + '" href="#" target="_top" style="text-decoration:none;">' +
-      '<div id="' + uid + 'c' + i + '" style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;' +
+      '<div data-cb="tile" data-key="' + mk + '" id="' + uid + 'c' + i + '" style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
         'display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;transition:all 0.2s;">' +
         '<div id="' + uid + 's' + i + '" style="position:absolute;top:12px;right:12px;"></div>' +
         '<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.12em;color:#334155;text-transform:uppercase;">Module ' + (i + 1) + '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;">' +
           '<span style="font-size:1.4rem;flex-shrink:0;">' + _esc(m.icon || '📚') + '</span>' +
-          '<div style="font-size:0.88rem;font-weight:700;color:#4878a8;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
+          '<div data-cb="label" data-key="' + mk + '" style="font-size:0.88rem;font-weight:700;color:#4878a8;line-height:1.3;">' + _esc(m.title || '') + '</div>' +
         '</div>' +
         (m.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(m.description) + '</div>' : '') +
         '<div style="display:flex;gap:12px;margin-top:auto;">' +
@@ -160,7 +161,7 @@ _RENDERERS['knowledge_check'] = function(b) {
   var opts = '';
   for (var i = 0; i < options.length; i++) {
     opts +=
-      '<button id="' + uid + 'o' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
+      '<button data-cb="tile" data-key="' + _esc(options[i]) + '" id="' + uid + 'o' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="display:block;width:100%;text-align:left;padding:11px 14px;border-radius:9px;margin-bottom:7px;' +
           'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
           'color:#567295;font-size:0.8rem;cursor:pointer;transition:all 0.15s;"' +
@@ -516,12 +517,13 @@ _RENDERERS['badge_showcase'] = function(b) {
   for (var i = 0; i < badges.length; i++) {
     var bg = badges[i];
     var reqId = bg.required_id || bg.id || ('badge' + i);
+    var badgeK = _esc(bg.id || bg.label || ('badge' + i));
     items +=
-      '<div id="' + uid + 'b' + i + '" data-req="' + _esc(reqId) + '" ' +
+      '<div data-cb="node" data-key="' + badgeK + '" id="' + uid + 'b' + i + '" data-req="' + _esc(reqId) + '" ' +
         'style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;' +
           'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;">' +
         '<div id="' + uid + 'i' + i + '" style="font-size:2rem;filter:grayscale(1);opacity:0.25;transition:all 0.4s;">' + _esc(bg.icon || '🏅') + '</div>' +
-        '<div style="font-size:0.65rem;font-weight:700;color:#334155;">' + _esc(bg.label || '') + '</div>' +
+        '<div data-cb="label" data-key="' + badgeK + '" style="font-size:0.65rem;font-weight:700;color:#334155;">' + _esc(bg.label || '') + '</div>' +
         (bg.description ? '<div style="font-size:0.58rem;color:#1e293b;line-height:1.3;">' + _esc(bg.description) + '</div>' : '') +
       '</div>';
   }
@@ -561,15 +563,16 @@ _RENDERERS['learning_path_selector'] = function(b) {
   for (var i = 0; i < paths.length; i++) {
     var p  = paths[i];
     var ac = p.accent || '#4f46e5';
+    var pkey = _esc(p.id || p.label || p.name || '');
     cards +=
-      '<div id="' + uid + 'p' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
+      '<div data-cb="tile" data-key="' + pkey + '" id="' + uid + 'p' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
         'style="border-radius:14px;padding:22px 18px;cursor:pointer;transition:all 0.2s;' +
           'background:rgba(255,255,255,0.03);border:2px solid rgba(255,255,255,0.08);' +
           'display:flex;flex-direction:column;gap:10px;"' +
         ' onmouseover="if(!this.dataset.sel){this.style.borderColor=\'' + ac + '55\';this.style.background=\'' + ac + '0d\';}"' +
         ' onmouseout="if(!this.dataset.sel){this.style.borderColor=\'rgba(255,255,255,0.08)\';this.style.background=\'rgba(255,255,255,0.03)\'}">' +
         '<span style="font-size:2rem;">' + _esc(p.icon || '🎯') + '</span>' +
-        '<div style="font-size:0.92rem;font-weight:700;color:#4878a8;">' + _esc(p.label || '') + '</div>' +
+        '<div data-cb="label" data-key="' + pkey + '" style="font-size:0.92rem;font-weight:700;color:#4878a8;">' + _esc(p.label || '') + '</div>' +
         (p.description ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(p.description) + '</div>' : '') +
         (p.duration ? '<div style="font-size:0.62rem;color:#475569;margin-top:auto;">⏱ ' + _esc(p.duration) + '</div>' : '') +
       '</div>';
@@ -628,9 +631,10 @@ _RENDERERS['flashcard_deck'] = function(b) {
   for (var i = 0; i < cards.length; i++) {
     var front = _esc(cards[i].front || '').replace(/\n/g, '<br>');
     var back  = _esc(cards[i].back  || '').replace(/\n/g, '<br>');
+    var cardKey = cards[i].id !== undefined ? cards[i].id : (cards[i].front || '');
     var show  = i === 0 ? 'opacity:1;pointer-events:auto;transform:scale(1);' : 'opacity:0;pointer-events:none;transform:scale(0.96);';
     cardsHtml +=
-      '<div class="' + uid + 'w" data-idx="' + i + '" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;' + show + '">' +
+      '<div data-cb="item" data-key="' + _esc(cardKey) + '" class="' + uid + 'w" data-idx="' + i + '" style="position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s;' + show + '">' +
         '<div class="' + uid + 'i" style="position:relative;width:100%;height:100%;' +
           'transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);cursor:pointer;">' +
           '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;' +
@@ -639,7 +643,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
             'background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.09);' +
             'box-shadow:0 24px 48px rgba(0,0,0,0.5);">' +
             '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:1.2rem;">' + _esc(lblFront) + '</div>' +
-            '<div style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;">' + front + '</div>' +
+            '<div data-cb="label" data-key="' + _esc(cardKey) + '" style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;">' + front + '</div>' +
             '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— space / click to flip —</div>' +
           '</div>' +
           '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;' +

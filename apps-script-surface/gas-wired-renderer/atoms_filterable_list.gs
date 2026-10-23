@@ -62,9 +62,10 @@ _RENDERERS['filterable_list'] = function(b) {
     var value = (it[field] !== undefined && it[field] !== null && String(it[field]).trim()) ? String(it[field]).trim() : '';
     var badge = (field === 'status' || value) && value
       ? '<span class="fl-badge" style="--c:' + _esc(c) + '">' + _esc(value) + '</span>' : '';
-    return '<div class="fl-row" data-fv="' + _esc(k) + '">' +
+    var itKey = it.id !== undefined ? it.id : title(it);
+    return '<div data-cb="item" data-key="' + _esc(itKey) + '" class="fl-row" data-fv="' + _esc(k) + '">' +
       (it.icon ? '<span class="fl-ic" aria-hidden="true">' + _esc(it.icon) + '</span>' : '') +
-      '<div class="fl-main"><div class="fl-t">' + _esc(title(it)) + '</div>' +
+      '<div class="fl-main"><div data-cb="label" data-key="' + _esc(itKey) + '" class="fl-t">' + _esc(title(it)) + '</div>' +
       (detail(it) ? '<div class="fl-d">' + _esc(detail(it)) + '</div>' : '') + '</div>' +
       (it.meta ? '<span class="fl-meta">' + _esc(it.meta) + '</span>' : '') + badge + '</div>';
   }).join('');

@@ -144,9 +144,9 @@ _RENDERERS['avatar_group'] = function(b) {
     var colors   = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
     var bg       = colors[i % colors.length];
     if (a.url || a.avatar_url) {
-      return '<img src="' + _esc(a.url || a.avatar_url) + '" alt="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">';
+      return '<img data-cb="item" data-key="' + _esc(a.name || '') + '" src="' + _esc(a.url || a.avatar_url) + '" alt="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">';
     }
-    return '<div title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;background:' + bg + ';border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">' + initials + '</div>';
+    return '<div data-cb="item" data-key="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;background:' + bg + ';border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">' + initials + '</div>';
   }).join('');
   return '<div style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + imgs + surplus + label + '</div>';
 };
@@ -162,9 +162,9 @@ _RENDERERS['contributor_list'] = function(b) {
       ? '<img src="' + _esc(c.avatar_url) + '" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
       : '<div style="width:36px;height:36px;border-radius:50%;background:' + bg + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">' + initials + '</div>';
     var meta = c.contributions ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-left:6px;">' + _esc(String(c.contributions)) + ' contributions</span>' : '';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#e5e7eb);">'
+    return '<div data-cb="item" data-key="' + _esc(c.name || '') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#e5e7eb);">'
       + avatar
-      + '<div style="flex:1;"><div style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">' + _esc(c.name || '') + meta + '</div>'
+      + '<div style="flex:1;"><div data-cb="label" data-key="' + _esc(c.name || '') + '" style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">' + _esc(c.name || '') + meta + '</div>'
       + (c.role ? '<div style="font-size:0.78rem;color:var(--muted,#6b7280);">' + _esc(c.role) + '</div>' : '')
       + '</div>'
       + (c.url ? '<a href="' + _safeUrl(c.url) + '" target="_top" style="font-size:0.75rem;color:var(--a2ui-accent,#4f46e5);">→</a>' : '')
@@ -181,7 +181,7 @@ _RENDERERS['prerequisite_checklist'] = function(b) {
     var done  = typeof item === 'object' ? item.done : false;
     var icon  = done ? '✅' : '⬜';
     var style = done ? 'text-decoration:line-through;color:var(--muted,#9ca3af);' : 'color:var(--text,#374151);';
-    return '<li style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.875rem;' + style + '">'
+    return '<li data-cb="item" data-key="' + _esc(String(text)) + '" style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.875rem;' + style + '">'
       + '<span style="flex-shrink:0;">' + icon + '</span>'
       + '<span>' + _markdownToHtml(String(text)) + '</span></li>';
   }).join('');
@@ -195,13 +195,14 @@ _RENDERERS['capability_checklist'] = function(b) {
   var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(b.title) + '</div>' : '';
   var names = b.capability_names || [];
   var items = (b.items || names).map(function(item) {
-    var label  = typeof item === 'object' ? (item.label || item.name || '') : item;
+    var label  = typeof item === 'object' ? (item.name || item.text || item.label || '') : item;
+    var key    = _esc(String(label));
     var status = typeof item === 'object' ? (item.status || 'available') : 'available';
     var map    = { available: ['✓', '#10b981', '#d1fae5'], unavailable: ['✗', '#ef4444', '#fee2e2'], partial: ['◐', '#f59e0b', '#fef3c7'], planned: ['○', '#6b7280', '#f3f4f6'] };
     var cfg    = map[status] || map.available;
-    return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
+    return '<div data-cb="item" data-key="' + key + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
       + '<span style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">' + cfg[0] + '</span>'
-      + '<span style="flex:1;color:var(--text,#374151);">' + _esc(String(label)) + '</span>'
+      + '<span data-cb="label" data-key="' + key + '" style="flex:1;color:var(--text,#374151);">' + _esc(String(label)) + '</span>'
       + (typeof item === 'object' && item.tier ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(item.tier) + '</span>' : '')
       + '</div>';
   }).join('');
@@ -450,13 +451,14 @@ _RENDERERS['customer_logo_grid'] = function(b) {
     var img = l.image_url || l.url || l.src || '';
     var name = l.name || l.alt || '';
     var linkUrl = l.link_url || (l.url && l.image_url ? l.url : '');
+    var lKey = _esc(String(name || img));
     if (linkUrl && img) {
-      return '<a href="' + _safeUrl(linkUrl) + '" target="_top" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"></a>';
+      return '<a data-cb="tile" data-key="' + lKey + '" href="' + _safeUrl(linkUrl) + '" target="_top" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"></a>';
     }
     if (img) {
-      return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);"></div>';
+      return '<div data-cb="tile" data-key="' + lKey + '" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);"></div>';
     }
-    return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);">' + _esc(name) + '</div>';
+    return '<div data-cb="tile" data-key="' + lKey + '" style="display:flex;align-items:center;justify-content:center;padding:12px;font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);"><span data-cb="label" data-key="' + lKey + '">' + _esc(name) + '</span></div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + title
@@ -875,7 +877,7 @@ _RENDERERS['heatmap_calendar'] = function(b) {
     var count = lookup[iso] || 0;
     var ci    = Math.min(colors.length - 1, Math.floor((count / maxVal) * (colors.length - 1)));
     var bg    = colors[ci];
-    cells += '<div title="' + iso + ': ' + count + '" style="width:10px;height:10px;border-radius:2px;background:' + bg + ';flex-shrink:0;"></div>';
+    cells += '<div data-cb="item" data-key="' + _esc(iso) + '" title="' + iso + ': ' + count + '" style="width:10px;height:10px;border-radius:2px;background:' + bg + ';flex-shrink:0;"></div>';
     d.setDate(d.getDate() + 1);
   }
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);overflow-x:auto;">'
@@ -896,9 +898,10 @@ _RENDERERS['image_hotspots'] = function(b) {
     var x   = _esc(String(h.x_position || h.x || 50));
     var y   = _esc(String(h.y_position || h.y || 50));
     var lbl = _esc(h.label || String(i + 1));
+    var k   = _esc(String(h.id || h.label || h.content || h.description || ''));
     var cnt = h.content ? '<div class="' + uid + '-tip" style="display:none;position:absolute;left:calc(' + x + '% + 18px);top:calc(' + y + '% - 10px);background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;font-size:0.78rem;color:#374151;min-width:120px;max-width:200px;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);">' + _esc(h.content) + '</div>' : '';
-    return '<div style="position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);" onmouseenter="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'block\';" onmouseleave="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'none\';">'
-      + '<div style="width:24px;height:24px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,0.2);animation:pulse 2s infinite;">' + lbl + '</div>'
+    return '<div data-cb="node" data-key="' + k + '" style="position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);" onmouseenter="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'block\';" onmouseleave="var t=this.querySelector(\'.' + uid + '-tip\');if(t)t.style.display=\'none\';">'
+      + '<div data-cb="label" data-key="' + k + '" style="width:24px;height:24px;border-radius:50%;background:var(--a2ui-accent,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,0.2);animation:pulse 2s infinite;">' + lbl + '</div>'
       + cnt + '</div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;position:relative;display:inline-block;width:100%;">'
@@ -916,8 +919,9 @@ _RENDERERS['inventory_table'] = function(b) {
     var low   = thresh && avail < thresh;
     var stockColor = avail === 0 ? '#ef4444' : low ? '#f59e0b' : '#10b981';
     var stockBg    = avail === 0 ? '#fee2e2' : low ? '#fef3c7' : '#d1fae5';
-    return '<tr style="border-bottom:1px solid var(--border,#f3f4f6);">'
-      + '<td style="padding:8px 10px;font-size:0.82rem;color:var(--text,#374151);">' + _esc(item.product || item.sku || '') + '</td>'
+    var k = _esc(String(item.sku || item.product || item.name || item.id || ''));
+    return '<tr data-cb="item" data-key="' + k + '" style="border-bottom:1px solid var(--border,#f3f4f6);">'
+      + '<td data-cb="label" data-key="' + k + '" style="padding:8px 10px;font-size:0.82rem;color:var(--text,#374151);">' + _esc(item.product || item.sku || '') + '</td>'
       + (item.sku && item.product ? '<td style="padding:8px 10px;font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(item.sku) + '</td>' : '')
       + '<td style="padding:8px 10px;text-align:right;"><span style="padding:2px 8px;border-radius:12px;font-size:0.78rem;font-weight:600;background:' + stockBg + ';color:' + stockColor + ';">' + avail + '</span></td>'
       + (item.committed !== undefined ? '<td style="padding:8px 10px;text-align:right;font-size:0.78rem;color:var(--muted,#6b7280);">' + _esc(String(item.committed)) + '</td>' : '')
@@ -960,7 +964,8 @@ _RENDERERS['data_grid'] = function(b) {
       }
       return '<td style="padding:8px 12px;font-size:0.82rem;color:var(--text,#374151);border-bottom:1px solid var(--border,#f3f4f6);">' + cell + '</td>';
     }).join('');
-    return '<tr style="background:' + (ri % 2 ? 'var(--surface,#f9fafb)' : 'var(--bg,#fff)') + ';">' + trs + '</tr>';
+    var rKey = _esc(String(row.id !== undefined ? row.id : (row.name || row.label || row.title || (columns.length > 0 && row[columns[0].key] !== undefined ? row[columns[0].key] : ''))));
+    return '<tr data-cb="item" data-key="' + rKey + '" style="background:' + (ri % 2 ? 'var(--surface,#f9fafb)' : 'var(--bg,#fff)') + ';">' + trs + '</tr>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;">'
     + title + '<div style="overflow-x:auto;">'
@@ -979,7 +984,8 @@ _RENDERERS['conversion_funnel'] = function(b) {
     var val = parseFloat(s.value || 0);
     var pct = (val / maxVal * 100).toFixed(0);
     var conv = i > 0 ? ((val / parseFloat(steps[i-1].value||1)) * 100).toFixed(0) + '% of prev' : '';
-    return '<div style="text-align:center;margin-bottom:4px;">'
+    var sKey = _esc(String(s.stage || s.label || ''));
+    return '<div data-cb="bar" data-key="' + sKey + '" style="text-align:center;margin-bottom:4px;">'
       + '<div style="display:inline-block;width:' + pct + '%;background:' + accent + ';opacity:' + (1 - i * 0.12) + ';color:#fff;padding:8px 12px;border-radius:4px;font-size:0.85rem;font-weight:600;min-width:140px;">'
       + _esc(s.stage || s.label || '') + ' — ' + _esc(s.value !== undefined ? String(s.value) : '') + '</div>'
       + (conv ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:2px;">' + conv + '</div>' : '')
