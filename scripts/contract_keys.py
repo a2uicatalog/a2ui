@@ -229,6 +229,20 @@ def accept_now_read(atoms, detail, unread=UNREAD):
     return changed
 
 
+def _test_body(f, name):
+    """The test's name, then the source of its function in file f when there is one (a name like test_body names its atom)."""
+    try:
+        text = open(f).read()
+    except OSError:
+        return name
+    m = re.search(r'^(?:async )?def %s\(' % re.escape(name), text, re.M)
+    if not m:
+        return name
+    start = text.find('\n', m.end()) + 1 or len(text)
+    n = re.search(r'^(?=[^\s)])', text[start:], re.M)   # the next line at column 0 that is not the signature's close
+    return name + '\n' + text[m.start():start + (n.start() if n else len(text))]
+
+
 def attribute_failures(out, atoms, rel, returncode=1, locate=None):
     """The atoms a pytest run's failures belong to. A failure is pinned to the atom its test id or line names, else (for a
     cross-atom check) to the atoms its message names, else to the atoms its file names; a collection or syntax error with no
@@ -248,16 +262,21 @@ def attribute_failures(out, atoms, rel, returncode=1, locate=None):
         e_named = [x for x in atoms if re.search(r'(?m)^E .*\b%s\b' % re.escape(x), out)]
         if f in ALWAYS and e_named:   # a cross-atom check names its atoms in the message (schema fields, parity, twins)
             fails.update(e_named); continue
+        body = _test_body(f, line.split()[1].split('::')[-1].split('[')[0].split(' ')[0])
+        b_named = [x for x in atoms if re.search(r'["\']%s["\']|\b_render_%s\b|\btest_%s\b' % ((re.escape(x),) * 3), body)]
+        if b_named:   # the failing test's own code names its atoms: a file that names the whole batch must not fail it all
+            fails.update(b_named); continue
         fails.update(rel.get(f, atoms) if 'test_contract_sweep' not in f else [])
     if returncode != 0 and not fails:
         fails = set(atoms)
     return fails
 
 
-def gate(atoms, locate=None):
-    """The sweep gate for these atoms, then their own tests and the cross-atom checks."""
+def gate(atoms, locate=None, fast=False):
+    """The sweep gate for these atoms, then their own tests and the cross-atom checks. fast: the sweep and the cross-atom
+    checks only (a repair round); the atoms' own test files run once, on the edits that survive."""
     subprocess.run([PYTHON, 'scripts/gen_mcp_apps_bundle.py'], capture_output=True)
-    rel = related(atoms)
+    rel = {f: a for f, a in related(atoms).items() if not fast or f in ALWAYS}
     r = subprocess.run(['timeout', '1500', 'systemd-run', '--user', '--scope', '-q', '-p', 'MemoryMax=3G', '-p', 'MemorySwapMax=0', '-E',
                         'A2UI_SWEEP_ATOMS=' + ','.join(atoms), PYTHON, '-m', 'pytest', '-q', '--no-header', '-p', 'no:cacheprovider',
                         '-k', 'not registered and not well_formed', 'tests/test_contract_sweep.py'] + list(rel), capture_output=True, text=True)
@@ -265,7 +284,7 @@ def gate(atoms, locate=None):
     fails = attribute_failures(out, atoms, rel, r.returncode, locate)
     detail = '\n'.join(l for l in out.splitlines() if l.startswith(('E ', 'FAILED', 'ERROR')))[:10000]
     if 'now read, so delete from' in detail and accept_now_read(atoms, detail):
-        return gate(atoms, locate)   # the baseline now records the newly read field: judge the batch again
+        return gate(atoms, locate, fast)   # the baseline now records the newly read field: judge the batch again
     if r.returncode != 0 and not detail:
         detail = '\n'.join('E ' + l for l in out.splitlines()[-25:])
     summary = ([l.strip('= ') for l in out.splitlines() if re.search(r'\d+ (?:passed|failed|error)', l)] or ['(no summary)'])[-1]
@@ -392,7 +411,7 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
     history, total, applied = [], {'prompt': 0, 'answer': 0, 'thinking': 0}, []
     calls = 0
     t0 = time.time()
-    fails, summary, detail = gate(atoms, locate)
+    fails, summary, detail = gate(atoms, locate, fast=True)
     for rnd in range(1, rounds + 1):
         if not fails:
             break
@@ -418,11 +437,17 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
         edits = [e for e in ans.get('edits', []) if e.get('atom') in todo]
         done, refused, _ = apply(edits, files, scope)
         applied += edits
-        fails, summary, detail = gate(atoms, locate)
+        fails, summary, detail = gate(atoms, locate, fast=True)
         print('round %d: %d edits, %d refused; gate %s; failing %s' % (rnd, done, len(refused), summary, fails), flush=True)
         with open(log, 'a') as fh:
             fh.write(json.dumps({'round': rnd, 'applied': done, 'refused': refused, 'fails': fails, 'summary': summary, 'detail': detail[:4000], 'notes': ans.get('notes', ''), 'usage': u}) + '\n')
         history.append('Refused edits:\n%s\n\nGate: %s\n%s' % ('\n'.join(refused) or '(none)', summary, detail))
+    if len(fails) < len(atoms):   # the full gate, once, on what the repair rounds left passing
+        f_full, summary, detail = gate(atoms, locate)
+        fails = sorted(set(fails) | set(f_full))
+        print('full gate %s; failing %s' % (summary, fails), flush=True)
+        with open(log, 'a') as fh:
+            fh.write(json.dumps({'round': 'full', 'fails': fails, 'summary': summary, 'detail': detail[:4000]}) + '\n')
     keep = [t for t in atoms if t not in fails]
     if fails and not keep_failing:   # put the files back, then replay only the passing atoms' edits, in order, and gate them again
         for f, s0 in snapshot.items():

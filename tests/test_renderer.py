@@ -17,7 +17,7 @@ def rd(renderer, *blocks):
 
 def test_body(renderer):
     html = r(renderer, {"type": "body", "text": "Hello **world**."})
-    assert "<p>" in html
+    assert re.search(r"<p[ >]", html)   # the contract adds data-cb/data-key to the tag
     assert "<strong>world</strong>" in html
 
 

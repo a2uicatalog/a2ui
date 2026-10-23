@@ -57,6 +57,17 @@ def test_an_atoms_own_test_file_pins_the_atoms_it_names():
     assert ck.attribute_failures(out, ATOMS, REL) == {"alpha", "beta"}
 
 
+def test_a_failing_test_in_a_shared_file_pins_the_atom_its_own_code_names(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests/test_alpha_beta.py").write_text(
+        'def test_render():\n    assert render("beta")\n\n\ndef test_alpha():\n    assert "alpha"\n')
+    out = "FAILED tests/test_alpha_beta.py::test_render - AssertionError\n"
+    assert ck.attribute_failures(out, ATOMS, REL) == {"beta"}
+    out = "FAILED tests/test_alpha_beta.py::test_alpha - AssertionError\n"
+    assert ck.attribute_failures(out, ATOMS, REL) == {"alpha"}
+
+
 def test_a_collection_error_with_no_failed_line_fails_the_whole_batch():
     out = "E   SyntaxError: invalid syntax\n1 error in 0.1s\n"
     assert ck.attribute_failures(out, ATOMS, REL, returncode=2) == set(ATOMS)
