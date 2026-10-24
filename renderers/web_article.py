@@ -1660,12 +1660,108 @@ def _render_inline_feedback_message(b: dict) -> str:
     inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ inline_feedback_message ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
+# ── I136 compare-family helpers (twins: _c136* in apps-script-surface/gas-wired-renderer/atom.gs) ──────────────────────────────
+_C136_NUM = re.compile(r'^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$')
+_C136_PF = re.compile(r'^\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)')
+_C136_PALETTE = ['#4f46e5', '#22d3ee', '#34d399', '#fb923c', '#f472b6', '#a78bfa', '#facc15', '#818cf8', '#e879f9', '#2dd4bf']
+
+
+def _c136_fmt(n):
+    """String(n) in JavaScript for a finite number ('' otherwise)."""
+    try:
+        f = float(n)
+    except OverflowError:
+        return ''
+    if f != f or f in (float('inf'), float('-inf')):
+        return ''
+    if f == int(f) and abs(f) < 1e16:
+        return str(int(f))
+    if 1e16 <= abs(f) < 1e21:
+        return format(decimal.Decimal(repr(f)), 'f')
+    if 1e-6 <= abs(f) < 1e-4:
+        return format(decimal.Decimal(repr(f)), 'f')
+    return re.sub(r'e([+-])0*(\d)', r'e\1\2', repr(f))
+
+
+def _c136_txt(v):
+    """A text field: a string as is, a finite number as JavaScript prints it, anything else empty."""
+    if isinstance(v, str):
+        return v
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        return _c136_fmt(v)
+    return ''
+
+
+def _c136_num(v, d):
+    """A number field (a number or a decimal string), else the default d."""
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        try:
+            n = float(v)
+        except OverflowError:
+            return d
+    elif isinstance(v, str) and _C136_NUM.match(v.strip()):
+        n = float(v.strip())
+    else:
+        return d
+    return n if n == n and abs(n) != float('inf') else d
+
+
+def _c136_pf(v):
+    """parseFloat(v) || 0 for a number or a string."""
+    if isinstance(v, str):
+        m = _C136_PF.match(v)
+        v = float(m.group(1)) if m else 0.0
+    return _c136_num(v, 0.0) if isinstance(v, (int, float)) and not isinstance(v, bool) else 0.0
+
+
+def _c136_list(v, cap):
+    return v[:cap] if isinstance(v, list) else []
+
+
+def _c136_obj(v):
+    return v if isinstance(v, dict) else {}
+
+
+def _c136_key(v, d):
+    return _cv_esc(v if v else d)
+
+
+def _c136_css(v, d):
+    """A colour field: a string that passes _safe_css, else d (a number is not a colour)."""
+    return _safe_css(v, d) if isinstance(v, str) else d
+
+
+def _c136_round(x):
+    return math.floor(x + 0.5)
+
+
 def _render_rating_stars(b: dict) -> str:
-    """TODO: A visual component allowing users to rate an item using a series of stars, or di"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ rating_stars ]</em>")
-    return f'<div data-cb="node" data-key="{_ck(b.get("rating"), "rating_stars")}" style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    """rating (default value) out of max_rating stars; is_interactive makes each star a button that recolours the row."""
+    mx = int(min(max(math.floor(_c136_num(b.get('max_rating'), 5)), 1), 50))
+    rv = b.get('rating') if _c136_num(b.get('rating'), None) is not None else b.get('value')
+    rating = min(max(_c136_num(rv, 0), 0), mx)
+    full = int(math.floor(rating))
+    label = _c136_txt(b.get('label'))
+    inter = b.get('is_interactive') is True or b.get('is_interactive') == 'true'
+    stars = ''
+    for i in range(1, mx + 1):
+        col = '#facc15' if i <= full else '#d1d5db'
+        if inter:
+            stars += ('<button type="button" data-n="' + str(i) + '" aria-label="Rate ' + str(i) + ' of ' + str(mx) + '" aria-pressed="'
+                      + ('true' if i <= full else 'false') + '" onclick="' + _C136_STAR_JS + '" style="background:none;border:0;padding:0;margin:0;font:inherit;cursor:pointer;color:' + col + ';">&#9733;</button>')
+        else:
+            stars += '<span aria-hidden="true" style="color:' + col + ';">&#9733;</span>'
+    num = '<span style="font-size:0.85rem;color:#374151;margin-left:6px;">' + _c136_fmt(rating) + '</span>'
+    wrap = ('<div role="group" aria-label="Rate' + (': ' + _cv_esc(label) if label else '') + '">' if inter else
+            '<div role="img" aria-label="Rating: ' + _c136_fmt(rating) + ' of ' + str(mx) + '">')
+    return ('<div data-cb="node" data-key="' + _ck(b.get('rating'), 'rating_stars') + '" style="margin:0.5rem 0;">'
+            + ('<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:4px;">' + _cv_esc(label) + '</div>' if label else '')
+            + wrap + stars + num + '</div></div>')
+
+
+_C136_STAR_JS = ("var p=this.parentNode,k=p.querySelectorAll('button'),n=+this.getAttribute('data-n'),i;"
+                 "for(i=0;i<k.length;i++){k[i].style.color=i<n?'#facc15':'#d1d5db';k[i].setAttribute('aria-pressed',i<n?'true':'false')}"
+                 "p.lastChild.textContent=n")
 
 def _render_progress_circle(atom: dict) -> str:
     import hashlib, math
@@ -1875,23 +1971,40 @@ def _render_color_section(b: dict) -> str:
 
 
 def _render_tag_cloud(b: dict) -> str:
-    tags   = b.get("tags", b.get("items", []))
-    accent = b.get("accent", "#4f46e5")
-    base   = b.get("min_size", 12)
-    max_s  = b.get("max_size", 22)
-    rng    = max_s - base
-    max_w  = max((t.get("weight", 1) if isinstance(t, dict) else 1) for t in tags) if tags else 1
-    html   = ""
+    """tags (alias items): {label, weight?, color?} or a plain string; sizes run from min_size to max_size by weight."""
+    tags = _c136_list(b.get('tags') if isinstance(b.get('tags'), list) else b.get('items'), 500)
+    accent = _c136_css(b.get('accent'), 'var(--a2ui-accent,#4f46e5)')
+    mn = min(max(_c136_num(b.get('min_size'), 12), 6), 96)
+    mx = max(min(max(_c136_num(b.get('max_size'), 22), 6), 96), mn)
+    rng = mx - mn
+    rows = []
     for t in tags:
-        label = t.get("label", t.get("text", str(t))) if isinstance(t, dict) else str(t)
-        w     = (t.get("weight", 1) if isinstance(t, dict) else 1)
-        color = (t.get("color", accent) if isinstance(t, dict) else accent)
-        size  = round(base + (w / max_w) * rng)
-        alpha = hex(round(10 + (w / max_w) * 25))[2:]
-        fw    = "700" if size > 16 else "500"
-        html += f'<span style="display:inline-block;margin:4px;padding:4px 12px;font-size:{size}px;font-weight:{fw};color:{_cv_esc(color)};background:{_cv_esc(color)}{alpha};border-radius:99px;">{_cv_esc(label)}</span>'
-    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">{_cv_esc(b["title"])}</div>' if b.get("title") else ""
-    return f'{title_html}<div style="display:flex;flex-wrap:wrap;gap:2px;margin:1rem 0;">{html}</div>'
+        if isinstance(t, dict):
+            label = _c136_txt(t.get('label')) or _c136_txt(t.get('text'))
+            w = max(_c136_num(t.get('weight'), 1), 0)
+            color = _c136_css(t.get('color'), accent)
+        else:
+            label, w, color = _c136_txt(t), 1, accent
+        if label:
+            rows.append((label, w, color))
+    max_w = max([r[1] for r in rows] or [1])
+    if max_w <= 0:
+        max_w = 1
+    html = ''
+    for label, w, color in rows:
+        ratio = w / max_w
+        size = _c136_round(mn + ratio * rng)
+        a = _c136_round(10 + ratio * 25)
+        if re.fullmatch(r'#[0-9a-fA-F]{6}', color):
+            bg = color + ('0' + format(a, 'x'))[-2:]
+        else:
+            bg = 'color-mix(in srgb,' + color + ' ' + str(_c136_round(a / 255 * 100)) + '%,transparent)'
+        html += ('<span data-cb="item" data-key="' + _cv_esc(label) + '" style="display:inline-block;margin:4px;padding:4px 12px;font-size:' + _c136_fmt(size)
+                 + 'px;font-weight:' + ('700' if size > 16 else '500') + ';color:' + _cv_esc(color) + ';background:' + _cv_esc(bg)
+                 + ';border-radius:99px;cursor:default;">' + _cv_esc(label) + '</span>')
+    title = _c136_txt(b.get('title'))
+    return ((('<div style="font-size:16px;font-weight:700;color:var(--text,#111827);margin-bottom:14px;">' + _cv_esc(title) + '</div>') if title else '')
+            + '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:1rem 0;">' + html + '</div>')
 
 
 def _render_step_progress(b: dict) -> str:
@@ -2357,11 +2470,24 @@ def _render_pros_cons_list(b: dict) -> str:
             f'</div></div>')
 
 def _render_side_by_side_spec(b: dict) -> str:
-    """TODO: Renders a detailed comparison of two items, displaying their attributes and valu"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ side_by_side_spec ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    """item_a_name / item_b_name over specs ({name, item_a, item_b}): two panes of label / value rows. Old payloads (left / right {title, specs[{label, value}]}) fill the same panes."""
+    specs = b.get('specs') if isinstance(b.get('specs'), list) else None
+    panes = ''
+    for side, nm, old, fld in (('a', 'item_a_name', 'left', 'item_a'), ('b', 'item_b_name', 'right', 'item_b')):
+        o = _c136_obj(b.get(old))
+        name = _c136_txt(b.get(nm)) or _c136_txt(o.get('title'))
+        if specs is not None:
+            rows = [(_c136_txt(_c136_obj(s).get('name')) or _c136_txt(_c136_obj(s).get('label')), _c136_txt(_c136_obj(s).get(fld))) for s in specs[:200]]
+        else:
+            rows = [(_c136_txt(_c136_obj(s).get('label')), _c136_txt(_c136_obj(s).get('value'))) for s in _c136_list(o.get('specs'), 200)]
+        trs = ''
+        for i, (lab, val) in enumerate(rows):
+            k = _c136_key(lab, 'spec ' + str(i + 1)) + ('' if side == 'a' else ' (B)')
+            trs += ('<tr data-cb="item" data-key="' + k + '"' + (' style="background:#f9fafb;"' if i % 2 else '') + '><td style="padding:9px 16px;color:var(--muted,#5f6368);font-weight:500;width:45%;border-bottom:1px solid #f3f4f6;">' + _cv_esc(lab)
+                    + '</td><td style="padding:9px 16px;color:#111827;font-weight:600;border-bottom:1px solid #f3f4f6;">' + _cv_esc(val) + '</td></tr>')
+        panes += ('<div' + (' style="border-left:1px solid #e5e7eb;"' if side == 'b' else '') + '><div style="font-size:15px;font-weight:700;color:#fff;background:#7c3aed;padding:12px 16px;">'
+                  + _cv_esc(name) + '</div><table style="width:100%;border-collapse:collapse;font-size:14px;"><tbody>' + trs + '</tbody></table></div>')
+    return '<div style="margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + panes + '</div>'
 
 def _render_product_spec_table(b: dict) -> str:
     # This was an unfinished auto-generated stub (its own docstring said "TODO") that never
@@ -2386,18 +2512,97 @@ def _render_product_spec_table(b: dict) -> str:
             f'<tbody>{rows}</tbody></table></div>')
 
 def _render_comparison_grid(b: dict) -> str:
-    """TODO: Renders a grid comparing multiple products or services with features, often usin"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ comparison_grid ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    """products (columns) x features ({name, values[]}, a true / false value shows a tick / cross); old payloads' items ({name, value, highlight}) show as cards."""
+    products = _c136_names(b.get('products'))
+    feats = [f for f in _c136_list(b.get('features'), 200)]
+    ncols = len(products)
+    for f in feats:
+        if isinstance(f, dict) and isinstance(f.get('values'), list):
+            ncols = max(ncols, min(len(f['values']), 50))
+    ncols = min(ncols, 50)
+    table = ''
+    if products or feats:
+        th = 'padding:11px 16px;text-align:center;background:#7c3aed;color:#fff;font-size:13px;font-weight:700;'
+        head = '<th style="padding:11px 16px;text-align:left;background:#6d28d9;color:#fff;font-size:13px;font-weight:700;"></th>'
+        for j in range(ncols):
+            p = products[j] if j < len(products) else ''
+            head += ('<th data-cb="label" data-key="' + _c136_key(p, 'product ' + str(j + 1)) + '" style="' + th + '">' + _cv_esc(p) + '</th>') if p else '<th style="' + th + '"></th>'
+        rows = ''
+        for i, f in enumerate(feats):
+            o = f if isinstance(f, dict) else {}
+            name = (_c136_txt(o.get('name')) or _c136_txt(o.get('label'))) if isinstance(f, dict) else _c136_txt(f)
+            vals = _c136_list(o.get('values'), 50)
+            cells = ''
+            for j in range(ncols):
+                v = vals[j] if j < len(vals) else None
+                if v is True or v == 'true':
+                    c = '<span style="color:#16a34a;font-weight:700;font-size:16px;">&#10003;</span>'
+                elif v is False or v == 'false':
+                    c = '<span style="color:#dc2626;font-size:16px;">&#10007;</span>'
+                else:
+                    c = _cv_esc(_c136_txt(v))
+                cells += '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;color:#374151;text-align:center;">' + c + '</td>'
+            rows += ('<tr data-cb="item" data-key="' + _c136_key(name, 'feature ' + str(i + 1)) + '"><td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-weight:600;color:#111827;">'
+                     + _cv_esc(name) + '</td>' + cells + '</tr>')
+        table = ('<div style="overflow-x:auto;border:1px solid #e5e7eb;border-radius:10px;"><table style="width:100%;border-collapse:collapse;font-size:14px;">'
+                 '<thead><tr>' + head + '</tr></thead><tbody>' + rows + '</tbody></table></div>')
+    cards = ''
+    for i, it in enumerate(_c136_list(b.get('items'), 200)):
+        o = _c136_obj(it)
+        name = _c136_txt(o.get('name'))
+        h = o.get('highlight')
+        hl = h is True or h == 'true' or h == 1
+        cards += ('<div data-cb="item" data-key="' + _c136_key(name, 'item ' + str(i + 1)) + '" style="padding:16px;border:1.5px solid ' + ('#7c3aed' if hl else '#e5e7eb')
+                  + ';border-radius:10px;background:' + ('#faf5ff' if hl else '#fff') + ';text-align:center;">'
+                  '<div style="font-size:22px;font-weight:800;color:#7c3aed;margin-bottom:4px;">' + _cv_esc(_c136_txt(o.get('value'))) + '</div>'
+                  '<div style="font-size:13px;color:var(--muted,#5f6368);font-weight:500;">' + _cv_esc(name) + '</div></div>')
+    title = _c136_txt(b.get('title'))
+    return ('<div style="margin:1rem 0;">'
+            + ('<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;">' + _cv_esc(title) + '</div>' if title else '')
+            + table
+            + ('<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;' + ('margin-top:12px;' if table else '') + '">' + cards + '</div>' if cards else '')
+            + '</div>')
+
+def _c136_names(v):
+    """comparison_points / products: strings, or objects naming the entry."""
+    out = []
+    for x in _c136_list(v, 200):
+        s = _c136_txt(x)
+        if isinstance(x, dict):
+            s = _c136_txt(x.get('label')) or _c136_txt(x.get('name')) or _c136_txt(x.get('point')) or _c136_txt(x.get('text'))
+        out.append(s)
+    return out
+
 
 def _render_versus_block(b: dict) -> str:
-    """TODO: Renders a block explicitly comparing two entities with a prominent "VS" separato"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ versus_block ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    """Two entities side by side with a VS divider: entity_a_* / entity_b_* (name, description, image_url) and the comparison_points list.
+    Old payloads (left / right {title, items}, metric_label) fill the same columns."""
+    cols = ''
+    for side, bg, f_name, f_desc, f_img, old, fb in (('a', '#eff6ff', 'entity_a_name', 'entity_a_description', 'entity_a_image_url', 'left', 'entity_a'),
+                                                     ('b', '#fdf4ff', 'entity_b_name', 'entity_b_description', 'entity_b_image_url', 'right', 'entity_b')):
+        o = _c136_obj(b.get(old))
+        name = _c136_txt(b.get(f_name)) or _c136_txt(o.get('title'))
+        desc = _c136_txt(b.get(f_desc))
+        img = _safe_href(b.get(f_img), schemes=('https', 'mailto'))
+        lis = ''.join('<li style="font-size:14px;color:#374151;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05);">' + _cv_esc(_c136_txt(x)) + '</li>'
+                      for x in _c136_list(o.get('items'), 200))
+        cols += ('<div data-cb="item" data-key="' + _c136_key(name, fb) + '" style="padding:20px;background:' + bg + ';">'
+                 + ('<img src="' + _cv_esc(img) + '" alt="' + _cv_esc(name) + '" style="display:block;max-width:100%;max-height:96px;margin:0 auto 12px;border-radius:8px;object-fit:contain;">' if img else '')
+                 + '<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;">' + _cv_esc(name) + '</div>'
+                 + ('<div style="font-size:14px;color:#4b5563;margin-bottom:12px;">' + _cv_esc(desc) + '</div>' if desc else '')
+                 + ('<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;">' + lis + '</ul>' if lis else '')
+                 + '</div>')
+        if side == 'a':
+            cols += ('<div style="display:flex;align-items:center;justify-content:center;padding:0 12px;background:#fff;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">'
+                     '<span style="font-size:16px;font-weight:800;color:var(--muted,#5f6368);writing-mode:vertical-lr;letter-spacing:0.1em;">VS</span></div>')
+    metric = _c136_txt(b.get('metric_label'))
+    pts = ''.join('<li>' + _cv_esc(p) + '</li>' for p in _c136_names(b.get('comparison_points')) if p)
+    return ('<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
+            + ('<div style="text-align:center;font-size:13px;font-weight:600;color:var(--muted,#5f6368);background:#f9fafb;padding:8px;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:0.04em;">' + _cv_esc(metric) + '</div>' if metric else '')
+            + '<div style="display:grid;grid-template-columns:1fr auto 1fr;">' + cols + '</div>'
+            + ('<div style="padding:14px 20px;border-top:1px solid #e5e7eb;"><div style="font-size:12px;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Compared on</div>'
+               '<ul style="margin:0;padding-left:20px;font-size:14px;color:#374151;">' + pts + '</ul></div>' if pts else '')
+            + '</div>')
 
 def _render_rating_comparison(b: dict) -> str:
     """TODO: Renders a comparison of multiple items based on star ratings or numerical scores"""
@@ -3582,7 +3787,40 @@ def _render_live_demo_embed(b: dict) -> str:
     )
 
 def _render_benchmark_comparison(b: dict) -> str:
-    return '<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="padding:8px;background:#f0f9ff;border-radius:4px;">Benchmark A: 95ms</div><div style="padding:8px;background:#f0fdf4;border-radius:4px;">Benchmark B: 120ms</div></div></div>'
+    """items [{label, value}] as horizontal bars (old payloads: benchmarks [{name, value, max_value, unit, color}] and title)."""
+    items = [d for d in _c136_list(b.get('items') if isinstance(b.get('items'), list) else b.get('benchmarks'), 100) if isinstance(d, dict)]
+    if not items:
+        return '<div class="a2ui-chart-empty">No benchmarks</div>'
+    vals = [_c136_pf(d.get('value')) for d in items]
+    gmax = max(vals)
+    pad_l, pad_r, pad_t, row_h, row_gap, width = 130, 80, 30, 36, 4, 560
+    total_h = pad_t + len(items) * (row_h + row_gap) + 20
+    chart_w = width - pad_l - pad_r
+    title = _c136_txt(b.get('title'))
+    svg = '<svg viewBox="0 0 ' + str(width) + ' ' + str(total_h) + '" width="100%" preserveAspectRatio="xMidYMid meet">'
+    if title:
+        svg += '<text x="' + str(width // 2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _cv_esc(title) + '</text>'
+    for i, d in enumerate(items):
+        val = vals[i]
+        max_v = _c136_pf(d.get('max_value')) or gmax or 1
+        if max_v <= 0:
+            max_v = 1
+        bw = max(min(val / max_v, 1), 0) * chart_w
+        y = pad_t + i * (row_h + row_gap)
+        color = _c136_css(d.get('color'), _C136_PALETTE[i % len(_C136_PALETTE)])
+        unit = _c136_txt(d.get('unit'))
+        name = _c136_txt(d.get('label')) or _c136_txt(d.get('name'))
+        short = ''.join(list(name)[:18])
+        if i % 2 == 0:
+            svg += '<rect x="0" y="' + str(y) + '" width="' + str(width) + '" height="' + str(row_h) + '" fill="#f8fafc" rx="2"/>'
+        svg += ('<text data-cb="label" data-key="' + _c136_key(name, 'item ' + str(i + 1)) + '" x="' + str(pad_l - 8) + '" y="' + str(y + row_h // 2 + 4)
+                + '" text-anchor="end" font-size="11" fill="#334155"><title>' + _cv_esc(name) + '</title>' + _cv_esc(short) + '</text>')
+        svg += '<rect x="' + str(pad_l) + '" y="' + str(y + 8) + '" width="' + str(chart_w) + '" height="' + str(row_h - 16) + '" rx="4" fill="#e2e8f0"/>'
+        svg += ('<rect data-cb="bar" data-key="' + _c136_key(name, 'item ' + str(i + 1)) + '" x="' + str(pad_l) + '" y="' + str(y + 8) + '" width="' + _c136_fmt(bw)
+                + '" height="' + str(row_h - 16) + '" rx="4" fill="' + _cv_esc(color) + '"/>')
+        svg += ('<text x="' + str(pad_l + chart_w + 6) + '" y="' + str(y + row_h // 2 + 4) + '" font-size="11" font-weight="600" fill="#1e293b">'
+                + _cv_esc(_c136_fmt(val) + (' ' + unit if unit else '')) + '</text>')
+    return '<div class="a2ui-benchmark-comparison">' + svg + '</svg></div>'
 
 # ── shared chart-axis helper (plotly core-bar) ──────────────────────────────────────────────────────────────────────────────
 # d3-format 3.1.0 subset (types d f e g s % and n; flags fill/align, sign, $, 0, width, comma, precision, ~), d3-scale 4.0.2
@@ -14883,23 +15121,6 @@ def _render_table(b: dict) -> str:
 _RENDERERS['table'] = _render_table
 
 
-def _render_tag_cloud(b: dict) -> str:
-    tags = b.get('tags', [])
-    accent = b.get('accent', '#4f46e5')
-    items = ''
-    for tag in tags:
-        if isinstance(tag, dict):
-            text = tag.get('label') or tag.get('text', '')
-            weight = tag.get('weight', 1)
-            size = 0.72 + weight * 0.12
-        else:
-            text, size = str(tag), 0.84
-        items += (f'<span style="display:inline-block;padding:3px 10px;background:{_cv_esc(accent)}12;'
-                  f'color:{_cv_esc(accent)};border:1px solid {_cv_esc(accent)}30;border-radius:100px;font-size:{size:.2f}rem;'
-                  f'font-weight:600;margin:3px;">{_esc(text)}</span>')
-    return f'<div style="margin:1rem 0;display:flex;flex-wrap:wrap;gap:4px;">{items}</div>'
-
-_RENDERERS['tag_cloud'] = _render_tag_cloud
 
 
 def _render_tech_stack(b: dict) -> str:

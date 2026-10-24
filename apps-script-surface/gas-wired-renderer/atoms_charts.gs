@@ -197,50 +197,35 @@ _RENDERERS['chartjs_pie'] = function(b) {
 // 4. benchmark_comparison — horizontal bar comparison
 // ─────────────────────────────────────────────────────────
 _RENDERERS['benchmark_comparison'] = function(b) {
-  var items = b.benchmarks || [];
-  var title = b.title || '';
-
+  var items = _c136List(Array.isArray(b.items) ? b.items : b.benchmarks, 100).filter(function(d) { return d && typeof d === 'object' && !Array.isArray(d); });
   if (!items.length) return '<div class="a2ui-chart-empty">No benchmarks</div>';
-
-  var vals   = items.map(function(d){ return parseFloat(d.value)||0; });
-  var globalMax = Math.max.apply(null, vals);
-
-  var padL = 130, padR = 80, padT = 30, rowH = 36, rowGap = 4;
-  var width  = 560;
+  var vals = items.map(function(d) { return _c136Pf(d.value); });
+  var gmax = Math.max.apply(null, vals);
+  var padL = 130, padR = 80, padT = 30, rowH = 36, rowGap = 4, width = 560;
   var totalH = padT + items.length * (rowH + rowGap) + 20;
   var chartW = width - padL - padR;
-
+  var title = _c136Txt(b.title);
   var svg = '<svg viewBox="0 0 ' + width + ' ' + totalH + '" width="100%" preserveAspectRatio="xMidYMid meet">';
-  if (title) svg += '<text x="' + (width/2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
-
+  if (title) svg += '<text x="' + Math.floor(width / 2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
   items.forEach(function(d, i) {
-    var val    = parseFloat(d.value) || 0;
-    var maxV   = parseFloat(d.max_value) || globalMax || 1;
-    var pct    = Math.min(val / maxV, 1);
-    var bw     = pct * chartW;
-    var y      = padT + i * (rowH + rowGap);
-    var color  = d.color || _CHART_PALETTE[i % _CHART_PALETTE.length];
-    var unit   = d.unit || '';
-
-    // Alternating row bg
-    if (i % 2 === 0) {
-      svg += '<rect x="0" y="' + y + '" width="' + width + '" height="' + rowH + '" fill="#f8fafc" rx="2"/>';
-    }
-
-    // Label
-    svg += '<text x="' + (padL - 8) + '" y="' + (y + rowH/2 + 4) + '" text-anchor="end" font-size="11" fill="#334155">' + _esc((d.name||'').substr(0,18)) + '</text>';
-
-    // Bar track
+    var val = vals[i];
+    var maxV = _c136Pf(d.max_value) || gmax || 1;
+    if (maxV <= 0) maxV = 1;
+    var bw = Math.max(Math.min(val / maxV, 1), 0) * chartW;
+    var y = padT + i * (rowH + rowGap);
+    var color = _c136Css(d.color, _C136_PALETTE[i % _C136_PALETTE.length]);
+    var unit = _c136Txt(d.unit);
+    var name = _c136Txt(d.label) || _c136Txt(d.name);
+    var short = Array.from(name).slice(0, 18).join('');
+    if (i % 2 === 0) svg += '<rect x="0" y="' + y + '" width="' + width + '" height="' + rowH + '" fill="#f8fafc" rx="2"/>';
+    svg += '<text data-cb="label" data-key="' + _c136Key(name, 'item ' + (i + 1)) + '" x="' + (padL - 8) + '" y="' + (y + Math.floor(rowH / 2) + 4) +
+      '" text-anchor="end" font-size="11" fill="#334155"><title>' + _esc(name) + '</title>' + _esc(short) + '</text>';
     svg += '<rect x="' + padL + '" y="' + (y + 8) + '" width="' + chartW + '" height="' + (rowH - 16) + '" rx="4" fill="#e2e8f0"/>';
-    // Bar fill
-    if (bw > 0) {
-      svg += '<rect x="' + padL + '" y="' + (y + 8) + '" width="' + bw + '" height="' + (rowH - 16) + '" rx="4" fill="' + _esc(color) + '"/>';
-    }
-
-    // Value
-    svg += '<text x="' + (padL + chartW + 6) + '" y="' + (y + rowH/2 + 4) + '" font-size="11" font-weight="600" fill="#1e293b">' + _esc(String(val) + (unit ? ' '+unit : '')) + '</text>';
+    svg += '<rect data-cb="bar" data-key="' + _c136Key(name, 'item ' + (i + 1)) + '" x="' + padL + '" y="' + (y + 8) + '" width="' + _c136Fmt(bw) +
+      '" height="' + (rowH - 16) + '" rx="4" fill="' + _esc(color) + '"/>';
+    svg += '<text x="' + (padL + chartW + 6) + '" y="' + (y + Math.floor(rowH / 2) + 4) + '" font-size="11" font-weight="600" fill="#1e293b">' +
+      _esc(_c136Fmt(val) + (unit ? ' ' + unit : '')) + '</text>';
   });
-
   svg += '</svg>';
   return '<div class="a2ui-benchmark-comparison">' + svg + '</div>';
 };

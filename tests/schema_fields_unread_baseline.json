@@ -43,9 +43,6 @@
   "opacity",
   "speed"
  ],
- "benchmark_comparison": [
-  "items"
- ],
  "bezier_easing": [
   "theme"
  ],
@@ -150,10 +147,6 @@
  ],
  "combobox": [
   "rules"
- ],
- "comparison_grid": [
-  "features",
-  "products"
  ],
  "concept_ladder": [
   "source"
@@ -670,9 +663,6 @@
  "quiz_question": [
   "style"
  ],
- "rating_stars": [
-  "is_interactive"
- ],
  "reveal_on_scroll": [
   "accent",
   "background",
@@ -740,10 +730,6 @@
   "href",
   "size",
   "speed"
- ],
- "side_by_side_spec": [
-  "item_a_name",
-  "item_b_name"
  ],
  "skeleton": [
   "skeleton_type"
@@ -858,15 +844,6 @@
   "set_c_exclusive",
   "title",
   "version"
- ],
- "versus_block": [
-  "comparison_points",
-  "entity_a_description",
-  "entity_a_image_url",
-  "entity_a_name",
-  "entity_b_description",
-  "entity_b_image_url",
-  "entity_b_name"
  ],
  "video_card": [
   "alt_text"

@@ -446,7 +446,7 @@
   "parity": false
  },
  "benchmark_comparison": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "benchmark_comparison",
    "items": [
@@ -471,9 +471,9 @@
   "kind": "bar",
   "label_kind": "label",
   "key": "items[].name",
-  "py_sha": "0959de4d1d14f5058b6cba3e7a5a3a17716c02157c61c0577b92aaeb2dd21139",
-  "gas_sha": "d443fe7b9ce22a5d4104d2ca4fa20fbcaff0503339c21f56cc9856bbbeb3e004",
-  "parity": false
+  "py_sha": "ec2af738e397cde2279e1bbd15213367d9eebd3ed205457cfdf267000ad48f5f",
+  "gas_sha": "ec2af738e397cde2279e1bbd15213367d9eebd3ed205457cfdf267000ad48f5f",
+  "parity": true
  },
  "bento_grid": {
   "status": "pending",
@@ -1381,7 +1381,7 @@
   "parity": false
  },
  "comparison_grid": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "comparison_grid",
    "products": [
@@ -1432,8 +1432,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "features[].name",
-  "py_sha": "7f88e75eb6c4865415d15a49ae666f6ae6e2217573ea006f675f06d6e475adde",
-  "gas_sha": "44e581306daeb00a93c9a0fe1183e1944ca10626e3be3c6a0acd57f8048cc915",
+  "py_sha": "951c8c11bdf733bd87bb715e118fd4b8472de335dbddc8a75de47cf47c722431",
+  "gas_sha": "951c8c11bdf733bd87bb715e118fd4b8472de335dbddc8a75de47cf47c722431",
   "parity": true
  },
  "concept_ladder": {
@@ -6300,7 +6300,7 @@
   "parity": true
  },
  "side_by_side_spec": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "side_by_side_spec",
    "item_a_name": "Aurora Serverless v2",
@@ -6331,8 +6331,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "specs[].name",
-  "py_sha": "0d49a7415a636eb4907c0c91061645a0f69c1fda31288deaf3e9d06bfd1e5e25",
-  "gas_sha": "c414d56a45c311954c1b0bbca02507c3b81c5a4612378ea65e0b1d482c0278e9",
+  "py_sha": "43b2b0ce54a677a3a83e85e0feb929d466edbca3069f3e258373f7e3e4fb3295",
+  "gas_sha": "43b2b0ce54a677a3a83e85e0feb929d466edbca3069f3e258373f7e3e4fb3295",
   "parity": true
  },
  "skill_bars": {
@@ -7331,7 +7331,7 @@
   "parity": false
  },
  "tag_cloud": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "tag_cloud",
    "title": "Architecture Domains",
@@ -7357,9 +7357,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "tags[].text",
-  "py_sha": "07596ce2503494bf1c8e0ca61e1e410d76c6fc0be39adbf140997c6476defbe0",
-  "gas_sha": "5505aadfdf7f97fa6446589c34284345e617ed0efaf4f55b3e25f406bf7027be",
-  "parity": false
+  "py_sha": "c9c235c457cabf9b2e777b794fe71729cfe08163308afab6ca14a0fa9505c9f3",
+  "gas_sha": "c9c235c457cabf9b2e777b794fe71729cfe08163308afab6ca14a0fa9505c9f3",
+  "parity": true
  },
  "task_list": {
   "status": "pending",
@@ -7836,7 +7836,7 @@
   "parity": false
  },
  "versus_block": {
-  "status": "pending",
+  "status": "keyed",
   "block": {
    "type": "versus_block",
    "entity_a_name": "REST API",
@@ -7855,8 +7855,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "entity_a_name, entity_b_name",
-  "py_sha": "7d94f0cf4db70139eabf35967b36e51e9887019fb6cda9661d449f21c7be35aa",
-  "gas_sha": "9122d842c0ed53e445ecee6969068998b7624c39b49a832b7b2f01d74ec6e590",
+  "py_sha": "314850eb5acfca7191a1436ce851b58f14651c9a1360c60a793ff761b4438ba4",
+  "gas_sha": "314850eb5acfca7191a1436ce851b58f14651c9a1360c60a793ff761b4438ba4",
   "parity": true
  },
  "weather_outlook": {
@@ -9031,9 +9031,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "rating",
-  "py_sha": "8fc4c464223ca6289bd0dfa4ad76ac211b7ff892712328bca63b80d9b710f073",
-  "gas_sha": "98dca5a77c705939a9b21284b73d0f786827e5df5f2122efaa8aaa8b33852933",
-  "parity": false
+  "py_sha": "7c3793d27b056d421fdd9ff0e290832228dd3022c44951a3e091666dabff8b77",
+  "gas_sha": "7c3793d27b056d421fdd9ff0e290832228dd3022c44951a3e091666dabff8b77",
+  "parity": true
  },
  "progress_circle": {
   "status": "keyed",

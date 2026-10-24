@@ -1089,6 +1089,31 @@ var re = /([a-zA-Z_-][a-zA-Z0-9_-]*)[ \t\n\r\f\v]*\(/g, m;
 while ((m = re.exec(v)) !== null) { if (!_SAFE_CSS_FN.hasOwnProperty(m[1].toLowerCase())) return dflt; }
 return v;
 }
+var _C136_NUM = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+var _C136_PF = /^\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)/;
+var _C136_PALETTE = ['#4f46e5','#22d3ee','#34d399','#fb923c','#f472b6','#a78bfa','#facc15','#818cf8','#e879f9','#2dd4bf'];
+var _C136_STAR_JS = "var p=this.parentNode,k=p.querySelectorAll('button'),n=+this.getAttribute('data-n'),i;" +
+"for(i=0;i<k.length;i++){k[i].style.color=i<n?'#facc15':'#d1d5db';k[i].setAttribute('aria-pressed',i<n?'true':'false')}" +
+"p.lastChild.textContent=n";
+function _c136Fmt(n) { return (typeof n === 'number' && isFinite(n)) ? String(n) : ''; }
+function _c136Txt(v) { return typeof v === 'string' ? v : (typeof v === 'number' ? _c136Fmt(v) : ''); }
+function _c136Num(v, d) {
+var n = typeof v === 'number' ? v : (typeof v === 'string' && _C136_NUM.test(v.trim()) ? Number(v.trim()) : NaN);
+return isFinite(n) ? n : d;
+}
+function _c136Pf(v) {
+if (typeof v === 'string') { var m = _C136_PF.exec(v); v = m ? Number(m[1]) : 0; }
+return typeof v === 'number' && isFinite(v) ? v : 0;
+}
+function _c136Css(v, d) { return typeof v === 'string' ? _safe_css(v, d) : d; }
+function _c136List(v, cap) { return Array.isArray(v) ? v.slice(0, cap) : []; }
+function _c136Obj(v) { return (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}; }
+function _c136Key(v, d) { return _esc(v ? v : d); }
+function _c136Names(v) {
+return _c136List(v, 200).map(function(x) {
+return (x && typeof x === 'object' && !Array.isArray(x)) ? (_c136Txt(x.label) || _c136Txt(x.name) || _c136Txt(x.point) || _c136Txt(x.text)) : _c136Txt(x);
+});
+}
 function _md_url_ok(v) {
 v = String(v).replace(/[\t\n\r]/g, '').replace(/^[\u0000-\u0020]+/, '');
 var m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
@@ -3887,15 +3912,27 @@ return '<div style="display:flex;align-items:flex-start;gap:6px;margin:0.5rem 0;
 '<span>' + _esc(message) + '</span></div>';
 };
 _RENDERERS['rating_stars'] = function(b) {
-var rating = parseFloat(b.rating || b.value || 0);
-var maxRating = parseInt(b.max_rating || 5);
-var label = b.label || '';
-var full = Math.min(Math.floor(rating), maxRating);
-var stars = Array(full).fill('<span style="color:#facc15;">★</span>').join('') +
-Array(maxRating-full).fill('<span style="color:#d1d5db;">★</span>').join('');
+var mx = Math.min(Math.max(Math.floor(_c136Num(b.max_rating, 5)), 1), 50);
+var rating = Math.min(Math.max(_c136Num(_c136Num(b.rating, null) !== null ? b.rating : b.value, 0), 0), mx);
+var full = Math.floor(rating);
+var label = _c136Txt(b.label);
+var inter = b.is_interactive === true || b.is_interactive === 'true';
+var stars = '';
+for (var i = 1; i <= mx; i++) {
+var col = i <= full ? '#facc15' : '#d1d5db';
+if (inter) {
+stars += '<button type="button" data-n="' + i + '" aria-label="Rate ' + i + ' of ' + mx + '" aria-pressed="' + (i <= full ? 'true' : 'false') +
+'" onclick="' + _C136_STAR_JS + '" style="background:none;border:0;padding:0;margin:0;font:inherit;cursor:pointer;color:' + col + ';">&#9733;</button>';
+} else {
+stars += '<span aria-hidden="true" style="color:' + col + ';">&#9733;</span>';
+}
+}
+var num = '<span style="font-size:0.85rem;color:#374151;margin-left:6px;">' + _c136Fmt(rating) + '</span>';
+var wrap = inter ? '<div role="group" aria-label="Rate' + (label ? ': ' + _esc(label) : '') + '">' :
+'<div role="img" aria-label="Rating: ' + _c136Fmt(rating) + ' of ' + mx + '">';
 return '<div data-cb="node" data-key="' + _ckey(b.rating, 'rating_stars') + '" style="margin:0.5rem 0;">' +
 (label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:4px;">' + _esc(label) + '</div>' : '') +
-'<div>' + stars + '<span style="font-size:0.85rem;color:#374151;margin-left:6px;">' + rating + '</span></div></div>';
+wrap + stars + num + '</div></div>';
 };
 _RENDERERS['progress_circle'] = function(b) {
 var uid = Math.random().toString(36).substr(2,6);
@@ -4602,48 +4639,34 @@ cards += renderCard(tiers[i]);
 return '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:1rem 0;">' + cards + '</div>';
 };
 _RENDERERS['versus_block'] = function(b) {
-var uid = Math.random().toString(36).substr(2, 6);
-var left = b.left || {};
-var right = b.right || {};
-var metricLabel = b.metric_label || '';
-var leftTitle = left.title || '';
-var rightTitle = right.title || '';
-var leftItems = left.items || [];
-var rightItems = right.items || [];
-var leftHtml = '';
-for (var i = 0; i < leftItems.length; i++) {
-leftHtml += '<li class="vb-item-' + uid + '">' + _esc(leftItems[i]) + '</li>';
+var cols = '';
+[['a', '#eff6ff', 'entity_a_name', 'left', 'entity_a', 'entity_a_description', 'entity_a_image_url'], ['b', '#fdf4ff', 'entity_b_name', 'right', 'entity_b', 'entity_b_description', 'entity_b_image_url']].forEach(function(c) {
+var o = _c136Obj(b[c[3]]);
+var name = _c136Txt(b[c[2]]) || _c136Txt(o.title);
+var desc = _c136Txt(b[c[5]]);
+var rawImg = b[c[6]];
+var img = typeof rawImg === 'string' ? _hrefIsSafe(rawImg) : '';
+var lis = _c136List(o.items, 200).map(function(x) {
+return '<li style="font-size:14px;color:#374151;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05);">' + _esc(_c136Txt(x)) + '</li>';
+}).join('');
+cols += '<div data-cb="item" data-key="' + _c136Key(name, c[4]) + '" style="padding:20px;background:' + c[1] + ';">' +
+(img ? '<img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="display:block;max-width:100%;max-height:96px;margin:0 auto 12px;border-radius:8px;object-fit:contain;">' : '') +
+'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;">' + _esc(name) + '</div>' +
+(desc ? '<div style="font-size:14px;color:#4b5563;margin-bottom:12px;">' + _esc(desc) + '</div>' : '') +
+(lis ? '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;">' + lis + '</ul>' : '') +
+'</div>';
+if (c[0] === 'a') {
+cols += '<div style="display:flex;align-items:center;justify-content:center;padding:0 12px;background:#fff;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">' +
+'<span style="font-size:16px;font-weight:800;color:var(--muted,#5f6368);writing-mode:vertical-lr;letter-spacing:0.1em;">VS</span></div>';
 }
-var rightHtml = '';
-for (var j = 0; j < rightItems.length; j++) {
-rightHtml += '<li class="vb-item-' + uid + '">' + _esc(rightItems[j]) + '</li>';
-}
-return '<style>' +
-'.vb-wrap-' + uid + '{margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}' +
-(metricLabel ? '.vb-metric-' + uid + '{text-align:center;font-size:13px;font-weight:600;color:var(--muted,#5f6368);background:#f9fafb;padding:8px;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:0.04em;}' : '') +
-'.vb-cols-' + uid + '{display:grid;grid-template-columns:1fr auto 1fr;}' +
-'.vb-col-' + uid + '{padding:20px;}' +
-'.vb-col-left-' + uid + '{background:#eff6ff;}' +
-'.vb-col-right-' + uid + '{background:#fdf4ff;}' +
-'.vb-col-title-' + uid + '{font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;}' +
-'.vb-list-' + uid + '{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;}' +
-'.vb-item-' + uid + '{font-size:14px;color:#374151;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05);}' +
-'.vb-vs-' + uid + '{display:flex;align-items:center;justify-content:center;padding:0 12px;background:#fff;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;}' +
-'.vb-vs-text-' + uid + '{font-size:16px;font-weight:800;color:var(--muted,#5f6368);writing-mode:vertical-lr;letter-spacing:0.1em;}' +
-'</style>' +
-'<div class="vb-wrap-' + uid + '">' +
-(metricLabel ? '<div class="vb-metric-' + uid + '">' + _esc(metricLabel) + '</div>' : '') +
-'<div class="vb-cols-' + uid + '">' +
-'<div class="vb-col-' + uid + ' vb-col-left-' + uid + '">' +
-'<div class="vb-col-title-' + uid + '">' + _esc(leftTitle) + '</div>' +
-'<ul class="vb-list-' + uid + '">' + leftHtml + '</ul>' +
-'</div>' +
-'<div class="vb-vs-' + uid + '"><span class="vb-vs-text-' + uid + '">VS</span></div>' +
-'<div class="vb-col-' + uid + ' vb-col-right-' + uid + '">' +
-'<div class="vb-col-title-' + uid + '">' + _esc(rightTitle) + '</div>' +
-'<ul class="vb-list-' + uid + '">' + rightHtml + '</ul>' +
-'</div>' +
-'</div>' +
+});
+var metric = _c136Txt(b.metric_label);
+var pts = _c136Names(b.comparison_points).filter(function(p) { return p; }).map(function(p) { return '<li>' + _esc(p) + '</li>'; }).join('');
+return '<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' +
+(metric ? '<div style="text-align:center;font-size:13px;font-weight:600;color:var(--muted,#5f6368);background:#f9fafb;padding:8px;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:0.04em;">' + _esc(metric) + '</div>' : '') +
+'<div style="display:grid;grid-template-columns:1fr auto 1fr;">' + cols + '</div>' +
+(pts ? '<div style="padding:14px 20px;border-top:1px solid #e5e7eb;"><div style="font-size:12px;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Compared on</div>' +
+'<ul style="margin:0;padding-left:20px;font-size:14px;color:#374151;">' + pts + '</ul></div>' : '') +
 '</div>';
 };
 _RENDERERS['feature_matrix'] = function(b) {
@@ -4698,44 +4721,27 @@ return '<style>' +
 '</div>';
 };
 _RENDERERS['side_by_side_spec'] = function(b) {
-var uid = Math.random().toString(36).substr(2, 6);
-var left = b.left || {};
-var right = b.right || {};
-var leftTitle = left.title || '';
-var rightTitle = right.title || '';
-var leftSpecs = left.specs || [];
-var rightSpecs = right.specs || [];
-function renderSpecs(specs, side) {
-var html = '';
-for (var i = 0; i < specs.length; i++) {
-var s = specs[i];
-html += '<tr class="sbs-tr-' + uid + '">' +
-'<td class="sbs-td-label-' + uid + '">' + _esc(s.label || '') + '</td>' +
-'<td class="sbs-td-val-' + uid + '">' + _esc(s.value || '') + '</td>' +
-'</tr>';
+var specs = Array.isArray(b.specs) ? b.specs : null;
+var panes = '';
+[['a', 'item_a_name', 'left', 'item_a'], ['b', 'item_b_name', 'right', 'item_b']].forEach(function(c) {
+var o = _c136Obj(b[c[2]]);
+var name = _c136Txt(b[c[1]]) || _c136Txt(o.title);
+var rows;
+if (specs !== null) {
+rows = specs.slice(0, 200).map(function(s) { s = _c136Obj(s); return [_c136Txt(s.name) || _c136Txt(s.label), _c136Txt(s[c[3]])]; });
+} else {
+rows = _c136List(o.specs, 200).map(function(s) { s = _c136Obj(s); return [_c136Txt(s.label), _c136Txt(s.value)]; });
 }
-return html;
-}
-return '<style>' +
-'.sbs-wrap-' + uid + '{margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}' +
-'.sbs-col-' + uid + '{padding:0;}' +
-'.sbs-col-right-' + uid + '{border-left:1px solid #e5e7eb;}' +
-'.sbs-col-title-' + uid + '{font-size:15px;font-weight:700;color:#fff;background:#7c3aed;padding:12px 16px;}' +
-'.sbs-table-' + uid + '{width:100%;border-collapse:collapse;font-size:14px;}' +
-'.sbs-tr-' + uid + ':nth-child(even){background:#f9fafb;}' +
-'.sbs-td-label-' + uid + '{padding:9px 16px;color:var(--muted,#5f6368);font-weight:500;width:45%;border-bottom:1px solid #f3f4f6;}' +
-'.sbs-td-val-' + uid + '{padding:9px 16px;color:#111827;font-weight:600;border-bottom:1px solid #f3f4f6;}' +
-'</style>' +
-'<div class="sbs-wrap-' + uid + '">' +
-'<div class="sbs-col-' + uid + '">' +
-'<div class="sbs-col-title-' + uid + '">' + _esc(leftTitle) + '</div>' +
-'<table class="sbs-table-' + uid + '"><tbody>' + renderSpecs(leftSpecs, 'left') + '</tbody></table>' +
-'</div>' +
-'<div class="sbs-col-' + uid + ' sbs-col-right-' + uid + '">' +
-'<div class="sbs-col-title-' + uid + '">' + _esc(rightTitle) + '</div>' +
-'<table class="sbs-table-' + uid + '"><tbody>' + renderSpecs(rightSpecs, 'right') + '</tbody></table>' +
-'</div>' +
-'</div>';
+var trs = '';
+rows.forEach(function(r, i) {
+var k = _c136Key(r[0], 'spec ' + (i + 1)) + (c[0] === 'a' ? '' : ' (B)');
+trs += '<tr data-cb="item" data-key="' + k + '"' + (i % 2 ? ' style="background:#f9fafb;"' : '') + '><td style="padding:9px 16px;color:var(--muted,#5f6368);font-weight:500;width:45%;border-bottom:1px solid #f3f4f6;">' + _esc(r[0]) +
+'</td><td style="padding:9px 16px;color:#111827;font-weight:600;border-bottom:1px solid #f3f4f6;">' + _esc(r[1]) + '</td></tr>';
+});
+panes += '<div' + (c[0] === 'b' ? ' style="border-left:1px solid #e5e7eb;"' : '') + '><div style="font-size:15px;font-weight:700;color:#fff;background:#7c3aed;padding:12px 16px;">' +
+_esc(name) + '</div><table style="width:100%;border-collapse:collapse;font-size:14px;"><tbody>' + trs + '</tbody></table></div>';
+});
+return '<div style="margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + panes + '</div>';
 };
 _RENDERERS['product_spec_table'] = function(b) {
 var uid = Math.random().toString(36).substr(2, 6);
@@ -4771,33 +4777,56 @@ return '<style>' +
 '</div>';
 };
 _RENDERERS['comparison_grid'] = function(b) {
-var uid = Math.random().toString(36).substr(2, 6);
-var items = b.items || [];
-var title = b.title || '';
-var itemsHtml = '';
-for (var i = 0; i < items.length; i++) {
-var item = items[i];
-var name = item.name || '';
-var value = item.value || '';
-var highlight = !!item.highlight;
-itemsHtml +=
-'<div class="cg-item-' + uid + (highlight ? ' cg-item-hl-' + uid : '') + '">' +
-'<div class="cg-item-value-' + uid + '">' + _esc(value) + '</div>' +
-'<div class="cg-item-name-' + uid + '">' + _esc(name) + '</div>' +
-'</div>';
+var products = _c136Names(b.products);
+var feats = _c136List(b.features, 200);
+var ncols = products.length;
+feats.forEach(function(f) {
+if (f && typeof f === 'object' && Array.isArray(f.values)) ncols = Math.max(ncols, Math.min(f.values.length, 50));
+});
+ncols = Math.min(ncols, 50);
+var table = '';
+if (products.length || feats.length) {
+var th = 'padding:11px 16px;text-align:center;background:#7c3aed;color:#fff;font-size:13px;font-weight:700;';
+var head = '<th style="padding:11px 16px;text-align:left;background:#6d28d9;color:#fff;font-size:13px;font-weight:700;"></th>';
+for (var j = 0; j < ncols; j++) {
+var p = j < products.length ? products[j] : '';
+head += p ? '<th data-cb="label" data-key="' + _c136Key(p, 'product ' + (j + 1)) + '" style="' + th + '">' + _esc(p) + '</th>' : '<th style="' + th + '"></th>';
 }
-return '<style>' +
-'.cg-wrap-' + uid + '{margin:1rem 0;}' +
-(title ? '.cg-title-' + uid + '{font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;}' : '') +
-'.cg-grid-' + uid + '{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}' +
-'.cg-item-' + uid + '{padding:16px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;text-align:center;transition:border-color 0.15s;}' +
-'.cg-item-hl-' + uid + '{border-color:#7c3aed;background:#faf5ff;}' +
-'.cg-item-value-' + uid + '{font-size:22px;font-weight:800;color:#7c3aed;margin-bottom:4px;}' +
-'.cg-item-name-' + uid + '{font-size:13px;color:var(--muted,#5f6368);font-weight:500;}' +
-'</style>' +
-'<div class="cg-wrap-' + uid + '">' +
-(title ? '<div class="cg-title-' + uid + '">' + _esc(title) + '</div>' : '') +
-'<div class="cg-grid-' + uid + '">' + itemsHtml + '</div>' +
+var rows = '';
+feats.forEach(function(f, i) {
+var isObj = f && typeof f === 'object' && !Array.isArray(f);
+var o = isObj ? f : {};
+var name = isObj ? (_c136Txt(o.name) || _c136Txt(o.label)) : _c136Txt(f);
+var vals = _c136List(o.values, 50);
+var cells = '';
+for (var j2 = 0; j2 < ncols; j2++) {
+var v = j2 < vals.length ? vals[j2] : null, c;
+if (v === true || v === 'true') c = '<span style="color:#16a34a;font-weight:700;font-size:16px;">&#10003;</span>';
+else if (v === false || v === 'false') c = '<span style="color:#dc2626;font-size:16px;">&#10007;</span>';
+else c = _esc(_c136Txt(v));
+cells += '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;color:#374151;text-align:center;">' + c + '</td>';
+}
+rows += '<tr data-cb="item" data-key="' + _c136Key(name, 'feature ' + (i + 1)) + '"><td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-weight:600;color:#111827;">' +
+_esc(name) + '</td>' + cells + '</tr>';
+});
+table = '<div style="overflow-x:auto;border:1px solid #e5e7eb;border-radius:10px;"><table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+'<thead><tr>' + head + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+var cards = '';
+_c136List(b.items, 200).forEach(function(it, i) {
+var o = _c136Obj(it);
+var name = _c136Txt(o.name);
+var hl = o.highlight === true || o.highlight === 'true' || o.highlight === 1;
+cards += '<div data-cb="item" data-key="' + _c136Key(name, 'item ' + (i + 1)) + '" style="padding:16px;border:1.5px solid ' + (hl ? '#7c3aed' : '#e5e7eb') +
+';border-radius:10px;background:' + (hl ? '#faf5ff' : '#fff') + ';text-align:center;">' +
+'<div style="font-size:22px;font-weight:800;color:#7c3aed;margin-bottom:4px;">' + _esc(_c136Txt(o.value)) + '</div>' +
+'<div style="font-size:13px;color:var(--muted,#5f6368);font-weight:500;">' + _esc(name) + '</div></div>';
+});
+var title = _c136Txt(b.title);
+return '<div style="margin:1rem 0;">' +
+(title ? '<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;">' + _esc(title) + '</div>' : '') +
+table +
+(cards ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;' + (table ? 'margin-top:12px;' : '') + '">' + cards + '</div>' : '') +
 '</div>';
 };
 _RENDERERS['linkedin_post_image'] = function(b) {
@@ -5373,20 +5402,37 @@ var maxCss = b.max_width ? ('max-width:' + b.max_width + ';margin-left:auto;marg
 return '<div style="background:' + bg + ';border-radius:14px;padding:' + (b.padding || '24px') + ';margin:1.5rem 0;color:' + tc + ';overflow:hidden;' + maxCss + '">' + inner + '</div>';
 };
 _RENDERERS['tag_cloud'] = function(b) {
-var uid  = Math.random().toString(36).substr(2, 6);
-var tags = b.tags || b.items || [];
-var base = b.min_size || 12;
-var range = (b.max_size || 22) - base;
-var maxW  = Math.max.apply(null, tags.map(function(t){ return t.weight || 1; })) || 1;
-var html  = tags.map(function(t) {
-var w     = t.weight || 1;
-var size  = Math.round(base + (w / maxW) * range);
-var color = t.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
-var alpha = Math.round(10 + (w / maxW) * 25).toString(16);
-return '<span style="display:inline-block;margin:4px;padding:4px 12px;font-size:' + size + 'px;font-weight:' + (size > 16 ? '700' : '500') + ';color:' + color + ';background:' + color + alpha + ';border-radius:99px;cursor:default;">' + _esc(t.label || t.text || t) + '</span>';
-}).join('');
-return (b.title ? '<div style="font-size:16px;font-weight:700;color:var(--text,#111827);margin-bottom:14px;">' + _esc(b.title) + '</div>' : '') +
-'<div style="display:flex;flex-wrap:wrap;gap:2px;margin:1rem 0;">' + html + '</div>';
+var tags = _c136List(Array.isArray(b.tags) ? b.tags : b.items, 500);
+var accent = _c136Css(b.accent, 'var(--a2ui-accent,#4f46e5)');
+var mn = Math.min(Math.max(_c136Num(b.min_size, 12), 6), 96);
+var mx = Math.max(Math.min(Math.max(_c136Num(b.max_size, 22), 6), 96), mn);
+var rng = mx - mn;
+var rows = [];
+tags.forEach(function(t) {
+var label, w, color;
+if (t && typeof t === 'object' && !Array.isArray(t)) {
+label = _c136Txt(t.label) || _c136Txt(t.text);
+w = Math.max(_c136Num(t.weight, 1), 0);
+color = _c136Css(t.color, accent);
+} else { label = _c136Txt(t); w = 1; color = accent; }
+if (label) rows.push([label, w, color]);
+});
+var maxW = rows.reduce(function(m, r) { return Math.max(m, r[1]); }, rows.length ? rows[0][1] : 1);
+if (!(maxW > 0)) maxW = 1;
+var html = '';
+rows.forEach(function(r) {
+var ratio = r[1] / maxW, color = r[2];
+var size = Math.round(mn + ratio * rng);
+var a = Math.round(10 + ratio * 25);
+var bg = /^#[0-9a-fA-F]{6}$/.test(color) ? color + ('0' + a.toString(16)).slice(-2) :
+'color-mix(in srgb,' + color + ' ' + Math.round(a / 255 * 100) + '%,transparent)';
+html += '<span data-cb="item" data-key="' + _esc(r[0]) + '" style="display:inline-block;margin:4px;padding:4px 12px;font-size:' + _c136Fmt(size) +
+'px;font-weight:' + (size > 16 ? '700' : '500') + ';color:' + _esc(color) + ';background:' + _esc(bg) +
+';border-radius:99px;cursor:default;">' + _esc(r[0]) + '</span>';
+});
+var title = _c136Txt(b.title);
+return (title ? '<div style="font-size:16px;font-weight:700;color:var(--text,#111827);margin-bottom:14px;">' + _esc(title) + '</div>' : '') +
+'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:1rem 0;">' + html + '</div>';
 };
 _RENDERERS['step_progress'] = function(b) {
 var uid   = Math.random().toString(36).substr(2, 6);
@@ -14874,34 +14920,34 @@ svg += '</svg>';
 return '<div class="a2ui-chartjs-pie">' + svg + '</div>';
 };
 _RENDERERS['benchmark_comparison'] = function(b) {
-var items = b.benchmarks || [];
-var title = b.title || '';
+var items = _c136List(Array.isArray(b.items) ? b.items : b.benchmarks, 100).filter(function(d) { return d && typeof d === 'object' && !Array.isArray(d); });
 if (!items.length) return '<div class="a2ui-chart-empty">No benchmarks</div>';
-var vals   = items.map(function(d){ return parseFloat(d.value)||0; });
-var globalMax = Math.max.apply(null, vals);
-var padL = 130, padR = 80, padT = 30, rowH = 36, rowGap = 4;
-var width  = 560;
+var vals = items.map(function(d) { return _c136Pf(d.value); });
+var gmax = Math.max.apply(null, vals);
+var padL = 130, padR = 80, padT = 30, rowH = 36, rowGap = 4, width = 560;
 var totalH = padT + items.length * (rowH + rowGap) + 20;
 var chartW = width - padL - padR;
+var title = _c136Txt(b.title);
 var svg = '<svg viewBox="0 0 ' + width + ' ' + totalH + '" width="100%" preserveAspectRatio="xMidYMid meet">';
-if (title) svg += '<text x="' + (width/2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
+if (title) svg += '<text x="' + Math.floor(width / 2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
 items.forEach(function(d, i) {
-var val    = parseFloat(d.value) || 0;
-var maxV   = parseFloat(d.max_value) || globalMax || 1;
-var pct    = Math.min(val / maxV, 1);
-var bw     = pct * chartW;
-var y      = padT + i * (rowH + rowGap);
-var color  = d.color || _CHART_PALETTE[i % _CHART_PALETTE.length];
-var unit   = d.unit || '';
-if (i % 2 === 0) {
-svg += '<rect x="0" y="' + y + '" width="' + width + '" height="' + rowH + '" fill="#f8fafc" rx="2"/>';
-}
-svg += '<text x="' + (padL - 8) + '" y="' + (y + rowH/2 + 4) + '" text-anchor="end" font-size="11" fill="#334155">' + _esc((d.name||'').substr(0,18)) + '</text>';
+var val = vals[i];
+var maxV = _c136Pf(d.max_value) || gmax || 1;
+if (maxV <= 0) maxV = 1;
+var bw = Math.max(Math.min(val / maxV, 1), 0) * chartW;
+var y = padT + i * (rowH + rowGap);
+var color = _c136Css(d.color, _C136_PALETTE[i % _C136_PALETTE.length]);
+var unit = _c136Txt(d.unit);
+var name = _c136Txt(d.label) || _c136Txt(d.name);
+var short = Array.from(name).slice(0, 18).join('');
+if (i % 2 === 0) svg += '<rect x="0" y="' + y + '" width="' + width + '" height="' + rowH + '" fill="#f8fafc" rx="2"/>';
+svg += '<text data-cb="label" data-key="' + _c136Key(name, 'item ' + (i + 1)) + '" x="' + (padL - 8) + '" y="' + (y + Math.floor(rowH / 2) + 4) +
+'" text-anchor="end" font-size="11" fill="#334155"><title>' + _esc(name) + '</title>' + _esc(short) + '</text>';
 svg += '<rect x="' + padL + '" y="' + (y + 8) + '" width="' + chartW + '" height="' + (rowH - 16) + '" rx="4" fill="#e2e8f0"/>';
-if (bw > 0) {
-svg += '<rect x="' + padL + '" y="' + (y + 8) + '" width="' + bw + '" height="' + (rowH - 16) + '" rx="4" fill="' + _esc(color) + '"/>';
-}
-svg += '<text x="' + (padL + chartW + 6) + '" y="' + (y + rowH/2 + 4) + '" font-size="11" font-weight="600" fill="#1e293b">' + _esc(String(val) + (unit ? ' '+unit : '')) + '</text>';
+svg += '<rect data-cb="bar" data-key="' + _c136Key(name, 'item ' + (i + 1)) + '" x="' + padL + '" y="' + (y + 8) + '" width="' + _c136Fmt(bw) +
+'" height="' + (rowH - 16) + '" rx="4" fill="' + _esc(color) + '"/>';
+svg += '<text x="' + (padL + chartW + 6) + '" y="' + (y + Math.floor(rowH / 2) + 4) + '" font-size="11" font-weight="600" fill="#1e293b">' +
+_esc(_c136Fmt(val) + (unit ? ' ' + unit : '')) + '</text>';
 });
 svg += '</svg>';
 return '<div class="a2ui-benchmark-comparison">' + svg + '</div>';
