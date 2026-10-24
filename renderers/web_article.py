@@ -27532,8 +27532,10 @@ _RENDERERS["masonry_elevation"] = _render_masonry_elevation
 # schema.yaml description for the specific article/pattern it matches.
 
 def _render_verdict_checklist(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    items = [i for i in (b.get('items') or []) if isinstance(i, dict)]
+    b = _c136_obj(b)
+    title = _esc(_c136_txt(b.get('title')))
+    raw_items = _c136_list(b.get('items'), 200)
+    items = [_c136_obj(i) for i in raw_items if isinstance(i, dict)]
     verdict_style = {
         'yes':     ('✓', '#e6f4ea', '#34a853'),
         'partial': ('~', '#fef7e0', '#e37400'),
@@ -27541,10 +27543,12 @@ def _render_verdict_checklist(b: dict) -> str:
     }
     rows = []
     for it in items:
-        v = str(it.get('verdict', 'no')).strip().lower()
+        v = _c136_txt(it.get('verdict')).strip().lower()
         mark, bg, fg = verdict_style.get(v, verdict_style['no'])
-        label = _md_inline(str(it.get('label', '')))
-        note = _md_inline(str(it.get('note', ''))) if it.get('note') else ''
+        label = _md_inline(_c136_txt(it.get('label')))
+        note_txt = _c136_txt(it.get('note'))
+        note = _md_inline(note_txt) if note_txt else ''
+        note_html = f'<div style="color:#5f6368;font-size:0.85rem;margin-top:2px;">{note}</div>' if note else ''
         rows.append(
             f'<li style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;'
             f'border-bottom:1px solid #e8eaed;">'
@@ -27552,13 +27556,14 @@ def _render_verdict_checklist(b: dict) -> str:
             f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;">'
             f'{mark}</span>'
             f'<div style="line-height:1.5;"><span style="color:#202124;">{label}</span>'
-            + (f'<div style="color:#5f6368;font-size:0.85rem;margin-top:2px;">{note}</div>' if note else '')
-            + '</div></li>'
+            f'{note_html}'
+            '</div></li>'
         )
     title_html = f'<div style="font-weight:700;margin-bottom:8px;color:#202124;">{title}</div>' if title else ''
+    rows_joined = ''.join(rows)
     return (
         f'<div style="margin:1.5rem 0;">{title_html}'
-        f'<ul style="list-style:none;padding:0;margin:0;">{"".join(rows)}</ul></div>'
+        f'<ul style="list-style:none;padding:0;margin:0;">{rows_joined}</ul></div>'
     )
 
 
@@ -27566,9 +27571,10 @@ _RENDERERS['verdict_checklist'] = _render_verdict_checklist
 
 
 def _render_constraint_fix_triad(b: dict) -> str:
-    constraint = _md_inline(str(b.get('constraint', '')))
-    breaks = _md_inline(str(b.get('breaks', '')))
-    fix = _md_inline(str(b.get('fix', '')))
+    b = _c136_obj(b)
+    constraint = _md_inline(_c136_txt(b.get('constraint')))
+    breaks = _md_inline(_c136_txt(b.get('breaks')))
+    fix = _md_inline(_c136_txt(b.get('fix')))
     row = lambda label, color, bg, text: (
         f'<div style="display:flex;gap:10px;padding:10px 14px;background:{bg};'
         f'border-left:3px solid {color};margin-bottom:6px;border-radius:0 6px 6px 0;">'
@@ -27589,9 +27595,11 @@ _RENDERERS['constraint_fix_triad'] = _render_constraint_fix_triad
 
 
 def _render_incident_finding(b: dict) -> str:
-    headline = _md_inline(str(b.get('headline', '')))
-    detail = _md_inline(str(b.get('detail', '')))
-    synthesis = _md_inline(str(b.get('synthesis', ''))) if b.get('synthesis') else ''
+    b = _c136_obj(b)
+    headline = _md_inline(_c136_txt(b.get('headline')))
+    detail = _md_inline(_c136_txt(b.get('detail')))
+    synthesis_txt = _c136_txt(b.get('synthesis'))
+    synthesis = _md_inline(synthesis_txt) if synthesis_txt else ''
     synthesis_html = (
         f'<div style="margin-top:12px;padding:10px 14px;background:#e8f0fe;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
         f'color:#1a73e8;font-size:0.9rem;line-height:1.5;">{synthesis}</div>'
@@ -27610,12 +27618,14 @@ _RENDERERS['incident_finding'] = _render_incident_finding
 
 
 def _render_wrong_vs_right(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    pairs = [p for p in (b.get('pairs') or []) if isinstance(p, dict)]
+    b = _c136_obj(b)
+    title = _esc(_c136_txt(b.get('title')))
+    raw_pairs = _c136_list(b.get('pairs'), 200)
+    pairs = [_c136_obj(p) for p in raw_pairs if isinstance(p, dict)]
     rows = []
     for p in pairs:
-        wrong = _md_inline(str(p.get('wrong', '')))
-        right = _md_inline(str(p.get('right', '')))
+        wrong = _md_inline(_c136_txt(p.get('wrong')))
+        right = _md_inline(_c136_txt(p.get('right')))
         rows.append(
             f'<li style="display:flex;gap:10px;align-items:center;padding:6px 0;font-size:0.92rem;">'
             f'<span style="color:#c5221f;text-decoration:line-through;text-decoration-color:#ea4335;">'
@@ -27624,9 +27634,10 @@ def _render_wrong_vs_right(b: dict) -> str:
             f'<span style="color:#137333;font-weight:600;">{right}</span></li>'
         )
     title_html = f'<div style="font-weight:700;margin-bottom:8px;color:#202124;">{title}</div>' if title else ''
+    rows_joined = ''.join(rows)
     return (
         f'<div style="margin:1.5rem 0;">{title_html}'
-        f'<ul style="list-style:none;padding:0;margin:0;">{"".join(rows)}</ul></div>'
+        f'<ul style="list-style:none;padding:0;margin:0;">{rows_joined}</ul></div>'
     )
 
 
@@ -27634,9 +27645,11 @@ _RENDERERS['wrong_vs_right'] = _render_wrong_vs_right
 
 
 def _render_agent_demo_card(b: dict) -> str:
-    name = _esc(b.get('name', ''))
-    description = _md_inline(str(b.get('description', '')))
-    primitives = [str(p) for p in (b.get('primitives_used') or [])]
+    b = _c136_obj(b)
+    name = _esc(_c136_txt(b.get('name')))
+    description = _md_inline(_c136_txt(b.get('description')))
+    raw_primitives = _c136_list(b.get('primitives_used'), 100)
+    primitives = [_c136_txt(p) for p in raw_primitives if _c136_txt(p)]
     chips = ''.join(
         f'<span style="display:inline-block;background:#e8f0fe;color:#1558b4;font-size:0.78rem;'
         f'font-family:ui-monospace,\'SF Mono\',Consolas,monospace;padding:3px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
@@ -27655,14 +27668,33 @@ _RENDERERS['agent_demo_card'] = _render_agent_demo_card
 
 
 def _render_wishlist_panel(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    groups = [g for g in (b.get('groups') or []) if isinstance(g, dict)]
+    b = _c136_obj(b)
+    title = _esc(_c136_txt(b.get('title')))
+    raw_groups = _c136_list(b.get('groups'), 50)
+    groups = [_c136_obj(g) for g in raw_groups if isinstance(g, dict)]
     group_html = []
     for g in groups:
-        heading = _esc(g.get('heading', ''))
-        items = [str(i) for i in (g.get('items') or [])]
-        li = ''.join(f'<li style="margin-bottom:6px;line-height:1.5;color:#3c4043;">{_md_inline(i)}</li>'
-                     for i in items)
+        heading = _esc(_c136_txt(g.get('heading')))
+        raw_items = _c136_list(g.get('items'), 100)
+        li_parts = []
+        for raw_item in raw_items:
+            s = _c136_txt(raw_item)
+            if not s:
+                continue
+            idx = s.find(':')
+            if 0 < idx <= 80 and (idx == len(s) - 1 or s[idx + 1] in ' \t\n'):
+                content = (
+                    '<strong style="color:#202124;">'
+                    + _md_inline(s[:idx])
+                    + ':</strong>'
+                    + _md_inline(s[idx + 1:])
+                )
+            else:
+                content = _md_inline(s)
+            li_parts.append(
+                f'<li style="margin-bottom:6px;line-height:1.5;color:#3c4043;">{content}</li>'
+            )
+        li = ''.join(li_parts)
         group_html.append(
             f'<div style="margin-bottom:14px;">'
             f'<div style="font-weight:700;font-size:0.85rem;text-transform:uppercase;'
@@ -27670,21 +27702,24 @@ def _render_wishlist_panel(b: dict) -> str:
             f'<ul style="margin:0;padding-left:1.2rem;">{li}</ul></div>'
         )
     title_html = f'<div style="font-weight:700;font-size:1.05rem;margin-bottom:12px;color:#202124;">{title}</div>' if title else ''
-    return f'<div style="margin:1.5rem 0;">{title_html}{"".join(group_html)}</div>'
+    groups_joined = ''.join(group_html)
+    return f'<div style="margin:1.5rem 0;">{title_html}{groups_joined}</div>'
 
 
 _RENDERERS['wishlist_panel'] = _render_wishlist_panel
 
 
 def _render_trace_step(b: dict) -> str:
-    step_number = _esc(b.get('step_number', ''))
-    title = _md_inline(str(b.get('title', '')))
-    body = _md_inline(str(b.get('body', '')))
-    code = b.get('code', '')
+    b = _c136_obj(b)
+    step_number = _esc(_c136_txt(b.get('step_number')))
+    title = _md_inline(_c136_txt(b.get('title')))
+    body = _md_inline(_c136_txt(b.get('body')))
+    code = _c136_txt(b.get('code'))
+    code_esc = _esc(code)
     code_html = (
         f'<pre style="background:#0d1117;color:#cdd6f4;padding:12px 14px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
         f'font-family:ui-monospace,\'SF Mono\',Consolas,monospace;font-size:0.85rem;'
-        f'overflow-x:auto;margin-top:8px;">{_esc(code)}</pre>'
+        f'overflow-x:auto;margin-top:8px;">{code_esc}</pre>'
         if code else ''
     )
     return (
@@ -27701,8 +27736,9 @@ _RENDERERS['trace_step'] = _render_trace_step
 
 
 def _render_stat_inline_badge(b: dict) -> str:
-    value = _esc(b.get('value', ''))
-    label = _esc(b.get('label', ''))
+    b = _c136_obj(b)
+    value = _esc(_c136_txt(b.get('value')))
+    label = _esc(_c136_txt(b.get('label')))
     return (
         '<span style="display:inline-flex;align-items:baseline;gap:5px;background:#e8f0fe;'
         'padding:3px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin:0 2px;">'
@@ -27715,11 +27751,13 @@ _RENDERERS['stat_inline_badge'] = _render_stat_inline_badge
 
 
 def _render_problem_chapter(b: dict) -> str:
-    number = _esc(b.get('number', ''))
-    headline = _md_inline(str(b.get('headline', '')))
-    body = _md_inline(str(b.get('body', '')))
-    angle_label = _esc(b.get('angle_label') or 'Takeaway')
-    angle_text = _md_inline(str(b.get('angle_text', '')))
+    b = _c136_obj(b)
+    number = _esc(_c136_txt(b.get('number')))
+    headline = _md_inline(_c136_txt(b.get('headline')))
+    body = _md_inline(_c136_txt(b.get('body')))
+    angle_label_txt = _c136_txt(b.get('angle_label')) or 'Takeaway'
+    angle_label = _esc(angle_label_txt)
+    angle_text = _md_inline(_c136_txt(b.get('angle_text')))
     return (
         '<div style="margin:2rem 0;">'
         f'<div style="font-size:0.8rem;font-weight:700;color:#9aa0a6;text-transform:uppercase;'
@@ -27736,14 +27774,26 @@ _RENDERERS['problem_chapter'] = _render_problem_chapter
 
 
 def _render_resource_link_row(b: dict) -> str:
-    label = _esc(b.get('label', ''))
-    url = _esc(b.get('url', ''))
-    note = _md_inline(str(b.get('note', ''))) if b.get('note') else ''
+    b = _c136_obj(b)
+    label = _esc(_c136_txt(b.get('label')))
+    raw_url = _c136_txt(b.get('url'))
+    note_txt = _c136_txt(b.get('note'))
+    note = _md_inline(note_txt) if note_txt else ''
     note_html = f'<span style="color:#5f6368;font-size:0.85rem;margin-left:8px;">{note}</span>' if note else ''
+    href = _safe_href(raw_url, schemes=('https', 'mailto'))
+    if href:
+        url_esc = _esc(href)
+        link_html = (
+            f'<a href="{url_esc}" target="_blank" rel="noopener noreferrer" '
+            f'style="color:#1a73e8;font-weight:600;text-decoration:none;">{label}</a>'
+        )
+    else:
+        link_html = (
+            f'<span style="font-weight:600;">{label}</span>'
+        )
     return (
         '<div style="display:flex;align-items:baseline;padding:8px 0;border-bottom:1px solid #e8eaed;">'
-        f'<a href="{url}" target="_blank" rel="noopener noreferrer" '
-        f'style="color:#1a73e8;font-weight:600;text-decoration:none;">{label}</a>'
+        f'{link_html}'
         f'{note_html}</div>'
     )
 

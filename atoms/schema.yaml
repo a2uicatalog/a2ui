@@ -20427,7 +20427,7 @@ blocks:
     - google-apps-script-web
   fields:
     label: string (required). The link's visible text.
-    url: url (required). The destination.
+    url: "url (required). The destination: https, mailto or a relative path. Any other scheme (http, javascript, data...) is not linked; the label shows as plain text."
     note: string (optional). One short line of context after the link.
   source: *id001
 - type: tool_call_card

@@ -7832,8 +7832,8 @@
   "label_kind": "label",
   "key": "items[].claim",
   "py_sha": "ff537adbcceac0bb1206bc27e932b5fb6666742679150c7328a5aa6050e0a205",
-  "gas_sha": "ed998d21bc7074205863176e6dcf509206127820a8cbd74af65519eb40a69cc3",
-  "parity": false
+  "gas_sha": "ff537adbcceac0bb1206bc27e932b5fb6666742679150c7328a5aa6050e0a205",
+  "parity": true
  },
  "versus_block": {
   "status": "keyed",
@@ -7971,9 +7971,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "groups[].title",
-  "py_sha": "58a8ec2c6450eddd3eeb66fc992a699afdcf515fb365403734b3467023153122",
-  "gas_sha": "02fb920708d60984283e68fd3e12b4215a25c7eb3390467492ece37834d931a1",
-  "parity": false
+  "py_sha": "6a1e522ccf71a4b4f315c13fe52a9f61318438f547dea8c35baa5b45fe60d077",
+  "gas_sha": "6a1e522ccf71a4b4f315c13fe52a9f61318438f547dea8c35baa5b45fe60d077",
+  "parity": true
  },
  "word_cloud": {
   "status": "pending",
@@ -8095,8 +8095,8 @@
   "label_kind": "label",
   "key": "pairs[].wrong",
   "py_sha": "0aaecf7eab0c184ae2756cd605efdda703852f2a6157ac94cc9b559f55af684e",
-  "gas_sha": "3ff53fe49165b650c5c5e541ff587e00f402c7f66279a5b69a39b31aa6dc971b",
-  "parity": false
+  "gas_sha": "0aaecf7eab0c184ae2756cd605efdda703852f2a6157ac94cc9b559f55af684e",
+  "parity": true
  },
  "accordion_item": {
   "status": "keyed",
@@ -12313,8 +12313,8 @@
   "label_kind": "label",
   "key": "constraint",
   "py_sha": "43cb4654616756c7da1c19971ddf1a199e4dcf1dd6e917aa45733f2a04d7e56b",
-  "gas_sha": "3fd9877f42e555c95781f7789ef5dfb9dfc6eb6df96d0037d44ffc251d7592cb",
-  "parity": false
+  "gas_sha": "43cb4654616756c7da1c19971ddf1a199e4dcf1dd6e917aa45733f2a04d7e56b",
+  "parity": true
  },
  "incident_finding": {
   "status": "pending",
@@ -12329,8 +12329,8 @@
   "label_kind": "label",
   "key": "headline",
   "py_sha": "5c15ff5b52140ef36fbd73224124e19b732dcd26e81987cf8432f743b6883fbc",
-  "gas_sha": "223bba3faea9031ca8a733c9f405160e78d4d5d37af13c826bc5c2e32e9e6706",
-  "parity": false
+  "gas_sha": "5c15ff5b52140ef36fbd73224124e19b732dcd26e81987cf8432f743b6883fbc",
+  "parity": true
  },
  "agent_demo_card": {
   "status": "pending",
@@ -12349,8 +12349,8 @@
   "label_kind": "label",
   "key": "name",
   "py_sha": "ebc0a5c32bde4f660af01a7bce9e73ba1a39af00f93605f0affc870573c37910",
-  "gas_sha": "0afe03eaad7eec85185086d2163eff692ca820b4a00a6c73da8086f60ddc8a77",
-  "parity": false
+  "gas_sha": "ebc0a5c32bde4f660af01a7bce9e73ba1a39af00f93605f0affc870573c37910",
+  "parity": true
  },
  "trace_step": {
   "status": "pending",
@@ -12366,8 +12366,8 @@
   "label_kind": "label",
   "key": "step_number",
   "py_sha": "b3b7ac5fbea1c4b61c61c38174df972064f060efbc1370007b84103ef23bc916",
-  "gas_sha": "0d7f28b425faeb65cbfa1c48ecb1be38c20004106814318b8c551d9152899422",
-  "parity": false
+  "gas_sha": "b3b7ac5fbea1c4b61c61c38174df972064f060efbc1370007b84103ef23bc916",
+  "parity": true
  },
  "stat_inline_badge": {
   "status": "pending",
@@ -12381,8 +12381,8 @@
   "label_kind": "label",
   "key": "label",
   "py_sha": "a80d7876724ac91d624a3799cbe46a348dbd402666852705b667bb755e7b9e5a",
-  "gas_sha": "a26f2666df001555d7eb93f3d64b690e438d523e9ab7249373e87cdab758eed1",
-  "parity": false
+  "gas_sha": "a80d7876724ac91d624a3799cbe46a348dbd402666852705b667bb755e7b9e5a",
+  "parity": true
  },
  "problem_chapter": {
   "status": "pending",
@@ -12399,8 +12399,8 @@
   "label_kind": "label",
   "key": "number",
   "py_sha": "665a745126ecbd54b01579569d5f0dcb2aa6d131df69f3ccb99332dd83b03654",
-  "gas_sha": "9752f5e9a5664f7dc1853c176dc975a75bae152fc1d1488128936aaedac7d84b",
-  "parity": false
+  "gas_sha": "665a745126ecbd54b01579569d5f0dcb2aa6d131df69f3ccb99332dd83b03654",
+  "parity": true
  },
  "resource_link_row": {
   "status": "pending",
@@ -12415,8 +12415,8 @@
   "label_kind": "label",
   "key": "label",
   "py_sha": "4020b4f8d421d2a534d6caaea80ea468619cf9f87f53f6ad4cb75b0aebf3b93c",
-  "gas_sha": "3bdd256c19e15c92c237c40f513e94d22ef648091db9922260b3f2ed36eec50f",
-  "parity": false
+  "gas_sha": "4020b4f8d421d2a534d6caaea80ea468619cf9f87f53f6ad4cb75b0aebf3b93c",
+  "parity": true
  },
  "tool_call_card": {
   "status": "keyed",
