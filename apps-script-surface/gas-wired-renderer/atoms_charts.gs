@@ -2703,7 +2703,7 @@ _RENDERERS['word_flip'] = function(b) {
   var color    = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
   var wordsJson = _jsJson(words.map(function(w) { return String(w); }));
-  return '<div style="margin:1rem 0;font-size:1.3rem;font-weight:700;color:#1f2937;line-height:1.5;">'
+  return '<div data-cb="node" data-key="' + _ckey((b.words && b.words.length) ? b.words[0] : null, 'word_flip') + '" style="margin:1rem 0;font-size:1.3rem;font-weight:700;color:#1f2937;line-height:1.5;">'
     + (prefix ? '<span>' + _esc(prefix) + ' </span>' : '')
     + '<span id="wf-' + uid + '" style="color:' + _esc(color) + ';transition:opacity 0.28s ease;">' + _esc(String(words[0] || '')) + '</span>'
     + (suffix ? '<span> ' + _esc(suffix) + '</span>' : '')
@@ -2719,7 +2719,7 @@ _RENDERERS['word_scramble'] = function(b) {
   var words = b.words || b.items || ['HELLO','WORLD'];
   var uid = Math.random().toString(36).substr(2, 6);
   var wordsJson = _jsJson(words.map(function(w) { return String(w).toUpperCase(); }));
-  return '<div style="border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;margin:1rem 0;background:#0f172a;text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(null, 'word_scramble') + '" style="border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;margin:1rem 0;background:#0f172a;text-align:center;">'
     + '<div id="ws-' + uid + '" style="font-family:\'Courier New\',monospace;font-size:1.6rem;font-weight:800;color:#22d3ee;letter-spacing:0.12em;min-height:2rem;"></div>'
     + '<script>(function(){'
     + 'var el=document.getElementById("ws-' + uid + '");'

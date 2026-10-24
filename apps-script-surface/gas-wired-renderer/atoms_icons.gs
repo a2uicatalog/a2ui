@@ -181,7 +181,7 @@ _RENDERERS['workspace_logo'] = function(b) {
     // Unknown app — render coloured letter badge
     var fbBg  = _WORKSPACE_COLORS[app] || '#1b6cf2';
     var fbCh  = _esc((app[0] || 'G').toUpperCase());
-    return '<span style="' + wrapStyle + '">'
+    return '<span data-cb="node" data-key="' + _ckey(b.app, 'workspace_logo') + '" style="' + wrapStyle + '">'
       + '<span style="width:' + size + 'px;height:' + size + 'px;border-radius:8px;background:' + fbBg + ';display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size * 0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>'
       + lblHtml + '</span>';
   }
@@ -189,7 +189,7 @@ _RENDERERS['workspace_logo'] = function(b) {
   // Prefer 2026Q2 PNG from workspacelogos.com, fall back to fonts.gstatic SVG
   var path2026 = _WORKSPACE_LOGOS_2026[app];
   var src = path2026 ? (_WL_BASE + path2026) : (_LOGO_BASE + path + '/192px.svg');
-  return '<span style="' + wrapStyle + '">'
+  return '<span data-cb="node" data-key="' + _ckey(b.app, 'workspace_logo') + '" style="' + wrapStyle + '">'
     + '<img src="' + src + '" width="' + size + '" height="' + size + '" alt="' + _esc(app) + '" style="display:block;object-fit:contain;">'
     + lblHtml + '</span>';
 };

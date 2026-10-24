@@ -887,7 +887,7 @@ _RENDERERS['xp_bar'] = function(b) {
   var pct = Math.min(100, Math.round((xpCurrent / xpNext) * 100));
   var accent = b.accent || 'var(--accent)';
   
-  return '<div class="asw-xp">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.level_label, 'xp_bar') + '" class="asw-xp">' +
          '<div class="asw-xp-row">' +
          '<span class="asw-xp-level">' + _esc(b.level_label || 'Level 1') + '</span>' +
          '<span class="asw-xp-count">' + xpCurrent + ' / ' + xpNext + ' XP</span>' +
@@ -2290,7 +2290,7 @@ _RENDERERS['version_badge'] = function(b) {
   var colors = {stable:'#16a34a',beta:'#2563eb',alpha:'#d97706',rc:'#7c3aed'};
   var c = colors[status] || '#6b7280';
   var statusLabel = status !== 'stable' ? '<span style="font-weight:400;margin-left:2px;"> · ' + _esc(status) + '</span>' : '';
-  return '<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c + ';border-radius:100px;padding:2px 10px;font-size:0.75rem;font-weight:700;color:' + c + ';font-family:monospace;">v' + _esc(v) + statusLabel + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.version, 'version_badge') + '" style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c + ';border-radius:100px;padding:2px 10px;font-size:0.75rem;font-weight:700;color:' + c + ';font-family:monospace;">v' + _esc(v) + statusLabel + '</span>';
 };
 
 _RENDERERS['deprecation_notice'] = function(b) {
@@ -2715,7 +2715,7 @@ _RENDERERS['zoomable_image'] = function(b) {
   var alt = b.alt_text || b.alt || '';
   var factor = b.zoom_factor || 1.5;
   return '<style>.zi' + uid + '{overflow:hidden;border-radius:10px;cursor:zoom-in;border:1px solid #e5e7eb;}.zi' + uid + ' img{width:100%;display:block;transition:transform .4s ease;}.zi' + uid + ':hover img{transform:scale(' + factor + ');}</style>' +
-    '<div style="margin:1rem 0;"><div class="zi' + uid + '"><img src="' + _esc(url) + '" alt="' + _esc(alt) + '"></div>' +
+    '<div data-cb="node" data-key="' + _ckey(b.image_url, 'zoomable_image') + '" style="margin:1rem 0;"><div class="zi' + uid + '"><img src="' + _esc(url) + '" alt="' + _esc(alt) + '"></div>' +
     '<div style="font-size:0.75rem;color:var(--muted,#5f6368);text-align:center;margin-top:4px;">Hover to zoom</div></div>';
 };
 
@@ -2887,7 +2887,7 @@ _RENDERERS['video_thumbnail'] = function(b) {
   // (surface-parity debt). 2026-09-27.
   var alt = b.alt_text || title;
   var link = b.video_url || b.link || '#';
-  return '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;margin:1rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
+  return '<a data-cb="node" data-key="' + _ckey(b.video_url, 'video_thumbnail') + '" href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;margin:1rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     (url ? '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;display:flex;align-items:center;justify-content:center;"></div>') +
     '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">' +
     '<div style="width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.5rem;margin-left:4px;">▶</span></div></div>' +
@@ -2899,7 +2899,7 @@ _RENDERERS['video_card'] = function(b) {
   var title = b.title || '';
   var description = b.description || '';
   var link = b.video_url || b.link || '#';
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.video_url, 'video_card') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
     '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;">' +
     (url ? '<img src="' + _esc(url) + '" alt="' + _esc(title) + '" style="width:100%;height:180px;object-fit:cover;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;"></div>') +
     '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div></a>' +

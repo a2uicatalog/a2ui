@@ -8606,7 +8606,7 @@
   "parity": false
  },
  "video_thumbnail": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "video_thumbnail",
@@ -8623,7 +8623,7 @@
   "parity": false
  },
  "video_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "video_card",
@@ -8793,7 +8793,7 @@
   "parity": false
  },
  "zoomable_image": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "zoomable_image",
@@ -8969,7 +8969,7 @@
   "parity": false
  },
  "version_badge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "version_badge",
@@ -10051,7 +10051,7 @@
   "parity": false
  },
  "word_flip": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "word_flip",
@@ -10186,7 +10186,7 @@
   "parity": false
  },
  "word_scramble": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "word_scramble",
@@ -10278,7 +10278,7 @@
   "parity": false
  },
  "xp_bar": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "xp_bar",
@@ -10430,7 +10430,7 @@
   "parity": false
  },
  "user_profile_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "user_profile_card",
@@ -10561,7 +10561,7 @@
   "parity": false
  },
  "word_reveal": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "word_reveal",
@@ -11730,7 +11730,7 @@
   "parity": false
  },
  "workspace_logo": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "workspace_logo",
@@ -12163,7 +12163,7 @@
   "parity": false
  },
  "wall_elevation": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "wall_elevation",

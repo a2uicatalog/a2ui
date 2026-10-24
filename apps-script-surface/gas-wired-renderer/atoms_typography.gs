@@ -147,7 +147,7 @@ _RENDERERS['word_reveal'] = function(b) {
     : 'color:' + colour + ';';
 
   return '<style>@keyframes ' + uid + '{to{opacity:1;transform:translateY(0);}}</style>' +
-    '<div style="padding:32px 0;text-align:' + _esc(align) + ';">' +
+    '<div data-cb="node" data-key="' + _ckey(b.text, 'word_reveal') + '" style="padding:32px 0;text-align:' + _esc(align) + ';">' +
     '<div style="font-size:' + _esc(size) + ';font-weight:' + weight + ';line-height:1.25;' +
       textStyle + '">' +
     spans +

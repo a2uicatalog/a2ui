@@ -2570,7 +2570,7 @@ def _render_zoomable_image(b: dict) -> str:
     )
     caption = '<div style="font-size:0.75rem;color:var(--muted,#5f6368);text-align:center;margin-top:4px;">Hover to zoom</div>'
     return (
-        f'{style}<div style="margin:1rem 0;">'
+        f'{style}<div data-cb="node" data-key="{_ck(b.get("image_url"), "zoomable_image")}" style="margin:1rem 0;">'
         f'<div class="zi{uid}"><img src="{_h.escape(url)}" alt="{_h.escape(alt)}"></div>'
         f'{caption}</div>'
     )
@@ -9137,7 +9137,7 @@ def _render_word_flip(atom: dict) -> str:
         f'@keyframes wf_{uid}{{0%{{transform:translateY(0);}}100%{{transform:translateY(-{target}%);}}}}'
         f'.wfi_{uid}{{animation:wf_{uid} {total}s steps({n},end) infinite;display:block;}}'
         f'</style>'
-        f'<span style="font-size:{_cv_esc(size)};">'
+        f'<span data-cb="node" data-key="{_ck((atom.get("words") or [None])[0], "word_flip")}" style="font-size:{_cv_esc(size)};">'
         f'{_cv_esc(prefix)}'
         f'<span style="display:inline-flex;overflow:hidden;height:1.2em;vertical-align:middle;'
         f'color:{_cv_esc(color)};font-weight:{_cv_esc(weight)};">'
@@ -11105,7 +11105,7 @@ def _render_word_reveal(b: dict) -> str:
     color_css = f"background:{_cv_esc(grad)};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" if grad else f"color:{_cv_esc(color)};"
     return (
         f'<style>@keyframes wr_{uid}{{from{{opacity:0;transform:translateY(16px);}}to{{opacity:1;transform:translateY(0);}}}}</style>'
-        f'<div style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};line-height:1.2;margin:1rem 0;{color_css}">{spans}</div>'
+        f'<div data-cb="node" data-key="{_ck(b.get("text"), "word_reveal")}" style="font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};line-height:1.2;margin:1rem 0;{color_css}">{spans}</div>'
     )
 
 _RENDERERS["word_reveal"] = _render_word_reveal
@@ -14709,7 +14709,7 @@ def _render_version_badge(b: dict) -> str:
     color = b.get('color') or colors.get(status, '#6b7280')
     status_html = (f'<span style="font-weight:400;margin-left:2px;"> · {_esc(status)}</span>'
                    if status != 'stable' else '')
-    return (f'<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid {_esc(color)};'
+    return (f'<span data-cb="node" data-key="{_ck(b.get("version"), "version_badge")}" style="display:inline-flex;align-items:center;gap:5px;border:1px solid {_esc(color)};'
             f'border-radius:100px;padding:2px 10px;font-size:0.75rem;font-weight:700;color:{_esc(color)};'
             f'font-family:monospace;">v{_esc(str(version))}{status_html}</span>')
 
@@ -14733,7 +14733,7 @@ def _render_video_card(b: dict) -> str:
     else:
         img_html = ''
     title_html = (f'<div style="padding:10px 12px;font-weight:600;font-size:0.88rem;">{_esc(title)}</div>' if title else '')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("video_url"), "video_card")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;'
             f'max-width:360px;">{img_html}{title_html}</div>')
 
 _RENDERERS['video_card'] = _render_video_card
@@ -14752,7 +14752,7 @@ def _render_video_thumbnail(b: dict) -> str:
     title_html = (f'<div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;'
                   f'background:linear-gradient(transparent,rgba(0,0,0,0.8));color:#fff;font-size:0.85rem;'
                   f'font-weight:600;">{_esc(title)}</div>') if title else ''
-    return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
+    return (f'<a data-cb="node" data-key="{_ck(b.get("video_url"), "video_thumbnail")}" href="{_esc(url)}" target="_blank" rel="noopener" '
             f'style="display:block;position:relative;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;'
             f'max-width:360px;margin:1rem 0;">'
             f'{"<img src="+chr(34)+_esc(thumbnail)+chr(34)+" alt="+chr(34)+_esc(alt)+chr(34)+" style=width:100%;aspect-ratio:16/9;object-fit:cover;>" if thumbnail else "<div style=background:#1e1e2e;aspect-ratio:16/9;></div>"}'
@@ -14796,7 +14796,7 @@ def _render_word_scramble(b: dict) -> str:
         if ''.join(letters) != word.upper():
             break
     scrambled = ''.join(letters)
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;text-align:center;">'
+    return (f'<div data-cb="node" data-key="{_ck(None, "word_scramble")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;text-align:center;">'
             f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-bottom:8px;">Unscramble:</div>'
             f'<div style="font-size:1.6rem;font-weight:900;letter-spacing:0.15em;color:#4f46e5;margin-bottom:12px;">'
             f'{_esc(scrambled)}</div>'
@@ -18767,7 +18767,7 @@ def _render_xp_bar(b: dict) -> str:
     accent = b.get('accent', '#4f46e5')
     level = _esc(b.get('level_label', 'Level 1'))
     return (
-        f'<div style="font-family:system-ui,sans-serif;padding:12px 0;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("level_label"), "xp_bar")}" style="font-family:system-ui,sans-serif;padding:12px 0;">'
         f'<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:6px;">'
         f'<span style="font-weight:700;">{level}</span>'
         f'<span style="color:var(--muted,#5f6368);">{current} / {nxt} XP</span></div>'
@@ -19221,7 +19221,7 @@ def _render_workspace_logo(b: dict) -> str:
     label_val = b.get('label', app.capitalize())
     label_html = (f'<span style="font-size:{max(10,size//4)}px;color:var(--muted,#5f6368);margin-top:4px;">'
                   f'{_esc(str(label_val))}</span>') if label_val else ''
-    return (f'<span style="display:inline-flex;flex-direction:column;align-items:center;margin:4px;">'
+    return (f'<span data-cb="node" data-key="{_ck(b.get("app"), "workspace_logo")}" style="display:inline-flex;flex-direction:column;align-items:center;margin:4px;">'
             f'{_ws_badge(app, size)}{label_html}</span>')
 _RENDERERS["workspace_logo"] = _render_workspace_logo
 
@@ -21821,7 +21821,7 @@ def _render_user_profile_card(b: dict) -> str:
     initials = ''.join(w[0].upper() for w in raw_name.split()[:2]) or 'U'
     sub_div = ('<div style="font-size:0.82rem;color:var(--muted,#5f6368);">' + subtitle + '</div>') if subtitle else ''
     email_div = ('<div style="font-size:0.78rem;color:var(--muted,#5f6368);">' + email + '</div>') if email else ''
-    return ('<div style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('email'), 'user_profile_card') + '" style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:#ffffff;background:var(--a2ui-surface,#ffffff);display:flex;align-items:center;gap:16px;">'
             '<div style="width:52px;height:52px;border-radius:50%;background:' + accent + ';'
             'color:#fff;display:flex;align-items:center;justify-content:center;'
@@ -27833,7 +27833,7 @@ def _render_wall_elevation(b: dict) -> str:
     )
 
     return (
-        '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;border-radius:8px;background:#ffffff;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("block_id"), "wall_elevation")}" style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;border-radius:8px;background:#ffffff;">'
         f'{svg}'
         '<div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));'
         'gap:6px 16px;font-size:0.85rem;color:#3c4043;">'

@@ -182,7 +182,7 @@ _RENDERERS['user_profile_card'] = function(b) {
   var initial  = email.charAt(0).toUpperCase();
   var username = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.email, 'user_profile_card') + '" class="asw-native-card">' +
          '<div style="display:flex;align-items:center;gap:16px;padding:4px 0;">' +
          '<div style="width:56px;height:56px;border-radius:50%;background:' + _esc(accent) + ';display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:#fff;flex-shrink:0;">' + initial + '</div>' +
          '<div>' +
