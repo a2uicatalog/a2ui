@@ -219,7 +219,7 @@ def test_volume_panel_only_when_volume_is_given(core_js):
 
 def test_motion_index_per_bar_stays_inside_its_clamp(core_js):
     for html in (_py(PAYLOADS["thirty"]), _gas_batch(core_js, [PAYLOADS["thirty"]])[0]):
-        ks = re.findall(r'class="csc cs[ud]" style="[^"]*--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
+        ks = re.findall(r'class="csc cs[ud]"(?: data-cb="bar")? style="[^"]*--k:clamp\(0,calc\(var\(--p,1\)\*(\d+) - (\d+)\),1\);', html)
         assert [int(i) for _, i in ks] == list(range(30)) and all(int(n) == 31 for n, _ in ks)
 
 

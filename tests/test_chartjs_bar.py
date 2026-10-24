@@ -136,7 +136,7 @@ def test_the_aria_label_states_the_gist():
 def _boxes(h):
     """[(left, bottom, width, height)] in % of each bar element (the ones with a border of the series colour and a position)."""
     out = []
-    for m in re.finditer(r'<div style="position:absolute;box-sizing:border-box;border:1\.5px solid [^;]+;[^"]*?(?:left:([\d.\-]+)%;width:([\d.]+)%;bottom:([\d.\-]+)%;height:([\d.]+)%|top:([\d.\-]+)%;height:([\d.]+)%;left:([\d.\-]+)%;width:([\d.]+)%)', h):
+    for m in re.finditer(r'<div(?: data-cb="bar")? style="position:absolute;box-sizing:border-box;border:1\.5px solid [^;]+;[^"]*?(?:left:([\d.\-]+)%;width:([\d.]+)%;bottom:([\d.\-]+)%;height:([\d.]+)%|top:([\d.\-]+)%;height:([\d.]+)%;left:([\d.\-]+)%;width:([\d.]+)%)', h):
         g = m.groups()
         out.append((float(g[0]), float(g[2]), float(g[1]), float(g[3])) if g[0] is not None else (float(g[6]), float(g[4]), float(g[7]), float(g[5])))
     return out

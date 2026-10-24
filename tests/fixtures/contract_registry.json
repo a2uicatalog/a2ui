@@ -212,6 +212,9 @@
   "callout_anatomy": {
    "status": "sweep"
   },
+  "candlestick_chart": {
+   "status": "sweep"
+  },
   "canvas_plexus": {
    "status": "exempt",
    "reason": "procedural full-viewport background animation"
@@ -1691,6 +1694,9 @@
    "status": "exempt",
    "reason": "depth-layered canvas background animation"
   },
+  "parallel_coords": {
+   "status": "sweep"
+  },
   "particle_burst": {
    "status": "exempt",
    "reason": "decorative click interaction animation effect"
@@ -1815,6 +1821,9 @@
    "status": "sweep"
   },
   "quiet_link": {
+   "status": "sweep"
+  },
+  "quiver": {
    "status": "sweep"
   },
   "quiz_question": {
@@ -2226,6 +2235,9 @@
    "status": "sweep"
   },
   "terminal_boot": {
+   "status": "sweep"
+  },
+  "ternary_plot": {
    "status": "sweep"
   },
   "testimonial_card": {

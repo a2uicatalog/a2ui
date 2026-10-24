@@ -4049,15 +4049,15 @@ def _render_chartjs_bar(b: dict) -> str:
                     if wk is not None:
                         thresholds[wk] = True
                     chip = '<div class="cbv' + (' cbw' + str(wk) if wk is not None else '') + '" style="' + _CB_CHIP + col + ';' + place + '">' + _cv_esc(txt) + '</div>'
-            inner_html += ('<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cb_fill(k, col) + geo
+            inner_html += ('<div' + (' data-cb="bar" data-key="' + _cb_kj([labels[i], series[k][0]]) + '"' if sd > 1 else '') + ' style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cb_fill(k, col) + geo
                            + '">' + chip + '</div>')
-        bars += '<div style="position:absolute;inset:0;' + _if_k(i, nd) + _IF_FADE + '">' + inner_html + '</div>'
+        bars += '<div' + (' data-cb="bar" data-key="' + _cb_key(labels[i]) + '"' if sd == 1 else '') + ' style="position:absolute;inset:0;' + _if_k(i, nd) + _IF_FADE + '">' + inner_html + '</div>'
     css = '<style>' + ''.join('@container (max-width:' + str(w) + 'px){.ifcb .cbw' + str(w) + '{display:none}}' for w in sorted(thresholds)) + '@container (max-width:560px){.ifcb .cbx:not(.cbc){display:none}}</style>'
     gut = _CB_LABW if horiz else str(gut_px) + 'px'
     xs = ''
     if horiz:
         for i in range(nd):
-            xs += ('<div style="position:absolute;right:100%;top:' + _cb_pc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
+            xs += ('<div data-cb="label" data-key="' + _cb_key(labels[i]) + '" style="position:absolute;right:100%;top:' + _cb_pc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
                    + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
                    + ';overflow-wrap:anywhere;">' + _cv_esc(labels[i]) + '</div>')
         axis = ''
@@ -4070,7 +4070,7 @@ def _render_chartjs_bar(b: dict) -> str:
                 '<div style="position:relative;height:26px;margin-top:2px;">' + axis + '</div>')
     else:
         for i in range(nd):
-            xs += '<div style="flex:0 0 ' + _cb_pc(1 / nd) + ';box-sizing:border-box;padding:4px 2px 0;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _IF_MUTED + ';overflow-wrap:anywhere;">' + _cv_esc(labels[i]) + '</div>'
+            xs += '<div data-cb="label" data-key="' + _cb_key(labels[i]) + '" style="flex:0 0 ' + _cb_pc(1 / nd) + ';box-sizing:border-box;padding:4px 2px 0;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _IF_MUTED + ';overflow-wrap:anywhere;">' + _cv_esc(labels[i]) + '</div>'
         plot = ('<div role="img" aria-label="@ARIA@" style="position:relative;height:' + str(_CB_PH) + 'px;border-bottom:1px solid var(--muted,#475569);">' + grid + bars + '</div>'
                 '<div style="display:flex;">' + xs + '</div>')
     i_hi = max(range(len(segs)), key=lambda q: (segs[q][4], -q))
@@ -37604,7 +37604,7 @@ def _render_ternary_plot(b: dict) -> str:
     dots = ''
     for k, u in enumerate(used):
         x, y = xy(u[1], u[2], u[3])
-        dots += ('<div class="tpd" style="position:absolute;left:' + _tm_pct(x, 1) + ';top:' + _tm_pct(y, 1) + ';width:10px;height:10px;box-sizing:border-box;border-radius:50%;'
+        dots += ('<div class="tpd" data-cb="node" data-key="' + _cb_key(u[0]) + '" style="position:absolute;left:' + _tm_pct(x, 1) + ';top:' + _tm_pct(y, 1) + ';width:10px;height:10px;box-sizing:border-box;border-radius:50%;'
                  'border:1.5px solid var(--bg,#fff);background:var(--accent,#0369A1);transform:translate(-50%,-50%);' + _if_k(k, n) + 'opacity:var(--k,1);"></div>')
     tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';'
     labs = ''
@@ -37663,7 +37663,7 @@ def _render_quiver(b: dict) -> str:
         cx, cy, mag = px(a[1]), py(a[2]), a[5]
         st = _if_k(k, n) + 'opacity:var(--k,1);'
         if not (mag > 0 and big > 0):
-            marks += '<circle class="qvz" cx="' + fx(cx) + '" cy="' + fx(cy) + '" r="5" fill="var(--accent,#0369A1)" style="' + st + '"/>'
+            marks += '<circle class="qvz" data-cb="node" data-key="' + str(k + 1) + '" cx="' + fx(cx) + '" cy="' + fx(cy) + '" r="5" fill="var(--accent,#0369A1)" style="' + st + '"/>'
             continue
         ln = _QV_LMAX * sc * mag / big
         dx, dy = a[3] / mag, -a[4] / mag
@@ -37671,7 +37671,7 @@ def _render_quiver(b: dict) -> str:
         hl = min(0.35 * ln, 28)
         b1x, b1y = x1 - hl * (dx * _QV_COS - dy * _QV_SIN), y1 - hl * (dx * _QV_SIN + dy * _QV_COS)
         b2x, b2y = x1 - hl * (dx * _QV_COS + dy * _QV_SIN), y1 - hl * (-dx * _QV_SIN + dy * _QV_COS)
-        marks += ('<path class="qva" d="M' + fx(x0) + ' ' + fx(y0) + 'L' + fx(x1) + ' ' + fx(y1) + 'M' + fx(b1x) + ' ' + fx(b1y) + 'L' + fx(x1) + ' ' + fx(y1) + 'L' + fx(b2x) + ' ' + fx(b2y)
+        marks += ('<path class="qva" data-cb="node" data-key="' + str(k + 1) + '" d="M' + fx(x0) + ' ' + fx(y0) + 'L' + fx(x1) + ' ' + fx(y1) + 'M' + fx(b1x) + ' ' + fx(b1y) + 'L' + fx(x1) + ' ' + fx(y1) + 'L' + fx(b2x) + ' ' + fx(b2y)
                   + '" fill="none" stroke="var(--accent,#0369A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="' + st + '"/>')
     tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';'
     xd, yd = _hg_decimals(xt), _hg_decimals(yt)
@@ -38028,9 +38028,9 @@ def _render_candlestick_chart(b: dict) -> str:
             inner = ('<div class="csk" style="' + geo + '"></div>'
                      '<div class="csb ' + kind + '" style="position:absolute;left:0;right:0;margin:0 auto;max-width:28px;top:' + yp(max(o, c)) + ';height:' + ph(min(o, c), max(o, c)) + ';min-height:2px;box-sizing:border-box;border:' + stroke + ' solid ' + cc
                      + ';background:' + ('var(--surface,#FFFFFF)' if up else cc) + ';"></div>')
-        candles += '<div class="csc ' + kind + '" style="position:absolute;top:0;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;' + _if_k(k, n) + _IF_FADE + '">' + inner + '</div>'
+        candles += '<div class="csc ' + kind + '" data-cb="bar" data-key="' + _cb_key(bars[k][1]) + '" style="position:absolute;top:0;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;' + _if_k(k, n) + _IF_FADE + '">' + inner + '</div>'
         if v is not None:
-            volume += ('<div class="csv ' + kind + '" style="position:absolute;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;height:' + (_tm_pct(v, V1) if V1 > 0 else '0%') + ';min-height:1px;box-sizing:border-box;border:1px solid ' + cc
+            volume += ('<div class="csv ' + kind + '" data-cb="bar" data-key="' + _cb_key(bars[k][1]) + '/volume" style="position:absolute;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;height:' + (_tm_pct(v, V1) if V1 > 0 else '0%') + ';min-height:1px;box-sizing:border-box;border:1px solid ' + cc
                        + ';background:' + ('var(--surface,#FFFFFF)' if up else cc) + ';' + _if_k(k, n) + _IF_FADE + '"></div>')
     first, last = bars[0], bars[-1]
     hi_i = max(range(n), key=lambda i: (bars[i][3], -i))
@@ -38192,7 +38192,7 @@ def _render_parallel_coords(b: dict) -> str:
                     + _cv_esc(d['label']) + ('<span style="display:block;font-weight:400;color:' + _IF_MUTED + ';">reversed</span>' if d['reverse'] else '') + '</div>' for d in dims)
     axes = ''.join('<line class="pca" x1="' + _if_numstr(_hg_round(x * 100) / 100) + '" x2="' + _if_numstr(_hg_round(x * 100) / 100) + '" y1="' + str(_PC_TOP) + '" y2="' + str(_PC_BOT)
                    + '" style="stroke:var(--muted,#475569);stroke-width:1.5;"/>' for x in L['xs'])
-    lines = ''.join('<path class="pcr" d="' + p + '"' + (' style="stroke:' + cols[r] + ';"' if cbi is not None else '') + '/>' for r, p in enumerate(L['paths']))
+    lines = ''.join('<path class="pcr" data-cb="link" data-key="' + _cb_key(names[r]) + '" d="' + p + '"' + (' style="stroke:' + cols[r] + ';"' if cbi is not None else '') + '/>' for r, p in enumerate(L['paths']))
     tickl = ''.join('<div class="pct" style="position:absolute;left:' + _tm_pct(x, _PC_W) + ';top:' + _tm_pct(y, _PC_H) + ';transform:translate(calc(-100% - 5px),-50%);font-size:0.75rem;line-height:1;white-space:nowrap;'
                     'font-variant-numeric:tabular-nums;color:' + _IF_MUTED + ';text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff);">' + s + '</div>'
                     for x, ty, ls in zip(L['xs'], L['tickY'], tl) for y, s in zip(ty, ls))

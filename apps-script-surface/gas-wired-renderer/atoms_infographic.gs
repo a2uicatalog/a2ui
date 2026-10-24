@@ -3131,15 +3131,15 @@ _RENDERERS['chartjs_bar'] = function(b) {
           chip = '<div class="cbv' + (wk !== null ? ' cbw' + wk : '') + '" style="' + _CB_CHIP + col + ';' + place + '">' + _esc(txt) + '</div>';
         }
       }
-      ih += '<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cbFill(kx, col) + geo + '">' + chip + '</div>';
+      ih += '<div' + (sd > 1 ? ' data-cb="bar" data-key="' + _esc([labels[i], series[kx][0]].join('/')) + '"' : '') + ' style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cbFill(kx, col) + geo + '">' + chip + '</div>';
     }
-    bars += '<div style="position:absolute;inset:0;' + _ifK(i, nd) + _IF_FADE + '">' + ih + '</div>';
+    bars += '<div' + (sd === 1 ? ' data-cb="bar" data-key="' + _esc(labels[i]) + '"' : '') + ' style="position:absolute;inset:0;' + _ifK(i, nd) + _IF_FADE + '">' + ih + '</div>';
   }
   var css = '<style>' + Object.keys(thr).map(Number).sort(function(x, y) { return x - y; }).map(function(w) { return '@container (max-width:' + w + 'px){.ifcb .cbw' + w + '{display:none}}'; }).join('') + '@container (max-width:560px){.ifcb .cbx:not(.cbc){display:none}}</style>';
   var gut = horiz ? _CB_LABW : gutPx + 'px', xs = '', plot;
   if (horiz) {
     for (i = 0; i < nd; i++) {
-      xs += '<div style="position:absolute;right:100%;top:' + _cbPc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
+      xs += '<div data-cb="label" data-key="' + _esc(labels[i]) + '" style="position:absolute;right:100%;top:' + _cbPc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
         + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _CB_MUTED
         + ';overflow-wrap:anywhere;">' + _esc(labels[i]) + '</div>';
     }
@@ -3152,7 +3152,7 @@ _RENDERERS['chartjs_bar'] = function(b) {
     plot = '<div role="img" aria-label="@ARIA@" style="position:relative;height:' + (nd * slotPx) + 'px;border-left:1px solid var(--muted,#475569);">' + grid + bars + xs + '</div>'
       + '<div style="position:relative;height:26px;margin-top:2px;">' + axis + '</div>';
   } else {
-    for (i = 0; i < nd; i++) xs += '<div style="flex:0 0 ' + _cbPc(1 / nd) + ';box-sizing:border-box;padding:4px 2px 0;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _CB_MUTED + ';overflow-wrap:anywhere;">' + _esc(labels[i]) + '</div>';
+    for (i = 0; i < nd; i++) xs += '<div data-cb="label" data-key="' + _esc(labels[i]) + '" style="flex:0 0 ' + _cbPc(1 / nd) + ';box-sizing:border-box;padding:4px 2px 0;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _CB_MUTED + ';overflow-wrap:anywhere;">' + _esc(labels[i]) + '</div>';
     plot = '<div role="img" aria-label="@ARIA@" style="position:relative;height:' + _CB_PH + 'px;border-bottom:1px solid var(--muted,#475569);">' + grid + bars + '</div>'
       + '<div style="display:flex;">' + xs + '</div>';
   }
@@ -3537,7 +3537,7 @@ _RENDERERS['ternary_plot'] = function(b) {
   var tri = '<polygon points="500,0 0,' + _TP_VB_H + ' 1000,' + _TP_VB_H + '" fill="var(--surface,#F8FAFC)" stroke="var(--muted,#475569)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>';
   var dots = used.map(function(u, k) {
     var q = xy(u[1], u[2], u[3]);
-    return '<div class="tpd" style="position:absolute;left:' + _tmPct(q[0], 1) + ';top:' + _tmPct(q[1], 1) + ';width:10px;height:10px;box-sizing:border-box;border-radius:50%;' +
+    return '<div class="tpd" data-cb="node" data-key="' + _esc(u[0]) + '" style="position:absolute;left:' + _tmPct(q[0], 1) + ';top:' + _tmPct(q[1], 1) + ';width:10px;height:10px;box-sizing:border-box;border-radius:50%;' +
       'border:1.5px solid var(--bg,#fff);background:var(--accent,#0369A1);transform:translate(-50%,-50%);' + _ifK(k, n) + 'opacity:var(--k,1);"></div>';
   }).join('');
   var tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);', labs = '';
@@ -3580,12 +3580,12 @@ _RENDERERS['quiver'] = function(b) {
     yt.map(function(t) { return '<line class="qvg" x1="0" y1="' + _qv2(py(t)) + '" x2="' + _QV_W + '" y2="' + _qv2(py(t)) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>'; }).join('');
   var marks = used.map(function(a, k) {
     var cx = px(a[1]), cy = py(a[2]), mag = a[5], st = _ifK(k, n) + 'opacity:var(--k,1);';
-    if (!(mag > 0 && big > 0)) return '<circle class="qvz" cx="' + _qv2(cx) + '" cy="' + _qv2(cy) + '" r="5" fill="var(--accent,#0369A1)" style="' + st + '"/>';
+    if (!(mag > 0 && big > 0)) return '<circle class="qvz" data-cb="node" data-key="' + (k + 1) + '" cx="' + _qv2(cx) + '" cy="' + _qv2(cy) + '" r="5" fill="var(--accent,#0369A1)" style="' + st + '"/>';
     var ln = _QV_LMAX * sc * mag / big, dx = a[3] / mag, dy = -a[4] / mag;
     var x0 = cx - 0.5 * ln * dx, y0 = cy - 0.5 * ln * dy, x1 = cx + 0.5 * ln * dx, y1 = cy + 0.5 * ln * dy, hl = Math.min(0.35 * ln, 28);
     var b1x = x1 - hl * (dx * _QV_COS - dy * _QV_SIN), b1y = y1 - hl * (dx * _QV_SIN + dy * _QV_COS);
     var b2x = x1 - hl * (dx * _QV_COS + dy * _QV_SIN), b2y = y1 - hl * (-dx * _QV_SIN + dy * _QV_COS);
-    return '<path class="qva" d="M' + _qv2(x0) + ' ' + _qv2(y0) + 'L' + _qv2(x1) + ' ' + _qv2(y1) + 'M' + _qv2(b1x) + ' ' + _qv2(b1y) + 'L' + _qv2(x1) + ' ' + _qv2(y1) + 'L' + _qv2(b2x) + ' ' + _qv2(b2y) +
+    return '<path class="qva" data-cb="node" data-key="' + (k + 1) + '" d="M' + _qv2(x0) + ' ' + _qv2(y0) + 'L' + _qv2(x1) + ' ' + _qv2(y1) + 'M' + _qv2(b1x) + ' ' + _qv2(b1y) + 'L' + _qv2(x1) + ' ' + _qv2(y1) + 'L' + _qv2(b2x) + ' ' + _qv2(b2y) +
       '" fill="none" stroke="var(--accent,#0369A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="' + st + '"/>';
   }).join('');
   var tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);';
@@ -4004,8 +4004,8 @@ _RENDERERS['candlestick_chart'] = function(b) {
         '<div class="csb ' + kind + '" style="position:absolute;left:0;right:0;margin:0 auto;max-width:28px;top:' + yp(Math.max(o, c)) + ';height:' + ph(Math.min(o, c), Math.max(o, c)) + ';min-height:2px;box-sizing:border-box;border:' + stroke + ' solid ' + cc +
         ';background:' + (up ? 'var(--surface,#FFFFFF)' : cc) + ';"></div>';
     }
-    candles += '<div class="csc ' + kind + '" style="position:absolute;top:0;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;' + _ifK(k, n) + _IF_FADE + '">' + inner + '</div>';
-    if (v !== null) volume += '<div class="csv ' + kind + '" style="position:absolute;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;height:' + (V1 > 0 ? _tmPct(v, V1) : '0%') + ';min-height:1px;box-sizing:border-box;border:1px solid ' + cc +
+    candles += '<div class="csc ' + kind + '" data-cb="bar" data-key="' + _esc(r[1]) + '" style="position:absolute;top:0;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;' + _ifK(k, n) + _IF_FADE + '">' + inner + '</div>';
+    if (v !== null) volume += '<div class="csv ' + kind + '" data-cb="bar" data-key="' + _esc(r[1]) + '/volume" style="position:absolute;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;height:' + (V1 > 0 ? _tmPct(v, V1) : '0%') + ';min-height:1px;box-sizing:border-box;border:1px solid ' + cc +
       ';background:' + (up ? 'var(--surface,#FFFFFF)' : cc) + ';' + _ifK(k, n) + _IF_FADE + '"></div>';
   });
   var first = bars[0], last = bars[n - 1], hiI = 0, loI = 0, ups = 0;
@@ -4118,7 +4118,7 @@ _RENDERERS['parallel_coords'] = function(b) {
   }).join('');
   var r2 = function(x) { return String(Math.round(x * 100) / 100); };
   var axes = L.xs.map(function(x) { return '<line class="pca" x1="' + r2(x) + '" x2="' + r2(x) + '" y1="' + _PC_TOP + '" y2="' + _PC_BOT + '" style="stroke:var(--muted,#475569);stroke-width:1.5;"/>'; }).join('');
-  var lines = L.paths.map(function(p, r) { return '<path class="pcr" d="' + p + '"' + (cbi !== null ? ' style="stroke:' + cols[r] + ';"' : '') + '/>'; }).join('');
+  var lines = L.paths.map(function(p, r) { return '<path class="pcr" data-cb="link" data-key="' + _esc(names[r]) + '" d="' + p + '"' + (cbi !== null ? ' style="stroke:' + cols[r] + ';"' : '') + '/>'; }).join('');
   var tickl = '';
   L.xs.forEach(function(x, k) {
     L.tickY[k].forEach(function(y, j) {

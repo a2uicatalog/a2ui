@@ -122,7 +122,7 @@ def test_aria_label_gives_the_shape_and_each_axis_range(core_js):
 def test_one_path_per_row_each_with_the_golden_path(core_js):
     c = CASES["iris_like"]
     for html in (_py(PAYLOADS["iris"]), _gas_batch(core_js, [PAYLOADS["iris"]])[0]):
-        assert re.findall(r'<path class="pcr" d="([^"]*)"', html) == c["paths"]
+        assert re.findall(r'<path class="pcr"(?: data-cb="link")? d="([^"]*)"', html) == c["paths"]
         assert len(re.findall(r'<line class="pca"', html)) == 4
 
 

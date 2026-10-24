@@ -110,7 +110,7 @@ H = math.sqrt(3) / 2
 
 
 def _tp_dots(html):
-    return [(float(a), float(b)) for a, b in re.findall(r'<div class="tpd" style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;', html)]
+    return [(float(a), float(b)) for a, b in re.findall(r'<div class="tpd"(?: data-cb="node")? style="position:absolute;left:([\d.]+)%;top:([\d.]+)%;', html)]
 
 
 def test_ternary_points_sit_at_their_barycentric_place(core_js):
@@ -186,7 +186,7 @@ def _shaft(d):
 def test_quiver_arrows_point_the_way_their_u_v_say_and_scale_with_length(core_js):
     b = QUIV["basic"]
     for html in (_py(b), _gas_batch(core_js, [b])[0]):
-        ds = re.findall(r'<path class="qva" d="([^"]*)"', html)
+        ds = re.findall(r'<path class="qva"(?: data-cb="node")? d="([^"]*)"', html)
         assert len(ds) == len(FIELD) - 1                                     # the (1,1) arrow has length 0 and is a dot
         assert len(re.findall(r'<circle class="qvz"', html)) == 1
         it = iter(ds)
@@ -204,7 +204,7 @@ def test_quiver_arrows_point_the_way_their_u_v_say_and_scale_with_length(core_js
 def test_quiver_arrows_are_centred_on_their_point_and_stay_inside_the_plot():
     html = _py(QUIV["negatives"])
     (dom_x, _), (dom_y, _) = wa._qv_axis([-3.5, 4.0]), wa._qv_axis([-1.0, 2.25])
-    for d, a in zip(re.findall(r'<path class="qva" d="([^"]*)"', html), QUIV["negatives"]["arrows"]):
+    for d, a in zip(re.findall(r'<path class="qva"(?: data-cb="node")? d="([^"]*)"', html), QUIV["negatives"]["arrows"]):
         x0, y0, x1, y1 = _shaft(d)
         px, py = wa._qv_place(float(a["x"]), dom_x, 65, 935), wa._qv_place(float(a["y"]), dom_y, 555, 65)
         assert abs((x0 + x1) / 2 - px) < 0.01 and abs((y0 + y1) / 2 - py) < 0.01
@@ -212,7 +212,7 @@ def test_quiver_arrows_are_centred_on_their_point_and_stay_inside_the_plot():
 
 
 def test_quiver_arrow_scale_shrinks_and_junk_scale_is_ignored():
-    longest = lambda h: max(math.hypot(_shaft(d)[2] - _shaft(d)[0], _shaft(d)[3] - _shaft(d)[1]) for d in re.findall(r'<path class="qva" d="([^"]*)"', h))
+    longest = lambda h: max(math.hypot(_shaft(d)[2] - _shaft(d)[0], _shaft(d)[3] - _shaft(d)[1]) for d in re.findall(r'<path class="qva"(?: data-cb="node")? d="([^"]*)"', h))
     assert abs(longest(_py(QUIV["basic"])) - 120) < 0.5 and abs(longest(_py(QUIV["scaled"])) - 60) < 0.5
     assert _py(QUIV["scale_junk"]) == _py(dict(QUIV["scaled"], arrow_scale=1))
 

@@ -783,6 +783,51 @@
   "gas_sha": "38bec4dd0be860c945d07b14c4145e1a82b33ae103b57217ebb72a9bea124371",
   "parity": true
  },
+ "candlestick_chart": {
+  "status": "keyed",
+  "block": {
+   "type": "candlestick_chart",
+   "title": "Share price",
+   "unit": "USD",
+   "y_label": "Price",
+   "dates": [
+    "2024-03-04",
+    "2024-03-05",
+    "2024-03-06"
+   ],
+   "open": [
+    10,
+    12,
+    11.5
+   ],
+   "high": [
+    13,
+    12.75,
+    12
+   ],
+   "low": [
+    9.5,
+    10.5,
+    10
+   ],
+   "close": [
+    12,
+    11,
+    11.75
+   ],
+   "volume": [
+    1500,
+    2200,
+    900
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "dates[]",
+  "py_sha": "43e14a66f0562f0a11f70dd78657bdec03b03aaba609553f149372d8018c2dfc",
+  "gas_sha": "43e14a66f0562f0a11f70dd78657bdec03b03aaba609553f149372d8018c2dfc",
+  "parity": true
+ },
  "capability_checklist": {
   "status": "keyed",
   "block": {
@@ -983,9 +1028,9 @@
   "kind": "bar",
   "label_kind": "label",
   "key": "labels[]",
-  "py_sha": "10aa55bff74d9bb2dec6af4448219eab61339db0c104e1935ac695aec75a3d7d",
-  "gas_sha": "c504a38cfcea361cd8f9cbbc275840cea6ff1723bc5ce6cee2c2fb806f3c3add",
-  "parity": false
+  "py_sha": "3320a135850fbe2552b6fc938c3609f2d61c8e08b0438cf5804b5bea32604b20",
+  "gas_sha": "3320a135850fbe2552b6fc938c3609f2d61c8e08b0438cf5804b5bea32604b20",
+  "parity": true
  },
  "chartjs_line": {
   "status": "keyed",
@@ -4587,6 +4632,65 @@
   "gas_sha": "181764ef7d0acbb98ddd71de32c8bde0e204932b8ec1c603d7a82fcbc880afd1",
   "parity": false
  },
+ "parallel_coords": {
+  "status": "keyed",
+  "block": {
+   "type": "parallel_coords",
+   "title": "Cars",
+   "color_by": "Weight",
+   "row_labels": [
+    "Alpha",
+    "Beta",
+    "Gamma",
+    "Delta"
+   ],
+   "dimensions": [
+    {
+     "label": "Power",
+     "values": [
+      90,
+      120,
+      150,
+      200
+     ]
+    },
+    {
+     "label": "Weight",
+     "values": [
+      1100,
+      1300,
+      1500,
+      1900
+     ]
+    },
+    {
+     "label": "Range",
+     "values": [
+      620.5,
+      540,
+      480.25,
+      400
+     ],
+     "reverse": true
+    },
+    {
+     "label": "Price",
+     "values": [
+      18,
+      22,
+      31,
+      48
+     ]
+    }
+   ]
+  },
+  "kind": "link",
+  "label_kind": "label",
+  "key": "row_labels[]",
+  "py_sha": "fee17dd82d0719e41f874bc9d7aa6cfb8ab6215bfac1bedd3f2b3536622e0ec8",
+  "gas_sha": "fee17dd82d0719e41f874bc9d7aa6cfb8ab6215bfac1bedd3f2b3536622e0ec8",
+  "parity": true
+ },
  "photo_grid": {
   "status": "pending",
   "block": {
@@ -5164,6 +5268,78 @@
   "key": "items[].name",
   "py_sha": "32fb268f5135fec224962bd2e12eebc953af9b4afa2f0918edf8b322c5c5661a",
   "gas_sha": "32fb268f5135fec224962bd2e12eebc953af9b4afa2f0918edf8b322c5c5661a",
+  "parity": true
+ },
+ "quiver": {
+  "status": "keyed",
+  "block": {
+   "type": "quiver",
+   "title": "Wind",
+   "x_label": "East",
+   "y_label": "North",
+   "unit": "m/s",
+   "arrows": [
+    {
+     "x": 0,
+     "y": 0,
+     "u": 1,
+     "v": 0
+    },
+    {
+     "x": 1,
+     "y": 0,
+     "u": 0,
+     "v": 1
+    },
+    {
+     "x": 2,
+     "y": 0,
+     "u": -1,
+     "v": 0
+    },
+    {
+     "x": 0,
+     "y": 1,
+     "u": 1,
+     "v": 1
+    },
+    {
+     "x": 1,
+     "y": 1,
+     "u": 0,
+     "v": 0
+    },
+    {
+     "x": 2,
+     "y": 1,
+     "u": -1,
+     "v": -1
+    },
+    {
+     "x": 0,
+     "y": 2,
+     "u": 2,
+     "v": 0
+    },
+    {
+     "x": 1,
+     "y": 2,
+     "u": 0,
+     "v": -2
+    },
+    {
+     "x": 2,
+     "y": 2,
+     "u": -2,
+     "v": 1
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "arrows[] index",
+  "py_sha": "3b2c6a30afa99f443d8066121e9b6e4033be56600d0674ee3ccc9bb762dfbcae",
+  "gas_sha": "3b2c6a30afa99f443d8066121e9b6e4033be56600d0674ee3ccc9bb762dfbcae",
   "parity": true
  },
  "quiz_question": {
@@ -7233,6 +7409,60 @@
   "py_sha": "223b4edbd6255c706f88c5f8f5d3c2359ebb1a6f584b4a171f7bde9ca532a262",
   "gas_sha": "5dc922d4aa4f0917b27ee46a4c043d5133346b2e975c744a40f9a8b62f7241e1",
   "parity": false
+ },
+ "ternary_plot": {
+  "status": "keyed",
+  "block": {
+   "type": "ternary_plot",
+   "title": "Soil mix",
+   "a_label": "Sand",
+   "b_label": "Silt",
+   "c_label": "Clay",
+   "points": [
+    {
+     "label": "Plot 0",
+     "a": 60,
+     "b": 30,
+     "c": 10
+    },
+    {
+     "label": "Plot 1",
+     "a": 20,
+     "b": 50,
+     "c": 30
+    },
+    {
+     "label": "Plot 2",
+     "a": 10,
+     "b": 10,
+     "c": 80
+    },
+    {
+     "label": "Plot 3",
+     "a": 34,
+     "b": 33,
+     "c": 33
+    },
+    {
+     "label": "Plot 4",
+     "a": 0,
+     "b": 100,
+     "c": 0
+    },
+    {
+     "label": "Plot 5",
+     "a": 5,
+     "b": 0,
+     "c": 95
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "points[].label",
+  "py_sha": "370a2bb7e695d6ad8f78c7d49032fb40930eeb7a1de9848b0375d8237b6e1eac",
+  "gas_sha": "370a2bb7e695d6ad8f78c7d49032fb40930eeb7a1de9848b0375d8237b6e1eac",
+  "parity": true
  },
  "text_analysis": {
   "status": "pending",
