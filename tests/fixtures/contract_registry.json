@@ -1264,6 +1264,10 @@
    "status": "exempt",
    "reason": "decorative drifting bubble animation effect"
   },
+  "motion_transition": {
+   "status": "exempt",
+   "reason": "motion wrapper animating an update between two states; it reads the keys of the atoms it wraps"
+  },
   "motion_build": {
    "status": "exempt",
    "reason": "motion wrapper orchestrating chart build progress"
