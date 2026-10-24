@@ -30883,14 +30883,14 @@ def _render_motion_path(b: dict) -> str:
             + nodes + '</svg>')
 
 
-_MO_MASK_SHAPES = {'blob': 1, 'circle': 1, 'diagonal': 1, 'rounded': 1, 'bars': 1}
+_MO_MASK_SHAPES = {'blob': 1, 'circle': 1, 'diagonal': 1, 'rounded': 1, 'bars': 1, 'diamond': 1, 'halftone': 1, 'conic': 1, 'slats': 1}
 _MO_MASK_R = [84, 91, 82, 92, 85, 90, 81, 89, 86, 91, 83, 92, 80, 88, 84, 91, 82, 90, 86, 92]
 
 
 def _render_motion_mask(b: dict) -> str:
     shape = b['shape'] if isinstance(b.get('shape'), str) and b['shape'] in _MO_MASK_SHAPES else 'blob'
     blocks = b['blocks'][:6] if isinstance(b.get('blocks'), list) else []
-    inner, clip, mask = ''.join(_mo_child(blk) for blk in blocks), '', ''
+    inner, clip, mask, extra_mask = ''.join(_mo_child(blk) for blk in blocks), '', '', ''
     if shape in ('blob', 'circle'):
         pts = []
         for i in range(20):
@@ -30901,10 +30901,19 @@ def _render_motion_mask(b: dict) -> str:
         clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)'
     elif shape == 'rounded':
         clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))'
+    elif shape == 'diamond':
+        clip = 'polygon(50% calc(50% - var(--m)*100%),calc(50% + var(--m)*100%) 50%,50% calc(50% + var(--m)*100%),calc(50% - var(--m)*100%) 50%)'
+    elif shape == 'conic':
+        mask = 'conic-gradient(#000 calc(var(--m)*360deg),transparent 0)'
+    elif shape == 'slats':
+        mask = 'repeating-linear-gradient(180deg,#000 0,#000 calc(var(--m)*24px),transparent calc(var(--m)*24px),transparent 24px)'
+    elif shape == 'halftone':
+        mask = 'radial-gradient(circle,#000 calc(var(--m)*104% - 4%),transparent calc(var(--m)*104%))'
+        extra_mask = '-webkit-mask-size:14px 14px;mask-size:14px 14px;-webkit-mask-repeat:repeat;mask-repeat:repeat;'
     else:
         mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)'
     return ('<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + ('clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' if clip else '')
-            + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' if mask else '') + '">' + inner + '</div>')
+            + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' + extra_mask if mask else '') + '">' + inner + '</div>')
 
 
 _MO_STITCH = {'letter': 1, 'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1, 'collapse': 1}

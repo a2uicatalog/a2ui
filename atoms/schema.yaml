@@ -11039,10 +11039,10 @@ blocks:
     license: MIT
 - type: motion_mask
   description: 'Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a
-    rounded rectangle that opens, or venetian bars. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes
+    rounded rectangle that opens, venetian bars, a diamond, a halftone dot grid, a conic sweep, or horizontal slats. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes
     in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current
     browser. At p = 1 the child is fully visible; standalone it renders fully revealed.'
-  compact_description: reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars
+  compact_description: reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle, bars, diamond, halftone, conic sweep or slats
   surfaces:
     works_on:
     - web
@@ -11059,7 +11059,7 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    shape: '"blob" | "circle" | "diagonal" | "rounded" | "bars" (optional, default "blob")'
+    shape: '"blob" | "circle" | "diagonal" | "rounded" | "bars" | "diamond" | "halftone" | "conic" | "slats" (optional, default "blob")'
     blocks: array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address.
   source:
     name: a2uicatalog

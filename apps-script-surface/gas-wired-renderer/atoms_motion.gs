@@ -1801,13 +1801,14 @@ _RENDERERS['motion_path'] = function(b) {
     + nodes + '</svg>';
 };
 
-// Reveals its children through a shape that grows with p: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle, or
-// venetian bars. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script.
-var _MO_MASK_SHAPES = {blob: 1, circle: 1, diagonal: 1, rounded: 1, bars: 1};
+// Reveals its children through a shape that grows with p: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle,
+// venetian bars, a diamond, a halftone dot grid, a conic radial sweep, or horizontal slats.
+// The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script.
+var _MO_MASK_SHAPES = {blob: 1, circle: 1, diagonal: 1, rounded: 1, bars: 1, diamond: 1, halftone: 1, conic: 1, slats: 1};
 var _MO_MASK_R = [84, 91, 82, 92, 85, 90, 81, 89, 86, 91, 83, 92, 80, 88, 84, 91, 82, 90, 86, 92];
 _RENDERERS['motion_mask'] = function(b) {
   var shape = (typeof b.shape === 'string' && Object.prototype.hasOwnProperty.call(_MO_MASK_SHAPES, b.shape)) ? b.shape : 'blob';
-  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i, clip = '', mask = '';
+  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i, clip = '', mask = '', extraMask = '';
   for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
   if (shape === 'blob' || shape === 'circle') {
     var pts = [];
@@ -1818,8 +1819,14 @@ _RENDERERS['motion_mask'] = function(b) {
     clip = 'polygon(' + pts.join(',') + ')';
   } else if (shape === 'diagonal') clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)';
   else if (shape === 'rounded') clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))';
-  else mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)';
-  return '<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + (clip ? 'clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' : '') + (mask ? '-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' : '') + '">' + inner + '</div>';
+  else if (shape === 'diamond') clip = 'polygon(50% calc(50% - var(--m)*100%),calc(50% + var(--m)*100%) 50%,50% calc(50% + var(--m)*100%),calc(50% - var(--m)*100%) 50%)';
+  else if (shape === 'conic') mask = 'conic-gradient(#000 calc(var(--m)*360deg),transparent 0)';
+  else if (shape === 'slats') mask = 'repeating-linear-gradient(180deg,#000 0,#000 calc(var(--m)*24px),transparent calc(var(--m)*24px),transparent 24px)';
+  else if (shape === 'halftone') {
+    mask = 'radial-gradient(circle,#000 calc(var(--m)*104% - 4%),transparent calc(var(--m)*104%))';
+    extraMask = '-webkit-mask-size:14px 14px;mask-size:14px 14px;-webkit-mask-repeat:repeat;mask-repeat:repeat;';
+  } else mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)';
+  return '<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + (clip ? 'clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' : '') + (mask ? '-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' + extraMask : '') + '">' + inner + '</div>';
 };
 
 // ─── stitching: scenes that hand over to each other ─────────────────────────────────────────────────────────────────
