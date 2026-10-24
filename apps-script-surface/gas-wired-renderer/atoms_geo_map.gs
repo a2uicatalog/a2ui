@@ -109,7 +109,24 @@ _RENDERERS['geo_map'] = function(b) {
   for (i = 0; i < pts.length; i++) if (pts[i][3] !== null) vals.push(pts[i][3]);
   lo = vals.length ? Math.min.apply(null, vals) : 0; hi = vals.length ? Math.max.apply(null, vals) : 0;
   var unitRaw = typeof b.unit === 'string' ? b.unit : '', unit = _crS(unitRaw, 12), us = unit ? ((unitRaw.slice(0, 12) === '%' ? '' : ' ') + unit) : '';
-  var regs = _chRegions(rset), fr = _chFrame(rset, proj, regs), pr = fr[0], w = fr[1], h = fr[2], usa = proj === 'albers-usa' ? _chAlbersUsa(1070, 480, 250) : null;
+  var regs = _chRegions(rset), frm = _chFrameRead(b.frame, proj, notes), fr = _chFrame(rset, proj, regs, frm), pr = fr[0], w = fr[1], h = fr[2], usa = proj === 'albers-usa' ? _chAlbersUsa(1070, 480, 250) : null;
+  var shade = Array.isArray(b.regions) ? b.regions.slice(0, 250) : [], cats = null, cols = null, got = Object.create(null), rd, ridxm = Object.create(null), gotN = 0;
+  for (i = 0; i < regs.length; i++) ridxm[regs[i][0]] = i;
+  if (shade.length) {
+    rd = _chCatRead(b.categories, b.category_colors, shade, 'category', ridxm, notes, true);
+    if (rd[3]) { notes.push('regions not shaded: ' + rd[3]); }
+    else {
+      if (rd[4].length) notes.push('Not in the map: ' + _chIds(rd[4]) + '.');
+      if (rd[5].length) notes.push('Repeated region ids, the first category was used: ' + _chIds(rd[5]) + '.');
+      gotN = Object.keys(rd[2]).length;
+      if (gotN) {
+        cats = rd[0]; got = rd[2];
+        cols = rd[1].map(function(c) { return _crMix(c, 38, _CR_SURF); });   // a tint, so the strong marker and route colours stay readable on a shaded region
+      }
+    }
+  }
+  var keyed = !!frm || gotN > 0;
+  var pid = gotN ? 'gc' + _crId(['geo_map', 'regions'].concat(cats, cols)) : '';
   function at(lat, lon) {
     if (usa) return usa(lon, lat);
     var p = pr('', lon, lat);
@@ -117,12 +134,17 @@ _RENDERERS['geo_map'] = function(b) {
   }
   var base = '', ri;
   function mk(rid) { return function(lo_, la_) { return pr(rid, lo_, la_); }; }
+  var rfill, rkey, rtip, rid;
   for (ri = 0; ri < regs.length; ri++) {
-    base += '<path data-base="1" style="fill:' + _crMix(_CR_MUTED, 12, _CR_SURF) + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;" d="' + _chPath(regs[ri][2], mk(regs[ri][0])) + '"/>';
+    rid = regs[ri][0];
+    rfill = got[rid] !== undefined ? _chCatFill(pid, cols, got[rid]) : _crMix(_CR_MUTED, 12, _CR_SURF);
+    rkey = keyed ? ' data-cb="tile" data-key="' + _crS(rid, 12) + '"' : '';
+    rtip = got[rid] !== undefined ? '<title>' + _crS(regs[ri][1], 80) + ': ' + _crS(cats[got[rid]], 40) + '</title>' : '';
+    base += '<path data-base="1"' + rkey + ' style="fill:' + rfill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;" d="' + _chPath(regs[ri][2], mk(rid)) + '"' + (rtip ? '>' + rtip + '</path>' : '/>');
   }
-  var cut = 0, nAll = lines.length + pts.length, idx = 0, routeSvg = '', masks = '', dsAll = [], li, d, seg, prev, f, dist, n, s, q, p, dash, col, tip, legs, last, ld, lseg, j;
+  var pq, cut = 0, nAll = lines.length + pts.length, idx = 0, routeSvg = '', masks = '', dsAll = [], li, d, seg, prev, f, dist, n, s, q, p, dash, col, tip, legs, last, ld, lseg, j;
   for (li = 0; li < lines.length; li++) {
-    cs = lines[li][1]; d = ''; seg = []; prev = null; legs = []; last = null;
+    cs = lines[li][1]; d = ''; seg = []; prev = null; pq = null; legs = []; last = null;
     for (k = 0; k < cs.length - 1; k++) {
       f = _gmInterp([cs[k][1], cs[k][0]], [cs[k + 1][1], cs[k + 1][0]]); dist = f[1];
       n = (dist < 1e-9 || Math.sin(dist) < 1e-9) ? 1 : Math.max(1, Math.min(64, Math.ceil(dist / 0.0349)));
@@ -131,14 +153,14 @@ _RENDERERS['geo_map'] = function(b) {
         q = n > 1 ? f[0](s / n) : (s === 0 ? [cs[k][1], cs[k][0]] : [cs[k + 1][1], cs[k + 1][0]]);
         p = usa ? at(q[1], q[0]) : pr('', q[0], q[1]);
         if (p === null) cut++;
-        if (p === null || (prev !== null && Math.abs(p[0] - prev[0]) > w / 2)) {
+        if (p === null || (prev !== null && (frm ? Math.abs(q[0] - pq) > 180 : Math.abs(p[0] - prev[0]) > w / 2))) {
           if (seg.length >= 2) d += 'M' + seg.join(' ');
           seg = [];
           if (lseg.length >= 2) ld += 'M' + lseg.join(' ');
           lseg = [];
         }
         if (p !== null) { last = _chR1(p[0]) + ' ' + _chR1(p[1]); seg.push(last); lseg.push(last); }
-        prev = p;
+        prev = p; pq = q[0];
       }
       if (lseg.length >= 2) ld += 'M' + lseg.join(' ');
       legs.push(ld);
@@ -159,7 +181,7 @@ _RENDERERS['geo_map'] = function(b) {
   var mid = 'gm' + _crId(['geo_map', rset, proj].concat(lkeys, dsAll));
   routeSvg = routeSvg.split('url(#@@').join('url(#' + mid);
   masks = masks.split('id="@@').join('id="' + mid);
-  var defsM = masks ? '<defs>' + masks + '</defs>' : '';
+  var defsM = (masks || gotN) ? '<defs>' + masks + (gotN ? _chCatDefs(pid, cols) : '') + '</defs>' : '';
   var gidx = {}, markSvg = '', outside = [], pi, gi, r, v, st, hasUng = false, ungi = named.length;
   for (i = 0; i < named.length; i++) gidx[named[i]] = i;
   for (i = 0; i < pts.length; i++) if (pts[i][4] === '') hasUng = true;
@@ -176,11 +198,13 @@ _RENDERERS['geo_map'] = function(b) {
   if (cut) notes.push('Lines are cut where they leave the map: the US composite has no place for the path between the lower 48 and Alaska or Hawaii.');
   var title = _crS(b.title, 80);
   var label = (title || 'Geo map') + ': ' + (pts.length - outside.length) + ' of ' + pts.length + ' points drawn' + (lines.length ? ', ' + lines.length + (lines.length === 1 ? ' line' : ' lines') : '')
-    + (named.length ? ' in ' + named.length + (named.length === 1 ? ' group' : ' groups') : '');
+    + (named.length ? ' in ' + named.length + (named.length === 1 ? ' group' : ' groups') : '')
+    + (gotN ? ', ' + gotN + (gotN === 1 ? ' region shaded' : ' regions shaded') + ' in ' + cats.length + (cats.length === 1 ? ' category' : ' categories') : '');
   var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;">' + defsM + base + routeSvg + markSvg + '</svg>';
   var lt = _crS(b.legend_title, 60), lis = '', noVal = false;
   var gnames = named.concat(named.length && hasUng ? ['Ungrouped'] : []);
   for (i = 0; i < gnames.length; i++) { st = _gmStyle(i); lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _gmSwatch(st[0], st[1]) + '<span>' + _crS(gnames[i], 40) + '</span></li>'; }
+  for (i = 0; gotN && i < cats.length; i++) lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _chCatSwatch(pid, cols, i) + '<span>' + _crS(cats[i], 40) + '</span></li>';
   for (li = 0; li < lines.length; li++) {
     dash = _GM_DASH[li % 3];
     lis += '<li style="display:inline-flex;align-items:center;gap:6px;"><svg aria-hidden="true" focusable="false" width="28" height="16" viewBox="0 0 28 16" style="flex:none;"><line x1="1" y1="8" x2="27" y2="8" style="stroke:'
@@ -209,6 +233,13 @@ _RENDERERS['geo_map'] = function(b) {
   }
   var ltable = lines.length ? '<table style="' + _CR_SR + '"><caption>' + (title || 'Geo map') + ', lines (great-circle arcs between the listed points)</caption><thead><tr><th scope="col">Line</th>'
     + '<th scope="col">Stops (lat, lon), in order</th><th scope="col">Points</th></tr></thead><tbody>' + lrow + '</tbody></table>' : '';
+  var rtable = '';
+  if (gotN) {
+    var gk = Object.keys(got);
+    gk.sort(function(a, c) { return (got[a] - got[c]) || (ridxm[a] - ridxm[c]); });
+    rtable = '<table style="' + _CR_SR + '"><caption>' + (title || 'Geo map') + ', shaded regions</caption><thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>'
+      + gk.map(function(r) { return '<tr><th scope="row">' + _crS(regs[ridxm[r]][1], 80) + '</th><td>' + _crS(r, 12) + '</td><td>' + _crS(cats[got[r]], 40) + '</td></tr>'; }).join('') + '</tbody></table>';
+  }
   return '<div role="group" aria-label="' + (title || 'Geo map') + '" data-cb-root style="--n:' + nAll + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
-    + _CR_CB_CSS + (title ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' : '') + svg + legend + nt + ptable + ltable + '</div>';
+    + _CR_CB_CSS + (title ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' : '') + svg + legend + nt + ptable + ltable + rtable + '</div>';
 };

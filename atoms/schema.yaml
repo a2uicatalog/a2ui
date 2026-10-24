@@ -21646,6 +21646,22 @@ blocks:
     legend_title: string (optional, max 60). A heading for the legend (for example Unemployment rate, %); the map title says what the map is, the legend title says what the colours measure.
     steps: integer (optional, 3 to 9, default 5). The number of classes. Fewer classes read faster and hide detail; more show detail but
       neighbouring shades get hard to tell apart. A number outside 3 to 9 is moved to the nearest and named in a note.
+    frame: >-
+      object (optional) {lon_min, lon_max, lat_min, lat_max}, four finite numbers in degrees: frame the map on a zone (for example a trip) instead of the whole
+      region_set. Longitude is clamped to -180..180 and latitude to -85..85, lon_min must be below lon_max and lat_min below lat_max after that, and a span under
+      1 degree is widened to 1. The frame is fitted into a fixed 960 x 540 canvas and centred, so two states of one film with different frames have the same box
+      and a motion_transition between them pans and zooms: regions keep their data-key. Outlines outside the frame are drawn and cropped by the viewBox, not
+      dropped. Not used with albers-usa (a fixed composite). A frame that cannot be used is named in a note and the whole map is drawn. Absent: unchanged.
+    categories: >-
+      array (optional, 1 to 6 names, text up to 40) of category names: switches the map to category mode. Each value is then a category name instead of a number
+      ({id, value: "visited"}); the scale, steps and unit are not used. Each category gets a colour AND a pattern (solid, dots, horizontal, vertical or cross-hatch,
+      backslash stripes, in list order), so colour is never the only cue; regions with no category are hatched on the surface colour (forward slash) and listed
+      in a details element. The legend lists the categories (data-key class-1 to class-n) and the hidden table lists region, code and category. An entry that
+      names a category not in the list is skipped and counted in a note.
+    category_colors: >-
+      object (optional) mapping a category name to a theme token name: accent, accent2, text or muted (nothing else, so the map follows the theme in light and dark).
+      A category without an entry, or with another name, takes the default palette by position (accent, accent2, then lighter mixes of them, text and muted) and is
+      named in a note when the name was not a token. Only used with categories.
   notes: 'Classes are equal intervals between the smallest and largest value (the same as d3 scaleQuantize), not quantiles or natural breaks. Names and
     borders are Natural Earth as shipped, unchanged, including its view of disputed borders; the catalogue does not adjudicate them. The 1:110m set
     leaves out very small countries (for example Singapore, Malta, Monaco), so their values are reported as not in the map. No custom GeoJSON is accepted;
@@ -21698,8 +21714,23 @@ blocks:
       it never streaks across the map. Each line has its own dash (solid, long dash, dotted) and a theme colour.
     unit: string (optional, max 12). Appended to the values in the legend, tooltips and table.
     legend_title: string (optional, max 60). A heading for the legend (what the marker size measures).
+    frame: >-
+      object (optional) {lon_min, lon_max, lat_min, lat_max}: frame the map on a zone (a trip) instead of the whole region_set; the same rules as the frame of
+      choropleth_map (clamped to -180..180 and -85..85, a span under 1 degree widened, a fixed 960 x 540 canvas, not used with albers-usa, a bad frame is
+      named in a note and the whole map drawn). With a frame every outline carries data-cb "tile" and its region code as data-key, so a motion_transition between
+      two frames moves the whole map as a pan and zoom; points and routes keep their keys and travel with it. Outlines outside the frame are cropped, not dropped;
+      a point outside it is not drawn and is noted. Absent: unchanged.
+    regions: >-
+      array (optional, up to 250) of {id, category}: shade regions by category (visited, planned, not yet). id is an ISO 3166-1 alpha-3 code (or a USPS code for
+      us-states), category text up to 40. Shaded regions keep their data-key (the code), so they travel in a transition and a region that changes category
+      changes colour. Each category has a colour and a pattern (see categories), listed in the legend, and the hidden table lists region, code and category.
+    categories: >-
+      array (optional, 1 to 6 names) fixing the category order of regions (so the colours stay the same from one state of a film to the next); without it the
+      categories are the names of regions in first-seen order. Only used with regions.
+    category_colors: >-
+      object (optional) mapping a category name to accent, accent2, text or muted (theme tokens only); the default palette by position otherwise. Only used with regions.
   notes: >-
-    At least one valid point or line is needed. Outlines and projections are those of choropleth_map (Natural Earth 1:110m, US Census 1:10m, d3-geo 3.1.1
+    At least one valid point or line is needed (regions alone do not make a map). Outlines and projections are those of choropleth_map (Natural Earth 1:110m, US Census 1:10m, d3-geo 3.1.1
     ports) and the great circle is d3-geo geoInterpolate; vertices are projected without clipping, so the frame crops what lies outside it. Under reduced
     motion or with no film wrapper the map is drawn settled. Lines carry data-cb "link" and markers "node" (each with its data-key, see points and lines), and
     they come in that order only when a wrapper sets --p: a marker fades in, a route is drawn on along its path, stop by stop (each leg between two listed
