@@ -114,3 +114,106 @@ def _renderer_at(sha):
     finally:
         f.unlink()
     return mod
+
+
+# --- I97: blur_dir and blur_radial ------------------------------------------------------------------------
+CASES_I97 = [
+    # blur_dir truthy / defaults
+    {'type': 'motion_pill', 'text': 'Pill 1', 'blur_dir': True},
+    {'type': 'motion_pill', 'text': 'Pill 2', 'blur_dir': {}},
+    {'type': 'motion_pill', 'text': 'Pill 3', 'blur_dir': {'angle': 45, 'amount': 20}},
+    {'type': 'motion_pill', 'text': 'Pill 4', 'blur_dir': {'angle': -90, 'amount': 15, 'static': True}},
+    {'type': 'motion_pill', 'text': 'Pill 5', 'blur_dir': {'angle': 720, 'amount': 999}},
+    {'type': 'motion_pill', 'text': 'Pill 6', 'blur_dir': {'angle': -500, 'amount': -10}},
+    # blur_dir no-op / falsy
+    {'type': 'motion_pill', 'text': 'Pill 7', 'blur_dir': False},
+    {'type': 'motion_pill', 'text': 'Pill 8', 'blur_dir': None},
+    {'type': 'motion_pill', 'text': 'Pill 9', 'blur_dir': 'fast'},
+    {'type': 'motion_pill', 'text': 'Pill 10', 'blur_dir': 42},
+    {'type': 'motion_pill', 'text': 'Pill 11', 'blur_dir': [1, 2]},
+    {'type': 'motion_pill', 'text': 'Pill 12', 'blur_dir': {'amount': 0}},
+    # blur_radial truthy / defaults
+    {'type': 'demo_panel', 'title': 'Card 1', 'blur_radial': True},
+    {'type': 'demo_panel', 'title': 'Card 2', 'blur_radial': {}},
+    {'type': 'demo_panel', 'title': 'Card 3', 'blur_radial': {'amount': 0.3, 'cx': 20, 'cy': 80}},
+    {'type': 'demo_panel', 'title': 'Card 4', 'blur_radial': {'amount': 0.15, 'static': True}},
+    {'type': 'demo_panel', 'title': 'Card 5', 'blur_radial': {'amount': 5, 'cx': 150, 'cy': -20}},
+    # blur_radial no-op / falsy
+    {'type': 'demo_panel', 'title': 'Card 6', 'blur_radial': False},
+    {'type': 'demo_panel', 'title': 'Card 7', 'blur_radial': None},
+    {'type': 'demo_panel', 'title': 'Card 8', 'blur_radial': 'zoom'},
+    {'type': 'demo_panel', 'title': 'Card 9', 'blur_radial': 12},
+    {'type': 'demo_panel', 'title': 'Card 10', 'blur_radial': [1, 2]},
+    {'type': 'demo_panel', 'title': 'Card 11', 'blur_radial': {'amount': 0}},
+    # both together
+    {'type': 'motion_text', 'text': 'Combo 1', 'blur_dir': {'angle': 30, 'amount': 10}, 'blur_radial': {'amount': 0.2}},
+    {'type': 'motion_text', 'text': 'Combo 2', 'blur_dir': True, 'blur_radial': {'static': True}},
+    # combined with glitch, smear, tilt, blend, enter
+    {'type': 'motion_pill', 'text': 'All Props', 'blur_dir': {'angle': 15}, 'blur_radial': {'amount': 0.08}, 'tilt': True, 'blend': 'multiply', 'enter': 'fade'},
+    # hostile / script containment in child
+    {'type': 'motion_pill', 'text': '<script>alert(1)</script>', 'blur_dir': True},
+    {'type': 'motion_pill', 'text': '<SCRIPT src="x"></script>', 'blur_radial': True},
+    # hostile spec injection
+    {'type': 'motion_pill', 'text': 'Hostile', 'blur_dir': {'angle': '"><img src=x onerror=1>', 'amount': '<script>'}},
+    {'type': 'demo_panel', 'title': 'Hostile2', 'blur_radial': {'amount': '"><script>', 'cx': '"><script>'}},
+]
+
+
+def test_i97_python_matches_gas_exactly(core_js):
+    got = _gas_batch(core_js, CASES_I97)
+    bad = [str(b)[:110] for b, g in zip(CASES_I97, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_i97_inert_when_absent_or_falsy():
+    for base in (PILL, CARD, TEXT):
+        plain = _py(dict(base))
+        for k in ("blur_dir", "blur_radial"):
+            for inert in (None, False, "", 0, "fast", 42, [1], {}, {"amount": 0}):
+                assert _py(dict(base, **{k: inert})) == plain, (base["type"], k, inert)
+        assert "mo-bd" not in plain and "mo-br" not in plain
+    assert _py(dict(PILL, blur_dir={"static": "yes"}, blur_radial={"static": 1})).count('inert style') == 4  # non-True static is not static
+
+
+def test_i97_markup():
+    h = _py(dict(PILL, blur_dir={"angle": 45, "amount": 16}))
+    assert 'transform:rotate(45deg);filter:url(#mo-' in h and '<div style="transform:rotate(-45deg);">' in h and 'stdDeviation="16 0"' in h
+    assert "flood-opacity:calc(1 - clamp(0,var(--p,1),1))" in h and "prefers-reduced-motion" in h
+    n = _py(dict(PILL, blur_dir={"angle": -30, "amount": 5}))
+    assert "rotate(-30deg);filter" in n and 'style="transform:rotate(30deg);"' in n and "--" not in n.split("<svg")[1].split("</svg>")[0].replace("var(--p", "")
+    s = _py(dict(PILL, blur_dir={"angle": 10, "static": True}))
+    assert "flood" not in s and "prefers-reduced-motion" not in s and '<feGaussianBlur in="SourceGraphic" stdDeviation="12 0"/>' in s
+    fid = re.search(r'<filter id="(mo-[a-z0-9]{6})"', h).group(1)
+    assert "url(#" + fid + ")" in h
+    r = _py(dict(PILL, blur_radial={"amount": 0.25, "cx": 40, "cy": 60}))
+    assert r.count('class="mo-br-c"') == 4 and "transform-origin:40% 60%;" in r
+    assert "transform:scale(calc(1 + 0.25*0.25*(1 - clamp(0,var(--p,1),1))))" in r and "transform:scale(calc(1 + 0.25*1*(1 - clamp(0,var(--p,1),1))))" in r
+    rs = _py(dict(PILL, blur_radial={"static": True}))
+    assert "prefers-reduced-motion" not in rs and "calc(1 + 0.12*0.5*1)" in rs
+
+
+def test_i97_radial_copies_carry_no_ids_and_are_hidden_from_assistive_tech():
+    from renderers import web_article as wa
+    h = wa._mo_blur_radial(True, '<div id="x1" data-id="k">a</div>')
+    assert h.count('id="x1"') == 1 and h.count('data-id="k"') == 5
+    assert h.count('aria-hidden="true" inert') == 4
+
+
+def test_i97_scripts_and_hostile_values_never_reach_markup():
+    from renderers import web_article as wa
+    assert wa._mo_blur_dir(True, "<script>x</script>") == "<script>x</script>"
+    assert wa._mo_blur_radial(True, "<SCRIPT>x</SCRIPT>") == "<SCRIPT>x</SCRIPT>"
+    for b in (dict(PILL, blur_dir={"angle": '"><img src=x onerror=1>', "amount": "<script>"}),
+              dict(PILL, blur_radial={"amount": '"><script>', "cx": '"><script>', "cy": "x;}</style>"}),
+              dict(PILL, blur_dir={"angle": 1e999, "amount": 1e999}, blur_radial={"amount": float("nan")})):
+        out = _py(b)
+        assert "<script" not in out.lower() and "onerror" not in out and "NaN" not in out and "undefined" not in out and "inf" not in out.lower().replace("info", ""), out[:200]
+
+
+@browser
+def test_i97_filter_resolves_and_settles_sharp_in_a_browser():
+    js = "var e=document.querySelector('.mo-bd');return getComputedStyle(e).filter;"
+    assert "url(" in _probe(dict(PILL, blur_dir={"angle": 30, "amount": 10}), 0, js)
+    js2 = "var e=document.querySelector('.mo-br-c');return +getComputedStyle(e).opacity;"
+    assert _probe(dict(PILL, blur_radial={"amount": 0.2}), 0, js2) == 0, "p defaults to 1: copies invisible when settled"
+    assert abs(_probe(dict(PILL, blur_radial={"amount": 0.2, "static": True}), 0, js2) - 0.22) < 0.01

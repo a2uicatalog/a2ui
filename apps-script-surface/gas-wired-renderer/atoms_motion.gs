@@ -265,6 +265,68 @@ function _moTilt(spec, html) {
   if (rx === 0 && ry === 0 && blur === 0) return html;
   return '<div class="mo-tilt" style="transform:perspective(900px) rotateX(calc(' + rx + 'deg*(1 - clamp(0,var(--p,1),1)))) rotateY(calc(' + ry + 'deg*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + blur + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>';
 }
+function _moBlurDir(spec, html) {
+  var o = spec === true ? {} : ((spec && typeof spec === 'object' && !Array.isArray(spec)) ? spec : null);
+  if (!o) return html;
+  if (spec !== true && !Object.keys(o).length) return html; // an empty object is off, as in Python (falsy {})
+  if (/<script/i.test(html)) return html;
+  var amount = _ffInt(o.amount, 12, 0, 60);
+  if (amount === 0) return html;
+  var angle = _ffNum(o.angle, 0, -360, 360, 2);
+  var isStatic = o.static === true;
+  var uid = 'mo-' + Math.random().toString(36).substr(2, 6);
+  var lead = isStatic ? '' : '<style>@media (prefers-reduced-motion:reduce),print{.mo-bd{filter:none!important}}</style>';
+  var filt;
+  if (isStatic) {
+    filt = '<feGaussianBlur in="SourceGraphic" stdDeviation="' + amount + ' 0"/>';
+  } else {
+    filt = '<feGaussianBlur stdDeviation="' + amount + ' 0" result="b"/>' +
+      '<feFlood style="flood-opacity:calc(1 - clamp(0,var(--p,1),1))" flood-color="#000" result="w"/>' +
+      '<feComposite in="b" in2="w" operator="in" result="bw"/>' +
+      '<feFlood style="flood-opacity:clamp(0,var(--p,1),1)" flood-color="#000" result="w2"/>' +
+      '<feComposite in="SourceGraphic" in2="w2" operator="in" result="sw"/>' +
+      '<feComposite in="bw" in2="sw" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>';
+  }
+  return lead +
+    '<svg class="mo-bd-f" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;">' +
+    '<filter id="' + uid + '" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">' +
+    filt +
+    '</filter></svg>' +
+    '<div class="mo-bd" style="transform:rotate(' + angle + 'deg);filter:url(#' + uid + ');">' +
+    '<div style="transform:rotate(' + _ffNum(-parseFloat(angle), 0, -360, 360, 2) + 'deg);">' + html + '</div></div>';
+}
+
+function _moBlurRadial(spec, html) {
+  var o = spec === true ? {} : ((spec && typeof spec === 'object' && !Array.isArray(spec)) ? spec : null);
+  if (!o) return html;
+  if (spec !== true && !Object.keys(o).length) return html; // an empty object is off, as in Python (falsy {})
+  if (/<script/i.test(html)) return html;
+  var amount = _ffNum(o.amount, 0.12, 0, 1, 2);
+  if (parseFloat(amount) === 0) return html;
+  var cx = _ffNum(o.cx, 50, 0, 100, 2);
+  var cy = _ffNum(o.cy, 50, 0, 100, 2);
+  var isStatic = o.static === true;
+  var lead = isStatic ? '' : '<style>@media (prefers-reduced-motion:reduce),print{.mo-br-c{display:none!important}}</style>';
+  var copyHtml = html.replace(/[ \t\n\r]id="[^"]*"/g, '');
+  var steps = ['0.25', '0.5', '0.75', '1'];
+  var copies = '';
+  for (var i = 0; i < steps.length; i++) {
+    var kStr = steps[i];
+    var scaleExpr = isStatic
+      ? 'calc(1 + ' + amount + '*' + kStr + '*1)'
+      : 'calc(1 + ' + amount + '*' + kStr + '*(1 - clamp(0,var(--p,1),1)))';
+    var opExpr = isStatic
+      ? 'calc(0.22*1)'
+      : 'calc(0.22*(1 - clamp(0,var(--p,1),1)))';
+    copies += '<div class="mo-br-c" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;user-select:none;' +
+      'transform-origin:' + cx + '% ' + cy + '%;transform:scale(' + scaleExpr + ');opacity:' + opExpr + ';">' +
+      copyHtml + '</div>';
+  }
+  return lead +
+    '<div class="mo-br" style="position:relative;"><div class="mo-br-b">' + html + '</div>' +
+    copies + '</div>';
+}
+
 var _MO_BLEND = {
   'multiply': true, 'screen': true, 'overlay': true, 'darken': true, 'lighten': true,
   'color-dodge': true, 'color-burn': true, 'difference': true, 'exclusion': true,
@@ -302,6 +364,8 @@ function _moInstall() {
         if (b && typeof b === 'object' && b.halo) h = _moHalo(b.halo, h);
         if (b && typeof b === 'object' && b.smear) h = _moSmear(b.smear, h);
         if (b && typeof b === 'object' && b.tilt) h = _moTilt(b.tilt, h);
+        if (b && typeof b === 'object' && b.blur_dir) h = _moBlurDir(b.blur_dir, h);
+        if (b && typeof b === 'object' && b.blur_radial) h = _moBlurRadial(b.blur_radial, h);
         if (b && typeof b === 'object' && !Object.prototype.hasOwnProperty.call(_MO_BLEND_OWN, k) && ('blend' in b)) {
           h = _moBlend(b.blend, h);
         }

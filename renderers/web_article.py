@@ -29242,6 +29242,86 @@ def _mo_tilt(spec, html):
     return ('<div class="mo-tilt" style="transform:perspective(900px) rotateX(calc(' + str(rx) + 'deg*(1 - clamp(0,var(--p,1),1)))) rotateY(calc(' + str(ry) + 'deg*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + str(blur) + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>')
 
 
+def _mo_blur_dir(spec, html):
+    """Twin of atoms_motion.gs _moBlurDir."""
+    if spec is True:
+        o = {}
+    elif isinstance(spec, dict):
+        o = spec
+    else:
+        return html
+    if re.search(r'<script', html, re.IGNORECASE):
+        return html
+    amt = o.get('amount')
+    amount = _ff_int(None if isinstance(amt, float) and not math.isfinite(amt) else amt, 12, 0, 60)  # parseInt(Infinity) is NaN: the default
+    if amount == 0:
+        return html
+    angle = _ff_num(o.get('angle'), 0, -360, 360, 2)
+    is_static = o.get('static') is True
+    uid = 'mo-' + _wa_uid({'k': 'bd', 'a': angle, 'm': str(amount), 's': is_static, 'h': html})[:6]
+    lead = '' if is_static else '<style>@media (prefers-reduced-motion:reduce),print{.mo-bd{filter:none!important}}</style>'
+    if is_static:
+        filt = '<feGaussianBlur in="SourceGraphic" stdDeviation="' + str(amount) + ' 0"/>'
+    else:
+        filt = (
+            '<feGaussianBlur stdDeviation="' + str(amount) + ' 0" result="b"/>'
+            '<feFlood style="flood-opacity:calc(1 - clamp(0,var(--p,1),1))" flood-color="#000" result="w"/>'
+            '<feComposite in="b" in2="w" operator="in" result="bw"/>'
+            '<feFlood style="flood-opacity:clamp(0,var(--p,1),1)" flood-color="#000" result="w2"/>'
+            '<feComposite in="SourceGraphic" in2="w2" operator="in" result="sw"/>'
+            '<feComposite in="bw" in2="sw" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>'
+        )
+    return (
+        lead +
+        '<svg class="mo-bd-f" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;">'
+        '<filter id="' + uid + '" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">' +
+        filt +
+        '</filter></svg>'
+        '<div class="mo-bd" style="transform:rotate(' + angle + 'deg);filter:url(#' + uid + ');">'
+        '<div style="transform:rotate(' + _ff_num(-float(angle), 0, -360, 360, 2) + 'deg);">' + html + '</div></div>'
+    )
+
+
+def _mo_blur_radial(spec, html):
+    """Twin of atoms_motion.gs _moBlurRadial."""
+    if spec is True:
+        o = {}
+    elif isinstance(spec, dict):
+        o = spec
+    else:
+        return html
+    if re.search(r'<script', html, re.IGNORECASE):
+        return html
+    amount = _ff_num(o.get('amount'), 0.12, 0, 1, 2)
+    if float(amount) == 0:
+        return html
+    cx = _ff_num(o.get('cx'), 50, 0, 100, 2)
+    cy = _ff_num(o.get('cy'), 50, 0, 100, 2)
+    is_static = o.get('static') is True
+    lead = '' if is_static else '<style>@media (prefers-reduced-motion:reduce),print{.mo-br-c{display:none!important}}</style>'
+    copy_html = re.sub(r'[ \t\n\r]id="[^"]*"', '', html)
+    steps = [('0.25', '0.25'), ('0.5', '0.5'), ('0.75', '0.75'), ('1', '1')]
+    copies = []
+    for k_str, _ in steps:
+        if is_static:
+            scale_expr = 'calc(1 + ' + amount + '*' + k_str + '*1)'
+            op_expr = 'calc(0.22*1)'
+        else:
+            scale_expr = 'calc(1 + ' + amount + '*' + k_str + '*(1 - clamp(0,var(--p,1),1)))'
+            op_expr = 'calc(0.22*(1 - clamp(0,var(--p,1),1)))'
+        c = (
+            '<div class="mo-br-c" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;user-select:none;'
+            'transform-origin:' + cx + '% ' + cy + '%;transform:scale(' + scale_expr + ');opacity:' + op_expr + ';">' +
+            copy_html + '</div>'
+        )
+        copies.append(c)
+    return (
+        lead +
+        '<div class="mo-br" style="position:relative;"><div class="mo-br-b">' + html + '</div>' +
+        ''.join(copies) + '</div>'
+    )
+
+
 _MO_BLEND = {
     'multiply', 'screen', 'overlay', 'darken', 'lighten',
     'color-dodge', 'color-burn', 'difference', 'exclusion',
@@ -29288,6 +29368,10 @@ def _mo_install():
                     h = _mo_smear(b['smear'], h)
                 if isinstance(b, dict) and b.get('tilt'):
                     h = _mo_tilt(b['tilt'], h)
+                if isinstance(b, dict) and b.get('blur_dir'):
+                    h = _mo_blur_dir(b['blur_dir'], h)
+                if isinstance(b, dict) and b.get('blur_radial'):
+                    h = _mo_blur_radial(b['blur_radial'], h)
                 if isinstance(b, dict) and k not in _MO_BLEND_OWN and 'blend' in b:
                     h = _mo_blend(b.get('blend'), h)
                 return _mo_enter(b, h) if isinstance(b, dict) and b.get('enter') else h
