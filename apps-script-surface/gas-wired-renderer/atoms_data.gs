@@ -138,7 +138,7 @@ _RENDERERS['feed_status'] = function(b) {
   var uid   = 'fs' + Math.random().toString(36).substr(2, 5);
   var name  = b.name  || '';
   var label = b.label ? _esc(b.label) + ' ' : '';
-  var size  = b.size  || '0.6rem';
+  var size  = _safe_css(b.size, '0.6rem');
 
   var pill =
     '<span data-cb="node" data-key="' + _ckey(b.name, 'feed_status') + '" id="' + uid + '" style="display:inline-flex;align-items:center;gap:5px;' +
@@ -169,10 +169,10 @@ _RENDERERS['feed_status'] = function(b) {
       '}' +
       // Chain — preserve any existing subscriber
       (name ?
-        'var prev=window.A2UI_CALLBACKS["' + _esc(name) + '"];' +
-        'window.A2UI_CALLBACKS["' + _esc(name) + '"]=function(d){update(d);if(prev)prev(d);};' +
+        'var prev=window.A2UI_CALLBACKS[' + _jsJson(name) + '];' +
+        'window.A2UI_CALLBACKS[' + _jsJson(name) + ']=function(d){update(d);if(prev)prev(d);};' +
         // Catch data already dispatched before this atom's script ran
-        'if(window.A2UI_DATA["' + _esc(name) + '"])update(window.A2UI_DATA["' + _esc(name) + '"]);' : '') +
+        'if(window.A2UI_DATA[' + _jsJson(name) + '])update(window.A2UI_DATA[' + _jsJson(name) + ']);' : '') +
     '})();<\/script>';
 
   return pill + script;

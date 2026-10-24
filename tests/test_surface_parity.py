@@ -64,6 +64,9 @@ CURATED = {
                         "alt_text": "Descriptive alt text for accessibility", "zoom_factor": 2.0},
     "timeline": {"title": "Project history", "events": [
         {"date": "2026", "label": "Public launch", "text": "We shipped it"}]},
+    "cta_section": {"heading": "Ready to scale your clusters?", "body": "Spin up a dedicated environment in minutes.",
+                    "primary_cta": {"label": "Start Trial", "url": "https://example.com/start"},
+                    "secondary_cta": {"label": "Contact Sales", "url": "https://example.com/sales"}},
     "further_reading": {"links": [{"title": "Guide to tokens", "url": "https://example.com/a",
                                    "description": "Background reading"}]},
     "resources_list": {"items": [{"title": "Design kit bundle", "size": "2 MB", "type": "zip",

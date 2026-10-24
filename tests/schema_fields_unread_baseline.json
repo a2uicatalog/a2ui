@@ -12,14 +12,6 @@
  "anchor_list": [
   "anchors"
  ],
- "animated_beam": [
-  "active",
-  "body",
-  "curved",
-  "from_label",
-  "speed",
-  "to_label"
- ],
  "animated_border_card": [
   "accent",
   "accent2",
@@ -29,9 +21,6 @@
  ],
  "animated_counter": [
   "counters"
- ],
- "api_reference": [
-  "deprecated"
  ],
  "arc_diagram": [
   "title"
@@ -56,11 +45,6 @@
  ],
  "benchmark_comparison": [
   "items"
- ],
- "bento_grid": [
-  "columns",
-  "heading",
-  "tiles"
  ],
  "bezier_easing": [
   "theme"
@@ -87,9 +71,6 @@
  ],
  "call_mood_board": [
   "summary"
- ],
- "callout": [
-  "kind"
  ],
  "candlestick_chart": [
   "close",
@@ -183,9 +164,6 @@
  "contour_plot": [
   "title"
  ],
- "conversation_snippet": [
-  "accent"
- ],
  "conversion_funnel": [
   "version"
  ],
@@ -207,13 +185,6 @@
  ],
  "cta_button": [
   "color"
- ],
- "cta_section": [
-  "background",
-  "body",
-  "heading",
-  "primary_cta",
-  "secondary_cta"
  ],
  "cycle_diagram": [
   "title"
@@ -279,10 +250,6 @@
  "embed_tweet": [
   "tweet_id"
  ],
- "empty_state": [
-  "action_url",
-  "image_url"
- ],
  "encrypted_reveal": [
   "background",
   "color",
@@ -292,10 +259,6 @@
   "size",
   "speed",
   "weight"
- ],
- "feature_grid": [
-  "columns",
-  "heading"
  ],
  "feature_matrix": [
   "product_names"
@@ -317,9 +280,6 @@
   "back_content",
   "front_content",
   "trigger_on_hover"
- ],
- "footnote": [
-  "number"
  ],
  "form": [
   "cancel_label",
@@ -391,8 +351,6 @@
  ],
  "gradient_text": [
   "duration",
-  "from",
-  "to",
   "via",
   "weight"
  ],
@@ -443,18 +401,8 @@
   "card_title",
   "trigger_element"
  ],
- "image": [
-  "width"
- ],
- "image_pair": [
-  "left",
-  "right"
- ],
  "image_plot": [
   "version"
- ],
- "inline_alert": [
-  "detail"
  ],
  "inline_feedback_message": [
   "icon"
@@ -465,15 +413,7 @@
   "grid",
   "height_scale"
  ],
- "jira_ticket": [
-  "description",
-  "issue_type",
-  "priority"
- ],
  "journey_map": [
-  "title"
- ],
- "key_value": [
   "title"
  ],
  "layer_stack": [
@@ -706,9 +646,6 @@
   "is_highlighted",
   "plan_name"
  ],
- "primitive_plate": [
-  "equivalent_in"
- ],
  "product_thumbnail": [
   "tags"
  ],
@@ -735,12 +672,6 @@
  ],
  "rating_stars": [
   "is_interactive"
- ],
- "rating_summary_bar": [
-  "accent",
-  "average",
-  "breakdown",
-  "total"
  ],
  "reveal_on_scroll": [
   "accent",
@@ -810,10 +741,6 @@
   "size",
   "speed"
  ],
- "shortcut_legend": [
-  "items",
-  "title"
- ],
  "side_by_side_spec": [
   "item_a_name",
   "item_b_name"
@@ -852,9 +779,6 @@
   "color",
   "icon"
  ],
- "steps": [
-  "items"
- ],
  "sun_path": [
   "theme"
  ],
@@ -866,20 +790,11 @@
   "title",
   "version"
  ],
- "svg_path_draw": [
-  "duration",
-  "shape",
-  "width"
- ],
  "swimlane": [
   "title"
  ],
  "tabs": [
   "accent"
- ],
- "task_list": [
-  "tasks",
-  "title"
  ],
  "tasks_today": [
   "auth_token"

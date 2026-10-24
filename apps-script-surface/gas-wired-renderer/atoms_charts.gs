@@ -1479,50 +1479,81 @@ _RENDERERS['markdown_block'] = function(b) {
 };
 
 _RENDERERS['bento_grid'] = function(b) {
-  var items = b.items || [];
-  var cols = b.cols || 3;
-  var uid = Math.random().toString(36).substr(2, 6);
-  var id = 'bento-' + uid;
-  var colorSchemes = [
-    {bg:'#f3f0ff',border:'#ede9fe'},
-    {bg:'#fdf4ff',border:'#fae8ff'},
-    {bg:'#f0fdf4',border:'#dcfce7'},
-    {bg:'#eff6ff',border:'#dbeafe'},
-    {bg:'#fff7ed',border:'#fed7aa'},
-    {bg:'#fafafa',border:'#e5e7eb'}
-  ];
-  var itemsHtml = '';
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    var span = Math.min(Math.max(parseInt(item.span) || 1, 1), cols);
-    var scheme = colorSchemes[i % colorSchemes.length];
-    if (item.color_scheme === 'purple') { scheme = {bg:'#f3f0ff',border:'#ede9fe'}; }
-    else if (item.color_scheme === 'green') { scheme = {bg:'#f0fdf4',border:'#dcfce7'}; }
-    else if (item.color_scheme === 'blue') { scheme = {bg:'#eff6ff',border:'#dbeafe'}; }
-    else if (item.color_scheme === 'orange') { scheme = {bg:'#fff7ed',border:'#fed7aa'}; }
-    var iconHtml = item.icon ? '<div style="font-size:1.8rem;margin-bottom:8px;">' + _esc(item.icon) + '</div>' : '';
-    var titleHtml = item.title ? '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:6px;">' + _esc(item.title) + '</div>' : '';
-    var bodyHtml = item.body ? '<div style="font-size:0.875rem;color:#4b5563;line-height:1.5;">' + _esc(item.body) + '</div>' : '';
-    itemsHtml += '<div style="grid-column:span ' + span + ';background:' + scheme.bg + ';border:1px solid ' + scheme.border + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;box-sizing:border-box;">' + iconHtml + titleHtml + bodyHtml + '</div>';
+  var tiles   = (Array.isArray(b.tiles) ? b.tiles : (Array.isArray(b.items) ? b.items : [])).filter(function(t) { return t && typeof t === 'object'; });
+  var heading = b.heading || '';
+  var cols    = parseInt(b.columns || b.cols || 3, 10);
+
+  var heading_html = heading
+    ? '<h3 style="font-size:1.3rem;font-weight:700;color:#202124;margin:0 0 16px;">' + _esc(heading) + '</h3>'
+    : '';
+
+  var _COLORS = ['#1a73e8', '#34a853', '#ea4335', '#fbbc04', '#9c27b0', '#00bcd4', '#ff6d00', '#00897b'];
+  var _SCHEME_COLORS = {
+    'purple': '#7c3aed',
+    'green':  '#34a853',
+    'blue':   '#1a73e8',
+    'orange': '#ea580c'
+  };
+
+  var tiles_html = '';
+  for (var i = 0; i < tiles.length; i++) {
+    var tile = tiles[i];
+    var title    = tile.title || '';
+    var subtitle = tile.subtitle || tile.description || tile.body || '';
+    var icon     = tile.icon || '';
+    var span     = parseInt(tile.span !== undefined ? tile.span : 1, 10);
+    if (isNaN(span)) { span = 1; }
+    var color    = tile.color || (tile.color_scheme && _SCHEME_COLORS[tile.color_scheme] ? _SCHEME_COLORS[tile.color_scheme] : _COLORS[i % _COLORS.length]);
+    var bg       = tile.background || (_esc(color) + '0d');
+    var col_span = (span > 1) ? ('1 / span ' + Math.min(span, cols)) : 'auto';
+    var icon_html = icon ? ('<span style="font-size:1.7rem;margin-bottom:4px;">' + _esc(icon) + '</span>') : '';
+    tiles_html += '<div style="grid-column:' + col_span + ';background:' + _esc(bg) + ';border:1px solid ' + _esc(color) + '28;'
+      + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;display:flex;flex-direction:column;gap:6px;">'
+      + icon_html
+      + '<div style="font-size:' + (span > 1 ? '1.05rem' : '0.92rem') + ';'
+      + 'font-weight:700;color:#202124;">' + _esc(title) + '</div>'
+      + '<div style="font-size:0.82rem;color:#5f6368;line-height:1.55;">' + _esc(subtitle) + '</div>'
+      + '</div>';
   }
-  return '<div id="' + id + '" style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:14px;margin:1rem 0;">' + itemsHtml + '</div>';
+
+  return '<div style="margin:1.5rem 0;">' + heading_html
+    + '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:12px;">'
+    + tiles_html + '</div></div>';
 };
 
 _RENDERERS['cta_section'] = function(b) {
-  var headline = b.headline || '';
-  var subheadline = b.subheadline || '';
-  var primaryLabel = b.primary_label || '';
-  var primaryUrl = b.primary_url || '#';
-  var secondaryLabel = b.secondary_label || '';
-  var secondaryUrl = b.secondary_url || '#';
-  var alignment = b.alignment === 'left' ? 'left' : 'center';
-  var btnPrimary = primaryLabel ? '<a href="' + _esc(primaryUrl) + '" style="display:inline-block;background:#7c3aed;color:#fff;font-weight:600;padding:12px 28px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;font-size:0.95rem;margin:6px;">' + _esc(primaryLabel) + '</a>' : '';
-  var btnSecondary = secondaryLabel ? '<a href="' + _esc(secondaryUrl) + '" style="display:inline-block;background:transparent;color:#7c3aed;font-weight:600;padding:11px 27px;border-radius:8px;text-decoration:none;font-size:0.95rem;border:1.5px solid #7c3aed;margin:6px;">' + _esc(secondaryLabel) + '</a>' : '';
-  return '<div style="background:linear-gradient(135deg,#f5f3ff,#faf5ff);border:1px solid #ede9fe;border-radius:16px;padding:40px 32px;margin:1rem 0;text-align:' + alignment + ';">'
-    + (headline ? '<h2 style="margin:0 0 12px;font-size:1.75rem;font-weight:800;color:#111827;">' + _esc(headline) + '</h2>' : '')
-    + (subheadline ? '<p style="margin:0 0 24px;font-size:1.05rem;color:#4b5563;">' + _esc(subheadline) + '</p>' : '')
-    + '<div>' + btnPrimary + btnSecondary + '</div>'
-    + '</div>';
+  var heading   = b.heading || b.headline || '';
+  var body      = b.body !== undefined ? b.body : (b.description !== undefined ? b.description : (b.subheadline || ''));
+  var primary   = b.primary_cta || (b.primary_label ? { label: b.primary_label, url: b.primary_url } : null);
+  var secondary = b.secondary_cta || (b.secondary_label ? { label: b.secondary_label, url: b.secondary_url } : null);
+  var bg        = b.background || '#1a73e8';
+  var align     = b.alignment === 'left' ? 'left' : 'center';
+  var marginAuto = b.alignment === 'left' ? '0 0 24px' : '0 auto 24px';
+  var justify   = b.alignment === 'left' ? 'flex-start' : 'center';
+
+  var primary_html = primary ? (
+    '<a href="' + _esc(primary.url !== undefined ? primary.url : '#') + '" ' +
+    'style="display:inline-flex;align-items:center;padding:11px 22px;' +
+    'background:#ffffff;background:var(--a2ui-surface,#ffffff);color:' + _esc(bg) + ';font-size:0.9rem;font-weight:700;' +
+    'border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;">' + _esc(primary.label !== undefined ? primary.label : '') + '</a>'
+  ) : '';
+
+  var secondary_html = secondary ? (
+    '<a href="' + _esc(secondary.url !== undefined ? secondary.url : '#') + '" ' +
+    'style="display:inline-flex;align-items:center;padding:11px 22px;' +
+    'background:rgba(255,255,255,0.15);color:#fff;font-size:0.9rem;font-weight:600;' +
+    'border-radius:8px;text-decoration:none;border:1px solid rgba(255,255,255,0.4);">' +
+    _esc(secondary.label !== undefined ? secondary.label : '') + '</a>'
+  ) : '';
+
+  return (
+    '<div style="margin:1.5rem 0;background:' + _esc(bg) + ';border-radius:14px;padding:36px 32px;text-align:' + align + ';">' +
+    '<h3 style="font-size:1.4rem;font-weight:800;color:#fff;margin:0 0 10px;">' + _esc(heading) + '</h3>' +
+    '<p style="font-size:0.93rem;color:rgba(255,255,255,0.85);margin:' + marginAuto + ';' +
+    'max-width:480px;line-height:1.65;">' + _esc(body) + '</p>' +
+    '<div style="display:flex;justify-content:' + justify + ';gap:12px;flex-wrap:wrap;">' +
+    primary_html + secondary_html + '</div></div>'
+  );
 };
 
 _RENDERERS['lozenge'] = function(b) {
@@ -1540,23 +1571,95 @@ _RENDERERS['lozenge'] = function(b) {
 };
 
 _RENDERERS['task_list'] = function(b) {
-  var items = b.items || [];
-  var priorityColors = {high:'#ef4444', medium:'#f59e0b', low:'#9ca3af'};
-  var rows = '';
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    var dot = item.priority ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (priorityColors[item.priority] || '#9ca3af') + ';margin-right:8px;flex-shrink:0;"></span>' : '';
-    var textStyle = item.done ? 'text-decoration:line-through;color:var(--muted,#5f6368);' : 'color:#111827;';
-    var checkIcon = item.done
-      ? '<svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;"><circle cx="8" cy="8" r="7" fill="#7c3aed"/><polyline points="4,8 7,11 12,5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-      : '<svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;"><circle cx="8" cy="8" r="7" fill="none" stroke="#d1d5db" stroke-width="1.5"/></svg>';
-    rows += '<li style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f3f4f6;">'
-      + checkIcon
-      + '<span style="' + textStyle + 'flex:1;font-size:0.9rem;">' + _esc(item.text || '') + '</span>'
-      + dot
-      + '</li>';
+  var title = b.title || '';
+  var tasks = (Array.isArray(b.tasks) ? b.tasks : (Array.isArray(b.items) ? b.items : [])).filter(function(t) { return t && typeof t === 'object'; });
+
+  var headerHtml = '';
+  if (title) {
+    headerHtml = '\n        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">\n' +
+      '          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">\n' +
+      '            <span style="color:#00f2ff; font-weight:900;">⬡</span> ' + _esc(title) + '\n' +
+      '          </div>\n' +
+      '          <div style="font-size:0.75rem; font-family:monospace; color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.04); padding:4px 8px; border-radius:12px;border-radius:var(--a2ui-radius,12px); border:1px solid rgba(255,255,255,0.06);">\n' +
+      '            ' + tasks.length + ' Tasks\n' +
+      '          </div>\n' +
+      '        </div>\n        ';
   }
-  return '<ul style="list-style:none;margin:0.5rem 0;padding:0;">' + rows + '</ul>';
+
+  var tasksHtml = [];
+  for (var i = 0; i < tasks.length; i++) {
+    var task = tasks[i];
+    var text = task.text || '';
+    var completed = !!(task.completed || task.done);
+    var priority = String(task.priority || 'medium').toLowerCase();
+    var dueDate = task.due_date || task.due || '';
+    var assignee = task.assignee || '';
+
+    var checkboxStyle = '';
+    var checkboxInner = '';
+    var textStyle = '';
+
+    if (completed) {
+      checkboxStyle = 'background:#10b981; border-color:#10b981; color:#0f172a; box-shadow: 0 0 10px rgba(16,185,129,0.4);';
+      checkboxInner = '<span style="font-size:11px; font-weight:900;">✓</span>';
+      textStyle = 'text-decoration:line-through; color:rgba(255,255,255,0.4);';
+    } else {
+      checkboxStyle = 'background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.2); color:transparent;';
+      checkboxInner = '';
+      textStyle = 'color:#f3f4f6;';
+    }
+
+    var pStyle = '';
+    var pLabel = '';
+    if (priority === 'high') {
+      pStyle = 'background:rgba(239, 68, 68, 0.1); color:#ef4444; border: 1px solid rgba(239,68,68,0.25);';
+      pLabel = 'HIGH';
+    } else if (priority === 'low') {
+      pStyle = 'background:rgba(59, 130, 246, 0.1); color:#3b82f6; border: 1px solid rgba(59,130,246,0.25);';
+      pLabel = 'LOW';
+    } else {
+      pStyle = 'background:rgba(245, 158, 11, 0.1); color:#f59e0b; border: 1px solid rgba(245,158,11,0.25);';
+      pLabel = 'MED';
+    }
+
+    var assigneeHtml = '';
+    if (assignee) {
+      assigneeHtml = '\n            <div style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #00f2ff 0%, #0072ff 100%); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; font-family:monospace; border:1px solid rgba(255,255,255,0.2); flex-shrink:0;" title="Assignee: ' + _esc(assignee) + '">\n' +
+        '              ' + _esc(assignee.slice(0, 2).toUpperCase()) + '\n' +
+        '            </div>\n            ';
+    }
+
+    var dueHtml = '';
+    if (dueDate) {
+      dueHtml = '\n            <div style="font-size:0.75rem; font-family:monospace; color:rgba(255,255,255,0.5); display:flex; align-items:center; gap:4px; padding:3px 8px; border-radius:4px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); flex-shrink:0;">\n' +
+        '              <span style="font-size:0.7rem;">📅</span> ' + _esc(dueDate) + '\n' +
+        '            </div>\n            ';
+    }
+
+    tasksHtml.push('\n        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(15,23,42,0.2); border:1px solid rgba(255,255,255,0.04); border-radius:8px; gap:16px; transition:all 0.2s ease-in-out;" onmouseover="this.style.background=\'rgba(255,255,255,0.03)\';this.style.borderColor=\'rgba(0,242,255,0.15)\';" onmouseout="this.style.background=\'rgba(15,23,42,0.2)\';this.style.borderColor=\'rgba(255,255,255,0.04)\';">\n' +
+      '          <div style="display:flex; align-items:center; gap:12px; flex-grow:1; min-width:0;">\n' +
+      '            <div style="width:18px; height:18px; border-radius:4px; border:1.5px solid; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; transition:all 0.15s ease-in-out; ' + checkboxStyle + '">\n' +
+      '              ' + checkboxInner + '\n' +
+      '            </div>\n' +
+      '            <div style="font-size:0.9rem; font-weight:500; font-family:sans-serif; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; ' + textStyle + '">\n' +
+      '              ' + _esc(text) + '\n' +
+      '            </div>\n' +
+      '          </div>\n          \n' +
+      '          <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">\n' +
+      '            <div style="font-size:0.65rem; font-weight:800; font-family:monospace; padding:3px 6px; border-radius:4px; letter-spacing:0.05em; ' + pStyle + '">\n' +
+      '              ' + pLabel + '\n' +
+      '            </div>\n' +
+      '            ' + dueHtml + '\n' +
+      '            ' + assigneeHtml + '\n' +
+      '          </div>\n' +
+      '        </div>\n        ');
+  }
+
+  var tasksContainer = '<div style="display:flex; flex-direction:column; gap:8px;">' + tasksHtml.join('') + '</div>';
+
+  return '\n    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">' +
+    headerHtml +
+    '\n      ' + tasksContainer + '\n    </div>\n    ';
 };
 
 _RENDERERS['vote_button_group'] = function(b) {
@@ -1618,50 +1721,113 @@ _RENDERERS['sprint_board'] = function(b) {
 };
 
 _RENDERERS['jira_ticket'] = function(b) {
-  var typeIcons = {bug:'🐛', story:'📖', task:'✅', epic:'⚡'};
-  var typeColors = {bug:'#fee2e2', story:'#dbeafe', task:'#f0fdf4', epic:'#faf5ff'};
-  var statusColors = {
-    'To Do':'#f3f4f6','In Progress':'#dbeafe','Done':'#dcfce7',
-    'Blocked':'#fee2e2','Review':'#fef3c7'
+  var key = b.key !== undefined ? b.key : 'PROJ-1';
+  var issue_type = b.issue_type !== undefined ? b.issue_type : (b.type !== undefined ? b.type : 'task');
+  var summary = b.summary !== undefined ? b.summary : '';
+  var status = b.status !== undefined ? b.status : 'To Do';
+  var priority = (typeof b.priority === 'string' && b.priority) ? b.priority : 'medium';
+  var assignee = b.assignee !== undefined ? b.assignee : '';
+  var description = b.description !== undefined ? b.description : '';
+  var labels = Array.isArray(b.labels) ? b.labels : [];
+  issue_type = String(issue_type);
+  status = String(status);
+
+  var TYPE_ICONS = {
+    'bug': '🐛',
+    'story': '📖',
+    'task': '✓',
+    'epic': '⚡',
+    'subtask': '↗'
   };
-  var type = b.type || 'task';
-  var status = b.status || 'To Do';
-  var icon = typeIcons[type] || '📋';
-  var bgColor = typeColors[type] || '#f9fafb';
-  var statusBg = statusColors[status] || '#f3f4f6';
-  var labelsHtml = '';
-  if (b.labels && b.labels.length) {
-    for (var l = 0; l < b.labels.length; l++) {
-      labelsHtml += '<span style="background:#ede9fe;color:#5b21b6;font-size:0.72rem;padding:2px 8px;border-radius:999px;">' + _esc(b.labels[l]) + '</span>';
-    }
+  var icon = TYPE_ICONS.hasOwnProperty(issue_type) ? TYPE_ICONS[issue_type] : '✓';
+
+  var PRIORITY_ICONS = {
+    'highest': '🔴', 'high': '🟠', 'medium': '🟡', 'low': '🔵', 'lowest': '⚪'
+  };
+  var p_icon = PRIORITY_ICONS.hasOwnProperty(priority) ? PRIORITY_ICONS[priority] : '🟡';
+
+  var STATUS_COLORS = {
+    'To Do': ['#dfe1e6', '#42526e'],
+    'In Progress': ['#deebff', '#0747a6'],
+    'Done': ['#e3fcef', '#006644'],
+    'Blocked': ['#ffebe6', '#bf2600'],
+    'Review': ['#fffae6', '#172b4d']
+  };
+  var s_pair = STATUS_COLORS.hasOwnProperty(status) ? STATUS_COLORS[status] : ['#dfe1e6', '#42526e'];
+  var s_bg = s_pair[0];
+  var s_fg = s_pair[1];
+
+  var labels_html = '';
+  for (var i = 0; i < labels.length; i++) {
+    labels_html += '<span style="background:#dfe1e6;color:#172b4d;font-size:11px;padding:2px 6px;border-radius:3px;">' + _esc(labels[i]) + '</span>';
   }
-  var assigneeHtml = b.assignee ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--muted,#5f6368);"><div style="width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + _esc(b.assignee.charAt(0).toUpperCase()) + '</div>' + _esc(b.assignee) + '</div>' : '';
-  return '<div data-cb="node" data-key="' + _ckey(b.key, 'jira_ticket') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
-    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
-    + '<span style="font-size:1.2rem;background:' + bgColor + ';padding:6px;border-radius:8px;">' + icon + '</span>'
-    + '<span style="font-size:0.82rem;font-weight:700;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(b.key || '') + '</span>'
-    + '<span style="margin-left:auto;background:' + statusBg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;color:#374151;">' + _esc(status) + '</span>'
-    + '</div>'
-    + '<div style="font-size:1rem;font-weight:600;color:#111827;margin-bottom:10px;">' + _esc(b.summary || '') + '</div>'
-    + (labelsHtml ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">' + labelsHtml + '</div>' : '')
-    + (assigneeHtml ? '<div style="margin-top:8px;">' + assigneeHtml + '</div>' : '')
-    + '</div>';
+
+  var capitalizedPriority = priority ? (priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase()) : '';
+
+  return (
+    '<div data-cb="node" data-key="' + _ckey(b.key, 'jira_ticket') + '" style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+    '<span style="font-size:15px;">' + icon + '</span>' +
+    '<span style="font-size:12px;font-weight:600;color:#0052cc;">' + _esc(key) + '</span>' +
+    '<span style="margin-left:auto;background:' + s_bg + ';color:' + s_fg + ';font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(status) + '</span>' +
+    '</div>' +
+    '<div style="font-size:15px;font-weight:500;color:#172b4d;margin-bottom:10px;line-height:1.4;">' + _esc(summary) + '</div>' +
+    (description ? '<div style="font-size:13px;color:#5e6c84;margin-bottom:12px;line-height:1.5;">' + _esc(description) + '</div>' : '') +
+    '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+    '<span style="font-size:12px;color:#5e6c84;">' + p_icon + ' ' + _esc(capitalizedPriority) + '</span>' +
+    (assignee ? '<span style="font-size:12px;color:#5e6c84;">👤 ' + _esc(assignee) + '</span>' : '') +
+    labels_html +
+    '</div></div>'
+  );
 };
 
 _RENDERERS['feature_grid'] = function(b) {
-  var features = b.features || [];
-  var cols = b.cols || 3;
-  var cardsHtml = '';
+  var heading     = b.heading || '';
+  var description = b.description || '';
+  var features    = b.features || [];
+  var columns     = parseInt(b.columns !== undefined ? b.columns : (b.cols !== undefined ? b.cols : 3), 10);
+
+  var heading_html = heading
+    ? '<h3 style="font-size:1.3rem;font-weight:700;color:#202124;margin:0 0 8px;">' + _esc(heading) + '</h3>'
+    : '';
+  var desc_html = description
+    ? '<p style="font-size:0.93rem;color:#5f6368;margin:0 0 28px;max-width:560px;line-height:1.6;">' + _esc(description) + '</p>'
+    : '';
+
+  var _COLORS = ["#1a73e8","#34a853","#ea4335","#fbbc04","#9c27b0","#00bcd4","#ff6d00","#00897b"];
+  var items_html = '';
   for (var i = 0; i < features.length; i++) {
-    var f = features[i];
-    var k = _esc(String(f.title || ''));
-    cardsHtml += '<div data-cb="tile" data-key="' + k + '" style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
-      + (f.icon ? '<div style="font-size:2rem;margin-bottom:12px;">' + _esc(f.icon) + '</div>' : '')
-      + (f.title ? '<div data-cb="label" data-key="' + k + '" style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:8px;">' + _esc(f.title) + '</div>' : '')
-      + (f.description ? '<div style="font-size:0.875rem;color:#4b5563;line-height:1.6;">' + _esc(f.description) + '</div>' : '')
-      + '</div>';
+    var feat = features[i];
+    var icon  = feat.icon !== undefined ? feat.icon : '◆';
+    var title = feat.title || '';
+    var desc  = feat.description || '';
+    var badge = feat.badge || '';
+    var color = feat.color || _COLORS[i % _COLORS.length];
+    var badge_html = badge
+      ? '<span style="font-size:0.68rem;font-weight:600;letter-spacing:.05em;' +
+        'text-transform:uppercase;color:' + _esc(color) + ';background:' + _esc(color) + '1a;' +
+        'padding:2px 7px;border-radius:10px;margin-left:8px;">' + _esc(badge) + '</span>'
+      : '';
+    var k = _esc(String(title));
+    items_html += (
+      '<div data-cb="tile" data-key="' + k + '" style="display:flex;flex-direction:column;gap:10px;">' +
+      '<div style="width:42px;height:42px;border-radius:10px;background:' + _esc(color) + '18;' +
+      'display:flex;align-items:center;justify-content:center;font-size:1.15rem;">' + _esc(icon) + '</div>' +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:0.95rem;font-weight:600;color:#202124;">' +
+      _esc(title) + badge_html + '</div>' +
+      '<div style="font-size:0.85rem;color:#5f6368;line-height:1.6;">' + _esc(desc) + '</div>' +
+      '</div>'
+    );
   }
-  return '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:14px;margin:1rem 0;">' + cardsHtml + '</div>';
+
+  return (
+    '<div style="margin:1.5rem 0;">' +
+    heading_html + desc_html +
+    '<div style="display:grid;grid-template-columns:repeat(' + columns + ',1fr);gap:28px 24px;">' +
+    items_html +
+    '</div>' +
+    '</div>'
+  );
 };
 
 _RENDERERS['navigation_menu'] = function(b) {
@@ -1804,30 +1970,23 @@ _RENDERERS['notification_stack'] = function(b) {
 };
 
 _RENDERERS['inline_alert'] = function(b) {
-  var typeConfig = {
-    info:    {bg:'#eff6ff',border:'#3b82f6',fg:'#1d4ed8',icon:'ℹ️'},
-    success: {bg:'#f0fdf4',border:'#22c55e',fg:'#166534',icon:'✅'},
-    warning: {bg:'#fffbeb',border:'#f59e0b',fg:'#92400e',icon:'⚠️'},
-    error:   {bg:'#fef2f2',border:'#ef4444',fg:'#991b1b',icon:'❌'}
-  };
-  // Sibling atoms disagreed on the worst severity: inline_alert knew
-  // 'error', alert_banner knew 'critical', and each silently fell back to
-  // 'info' on the other's word. An author — or a model — that learns one
-  // vocabulary uses it on both. Accept both everywhere; additive, so no
-  // existing payload changes.
-  typeConfig.critical = typeConfig.error;
-  // b.variant, NOT b.type: `type` is the block discriminator and is always
-  // 'inline_alert' here, so the old lookup never matched and every alert
-  // rendered as 'info' regardless of what the author asked for. Found
-  // 2026-08-14 when a model tried to set it and put the severity in the
-  // discriminator instead. Matches alert_banner (atom.gs) and the Python
-  // reference renderer, both of which already read `variant`.
-  var tc = typeConfig[b.variant] || typeConfig['info'];
-  return '<div data-cb="node" data-key="' + _ckey(b.variant, 'inline_alert') + '" style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
-    + '<span style="font-size:0.95rem;flex-shrink:0;">' + tc.icon + '</span>'
-    + '<div style="flex:1;font-size:0.875rem;color:' + tc.fg + ';">' + _esc(b.message || '') + '</div>'
-    + (b.dismissible ? '<button style="background:none;border:none;cursor:pointer;color:var(--muted,#5f6368);font-size:1rem;padding:0;line-height:1;" aria-label="Dismiss">×</button>' : '')
-    + '</div>';
+  var text = b.message !== undefined ? b.message : (b.text !== undefined ? b.text : '');
+  var detail = b.detail !== undefined ? b.detail : '';
+  var variant = b.variant !== undefined ? b.variant : 'info';
+  if (variant === 'critical') {
+    variant = 'error';
+  }
+  var cols = {'info': '#3b82f6', 'success': '#10b981', 'warning': '#f59e0b', 'error': '#ef4444'};
+  var col = cols[variant] || '#3b82f6';
+  var tcols = {'info': '#1d4ed8', 'success': '#047857', 'warning': '#92400e', 'error': '#b91c1c'};
+  var tcol = tcols[variant] || '#1d4ed8';
+  var icons = {'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'error': '❌'};
+  var icon = b.icon || icons[variant] || 'ℹ️';
+  var detail_html = detail ? '<div style="font-size:0.76rem;opacity:0.85;margin-top:2px;">' + _markdownToHtml(detail) + '</div>' : '';
+  var dismiss_btn = b.dismissible ? '<button style="background:none;border:none;cursor:pointer;color:currentColor;opacity:0.7;font-size:1rem;padding:0;line-height:1;margin-left:6px;" aria-label="Dismiss">×</button>' : '';
+  return '<div data-cb="node" data-key="' + _ckey(b.variant, 'inline_alert') + '" style="display:inline-flex;align-items:center;gap:6px;background:' + col + '18;'
+       + 'color:' + tcol + ';border:1px solid ' + col + '40;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:4px 12px;'
+       + 'font-size:0.83rem;font-weight:500;">' + _esc(icon) + ' <span>' + _markdownToHtml(text) + detail_html + '</span>' + dismiss_btn + '</div>';
 };
 
 _RENDERERS['source_citation'] = function(b) {
@@ -1993,61 +2152,93 @@ _RENDERERS['variant_selector'] = function(b) {
 };
 
 _RENDERERS['shortcut_legend'] = function(b) {
-  var shortcuts = b.shortcuts || [];
+  var title = b.title || '';
+  var items = (Array.isArray(b.items) ? b.items : (Array.isArray(b.shortcuts) ? b.shortcuts : [])).filter(function(s) { return s && typeof s === 'object'; });
+
+  var titleHtml = title ? (
+    '<div style="font-size:0.8rem;font-weight:700;color:#374151;margin-bottom:10px;">' + _esc(title) + '</div>'
+  ) : '';
+
   var rows = '';
-  for (var i = 0; i < shortcuts.length; i++) {
-    var sc = shortcuts[i];
-    var keys = sc.keys || [];
-    var keysHtml = '';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var keys = Array.isArray(item.keys) ? item.keys : [];
+    var action = (item.action !== undefined && item.action !== null) ? item.action : (item.description || '');
+
+    var kbdHtml = '';
     for (var k = 0; k < keys.length; k++) {
-      if (k > 0) { keysHtml += '<span style="color:var(--muted,#5f6368);font-size:0.8rem;margin:0 3px;">+</span>'; }
-      keysHtml += '<kbd style="display:inline-block;background:#fff;border:1px solid #d1d5db;border-bottom:2px solid #9ca3af;border-radius:5px;padding:2px 7px;font-size:0.78rem;font-family:monospace;color:#111827;box-shadow:0 1px 0 rgba(0,0,0,0.1);">' + _esc(keys[k]) + '</kbd>';
+      kbdHtml += '<kbd style="display:inline-block;padding:2px 7px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);' +
+        'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);font-family:monospace;' +
+        'font-size:0.78rem;color:#374151;box-shadow:0 1px 0 #d1d5db;">' + _esc(String(keys[k])) + '</kbd>';
     }
-    rows += '<tr style="' + (i % 2 === 0 ? '' : 'background:#f9fafb;') + '">'
-      + '<td style="padding:9px 12px;">' + keysHtml + '</td>'
-      + '<td style="padding:9px 12px;font-size:0.875rem;color:#374151;">' + _esc(sc.description || '') + '</td>'
-      + '</tr>';
+
+    rows += '<div style="display:flex;align-items:center;justify-content:space-between;' +
+      'padding:6px 0;border-bottom:1px solid #f3f4f6;">' +
+      '<span style="font-size:0.82rem;color:#374151;">' + _esc(String(action)) + '</span>' +
+      '<div style="display:flex;gap:3px;align-items:center;">' + kbdHtml + '</div>' +
+      '</div>';
   }
-  return '<div style="margin:1rem 0;overflow-x:auto;">'
-    + '<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
-    + '<thead><tr style="background:#f3f4f6;"><th style="padding:9px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Shortcut</th><th style="padding:9px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th></tr></thead>'
-    + '<tbody>' + rows + '</tbody>'
-    + '</table></div>';
+
+  return '<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e5e7eb;' +
+    'border-radius:8px;background:#fff;">' +
+    titleHtml +
+    rows +
+    '</div>';
 };
 
 _RENDERERS['rating_summary_bar'] = function(b) {
-  var overall = parseFloat(b.overall) || 0;
-  var totalReviews = b.total_reviews || 0;
-  var dist = b.distribution || {};
-  var starsHtml = '';
-  var fullStars = Math.floor(overall);
-  var halfStar = (overall - fullStars) >= 0.5;
-  for (var s = 1; s <= 5; s++) {
-    if (s <= fullStars) { starsHtml += '★'; }
-    else if (s === fullStars + 1 && halfStar) { starsHtml += '½'; }
-    else { starsHtml += '☆'; }
+  var average = (b.average !== undefined && b.average !== null) ? Number(b.average) : (Number(b.overall) || 0.0);
+  var total = (b.total !== undefined && b.total !== null) ? Number(b.total) : (Number(b.total_reviews) || 0);
+  var breakdown = b.breakdown;
+  var accent = b.accent || '#f59e0b';
+
+  if (!breakdown && b.distribution) {
+    breakdown = [];
+    for (var r = 5; r >= 1; r--) {
+      breakdown.push({ stars: r, count: b.distribution[String(r)] || 0 });
+    }
   }
-  var barsHtml = '';
-  for (var r = 5; r >= 1; r--) {
-    var count = dist[String(r)] || 0;
-    var pct = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
-    barsHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
-      + '<span style="font-size:0.78rem;color:var(--muted,#5f6368);width:10px;">' + r + '</span>'
-      + '<span style="color:#f59e0b;font-size:0.78rem;">★</span>'
-      + '<div style="flex:1;background:#f3f4f6;border-radius:999px;height:8px;overflow:hidden;">'
-      + '<div style="width:' + pct + '%;height:100%;background:#f59e0b;border-radius:999px;"></div>'
-      + '</div>'
-      + '<span style="font-size:0.72rem;color:var(--muted,#5f6368);width:28px;text-align:right;">' + count + '</span>'
-      + '</div>';
+  breakdown = (Array.isArray(breakdown) ? breakdown : []).filter(function(e) { return e && typeof e === 'object'; });
+
+  var maxCount = 1;
+  for (var i = 0; i < breakdown.length; i++) {
+    var c = breakdown[i].count || 0;
+    if (c > maxCount) maxCount = c;
   }
-  return '<div style="display:flex;gap:24px;align-items:flex-start;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-    + '<div style="text-align:center;min-width:80px;">'
-    + '<div style="font-size:2.5rem;font-weight:800;color:#111827;line-height:1;">' + overall.toFixed(1) + '</div>'
-    + '<div style="color:#f59e0b;font-size:1.1rem;letter-spacing:2px;">' + starsHtml + '</div>'
-    + '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:4px;">' + totalReviews.toLocaleString() + ' reviews</div>'
-    + '</div>'
-    + '<div style="flex:1;">' + barsHtml + '</div>'
-    + '</div>';
+
+  function fmtComma(n) {
+    var parts = String(n).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  }
+
+  var header = '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;">' +
+    '<span style="font-size:2rem;font-weight:700;color:#111827;">' + average.toFixed(1) + '</span>' +
+    '<span style="font-size:0.85rem;color:var(--muted,#5f6368);">/ 5 · ' + fmtComma(total) + ' ratings</span>' +
+    '</div>';
+
+  var bars = '';
+  for (var i = 0; i < breakdown.length; i++) {
+    var entry = breakdown[i];
+    var stars = (entry.stars !== undefined && entry.stars !== null) ? entry.stars : 0;
+    var count = (entry.count !== undefined && entry.count !== null) ? entry.count : 0;
+    var pct = total ? Math.round(count / total * 100) : 0;
+    var width = Math.round(count / maxCount * 100);
+    bars += '<div style="display:flex;align-items:center;gap:8px;">' +
+      '<span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">' + _esc(String(stars)) + '</span>' +
+      '<span style="font-size:0.82rem;color:' + _esc(accent) + ';">★</span>' +
+      '<div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;">' +
+      '<div style="width:' + width + '%;height:100%;border-radius:100px;background:' + _esc(accent) + ';"></div>' +
+      '</div>' +
+      '<span style="font-size:0.75rem;color:var(--muted,#5f6368);width:3ch;text-align:right;">' + pct + '%</span>' +
+      '</div>';
+  }
+
+  return '<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);' +
+    'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">' +
+    header +
+    '<div style="display:flex;flex-direction:column;gap:6px;">' + bars + '</div>' +
+    '</div>';
 };
 
 // Was built against an older, unrelated field shape (metrics/tags/name/version/type/
@@ -2098,30 +2289,63 @@ _RENDERERS['model_card'] = function(b) {
 };
 
 _RENDERERS['conversation_snippet'] = function(b) {
-  // Schema shape (atoms/schema.yaml): user / response (+ optional user_label / ai_label)
-  var messages = b.messages || ((b.user || b.response) ? [
-    {role: 'user', content: b.user || '', label: b.user_label || 'You'},
-    {role: 'assistant', content: b.response || '', label: b.ai_label || 'Assistant'}
-  ] : []);
-  var html = '<div data-cb="node" data-key="' + _ckey(b.user_label, 'conversation_snippet') + '" style="display:flex;flex-direction:column;gap:10px;margin:1rem 0;">';
-  for (var i = 0; i < messages.length; i++) {
-    var msg = messages[i];
-    var role = msg.role || 'user';
-    var lbl = msg.label ? '<div style="font-size:0.7rem;color:var(--muted,#5f6368);text-align:' + (role === 'user' ? 'right' : 'left') + ';margin:0 4px -6px;">' + _esc(msg.label) + '</div>' : '';
-    if (role === 'system') {
-      html += '<div style="background:#f3f4f6;border-radius:8px;padding:8px 14px;font-size:0.8rem;color:var(--muted,#5f6368);font-style:italic;text-align:center;">' + _esc(msg.content || '') + '</div>';
-    } else if (role === 'user') {
-      html += lbl + '<div style="display:flex;justify-content:flex-end;">'
-        + '<div style="background:#ede9fe;color:#111827;border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
-        + '</div>';
-    } else {
-      html += lbl + '<div style="display:flex;justify-content:flex-start;">'
-        + '<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);color:#111827;border-radius:16px 16px 16px 4px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
-        + '</div>';
+  var accent     = (typeof b.accent === 'string' && /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(b.accent)) ? b.accent : '#1a73e8';
+
+  function hexToRgba(hex_color, alpha) {
+    var h = hex_color.replace(/^#/, '');
+    if (h.length === 3) {
+      h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
     }
+    var r = parseInt(h.substring(0, 2), 16);
+    var g = parseInt(h.substring(2, 4), 16);
+    var b = parseInt(h.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
   }
-  html += '</div>';
-  return html;
+
+  var user_bg = hexToRgba(accent, 0.10);
+  var user_bd = hexToRgba(accent, 0.25);
+
+  function bubble(label, text, align, bg, bd, label_color) {
+    return '<div style="display:flex;flex-direction:column;'
+      + 'align-items:' + (align === 'right' ? 'flex-end' : 'flex-start') + ';gap:4px;">'
+      + '<span style="font-size:0.7rem;font-weight:600;color:' + _esc(label_color) + ';'
+      + 'padding:0 4px;">' + _esc(label) + '</span>'
+      + '<div style="max-width:80%;padding:10px 14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+      + 'border:1px solid ' + bd + ';background:' + bg + ';font-size:0.86rem;'
+      + 'color:#374151;line-height:1.5;white-space:pre-wrap;">' + _esc(text) + '</div>'
+      + '</div>';
+  }
+
+  var key = (typeof _ckey === 'function') ? _ckey(b.user_label, 'conversation_snippet') : _esc(b.user_label || 'conversation_snippet');
+
+  if (Array.isArray(b.messages) && b.messages.length) {
+    var bubbles = '';
+    for (var i = 0; i < b.messages.length; i++) {
+      var msg = b.messages[i];
+      if (!msg || typeof msg !== 'object') msg = {content: (msg === null || msg === undefined) ? '' : String(msg)};
+      var role = msg.role || 'user';
+      var isUser = role === 'user';
+      var lbl = msg.label || (isUser ? 'You' : 'Assistant');
+      var content = msg.content || '';
+      var bBg = isUser ? user_bg : '#f9fafb';
+      var bBd = isUser ? user_bd : '#e5e7eb';
+      var bColor = isUser ? accent : '#6b7280';
+      bubbles += bubble(lbl, content, isUser ? 'right' : 'left', bBg, bBd, bColor);
+    }
+    return '<div data-cb="node" data-key="' + key + '" style="margin:1rem 0;display:flex;flex-direction:column;gap:12px;">'
+      + bubbles
+      + '</div>';
+  }
+
+  var user_label = b.user_label !== undefined ? b.user_label : 'You';
+  var user_text  = b.user !== undefined ? b.user : '';
+  var ai_label   = b.ai_label !== undefined ? b.ai_label : 'Assistant';
+  var ai_text    = b.response !== undefined ? b.response : '';
+
+  return '<div data-cb="node" data-key="' + key + '" style="margin:1rem 0;display:flex;flex-direction:column;gap:12px;">'
+    + bubble(user_label, user_text, 'right', user_bg, user_bd, accent)
+    + bubble(ai_label, ai_text, 'left', '#f9fafb', '#e5e7eb', '#6b7280')
+    + '</div>';
 };
 
 _RENDERERS['prompt_template'] = function(b) {
@@ -2295,9 +2519,18 @@ _RENDERERS['glow_button'] = function(b) {
 };
 
 _RENDERERS['gradient_text'] = function(b) {
-  var text = b.text || b.label || b.title || '';
-  var grad = b.gradient || 'linear-gradient(135deg,#4f46e5,#a855f7,#ec4899)';
-  return '<div data-cb="node" data-key="' + _ckey(b.text, 'gradient_text') + '" style="margin:0.5rem 0;"><span style="background:' + _esc(grad) + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;font-size:' + _esc(b.size || '1.5rem') + ';">' + _esc(text) + '</span></div>';
+  var text = b.text !== undefined ? b.text : (b.label !== undefined ? b.label : (b.title !== undefined ? b.title : ''));
+  var from_color = _safe_css(b['from'], '#4f46e5');
+  var to_color = _safe_css(b['to'], '#a855f7');
+  var size = _safe_css(b.size, '2rem');
+  var validTags = ['span', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em'];
+  var tag = (b.tag && validTags.indexOf(b.tag) !== -1) ? b.tag : 'span';
+  var bgGradient = b.gradient ? _esc(b.gradient) : ('linear-gradient(135deg,' + _esc(from_color) + ',' + _esc(to_color) + ')');
+  var style = 'background:' + bgGradient + ';'
+            + '-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+            + 'background-clip:text;font-size:' + _esc(size) + ';font-weight:800;display:inline-block;';
+  var keyVal = b.text !== undefined ? b.text : text;
+  return '<' + _esc(tag) + ' data-cb="node" data-key="' + _ckey(keyVal, 'gradient_text') + '" style="' + style + '">' + _esc(text) + '</' + _esc(tag) + '>';
 };
 
 _RENDERERS['glitch_text'] = function(b) {
@@ -2337,16 +2570,47 @@ _RENDERERS['skeleton_stage_card'] = function(b) {
 };
 
 _RENDERERS['svg_path_draw'] = function(b) {
-  var path  = b.path  || 'M10 50 Q 100 10 190 50 T 380 50';
-  var label = b.label || b.title || '';
   var color = b.color || '#4f46e5';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<div data-cb="node" data-key="' + _ckey(b.label, 'svg_path_draw') + '" style="margin:1rem 0;">'
-    + '<style>@keyframes draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
-    + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
-    + '<svg role="img" aria-label="Path drawing animation" viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
-    + '<path d="' + _esc(path) + '" stroke="' + _esc(color) + '" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:draw-' + uid + ' 2s ease-out 0.2s forwards;"/>'
-    + '</svg></div>';
+  var dur = (b.duration !== undefined && b.duration !== null) ? Number(b.duration) : 1.5;
+  var label = b.label || b.title || '';
+  var labelHtml = label ? (
+    '<div style="font-size:0.8rem;color:var(--muted,#5f6368);text-align:center;margin-top:4px;">' + _esc(label) + '</div>'
+  ) : '';
+
+  var uid = _payloadUid(b);
+
+  var width = (b.width !== undefined && b.width !== null) ? parseInt(b.width, 10) : 3;
+  var shape = b.shape || 'arrow';
+
+  var shapes = {
+    check: { d: 'M 20 55 L 42 78 L 80 28', len: 80, vb: '0 0 100 100', w: 160, h: 160 },
+    arrow: { d: 'M 10 50 L 80 50 M 55 25 L 80 50 L 55 75', len: 120, vb: '0 0 100 100', w: 160, h: 160 },
+    circle: { d: 'M 50 10 A 40 40 0 1 1 49.9 10', len: 252, vb: '0 0 100 100', w: 160, h: 160 },
+    zigzag: { d: 'M 10 50 L 30 20 L 50 80 L 70 20 L 90 50', len: 180, vb: '0 0 100 100', w: 160, h: 160 },
+    infinity: { d: 'M 50 50 C 30 20 10 35 10 50 C 10 65 30 80 50 50 C 70 20 90 35 90 50 C 90 65 70 80 50 50', len: 240, vb: '0 0 100 100', w: 160, h: 160 }
+  };
+
+  var info = shapes[shape] || shapes.arrow;
+  var d = b.path || info.d;
+  var plen = info.len;
+  var vb = info.vb;
+  var w = info.w;
+  var h = info.h;
+
+  var durStr = (dur % 1 === 0) ? dur.toFixed(1) : String(dur);
+  var sid = 'sp_' + uid;
+  var nodeKey = _ckey(b.label, 'svg_path_draw');
+  var ariaLabel = _esc(label || 'Path drawing animation');
+
+  return '<style>@keyframes ' + sid + '{from{stroke-dashoffset:' + plen + '}to{stroke-dashoffset:0}}.' +
+    sid + '{stroke-dasharray:' + plen + ';stroke-dashoffset:' + plen + ';animation:' + sid + ' ' + durStr + 's ease-out forwards;}</style>' +
+    '<div data-cb="node" data-key="' + nodeKey + '" style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">' +
+    '<svg role="img" aria-label="' + ariaLabel + '" viewBox="' + vb + '" width="' + w + '" height="' + h + '" fill="none" ' +
+    'stroke="' + _esc(color) + '" stroke-width="' + width + '" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path class="' + sid + '" d="' + _esc(d) + '"/>' +
+    '</svg>' +
+    labelHtml +
+    '</div>';
 };
 
 // 2026-08-24, redesigned 2026-08-24: agent_sketchpad -- a composite
@@ -2665,24 +2929,69 @@ _RENDERERS['magnetic_button'] = function(b) {
     + '</div>';
 };
 
+// Per-payload id for scoped @keyframes/class names: a 6-hex FNV-1a hash of the payload JSON, the content-hash counterpart of the
+// Python twins' md5(str(atom))[:6]. Needs no Utilities, so it is the same in the Apps Script and every browser bundle.
+function _payloadUid(b) {
+  var s;
+  try { s = JSON.stringify(b); } catch (e) { s = String(b); }
+  var h = 0x811c9dc5;
+  for (var i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  var hex = (h >>> 0).toString(16);
+  while (hex.length < 6) hex = '0' + hex;
+  return hex.slice(0, 6);
+}
+
 _RENDERERS['animated_beam'] = function(b) {
-  var from  = b.from  || 'Source';
-  var to    = b.to    || 'Target';
-  var label = b.label || b.text || '';
-  var color = b.color || '#4f46e5';
-  var uid = Math.random().toString(36).substr(2, 6);
+  var from_lbl = String(b.from_label || b.from || 'Source');
+  var to_lbl   = String(b.to_label || b.to || 'Target');
+  var label    = b.label || b.text || '';
+  var body     = b.body || '';
+  var active   = b.active !== false;
+  var color    = b.color || '#38bdf8';
+  var curved   = b.curved !== false;
+  var speed_map = {'slow': '3s', 'normal': '1.8s', 'fast': '1s'};
+  var dur      = speed_map.hasOwnProperty(b.speed) ? speed_map[b.speed] : '1.8s';
+
+  var uid = _payloadUid(b);
+
+  var W = 340, H = 90, NR = 18;
+  var lx = NR + 10, rx = W - NR - 10;
+  var cy = Math.floor(H / 2);
+  var ctrl = curved
+    ? ('M' + lx + ',' + cy + ' C' + (lx + 70) + ',' + (cy - 30) + ' ' + (rx - 70) + ',' + (cy - 30) + ' ' + rx + ',' + cy)
+    : ('M' + lx + ',' + cy + ' L' + rx + ',' + cy);
+  var path_len = 260;
+
+  var anim_css = active
+    ? ('@keyframes beam_' + uid + '{0%{stroke-dashoffset:' + path_len + ';opacity:0;}'
+       + '10%{opacity:1;}90%{opacity:1;}100%{stroke-dashoffset:0;opacity:0;}}'
+       + '.bm_' + uid + '{stroke-dasharray:' + path_len + ';stroke-dashoffset:' + path_len + ';'
+       + 'animation:beam_' + uid + ' ' + dur + ' linear infinite;}')
+    : '';
+
+  var label_html = label
+    ? ('<div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase;">' + _esc(label) + '</div>')
+    : '';
+  var body_html = body
+    ? ('<div style="font-size:0.85rem;color:#94a3b8;margin-top:6px;">' + _esc(body) + '</div>')
+    : '';
   var k = b.label ? _esc(String(b.label)) : 'animated_beam';
-  return '<style>@keyframes beam-' + uid + '{to{stroke-dashoffset:-20;}}</style>'
-    + '<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;display:flex;align-items:center;gap:0;">'
-    + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(from) + '</div>'
-    + '<div style="flex:1;position:relative;height:32px;">'
-    + '<svg role="img" aria-label="Animated beam diagram" width="100%" height="32" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;overflow:visible;">'
-    + '<line x1="0" y1="16" x2="100%" y2="16" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-dasharray="7 5" style="animation:beam-' + uid + ' 0.7s linear infinite;"/>'
-    + '<svg role="img" aria-label="Animated beam diagram" x="100%" y="16" overflow="visible"><polygon points="-6,-5 4,0 -6,5" fill="' + _esc(color) + '"/></svg>'
+
+  return '<style>' + anim_css + '</style>'
+    + '<div data-cb="node" data-key="' + k + '" style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:20px 24px;margin:1rem 0;">'
+    + label_html
+    + '<svg role="img" aria-label="Animated beam diagram" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="display:block;max-width:100%;">'
+    + '<path d="' + ctrl + '" fill="none" stroke="' + _esc(color) + '22" stroke-width="2"/>'
+    + '<path class="bm_' + uid + '" d="' + ctrl + '" fill="none" stroke="' + _esc(color) + '" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<circle cx="' + lx + '" cy="' + cy + '" r="' + NR + '" fill="#1e293b" stroke="' + _esc(color) + '" stroke-width="2"/>'
+    + '<circle cx="' + rx + '" cy="' + cy + '" r="' + NR + '" fill="#1e293b" stroke="' + _esc(color) + '" stroke-width="2"/>'
+    + '<text x="' + lx + '" y="' + (cy + 1) + '" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="monospace" fill="' + _esc(color) + '">' + _esc(from_lbl.slice(0, 6)) + '</text>'
+    + '<text x="' + rx + '" y="' + (cy + 1) + '" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="monospace" fill="' + _esc(color) + '">' + _esc(to_lbl.slice(0, 6)) + '</text>'
     + '</svg>'
-    + (label ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:2px 10px;font-size:0.72rem;color:var(--muted,#5f6368);white-space:nowrap;">' + _esc(label) + '</div>' : '')
-    + '</div>'
-    + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(to) + '</div>'
+    + body_html
     + '</div>';
 };
 // flow_connector now has its own implementation (2026-07-24) rather than
@@ -3167,19 +3476,12 @@ _RENDERERS['tooltip_glossary'] = function(b) {
 
 _RENDERERS['focus_lens'] = function(b) {
   var title = b.title || '';
-  var text  = b.text || b.content || '';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<style>'
-    + '.fl-wrap-' + uid + '{position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;min-height:140px;}'
-    + '.fl-bg-' + uid + '{filter:blur(4px);padding:30px;background:#f3f4f6;opacity:0.7;user-select:none;font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.8;}'
-    + '.fl-lens-' + uid + '{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.96);border-radius:14px;padding:22px 30px;box-shadow:0 6px 40px rgba(0,0,0,0.16);max-width:80%;text-align:center;z-index:2;}'
-    + '</style>'
-    + '<div data-cb="node" data-key="' + _ckey(b.title, 'focus_lens') + '" class="fl-wrap-' + uid + '">'
-    + '<div class="fl-bg-' + uid + '">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris.</div>'
-    + '<div class="fl-lens-' + uid + '">'
-    + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
-    + (text  ? '<div style="font-size:0.875rem;color:#374151;line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
-    + '</div></div>';
+  var text = b.text || b.content || '';
+  var titleDiv = title ? ('<div style="font-weight:700;font-size:1rem;color:#4338ca;margin-bottom:8px;">🔍 ' + _esc(title) + '</div>') : '';
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'focus_lens') + '" style="margin:1.5rem 0;padding:20px 24px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
+    'background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #c7d2fe;">' +
+    titleDiv +
+    '<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + _md_inline(text) + '</div></div>';
 };
 
 // ── Gap atoms ────────────────────────────────────────────────────────────────
@@ -3250,18 +3552,190 @@ _RENDERERS['liquid_button'] = function(b) {
 };
 
 _RENDERERS['highlight_sweep'] = function(b) {
-  var text  = b.text  || b.content || '';
-  var color = b.color || '#fef08a';
-  var delay = parseFloat(b.delay !== undefined ? b.delay : 0.4);
-  var size  = b.size  || '1.05rem';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<style>'
-    + '.hs-' + uid + '{background:linear-gradient(90deg,' + _esc(color) + ' 50%,transparent 50%);background-size:201% 100%;background-position:100% 0;animation:hs-' + uid + ' 0.75s ease ' + delay + 's forwards;padding:1px 3px;border-radius:3px;}'
-    + '@keyframes hs-' + uid + '{to{background-position:0% 0;}}'
-    + '</style>'
-    + '<div data-cb="node" data-key="' + _ckey(b.text, 'highlight_sweep') + '" style="margin:1rem 0;font-size:' + _esc(size) + ';line-height:1.75;color:#1f2937;">'
-    + '<span class="hs-' + uid + '">' + _esc(text) + '</span>'
-    + '</div>';
+  var rawText = b.text !== undefined ? b.text : (b.content !== undefined ? b.content : '');
+  var text = _esc(rawText);
+  var color = _esc(b.color !== undefined ? b.color : '#4f46e5');
+  var delay = parseFloat(b.delay !== undefined ? b.delay : 0);
+  var size = _esc(b.size !== undefined ? b.size : '1.5rem');
+
+  function md5(string) {
+    function rotateLeft(lValue, iShiftBits) {
+      return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
+    }
+    function addUnsigned(lX, lY) {
+      var lX4, lY4, lX8, lY8, lResult;
+      lX8 = (lX & 0x80000000);
+      lY8 = (lY & 0x80000000);
+      lX4 = (lX & 0x40000000);
+      lY4 = (lY & 0x40000000);
+      lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+      if (lX4 & lY4) return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+      if (lX4 | lY4) {
+        if (lResult & 0x40000000) return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+        else return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+      } else {
+        return (lResult ^ lX8 ^ lY8);
+      }
+    }
+    function F(x, y, z) { return (x & y) | ((~x) & z); }
+    function G(x, y, z) { return (x & z) | (y & (~z)); }
+    function H(x, y, z) { return (x ^ y ^ z); }
+    function I(x, y, z) { return (y ^ (x | (~z))); }
+    function FF(a, b, c, d, x, s, ac) {
+      a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
+      return addUnsigned(rotateLeft(a, s), b);
+    }
+    function GG(a, b, c, d, x, s, ac) {
+      a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
+      return addUnsigned(rotateLeft(a, s), b);
+    }
+    function HH(a, b, c, d, x, s, ac) {
+      a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
+      return addUnsigned(rotateLeft(a, s), b);
+    }
+    function II(a, b, c, d, x, s, ac) {
+      a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
+      return addUnsigned(rotateLeft(a, s), b);
+    }
+    function convertToWordArray(string) {
+      var lWordCount;
+      var lMessageLength = string.length;
+      var lNumberOfWords_temp1 = lMessageLength + 8;
+      var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
+      var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
+      var lWordArray = Array(lNumberOfWords - 1);
+      var lBytePosition = 0;
+      var lByteCount = 0;
+      while (lByteCount < lMessageLength) {
+        lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+        lBytePosition = (lByteCount % 4) * 8;
+        lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition));
+        lByteCount++;
+      }
+      lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+      lBytePosition = (lByteCount % 4) * 8;
+      lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
+      lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
+      lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
+      return lWordArray;
+    }
+    function wordToHex(lValue) {
+      var wordToHexValue = '', wordToHexValue_temp = '', lByte, lCount;
+      for (lCount = 0; lCount <= 3; lCount++) {
+        lByte = (lValue >>> (lCount * 8)) & 255;
+        wordToHexValue_temp = '0' + lByte.toString(16);
+        wordToHexValue = wordToHexValue + wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2);
+      }
+      return wordToHexValue;
+    }
+    function utf8Encode(string) {
+      string = string.replace(/\r\n/g, '\n');
+      var utftext = '';
+      for (var n = 0; n < string.length; n++) {
+        var c = string.charCodeAt(n);
+        if (c < 128) {
+          utftext += String.fromCharCode(c);
+        } else if ((c > 127) && (c < 2048)) {
+          utftext += String.fromCharCode((c >> 6) | 192);
+          utftext += String.fromCharCode((c & 63) | 128);
+        } else {
+          utftext += String.fromCharCode((c >> 12) | 224);
+          utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+          utftext += String.fromCharCode((c & 63) | 128);
+        }
+      }
+      return utftext;
+    }
+    var x = convertToWordArray(utf8Encode(string));
+    var k, AA, BB, CC, DD, a, b, c, d;
+    var S11 = 7, S12 = 12, S13 = 17, S14 = 22;
+    var S21 = 5, S22 = 9, S23 = 14, S24 = 20;
+    var S31 = 4, S32 = 11, S33 = 16, S34 = 23;
+    var S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+    a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
+    for (k = 0; k < x.length; k += 16) {
+      AA = a; BB = b; CC = c; DD = d;
+      a = FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
+      d = FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
+      c = FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
+      b = FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
+      a = FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
+      d = FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
+      c = FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
+      b = FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
+      a = FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
+      d = FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
+      c = FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
+      b = FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
+      a = FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
+      d = FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
+      c = FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
+      b = FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
+      a = GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
+      d = GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
+      c = GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
+      b = GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
+      a = GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
+      d = GG(d, a, b, c, x[k + 10], S22, 0x2441453);
+      c = GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
+      b = GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
+      a = GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
+      d = GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
+      c = GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
+      b = GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
+      a = GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
+      d = GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
+      c = GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
+      b = GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
+      a = HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
+      d = HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
+      c = HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
+      b = HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
+      a = HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
+      d = HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
+      c = HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
+      b = HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
+      a = HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
+      d = HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
+      c = HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
+      b = HH(b, c, d, a, x[k + 6], S34, 0x4881D05);
+      a = HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
+      d = HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
+      c = HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
+      b = HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
+      a = II(a, b, c, d, x[k + 0], S41, 0xF4292244);
+      d = II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
+      c = II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
+      b = II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
+      a = II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
+      d = II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
+      c = II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
+      b = II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
+      a = II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
+      d = II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
+      c = II(c, d, a, b, x[k + 6], S43, 0xA3014314);
+      b = II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
+      a = II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
+      d = II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
+      c = II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
+      b = II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
+      a = addUnsigned(a, AA);
+      b = addUnsigned(b, BB);
+      c = addUnsigned(c, CC);
+      d = addUnsigned(d, DD);
+    }
+    return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+  }
+
+  var uid = 'hs' + md5(text).substr(0, 5);
+  var dly = delay.toFixed(2) + 's';
+  var kf = '@keyframes ' + uid + '{from{background-size:0% 40%;}to{background-size:100% 40%;}}';
+  return '<style>' + kf + '</style>' +
+    '<span data-cb="node" data-key="' + _ckey(b.text, 'highlight_sweep') + '" style="font-size:' + size + ';font-weight:700;' +
+    'background-image:linear-gradient(' + color + '44,' + color + '44);' +
+    'background-repeat:no-repeat;background-position:0 85%;background-size:0% 40%;' +
+    'animation:' + uid + ' 0.6s ease ' + dly + 's forwards;display:inline;">' +
+    text + '</span>';
 };
 
 _RENDERERS['progress_reveal'] = function(b) {

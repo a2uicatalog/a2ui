@@ -163,15 +163,12 @@ _RENDERERS['word_reveal'] = function(b) {
 //   colour — accent colour (default #4f46e5)
 //   margin — vertical margin (default 24px 0 12px)
 _RENDERERS['section_label'] = function(b) {
-  var text   = b.text   || 'Section';
-  var colour = b.colour || '#4f46e5';
-  var margin = b.margin || '24px 0 12px';
-
-  return '<div data-cb="node" data-key="' + _ckey(b.text, 'section_label') + '" style="margin:' + _esc(margin) + ';display:flex;align-items:center;gap:12px;">' +
-    '<div style="width:24px;height:2px;border-radius:99px;' +
-      'background:' + _esc(colour) + ';box-shadow:0 0 8px ' + _esc(colour) + ';flex-shrink:0;"></div>' +
-    '<span style="font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;' +
-      'color:' + _esc(colour) + ';">' + _esc(text) + '</span>' +
+  var text = _esc(b.text || '').toUpperCase();
+  var color = b.colour !== undefined ? b.colour : (b.color !== undefined ? b.color : 'var(--a2ui-accent,#4f46e5)');
+  var margin = b.margin !== undefined ? b.margin : '24px 0 12px';
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'section_label') + '" style="display:inline-flex;align-items:center;gap:8px;margin:' + _esc(margin) + ';">' +
+    '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + _esc(color) + ';box-shadow:0 0 8px ' + _esc(color) + ';"></span>' +
+    '<span style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(color) + ';">' + text + '</span>' +
     '</div>';
 };
 

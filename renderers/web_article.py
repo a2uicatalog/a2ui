@@ -12403,14 +12403,25 @@ def _render_avatar_group(b: dict) -> str:
 
 def _render_tree_view(b: dict) -> str:
     def node(n, d=0):
-        kids = n.get("children",[])
-        pad = d*16; icon = n.get("icon","📁" if kids else "📄")
-        lbl = f'<span style="padding-left:{pad}px;font-size:.85rem;">{_cv_esc(icon)} {_cv_esc(n.get("label",""))}</span>'
-        if not kids: return f'<div style="padding:3px 8px;color:#374151;">{lbl}</div>'
-        inner = "".join(node(c,d+1) for c in kids)
-        return f'<details{"open" if n.get("expanded",True) else ""}><summary style="padding:3px 8px;cursor:pointer;list-style:none;color:#374151;">{lbl}</summary>{inner}</details>'
-    title = f'<div style="font-weight:700;font-size:.9rem;margin-bottom:10px;">{_cv_esc(b.get("title",""))}</div>' if b.get("title") else ""
-    return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">{title}{"".join(node(n) for n in b.get("nodes",[]))}</div>'
+        if not isinstance(n, dict):
+            n = {"label": n} if n is not None else {}
+        kids = [c for c in (n.get("children") or []) if c is not None]
+        pad = d * 16
+        icon = n.get("icon") or ("\U0001F4C1" if kids else "\U0001F4C4")
+        meta = n.get("meta")
+        meta_html = f'<span style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-left:6px;">{_cv_esc(meta)}</span>' if meta else ''
+        label = _cv_esc(n.get("label") or "")
+        if not kids:
+            return (f'<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:4px;font-size:0.85rem;color:var(--text,#374151);padding-left:{pad}px;">'
+                    f'<span>{_cv_esc(icon)}</span><span>{label}</span>{meta_html}</div>')
+        inner = "".join(node(c, d + 1) for c in kids)
+        open_attr = " open" if n.get("expanded") is not False else ""
+        return (f'<details{open_attr}><summary style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:4px;font-size:0.85rem;color:var(--text,#374151);cursor:pointer;list-style:none;padding-left:{pad}px;">'
+                f'\u25B6 <span>{_cv_esc(icon)}</span><span>{label}</span>{meta_html}</summary>{inner}</details>')
+    title = f'<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">{_cv_esc(b.get("title"))}</div>' if b.get("title") else ""
+    nodes = "".join(node(n) for n in (b.get("nodes") or []) if n is not None)
+    return (f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:12px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);font-family:var(--font,inherit);">'
+            f'{title}{nodes}</div>')
 
 def _render_noop_stub(name):
     def r(b: dict) -> str:
@@ -12529,12 +12540,12 @@ _RENDERERS['abbr_tooltip'] = _render_abbr_tooltip
 
 
 def _render_accordion_item(b: dict) -> str:
-    label = b.get('label') or b.get('title', '')
+    label = b.get('label') or b.get('title') or b.get('header') or ''
     text = b.get('text') or b.get('content') or b.get('body', '')
     k = _esc(str(b['header'])) if b.get('header') else 'accordion_item'
     return (f'<details data-cb="node" data-key="{k}" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
             f'<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;'
-            f'color:#374151;cursor:pointer;list-style:none;">▶ {_esc(label)}</summary>'
+            f'color:#374151;cursor:pointer;list-style:none;"{"" if label else " aria-label=" + chr(34) + "Details" + chr(34)}><span aria-hidden="true">▶</span> {_esc(label)}</summary>'
             f'<div style="padding:12px 14px;font-size:0.85rem;">{_md_inline(text)}</div></details>')
 
 _RENDERERS['accordion_item'] = _render_accordion_item
@@ -13667,7 +13678,8 @@ _RENDERERS['follow_cta'] = _render_follow_cta
 
 
 def _render_footnote(b: dict) -> str:
-    number = b.get('number', 1)
+    fid = b.get('id')   # old payloads put the note's number in `id`; the schema field is `number`
+    number = b['number'] if 'number' in b else (fid if (isinstance(fid, int) and not isinstance(fid, bool)) or (isinstance(fid, str) and re.fullmatch(r'[0-9]{1,4}', fid)) else 1)
     text = b.get('text', '')
     return (f'<div data-cb="node" data-key="{_ck(b.get("id"), "footnote")}" id="fn{_cv_esc(number)}" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;'
             f'font-size:0.82rem;color:var(--muted,#5f6368);display:flex;gap:8px;align-items:flex-start;">'
@@ -14534,13 +14546,14 @@ _RENDERERS['related_articles'] = _render_related_articles
 
 
 def _render_repo_links(b: dict) -> str:
-    links = b.get('links', [])
+    links = [l for l in (b.get('links') or []) if isinstance(l, dict)]
     if not links and b.get('url'):
         links = [{'url': b['url'], 'label': b.get('label', 'Repository'), 'icon': '🐙'}]
     items = ''
     for link in links:
-        url = link.get('url', '#')
-        label = link.get('label') or link.get('text', '')
+        url = link.get('url') or '#'
+        # no label: show the URL without its scheme, so the link is never blank
+        label = link.get('label') or link.get('text') or re.sub(r'/$', '', re.sub(r'^[a-zA-Z][a-zA-Z0-9+.-]*://', '', str(url)))
         icon = link.get('icon', '🐙')
         items += (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
                   f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;'
@@ -14632,18 +14645,24 @@ _RENDERERS['section_break'] = _render_section_break
 
 
 def _render_share_quote(b: dict) -> str:
-    text = b.get('text') or b.get('quote', '')
-    url = b.get('url', '')
-    twitter_text = text[:240] if text else ''
-    tw_url = f'https://twitter.com/intent/tweet?text={_esc(twitter_text)}'
+    text = b.get('text') or b.get('quote') or ''
+    text = text if isinstance(text, str) else str(text)
+    author = b.get('author') or ''
+    author = author if isinstance(author, str) else str(author)
+    url = b.get('url') or ''
+    url = url if isinstance(url, str) else str(url)
+    from urllib.parse import quote as _q
+    # percent-encode every query value (twin of encodeURIComponent): a raw & or # in the quote would end the text= parameter
+    tw_url = 'https://twitter.com/intent/tweet?text=' + _q(text[:240] + (' \u2014 ' + author if author else ''), safe="!~*'()")
     if url:
-        tw_url += f'&url={_esc(url)}'
+        tw_url += '&url=' + _q(url, safe="!~*'()")
     return (f'<blockquote data-cb="node" data-key="{_ck(b.get("author"), "share_quote")}" style="border:1.5px solid #0a71b1;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
             f'margin:1.5rem 0;background:#e8f5fd;">'
             f'<p style="font-style:italic;font-size:0.95rem;color:#14171a;margin:0 0 10px;">'
             f'"{_esc(text)}"</p>'
-            f'<a href="{tw_url}" target="_blank" rel="noopener" '
-            f'style="font-size:0.82rem;color:#0a71b1;text-decoration:none;font-weight:700;">🐦 Tweet this</a>'
+            + (f'<div style="font-size:0.8rem;color:#0a71b1;font-weight:600;margin:0 0 10px;">\u2014 {_esc(author)}</div>' if author else '') +
+            f'<a href="{_esc(tw_url)}" target="_blank" rel="noopener" '
+            f'style="font-size:0.82rem;color:#0a71b1;text-decoration:none;font-weight:700;">\U0001F426 Tweet this</a>'
             f'</blockquote>')
 
 _RENDERERS['share_quote'] = _render_share_quote
@@ -14950,6 +14969,10 @@ _RENDERERS['terminal_block'] = _render_terminal_block
 def _render_time_estimate(b: dict) -> str:
     estimate = b.get('estimate') or b.get('time', '')
     label = b.get('label', 'Reading time')
+    if not estimate and b.get('minutes') not in (None, ''):
+        # schema field: `minutes` (integer) -> "6 min read"
+        estimate = b.get('minutes')
+        label = b.get('label', 'min read')
     icon = b.get('icon', '⏱')
     return (f'<div data-cb="node" data-key="{_ck(b.get("minutes"), "time_estimate")}" style="display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;'
             f'color:var(--muted,#5f6368);padding:4px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;">'
@@ -18450,6 +18473,16 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
     )
 _RENDERERS["content_tabs"] = _render_content_tabs
 
+def _pin_num(v):
+    """A pin coordinate (percent of the image) as a plain number for a style or attribute: anything else is 0."""
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        try:
+            v = float(v)
+        except (TypeError, ValueError):
+            return 0
+    return v if v == v and abs(v) != float("inf") else 0
+
+
 _PLATE_CSS = """
 <style>
 /* Follows the HOST page's own theme tokens (--text/--surface/--accent/...,
@@ -18682,7 +18715,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
         # line (JS, below), which starts at the image's right edge and
         # reads each pin's real position from the DOM directly.
         lines = "".join(
-            f'<line x1="{_cv_esc(p.get("x", 0))}" y1="{_cv_esc(p.get("y", 0))}" x2="100" y2="{_cv_esc(p.get("y", 0))}" '
+            f'<line x1="{_pin_num(p.get("x"))}" y1="{_pin_num(p.get("y"))}" x2="100" y2="{_pin_num(p.get("y"))}" '
             f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
             for p in pins if p.get("connector") == "continuous"
         )
@@ -18709,7 +18742,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             )
             markers.append(
                 f'<div class="pp-pin{adv_cls}" data-pin-idx="{_cv_esc(i)}" '
-                f'style="top:{_cv_esc(p.get("y", 0))}%;left:{_cv_esc(p.get("x", 0))}%;"{adv_attr}>'
+                f'style="top:{_pin_num(p.get("y"))}%;left:{_pin_num(p.get("x"))}%;"{adv_attr}>'
                 f'{display_num[i]}</div>'
             )
         markers = "".join(markers)
@@ -18738,8 +18771,10 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             # unusually long note or a field name that needs to stand out.
             # Absent -> no inline style at all, falls through to the normal
             # CSS class size exactly as before this existed.
-            field_style = f' style="font-size:{_esc(p["field_size"])}"' if p.get("field_size") else ""
-            note_style = f' style="font-size:{_esc(p["note_size"])}"' if p.get("note_size") else ""
+            _field_sz = _safe_css(p.get("field_size"), "") if p.get("field_size") else ""
+            field_style = f' style="font-size:{_esc(_field_sz)}"' if _field_sz else ""
+            _note_sz = _safe_css(p.get("note_size"), "") if p.get("note_size") else ""
+            note_style = f' style="font-size:{_esc(_note_sz)}"' if _note_sz else ""
             label_html = (
                 f'<div class="pp-label" data-pin-idx="{_cv_esc(i)}"><span class="pp-field"{field_style}>{field}{badge_html}</span>'
                 f'<span class="pp-note{chrome_cls}"{note_style}><span class="pp-num">{display_num[i]}.</span> {note}</span></div>'
@@ -22939,15 +22974,33 @@ _RENDERERS["ai_build_trace"] = _render_ai_build_trace
 
 
 def _render_feed_status(b: dict) -> str:
-    name = _esc(b.get('name', b.get('label', 'Feed')))
-    size = _esc(str(b.get('size', '')))
-    return ('<div data-cb="node" data-key="' + _ck(b.get('name'), 'feed_status') + '" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;'
-            'border-radius:20px;background:#f0fdf4;border:1px solid #86efac;">'
-            '<span style="width:8px;height:8px;border-radius:50%;background:#10b981;'
-            'animation:pulse 2s infinite;display:inline-block;"></span>'
-            '<span style="font-size:0.78rem;font-weight:600;color:#065f46;">' + name + '</span>'
-            + ('<span style="font-size:0.72rem;color:#9ca3af;">' + size + '</span>' if size else '')
-            + '</div>')
+    """Live/SIM pill for a data feed (twin of the GAS renderer): red SIM until window.A2UI_CALLBACKS[name] delivers data, then green LIVE (n)."""
+    import hashlib as _hl
+    uid = 'fs' + _hl.md5(str(sorted(b.items(), key=str)).encode()).hexdigest()[:6]
+    name = b.get('name') if isinstance(b.get('name'), str) else ''
+    label = (_esc(str(b['label'])) + ' ') if b.get('label') else ''
+    size = _safe_css(b.get('size'), '0.6rem')
+    pill = ('<span data-cb="node" data-key="' + _ck(b.get('name'), 'feed_status') + '" id="' + uid + '" style="display:inline-flex;align-items:center;gap:5px;'
+            "font-family:'Courier New',monospace;font-size:" + size + ';letter-spacing:0.08em;'
+            'padding:3px 9px;border-radius:100px;vertical-align:middle;'
+            'background:rgba(255,59,48,0.12);border:1px solid rgba(255,59,48,0.3);color:#d30b00;">'
+            '<span id="' + uid + 'd" style="width:6px;height:6px;border-radius:50%;flex-shrink:0;'
+            'background:#d30b00;box-shadow:0 0 5px #d30b00;"></span>'
+            + label + '<span id="' + uid + 'l">SIM</span></span>')
+    qn = _js_json(name)
+    script = ('<script>(function(){'
+              'window.A2UI_CALLBACKS=window.A2UI_CALLBACKS||{};window.A2UI_DATA=window.A2UI_DATA||{};'
+              'function update(data){var n=Array.isArray(data)?data.length:(data?1:0);var live=n>0;var c=live?"#34c759":"#d30b00";'
+              'var el=document.getElementById("' + uid + '");var dot=document.getElementById("' + uid + 'd");var lbl=document.getElementById("' + uid + 'l");'
+              'if(el){el.style.background=live?"rgba(52,199,89,0.12)":"rgba(255,59,48,0.12)";'
+              'el.style.borderColor=live?"rgba(52,199,89,0.3)":"rgba(255,59,48,0.3)";el.style.color=c;}'
+              'if(dot){dot.style.background=c;dot.style.boxShadow="0 0 5px "+c;}'
+              'if(lbl)lbl.textContent=live?"LIVE ("+n+")":"SIM";}'
+              + ('var prev=window.A2UI_CALLBACKS[' + qn + '];'
+                 'window.A2UI_CALLBACKS[' + qn + ']=function(d){update(d);if(prev)prev(d);};'
+                 'if(window.A2UI_DATA[' + qn + '])update(window.A2UI_DATA[' + qn + ']);' if name else '')
+              + '})();</script>')
+    return pill + script
 _RENDERERS["feed_status"] = _render_feed_status
 
 
