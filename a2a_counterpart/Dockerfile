@@ -20,6 +20,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # binding — the SAME renderers/ every other surface in this repo uses, not
 # a duplicated copy (the exact drift class Topic A just fixed elsewhere).
 COPY renderers/ /app/renderers/
+# the geo atoms read their outlines from atoms/geo (renderers/web_article.py _CH_DIR = <app>/atoms/geo)
+COPY atoms/geo/ /app/atoms/geo/
 COPY a2a_counterpart/main.py .
 
 ENV PORT=8080

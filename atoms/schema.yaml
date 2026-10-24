@@ -21546,6 +21546,157 @@ blocks:
     is shown by the arrowhead as well as the line, so it never rests on colour, and the table lists the exact numbers. The vertical
     axis grows upwards, and so does v.
   source: *ifg002
+- type: choropleth_map
+  stage: preview
+  description: 'A map of regions shaded by one number each: world countries, US states or European countries. Give a region_set and a list of
+    {id, value}; the server shades every region in one of 3 to 9 equal-interval classes (steps, default 5), draws a legend of the class ranges
+    and hatches the regions that have no value, so a gap never reads as a low number. Colours come from the theme tokens (sequential accent
+    ramp, or a diverging accent2-to-accent ramp through a neutral middle); Viridis, Turbo and other fixed colour maps are not offered. The
+    outlines are bundled with the catalogue (Natural Earth 1:110m for countries, US Census 1:10m for states): there is no custom GeoJSON, so
+    a region that is not in the set cannot be added. A hidden table lists each region with its code, value and class, largest first, and the
+    regions with no value are listed in a details element. A payload that breaks the rules shows a short note instead of a map.'
+  compact_description: 'choropleth map: world, US states or Europe shaded by value in classes'
+  routing_text: Shade countries (world or Europe) or US states by one number each, with a quantized legend and a text table. Not for points,
+    routes or city-level maps, and not for a map you draw yourself from GeoJSON. For a ranked list of the same numbers use bar_chart.
+  intent_phrases:
+  - Show unemployment rate by US state on a map.
+  - Colour the countries of the world by GDP per person.
+  - Map our customer count across Europe.
+  surfaces: *ifg001
+  fields:
+    version: integer (optional, default 1). Payload contract version.
+    title: string (optional, max 80). Shown above the map and used as its name.
+    region_set: 'string (required): world-countries (176 countries, Antarctica left out), us-states (the 50 states and DC) or europe-countries
+      (the European subset of world-countries, Russia and Turkey included, framed on the area west of 45 degrees east). Use it to choose which
+      outlines are drawn; the set also decides which ids are valid.'
+    projection: 'string (optional): equal-earth, mercator or albers-usa. Equal Earth keeps areas comparable, so it is the default for
+      world-countries and europe-countries; Mercator suits a close view of Europe but inflates high latitudes; albers-usa (the d3 composite
+      that moves Alaska and Hawaii under the lower 48) is only valid with us-states and is its default. Any other combination, or any other
+      name, shows a note. Use this to change the look, not the data.'
+    values: 'array (required, 1 to 250) of {id (string), value (number)}. id is an ISO 3166-1 alpha-3 code for the country sets (for
+      example FRA; Kosovo is XKX) or a 2-letter USPS code for us-states (for example TX; DC is included); case is ignored. value is a finite
+      number of at most 1e15 in size. Entries beyond the 250th are ignored, an unknown id is skipped and named in a note, a repeated id keeps
+      its first value, and an entry without a usable id and number is counted in a note; if nothing matches a region the map is not drawn.'
+    scale: 'object (optional) {kind, scheme?}, the scale contract of chart_legend without the domain (the domain is the data). kind is
+      sequential (default: low to high, one direction) or diverging (a neutral middle, two directions, for values that rise and fall
+      around a centre such as change or difference). scheme is a theme-token ramp name: accent (default) or accent2 for sequential,
+      accent_pair for diverging; any other name falls back to the default. For diverging the centre is 0 when the values cross zero,
+      otherwise the middle of the range. Use diverging only when the centre means something.'
+    unit: string (optional, max 12). Appended to the legend ranges and the table values (for example % or USD), with no space before a percent sign.
+    legend_title: string (optional, max 60). A heading for the legend (for example Unemployment rate, %); the map title says what the map is, the legend title says what the colours measure.
+    steps: integer (optional, 3 to 9, default 5). The number of classes. Fewer classes read faster and hide detail; more show detail but
+      neighbouring shades get hard to tell apart. A number outside 3 to 9 is moved to the nearest and named in a note.
+  notes: 'Classes are equal intervals between the smallest and largest value (the same as d3 scaleQuantize), not quantiles or natural breaks. Names and
+    borders are Natural Earth as shipped, unchanged, including its view of disputed borders; the catalogue does not adjudicate them. The 1:110m set
+    leaves out very small countries (for example Singapore, Malta, Monaco), so their values are reported as not in the map. No custom GeoJSON is accepted;
+    to add a region set, extend atoms/geo. The projections are d3-geo 3.1.1 ports (geoEqualEarth, geoMercator, geoAlbersUsa) with no clipping,
+    so parts of Russia and Svalbard fall outside the Europe frame. The neutral middle of a diverging scale is the page surface colour, so a value near the
+    centre looks close to the background; the table and the title attribute on each region carry the value. Under reduced motion or with no film
+    wrapper the map is drawn settled: every region and legend label has data-cb ("tile" and "label") and fades in value order, largest first, only when
+    a wrapper sets --p. The data-key of a region is its code (ISO 3166-1 alpha-3, or USPS for states), the data-key of a legend label is class-1 to class-n.
+    Projections are Equal Earth, Mercator and the US composite; Plotly''s orthographic and equirectangular are not offered (a deliberate deviation: the
+    globe has globe_3d, and equirectangular distorts areas). A diverging scale whose values are all equal draws every region in the neutral colour.'
+  source: *ifg002
+- type: geo_map
+  stage: preview
+  description: >-
+    Points and lines on a map: dots at latitude and longitude, optionally sized by a number and grouped, and great-circle lines between places,
+    drawn over the same bundled outlines and projections as choropleth_map (world countries, US states or European countries; Equal Earth, Mercator
+    or the US composite). Each group gets its own marker shape as well as its own colour, each line its own dash, so colour is never the only cue.
+    A hidden table lists every point (including any that fall outside the frame, which are noted) and every line. A payload that breaks the rules
+    shows a short note instead of a map.
+  compact_description: 'geo map: points sized and grouped by value, plus great-circle lines, on bundled outlines'
+  routing_text: >-
+    Place sites, cities, offices or events on a map from latitude and longitude, optionally with routes between them. Not for shading whole countries
+    or states by a number (use choropleth_map), not for a tile map with streets (no map tiles are fetched), and not for a spinning globe (use globe_3d).
+  intent_phrases:
+  - Plot our office locations on a world map.
+  - Show shipping routes between these ports.
+  - Mark the cities where we have customers, bigger for more customers.
+  surfaces: *ifg001
+  fields:
+    version: integer (optional, default 1). Payload contract version.
+    title: string (optional, max 80). Shown above the map and used as its name.
+    region_set: >-
+      string (optional, default world-countries): world-countries, us-states or europe-countries. Chooses the outlines drawn behind the data
+      and the area the map is framed on; there is no custom GeoJSON and no map tiles.
+    projection: >-
+      string (optional): equal-earth, mercator or albers-usa. Defaults as in choropleth_map (equal-earth, or albers-usa for us-states);
+      albers-usa is only valid with us-states and moves Alaska and Hawaii under the lower 48. Any other value shows a note.
+    points: >-
+      array (optional, up to 500) of {lat, lon, id?, label?, value?, group?}. id is text (max 60), the stable key of the point for a build
+      (data-key): without it the key is the label, then the position in the list (p0, p1, ...); a repeated key gets ~2, ~3. lat is -90 to 90 and lon -180 to 180, both finite numbers. label is
+      text (max 40) for the tooltip and the table. value is a finite number that sets the marker size (radius grows with the square root of
+      its place between the smallest and largest value, about 2 to 8 px on a 650 px wide map; a point without a value is the smallest). group is text (max 40); each group gets a
+      marker shape (circle, square, diamond, triangle) and a theme colour in order of first appearance, six groups at most, later groups are shown as Other;
+      the shape and colour pairs of all six groups differ, and points without a group get their own pair and a legend entry Ungrouped (when other points have a group).
+      A point outside the frame (for example Tokyo on a Europe map) is not drawn and is noted. Entries past the 500th are ignored with a note.
+    lines: >-
+      array (optional, up to 40) of {id?, label?, path: [{lat, lon}, ...]} with 2 to 20 points per path. id is the stable key of the line (as for a point,
+      then the label, then l0, l1, ...). Consecutive points are joined by the
+      great-circle arc between them (d3-geo geoInterpolate, drawn with up to 64 segments each), broken where it crosses the antimeridian so
+      it never streaks across the map. Each line has its own dash (solid, long dash, dotted) and a theme colour.
+    unit: string (optional, max 12). Appended to the values in the legend, tooltips and table.
+    legend_title: string (optional, max 60). A heading for the legend (what the marker size measures).
+  notes: >-
+    At least one valid point or line is needed. Outlines and projections are those of choropleth_map (Natural Earth 1:110m, US Census 1:10m, d3-geo 3.1.1
+    ports) and the great circle is d3-geo geoInterpolate; vertices are projected without clipping, so the frame crops what lies outside it. Under reduced
+    motion or with no film wrapper the map is drawn settled. Lines carry data-cb "link" and markers "node" (each with its data-key, see points and lines), and
+    they come in that order only when a wrapper sets --p: a marker fades in, a route is drawn on along its path, stop by stop (each leg between two listed
+    places takes an equal share of the route''s time, through a mask that reads --p), and is complete when there is no wrapper or under reduced motion.
+    Hidden tables sit beside the picture, not inside it; the line table lists every stop. Projections are Equal Earth, Mercator and the US composite;
+    Plotly''s orthographic and equirectangular are not offered (use globe_3d for a globe).
+  source: *ifg002
+- type: polar_chart
+  stage: preview
+  description: 'Points and lines placed by angle and distance from a centre: each series gives a radius r and an angle theta for every point, so
+    a compass or wind bearing, a cyclic pattern (hour of day, month) or a radar of scores per category reads as a circular chart. Angles are
+    degrees, or categories (any text) spread evenly around the circle, which draws a radar chart. Up to 6 series are drawn as lines, markers
+    or both, each with its own dash and marker shape so no series depends on colour alone; the optional fill "toself" shades the closed
+    shape of a series. The radial axis starts at 0 (or the lowest negative value) and ends at a round number d3 nice() picks, with circular
+    gridlines at d3 ticks(); an explicit r_range sets it, and a point outside the range is not drawn and is counted in a note. Angles are
+    turned to positions by d3-shape lineRadial() maths and scaled by a d3-scale linear scale, on the server, so there is no script. A
+    large series is thinned to evenly spaced points (the first and last of the points read are kept) with a visible note, the same cap that
+    stands in for Plotly''s WebGL scatterpolargl; a series is read up to 5000 points and a longer one says so in a note, so no point is dropped
+    without being counted. The hidden table lists every point with a Status column (drawn, or outside the radial range and not drawn), and the
+    aria label gives the radial range of the drawn points, the categories and each series'' extent. Motion-ready: each series fades in through --k from --p (build progress 0 to 1, default 1); the standalone
+    render is the finished picture and reduced motion shows the end state.'
+  compact_description: 'polar_chart: points and lines by angle and radius, or a radar'
+  routing_text: Values placed by an angle and a distance from a centre, such as wind direction against speed, activity by hour of day, a
+    cyclic signal, or scores on several categories compared as a radar. Give each series r and theta (degrees or category names). For a
+    single series of 0 to 100 skill scores use skill_radar; it is not for bars around a circle (radial bars are not offered), for values
+    on straight x and y axes (use scatter_trend) or for part-to-whole (use a pie or sunburst).
+  intent_phrases:
+  - Plot wind speed by compass direction on a polar chart.
+  - Compare two products on six criteria as a radar chart.
+  - Show how load varies over the 24 hours of the day around a circle.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    series: 'array (required, 1 to 6) of {label (string, max 30, default "Series n"), r (array of numbers, radius of each point), theta (array
+      of numbers in degrees, or strings for categories; same length as r), mode (optional, "lines", "markers" or "lines+markers"; default
+      "lines+markers" up to 20 points, otherwise "lines"), fill (optional, "toself" shades the shape closed from the last point to the first)}.
+      A point needs a finite radius and angle up to 1e12 in size; an entry without a partner or number is skipped and counted in a note; series
+      beyond the first 6 are noted and not drawn. Each series draws at most 2000 divided by the number of series points: a longer one is thinned
+      to evenly spaced points with a note. If any theta is a string, all angles are categories.'
+    categories: array (optional, up to 12 strings, max 30 each). Fixes the order of the categories around the circle; categories met in the
+      series after these are added in order of appearance, up to 12 in all (points in later ones are noted and not drawn).
+    r_range: array (optional) of two numbers [low, high], low below high. Sets the radial axis; points outside it are not drawn and are counted
+      in a note. Absent, the axis runs from 0 (or the lowest negative radius) to a round number above the highest.
+    r_ticks: integer (optional, 2 to 8, default 4). About how many circular gridlines the radial axis aims for.
+    theta_step: integer (optional, 30 to 180, default 30). Degrees between the labelled angle spokes of a numeric chart.
+    direction: '"clockwise" or "counterclockwise" (optional). Default counterclockwise for numeric angles (as Plotly draws them) and clockwise for categories.'
+    rotation: 'number (optional, -360 to 360). Where angle 0 sits, in degrees counterclockwise from three o''clock. The default follows Plotly: 90 (due north, like a compass) when the direction is clockwise, 0 (due east) when it is counterclockwise; so an explicit "clockwise" starts at the top, which suits wind bearings.'
+    unit: string (optional, max 12). Appended to the radial values in the aria label and the hidden table.
+    version: integer (optional, default 1). The polar_chart contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: Radius is a linear scale from the axis start to its end (not area-proportional). The chart is a square that scales to its container up to
+    520 px; text is 12 px or more at every width, category names are wrapped to three lines and the hidden table keeps them whole. The numbers on
+    the radial axis sit along the spoke halfway between the first two angles. Series colours come from the theme (--accent, --chart-2 to --chart-6,
+    with fallbacks) and each series also has its own dash and marker shape. Lines are open unless fill is "toself"; to close a line without fill repeat
+    its first point. A series of 0 to 100 skill scores without an axis choice is better served by skill_radar, which is a separate atom and is not
+    changed here. Each series group carries data-cb ("node") and a data-key that is the series label (a repeated label gets ~2, ~3), and fades in through --k.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

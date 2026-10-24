@@ -12431,5 +12431,138 @@
   "py_sha": "e061e3485c3c86eb50a9f8e52c355a7d1b17cfb222a6e9717742e253e2d33f3f",
   "gas_sha": "6375a6ae763933093154f755153640ebba0c4b924ccbf862e8a2cac2fa4cf202",
   "parity": false
+ },
+ "choropleth_map": {
+  "status": "keyed",
+  "block": {
+   "type": "choropleth_map",
+   "title": "Rate",
+   "region_set": "us-states",
+   "values": [
+    {
+     "id": "CA",
+     "value": 4.5
+    },
+    {
+     "id": "TX",
+     "value": 6.1
+    },
+    {
+     "id": "NY",
+     "value": 3.2
+    },
+    {
+     "id": "WA",
+     "value": 5.0
+    }
+   ],
+   "unit": "%"
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "values[].id",
+  "py_sha": "d72f784e18074e0fd4cb8168273023fda902077bddbda6cda7988e4594f20754",
+  "gas_sha": "d72f784e18074e0fd4cb8168273023fda902077bddbda6cda7988e4594f20754",
+  "parity": true
+ },
+ "geo_map": {
+  "status": "keyed",
+  "block": {
+   "type": "geo_map",
+   "title": "Trip",
+   "region_set": "europe-countries",
+   "points": [
+    {
+     "lat": 38.7,
+     "lon": -9.1,
+     "label": "Lisbon",
+     "group": "Stop"
+    },
+    {
+     "lat": 40.4,
+     "lon": -3.7,
+     "label": "Madrid",
+     "group": "Stop"
+    },
+    {
+     "lat": 48.85,
+     "lon": 2.35,
+     "id": "par",
+     "label": "Paris"
+    }
+   ],
+   "lines": [
+    {
+     "id": "route",
+     "label": "Trip",
+     "path": [
+      {
+       "lat": 38.7,
+       "lon": -9.1
+      },
+      {
+       "lat": 40.4,
+       "lon": -3.7
+      },
+      {
+       "lat": 48.85,
+       "lon": 2.35
+      }
+     ]
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "points[].id | label | index; lines[].id | label | index",
+  "py_sha": "215123df4133b53d20483a0eea426dab6ebc999fb4685b062b0bab1e1fe7b3ad",
+  "gas_sha": "215123df4133b53d20483a0eea426dab6ebc999fb4685b062b0bab1e1fe7b3ad",
+  "parity": true
+ },
+ "polar_chart": {
+  "status": "keyed",
+  "block": {
+   "type": "polar_chart",
+   "title": "Two models",
+   "series": [
+    {
+     "label": "Model A",
+     "theta": [
+      "Speed",
+      "Power",
+      "Range",
+      "Comfort"
+     ],
+     "r": [
+      4,
+      3,
+      5,
+      2
+     ],
+     "fill": "toself"
+    },
+    {
+     "label": "Model B",
+     "theta": [
+      "Speed",
+      "Power",
+      "Range",
+      "Comfort"
+     ],
+     "r": [
+      3,
+      4,
+      2,
+      5
+     ]
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "series[].label",
+  "py_sha": "31db101057a11c5937836aacc62e6c3fd2d0d776e2bd1824eda2f738e3c450cf",
+  "gas_sha": "31db101057a11c5937836aacc62e6c3fd2d0d776e2bd1824eda2f738e3c450cf",
+  "parity": true
  }
 }

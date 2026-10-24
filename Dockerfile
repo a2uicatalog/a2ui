@@ -20,6 +20,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Single source of truth for atom->HTML: the SAME renderers/ every other
 # surface in this repo uses, not a duplicated copy.
 COPY renderers/ /app/renderers/
+# the geo atoms read their outlines from atoms/geo (renderers/web_article.py _CH_DIR = <app>/atoms/geo)
+COPY atoms/geo/ /app/atoms/geo/
 COPY cloud-run-renderer/server.py .
 COPY cloud-run-renderer/chat_data.py .
 # Real, structural gap found live, 2026-08-22: this image never copied

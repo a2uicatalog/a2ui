@@ -198,6 +198,9 @@ a2ui-charts-v1:
 - voronoi
 - candlestick_chart
 - parallel_coords
+- choropleth_map
+- geo_map
+- polar_chart
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing

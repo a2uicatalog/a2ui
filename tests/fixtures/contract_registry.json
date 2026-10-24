@@ -2448,6 +2448,15 @@
   },
   "zoomable_image": {
    "status": "sweep"
+  },
+  "choropleth_map": {
+   "status": "sweep"
+  },
+  "geo_map": {
+   "status": "sweep"
+  },
+  "polar_chart": {
+   "status": "sweep"
   }
  }
 }

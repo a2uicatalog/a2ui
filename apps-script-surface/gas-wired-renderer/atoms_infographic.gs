@@ -4144,3 +4144,197 @@ _RENDERERS['parallel_coords'] = function(b) {
   return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'parallel_coords') +
     _ifTable(['Row'].concat(dims.map(function(d) { return d.label; })), keep.map(function(r, j) { return [names[j]].concat(dims.map(function(d) { return f(d.real[j]); })); })));
 };
+
+// ── polar_chart (Plotly scatterpolar / scatterpolargl, package "polar") ── points at (angle, radius) on a circular grid. The radial axis is
+// d3 nice(lo, hi, count) over the data (or the given r_range) with ticks(); a radius is scaleLinear().domain([lo, hi]).range([0, 40])(r) in a
+// 100 x 100 box, an angle is clockwise from twelve o'clock = 90 - (rotation + direction * theta) degrees (d3 lineRadial's convention); a line is
+// lineRadial() with defined() (a point outside the radial range breaks the line) and curveLinearClosed for fill "toself". Paths use d3-path's
+// default 3 digits. Twin of _pc_layout / _render_polar_chart in renderers/web_article.py.
+var _PL_R = 40, _PL_POINT_CAP = 2000, _PL_READ_CAP = 5000;
+var _PL_COLORS = ['var(--accent,#0369A1)', 'var(--chart-2,#B45309)', 'var(--chart-3,#7E22CE)', 'var(--chart-4,#0F766E)', 'var(--chart-5,#BE123C)', 'var(--chart-6,#4D7C0F)'];
+var _PL_DASH = ['', '6 3', '2 3', '8 3 2 3', '1 3', '10 4'];
+var _PL_SYMBOLS = ['circle', 'square', 'triangle', 'diamond', 'cross', 'plus'];
+function _plDec(v, d) {
+  var k = Math.pow(10, d), n = Math.floor(v * k + 0.5);
+  if (n === 0) return '0';
+  var s = String(Math.abs(n)); while (s.length < d + 1) s = '0' + s;
+  var fp = d ? s.slice(s.length - d).replace(/0+$/, '') : '';
+  return (n < 0 ? '-' : '') + s.slice(0, s.length - d) + (fp ? '.' + fp : '');
+}
+function _plPath(angs, rads, ok, closed) {
+  var out = '', seg = 0;
+  for (var i = 0; i <= angs.length; i++) {
+    if (i < angs.length && ok[i]) {
+      out += (seg === 0 ? 'M' : 'L') + _plDec(rads[i] * Math.sin(angs[i]), 3) + ',' + _plDec(-rads[i] * Math.cos(angs[i]), 3);
+      seg++;
+    } else {
+      if (seg && (closed || seg === 1)) out += 'Z';
+      seg = 0;
+    }
+  }
+  return out;
+}
+function _plLayout(r, theta, rotation, direction, rng, count) {
+  var lo, hi;
+  if (rng) { lo = rng[0]; hi = rng[1]; }
+  else {
+    var d = _hgNice(Math.min.apply(null, [0].concat(r)), Math.max.apply(null, [0].concat(r)), count); lo = d[0]; hi = d[1];
+    if (lo === hi) { lo = 0; hi = 1; }
+  }
+  var span = hi - lo;
+  return [lo, hi, _hgTicks(lo, hi, count),
+    theta.map(function(t) { return (90 - (rotation + direction * t)) * Math.PI / 180; }),
+    r.map(function(v) { return 0 * (1 - (v - lo) / span) + _PL_R * ((v - lo) / span); }),
+    r.map(function(v) { return lo <= v && v <= hi; })];
+}
+function _plUniq(base, seen) {
+  var k = base, n = 1;
+  while (seen[k] === true) { n++; k = base + '~' + n; }
+  seen[k] = true;
+  return k;
+}
+function _plNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+function _plMarker(sym, x, y, s) {
+  var d = _plDec;
+  if (sym === 'circle') return '<circle cx="' + d(x, 3) + '" cy="' + d(y, 3) + '" r="' + d(s, 3) + '"/>';
+  if (sym === 'square') return '<rect x="' + d(x - s, 3) + '" y="' + d(y - s, 3) + '" width="' + d(2 * s, 3) + '" height="' + d(2 * s, 3) + '"/>';
+  if (sym === 'triangle') return '<path d="M' + d(x, 3) + ',' + d(y - 1.2 * s, 3) + 'L' + d(x + 1.1 * s, 3) + ',' + d(y + s, 3) + 'L' + d(x - 1.1 * s, 3) + ',' + d(y + s, 3) + 'Z"/>';
+  if (sym === 'diamond') return '<path d="M' + d(x, 3) + ',' + d(y - 1.3 * s, 3) + 'L' + d(x + 1.3 * s, 3) + ',' + d(y, 3) + 'L' + d(x, 3) + ',' + d(y + 1.3 * s, 3) + 'L' + d(x - 1.3 * s, 3) + ',' + d(y, 3) + 'Z"/>';
+  if (sym === 'cross') return '<path d="M' + d(x - s, 3) + ',' + d(y - s, 3) + 'L' + d(x + s, 3) + ',' + d(y + s, 3) + 'M' + d(x + s, 3) + ',' + d(y - s, 3) + 'L' + d(x - s, 3) + ',' + d(y + s, 3) + '" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/>';
+  return '<path d="M' + d(x - 1.3 * s, 3) + ',' + d(y, 3) + 'L' + d(x + 1.3 * s, 3) + ',' + d(y, 3) + 'M' + d(x, 3) + ',' + d(y - 1.3 * s, 3) + 'L' + d(x, 3) + ',' + d(y + 1.3 * s, 3) + '" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/>';
+}
+function _plLabel(txt, x, y, cls) {
+  var side = x > 56 ? 'r' : x < 44 ? 'l' : 'c';
+  var tf = {r: 'translate(0,-50%)', l: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)'}[side];
+  var avail = side === 'r' ? 100 - x : side === 'l' ? x : 2 * Math.min(x, 100 - x);
+  if (cls.indexOf('pcr') === 0) {
+    return '<div class="' + cls + '" style="position:absolute;left:' + _plDec(x, 2) + '%;top:' + _plDec(y, 2) + '%;transform:translate(-50%,-50%)' +
+      ';font-size:0.75rem;line-height:1;white-space:nowrap;padding:1px 3px;border-radius:3px;background:var(--bg,#fff);color:var(--muted,#475569);font-variant-numeric:tabular-nums;">' + txt + '</div>';
+  }
+  return '<div class="pca" style="position:absolute;left:' + _plDec(x, 2) + '%;top:' + _plDec(y, 2) + '%;transform:' + tf + ';max-width:' + _plDec(Math.max(avail - 1, 8), 2) +
+    '%;font-size:0.75rem;line-height:1.1;text-align:' + {r: 'left', l: 'right', c: 'center'}[side] +
+    ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:var(--muted,#475569);">' + txt + '</div>';
+}
+_RENDERERS['polar_chart'] = function(b) {
+  var lst = Array.isArray(b.series) ? b.series : [];
+  var catsIn = b.categories;
+  var cats = Array.isArray(catsIn) ? catsIn.slice(0, 12).filter(function(c) { return typeof c === 'string' || _plNum(c); }).map(function(c) { return String(c).slice(0, 30); }) : [];
+  cats = cats.filter(function(c, i) { return cats.indexOf(c) === i; });
+  var raw = [], leftOut = 0, nbad = 0, capped = [];
+  lst.slice(0, 6).forEach(function(sr, k) {
+    if (!(sr && typeof sr === 'object' && !Array.isArray(sr))) { leftOut++; return; }
+    var rr = Array.isArray(sr.r) ? sr.r : [], tt = Array.isArray(sr.theta) ? sr.theta : [];
+    var lab = sr.label ? String(sr.label).slice(0, 30) : 'Series ' + (k + 1);
+    if (Math.max(rr.length, tt.length) > _PL_READ_CAP) capped.push([lab, Math.max(rr.length, tt.length)]);
+    rr = rr.slice(0, _PL_READ_CAP); tt = tt.slice(0, _PL_READ_CAP);
+    nbad += Math.abs(rr.length - tt.length);
+    raw.push({k: k, label: lab, r: rr, theta: tt, sr: sr});
+  });
+  var categorical = cats.length > 0 || raw.some(function(s) { return s.theta.some(function(t) { return typeof t === 'string'; }); });
+  if (categorical) raw.forEach(function(s) { s.theta.forEach(function(t) {
+    if (cats.length < 12 && (typeof t === 'string' || _plNum(t)) && cats.indexOf(String(t).slice(0, 30)) < 0) cats.push(String(t).slice(0, 30));
+  }); });
+  var series = [], outsideCat = 0;
+  raw.forEach(function(s) {
+    var pr = [], pt = [], pl = [], m = Math.min(s.r.length, s.theta.length);
+    for (var j = 0; j < m; j++) {
+      var rv = s.r[j], tv = s.theta[j];
+      if (!_plNum(rv)) { nbad++; continue; }
+      if (categorical) {
+        var ck = (typeof tv === 'string' || _plNum(tv)) ? String(tv).slice(0, 30) : null;
+        if (ck === null) { nbad++; continue; }
+        if (cats.indexOf(ck) < 0) { outsideCat++; continue; }
+        pt.push(cats.indexOf(ck) * 360 / cats.length); pl.push(ck);
+      } else {
+        if (!_plNum(tv)) { nbad++; continue; }
+        pt.push(tv); pl.push(tv);
+      }
+      pr.push(rv);
+    }
+    s.r = pr; s.theta = pt; s.tlabel = pl;
+    if (pr.length) series.push(s);
+  });
+  var beyond = lst.length - 6;
+  var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' series was not a series and was' : ' series were not a series and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' series beyond the first 6 was' : ' series beyond the first 6 were') + ' not drawn.') : '') +
+    (nbad ? _hgNote(nbad + (nbad === 1 ? ' entry was' : ' entries were') + ' not a usable number or had no matching partner and ' + (nbad === 1 ? 'was' : 'were') + ' skipped.') : '') +
+    (outsideCat ? _hgNote(outsideCat + (outsideCat === 1 ? ' point was' : ' points were') + ' in a category beyond the first 12 and ' + (outsideCat === 1 ? 'was' : 'were') + ' not drawn.') : '') +
+    capped.map(function(c) { return _hgNote(_esc('Series "' + c[0] + '": ' + c[1] + ' points were given; only the first ' + _PL_READ_CAP + ' were read and the rest were not drawn.')); }).join('');
+  if (!series.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A polar chart needs at least one series with a radius and an angle for each point.</div>' + notes + _hgVersionNote(b, 'polar_chart'));
+  var n = series.length, cap = Math.max(1, Math.floor(_PL_POINT_CAP / n));
+  series.forEach(function(s) {
+    var m = s.r.length;
+    if (m > cap) {
+      var idx = [];
+      if (cap === 1) idx = [0]; else for (var i = 0; i < cap; i++) { var q = Math.floor(i * (m - 1) / (cap - 1)); if (idx.indexOf(q) < 0) idx.push(q); }
+      notes += _hgNote(_esc('Series "' + s.label + '": ' + m + ' points were thinned to ' + idx.length + ' evenly spaced points (the first and last of the points read are kept); the limit is ' + _PL_POINT_CAP + ' points in all.'));
+      s.r = idx.map(function(i) { return s.r[i]; }); s.theta = idx.map(function(i) { return s.theta[i]; }); s.tlabel = idx.map(function(i) { return s.tlabel[i]; });
+    }
+  });
+  var direction = b.direction === 'clockwise' ? -1 : b.direction === 'counterclockwise' ? 1 : (categorical ? -1 : 1);
+  var rotation = (_plNum(b.rotation) && Math.abs(b.rotation) <= 360) ? b.rotation : (direction === -1 ? 90 : 0);
+  var count = _plNum(b.r_ticks) ? Math.floor(Math.min(8, Math.max(2, b.r_ticks)) + 0.5) : 4;
+  var rg = b.r_range, rng = null;
+  if (Array.isArray(rg) && rg.length === 2 && _plNum(rg[0]) && _plNum(rg[1]) && rg[0] < rg[1]) rng = [rg[0], rg[1]];
+  else if (rg) notes += _hgNote('r_range needs two numbers, the first below the second; it was ignored.');
+  var allr = []; series.forEach(function(s) { allr = allr.concat(s.r); });
+  var lo, hi;
+  if (rng) { lo = rng[0]; hi = rng[1]; }
+  else { var dd = _hgNice(Math.min.apply(null, [0].concat(allr)), Math.max.apply(null, [0].concat(allr)), count); lo = dd[0]; hi = dd[1]; if (lo === hi) { lo = 0; hi = 1; } }
+  var ticks = _hgTicks(lo, hi, count), hidden = 0;
+  series.forEach(function(s) {
+    var L = _plLayout(s.r, s.theta, rotation, direction, [lo, hi], count);
+    s.ang = L[3]; s.rad = L[4]; s.ok = L[5];
+    hidden += s.ok.filter(function(x) { return !x; }).length;
+  });
+  if (hidden) notes += _hgNote(hidden + (hidden === 1 ? ' point is' : ' points are') + ' outside the radial range and not drawn.');
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var dc = Math.min(6, _hgDecimals(allr.concat(ticks))), ff = function(v) { return _bpFmt(v, dc); };
+  var ncat = cats.length, tstep = _plNum(b.theta_step) ? Math.floor(Math.min(180, Math.max(30, b.theta_step)) + 0.5) : 30;
+  var spokes = [], spokeLab = [];
+  if (categorical) { for (var ci = 0; ci < ncat; ci++) spokes.push(ci * 360 / ncat); spokeLab = cats; }
+  else for (var tt2 = 0; tt2 < 360; tt2 += tstep) { spokes.push(tt2); spokeLab.push(tt2 + '°'); }
+  var half = (categorical ? 360 / ncat : tstep) / 2, boxR = categorical ? 30 : 38, scale = boxR / _PL_R;
+  var sx = function(deg, rr) { var a = (rotation + direction * deg) * Math.PI / 180; return [50 + rr * Math.cos(a), 50 - rr * Math.sin(a)]; };
+  var grid = ticks.filter(function(t) { return t > lo; }).map(function(t) {
+    return '<circle cx="0" cy="0" r="' + _plDec(_PL_R * (t - lo) / (hi - lo), 3) + '" fill="none" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>'; }).join('');
+  spokes.forEach(function(t) {
+    var a = (90 - (rotation + direction * t)) * Math.PI / 180;
+    grid += '<path d="M0,0L' + _plDec(_PL_R * Math.sin(a), 3) + ',' + _plDec(-_PL_R * Math.cos(a), 3) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" fill="none" vector-effect="non-scaling-stroke"/>';
+  });
+  var body = '', seenK = {};
+  series.forEach(function(s, i) {
+    var col = _PL_COLORS[i], dash = _PL_DASH[i], sym = _PL_SYMBOLS[i], pts = s.r.length, mode = s.sr.mode;
+    mode = (mode === 'lines' || mode === 'markers' || mode === 'lines+markers') ? mode : (pts <= 20 ? 'lines+markers' : 'lines');
+    var g = '<g data-cb="node" data-key="' + _esc(_plUniq(s.label, seenK)) + '" style="' + _ifK(i, n) + 'opacity:var(--k,1);color:' + col + ';">';
+    if (s.sr.fill === 'toself') g += '<path d="' + _plPath(s.ang, s.rad, s.ok, true) + '" fill="' + col + '" fill-opacity="0.16" stroke="none"/>';
+    if (mode.indexOf('lines') >= 0) g += '<path d="' + _plPath(s.ang, s.rad, s.ok, false) + '" fill="none" stroke="' + col + '" stroke-width="2"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + ' stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+    if (mode.indexOf('markers') >= 0) {
+      g += '<g fill="' + col + '" stroke="var(--bg,#fff)" stroke-width="0.5">' + s.ang.map(function(a, j) { return s.ok[j] ? _plMarker(sym, s.rad[j] * Math.sin(a), -s.rad[j] * Math.cos(a), 1.6) : ''; }).join('') + '</g>';
+    }
+    body += g + '</g>';
+  });
+  var svg = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;"><g transform="translate(50 50) scale(' + _plDec(scale, 3) + ')">' + grid + body + '</g></svg>';
+  var labels = '';
+  spokes.forEach(function(t, i) { var p = sx(t, boxR + 3.5); labels += _plLabel(_esc(spokeLab[i]), p[0], p[1], 'pca'); });
+  var tdc = _hgDecimals(ticks);
+  ticks.forEach(function(t, ti) { var p = sx(half, boxR * ((t - lo) / (hi - lo))); labels += _plLabel(_hgNum(t, tdc), p[0], p[1], ti % 2 && ticks.length > 3 ? 'pcr pcx' : 'pcr'); });
+  var legend = '';
+  if (n > 1) legend = '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:0.75rem;color:var(--text,#0F172A);">' + series.map(function(s, i) {
+    return '<span class="pcl" style="display:inline-flex;align-items:center;gap:6px;"><svg width="30" height="12" viewBox="0 0 30 12" aria-hidden="true" focusable="false" style="flex:0 0 30px;color:' + _PL_COLORS[i] + ';">' +
+      '<path d="M1,6L29,6" stroke="' + _PL_COLORS[i] + '" stroke-width="2" fill="none"' + (_PL_DASH[i] ? ' stroke-dasharray="' + _PL_DASH[i] + '"' : '') + '/><g fill="' + _PL_COLORS[i] + '">' +
+      _plMarker(_PL_SYMBOLS[i], 15, 6, 3.2) + '</g></svg><span>' + _esc(s.label) + '</span></span>'; }).join('') + '</div>';
+  var aria = 'Polar chart of ' + n + ' series with the radius from ' + ff(lo) + ' to ' + ff(hi) + us +
+    (categorical ? ', ' + ncat + ' categories: ' + cats.join(', ') : ', angles in degrees') + '. ' +
+    series.map(function(s) {
+      var dr = s.r.filter(function(v, j) { return s.ok[j]; });
+      return s.label + ': ' + s.r.length + (s.r.length === 1 ? ' point' : ' points') +
+        (dr.length ? ', radius from ' + ff(Math.min.apply(null, dr)) + ' to ' + ff(Math.max.apply(null, dr)) + us : ', none in the radial range') +
+        (dr.length && dr.length !== s.r.length ? ' (' + (s.r.length - dr.length) + ' outside the radial range, not drawn)' : '');
+    }).join('; ') + '.';
+  var chart = '<div class="ifpc" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifpc .pcx{display:none}}</style><div role="img" aria-label="' + _esc(aria) + '" style="position:relative;width:100%;max-width:520px;margin:0 auto;aspect-ratio:1/1;">' +
+    svg + labels + '</div>' + legend + '</div>';
+  var rows = [];
+  series.forEach(function(s) { s.r.forEach(function(v, j) { rows.push([s.label, categorical ? s.tlabel[j] : _bpFmt(s.tlabel[j], 6), ff(v) + us, s.ok[j] ? 'drawn' : 'outside the radial range, not drawn']); }); });
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'polar_chart') + _ifTable(['Series', categorical ? 'Category' : 'Angle (degrees)', 'Radius', 'Status'], rows));
+};

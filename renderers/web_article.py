@@ -38356,6 +38356,263 @@ for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _rende
     _RENDERERS[_if_name] = _cb_wrap(_if_fn) if _if_name in _CB_ATOMS else _if_fn
 
 
+# ── polar_chart (Plotly scatterpolar / scatterpolargl, package "polar") ── points at (angle, radius) on a circular grid. The radial axis is
+# d3 nice(lo, hi, count) over the data (or the given r_range) with ticks(); a radius is scaleLinear().domain([lo, hi]).range([0, 40])(r) in a
+# 100 x 100 box, an angle is clockwise from twelve o'clock = 90 - (rotation + direction * theta) degrees (d3 lineRadial's convention); a line is
+# lineRadial() with defined() (a point outside the radial range breaks the line) and curveLinearClosed for fill "toself". Paths use d3-path's
+# default 3 digits. Twin of _pcLayout / _RENDERERS['polar_chart'] in atoms_infographic.gs.
+_PL_R = 40
+_PL_POINT_CAP = 2000
+_PL_READ_CAP = 5000
+_PL_COLORS = ['var(--accent,#0369A1)', 'var(--chart-2,#B45309)', 'var(--chart-3,#7E22CE)', 'var(--chart-4,#0F766E)', 'var(--chart-5,#BE123C)', 'var(--chart-6,#4D7C0F)']
+_PL_DASH = ['', '6 3', '2 3', '8 3 2 3', '1 3', '10 4']
+_PL_SYMBOLS = ['circle', 'square', 'triangle', 'diamond', 'cross', 'plus']
+
+
+def _pl_dec(v, d):
+    """JavaScript String(Math.round(v * 10^d) / 10^d) for a value rounded to d <= 3 decimals."""
+    k = 10 ** d
+    n = math.floor(v * k + 0.5)
+    if n == 0:
+        return '0'
+    s = str(abs(n)).rjust(d + 1, '0')
+    fp = s[len(s) - d:].rstrip('0') if d else ''
+    return ('-' if n < 0 else '') + s[:len(s) - d] + ('.' + fp if fp else '')
+
+
+def _pl_path(angs, rads, ok, closed):
+    """d3 lineRadial().defined() (with curveLinearClosed when closed): angles in radians clockwise from the top."""
+    out, seg = '', 0
+    for i in range(len(angs) + 1):
+        if i < len(angs) and ok[i]:
+            out += ('M' if seg == 0 else 'L') + _pl_dec(rads[i] * math.sin(angs[i]), 3) + ',' + _pl_dec(-rads[i] * math.cos(angs[i]), 3)
+            seg += 1
+        else:
+            if seg and (closed or seg == 1):
+                out += 'Z'
+            seg = 0
+    return out
+
+
+def _pl_layout(r, theta, rotation, direction, rng, count):
+    """-> (lo, hi, ticks, angles, radii, inside). rng: None or (lo, hi)."""
+    if rng is not None:
+        lo, hi = rng
+    else:
+        lo, hi = _hg_nice(min([0] + r), max([0] + r), count)
+        if lo == hi:
+            lo, hi = 0, 1
+    tk = _hg_ticks(lo, hi, count)
+    span = hi - lo
+    angs = [(90 - (rotation + direction * t)) * math.pi / 180 for t in theta]
+    rads = [0 * (1 - (v - lo) / span) + _PL_R * ((v - lo) / span) for v in r]
+    return lo, hi, tk, angs, rads, [lo <= v <= hi for v in r]
+
+
+def _pl_uniq(base, seen):
+    """Series key: the label, with ~2, ~3 ... for a repeated label."""
+    k, n = base, 1
+    while k in seen:
+        n += 1
+        k = base + '~' + str(n)
+    seen.add(k)
+    return k
+
+
+def _pl_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _pl_marker(sym, x, y, s):
+    d = _pl_dec
+    if sym == 'circle':
+        return '<circle cx="' + d(x, 3) + '" cy="' + d(y, 3) + '" r="' + d(s, 3) + '"/>'
+    if sym == 'square':
+        return '<rect x="' + d(x - s, 3) + '" y="' + d(y - s, 3) + '" width="' + d(2 * s, 3) + '" height="' + d(2 * s, 3) + '"/>'
+    if sym == 'triangle':
+        return '<path d="M' + d(x, 3) + ',' + d(y - 1.2 * s, 3) + 'L' + d(x + 1.1 * s, 3) + ',' + d(y + s, 3) + 'L' + d(x - 1.1 * s, 3) + ',' + d(y + s, 3) + 'Z"/>'
+    if sym == 'diamond':
+        return '<path d="M' + d(x, 3) + ',' + d(y - 1.3 * s, 3) + 'L' + d(x + 1.3 * s, 3) + ',' + d(y, 3) + 'L' + d(x, 3) + ',' + d(y + 1.3 * s, 3) + 'L' + d(x - 1.3 * s, 3) + ',' + d(y, 3) + 'Z"/>'
+    if sym == 'cross':
+        return '<path d="M' + d(x - s, 3) + ',' + d(y - s, 3) + 'L' + d(x + s, 3) + ',' + d(y + s, 3) + 'M' + d(x + s, 3) + ',' + d(y - s, 3) + 'L' + d(x - s, 3) + ',' + d(y + s, 3) + '" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/>'
+    return '<path d="M' + d(x - 1.3 * s, 3) + ',' + d(y, 3) + 'L' + d(x + 1.3 * s, 3) + ',' + d(y, 3) + 'M' + d(x, 3) + ',' + d(y - 1.3 * s, 3) + 'L' + d(x, 3) + ',' + d(y + 1.3 * s, 3) + '" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/>'
+
+
+def _pl_label(txt, x, y, cls, maxw=None):
+    """An HTML label centred on (x, y) in percent of the plot, or hung off it to the outside on the left and right."""
+    side = 'r' if x > 56 else 'l' if x < 44 else 'c'
+    tf = {'r': 'translate(0,-50%)', 'l': 'translate(-100%,-50%)', 'c': 'translate(-50%,-50%)'}[side]
+    avail = (100 - x) if side == 'r' else x if side == 'l' else 2 * min(x, 100 - x)
+    if cls.startswith('pcr'):
+        tf = 'translate(-50%,-50%)'
+        return ('<div class="' + cls + '" style="position:absolute;left:' + _pl_dec(x, 2) + '%;top:' + _pl_dec(y, 2) + '%;transform:' + tf
+                + ';font-size:0.75rem;line-height:1;white-space:nowrap;padding:1px 3px;border-radius:3px;background:var(--bg,#fff);color:' + _IF_MUTED + ';font-variant-numeric:tabular-nums;">' + txt + '</div>')
+    return ('<div class="pca" style="position:absolute;left:' + _pl_dec(x, 2) + '%;top:' + _pl_dec(y, 2) + '%;transform:' + tf + ';max-width:' + _pl_dec(max(avail - 1, 8), 2)
+            + '%;font-size:0.75rem;line-height:1.1;text-align:' + {'r': 'left', 'l': 'right', 'c': 'center'}[side]
+            + ';overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:' + _IF_MUTED + ';">' + txt + '</div>')
+
+
+def _render_polar_chart(b: dict) -> str:
+    lst = _if_g(b, 'series')
+    lst = lst if isinstance(lst, list) else []
+    cats_in = _if_g(b, 'categories')
+    cats = [_if_str(c)[:30] for c in cats_in[:12] if isinstance(c, str) or _pl_num(c)] if isinstance(cats_in, list) else []
+    cats = list(dict.fromkeys(cats))
+    raw, left_out, nbad, capped = [], 0, 0, []
+    for k, sr in enumerate(lst[:6]):
+        if not isinstance(sr, dict):
+            left_out += 1
+            continue
+        rr, tt = _if_g(sr, 'r'), _if_g(sr, 'theta')
+        rr = rr if isinstance(rr, list) else []
+        tt = tt if isinstance(tt, list) else []
+        lab = _if_str(_if_g(sr, 'label'))[:30] if _if_truthy(_if_g(sr, 'label')) else 'Series ' + str(k + 1)
+        if max(len(rr), len(tt)) > _PL_READ_CAP:
+            capped.append((lab, max(len(rr), len(tt))))
+        rr, tt = rr[:_PL_READ_CAP], tt[:_PL_READ_CAP]
+        nbad += abs(len(rr) - len(tt))
+        raw.append({'k': k, 'label': lab, 'r': rr, 'theta': tt, 'sr': sr})
+    categorical = bool(cats) or any(isinstance(t, str) for s in raw for t in s['theta'])
+    if categorical:
+        for s in raw:
+            for t in s['theta']:
+                if len(cats) < 12 and (isinstance(t, str) or _pl_num(t)) and _if_str(t)[:30] not in cats:
+                    cats.append(_if_str(t)[:30])
+    series, outside_cat = [], 0
+    for s in raw:
+        pr, pt, pl = [], [], []
+        for rv, tv in zip(s['r'], s['theta']):
+            if not _pl_num(rv):
+                nbad += 1
+                continue
+            if categorical:
+                ck = _if_str(tv)[:30] if (isinstance(tv, str) or _pl_num(tv)) else None
+                if ck is None:
+                    nbad += 1
+                    continue
+                if ck not in cats:
+                    outside_cat += 1
+                    continue
+                pt.append(cats.index(ck) * 360 / len(cats))
+                pl.append(ck)
+            else:
+                if not _pl_num(tv):
+                    nbad += 1
+                    continue
+                pt.append(tv)
+                pl.append(tv)
+            pr.append(rv)
+        s.update(r=pr, theta=pt, tlabel=pl)
+        if pr:
+            series.append(s)
+    beyond = len(lst) - 6
+    notes = ((_hg_note(str(left_out) + (' series was not a series and was' if left_out == 1 else ' series were not a series and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' series beyond the first 6 was' if beyond == 1 else ' series beyond the first 6 were') + ' not drawn.') if beyond > 0 else '')
+             + (_hg_note(str(nbad) + (' entry was' if nbad == 1 else ' entries were') + ' not a usable number or had no matching partner and ' + ('was' if nbad == 1 else 'were') + ' skipped.') if nbad else '')
+             + (_hg_note(str(outside_cat) + (' point was' if outside_cat == 1 else ' points were') + ' in a category beyond the first 12 and ' + ('was' if outside_cat == 1 else 'were') + ' not drawn.') if outside_cat else '')
+             + ''.join(_hg_note(_cv_esc('Series "' + cl + '": ' + str(cn) + ' points were given; only the first ' + str(_PL_READ_CAP) + ' were read and the rest were not drawn.')) for cl, cn in capped))
+    if not series:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A polar chart needs at least one series with a radius and an angle for each point.</div>' + notes + _hg_version_note(b, 'polar_chart'))
+    n = len(series)
+    cap = max(1, _PL_POINT_CAP // n)
+    for s in series:
+        m = len(s['r'])
+        if m > cap:
+            idx = [0] if cap == 1 else list(dict.fromkeys(math.floor(i * (m - 1) / (cap - 1)) for i in range(cap)))
+            notes += _hg_note(_cv_esc('Series "' + s['label'] + '": ' + str(m) + ' points were thinned to ' + str(len(idx)) + ' evenly spaced points (the first and last of the points read are kept); the limit is ' + str(_PL_POINT_CAP) + ' points in all.'))
+            s['r'], s['theta'], s['tlabel'] = [s['r'][i] for i in idx], [s['theta'][i] for i in idx], [s['tlabel'][i] for i in idx]
+    dirv = _if_g(b, 'direction')
+    direction = -1 if dirv == 'clockwise' else 1 if dirv == 'counterclockwise' else (-1 if categorical else 1)
+    rot_in = _if_g(b, 'rotation')
+    rotation = rot_in if (_pl_num(rot_in) and abs(rot_in) <= 360) else (90 if direction == -1 else 0)  # Plotly: clockwise starts due north (90), counterclockwise due east (0)
+    cnt_in = _if_g(b, 'r_ticks')
+    count = int(_hg_round(min(8, max(2, cnt_in)))) if _pl_num(cnt_in) else 4
+    rg = _if_g(b, 'r_range')
+    rng = None
+    if isinstance(rg, list) and len(rg) == 2 and _pl_num(rg[0]) and _pl_num(rg[1]) and rg[0] < rg[1]:
+        rng = (rg[0], rg[1])
+    elif _if_truthy(rg):
+        notes += _hg_note('r_range needs two numbers, the first below the second; it was ignored.')
+    allr = [v for s in series for v in s['r']]
+    if rng:
+        lo, hi = rng
+    else:
+        lo, hi = _hg_nice(min([0] + allr), max([0] + allr), count)
+        if lo == hi:
+            lo, hi = 0, 1
+    ticks = _hg_ticks(lo, hi, count)
+    for s in series:
+        _, _, _, s['ang'], s['rad'], s['ok'] = _pl_layout(s['r'], s['theta'], rotation, direction, (lo, hi), count)
+        s['ok_n'] = sum(1 for x in s['ok'] if x)
+    hidden = sum(len(s['r']) - s['ok_n'] for s in series)
+    if hidden:
+        notes += _hg_note(str(hidden) + (' point is' if hidden == 1 else ' points are') + ' outside the radial range and not drawn.')
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    dc = min(6, _hg_decimals(allr + ticks))
+    ff = lambda v: _bp_fmt(v, dc)
+    ncat = len(cats)
+    step_in = _if_g(b, 'theta_step')
+    tstep = int(_hg_round(min(180, max(30, step_in)))) if _pl_num(step_in) else 30
+    spokes = [i * 360 / ncat for i in range(ncat)] if categorical else [float(t) for t in range(0, 360, tstep)]
+    spoke_lab = cats if categorical else [str(t) + '°' for t in range(0, 360, tstep)]
+    half = (360 / ncat if categorical else tstep) / 2
+    box_r = 30 if categorical else 38
+    scale = box_r / _PL_R
+
+    def sx(rad_deg, rr):
+        a = (rotation + direction * rad_deg) * math.pi / 180
+        return 50 + rr * math.cos(a), 50 - rr * math.sin(a)
+    grid = ''.join('<circle cx="0" cy="0" r="' + _pl_dec(_PL_R * (t - lo) / (hi - lo), 3) + '" fill="none" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>' for t in ticks if t > lo)
+    for t in spokes:
+        a = (90 - (rotation + direction * t)) * math.pi / 180
+        grid += ('<path d="M0,0L' + _pl_dec(_PL_R * math.sin(a), 3) + ',' + _pl_dec(-_PL_R * math.cos(a), 3) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" fill="none" vector-effect="non-scaling-stroke"/>')
+    body = ''
+    seen = set()
+    for i, s in enumerate(series):
+        col, dash, sym = _PL_COLORS[i], _PL_DASH[i], _PL_SYMBOLS[i]
+        pts = len(s['r'])
+        mode = _if_g(s['sr'], 'mode')
+        mode = mode if mode in ('lines', 'markers', 'lines+markers') else ('lines+markers' if pts <= 20 else 'lines')
+        fill = _if_g(s['sr'], 'fill') == 'toself'
+        g = '<g data-cb="node" data-key="' + _cv_esc(_pl_uniq(s['label'], seen)) + '" style="' + _if_k(i, n) + 'opacity:var(--k,1);color:' + col + ';">'
+        if fill:
+            g += '<path d="' + _pl_path(s['ang'], s['rad'], s['ok'], True) + '" fill="' + col + '" fill-opacity="0.16" stroke="none"/>'
+        if 'lines' in mode:
+            g += '<path d="' + _pl_path(s['ang'], s['rad'], s['ok'], False) + '" fill="none" stroke="' + col + '" stroke-width="2"' + (' stroke-dasharray="' + dash + '"' if dash else '') + ' stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
+        if 'markers' in mode:
+            g += '<g fill="' + col + '" stroke="var(--bg,#fff)" stroke-width="0.5">' + ''.join(
+                _pl_marker(sym, rads * math.sin(a), -rads * math.cos(a), 1.6) for a, rads, okk in zip(s['ang'], s['rad'], s['ok']) if okk) + '</g>'
+        body += g + '</g>'
+    svg = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;"><g transform="translate(50 50) scale(' + _pl_dec(scale, 3) + ')">' + grid + body + '</g></svg>'
+    labels = ''
+    for t, txt in zip(spokes, spoke_lab):
+        x, y = sx(t, box_r + 3.5)
+        labels += _pl_label(_cv_esc(txt), x, y, 'pca')
+    for ti, t in enumerate(ticks):
+        x, y = sx(half, box_r * ((t - lo) / (hi - lo)))
+        labels += _pl_label(_hg_num(t, _hg_decimals(ticks)), x, y, 'pcr pcx' if ti % 2 and len(ticks) > 3 else 'pcr')
+    legend = ''
+    if n > 1:
+        legend = ('<div style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:0.75rem;color:var(--text,#0F172A);">' + ''.join(
+            '<span class="pcl" style="display:inline-flex;align-items:center;gap:6px;"><svg width="30" height="12" viewBox="0 0 30 12" aria-hidden="true" focusable="false" style="flex:0 0 30px;color:' + _PL_COLORS[i] + ';">'
+            '<path d="M1,6L29,6" stroke="' + _PL_COLORS[i] + '" stroke-width="2" fill="none"' + (' stroke-dasharray="' + _PL_DASH[i] + '"' if _PL_DASH[i] else '') + '/><g fill="' + _PL_COLORS[i] + '">'
+            + _pl_marker(_PL_SYMBOLS[i], 15, 6, 3.2) + '</g></svg><span>' + _cv_esc(s['label']) + '</span></span>' for i, s in enumerate(series)) + '</div>')
+    aria = ('Polar chart of ' + str(n) + (' series' if n == 1 else ' series') + ' with the radius from ' + ff(lo) + ' to ' + ff(hi) + us
+            + (', ' + str(ncat) + ' categories: ' + ', '.join(cats) if categorical else ', angles in degrees') + '. '
+            + '; '.join(s['label'] + ': ' + str(len(s['r'])) + (' point' if len(s['r']) == 1 else ' points')
+                        + ((', radius from ' + ff(min(v for v, k_ in zip(s['r'], s['ok']) if k_)) + ' to ' + ff(max(v for v, k_ in zip(s['r'], s['ok']) if k_)) + us) if s['ok_n'] else ', none in the radial range')
+                        + (' (' + str(len(s['r']) - s['ok_n']) + ' outside the radial range, not drawn)' if s['ok_n'] != len(s['r']) and s['ok_n'] else '') for s in series) + '.')
+    chart = ('<div class="ifpc" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifpc .pcx{display:none}}</style><div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;width:100%;max-width:520px;margin:0 auto;aspect-ratio:1/1;">'
+             + svg + labels + '</div>' + legend + '</div>')
+    th = ['Series', 'Category' if categorical else 'Angle (degrees)', 'Radius', 'Status']
+    rows = [[s['label'], t if categorical else _bp_fmt(t, 6), ff(v) + us, 'drawn' if k_ else 'outside the radial range, not drawn'] for s in series for v, t, k_ in zip(s['r'], s['tlabel'], s['ok'])]
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'polar_chart') + _if_table(th, rows))
+
+
+_RENDERERS['polar_chart'] = _render_polar_chart
+
+
 # ─── Python twins of atoms that were GAS-only (2026-10-12; rule: GAS-only only if possible or relevant only on Apps Script). Each mirrors its atoms_*.gs
 # renderer including the JavaScript rules the GAS code relies on (truthiness, String(), property reads that throw on null, .map on a non-array). ───
 class _GxTypeError(TypeError):
@@ -40860,6 +41117,632 @@ def _hm_wrap(prev):
 
 
 _RENDERERS['heatmap'] = _hm_wrap(_RENDERERS['heatmap'])
+
+# --- shared scale/reading helpers choropleth_map needs (defined once in the chart-reading and d3 radial layers on the round-one branch; copied here because this base predates them; identical bodies, drop at the round-one merge) ---
+_CR_ACC = 'var(--a2ui-accent,#4f46e5)'
+
+_CR_ACC2 = 'var(--a2ui-accent2,#0e7490)'
+
+_CR_SURF = 'var(--a2ui-surface,#ffffff)'
+
+_CR_TEXT = 'var(--a2ui-text,var(--text,#171717))'
+
+_CR_MUTED = 'var(--a2ui-muted,var(--muted,#595959))'
+
+_CR_SCHEMES = {'sequential': ('accent', 'accent2'), 'diverging': ('accent_pair',), 'categorical': ('accent_cycle',)}
+
+def _cr_mix(a, pa, b):
+    return 'color-mix(in srgb,' + a + ' ' + str(pa) + '%,' + b + ')'
+
+_CR_SR = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
+
+_CR_BORDER = '1px solid var(--a2ui-muted,var(--muted,#595959))'
+
+_CR_CB_CSS = '<style>[data-cb-root] .cb-fade{opacity:var(--k,1);}</style>'
+
+def _cr_cb(kind, i, n, style='', key=None):
+    return (' data-cb="' + kind + '"' + ('' if key is None else ' data-key="' + key + '"') + ' class="cb-fade" style="' + style + '--k:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);"')
+
+def _cr_s(v, mx):
+    """Text field: a string only (anything else is empty), cut to mx characters, escaped."""
+    return _cv_esc(v[:mx]) if isinstance(v, str) else ''
+
+def _cr_id(*parts):
+    """Per-payload id suffix: 32-bit FNV-1a over the UTF-16 code units of the parts (the same arithmetic as _crId in the JavaScript twin), base 36."""
+    h = 2166136261
+    raw = '\x1f'.join(parts).encode('utf-16-le')
+    for i in range(0, len(raw), 2):
+        h = ((h ^ (raw[i] | (raw[i + 1] << 8))) * 16777619) & 0xFFFFFFFF
+    n, out = h, ''
+    while True:
+        out = '0123456789abcdefghijklmnopqrstuvwxyz'[n % 36] + out
+        n //= 36
+        if not n:
+            return out
+
+def _cr_fixed(x, d):
+    """JavaScript Number.prototype.toFixed: exact binary value, ties rounded up in magnitude, a sign for any x < 0."""
+    q = decimal.Decimal(abs(x)).quantize(decimal.Decimal(1).scaleb(-d), rounding=decimal.ROUND_HALF_UP)
+    return ('-' if x < 0 else '') + format(q, 'f')
+
+def _cr_trim(x):
+    """Up to three decimals, trailing zeros dropped, never '-0'."""
+    s = _cr_fixed(x, 3)
+    s = re.sub(r'(\.\d*?)0+$', r'\1', s)
+    s = re.sub(r'\.$', '', s)
+    return '0' if s == '-0' else s
+
+def _cr_num(v):
+    """A finite number that is not a boolean and is at most 1e15 in size; None otherwise."""
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        return None
+    v = float(v)
+    return v if v == v and abs(v) <= 1e15 else None
+
+def _d3_round(x):
+    """JavaScript Math.round: nearest, ties toward +infinity."""
+    f = math.floor(x)
+    return f + 1 if x - f >= 0.5 else f
+
+
+# ─── choropleth_map (I41, 2026-10-21, stage: preview; D3 target, owner decision D10). Twin of apps-script-surface/*/atoms_choropleth.gs. ───
+# Server-side SVG, one path per region, quantized (equal-interval) classes coloured from the theme tokens of the shared scale helpers. The region outlines are the
+# bundled sets under atoms/geo (Natural Earth 110m via world-atlas, US Census 10m via us-atlas, both ISC; no custom GeoJSON). Projections are ports of d3-geo 3.1.1 (ISC,
+# Mike Bostock): geoEqualEarth and geoAlbersUsa are added here (checked against the real library to 1e-9 by tests/test_choropleth_map.py); geoMercator is _geo_merc above.
+# The renderer projects vertices only (no adaptive resampling, no clipping): the 110m data is already coarse and the frame crops what lies outside it.
+_CH_SETS = ('world-countries', 'us-states', 'europe-countries')
+_CH_PROJ = ('equal-earth', 'mercator', 'albers-usa')
+_CH_DIR = Path(__file__).resolve().parent.parent / 'atoms' / 'geo'
+_CH_CACHE = {}
+_CH_EA = (1.340264, -0.081106, 0.000893, 0.003796)
+_CH_EA_M = _gm.sqrt(3) / 2
+# Fit window (lon0, lon1, lat0, lat1) per set: only vertices inside it count when the frame is fitted, so Antarctica-free world, Europe without the Russian Far East, and
+# the lower 48 plus Alaska and Hawaii without the Aleutians that cross 180 degrees. Vertices outside the window are still drawn and cropped by the frame.
+_CH_WIN = {'world-countries': (-180, 180, -58, 84), 'europe-countries': (-25, 45, 34, 72), 'us-states': (-180, -60, 15, 74)}
+
+
+def _ch_nice(x):
+    """Legend break rounded to three significant digits (display only; class edges stay equal intervals)."""
+    if x == 0:
+        return 0
+    e = 2 - math.floor(math.log10(abs(x)))
+    if e >= 0:
+        m = 10 ** e
+        return math.floor(x * m + 0.5) / m
+    m = 10 ** (-e)
+    return math.floor(x / m + 0.5) * m
+
+
+def _ch_load(name):
+    if name not in _CH_CACHE:
+        d = _json.loads((_CH_DIR / (name + '.json')).read_text(encoding='utf-8'))
+        if d.get('enc') == 'd100':  # rings are stored as centi-degree integer deltas (first pair absolute); decoded to the same floats the old files held
+            for r in d['regions']:
+                for poly in r['p']:
+                    for k, ring in enumerate(poly):
+                        ax = ay = 0
+                        out = []
+                        for i in range(0, len(ring), 2):
+                            ax += ring[i]
+                            ay += ring[i + 1]
+                            out += [ax / 100, ay / 100]
+                        poly[k] = out
+        _CH_CACHE[name] = d
+    return _CH_CACHE[name]
+
+
+def _ch_regions(rset):
+    """[(id, name, polygons)] in file order; europe-countries is the filtered subset of world-countries."""
+    if rset == 'europe-countries':
+        ids = set(_ch_load('europe-countries')['ids'])
+        return [(r['id'], r['name'], r['p']) for r in _ch_load('world-countries')['regions'] if r['id'] in ids]
+    return [(r['id'], r['name'], r['p']) for r in _ch_load(rset)['regions']]
+
+
+def _ch_equal_earth(k, tx, ty):
+    """d3.geoEqualEarth().scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y]."""
+    def f(lo, la):
+        q = _geo_ident(lo * _GEO_D2R, la * _GEO_D2R)
+        t = _gm.asin(_CH_EA_M * _gm.sin(q[1]))
+        t2 = t * t
+        t6 = t2 * t2 * t2
+        a1, a2, a3, a4 = _CH_EA
+        x = q[0] * _gm.cos(t) / (_CH_EA_M * (a1 + 3 * a2 * t2 + t6 * (7 * a3 + 9 * a4 * t2)))
+        y = t * (a1 + a2 * t2 + t6 * (a3 + a4 * t2))
+        return [tx + k * x, ty - k * y]
+    return f
+
+
+def _ch_conic(p0, p1, rot, cen, k, tx, ty):
+    """d3.geoConicEqualArea().parallels([p0, p1]).rotate([rot, 0]).center(cen).scale(k).translate([tx, ty])."""
+    y0, y1 = p0 * _GEO_D2R, p1 * _GEO_D2R
+    sy0 = _gm.sin(y0)
+    n = (sy0 + _gm.sin(y1)) / 2
+    c = 1 + sy0 * (2 * n - sy0)
+    r0 = _gm.sqrt(c) / n
+    rl = _geo_rl(rot * _GEO_D2R)
+
+    def raw(lam, phi):
+        r = _gm.sqrt(c - 2 * n * _gm.sin(phi)) / n
+        lam = lam * n
+        return [r * _gm.sin(lam), r0 - r * _gm.cos(lam)]
+    ce = raw(cen[0] * _GEO_D2R, cen[1] * _GEO_D2R)
+    dx, dy = tx - k * ce[0], ty + k * ce[1]
+
+    def f(lo, la):
+        q = rl(lo * _GEO_D2R, la * _GEO_D2R)
+        r = raw(q[0], q[1])
+        return [dx + k * r[0], dy - k * r[1]]
+    return f
+
+
+def _ch_albers_parts(k, tx, ty):
+    """The three projections of d3.geoAlbersUsa (lower 48, Alaska, Hawaii) and their clip extents (x0, y0, x1, y1)."""
+    e = _GEO_EPS
+    return [(_ch_conic(29.5, 45.5, 96, (-0.6, 38.7), k, tx, ty), (tx - 0.455 * k, ty - 0.238 * k, tx + 0.455 * k, ty + 0.238 * k)),
+            (_ch_conic(55, 65, 154, (-2, 58.5), k * 0.35, tx - 0.307 * k, ty + 0.201 * k), (tx - 0.425 * k + e, ty + 0.120 * k + e, tx - 0.214 * k - e, ty + 0.234 * k - e)),
+            (_ch_conic(8, 18, 157, (-3, 19.9), k, tx - 0.205 * k, ty + 0.212 * k), (tx - 0.214 * k + e, ty + 0.166 * k + e, tx - 0.115 * k - e, ty + 0.234 * k - e))]
+
+
+def _ch_albers_usa(k, tx, ty):
+    """d3.geoAlbersUsa().scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y], or None where no part of the composite shows the point."""
+    parts = _ch_albers_parts(k, tx, ty)
+
+    def f(lo, la):
+        for pr, (x0, y0, x1, y1) in parts:
+            p = pr(lo, la)
+            if x0 <= p[0] <= x1 and y0 <= p[1] <= y1:
+                return p
+        return None
+    return f
+
+
+def _ch_r1(v):
+    return _gm.floor(v * 10 + 0.5) / 10
+
+
+def _ch_path(polys, pr):
+    d = ''
+    for poly in polys:
+        for ring in poly:
+            pts, lx, ly = '', None, None
+            n = 0
+            for i in range(0, len(ring), 2):
+                p = pr(ring[i], ring[i + 1])
+                x, y = _ch_r1(p[0]), _ch_r1(p[1])
+                if x != lx or y != ly:
+                    pts += (' ' if n else '') + _geo_jsnum(x) + ' ' + _geo_jsnum(y)
+                    n += 1
+                    lx, ly = x, y
+            if n >= 3:
+                d += 'M' + pts + 'Z'
+    return d
+
+
+def _ch_frame(rset, proj, regs):
+    """(project(region_id, lon, lat), width, height): albers-usa is d3's default frame; the others are fitted to the set's window."""
+    if proj == 'albers-usa':
+        lo48, ak, hi = (p[0] for p in _ch_albers_parts(1070, 480, 250))
+        return (lambda rid, lo, la: ak(lo, la) if rid == 'AK' else hi(lo, la) if rid == 'HI' else lo48(lo, la)), 960, 500
+    u = _ch_equal_earth(1, 0, 0) if proj == 'equal-earth' else _geo_merc([0, 0], 1, 0, 0)
+    w0, w1, a0, a1 = _CH_WIN[rset]
+    x0 = y0 = float('inf')
+    x1 = y1 = float('-inf')
+    for _id, _nm, polys in regs:
+        for poly in polys:
+            for ring in poly:
+                for i in range(0, len(ring), 2):
+                    if w0 <= ring[i] <= w1 and a0 <= ring[i + 1] <= a1:
+                        p = u(ring[i], ring[i + 1])
+                        x0, x1, y0, y1 = min(x0, p[0]), max(x1, p[0]), min(y0, p[1]), max(y1, p[1])
+    pad = 4
+    k = (960 - 2 * pad) / (x1 - x0)
+    h = (y1 - y0) * k + 2 * pad
+    if h > 640:
+        k = (640 - 2 * pad) / (y1 - y0)
+        h = 640
+    h = _gm.ceil(h)
+    tx, ty = 480 - k * (x0 + x1) / 2, h / 2 - k * (y0 + y1) / 2
+
+    def fit(rid, lo, la):
+        p = u(lo, la)
+        return [tx + k * p[0], ty + k * p[1]]
+    return fit, 960, h
+
+
+def _ch_err(b, msg):
+    t = _cr_s(b.get('title'), 80)
+    return ('<div role="note" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:' + _CR_BORDER + ';border-radius:8px;padding:8px 10px;font-size:0.85rem;color:' + _CR_TEXT + ';">'
+            + ('<div style="font-weight:700;margin-bottom:4px;">' + t + '</div>' if t else '') + 'Choropleth map not drawn: ' + _cr_s(msg, 200) + '</div>')
+
+
+def _ch_ids(ids):
+    s = ', '.join(_cr_s(i, 12) for i in ids[:8])
+    return s + (' and ' + str(len(ids) - 8) + ' more' if len(ids) > 8 else '')
+
+
+def _ch_color(kind, scheme, j, steps, lo, hi):
+    """Class j (0 = lowest) of a quantized scale: the theme-token ramp of the legend, sampled at the class centre."""
+    if kind == 'sequential':
+        top = _CR_ACC2 if scheme == 'accent2' else _CR_ACC
+        return _cr_mix(top, _d3_round(12 + 88 * j / (steps - 1)), _CR_SURF)
+    c = lo + (hi - lo) * (j + 0.5) / steps
+    m = 0 if lo < 0 < hi else (lo + hi) / 2
+    den = max(m - lo, hi - m)
+    s = abs(c - m) / den if den > 0 else 0
+    p = _d3_round(100 * s)
+    return _CR_SURF if p == 0 else _cr_mix(_CR_ACC2 if c < m else _CR_ACC, p, _CR_SURF)
+
+
+def _render_choropleth_map(b: dict) -> str:
+    b = b if isinstance(b, dict) else {}
+    rset = b.get('region_set')
+    if rset not in _CH_SETS:
+        return _ch_err(b, 'region_set must be world-countries, us-states or europe-countries.')
+    proj = b.get('projection')
+    if proj is not None and proj not in _CH_PROJ:
+        return _ch_err(b, 'projection must be equal-earth, mercator or albers-usa.')
+    if proj == 'albers-usa' and rset != 'us-states':
+        return _ch_err(b, 'albers-usa only works with region_set us-states.')
+    proj = proj or ('albers-usa' if rset == 'us-states' else 'equal-earth')
+    sc = b.get('scale')
+    if sc is not None and not isinstance(sc, dict):
+        return _ch_err(b, 'scale must be an object {kind, scheme}.')
+    sc = sc or {}
+    kind = sc.get('kind', 'sequential')
+    if kind not in ('sequential', 'diverging'):
+        return _ch_err(b, 'scale.kind must be sequential or diverging.')
+    scheme = sc.get('scheme')
+    scheme = scheme if scheme in _CR_SCHEMES[kind] else _CR_SCHEMES[kind][0]
+    vals = b.get('values')
+    if not isinstance(vals, list) or len(vals) < 1:
+        return _ch_err(b, 'values must be a list of 1 to 250 {id, value}.')
+    notes = []
+    if len(vals) > 250:
+        notes.append('Only the first 250 of ' + str(len(vals)) + ' values were used.')
+        vals = vals[:250]
+    steps = 5
+    if b.get('steps') is not None:
+        sv = _cr_num(b.get('steps'))
+        if sv is None:
+            notes.append('steps must be a number from 3 to 9; using 5.')
+        else:
+            steps = int(max(3, min(9, _d3_round(sv))))
+            if steps != sv:
+                notes.append('steps must be a whole number from 3 to 9; using ' + str(steps) + '.')
+    regs = _ch_regions(rset)
+    index = {r[0]: i for i, r in enumerate(regs)}
+    got, unknown, dup, skipped = {}, [], [], 0
+    for e in vals:
+        v = _cr_num(e.get('value')) if isinstance(e, dict) else None
+        rid = e.get('id') if isinstance(e, dict) else None
+        if v is None or not isinstance(rid, str) or rid.strip() == '':
+            skipped += 1
+            continue
+        rid = rid.strip().upper()
+        if rid not in index:
+            unknown.append(rid)
+        elif rid in got:
+            dup.append(rid)
+        else:
+            got[rid] = v
+    codes = '2-letter USPS codes' if rset == 'us-states' else 'ISO 3166-1 alpha-3 codes'
+    if skipped:
+        notes.append(str(skipped) + (' entry was' if skipped == 1 else ' entries were') + ' skipped: each needs an id and a finite number value.')
+    if unknown:
+        notes.append('Not in the map: ' + _ch_ids(unknown) + '. Ids are ' + codes + '.')
+    if dup:
+        notes.append('Repeated ids, the first value was used: ' + _ch_ids(dup) + '.')
+    if not got:
+        return _ch_err(b, 'no value matched a region of ' + rset + ' (ids are ' + codes + ').')
+    lo, hi = min(got.values()), max(got.values())
+    unit_raw = b.get('unit') if isinstance(b.get('unit'), str) else ''
+    unit = _cr_s(unit_raw, 12)
+    us = (('' if unit_raw[:12] == '%' else ' ') + unit) if unit else ''
+
+    def klass(v):
+        return 0 if hi == lo else min(steps - 1, int(_gm.floor((v - lo) / (hi - lo) * steps)))
+    fills = [_ch_color(kind, scheme, j, steps, lo, hi) for j in range(steps)]
+    bounds = [lo + (hi - lo) * j / steps if j < steps else hi for j in range(steps + 1)]
+    valued = sorted(got, key=lambda r: (-got[r], index[r]))
+    nodata = [r for r in regs if r[0] not in got]
+    order = [regs[index[r]] for r in valued] + nodata
+    n_tiles = len(order)
+    n_all = n_tiles + steps
+    pr, w, h = _ch_frame(rset, proj, regs)
+    uid = 'ch' + _cr_id('choropleth_map', rset, proj, kind, str(steps), *[r + '=' + _cr_trim(got[r]) for r in valued])
+    paths = ''
+    for i, (rid, nm, polys) in enumerate(order):
+        if rid in got:
+            fill, tip = fills[klass(got[rid])], _cr_s(nm, 80) + ': ' + _cr_trim(got[rid]) + us
+        else:
+            fill, tip = 'url(#' + uid + ')', _cr_s(nm, 80) + ': no data'
+        paths += ('<path' + _cr_cb('tile', i, n_all, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _cr_s(rid, 12)) + ' d="'
+                  + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_)) + '"><title>' + tip + '</title></path>')
+    defs = ''
+    if nodata:
+        defs = ('<defs><pattern id="' + uid + '" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" style="fill:' + _CR_SURF
+                + ';"/><line x1="0" y1="0" x2="0" y2="6" style="stroke:' + _CR_MUTED + ';stroke-width:1.5;"/></pattern></defs>')
+    title = _cr_s(b.get('title'), 80)
+    label = (title or 'Choropleth map') + ': ' + str(len(got)) + ' of ' + str(len(regs)) + ' regions have a value, from ' + _cr_trim(lo) + us + ' to ' + _cr_trim(hi) + us
+    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;">'
+           + defs + paths + '</svg>')
+    lt = _cr_s(b.get('legend_title'), 60)
+    lis = ''
+    for j in range(steps):
+        lis += ('<li style="display:inline-flex;align-items:center;gap:6px;"><span aria-hidden="true" style="display:inline-block;flex:none;width:14px;height:14px;border-radius:3px;border:' + _CR_BORDER
+                + ';background:' + fills[j] + ';"></span><span' + _cr_cb('label', n_tiles + j, n_all, '', 'class-' + str(j + 1)) + '>' + _cr_trim(_ch_nice(bounds[j])) + ' to ' + _cr_trim(_ch_nice(bounds[j + 1])) + us + '</span></li>')
+    if nodata:
+        lis += ('<li style="display:inline-flex;align-items:center;gap:6px;"><span aria-hidden="true" style="display:inline-block;flex:none;width:14px;height:14px;border-radius:3px;border:' + _CR_BORDER
+                + ';background:repeating-linear-gradient(45deg,' + _CR_MUTED + ' 0 1.5px,' + _CR_SURF + ' 1.5px 5px);"></span><span>No data</span></li>')
+    legend = ('<div style="margin-top:8px;">' + ('<div style="font-weight:600;margin-bottom:4px;">' + lt + '</div>' if lt else '')
+              + '<ul style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;">' + lis + '</ul></div>')
+    nt = ''.join('<p role="note" style="margin:6px 0 0;font-size:0.8rem;color:' + _CR_MUTED + ';">' + x + '</p>' for x in notes) + _hg_version_note(b, 'choropleth_map')
+    nd = ''
+    if nodata:
+        nd = ('<details style="margin-top:6px;"><summary>' + str(len(nodata)) + (' region has' if len(nodata) == 1 else ' regions have') + ' no value (hatched)</summary><p style="margin:4px 0 0;">'
+              + ', '.join(_cr_s(r[1], 80) for r in nodata) + '</p></details>')
+    rows = ''
+    for r in valued:
+        v = got[r]
+        rows += ('<tr><th scope="row">' + _cr_s(regs[index[r]][1], 80) + '</th><td>' + r + '</td><td>' + _cr_trim(v) + us + '</td><td>' + str(klass(v) + 1) + ' of ' + str(steps) + '</td></tr>')
+    table = ('<table style="' + _CR_SR + '"><caption>' + (title or 'Choropleth map') + (' (' + unit + ')' if unit else '') + ', regions with a value, largest first</caption>'
+             '<thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Value</th><th scope="col">Class</th></tr></thead><tbody>' + rows + '</tbody></table>')
+    return ('<div role="group" aria-label="' + (title or 'Choropleth map') + '" data-cb-root style="--n:' + str(n_all) + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
+            + _CR_CB_CSS + ('<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' if title else '') + svg + legend + nt + nd + table + '</div>')
+
+
+_RENDERERS['choropleth_map'] = _render_choropleth_map
+
+
+# ─── geo_map (scattergeo parity, 2026-10-21, stage: preview). Twin of apps-script-surface/gas-wired-renderer/atoms_geo_map.gs. ───
+# Points and great-circle lines on the choropleth_map outlines and projections (no tiles, no network, no custom GeoJSON). The great circle is the d3-geo 3.1.1 geoInterpolate
+# (ISC, Mike Bostock) ported by hand and checked against the real library by tests/test_geo_map.py. Shape + colour per group and a dash per line, so colour is never the only cue.
+_GM_SHAPES = ('circle', 'square', 'diamond', 'triangle')
+_GM_COLS = (_CR_ACC, _CR_ACC2, _CR_TEXT, _CR_MUTED)
+_GM_DASH = ('', '7 4', '2 4')
+_GM_MAXPTS, _GM_MAXLINES, _GM_MAXVERT, _GM_MAXGROUPS = 500, 40, 20, 6
+
+
+def _gm_style(gi):
+    """(shape, colour) of group slot gi: the colour index moves on by one every fourth slot, so the 7 slots (6 groups and the ungrouped points) are all different pairs."""
+    return _GM_SHAPES[gi % 4], _GM_COLS[(gi + gi // 4) % 4]
+
+
+def _gm_kb(e, fb):
+    """Key of a point or line: its id (text, max 60), else its label (max 40), else fb ('p3' / 'l0': the position in the list as given)."""
+    i = e.get('id')
+    i = _cr_s(i.strip(), 60) if isinstance(i, str) else ''
+    return i or _cr_s(e.get('label'), 40) or fb
+
+
+def _gm_route_cb(li, i, n, key, style):
+    """A route has no fade: it is drawn on by the mask of its mask element (see _render_geo_map), so it carries data-cb/data-key but not cb-fade."""
+    return ' data-cb="link" data-key="' + key + '" mask="url(#@@' + str(li) + ')" style="' + style + '"'
+
+
+def _gm_uniq(base, seen):
+    k, n = base, 1
+    while k in seen:
+        n += 1
+        k = base + '~' + str(n)
+    seen.add(k)
+    return k
+
+
+def _gm_interp(a, b):
+    """d3.geoInterpolate(a, b) -> (f(t) = [lon, lat], distance in radians)."""
+    r = _GEO_D2R
+    x0, y0, x1, y1 = a[0] * r, a[1] * r, b[0] * r, b[1] * r
+    cy0, sy0, cy1, sy1 = _gm.cos(y0), _gm.sin(y0), _gm.cos(y1), _gm.sin(y1)
+    kx0, ky0, kx1, ky1 = cy0 * _gm.cos(x0), cy0 * _gm.sin(x0), cy1 * _gm.cos(x1), cy1 * _gm.sin(x1)
+    hv = lambda v: _gm.sin(v / 2) ** 2
+    d = 2 * _gm.asin(_gm.sqrt(min(1.0, hv(y1 - y0) + cy0 * cy1 * hv(x1 - x0))))
+    k = _gm.sin(d)
+    if not d:
+        return (lambda t: [x0 / r, y0 / r]), d
+
+    def f(t):
+        t = t * d
+        bb, aa = _gm.sin(t) / k, _gm.sin(d - t) / k
+        x, y, z = aa * kx0 + bb * kx1, aa * ky0 + bb * ky1, aa * sy0 + bb * sy1
+        return [_gm.atan2(y, x) / r, _gm.atan2(z, _gm.sqrt(x * x + y * y)) / r]
+    return f, d
+
+
+def _gm_err(b, msg):
+    t = _cr_s(b.get('title') if isinstance(b, dict) else None, 80)
+    return ('<div role="note" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:' + _CR_BORDER + ';border-radius:8px;padding:8px 10px;font-size:0.85rem;color:' + _CR_TEXT + ';">'
+            + ('<div style="font-weight:700;margin-bottom:4px;">' + t + '</div>' if t else '') + 'Geo map not drawn: ' + _cr_s(msg, 200) + '</div>')
+
+
+def _gm_coord(e):
+    if not isinstance(e, dict):
+        return None
+    la, lo = _cr_num(e.get('lat')), _cr_num(e.get('lon'))
+    return (la, lo) if la is not None and lo is not None and -90 <= la <= 90 and -180 <= lo <= 180 else None
+
+
+def _gm_marker(shape, x, y, r, cb, tip):
+    a = ' data-shape="' + shape + '" data-r="' + _cr_trim(r) + '" data-xy="' + _geo_jsnum(x) + ',' + _geo_jsnum(y) + '"'
+    if shape == 'circle':
+        return '<circle' + cb + a + ' cx="' + _geo_jsnum(x) + '" cy="' + _geo_jsnum(y) + '" r="' + _cr_trim(r) + '"><title>' + tip + '</title></circle>'
+    if shape == 'square':
+        return '<rect' + cb + a + ' x="' + _geo_jsnum(_ch_r1(x - r)) + '" y="' + _geo_jsnum(_ch_r1(y - r)) + '" width="' + _geo_jsnum(_ch_r1(2 * r)) + '" height="' + _geo_jsnum(_ch_r1(2 * r)) + '"><title>' + tip + '</title></rect>'
+    pts = ([(0, -1.25), (1.25, 0), (0, 1.25), (-1.25, 0)] if shape == 'diamond' else [(0, -1.2), (1.1, 0.9), (-1.1, 0.9)])
+    d = 'M' + 'L'.join(_geo_jsnum(_ch_r1(x + px * r)) + ' ' + _geo_jsnum(_ch_r1(y + py * r)) for px, py in pts) + 'Z'
+    return '<path' + cb + a + ' d="' + d + '"><title>' + tip + '</title></path>'
+
+
+def _render_geo_map(b: dict) -> str:
+    b = b if isinstance(b, dict) else {}
+    rset = b.get('region_set') if b.get('region_set') is not None else 'world-countries'
+    if rset not in _CH_SETS:
+        return _gm_err(b, 'region_set must be world-countries, us-states or europe-countries.')
+    proj = b.get('projection')
+    if proj is not None and proj not in _CH_PROJ:
+        return _gm_err(b, 'projection must be equal-earth, mercator or albers-usa.')
+    if proj == 'albers-usa' and rset != 'us-states':
+        return _gm_err(b, 'albers-usa only works with region_set us-states.')
+    proj = proj or ('albers-usa' if rset == 'us-states' else 'equal-earth')
+    notes = []
+    pts_in, lines_in = b.get('points'), b.get('lines')
+    pts_in = pts_in if isinstance(pts_in, list) else []
+    lines_in = lines_in if isinstance(lines_in, list) else []
+    if len(pts_in) > _GM_MAXPTS:
+        notes.append('Only the first ' + str(_GM_MAXPTS) + ' of ' + str(len(pts_in)) + ' points were used.')
+        pts_in = pts_in[:_GM_MAXPTS]
+    if len(lines_in) > _GM_MAXLINES:
+        notes.append('Only the first ' + str(_GM_MAXLINES) + ' of ' + str(len(lines_in)) + ' lines were used.')
+        lines_in = lines_in[:_GM_MAXLINES]
+    pts, bad = [], 0
+    seen = set()
+    for ei, e in enumerate(pts_in):
+        c = _gm_coord(e)
+        if c is None:
+            bad += 1
+            continue
+        pts.append((c[0], c[1], _cr_s(e.get('label'), 40), _cr_num(e.get('value')), e.get('group') if isinstance(e.get('group'), str) and e.get('group').strip() else '', _gm_kb(e, 'p' + str(ei))))
+    lines = []
+    for ei, e in enumerate(lines_in):
+        raw = e.get('path') if isinstance(e, dict) else None
+        cs = [_gm_coord(c) for c in raw[:_GM_MAXVERT]] if isinstance(raw, list) else []
+        if len(cs) < 2 or any(c is None for c in cs):
+            bad += 1
+            continue
+        lines.append((_cr_s(e.get('label'), 40), cs, _gm_kb(e, 'l' + str(ei))))
+    lkeys = [_gm_uniq(l[2], seen) for l in lines]
+    pkeys = [_gm_uniq(q[5], seen) for q in pts]
+    if bad:
+        notes.append(str(bad) + (' entry was' if bad == 1 else ' entries were') + ' skipped: a point needs lat (-90 to 90) and lon (-180 to 180) numbers, a line a path of 2 to ' + str(_GM_MAXVERT) + ' of them.')
+    if not pts and not lines:
+        return _gm_err(b, 'give points (each {lat, lon}) or lines (each {path: [{lat, lon}, ...]}).')
+    groups = []
+    for p in pts:
+        if p[4] not in groups:
+            groups.append(p[4])
+    named = [g for g in groups if g != '']
+    if len(named) > _GM_MAXGROUPS:
+        keep = named[:_GM_MAXGROUPS - 1]
+        notes.append('More than ' + str(_GM_MAXGROUPS) + ' groups: the groups after the first ' + str(_GM_MAXGROUPS - 1) + ' are shown as Other.')
+        pts = [p[:4] + (p[4] if p[4] in keep or p[4] == '' else 'Other',) + p[5:] for p in pts]
+        named = keep + ['Other']
+    gidx = {g: i for i, g in enumerate(named)}
+    ungi = len(named)
+    has_ung = any(p[4] == '' for p in pts)
+    vals = [p[3] for p in pts if p[3] is not None]
+    lo, hi = (min(vals), max(vals)) if vals else (0, 0)
+    unit_raw = b.get('unit') if isinstance(b.get('unit'), str) else ''
+    unit = _cr_s(unit_raw, 12)
+    us = (('' if unit_raw[:12] == '%' else ' ') + unit) if unit else ''
+    regs = _ch_regions(rset)
+    pr, w, h = _ch_frame(rset, proj, regs)
+    usa = _ch_albers_usa(1070, 480, 250) if proj == 'albers-usa' else None
+
+    def at(lat, lon):
+        if usa:
+            return usa(lon, lat)
+        p = pr('', lon, lat)
+        return p if 0 <= p[0] <= w and 0 <= p[1] <= h else None
+    base = ''
+    for rid, nm, polys in regs:
+        base += '<path data-base="1" style="fill:' + _cr_mix(_CR_MUTED, 12, _CR_SURF) + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;" d="' + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_)) + '"/>'
+    n_all = len(lines) + len(pts)
+    i, cut = 0, 0
+    route_svg, masks = '', ''
+    ds_all = []
+    for li, (lab, cs, _kb) in enumerate(lines):
+        d, seg, prev = '', [], None
+        legs = []
+        last = None
+        for k in range(len(cs) - 1):
+            f, dist = _gm_interp((cs[k][1], cs[k][0]), (cs[k + 1][1], cs[k + 1][0]))
+            n = 1 if dist < 1e-9 or _gm.sin(dist) < 1e-9 else max(1, min(64, int(_gm.ceil(dist / 0.0349))))
+            ld, lseg = '', ([last] if (k > 0 and prev is not None and last is not None) else [])
+            for s_ in range(0 if k == 0 else 1, n + 1):
+                q = f(s_ / n) if n > 1 else ([cs[k][1], cs[k][0]] if s_ == 0 else [cs[k + 1][1], cs[k + 1][0]])
+                p = at(q[1], q[0]) if usa else pr('', q[0], q[1])
+                if p is None:
+                    cut += 1
+                if p is None or (prev is not None and abs(p[0] - prev[0]) > w / 2):
+                    if len(seg) >= 2:
+                        d += 'M' + ' '.join(seg)
+                    seg = []
+                    if len(lseg) >= 2:
+                        ld += 'M' + ' '.join(lseg)
+                    lseg = []
+                if p is not None:
+                    last = _geo_jsnum(_ch_r1(p[0])) + ' ' + _geo_jsnum(_ch_r1(p[1]))
+                    seg.append(last)
+                    lseg.append(last)
+                prev = p
+            if len(lseg) >= 2:
+                ld += 'M' + ' '.join(lseg)
+            legs.append(ld)
+        if len(seg) >= 2:
+            d += 'M' + ' '.join(seg)
+        ds_all.append(d)
+        dash = _GM_DASH[li % 3]
+        col = _GM_COLS[li % 4]
+        tip = (lab or 'Line ' + str(li + 1)) + ': ' + str(len(cs)) + ' points'
+        route_svg += ('<path' + _gm_route_cb(li, i, n_all, lkeys[li], 'fill:none;stroke:' + col + ';stroke-width:3;stroke-linecap:round;stroke-linejoin:round;'
+                      + ('stroke-dasharray:' + dash + ';' if dash else '')) + ' d="' + d + '"><title>' + tip + '</title></path>')
+        masks += ('<mask id="@@' + str(li) + '" maskUnits="userSpaceOnUse" x="0" y="0" width="' + str(w) + '" height="' + str(h) + '">'
+                  + ''.join('<path d="' + ld + '" pathLength="1" style="fill:none;stroke:#fff;stroke-width:8;stroke-dasharray:1;stroke-dashoffset:calc(1px*(1 - clamp(0,calc((var(--p,1)*'
+                            + str(n_all + 1) + ' - ' + str(i) + ')*' + str(len(legs)) + ' - ' + str(j) + '),1)));"/>' for j, ld in enumerate(legs) if ld) + '</mask>')
+        i += 1
+    mid = 'gm' + _cr_id('geo_map', rset, proj, *lkeys, *ds_all)
+    route_svg = route_svg.replace('url(#@@', 'url(#' + mid)
+    masks = masks.replace('id="@@', 'id="' + mid)
+    defs_m = '<defs>' + masks + '</defs>' if masks else ''
+    mark_svg, outside = '', []
+    for pi, (la, lo_, lab, v, g, _pk) in enumerate(pts):
+        p = at(la, lo_)
+        if p is None:
+            outside.append(pi)
+            continue
+        gi = gidx.get(g, ungi)
+        shp, colr = _gm_style(gi)
+        r = 8 if not vals else (6 if v is None else (12 if hi == lo else 7 + 11 * _gm.sqrt((v - lo) / (hi - lo))))
+        tip = (lab + ': ' if lab else '') + _cr_trim(la) + ', ' + _cr_trim(lo_) + ('' if v is None else ' = ' + _cr_trim(v) + us) + (' (' + _cr_s(g, 40) + ')' if g else '')
+        mark_svg += _gm_marker(shp, _ch_r1(p[0]), _ch_r1(p[1]), r, _cr_cb('node', i, n_all, 'fill:' + colr + ';stroke:' + _CR_SURF + ';stroke-width:1.5;', pkeys[pi]), tip)
+        i += 1
+    if outside:
+        notes.append(str(len(outside)) + (' point is' if len(outside) == 1 else ' points are') + ' outside this map\'s frame and not drawn (still listed in the table).')
+    if cut:
+        notes.append('Lines are cut where they leave the map: the US composite has no place for the path between the lower 48 and Alaska or Hawaii.')
+    title = _cr_s(b.get('title'), 80)
+    label = ((title or 'Geo map') + ': ' + str(len(pts) - len(outside)) + ' of ' + str(len(pts)) + ' points drawn' + (', ' + str(len(lines)) + (' line' if len(lines) == 1 else ' lines') if lines else '')
+             + (' in ' + str(len(named)) + (' group' if len(named) == 1 else ' groups') if named else ''))
+    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;">'
+           + defs_m + base + route_svg + mark_svg + '</svg>')
+    lt = _cr_s(b.get('legend_title'), 60)
+    sw = lambda shape, col: ('<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="-8 -8 16 16" style="flex:none;">' + {
+        'circle': '<circle r="5.5"', 'square': '<rect x="-5" y="-5" width="10" height="10"', 'diamond': '<path d="M0 -7L7 0L0 7L-7 0Z"', 'triangle': '<path d="M0 -6.5L6 5L-6 5Z"'}[shape]
+        + ' style="fill:' + col + ';stroke:' + _CR_SURF + ';"/></svg>')
+    lis = ''
+    for gi, g in enumerate(named + (['Ungrouped'] if named and has_ung else [])):
+        lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + sw(*_gm_style(gi)) + '<span>' + _cr_s(g, 40) + '</span></li>'
+    for li, (lab, cs, _kb) in enumerate(lines):
+        dash = _GM_DASH[li % 3]
+        lis += ('<li style="display:inline-flex;align-items:center;gap:6px;"><svg aria-hidden="true" focusable="false" width="28" height="16" viewBox="0 0 28 16" style="flex:none;"><line x1="1" y1="8" x2="27" y2="8" style="stroke:'
+                + _GM_COLS[li % 4] + ';stroke-width:2;' + ('stroke-dasharray:' + dash + ';' if dash else '') + '"/></svg><span>' + (lab or 'Line ' + str(li + 1)) + '</span></li>')
+    size = (' <p style="margin:4px 0 0;">Marker size: value, from ' + _cr_trim(lo) + us + ' (smallest) to ' + _cr_trim(hi) + us + ' (largest)' + ('; points without a value are smallest' if any(p[3] is None for p in pts) else '') + '.</p>') if vals else ''
+    legend = ('<div style="margin-top:8px;">' + ('<div style="font-weight:600;margin-bottom:4px;">' + lt + '</div>' if lt else '')
+              + ('<ul style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;">' + lis + '</ul>' if lis else '') + size + '</div>')
+    nt = ''.join('<p role="note" style="margin:6px 0 0;font-size:0.8rem;color:' + _CR_MUTED + ';">' + x + '</p>' for x in notes) + _hg_version_note(b, 'geo_map')
+    prow = ''.join('<tr><th scope="row">' + (lab or 'Point ' + str(k + 1)) + '</th><td>' + _cr_trim(la) + '</td><td>' + _cr_trim(lo_) + '</td><td>' + ('' if v is None else _cr_trim(v) + us) + '</td><td>' + _cr_s(g, 40)
+                   + '</td><td>' + ('outside the frame' if k in outside else 'drawn') + '</td></tr>' for k, (la, lo_, lab, v, g, _pk) in enumerate(pts))
+    ptable = ('<table style="' + _CR_SR + '"><caption>' + (title or 'Geo map') + ', points</caption><thead><tr><th scope="col">Point</th><th scope="col">Latitude</th><th scope="col">Longitude</th>'
+              '<th scope="col">Value</th><th scope="col">Group</th><th scope="col">Status</th></tr></thead><tbody>' + prow + '</tbody></table>') if pts else ''
+    lrow = ''.join('<tr><th scope="row">' + (lab or 'Line ' + str(k + 1)) + '</th><td>' + ' to '.join(_cr_trim(c[0]) + ', ' + _cr_trim(c[1]) for c in cs) + '</td><td>' + str(len(cs)) + '</td></tr>' for k, (lab, cs, _kb) in enumerate(lines))
+    ltable = ('<table style="' + _CR_SR + '"><caption>' + (title or 'Geo map') + ', lines (great-circle arcs between the listed points)</caption><thead><tr><th scope="col">Line</th>'
+              '<th scope="col">Stops (lat, lon), in order</th><th scope="col">Points</th></tr></thead><tbody>' + lrow + '</tbody></table>') if lines else ''
+    return ('<div role="group" aria-label="' + (title or 'Geo map') + '" data-cb-root style="--n:' + str(n_all) + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
+            + _CR_CB_CSS + ('<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' if title else '') + svg + legend + nt + ptable + ltable + '</div>')
+
+
+_RENDERERS['geo_map'] = _render_geo_map
 
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.
