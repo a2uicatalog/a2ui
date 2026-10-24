@@ -73,6 +73,12 @@
   "speed"
  ],
  "box_plot": [
+  "bandwidth",
+  "notches",
+  "orientation",
+  "quartile_method",
+  "shape",
+  "show_mean",
   "title",
   "version"
  ],
@@ -110,6 +116,14 @@
   "datasets",
   "labels"
  ],
+ "chartjs_line": [
+  "max_points",
+  "series",
+  "version",
+  "x_label",
+  "x_type",
+  "y_label"
+ ],
  "chartjs_pie": [
   "colors",
   "show_labels",
@@ -124,6 +138,9 @@
  ],
  "chord_diagram": [
   "title"
+ ],
+ "choropleth_map": [
+  "version"
  ],
  "circle_pack": [
   "title"
@@ -168,6 +185,9 @@
  ],
  "conversation_snippet": [
   "accent"
+ ],
+ "conversion_funnel": [
+  "version"
  ],
  "countdown_timer": [
   "accent",
@@ -340,6 +360,9 @@
  "gantt": [
   "title"
  ],
+ "geo_map": [
+  "version"
+ ],
  "github_activity_grid": [
   "activity",
   "streak_days",
@@ -378,8 +401,6 @@
  ],
  "heatmap": [
   "color_scale",
-  "labels_x",
-  "labels_y",
   "scale",
   "show_colorbar",
   "show_values",
@@ -401,6 +422,19 @@
   "title",
   "version"
  ],
+ "histogram2d": [
+  "nbinsx",
+  "nbinsy",
+  "scale",
+  "show_colorbar",
+  "show_values",
+  "title",
+  "version",
+  "x",
+  "x_label",
+  "y",
+  "y_label"
+ ],
  "hover_card": [
   "card_content",
   "card_image_url",
@@ -413,6 +447,9 @@
  "image_pair": [
   "left",
   "right"
+ ],
+ "image_plot": [
+  "version"
  ],
  "inline_alert": [
   "detail"
@@ -620,6 +657,11 @@
   "body",
   "depth"
  ],
+ "parallel_categories": [
+  "dimensions",
+  "title",
+  "version"
+ ],
  "parallel_coords": [
   "title",
   "version"
@@ -644,6 +686,9 @@
  ],
  "photo_upload": [
   "wired"
+ ],
+ "polar_chart": [
+  "version"
  ],
  "pricing_tier_card": [
   "call_to_action_label",
@@ -697,6 +742,24 @@
  ],
  "roadmap_card": [
   "periods"
+ ],
+ "scatter3d_static": [
+  "camera",
+  "title",
+  "version"
+ ],
+ "scatter_matrix": [
+  "dimensions",
+  "title",
+  "version"
+ ],
+ "scatter_trend": [
+  "max_points",
+  "series",
+  "version",
+  "x_label",
+  "x_type",
+  "y_label"
  ],
  "scene_stage": [
   "accent",
@@ -789,6 +852,11 @@
  ],
  "sunburst": [
   "title"
+ ],
+ "surface_static": [
+  "camera",
+  "title",
+  "version"
  ],
  "svg_path_draw": [
   "duration",

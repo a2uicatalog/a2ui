@@ -4451,19 +4451,42 @@ def _get_color_from_scale(scale: list[str], weight: float) -> str:
     segment_percent = (weight - (segment * segment_w)) / segment_w
     return _interpolate_color(scale[segment], scale[segment+1], segment_percent)
 
-def _render_heatmap(b: dict) -> str:
-    data        = b.get("data", [])
-    labels_x    = b.get("labels_x", [])
-    labels_y    = b.get("labels_y", [])
+def _hmg_num(v) -> float:
+    """A cell value as a finite number; anything else counts as 0 (the Apps Script twin's parseFloat(v) || 0)."""
+    if isinstance(v, bool):
+        return 0.0
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return 0.0
+    return x if x == x and abs(x) != float("inf") else 0.0
+
+
+def _hmg_is_matrix(data) -> bool:
+    """Schema shape: data is a list of rows, each row a list of numbers (legacy shape: a list of {row, col, value} dicts)."""
+    return isinstance(data, list) and any(isinstance(r, list) for r in data)
+
+
+def _render_heatmap_grid(b: dict) -> str:
+    """Schema-shaped heatmap: data = [[...], [...]] with labels_x / labels_y (or cols / rows)."""
+    raw         = b.get("data", [])
+    labels_x    = b.get("labels_x") or b.get("cols") or []
+    labels_y    = b.get("labels_y") or b.get("rows") or []
     color_scale = b.get("color_scale", ["#1e293b", "#10b981"])
     unit        = b.get("unit", "")
-    
-    if not data or not data[0]:
+    labels_x    = labels_x if isinstance(labels_x, list) else []
+    labels_y    = labels_y if isinstance(labels_y, list) else []
+    if not isinstance(color_scale, list) or not color_scale:
+        color_scale = ["#1e293b", "#10b981"]
+
+    raw = [r if isinstance(r, list) else [] for r in raw]
+    num_rows = len(raw)
+    num_cols = max((len(r) for r in raw), default=0)
+    if not num_rows or not num_cols:
         return ""
-        
-    num_rows = len(data)
-    num_cols = len(data[0])
-    
+    # ragged rows are padded with 0, as the Apps Script twin does
+    data = [[_hmg_num(r[j]) if j < len(r) else 0.0 for j in range(num_cols)] for r in raw]
+
     flat_data = [val for row in data for val in row]
     mn, mx = min(flat_data), max(flat_data)
     rng = (mx - mn) or 1
@@ -4538,6 +4561,13 @@ def _render_heatmap(b: dict) -> str:
       </div>
     </div>
     """
+
+def _render_heatmap(b: dict) -> str:
+    """Route by shape: a list of lists is the schema heatmap, anything else the legacy {row, col, value} list."""
+    if isinstance(b, dict) and _hmg_is_matrix(b.get("data")):
+        return _render_heatmap_grid(b)
+    return _render_heatmap_items(b)
+
 
 def _render_status_dashboard(b: dict) -> str:
     """Overall-status banner + per-service rows. Mirrors the GAS renderer
@@ -13875,7 +13905,7 @@ def _render_heading(b: dict) -> str:
 _RENDERERS['heading'] = _render_heading
 
 
-def _render_heatmap(b: dict) -> str:
+def _render_heatmap_items(b: dict) -> str:
     data = b.get('data', [])
     rows = b.get('rows', [])
     cols = b.get('cols') or b.get('columns', [])

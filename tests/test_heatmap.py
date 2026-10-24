@@ -54,14 +54,64 @@ def _all_gas(core_js, d):
     return dict(zip(d, _gas_batch(core_js, list(d.values()))))
 
 
-@pytest.mark.parametrize("name", list(BASE))
+# Payloads whose data is a list of lists (the schema shape) used to draw nothing in Python (the second, dict-only
+# _render_heatmap shadowed the schema renderer) and, without rows and cols, nothing in Apps Script; they are routed to the
+# grid renderer now. Every other base payload (dict items, empty, rows + cols in Apps Script) is still byte for byte as at base.
+SCHEMA_SHAPED_PY = {"schema_form", "schema_minimal", "rows_cols", "hostile", "all_equal"}
+SCHEMA_SHAPED_GAS = {"schema_form", "schema_minimal", "hostile"}
+
+
+@pytest.mark.parametrize("name", [n for n in BASE if n not in SCHEMA_SHAPED_PY])
 def test_payloads_without_the_new_fields_render_byte_for_byte_as_at_base(name):
     assert _py(dict(LEGACY[name])) == BASE[name]["py"]
 
 
 def test_gas_payloads_without_the_new_fields_render_byte_for_byte_as_at_base(core_js):
     g = _all_gas(core_js, LEGACY)
-    assert {n: g[n] for n in BASE} == {n: BASE[n]["gas"] for n in BASE}
+    names = [n for n in BASE if n not in SCHEMA_SHAPED_GAS]
+    assert {n: g[n] for n in names} == {n: BASE[n]["gas"] for n in names}
+
+
+SCHEMA = {
+    "grid": {"type": "heatmap", "data": [[1, 2], [3, 4]], "labels_x": ["a", "b"], "labels_y": ["c", "d"]},
+    "wide": {"type": "heatmap", "title": "Visits", "data": [[1, 2, 3], [4, 5, 6]], "labels_x": ["Mon", "Tue", "Wed"], "labels_y": ["AM", "PM"]},
+    "no_labels": {"type": "heatmap", "data": [[0, 10], [5, 5], [1, 2]]},
+    "ragged": {"type": "heatmap", "data": [[1, "x", None], [2]], "labels_x": ["a", "b", "c"], "labels_y": ["r1", "r2"]},
+    "one_row": {"type": "heatmap", "data": [[7, 8, 9, 10]]},
+}
+SCHEMA_CELLS = {"grid": 4, "wide": 6, "no_labels": 6, "ragged": 6, "one_row": 4}
+
+
+def test_schema_shaped_payload_draws_rows_by_cols_cells_in_python():
+    for n, b in SCHEMA.items():
+        h = _py(dict(b))
+        assert h.count("<rect") == SCHEMA_CELLS[n], n
+        assert not re.search(r"NaN|undefined|Infinity|\[object", h), n
+    assert ">a</text>" in _py(dict(SCHEMA["grid"])) and ">d</text>" in _py(dict(SCHEMA["grid"]))
+
+
+def test_schema_shaped_payload_draws_rows_by_cols_cells_in_gas(core_js):
+    g = _all_gas(core_js, SCHEMA)
+    for n, h in g.items():
+        assert h.count("<rect") == SCHEMA_CELLS[n], n
+        assert "No heatmap data" not in h and not re.search(r"NaN|undefined|Infinity|\[object", h), n
+    assert ">a<" in g["grid"] and ">d<" in g["grid"]
+
+
+def test_python_and_gas_agree_on_the_cell_values_of_schema_shaped_payloads(core_js):
+    g = _all_gas(core_js, SCHEMA)
+    for n, b in SCHEMA.items():
+        p = _py(dict(b))
+        pv = re.findall(r"<title>([-\d.,]+)", p)
+        gv = re.findall(r"<title>[^<]*: ([-\d.]+)</title>", g[n])
+        assert [float(x.replace(",", "")) for x in pv] == [float(x) for x in gv], n
+
+
+def test_legacy_dict_items_are_routed_to_the_legacy_renderer():
+    b = {"type": "heatmap", "title": "Items", "data": [{"row": "a", "col": "x", "value": 3}, {"row": "a", "col": "y", "value": 9}]}
+    h = _py(dict(b))
+    assert h == BASE["dict_items"]["py"] and h.count("<td ") == 2 and "<rect" not in h
+    assert _py({"type": "heatmap"}) == BASE["empty"]["py"]
 
 
 def test_python_and_gas_emit_identical_html(core_js):
