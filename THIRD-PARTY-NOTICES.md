@@ -137,7 +137,7 @@ just looks plainer.
 
 ## d3-scale (Mike Bostock)
 
-- **Project:** d3-scale 4.0.2 — `scalePoint` (a band scale with no inner padding: n evenly spaced positions in a range, with `padding` 0.5 of a step at each end)
+- **Project:** d3-scale 4.0.2 — `scalePoint` (a band scale with no inner padding: n evenly spaced positions in a range, with `padding` 0.5 of a step at each end) and `scaleLinear` (`nice(5)` domain, `ticks(5)` and the normalize-then-`interpolateNumber` placing of a value)
 - **Website:** https://github.com/d3/d3-scale
 - **License:** ISC License
 - **Copyright:** Copyright 2010-2021 Mike Bostock
@@ -163,6 +163,8 @@ just looks plainer.
   `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, and checked against the real library's output (every string with ==) by
   `tests/test_chart_axis.py`. Types `b c o p r x X` are not ported; such a specifier is rejected and plain numbers are shown.
 - **Used by:** the `y_format` and `value_format` fields of `chartjs_bar` in both renderers. No script is shipped to the page.
+  The `quiver` atom's axes and arrow positions and the `ternary_plot` gridline ticks use the linear scale, ported by hand into `_qv_axis` / `_qv_place` in `renderers/web_article.py`
+  and `_qvAxis` / `_qvPlace` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`, checked with == against `tests/fixtures/quiver_d3_golden_gen.mjs` by `tests/test_ternary_quiver.py`.
 
 ---
 

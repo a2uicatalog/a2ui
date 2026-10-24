@@ -37511,6 +37511,192 @@ def _render_box_plot(b: dict) -> str:
                                 [[nm, str(s['n']), f(s['min']) + us, f(s['q1']) + us, f(s['median']) + us, f(s['q3']) + us, f(s['max']) + us, str(len(s['outliers']))] for (nm, _), s in zip(used, stats)]))
 
 
+# ── ternary_plot and quiver (Plotly wave A, package ternary-quiver) ── plain trigonometry on top of d3-scale's linear scale:
+# the axis is nice(min, max, 5) and ticks(5) (the same maths as the box_plot axis), a value is placed by d3's normalize then
+# interpolateNumber, a*(1-t) + b*t. A ternary point (a, b, c) is normalised to shares that sum to 1 and sits at x = c + a/2 of the
+# triangle's width and y = 1 - a of its height. Twin of _qvAxis / _qvPlace / _RENDERERS['ternary_plot'] and ['quiver'] in atoms_infographic.gs.
+_TP_VB_H = 866                      # a 1000-unit-wide triangle is 866 units high (1000 * sqrt(3) / 2)
+_QV_W, _QV_H, _QV_INSET, _QV_LMAX = 1000, 620, 65, 120
+_QV_COS, _QV_SIN = 0.9063077870366499, 0.42261826174069944        # cos and sin of 25 degrees: the arrowhead's barbs
+_QV_MAX = 200
+
+
+def _qv_axis(vals):
+    """vals: finite numbers -> ((x0, x1), ticks) exactly as d3 scaleLinear().domain([min, max]).nice(5) and .ticks(5)."""
+    x0, x1 = _hg_nice(min(vals), max(vals), 5)
+    return (x0, x1), _hg_ticks(x0, x1, 5)
+
+
+def _qv_place(v, dom, r0, r1):
+    """d3 scaleLinear().domain(dom).range([r0, r1])(v): normalize, then interpolateNumber."""
+    span = dom[1] - dom[0]
+    t = (v - dom[0]) / span if span else 0.5
+    return r0 * (1 - t) + r1 * t
+
+
+def _qv_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _qv_text(v, mx, d):
+    """A label: a string or a finite number; anything else (an object, a list, a bool) is no label."""
+    s = v if isinstance(v, str) else (_if_numstr(v) if (isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf')) else '')
+    return s[:mx] if s else d
+
+
+def _qv_c(f):
+    return min(1, max(0, f))
+
+
+def _qv_f(v):
+    return _hg_num(v, min(_hg_decimals([v]), 3))
+
+
+def _qv_note(lst, cap, left_out, noun):
+    beyond = len(lst) - cap
+    return ((_hg_note(str(left_out) + (' %s was not a usable %s and was' if left_out == 1 else ' %ss were not a usable %s and were') % ((noun, noun) if left_out == 1 else (noun, noun)) + ' left out.') if left_out else '')
+            + (_hg_note(str(beyond) + (' %s beyond the first %d was' if beyond == 1 else ' %ss beyond the first %d were') % (noun, cap) + ' not drawn.') if beyond > 0 else ''))
+
+
+def _render_ternary_plot(b: dict) -> str:
+    lst = _if_g(b, 'points')
+    lst = lst if isinstance(lst, list) else []
+    used, left_out = [], 0
+    for k, p in enumerate(lst[:_QV_MAX]):
+        if not isinstance(p, dict) or not all(_qv_num(_if_g(p, q)) and _if_g(p, q) >= 0 for q in 'abc'):
+            left_out += 1
+            continue
+        a, c3, c = float(p['a']), float(p['b']), float(p['c'])
+        s = a + c3 + c
+        if not s > 0:
+            left_out += 1
+            continue
+        used.append((_qv_text(_if_g(p, 'label'), 30, 'Point ' + str(k + 1)), a / s, c3 / s, c / s))
+    notes = _qv_note(lst, _QV_MAX, left_out, 'point')
+    ver = _hg_version_note(b, 'ternary_plot')
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A ternary plot needs at least one point with three non-negative numbers.</div>' + notes + ver)
+    names = [_qv_text(_if_g(b, 'a_label'), 20, 'A'), _qv_text(_if_g(b, 'b_label'), 20, 'B'), _qv_text(_if_g(b, 'c_label'), 20, 'C')]
+    n = len(used)
+    pct = [v * 100 for u in used for v in u[1:]]
+    d = min(_hg_decimals(pct), 2)
+    mean = []
+    for i in (1, 2, 3):
+        tot = 0.0
+        for u in used:
+            tot += u[i]
+        mean.append(tot / n * 100)
+    aria = ('Ternary plot of ' + str(n) + (' point' if n == 1 else ' points') + '. ' + names[0] + ', ' + names[1] + ' and ' + names[2] + ' shares sum to 100%. Average: '
+            + ', '.join(names[i] + ' ' + _hg_num(mean[i], 1) + '%' for i in range(3)) + '.')
+    ticks = [t for t in _hg_ticks(0, 1, 5) if 0 < t < 1]
+    xy = lambda fa, fb, fc: (_qv_c(fc + fa / 2), _qv_c(1 - fa))           # (x, y) as fractions of the width and height, y down
+    svg = ''
+    for t in ticks:
+        for p1, p2 in (((t, 1 - t, 0), (t, 0, 1 - t)), ((1 - t, t, 0), (0, t, 1 - t)), ((1 - t, 0, t), (0, 1 - t, t))):
+            (x1, y1), (x2, y2) = xy(*p1), xy(*p2)
+            svg += ('<line class="tpg" x1="' + _if_fixed(x1 * 1000, 2) + '" y1="' + _if_fixed(y1 * _TP_VB_H, 2) + '" x2="' + _if_fixed(x2 * 1000, 2) + '" y2="' + _if_fixed(y2 * _TP_VB_H, 2)
+                    + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>')
+    line = ''
+    if _if_g(b, 'connect') is True and n > 1:
+        line = ('<polyline class="tpl" fill="none" stroke="var(--accent,#0369A1)" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" points="'
+                + ' '.join(_if_fixed(x * 1000, 2) + ',' + _if_fixed(y * _TP_VB_H, 2) for x, y in (xy(u[1], u[2], u[3]) for u in used)) + '"/>')
+    tri = ('<polygon points="500,0 0,' + str(_TP_VB_H) + ' 1000,' + str(_TP_VB_H) + '" fill="var(--surface,#F8FAFC)" stroke="var(--muted,#475569)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>')
+    dots = ''
+    for k, u in enumerate(used):
+        x, y = xy(u[1], u[2], u[3])
+        dots += ('<div class="tpd" style="position:absolute;left:' + _tm_pct(x, 1) + ';top:' + _tm_pct(y, 1) + ';width:10px;height:10px;box-sizing:border-box;border-radius:50%;'
+                 'border:1.5px solid var(--bg,#fff);background:var(--accent,#0369A1);transform:translate(-50%,-50%);' + _if_k(k, n) + 'opacity:var(--k,1);"></div>')
+    tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';'
+    labs = ''
+    for t in ticks:
+        lab = _hg_num(t * 100, 0) + '%'
+        (ax, ay), (bx, by), (cx, cy) = xy(t, 1 - t, 0), xy(0, t, 1 - t), xy(1 - t, 0, t)
+        labs += ('<div class="tpt" style="' + tl + 'left:' + _tm_pct(ax, 1) + ';top:' + _tm_pct(ay, 1) + ';transform:translate(calc(-100% - 6px),-50%);">' + lab + '</div>'
+                 '<div class="tpt" style="' + tl + 'left:' + _tm_pct(bx, 1) + ';top:' + _tm_pct(by, 1) + ';transform:translate(-50%,6px);">' + lab + '</div>'
+                 '<div class="tpt" style="' + tl + 'left:' + _tm_pct(cx, 1) + ';top:' + _tm_pct(cy, 1) + ';transform:translate(6px,-50%);">' + lab + '</div>')
+    vl = 'font-size:0.8rem;font-weight:700;line-height:1.2;overflow-wrap:anywhere;'
+    chart = ('<div class="iftp" style="container-type:inline-size;max-width:100%;overflow:hidden;">'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '">'
+             '<div class="tpv" style="' + vl + 'text-align:center;margin:0 0 14px;">' + _cv_esc(names[0]) + '</div>'
+             '<div style="margin:0 52px;"><div class="tpp" style="position:relative;width:100%;aspect-ratio:1000/' + str(_TP_VB_H) + ';">'
+             '<svg aria-hidden="true" viewBox="0 0 1000 ' + str(_TP_VB_H) + '" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">'
+             + tri + svg + line + '</svg>' + dots + labs + '</div></div>'
+             '<div style="display:flex;justify-content:space-between;gap:8px;margin:30px 0 0;">'
+             '<div class="tpv" style="' + vl + 'max-width:45%;">' + _cv_esc(names[1]) + '</div><div class="tpv" style="' + vl + 'max-width:45%;text-align:right;">' + _cv_esc(names[2]) + '</div></div></div></div>')
+    hint = _hg_note('Gridlines every 20%: ' + _cv_esc(names[0]) + ' counts up the left edge, ' + _cv_esc(names[1]) + ' along the bottom edge towards the left, ' + _cv_esc(names[2]) + ' counts down the right edge towards its corner.')
+    return _if_wrap(_if_title(b) + chart + hint + notes + ver
+                    + _if_table(['Point'] + names, [[u[0]] + [_hg_num(v * 100, d) + '%' for v in u[1:]] for u in used]))
+
+
+def _render_quiver(b: dict) -> str:
+    lst = _if_g(b, 'arrows')
+    lst = lst if isinstance(lst, list) else []
+    used, left_out = [], 0
+    for k, p in enumerate(lst[:_QV_MAX]):
+        if not isinstance(p, dict) or not all(_qv_num(_if_g(p, q)) for q in ('x', 'y', 'u', 'v')):
+            left_out += 1
+            continue
+        x, y, u, v = float(p['x']), float(p['y']), float(p['u']), float(p['v'])
+        used.append((_qv_text(_if_g(p, 'label'), 30, 'Arrow ' + str(k + 1)), x, y, u, v, math.sqrt(u * u + v * v)))
+    notes = _qv_note(lst, _QV_MAX, left_out, 'arrow')
+    ver = _hg_version_note(b, 'quiver')
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A quiver plot needs at least one arrow with x, y, u and v numbers.</div>' + notes + ver)
+    n = len(used)
+    unit = _qv_text(_if_g(b, 'unit'), 12, '')
+    us = ' ' + unit if unit else ''
+    xn, yn = _qv_text(_if_g(b, 'x_label'), 40, 'x'), _qv_text(_if_g(b, 'y_label'), 40, 'y')
+    (X0, X1), xt = _qv_axis([a[1] for a in used])
+    (Y0, Y1), yt = _qv_axis([a[2] for a in used])
+    sc = _if_g(b, 'arrow_scale')
+    sc = min(1, max(0.1, float(sc))) if _qv_num(sc) else 1
+    big = max(a[5] for a in used)
+    R = _QV_W - _QV_INSET
+    B = _QV_H - _QV_INSET
+    px = lambda v: _qv_place(v, (X0, X1), _QV_INSET, R)
+    py = lambda v: _qv_place(v, (Y0, Y1), B, _QV_INSET)
+    fx = lambda v: _if_fixed(v, 2)
+    grid = ''.join('<line class="qvg" x1="' + fx(px(t)) + '" y1="0" x2="' + fx(px(t)) + '" y2="' + str(_QV_H) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>' for t in xt)
+    grid += ''.join('<line class="qvg" x1="0" y1="' + fx(py(t)) + '" x2="' + str(_QV_W) + '" y2="' + fx(py(t)) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>' for t in yt)
+    marks = ''
+    for k, a in enumerate(used):
+        cx, cy, mag = px(a[1]), py(a[2]), a[5]
+        st = _if_k(k, n) + 'opacity:var(--k,1);'
+        if not (mag > 0 and big > 0):
+            marks += '<circle class="qvz" cx="' + fx(cx) + '" cy="' + fx(cy) + '" r="5" fill="var(--accent,#0369A1)" style="' + st + '"/>'
+            continue
+        ln = _QV_LMAX * sc * mag / big
+        dx, dy = a[3] / mag, -a[4] / mag
+        x0, y0, x1, y1 = cx - 0.5 * ln * dx, cy - 0.5 * ln * dy, cx + 0.5 * ln * dx, cy + 0.5 * ln * dy
+        hl = min(0.35 * ln, 28)
+        b1x, b1y = x1 - hl * (dx * _QV_COS - dy * _QV_SIN), y1 - hl * (dx * _QV_SIN + dy * _QV_COS)
+        b2x, b2y = x1 - hl * (dx * _QV_COS + dy * _QV_SIN), y1 - hl * (-dx * _QV_SIN + dy * _QV_COS)
+        marks += ('<path class="qva" d="M' + fx(x0) + ' ' + fx(y0) + 'L' + fx(x1) + ' ' + fx(y1) + 'M' + fx(b1x) + ' ' + fx(b1y) + 'L' + fx(x1) + ' ' + fx(y1) + 'L' + fx(b2x) + ' ' + fx(b2y)
+                  + '" fill="none" stroke="var(--accent,#0369A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="' + st + '"/>')
+    tl = 'position:absolute;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';'
+    xd, yd = _hg_decimals(xt), _hg_decimals(yt)
+    xl = [_hg_num(t, xd) for t in xt]
+    stride = -(-len(xt) // max(2, min(8, 48 // max(len(s) for s in xl))))
+    xlabs = ''.join('<div class="qvx' + (' qvc' if i % (2 * stride) == 0 else '') + '" style="' + tl + 'top:100%;margin-top:6px;left:' + _tm_pct(px(t), _QV_W) + ';transform:translateX(-50%);">' + xl[i] + '</div>'
+                    for i, t in enumerate(xt) if i % stride == 0)
+    ylabs = ''.join('<div class="qvy" style="' + tl + 'left:0;margin-left:-6px;top:' + _tm_pct(py(t), _QV_H) + ';transform:translate(-100%,-50%);">' + _hg_num(t, yd) + '</div>' for t in yt)
+    xe, ye = _hg_decimals([X0, X1]), _hg_decimals([Y0, Y1])
+    rx, ry = (_hg_num(X0, xe), _hg_num(X1, xe)), (_hg_num(Y0, ye), _hg_num(Y1, ye))
+    lg = max(used, key=lambda a: a[5])           # the first of equally long arrows
+    aria = ('Quiver plot of ' + str(n) + (' arrow' if n == 1 else ' arrows') + ', ' + xn + ' ' + rx[0] + ' to ' + rx[1] + ', ' + yn + ' ' + ry[0] + ' to ' + ry[1] + '. '
+            + ('Longest arrow: ' + lg[0] + ' at (' + _qv_f(lg[1]) + ', ' + _qv_f(lg[2]) + '), across ' + _qv_f(lg[3]) + us + ', up ' + _qv_f(lg[4]) + us + ', length ' + _qv_f(lg[5]) + us + '.' if big > 0 else 'Every arrow has length 0.'))
+    cap = _hg_note('Each arrow is centred on its point and points the way its across and up numbers say; lengths are in proportion to the vector length' + (' (' + _cv_esc(unit) + ')' if unit else '') + ', the longest drawn at a fixed size.')
+    chart = ('<div class="ifqv" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifqv .qvx:not(.qvc){display:none}}</style>'
+             '<div style="font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 0 6px 4px;">' + _cv_esc(yn) + ' (up)</div>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="margin:0 12px 38px 56px;"><div class="qvp" style="position:relative;width:100%;aspect-ratio:' + str(_QV_W) + '/' + str(_QV_H) + ';">'
+             '<svg aria-hidden="true" viewBox="0 0 ' + str(_QV_W) + ' ' + str(_QV_H) + '" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">'
+             '<rect x="0" y="0" width="' + str(_QV_W) + '" height="' + str(_QV_H) + '" fill="var(--surface,#F8FAFC)" stroke="var(--muted,#475569)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>'
+             + grid + marks + '</svg>' + xlabs + ylabs + '</div></div>'
+             '<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 12px 0 56px;">' + _cv_esc(xn) + ' (across)</div></div>')
+    return _if_wrap(_if_title(b) + chart + cap + notes + ver
+                    + _if_table(['Arrow', xn, yn, 'Across', 'Up', 'Length'], [[a[0], _qv_f(a[1]), _qv_f(a[2]), _qv_f(a[3]) + us, _qv_f(a[4]) + us, _qv_f(a[5]) + us] for a in used]))
+
+
 # ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
 # running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
 # and every bar end, and its ticks. Twin of _wfLayout / _RENDERERS['waterfall'] in atoms_infographic.gs.
@@ -38036,7 +38222,7 @@ _RENDERERS['parallel_coords'] = _render_parallel_coords
 
 _CB_ATOMS = ('treemap', 'venn_diagram', 'org_chart', 'histogram', 'box_plot', 'waterfall', 'sunburst', 'chord_diagram', 'circle_pack', 'arc_diagram', 'contour_plot', 'voronoi')
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot), ('voronoi', _render_voronoi, ('candlestick_chart', _render_candlestick_chart))):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot), ('voronoi', _render_voronoi), ('candlestick_chart', _render_candlestick_chart), ('ternary_plot', _render_ternary_plot), ('quiver', _render_quiver)):
     _RENDERERS[_if_name] = _cb_wrap(_if_fn) if _if_name in _CB_ATOMS else _if_fn
 
 

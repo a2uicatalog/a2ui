@@ -193,6 +193,8 @@ a2ui-charts-v1:
 - circle_pack
 - arc_diagram
 - contour_plot
+- ternary_plot
+- quiver
 - voronoi
 - candlestick_chart
 - parallel_coords
