@@ -3557,6 +3557,168 @@ _RENDERERS['waterfall'] = function(b) {
     steps.map(function(st, k) { return [labels[k], st.kind === 'total' ? 'Total' : sg(st.value) + us, f(bars[k][1]) + us]; })));
 };
 
+
+// ─── heatmap variants (additive; twin of the heatmap block in renderers/web_article.py) ───────────────────────────────────────────────
+// Plotly's named colour scales, copied from plotly.js src/components/colorscale/scales.js (tests/fixtures/plotly_scales.json holds the original).
+var _HM_SCALES = {
+  "Greys": [[0, [0, 0, 0]], [1, [255, 255, 255]]],
+  "YlGnBu": [[0, [8, 29, 88]], [0.125, [37, 52, 148]], [0.25, [34, 94, 168]], [0.375, [29, 145, 192]], [0.5, [65, 182, 196]], [0.625, [127, 205, 187]], [0.75, [199, 233, 180]], [0.875, [237, 248, 217]], [1, [255, 255, 217]]],
+  "Greens": [[0, [0, 68, 27]], [0.125, [0, 109, 44]], [0.25, [35, 139, 69]], [0.375, [65, 171, 93]], [0.5, [116, 196, 118]], [0.625, [161, 217, 155]], [0.75, [199, 233, 192]], [0.875, [229, 245, 224]], [1, [247, 252, 245]]],
+  "YlOrRd": [[0, [128, 0, 38]], [0.125, [189, 0, 38]], [0.25, [227, 26, 28]], [0.375, [252, 78, 42]], [0.5, [253, 141, 60]], [0.625, [254, 178, 76]], [0.75, [254, 217, 118]], [0.875, [255, 237, 160]], [1, [255, 255, 204]]],
+  "Bluered": [[0, [0, 0, 255]], [1, [255, 0, 0]]],
+  "RdBu": [[0, [5, 10, 172]], [0.35, [106, 137, 247]], [0.5, [190, 190, 190]], [0.6, [220, 170, 132]], [0.7, [230, 145, 90]], [1, [178, 10, 28]]],
+  "Reds": [[0, [220, 220, 220]], [0.2, [245, 195, 157]], [0.4, [245, 160, 105]], [1, [178, 10, 28]]],
+  "Blues": [[0, [5, 10, 172]], [0.35, [40, 60, 190]], [0.5, [70, 100, 245]], [0.6, [90, 120, 245]], [0.7, [106, 137, 247]], [1, [220, 220, 220]]],
+  "Picnic": [[0, [0, 0, 255]], [0.1, [51, 153, 255]], [0.2, [102, 204, 255]], [0.3, [153, 204, 255]], [0.4, [204, 204, 255]], [0.5, [255, 255, 255]], [0.6, [255, 204, 255]], [0.7, [255, 153, 255]], [0.8, [255, 102, 204]], [0.9, [255, 102, 102]], [1, [255, 0, 0]]],
+  "Rainbow": [[0, [150, 0, 90]], [0.125, [0, 0, 200]], [0.25, [0, 25, 255]], [0.375, [0, 152, 255]], [0.5, [44, 255, 150]], [0.625, [151, 255, 0]], [0.75, [255, 234, 0]], [0.875, [255, 111, 0]], [1, [255, 0, 0]]],
+  "Portland": [[0, [12, 51, 131]], [0.25, [10, 136, 186]], [0.5, [242, 211, 56]], [0.75, [242, 143, 56]], [1, [217, 30, 30]]],
+  "Jet": [[0, [0, 0, 131]], [0.125, [0, 60, 170]], [0.375, [5, 255, 255]], [0.625, [255, 255, 0]], [0.875, [250, 0, 0]], [1, [128, 0, 0]]],
+  "Hot": [[0, [0, 0, 0]], [0.3, [230, 0, 0]], [0.6, [255, 210, 0]], [1, [255, 255, 255]]],
+  "Blackbody": [[0, [0, 0, 0]], [0.2, [230, 0, 0]], [0.4, [230, 210, 0]], [0.7, [255, 255, 255]], [1, [160, 200, 255]]],
+  "Earth": [[0, [0, 0, 130]], [0.1, [0, 180, 180]], [0.2, [40, 210, 40]], [0.4, [230, 230, 50]], [0.6, [120, 70, 20]], [1, [255, 255, 255]]],
+  "Electric": [[0, [0, 0, 0]], [0.15, [30, 0, 100]], [0.4, [120, 0, 100]], [0.6, [160, 90, 0]], [0.8, [230, 200, 0]], [1, [255, 250, 220]]],
+  "Viridis": [[0, [68, 1, 84]], [0.06274509803921569, [72, 24, 106]], [0.12549019607843137, [71, 45, 123]], [0.18823529411764706, [66, 64, 134]], [0.25098039215686274, [59, 82, 139]], [0.3137254901960784, [51, 99, 141]], [0.3764705882352941, [44, 114, 142]], [0.4392156862745098, [38, 130, 142]], [0.5019607843137255, [33, 145, 140]], [0.5647058823529412, [31, 160, 136]], [0.6274509803921569, [40, 174, 128]], [0.6901960784313725, [63, 188, 115]], [0.7529411764705882, [94, 201, 98]], [0.8156862745098039, [132, 212, 75]], [0.8784313725490196, [173, 220, 48]], [0.9411764705882353, [216, 226, 25]], [1, [253, 231, 37]]],
+  "Cividis": [[0, [0, 32, 76]], [0.058824, [0, 42, 102]], [0.117647, [0, 52, 110]], [0.176471, [39, 63, 108]], [0.235294, [60, 74, 107]], [0.294118, [76, 85, 107]], [0.352941, [91, 95, 109]], [0.411765, [104, 106, 112]], [0.470588, [117, 117, 117]], [0.529412, [131, 129, 120]], [0.588235, [146, 140, 120]], [0.647059, [161, 152, 118]], [0.705882, [176, 165, 114]], [0.764706, [192, 177, 109]], [0.823529, [209, 191, 102]], [0.882353, [225, 204, 92]], [0.941176, [243, 219, 79]], [1, [255, 233, 69]]],
+};
+var _HM_KEYS = ['z_min', 'z_max', 'z_mid', 'scale', 'show_colorbar', 'show_values', 'value_format', 'version'];
+var _HM_CAP = 40;
+var _HM_COMPACT = 8;
+var _HM_FMT_RE = /^(,)?(?:\.([0-9]))?([f%d])?$/;
+function _hmNum(v) { return (typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12) ? v : null; }
+function _hmRound(x) { return Math.floor(x + 0.5); }
+function _hmFixed(x, d) { var s = Math.abs(x).toFixed(d); return (x < 0 && parseFloat(s) !== 0 ? '-' : '') + s; }
+function _hmRgb(st, t) {
+  if (typeof st === 'string') st = _HM_SCALES[st];
+  t = Math.min(1, Math.max(0, t));
+  for (var i = 1; i < st.length; i++) {
+    if (t <= st[i][0] || i === st.length - 1) {
+      var p0 = st[i - 1][0], c0 = st[i - 1][1], p1 = st[i][0], c1 = st[i][1];
+      var f = p1 === p0 ? 0 : Math.min(1, Math.max(0, (t - p0) / (p1 - p0)));
+      return [0, 1, 2].map(function(k) { return _hmRound(c0[k] + (c1[k] - c0[k]) * f); });
+    }
+  }
+  return st[0][1];
+}
+function _hmDomain(vals, zmin, zmax, zmid) {
+  var lo = zmin !== null ? zmin : Math.min.apply(null, vals), hi = zmax !== null ? zmax : Math.max.apply(null, vals);
+  if (zmid !== null && !(zmin !== null && zmax !== null)) { var d = Math.max(Math.abs(zmid - lo), Math.abs(hi - zmid)); lo = zmid - d; hi = zmid + d; }
+  return [lo, hi > lo ? hi : lo + 1];
+}
+function _hmTrim(s) { return s.indexOf('.') >= 0 ? s.replace(/0+$/, '').replace(/\.$/, '') : s; }
+function _hmFmt(x, spec) {
+  var m = (typeof spec === 'string' && spec) ? _HM_FMT_RE.exec(spec) : null, s;
+  if (!m) return _hmTrim(_hmFixed(x, 2));
+  var typ = m[3], d = m[2] ? parseInt(m[2], 10) : ((typ === '%' || typ === 'd') ? 0 : 2);
+  if (!typ && !m[2]) s = _hmTrim(_hmFixed(x, 2)); else s = _hmFixed(typ === '%' ? x * 100 : x, d);
+  if (m[1]) {
+    var neg = s.charAt(0) === '-', parts = s.replace(/^-/, '').split('.'), ip = parts[0], g = '';
+    while (ip.length > 3) { g = ',' + ip.slice(-3) + g; ip = ip.slice(0, -3); }
+    s = (neg ? '-' : '') + ip + g + (parts.length > 1 && parts[1] ? '.' + parts[1] : '');
+  }
+  return s + (typ === '%' ? '%' : '');
+}
+function _hmHexScale(v) {
+  if (!Array.isArray(v) || v.length < 2) return null;
+  var out = [];
+  for (var i = 0; i < Math.min(v.length, 32); i++) {
+    var m = typeof v[i] === 'string' ? /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(v[i]) : null;
+    if (!m) return null;
+    var h = m[1];
+    if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
+    out.push([parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]);
+  }
+  return out.map(function(c, k) { return [k / (out.length - 1), c]; });
+}
+function _hmLab(v) {
+  if (typeof v === 'string') return v || null;
+  if (typeof v === 'number' && isFinite(v) && v !== 0) return String(v);
+  return null;
+}
+function _hmPivot(raw) {
+  if (!(Array.isArray(raw) && raw.length && raw.every(function(x) { return x && typeof x === 'object' && !Array.isArray(x); }) && raw.some(function(x) { return Object.prototype.hasOwnProperty.call(x, 'value'); }))) return null;
+  var ry = [], cx = [], cell = {};
+  raw.forEach(function(x) {
+    var r = _hmLab(x.row), c = _hmLab(x.col);
+    if (r === null || c === null) return;
+    if (ry.indexOf(r) < 0) ry.push(r);
+    if (cx.indexOf(c) < 0) cx.push(c);
+    cell[JSON.stringify([r, c])] = x.value;
+  });
+  return [ry.map(function(r) { return cx.map(function(c) { var k = JSON.stringify([r, c]); return Object.prototype.hasOwnProperty.call(cell, k) ? cell[k] : null; }); }), ry, cx];
+}
+function _hmExt(b) {
+  var raw = b.data, piv = _hmPivot(raw);
+  if (piv) raw = piv[0];
+  var rowsIn = Array.isArray(raw) ? raw : [];
+  var nrAll = rowsIn.length, ncAll = 0;
+  rowsIn.forEach(function(r) { if (Array.isArray(r) && r.length > ncAll) ncAll = r.length; });
+  var R = Math.min(_HM_CAP, nrAll), C = Math.min(_HM_CAP, ncAll), grid = [], vals = [], i, j;
+  for (i = 0; i < R; i++) { grid.push([]); for (j = 0; j < C; j++) { var v0 = (Array.isArray(rowsIn[i]) && j < rowsIn[i].length) ? _hmNum(rowsIn[i][j]) : null; grid[i].push(v0); if (v0 !== null) vals.push(v0); } }
+  var capnote = '';
+  if (nrAll > R) capnote += _hgNote('Showing the first ' + R + ' of ' + nrAll + ' rows.');
+  if (ncAll > C) capnote += _hgNote('Showing the first ' + C + ' of ' + ncAll + ' columns.');
+  if (!vals.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A heatmap needs at least one number in data.</div>' + capnote + _hgVersionNote(b, 'heatmap'));
+  var ly = Array.isArray(b.labels_y) ? b.labels_y : (Array.isArray(b.rows) ? b.rows : []), lx = Array.isArray(b.labels_x) ? b.labels_x : (Array.isArray(b.cols) ? b.cols : []);
+  if (piv) { ly = piv[1]; lx = piv[2]; }
+  var rl = [], cl = [];
+  for (i = 0; i < R; i++) rl.push(i < ly.length && _hmLab(ly[i]) ? _hmLab(ly[i]).slice(0, 24) : 'Row ' + (i + 1));
+  for (j = 0; j < C; j++) cl.push(j < lx.length && _hmLab(lx[j]) ? _hmLab(lx[j]).slice(0, 24) : 'Col ' + (j + 1));
+  var notes = capnote, sname = b.scale, stops = null, lname = typeof sname === 'string' ? sname.toLowerCase() : null;
+  if (lname !== null) Object.keys(_HM_SCALES).forEach(function(k) { if (stops === null && k.toLowerCase() === lname) stops = _HM_SCALES[k]; });
+  if (stops === null && sname) notes += _hgNote('Unknown scale' + (typeof sname === 'string' ? ' "' + _ifS(sname, 30) + '"' : '') + '; drawn with Viridis.');
+  if (stops === null) stops = (!sname ? _hmHexScale(b.color_scale) : null) || _HM_SCALES.Viridis;
+  var zmin = _hmNum(b.z_min), zmax = _hmNum(b.z_max), zmid = _hmNum(b.z_mid);
+  var dom = _hmDomain(vals, zmin, zmax, zmid), lo = dom[0], hi = dom[1];
+  var midOn = zmid !== null && !(zmin !== null && zmax !== null), spec = b.value_format;
+  if (spec && !(typeof spec === 'string' && _HM_FMT_RE.test(spec))) { notes += _hgNote('value_format "' + _ifS(spec, 20) + '" is not understood (use , .N and f, % or d); values use the default format.'); spec = null; }
+  function f(x) { return _hmFmt(x, spec); }
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', show = b.show_values === true, compact = C > _HM_COMPACT, hdr, mh = compact ? '16' : '32';
+  if (compact) {
+    if (show) notes += _hgNote('Values are not drawn above ' + _HM_COMPACT + ' columns (the grid is squeezed to fit); hover a cell or read the table.');
+    show = false;
+    var k = Math.ceil(C / 4);
+    hdr = '';
+    for (j = 0; j < C; j += k) hdr += '<div style="font-size:12px;line-height:1.25;text-align:left;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;grid-column:span ' + Math.min(k, C - j) + ';">' + _ifS(cl[j], 24) + '</div>';
+  } else {
+    hdr = cl.map(function(c) { return '<div style="font-size:12px;line-height:1.25;text-align:center;overflow-wrap:anywhere;color:var(--muted,#475569);padding:0 2px 2px;">' + _ifS(c, 24) + '</div>'; }).join('');
+  }
+  var cells = '<div></div>' + hdr;
+  var nmiss = 0;
+  for (i = 0; i < R; i++) {
+    cells += '<div style="font-size:12px;line-height:1.25;text-align:right;overflow-wrap:anywhere;max-width:110px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:var(--muted,#475569);">' + _ifS(rl[i], 24) + '</div>';
+    for (j = 0; j < C; j++) {
+      var v = grid[i][j], tip = _ifS(rl[i] + ', ' + cl[j] + ': ', 60);
+      if (v === null) {
+        nmiss++;
+        cells += '<div class="hmc hmn" title="' + tip + 'no data" style="min-height:' + mh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px dashed var(--muted,#475569);color:var(--muted,#475569);">–</div>';
+        continue;
+      }
+      var c = _hmRgb(stops, (v - lo) / (hi - lo)), fg = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2] < 140 ? '#fff' : '#111';
+      cells += '<div class="hmc" title="' + tip + _ifS(f(v) + us, 30) + '" style="min-height:' + mh + 'px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;overflow-wrap:anywhere;background:rgb(' +
+        c[0] + ',' + c[1] + ',' + c[2] + ');color:' + fg + ';">' + (show ? _ifS(f(v), 20) : '') + '</div>';
+    }
+  }
+  if (nmiss) notes += _hgNote(nmiss + (nmiss === 1 ? ' cell has' : ' cells have') + ' no usable number and ' + (nmiss === 1 ? 'is' : 'are') + ' marked "no data".');
+  var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+  var aria = 'Heatmap, ' + R + (R === 1 ? ' row' : ' rows') + ' by ' + C + (C === 1 ? ' column' : ' columns') + ', values from ' + f(mn) + ' to ' + f(mx) + us + '.';
+  var gridHtml = '<div class="hms" style="max-width:100%;overflow-x:auto;"><div role="img" aria-label="' + _ifS(aria, 200) + '" style="display:grid;grid-template-columns:minmax(72px,auto) repeat(' + C + ',minmax(0,1fr));gap:2px;width:100%;max-width:' + (120 + C * 96) + 'px;">' + cells + '</div></div>';
+  var bar = '';
+  if (b.show_colorbar !== false) {
+    var grad = stops.map(function(s) { return 'rgb(' + s[1][0] + ',' + s[1][1] + ',' + s[1][2] + ') ' + _ifFmt(s[0] * 100) + '%'; }).join(',');
+    bar = '<div class="hmb" style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted,#475569);"><span style="max-width:35%;overflow-wrap:anywhere;">' + _ifS(f(lo) + us, 30) +
+      '</span><div style="flex:1 0 60px;height:12px;border:1px solid var(--border,#CBD5E1);border-radius:3px;background:linear-gradient(to right,' + grad + ');"></div><span style="max-width:35%;overflow-wrap:anywhere;">' + _ifS(f(hi) + us, 30) + '</span></div>';
+    if (midOn) bar += _hgNote('Colour midpoint: ' + _ifS(f(zmid) + us, 30) + '.');
+  }
+  var table = _ifTable(['Row'].concat(cl), rl.map(function(r, ri) { return [r].concat(cl.map(function(_, ci) { return grid[ri][ci] === null ? 'no data' : f(grid[ri][ci]) + us; })); }));
+  return _ifWrap('<div class="ifhm" style="max-width:100%;">' + _ifTitle(b) + gridHtml + bar + notes + _hgVersionNote(b, 'heatmap') + table + '</div>');
+}
+(function() {
+  var prev = _RENDERERS['heatmap'];
+  _RENDERERS['heatmap'] = function(b) {
+    return (b && typeof b === 'object' && _HM_KEYS.some(function(k) { return Object.prototype.hasOwnProperty.call(b, k); })) ? _hmExt(b) : prev(b);
+  };
+})();
+
 // Build contract v1.1: these atoms emit data-cb on their moving elements; _cbPass completes the markup (see above).
 ['treemap', 'venn_diagram', 'org_chart', 'histogram', 'box_plot', 'waterfall', 'sunburst', 'chord_diagram', 'circle_pack', 'arc_diagram', 'contour_plot', 'voronoi'].forEach(function(n) {
   var fn = _RENDERERS[n];

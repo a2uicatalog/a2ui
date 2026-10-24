@@ -378,7 +378,15 @@
   "color_scale",
   "labels_x",
   "labels_y",
-  "unit"
+  "scale",
+  "show_colorbar",
+  "show_values",
+  "unit",
+  "value_format",
+  "version",
+  "z_max",
+  "z_mid",
+  "z_min"
  ],
  "heatmap_calendar": [
   "unit"
