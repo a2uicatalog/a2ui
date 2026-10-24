@@ -265,25 +265,51 @@ function _moTilt(spec, html) {
   if (rx === 0 && ry === 0 && blur === 0) return html;
   return '<div class="mo-tilt" style="transform:perspective(900px) rotateX(calc(' + rx + 'deg*(1 - clamp(0,var(--p,1),1)))) rotateY(calc(' + ry + 'deg*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + blur + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>';
 }
+var _MO_BLEND = {
+  'multiply': true, 'screen': true, 'overlay': true, 'darken': true, 'lighten': true,
+  'color-dodge': true, 'color-burn': true, 'difference': true, 'exclusion': true,
+  'hue': true, 'saturation': true, 'color': true, 'luminosity': true
+};
+
+var _MO_BLEND_OWN = {
+  'wave_terrain': true, 'cursor_glow': true, 'motion_discs': true
+};
+
+function _moBlend(v, html) {
+  if (v === null || v === undefined || v === false || v === '') return html;
+  if (typeof v === 'string') {
+    if (Object.prototype.hasOwnProperty.call(_MO_BLEND, v)) {
+      return '<div class="mo-blend" style="mix-blend-mode:' + v + ';">' + html + '</div>';
+    }
+    return html + '<!-- a2ui: blend "' + _esc(v).slice(0, 40) + '" ignored -->';
+  }
+  var t = (typeof v === 'object') ? 'object' : (typeof v === 'number' ? 'number' : (typeof v === 'boolean' ? 'boolean' : typeof v));
+  return html + '<!-- a2ui: blend "' + t + '" ignored -->';
+}
+
 // Wrap every registered renderer once. Safe to call repeatedly and from any entry
 // point: a wrapped function carries _mo and is skipped. Called from renderAtoms
 // (and the Worker/bundle entry points share that function).
 function _moInstall() {
   for (var k in _RENDERERS) {
+    if (!Object.prototype.hasOwnProperty.call(_RENDERERS, k)) continue;
     var f = _RENDERERS[k];
     if (typeof f !== 'function' || f._mo) continue;
-    _RENDERERS[k] = (function(f) {
+    _RENDERERS[k] = (function(f, k) {
       var w = function(b) {
         var h = f(b);
         if (b && typeof b === 'object' && _moGlOn(b.glitch)) h = _moGlitch(b.glitch, h);
         if (b && typeof b === 'object' && b.halo) h = _moHalo(b.halo, h);
         if (b && typeof b === 'object' && b.smear) h = _moSmear(b.smear, h);
         if (b && typeof b === 'object' && b.tilt) h = _moTilt(b.tilt, h);
+        if (b && typeof b === 'object' && !Object.prototype.hasOwnProperty.call(_MO_BLEND_OWN, k) && ('blend' in b)) {
+          h = _moBlend(b.blend, h);
+        }
         return (b && typeof b === 'object' && b.enter) ? _moEnter(b, h) : h;
       };
       w._mo = true;
       return w;
-    })(f);
+    })(f, k);
   }
 }
 

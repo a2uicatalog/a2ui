@@ -29060,12 +29060,40 @@ def _mo_install():
         if not callable(f) or getattr(f, '_mo', False):
             continue
 
-        def make(f):
+        def make(f, k):
             def w(b):
                 h = f(b)
                 if isinstance(b, dict) and _mo_gl_on(b.get('glitch')):
                     h = _mo_glitch(b['glitch'], h)
                 if isinstance(b, dict) and b.get('halo'):
+_MO_BLEND = {
+    'multiply', 'screen', 'overlay', 'darken', 'lighten',
+    'color-dodge', 'color-burn', 'difference', 'exclusion',
+    'hue', 'saturation', 'color', 'luminosity',
+}
+
+_MO_BLEND_OWN = {'wave_terrain', 'cursor_glow', 'motion_discs'}
+
+
+def _mo_blend(v, html):
+    """Additive blend prop on any motion block (CSS mix-blend-mode). Twin of atoms_motion.gs _moBlend."""
+    if v is None or v is False or v == '':
+        return html
+    if isinstance(v, str):
+        if v in _MO_BLEND:
+            return '<div class="mo-blend" style="mix-blend-mode:' + v + ';">' + html + '</div>'
+        val = _cv_esc(v)[:40]
+    elif isinstance(v, bool):
+        val = 'boolean'
+    elif isinstance(v, (int, float)):
+        val = 'number'
+    elif isinstance(v, (dict, list)):
+        val = 'object'
+    else:
+        val = _cv_esc(type(v).__name__)[:40]
+    return html + '<!-- a2ui: blend "' + val + '" ignored -->'
+
+
                     h = _mo_halo(b['halo'], h)
                 if isinstance(b, dict) and b.get('smear'):
                     h = _mo_smear(b['smear'], h)
@@ -29074,7 +29102,7 @@ def _mo_install():
                 return _mo_enter(b, h) if isinstance(b, dict) and b.get('enter') else h
             w._mo = True
             return w
-        _RENDERERS[k] = make(f)
+        _RENDERERS[k] = make(f, k)
 
 
 def _mo_render(blk):
@@ -29084,6 +29112,8 @@ def _mo_render(blk):
     fn = _RENDERERS.get(t)
     if not fn:
         return '<!-- a2ui: unknown atom "' + _cv_esc(t) + '" -->'
+                if isinstance(b, dict) and k not in _MO_BLEND_OWN and 'blend' in b:
+                    h = _mo_blend(b.get('blend'), h)
     try:
         return fn(blk)
     except Exception as err:  # noqa: BLE001 — same contract as renderAtoms: one bad child never kills the page
