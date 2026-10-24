@@ -21873,7 +21873,8 @@ blocks:
   surfaces: *mla001
   fields:
     from: "object (optional). The block shown at p = 0 (any atom). Its elements that carry the build contract (data-cb with data-key) are the start positions; it fades out over the first part of p. Missing: every element of to enters."
-    to: "object (required). The block shown at p = 1 (any atom): the page is exactly this block when p is 1, with reduced motion, and on surfaces without script."
+    to: "object (required unless patch is given). The block shown at p = 1 (any atom): the page is exactly this block when p is 1, with reduced motion, and on surfaces without script."
+    patch: "array (optional, preview) of RFC 6902 JSON Patch operations (add, remove, replace, move, copy, test) applied to a copy of from to make the p = 1 block, in place of to. Use it when the change is a few edits to the same atom (add a person to an org chart, move a card between columns): a copied item grows out of its source, a replaced id continues from the old element, a moved item keeps its key. Needs from; if to is also given, to wins. Up to 500 operations are applied. A patch that fails (bad path, failed test op) shows the from block, with an HTML comment naming the error."
     match: "\"path\" | \"exact\" (optional, default path). exact joins identical keys only. path also joins along category paths: a key that is the prefix of others (Cloud, of Cloud/VMs) starts on the union of their boxes, and a key under another (Cloud/VMs, under Cloud) starts on its parent's box."
     key_map: "object (optional, up to 200 pairs). Renames keys of from before the join, from-key to to-key, for two atoms that name the same things differently (a team table keyed by employee id to an org chart keyed by name)."
     version: "integer (optional, default 1). Contract version."
