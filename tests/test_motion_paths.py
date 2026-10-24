@@ -27,13 +27,14 @@ BAD_D = [
     "M0 0 L1e3 5", "M0 0 L1E3 5", "M0 0 L1 1 -", "M0 0 L1 1 .", "M0 0 L1 1 Z 5", "M0 0 L1 1 #", "M0 0 L1 1;",
     'M0 0"/><script>alert(1)</script>', 'M0 0 L1 1" onload="x', "M0 0 L1 1\x00", "M0 0 L9999999 1", "M0 0 L-9999999 1",
     "M0 0 L1 1 L" + "9" * 5000, "M0 0" + " L1 1" * 500, "M5 5", "M5 5 L5 5 L5 5", "M0 0 L1 1 NaN", "M0 0 L Infinity 1", "M0 0 C1 1 2 2 3",
-    "M0 0 L0 10 L0 20",
+    "M0 0 L0 10 L0 20", "M0 0 L100 100", "M0 50 L100 50", "M0 0 L10 0 L20 0 Z", "\x1cM0 0 L10 0 L10 10Z", "\ufeffM0 0 L10 0 L10 10Z", "\x85M0 0 L10 0 L10 10Z", "\x0bM0 0 L10 0 L10 10Z\x0c",
 ]
 CASES = ([dict(MASK, shape="path", d=d) for d in GOOD_D + BAD_D]
          + [dict(MASK, shape=s, d=STAR) for s in ("blob", "circle", "bars", "diagonal", "rounded", "diamond", "halftone", "conic", "slats", None, 5, "PATH")]
          + [dict(MASK, shape="path"), dict(MASK, shape="path", d=STAR, blocks=[CHILD, {"type": "motion_text", "text": "Hi"}])]
          + [dict(MORPH, from_d=a, to_d=b) for a in (STAR, HEART, OPEN) for b in (SQUARE, STAR, WAVE, OPEN, SMOOTH)]
          + [dict(MORPH, from_d=a, to_d=b) for a in BAD_D[:20] + [STAR] for b in (STAR, BAD_D[8], BAD_D[14], BAD_D[16])]
+         + [dict(MORPH, from_d=STAR, to_d=HEART, label=lb) for lb in ("A star", 5, '"><b>', None)]
          + [dict(MORPH, from_d=STAR), dict(MORPH, to_d=STAR), dict(MORPH, from_d="", to_d=""), dict(MORPH, from_d=None, to_d=None)]
          + [dict(MORPH, from_d=STAR, to_d=HEART, fill="#ff0000", fill2="#0000ff", glossy=True, rotate=90, aspect=1.78, round=True, shapes=["square", "dot"])]
          + [dict(MORPH, from_d=HEART, to_d=STAR, shapes=["bogus"]), dict(MORPH, from_d=SQUARE, to_d="M0 0H100V100H0Z")])
@@ -57,7 +58,7 @@ def test_mask_path_markup_and_note():
 
 def test_morph_path_markup_and_note():
     h = _py(dict(MORPH, from_d=STAR, to_d=SQUARE))
-    assert h.count("clamp(0,var(--p,1),1)") > 40 and 'aria-label="path to path"' in h and "<!--" not in h
+    assert h.count("clamp(0,var(--p,1),1)") > 40 and 'aria-label="Shape morph"' in h and "<!--" not in h
     one = _py(dict(MORPH, from_d=STAR))
     assert one.endswith("<!-- a2ui: morph path ignored -->") and 'aria-label="circle to star"' in one
     assert _py(dict(MORPH, from_d=STAR, to_d="bad")).endswith("<!-- a2ui: morph path ignored -->")
@@ -232,3 +233,29 @@ def test_settled_markup_without_p_equals_p1():
         g = _probe(blk, 0, js)
         b = [(float(x), float(y)) for x, _u, y, _v in re.findall(r"(-?[0-9.]+)(px|%)\s+(-?[0-9.]+)(px|%)", g["cp"])]
         assert a == b
+
+
+def test_zero_area_paths_fall_back_with_the_note():
+    for d in ("M0 0 L100 100", "M0 50 L100 50", "M0 0 L10 0 L20 0 Z", "M0 0 L100 0 L100 1 L0 1 Z"):
+        assert _py(dict(MORPH, from_d=STAR, to_d=d)).endswith("<!-- a2ui: morph path ignored -->"), d
+        assert _py(dict(MORPH, from_d=d, to_d=STAR)).endswith("<!-- a2ui: morph path ignored -->"), d
+        if d.endswith("L0 1 Z"):
+            continue                                   # a thin rectangle fills the mask box (stretched); only morph keeps proportions
+        assert _py(dict(MASK, shape="path", d=d)).endswith("<!-- a2ui: mask path ignored -->"), d
+    assert "<!--" not in _py(dict(MASK, shape="path", d="M0 0 L100 0 L100 10 L0 10 Z"))
+
+
+def test_whitespace_trim_is_an_explicit_set_in_both_twins(core_js):
+    ok = "M0 0 L10 0 L10 10Z"
+    cases = [dict(MASK, shape="path", d=p + ok + q) for p, q in (("", ""), ("\x0b", "\x0c"), ("\x1c", ""), ("\ufeff", ""), ("\x85", ""), (" \t\n", "\r "))]
+    got = _gas_batch(core_js, cases)
+    assert [_norm(_py(b)) for b in cases] == [_norm(g) for g in got]
+    assert "<!--" not in _py(cases[0]) and "<!--" not in _py(cases[1]) and "<!--" not in _py(cases[5])
+    for c in cases[2:5]:
+        assert _py(c).endswith("<!-- a2ui: mask path ignored -->")
+
+
+def test_morph_path_label():
+    assert 'aria-label="Shape morph"' in _py(dict(MORPH, from_d=STAR, to_d=HEART))
+    assert 'aria-label="Star to heart"' in _py(dict(MORPH, from_d=STAR, to_d=HEART, label="Star to heart"))
+    assert 'aria-label="circle to star"' in _py(dict(MORPH, label="x"))

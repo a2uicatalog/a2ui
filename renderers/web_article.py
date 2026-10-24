@@ -31093,7 +31093,7 @@ _MO_PP_PARAMS = {'M': 2, 'L': 2, 'H': 1, 'V': 1, 'C': 6, 'S': 4, 'Q': 4, 'T': 2,
 def _mo_pp_parse(d):
     if not isinstance(d, str):
         return None
-    s = d.strip()
+    s = d.strip(' \t\n\r\f\v')
     if not (1 <= len(s) <= 4000):
         return None
     if not _MO_PP_VALID_RE.match(s):
@@ -31425,6 +31425,15 @@ def _mo_pp_fit(polys, uniform):
     return out_polys
 
 
+def _mo_pp_solid(poly):
+    # a fitted polygon (integer tenths of a percent) must cover at least 1% of the box, or the reveal would stay invisible
+    area2 = 0
+    for i in range(len(poly)):
+        j = (i + 1) % len(poly)
+        area2 += poly[i][0] * poly[j][1] - poly[j][0] * poly[i][1]
+    return abs(area2) >= 20000
+
+
 def _mo_pp_align(a, b, closed):
     if not closed:
         return [p[:] for p in b]
@@ -31476,7 +31485,7 @@ def _render_motion_mask(b: dict) -> str:
         parsed = _mo_pp_parse(d_val) if isinstance(d_val, str) else None
         resampled = _mo_pp_resample(parsed['pts'], parsed['closed'], 48) if parsed else None
         fitted = _mo_pp_fit([resampled], False) if resampled else None
-        if fitted:
+        if fitted and _mo_pp_solid(fitted[0]):
             pts = []
             for pt in fitted[0]:
                 pts.append('calc(50% + ' + _mo_t10(pt[0] - 500) + '% * var(--m)) calc(50% + ' + _mo_t10(pt[1] - 500) + '% * var(--m))')
@@ -32397,7 +32406,7 @@ def _render_motion_morph(b: dict) -> str:
                 rb = _mo_pp_resample(pb['pts'], pb['closed'], 64)
                 if ra and rb:
                     fa_fb = _mo_pp_fit([ra, rb], True)
-                    if fa_fb:
+                    if fa_fb and _mo_pp_solid(fa_fb[0]) and _mo_pp_solid(fa_fb[1]):
                         a_pts, b_pts = fa_fb[0], fa_fb[1]
                         closed = pa['closed'] and pb['closed']
                         b2 = _mo_pp_align(a_pts, b_pts, closed)
@@ -32409,7 +32418,7 @@ def _render_motion_morph(b: dict) -> str:
                             part_y = (' + ' + _mo_t10(dy) + '%*clamp(0,var(--p,1),1)') if dy != 0 else ''
                             pts.append('calc(' + _mo_t10(a_pts[j][0]) + '%' + part_x + ') calc(' + _mo_t10(a_pts[j][1]) + '%' + part_y + ')')
                         poly = 'polygon(' + ','.join(pts) + ')'
-                        aria_label = 'path to path'
+                        aria_label = _cv_str(b.get('label'), 60) or 'Shape morph'
         if poly is None:
             comment = '<!-- a2ui: morph path ignored -->'
 

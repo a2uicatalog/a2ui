@@ -1920,7 +1920,7 @@ var _MO_PP_PARAMS = {M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, Z: 0};
 
 function _moPpParse(d) {
   if (typeof d !== 'string') return null;
-  var s = d.trim();
+  var s = d.replace(/^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$/g, '');
   if (s.length < 1 || s.length > 4000) return null;
   if (!_MO_PP_VALID_RE.test(s)) return null;
   var residue = s.replace(_MO_PP_TOK_RE, '');
@@ -2218,6 +2218,15 @@ function _moPpFit(polys, uniform) {
   return outPolys;
 }
 
+function _moPpSolid(poly) {
+  var area2 = 0, i, j;
+  for (i = 0; i < poly.length; i++) {
+    j = (i + 1) % poly.length;
+    area2 += poly[i][0] * poly[j][1] - poly[j][0] * poly[i][1];
+  }
+  return Math.abs(area2) >= 20000;
+}
+
 function _moPpAlign(a, b, closed) {
   var i;
   if (!closed) {
@@ -2273,7 +2282,7 @@ _RENDERERS['motion_mask'] = function(b) {
     var parsed = (typeof dVal === 'string') ? _moPpParse(dVal) : null;
     var resampled = parsed ? _moPpResample(parsed.pts, parsed.closed, 48) : null;
     var fitted = resampled ? _moPpFit([resampled], false) : null;
-    if (fitted) {
+    if (fitted && _moPpSolid(fitted[0])) {
       var ptsP = [];
       for (var pi = 0; pi < fitted[0].length; pi++) {
         var pt = fitted[0][pi];
@@ -3032,7 +3041,7 @@ _RENDERERS['motion_morph'] = function(b) {
         var rb = _moPpResample(pb.pts, pb.closed, 64);
         if (ra && rb) {
           var faFb = _moPpFit([ra, rb], true);
-          if (faFb) {
+          if (faFb && _moPpSolid(faFb[0]) && _moPpSolid(faFb[1])) {
             var aPts = faFb[0], bPts = faFb[1];
             var closed = pa.closed && pb.closed;
             var b2 = _moPpAlign(aPts, bPts, closed);
@@ -3045,7 +3054,7 @@ _RENDERERS['motion_morph'] = function(b) {
               ptsP.push('calc(' + _moT10(aPts[j][0]) + '%' + partX + ') calc(' + _moT10(aPts[j][1]) + '%' + partY + ')');
             }
             poly = 'polygon(' + ptsP.join(',') + ')';
-            ariaLabel = 'path to path';
+            ariaLabel = _cvStr(b.label, 60) || 'Shape morph';
           }
         }
       }
