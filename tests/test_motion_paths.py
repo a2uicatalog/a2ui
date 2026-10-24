@@ -55,17 +55,24 @@ def test_mask_path_markup_and_note():
     assert "<!--" not in _py(dict(MASK, shape="circle", d=STAR))
 
 
-
+def test_morph_path_markup_and_note():
+    h = _py(dict(MORPH, from_d=STAR, to_d=SQUARE))
+    assert h.count("clamp(0,var(--p,1),1)") > 40 and 'aria-label="path to path"' in h and "<!--" not in h
+    one = _py(dict(MORPH, from_d=STAR))
+    assert one.endswith("<!-- a2ui: morph path ignored -->") and 'aria-label="circle to star"' in one
+    assert _py(dict(MORPH, from_d=STAR, to_d="bad")).endswith("<!-- a2ui: morph path ignored -->")
+    same = _py(dict(MORPH, from_d=SQUARE, to_d=SQUARE))
+    assert "clamp(" not in _clip(same), "identical paths have nothing to interpolate"
 
 
 def test_hostile_paths_never_reach_markup():
     hostile = ['M0 0"/><script>alert(1)</script>', 'M0 0 L1 1" onload="x', "M0 0 L9" + "9" * 40 + " 1", "M0 0 LNaN NaN", "M0 0 L-1e999 1",
                "M0 0 L1 1</style><script>"]
     for d in hostile:
-        for b in (dict(MASK, shape="path", d=d),):
+        for b in (dict(MASK, shape="path", d=d), dict(MORPH, from_d=d, to_d=STAR), dict(MORPH, from_d=STAR, to_d=d)):
             out = _py(b)
             assert "<script" not in out.lower() and "alert" not in out and "onload" not in out and "NaN" not in out and "Infinity" not in out and "undefined" not in out, (d, out[:200])
-            assert re.search(r"<!-- a2ui: mask path ignored -->$", out), d
+            assert re.search(r"<!-- a2ui: (mask|morph) path ignored -->$", out), d
 
 
 def test_numbers_in_the_polygon_are_bounded_and_finite():
@@ -90,7 +97,28 @@ def _vertices(h):
     return out
 
 
+def test_morph_start_equals_from_and_end_equals_to():
+    # evaluate the calc() expressions at p = 0 and p = 1 and compare with the fit of each path on its own
+    from renderers import web_article as wa
 
+    def at(h, p):
+        pts = []
+        for ex, ey in _vertices(h):
+            v = []
+            for e in (ex, ey):
+                e = e.replace("clamp(0,var(--p,1),1)", str(p))
+                e = e.replace("%", "")
+                v.append(eval(e, {}, {}))  # noqa: S307 - arithmetic from our own renderer
+            pts.append(v)
+        return pts
+    h = _py(dict(MORPH, from_d=STAR, to_d=SQUARE))
+    pa, pb = wa._mo_pp_parse(STAR), wa._mo_pp_parse(SQUARE)
+    ra, rb = (wa._mo_pp_resample(x["pts"], x["closed"], 64) for x in (pa, pb))
+    fa, fb = wa._mo_pp_fit([ra, rb], True)
+    fb = wa._mo_pp_align(fa, fb, True)
+    start, end = at(h, 0), at(h, 1)
+    assert [[round(a * 10), round(b * 10)] for a, b in start] == fa
+    assert [[round(a * 10), round(b * 10)] for a, b in end] == fb
 
 
 def test_flatten_resample_basics():
@@ -178,7 +206,22 @@ def test_mask_path_scales_in_from_the_centre_and_settles_on_the_shape():
     assert cx > 0
 
 
-
+@browser
+def test_morph_path_mid_frame_is_between_and_settles_on_the_target():
+    blk = dict(MORPH, from_d=STAR, to_d=SQUARE)
+    p0, _g = _poly_pts(0, blk)
+    p5, _g = _poly_pts(0.5, blk)
+    p1, _g = _poly_pts(1, blk)
+    assert len(p0) == len(p5) == len(p1) == 64
+    for a, m, b in zip(p0, p5, p1):
+        for i in (0, 1):
+            assert abs(m[i] - (a[i] + b[i]) / 2) < 0.6, (a, m, b)
+    # the end frame is the square: every vertex sits on the box edge
+    xs, ys = [x for x, _ in p1], [y for _, y in p1]
+    on_edge = sum(1 for x, y in p1 if min(abs(x - min(xs)), abs(x - max(xs)), abs(y - min(ys)), abs(y - max(ys))) < 0.6)
+    assert on_edge == 64, on_edge
+    # and the start frame is not the end frame
+    assert max(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in zip(p0, p1)) > 5
 
 
 @browser

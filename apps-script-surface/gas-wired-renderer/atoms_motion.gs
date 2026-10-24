@@ -3017,10 +3017,46 @@ _RENDERERS['motion_particles'] = function(b) {
 // Shape morph: one shape becomes the next (2 to 4 presets) as p goes 0 to 1. Every vertex of a 48-point clip polygon is a sum of
 // clamped steps, so the morph is pure CSS and scrubs exactly. --s turns it by `rotate` degrees.
 _RENDERERS['motion_morph'] = function(b) {
-  var src = Array.isArray(b.shapes) ? b.shapes : [], sh = [], i, j;
-  for (i = 0; i < src.length && sh.length < 4; i++) if (typeof src[i] === 'string' && Object.prototype.hasOwnProperty.call(_MO_SHAPES, src[i])) sh.push(src[i]);
-  if (sh.length < 2) sh = ['circle', 'star'];
-  var k = sh.length, pts = [], fill = _moInk(b, 'fill', 'var(--mt-acc,#38bdf8)'), fill2 = _moInk(b, 'fill2', ''), rot = _ffInt(b.rotate, 0, -720, 720), asp = _ffNum(b.aspect, 1, 0.4, 3, 2), aspCss = asp === '1' ? '1/1' : asp;
+  var hasFrom = b.from_d !== undefined && b.from_d !== null && b.from_d !== '';
+  var hasTo = b.to_d !== undefined && b.to_d !== null && b.to_d !== '';
+  var usePath = hasFrom || hasTo;
+
+  var poly = null, ariaLabel = null, comment = '';
+
+  if (usePath) {
+    if (hasFrom && hasTo && typeof b.from_d === 'string' && typeof b.to_d === 'string') {
+      var pa = _moPpParse(b.from_d);
+      var pb = _moPpParse(b.to_d);
+      if (pa && pb) {
+        var ra = _moPpResample(pa.pts, pa.closed, 64);
+        var rb = _moPpResample(pb.pts, pb.closed, 64);
+        if (ra && rb) {
+          var faFb = _moPpFit([ra, rb], true);
+          if (faFb) {
+            var aPts = faFb[0], bPts = faFb[1];
+            var closed = pa.closed && pb.closed;
+            var b2 = _moPpAlign(aPts, bPts, closed);
+            var ptsP = [];
+            for (var j = 0; j < 64; j++) {
+              var dxP = b2[j][0] - aPts[j][0];
+              var dyP = b2[j][1] - aPts[j][1];
+              var partX = (dxP !== 0) ? (' + ' + _moT10(dxP) + '%*clamp(0,var(--p,1),1)') : '';
+              var partY = (dyP !== 0) ? (' + ' + _moT10(dyP) + '%*clamp(0,var(--p,1),1)') : '';
+              ptsP.push('calc(' + _moT10(aPts[j][0]) + '%' + partX + ') calc(' + _moT10(aPts[j][1]) + '%' + partY + ')');
+            }
+            poly = 'polygon(' + ptsP.join(',') + ')';
+            ariaLabel = 'path to path';
+          }
+        }
+      }
+    }
+    if (poly === null) {
+      comment = '<!-- a2ui: morph path ignored -->';
+    }
+  }
+
+  var fill = _moInk(b, 'fill', 'var(--mt-acc,#38bdf8)'), fill2 = _moInk(b, 'fill2', ''), rot = _ffInt(b.rotate, 0, -720, 720);
+  var asp = _ffNum(b.aspect, 1, 0.4, 3, 2), aspCss = asp === '1' ? '1/1' : asp;
   var a100 = Math.floor(parseFloat(asp) * 100 + 0.5), rnd = b.round === true && a100 !== 100;
   // round: true squeezes circle and dot about the centre by the box aspect, in whole tenths of a percent, so they stay round in a wide or tall box
   function pt(name, n) {
@@ -3031,18 +3067,34 @@ _RENDERERS['motion_morph'] = function(b) {
     }
     return v;
   }
-  for (i = 0; i < 96; i += 2) {
-    var x = _moT10(pt(sh[0], i)) + '%', y = _moT10(pt(sh[0], i + 1)) + '%';
-    for (j = 1; j < k; j++) {
-      var dx = pt(sh[j], i) - pt(sh[j - 1], i), dy = pt(sh[j], i + 1) - pt(sh[j - 1], i + 1), st = '*clamp(0,calc(var(--p,1)*' + (k - 1) + ' - ' + (j - 1) + '),1)';
-      if (dx) x += ' + ' + _moT10(dx) + '%' + st;
-      if (dy) y += ' + ' + _moT10(dy) + '%' + st;
+
+  if (poly === null) {
+    var src = Array.isArray(b.shapes) ? b.shapes : [], sh = [], i, k;
+    for (i = 0; i < src.length && sh.length < 4; i++) {
+      if (typeof src[i] === 'string' && Object.prototype.hasOwnProperty.call(_MO_SHAPES, src[i])) sh.push(src[i]);
     }
-    pts.push('calc(' + x + ') calc(' + y + ')');
+    if (sh.length < 2) sh = ['circle', 'star'];
+    k = sh.length;
+    var pts = [];
+    for (i = 0; i < 96; i += 2) {
+      var x = _moT10(pt(sh[0], i)) + '%', y = _moT10(pt(sh[0], i + 1)) + '%';
+      for (var sIdx = 1; sIdx < k; sIdx++) {
+        var dx = pt(sh[sIdx], i) - pt(sh[sIdx - 1], i);
+        var dy = pt(sh[sIdx], i + 1) - pt(sh[sIdx - 1], i + 1);
+        var st = '*clamp(0,calc(var(--p,1)*' + (k - 1) + ' - ' + (sIdx - 1) + '),1)';
+        if (dx) x += ' + ' + _moT10(dx) + '%' + st;
+        if (dy) y += ' + ' + _moT10(dy) + '%' + st;
+      }
+      pts.push('calc(' + x + ') calc(' + y + ')');
+    }
+    poly = 'polygon(' + pts.join(',') + ')';
+    ariaLabel = sh.join(' to ');
   }
-  var gl = b.glossy === true, bg = (gl ? 'radial-gradient(circle at 32% 26%,rgba(255,255,255,0.42),rgba(255,255,255,0) 46%),radial-gradient(circle at 70% 85%,rgba(0,0,0,0.28),rgba(0,0,0,0) 55%),' : '') + (fill2 ? 'linear-gradient(135deg,' + fill + ',' + fill2 + ')' : fill), poly = 'polygon(' + pts.join(',') + ')';
+
+  var gl = b.glossy === true;
+  var bg = (gl ? 'radial-gradient(circle at 32% 26%,rgba(255,255,255,0.42),rgba(255,255,255,0) 46%),radial-gradient(circle at 70% 85%,rgba(0,0,0,0.28),rgba(0,0,0,0) 55%),' : '') + (fill2 ? 'linear-gradient(135deg,' + fill + ',' + fill2 + ')' : fill);
   var inner = '<div style="width:100%;aspect-ratio:' + aspCss + ';background:' + bg + ';clip-path:' + poly + ';-webkit-clip-path:' + poly + ';' + (rot ? 'transform:rotate(calc(var(--s,0)*' + rot + 'deg));' : '') + '"></div>';
-  return '<div role="img" aria-label="' + _esc(sh.join(' to ')) + '" style="width:100%;' + (gl ? 'filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' : '') + '">' + inner + '</div>';
+  return '<div role="img" aria-label="' + _esc(ariaLabel) + '" style="width:100%;' + (gl ? 'filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' : '') + '">' + inner + '</div>' + comment;
 };
 
 // ─── WebGL spike (2026-10-02, see a2ui-private/briefs/webgl-spike-design.md): a seekable shader background ─────────────────────

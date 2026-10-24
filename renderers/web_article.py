@@ -32380,50 +32380,87 @@ _MO_ROUND = {'circle': 1, 'dot': 1}
 
 
 def _render_motion_morph(b: dict) -> str:
-    sh = []
-    for v in (b.get('shapes') if isinstance(b.get('shapes'), list) else []):
-        if len(sh) >= 4:
-            break
-        if isinstance(v, str) and v in _MO_SHAPES:
-            sh.append(v)
-    if len(sh) < 2:
-        sh = ['circle', 'star']
-    k = len(sh)
+    has_from = b.get('from_d') is not None and b.get('from_d') != ''
+    has_to = b.get('to_d') is not None and b.get('to_d') != ''
+    use_path = has_from or has_to
+
+    poly = None
+    aria_label = None
+    comment = ''
+
+    if use_path:
+        if has_from and has_to and isinstance(b.get('from_d'), str) and isinstance(b.get('to_d'), str):
+            pa = _mo_pp_parse(b['from_d'])
+            pb = _mo_pp_parse(b['to_d'])
+            if pa and pb:
+                ra = _mo_pp_resample(pa['pts'], pa['closed'], 64)
+                rb = _mo_pp_resample(pb['pts'], pb['closed'], 64)
+                if ra and rb:
+                    fa_fb = _mo_pp_fit([ra, rb], True)
+                    if fa_fb:
+                        a_pts, b_pts = fa_fb[0], fa_fb[1]
+                        closed = pa['closed'] and pb['closed']
+                        b2 = _mo_pp_align(a_pts, b_pts, closed)
+                        pts = []
+                        for j in range(64):
+                            dx = b2[j][0] - a_pts[j][0]
+                            dy = b2[j][1] - a_pts[j][1]
+                            part_x = (' + ' + _mo_t10(dx) + '%*clamp(0,var(--p,1),1)') if dx != 0 else ''
+                            part_y = (' + ' + _mo_t10(dy) + '%*clamp(0,var(--p,1),1)') if dy != 0 else ''
+                            pts.append('calc(' + _mo_t10(a_pts[j][0]) + '%' + part_x + ') calc(' + _mo_t10(a_pts[j][1]) + '%' + part_y + ')')
+                        poly = 'polygon(' + ','.join(pts) + ')'
+                        aria_label = 'path to path'
+        if poly is None:
+            comment = '<!-- a2ui: morph path ignored -->'
+
     fill, fill2, rot = _mo_ink(b, 'fill', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'fill2', ''), _ff_int(b.get('rotate'), 0, -720, 720)
     asp = _ff_num(b.get('aspect'), 1, 0.4, 3, 2)
     asp_css = '1/1' if asp == '1' else asp
-    a100 = int(float(asp) * 100 + 0.5)
-    rnd = b.get('round') is True and a100 != 100
 
-    def pt(name, i):
-        # round: true squeezes circle and dot about the centre by the box aspect, in whole tenths of a percent, so they stay round in a wide or tall box
-        v = _MO_SHAPES[name][i]
-        if rnd and name in _MO_ROUND:
-            d = v - 500
-            if a100 > 100 and i % 2 == 0:
-                return 500 + (d * 100 + a100 // 2) // a100
-            if a100 < 100 and i % 2 == 1:
-                return 500 + (d * a100 + 50) // 100
-        return v
-    pts = []
-    for i in range(0, 96, 2):
-        x, y = _mo_t10(pt(sh[0], i)) + '%', _mo_t10(pt(sh[0], i + 1)) + '%'
-        for j in range(1, k):
-            dx = pt(sh[j], i) - pt(sh[j - 1], i)
-            dy = pt(sh[j], i + 1) - pt(sh[j - 1], i + 1)
-            st = '*clamp(0,calc(var(--p,1)*' + str(k - 1) + ' - ' + str(j - 1) + '),1)'
-            if dx:
-                x += ' + ' + _mo_t10(dx) + '%' + st
-            if dy:
-                y += ' + ' + _mo_t10(dy) + '%' + st
-        pts.append('calc(' + x + ') calc(' + y + ')')
+    if poly is None:
+        sh = []
+        for v in (b.get('shapes') if isinstance(b.get('shapes'), list) else []):
+            if len(sh) >= 4:
+                break
+            if isinstance(v, str) and v in _MO_SHAPES:
+                sh.append(v)
+        if len(sh) < 2:
+            sh = ['circle', 'star']
+        k = len(sh)
+        a100 = int(float(asp) * 100 + 0.5)
+        rnd = b.get('round') is True and a100 != 100
+
+        def pt(name, i):
+            v = _MO_SHAPES[name][i]
+            if rnd and name in _MO_ROUND:
+                d = v - 500
+                if a100 > 100 and i % 2 == 0:
+                    return 500 + (d * 100 + a100 // 2) // a100
+                if a100 < 100 and i % 2 == 1:
+                    return 500 + (d * a100 + 50) // 100
+            return v
+
+        pts = []
+        for i in range(0, 96, 2):
+            x, y = _mo_t10(pt(sh[0], i)) + '%', _mo_t10(pt(sh[0], i + 1)) + '%'
+            for j in range(1, k):
+                dx = pt(sh[j], i) - pt(sh[j - 1], i)
+                dy = pt(sh[j], i + 1) - pt(sh[j - 1], i + 1)
+                st = '*clamp(0,calc(var(--p,1)*' + str(k - 1) + ' - ' + str(j - 1) + '),1)'
+                if dx:
+                    x += ' + ' + _mo_t10(dx) + '%' + st
+                if dy:
+                    y += ' + ' + _mo_t10(dy) + '%' + st
+            pts.append('calc(' + x + ') calc(' + y + ')')
+        poly = 'polygon(' + ','.join(pts) + ')'
+        aria_label = ' to '.join(sh)
+
     gl = b.get('glossy') is True
     bg = (('radial-gradient(circle at 32% 26%,rgba(255,255,255,0.42),rgba(255,255,255,0) 46%),radial-gradient(circle at 70% 85%,rgba(0,0,0,0.28),rgba(0,0,0,0) 55%),' if gl else '')
           + (('linear-gradient(135deg,' + fill + ',' + fill2 + ')') if fill2 else fill))
-    poly = 'polygon(' + ','.join(pts) + ')'
     inner = ('<div style="width:100%;aspect-ratio:' + asp_css + ';background:' + bg + ';clip-path:' + poly + ';-webkit-clip-path:' + poly + ';'
              + ('transform:rotate(calc(var(--s,0)*' + str(rot) + 'deg));' if rot else '') + '"></div>')
-    return '<div role="img" aria-label="' + _cv_esc(' to '.join(sh)) + '" style="width:100%;' + ('filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' if gl else '') + '">' + inner + '</div>'
+    return '<div role="img" aria-label="' + _cv_esc(aria_label) + '" style="width:100%;' + ('filter:drop-shadow(0 0.9em 1.2em rgba(0,0,0,0.38));' if gl else '') + '">' + inner + '</div>' + comment
 
 
 # ─── WebGL spike (2026-10-02): see the matching block in atoms_motion.gs ──────────────────────────────────────────────────────────

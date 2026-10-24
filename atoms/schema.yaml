@@ -11902,6 +11902,8 @@ blocks:
     glossy: 'bool (optional). A specular highlight, a soft core shadow and a drop shadow, so the shape reads as a solid object. Default false.'
     rotate: 'integer (optional). Degrees turned at --s = 1, -720 to 720. Default 0.'
     aspect: 'number (optional). Width over height of the box, 0.4 to 3. Default 1 (a square). Use 1.78 for a 16:9 panel.'
+    from_d: 'string (optional, max 4000 characters). With to_d, morphs an arbitrary SVG path into another instead of presets: path-to-path. Straight and curve commands only (M L H V C S Q T Z, absolute or relative; no arcs A, no exponent numbers, numbers up to 1000000); only the first subpath is used. Both paths are flattened and resampled to 64 points evenly spaced by length, fitted together into the box keeping proportions (so their relative size and position survive), and for closed shapes the second is wound the same way and rotated to the nearest start, so the vertices travel the shortest way. The 64 vertices are interpolated in the clip polygon on p (pure CSS, scrubs exactly); at p = 1 the settled frame is to_d. shapes and round are ignored in path mode. If only one of from_d and to_d is given or either is invalid, the presets are used and an HTML comment notes it. Absent: unchanged.'
+    to_d: 'string (optional, max 4000 characters). The path the shape settles on at p = 1; see from_d. Needs from_d.'
     round: 'bool (optional). Keeps the circle and dot presets round in a box that is not square (they are squeezed by the aspect), so a dot can swell into a true circle before it becomes a lens or panel. Other shapes are not touched. Default false.'
   source:
     name: a2uicatalog
