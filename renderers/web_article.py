@@ -3581,126 +3581,521 @@ def _render_live_demo_embed(b: dict) -> str:
 def _render_benchmark_comparison(b: dict) -> str:
     return '<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="padding:8px;background:#f0f9ff;border-radius:4px;">Benchmark A: 95ms</div><div style="padding:8px;background:#f0fdf4;border-radius:4px;">Benchmark B: 120ms</div></div></div>'
 
+# ── shared chart-axis helper (plotly core-bar) ──────────────────────────────────────────────────────────────────────────────
+# d3-format 3.1.0 subset (types d f e g s % and n; flags fill/align, sign, $, 0, width, comma, precision, ~), d3-scale 4.0.2
+# scaleLog ticks and nice (base 10) and the linear nice/ticks the histogram already ports. Types b c o p r x X are NOT ported: such a
+# specifier is rejected (the caller shows plain numbers and says so) rather than answered wrongly. Twin of _ax* in atoms_infographic.gs.
+_AX_SPEC = re.compile(r'^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?([0-9]+)?(,)?(\.[0-9]+)?(~)?([a-z%])?$', re.I)
+_AX_SI = ['y', 'z', 'a', 'f', 'p', 'n', 'µ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
+_AX_TYPES = ('d', 'f', 'e', 'g', 's', '%', 'n', '')
+
+
+def _ax_parse(spec):
+    """d3 formatSpecifier, or None when d3 would throw or the type is outside the ported subset."""
+    if not isinstance(spec, str) or len(spec) > 24 or '\n' in spec or '\r' in spec:
+        return None
+    m = _AX_SPEC.match(spec)
+    if m is None:
+        return None
+    fill, align, sign, symbol, zero, width, comma, prec, trim, typ = m.groups()
+    typ = typ or ''
+    if typ not in _AX_TYPES:
+        return None
+    return {'fill': fill or ' ', 'align': align or '>', 'sign': sign or '-', 'symbol': symbol or '', 'zero': bool(zero),
+            'width': int(width) if width is not None else None, 'comma': bool(comma), 'precision': int(prec[1:]) if prec else None,
+            'trim': bool(trim), 'type': typ}
+
+
+def _ax_toexp(x, p=None):
+    """JavaScript x.toExponential(p) for finite x >= 0 (p None = as many digits as needed): 1.5e+3, 1e-7."""
+    if x == 0:
+        return '0' + ('.' + '0' * p if p else '') + 'e+0'
+    if p is None:
+        d = decimal.Decimal(repr(float(x))).normalize()
+        dg = d.as_tuple().digits
+        e = len(dg) - 1 + d.as_tuple().exponent
+        ds = ''.join(str(i) for i in dg)
+    else:
+        d = decimal.Context(prec=p + 1, rounding=decimal.ROUND_HALF_UP).create_decimal(decimal.Decimal(float(x)))
+        dg = d.as_tuple().digits
+        e = len(dg) - 1 + d.as_tuple().exponent
+        ds = ''.join(str(i) for i in dg).ljust(p + 1, '0')[:p + 1]
+    return ds[0] + ('.' + ds[1:] if len(ds) > 1 else '') + 'e' + ('+' if e >= 0 else '-') + str(abs(e))
+
+
+def _ax_toprec(x, p):
+    """JavaScript x.toPrecision(p) for finite x >= 0."""
+    if x == 0:
+        return '0' + ('.' + '0' * (p - 1) if p > 1 else '')
+    mant, e = _ax_toexp(x, p - 1).split('e')
+    e = int(e)
+    dg = mant.replace('.', '')
+    if e < -6 or e >= p:
+        return mant + 'e' + ('+' if e >= 0 else '-') + str(abs(e))
+    if e == p - 1:
+        return dg
+    if e >= 0:
+        return dg[:e + 1] + '.' + dg[e + 1:]
+    return '0.' + '0' * (-(e + 1)) + dg
+
+
+def _ax_dparts(x, p):
+    s = _ax_toexp(x, p - 1) if p else _ax_toexp(x, None)
+    c, e = s.split('e')
+    return (c[0] + c[2:] if len(c) > 1 else c), int(e)
+
+
+def _ax_prefix_auto(x, p):
+    """d3 formatPrefixAuto -> (digits, prefixExponent)."""
+    coef, ex = _ax_dparts(x, p)
+    pe = max(-8, min(8, math.floor(ex / 3))) * 3
+    i, n = ex - pe + 1, len(coef)
+    if i == n:
+        return coef, pe
+    if i > n:
+        return coef + '0' * (i - n), pe
+    if i > 0:
+        return coef[:i] + '.' + coef[i:], pe
+    return '0.' + '0' * (1 - i - 1) + _ax_dparts(x, max(0, p + i - 1))[0], pe
+
+
+def _ax_trim(s):
+    i0, i1, i, n = -1, 0, 1, len(s)
+    while i < n:
+        c = s[i]
+        if c == '.':
+            i0 = i1 = i
+        elif c == '0':
+            if i0 == 0:
+                i0 = i
+            i1 = i
+        else:
+            if not (c in '123456789'):
+                break
+            if i0 > 0:
+                i0 = 0
+        i += 1
+    return s[:i0] + s[i1 + 1:] if i0 > 0 else s
+
+
+def _ax_group(value, width):
+    i, t, g, length = len(value), [], 3, 0
+    while i > 0 and g > 0:
+        if length + g + 1 > width:
+            g = max(1, width - length)
+        t.append(value[max(0, i - g):i])
+        i -= g
+        length += g + 1
+        if length > width:
+            break
+    return ','.join(reversed(t))
+
+
+def _ax_format(spec, v):
+    """d3.format(spec)(v) for a finite number (NaN and the infinities come back as plain words)."""
+    s = _ax_parse(spec)
+    v = float(v)
+    if s is None or v != v or v in (_HG_INF, -_HG_INF):
+        return 'NaN' if v != v else ('Infinity' if v > 0 else '−Infinity')
+    typ, prec, trim, comma, fill, align, sign, zero, width = s['type'], s['precision'], s['trim'], s['comma'], s['fill'], s['align'], s['sign'], s['zero'], s['width']
+    if typ == 'n':
+        comma, typ = True, 'g'
+    elif typ not in ('d', 'f', 'e', 'g', 's', '%'):
+        if prec is None:
+            prec = 12
+        trim, typ = True, 'g'
+    if zero or (fill == '0' and align == '='):
+        zero, fill, align = True, '0', '='
+    prec = 6 if prec is None else (max(1, min(21, prec)) if typ in ('g', 's') else max(0, min(20, prec)))
+    cur = s['symbol'] == '$'
+    prefix = '$' if cur else ''
+    suffix = '' if cur else ('%' if typ == '%' else '')
+    neg = v < 0 or (v == 0 and math.copysign(1.0, v) < 0)
+    a, pe = abs(v), 0
+    if typ == '%':
+        body = _ax_fixed(a * 100, prec)
+    elif typ == 'd':
+        body = _ax_decimal(a)
+    elif typ == 'e':
+        body = _ax_toexp(a, prec)
+    elif typ == 'f':
+        body = _ax_fixed(a, prec)
+    elif typ == 'g':
+        body = _ax_toprec(a, prec)
+    else:
+        body, pe = _ax_prefix_auto(a, prec)
+    if trim:
+        body = _ax_trim(body)
+    try:
+        isz = float(body) == 0
+    except ValueError:
+        isz = False
+    if neg and isz and sign != '+':
+        neg = False
+    pre = ('(' if sign == '(' else '−') if neg else ('' if sign in ('-', '(') else sign)
+    pre += prefix
+    suf = (_AX_SI[8 + pe // 3] if typ == 's' else '') + suffix + (')' if neg and sign == '(' else '')
+    for i, c in enumerate(body):
+        if not ('0' <= c <= '9'):
+            suf = ('.' + body[i + 1:] if c == '.' else body[i:]) + suf
+            body = body[:i]
+            break
+    if comma and not zero:
+        body = _ax_group(body, _HG_INF)
+    length = len(pre) + len(body) + len(suf)
+    pad = fill * (width - length) if width is not None and length < width else ''
+    if comma and zero:
+        body, pad = _ax_group(pad + body, (width - len(suf)) if pad else _HG_INF), ''
+    if align == '<':
+        return pre + body + suf + pad
+    if align == '=':
+        return pre + pad + body + suf
+    if align == '^':
+        h = len(pad) >> 1
+        return pad[:h] + pre + body + suf + pad[h:]
+    return pad + pre + body + suf
+
+
+def _ax_fixed(x, d):
+    return _if_numstr(x) if x >= 1e21 else _if_fixed(x, d)
+
+
+def _ax_decimal(x):
+    r = _hg_round(x)
+    return _if_numstr(r) if r < 1e21 else format(decimal.Decimal(repr(float(r))), 'f')
+
+
+def _ax_log_ticks(u, v, n):
+    """scaleLog().domain([u, v]).ticks(n), base 10, u and v > 0."""
+    rev = v < u
+    if rev:
+        u, v = v, u
+    i, j = math.log10(u), math.log10(v)
+    z = []
+    if j - i < n:
+        i, j = math.floor(i), math.ceil(j)
+        while i <= j:
+            for k in range(1, 10):
+                t = k / _hg_pow10(-i) if i < 0 else k * _hg_pow10(i)
+                if t < u:
+                    continue
+                if t > v:
+                    break
+                z.append(t)
+            i += 1
+        if len(z) * 2 < n:
+            z = _hg_ticks(u, v, n)
+    else:
+        z = [_hg_pow10(int(q)) for q in _hg_ticks(i, j, min(j - i, n))]
+    return z[::-1] if rev else z
+
+
+def _ax_log_nice(u, v):
+    """scaleLog().domain([u, v]).nice().domain()."""
+    rev = v < u
+    a, b = (v, u) if rev else (u, v)
+    a, b = _hg_pow10(int(math.floor(math.log10(a)))), _hg_pow10(int(math.ceil(math.log10(b))))
+    return (b, a) if rev else (a, b)
+
+
+def _ax_scale(lo, hi, log, rng, reverse, count):
+    """The value axis of a bar chart: {lo, hi, ticks, log, pos(v) -> 0..1 along the axis}. lo and hi are the data extent (zero
+    included for linear); rng is a usable [a, b] or None; for a log axis the extent is of the positive values."""
+    if rng:
+        lo, hi = rng
+    elif log:
+        lo, hi = _ax_log_nice(lo, hi)
+        if lo == hi:
+            hi = lo * 10
+    else:
+        if lo == hi:
+            lo, hi = (lo - 1, hi + 1) if lo != 0 else (0, 1)
+        lo, hi = _hg_nice(lo, hi, count)
+    ticks = _ax_log_ticks(lo, hi, count) if log else _hg_ticks(lo, hi, count)
+    if log:
+        major = [t for t in ticks if t == _hg_pow10(int(round(math.log10(t))))]      # d3 gives 1..9 of each decade; the axis labels the powers of ten
+        if len(major) >= 2:
+            ticks = major
+    if log:
+        l0, l1 = math.log10(lo), math.log10(hi)
+        f = lambda v: (math.log10(v) - l0) / (l1 - l0)
+    else:
+        f = lambda v: (v - lo) / (hi - lo)
+    return {'lo': lo, 'hi': hi, 'ticks': ticks, 'log': log, 'pos': (lambda v: 1 - f(v)) if reverse else f}
+
+
+# ── chartjs_bar (plotly core-bar) ── static HTML bars on the shared axis helper above. Twin of _RENDERERS['chartjs_bar'] in atoms_infographic.gs.
+# mode group | stack | relative | overlay, orientation v | h, show_values + value_format, legend_position, y_scale linear | log, y_range, y_format,
+# y_ticks, y_reverse, gap. Series are told apart by fill pattern as well as colour; every value is in the hidden table.
+_CB_COL = ['var(--accent,#0369A1)', 'var(--chart-2,#9A6120)', 'var(--chart-3,#0F6C4F)', 'var(--chart-4,#810998)', 'var(--chart-5,#19294E)',
+           'var(--chart-6,#B91C1C)', 'var(--chart-7,#0E7490)', 'var(--chart-8,#5B21B6)']
+_CB_CATS, _CB_SERIES, _CB_PH, _CB_CHIP = 40, 8, 240, 'position:absolute;z-index:1;font-size:0.75rem;line-height:1.25;padding:0 3px;border-radius:3px;white-space:nowrap;background:var(--surface,#F8FAFC);color:var(--text,#0F172A);border:1px solid '
+_CB_LABW = 'clamp(64px,24cqw,150px)'
+
+
+def _cb_fill(i, col):
+    k = i % 4
+    if k == 0:
+        return 'background:' + col + ';'
+    if k == 1:
+        return 'background-color:var(--bg,#fff);background-image:repeating-linear-gradient(45deg,' + col + ' 0 3px,transparent 3px 7px);'
+    if k == 2:
+        return 'background-color:var(--bg,#fff);background-image:radial-gradient(' + col + ' 1.6px,transparent 1.9px);background-size:7px 7px;'
+    return 'background-color:var(--bg,#fff);background-image:repeating-linear-gradient(45deg,' + col + ' 0 2px,transparent 2px 6px),repeating-linear-gradient(-45deg,' + col + ' 0 2px,transparent 2px 6px);'
+
+
+def _cb_str(v, mx):
+    return '' if (v is None or v is _IF_UNDEF or isinstance(v, (dict, list))) else _if_str(v)[:mx]
+
+
+def _cb_num(v):
+    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12 else None
+
+
+def _cb_pc(f):
+    return _if_fixed(f * 100, 3) + '%'
+
+
+def _cb_spec(v):
+    return v if isinstance(v, str) and v != '' and _ax_parse(v) is not None else None
+
+
+def _cb_data(b):
+    """-> (labels, [(name, color or None, [value or None, ...])], skipped, (categories given, series given)); at most 200 categories and 24 series are read."""
+    ds, labs, skipped, series = _if_g(b, 'datasets'), _if_arr(_if_g(b, 'labels'), 200), 0, []
+    given_n = len(_if_g(b, 'labels')) if isinstance(_if_g(b, 'labels'), list) else 0
+    if not (isinstance(ds, list) and ds):
+        rows = _if_arr(_if_g(b, 'data'), 200)
+        given_n = len(_if_g(b, 'data')) if isinstance(_if_g(b, 'data'), list) else 0
+        if rows:
+            labs = [_cb_str(_if_g(r, 'label'), 40) if isinstance(r, dict) else '' for r in rows]
+            ds = [{'label': _cb_str(_if_g(b, 'title'), 40) or 'Value', 'data': [_if_g(r, 'value') if isinstance(r, dict) else None for r in rows]}]
+        else:
+            ds = []
+    given_s = len(ds) if isinstance(ds, list) else 0
+    for k, d in enumerate(_if_arr(ds, 24)):
+        if not isinstance(d, dict):
+            skipped += 1
+            continue
+        raw = _if_arr(_if_g(d, 'data'), 200)
+        vals = [_cb_num(x) for x in raw]
+        skipped += sum(1 for x in vals if x is None)
+        given_n = max(given_n, len(_if_g(d, 'data')) if isinstance(_if_g(d, 'data'), list) else 0)
+        col = _if_g(d, 'color')
+        series.append((_cb_str(_if_g(d, 'label'), 40) or 'Series ' + str(k + 1),
+                       col if isinstance(col, str) and re.fullmatch(r'#[0-9a-fA-F]{6}', col) else None, vals))
+    n = max([len(labs)] + [len(s[2]) for s in series])
+    labels = [(_cb_str(labs[i], 40) if i < len(labs) and labs[i] is not None else '') or str(i + 1) for i in range(n)]
+    return labels, series, skipped, (max(given_n, n), max(given_s, len(series)))
+
+
 def _render_chartjs_bar(b: dict) -> str:
-    datasets = b.get("datasets", [])
-    labels   = b.get("labels", [])
-    if not datasets:
-        return ""
-    
-    # Flatten datasets to find global max
-    all_vals = []
-    for ds in datasets:
-        all_vals.extend(ds.get("data", []))
-    if not all_vals:
-        return ""
-        
-    mx = max(all_vals) or 1
-    mn = min(all_vals)
-    
-    # SVG canvas coordinate dimensions
-    w, h = 500, 200
-    pad_l, pad_r, pad_t, pad_b = 60, 20, 30, 40
-    chart_w = w - pad_l - pad_r
-    chart_h = h - pad_t - pad_b
-    
-    chart_id = f"bar_{_wa_oid(b)}"
-    
-    # Y-axis ticks and horizontal grid lines
-    grid_lines = ""
-    for grid_idx in range(5):
-        grid_y = pad_t + (grid_idx / 4) * chart_h
-        grid_v = mx - (grid_idx / 4) * (mx - mn if mx != mn else mx)
-        val_str = f"{grid_v:,.1f}" if grid_v % 1 != 0 else f"{grid_v:,.0f}"
-        grid_lines += f"""
-        <line x1="{pad_l}" y1="{grid_y}" x2="{pad_l + chart_w}" y2="{grid_y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
-        <text x="{pad_l - 10}" y="{grid_y + 3}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{val_str}</text>
-        """
-        
-    # Draw bars and X axis labels
-    num_labels = len(labels)
-    num_series = len(datasets)
-    
-    colors = [
-        {"fill": "#3b82f6", "stop": "#2563eb"}, # blue
-        {"fill": "#10b981", "stop": "#059669"}, # emerald green
-        {"fill": "#a855f7", "stop": "#7c3aed"}, # purple
-        {"fill": "#f59e0b", "stop": "#d97706"}, # amber
-    ]
-    
-    defs = []
-    for di in range(num_series):
-        color_set = colors[di % len(colors)]
-        grad_id = f"bar_grad_{chart_id}_{di}"
-        glow_id = f"bar_glow_{chart_id}_{di}"
-        defs.append(f"""
-        <linearGradient id="{grad_id}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="{color_set['fill']}" />
-          <stop offset="100%" stop-color="{color_set['stop']}" stop-opacity="0.3" />
-        </linearGradient>
-        <filter id="{glow_id}" x="-10%" y="-10%" width="120%" height="120%">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        """)
-        
-    bars_html = []
-    x_labels = ""
-    
-    # Calculate group widths
-    group_width_ratio = 0.7  # 70% of available slot
-    slot_width = chart_w / (num_labels if num_labels > 0 else 1)
-    bar_group_w = slot_width * group_width_ratio
-    single_bar_w = bar_group_w / (num_series if num_series > 0 else 1)
-    
-    for i, lbl in enumerate(labels):
-        group_x_start = pad_l + i * slot_width + (slot_width - bar_group_w) / 2
-        
-        # Add label text
-        x_labels += f'<text data-cb="label" data-key="{_cv_esc(lbl)}" x="{pad_l + i * slot_width + slot_width/2}" y="{pad_t + chart_h + 20}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
-        
-        for di, ds in enumerate(datasets):
-            data = ds.get("data", [])
-            if i < len(data):
-                val = data[i]
-                bar_h = (val / mx) * chart_h if mx > 0 else 0
-                bar_x = group_x_start + di * single_bar_w
-                bar_y = pad_t + chart_h - bar_h
-                
-                grad_id = f"bar_grad_{chart_id}_{_cv_esc(di)}"
-                glow_id = f"bar_glow_{chart_id}_{_cv_esc(di)}"
-                
-                # Draw rounded top bars using path or rect with rx
-                bars_html.append(f"""
-                <rect data-cb="bar" data-key="{_cv_esc(lbl)}" x="{bar_x}" y="{bar_y}" width="{max(2, single_bar_w - 2)}" height="{max(1, bar_h)}" fill="url(#{grad_id})" rx="3" ry="3" filter="url(#{glow_id})" />
-                """)
-                
-    svg_defs = "\n".join(defs)
-    bars_markup = "\n".join(bars_html)
-    
-    label = datasets[0].get("label", "") if datasets else ""
-    label_html = f'<div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">{_cv_esc(label)}</div>' if label else ""
-    
-    return f"""
-    <div style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-      {label_html}
-      <div style="width:100%;height:200px;">
-        <svg role="img" aria-label="{_cv_esc(label or b.get('title') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-          <defs>
-            {svg_defs}
-          </defs>
-          <!-- Grid & Y-Axes -->
-          {grid_lines}
-          <!-- X-Axes -->
-          {x_labels}
-          <!-- Bars -->
-          {bars_markup}
-        </svg>
-      </div>
-    </div>
-    """
+    labels, series, skipped, given = _cb_data(b)
+    n, S = len(labels), len(series)
+    if n == 0 or not any(v is not None for s in series for v in s[2]):
+        return _if_wrap(_if_title(b) + _hg_note('No numbers to draw as bars.'))
+    notes = _hg_skip_note(skipped) if skipped else ''
+    nd, sd = min(n, _CB_CATS), min(S, _CB_SERIES)
+    if given[0] > nd:
+        notes += _hg_note('The first ' + str(nd) + ' of ' + str(given[0]) + ' categories are drawn; ' + ('the table has all of them.' if given[0] == n else 'the table has the first ' + str(n) + '.'))
+    if given[1] > sd:
+        notes += _hg_note('The first ' + str(sd) + ' of ' + str(given[1]) + ' series are drawn; ' + ('the table has all of them.' if given[1] == S else 'the table has the first ' + str(S) + '.'))
+    horiz = _if_g(b, 'orientation') in ('h', 'horizontal')
+    mode = _if_pick(_if_g(b, 'mode'), ('group', 'stack', 'relative', 'overlay'), 'group')
+    log = _if_g(b, 'y_scale') == 'log'
+    cnt = math.floor(_if_n(_if_g(b, 'y_ticks'), 2, 12, 5))
+    gap = _if_n(_if_g(b, 'gap'), 0, 0.8, 0.3)
+    show = _if_truthy(_if_g(b, 'show_values')) and _if_g(b, 'show_values') != 'false'
+    lp = _if_pick(_if_g(b, 'legend_position'), ('top', 'bottom', 'right', 'none'), 'top' if S > 1 else 'none')
+    rev = _if_g(b, 'y_reverse') is True or _if_g(b, 'y_reverse') == 'true'
+    yf, vf0 = _if_g(b, 'y_format'), _if_g(b, 'value_format')
+    for nm, sp in (('y_format', yf), ('value_format', vf0)):
+        if _if_truthy(sp) and _cb_spec(sp) is None:
+            notes += _hg_note(nm + ' "' + _if_s(sp, 24) + '" is not a number format this chart knows; plain numbers are shown.')
+    yf, vf0 = _cb_spec(yf), _cb_spec(vf0)
+    vals = [v for s in series[:sd] for v in s[2][:nd] if v is not None]
+    allv = [v for s in series for v in s[2] if v is not None]
+    if log and mode in ('stack', 'relative'):
+        mode = 'group'
+        notes += _hg_note('Stacked bars need a linear axis; the bars are drawn grouped on the log axis.')
+    rng = _if_g(b, 'y_range')
+    rng = [float(rng[0]), float(rng[1])] if isinstance(rng, list) and len(rng) == 2 and _cb_num(rng[0]) is not None and _cb_num(rng[1]) is not None and rng[0] != rng[1] else None
+    if rng is None and _if_truthy(_if_g(b, 'y_range')):
+        notes += _hg_note('y_range was not two different numbers; it was ignored.')
+    if rng and rng[0] > rng[1]:
+        rng = [rng[1], rng[0]]
+    if rng and log and rng[0] <= 0:
+        rng = None
+        notes += _hg_note('y_range must be above zero on a log axis; it was ignored.')
+    # segments [(cat, series, v0, v1, value)] in value space
+    segs, lo, hi = [], 0.0, 0.0
+    drop = 0
+    for i in range(nd):
+        cum, pos_c, neg_c = 0.0, 0.0, 0.0
+        for k in range(sd):
+            v = series[k][2][i] if i < len(series[k][2]) else None
+            if v is None:
+                continue
+            if log and v <= 0:
+                drop += 1
+                continue
+            if mode == 'stack':
+                a, e = cum, cum + v
+                cum = e
+            elif mode == 'relative':
+                if v >= 0:
+                    a, e = pos_c, pos_c + v
+                    pos_c = e
+                else:
+                    a, e = neg_c, neg_c + v
+                    neg_c = e
+            else:
+                a, e = None, v
+            segs.append((i, k, a, e, v))
+    if log:
+        if drop:
+            notes += _hg_note(str(drop) + (' number is' if drop == 1 else ' numbers are') + ' not above zero, so ' + ('it cannot' if drop == 1 else 'they cannot') + ' be drawn on a log axis; the table has ' + ('it' if drop == 1 else 'them') + '.')
+        pv = [s[4] for s in segs]
+        if not pv:
+            return _if_wrap(_if_title(b) + _hg_note('No numbers above zero to draw on a log axis.') + notes)
+        lo, hi = min(pv), max(pv)
+        if lo == hi:
+            hi = lo * 10
+    else:
+        ends = [x for s in segs for x in ((0.0 if s[2] is None else s[2]), s[3])]
+        lo, hi = min(ends + [0.0]), max(ends + [0.0])
+    ax = _ax_scale(lo, hi, log, rng, rev, cnt)
+    pos = ax['pos']
+    clip = [False]
+    base = ax['lo'] if log else (ax['lo'] if ax['lo'] > 0 else ax['hi'] if ax['hi'] < 0 else 0.0)
+    def fr(v):
+        f = pos(v)
+        if f < -1e-9 or f > 1 + 1e-9:
+            clip[0] = True
+        return min(1.0, max(0.0, f))
+    dec = _hg_decimals(allv)
+    vf = (lambda v: _ax_format(vf0, v)) if vf0 else ((lambda v: _ax_format(yf, v)) if yf else (lambda v: _hg_num(v, dec)))
+    tdec = _hg_decimals(ax['ticks'])
+    tf = (lambda t: _ax_format(yf, t)) if yf else ((lambda t: _ax_format('~s', t)) if log else (lambda t: _hg_num(t, tdec)))
+    tlab = [tf(t) for t in ax['ticks']]
+    tw = max([len(x) for x in tlab] + [1])
+    # geometry: slots along the category axis, a fraction of each slot for the bars
+    inner = 1 - gap
+    kk = sd if mode == 'group' else 1
+    colr = [(series[k][1] or _CB_COL[k % 8]) for k in range(sd)]
+    chip_w = max([len(vf(s[4])) for s in segs] + [1]) * 7 + 10
+    slot_px = max(34, (sd if mode in ('group', 'overlay') else 1) * 24 + 10)
+    if horiz:      # a category label wraps in the narrowest label column (about 69px of text), so the row is as tall as its longest label needs
+        slot_px = max(slot_px, min(6, math.ceil(max([len(x) for x in labels[:nd]] + [1]) * 6.6 / 69)) * 15 + 6)
+    outside = show and mode in ('group', 'overlay')
+    pad_top = (22 + (sd - 1) * 18 if mode == 'overlay' else 22) if (outside and not horiz) else 8
+    pad_right = (chip_w + 6 if outside else 12) if horiz else 12
+    gut_px = math.ceil(tw * 7.5) + 14
+    grid = ''
+    for t, tl in zip(ax['ticks'], tlab):
+        f = pos(t)
+        if f < -1e-9 or f > 1 + 1e-9:
+            continue
+        if horiz:
+            grid += '<div style="position:absolute;top:0;bottom:0;left:' + _cb_pc(f) + ';border-left:1px dashed var(--border,#CBD5E1);"></div>'
+        else:
+            grid += '<div style="position:absolute;left:0;right:0;bottom:' + _cb_pc(f) + ';border-top:1px dashed var(--border,#CBD5E1);"></div>'
+            grid += '<div style="position:absolute;right:100%;bottom:' + _cb_pc(f) + ';transform:translateY(50%);padding-right:6px;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _cv_esc(tl) + '</div>'
+    zf = None if (log or not (ax['lo'] <= 0 <= ax['hi'])) else pos(0)
+    if zf is not None:
+        grid += ('<div style="position:absolute;top:0;bottom:0;left:' + _cb_pc(zf) + ';border-left:1.5px solid var(--muted,#475569);"></div>' if horiz
+                 else '<div style="position:absolute;left:0;right:0;bottom:' + _cb_pc(zf) + ';border-top:1.5px solid var(--muted,#475569);"></div>')
+    byc = {}
+    for s in segs:
+        byc.setdefault(s[0], []).append(s)
+    bars, thresholds = '', {}
+    for i in range(nd):
+        inner_html = ''
+        lst = byc.get(i, [])
+        if mode == 'overlay':      # the largest is drawn first so the smaller ones stay in front of it
+            lst = sorted(lst, key=lambda t: (-t[4], t[1]))
+        for (_, k, a, e, v) in lst:
+            f0, f1 = fr(a if a is not None else base), fr(e)
+            low, size = min(f0, f1), abs(f1 - f0)
+            gw = inner / kk if mode == 'group' else inner
+            off = (1 - inner) / 2 + (k * gw if mode == 'group' else 0)
+            col = colr[k]
+            geo = ('top:' + _cb_pc((i + off) / nd) + ';height:' + _cb_pc(gw / nd) + ';left:' + _cb_pc(low) + ';width:' + _cb_pc(size) + ';min-width:2px;') if horiz else \
+                  ('left:' + _cb_pc((i + off) / nd) + ';width:' + _cb_pc(gw / nd) + ';bottom:' + _cb_pc(low) + ';height:' + _cb_pc(size) + ';min-height:2px;')
+            chip = ''
+            if show:
+                txt = vf(v)
+                need = len(txt) * 7 + 10
+                inside = mode in ('stack', 'relative')
+                if inside and (size < (0.1 if horiz else 0.075)):
+                    chip = ''
+                else:
+                    if inside:
+                        place = 'left:50%;top:50%;transform:translate(-50%,-50%);'
+                        frac = size if horiz else gw / nd
+                    elif horiz:
+                        st = (k - (sd - 1) / 2) * 18 if mode == 'overlay' else 0
+                        place = 'left:calc(100% + 3px);top:calc(50% + ' + _if_fixed(st, 1) + 'px);transform:translateY(-50%);'
+                        frac = 1
+                    else:
+                        st = k * 18 if mode == 'overlay' else 0
+                        place = 'left:50%;bottom:calc(100% + 2px + ' + str(st) + 'px);transform:translateX(-50%);'
+                        frac = gw / nd
+                    wk = None
+                    if not (horiz and not inside):
+                        lead = (150 + pad_right) if horiz else (gut_px + 12)
+                        wk = 99999 if frac <= 0 else int(math.ceil((lead + need / frac) / 50.0)) * 50
+                    if wk is not None:
+                        thresholds[wk] = True
+                    chip = '<div class="cbv' + (' cbw' + str(wk) if wk is not None else '') + '" style="' + _CB_CHIP + col + ';' + place + '">' + _cv_esc(txt) + '</div>'
+            inner_html += ('<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cb_fill(k, col) + geo
+                           + '">' + chip + '</div>')
+        bars += '<div style="position:absolute;inset:0;' + _if_k(i, nd) + _IF_FADE + '">' + inner_html + '</div>'
+    css = '<style>' + ''.join('@container (max-width:' + str(w) + 'px){.ifcb .cbw' + str(w) + '{display:none}}' for w in sorted(thresholds)) + '@container (max-width:560px){.ifcb .cbx:not(.cbc){display:none}}</style>'
+    gut = _CB_LABW if horiz else str(gut_px) + 'px'
+    xs = ''
+    if horiz:
+        for i in range(nd):
+            xs += ('<div style="position:absolute;right:100%;top:' + _cb_pc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
+                   + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED
+                   + ';overflow-wrap:anywhere;">' + _cv_esc(labels[i]) + '</div>')
+        axis = ''
+        for j, (t, tl) in enumerate(zip(ax['ticks'], tlab)):
+            f = pos(t)
+            if f < -1e-9 or f > 1 + 1e-9:
+                continue
+            axis += ('<div class="cbx' + (' cbc' if j % 2 == 0 else '') + '" style="position:absolute;top:6px;left:' + _cb_pc(f) + ';transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _cv_esc(tl) + '</div>')
+        plot = ('<div role="img" aria-label="@ARIA@" style="position:relative;height:' + str(nd * slot_px) + 'px;border-left:1px solid var(--muted,#475569);">' + grid + bars + xs + '</div>'
+                '<div style="position:relative;height:26px;margin-top:2px;">' + axis + '</div>')
+    else:
+        for i in range(nd):
+            xs += '<div style="flex:0 0 ' + _cb_pc(1 / nd) + ';box-sizing:border-box;padding:4px 2px 0;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _IF_MUTED + ';overflow-wrap:anywhere;">' + _cv_esc(labels[i]) + '</div>'
+        plot = ('<div role="img" aria-label="@ARIA@" style="position:relative;height:' + str(_CB_PH) + 'px;border-bottom:1px solid var(--muted,#475569);">' + grid + bars + '</div>'
+                '<div style="display:flex;">' + xs + '</div>')
+    i_hi = max(range(len(segs)), key=lambda q: (segs[q][4], -q))
+    i_lo = min(range(len(segs)), key=lambda q: (segs[q][4], q))
+    def where(q):
+        return series[segs[q][1]][0] + ', ' + labels[segs[q][0]] if sd > 1 else labels[segs[q][0]]
+    aria = (('Stacked ' if mode == 'stack' else 'Relative stacked ' if mode == 'relative' else 'Overlaid ' if mode == 'overlay' else 'Grouped ' if sd > 1 else '') + ('horizontal ' if horiz else '') + 'bar chart of '
+            + str(nd) + (' category' if nd == 1 else ' categories') + (' and ' + str(sd) + ' series' if sd > 1 else '') + '. Highest value ' + vf(segs[i_hi][4]) + ' (' + where(i_hi)
+            + '), lowest ' + vf(segs[i_lo][4]) + ' (' + where(i_lo) + '). Value axis' + (' (log)' if log else '') + ' from ' + tf(ax['lo']) + ' to ' + tf(ax['hi']) + (', reversed' if rev else '') + '.')
+    plot = plot.replace('@ARIA@', _cv_esc(aria))
+    if clip[0]:
+        notes += _hg_note('Bars that pass the y_range are cut at the axis; the table has the full values.')
+    if show:
+        notes += _hg_note('Value labels hide when the chart is too narrow to fit them; the table has every value.')
+    legend = ''
+    if lp != 'none' and sd > 0:
+        legend = ('<div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:0.75rem;line-height:1.2;' + ('flex-direction:column;' if lp == 'right' else '') + '">'
+                  + ''.join('<div style="display:flex;align-items:center;gap:6px;"><span aria-hidden="true" style="flex:0 0 auto;width:14px;height:14px;box-sizing:border-box;border:1.5px solid ' + colr[k] + ';' + _cb_fill(k, colr[k]) + '"></span>'
+                            '<span>' + _cv_esc(series[k][0]) + '</span></div>' for k in range(sd)) + '</div>')
+    box = ('<div style="flex:1 1 260px;min-width:0;"><div style="position:relative;margin:' + str(pad_top) + 'px ' + str(pad_right) + 'px 0 ' + gut + ';">' + plot + '</div></div>')
+    body = ('<div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;">' + box + (legend if lp == 'right' else '') + '</div>') if lp == 'right' else box
+    chart = ('<div class="ifcb" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css + (legend if lp == 'top' else '') + body + (legend if lp == 'bottom' else '') + '</div>')
+    head = ['Category'] + [s[0] for s in series]
+    rows = [[labels[i]] + [_hg_num(series[k][2][i], dec) if i < len(series[k][2]) and series[k][2][i] is not None else '' for k in range(S)] for i in range(n)]
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'chartjs_bar') + _if_table(head, rows))
+
 
 def _render_chartjs_line(b: dict) -> str:
     datasets = b.get("datasets", [])
@@ -32286,10 +32681,13 @@ def _if_fmt(n):
     return _if_numstr(_if_round(n * 100) / 100)
 
 
+_IF_DEC_CTX = decimal.Context(prec=80)
+
+
 def _if_fixed(x, d):
     """JavaScript toFixed: exact binary value, ties away from zero."""
     q = decimal.Decimal(1).scaleb(-d)
-    s = format(decimal.Decimal(abs(x)).quantize(q, rounding=decimal.ROUND_HALF_UP), 'f')
+    s = format(decimal.Decimal(abs(x)).quantize(q, rounding=decimal.ROUND_HALF_UP, context=_IF_DEC_CTX), 'f')
     return ('-' if x < 0 and float(s) != 0 else '') + s
 
 

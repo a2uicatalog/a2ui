@@ -2831,6 +2831,359 @@ function _hgNice(start, stop, count) {
     pre = step;
   }
 }
+// ── shared chart-axis helper (plotly core-bar) ──
+// d3-format 3.1.0 subset (d f e g s % n; fill/align, sign, $, 0, width, comma, precision, ~) and d3-scale 4.0.2 scaleLog ticks / nice (base 10).
+// Types b c o p r x X are NOT ported: _axParse returns null for them. Twin of _ax_* in renderers/web_article.py.
+var _AX_SPEC = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?([0-9]+)?(,)?(\.[0-9]+)?(~)?([a-z%])?$/i;
+var _AX_SI = ['y', 'z', 'a', 'f', 'p', 'n', 'µ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+function _axParse(spec) {
+  if (typeof spec !== 'string' || spec.length > 24 || spec.indexOf('\n') >= 0 || spec.indexOf('\r') >= 0) return null;
+  var m = _AX_SPEC.exec(spec);
+  if (!m) return null;
+  var typ = m[10] || '';
+  if (['d', 'f', 'e', 'g', 's', '%', 'n', ''].indexOf(typ) < 0) return null;
+  return {fill: m[1] || ' ', align: m[2] || '>', sign: m[3] || '-', symbol: m[4] || '', zero: !!m[5], width: m[6] === undefined ? null : +m[6],
+          comma: !!m[7], precision: m[8] ? +m[8].slice(1) : null, trim: !!m[9], type: typ};
+}
+function _axDparts(x, p) {
+  var s = p ? x.toExponential(p - 1) : x.toExponential(), i = s.indexOf('e'), c = s.slice(0, i);
+  return [c.length > 1 ? c.charAt(0) + c.slice(2) : c, +s.slice(i + 1)];
+}
+function _axPrefixAuto(x, p) {
+  var d = _axDparts(x, p), coef = d[0], ex = d[1], pe = Math.max(-8, Math.min(8, Math.floor(ex / 3))) * 3, i = ex - pe + 1, n = coef.length, out;
+  if (i === n) out = coef;
+  else if (i > n) out = coef + new Array(i - n + 1).join('0');
+  else if (i > 0) out = coef.slice(0, i) + '.' + coef.slice(i);
+  else out = '0.' + new Array(1 - i).join('0') + _axDparts(x, Math.max(0, p + i - 1))[0];
+  return [out, pe];
+}
+function _axTrim(s) {
+  var n = s.length, i, i0 = -1, i1 = 0, c;
+  for (i = 1; i < n; ++i) {
+    c = s.charAt(i);
+    if (c === '.') { i0 = i1 = i; }
+    else if (c === '0') { if (i0 === 0) i0 = i; i1 = i; }
+    else { if ('123456789'.indexOf(c) < 0) break; if (i0 > 0) i0 = 0; }
+  }
+  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
+}
+function _axGroup(value, width) {
+  var i = value.length, t = [], g = 3, length = 0;
+  while (i > 0 && g > 0) {
+    if (length + g + 1 > width) g = Math.max(1, width - length);
+    t.push(value.substring(i -= g, i + g));
+    if ((length += g + 1) > width) break;
+  }
+  return t.reverse().join(',');
+}
+function _axFixed(x, d) { return x >= 1e21 ? String(x) : x.toFixed(d); }
+function _axDecimal(x) {
+  var r = Math.round(x);
+  if (r < 1e21) return String(r);
+  var p = _axDparts(r, 0), c = p[0];
+  return c + new Array(p[1] - c.length + 2).join('0');
+}
+function _axFormat(spec, v) {
+  var s = _axParse(spec);
+  v = +v;
+  if (s === null || v !== v || v === Infinity || v === -Infinity) return v !== v ? 'NaN' : v > 0 ? 'Infinity' : '−Infinity';
+  var typ = s.type, prec = s.precision, trim = s.trim, comma = s.comma, fill = s.fill, align = s.align, sign = s.sign, zero = s.zero, width = s.width;
+  if (typ === 'n') { comma = true; typ = 'g'; }
+  else if (['d', 'f', 'e', 'g', 's', '%'].indexOf(typ) < 0) { if (prec === null) prec = 12; trim = true; typ = 'g'; }
+  if (zero || (fill === '0' && align === '=')) { zero = true; fill = '0'; align = '='; }
+  prec = prec === null ? 6 : (typ === 'g' || typ === 's') ? Math.max(1, Math.min(21, prec)) : Math.max(0, Math.min(20, prec));
+  var cur = s.symbol === '$', prefix = cur ? '$' : '', suffix = cur ? '' : typ === '%' ? '%' : '';
+  var neg = v < 0 || 1 / v < 0, a = Math.abs(v), pe = 0, body;
+  if (typ === '%') body = _axFixed(a * 100, prec);
+  else if (typ === 'd') body = _axDecimal(a);
+  else if (typ === 'e') body = a.toExponential(prec);
+  else if (typ === 'f') body = _axFixed(a, prec);
+  else if (typ === 'g') body = a.toPrecision(prec);
+  else { var pa = _axPrefixAuto(a, prec); body = pa[0]; pe = pa[1]; }
+  if (trim) body = _axTrim(body);
+  if (neg && +body === 0 && sign !== '+') neg = false;
+  var pre = (neg ? (sign === '(' ? '(' : '−') : (sign === '-' || sign === '(' ? '' : sign)) + prefix;
+  var suf = (typ === 's' ? _AX_SI[8 + pe / 3] : '') + suffix + (neg && sign === '(' ? ')' : ''), i, c;
+  for (i = 0; i < body.length; ++i) {
+    c = body.charCodeAt(i);
+    if (c < 48 || c > 57) { suf = (c === 46 ? '.' + body.slice(i + 1) : body.slice(i)) + suf; body = body.slice(0, i); break; }
+  }
+  if (comma && !zero) body = _axGroup(body, Infinity);
+  var length = pre.length + body.length + suf.length, pad = width !== null && length < width ? new Array(width - length + 1).join(fill) : '';
+  if (comma && zero) { body = _axGroup(pad + body, pad.length ? width - suf.length : Infinity); pad = ''; }
+  if (align === '<') return pre + body + suf + pad;
+  if (align === '=') return pre + pad + body + suf;
+  if (align === '^') { var h = pad.length >> 1; return pad.slice(0, h) + pre + body + suf + pad.slice(h); }
+  return pad + pre + body + suf;
+}
+function _axLogTicks(u, v, n) {
+  var rev = v < u, i, j, k, t, z = [];
+  if (rev) { t = u; u = v; v = t; }
+  i = Math.log10(u); j = Math.log10(v);
+  if (j - i < n) {
+    i = Math.floor(i); j = Math.ceil(j);
+    for (; i <= j; ++i) {
+      for (k = 1; k < 10; ++k) {
+        t = i < 0 ? k / _hgP10(-i) : k * _hgP10(i);
+        if (t < u) continue;
+        if (t > v) break;
+        z.push(t);
+      }
+    }
+    if (z.length * 2 < n) z = _hgTicks(u, v, n);
+  } else {
+    z = _hgTicks(i, j, Math.min(j - i, n)).map(function(q) { return _hgP10(q); });
+  }
+  return rev ? z.reverse() : z;
+}
+function _axLogNice(u, v) {
+  var rev = v < u, a = rev ? v : u, b = rev ? u : v;
+  a = _hgP10(Math.floor(Math.log10(a))); b = _hgP10(Math.ceil(Math.log10(b)));
+  return rev ? [b, a] : [a, b];
+}
+function _axScale(lo, hi, log, rng, reverse, count) {
+  var nz, ticks, f;
+  if (rng) { lo = rng[0]; hi = rng[1]; }
+  else if (log) { nz = _axLogNice(lo, hi); lo = nz[0]; hi = nz[1]; if (lo === hi) hi = lo * 10; }
+  else {
+    if (lo === hi) { if (lo !== 0) { lo = lo - 1; hi = hi + 1; } else { lo = 0; hi = 1; } }
+    nz = _hgNice(lo, hi, count); lo = nz[0]; hi = nz[1];
+  }
+  ticks = log ? _axLogTicks(lo, hi, count) : _hgTicks(lo, hi, count);
+  if (log) {
+    var major = ticks.filter(function(t) { return t === _hgP10(Math.round(Math.log10(t))); });
+    if (major.length >= 2) ticks = major;
+  }
+  if (log) { var l0 = Math.log10(lo), l1 = Math.log10(hi); f = function(v) { return (Math.log10(v) - l0) / (l1 - l0); }; }
+  else f = function(v) { return (v - lo) / (hi - lo); };
+  return {lo: lo, hi: hi, ticks: ticks, log: log, pos: reverse ? function(v) { return 1 - f(v); } : f};
+}
+// ── chartjs_bar (plotly core-bar) ── static HTML bars on the shared axis helper above. Twin of _render_chartjs_bar in renderers/web_article.py;
+// this definition replaces the one in atoms_charts.gs (this file loads after it).
+var _CB_COL = ['var(--accent,#0369A1)', 'var(--chart-2,#9A6120)', 'var(--chart-3,#0F6C4F)', 'var(--chart-4,#810998)', 'var(--chart-5,#19294E)',
+               'var(--chart-6,#B91C1C)', 'var(--chart-7,#0E7490)', 'var(--chart-8,#5B21B6)'];
+var _CB_CATS = 40, _CB_SERIES = 8, _CB_PH = 240, _CB_CHIP = 'position:absolute;z-index:1;font-size:0.75rem;line-height:1.25;padding:0 3px;border-radius:3px;white-space:nowrap;background:var(--surface,#F8FAFC);color:var(--text,#0F172A);border:1px solid ';
+var _CB_MUTED = 'var(--muted,#475569)';
+var _CB_LABW = 'clamp(64px,24cqw,150px)';
+function _cbFill(i, col) {
+  var k = i % 4;
+  if (k === 0) return 'background:' + col + ';';
+  if (k === 1) return 'background-color:var(--bg,#fff);background-image:repeating-linear-gradient(45deg,' + col + ' 0 3px,transparent 3px 7px);';
+  if (k === 2) return 'background-color:var(--bg,#fff);background-image:radial-gradient(' + col + ' 1.6px,transparent 1.9px);background-size:7px 7px;';
+  return 'background-color:var(--bg,#fff);background-image:repeating-linear-gradient(45deg,' + col + ' 0 2px,transparent 2px 6px),repeating-linear-gradient(-45deg,' + col + ' 0 2px,transparent 2px 6px);';
+}
+function _cbStr(v, mx) { return (v === undefined || v === null || typeof v === 'object') ? '' : String(v).slice(0, mx); }
+function _cbNum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12 ? v : null; }
+function _cbPc(f) { var s = (f * 100).toFixed(3); if (/^-0\.0+$/.test(s)) s = s.slice(1); return s + '%'; }
+function _cbSpec(v) { return typeof v === 'string' && v !== '' && _axParse(v) !== null ? v : null; }
+function _cbObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
+function _cbData(b) {
+  var ds = b.datasets, labs = _ifArr(b.labels, 200), skipped = 0, series = [], rows, i, k, givenN = Array.isArray(b.labels) ? b.labels.length : 0, givenS;
+  if (!(Array.isArray(ds) && ds.length)) {
+    rows = _ifArr(b.data, 200);
+    givenN = Array.isArray(b.data) ? b.data.length : 0;
+    if (rows.length) {
+      labs = rows.map(function(r) { return _cbObj(r) ? _cbStr(r.label, 40) : ''; });
+      ds = [{label: _cbStr(b.title, 40) || 'Value', data: rows.map(function(r) { return _cbObj(r) ? r.value : null; })}];
+    } else ds = [];
+  }
+  givenS = Array.isArray(ds) ? ds.length : 0;
+  ds = _ifArr(ds, 24);
+  for (k = 0; k < ds.length; k++) {
+    var d = ds[k];
+    if (!_cbObj(d)) { skipped++; continue; }
+    var vals = _ifArr(d.data, 200).map(_cbNum), col = d.color;
+    if (Array.isArray(d.data) && d.data.length > givenN) givenN = d.data.length;
+    vals.forEach(function(x) { if (x === null) skipped++; });
+    series.push([_cbStr(d.label, 40) || 'Series ' + (k + 1), typeof col === 'string' && /^#[0-9a-fA-F]{6}$/.test(col) ? col : null, vals]);
+  }
+  var n = labs.length;
+  series.forEach(function(s) { if (s[2].length > n) n = s[2].length; });
+  var labels = [];
+  for (i = 0; i < n; i++) labels.push((i < labs.length && labs[i] !== null && labs[i] !== undefined ? _cbStr(labs[i], 40) : '') || String(i + 1));
+  return [labels, series, skipped, [Math.max(givenN, n), Math.max(givenS, series.length)]];
+}
+_RENDERERS['chartjs_bar'] = function(b) {
+  var dt = _cbData(b), labels = dt[0], series = dt[1], skipped = dt[2], given = dt[3], n = labels.length, S = series.length, i, k, j, q;
+  var anyv = false;
+  series.forEach(function(s) { s[2].forEach(function(v) { if (v !== null) anyv = true; }); });
+  if (n === 0 || !anyv) return _ifWrap(_ifTitle(b) + _hgNote('No numbers to draw as bars.'));
+  var notes = skipped ? _hgSkipNote(skipped) : '';
+  var nd = Math.min(n, _CB_CATS), sd = Math.min(S, _CB_SERIES);
+  if (given[0] > nd) notes += _hgNote('The first ' + nd + ' of ' + given[0] + ' categories are drawn; ' + (given[0] === n ? 'the table has all of them.' : 'the table has the first ' + n + '.'));
+  if (given[1] > sd) notes += _hgNote('The first ' + sd + ' of ' + given[1] + ' series are drawn; ' + (given[1] === S ? 'the table has all of them.' : 'the table has the first ' + S + '.'));
+  var horiz = b.orientation === 'h' || b.orientation === 'horizontal';
+  var mode = _ifPick(b.mode, ['group', 'stack', 'relative', 'overlay'], 'group');
+  var log = b.y_scale === 'log';
+  var cnt = Math.floor(_ifNum(b.y_ticks, 2, 12, 5));
+  var gap = _ifNum(b.gap, 0, 0.8, 0.3);
+  var show = !!b.show_values && b.show_values !== 'false';
+  var lp = _ifPick(b.legend_position, ['top', 'bottom', 'right', 'none'], S > 1 ? 'top' : 'none');
+  var rev = b.y_reverse === true || b.y_reverse === 'true';
+  var yf = b.y_format, vf0 = b.value_format;
+  [['y_format', yf], ['value_format', vf0]].forEach(function(p) {
+    if (p[1] && _cbSpec(p[1]) === null) notes += _hgNote(p[0] + ' "' + _ifS(p[1], 24) + '" is not a number format this chart knows; plain numbers are shown.');
+  });
+  yf = _cbSpec(yf); vf0 = _cbSpec(vf0);
+  var allv = [];
+  series.forEach(function(s) { s[2].forEach(function(v) { if (v !== null) allv.push(v); }); });
+  if (log && (mode === 'stack' || mode === 'relative')) {
+    mode = 'group';
+    notes += _hgNote('Stacked bars need a linear axis; the bars are drawn grouped on the log axis.');
+  }
+  var rng = b.y_range;
+  rng = Array.isArray(rng) && rng.length === 2 && _cbNum(rng[0]) !== null && _cbNum(rng[1]) !== null && rng[0] !== rng[1] ? [rng[0], rng[1]] : null;
+  if (rng === null && b.y_range) notes += _hgNote('y_range was not two different numbers; it was ignored.');
+  if (rng && rng[0] > rng[1]) rng = [rng[1], rng[0]];
+  if (rng && log && rng[0] <= 0) { rng = null; notes += _hgNote('y_range must be above zero on a log axis; it was ignored.'); }
+  var segs = [], drop = 0, lo = 0, hi = 0;
+  for (i = 0; i < nd; i++) {
+    var cum = 0, posC = 0, negC = 0;
+    for (k = 0; k < sd; k++) {
+      var v = i < series[k][2].length ? series[k][2][i] : null, a, e;
+      if (v === null) continue;
+      if (log && v <= 0) { drop++; continue; }
+      if (mode === 'stack') { a = cum; e = cum + v; cum = e; }
+      else if (mode === 'relative') {
+        if (v >= 0) { a = posC; e = posC + v; posC = e; } else { a = negC; e = negC + v; negC = e; }
+      } else { a = null; e = v; }
+      segs.push([i, k, a, e, v]);
+    }
+  }
+  if (log) {
+    if (drop) notes += _hgNote(drop + (drop === 1 ? ' number is' : ' numbers are') + ' not above zero, so ' + (drop === 1 ? 'it cannot' : 'they cannot') + ' be drawn on a log axis; the table has ' + (drop === 1 ? 'it' : 'them') + '.');
+    if (!segs.length) return _ifWrap(_ifTitle(b) + _hgNote('No numbers above zero to draw on a log axis.') + notes);
+    lo = segs[0][4]; hi = segs[0][4];
+    segs.forEach(function(s) { if (s[4] < lo) lo = s[4]; if (s[4] > hi) hi = s[4]; });
+    if (lo === hi) hi = lo * 10;
+  } else {
+    segs.forEach(function(s) { var x = s[2] === null ? 0 : s[2]; if (x < lo) lo = x; if (x > hi) hi = x; if (s[3] < lo) lo = s[3]; if (s[3] > hi) hi = s[3]; });
+  }
+  var ax = _axScale(lo, hi, log, rng, rev, cnt), pos = ax.pos, clip = false;
+  var base = log ? ax.lo : (ax.lo > 0 ? ax.lo : ax.hi < 0 ? ax.hi : 0);
+  function fr(v) { var f = pos(v); if (f < -1e-9 || f > 1 + 1e-9) clip = true; return Math.min(1, Math.max(0, f)); }
+  var dec = _hgDecimals(allv);
+  var vf = vf0 ? function(v) { return _axFormat(vf0, v); } : yf ? function(v) { return _axFormat(yf, v); } : function(v) { return _hgNum(v, dec); };
+  var tdec = _hgDecimals(ax.ticks);
+  var tf = yf ? function(t) { return _axFormat(yf, t); } : log ? function(t) { return _axFormat('~s', t); } : function(t) { return _hgNum(t, tdec); };
+  var tlab = ax.ticks.map(tf), tw = 1;
+  tlab.forEach(function(x) { if (x.length > tw) tw = x.length; });
+  var inner = 1 - gap, kk = mode === 'group' ? sd : 1;
+  var colr = [];
+  for (k = 0; k < sd; k++) colr.push(series[k][1] || _CB_COL[k % 8]);
+  var chipW = 1;
+  segs.forEach(function(s) { var l = vf(s[4]).length; if (l > chipW) chipW = l; });
+  chipW = chipW * 7 + 10;
+  var slotPx = Math.max(34, ((mode === 'group' || mode === 'overlay') ? sd : 1) * 24 + 10);
+  if (horiz) {
+    var ml = 1;
+    labels.slice(0, nd).forEach(function(x) { if (x.length > ml) ml = x.length; });
+    slotPx = Math.max(slotPx, Math.min(6, Math.ceil(ml * 6.6 / 69)) * 15 + 6);
+  }
+  var outside = show && (mode === 'group' || mode === 'overlay');
+  var padTop = (outside && !horiz) ? (mode === 'overlay' ? 22 + (sd - 1) * 18 : 22) : 8;
+  var padRight = horiz ? (outside ? chipW + 6 : 12) : 12;
+  var gutPx = Math.ceil(tw * 7.5) + 14;
+  var grid = '', f;
+  for (j = 0; j < ax.ticks.length; j++) {
+    f = pos(ax.ticks[j]);
+    if (f < -1e-9 || f > 1 + 1e-9) continue;
+    if (horiz) grid += '<div style="position:absolute;top:0;bottom:0;left:' + _cbPc(f) + ';border-left:1px dashed var(--border,#CBD5E1);"></div>';
+    else {
+      grid += '<div style="position:absolute;left:0;right:0;bottom:' + _cbPc(f) + ';border-top:1px dashed var(--border,#CBD5E1);"></div>';
+      grid += '<div style="position:absolute;right:100%;bottom:' + _cbPc(f) + ';transform:translateY(50%);padding-right:6px;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _CB_MUTED + ';">' + _esc(tlab[j]) + '</div>';
+    }
+  }
+  var zf = (log || !(ax.lo <= 0 && 0 <= ax.hi)) ? null : pos(0);
+  if (zf !== null) grid += horiz ? '<div style="position:absolute;top:0;bottom:0;left:' + _cbPc(zf) + ';border-left:1.5px solid var(--muted,#475569);"></div>'
+    : '<div style="position:absolute;left:0;right:0;bottom:' + _cbPc(zf) + ';border-top:1.5px solid var(--muted,#475569);"></div>';
+  var byc = {};
+  segs.forEach(function(s) { (byc[s[0]] = byc[s[0]] || []).push(s); });
+  var bars = '', thr = {};
+  for (i = 0; i < nd; i++) {
+    var ih = '', list = byc[i] || [];
+    if (mode === 'overlay') list = list.slice().sort(function(x, y) { return (y[4] - x[4]) || (x[1] - y[1]); });
+    for (q = 0; q < list.length; q++) {
+      var s = list[q], kx = s[1], f0 = fr(s[2] !== null ? s[2] : base), f1 = fr(s[3]);
+      var low = Math.min(f0, f1), size = Math.abs(f1 - f0), gw = mode === 'group' ? inner / kk : inner;
+      var off = (1 - inner) / 2 + (mode === 'group' ? kx * gw : 0), col = colr[kx];
+      var geo = horiz ? 'top:' + _cbPc((i + off) / nd) + ';height:' + _cbPc(gw / nd) + ';left:' + _cbPc(low) + ';width:' + _cbPc(size) + ';min-width:2px;'
+                      : 'left:' + _cbPc((i + off) / nd) + ';width:' + _cbPc(gw / nd) + ';bottom:' + _cbPc(low) + ';height:' + _cbPc(size) + ';min-height:2px;';
+      var chip = '';
+      if (show) {
+        var txt = vf(s[4]), need = txt.length * 7 + 10, inside = mode === 'stack' || mode === 'relative', place, frac, st;
+        if (inside && size < (horiz ? 0.1 : 0.075)) chip = '';
+        else {
+          if (inside) { place = 'left:50%;top:50%;transform:translate(-50%,-50%);'; frac = horiz ? size : gw / nd; }
+          else if (horiz) {
+            st = mode === 'overlay' ? (kx - (sd - 1) / 2) * 18 : 0;
+            place = 'left:calc(100% + 3px);top:calc(50% + ' + st.toFixed(1) + 'px);transform:translateY(-50%);'; frac = 1;
+          } else {
+            st = mode === 'overlay' ? kx * 18 : 0;
+            place = 'left:50%;bottom:calc(100% + 2px + ' + st + 'px);transform:translateX(-50%);'; frac = gw / nd;
+          }
+          var wk = null;
+          if (!(horiz && !inside)) {
+            var lead = horiz ? 150 + padRight : gutPx + 12;
+            wk = frac <= 0 ? 99999 : Math.ceil((lead + need / frac) / 50) * 50;
+            thr[wk] = true;
+          }
+          chip = '<div class="cbv' + (wk !== null ? ' cbw' + wk : '') + '" style="' + _CB_CHIP + col + ';' + place + '">' + _esc(txt) + '</div>';
+        }
+      }
+      ih += '<div style="position:absolute;box-sizing:border-box;border:1.5px solid ' + col + ';' + _cbFill(kx, col) + geo + '">' + chip + '</div>';
+    }
+    bars += '<div style="position:absolute;inset:0;' + _ifK(i, nd) + _IF_FADE + '">' + ih + '</div>';
+  }
+  var css = '<style>' + Object.keys(thr).map(Number).sort(function(x, y) { return x - y; }).map(function(w) { return '@container (max-width:' + w + 'px){.ifcb .cbw' + w + '{display:none}}'; }).join('') + '@container (max-width:560px){.ifcb .cbx:not(.cbc){display:none}}</style>';
+  var gut = horiz ? _CB_LABW : gutPx + 'px', xs = '', plot;
+  if (horiz) {
+    for (i = 0; i < nd; i++) {
+      xs += '<div style="position:absolute;right:100%;top:' + _cbPc((i + 0.5) / nd) + ';transform:translateY(-50%);width:' + _CB_LABW
+        + ';box-sizing:border-box;padding-right:8px;text-align:right;font-size:0.75rem;line-height:1.15;color:' + _CB_MUTED
+        + ';overflow-wrap:anywhere;">' + _esc(labels[i]) + '</div>';
+    }
+    var axis = '';
+    for (j = 0; j < ax.ticks.length; j++) {
+      f = pos(ax.ticks[j]);
+      if (f < -1e-9 || f > 1 + 1e-9) continue;
+      axis += '<div class="cbx' + (j % 2 === 0 ? ' cbc' : '') + '" style="position:absolute;top:6px;left:' + _cbPc(f) + ';transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _CB_MUTED + ';">' + _esc(tlab[j]) + '</div>';
+    }
+    plot = '<div role="img" aria-label="@ARIA@" style="position:relative;height:' + (nd * slotPx) + 'px;border-left:1px solid var(--muted,#475569);">' + grid + bars + xs + '</div>'
+      + '<div style="position:relative;height:26px;margin-top:2px;">' + axis + '</div>';
+  } else {
+    for (i = 0; i < nd; i++) xs += '<div style="flex:0 0 ' + _cbPc(1 / nd) + ';box-sizing:border-box;padding:4px 2px 0;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _CB_MUTED + ';overflow-wrap:anywhere;">' + _esc(labels[i]) + '</div>';
+    plot = '<div role="img" aria-label="@ARIA@" style="position:relative;height:' + _CB_PH + 'px;border-bottom:1px solid var(--muted,#475569);">' + grid + bars + '</div>'
+      + '<div style="display:flex;">' + xs + '</div>';
+  }
+  var iHi = 0, iLo = 0;
+  for (q = 1; q < segs.length; q++) { if (segs[q][4] > segs[iHi][4]) iHi = q; if (segs[q][4] < segs[iLo][4]) iLo = q; }
+  function where(q) { return sd > 1 ? series[segs[q][1]][0] + ', ' + labels[segs[q][0]] : labels[segs[q][0]]; }
+  var aria = (mode === 'stack' ? 'Stacked ' : mode === 'relative' ? 'Relative stacked ' : mode === 'overlay' ? 'Overlaid ' : sd > 1 ? 'Grouped ' : '') + (horiz ? 'horizontal ' : '') + 'bar chart of '
+    + nd + (nd === 1 ? ' category' : ' categories') + (sd > 1 ? ' and ' + sd + ' series' : '') + '. Highest value ' + vf(segs[iHi][4]) + ' (' + where(iHi)
+    + '), lowest ' + vf(segs[iLo][4]) + ' (' + where(iLo) + '). Value axis' + (log ? ' (log)' : '') + ' from ' + tf(ax.lo) + ' to ' + tf(ax.hi) + (rev ? ', reversed' : '') + '.';
+  plot = plot.replace('@ARIA@', function() { return _esc(aria); });
+  if (clip) notes += _hgNote('Bars that pass the y_range are cut at the axis; the table has the full values.');
+  if (show) notes += _hgNote('Value labels hide when the chart is too narrow to fit them; the table has every value.');
+  var legend = '';
+  if (lp !== 'none' && sd > 0) {
+    legend = '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:0.75rem;line-height:1.2;' + (lp === 'right' ? 'flex-direction:column;' : '') + '">';
+    for (k = 0; k < sd; k++) legend += '<div style="display:flex;align-items:center;gap:6px;"><span aria-hidden="true" style="flex:0 0 auto;width:14px;height:14px;box-sizing:border-box;border:1.5px solid ' + colr[k] + ';' + _cbFill(k, colr[k]) + '"></span>'
+      + '<span>' + _esc(series[k][0]) + '</span></div>';
+    legend += '</div>';
+  }
+  var box = '<div style="flex:1 1 260px;min-width:0;"><div style="position:relative;margin:' + padTop + 'px ' + padRight + 'px 0 ' + gut + ';">' + plot + '</div></div>';
+  var body = lp === 'right' ? '<div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;">' + box + legend + '</div>' : box;
+  var chart = '<div class="ifcb" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css + (lp === 'top' ? legend : '') + body + (lp === 'bottom' ? legend : '') + '</div>';
+  var head = ['Category'].concat(series.map(function(s) { return s[0]; }));
+  var rows = [];
+  for (i = 0; i < n; i++) {
+    var r = [labels[i]];
+    for (k = 0; k < S; k++) r.push(i < series[k][2].length && series[k][2][i] !== null ? _hgNum(series[k][2][i], dec) : '');
+    rows.push(r);
+  }
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'chartjs_bar') + _ifTable(head, rows));
+};
 function _hgBin(values, target) {
   var n = values.length, mx = Math.max.apply(null, values), x0 = Math.min.apply(null, values), x1 = mx, i, x;
   var tn = target === null ? Math.max(1, Math.ceil(Math.log(n) / Math.LN2) + 1) : target, nz = _hgNice(x0, x1, tn), step;

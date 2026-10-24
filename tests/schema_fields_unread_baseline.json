@@ -96,6 +96,18 @@
  "change_chart": [
   "title"
  ],
+ "chartjs_bar": [
+  "gap",
+  "legend_position",
+  "mode",
+  "value_format",
+  "version",
+  "y_format",
+  "y_range",
+  "y_reverse",
+  "y_scale",
+  "y_ticks"
+ ],
  "chartjs_pie": [
   "colors",
   "show_labels",
