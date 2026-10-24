@@ -45302,6 +45302,83 @@ def _render_motion_shatter(b: dict) -> str:
 _RENDERERS['motion_shatter'] = _render_motion_shatter
 
 
+# ─── motion_crt_off (B-34, motion coverage program 2026-10-24): an old CRT television switching off, two-phase anisotropic collapse on a curved glass screen ───
+# Twin of the motion_crt_off block in atoms_motion_candidates.gs. p = 0 whole, p = 1 black (gone). PHASES: (1) vertical: scale(1, sy) squashes the picture to a bright horizontal
+# line, p 0.08 to 0.50, accelerating (sy = 1 - a*a) with a white-hot brightness spike on the way; (2) horizontal: scale(sx, .) shrinks the line to a dot, p 0.50 to 0.72, fast then
+# slow (sx = (1 - b)^2); (3) the phosphor dot flashes, glows and decays, p 0.70 to 1. CURVATURE: the whole tube (picture, scanlines, vignette, glare) goes through an SVG
+# feDisplacementMap whose map is a 32 x 32 BMP of a barrel field (dx = x*r^2, dy = y*r^2, baked as a data: URI by a fixed formula, no random), so the picture bulges like convex glass
+# and a squashed line stays straight on the horizontal centre axis. All of it is a pure function of p. Reduced motion: no collapse, no glow; the picture fades plainly to black.
+# Print: whole and flat. WCAG 2.3.1: the one bright pulse (line, then dot) is small and single, over p alone, never repeating.
+_CRT_BARS = ('linear-gradient(90deg,#c0c0c0 0 14.28%,#c0c000 14.28% 28.56%,#00c0c0 28.56% 42.84%,#00c000 42.84% 57.12%,#c000c0 57.12% 71.4%,#c00000 71.4% 85.68%,#0000c0 85.68% 100%)')
+_B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+
+def _crt_le32(v: int) -> list:
+    return [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >> 24) & 255]
+
+
+def _crt_bmp() -> str:
+    """A 32 x 32 24-bit BMP of the barrel field: red = x*r^2, green = y*r^2 (both normalised to the corner), blue 128. Pure arithmetic, no random, no zlib."""
+    n = 32
+    raw = [66, 77] + _crt_le32(54 + n * n * 3) + [0, 0, 0, 0] + _crt_le32(54) + _crt_le32(40) + _crt_le32(n) + _crt_le32(n) + [1, 0, 24, 0] + _crt_le32(0) + _crt_le32(n * n * 3) + _crt_le32(2835) + _crt_le32(2835) + _crt_le32(0) + _crt_le32(0)
+    for j in range(n - 1, -1, -1):
+        for i in range(n):
+            nx, ny = (i + 0.5) / n - 0.5, (j + 0.5) / n - 0.5
+            r2 = nx * nx + ny * ny
+            raw += [128, max(0, min(255, int(127.5 + 127.5 * ny * r2 / 0.25 + 0.5))), max(0, min(255, int(127.5 + 127.5 * nx * r2 / 0.25 + 0.5)))]
+    s = ''
+    for k in range(0, len(raw), 3):
+        a, b2, c = raw[k], raw[k + 1], raw[k + 2]
+        s += _B64[a >> 2] + _B64[((a & 3) << 4) | (b2 >> 4)] + _B64[((b2 & 15) << 2) | (c >> 6)] + _B64[c & 63]
+    return s
+
+
+def _render_motion_crt_off(b: dict) -> str:
+    glow = _ff_num(b.get('glow'), 1, 0, 1, 2)
+    curve = _ff_num(b.get('curve'), 0.5, 0, 1, 2)
+    scan = b.get('scanlines') is not False
+    kids = ''.join(_mo_child(x) for x in _m3_list(b.get('blocks'), 3))
+    has = bool(kids.strip())
+    face = ('<div data-crt="face" style="--p:1;position:relative;overflow-wrap:anywhere;">' + kids + '</div>') if has else \
+        '<div data-crt="face" style="--p:1;position:absolute;left:0;top:0;width:100%;height:100%;background:' + _CRT_BARS + ';"></div>'
+    cid = 'crtc' + _ff_num(float(curve) * 100, 0, 0, 100, 0)
+    flt = ''
+    if float(curve) > 0:
+        flt = ('<svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;"><filter id="' + cid + '" x="0" y="0" width="1" height="1" '
+               'color-interpolation-filters="sRGB" primitiveUnits="objectBoundingBox"><feImage href="data:image/bmp;base64,' + _crt_bmp() + '" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="r"/><feGaussianBlur in="r" stdDeviation="0.012" result="m"/>'
+               '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + _ff_num(float(curve) * 0.16, 0, 0, 1, 3) + '" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="0.0013"/></filter></svg>')
+    tube_f = ('filter:url(#' + cid + ');') if float(curve) > 0 else ''
+    css = ('<style>@keyframes crt-gone{from{visibility:visible}to{visibility:hidden}}'
+           '.crt-scr{animation:crt-gone 1s linear paused both;animation-delay:calc(var(--p,1)*-1s)}'
+           '@media (prefers-reduced-motion:reduce){.crt-scr{transform:none!important;filter:none!important;opacity:clamp(0,calc((1 - var(--p,1))*1.4286),1)!important}.crt-fx{display:none!important}}'
+           '@media print{.crt-scr{transform:none!important;filter:none!important;opacity:1!important;animation:none!important}.crt-fx{display:none!important}}</style>')
+    vars_ = ('--a:clamp(0,calc((var(--p,1) - 0.08)/0.42),1);--b:clamp(0,calc((var(--p,1) - 0.5)/0.22),1);--c:clamp(0,calc((var(--p,1) - 0.7)/0.3),1);--d:calc(1 - var(--c));'
+             '--sy:max(0.003,calc(1 - var(--a)*var(--a)));--sx:max(0.002,calc((1 - var(--b))*(1 - var(--b))));--g:' + glow + ';')
+    scr = ('<div class="crt-scr" data-crt="scr" style="position:relative;' + ('' if has else 'aspect-ratio:16/9;') + 'transform:scale(var(--sx),var(--sy));transform-origin:50% 50%;'
+           'filter:brightness(calc(1 + 3*var(--a)*var(--a)*var(--a)*(1 - var(--b))*(0.4 + 0.6*var(--g)))) saturate(calc(1 - 0.7*var(--a)));'
+           'opacity:calc(1 - clamp(0,calc((var(--b) - 0.55)*3.3),1));">' + face + '</div>')
+    fx = ''
+    if scan:
+        fx += ('<div class="crt-fx" data-crt="scan" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;'
+               'background:repeating-linear-gradient(0deg,rgba(0,0,0,0.16) 0,rgba(0,0,0,0.16) 1px,transparent 1px,transparent 3px);opacity:calc(1 - clamp(0,calc(var(--a)*1.5),1));"></div>')
+    fx += ('<div class="crt-fx" data-crt="glass" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;'
+           'background:radial-gradient(ellipse at 50% 50%,transparent 58%,rgba(0,0,0,0.4) 100%),linear-gradient(135deg,rgba(255,255,255,0.12),transparent 32%);opacity:calc(1 - clamp(0,calc(var(--a)*1.5),1));"></div>')
+    fx += ('<div class="crt-fx" data-crt="line" aria-hidden="true" style="position:absolute;left:0;top:50%;width:100%;height:3px;margin-top:-1.5px;pointer-events:none;'
+           'background:linear-gradient(90deg,transparent,#ffffff 12%,#ffffff 88%,transparent);transform:scaleX(var(--sx));transform-origin:50% 50%;'
+           'box-shadow:0 0 6px 2px rgba(205,228,255,0.9),0 0 26px 7px rgba(120,170,255,0.55);'
+           'opacity:calc(var(--g)*clamp(0,calc((var(--a) - 0.7)*3.34),1)*(1 - clamp(0,calc((var(--b) - 0.85)*6.67),1)));"></div>')
+    fx += ('<div class="crt-fx" data-crt="dot" aria-hidden="true" style="position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;pointer-events:none;'
+           'background:radial-gradient(circle,#ffffff 0,#ffffff 45%,rgba(190,220,255,0.9) 100%);'
+           'box-shadow:0 0 14px 7px rgba(200,225,255,0.9),0 0 60px 24px rgba(110,165,255,0.5);'
+           'opacity:calc(var(--g)*clamp(0,calc((var(--b) - 0.6)*4),1)*var(--d)*var(--d));transform:scale(calc(0.45 + 1.6*var(--d)*var(--d)*var(--d)));"></div>')
+    return (css + '<div data-crt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;background:#000000;overflow:hidden;border-radius:5% / 7%;'
+            + vars_ + '">' + flt + '<div data-crt="tube" style="position:relative;' + tube_f + '">' + scr + fx + '</div></div>' + _hg_version_note(b, 'motion_crt_off'))
+
+
+_RENDERERS['motion_crt_off'] = _render_motion_crt_off
+
+
+# ─── motion_map3d (I72, owner's reference video): a tilted 3D city map; camera descends, the route draws on station by station, a clock counts ───
 # ─── motion_map3d v2 (I72, owner's reference video): a tilted 3D city map; camera descends, legs draw on station by station, messages travel, a clock counts ───
 # Twin of the motion_map3d block in atoms_motion_candidates.gs. CSS 3D only (perspective + rotateX/rotateZ on a plane, boxes made of three faces), no WebGL,
 # no map tiles, no fetch. Every moving value is a pure function of var(--p, 1): the camera takes p 0 to 0.3, the route draws p 0.3 to 0.92 segment by segment

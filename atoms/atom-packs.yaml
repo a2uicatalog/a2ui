@@ -398,6 +398,7 @@ a2ui-effects-v1:
 - motion_lightning
 - motion_shatter
 - motion_map3d
+- motion_crt_off
 - motion_orbit
 - motion_code
 - motion_mark

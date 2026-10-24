@@ -452,6 +452,9 @@
   "children",
   "size"
  ],
+ "motion_crt_off": [
+  "version"
+ ],
  "motion_disperse": [
   "align",
   "color",

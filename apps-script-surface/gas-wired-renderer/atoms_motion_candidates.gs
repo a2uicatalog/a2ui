@@ -1319,6 +1319,78 @@ _RENDERERS['motion_shatter'] = function(b) {
     '<div class="sh-shards" data-sh="shards" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;">' + shards + '</div>' + cracks + '</div>' + _hgVersionNote(b, 'motion_shatter');
 };
 
+// motion_crt_off (B-34): an old CRT television switching off, two-phase anisotropic collapse on a curved glass screen. Twin of _render_motion_crt_off in web_article.py
+var _CRT_BARS = 'linear-gradient(90deg,#c0c0c0 0 14.28%,#c0c000 14.28% 28.56%,#00c0c0 28.56% 42.84%,#00c000 42.84% 57.12%,#c000c0 57.12% 71.4%,#c00000 71.4% 85.68%,#0000c0 85.68% 100%)';
+var _CRT_B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function _crtLe32(v) {
+  return [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >> 24) & 255];
+}
+
+function _crtBmp() {
+  var n = 32;
+  var raw = [66, 77].concat(_crtLe32(54 + n * n * 3), [0, 0, 0, 0], _crtLe32(54), _crtLe32(40), _crtLe32(n), _crtLe32(n), [1, 0, 24, 0], _crtLe32(0), _crtLe32(n * n * 3), _crtLe32(2835), _crtLe32(2835), _crtLe32(0), _crtLe32(0));
+  for (var j = n - 1; j >= 0; j--) {
+    for (var i = 0; i < n; i++) {
+      var nx = (i + 0.5) / n - 0.5, ny = (j + 0.5) / n - 0.5;
+      var r2 = nx * nx + ny * ny;
+      raw.push(128, Math.max(0, Math.min(255, Math.floor(127.5 + 127.5 * ny * r2 / 0.25 + 0.5))), Math.max(0, Math.min(255, Math.floor(127.5 + 127.5 * nx * r2 / 0.25 + 0.5))));
+    }
+  }
+  var s = '', len = raw.length;
+  for (var k = 0; k < len; k += 3) {
+    var a = raw[k], b2 = raw[k + 1], c = raw[k + 2];
+    s += _CRT_B64[a >> 2] + _CRT_B64[((a & 3) << 4) | (b2 >> 4)] + _CRT_B64[((b2 & 15) << 2) | (c >> 6)] + _CRT_B64[c & 63];
+  }
+  return s;
+}
+
+_RENDERERS['motion_crt_off'] = function(b) {
+  var glow = _ffNum(b.glow, 1, 0, 1, 2);
+  var curve = _ffNum(b.curve, 0.5, 0, 1, 2);
+  var scan = b.scanlines !== false;
+  var kl = _bxList(b.blocks, 3), kids = '';
+  for (var ki = 0; ki < kl.length; ki++) kids += _moChild(kl[ki]);
+  var has = !!kids.trim();
+  var face = has ? ('<div data-crt="face" style="--p:1;position:relative;overflow-wrap:anywhere;">' + kids + '</div>') :
+    '<div data-crt="face" style="--p:1;position:absolute;left:0;top:0;width:100%;height:100%;background:' + _CRT_BARS + ';"></div>';
+  var cid = 'crtc' + _ffNum(parseFloat(curve) * 100, 0, 0, 100, 0);
+  var flt = '';
+  if (parseFloat(curve) > 0) {
+    flt = '<svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;"><filter id="' + cid + '" x="0" y="0" width="1" height="1" ' +
+      'color-interpolation-filters="sRGB" primitiveUnits="objectBoundingBox"><feImage href="data:image/bmp;base64,' + _crtBmp() + '" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="r"/><feGaussianBlur in="r" stdDeviation="0.012" result="m"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + _ffNum(parseFloat(curve) * 0.16, 0, 0, 1, 3) + '" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="0.0013"/></filter></svg>';
+  }
+  var tube_f = (parseFloat(curve) > 0) ? ('filter:url(#' + cid + ');') : '';
+  var css = '<style>@keyframes crt-gone{from{visibility:visible}to{visibility:hidden}}' +
+    '.crt-scr{animation:crt-gone 1s linear paused both;animation-delay:calc(var(--p,1)*-1s)}' +
+    '@media (prefers-reduced-motion:reduce){.crt-scr{transform:none!important;filter:none!important;opacity:clamp(0,calc((1 - var(--p,1))*1.4286),1)!important}.crt-fx{display:none!important}}' +
+    '@media print{.crt-scr{transform:none!important;filter:none!important;opacity:1!important;animation:none!important}.crt-fx{display:none!important}}</style>';
+  var vars_ = '--a:clamp(0,calc((var(--p,1) - 0.08)/0.42),1);--b:clamp(0,calc((var(--p,1) - 0.5)/0.22),1);--c:clamp(0,calc((var(--p,1) - 0.7)/0.3),1);--d:calc(1 - var(--c));' +
+    '--sy:max(0.003,calc(1 - var(--a)*var(--a)));--sx:max(0.002,calc((1 - var(--b))*(1 - var(--b))));--g:' + glow + ';';
+  var scr = '<div class="crt-scr" data-crt="scr" style="position:relative;' + (has ? '' : 'aspect-ratio:16/9;') + 'transform:scale(var(--sx),var(--sy));transform-origin:50% 50%;' +
+    'filter:brightness(calc(1 + 3*var(--a)*var(--a)*var(--a)*(1 - var(--b))*(0.4 + 0.6*var(--g)))) saturate(calc(1 - 0.7*var(--a)));' +
+    'opacity:calc(1 - clamp(0,calc((var(--b) - 0.55)*3.3),1));">' + face + '</div>';
+  var fx = '';
+  if (scan) {
+    fx += '<div class="crt-fx" data-crt="scan" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;' +
+      'background:repeating-linear-gradient(0deg,rgba(0,0,0,0.16) 0,rgba(0,0,0,0.16) 1px,transparent 1px,transparent 3px);opacity:calc(1 - clamp(0,calc(var(--a)*1.5),1));"></div>';
+  }
+  fx += '<div class="crt-fx" data-crt="glass" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;' +
+    'background:radial-gradient(ellipse at 50% 50%,transparent 58%,rgba(0,0,0,0.4) 100%),linear-gradient(135deg,rgba(255,255,255,0.12),transparent 32%);opacity:calc(1 - clamp(0,calc(var(--a)*1.5),1));"></div>';
+  fx += '<div class="crt-fx" data-crt="line" aria-hidden="true" style="position:absolute;left:0;top:50%;width:100%;height:3px;margin-top:-1.5px;pointer-events:none;' +
+    'background:linear-gradient(90deg,transparent,#ffffff 12%,#ffffff 88%,transparent);transform:scaleX(var(--sx));transform-origin:50% 50%;' +
+    'box-shadow:0 0 6px 2px rgba(205,228,255,0.9),0 0 26px 7px rgba(120,170,255,0.55);' +
+    'opacity:calc(var(--g)*clamp(0,calc((var(--a) - 0.7)*3.34),1)*(1 - clamp(0,calc((var(--b) - 0.85)*6.67),1)));"></div>';
+  fx += '<div class="crt-fx" data-crt="dot" aria-hidden="true" style="position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;pointer-events:none;' +
+    'background:radial-gradient(circle,#ffffff 0,#ffffff 45%,rgba(190,220,255,0.9) 100%);' +
+    'box-shadow:0 0 14px 7px rgba(200,225,255,0.9),0 0 60px 24px rgba(110,165,255,0.5);' +
+    'opacity:calc(var(--g)*clamp(0,calc((var(--b) - 0.6)*4),1)*var(--d)*var(--d));transform:scale(calc(0.45 + 1.6*var(--d)*var(--d)*var(--d)));"></div>';
+  return css + '<div data-crt="root" style="position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;isolation:isolate;background:#000000;overflow:hidden;border-radius:5% / 7%;' +
+    vars_ + '">' + flt + '<div data-crt="tube" style="position:relative;' + tube_f + '">' + scr + fx + '</div></div>' + _hgVersionNote(b, 'motion_crt_off');
+};
+
+// motion_map3d (I72): a tilted 3D city map, camera descent, route draw, station states, clock chip. Twin of _render_motion_map3d in web_article.py (read its header).
 // motion_map3d v2 (I72): a tilted 3D city map, camera descent, route/legs draw, station states, messages, clock chip. Twin of _render_motion_map3d in web_article.py (read its header).
 var _M3_P0 = 0.3, _M3_P1 = 0.92, _M3_U = 0.62;
 var _M3_ID = /^[A-Za-z][A-Za-z0-9_]{0,23}$/;

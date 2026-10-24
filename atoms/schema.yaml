@@ -22906,6 +22906,24 @@ blocks:
     version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
   notes: "End state: p = 1 is GONE (the source shows the block gone, revealing what is behind) and p = 0 is whole, so the standalone render, which has p = 1, draws nothing but the space the block took; put it in a motion_timeline over a scene, or hold p at 0 for a whole block. Timing: cracks p 0 to 0.3 (the real content is drawn until then), then the shards take over at the same place and move over p 0.3 to 1, nearest shards first, fading out from about half way. The shards are clipped copies of the content (aria-hidden, inert, no duplicate ids); up to 24 copies of up to 3 children is the cost. Accessibility: the real content stays in the accessibility tree while it is visible and is hidden from it (visibility) only once p reaches 1; the cracks and shards are decorative. Nothing flashes: no opacity or colour oscillates, each only rises once or falls, so there is no WCAG 2.3.1 concern at any speed. Reduced motion: no shards, no cracks, no falling; the block fades plainly to the same gone end state, so a scene that relies on the block being gone is still correct. Print shows the block whole. Shards that fly beyond the box are clipped sideways and never widen the page. Take at least 0.6 s over p so the break reads."
   source: *mla002
+- type: motion_crt_off
+  stage: preview
+  description: "An old cathode-ray tube television switching off: the picture squashes vertically into a bright horizontal line, shrinks horizontally into a glowing phosphor dot, then flashes and decays into black on a curved glass screen. Everything is a pure mathematical function of p (0 whole, 1 black/gone) with no random state. The screen curvature uses an SVG feDisplacementMap barrel field. It can wrap up to 3 child atoms; with none it renders a 16:9 colour-bar test card."
+  compact_description: "an old CRT screen switching off into a bright line, central dot, and black"
+  routing_text: "A vintage CRT screen powering down or switching off, collapsing into a horizontal line then a central phosphor dot. Not a shatter or break (use motion_shatter), not a glitch tear (use glitch prop), not a scatter (use motion_disperse), not a plain fade or wipe (use motion_reveal)."
+  intent_phrases:
+  - "Power off the screen like an old CRT television."
+  - "The display collapses vertically into a bright line then shrinks to a dot."
+  - "Shut down the retro monitor with an authentic cathode-ray switch off."
+  surfaces: *mla001
+  fields:
+    blocks: "array (optional, up to 3) of child atoms to show inside the CRT screen. They are held at their finished state while whole and stay readable. Without blocks the atom shows a 16:9 colour-bar test card."
+    glow: "number (optional, 0 to 1, default 1). Strength and intensity of the bright horizontal collapse line and the central phosphor dot."
+    curve: "number (optional, 0 to 1, default 0.5). Degree of CRT glass bulb curvature distortion. 0 turns the SVG curvature filter off completely."
+    scanlines: "bool (optional, default true). Displays subtle CRT horizontal scanlines across the tube face. Set to false to disable them."
+    version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note."
+  notes: "End state: p = 0 whole, p = 1 black/gone. Phase timings: vertical squash p 0.08-0.50 (sy collapses accelerating towards a bright line), horizontal shrink to a dot p 0.50-0.72 (sx shrinks line to centre point), phosphor dot flash and decay p 0.70-1. Curvature is an SVG feDisplacementMap barrel field (so the filter's id is crtc<curve*100>, harmless duplicates). No children means a 16:9 colour-bar test card. Accessibility: the real content is hidden from assistive tech only at p = 1 (keyframes crt-gone with paused animation-delay calc(var(--p,1)*-1s)); the FX overlays are aria-hidden and decorative. WCAG 2.3.1: one small bright pulse (line then dot), never repeating; nothing is random or oscillating. Reduced motion: a plain fade to black with no collapse, glow or filter. Print shows it whole."
+  source: *mla002
 - type: motion_kinetic_drum
   stage: preview
   description: 'A 3D cylindrical kinetic typography drum in pure HTML and CSS: arranges 6 to 12 facets around a rotating 3D barrel in perspective space (axis: "x" for a vertical slot-wheel drum, "y" for a horizontal carousel). p expands the drum radius and unfolds the staves into a cylinder; the second dial (--s) spins the barrel so words curve around the front equator and recede into depth. Plain HTML and CSS 3D transforms, no script and no WebGL; standalone it renders the drum angled at rest.'
