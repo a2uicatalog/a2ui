@@ -306,10 +306,6 @@
  "form_switch_group": [
   "items"
  ],
- "framed_screenshot": [
-  "alt_text",
-  "device_type"
- ],
  "gantt": [
   "title"
  ],
@@ -459,9 +455,6 @@
  "lozenge": [
   "appearance",
   "items"
- ],
- "markdown_block": [
-  "variant"
  ],
  "marquee_strip": [
   "direction",
@@ -620,10 +613,6 @@
   "size",
   "text",
   "title"
- ],
- "pdf_preview": [
-  "alt_text",
-  "thumbnail_url"
  ],
  "photo_upload": [
   "wired"

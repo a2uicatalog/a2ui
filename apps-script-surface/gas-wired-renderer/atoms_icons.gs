@@ -194,6 +194,13 @@ _RENDERERS['workspace_logo'] = function(b) {
     + lblHtml + '</span>';
 };
 
+// A whole number from a payload field: a finite number is truncated, a string of digits is parsed, anything else is the default; then clamped.
+// Python twin: _ws_int.
+function _wsInt(v, d, lo, hi) {
+  var n = (typeof v === 'number' && isFinite(v)) ? Math.trunc(v) : ((typeof v === 'string' && /^\s*\d+\s*$/.test(v)) ? parseInt(v, 10) : d);
+  return Math.max(lo, Math.min(hi, n));
+}
+
 function _wsCapitalise(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 }
@@ -240,11 +247,21 @@ _RENDERERS['workspace_logo_strip'] = function(b) {
 // ─── workspace_logo_grid ──────────────────────────────────────────────────────
 // Grid of all Workspace product logos with labels and hover highlight.
 _RENDERERS['workspace_logo_grid'] = function(b) {
-  var uid    = 'wg' + Math.random().toString(36).substr(2, 5);
-  var apps   = b.apps || Object.keys(_WORKSPACE_LOGOS);
-  var size   = parseInt(b.size || 48, 10);
-  var cols   = parseInt(b.cols, 10) || 5;
-  var grey   = b.greyscale || false;
+  if (!b || typeof b !== 'object') b = {};
+  var uid = 'wg' + _payloadUid(b);
+  var rawApps = Array.isArray(b.apps) ? b.apps : Object.keys(_WORKSPACE_LOGOS);
+  var apps = [];
+  for (var i = 0; i < rawApps.length && apps.length < 60; i++) {
+    if (typeof rawApps[i] === 'string' && rawApps[i].length > 0) {
+      apps.push(rawApps[i]);
+    }
+  }
+
+  var size = _wsInt(b.size, 48, 16, 256);
+  var cols = _wsInt(b.cols, 5, 1, 12);
+
+  var grey = b.greyscale === true;
+  var showLabels = b.show_labels !== false;
 
   var css = '<style>.' + uid + '-c{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:10px;transition:background 0.2s;}'
     + '.' + uid + '-c:hover{background:var(--surface,#f9fafb);}'
@@ -253,21 +270,21 @@ _RENDERERS['workspace_logo_grid'] = function(b) {
     + '</style>';
 
   var cells = apps.map(function(app) {
-    var key   = typeof app === 'string' ? app.toLowerCase() : app;
-    var path  = _WORKSPACE_LOGOS[key];
-    var lbl   = b.show_labels !== false ? _wsCapitalise(key) : '';
-    var fbBg  = _WORKSPACE_COLORS[key] || '#1b6cf2';
-    var fbCh  = _esc((key[0] || 'G').toUpperCase());
+    var key = app.toLowerCase();
+    var path = Object.prototype.hasOwnProperty.call(_WORKSPACE_LOGOS, key) ? _WORKSPACE_LOGOS[key] : '';
+    var lbl = showLabels ? _wsCapitalise(key) : '';
+    var fbBg = (Object.prototype.hasOwnProperty.call(_WORKSPACE_COLORS, key) && _WORKSPACE_COLORS[key]) || '#1b6cf2';
+    var fbCh = _esc((key[0] || 'G').toUpperCase());
     var inner = path
       ? '<img src="' + _LOGO_BASE + path + '/192px.svg" width="' + size + '" height="' + size + '" class="' + uid + '-i" alt="' + _esc(key) + '">'
-      : '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size*0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>';
+      : '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size * 0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>';
     return '<div class="' + uid + '-c">'
       + inner
       + (lbl ? '<span style="font-size:0.7rem;color:var(--muted,#6b7280);font-weight:500;text-align:center;">' + _esc(lbl) + '</span>' : '')
       + '</div>';
   }).join('');
 
-  var title = b.title ? '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
+  var title = (typeof b.title === 'string' && b.title) ? '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
 
   return css + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + title

@@ -13934,32 +13934,73 @@ _RENDERERS['footnote'] = _render_footnote
 
 
 def _render_footnote_group(b: dict) -> str:
-    # Schema's field is `footnotes` (array of {id, text}); this read the non-existent
-    # `items`/`number`, so the payload's actual footnotes never appeared (surface-parity
-    # debt; GAS already reads b.footnotes and fn.id). 2026-09-27.
-    items = b.get('footnotes', b.get('items', []))
-    rows = ''
+    raw_list = b.get('footnotes') if isinstance(b.get('footnotes'), list) else (b.get('items') if isinstance(b.get('items'), list) else [])
+    items = raw_list[:200]
+    rows = []
     for i, item in enumerate(items, 1):
-        text = item if isinstance(item, str) else item.get('text', '')
-        num = item.get('id', item.get('number', i)) if isinstance(item, dict) else i
-        rows += (f'<div data-cb="ref" data-key="{_cv_esc(num)}" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">'
-                 f'<span data-cb="label" data-key="{_cv_esc(num)}" style="font-weight:700;flex-shrink:0;">[{_cv_esc(num)}]</span><span>{_md_inline(text)}</span></div>')
-    return f'<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">{rows}</div>'
+        if item is None or not isinstance(item, (dict, str)):
+            continue
+        if isinstance(item, str):
+            text = item
+            num = i
+        else:
+            text = item.get('text', '') if isinstance(item.get('text'), str) else ''
+            raw_id = item.get('id')
+            if (isinstance(raw_id, str) and raw_id) or (isinstance(raw_id, (int, float)) and not isinstance(raw_id, bool)):
+                num = raw_id
+            elif item.get('number') is not None and item.get('number') != '':
+                num = item.get('number')
+            else:
+                num = i
+        num_str = str(num)
+        rows.append(
+            f'<div data-cb="ref" data-key="{_cv_esc(num_str)}" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">'
+            f'<span data-cb="label" data-key="{_cv_esc(num_str)}" style="font-weight:700;flex-shrink:0;">[{_cv_esc(num_str)}]</span>'
+            f'<span>{_md_inline(text)}</span></div>'
+        )
+    return f'<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">{"".join(rows)}</div>'
 
 _RENDERERS['footnote_group'] = _render_footnote_group
 
 
 def _render_framed_screenshot(b: dict) -> str:
-    url = b.get('url') or b.get('image_url', '')
-    alt = b.get('alt') or b.get('caption', 'Screenshot')
-    caption = b.get('caption', '')
-    shadow = 'box-shadow:0 20px 60px rgba(0,0,0,0.12);' if b.get('shadow', True) else ''
-    return (f'<div data-cb="node" data-key="{_ck(b.get("image_url"), "framed_screenshot")}" style="margin:1.5rem 0;text-align:center;">'
-            f'<div style="display:inline-block;border-radius:12px;overflow:hidden;{shadow}">'
-            f'{"<img src="+chr(34)+_esc(url)+chr(34)+" alt="+chr(34)+_esc(alt)+chr(34)+" style=max-width:100%;height:auto;display:block;>" if url else "<div style=padding:40px;background:#f3f4f6;color:var(--muted,#5f6368);>No image</div>"}'
-            f'</div>'
-            f'{"<p style=font-size:0.8rem;text-align:center;color:var(--muted,#5f6368);margin:6px 0 0;>"+_esc(caption)+"</p>" if caption else ""}'
-            f'</div>')
+    raw_url = b.get('image_url') if isinstance(b.get('image_url'), str) and b.get('image_url') else (b.get('url') if isinstance(b.get('url'), str) else '')
+    image_url = _safe_href(raw_url, schemes=('https', 'mailto')) if raw_url else ''
+
+    alt = b.get('alt_text') if isinstance(b.get('alt_text'), str) and b.get('alt_text') else (
+        b.get('alt') if isinstance(b.get('alt'), str) and b.get('alt') else (
+            b.get('caption') if isinstance(b.get('caption'), str) and b.get('caption') else 'Screenshot'
+        )
+    )
+
+    device = b.get('device_type') if isinstance(b.get('device_type'), str) and b.get('device_type') else (
+        b.get('frame') if isinstance(b.get('frame'), str) else 'browser'
+    )
+    if device not in ('browser', 'phone', 'tablet', 'none'):
+        device = 'browser'
+
+    content_html = f'<img src="{_cv_esc(image_url)}" alt="{_cv_esc(alt)}" style="width:100%;display:block;">' if image_url else '<div style="padding:40px;background:#f3f4f6;color:var(--muted,#5f6368);text-align:center;">No image</div>'
+
+    if device == 'phone':
+        frame_html = f'<div style="max-width:280px;margin:0 auto;border-radius:28px;border:8px solid #1f2937;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.15);">{content_html}</div>'
+    elif device == 'tablet':
+        frame_html = f'<div style="max-width:520px;margin:0 auto;border-radius:16px;border:10px solid #1f2937;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.15);">{content_html}</div>'
+    elif device == 'none':
+        frame_html = f'<div style="border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">{content_html}</div>'
+    else:
+        chrome_bar = (
+            '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">'
+            '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>'
+            '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>'
+            '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>'
+            '</div>'
+        )
+        frame_html = f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);">{chrome_bar}{content_html}</div>'
+
+    caption_val = b.get('caption')
+    caption_html = f'<p style="font-size:0.8rem;text-align:center;color:var(--muted,#5f6368);margin:6px 0 0;">{_cv_esc(caption_val)}</p>' if isinstance(caption_val, str) and caption_val else ''
+
+    return f'<div data-cb="node" data-key="{_ck(b.get("image_url"), "framed_screenshot")}" style="margin:1.5rem 0;">{frame_html}{caption_html}</div>'
 
 _RENDERERS['framed_screenshot'] = _render_framed_screenshot
 
@@ -14256,16 +14297,29 @@ _RENDERERS['json_preview'] = _render_json_preview
 
 def _render_json_tree_viewer(b: dict) -> str:
     import json
-    data = b.get('data') or b.get('payload', {})
-    title = b.get('title', 'JSON')
-    try:
-        formatted = _js_json(data, indent=2, ensure_ascii=False)
-    except Exception:
-        formatted = str(data)
-    escaped = formatted.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    raw = b.get('data') if b.get('data') is not None else (b.get('payload') if b.get('payload') is not None else b.get('json'))
+    title = b.get('title') if isinstance(b.get('title'), str) and b.get('title') else 'JSON'
+    pretty = ''
+    if isinstance(raw, str):
+        truncated = raw[:200000]
+        try:
+            parsed = json.loads(truncated)
+            pretty = json.dumps(parsed, indent=2, ensure_ascii=False)
+        except Exception:
+            pretty = truncated
+    elif isinstance(raw, (dict, list)):
+        try:
+            pretty = json.dumps(raw, indent=2, ensure_ascii=False)
+        except Exception:
+            pretty = str(raw)
+    elif isinstance(raw, bool):
+        pretty = 'true' if raw else 'false'
+    elif raw is not None:
+        pretty = str(raw)
+    escaped = _cv_esc(pretty)
     return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
             f'<div style="padding:8px 12px;background:#1e1e2e;border-bottom:1px solid #313244;'
-            f'font-size:0.78rem;color:#89dceb;font-family:monospace;font-weight:600;">{_esc(title)}</div>'
+            f'font-size:0.78rem;color:#89dceb;font-family:monospace;font-weight:600;">{_cv_esc(title)}</div>'
             f'<pre style="margin:0;padding:14px;background:#1e1e2e;color:#cdd6f4;'
             f'overflow-x:auto;font-size:0.82rem;max-height:360px;"><code>{escaped}</code></pre></div>')
 
@@ -14415,8 +14469,15 @@ _RENDERERS['lozenge'] = _render_lozenge
 
 
 def _render_markdown_block(b: dict) -> str:
-    text = b.get('text') or b.get('content', '')
-    return f'<div data-cb="node" data-key="{_ck(None, "markdown_block")}" class="markdown-content">{_md_inline(text)}</div>'
+    raw = b.get('text') if isinstance(b.get('text'), str) and b.get('text') else b.get('content', '')
+    if isinstance(raw, str):
+        text = raw
+    elif isinstance(raw, (int, float)) and not isinstance(raw, bool):
+        text = str(raw)
+    else:
+        text = ''
+    style = 'margin:0.5rem 0;' if b.get('variant') == 'compact' else 'margin:1rem 0;'
+    return f'<div data-cb="node" data-key="{_ck(None, "markdown_block")}" class="markdown-content asw-markdown-block" style="{style}">{_md_inline(text)}</div>'
 
 _RENDERERS['markdown_block'] = _render_markdown_block
 
@@ -14537,14 +14598,27 @@ _RENDERERS['parallax_card'] = _render_parallax_card
 
 
 def _render_pdf_preview(b: dict) -> str:
-    url = b.get('url', '')
-    title = b.get('title', 'Document Preview')
-    height = b.get('height', '500px')
-    return (f'<div data-cb="node" data-key="{_ck(b.get("pdf_url") or b.get("url"), "pdf_preview")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
-            f'<div style="padding:8px 14px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
-            f'font-size:0.82rem;font-weight:600;">📄 {_esc(title)}</div>'
-            f'{"<iframe src="+chr(34)+_esc(url)+chr(34)+" style=width:100%;height:"+chr(34)+_esc(str(height))+chr(34)+";border:none;></iframe>" if url else "<div style=padding:24px;text-align:center;color:var(--muted,#5f6368);>No PDF URL provided</div>"}'
-            f'</div>')
+    raw_pdf = b.get('pdf_url') if isinstance(b.get('pdf_url'), str) and b.get('pdf_url') else (b.get('url') if isinstance(b.get('url'), str) else '')
+    pdf_url = _safe_href(raw_pdf, schemes=('https', 'mailto')) if raw_pdf else ''
+    raw_thumb = b.get('thumbnail_url') if isinstance(b.get('thumbnail_url'), str) else ''
+    thumb_url = _safe_href(raw_thumb, schemes=('https', 'mailto')) if raw_thumb else ''
+    title = b.get('title') if isinstance(b.get('title'), str) and b.get('title') else 'PDF Document'
+    alt_text = b.get('alt_text') if isinstance(b.get('alt_text'), str) and b.get('alt_text') else title
+
+    if thumb_url:
+        media_html = f'<img src="{_cv_esc(thumb_url)}" alt="{_cv_esc(alt_text)}" style="width:40px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;" loading="lazy">'
+    else:
+        media_html = '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>'
+
+    sub_text = 'Click to open PDF' if pdf_url else 'No PDF URL provided'
+    text_html = f'<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">{_cv_esc(title)}</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">{sub_text}</div></div>'
+
+    key = _ck(raw_pdf, 'pdf_preview')
+    base_style = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;'
+
+    if pdf_url:
+        return f'<a data-cb="node" data-key="{key}" href="{_cv_esc(pdf_url)}" target="_blank" rel="noopener noreferrer" style="{base_style}">{media_html}{text_html}</a>'
+    return f'<div data-cb="node" data-key="{key}" style="{base_style}">{media_html}{text_html}</div>'
 
 _RENDERERS['pdf_preview'] = _render_pdf_preview
 
@@ -18160,10 +18234,23 @@ _RENDERERS["copy_to_clipboard"] = _render_copy_to_clipboard
 
 def _svg_gauge_sla(b: dict) -> str:
     import math
-    val = float(b.get("value", 0))
-    max_val = float(b.get("max_value", 100))
-    unit = b.get("unit", "")
-    label = b.get("label", "SLA Status")
+    raw_val = b.get("value", 0)
+    raw_max = b.get("max_value", 100)
+    try:
+        val = float(raw_val) if not isinstance(raw_val, bool) else (1.0 if raw_val else 0.0)
+    except (ValueError, TypeError):
+        val = 0.0
+    if not math.isfinite(val):
+        val = 0.0
+    try:
+        max_val = float(raw_max) if not isinstance(raw_max, bool) else (1.0 if raw_max else 0.0)
+    except (ValueError, TypeError):
+        max_val = 100.0
+    if not math.isfinite(max_val):
+        max_val = 100.0
+
+    unit = b.get("unit", "") if isinstance(b.get("unit"), str) else ""
+    label = b.get("label", "SLA Status") if isinstance(b.get("label"), str) else "SLA Status"
 
     pct = (val / max_val) * 100 if max_val > 0 else 0
     pct = min(100.0, max(0.0, pct))
@@ -18176,17 +18263,34 @@ def _svg_gauge_sla(b: dict) -> str:
     nx = 150 + 85 * math.cos(rad)
     ny = 140 + 85 * math.sin(rad)
 
-    gauge_id = f"gauge_sla_{_wa_oid(b)}"
+    gauge_id = f"gauge_sla_{_wa_uid(b)[:8]}"
 
-    if pct >= 95:
+    # status: against the payload's threshold (the value, as the schema says) when it has one, else against 95% / 85% of the scale
+    thr_raw = b.get("threshold")
+    thr = None
+    if isinstance(thr_raw, (int, float)) and not isinstance(thr_raw, bool):
+        try:
+            thr = float(thr_raw) if math.isfinite(float(thr_raw)) and thr_raw > 0 else None
+        except OverflowError:
+            thr = None
+    healthy = val >= thr if thr is not None else pct >= 95
+    warn = val >= thr * 0.9 if thr is not None else pct >= 85
+    if healthy:
         status_color = "#10b981"
         status_label = "HEALTHY"
-    elif pct >= 85:
+    elif warn:
         status_color = "#38bdf8"
         status_label = "WARNING"
     else:
         status_color = "#ef4444"
         status_label = "BREACHED"
+
+    # the schema's value (e.g. 99.4) with its unit, not the filled percentage; two decimals at most, no trailing zeros (twin: _gaugeSlaLegacy)
+    shown = f"{max(-1e15, min(1e15, val)):.2f}"
+    if "." in shown:
+        shown = shown.rstrip("0").rstrip(".")
+    val_display = f"{shown}{unit}"
+    full_status = f"{status_label} · {label.upper()}" if label else status_label
 
     return f"""
       <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -18208,7 +18312,7 @@ def _svg_gauge_sla(b: dict) -> str:
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />
 
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#{gauge_id}_grad)" stroke-width="14" stroke-linecap="round"
-              stroke-dasharray="{path_len}" stroke-dashoffset="{dash_offset}" filter="url(#{gauge_id}_glow)" />
+              stroke-dasharray="314.159" stroke-dashoffset="{dash_offset}" filter="url(#{gauge_id}_glow)" />
 
         <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
@@ -18217,8 +18321,8 @@ def _svg_gauge_sla(b: dict) -> str:
         <line x1="150" y1="140" x2="{nx:.1f}" y2="{ny:.1f}" stroke="{status_color}" stroke-width="3" stroke-linecap="round" filter="url(#{gauge_id}_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="{status_color}" stroke-width="3" />
 
-        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{val:,.1f}{_cv_esc(unit)}</text>
-        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{status_label} · {_cv_esc(label.upper())}</text>
+        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{_cv_esc(val_display)}</text>
+        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{_cv_esc(full_status)}</text>
       </svg>
     """
 
@@ -19555,22 +19659,66 @@ _RENDERERS["achievement_badge"] = _render_achievement_badge
 
 def _render_annotation_highlight(b: dict) -> str:
     import re as _re
-    uid = 'anhl' + _wa_uid(b)[:6]
-    text = b.get('text', '')
-    notes = b.get('notes', [])
-    out = _esc(text)
-    for i, n in enumerate(notes):
-        term = n.get('term', '')
-        col = n.get('color', '#996206')
-        if term:
-            escaped_term = _esc(term)
-            # Schema's field is `explanation`; this read the non-existent `note`, so the
-            # tooltip content never appeared (surface-parity debt). 2026-09-27.
-            k = n.get('id') or term
-            out = out.replace(escaped_term,
-                f'<mark data-cb="ref" data-key="{_esc(k)}" style="background:{_esc(col)};color:{_ws_letter_colour(col)};padding:1px 3px;border-radius:3px;cursor:pointer;" '
-                f'title="{_esc(n.get("explanation",""))}">{escaped_term}</mark>', 1)
-    return f'<div style="font-family:system-ui,sans-serif;line-height:1.7;margin:1rem 0;">{out}</div>'
+    raw_text = b.get('text', '')
+    if isinstance(raw_text, str):
+        text = raw_text
+    elif isinstance(raw_text, (int, float)) and not isinstance(raw_text, bool):
+        text = str(raw_text)
+    else:
+        text = ''
+
+    raw_notes = b.get('notes')
+    notes_list = raw_notes[:40] if isinstance(raw_notes, list) else []
+
+    color_re = _re.compile(r'^#[0-9a-fA-F]{6}$')
+    valid_notes = []
+    for item in notes_list:
+        if isinstance(item, dict) and isinstance(item.get('term'), str) and item['term']:
+            col = item['color'] if isinstance(item.get('color'), str) and color_re.match(item['color']) else '#996206'
+            exp = item.get('explanation') if isinstance(item.get('explanation'), str) else ''
+            nid = item.get('id') if isinstance(item.get('id'), str) and item['id'] else item['term']
+            valid_notes.append({
+                'term': item['term'],
+                'explanation': exp,
+                'color': col,
+                'id': nid
+            })
+
+    claimed = []
+    matches = []
+    for n in valid_notes:
+        search_idx = 0
+        term_len = len(n['term'])
+        while search_idx <= len(text) - term_len:
+            found = text.find(n['term'], search_idx)
+            if found == -1:
+                break
+            end = found + term_len
+            if not any(max(found, cs) < min(end, ce) for cs, ce in claimed):
+                claimed.append((found, end))
+                matches.append((found, end, n))
+                break
+            search_idx = found + 1
+
+    matches.sort(key=lambda m: m[0])
+
+    out = []
+    cur = 0
+    for start, end, n in matches:
+        if start > cur:
+            out.append(_cv_esc(text[cur:start]))
+        esc_term = _cv_esc(text[start:end])
+        col = n['color']
+        out.append(
+            f'<mark data-cb="ref" data-key="{_cv_esc(n["id"])}" '
+            f'style="background:{col}22;border-bottom:2px solid {col};color:{col};padding:1px 3px;border-radius:3px;cursor:pointer;" '
+            f'title="{_cv_esc(n["explanation"])}">{esc_term}</mark>'
+        )
+        cur = end
+    if cur < len(text):
+        out.append(_cv_esc(text[cur:]))
+
+    return f'<div style="font-family:system-ui,sans-serif;line-height:1.7;margin:1rem 0;">{"".join(out)}</div>'
 _RENDERERS["annotation_highlight"] = _render_annotation_highlight
 
 
@@ -19811,18 +19959,61 @@ def _render_workspace_logo(b: dict) -> str:
 _RENDERERS["workspace_logo"] = _render_workspace_logo
 
 
+def _ws_int(v, d, lo, hi):
+    """A whole number from a payload field: a finite number is truncated, a string of digits is parsed, anything else is the default; then clamped. Twin: _wsInt in atoms_icons.gs."""
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != float('inf'):
+        n = int(v)
+    elif isinstance(v, str) and re.fullmatch(r'\s*[0-9]+\s*', v) and len(v) < 400:
+        n = int(v)
+    else:
+        n = d
+    return max(lo, min(hi, n))
+
+
 def _render_workspace_logo_grid(b: dict) -> str:
-    apps = b.get('apps', list(_WS_COLORS.keys()))
-    size = int(b.get('size', 48))
-    cols = int(b.get('cols', 5))
-    items = ''.join(
-        f'<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;">'
-        f'{_ws_badge(app, size)}'
-        f'<span style="font-size:0.7rem;color:var(--muted,#5f6368);">{_esc(app.capitalize())}</span></div>'
-        for app in apps
+    uid = 'wg' + _wa_uid(b)[:6]
+    raw_apps = b.get('apps')
+    if not isinstance(raw_apps, list):
+        raw_apps = list(_WORKSPACE_LOGOS_2026.keys())
+    apps = [a for a in raw_apps if isinstance(a, str) and a][:60]
+
+    size = _ws_int(b.get('size'), 48, 16, 256)
+    cols = _ws_int(b.get('cols'), 5, 1, 12)
+
+    grey = b.get('greyscale') is True
+    show_labels = b.get('show_labels') is not False
+
+    css = (
+        f'<style>.{uid}-c{{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:10px;transition:background 0.2s;}}'
+        f'.{uid}-c:hover{{background:var(--surface,#f9fafb);}}'
+        f'.{uid}-i{{{ "filter:grayscale(1);opacity:0.6;" if grey else "" }transition:filter 0.25s,opacity 0.25s;object-fit:contain;}}'
+        f'.{uid}-c:hover .{uid}-i{{filter:none;opacity:1;}}'
+        f'</style>'
     )
-    return (f'<div style="font-family:system-ui,sans-serif;display:grid;'
-            f'grid-template-columns:repeat({cols},1fr);gap:4px;">{items}</div>')
+
+    cells = []
+    for app in apps:
+        key = app.lower()
+        lbl = key.capitalize() if show_labels else ''
+        path2026 = _WORKSPACE_LOGOS_2026.get(key)
+        if path2026:
+            src = path2026 if path2026.startswith("http") else f"{_WL_BASE}{path2026}"
+            inner = f'<img src="{src}" width="{size}" height="{size}" class="{uid}-i" alt="{_cv_esc(key)}">'
+        else:
+            fb_bg = _WS_COLORS.get(key, '#1b6cf2')
+            fb_ch = _cv_esc((key[0] if key else 'G').upper())
+            inner = (
+                f'<span style="width:{size}px;height:{size}px;background:{fb_bg};border-radius:8px;'
+                f'display:flex;align-items:center;justify-content:center;font-weight:700;'
+                f'font-size:{round(size * 0.5)}px;color:{_ws_letter_colour(fb_bg)};">{fb_ch}</span>'
+            )
+        lbl_html = f'<span style="font-size:0.7rem;color:var(--muted,#6b7280);font-weight:500;text-align:center;">{_cv_esc(lbl)}</span>' if lbl else ''
+        cells.append(f'<div class="{uid}-c">{inner}{lbl_html}</div>')
+
+    title_val = b.get('title')
+    title = f'<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:12px;">{_cv_esc(title_val)}</div>' if isinstance(title_val, str) and title_val else ''
+
+    return f'{css}<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">{title}<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:4px;">{"".join(cells)}</div></div>'
 _RENDERERS["workspace_logo_grid"] = _render_workspace_logo_grid
 
 

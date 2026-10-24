@@ -2982,11 +2982,37 @@ return '<div data-cb="node" data-key="' + key + '" id="fn' + _esc(String(number)
 '<span>' + _md_inline(text) + '</span></div>';
 };
 _RENDERERS['footnote_group'] = function(b) {
-var footnotes = b.footnotes || [];
-var rows = footnotes.map(function(fn){
-return '<div data-cb="ref" data-key="' + _esc(String(fn.id||'?')) + '" style="margin:4px 0;font-size:0.78rem;color:var(--muted,#5f6368);padding-left:1.2rem;"><sup data-cb="label" data-key="' + _esc(String(fn.id||'?')) + '" style="color:#7c3aed;font-weight:600;">[' + _esc(String(fn.id||'?')) + ']</sup> ' + _markdownToHtml(fn.text||'') + '</div>';
-}).join('');
-return '<div style="margin:1.5rem 0;padding:12px 16px;border-top:1px solid #e5e7eb;"><div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Footnotes</div>' + rows + '</div>';
+if (!b || typeof b !== 'object') b = {};
+var rawList = Array.isArray(b.footnotes) ? b.footnotes : (Array.isArray(b.items) ? b.items : []);
+var items = rawList.slice(0, 200);
+var rows = '';
+for (var i = 0; i < items.length; i++) {
+var item = items[i];
+if (item === null || item === undefined || Array.isArray(item) || (typeof item !== 'object' && typeof item !== 'string')) {
+continue;
+}
+var idx = i + 1;
+var text = '';
+var num = idx;
+if (typeof item === 'string') {
+text = item;
+num = idx;
+} else {
+text = typeof item.text === 'string' ? item.text : '';
+if ((typeof item.id === 'string' && item.id.length > 0) || (typeof item.id === 'number' && !isNaN(item.id))) {
+num = item.id;
+} else if (item.number !== undefined && item.number !== null && item.number !== '') {
+num = item.number;
+} else {
+num = idx;
+}
+}
+var numStr = String(num);
+rows += '<div data-cb="ref" data-key="' + _esc(numStr) + '" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">' +
+'<span data-cb="label" data-key="' + _esc(numStr) + '" style="font-weight:700;flex-shrink:0;">[' + _esc(numStr) + ']</span>' +
+'<span>' + _md_inline(text) + '</span></div>';
+}
+return '<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">' + rows + '</div>';
 };
 _RENDERERS['collapsible_panel'] = function(b) {
 var title = b.title || 'Panel';
@@ -3540,12 +3566,33 @@ return '<div data-cb="node" data-key="' + _ckey(undefined, 'log_output') + '" st
 '<pre style="margin:0;font-family:monospace;font-size:0.78rem;color:#656e7d;white-space:pre-wrap;word-break:break-all;">' + logs + '</pre></div>';
 };
 _RENDERERS['json_tree_viewer'] = function(b) {
-var raw = b.data || b.json || '';
-var pretty = raw;
-try { pretty = _jsJson(JSON.parse(raw), null, 2); } catch(e) {}
-var escaped = pretty.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-return '<div style="background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1.2rem 0;max-height:400px;overflow:auto;">' +
-'<pre style="margin:0;font-family:monospace;font-size:0.8rem;color:#4f6e99;">' + escaped + '</pre></div>';
+if (!b || typeof b !== 'object') b = {};
+var raw = (b.data !== undefined && b.data !== null) ? b.data : ((b.payload !== undefined && b.payload !== null) ? b.payload : b.json);
+var pretty = '';
+if (typeof raw === 'string') {
+var truncated = raw.length > 200000 ? raw.substring(0, 200000) : raw;
+try {
+var parsed = JSON.parse(truncated);
+pretty = JSON.stringify(parsed, null, 2);
+} catch (e) {
+pretty = truncated;
+}
+} else if (raw !== null && typeof raw === 'object') {
+try {
+pretty = JSON.stringify(raw, null, 2);
+} catch (e) {
+pretty = String(raw);
+}
+} else if (raw !== undefined && raw !== null) {
+pretty = String(raw);
+}
+var title = (typeof b.title === 'string' && b.title) ? b.title : 'JSON';
+var escaped = _esc(pretty);
+return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
+'<div style="padding:8px 12px;background:#1e1e2e;border-bottom:1px solid #313244;' +
+'font-size:0.78rem;color:#89dceb;font-family:monospace;font-weight:600;">' + _esc(title) + '</div>' +
+'<pre style="margin:0;padding:14px;background:#1e1e2e;color:#cdd6f4;' +
+'overflow-x:auto;font-size:0.82rem;max-height:360px;"><code>' + escaped + '</code></pre></div>';
 };
 _RENDERERS['star_rating_input'] = function(b) {
 var uid = Math.random().toString(36).substr(2,6);
@@ -3733,15 +3780,38 @@ return '<figure data-cb="node" data-key="' + _ckey(b.image_url, 'image_with_capt
 (caption ? '<figcaption style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:8px;font-style:italic;">' + _esc(caption) + '</figcaption>' : '') + '</figure>';
 };
 _RENDERERS['framed_screenshot'] = function(b) {
-var url = b.url || b.image_url || '';
-var alt = b.alt || b.caption || '';
-var frame = b.frame || 'browser';
-var header = '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">' +
+if (!b || typeof b !== 'object') b = {};
+var rawUrl = typeof b.image_url === 'string' && b.image_url ? b.image_url : (typeof b.url === 'string' ? b.url : '');
+var imageUrl = _hrefIsSafe(rawUrl);
+var alt = typeof b.alt_text === 'string' && b.alt_text
+? b.alt_text
+: (typeof b.alt === 'string' && b.alt ? b.alt : (typeof b.caption === 'string' && b.caption ? b.caption : 'Screenshot'));
+var device = typeof b.device_type === 'string' && b.device_type ? b.device_type : (typeof b.frame === 'string' ? b.frame : 'browser');
+if (device !== 'browser' && device !== 'phone' && device !== 'tablet' && device !== 'none') {
+device = 'browser';
+}
+var contentHtml = imageUrl
+? '<img src="' + _esc(imageUrl) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;">'
+: '<div style="padding:40px;background:#f3f4f6;color:var(--muted,#5f6368);text-align:center;">No image</div>';
+var frameHtml = '';
+if (device === 'phone') {
+frameHtml = '<div style="max-width:280px;margin:0 auto;border-radius:28px;border:8px solid #1f2937;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.15);">' + contentHtml + '</div>';
+} else if (device === 'tablet') {
+frameHtml = '<div style="max-width:520px;margin:0 auto;border-radius:16px;border:10px solid #1f2937;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.15);">' + contentHtml + '</div>';
+} else if (device === 'none') {
+frameHtml = '<div style="border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">' + contentHtml + '</div>';
+} else {
+var chromeBar = '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">' +
 '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>' +
 '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
 '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>' +
-(alt ? '<span style="flex:1;background:#fff;border-radius:4px;padding:2px 8px;font-size:0.72rem;color:#6b7280;">' + _esc(alt) + '</span>' : '') + '</div>';
-return '<div data-cb="node" data-key="' + _ckey(b.image_url, 'framed_screenshot') + '" style="margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + header + '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;"></div>';
+'</div>';
+frameHtml = '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);">' + chromeBar + contentHtml + '</div>';
+}
+var captionHtml = (typeof b.caption === 'string' && b.caption)
+? '<p style="font-size:0.8rem;text-align:center;color:var(--muted,#5f6368);margin:6px 0 0;">' + _esc(b.caption) + '</p>'
+: '';
+return '<div data-cb="node" data-key="' + _ckey(b.image_url, 'framed_screenshot') + '" style="margin:1.5rem 0;">' + frameHtml + captionHtml + '</div>';
 };
 _RENDERERS['video_thumbnail'] = function(b) {
 var url = b.url || b.thumbnail_url || '';
@@ -3781,11 +3851,24 @@ var k = b.audio_url ? _esc(String(b.audio_url)) : 'audio_link';
 return '<a data-cb="node" data-key="' + k + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 ' + _esc(label) + '</a>';
 };
 _RENDERERS['pdf_preview'] = function(b) {
-var url = b.url || '';
-var title = b.title || 'PDF Document';
-return '<a data-cb="node" data-key="' + _ckey(b.pdf_url || b.url, 'pdf_preview') + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;">' +
-'<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>' +
-'<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">Click to open PDF</div></div></a>';
+if (!b || typeof b !== 'object') b = {};
+var rawPdf = typeof b.pdf_url === 'string' && b.pdf_url ? b.pdf_url : (typeof b.url === 'string' ? b.url : '');
+var pdfUrl = _hrefIsSafe(rawPdf);
+var rawThumb = typeof b.thumbnail_url === 'string' ? b.thumbnail_url : '';
+var thumbUrl = _hrefIsSafe(rawThumb);
+var title = typeof b.title === 'string' && b.title ? b.title : 'PDF Document';
+var altText = typeof b.alt_text === 'string' && b.alt_text ? b.alt_text : title;
+var mediaHtml = thumbUrl
+? '<img src="' + _esc(thumbUrl) + '" alt="' + _esc(altText) + '" style="width:40px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;" loading="lazy">'
+: '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>';
+var subText = pdfUrl ? 'Click to open PDF' : 'No PDF URL provided';
+var textHtml = '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + subText + '</div></div>';
+var key = _ckey(rawPdf, 'pdf_preview');
+var baseStyle = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;';
+if (pdfUrl) {
+return '<a data-cb="node" data-key="' + key + '" href="' + _esc(pdfUrl) + '" target="_blank" rel="noopener noreferrer" style="' + baseStyle + '">' + mediaHtml + textHtml + '</a>';
+}
+return '<div data-cb="node" data-key="' + key + '" style="' + baseStyle + '">' + mediaHtml + textHtml + '</div>';
 };
 _RENDERERS['document_link'] = function(b) {
 var url = b.document_url || b.url || '';
@@ -15920,9 +16003,17 @@ html += '</div></div>';
 return html;
 };
 _RENDERERS['markdown_block'] = function(b) {
-var content = b.content || '';
-var html = _markdownToHtml(content);
-return '<div data-cb="node" data-key="' + _ckey(undefined, 'markdown_block') + '" class="asw-markdown-block">' + html + '</div>';
+if (!b || typeof b !== 'object') b = {};
+var raw = (typeof b.text === 'string' && b.text) ? b.text : b.content;
+var text = '';
+if (typeof raw === 'string') {
+text = raw;
+} else if (typeof raw === 'number' && !isNaN(raw)) {
+text = String(raw);
+}
+var style = b.variant === 'compact' ? 'margin:0.5rem 0;' : 'margin:1rem 0;';
+var html = _md_inline(text);
+return '<div data-cb="node" data-key="' + _ckey(undefined, 'markdown_block') + '" class="markdown-content asw-markdown-block" style="' + style + '">' + html + '</div>';
 };
 _RENDERERS['bento_grid'] = function(b) {
 var tiles   = (Array.isArray(b.tiles) ? b.tiles : (Array.isArray(b.items) ? b.items : [])).filter(function(t) { return t && typeof t === 'object'; });
@@ -22375,6 +22466,10 @@ return '<span data-cb="node" data-key="' + _ckey(b.app, 'workspace_logo') + '" s
 + '<img src="' + src + '" width="' + size + '" height="' + size + '" alt="' + _esc(app) + '" style="display:block;object-fit:contain;">'
 + lblHtml + '</span>';
 };
+function _wsInt(v, d, lo, hi) {
+var n = (typeof v === 'number' && isFinite(v)) ? Math.trunc(v) : ((typeof v === 'string' && /^\s*\d+\s*$/.test(v)) ? parseInt(v, 10) : d);
+return Math.max(lo, Math.min(hi, n));
+}
 function _wsCapitalise(s) {
 return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 }
@@ -22410,31 +22505,39 @@ return css + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;background:' + 
 + logos + '</div></div>';
 };
 _RENDERERS['workspace_logo_grid'] = function(b) {
-var uid    = 'wg' + Math.random().toString(36).substr(2, 5);
-var apps   = b.apps || Object.keys(_WORKSPACE_LOGOS);
-var size   = parseInt(b.size || 48, 10);
-var cols   = parseInt(b.cols, 10) || 5;
-var grey   = b.greyscale || false;
+if (!b || typeof b !== 'object') b = {};
+var uid = 'wg' + _payloadUid(b);
+var rawApps = Array.isArray(b.apps) ? b.apps : Object.keys(_WORKSPACE_LOGOS);
+var apps = [];
+for (var i = 0; i < rawApps.length && apps.length < 60; i++) {
+if (typeof rawApps[i] === 'string' && rawApps[i].length > 0) {
+apps.push(rawApps[i]);
+}
+}
+var size = _wsInt(b.size, 48, 16, 256);
+var cols = _wsInt(b.cols, 5, 1, 12);
+var grey = b.greyscale === true;
+var showLabels = b.show_labels !== false;
 var css = '<style>.' + uid + '-c{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:10px;transition:background 0.2s;}'
 + '.' + uid + '-c:hover{background:var(--surface,#f9fafb);}'
 + '.' + uid + '-i{' + (grey ? 'filter:grayscale(1);opacity:0.6;' : '') + 'transition:filter 0.25s,opacity 0.25s;object-fit:contain;}'
 + '.' + uid + '-c:hover .' + uid + '-i{filter:none;opacity:1;}'
 + '</style>';
 var cells = apps.map(function(app) {
-var key   = typeof app === 'string' ? app.toLowerCase() : app;
-var path  = _WORKSPACE_LOGOS[key];
-var lbl   = b.show_labels !== false ? _wsCapitalise(key) : '';
-var fbBg  = _WORKSPACE_COLORS[key] || '#1b6cf2';
-var fbCh  = _esc((key[0] || 'G').toUpperCase());
+var key = app.toLowerCase();
+var path = Object.prototype.hasOwnProperty.call(_WORKSPACE_LOGOS, key) ? _WORKSPACE_LOGOS[key] : '';
+var lbl = showLabels ? _wsCapitalise(key) : '';
+var fbBg = (Object.prototype.hasOwnProperty.call(_WORKSPACE_COLORS, key) && _WORKSPACE_COLORS[key]) || '#1b6cf2';
+var fbCh = _esc((key[0] || 'G').toUpperCase());
 var inner = path
 ? '<img src="' + _LOGO_BASE + path + '/192px.svg" width="' + size + '" height="' + size + '" class="' + uid + '-i" alt="' + _esc(key) + '">'
-: '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size*0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>';
+: '<span style="width:' + size + 'px;height:' + size + 'px;background:' + fbBg + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:' + Math.round(size * 0.5) + 'px;color:' + _wsLetterColour(fbBg) + ';">' + fbCh + '</span>';
 return '<div class="' + uid + '-c">'
 + inner
 + (lbl ? '<span style="font-size:0.7rem;color:var(--muted,#6b7280);font-weight:500;text-align:center;">' + _esc(lbl) + '</span>' : '')
 + '</div>';
 }).join('');
-var title = b.title ? '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
+var title = (typeof b.title === 'string' && b.title) ? '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
 return css + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
 + title
 + '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:4px;">' + cells + '</div>'
@@ -28606,27 +28709,80 @@ return (
 );
 };
 _RENDERERS['annotation_highlight'] = function(b) {
-var uid   = 'anhl' + Math.random().toString(36).substr(2, 6);
-var text  = b.text  || '';
-var notes = b.notes || [];
-var out = _esc(text);
-for (var i = 0; i < notes.length; i++) {
-var n   = notes[i];
-var col = n.color || '#996206';
-var esc_term = n.term.replace(/[&<>"']/g, function(c) {
-return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-});
-var k = n.id || n.term;
-out = out.replace(esc_term,
-'<span data-cb="ref" data-key="' + _esc(k) + '" class="' + uid + 'a" data-i="' + i + '" onclick="' + uid + 'show(' + i + ',this)" ' +
-'style="background:' + col + '22;border-bottom:2px solid ' + col + ';color:' + col + ';' +
-'cursor:pointer;border-radius:3px;padding:0 3px;font-weight:600;">' +
-esc_term + '</span>'
-);
+if (!b || typeof b !== 'object') b = {};
+var uid = 'anhl' + _payloadUid(b);
+var rawText = b.text;
+var text = '';
+if (typeof rawText === 'string') {
+text = rawText;
+} else if (typeof rawText === 'number' && !isNaN(rawText)) {
+text = String(rawText);
 }
-var notesJson = _jsJson(notes.map(function(n) {
-return { term: n.term, explanation: n.explanation || '', color: n.color || '#996206' };
-}));
+var rawNotes = Array.isArray(b.notes) ? b.notes.slice(0, 40) : [];
+var validNotes = [];
+var colorRe = /^#[0-9a-fA-F]{6}$/;
+for (var i = 0; i < rawNotes.length; i++) {
+var item = rawNotes[i];
+if (item && typeof item === 'object' && typeof item.term === 'string' && item.term.length > 0) {
+var col = (typeof item.color === 'string' && colorRe.test(item.color)) ? item.color : '#996206';
+var exp = typeof item.explanation === 'string' ? item.explanation : '';
+var id = (typeof item.id === 'string' && item.id.length > 0) ? item.id : item.term;
+validNotes.push({
+term: item.term,
+explanation: exp,
+color: col,
+id: id
+});
+}
+}
+var claimedRanges = [];
+var matches = [];
+for (var j = 0; j < validNotes.length; j++) {
+var n = validNotes[j];
+var searchIdx = 0;
+while (searchIdx <= text.length - n.term.length) {
+var found = text.indexOf(n.term, searchIdx);
+if (found === -1) break;
+var end = found + n.term.length;
+var overlaps = false;
+for (var r = 0; r < claimedRanges.length; r++) {
+if (Math.max(found, claimedRanges[r][0]) < Math.min(end, claimedRanges[r][1])) {
+overlaps = true;
+break;
+}
+}
+if (!overlaps) {
+claimedRanges.push([found, end]);
+matches.push({ start: found, end: end, noteIndex: j, note: n });
+break;
+}
+searchIdx = found + 1;
+}
+}
+matches.sort(function(a, b) { return a.start - b.start; });
+var out = '';
+var curPos = 0;
+for (var m = 0; m < matches.length; m++) {
+var match = matches[m];
+if (match.start > curPos) {
+out += _esc(text.substring(curPos, match.start));
+}
+var escTerm = _esc(text.substring(match.start, match.end));
+var note = match.note;
+var ni = match.noteIndex;
+out += '<span data-cb="ref" data-key="' + _esc(note.id) + '" class="' + uid + 'a" data-i="' + ni + '" onclick="' + uid + 'show(' + ni + ',this)" ' +
+'style="background:' + note.color + '22;border-bottom:2px solid ' + note.color + ';color:' + note.color + ';' +
+'cursor:pointer;border-radius:3px;padding:0 3px;font-weight:600;">' +
+escTerm + '</span>';
+curPos = match.end;
+}
+if (curPos < text.length) {
+out += _esc(text.substring(curPos));
+}
+var scriptNotes = validNotes.map(function(n) {
+return { term: n.term, explanation: n.explanation, color: n.color };
+});
+var notesJson = _jsJson(scriptNotes);
 return (
 '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
 '<div style="font-size:0.88rem;color:#59779b;line-height:1.9;">' + out + '</div>' +
@@ -36744,26 +36900,52 @@ return '<div data-cb="node" data-key="' + _ckey(b.repo, 'github_repo_card') + '"
 + '</div>';
 };
 _RENDERERS['gauge_sla'] = function(b) {
-var value   = parseFloat(b.value || 0);
-var max     = parseFloat(b.max_value || 100);
-var pct     = Math.min(1, value / max);
-var unit    = _esc(b.unit || '');
-var label   = _esc(b.label || '');
-var title   = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:8px;">' + _esc(b.title) + '</div>' : '';
-var thresh  = b.threshold || 90;
-var color   = value >= thresh ? '#10b981' : value >= thresh * 0.9 ? '#f59e0b' : '#ef4444';
-var r = 56, cx = 72, cy = 72;
-var circ = Math.PI * r;
-var dash = pct * circ;
-var svgStyle = 'transform:rotate(-180deg)';
-var svg = '<svg role="img" aria-label="SLA gauge" width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
-+ '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f3f4f6" stroke-width="12" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + '" stroke-linecap="round"/>'
-+ '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-dasharray="' + dash + ' ' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + ';transition:stroke-dasharray 0.5s;" stroke-linecap="round"/>'
-+ '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" style="font-size:20px;font-weight:700;fill:' + color + ';">' + value + unit + '</text>'
-+ (label ? '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" style="font-size:10px;fill:#9ca3af;">' + label + '</text>' : '')
-+ '</svg>';
-return '<div data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
-+ title + svg + '</div>';
+if (!b || typeof b !== 'object') return '';
+var rawVal = b.value;
+var rawMax = b.max_value;
+var val = (typeof rawVal === 'boolean') ? (rawVal ? 1 : 0) : (typeof rawVal === 'number' || typeof rawVal === 'string' ? Number(rawVal) : NaN);
+if (!isFinite(val)) val = 0;
+var maxVal = (typeof rawMax === 'boolean') ? (rawMax ? 1 : 0) : (typeof rawMax === 'number' || typeof rawMax === 'string' ? Number(rawMax) : NaN);
+if (!isFinite(maxVal)) maxVal = 100;
+var unit = (typeof b.unit === 'string') ? b.unit : '';
+var label = (typeof b.label === 'string') ? b.label : 'SLA Status';
+var title = (typeof b.title === 'string') ? b.title : '';
+var pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+pct = Math.min(100.0, Math.max(0.0, pct));
+var pathLen = 314.159;
+var dashOffset = pathLen - (pct / 100.0) * pathLen;
+var angle = 180 + (pct / 100.0) * 180;
+var rad = (angle * Math.PI) / 180.0;
+var nx = 150 + 85 * Math.cos(rad);
+var ny = 140 + 85 * Math.sin(rad);
+var uid = typeof _payloadUid === 'function' ? _payloadUid(b) : '524383943';
+var gradId = 'gauge_sla_' + uid + '_grad';
+var glowId = 'gauge_sla_' + uid + '_glow';
+var thr = (typeof b.threshold === 'number' && isFinite(b.threshold) && b.threshold > 0) ? b.threshold : null;
+var healthy = thr !== null ? val >= thr : pct >= 95;
+var warn = thr !== null ? val >= thr * 0.9 : pct >= 85;
+var statusColor = '#ef4444';
+var statusLabel = 'BREACHED';
+if (healthy) {
+statusColor = '#10b981';
+statusLabel = 'HEALTHY';
+} else if (warn) {
+statusColor = '#38bdf8';
+statusLabel = 'WARNING';
+}
+var headerHtml = '';
+if (title) {
+headerHtml = '\n        <div style="margin-bottom:15px; display:flex; align-items:center; justify-content:space-between;">\n          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">\n            <span style="color:#00f2ff; font-weight:900;">◵</span> ' + _esc(title) + '\n          </div>\n        </div>\n        ';
+}
+var shown = Math.max(-1e15, Math.min(1e15, val)).toFixed(2);
+if (shown.indexOf('.') >= 0) shown = shown.replace(/0+$/, '').replace(/\.$/, '');
+var valDisplay = shown + unit;
+var fullStatus = (statusLabel + (label ? ' · ' + label.toUpperCase() : '')).trim();
+var svgHtml = '\n    <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">\n      \n      <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">\n        <defs>\n          <linearGradient id="' + gradId + '" x1="0" y1="0" x2="1" y2="0">\n            <stop offset="0%" stop-color="#ef4444" />\n            <stop offset="60%" stop-color="#f59e0b" />\n            <stop offset="100%" stop-color="#10b981" />\n          </linearGradient>\n          <filter id="' + glowId + '" x="-20%" y="-20%" width="140%" height="140%">\n            <feGaussianBlur stdDeviation="3" result="blur" />\n            <feMerge>\n              <feMergeNode in="blur" />\n              <feMergeNode in="SourceGraphic" />\n            </feMerge>\n          </filter>\n        </defs>\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#' + gradId + ')" stroke-width="14" stroke-linecap="round"\n              stroke-dasharray="314.159" stroke-dashoffset="' + dashOffset + '" filter="url(#' + glowId + ')" />\n\n        <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n\n        <line x1="150" y1="140" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="' + statusColor + '" stroke-width="3" stroke-linecap="round" filter="url(#' + glowId + ')" />\n        <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="' + statusColor + '" stroke-width="3" />\n\n        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">' + _esc(valDisplay) + '</text>\n        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="' + statusColor + '" font-family="monospace" letter-spacing="0.1em">' + _esc(fullStatus) + '</text>\n      </svg>\n    \n    </div>\n    ';
+return '\n    <div data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">' +
+headerHtml +
+svgHtml +
+'\n    </div>\n    ';
 };
 _RENDERERS['sparkline'] = function(b) {
 var data   = b.data || [];

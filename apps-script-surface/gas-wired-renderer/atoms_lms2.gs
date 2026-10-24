@@ -241,30 +241,86 @@ _RENDERERS['reflection_prompt'] = function(b) {
 // Body text with clickable highlighted terms that reveal inline explanations.
 // No state required. Pure CSS/JS enriched reading experience.
 _RENDERERS['annotation_highlight'] = function(b) {
-  var uid   = 'anhl' + Math.random().toString(36).substr(2, 6);
-  var text  = b.text  || '';
-  var notes = b.notes || [];
-
-  // Server-side: replace annotated terms in text with tagged spans
-  var out = _esc(text);
-  for (var i = 0; i < notes.length; i++) {
-    var n   = notes[i];
-    var col = n.color || '#996206';
-    var esc_term = n.term.replace(/[&<>"']/g, function(c) {
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-    var k = n.id || n.term;
-    out = out.replace(esc_term,
-      '<span data-cb="ref" data-key="' + _esc(k) + '" class="' + uid + 'a" data-i="' + i + '" onclick="' + uid + 'show(' + i + ',this)" ' +
-        'style="background:' + col + '22;border-bottom:2px solid ' + col + ';color:' + col + ';' +
-          'cursor:pointer;border-radius:3px;padding:0 3px;font-weight:600;">' +
-        esc_term + '</span>'
-    );
+  if (!b || typeof b !== 'object') b = {};
+  var uid = 'anhl' + _payloadUid(b);
+  var rawText = b.text;
+  var text = '';
+  if (typeof rawText === 'string') {
+    text = rawText;
+  } else if (typeof rawText === 'number' && !isNaN(rawText)) {
+    text = String(rawText);
   }
 
-  var notesJson = _jsJson(notes.map(function(n) {
-    return { term: n.term, explanation: n.explanation || '', color: n.color || '#996206' };
-  }));
+  var rawNotes = Array.isArray(b.notes) ? b.notes.slice(0, 40) : [];
+  var validNotes = [];
+  var colorRe = /^#[0-9a-fA-F]{6}$/;
+
+  for (var i = 0; i < rawNotes.length; i++) {
+    var item = rawNotes[i];
+    if (item && typeof item === 'object' && typeof item.term === 'string' && item.term.length > 0) {
+      var col = (typeof item.color === 'string' && colorRe.test(item.color)) ? item.color : '#996206';
+      var exp = typeof item.explanation === 'string' ? item.explanation : '';
+      var id = (typeof item.id === 'string' && item.id.length > 0) ? item.id : item.term;
+      validNotes.push({
+        term: item.term,
+        explanation: exp,
+        color: col,
+        id: id
+      });
+    }
+  }
+
+  var claimedRanges = [];
+  var matches = [];
+  for (var j = 0; j < validNotes.length; j++) {
+    var n = validNotes[j];
+    var searchIdx = 0;
+    while (searchIdx <= text.length - n.term.length) {
+      var found = text.indexOf(n.term, searchIdx);
+      if (found === -1) break;
+      var end = found + n.term.length;
+      var overlaps = false;
+      for (var r = 0; r < claimedRanges.length; r++) {
+        if (Math.max(found, claimedRanges[r][0]) < Math.min(end, claimedRanges[r][1])) {
+          overlaps = true;
+          break;
+        }
+      }
+      if (!overlaps) {
+        claimedRanges.push([found, end]);
+        matches.push({ start: found, end: end, noteIndex: j, note: n });
+        break;
+      }
+      searchIdx = found + 1;
+    }
+  }
+
+  matches.sort(function(a, b) { return a.start - b.start; });
+
+  var out = '';
+  var curPos = 0;
+  for (var m = 0; m < matches.length; m++) {
+    var match = matches[m];
+    if (match.start > curPos) {
+      out += _esc(text.substring(curPos, match.start));
+    }
+    var escTerm = _esc(text.substring(match.start, match.end));
+    var note = match.note;
+    var ni = match.noteIndex;
+    out += '<span data-cb="ref" data-key="' + _esc(note.id) + '" class="' + uid + 'a" data-i="' + ni + '" onclick="' + uid + 'show(' + ni + ',this)" ' +
+      'style="background:' + note.color + '22;border-bottom:2px solid ' + note.color + ';color:' + note.color + ';' +
+      'cursor:pointer;border-radius:3px;padding:0 3px;font-weight:600;">' +
+      escTerm + '</span>';
+    curPos = match.end;
+  }
+  if (curPos < text.length) {
+    out += _esc(text.substring(curPos));
+  }
+
+  var scriptNotes = validNotes.map(function(n) {
+    return { term: n.term, explanation: n.explanation, color: n.color };
+  });
+  var notesJson = _jsJson(scriptNotes);
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +

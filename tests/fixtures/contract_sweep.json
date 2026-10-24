@@ -270,8 +270,8 @@
   "kind": "ref",
   "label_kind": "label",
   "key": "notes[].id",
-  "py_sha": "fa368d7b041ce85d3a77b5ddf2d904da4df62d88c2e761b108d554ca3ae0c366",
-  "gas_sha": "c0327ac0dd0c5b360fbb89cdff42439a92c39361efec971afbc3b6a2cb3c9834",
+  "py_sha": "fdb0624617136878a6a369f974d61ff23f8ee078bacbd2171315a6d1d3df4e14",
+  "gas_sha": "f1e2937cb3300308d005b01b0f42a84cb42b08d1a361b101daa2d1c2b240bc2c",
   "parity": false
  },
  "api_param_table": {
@@ -2329,8 +2329,8 @@
   "label_kind": "label",
   "key": "footnotes[].id",
   "py_sha": "0014e280ce178793211e419b432f7f657cfce5c50f5580420b95c71bfd645aa9",
-  "gas_sha": "b0d1f5e6a81221d4564fbf320111d1645ad05a5ca6c879cb32beb3d0da4afbd0",
-  "parity": false
+  "gas_sha": "0014e280ce178793211e419b432f7f657cfce5c50f5580420b95c71bfd645aa9",
+  "parity": true
  },
  "further_reading": {
   "status": "keyed",
@@ -3183,9 +3183,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "data[].key",
-  "py_sha": "0943e17f4d3cc5930ba970eb336d6b382a75c1c0ab795a0a432f3c0977bf5010",
-  "gas_sha": "f0ce41e05989f1f18678758ce38e6ff2c48d72e6af0d3127c066a1623e273bfb",
-  "parity": false
+  "py_sha": "27ad7bdc0434c596328cf206d61243fed4cdc9120fe9456fd1972abdf84ec7ad",
+  "gas_sha": "27ad7bdc0434c596328cf206d61243fed4cdc9120fe9456fd1972abdf84ec7ad",
+  "parity": true
  },
  "jump_nav": {
   "status": "keyed",
@@ -8037,8 +8037,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "apps[]",
-  "py_sha": "e6c55d84336ea61202d6a47ec80ab90f16dc7b2b32e4c353ce35de73846545a9",
-  "gas_sha": "81ddf3e534454b58106aed9c902a472ea8a5fdbfc6458f6da287aaeee2be2b81",
+  "py_sha": "c00050601bcf6956d3dd5b6ba81cc539959e5cd05af8ac69e4665e7b91bd9cee",
+  "gas_sha": "f653901792a1b88380171ca284f30b1913b54ff39b9a580ca3975ab5750d17d6",
   "parity": false
  },
  "workspace_logo_strip": {
@@ -8877,9 +8877,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "pdf_url",
-  "py_sha": "6339d76f92765706066284790dc97228d5653171dfae283d08c4c6906269c8da",
-  "gas_sha": "6721ee607f7c9f13276456db48d5a8a530885a845195e77e42e847658d1f9f09",
-  "parity": false
+  "py_sha": "a76a86762ee4067329c9237cd2a177e57264ed4c3c6641416bf1a47c62fa4e10",
+  "gas_sha": "a76a86762ee4067329c9237cd2a177e57264ed4c3c6641416bf1a47c62fa4e10",
+  "parity": true
  },
  "document_link": {
   "status": "keyed",
@@ -8964,9 +8964,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "image_url",
-  "py_sha": "d0054348e520b8ab1273adad693d840ec36d70c7beec4facab620fd3fff89999",
-  "gas_sha": "172b05e18f310ac2e2ae076a890ac95cab306c5164ef102090d4e95b61bf1970",
-  "parity": false
+  "py_sha": "52b74859425681e5cca81a7086514fab93d97315f40e49f28984f565231e0457",
+  "gas_sha": "52b74859425681e5cca81a7086514fab93d97315f40e49f28984f565231e0457",
+  "parity": true
  },
  "image_with_caption": {
   "status": "keyed",
@@ -9703,8 +9703,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "title",
-  "py_sha": "8d25f9cc15d34ddd618e9cd7dfd9b01462913882ffe47de5a55631a0a2a7c86f",
-  "gas_sha": "067fe9837523c65120098ac508807447ef178435a05c1524f878ded405a1cedf",
+  "py_sha": "413f783c794e048385b0612f64299b639fccede089f3c98d3584aa9eb46c4fa2",
+  "gas_sha": "b980b59f6bdb077f7b113d83ee38aaa1b9fbf2e1bf0777bb1975f1e9d135d264",
   "parity": false
  },
  "masonry_elevation": {
@@ -9851,9 +9851,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "type",
-  "py_sha": "10b724e1f5644a2f41f680e4772c8ae006f609b9c060aa7f3614c1ab3319e77e",
-  "gas_sha": "6998b75f70cc4ee3fc96c7ef0f1f384904a8d1b1e1d4a316d0c5ef9b4da415c0",
-  "parity": false
+  "py_sha": "7ae68d3fff82b0aaf9dd5cfe777938493187530d01ddd25dc533867409a05ec7",
+  "gas_sha": "7ae68d3fff82b0aaf9dd5cfe777938493187530d01ddd25dc533867409a05ec7",
+  "parity": true
  },
  "text_callout": {
   "status": "keyed",

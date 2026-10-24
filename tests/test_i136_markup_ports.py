@@ -1,0 +1,147 @@
+"""I136 markup ports (batch b4): the GAS twin and the Python twin read the schema's fields and draw the same markup.
+
+Three groups, each a dict keyed by atom type:
+* EQUAL: twins must be byte-identical (ids normalised) for the schema payload, for the old-name payloads and for a fuzz of every leaf;
+* SAFE: twins differ by design (client script, logo URL tables, ids) but every field shows in both, and no hostile value crashes or injects;
+* OLD: payloads using the field names the old GAS twin read keep their content in both twins.
+"""
+from __future__ import annotations
+
+import copy
+import re
+import sys
+from pathlib import Path
+
+import pytest
+
+sys.path.insert(0, str(Path(__file__).parent))
+from test_motion_atoms import _norm, core_js  # noqa: E402,F401
+from test_contract_sweep import _gas_isolated, _py_fresh  # noqa: E402
+
+ATTACK = '"><img src=x onerror=alert(1)><script>alert(2)</script>\'`${x}'
+
+# atoms whose twins are byte-identical after the shared normalisation
+EQUAL = [
+    {"type": "markdown_block", "content": "Deploy **now** with `kubectl` and [docs](https://example.com/d)", "variant": "compact"},
+    {"type": "pdf_preview", "pdf_url": "https://example.com/report.pdf", "thumbnail_url": "https://example.com/a.png", "title": "SOC2 Audit", "alt_text": "Cover page"},
+    {"type": "json_tree_viewer", "data": "{\"cluster\": \"prod\", \"n\": [1, 2.5, null], \"s\": \"<b>&\"}"},
+    {"type": "framed_screenshot", "image_url": "https://example.com/a.png", "alt_text": "Telemetry", "device_type": "phone", "caption": "Live view"},
+    {"type": "footnote_group", "footnotes": [{"id": "fn-1", "text": "First **bold**"}, {"id": 2, "text": "Second"}, "plain"]},
+]
+# atoms whose twins differ by design
+SAFE = [
+    {"type": "gauge_sla", "title": "Uptime", "value": 99.4, "max_value": 100, "unit": "%", "label": "Operational", "threshold": 95},
+    {"type": "workspace_logo_grid", "title": "Connectors", "size": 40, "cols": 3, "greyscale": True, "show_labels": True, "apps": ["gmail", "drive", "nonesuch"]},
+    {"type": "annotation_highlight", "text": "Zero-trust needs mutual TLS everywhere.",
+     "notes": [{"term": "Zero-trust", "explanation": "No implicit trust.", "color": "#ef4444"}, {"term": "mutual TLS", "explanation": "Both sides prove identity."}]},
+]
+MUST = {
+    "markdown_block": ["<strong>now</strong>", "<code>kubectl</code>", 'href="https://example.com/d"', "margin:0.5rem 0;"],
+    "pdf_preview": ["SOC2 Audit", 'href="https://example.com/report.pdf"', 'src="https://example.com/a.png"', 'alt="Cover page"'],
+    "json_tree_viewer": ["&quot;cluster&quot;: &quot;prod&quot;", "2.5", "null", "&lt;b&gt;&amp;"],
+    "framed_screenshot": ['alt="Telemetry"', "Live view", "border:8px solid #1f2937", 'src="https://example.com/a.png"'],
+    "footnote_group": ["[fn-1]", "<strong>bold</strong>", "[2]", "[3]", "Second", "plain"],
+    "gauge_sla": ["Uptime", "99.4%", "HEALTHY", "OPERATIONAL"],
+    "workspace_logo_grid": ["Connectors", "Gmail", "Drive", "Nonesuch", "grayscale(1)", "repeat(3,1fr)", 'width="40"'],
+    "annotation_highlight": ["Zero-trust", "mutual TLS", "#ef4444", "#996206"],
+}
+OLD = [
+    {"type": "pdf_preview", "url": "https://example.com/old.pdf", "title": "Old Doc"},
+    {"type": "json_tree_viewer", "json": "{\"a\": 1}"},
+    {"type": "framed_screenshot", "url": "https://example.com/o.png", "alt": "Old alt", "frame": "none"},
+    {"type": "markdown_block", "text": "old *text*"},
+    {"type": "footnote_group", "items": [{"number": 7, "text": "seven"}]},
+]
+OLD_WORDS = {"pdf_preview": ["Old Doc", "https://example.com/old.pdf"], "json_tree_viewer": ["&quot;a&quot;: 1"],
+             "framed_screenshot": ['alt="Old alt"', "https://example.com/o.png"], "markdown_block": ["<em>text</em>"], "footnote_group": ["[7]", "seven"]}
+WEIRD = [None, True, False, 0, -3, 2.5, 1e22, "", "  ", "7", "12ms", "javascript:alert(1)", "\x01javascript:alert(1)", ATTACK, "😀" * 30, [], [1, "a"], {},
+         {"label": ATTACK, "name": "n", "term": ATTACK, "id": ATTACK}, "x" * 3000, 99999, [None], [{"term": None, "color": ATTACK}], "__proto__", "constructor"]
+
+
+def _leaves(o, path=()):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            yield from _leaves(v, path + (k,))
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from _leaves(v, path + (i,))
+    if path:
+        yield path
+
+
+def _fuzz(blocks):
+    out = []
+    for b in blocks:
+        for p in _leaves(b):
+            if p[0] == "type":
+                continue
+            for v in WEIRD:
+                c = copy.deepcopy(b)
+                o = c
+                for k in p[:-1]:
+                    o = o[k]
+                o[p[-1]] = v
+                out.append(c)
+    return out
+
+
+def _norm_uid(h):
+    return re.sub(r"\b(anhl|wg|gauge_sla_)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+
+
+@pytest.fixture(scope="module")
+def renders(core_js):
+    blocks = EQUAL + SAFE + OLD
+    gas = _gas_isolated(core_js, blocks)
+    return [(b, _py_fresh(b), g) for b, g in zip(blocks, gas)]
+
+
+def test_schema_payloads_show_every_documented_field_in_both_twins(renders):
+    for b, py, gas in renders[:len(EQUAL) + len(SAFE)]:
+        for twin, html in (("py", py), ("gas", gas)):
+            for needle in MUST[b["type"]]:
+                assert needle in html, "%s %s lacks %r" % (b["type"], twin, needle)
+    for b, py, gas in renders[:len(EQUAL)]:
+        assert _norm(py) == _norm(gas), b["type"]
+
+
+def test_old_field_names_still_render_the_same_content_in_both_twins(renders):
+    for b, py, gas in renders[len(EQUAL) + len(SAFE):]:
+        for twin, html in (("py", py), ("gas", gas)):
+            for w in OLD_WORDS[b["type"]]:
+                assert w in html, "%s %s lacks %r" % (b["type"], twin, w)
+        assert _norm(py) == _norm(gas), b["type"]
+
+
+def test_hostile_and_odd_values_give_safe_markup_and_equal_twins(core_js):
+    blocks = _fuzz(EQUAL + SAFE)
+    gas = _gas_isolated(core_js, blocks)
+    equal = {b["type"] for b in EQUAL}
+    bad = []
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        if b["type"] in equal and _norm(py) != _norm(g):
+            bad.append(("differs", b))
+        for html in (py, g):
+            if html.startswith(("PY ERROR", "GAS ERROR")) or "<img src=x" in html or "<script>alert" in html or re.search(r'(src|href)="\s*[\x00-\x20]*javascript:', html, re.I):
+                bad.append(("unsafe", b))
+    assert not bad, bad[:3]
+
+
+def test_gauge_shows_the_value_not_the_percentage_and_judges_it_against_the_threshold(core_js):
+    blocks = [{"type": "gauge_sla", "value": 3, "max_value": 10, "unit": "ms"},
+              {"type": "gauge_sla", "value": 85, "max_value": 100, "threshold": 90},
+              {"type": "gauge_sla", "value": 95, "max_value": 100, "threshold": 90}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        for html in (_py_fresh(b), g):
+            assert ">3ms<" in html or b["value"] != 3
+    assert "WARNING" in gas[1] and "WARNING" in _py_fresh(blocks[1])
+    assert "HEALTHY" in gas[2] and "HEALTHY" in _py_fresh(blocks[2])
+
+
+def test_annotation_terms_are_matched_once_on_the_raw_text(core_js):
+    b = {"type": "annotation_highlight", "text": "a <b> & b", "notes": [{"term": "<b>", "explanation": "y"}, {"term": "&", "explanation": "z"}, {"term": "b", "explanation": "x"}]}
+    py, g = _py_fresh(b), _gas_isolated(core_js, [b])[0]
+    for html in (py, g):
+        assert html.count("&lt;b&gt;") >= 1 and "&amp;" in html and "<b>" not in html

@@ -491,27 +491,63 @@ _RENDERERS['github_repo_card'] = function(b) {
 
 // ─── gauge_sla ────────────────────────────────────────────────────────────────
 _RENDERERS['gauge_sla'] = function(b) {
-  var value   = parseFloat(b.value || 0);
-  var max     = parseFloat(b.max_value || 100);
-  var pct     = Math.min(1, value / max);
-  var unit    = _esc(b.unit || '');
-  var label   = _esc(b.label || '');
-  var title   = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:8px;">' + _esc(b.title) + '</div>' : '';
-  var thresh  = b.threshold || 90;
-  var color   = value >= thresh ? '#10b981' : value >= thresh * 0.9 ? '#f59e0b' : '#ef4444';
-  // SVG semicircle gauge
-  var r = 56, cx = 72, cy = 72;
-  var circ = Math.PI * r;
-  var dash = pct * circ;
-  var svgStyle = 'transform:rotate(-180deg)';
-  var svg = '<svg role="img" aria-label="SLA gauge" width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
-    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f3f4f6" stroke-width="12" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + '" stroke-linecap="round"/>'
-    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-dasharray="' + dash + ' ' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + ';transition:stroke-dasharray 0.5s;" stroke-linecap="round"/>'
-    + '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" style="font-size:20px;font-weight:700;fill:' + color + ';">' + value + unit + '</text>'
-    + (label ? '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" style="font-size:10px;fill:#9ca3af;">' + label + '</text>' : '')
-    + '</svg>';
-  return '<div data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
-    + title + svg + '</div>';
+  if (!b || typeof b !== 'object') return '';
+  var rawVal = b.value;
+  var rawMax = b.max_value;
+  var val = (typeof rawVal === 'boolean') ? (rawVal ? 1 : 0) : (typeof rawVal === 'number' || typeof rawVal === 'string' ? Number(rawVal) : NaN);
+  if (!isFinite(val)) val = 0;
+  var maxVal = (typeof rawMax === 'boolean') ? (rawMax ? 1 : 0) : (typeof rawMax === 'number' || typeof rawMax === 'string' ? Number(rawMax) : NaN);
+  if (!isFinite(maxVal)) maxVal = 100;
+  var unit = (typeof b.unit === 'string') ? b.unit : '';
+  var label = (typeof b.label === 'string') ? b.label : 'SLA Status';
+  var title = (typeof b.title === 'string') ? b.title : '';
+
+  var pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+  pct = Math.min(100.0, Math.max(0.0, pct));
+
+  var pathLen = 314.159;
+  var dashOffset = pathLen - (pct / 100.0) * pathLen;
+
+  var angle = 180 + (pct / 100.0) * 180;
+  var rad = (angle * Math.PI) / 180.0;
+  var nx = 150 + 85 * Math.cos(rad);
+  var ny = 140 + 85 * Math.sin(rad);
+
+  var uid = typeof _payloadUid === 'function' ? _payloadUid(b) : '524383943';
+  var gradId = 'gauge_sla_' + uid + '_grad';
+  var glowId = 'gauge_sla_' + uid + '_glow';
+
+  // status: against the payload's threshold (the value, as the schema says) when it has one, else against 95% / 85% of the scale
+  var thr = (typeof b.threshold === 'number' && isFinite(b.threshold) && b.threshold > 0) ? b.threshold : null;
+  var healthy = thr !== null ? val >= thr : pct >= 95;
+  var warn = thr !== null ? val >= thr * 0.9 : pct >= 85;
+  var statusColor = '#ef4444';
+  var statusLabel = 'BREACHED';
+  if (healthy) {
+    statusColor = '#10b981';
+    statusLabel = 'HEALTHY';
+  } else if (warn) {
+    statusColor = '#38bdf8';
+    statusLabel = 'WARNING';
+  }
+
+  var headerHtml = '';
+  if (title) {
+    headerHtml = '\n        <div style="margin-bottom:15px; display:flex; align-items:center; justify-content:space-between;">\n          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">\n            <span style="color:#00f2ff; font-weight:900;">◵</span> ' + _esc(title) + '\n          </div>\n        </div>\n        ';
+  }
+
+  // the schema's value (e.g. 99.4) with its unit, not the filled percentage; two decimals at most, no trailing zeros, clamped so toFixed never goes exponential
+  var shown = Math.max(-1e15, Math.min(1e15, val)).toFixed(2);
+  if (shown.indexOf('.') >= 0) shown = shown.replace(/0+$/, '').replace(/\.$/, '');
+  var valDisplay = shown + unit;
+  var fullStatus = (statusLabel + (label ? ' · ' + label.toUpperCase() : '')).trim();
+
+  var svgHtml = '\n    <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">\n      \n      <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">\n        <defs>\n          <linearGradient id="' + gradId + '" x1="0" y1="0" x2="1" y2="0">\n            <stop offset="0%" stop-color="#ef4444" />\n            <stop offset="60%" stop-color="#f59e0b" />\n            <stop offset="100%" stop-color="#10b981" />\n          </linearGradient>\n          <filter id="' + glowId + '" x="-20%" y="-20%" width="140%" height="140%">\n            <feGaussianBlur stdDeviation="3" result="blur" />\n            <feMerge>\n              <feMergeNode in="blur" />\n              <feMergeNode in="SourceGraphic" />\n            </feMerge>\n          </filter>\n        </defs>\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#' + gradId + ')" stroke-width="14" stroke-linecap="round"\n              stroke-dasharray="314.159" stroke-dashoffset="' + dashOffset + '" filter="url(#' + glowId + ')" />\n\n        <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n\n        <line x1="150" y1="140" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="' + statusColor + '" stroke-width="3" stroke-linecap="round" filter="url(#' + glowId + ')" />\n        <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="' + statusColor + '" stroke-width="3" />\n\n        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">' + _esc(valDisplay) + '</text>\n        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="' + statusColor + '" font-family="monospace" letter-spacing="0.1em">' + _esc(fullStatus) + '</text>\n      </svg>\n    \n    </div>\n    ';
+
+  return '\n    <div data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">' +
+    headerHtml +
+    svgHtml +
+    '\n    </div>\n    ';
 };
 
 // ─── sparkline ────────────────────────────────────────────────────────────────

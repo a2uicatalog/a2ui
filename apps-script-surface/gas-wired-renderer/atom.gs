@@ -2372,11 +2372,39 @@ _RENDERERS['footnote'] = function(b) {
 };
 
 _RENDERERS['footnote_group'] = function(b) {
-  var footnotes = b.footnotes || [];
-  var rows = footnotes.map(function(fn){
-    return '<div data-cb="ref" data-key="' + _esc(String(fn.id||'?')) + '" style="margin:4px 0;font-size:0.78rem;color:var(--muted,#5f6368);padding-left:1.2rem;"><sup data-cb="label" data-key="' + _esc(String(fn.id||'?')) + '" style="color:#7c3aed;font-weight:600;">[' + _esc(String(fn.id||'?')) + ']</sup> ' + _markdownToHtml(fn.text||'') + '</div>';
-  }).join('');
-  return '<div style="margin:1.5rem 0;padding:12px 16px;border-top:1px solid #e5e7eb;"><div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Footnotes</div>' + rows + '</div>';
+  if (!b || typeof b !== 'object') b = {};
+  var rawList = Array.isArray(b.footnotes) ? b.footnotes : (Array.isArray(b.items) ? b.items : []);
+  var items = rawList.slice(0, 200);
+
+  var rows = '';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    if (item === null || item === undefined || Array.isArray(item) || (typeof item !== 'object' && typeof item !== 'string')) {
+      continue;
+    }
+    var idx = i + 1;
+    var text = '';
+    var num = idx;
+    if (typeof item === 'string') {
+      text = item;
+      num = idx;
+    } else {
+      text = typeof item.text === 'string' ? item.text : '';
+      if ((typeof item.id === 'string' && item.id.length > 0) || (typeof item.id === 'number' && !isNaN(item.id))) {
+        num = item.id;
+      } else if (item.number !== undefined && item.number !== null && item.number !== '') {
+        num = item.number;
+      } else {
+        num = idx;
+      }
+    }
+    var numStr = String(num);
+    rows += '<div data-cb="ref" data-key="' + _esc(numStr) + '" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">' +
+      '<span data-cb="label" data-key="' + _esc(numStr) + '" style="font-weight:700;flex-shrink:0;">[' + _esc(numStr) + ']</span>' +
+      '<span>' + _md_inline(text) + '</span></div>';
+  }
+
+  return '<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">' + rows + '</div>';
 };
 
 _RENDERERS['collapsible_panel'] = function(b) {
@@ -2989,12 +3017,35 @@ _RENDERERS['log_output'] = function(b) {
 };
 
 _RENDERERS['json_tree_viewer'] = function(b) {
-  var raw = b.data || b.json || '';
-  var pretty = raw;
-  try { pretty = _jsJson(JSON.parse(raw), null, 2); } catch(e) {}
-  var escaped = pretty.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1.2rem 0;max-height:400px;overflow:auto;">' +
-    '<pre style="margin:0;font-family:monospace;font-size:0.8rem;color:#4f6e99;">' + escaped + '</pre></div>';
+  if (!b || typeof b !== 'object') b = {};
+  var raw = (b.data !== undefined && b.data !== null) ? b.data : ((b.payload !== undefined && b.payload !== null) ? b.payload : b.json);
+  var pretty = '';
+  if (typeof raw === 'string') {
+    var truncated = raw.length > 200000 ? raw.substring(0, 200000) : raw;
+    try {
+      var parsed = JSON.parse(truncated);
+      pretty = JSON.stringify(parsed, null, 2);
+    } catch (e) {
+      pretty = truncated;
+    }
+  } else if (raw !== null && typeof raw === 'object') {
+    try {
+      pretty = JSON.stringify(raw, null, 2);
+    } catch (e) {
+      pretty = String(raw);
+    }
+  } else if (raw !== undefined && raw !== null) {
+    pretty = String(raw);
+  }
+
+  var title = (typeof b.title === 'string' && b.title) ? b.title : 'JSON';
+  var escaped = _esc(pretty);
+
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
+    '<div style="padding:8px 12px;background:#1e1e2e;border-bottom:1px solid #313244;' +
+    'font-size:0.78rem;color:#89dceb;font-family:monospace;font-weight:600;">' + _esc(title) + '</div>' +
+    '<pre style="margin:0;padding:14px;background:#1e1e2e;color:#cdd6f4;' +
+    'overflow-x:auto;font-size:0.82rem;max-height:360px;"><code>' + escaped + '</code></pre></div>';
 };
 
 _RENDERERS['star_rating_input'] = function(b) {
@@ -3207,15 +3258,44 @@ _RENDERERS['image_with_caption'] = function(b) {
 };
 
 _RENDERERS['framed_screenshot'] = function(b) {
-  var url = b.url || b.image_url || '';
-  var alt = b.alt || b.caption || '';
-  var frame = b.frame || 'browser';
-  var header = '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">' +
-    '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>' +
-    '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
-    '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>' +
-    (alt ? '<span style="flex:1;background:#fff;border-radius:4px;padding:2px 8px;font-size:0.72rem;color:#6b7280;">' + _esc(alt) + '</span>' : '') + '</div>';
-  return '<div data-cb="node" data-key="' + _ckey(b.image_url, 'framed_screenshot') + '" style="margin:1.2rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + header + '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;"></div>';
+  if (!b || typeof b !== 'object') b = {};
+  var rawUrl = typeof b.image_url === 'string' && b.image_url ? b.image_url : (typeof b.url === 'string' ? b.url : '');
+  var imageUrl = _hrefIsSafe(rawUrl);
+
+  var alt = typeof b.alt_text === 'string' && b.alt_text
+    ? b.alt_text
+    : (typeof b.alt === 'string' && b.alt ? b.alt : (typeof b.caption === 'string' && b.caption ? b.caption : 'Screenshot'));
+
+  var device = typeof b.device_type === 'string' && b.device_type ? b.device_type : (typeof b.frame === 'string' ? b.frame : 'browser');
+  if (device !== 'browser' && device !== 'phone' && device !== 'tablet' && device !== 'none') {
+    device = 'browser';
+  }
+
+  var contentHtml = imageUrl
+    ? '<img src="' + _esc(imageUrl) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;">'
+    : '<div style="padding:40px;background:#f3f4f6;color:var(--muted,#5f6368);text-align:center;">No image</div>';
+
+  var frameHtml = '';
+  if (device === 'phone') {
+    frameHtml = '<div style="max-width:280px;margin:0 auto;border-radius:28px;border:8px solid #1f2937;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.15);">' + contentHtml + '</div>';
+  } else if (device === 'tablet') {
+    frameHtml = '<div style="max-width:520px;margin:0 auto;border-radius:16px;border:10px solid #1f2937;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.15);">' + contentHtml + '</div>';
+  } else if (device === 'none') {
+    frameHtml = '<div style="border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">' + contentHtml + '</div>';
+  } else {
+    var chromeBar = '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">' +
+      '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>' +
+      '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
+      '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>' +
+      '</div>';
+    frameHtml = '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);">' + chromeBar + contentHtml + '</div>';
+  }
+
+  var captionHtml = (typeof b.caption === 'string' && b.caption)
+    ? '<p style="font-size:0.8rem;text-align:center;color:var(--muted,#5f6368);margin:6px 0 0;">' + _esc(b.caption) + '</p>'
+    : '';
+
+  return '<div data-cb="node" data-key="' + _ckey(b.image_url, 'framed_screenshot') + '" style="margin:1.5rem 0;">' + frameHtml + captionHtml + '</div>';
 };
 
 _RENDERERS['video_thumbnail'] = function(b) {
@@ -3263,11 +3343,28 @@ _RENDERERS['audio_link'] = function(b) {
 };
 
 _RENDERERS['pdf_preview'] = function(b) {
-  var url = b.url || '';
-  var title = b.title || 'PDF Document';
-  return '<a data-cb="node" data-key="' + _ckey(b.pdf_url || b.url, 'pdf_preview') + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;">' +
-    '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>' +
-    '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">Click to open PDF</div></div></a>';
+  if (!b || typeof b !== 'object') b = {};
+  var rawPdf = typeof b.pdf_url === 'string' && b.pdf_url ? b.pdf_url : (typeof b.url === 'string' ? b.url : '');
+  var pdfUrl = _hrefIsSafe(rawPdf);
+  var rawThumb = typeof b.thumbnail_url === 'string' ? b.thumbnail_url : '';
+  var thumbUrl = _hrefIsSafe(rawThumb);
+  var title = typeof b.title === 'string' && b.title ? b.title : 'PDF Document';
+  var altText = typeof b.alt_text === 'string' && b.alt_text ? b.alt_text : title;
+
+  var mediaHtml = thumbUrl
+    ? '<img src="' + _esc(thumbUrl) + '" alt="' + _esc(altText) + '" style="width:40px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;" loading="lazy">'
+    : '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>';
+
+  var subText = pdfUrl ? 'Click to open PDF' : 'No PDF URL provided';
+  var textHtml = '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + subText + '</div></div>';
+
+  var key = _ckey(rawPdf, 'pdf_preview');
+  var baseStyle = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;';
+
+  if (pdfUrl) {
+    return '<a data-cb="node" data-key="' + key + '" href="' + _esc(pdfUrl) + '" target="_blank" rel="noopener noreferrer" style="' + baseStyle + '">' + mediaHtml + textHtml + '</a>';
+  }
+  return '<div data-cb="node" data-key="' + key + '" style="' + baseStyle + '">' + mediaHtml + textHtml + '</div>';
 };
 
 _RENDERERS['document_link'] = function(b) {
