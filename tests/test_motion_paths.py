@@ -30,7 +30,7 @@ BAD_D = [
     "M0 0 L0 10 L0 20",
 ]
 CASES = ([dict(MASK, shape="path", d=d) for d in GOOD_D + BAD_D]
-         + [dict(MASK, shape=s, d=STAR) for s in ("blob", "circle", "bars", "diagonal", "rounded", None, 5, "PATH")]
+         + [dict(MASK, shape=s, d=STAR) for s in ("blob", "circle", "bars", "diagonal", "rounded", "diamond", "halftone", "conic", "slats", None, 5, "PATH")]
          + [dict(MASK, shape="path"), dict(MASK, shape="path", d=STAR, blocks=[CHILD, {"type": "motion_text", "text": "Hi"}])]
          + [dict(MORPH, from_d=a, to_d=b) for a in (STAR, HEART, OPEN) for b in (SQUARE, STAR, WAVE, OPEN, SMOOTH)]
          + [dict(MORPH, from_d=a, to_d=b) for a in BAD_D[:20] + [STAR] for b in (STAR, BAD_D[8], BAD_D[14], BAD_D[16])]
@@ -145,14 +145,14 @@ def test_align_picks_the_rotation_and_orientation():
     assert wa._mo_pp_align(a, ob, False) == ob
 
 
-# ─── absent fields: every existing payload renders byte for byte as on origin/main db74f22dc ───────────────────────
+# ─── absent fields: every existing payload renders byte for byte as on origin/main e8ccc9a59 ───────────────────────
 def test_existing_payloads_render_byte_for_byte_as_before():
     from test_motion_glitch import _existing_payloads
     from renderers import web_article as wa
-    old = _renderer_at("db74f22dc")
+    old = _renderer_at("e8ccc9a59")
     old._mo_install()
     wa._mo_install()
-    pays = _existing_payloads() + [dict(MASK, shape=s) for s in (None, "blob", "circle", "diagonal", "rounded", "bars", "path-ish", 3)] \
+    pays = _existing_payloads() + [dict(MASK, shape=s) for s in (None, "blob", "circle", "diagonal", "rounded", "bars", "diamond", "halftone", "conic", "slats", "path-ish", 3)] \
         + [dict(MASK, shape=s, d=STAR) for s in ("blob", "bars")] + [dict(MORPH), dict(MORPH, shapes=["square", "heart", "dot"], round=True, aspect=2), dict(MORPH, from_d=None, to_d=""), dict(MORPH, glossy=True, rotate=45)]
     kinds, bad = set(), []
     for b in pays:
