@@ -42203,34 +42203,34 @@ _RENDERERS['motion_shatter'] = _render_motion_shatter
 # window. p = 1 (no timeline, no script, reduced motion, print) is the settled picture. The scene is aria-hidden; a visually hidden text lists route, stations
 # and clock. The city is seeded (Park-Miller LCG, never a random call), with the cells under the route and the stations left clear. Only sqrt, + - * / and floor
 # are used, so both twins make the same bytes.
-_M3_P0, _M3_P1, _M3_U = 0.3, 0.92, 0.62
-_M3_ID = re.compile(r'[A-Za-z][A-Za-z0-9_]{0,23}')
-_M3_CLK = re.compile(r'[ ]*([0-9]{1,2}):([0-9]{2})[ ]*')
-_M3_STATES = ('idle', 'active', 'done')
+_MAP3D_P0, _MAP3D_P1, _MAP3D_U = 0.3, 0.92, 0.62
+_MAP3D_ID = re.compile(r'[A-Za-z][A-Za-z0-9_]{0,23}')
+_MAP3D_CLK = re.compile(r'[ ]*([0-9]{1,2}):([0-9]{2})[ ]*')
+_MAP3D_STATES = ('idle', 'active', 'done')
 
 
-def _m3_n(v, dflt, lo, hi):
+def _map3d_n(v, dflt, lo, hi):
     ok = isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
     return max(lo, min(hi, float(v) if ok else float(dflt)))
 
 
-def _m3_f(x, places=2):
+def _map3d_f(x, places=2):
     return _ff_num(x, 0, -100000, 100000, places)
 
 
-def _m3_clock(v):
-    m = _M3_CLK.fullmatch(v) if isinstance(v, str) else None
+def _map3d_clock(v):
+    m = _MAP3D_CLK.fullmatch(v) if isinstance(v, str) else None
     if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
         return None
     return int(m.group(1)) * 60 + int(m.group(2))
 
 
-def _m3_hhmm(t):
+def _map3d_hhmm(t):
     t = t % 1440
     return _cv_pad(t // 60) + ':' + _cv_pad(t % 60)
 
 
-def _m3_segdist(px, py, ax, ay, bx, by):
+def _map3d_segdist(px, py, ax, ay, bx, by):
     dx, dy = bx - ax, by - ay
     ll = dx * dx + dy * dy
     t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / ll)) if ll > 0 else 0.0
@@ -42240,9 +42240,9 @@ def _m3_segdist(px, py, ax, ay, bx, by):
 
 def _render_motion_map3d(b: dict) -> str:
     acc = _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)')
-    tilt = _m3_n(b.get('tilt'), 55, 0, 75)
+    tilt = _map3d_n(b.get('tilt'), 55, 0, 75)
     cam = _m3_obj(b.get('camera'))
-    z0, z1 = _m3_n(cam.get('from'), 0.55, 0.3, 3), _m3_n(cam.get('to'), 1.0, 0.3, 3)
+    z0, z1 = _map3d_n(cam.get('from'), 0.55, 0.3, 3), _map3d_n(cam.get('to'), 1.0, 0.3, 3)
     seed = _ff_int(b.get('seed'), 7, 0, 9999)
     notes = []
     # stations: unique ids, at most 24
@@ -42250,13 +42250,13 @@ def _render_motion_map3d(b: dict) -> str:
     raw = b.get('stations') if isinstance(b.get('stations'), list) else []
     for i, s in enumerate(raw[:24]):
         s = _m3_obj(s)
-        sid = s.get('id') if isinstance(s.get('id'), str) and _M3_ID.fullmatch(s.get('id')) else 's' + str(i + 1)
+        sid = s.get('id') if isinstance(s.get('id'), str) and _MAP3D_ID.fullmatch(s.get('id')) else 's' + str(i + 1)
         if sid in byid:
             bad += 1
             continue
         lab = _cv_str(s.get('label'), 24) or sid
-        st = {'id': sid, 'x': _m3_n(s.get('x'), 50, 0, 100), 'y': _m3_n(s.get('y'), 50, 0, 100), 'label': lab,
-              'state': s.get('state') if s.get('state') in _M3_STATES else 'idle', 'on': False}
+        st = {'id': sid, 'x': _map3d_n(s.get('x'), 50, 0, 100), 'y': _map3d_n(s.get('y'), 50, 0, 100), 'label': lab,
+              'state': s.get('state') if s.get('state') in _MAP3D_STATES else 'idle', 'on': False}
         byid[sid] = st
         sts.append(st)
     if len(raw) > 24:
@@ -42288,14 +42288,14 @@ def _render_motion_map3d(b: dict) -> str:
     total = 0.0
     for s in segs:
         total += s['len']
-    W = _M3_P1 - _M3_P0
+    W = _MAP3D_P1 - _MAP3D_P0
     dw = min(0.04, W * 0.3 / max(1, n - 1)) if n else 0.04
     draw = W - dw * max(0, n - 1)
     cum = 0.0
     seen = {}
     for i, s in enumerate(segs):
         share = (s['len'] / total) if total > 0 else 1.0 / n
-        s['s'] = _M3_P0 + dw * i + draw * cum
+        s['s'] = _MAP3D_P0 + dw * i + draw * cum
         s['w'] = draw * share
         cum += share
         k = s['from'] + '-' + s['to']
@@ -42303,7 +42303,7 @@ def _render_motion_map3d(b: dict) -> str:
         s['key'] = k if seen[k] == 1 else k + '-' + str(seen[k])
     for j, rid in enumerate(route):
         st = byid[rid]
-        r = (_M3_P0 - dw) if j == 0 else segs[j - 1]['s'] + segs[j - 1]['w']
+        r = (_MAP3D_P0 - dw) if j == 0 else segs[j - 1]['s'] + segs[j - 1]['w']
         lv = segs[j]['s'] if j < n else r + 0.05
         if not st['on']:
             st['on'], st['r'] = True, r
@@ -42314,7 +42314,7 @@ def _render_motion_map3d(b: dict) -> str:
     if braw:
         for e in braw:
             if isinstance(e, dict):
-                blocks.append((_m3_n(e.get('x'), 0, 0, 100), _m3_n(e.get('y'), 0, 0, 100), _m3_n(e.get('w'), 8, 1, 100), _m3_n(e.get('h'), 8, 1, 100), _m3_n(e.get('height'), 6, 0, 40)))
+                blocks.append((_map3d_n(e.get('x'), 0, 0, 100), _map3d_n(e.get('y'), 0, 0, 100), _map3d_n(e.get('w'), 8, 1, 100), _map3d_n(e.get('h'), 8, 1, 100), _map3d_n(e.get('height'), 6, 0, 40)))
         if len(blocks) > 200:
             notes.append('Showing the first 200 of ' + str(len(blocks)) + ' blocks.')
             blocks = blocks[:200]
@@ -42336,7 +42336,7 @@ def _render_motion_map3d(b: dict) -> str:
                     continue
                 dm = 1000.0
                 for s in segs:
-                    dm = min(dm, _m3_segdist(cx, cy, s['ax'], s['ay'], s['bx'], s['by']))
+                    dm = min(dm, _map3d_segdist(cx, cy, s['ax'], s['ay'], s['bx'], s['by']))
                 for s in sts:
                     dm = min(dm, math.sqrt((s['x'] - cx) * (s['x'] - cx) + (s['y'] - cy) * (s['y'] - cy)) - 3)
                 if dm < 7:
@@ -42345,24 +42345,24 @@ def _render_motion_map3d(b: dict) -> str:
                 blocks.append((bx, by, bw, bh, (3 + (1 - d) * 14 * r4 + r4 * 4) * max(0.2, min(1.0, (dm - 7) / 18))))
     faces = ''
     for (x, y, w, h, ht) in blocks:
-        faces += ('<div class="m3-b" style="left:' + _m3_f(x) + '%;top:' + _m3_f(y) + '%;width:' + _m3_f(w) + '%;height:' + _m3_f(h) + '%;--hh:' + _m3_f(ht * _M3_U) + 'cqw;">'
+        faces += ('<div class="m3-b" style="left:' + _map3d_f(x) + '%;top:' + _map3d_f(y) + '%;width:' + _map3d_f(w) + '%;height:' + _map3d_f(h) + '%;--hh:' + _map3d_f(ht * _MAP3D_U) + 'cqw;">'
                   '<i class="m3-t"></i><i class="m3-s"></i><i class="m3-e"></i></div>')
     # route svg
     paths = ''
     for s in segs:
-        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-m3="seg" d="M' + _m3_f(s['ax'], 1) + ',' + _m3_f(s['ay'], 1) + ' L' + _m3_f(s['bx'], 1) + ',' + _m3_f(s['by'], 1)
+        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-m3="seg" d="M' + _map3d_f(s['ax'], 1) + ',' + _map3d_f(s['ay'], 1) + ' L' + _map3d_f(s['bx'], 1) + ',' + _map3d_f(s['by'], 1)
                   + '" pathLength="1" fill="none" stroke="' + acc + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - '
-                  + _m3_f(s['s'], 3) + ')/' + _m3_f(max(s['w'], 0.001), 3) + '),1));"></path>')
+                  + _map3d_f(s['s'], 3) + ')/' + _map3d_f(max(s['w'], 0.001), 3) + '),1));"></path>')
     svg = ('<svg class="m3-route" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none">' + paths + '</svg>') if paths else ''
     # stations
     pins = ''
     for st in sts:
         reach = leave = None
         if st['on']:
-            reach = 'clamp(0,calc((var(--p,1) - ' + _m3_f(st['r'], 3) + ')*40),1)'
-            leave = 'clamp(0,calc((var(--p,1) - ' + _m3_f(st['l'], 3) + ')*40),1)'
+            reach = 'clamp(0,calc((var(--p,1) - ' + _map3d_f(st['r'], 3) + ')*40),1)'
+            leave = 'clamp(0,calc((var(--p,1) - ' + _map3d_f(st['l'], 3) + ')*40),1)'
         lay = ''
-        for name in _M3_STATES:
+        for name in _MAP3D_STATES:
             final = st['state'] == name
             if reach is None:
                 if not final:
@@ -42377,16 +42377,16 @@ def _render_motion_map3d(b: dict) -> str:
             else:
                 continue
             lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';"></span>'
-        pins += ('<div class="m3-st" data-cb="node" data-key="' + _cv_esc(st['id']) + '" data-m3="station" data-state="' + st['state'] + '" style="left:' + _m3_f(st['x'], 1) + '%;top:' + _m3_f(st['y'], 1) + '%;">'
+        pins += ('<div class="m3-st" data-cb="node" data-key="' + _cv_esc(st['id']) + '" data-m3="station" data-state="' + st['state'] + '" style="left:' + _map3d_f(st['x'], 1) + '%;top:' + _map3d_f(st['y'], 1) + '%;">'
                  '<div class="m3-bb">' + lay + '<span class="m3-lab" data-cb="label" data-key="' + _cv_esc(st['id']) + '">' + _cv_esc(st['label']) + '</span></div></div>')
     # clock
     ck = _m3_obj(b.get('clock'))
-    c0, c1 = _m3_clock(ck.get('from')), _m3_clock(ck.get('to'))
+    c0, c1 = _map3d_clock(ck.get('from')), _map3d_clock(ck.get('to'))
     chip = ''
     if c0 is not None and c1 is not None:
         if c1 < c0:
             c1 += 1440
-        chip = ('<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + str(c0) + ';--m1:' + str(c1) + ';"><span class="m3-cs">' + _m3_hhmm(c1) + '</span><span class="m3-cn"></span></div>')
+        chip = ('<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + str(c0) + ';--m1:' + str(c1) + ';"><span class="m3-cs">' + _map3d_hhmm(c1) + '</span><span class="m3-cn"></span></div>')
     # text alternative
     alt = []
     if route:
@@ -42394,7 +42394,7 @@ def _render_motion_map3d(b: dict) -> str:
     if sts:
         alt.append('Stations: ' + '; '.join(s['label'] + ' (' + s['state'] + ')' for s in sts) + '.')
     if chip:
-        alt.append('Clock runs from ' + _m3_hhmm(c0) + ' to ' + _m3_hhmm(c1) + '.')
+        alt.append('Clock runs from ' + _map3d_hhmm(c0) + ' to ' + _map3d_hhmm(c1) + '.')
     altx = '<div data-m3="alt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">' + _cv_esc(' '.join(alt) or 'City map.') + '</div>'
     css = ('<style>@property --m3m{syntax:"<integer>";initial-value:0;inherits:false}@property --m3h{syntax:"<integer>";initial-value:0;inherits:false}@property --m3n{syntax:"<integer>";initial-value:0;inherits:false}'
            '.m3-root{position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;aspect-ratio:16/9;overflow:hidden;container-type:inline-size;isolation:isolate;border-radius:12px;'
@@ -42420,7 +42420,7 @@ def _render_motion_map3d(b: dict) -> str:
            '--m3h:mod(round(down,calc(var(--m3m)/60),1),24);--m3n:mod(var(--m3m),60);counter-reset:m3h var(--m3h) m3n var(--m3n)}'
            '.m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}}'
            '@media (prefers-reduced-motion:reduce),print{.m3-root{--p:1!important}}</style>')
-    root_vars = ('--tilt:' + _m3_f(tilt, 1) + ';--rz:22;--z0:' + _m3_f(z0, 2) + ';--z1:' + _m3_f(z1, 2) + ';'
+    root_vars = ('--tilt:' + _map3d_f(tilt, 1) + ';--rz:22;--z0:' + _map3d_f(z0, 2) + ';--z1:' + _map3d_f(z1, 2) + ';'
                  '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));')
     plane = ('<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
              + faces + svg + pins + '</div>')

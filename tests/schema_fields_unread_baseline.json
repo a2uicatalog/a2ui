@@ -573,6 +573,9 @@
  "motion_lightning": [
   "version"
  ],
+ "motion_map3d": [
+  "version"
+ ],
  "motion_reveal": [
   "align",
   "color",
@@ -615,7 +618,8 @@
   "stitch",
   "theme",
   "title",
-  "tracks"
+  "tracks",
+  "transcript"
  ],
  "motion_tokens": [
   "theme"
