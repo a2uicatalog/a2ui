@@ -29704,6 +29704,46 @@ def _render_demo_panel(b: dict) -> str:
             + out + '</div>')
 
 
+# Spring easing on a track key (I90): the spring is integrated here (semi-implicit Euler, dt 0.001 s) into 24 linear samples per segment,
+# so the player needs no runtime. Twin of atoms_motion.gs _moSpringParams / _moSpringSamples.
+def _mo_spring_params(ease):
+    if not isinstance(ease, dict):
+        return None
+    sp = ease.get('spring')
+    if sp is not True and not isinstance(sp, dict):
+        return None
+    k, c, m = 170.0, 26.0, 1.0
+    if isinstance(sp, dict):
+        sk, sc, sm = sp.get('stiffness'), sp.get('damping'), sp.get('mass')
+        if isinstance(sk, (int, float)) and not isinstance(sk, bool) and math.isfinite(sk):
+            k = max(1.0, min(1000.0, float(sk)))
+        if isinstance(sc, (int, float)) and not isinstance(sc, bool) and math.isfinite(sc):
+            c = max(0.0, min(100.0, float(sc)))
+        if isinstance(sm, (int, float)) and not isinstance(sm, bool) and math.isfinite(sm):
+            m = max(0.1, min(10.0, float(sm)))
+    return (k, c, m)
+
+
+def _mo_spring_samples(t0, v0, t1, v1, sp_params, rg):
+    d = t1 - t0
+    steps = min(20000, max(1, math.floor(d * 1000.0 + 0.5)))
+    k, c, m = sp_params
+    dt = 0.001
+    x, vx = 0.0, 0.0
+    cur_step = 0
+    samples = []
+    for i in range(24):
+        target_step = (i * steps) // 24
+        while cur_step < target_step:
+            a = (-k * (x - 1.0) - c * vx) / m
+            vx = vx + a * dt
+            x = x + vx * dt
+            cur_step += 1
+        sti = t0 + (d * i) / 24.0
+        svi = v0 + (v1 - v0) * x
+        samples.append('[' + _ff_num(sti, 0, 0, 100000, 3) + ',' + _ff_num(svi, 0, rg[0], rg[1], 3) + ',0]')
+    return samples
+
 def _mo_track_js(keys, ranges, order, dur, bpm, def_ease, st):
     lst = []
     for i, k in enumerate(keys):
@@ -29723,15 +29763,26 @@ def _mo_track_js(keys, ranges, order, dur, bpm, def_ease, st):
     lst.sort(key=lambda e: (e[0], e[1]))
     parts = []
     for prop in order:
-        rg, pts = ranges[prop], []
+        rg = ranges[prop]
+        prop_keys = []
         for t, _i, k in lst:
             v = k.get(prop)
             if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
                 continue
-            pts.append('[' + _ff_num(t, 0, 0, 100000, 3) + ',' + _ff_num(v, 0, rg[0], rg[1], 3) + ',' + _mo_ease_js(k.get('ease'), def_ease) + ']')
-        if pts:
-            parts.append(prop + ':[' + ','.join(pts) + ']')
-            st['keys'] += len(pts)
+            prop_keys.append((t, v, _mo_spring_params(k.get('ease')), k.get('ease')))
+        if not prop_keys:
+            continue
+        st['keys'] += len(prop_keys)
+        pts = []
+        n = len(prop_keys)
+        for idx in range(n):
+            t, v, sp, authored_ease = prop_keys[idx]
+            if sp is not None and idx + 1 < n and prop_keys[idx + 1][0] > t:
+                t1, v1 = prop_keys[idx + 1][0], prop_keys[idx + 1][1]
+                pts.extend(_mo_spring_samples(t, v, t1, v1, sp, rg))
+            else:
+                pts.append('[' + _ff_num(t, 0, 0, 100000, 3) + ',' + _ff_num(v, 0, rg[0], rg[1], 3) + ',' + _mo_ease_js(authored_ease, def_ease) + ']')
+        parts.append(prop + ':[' + ','.join(pts) + ']')
     return ','.join(parts)
 
 

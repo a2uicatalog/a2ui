@@ -716,6 +716,37 @@ var _MO_SCROLL_JS = 'var run=root.querySelector(".mt-run");if(run&&C.drv){var rq
 
 // Keys -> per-property tracks. Every number goes through _ffNum so both renderers
 // spell it identically; anything that does not validate is counted, never silent.
+// Spring easing on a track key (I90): integrated here (semi-implicit Euler, dt 0.001 s) into 24 linear samples per segment, so the player needs no runtime.
+function _moSpringParams(ease) {
+  if (!ease || typeof ease !== 'object' || Array.isArray(ease)) return null;
+  var sp = ease.spring, k = 170.0, c = 26.0, m = 1.0;
+  if (sp !== true && !(sp && typeof sp === 'object' && !Array.isArray(sp))) return null;
+  if (sp && typeof sp === 'object' && !Array.isArray(sp)) {
+    if (typeof sp.stiffness === 'number' && isFinite(sp.stiffness)) k = Math.max(1.0, Math.min(1000.0, sp.stiffness));
+    if (typeof sp.damping === 'number' && isFinite(sp.damping)) c = Math.max(0.0, Math.min(100.0, sp.damping));
+    if (typeof sp.mass === 'number' && isFinite(sp.mass)) m = Math.max(0.1, Math.min(10.0, sp.mass));
+  }
+  return [k, c, m];
+}
+function _moSpringSamples(t0, v0, t1, v1, spParams, rg) {
+  var d = t1 - t0;
+  var steps = Math.min(20000, Math.max(1, Math.floor(d * 1000.0 + 0.5)));
+  var k = spParams[0], c = spParams[1], m = spParams[2];
+  var dt = 0.001, x = 0.0, vx = 0.0, curStep = 0, samples = [];
+  for (var i = 0; i < 24; i++) {
+    var targetStep = Math.floor((i * steps) / 24);
+    while (curStep < targetStep) {
+      var a = (-k * (x - 1.0) - c * vx) / m;
+      vx = vx + a * dt;
+      x = x + vx * dt;
+      curStep++;
+    }
+    var sti = t0 + (d * i) / 24.0;
+    var svi = v0 + (v1 - v0) * x;
+    samples.push('[' + _ffNum(sti, 0, 0, 100000, 3) + ',' + _ffNum(svi, 0, rg[0], rg[1], 3) + ',0]');
+  }
+  return samples;
+}
 function _moTrackJs(keys, ranges, order, dur, bpm, defEase, st) {
   var list = [], i, p;
   for (i = 0; i < keys.length; i++) {
@@ -730,13 +761,24 @@ function _moTrackJs(keys, ranges, order, dur, bpm, defEase, st) {
   list.sort(function(a, c) { return a.t - c.t || a.i - c.i; });
   var parts = [];
   for (p = 0; p < order.length; p++) {
-    var prop = order[p], rg = ranges[prop], pts = [];
+    var prop = order[p], rg = ranges[prop], propKeys = [];
     for (i = 0; i < list.length; i++) {
       var v = list[i].k[prop];
       if (typeof v !== 'number' || !isFinite(v)) continue;
-      pts.push('[' + _ffNum(list[i].t, 0, 0, 100000, 3) + ',' + _ffNum(v, 0, rg[0], rg[1], 3) + ',' + _moEaseJs(list[i].k.ease, defEase) + ']');
+      propKeys.push({t: list[i].t, v: v, sp: _moSpringParams(list[i].k.ease), ease: list[i].k.ease});
     }
-    if (pts.length) { parts.push(prop + ':[' + pts.join(',') + ']'); st.keys += pts.length; }
+    if (!propKeys.length) continue;
+    st.keys += propKeys.length;
+    var pts = [];
+    for (i = 0; i < propKeys.length; i++) {
+      var pk = propKeys[i];
+      if (pk.sp && i + 1 < propKeys.length && propKeys[i + 1].t > pk.t) {
+        pts = pts.concat(_moSpringSamples(pk.t, pk.v, propKeys[i + 1].t, propKeys[i + 1].v, pk.sp, rg));
+      } else {
+        pts.push('[' + _ffNum(pk.t, 0, 0, 100000, 3) + ',' + _ffNum(pk.v, 0, rg[0], rg[1], 3) + ',' + _moEaseJs(pk.ease, defEase) + ']');
+      }
+    }
+    parts.push(prop + ':[' + pts.join(',') + ']');
   }
   return parts.join(',');
 }

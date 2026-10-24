@@ -217,3 +217,184 @@ def test_i97_filter_resolves_and_settles_sharp_in_a_browser():
     js2 = "var e=document.querySelector('.mo-br-c');return +getComputedStyle(e).opacity;"
     assert _probe(dict(PILL, blur_radial={"amount": 0.2}), 0, js2) == 0, "p defaults to 1: copies invisible when settled"
     assert abs(_probe(dict(PILL, blur_radial={"amount": 0.2, "static": True}), 0, js2) - 0.22) < 0.01
+
+
+# --- I90: spring easing on timeline tracks --------------------------------------------------------------------
+def _extract_prop_points(html, prop):
+    m = re.search(r'\b' + re.escape(prop) + r':\[(\[[^\]]+\](?:,\[[^\]]+\])*)\]', html)
+    if not m:
+        return []
+    pts_raw = re.findall(r'\[([^\]]+)\]', m.group(1))
+    pts = []
+    for raw in pts_raw:
+        parts = [p.strip() for p in raw.split(',')]
+        pts.append((float(parts[0]), float(parts[1]), parts[2] if len(parts) > 2 else '0'))
+    return pts
+
+
+def test_i90_python_matches_gas_exactly(core_js):
+    cases = [
+        # 1. basic spring defaults true
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": True}}, {"t": 1.0, "x": 100}]}]),
+        # 2. spring with explicit params
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 10, "ease": {"spring": {"stiffness": 200, "damping": 15, "mass": 2.0}}}, {"t": 2.0, "x": 50}]}]),
+        # 3. hostile spring params (negative, string, huge, NaN-like)
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": {"stiffness": -10, "damping": "bad", "mass": 999}}}, {"t": 1.0, "x": 20}]}]),
+        # 4. empty spring dict {} -> defaults
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": {}}}, {"t": 0.5, "x": 30}]}]),
+        # 5. spring on the last key (ignored -> regular ease)
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0}, {"t": 1.0, "x": 10, "ease": {"spring": True}}]}]),
+        # 6. spring on key whose next key has a different property set
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": True}}, {"t": 0.5, "y": 10}, {"t": 1.0, "x": 100}]}]),
+        # 7. duplicate / same t keys
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": True}}, {"t": 0, "x": 5}, {"t": 1.0, "x": 10}]}]),
+        # 8. zero duration segment (t0 == t1)
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 1.0, "x": 0, "ease": {"spring": True}}, {"t": 1.0, "x": 10}]}]),
+        # 9. multiple props both with springs
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "y": 0, "ease": {"spring": {"stiffness": 100, "damping": 20, "mass": 1}}}, {"t": 1.5, "x": 40, "y": 80}]}]),
+        # 10. non-spring ease dict without 'spring' key
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"foo": 123}}, {"t": 1.0, "x": 50}]}]),
+        # 11. multi-segment track with mixed spring and linear
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": "linear"}, {"t": 1.0, "x": 10, "ease": {"spring": True}}, {"t": 2.0, "x": 20}]}]),
+        # 12. hostile types for spring itself (list, number, string)
+        _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": "invalid"}}, {"t": 1.0, "x": 10}]}]),
+    ]
+    got = _gas_batch(core_js, cases)
+    bad = [(i, _norm(_py(b)), _norm(g)) for i, (b, g) in enumerate(zip(cases, got)) if _norm(_py(b)) != _norm(g)]
+    assert not bad, f"Mismatches in {len(bad)} cases: indices {[b[0] for b in bad]}"
+
+
+def test_i90_inert_when_no_spring():
+    old = _renderer_at(BASE_SHA)
+    old._mo_install()
+    for ease in (None, {"foo": 1}, "expo-out", [0.2, 0, 0.4, 1], "hold", {"spring": False}, {"spring": "x"}):
+        keys = [{"t": 0, "x": 0}, {"t": 1.0, "x": 10}]
+        if ease is not None:
+            keys[0]["ease"] = ease
+        b = _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}], [{"target": "a", "keys": keys}])
+        assert _norm(_py(b)) == _norm(old._RENDERERS["motion_timeline"](dict(b))), ease
+
+
+def test_i90_samples_count_and_settled_exact():
+    block = _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+                   [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": True}}, {"t": 1.0, "x": 100}]}])
+    html = _py(block)
+    pts = _extract_prop_points(html, 'x')
+    # 24 samples for segment 0->1, plus the next authored keyframe at t=1.0 => 25 points total
+    assert len(pts) == 25
+    assert pts[0][0] == 0.0 and pts[0][1] == 0.0
+    assert pts[-1][0] == 1.0 and pts[-1][1] == 100.0
+
+
+def test_i90_underdamped_overshoots_critically_damped_does_not():
+    # underdamped spring: stiffness 300, damping 5, mass 1 (will overshoot 1.0 on 0 -> 1)
+    block_under = _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+                         [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": {"stiffness": 300, "damping": 5, "mass": 1}}}, {"t": 1.0, "x": 1.0}]}])
+    pts_under = _extract_prop_points(_py(block_under), 'x')
+    max_under = max(p[1] for p in pts_under)
+    assert max_under > 1.0
+
+    # critically damped spring: stiffness 100, damping 20, mass 1 (should not exceed 1.0005)
+    block_crit = _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+                        [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": {"stiffness": 100, "damping": 20, "mass": 1}}}, {"t": 1.0, "x": 1.0}]}])
+    pts_crit = _extract_prop_points(_py(block_crit), 'x')
+    max_crit = max(p[1] for p in pts_crit)
+    assert max_crit <= 1.0005
+
+def test_i90_spring_false_or_junk_is_not_a_spring():
+    def film(ease):
+        return _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}], [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": ease}, {"t": 1.0, "x": 10}]}])
+    ref = _norm(_py(film({"foo": 1})))
+    for junk in (False, None, "invalid", 3, [1]):
+        assert _norm(_py(film({"spring": junk}))) == ref, junk
+
+
+def test_i90_parameters_are_clamped_and_hostile_values_are_defaults():
+    from renderers import web_article as wa
+    assert wa._mo_spring_params({"spring": True}) == (170.0, 26.0, 1.0)
+    assert wa._mo_spring_params({"spring": {"stiffness": -5, "damping": 1e9, "mass": 0}}) == (1.0, 100.0, 0.1)
+    assert wa._mo_spring_params({"spring": {"stiffness": 1e9, "damping": "x", "mass": 1e9}}) == (1000.0, 26.0, 10.0)
+    assert wa._mo_spring_params({"spring": {"stiffness": float("nan"), "damping": True, "mass": None}}) == (170.0, 26.0, 1.0)
+    assert wa._mo_spring_params("spring") is None and wa._mo_spring_params(None) is None
+
+
+def test_i90_each_spring_segment_is_24_linear_samples_and_the_rest_is_unchanged():
+    h = _py(_scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+                   [{"target": "a", "keys": [{"t": 0, "x": 0, "opacity": 0}, {"t": 1.0, "x": 10, "opacity": 1, "ease": {"spring": True}}, {"t": 2.0, "x": 20, "opacity": 1}]}]))
+    xs, ops = _extract_prop_points(h, "x"), _extract_prop_points(h, "opacity")
+    assert len(xs) == 26 and len(ops) == 26, "key 0 stays one point, the spring key becomes 24 samples, the last key is one exact point"
+    h2 = _py(_scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+                    [{"target": "a", "keys": [{"t": 0, "x": 0}, {"t": 1.0, "x": 10, "ease": {"spring": True}}, {"t": 2.0, "x": 20}]}]))
+    pts = _extract_prop_points(h2, "x")
+    assert len(pts) == 26 and pts[-1][:2] == (2.0, 20.0) and all(p[2] == "0" for p in pts[1:25])
+
+
+def test_i90_integration_is_deterministic_and_settles():
+    from renderers import web_article as wa
+    a = wa._mo_spring_samples(0, 0, 3, 1, (170.0, 26.0, 1.0), (-100, 200))
+    assert a == wa._mo_spring_samples(0, 0, 3, 1, (170.0, 26.0, 1.0), (-100, 200)) and len(a) == 24
+    assert a[0] == "[0,0,0]" and abs(float(a[-1].split(",")[1]) - 1) < 0.01
+
+
+def test_i90_lint_accepts_a_spring_film():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    import motion_lint
+    film = _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+                  [{"target": "a", "keys": [{"t": 0, "opacity": 0, "x": 0, "ease": {"spring": {"stiffness": 300, "damping": 8}}}, {"t": 1.5, "opacity": 1, "x": 40}]}])
+    rep = motion_lint.lint(film)
+    assert not [f for f in rep if f["level"] == "error" or "flash" in f["rule"]], rep
+
+
+@browser
+def test_i90_spring_rings_around_the_target_and_settles_exactly_in_a_browser():
+    f = _scene([{"type": "motion_pill", "id": "a", "text": "Go", "place": {"x": 10, "y": 10, "w": 40}}],
+               [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": {"spring": {"stiffness": 300, "damping": 8}}}, {"t": 2, "x": 50}]}], duration=4)
+    js = "return parseFloat(document.querySelector('[data-mt-id=a]').style.transform.match(/translate\\(([-0-9.]+)px/)[1]);"
+    end = _probe(f, 4, js)
+    seen = [_probe(f, t, js) for t in (0.2, 0.35, 0.6)]
+    assert max(seen) > end + 1 and min(seen) < end - 1, (seen, end)
+    assert _probe(f, 2, js) == end
+
+
+# --- absent props: every existing motion payload renders byte for byte as on origin/main cd1af1abe --------------------
+NEW_KEYS = ("blur_dir", "blur_radial")
+
+
+def test_existing_motion_payloads_render_byte_for_byte_as_before_the_batch():
+    from test_motion_glitch import _existing_payloads
+    from renderers import web_article as wa
+    old = _renderer_at(BASE_SHA)
+    old._mo_install()
+    wa._mo_install()
+    pays = _existing_payloads() + [{"type": "motion_mask", "shape": s, "blocks": [PILL]} for s in ("blob", "circle", "diagonal", "rounded", "bars", "unknown", None)]
+    pays += [_scene([PILL | {"id": "a", "place": {"x": 1, "y": 1, "w": 30}}], [{"target": "a", "keys": [{"t": 0, "x": 0, "ease": e}, {"t": 1, "x": 9}]}])
+             for e in ("expo-out", [0.1, 0, 0.3, 1], "hold", "linear", {"foo": 1}, {"spring": "no"})]
+    assert len(pays) > 150, len(pays)
+    kinds, bad = set(), []
+    for b in pays:
+        k = b.get("component") or b["type"]
+        if k not in old._RENDERERS or "glitch" in b or "blend" in b or any(n in b for n in NEW_KEYS):
+            continue
+        try:
+            a = old._RENDERERS[k](dict(b))
+        except Exception:
+            continue
+        kinds.add(k)
+        if a != wa._RENDERERS[k](dict(b)):
+            bad.append(k)
+    assert not bad, bad[:10]
+    assert {"motion_mask", "motion_timeline", "motion_pill"} <= kinds, kinds
