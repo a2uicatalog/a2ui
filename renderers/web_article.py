@@ -28717,8 +28717,9 @@ _MO_FX_ORDER = ['fade', 'rise', 'drop', 'slide-left', 'slide-right', 'scale', 'b
 _MO_SANS = 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif'
 _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]}
 _MO_PROPS = {'x': [-200, 300], 'y': [-200, 300], 'opacity': [0, 1], 'scale': [0, 6], 'rotate': [-360, 360], 'rx': [-80, 80],
-             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 9], 'a': [0, 1]}
-_MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs', 'a']
+             'ry': [-80, 80], 'blur': [0, 40], 'clip': [0, 1], 'p': [-0.5, 1.5], 'step': [0, 40], 'cs': [0, 9], 'a': [0, 1],
+             'hue': [-360, 360], 'saturation': [0, 4], 'brightness': [0, 4], 'contrast': [0, 4], 'invert': [0, 1]}
+_MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs', 'a', 'hue', 'saturation', 'brightness', 'contrast', 'invert']
 _MO_CAM = {'x': [-100, 200], 'y': [-100, 200], 'zoom': [0.25, 6], 'rx': [-80, 80], 'ry': [-80, 80], 'rz': [-180, 180], 'z': [-1500, 1500]}
 _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz', 'z']
 _MO_ORIGIN = {'c': '50% 50%', 'tl': '0 0', 't': '50% 0', 'b': '50% 100%', 'l': '0 50%', 'r': '100% 50%'}
@@ -28801,6 +28802,18 @@ def _mo_enter_wrap(s, html, extra_delay=0, seed=None):
 def _mo_enter(b, html):
     s = _mo_enter_spec(b.get('enter'))
     return _mo_enter_wrap(s, html, 0, b) if s else html
+
+
+_MO_FILTER_OLD = 'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";'
+_MO_FILTER_NEW = 'if(v.blur!==undefined||v.hue!==undefined||v.saturation!==undefined||v.brightness!==undefined||v.contrast!==undefined||v.invert!==undefined){var f=[];if(v.blur!==undefined&&v.blur>0.05)f.push("blur("+Math.min(40,Math.max(0,v.blur)).toFixed(2)+"px)");if(v.hue!==undefined&&Math.abs(v.hue)>0.05)f.push("hue-rotate("+Math.min(360,Math.max(-360,v.hue)).toFixed(2)+"deg)");if(v.saturation!==undefined&&Math.abs(v.saturation-1)>=0.001)f.push("saturate("+Math.min(4,Math.max(0,v.saturation)).toFixed(3)+")");if(v.brightness!==undefined&&Math.abs(v.brightness-1)>=0.001)f.push("brightness("+Math.min(4,Math.max(0,v.brightness)).toFixed(3)+")");if(v.contrast!==undefined&&Math.abs(v.contrast-1)>=0.001)f.push("contrast("+Math.min(4,Math.max(0,v.contrast)).toFixed(3)+")");if(v.invert!==undefined&&v.invert>=0.001)f.push("invert("+Math.min(1,Math.max(0,v.invert)).toFixed(3)+")");e.style.filter=f.join(" ");}'
+
+
+def _mo_tl_js(cfg):
+    """The player script. With none of the filter track keys (hue, saturation, brightness, contrast, invert) in the config it is _MO_TIMELINE_JS unchanged;
+    with one, the blur statement is replaced by one that composes every filter key into a single `filter`. Twin of _moTlJs."""
+    if re.search(r'[{,](hue|saturation|brightness|contrast|invert):\[', cfg):
+        return _MO_TIMELINE_JS.replace(_MO_FILTER_OLD, _MO_FILTER_NEW)
+    return _MO_TIMELINE_JS
 
 
 # ── Payload guard (2026-10-01): twin of atom.gs _gd*. Validates CSS/number/URL/id fields before any renderer sees them. ──
@@ -29053,19 +29066,6 @@ def _mo_tilt(spec, html):
     return ('<div class="mo-tilt" style="transform:perspective(900px) rotateX(calc(' + str(rx) + 'deg*(1 - clamp(0,var(--p,1),1)))) rotateY(calc(' + str(ry) + 'deg*(1 - clamp(0,var(--p,1),1))));filter:blur(calc(' + str(blur) + 'px*(1 - clamp(0,var(--p,1),1))));">' + html + '</div>')
 
 
-def _mo_install():
-    """Wrap every registered renderer once (idempotent): a block carrying `enter` gets the entrance wrapper,
-    every other block returns exactly what it always did. Twin of atoms_motion.gs _moInstall."""
-    for k, f in list(_RENDERERS.items()):
-        if not callable(f) or getattr(f, '_mo', False):
-            continue
-
-        def make(f, k):
-            def w(b):
-                h = f(b)
-                if isinstance(b, dict) and _mo_gl_on(b.get('glitch')):
-                    h = _mo_glitch(b['glitch'], h)
-                if isinstance(b, dict) and b.get('halo'):
 _MO_BLEND = {
     'multiply', 'screen', 'overlay', 'darken', 'lighten',
     'color-dodge', 'color-burn', 'difference', 'exclusion',
@@ -29094,11 +29094,26 @@ def _mo_blend(v, html):
     return html + '<!-- a2ui: blend "' + val + '" ignored -->'
 
 
+def _mo_install():
+    """Wrap every registered renderer once (idempotent): a block carrying `enter` gets the entrance wrapper,
+    every other block returns exactly what it always did. Twin of atoms_motion.gs _moInstall."""
+    for k, f in list(_RENDERERS.items()):
+        if not callable(f) or getattr(f, '_mo', False):
+            continue
+
+        def make(f, k):
+            def w(b):
+                h = f(b)
+                if isinstance(b, dict) and _mo_gl_on(b.get('glitch')):
+                    h = _mo_glitch(b['glitch'], h)
+                if isinstance(b, dict) and b.get('halo'):
                     h = _mo_halo(b['halo'], h)
                 if isinstance(b, dict) and b.get('smear'):
                     h = _mo_smear(b['smear'], h)
                 if isinstance(b, dict) and b.get('tilt'):
                     h = _mo_tilt(b['tilt'], h)
+                if isinstance(b, dict) and k not in _MO_BLEND_OWN and 'blend' in b:
+                    h = _mo_blend(b.get('blend'), h)
                 return _mo_enter(b, h) if isinstance(b, dict) and b.get('enter') else h
             w._mo = True
             return w
@@ -29112,8 +29127,6 @@ def _mo_render(blk):
     fn = _RENDERERS.get(t)
     if not fn:
         return '<!-- a2ui: unknown atom "' + _cv_esc(t) + '" -->'
-                if isinstance(b, dict) and k not in _MO_BLEND_OWN and 'blend' in b:
-                    h = _mo_blend(b.get('blend'), h)
     try:
         return fn(blk)
     except Exception as err:  # noqa: BLE001 — same contract as renderAtoms: one bad child never kills the page
@@ -29730,7 +29743,7 @@ def _mo_timeline(b: dict) -> str:
             + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
             + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>'
             + controls + note
-            + '<script>' + _MO_TIMELINE_JS.replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script></div>')
+            + '<script>' + _mo_tl_js(cfg).replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script></div>')
 
 
 def _render_motion_timeline(b: dict) -> str:
@@ -30394,7 +30407,11 @@ def _render_motion_sketch(b: dict) -> str:
         u = '--u:clamp(0,calc(var(--p,1)*' + str(n) + ' - ' + str(i) + '),1);'
         if s['f']:
             body += '<path d="' + s['d'] + '" style="' + u + 'fill:' + s['f'] + ';stroke:none;opacity:calc(var(--u)*' + s['fo'] + ');"/>'
-        body += ('<path d="' + s['d'] + '" pathLength="1" style="' + u + 'fill:none;stroke:' + s['c'] + ';stroke-width:' + str(s['w']) + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));"/>')
+        if tr is None:
+            body += ('<path d="' + s['d'] + '" pathLength="1" style="' + u + 'fill:none;stroke:' + s['c'] + ';stroke-width:' + str(s['w']) + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));"/>')
+        elif tr['has']:
+            l_expr = 'calc((' + tr['e'] + ' - ' + tr['s'] + ')*var(--u))'
+            body += ('<path d="' + s['d'] + '" pathLength="1" style="' + u + 'fill:none;stroke:' + s['c'] + ';stroke-width:' + str(s['w']) + ';stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(' + l_expr + '*1000),1);stroke-dasharray:calc(' + l_expr + ') 1;stroke-dashoffset:calc(-1*(' + tr['so'] + '));"/>')
     return '<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label) + '">' + body + '</svg>'
 
 
@@ -30466,8 +30483,8 @@ def _render_motion_path(b: dict) -> str:
         n += 1
     return ('<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label) + '">'
             + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;opacity:0.16;"/>'
-            + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>'
-            + ('<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ff_num(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*clamp(0,var(--p,1),1)*0.9999);"/>' if b.get('marker') is not False else '')
+            + bold_stroke
+            + marker_stroke
             + nodes + '</svg>')
 
 

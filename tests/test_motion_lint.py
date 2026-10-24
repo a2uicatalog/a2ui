@@ -106,3 +106,90 @@ def test_showpiece_dials_have_speed_limits():
     assert "wave-fast" not in rules(sp({"type": "motion_flag", "text": "x"}, k("s", 2)))
     assert "foil-fast" in rules(sp({"type": "motion_foil", "text": "x"}, k("s", 0.1)))
     assert "disperse-fast" in rules(sp({"type": "motion_disperse", "text": "x"}, k("s", 0.1)))
+
+
+# 4. tests for the lint, appended to tests/test_motion_lint.py
+
+def test_i96_lint_brightness_flash_error():
+    # Brightness alternating 0.2 and 1.8 every 0.1s over 2s on full-stage block -> flash-general error
+    keys = []
+    for i in range(21):
+        t = round(i * 0.1, 2)
+        val = 0.2 if i % 2 == 0 else 1.8
+        keys.append({"t": t, "brightness": val})
+    film = {
+        "type": "motion_timeline",
+        "duration": 3,
+        "blocks": [
+            {"type": "motion_layer", "id": "s1", "blocks": [
+                {"type": "motion_pill", "id": "b1", "bg": "#ffffff", "place": {"x": 0, "y": 0, "w": 100, "h": 100}}
+            ]}
+        ],
+        "tracks": [{"target": "b1", "keys": keys}]
+    }
+    r = rules(film)
+    assert "flash-general" in r
+
+
+def test_i96_lint_brightness_slow_no_flash():
+    # Same brightness alternation at 1.5s period -> no flash rule
+    keys = [
+        {"t": 0.0, "brightness": 0.2},
+        {"t": 1.5, "brightness": 1.8},
+        {"t": 3.0, "brightness": 0.2},
+        {"t": 4.5, "brightness": 1.8},
+    ]
+    film = {
+        "type": "motion_timeline",
+        "duration": 5,
+        "blocks": [
+            {"type": "motion_layer", "id": "s1", "blocks": [
+                {"type": "motion_pill", "id": "b1", "bg": "#ffffff", "place": {"x": 0, "y": 0, "w": 100, "h": 100}}
+            ]}
+        ],
+        "tracks": [{"target": "b1", "keys": keys}]
+    }
+    r = rules(film)
+    assert "flash-general" not in r
+
+
+def test_i96_lint_invert_flash_error():
+    # Invert alternating 0/1 every 0.1s on a full-stage white block -> flash-general error
+    keys = []
+    for i in range(21):
+        t = round(i * 0.1, 2)
+        val = 0.0 if i % 2 == 0 else 1.0
+        keys.append({"t": t, "invert": val})
+    film = {
+        "type": "motion_timeline",
+        "duration": 3,
+        "blocks": [
+            {"type": "motion_layer", "id": "s1", "blocks": [
+                {"type": "motion_pill", "id": "b1", "bg": "#ffffff", "place": {"x": 0, "y": 0, "w": 100, "h": 100}}
+            ]}
+        ],
+        "tracks": [{"target": "b1", "keys": keys}]
+    }
+    r = rules(film)
+    assert "flash-general" in r
+
+
+def test_i96_lint_invert_small_area_not_error():
+    # Same invert on a tiny block (w 5, h 5) -> not an error (warn/info or flash-small-area)
+    keys = []
+    for i in range(21):
+        t = round(i * 0.1, 2)
+        val = 0.0 if i % 2 == 0 else 1.0
+        keys.append({"t": t, "invert": val})
+    film = {
+        "type": "motion_timeline",
+        "duration": 3,
+        "blocks": [
+            {"type": "motion_layer", "id": "s1", "blocks": [
+                {"type": "motion_pill", "id": "b1", "bg": "#ffffff", "place": {"x": 0, "y": 0, "w": 5, "h": 5}}
+            ]}
+        ],
+        "tracks": [{"target": "b1", "keys": keys}]
+    }
+    r = rules(film)
+    assert "flash-general" not in r

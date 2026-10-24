@@ -143,7 +143,7 @@ def _showpiece(add, b, tid, keys, bpm):
 # ── flash rate (WCAG 2.3.1), from the film's tracks ────────────────────────────────────────────────────────────────────────────────
 # What can flash in a film: (1) any block's opacity track (a blink, a strobe); (2) motion_flash, a full-frame pop driven by p; (3) motion_lightning
 # with flash: true (a pale wash driven by p; its bolt flicker is a thin stroke well under the area limit, and a strike makes at most 2 flashes per
-# p pass); (4) motion_beats with the cut transition, whose colour fields swap on the step dial; (5) the noisy text reveals (checked by flash-risk).
+# p pass); (4) motion_beats with the cut transition, whose colour fields swap on the step dial; (5) a brightness or invert filter track (the block's colour scaled and inverted); (6) the noisy text reveals (checked by flash-risk).
 # The glitch tear is bounded by construction (under 1.5 swings over p 0 to 1) and is not modelled. Each source is turned into a colour-over-time
 # signal sampled at SAMPLE_HZ (keys are read linearly: easing changes when the middle of a move happens, not where it turns), then the signal is
 # reduced to its opposing changes. Static analysis of the payload only: no video is rendered.
@@ -341,6 +341,19 @@ def _flash_sources(film, bpm, blocks):
                 for j in range(1, n):
                     c = _mix(c, bgs[j], _clamp((u - j) / w))
                 return _mix(bgc, c, al(t))
+            yield bid, typ, area(bid), fl
+        elif typ != "motion_beats" and (_curve(keys, bpm, "brightness") or _curve(keys, bpm, "invert")):
+            br_f = _curve(keys, bpm, "brightness")
+            inv_f = _curve(keys, bpm, "invert")
+            fg = next((c for c in (_hex(b.get(k)) for k in ("bg", "fill", "color", "colour", "accent")) if c), (1.0, 1.0, 1.0))
+
+            def fl(t, al=al, fg=fg, br_f=br_f, inv_f=inv_f):
+                br = br_f(t) if br_f else 1.0
+                inv = inv_f(t) if inv_f else 0.0
+                c = tuple(_clamp(ch * br, 0.0, 1.0) for ch in fg)
+                c = tuple(_clamp(ch * (1.0 - inv) + (1.0 - ch) * inv, 0.0, 1.0) for ch in c)
+                return _mix(bgc, c, al(t))
+
             yield bid, typ, area(bid), fl
         elif has_op and opacity(bid):
             fg = next((c for c in (_hex(b.get(k)) for k in ("bg", "fill", "color", "colour", "accent")) if c), (1.0, 1.0, 1.0))

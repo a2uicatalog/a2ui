@@ -585,8 +585,8 @@ _RENDERERS['demo_panel'] = function(b) {
 
 // ─── motion_timeline ─────────────────────────────────────────────────────────
 var _MO_ASPECT = {'16:9': [1280, 720], '4:3': [1200, 900], '1:1': [1000, 1000], '9:16': [720, 1280]};
-var _MO_PROPS = {x: [-200, 300], y: [-200, 300], opacity: [0, 1], scale: [0, 6], rotate: [-360, 360], rx: [-80, 80], ry: [-80, 80], blur: [0, 40], clip: [0, 1], p: [-0.5, 1.5], step: [0, 40], cs: [0, 9], a: [0, 1]};
-var _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs', 'a'];
+var _MO_PROPS = {x: [-200, 300], y: [-200, 300], opacity: [0, 1], scale: [0, 6], rotate: [-360, 360], rx: [-80, 80], ry: [-80, 80], blur: [0, 40], clip: [0, 1], p: [-0.5, 1.5], step: [0, 40], cs: [0, 9], a: [0, 1], hue: [-360, 360], saturation: [0, 4], brightness: [0, 4], contrast: [0, 4], invert: [0, 1]};
+var _MO_PROP_ORDER = ['x', 'y', 'opacity', 'scale', 'rotate', 'rx', 'ry', 'blur', 'clip', 'p', 'step', 'cs', 'a', 'hue', 'saturation', 'brightness', 'contrast', 'invert'];
 var _MO_CAM = {x: [-100, 200], y: [-100, 200], zoom: [0.25, 6], rx: [-80, 80], ry: [-80, 80], rz: [-180, 180], z: [-1500, 1500]};
 var _MO_CAM_ORDER = ['x', 'y', 'zoom', 'rx', 'ry', 'rz', 'z'];
 var _MO_ORIGIN = {c: '50% 50%', tl: '0 0', t: '50% 0', b: '50% 100%', l: '0 50%', r: '100% 50%'};
@@ -636,6 +636,16 @@ var _MO_TIMELINE_JS =
   'xb();window.addEventListener("a2ui-export-ready",xb);' +
   'if(want){if(window.IntersectionObserver){new IntersectionObserver(function(a){if(a[0].isIntersecting){if(!manual)play();}else if(pl){pause();}},{threshold:0.25}).observe(root);}else{play();}}' +
   '})();';
+
+var _MO_FILTER_OLD = 'if(v.blur!==undefined)e.style.filter=v.blur>0.05?"blur("+Math.min(40,v.blur).toFixed(2)+"px)":"";';
+var _MO_FILTER_NEW = 'if(v.blur!==undefined||v.hue!==undefined||v.saturation!==undefined||v.brightness!==undefined||v.contrast!==undefined||v.invert!==undefined){var f=[];if(v.blur!==undefined&&v.blur>0.05)f.push("blur("+Math.min(40,Math.max(0,v.blur)).toFixed(2)+"px)");if(v.hue!==undefined&&Math.abs(v.hue)>0.05)f.push("hue-rotate("+Math.min(360,Math.max(-360,v.hue)).toFixed(2)+"deg)");if(v.saturation!==undefined&&Math.abs(v.saturation-1)>=0.001)f.push("saturate("+Math.min(4,Math.max(0,v.saturation)).toFixed(3)+")");if(v.brightness!==undefined&&Math.abs(v.brightness-1)>=0.001)f.push("brightness("+Math.min(4,Math.max(0,v.brightness)).toFixed(3)+")");if(v.contrast!==undefined&&Math.abs(v.contrast-1)>=0.001)f.push("contrast("+Math.min(4,Math.max(0,v.contrast)).toFixed(3)+")");if(v.invert!==undefined&&v.invert>=0.001)f.push("invert("+Math.min(1,Math.max(0,v.invert)).toFixed(3)+")");e.style.filter=f.join(" ");}';
+
+function _moTlJs(cfg) {
+  if (/[{,](hue|saturation|brightness|contrast|invert):\[/.test(cfg)) {
+    return _MO_TIMELINE_JS.split(_MO_FILTER_OLD).join(_MO_FILTER_NEW);
+  }
+  return _MO_TIMELINE_JS;
+}
 
 // Keys -> per-property tracks. Every number goes through _ffNum so both renderers
 // spell it identically; anything that does not validate is counted, never silent.
@@ -844,7 +854,7 @@ function _moTimeline(b) {
     + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
     + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none;">' + hud + '</div></div></div>'
     + controls + note
-    + '<script>' + _MO_TIMELINE_JS.replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, function() { return cfg; }) + '<\/script></div>';
+    + '<script>' + _moTlJs(cfg).replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, function() { return cfg; }) + '<\/script></div>';
 }
 _RENDERERS['motion_timeline'] = function(b) {
   // A timeline inside a timeline would share ids and clocks: refuse, and say so.
@@ -1362,7 +1372,12 @@ _RENDERERS['motion_sketch'] = function(b) {
   for (i = 0; i < n; i++) {
     var u = '--u:clamp(0,calc(var(--p,1)*' + n + ' - ' + i + '),1);';
     if (st[i].f) body += '<path d="' + st[i].d + '" style="' + u + 'fill:' + st[i].f + ';stroke:none;opacity:calc(var(--u)*' + st[i].fo + ');"/>';
-    body += '<path d="' + st[i].d + '" pathLength="1" style="' + u + 'fill:none;stroke:' + st[i].c + ';stroke-width:' + st[i].w + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));"/>';
+    if (tr === null) {
+      body += '<path d="' + st[i].d + '" pathLength="1" style="' + u + 'fill:none;stroke:' + st[i].c + ';stroke-width:' + st[i].w + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));"/>';
+    } else if (tr.has) {
+      var lExpr = 'calc((' + tr.e + ' - ' + tr.s + ')*var(--u))';
+      body += '<path d="' + st[i].d + '" pathLength="1" style="' + u + 'fill:none;stroke:' + st[i].c + ';stroke-width:' + st[i].w + ';stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(' + lExpr + '*1000),1);stroke-dasharray:calc(' + lExpr + ') 1;stroke-dashoffset:calc(-1*(' + tr.so + '));"/>';
+    }
   }
   return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label) + '">' + body + '</svg>';
 };
@@ -1418,8 +1433,8 @@ _RENDERERS['motion_path'] = function(b) {
   }
   return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label) + '">'
     + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;opacity:0.16;"/>'
-    + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>'
-    + (b.marker !== false ? '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ffNum(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*clamp(0,var(--p,1),1)*0.9999);"/>' : '')
+    + boldStroke
+    + markerStroke
     + nodes + '</svg>';
 };
 
