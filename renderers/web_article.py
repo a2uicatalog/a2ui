@@ -31083,37 +31083,436 @@ def _render_motion_path(b: dict) -> str:
             + nodes + '</svg>')
 
 
+# Arbitrary SVG paths for motion_mask (shape 'path') and motion_morph (from_d / to_d): validate, flatten, resample, fit.
+# Twin of _moPp* in atoms_motion.gs. Straight and curve commands only (no arcs, no exponents); first subpath only.
+_MO_PP_VALID_RE = re.compile(r'^[MmLlHhVvCcSsQqTtZz0-9.,+\- \t\n\r]{1,4000}$')
+_MO_PP_TOK_RE = re.compile(r'[MmLlHhVvCcSsQqTtZz]|[+-]?(?:\d+\.?\d*|\.\d+)')
+_MO_PP_PARAMS = {'M': 2, 'L': 2, 'H': 1, 'V': 1, 'C': 6, 'S': 4, 'Q': 4, 'T': 2, 'Z': 0}
+
+
+def _mo_pp_parse(d):
+    if not isinstance(d, str):
+        return None
+    s = d.strip()
+    if not (1 <= len(s) <= 4000):
+        return None
+    if not _MO_PP_VALID_RE.match(s):
+        return None
+    # Check that after removing tokens, only whitespace/commas remain
+    residue = _MO_PP_TOK_RE.sub('', s)
+    if any(c not in ' ,\t\n\r' for c in residue):
+        return None
+
+    tokens = _MO_PP_TOK_RE.findall(s)
+    if not tokens:
+        return None
+
+    # First token must be M or m
+    if tokens[0] not in ('M', 'm'):
+        return None
+
+    cur_x = 0.0
+    cur_y = 0.0
+    start_x = 0.0
+    start_y = 0.0
+    last_ctrl_x = 0.0
+    last_ctrl_y = 0.0
+    last_cmd_type = None
+
+    pts = []
+    closed = False
+    seg_count = 0
+    ti = 0
+    n_tok = len(tokens)
+    first_subpath = True
+
+    while ti < n_tok:
+        tok = tokens[ti]
+        if ('A' <= tok <= 'Z') or ('a' <= tok <= 'z'):
+            cmd = tok
+            ti += 1
+        else:
+            # implicit repetition
+            if last_cmd_type in ('M', 'm'):
+                cmd = 'l' if last_cmd_type == 'm' else 'L'
+            elif last_cmd_type is not None:
+                cmd = last_cmd_raw
+            else:
+                return None
+
+        cmd_upper = cmd.upper()
+        if cmd_upper not in _MO_PP_PARAMS:
+            return None
+
+        # Check second subpath
+        if cmd_upper == 'M':
+            if not first_subpath:
+                break
+            first_subpath = False
+
+        needed = _MO_PP_PARAMS[cmd_upper]
+        args = []
+        for _ in range(needed):
+            if ti >= n_tok:
+                return None
+            val_str = tokens[ti]
+            if ('A' <= val_str <= 'Z') or ('a' <= val_str <= 'z'):
+                return None
+            try:
+                v = float(val_str)
+            except ValueError:
+                return None
+            if abs(v) > 1000000:
+                return None
+            args.append(v)
+            ti += 1
+
+        seg_count += 1
+        if seg_count > 400:
+            return None
+
+        is_rel = cmd.islower()
+
+        if cmd_upper == 'M':
+            x = (cur_x + args[0]) if is_rel else args[0]
+            y = (cur_y + args[1]) if is_rel else args[1]
+            cur_x = x
+            cur_y = y
+            start_x = x
+            start_y = y
+            pts.append([cur_x, cur_y])
+            last_cmd_type = cmd
+            last_cmd_raw = cmd
+            last_ctrl_x = cur_x
+            last_ctrl_y = cur_y
+            continue
+
+        if cmd_upper == 'Z':
+            closed = True
+            cur_x = start_x
+            cur_y = start_y
+            last_cmd_type = cmd
+            last_cmd_raw = cmd
+            last_ctrl_x = cur_x
+            last_ctrl_y = cur_y
+            continue
+
+        if cmd_upper == 'L':
+            cur_x = (cur_x + args[0]) if is_rel else args[0]
+            cur_y = (cur_y + args[1]) if is_rel else args[1]
+            pts.append([cur_x, cur_y])
+            last_ctrl_x = cur_x
+            last_ctrl_y = cur_y
+        elif cmd_upper == 'H':
+            cur_x = (cur_x + args[0]) if is_rel else args[0]
+            pts.append([cur_x, cur_y])
+            last_ctrl_x = cur_x
+            last_ctrl_y = cur_y
+        elif cmd_upper == 'V':
+            cur_y = (cur_y + args[0]) if is_rel else args[0]
+            pts.append([cur_x, cur_y])
+            last_ctrl_x = cur_x
+            last_ctrl_y = cur_y
+        elif cmd_upper == 'C':
+            p0x, p0y = cur_x, cur_y
+            p1x = (cur_x + args[0]) if is_rel else args[0]
+            p1y = (cur_y + args[1]) if is_rel else args[1]
+            p2x = (cur_x + args[2]) if is_rel else args[2]
+            p2y = (cur_y + args[3]) if is_rel else args[3]
+            p3x = (cur_x + args[4]) if is_rel else args[4]
+            p3y = (cur_y + args[5]) if is_rel else args[5]
+            for step in range(1, 17):
+                t = step / 16.0
+                mt = 1.0 - t
+                c0 = mt * mt * mt
+                c1 = ((3.0 * mt) * mt) * t
+                c2 = ((3.0 * mt) * t) * t
+                c3 = t * t * t
+                px = c0 * p0x + c1 * p1x + c2 * p2x + c3 * p3x
+                py = c0 * p0y + c1 * p1y + c2 * p2y + c3 * p3y
+                pts.append([px, py])
+            cur_x = p3x
+            cur_y = p3y
+            last_ctrl_x = p2x
+            last_ctrl_y = p2y
+        elif cmd_upper == 'S':
+            p0x, p0y = cur_x, cur_y
+            if last_cmd_type in ('C', 'c', 'S', 's'):
+                p1x = 2.0 * cur_x - last_ctrl_x
+                p1y = 2.0 * cur_y - last_ctrl_y
+            else:
+                p1x = cur_x
+                p1y = cur_y
+            p2x = (cur_x + args[0]) if is_rel else args[0]
+            p2y = (cur_y + args[1]) if is_rel else args[1]
+            p3x = (cur_x + args[2]) if is_rel else args[2]
+            p3y = (cur_y + args[3]) if is_rel else args[3]
+            for step in range(1, 17):
+                t = step / 16.0
+                mt = 1.0 - t
+                c0 = mt * mt * mt
+                c1 = ((3.0 * mt) * mt) * t
+                c2 = ((3.0 * mt) * t) * t
+                c3 = t * t * t
+                px = c0 * p0x + c1 * p1x + c2 * p2x + c3 * p3x
+                py = c0 * p0y + c1 * p1y + c2 * p2y + c3 * p3y
+                pts.append([px, py])
+            cur_x = p3x
+            cur_y = p3y
+            last_ctrl_x = p2x
+            last_ctrl_y = p2y
+        elif cmd_upper == 'Q':
+            p0x, p0y = cur_x, cur_y
+            p1x = (cur_x + args[0]) if is_rel else args[0]
+            p1y = (cur_y + args[1]) if is_rel else args[1]
+            p2x = (cur_x + args[2]) if is_rel else args[2]
+            p2y = (cur_y + args[3]) if is_rel else args[3]
+            for step in range(1, 13):
+                t = step / 12.0
+                mt = 1.0 - t
+                q0 = mt * mt
+                q1 = 2.0 * mt * t
+                q2 = t * t
+                px = q0 * p0x + q1 * p1x + q2 * p2x
+                py = q0 * p0y + q1 * p1y + q2 * p2y
+                pts.append([px, py])
+            cur_x = p2x
+            cur_y = p2y
+            last_ctrl_x = p1x
+            last_ctrl_y = p1y
+        elif cmd_upper == 'T':
+            p0x, p0y = cur_x, cur_y
+            if last_cmd_type in ('Q', 'q', 'T', 't'):
+                p1x = 2.0 * cur_x - last_ctrl_x
+                p1y = 2.0 * cur_y - last_ctrl_y
+            else:
+                p1x = cur_x
+                p1y = cur_y
+            p2x = (cur_x + args[0]) if is_rel else args[0]
+            p2y = (cur_y + args[1]) if is_rel else args[1]
+            for step in range(1, 13):
+                t = step / 12.0
+                mt = 1.0 - t
+                q0 = mt * mt
+                q1 = 2.0 * mt * t
+                q2 = t * t
+                px = q0 * p0x + q1 * p1x + q2 * p2x
+                py = q0 * p0y + q1 * p1y + q2 * p2y
+                pts.append([px, py])
+            cur_x = p2x
+            cur_y = p2y
+            last_ctrl_x = p1x
+            last_ctrl_y = p1y
+
+        last_cmd_type = cmd
+        last_cmd_raw = cmd
+
+    if len(pts) < 2:
+        return None
+
+    # Check if last point equals first point
+    if pts[-1][0] == pts[0][0] and pts[-1][1] == pts[0][1]:
+        closed = True
+        pts.pop()
+
+    # Need >= 2 distinct points
+    distinct = False
+    for p in pts[1:]:
+        if p[0] != pts[0][0] or p[1] != pts[0][1]:
+            distinct = True
+            break
+    if not distinct or len(pts) < 2:
+        return None
+
+    return {'pts': pts, 'closed': closed}
+
+
+def _mo_pp_resample(pts, closed, n):
+    poly = [p[:] for p in pts]
+    if closed:
+        poly.append(pts[0][:])
+
+    seg_lens = []
+    total = 0.0
+    for i in range(len(poly) - 1):
+        dx = poly[i + 1][0] - poly[i][0]
+        dy = poly[i + 1][1] - poly[i][1]
+        sl = math.sqrt(dx * dx + dy * dy)
+        seg_lens.append(sl)
+        total += sl
+
+    if total == 0.0:
+        return None
+
+    out = []
+    seg_idx = 0
+    cum = 0.0
+
+    for i in range(n):
+        if not closed and i == n - 1:
+            out.append([poly[-1][0], poly[-1][1]])
+            break
+
+        target_s = (total * i / n) if closed else (total * i / (n - 1))
+
+        while seg_idx < len(seg_lens):
+            sl = seg_lens[seg_idx]
+            if sl == 0.0:
+                seg_idx += 1
+                continue
+            if cum + sl >= target_s or seg_idx == len(seg_lens) - 1:
+                frac = (target_s - cum) / sl
+                if frac < 0.0:
+                    frac = 0.0
+                elif frac > 1.0:
+                    frac = 1.0
+                a = poly[seg_idx]
+                b = poly[seg_idx + 1]
+                out.append([a[0] + (b[0] - a[0]) * frac, a[1] + (b[1] - a[1]) * frac])
+                break
+            cum += sl
+            seg_idx += 1
+
+    return out
+
+
+def _mo_pp_fit(polys, uniform):
+    min_x = float('inf')
+    max_x = float('-inf')
+    min_y = float('inf')
+    max_y = float('-inf')
+
+    for poly in polys:
+        for p in poly:
+            if p[0] < min_x:
+                min_x = p[0]
+            if p[0] > max_x:
+                max_x = p[0]
+            if p[1] < min_y:
+                min_y = p[1]
+            if p[1] > max_y:
+                max_y = p[1]
+
+    w = max_x - min_x
+    h = max_y - min_y
+
+    out_polys = []
+    if uniform:
+        m = max(w, h)
+        if m <= 0.0:
+            return None
+        scale = 1000.0 / m
+        mid_x = (min_x + max_x) / 2.0
+        mid_y = (min_y + max_y) / 2.0
+        for poly in polys:
+            fitted = []
+            for p in poly:
+                x10 = math.floor((p[0] - mid_x) * scale + 500.0 + 0.5)
+                y10 = math.floor((p[1] - mid_y) * scale + 500.0 + 0.5)
+                fitted.append([int(x10), int(y10)])
+            out_polys.append(fitted)
+    else:
+        if w == 0.0 or h == 0.0:
+            return None
+        for poly in polys:
+            fitted = []
+            for p in poly:
+                x10 = math.floor((p[0] - min_x) * 1000.0 / w + 0.5)
+                y10 = math.floor((p[1] - min_y) * 1000.0 / h + 0.5)
+                fitted.append([int(x10), int(y10)])
+            out_polys.append(fitted)
+
+    return out_polys
+
+
+def _mo_pp_align(a, b, closed):
+    if not closed:
+        return [p[:] for p in b]
+
+    n = len(a)
+
+    def shoelace(pts):
+        area = 0
+        for i in range(len(pts)):
+            j = (i + 1) % len(pts)
+            area += pts[i][0] * pts[j][1] - pts[j][0] * pts[i][1]
+        return area
+
+    area_a = shoelace(a)
+    area_b = shoelace(b)
+    cand_b = [p[:] for p in b]
+    if (area_a > 0 and area_b < 0) or (area_a < 0 and area_b > 0):
+        cand_b.reverse()
+
+    best_k = 0
+    best_cost = None
+    for k in range(n):
+        cost = 0
+        for i in range(n):
+            bk = cand_b[(i + k) % n]
+            ai = a[i]
+            dx = ai[0] - bk[0]
+            dy = ai[1] - bk[1]
+            cost += dx * dx + dy * dy
+        if best_cost is None or cost < best_cost:
+            best_cost = cost
+            best_k = k
+
+    return [cand_b[(i + best_k) % n] for i in range(n)]
+
+
 _MO_MASK_SHAPES = {'blob': 1, 'circle': 1, 'diagonal': 1, 'rounded': 1, 'bars': 1, 'diamond': 1, 'halftone': 1, 'conic': 1, 'slats': 1}
 _MO_MASK_R = [84, 91, 82, 92, 85, 90, 81, 89, 86, 91, 83, 92, 80, 88, 84, 91, 82, 90, 86, 92]
 
 
 def _render_motion_mask(b: dict) -> str:
-    shape = b['shape'] if isinstance(b.get('shape'), str) and b['shape'] in _MO_MASK_SHAPES else 'blob'
+    shape_val = b.get('shape')
+    is_path = shape_val == 'path'
+    comment = ''
+    clip, mask, extra_mask = '', '', ''
+
+    if is_path:
+        d_val = b.get('d')
+        parsed = _mo_pp_parse(d_val) if isinstance(d_val, str) else None
+        resampled = _mo_pp_resample(parsed['pts'], parsed['closed'], 48) if parsed else None
+        fitted = _mo_pp_fit([resampled], False) if resampled else None
+        if fitted:
+            pts = []
+            for pt in fitted[0]:
+                pts.append('calc(50% + ' + _mo_t10(pt[0] - 500) + '% * var(--m)) calc(50% + ' + _mo_t10(pt[1] - 500) + '% * var(--m))')
+            clip = 'polygon(' + ','.join(pts) + ')'
+        else:
+            shape_val = 'blob'
+            comment = '<!-- a2ui: mask path ignored -->'
+
+    if not is_path or comment:
+        shape = shape_val if isinstance(shape_val, str) and shape_val in _MO_MASK_SHAPES else 'blob'
+        if shape in ('blob', 'circle'):
+            pts = []
+            for i in range(20):
+                rr, ang = (90 if shape == 'circle' else _MO_MASK_R[i]), i * 18
+                pts.append('calc(50% + ' + str(rr) + '% * var(--m) * cos(' + str(ang) + 'deg)) calc(50% + ' + str(rr) + '% * var(--m) * sin(' + str(ang) + 'deg))')
+            clip = 'polygon(' + ','.join(pts) + ')'
+        elif shape == 'diagonal':
+            clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)'
+        elif shape == 'rounded':
+            clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))'
+        elif shape == 'diamond':
+            clip = 'polygon(50% calc(50% - var(--m)*100%),calc(50% + var(--m)*100%) 50%,50% calc(50% + var(--m)*100%),calc(50% - var(--m)*100%) 50%)'
+        elif shape == 'conic':
+            mask = 'conic-gradient(#000 calc(var(--m)*360deg),transparent 0)'
+        elif shape == 'slats':
+            mask = 'repeating-linear-gradient(180deg,#000 0,#000 calc(var(--m)*24px),transparent calc(var(--m)*24px),transparent 24px)'
+        elif shape == 'halftone':
+            mask = 'radial-gradient(circle,#000 calc(var(--m)*104% - 4%),transparent calc(var(--m)*104%))'
+            extra_mask = '-webkit-mask-size:14px 14px;mask-size:14px 14px;-webkit-mask-repeat:repeat;mask-repeat:repeat;'
+        else:
+            mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)'
+
     blocks = b['blocks'][:6] if isinstance(b.get('blocks'), list) else []
-    inner, clip, mask, extra_mask = ''.join(_mo_child(blk) for blk in blocks), '', '', ''
-    if shape in ('blob', 'circle'):
-        pts = []
-        for i in range(20):
-            rr, ang = (90 if shape == 'circle' else _MO_MASK_R[i]), i * 18
-            pts.append('calc(50% + ' + str(rr) + '% * var(--m) * cos(' + str(ang) + 'deg)) calc(50% + ' + str(rr) + '% * var(--m) * sin(' + str(ang) + 'deg))')
-        clip = 'polygon(' + ','.join(pts) + ')'
-    elif shape == 'diagonal':
-        clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)'
-    elif shape == 'rounded':
-        clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))'
-    elif shape == 'diamond':
-        clip = 'polygon(50% calc(50% - var(--m)*100%),calc(50% + var(--m)*100%) 50%,50% calc(50% + var(--m)*100%),calc(50% - var(--m)*100%) 50%)'
-    elif shape == 'conic':
-        mask = 'conic-gradient(#000 calc(var(--m)*360deg),transparent 0)'
-    elif shape == 'slats':
-        mask = 'repeating-linear-gradient(180deg,#000 0,#000 calc(var(--m)*24px),transparent calc(var(--m)*24px),transparent 24px)'
-    elif shape == 'halftone':
-        mask = 'radial-gradient(circle,#000 calc(var(--m)*104% - 4%),transparent calc(var(--m)*104%))'
-        extra_mask = '-webkit-mask-size:14px 14px;mask-size:14px 14px;-webkit-mask-repeat:repeat;mask-repeat:repeat;'
-    else:
-        mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)'
+    inner = ''.join(_mo_child(blk) for blk in blocks)
     return ('<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + ('clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' if clip else '')
-            + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' + extra_mask if mask else '') + '">' + inner + '</div>')
+            + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' + extra_mask if mask else '') + '">' + inner + '</div>' + comment)
 
 
 _MO_STITCH = {'letter': 1, 'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1, 'iris': 1, 'clock': 1, 'slice': 1, 'flip': 1, 'spin': 1, 'portal': 1, 'ribbon': 1, 'fade-through': 1, 'shared-x': 1, 'shared-y': 1, 'shared-z': 1, 'collapse': 1}

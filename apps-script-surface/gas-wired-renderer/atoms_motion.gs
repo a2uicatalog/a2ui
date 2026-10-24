@@ -1912,31 +1912,410 @@ _RENDERERS['motion_path'] = function(b) {
 };
 
 // Reveals its children through a shape that grows with p: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle,
-// venetian bars, a diamond, a halftone dot grid, a conic radial sweep, or horizontal slats.
-// The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script.
+// venetian bars, a diamond, a halftone dot grid, a conic radial sweep, horizontal slats, or an arbitrary SVG path. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script.
+// Arbitrary SVG paths for motion_mask (shape 'path') and motion_morph (from_d / to_d): validate, flatten, resample, fit. Twin of _mo_pp_* in web_article.py.
+var _MO_PP_VALID_RE = /^[MmLlHhVvCcSsQqTtZz0-9.,+\- \t\n\r]{1,4000}$/;
+var _MO_PP_TOK_RE = /[MmLlHhVvCcSsQqTtZz]|[+-]?(?:\d+\.?\d*|\.\d+)/g;
+var _MO_PP_PARAMS = {M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, Z: 0};
+
+function _moPpParse(d) {
+  if (typeof d !== 'string') return null;
+  var s = d.trim();
+  if (s.length < 1 || s.length > 4000) return null;
+  if (!_MO_PP_VALID_RE.test(s)) return null;
+  var residue = s.replace(_MO_PP_TOK_RE, '');
+  for (var ri = 0; ri < residue.length; ri++) {
+    var rc = residue.charAt(ri);
+    if (rc !== ' ' && rc !== ',' && rc !== '\t' && rc !== '\n' && rc !== '\r') return null;
+  }
+  var tokens = s.match(_MO_PP_TOK_RE);
+  if (!tokens || tokens.length === 0) return null;
+  if (tokens[0] !== 'M' && tokens[0] !== 'm') return null;
+
+  var curX = 0.0, curY = 0.0, startX = 0.0, startY = 0.0;
+  var lastCtrlX = 0.0, lastCtrlY = 0.0, lastCmdType = null, lastCmdRaw = null;
+  var pts = [], closed = false, segCount = 0, ti = 0, nTok = tokens.length, firstSubpath = true;
+
+  while (ti < nTok) {
+    var tok = tokens[ti], cmd;
+    var cCode = tok.charCodeAt(0);
+    if ((cCode >= 65 && cCode <= 90) || (cCode >= 97 && cCode <= 122)) {
+      cmd = tok;
+      ti++;
+    } else {
+      if (lastCmdType === 'M' || lastCmdType === 'm') {
+        cmd = lastCmdType === 'm' ? 'l' : 'L';
+      } else if (lastCmdType !== null) {
+        cmd = lastCmdRaw;
+      } else {
+        return null;
+      }
+    }
+
+    var cmdUpper = cmd.toUpperCase();
+    if (!Object.prototype.hasOwnProperty.call(_MO_PP_PARAMS, cmdUpper)) return null;
+
+    if (cmdUpper === 'M') {
+      if (!firstSubpath) break;
+      firstSubpath = false;
+    }
+
+    var needed = _MO_PP_PARAMS[cmdUpper], args = [], a_i;
+    for (a_i = 0; a_i < needed; a_i++) {
+      if (ti >= nTok) return null;
+      var valStr = tokens[ti];
+      var vCode = valStr.charCodeAt(0);
+      if ((vCode >= 65 && vCode <= 90) || (vCode >= 97 && vCode <= 122)) return null;
+      var v = parseFloat(valStr);
+      if (isNaN(v) || Math.abs(v) > 1000000) return null;
+      args.push(v);
+      ti++;
+    }
+
+    segCount++;
+    if (segCount > 400) return null;
+
+    var isRel = cmd >= 'a' && cmd <= 'z';
+    if (cmdUpper === 'M') {
+      curX = isRel ? curX + args[0] : args[0];
+      curY = isRel ? curY + args[1] : args[1];
+      startX = curX;
+      startY = curY;
+      pts.push([curX, curY]);
+      lastCmdType = cmd;
+      lastCmdRaw = cmd;
+      lastCtrlX = curX;
+      lastCtrlY = curY;
+      continue;
+    }
+
+    if (cmdUpper === 'Z') {
+      closed = true;
+      curX = startX;
+      curY = startY;
+      lastCmdType = cmd;
+      lastCmdRaw = cmd;
+      lastCtrlX = curX;
+      lastCtrlY = curY;
+      continue;
+    }
+
+    if (cmdUpper === 'L') {
+      curX = isRel ? curX + args[0] : args[0];
+      curY = isRel ? curY + args[1] : args[1];
+      pts.push([curX, curY]);
+      lastCtrlX = curX;
+      lastCtrlY = curY;
+    } else if (cmdUpper === 'H') {
+      curX = isRel ? curX + args[0] : args[0];
+      pts.push([curX, curY]);
+      lastCtrlX = curX;
+      lastCtrlY = curY;
+    } else if (cmdUpper === 'V') {
+      curY = isRel ? curY + args[0] : args[0];
+      pts.push([curX, curY]);
+      lastCtrlX = curX;
+      lastCtrlY = curY;
+    } else if (cmdUpper === 'C') {
+      var p0x = curX, p0y = curY;
+      var p1x = isRel ? curX + args[0] : args[0];
+      var p1y = isRel ? curY + args[1] : args[1];
+      var p2x = isRel ? curX + args[2] : args[2];
+      var p2y = isRel ? curY + args[3] : args[3];
+      var p3x = isRel ? curX + args[4] : args[4];
+      var p3y = isRel ? curY + args[5] : args[5];
+      for (var st = 1; st <= 16; st++) {
+        var t = st / 16.0, mt = 1.0 - t;
+        var c0 = mt * mt * mt;
+        var c1 = ((3.0 * mt) * mt) * t;
+        var c2 = ((3.0 * mt) * t) * t;
+        var c3 = t * t * t;
+        pts.push([c0 * p0x + c1 * p1x + c2 * p2x + c3 * p3x, c0 * p0y + c1 * p1y + c2 * p2y + c3 * p3y]);
+      }
+      curX = p3x;
+      curY = p3y;
+      lastCtrlX = p2x;
+      lastCtrlY = p2y;
+    } else if (cmdUpper === 'S') {
+      var sp0x = curX, sp0y = curY, sp1x, sp1y;
+      if (lastCmdType === 'C' || lastCmdType === 'c' || lastCmdType === 'S' || lastCmdType === 's') {
+        sp1x = 2.0 * curX - lastCtrlX;
+        sp1y = 2.0 * curY - lastCtrlY;
+      } else {
+        sp1x = curX;
+        sp1y = curY;
+      }
+      var sp2x = isRel ? curX + args[0] : args[0];
+      var sp2y = isRel ? curY + args[1] : args[1];
+      var sp3x = isRel ? curX + args[2] : args[2];
+      var sp3y = isRel ? curY + args[3] : args[3];
+      for (var sst = 1; sst <= 16; sst++) {
+        var stt = sst / 16.0, smt = 1.0 - stt;
+        var sc0 = smt * smt * smt;
+        var sc1 = ((3.0 * smt) * smt) * stt;
+        var sc2 = ((3.0 * smt) * stt) * stt;
+        var sc3 = stt * stt * stt;
+        pts.push([sc0 * sp0x + sc1 * sp1x + sc2 * sp2x + sc3 * sp3x, sc0 * sp0y + sc1 * sp1y + sc2 * sp2y + sc3 * sp3y]);
+      }
+      curX = sp3x;
+      curY = sp3y;
+      lastCtrlX = sp2x;
+      lastCtrlY = sp2y;
+    } else if (cmdUpper === 'Q') {
+      var q0x = curX, q0y = curY;
+      var q1x = isRel ? curX + args[0] : args[0];
+      var q1y = isRel ? curY + args[1] : args[1];
+      var q2x = isRel ? curX + args[2] : args[2];
+      var q2y = isRel ? curY + args[3] : args[3];
+      for (var qst = 1; qst <= 12; qst++) {
+        var qt = qst / 12.0, qmt = 1.0 - qt;
+        var qc0 = qmt * qmt;
+        var qc1 = 2.0 * qmt * qt;
+        var qc2 = qt * qt;
+        pts.push([qc0 * q0x + qc1 * q1x + qc2 * q2x, qc0 * q0y + qc1 * q1y + qc2 * q2y]);
+      }
+      curX = q2x;
+      curY = q2y;
+      lastCtrlX = q1x;
+      lastCtrlY = q1y;
+    } else if (cmdUpper === 'T') {
+      var t0x = curX, t0y = curY, t1x, t1y;
+      if (lastCmdType === 'Q' || lastCmdType === 'q' || lastCmdType === 'T' || lastCmdType === 't') {
+        t1x = 2.0 * curX - lastCtrlX;
+        t1y = 2.0 * curY - lastCtrlY;
+      } else {
+        t1x = curX;
+        t1y = curY;
+      }
+      var t2x = isRel ? curX + args[0] : args[0];
+      var t2y = isRel ? curY + args[1] : args[1];
+      for (var tst = 1; tst <= 12; tst++) {
+        var tt = tst / 12.0, tmt = 1.0 - tt;
+        var tc0 = tmt * tmt;
+        var tc1 = 2.0 * tmt * tt;
+        var tc2 = tt * tt;
+        pts.push([tc0 * t0x + tc1 * t1x + tc2 * t2x, tc0 * t0y + tc1 * t1y + tc2 * t2y]);
+      }
+      curX = t2x;
+      curY = t2y;
+      lastCtrlX = t1x;
+      lastCtrlY = t1y;
+    }
+
+    lastCmdType = cmd;
+    lastCmdRaw = cmd;
+  }
+
+  if (pts.length < 2) return null;
+
+  if (pts[pts.length - 1][0] === pts[0][0] && pts[pts.length - 1][1] === pts[0][1]) {
+    closed = true;
+    pts.pop();
+  }
+
+  var distinct = false;
+  for (var di = 1; di < pts.length; di++) {
+    if (pts[di][0] !== pts[0][0] || pts[di][1] !== pts[0][1]) {
+      distinct = true;
+      break;
+    }
+  }
+  if (!distinct || pts.length < 2) return null;
+
+  return {pts: pts, closed: closed};
+}
+
+function _moPpResample(pts, closed, n) {
+  var poly = [], pi;
+  for (pi = 0; pi < pts.length; pi++) poly.push([pts[pi][0], pts[pi][1]]);
+  if (closed) poly.push([pts[0][0], pts[0][1]]);
+
+  var segLens = [], total = 0.0;
+  for (pi = 0; pi < poly.length - 1; pi++) {
+    var dx = poly[pi + 1][0] - poly[pi][0];
+    var dy = poly[pi + 1][1] - poly[pi][1];
+    var sl = Math.sqrt(dx * dx + dy * dy);
+    segLens.push(sl);
+    total += sl;
+  }
+
+  if (total === 0.0) return null;
+
+  var out = [], segIdx = 0, cum = 0.0;
+  for (var i = 0; i < n; i++) {
+    if (!closed && i === n - 1) {
+      out.push([poly[poly.length - 1][0], poly[poly.length - 1][1]]);
+      break;
+    }
+
+    var targetS = closed ? (total * i / n) : (total * i / (n - 1));
+
+    while (segIdx < segLens.length) {
+      var len = segLens[segIdx];
+      if (len === 0.0) {
+        segIdx++;
+        continue;
+      }
+      if (cum + len >= targetS || segIdx === segLens.length - 1) {
+        var frac = (targetS - cum) / len;
+        if (frac < 0.0) frac = 0.0;
+        else if (frac > 1.0) frac = 1.0;
+        var a = poly[segIdx], b = poly[segIdx + 1];
+        out.push([a[0] + (b[0] - a[0]) * frac, a[1] + (b[1] - a[1]) * frac]);
+        break;
+      }
+      cum += len;
+      segIdx++;
+    }
+  }
+
+  return out;
+}
+
+function _moPpFit(polys, uniform) {
+  var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  var pi, pj;
+  for (pi = 0; pi < polys.length; pi++) {
+    for (pj = 0; pj < polys[pi].length; pj++) {
+      var px = polys[pi][pj][0], py = polys[pi][pj][1];
+      if (px < minX) minX = px;
+      if (px > maxX) maxX = px;
+      if (py < minY) minY = py;
+      if (py > maxY) maxY = py;
+    }
+  }
+
+  var w = maxX - minX, h = maxY - minY;
+  var outPolys = [];
+
+  if (uniform) {
+    var m = Math.max(w, h);
+    if (m <= 0.0) return null;
+    var scale = 1000.0 / m;
+    var midX = (minX + maxX) / 2.0, midY = (minY + maxY) / 2.0;
+    for (pi = 0; pi < polys.length; pi++) {
+      var fittedU = [];
+      for (pj = 0; pj < polys[pi].length; pj++) {
+        var ux10 = Math.floor((polys[pi][pj][0] - midX) * scale + 500.0 + 0.5);
+        var uy10 = Math.floor((polys[pi][pj][1] - midY) * scale + 500.0 + 0.5);
+        fittedU.push([ux10, uy10]);
+      }
+      outPolys.push(fittedU);
+    }
+  } else {
+    if (w === 0.0 || h === 0.0) return null;
+    for (pi = 0; pi < polys.length; pi++) {
+      var fittedS = [];
+      for (pj = 0; pj < polys[pi].length; pj++) {
+        var sx10 = Math.floor((polys[pi][pj][0] - minX) * 1000.0 / w + 0.5);
+        var sy10 = Math.floor((polys[pi][pj][1] - minY) * 1000.0 / h + 0.5);
+        fittedS.push([sx10, sy10]);
+      }
+      outPolys.push(fittedS);
+    }
+  }
+
+  return outPolys;
+}
+
+function _moPpAlign(a, b, closed) {
+  var i;
+  if (!closed) {
+    var copyB = [];
+    for (i = 0; i < b.length; i++) copyB.push([b[i][0], b[i][1]]);
+    return copyB;
+  }
+
+  var n = a.length;
+  function shoelace(pts) {
+    var area = 0;
+    for (var k = 0; k < pts.length; k++) {
+      var next = (k + 1) % pts.length;
+      area += pts[k][0] * pts[next][1] - pts[next][0] * pts[k][1];
+    }
+    return area;
+  }
+
+  var areaA = shoelace(a), areaB = shoelace(b);
+  var candB = [];
+  for (i = 0; i < b.length; i++) candB.push([b[i][0], b[i][1]]);
+  if ((areaA > 0 && areaB < 0) || (areaA < 0 && areaB > 0)) {
+    candB.reverse();
+  }
+
+  var bestK = 0, bestCost = null;
+  for (var k = 0; k < n; k++) {
+    var cost = 0;
+    for (i = 0; i < n; i++) {
+      var bk = candB[(i + k) % n], ai = a[i];
+      var dx = ai[0] - bk[0], dy = ai[1] - bk[1];
+      cost += dx * dx + dy * dy;
+    }
+    if (bestCost === null || cost < bestCost) {
+      bestCost = cost;
+      bestK = k;
+    }
+  }
+
+  var res = [];
+  for (i = 0; i < n; i++) res.push(candB[(i + bestK) % n]);
+  return res;
+}
 var _MO_MASK_SHAPES = {blob: 1, circle: 1, diagonal: 1, rounded: 1, bars: 1, diamond: 1, halftone: 1, conic: 1, slats: 1};
 var _MO_MASK_R = [84, 91, 82, 92, 85, 90, 81, 89, 86, 91, 83, 92, 80, 88, 84, 91, 82, 90, 86, 92];
 _RENDERERS['motion_mask'] = function(b) {
-  var shape = (typeof b.shape === 'string' && Object.prototype.hasOwnProperty.call(_MO_MASK_SHAPES, b.shape)) ? b.shape : 'blob';
-  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i, clip = '', mask = '', extraMask = '';
-  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
-  if (shape === 'blob' || shape === 'circle') {
-    var pts = [];
-    for (i = 0; i < 20; i++) {
-      var rr = shape === 'circle' ? 90 : _MO_MASK_R[i], ang = i * 18;
-      pts.push('calc(50% + ' + rr + '% * var(--m) * cos(' + ang + 'deg)) calc(50% + ' + rr + '% * var(--m) * sin(' + ang + 'deg))');
+  var shapeVal = b.shape;
+  var isPath = shapeVal === 'path';
+  var comment = '', clip = '', mask = '', extraMask = '';
+
+  if (isPath) {
+    var dVal = b.d;
+    var parsed = (typeof dVal === 'string') ? _moPpParse(dVal) : null;
+    var resampled = parsed ? _moPpResample(parsed.pts, parsed.closed, 48) : null;
+    var fitted = resampled ? _moPpFit([resampled], false) : null;
+    if (fitted) {
+      var ptsP = [];
+      for (var pi = 0; pi < fitted[0].length; pi++) {
+        var pt = fitted[0][pi];
+        ptsP.push('calc(50% + ' + _moT10(pt[0] - 500) + '% * var(--m)) calc(50% + ' + _moT10(pt[1] - 500) + '% * var(--m))');
+      }
+      clip = 'polygon(' + ptsP.join(',') + ')';
+    } else {
+      shapeVal = 'blob';
+      comment = '<!-- a2ui: mask path ignored -->';
     }
-    clip = 'polygon(' + pts.join(',') + ')';
-  } else if (shape === 'diagonal') clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)';
-  else if (shape === 'rounded') clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))';
-  else if (shape === 'diamond') clip = 'polygon(50% calc(50% - var(--m)*100%),calc(50% + var(--m)*100%) 50%,50% calc(50% + var(--m)*100%),calc(50% - var(--m)*100%) 50%)';
-  else if (shape === 'conic') mask = 'conic-gradient(#000 calc(var(--m)*360deg),transparent 0)';
-  else if (shape === 'slats') mask = 'repeating-linear-gradient(180deg,#000 0,#000 calc(var(--m)*24px),transparent calc(var(--m)*24px),transparent 24px)';
-  else if (shape === 'halftone') {
-    mask = 'radial-gradient(circle,#000 calc(var(--m)*104% - 4%),transparent calc(var(--m)*104%))';
-    extraMask = '-webkit-mask-size:14px 14px;mask-size:14px 14px;-webkit-mask-repeat:repeat;mask-repeat:repeat;';
-  } else mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)';
-  return '<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + (clip ? 'clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' : '') + (mask ? '-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' + extraMask : '') + '">' + inner + '</div>';
+  }
+
+  if (!isPath || comment) {
+    var shape = (typeof shapeVal === 'string' && Object.prototype.hasOwnProperty.call(_MO_MASK_SHAPES, shapeVal)) ? shapeVal : 'blob';
+    if (shape === 'blob' || shape === 'circle') {
+      var pts = [];
+      for (var i = 0; i < 20; i++) {
+        var rr = shape === 'circle' ? 90 : _MO_MASK_R[i], ang = i * 18;
+        pts.push('calc(50% + ' + rr + '% * var(--m) * cos(' + ang + 'deg)) calc(50% + ' + rr + '% * var(--m) * sin(' + ang + 'deg))');
+      }
+      clip = 'polygon(' + pts.join(',') + ')';
+    } else if (shape === 'diagonal') {
+      clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)';
+    } else if (shape === 'rounded') {
+      clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))';
+    } else if (shape === 'diamond') {
+      clip = 'polygon(50% calc(50% - var(--m)*100%),calc(50% + var(--m)*100%) 50%,50% calc(50% + var(--m)*100%),calc(50% - var(--m)*100%) 50%)';
+    } else if (shape === 'conic') {
+      mask = 'conic-gradient(#000 calc(var(--m)*360deg),transparent 0)';
+    } else if (shape === 'slats') {
+      mask = 'repeating-linear-gradient(180deg,#000 0,#000 calc(var(--m)*24px),transparent calc(var(--m)*24px),transparent 24px)';
+    } else if (shape === 'halftone') {
+      mask = 'radial-gradient(circle,#000 calc(var(--m)*104% - 4%),transparent calc(var(--m)*104%))';
+      extraMask = '-webkit-mask-size:14px 14px;mask-size:14px 14px;-webkit-mask-repeat:repeat;mask-repeat:repeat;';
+    } else {
+      mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)';
+    }
+  }
+
+  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '';
+  for (var bi = 0; bi < blocks.length; bi++) inner += _moChild(blocks[bi]);
+  return '<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + (clip ? 'clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' : '') + (mask ? '-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' + extraMask : '') + '">' + inner + '</div>' + comment;
 };
 
 // ─── stitching: scenes that hand over to each other ─────────────────────────────────────────────────────────────────

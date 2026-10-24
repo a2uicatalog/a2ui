@@ -11059,7 +11059,8 @@ blocks:
     - surface: email
       reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
   fields:
-    shape: '"blob" | "circle" | "diagonal" | "rounded" | "bars" | "diamond" | "halftone" | "conic" | "slats" (optional, default "blob")'
+    shape: '"blob" | "circle" | "diagonal" | "rounded" | "bars" | "diamond" | "halftone" | "conic" | "slats" | "path" (optional, default "blob")'
+    d: 'string (optional, max 4000 characters; used only when shape is "path"). An SVG path of straight and curve commands (M L H V C S Q T Z, absolute or relative; no arcs A, no exponent numbers, numbers up to 1000000). Only the first subpath is used. It is flattened, resampled to 48 points and stretched to fill the box, then scales in from the centre as p goes 0 to 1 (a 48-vertex clip polygon, pure CSS); at p = 1 the child shows through the whole shape. A missing or invalid d is ignored with an HTML comment and the blob is used. Absent: unchanged.'
     blocks: array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address.
   source:
     name: a2uicatalog
