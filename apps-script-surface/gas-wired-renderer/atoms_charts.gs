@@ -2382,7 +2382,7 @@ _RENDERERS['shimmer_button'] = function(b) {
     + '.sb-' + uid + '::after{content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent);transform:skewX(-20deg);animation:sb-shine-' + uid + ' 2s infinite;}'
     + '@keyframes sb-shine-' + uid + '{0%{left:-100%;}100%{left:160%;}}'
     + '</style>'
-    + '<div data-cb="node" data-key="' + _ckey(b.label || b.text || b.title, 'shimmer_button') + '" style="margin:1rem 0;text-align:center;"><button class="sb-' + uid + '">' + _esc(label) + '</button></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.label, 'shimmer_button') + '" style="margin:1rem 0;text-align:center;"><button class="sb-' + uid + '">' + _esc(label) + '</button></div>';
 };
 
 _RENDERERS['glow_button'] = function(b) {
@@ -2440,7 +2440,7 @@ _RENDERERS['svg_path_draw'] = function(b) {
   var label = b.label || b.title || '';
   var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div data-cb="node" data-key="' + _ckey(b.label || b.title, 'svg_path_draw') + '" style="margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'svg_path_draw') + '" style="margin:1rem 0;">'
     + '<style>@keyframes draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
     + '<svg role="img" aria-label="Path drawing animation" viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
@@ -3370,7 +3370,7 @@ _RENDERERS['progress_reveal'] = function(b) {
   var suffix = b.suffix !== undefined ? b.suffix : '%';
   var height = parseInt(b.height || 10, 10);
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div data-cb="node" data-key="' + _ckey(b.label || b.title, 'progress_reveal') + '" id="pr-wrap-' + uid + '" style="margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_reveal') + '" id="pr-wrap-' + uid + '" style="margin:1rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">'
     + (label ? '<span style="font-size:0.875rem;font-weight:600;color:#374151;">' + _esc(label) + '</span>' : '<span></span>')
     + '<span id="pr-val-' + uid + '" style="font-size:0.875rem;font-weight:700;color:' + _esc(color) + ';">0' + _esc(String(suffix)) + '</span>'
