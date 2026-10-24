@@ -269,11 +269,6 @@
   "answers",
   "case_sensitive"
  ],
- "flip_card": [
-  "back_content",
-  "front_content",
-  "trigger_on_hover"
- ],
  "form": [
   "cancel_label",
   "fields",
@@ -583,13 +578,6 @@
  "pagination": [
   "base_url",
   "page_param"
- ],
- "parallax_card": [
-  "accent",
-  "background",
-  "badge",
-  "body",
-  "depth"
  ],
  "parallel_categories": [
   "dimensions",

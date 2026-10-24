@@ -27,11 +27,19 @@ EQUAL = [
     {"type": "json_tree_viewer", "data": "{\"cluster\": \"prod\", \"n\": [1, 2.5, null], \"s\": \"<b>&\"}"},
     {"type": "framed_screenshot", "image_url": "https://example.com/a.png", "alt_text": "Telemetry", "device_type": "phone", "caption": "Live view"},
     {"type": "footnote_group", "footnotes": [{"id": "fn-1", "text": "First **bold**"}, {"id": 2, "text": "Second"}, "plain"]},
+    {"type": "deprecation_notice", "alternative": "Use the v2 endpoint.", "removal_version": "v3.0", "since": "v2.1", "message": "Old **auth** call"},
+    {"type": "surface_unlocked", "icon": "\U0001F513", "surface": "Admin Console", "sub": "NEW", "accent": "#f59e0b"},
+    {"type": "prerequisite_checklist", "title": "Before you start", "items": ["Docker 24", {"text": "Node 20", "done": True}, {"label": "AWS keys"}]},
+    {"type": "split_reveal", "title": "Project Titan", "text": "Ships in **Q3**", "color": "#3b82f6", "delay": 0.5},
+    {"type": "further_reading", "title": "Reading", "links": [{"title": "DDIA", "url": "https://example.com/ddia", "annotation": "Distributed systems"}, {"title": "No link"}]},
+    {"type": "parallax_card", "title": "Enterprise Cloud", "body": "Edge **compute**", "badge": "Pro", "accent": "#4f46e5", "background": "#0f172a", "depth": 12},
+    {"type": "copy_prompt", "prompt": "Summarise the incident.", "label": "Triage prompt", "accent": "#4f46e5"},
 ]
 # atoms whose twins differ by design
 SAFE = [
     {"type": "gauge_sla", "title": "Uptime", "value": 99.4, "max_value": 100, "unit": "%", "label": "Operational", "threshold": 95},
     {"type": "workspace_logo_grid", "title": "Connectors", "size": 40, "cols": 3, "greyscale": True, "show_labels": True, "apps": ["gmail", "drive", "nonesuch"]},
+    {"type": "flip_card", "front_content": "Front **side**", "back_content": "Back side", "trigger_on_hover": True},
     {"type": "annotation_highlight", "text": "Zero-trust needs mutual TLS everywhere.",
      "notes": [{"term": "Zero-trust", "explanation": "No implicit trust.", "color": "#ef4444"}, {"term": "mutual TLS", "explanation": "Both sides prove identity."}]},
 ]
@@ -41,6 +49,14 @@ MUST = {
     "json_tree_viewer": ["&quot;cluster&quot;: &quot;prod&quot;", "2.5", "null", "&lt;b&gt;&amp;"],
     "framed_screenshot": ['alt="Telemetry"', "Live view", "border:8px solid #1f2937", 'src="https://example.com/a.png"'],
     "footnote_group": ["[fn-1]", "<strong>bold</strong>", "[2]", "[3]", "Second", "plain"],
+    "deprecation_notice": ["Use the v2 endpoint.", "Alternative:", "Removed in: <code>v3.0</code>", "Deprecated since v2.1", "<strong>auth</strong>"],
+    "surface_unlocked": ["Admin Console", "NEW", "#f59e0b12", "prefers-reduced-motion"],
+    "prerequisite_checklist": ["Before you start", "Docker 24", "line-through", "AWS keys", "\u2705", "\u2b1c"],
+    "split_reveal": ["Project Titan", "<strong>Q3</strong>", "#3b82f6", "0.5s", "prefers-reduced-motion"],
+    "further_reading": ["Reading", "DDIA", 'href="https://example.com/ddia"', "Distributed systems", "No link"],
+    "parallax_card": ["Enterprise Cloud", "<strong>compute</strong>", "Pro", 'data-depth="12"', "d=12", "background:#0f172a"],
+    "copy_prompt": ["Triage prompt", "Summarise the incident.", "#4f46e5", "navigator.clipboard"],
+    "flip_card": ["<strong>side</strong>", "Back side"],
     "gauge_sla": ["Uptime", "99.4%", "HEALTHY", "OPERATIONAL"],
     "workspace_logo_grid": ["Connectors", "Gmail", "Drive", "Nonesuch", "grayscale(1)", "repeat(3,1fr)", 'width="40"'],
     "annotation_highlight": ["Zero-trust", "mutual TLS", "#ef4444", "#996206"],
@@ -51,9 +67,16 @@ OLD = [
     {"type": "framed_screenshot", "url": "https://example.com/o.png", "alt": "Old alt", "frame": "none"},
     {"type": "markdown_block", "text": "old *text*"},
     {"type": "footnote_group", "items": [{"number": 7, "text": "seven"}]},
+    {"type": "deprecation_notice", "replacement": "new()", "text": "legacy call", "removal_version": 4},
+    {"type": "copy_prompt", "text": "old prompt text"},
+    {"type": "further_reading", "items": [{"label": "Old item", "url": "https://example.com/o"}]},
+    {"type": "parallax_card", "title": "Old", "subtitle": "old subtitle"},
+    {"type": "split_reveal", "title": "T", "content": "old content"},
 ]
 OLD_WORDS = {"pdf_preview": ["Old Doc", "https://example.com/old.pdf"], "json_tree_viewer": ["&quot;a&quot;: 1"],
-             "framed_screenshot": ['alt="Old alt"', "https://example.com/o.png"], "markdown_block": ["<em>text</em>"], "footnote_group": ["[7]", "seven"]}
+             "framed_screenshot": ['alt="Old alt"', "https://example.com/o.png"], "markdown_block": ["<em>text</em>"], "footnote_group": ["[7]", "seven"],
+             "deprecation_notice": ["new()", "legacy call", "Removed in: <code>4</code>"], "copy_prompt": ["old prompt text"], "further_reading": ["Old item", "https://example.com/o"],
+             "parallax_card": ["old subtitle"], "split_reveal": ["old content"]}
 WEIRD = [None, True, False, 0, -3, 2.5, 1e22, "", "  ", "7", "12ms", "javascript:alert(1)", "\x01javascript:alert(1)", ATTACK, "😀" * 30, [], [1, "a"], {},
          {"label": ATTACK, "name": "n", "term": ATTACK, "id": ATTACK}, "x" * 3000, 99999, [None], [{"term": None, "color": ATTACK}], "__proto__", "constructor"]
 
@@ -86,7 +109,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"\b(anhl|wg|gauge_sla_)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -102,7 +125,7 @@ def test_schema_payloads_show_every_documented_field_in_both_twins(renders):
             for needle in MUST[b["type"]]:
                 assert needle in html, "%s %s lacks %r" % (b["type"], twin, needle)
     for b, py, gas in renders[:len(EQUAL)]:
-        assert _norm(py) == _norm(gas), b["type"]
+        assert _norm_uid(py) == _norm_uid(gas), b["type"]
 
 
 def test_old_field_names_still_render_the_same_content_in_both_twins(renders):
@@ -110,7 +133,7 @@ def test_old_field_names_still_render_the_same_content_in_both_twins(renders):
         for twin, html in (("py", py), ("gas", gas)):
             for w in OLD_WORDS[b["type"]]:
                 assert w in html, "%s %s lacks %r" % (b["type"], twin, w)
-        assert _norm(py) == _norm(gas), b["type"]
+        assert _norm_uid(py) == _norm_uid(gas), b["type"]
 
 
 def test_hostile_and_odd_values_give_safe_markup_and_equal_twins(core_js):
@@ -120,7 +143,7 @@ def test_hostile_and_odd_values_give_safe_markup_and_equal_twins(core_js):
     bad = []
     for b, g in zip(blocks, gas):
         py = _py_fresh(b)
-        if b["type"] in equal and _norm(py) != _norm(g):
+        if b["type"] in equal and _norm_uid(py) != _norm_uid(g):
             bad.append(("differs", b))
         for html in (py, g):
             if html.startswith(("PY ERROR", "GAS ERROR")) or "<img src=x" in html or "<script>alert" in html or re.search(r'(src|href)="\s*[\x00-\x20]*javascript:', html, re.I):
@@ -145,3 +168,11 @@ def test_annotation_terms_are_matched_once_on_the_raw_text(core_js):
     py, g = _py_fresh(b), _gas_isolated(core_js, [b])[0]
     for html in (py, g):
         assert html.count("&lt;b&gt;") >= 1 and "&amp;" in html and "<b>" not in html
+
+
+def test_flip_card_hover_trigger_reaches_both_twins(core_js):
+    b = {"type": "flip_card", "front_content": "F", "back_content": "B", "trigger_on_hover": True}
+    assert 'data-hover="1"' in _py_fresh(b)
+    assert ":hover #fci" in _gas_isolated(core_js, [b])[0]
+    b["trigger_on_hover"] = "yes"
+    assert 'data-hover' not in _py_fresh(b) and ":hover #fci" not in _gas_isolated(core_js, [b])[0]

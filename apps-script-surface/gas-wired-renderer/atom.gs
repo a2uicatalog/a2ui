@@ -143,6 +143,21 @@ function _c136Names(v) {
   });
 }
 
+// A text value from a payload field, twin of Python _text_loose: a string as is, a finite number as its shortest form, anything else
+// (null, booleans, arrays, objects) is ''.
+function _textLoose(v) {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' && isFinite(v) && Math.abs(v) < 1e21) return String(v);
+  return '';
+}
+
+// A finite number from a payload field, twin of Python _num_loose: a real number, or a string that is a plain decimal; anything else is null.
+function _numLoose(v) {
+  if (typeof v === 'number') return isFinite(v) ? v : null;
+  if (typeof v === 'string' && v.length < 400 && /^\s*-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?\s*$/.test(v)) { var f = Number(v); return isFinite(f) ? f : null; }
+  return null;
+}
+
 // Inline markdown for payload text, twin of the Python _md_inline (renderers/web_article.py): the text is HTML-escaped
 // FIRST, so payload markup shows as text; **bold**, *italic*, `code`, [term](def:definition) abbr tooltips and links
 // (a link keeps its href only for http, https, mailto, tel or a relative URL).
@@ -1345,11 +1360,43 @@ _RENDERERS['lottie_animation'] = function(b) {
 };
 
 _RENDERERS['parallax_card'] = function(b) {
-  // Degrades to static card presentation
-  return '<div data-cb="node" data-key="' + _ckey(b.title, 'parallax_card') + '" class="asw-native-card" style="background-image:linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05));">' +
-         '<div style="font-weight:700;margin-bottom:8px;">' + _esc(b.title || 'Parallax Card') + '</div>' +
-         '<div style="font-size:0.88rem;color:var(--muted);">' + _esc(b.subtitle || '') + '</div>' +
-         '</div>';
+  var title = (typeof b.title === 'string' && b.title) ? b.title : '';
+  var rawBody = (typeof b.body === 'string' && b.body) ? b.body :
+                ((typeof b.text === 'string' && b.text) ? b.text :
+                ((typeof b.description === 'string' && b.description) ? b.description :
+                ((typeof b.subtitle === 'string' && b.subtitle) ? b.subtitle : '')));
+  var badge = (typeof b.badge === 'string' && b.badge) ? b.badge : '';
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var bg = _safe_css(b.background, '#0f172a');
+
+  var bgCss = bg;
+  if (typeof b.image === 'string' && /^[A-Za-z0-9:\/._~%?&=#+,@!$*-]+$/.test(b.image) && /^(https:\/\/|\/)/.test(b.image)) {
+    bgCss = 'linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url(' + b.image + ') center/cover,' + bg;
+  }
+
+  var minHeight = '';
+  if (typeof b.height === 'string' && /^[0-9]{2,3}(\.[0-9]+)?(px|rem|em|vh)$/.test(b.height)) {
+    minHeight = 'min-height:' + b.height + ';';
+  }
+
+  var depth = 15;
+  if (typeof b.depth === 'number' && !isNaN(b.depth) && isFinite(b.depth)) {
+    depth = Math.round(b.depth);
+  } else if (typeof b.depth === 'string' && /^[0-9]+$/.test(b.depth.trim())) {
+    depth = parseInt(b.depth.trim(), 10);
+  }
+  if (depth < 0) depth = 0;
+  if (depth > 45) depth = 45;
+
+  var badgeHtml = badge ? '<span style="display:inline-block;padding:2px 10px;border-radius:999px;background:' + accent + ';color:#fff;font-size:0.7rem;font-weight:700;margin-bottom:10px;">' + _esc(badge) + '</span>' : '';
+  var titleHtml = title ? '<h3 style="margin:0 0 8px;font-size:1.4rem;">' + _esc(title) + '</h3>' : '';
+  var bodyHtml = rawBody ? '<p style="margin:0;font-size:0.9rem;opacity:0.9;">' + _md_inline(rawBody) + '</p>' : '';
+
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'parallax_card') + '" data-depth="' + depth + '" ' +
+    'onpointermove="var r=this.getBoundingClientRect(),d=' + depth + ',x=(event.clientX-r.left)/r.width-0.5,y=(event.clientY-r.top)/r.height-0.5;this.style.transform=\'perspective(800px) rotateX(\'+(-y*d).toFixed(1)+\'deg) rotateY(\'+(x*d).toFixed(1)+\'deg)\'" ' +
+    'onpointerleave="this.style.transform=\'\'" ' +
+    'style="position:relative;overflow:hidden;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;margin:1.5rem 0;color:#fff;background:' + bgCss + ';' + minHeight + 'transition:transform 0.15s ease-out;will-change:transform;">' +
+    badgeHtml + titleHtml + bodyHtml + '</div>';
 };
 
 _RENDERERS['embed_tweet'] = function(b) {
@@ -1945,15 +1992,43 @@ _RENDERERS['release_notes'] = function(b) {
 };
 
 _RENDERERS['further_reading'] = function(b) {
-  var links = b.links || [];
-  var items = links.map(function(l){
-    var annotation = l.annotation ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(l.annotation) + '</div>' : '';
-    return '<a data-cb="link" data-key="' + _esc((l.url && l.url !== '#') ? l.url : (l.title || l.label || l.name || l.url || '#')) + '" href="' + _esc(l.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
-      '<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
-      '<div><div style="font-size:0.88rem;font-weight:600;color:var(--accent,#1d4ed8);">' + _esc(l.title||l.label||l.name||'') + '</div>' + annotation + '</div></a>';
-  }).join('');
+  var rawList = Array.isArray(b.links) ? b.links : (Array.isArray(b.items) ? b.items : []);
+  var list = rawList.slice(0, 100);
+  var headerTitle = (typeof b.title === 'string' && b.title) ? b.title : 'Further reading';
+
+  var items = '';
+  for (var i = 0; i < list.length; i++) {
+    var l = list[i];
+    if (l === null || l === undefined) continue;
+    var title = '', url = '', annotation = '';
+    if (typeof l === 'string') {
+      title = l;
+    } else if (typeof l === 'object' && !Array.isArray(l)) {
+      title = (typeof l.title === 'string' && l.title) ? l.title :
+              ((typeof l.text === 'string' && l.text) ? l.text :
+              ((typeof l.label === 'string' && l.label) ? l.label :
+              ((typeof l.name === 'string' && l.name) ? l.name : '')));
+      url = typeof l.url === 'string' ? l.url : '';
+      annotation = typeof l.annotation === 'string' ? l.annotation : '';
+    } else {
+      continue;
+    }
+
+    var safeUrl = _hrefIsSafe(url);
+    var key = (safeUrl && safeUrl !== '#') ? safeUrl : (title || safeUrl || '#');
+    var annotHtml = annotation ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(annotation) + '</div>' : '';
+    var inner = '<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
+      '<div><div style="font-size:0.88rem;font-weight:600;color:var(--accent,#1d4ed8);">' + _esc(title) + '</div>' + annotHtml + '</div>';
+
+    if (safeUrl) {
+      items += '<a data-cb="link" data-key="' + _esc(key) + '" href="' + _esc(safeUrl) + '" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' + inner + '</a>';
+    } else {
+      items += '<div data-cb="link" data-key="' + _esc(key) + '" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' + inner + '</div>';
+    }
+  }
+
   return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
+    '<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 ' + _esc(headerTitle) + '</div>' + items + '</div>';
 };
 
 // Was fully hardcoded light-theme hex — invisible borders and clashing blue
@@ -2634,12 +2709,19 @@ _RENDERERS['version_badge'] = function(b) {
 };
 
 _RENDERERS['deprecation_notice'] = function(b) {
-  var alt = b.alternative || '';
-  var rv = b.removal_version || '';
-  var altHtml = alt ? '<div style="margin-top:4px;font-size:0.85rem;">Use instead: <code style="background:#fef2f2;padding:1px 6px;border-radius:4px;">' + _esc(alt) + '</code></div>' : '';
+  var since = _textLoose(b.since);
+  var alt = _textLoose(b.alternative) || _textLoose(b.replacement);
+  var msg = _textLoose(b.message) || _textLoose(b.text);
+  var rv = _textLoose(b.removal_version);
+
+  var sinceHtml = since ? '<span style="color:var(--muted,#5f6368);font-size:0.78rem;"> · Deprecated since ' + _esc(since) + '</span>' : '';
+  var msgHtml = msg ? '<p style="margin:4px 0 0;font-size:0.85rem;color:#7f1d1d;">' + _md_inline(msg) + '</p>' : '';
+  var altHtml = alt ? '<div style="margin-top:6px;font-size:0.84rem;"><strong>Alternative:</strong> ' + _md_inline(alt) + '</div>' : '';
   var rvHtml = rv ? '<div style="margin-top:6px;font-size:0.8rem;color:#991b1b;">Removed in: <code>' + _esc(rv) + '</code></div>' : '';
-  return '<div data-cb="node" data-key="' + _ckey(b.removal_version, 'deprecation_notice') + '" style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:#991b1b;margin-bottom:4px;">⚠ Deprecated</div>' + altHtml + rvHtml + '</div>';
+
+  return '<div data-cb="node" data-key="' + _ckey(b.removal_version, 'deprecation_notice') + '" style="border:1.5px solid #d52222;background:#fef2f2;border-radius:8px;padding:12px 16px;margin:1rem 0;">' +
+    '<div style="font-weight:700;color:#d52222;">⛔ Deprecated' + sinceHtml + '</div>' +
+    msgHtml + altHtml + rvHtml + '</div>';
 };
 
 _RENDERERS['experimental_banner'] = function(b) {
@@ -3212,17 +3294,41 @@ _RENDERERS['code_diff'] = function(b) {
 };
 
 _RENDERERS['flip_card'] = function(b) {
-  var uid    = Math.random().toString(36).substr(2, 6);
-  var height = b.height   || '220px';
-  var accent = b.accent   || '#4f46e5';
-  var frontBg = b.front_bg || 'var(--bg)';
-  var backBg  = b.back_bg  || accent;
+  var uid = _payloadUid(b);
+  var height = (typeof b.height === 'string' && /^[0-9]{2,3}(\.[0-9]+)?(px|rem|em|vh)$/.test(b.height)) ? b.height : '220px';
+  var accent = (typeof b.accent === 'string' && /^#[0-9a-fA-F]{6}$/.test(b.accent)) ? b.accent : '#4f46e5';
+  var frontBg = _safe_css(b.front_bg, 'var(--bg)');
+  var backBg  = _safe_css(b.back_bg, accent);
 
-  var frontHtml = '', backHtml = '';
-  (b.front_blocks || []).forEach(function(blk) { var fn = _RENDERERS[blk.component||blk.type]; if (fn) frontHtml += fn(blk); });
-  (b.back_blocks  || []).forEach(function(blk) { var fn = _RENDERERS[blk.component||blk.type]; if (fn) backHtml  += fn(blk); });
-  if (!frontHtml && b.front) frontHtml = '<p style="margin:0">' + _esc(b.front) + '</p>';
-  if (!backHtml  && b.back)  backHtml  = '<p style="margin:0">' + _esc(b.back)  + '</p>';
+  var frontHtml = '';
+  if (typeof b.front_content === 'string' && b.front_content) {
+    frontHtml = '<p style="margin:0">' + _md_inline(b.front_content) + '</p>';
+  } else if (Array.isArray(b.front_blocks) && b.front_blocks.length) {
+    b.front_blocks.forEach(function(blk) {
+      if (blk && typeof blk === 'object') {
+        var key = blk.component || blk.type; var fn = Object.prototype.hasOwnProperty.call(_RENDERERS, key) ? _RENDERERS[key] : null;
+        if (fn) frontHtml += fn(blk);
+      }
+    });
+  } else if (typeof b.front === 'string' && b.front) {
+    frontHtml = '<p style="margin:0">' + _esc(b.front) + '</p>';
+  }
+
+  var backHtml = '';
+  if (typeof b.back_content === 'string' && b.back_content) {
+    backHtml = '<p style="margin:0">' + _md_inline(b.back_content) + '</p>';
+  } else if (Array.isArray(b.back_blocks) && b.back_blocks.length) {
+    b.back_blocks.forEach(function(blk) {
+      if (blk && typeof blk === 'object') {
+        var key = blk.component || blk.type; var fn = Object.prototype.hasOwnProperty.call(_RENDERERS, key) ? _RENDERERS[key] : null;
+        if (fn) backHtml += fn(blk);
+      }
+    });
+  } else if (typeof b.back === 'string' && b.back) {
+    backHtml = '<p style="margin:0">' + _esc(b.back) + '</p>';
+  }
+
+  var hoverRule = b.trigger_on_hover === true ? '@media (hover:hover){#fco' + uid + ':hover #fci' + uid + '{transform:rotateY(180deg);}}' : '';
 
   return '<style>'
     + '#fco' + uid + '{perspective:1000px;margin:1.5rem 0;}'
@@ -3232,6 +3338,7 @@ _RENDERERS['flip_card'] = function(b) {
     + '.fcf' + uid + '{background:' + frontBg + ';border:2px solid ' + accent + '33;}'
     + '.fcb' + uid + '{background:' + backBg + ';color:#fff;transform:rotateY(180deg);}'
     + '.fch' + uid + '{position:absolute;bottom:10px;right:14px;font-size:0.62rem;opacity:0.45;pointer-events:none;}'
+    + hoverRule
     + '</style>'
     + '<div data-cb="node" data-key="' + _ckey(null, 'flip_card') + '" id="fco' + uid + '" role="button" tabindex="0" aria-label="Flip card — press to reveal" onclick="this.classList.toggle(\'flp\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.classList.toggle(\'flp\');}">'
     + '<div id="fci' + uid + '">'

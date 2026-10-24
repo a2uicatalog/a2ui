@@ -2633,9 +2633,29 @@ def _render_expandable_text(b: dict) -> str:
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_flip_card(b: dict) -> str:
-    front = render(b.get("front_blocks", []))
-    back  = render(b.get("back_blocks", []))
-    return (f'<div data-cb="node" data-key="{_ck(None, "flip_card")}" style="margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    fc = b.get('front_content')
+    if isinstance(fc, str) and fc:
+        front = f'<p style="margin:0">{_md_inline(fc)}</p>'
+    elif isinstance(b.get('front_blocks'), list) and b.get('front_blocks'):
+        front = render([blk for blk in b.get('front_blocks') if isinstance(blk, dict)])
+    elif isinstance(b.get('front'), str) and b.get('front'):
+        front = f'<p style="margin:0">{_cv_esc(b.get("front"))}</p>'
+    else:
+        front = ''
+
+    bc = b.get('back_content')
+    if isinstance(bc, str) and bc:
+        back = f'<p style="margin:0">{_md_inline(bc)}</p>'
+    elif isinstance(b.get('back_blocks'), list) and b.get('back_blocks'):
+        back = render([blk for blk in b.get('back_blocks') if isinstance(blk, dict)])
+    elif isinstance(b.get('back'), str) and b.get('back'):
+        back = f'<p style="margin:0">{_cv_esc(b.get("back"))}</p>'
+    else:
+        back = ''
+
+    hover_attr = ' data-hover="1"' if b.get('trigger_on_hover') is True else ''
+
+    return (f'<div data-cb="node" data-key="{_ck(None, "flip_card")}"{hover_attr} style="margin:1rem 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
             f'<div style="padding:12px;border:2px solid #7c3aed;border-radius:8px;background:#faf5ff;">'
             f'<div style="font-size:0.7rem;font-weight:600;color:#7c3aed;margin-bottom:6px;text-transform:uppercase;">Front</div>'
             f'{front}</div>'
@@ -13613,16 +13633,19 @@ _RENDERERS['deploy_button'] = _render_deploy_button
 
 
 def _render_deprecation_notice(b: dict) -> str:
-    since = b.get('since', '')
-    alt = b.get('alternative') or b.get('replacement', '')
-    msg = b.get('message') or b.get('text', '')
-    since_html = f'<span style="color:var(--muted,#5f6368);font-size:0.78rem;"> · Deprecated since {_esc(since)}</span>' if since else ''
-    alt_html = (f'<div style="margin-top:6px;font-size:0.84rem;">→ Use <code style="background:#fef2f2;padding:1px 5px;border-radius:4px;">'
-                f'{_esc(alt)}</code> instead.</div>' if alt else '')
+    since = _text_loose(b.get('since'))
+    alt = _text_loose(b.get('alternative')) or _text_loose(b.get('replacement'))
+    msg = _text_loose(b.get('message')) or _text_loose(b.get('text'))
+    rv = _text_loose(b.get('removal_version'))
+
+    since_html = f'<span style="color:var(--muted,#5f6368);font-size:0.78rem;"> · Deprecated since {_cv_esc(since)}</span>' if since else ''
+    msg_html = f'<p style="margin:4px 0 0;font-size:0.85rem;color:#7f1d1d;">{_md_inline(msg)}</p>' if msg else ''
+    alt_html = f'<div style="margin-top:6px;font-size:0.84rem;"><strong>Alternative:</strong> {_md_inline(alt)}</div>' if alt else ''
+    rv_html = f'<div style="margin-top:6px;font-size:0.8rem;color:#991b1b;">Removed in: <code>{_cv_esc(rv)}</code></div>' if rv else ''
+
     return (f'<div data-cb="node" data-key="{_ck(b.get("removal_version"), "deprecation_notice")}" style="border:1.5px solid #d52222;background:#fef2f2;border-radius:8px;padding:12px 16px;margin:1rem 0;">'
             f'<div style="font-weight:700;color:#d52222;">⛔ Deprecated{since_html}</div>'
-            f'{"<p style=margin:4px 0 0;font-size:0.85rem;color:#7f1d1d;>"+_md_inline(msg)+"</p>" if msg else ""}'
-            f'{alt_html}</div>')
+            f'{msg_html}{alt_html}{rv_html}</div>')
 
 _RENDERERS['deprecation_notice'] = _render_deprecation_notice
 
@@ -14006,20 +14029,38 @@ _RENDERERS['framed_screenshot'] = _render_framed_screenshot
 
 
 def _render_further_reading(b: dict) -> str:
-    items = b.get('items') or b.get('links', [])
-    title = b.get('title', 'Further Reading')
+    raw_list = b.get('links') if isinstance(b.get('links'), list) else (b.get('items') if isinstance(b.get('items'), list) else [])
+    items_list = raw_list[:100]
+    header_title = b.get('title') if isinstance(b.get('title'), str) and b.get('title') else 'Further reading'
+
     rows = ''
-    for item in items:
-        if isinstance(item, str):
-            text, url = item, '#'
+    for l in items_list:
+        if l is None:
+            continue
+        if isinstance(l, str):
+            title = l
+            url = ''
+            annotation = ''
+        elif isinstance(l, dict):
+            title = next((l[k] for k in ('title', 'text', 'label', 'name') if isinstance(l.get(k), str) and l[k]), '')
+            url = l.get('url') if isinstance(l.get('url'), str) else ''
+            annotation = l.get('annotation') if isinstance(l.get('annotation'), str) else ''
         else:
-            text = item.get('title') or item.get('text') or item.get('label', '')
-            url = item.get('url', '#')
-        rows += (f'<li style="margin:4px 0;">'
-                 f'<a data-cb="link" data-key="{_esc(url if url != "#" else (text or "#"))}" href="{_esc(url)}" style="color:#7c3aed;text-decoration:none;font-size:0.88rem;">→ {_esc(text)}</a></li>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;">'
-            f'<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">📚 {_esc(title)}</div>'
-            f'<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></div>')
+            continue
+
+        safe_url = _safe_href(url, schemes=('https', 'mailto')) if url else ''
+        key = safe_url if (safe_url and safe_url != '#') else (title or safe_url or '#')
+        annot_html = f'<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">{_cv_esc(annotation)}</div>' if annotation else ''
+        inner = (f'<span aria-hidden="true" style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>'
+                 f'<div><div style="font-size:0.88rem;font-weight:600;color:var(--accent,#1d4ed8);">{_cv_esc(title)}</div>{annot_html}</div>')
+
+        if safe_url:
+            rows += f'<a data-cb="link" data-key="{_cv_esc(key)}" href="{_cv_esc(safe_url)}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">{inner}</a>'
+        else:
+            rows += f'<div data-cb="link" data-key="{_cv_esc(key)}" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">{inner}</div>'
+
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">'
+            f'<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 {_cv_esc(header_title)}</div>{rows}</div>')
 
 _RENDERERS['further_reading'] = _render_further_reading
 
@@ -14579,20 +14620,55 @@ _RENDERERS['pagination'] = _render_pagination
 
 
 def _render_parallax_card(b: dict) -> str:
-    uid = _wa_uid(b)
-    image = b.get('image', '')
-    title = b.get('title', '')
-    text = b.get('text') or b.get('description', '')
-    height = b.get('height', '280px')
-    overlay = b.get('overlay', 'rgba(0,0,0,0.4)')
-    bg = f'url("{_esc(image)}) center/cover" ' if image else '#1e1e2e'
-    return (f'<div data-cb="node" data-key="{_ck(b.get("title"), "parallax_card")}" style="position:relative;overflow:hidden;border-radius:12px;border-radius:var(--a2ui-radius,12px);height:{_esc(str(height))};'
-            f'background:{bg};margin:1.5rem 0;display:flex;align-items:flex-end;">'
-            f'<div style="position:absolute;inset:0;background:{_esc(overlay)};"></div>'
-            f'<div style="position:relative;z-index:1;padding:24px 28px;color:#fff;">'
-            f'<h3 style="margin:0 0 8px;font-size:1.4rem;">{_esc(title)}</h3>'
-            f'{"<p style=margin:0;font-size:0.9rem;opacity:0.9;>"+_esc(text)+"</p>" if text else ""}'
-            f'</div></div>')
+    title = b.get('title') if isinstance(b.get('title'), str) and b.get('title') else ''
+    raw_body = b.get('body') if isinstance(b.get('body'), str) and b.get('body') else (
+        b.get('text') if isinstance(b.get('text'), str) and b.get('text') else (
+            b.get('description') if isinstance(b.get('description'), str) and b.get('description') else (
+                b.get('subtitle') if isinstance(b.get('subtitle'), str) and b.get('subtitle') else ''
+            )
+        )
+    )
+    badge = b.get('badge') if isinstance(b.get('badge'), str) and b.get('badge') else ''
+    accent = _safe_css(b.get('accent'), '#4f46e5')
+    bg = _safe_css(b.get('background'), '#0f172a')
+
+    img = b.get('image', '')
+    bg_css = bg
+    if isinstance(img, str) and img and re.fullmatch(r'[A-Za-z0-9:/._~%?&=#+,@!$*-]+', img):
+        if img.startswith('https://') or img.startswith('/'):
+            bg_css = f'linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url({img}) center/cover,{bg}'
+
+    height = b.get('height')
+    min_height = ''
+    if isinstance(height, str) and re.fullmatch(r'[0-9]{2,3}(\.[0-9]+)?(px|rem|em|vh)', height):
+        min_height = f'min-height:{height};'
+
+    depth_val = b.get('depth')
+    if isinstance(depth_val, bool) or depth_val is None:
+        depth = 15
+    elif isinstance(depth_val, (int, float)):
+        try:
+            depth = 15 if (depth_val != depth_val or abs(depth_val) == float('inf')) else int(_gm.floor(depth_val + 0.5))
+        except OverflowError:
+            depth = 45 if depth_val > 0 else 0
+    elif isinstance(depth_val, str) and re.fullmatch(r'[0-9]+', depth_val.strip()):
+        depth = int(depth_val.strip())
+    else:
+        depth = 15
+    if depth < 0:
+        depth = 0
+    elif depth > 45:
+        depth = 45
+
+    badge_html = f'<span style="display:inline-block;padding:2px 10px;border-radius:999px;background:{accent};color:#fff;font-size:0.7rem;font-weight:700;margin-bottom:10px;">{_cv_esc(badge)}</span>' if badge else ''
+    title_html = f'<h3 style="margin:0 0 8px;font-size:1.4rem;">{_cv_esc(title)}</h3>' if title else ''
+    body_html = f'<p style="margin:0;font-size:0.9rem;opacity:0.9;">{_md_inline(raw_body)}</p>' if raw_body else ''
+
+    return (f'<div data-cb="node" data-key="{_ck(b.get("title"), "parallax_card")}" data-depth="{depth}" '
+            f'onpointermove="var r=this.getBoundingClientRect(),d={depth},x=(event.clientX-r.left)/r.width-0.5,y=(event.clientY-r.top)/r.height-0.5;this.style.transform=\'perspective(800px) rotateX(\'+(-y*d).toFixed(1)+\'deg) rotateY(\'+(x*d).toFixed(1)+\'deg)\'" '
+            f'onpointerleave="this.style.transform=\'\'" '
+            f'style="position:relative;overflow:hidden;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px;margin:1.5rem 0;color:#fff;background:{bg_css};{min_height}transition:transform 0.15s ease-out;will-change:transform;">'
+            f'{badge_html}{title_html}{body_html}</div>')
 
 _RENDERERS['parallax_card'] = _render_parallax_card
 
@@ -15824,19 +15900,30 @@ _RENDERERS['otp_input'] = _render_otp_input
 
 
 def _render_prerequisite_checklist(b: dict) -> str:
-    items = b.get('items', [])
-    title = b.get('title', 'Prerequisites')
+    raw_items = b.get('items') if isinstance(b.get('items'), list) else []
+    title = b.get('title') if isinstance(b.get('title'), str) and b.get('title') else 'Prerequisites'
     rows = ''
-    for item in items:
-        text = item if isinstance(item, str) else item.get('text') or item.get('label', '')
-        done = item.get('done', False) if isinstance(item, dict) else False
+    for item in raw_items[:200]:
+        if item is None:
+            continue
+        if isinstance(item, str):
+            text = item
+            done = False
+        elif isinstance(item, dict):
+            text_val = item.get('text') if isinstance(item.get('text'), str) and item.get('text') else item.get('label', '')
+            text = text_val if isinstance(text_val, str) else ''
+            done = item.get('done') is True
+        else:
+            continue
         icon = '✅' if done else '⬜'
-        rows += (f'<li data-cb="item" data-key="{_esc(text)}" style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;'
+        text_style = ' style="text-decoration:line-through;color:var(--muted,#9ca3af);"' if done else ''
+        text_span = f'<span{text_style}>{_md_inline(text)}</span>'
+        rows += (f'<li data-cb="item" data-key="{_ck(text, "item")}" style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;'
                  f'font-size:0.88rem;color:#374151;border-bottom:1px solid #f9fafb;">'
-                 f'{icon} {_md_inline(text)}</li>')
+                 f'<span style="flex-shrink:0;">{icon}</span>{text_span}</li>')
     return (f'<div style="border:1px solid #dbeafe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
             f'margin:1.5rem 0;background:#eff6ff;">'
-            f'<div style="font-weight:700;color:#1e40af;margin-bottom:8px;">📋 {_esc(title)}</div>'
+            f'<div style="font-weight:700;color:#1e40af;margin-bottom:8px;">📋 {_cv_esc(title)}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></div>')
 
 _RENDERERS['prerequisite_checklist'] = _render_prerequisite_checklist
@@ -19670,11 +19757,11 @@ def _render_annotation_highlight(b: dict) -> str:
     raw_notes = b.get('notes')
     notes_list = raw_notes[:40] if isinstance(raw_notes, list) else []
 
-    color_re = _re.compile(r'^#[0-9a-fA-F]{6}$')
+    color_re = _re.compile(r'#[0-9a-fA-F]{6}')
     valid_notes = []
     for item in notes_list:
         if isinstance(item, dict) and isinstance(item.get('term'), str) and item['term']:
-            col = item['color'] if isinstance(item.get('color'), str) and color_re.match(item['color']) else '#996206'
+            col = item['color'] if isinstance(item.get('color'), str) and color_re.fullmatch(item['color']) else '#996206'
             exp = item.get('explanation') if isinstance(item.get('explanation'), str) else ''
             nid = item.get('id') if isinstance(item.get('id'), str) and item['id'] else item['term']
             valid_notes.append({
@@ -23249,18 +23336,26 @@ _RENDERERS["sheet_form_submit"] = _render_sheet_form_submit
 
 
 def _render_copy_prompt(b: dict) -> str:
-    prompt = _esc(b.get('prompt', ''))
-    label = _esc(b.get('label', 'Copy prompt'))
-    accent = _esc(b.get('accent', '#4f46e5'))
-    raw_prompt = _cv_esc(_js_json(str(b.get('prompt', ''))))
-    return ('<div data-cb="node" data-key="' + _ck(b.get('label'), 'copy_prompt') + '" style="margin:1rem 0;padding:14px 18px;border:1px solid ' + accent + '44;'
-            'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + accent + '08;">'
-            '<div style="font-size:0.82rem;color:#374151;margin-bottom:10px;font-style:italic;">'
-            + prompt + '</div>'
-            '<button onclick="navigator.clipboard.writeText(' + raw_prompt + ').then(function(){'
-            'this.textContent=\'Copied!\';}.bind(this))" '
-            'style="padding:6px 16px;background:' + accent + ';color:#fff;border:none;border-radius:6px;'
-            'font-size:0.82rem;font-weight:600;cursor:pointer;">' + label + '</button></div>')
+    uid = _wa_uid(b)[:6]
+    label = b.get('label') if isinstance(b.get('label'), str) and b.get('label') else 'Copy this prompt'
+    prompt = _text_loose(b.get('prompt')) or _text_loose(b.get('text')) or _text_loose(b.get('content'))
+    accent = b.get('accent') if isinstance(b.get('accent'), str) and re.fullmatch(r'#[0-9a-fA-F]{3,8}', b.get('accent')) else '#4f46e5'
+    return ('<style>'
+            f'#cp-wrap-{uid}{{background:#0f172a;border-radius:12px;overflow:hidden;margin:1rem 0;}}'
+            f'#cp-hd-{uid}{{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#1e293b;}}'
+            f'#cp-lbl-{uid}{{font-size:0.75rem;font-weight:600;color:#94a3b8;}}'
+            f'#cp-btn-{uid}{{padding:4px 12px;background:{accent};color:#fff;border:none;border-radius:5px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;}}'
+            f'#cp-body-{uid}{{padding:16px;font-family:monospace;font-size:0.82rem;color:#e2e8f0;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;}}'
+            '</style>'
+            f'<div data-cb="node" data-key="{_ck(b.get("label"), "copy_prompt")}" id="cp-wrap-{uid}">'
+            f'<div id="cp-hd-{uid}"><span id="cp-lbl-{uid}">{_cv_esc(label)}</span><button id="cp-btn-{uid}">Copy</button></div>'
+            f'<div id="cp-body-{uid}" data-text="{_cv_esc(prompt)}">{_cv_esc(prompt)}</div>'
+            '</div>'
+            f'<script>(function(){{'
+            f'var btn=document.getElementById("cp-btn-{uid}");'
+            f'var text=document.getElementById("cp-body-{uid}").getAttribute("data-text");'
+            'btn.onclick=function(){navigator.clipboard.writeText(text).then(function(){btn.textContent="Copied!";setTimeout(function(){btn.textContent="Copy";},1500);});};'
+            '})();</script>')
 _RENDERERS["copy_prompt"] = _render_copy_prompt
 
 
@@ -23833,22 +23928,44 @@ _RENDERERS["big_reveal"] = _render_big_reveal
 
 
 def _render_split_reveal(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    text = _md_inline(b.get('text', ''))
-    color = _esc(b.get('color', '#4f46e5'))
-    delay = float(b.get('delay', 0))
-    import hashlib
-    uid = 'sr' + hashlib.md5(title.encode()).hexdigest()[:5]
-    dly = f'{delay:.2f}s'
-    kf = '@keyframes ' + uid + '{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0% 0 0);}}'
-    return ('<style>' + kf + '</style>'
-            '<div data-cb="node" data-key="' + _ck(b.get('title'), 'split_reveal') + '" style="margin:2rem 0;padding:4px 0;overflow:hidden;">'
-            '<div style="font-size:clamp(1.8rem,5vw,3rem);font-weight:900;line-height:1.1;color:' + color + ';'
-            'animation:' + uid + ' 0.8s cubic-bezier(0.77,0,0.18,1) ' + dly + ' both;">'
-            + title + '</div>'
-            + ('<p style="margin:12px 0 0;font-size:0.9rem;line-height:1.7;color:var(--muted,#5f6368);">'
-               + text + '</p>' if text else '')
-            + '</div>')
+    title = _text_loose(b.get('title'))
+    text = _text_loose(b.get('text')) or _text_loose(b.get('content'))
+    color = b.get('color') if isinstance(b.get('color'), str) and re.fullmatch(r'#[0-9a-fA-F]{6}', b.get('color')) else '#4f46e5'
+
+    delay_val = b.get('delay')
+    delay_num = 0.2
+    if isinstance(delay_val, (int, float)) and not isinstance(delay_val, bool):
+        try:
+            delay_num = float(delay_val)
+        except OverflowError:
+            delay_num = 10.0 if delay_val > 0 else 0.0
+    elif isinstance(delay_val, str) and re.fullmatch(r'\s*-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?\s*', delay_val):
+        try:
+            delay_num = float(delay_val)
+        except (ValueError, OverflowError):
+            delay_num = 0.2
+    if delay_num != delay_num or delay_num in (float('inf'), float('-inf')):
+        delay_num = 0.2
+    delay_num = min(10.0, max(0.0, delay_num))
+    delay_str = f'{_gm.floor(delay_num * 100 + 0.5) / 100:g}'
+
+    uid = _wa_uid(b)[:6]
+    title_html = f'<div style="font-size:1.2rem;font-weight:700;color:#111827;margin-bottom:10px;">{_cv_esc(title)}</div>' if title else ''
+    text_html = f'<div style="color:#374151;line-height:1.7;">{_md_inline(text)}</div>' if text else ''
+
+    return ('<style>'
+            f'.sr-t-{uid}{{position:absolute;top:0;left:0;right:0;height:51%;background:{color};z-index:2;animation:sr-top-{uid} 0.75s cubic-bezier(0.77,0,0.175,1) {delay_str}s both;}}'
+            f'.sr-b-{uid}{{position:absolute;bottom:0;left:0;right:0;height:51%;background:{color};z-index:2;animation:sr-bot-{uid} 0.75s cubic-bezier(0.77,0,0.175,1) {delay_str}s both;}}'
+            f'@keyframes sr-top-{uid}{{from{{transform:translateY(0);}}to{{transform:translateY(-100%);}}}}'
+            f'@keyframes sr-bot-{uid}{{from{{transform:translateY(0);}}to{{transform:translateY(100%);}}}}'
+            f'@media (prefers-reduced-motion:reduce){{.sr-t-{uid},.sr-b-{uid}{{display:none;}}}}'
+            '</style>'
+            f'<div data-cb="node" data-key="{_ck(b.get("title"), "split_reveal")}" style="position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;">'
+            f'<div style="padding:32px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:16px;">'
+            f'{title_html}{text_html}</div>'
+            f'<div class="sr-t-{uid}"></div>'
+            f'<div class="sr-b-{uid}"></div>'
+            '</div>')
 _RENDERERS["split_reveal"] = _render_split_reveal
 
 
@@ -26016,19 +26133,24 @@ _RENDERERS["surface_map"] = _render_surface_map
 
 
 def _render_surface_unlocked(b: dict) -> str:
-    icon = _esc(b.get('icon', '🌐'))
-    surface = _esc(b.get('surface', ''))
-    sub = _esc(b.get('sub', ''))
-    accent = _esc(b.get('accent', '#4f46e5'))
-    import hashlib
-    uid = 'su' + hashlib.md5(surface.encode()).hexdigest()[:5]
-    kf = '@keyframes ' + uid + 'pop{0%{transform:scale(0.5);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}'
-    return ('<style>' + kf + '</style>'
-            '<div data-cb="node" data-key="' + _ck(b.get('surface'), 'surface_unlocked') + '" style="text-align:center;padding:28px;animation:' + uid + 'pop 0.6s cubic-bezier(0.22,1,0.36,1);">'
-            '<div style="font-size:3rem;margin-bottom:8px;">' + icon + '</div>'
-            '<div style="font-weight:800;font-size:1.1rem;color:' + accent + ';">✓ ' + surface + ' unlocked</div>'
-            + ('<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:4px;">' + sub + '</div>' if sub else '')
-            + '</div>')
+    uid = _wa_uid(b)[:6]
+    icon = b.get('icon') if isinstance(b.get('icon'), str) and b.get('icon') else '⚡'
+    surface = b.get('surface') if isinstance(b.get('surface'), str) and b.get('surface') else 'New Surface'
+    sub = b.get('sub') if isinstance(b.get('sub'), str) and b.get('sub') else 'NEW SURFACE UNLOCKED'
+    accent = b.get('accent') if isinstance(b.get('accent'), str) and re.fullmatch(r'#[0-9a-fA-F]{6}', b.get('accent')) else '#4f46e5'
+    return ('<style>'
+            f'@keyframes su-in-{uid}{{0%{{opacity:0;transform:translateY(-18px) scale(0.96);}}100%{{opacity:1;transform:none;}}}}'
+            f'@keyframes su-glow-{uid}{{0%,100%{{box-shadow:0 0 0 0 {accent}55;}}60%{{box-shadow:0 0 0 10px {accent}00;}}}}'
+            f'#su-{uid}{{animation:su-in-{uid} 0.5s cubic-bezier(0.34,1.56,0.64,1) both,su-glow-{uid} 1.8s 0.5s ease-out 3;}}'
+            f'@media (prefers-reduced-motion:reduce){{#su-{uid}{{animation:none;}}}}'
+            '</style>'
+            f'<div data-cb="node" data-key="{_ck(b.get("surface"), "surface_unlocked")}" id="su-{uid}" style="margin:1.5rem 0;padding:22px 26px;background:{accent}12;border:2px solid {accent};border-radius:12px;border-radius:var(--a2ui-radius,12px);display:flex;align-items:center;gap:22px;">'
+            f'<div style="font-size:3rem;line-height:1;flex-shrink:0">{_cv_esc(icon)}</div>'
+            '<div>'
+            f'<div style="font-size:0.6rem;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:{accent};margin-bottom:5px">{_cv_esc(sub)}</div>'
+            f'<div style="font-size:1.4rem;font-weight:800;color:var(--text);line-height:1.25">{_cv_esc(surface)}</div>'
+            '</div>'
+            '</div>')
 _RENDERERS["surface_unlocked"] = _render_surface_unlocked
 
 
@@ -29277,6 +29399,36 @@ def _gd_css(v):
     if len(v) > 300 or _GD_CSS_BAD.search(v):
         return False
     return all(m.group(1).lower() in _GD_CSS_FN for m in _GD_CSS_CALL.finditer(v))
+
+
+def _num_loose(v):
+    """A finite number from a payload field: a real number, or a string that is a plain decimal; anything else is None. Twin: _numLoose in atom.gs."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, str):
+        if len(v) >= 400 or not re.fullmatch(r'\s*-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?\s*', v):
+            return None
+    elif not isinstance(v, (int, float)):
+        return None
+    try:
+        f = float(v)
+    except OverflowError:
+        return None
+    return f if f == f and abs(f) != float('inf') else None
+
+
+def _text_loose(v):
+    """A text value from a payload field: a string as is, a finite number as its shortest form (integral numbers without a decimal
+    point), anything else (None, booleans, lists, dicts) is ''. Twin: _textLoose in atom.gs."""
+    if isinstance(v, str):
+        return v
+    if isinstance(v, bool):
+        return ''
+    if isinstance(v, int):
+        return str(v) if abs(v) < 10 ** 21 else ''
+    if isinstance(v, float) and v == v and abs(v) < 1e21:
+        return str(int(v)) if v.is_integer() else repr(v)
+    return ''
 
 
 def _safe_css(v, dflt):

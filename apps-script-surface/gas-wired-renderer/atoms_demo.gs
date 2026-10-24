@@ -4,18 +4,19 @@
 
 // surface_unlocked — game-style "NEW SURFACE UNLOCKED" achievement notification
 _RENDERERS['surface_unlocked'] = function(b) {
-  var uid     = Math.random().toString(36).substr(2, 6);
-  var icon    = b.icon    || '⚡';
-  var surface = b.surface || 'New Surface';
-  var sub     = b.sub     || 'NEW SURFACE UNLOCKED';
-  var accent  = b.accent  || '#4f46e5';
+  var uid     = _payloadUid(b);
+  var icon    = (typeof b.icon === 'string' && b.icon) ? b.icon : '⚡';
+  var surface = (typeof b.surface === 'string' && b.surface) ? b.surface : 'New Surface';
+  var sub     = (typeof b.sub === 'string' && b.sub) ? b.sub : 'NEW SURFACE UNLOCKED';
+  var accent  = (typeof b.accent === 'string' && /^#[0-9a-fA-F]{6}$/.test(b.accent)) ? b.accent : '#4f46e5';
   return '<style>'
     + '@keyframes su-in-' + uid + '{0%{opacity:0;transform:translateY(-18px) scale(0.96);}100%{opacity:1;transform:none;}}'
     + '@keyframes su-glow-' + uid + '{0%,100%{box-shadow:0 0 0 0 ' + accent + '55;}60%{box-shadow:0 0 0 10px ' + accent + '00;}}'
     + '#su-' + uid + '{animation:su-in-' + uid + ' 0.5s cubic-bezier(0.34,1.56,0.64,1) both,su-glow-' + uid + ' 1.8s 0.5s ease-out 3;}'
+    + '@media (prefers-reduced-motion:reduce){#su-' + uid + '{animation:none;}}'
     + '</style>'
     + '<div data-cb="node" data-key="' + _ckey(b.surface, 'surface_unlocked') + '" id="su-' + uid + '" style="margin:1.5rem 0;padding:22px 26px;background:' + accent + '12;border:2px solid ' + accent + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);display:flex;align-items:center;gap:22px;">'
-    + '<div style="font-size:3rem;line-height:1;flex-shrink:0">' + icon + '</div>'
+    + '<div style="font-size:3rem;line-height:1;flex-shrink:0">' + _esc(icon) + '</div>'
     + '<div>'
     + '<div style="font-size:0.6rem;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:' + accent + ';margin-bottom:5px">' + _esc(sub) + '</div>'
     + '<div style="font-size:1.4rem;font-weight:800;color:var(--text);line-height:1.25">' + _esc(surface) + '</div>'
@@ -209,10 +210,10 @@ _RENDERERS['next_step_strip'] = function(b) {
 
 // copy_prompt — displays a copyable text block (for sharing Gemini prompts)
 _RENDERERS['copy_prompt'] = function(b) {
-  var uid    = Math.random().toString(36).substr(2, 6);
-  var label  = b.label || 'Copy this prompt';
-  var prompt = b.prompt || b.text || b.content || '';
-  var accent = b.accent || '#4f46e5';
+  var uid = _payloadUid(b);
+  var label = (typeof b.label === 'string' && b.label) ? b.label : 'Copy this prompt';
+  var prompt = _textLoose(b.prompt) || _textLoose(b.text) || _textLoose(b.content);
+  var accent = (typeof b.accent === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.accent)) ? b.accent : '#4f46e5';
   return '<style>'
     + '#cp-wrap-' + uid + '{background:#0f172a;border-radius:12px;overflow:hidden;margin:1rem 0;}'
     + '#cp-hd-' + uid + '{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#1e293b;}'

@@ -3810,21 +3810,32 @@ _RENDERERS['text_reveal_mask'] = function(b) {
 };
 
 _RENDERERS['split_reveal'] = function(b) {
-  var title = b.title || '';
-  var text  = b.text  || b.content || '';
-  var color = b.color || '#4f46e5';
-  var delay = parseFloat(b.delay !== undefined ? b.delay : 0.2);
-  var uid = Math.random().toString(36).substr(2, 6);
+  var title = _textLoose(b.title);
+  var text = _textLoose(b.text) || _textLoose(b.content);
+  var color = (typeof b.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(b.color)) ? b.color : '#4f46e5';
+
+  var delayNum = 0.2;
+  if (typeof b.delay === 'number' && isFinite(b.delay)) {
+    delayNum = b.delay;
+  } else if (typeof b.delay === 'string' && /^\s*-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?\s*$/.test(b.delay) && isFinite(Number(b.delay))) {
+    delayNum = Number(b.delay);
+  }
+  if (delayNum < 0) delayNum = 0;
+  if (delayNum > 10) delayNum = 10;
+  var delayStr = String(Math.floor(delayNum * 100 + 0.5) / 100);
+
+  var uid = _payloadUid(b);
   return '<style>'
-    + '.sr-t-' + uid + '{position:absolute;top:0;left:0;right:0;height:51%;background:' + _esc(color) + ';z-index:2;animation:sr-top-' + uid + ' 0.75s cubic-bezier(0.77,0,0.175,1) ' + delay + 's both;}'
-    + '.sr-b-' + uid + '{position:absolute;bottom:0;left:0;right:0;height:51%;background:' + _esc(color) + ';z-index:2;animation:sr-bot-' + uid + ' 0.75s cubic-bezier(0.77,0,0.175,1) ' + delay + 's both;}'
+    + '.sr-t-' + uid + '{position:absolute;top:0;left:0;right:0;height:51%;background:' + color + ';z-index:2;animation:sr-top-' + uid + ' 0.75s cubic-bezier(0.77,0,0.175,1) ' + delayStr + 's both;}'
+    + '.sr-b-' + uid + '{position:absolute;bottom:0;left:0;right:0;height:51%;background:' + color + ';z-index:2;animation:sr-bot-' + uid + ' 0.75s cubic-bezier(0.77,0,0.175,1) ' + delayStr + 's both;}'
     + '@keyframes sr-top-' + uid + '{from{transform:translateY(0);}to{transform:translateY(-100%);}}'
     + '@keyframes sr-bot-' + uid + '{from{transform:translateY(0);}to{transform:translateY(100%);}}'
+    + '@media (prefers-reduced-motion:reduce){.sr-t-' + uid + ',.sr-b-' + uid + '{display:none;}}'
     + '</style>'
     + '<div data-cb="node" data-key="' + _ckey(b.title, 'split_reveal') + '" style="position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;">'
     + '<div style="padding:32px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:16px;">'
     + (title ? '<div style="font-size:1.2rem;font-weight:700;color:#111827;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
-    + (text  ? '<div style="color:#374151;line-height:1.7;">' + _markdownToHtml(text) + '</div>' : '')
+    + (text  ? '<div style="color:#374151;line-height:1.7;">' + _md_inline(text) + '</div>' : '')
     + '</div>'
     + '<div class="sr-t-' + uid + '"></div>'
     + '<div class="sr-b-' + uid + '"></div>'

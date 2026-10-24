@@ -177,19 +177,30 @@ _RENDERERS['contributor_list'] = function(b) {
 
 // ─── prerequisite_checklist ───────────────────────────────────────────────────
 _RENDERERS['prerequisite_checklist'] = function(b) {
-  var title = _esc(b.title || 'Prerequisites');
-  var items = (b.items || []).map(function(item) {
-    var text  = typeof item === 'object' ? (item.text || item.label || '') : item;
-    var done  = typeof item === 'object' ? item.done : false;
-    var icon  = done ? '✅' : '⬜';
-    var style = done ? 'text-decoration:line-through;color:var(--muted,#9ca3af);' : 'color:var(--text,#374151);';
-    return '<li data-cb="item" data-key="' + _esc(String(text)) + '" style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.875rem;' + style + '">'
-      + '<span style="flex-shrink:0;">' + icon + '</span>'
-      + '<span>' + _markdownToHtml(String(text)) + '</span></li>';
-  }).join('');
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;">'
-    + '<div style="font-weight:700;font-size:0.9rem;color:#92400e;margin-bottom:10px;">⚠️ ' + title + '</div>'
-    + '<ul style="list-style:none;padding:0;margin:0;">' + items + '</ul></div>';
+  var title = (typeof b.title === 'string' && b.title) ? b.title : 'Prerequisites';
+  var rawItems = Array.isArray(b.items) ? b.items.slice(0, 200) : [];
+  var rows = '';
+  for (var i = 0; i < rawItems.length; i++) {
+    var item = rawItems[i];
+    if (item === null || item === undefined) continue;
+    var text = '', done = false;
+    if (typeof item === 'string') {
+      text = item;
+    } else if (typeof item === 'object' && !Array.isArray(item)) {
+      text = (typeof item.text === 'string' && item.text) ? item.text : ((typeof item.label === 'string' && item.label) ? item.label : '');
+      done = item.done === true;
+    } else {
+      continue;
+    }
+    var icon = done ? '✅' : '⬜';
+    var textStyle = done ? 'text-decoration:line-through;color:var(--muted,#9ca3af);' : '';
+    var textSpan = textStyle ? '<span style="' + textStyle + '">' + _md_inline(text) + '</span>' : '<span>' + _md_inline(text) + '</span>';
+    rows += '<li data-cb="item" data-key="' + _ckey(text, 'item') + '" style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:0.88rem;color:#374151;border-bottom:1px solid #f9fafb;">' +
+      '<span style="flex-shrink:0;">' + icon + '</span>' + textSpan + '</li>';
+  }
+  return '<div style="border:1px solid #dbeafe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;background:#eff6ff;">' +
+    '<div style="font-weight:700;color:#1e40af;margin-bottom:8px;">📋 ' + _esc(title) + '</div>' +
+    '<ul style="list-style:none;padding:0;margin:0;">' + rows + '</ul></div>';
 };
 
 // ─── capability_checklist ─────────────────────────────────────────────────────
