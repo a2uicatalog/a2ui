@@ -117,7 +117,8 @@ function _esc(str) {
 // passes.
 var _HREF_SAFE_SCHEMES = {https: 1, mailto: 1};
 function _hrefIsSafe(value) {
-  var v = String(value === undefined || value === null ? '' : value).replace(/[\t\n\r]/g, '').trim();
+  // a browser strips leading C0 controls and spaces before reading the scheme, so "\u0001javascript:" must not pass as scheme-less
+  var v = String(value === undefined || value === null ? '' : value).replace(/[\t\n\r]/g, '').trim().replace(/^[\u0000-\u0020]+/, '');
   if (!v) return '';
   var m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
   if (!m) return v; // no scheme at all: relative path or /, ?, # prefixed

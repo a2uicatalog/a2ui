@@ -21,7 +21,9 @@ def _md_url_ok(v):
     # "java\tscript:alert(1)" slips past (no match => treated as scheme-less) even though a
     # browser still runs it as javascript: once it strips the tab itself.
     v = re.sub(r'[\t\n\r]', '', v)
-    m = re.match(r'^[ \f\v]*([a-zA-Z][a-zA-Z0-9+.-]*):', v)
+    # A browser also strips leading C0 controls and spaces before reading the scheme ("\x01javascript:" runs as javascript:)
+    v = re.sub(r'^[\x00-\x20]+', '', v)
+    m = re.match(r'^([a-zA-Z][a-zA-Z0-9+.-]*):', v)
     return not m or m.group(1).lower() in ('http', 'https', 'mailto', 'tel')
 
 
@@ -32,7 +34,7 @@ def _safe_href(v, schemes=('http', 'https', 'mailto', 'tel')):
     is in `schemes`, else ''. Mirrors the GAS twin's _hrefIsSafe."""
     if not isinstance(v, str):
         return ''
-    v = re.sub(r'[\t\n\r]', '', v).strip()
+    v = re.sub(r'^[\x00-\x20]+', '', re.sub(r'[\t\n\r]', '', v).strip())   # leading C0 controls: see _md_url_ok
     if not v:
         return ''
     m = re.match(r'^([a-zA-Z][a-zA-Z0-9+.-]*):', v)
