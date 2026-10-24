@@ -1,0 +1,1787 @@
+{
+ "title": "Sankey cinema scene",
+ "theme": "light",
+ "blocks": [
+  {
+   "type": "motion_timeline",
+   "title": "Sankey cinema: exporters on a map become a flow, then a 3D scene",
+   "aspect": "16:9",
+   "duration": 16.0,
+   "poster": 16.0,
+   "loop": false,
+   "transcript": true,
+   "backdrop": "grid",
+   "theme": "light",
+   "blocks": [
+    {
+     "type": "motion_transition",
+     "id": "sk",
+     "place": {
+      "x": 6.0,
+      "y": 12.0,
+      "w": 88.0
+     },
+     "from": {
+      "type": "choropleth_map",
+      "region_set": "world-countries",
+      "title": "Exports by country (illustrative, Mt)",
+      "values": [
+       {
+        "id": "CHN",
+        "value": 60
+       },
+       {
+        "id": "USA",
+        "value": 42
+       },
+       {
+        "id": "DEU",
+        "value": 26
+       },
+       {
+        "id": "IND",
+        "value": 9
+       },
+       {
+        "id": "JPN",
+        "value": 24
+       },
+       {
+        "id": "BRA",
+        "value": 18
+       }
+      ],
+      "legend_title": "Million tonnes"
+     },
+     "to": {
+      "type": "sankey_flow",
+      "title": "Cargo flow, exporter to destination (illustrative, Mt)",
+      "nodes": [
+       {
+        "id": "CHN",
+        "label": "China",
+        "column": 0,
+        "color": "#f87171"
+       },
+       {
+        "id": "USA",
+        "label": "United States",
+        "column": 0,
+        "color": "#60a5fa"
+       },
+       {
+        "id": "DEU",
+        "label": "Germany",
+        "column": 0,
+        "color": "#fbbf24"
+       },
+       {
+        "id": "IND",
+        "label": "India",
+        "column": 0,
+        "color": "#34d399"
+       },
+       {
+        "id": "JPN",
+        "label": "Japan",
+        "column": 0,
+        "color": "#f472b6"
+       },
+       {
+        "id": "BRA",
+        "label": "Brazil",
+        "column": 0,
+        "color": "#a3e635"
+       },
+       {
+        "id": "ELE",
+        "label": "Electronics",
+        "column": 1,
+        "color": "#38bdf8"
+       },
+       {
+        "id": "MAC",
+        "label": "Machinery",
+        "column": 1,
+        "color": "#a78bfa"
+       },
+       {
+        "id": "FOD",
+        "label": "Food and farm",
+        "column": 1,
+        "color": "#10b981"
+       },
+       {
+        "id": "ENG",
+        "label": "Energy",
+        "column": 1,
+        "color": "#f59e0b"
+       },
+       {
+        "id": "EUR",
+        "label": "Europe",
+        "column": 2,
+        "color": "#e2e8f0"
+       },
+       {
+        "id": "AME",
+        "label": "Americas",
+        "column": 2,
+        "color": "#e2e8f0"
+       },
+       {
+        "id": "APC",
+        "label": "Asia-Pacific",
+        "column": 2,
+        "color": "#e2e8f0"
+       }
+      ],
+      "links": [
+       {
+        "source": "CHN",
+        "target": "ELE",
+        "value": 38,
+        "color": "#f87171"
+       },
+       {
+        "source": "CHN",
+        "target": "MAC",
+        "value": 22,
+        "color": "#f87171"
+       },
+       {
+        "source": "USA",
+        "target": "ELE",
+        "value": 12,
+        "color": "#60a5fa"
+       },
+       {
+        "source": "USA",
+        "target": "FOD",
+        "value": 16,
+        "color": "#60a5fa"
+       },
+       {
+        "source": "USA",
+        "target": "ENG",
+        "value": 14,
+        "color": "#60a5fa"
+       },
+       {
+        "source": "DEU",
+        "target": "MAC",
+        "value": 26,
+        "color": "#fbbf24"
+       },
+       {
+        "source": "IND",
+        "target": "FOD",
+        "value": 9,
+        "color": "#34d399"
+       },
+       {
+        "source": "JPN",
+        "target": "ELE",
+        "value": 14,
+        "color": "#f472b6"
+       },
+       {
+        "source": "JPN",
+        "target": "MAC",
+        "value": 10,
+        "color": "#f472b6"
+       },
+       {
+        "source": "BRA",
+        "target": "FOD",
+        "value": 18,
+        "color": "#a3e635"
+       },
+       {
+        "source": "ELE",
+        "target": "EUR",
+        "value": 22,
+        "color": "#38bdf8"
+       },
+       {
+        "source": "ELE",
+        "target": "AME",
+        "value": 20,
+        "color": "#38bdf8"
+       },
+       {
+        "source": "ELE",
+        "target": "APC",
+        "value": 22,
+        "color": "#38bdf8"
+       },
+       {
+        "source": "MAC",
+        "target": "EUR",
+        "value": 28,
+        "color": "#a78bfa"
+       },
+       {
+        "source": "MAC",
+        "target": "APC",
+        "value": 30,
+        "color": "#a78bfa"
+       },
+       {
+        "source": "FOD",
+        "target": "AME",
+        "value": 20,
+        "color": "#10b981"
+       },
+       {
+        "source": "FOD",
+        "target": "APC",
+        "value": 23,
+        "color": "#10b981"
+       },
+       {
+        "source": "ENG",
+        "target": "EUR",
+        "value": 14,
+        "color": "#f59e0b"
+       }
+      ],
+      "keyed": true
+     },
+     "match": "exact"
+    },
+    {
+     "type": "motion_shape",
+     "id": "d0",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#f87171",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d1",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#f87171",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d2",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#60a5fa",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d3",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#60a5fa",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d4",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#60a5fa",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d5",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#fbbf24",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d6",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#34d399",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d7",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#f472b6",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d8",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#f472b6",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d9",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#a3e635",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d10",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#38bdf8",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d11",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#38bdf8",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d12",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#38bdf8",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d13",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#a78bfa",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d14",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#a78bfa",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d15",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#10b981",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d16",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#10b981",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_shape",
+     "id": "d17",
+     "shape": "circle",
+     "draw": "none",
+     "fill": "#f59e0b",
+     "glow": 0,
+     "place": {
+      "x": 0,
+      "y": 0,
+      "w": 1.0,
+      "h": 1.78
+     },
+     "w": 12,
+     "h": 12
+    },
+    {
+     "type": "motion_text",
+     "id": "cap1",
+     "text": "Where it starts: *six exporters*",
+     "size": 30,
+     "layer": "hud",
+     "font": "sans",
+     "reveal": "fade",
+     "weight": "bold",
+     "color": "#0f172a",
+     "place": {
+      "x": 4,
+      "y": 4.5,
+      "w": 92,
+      "h": 8
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "cap2",
+     "text": "The countries become the first column of a *flow*",
+     "size": 30,
+     "layer": "hud",
+     "font": "sans",
+     "reveal": "fade",
+     "weight": "bold",
+     "color": "#0f172a",
+     "place": {
+      "x": 4,
+      "y": 4.5,
+      "w": 92,
+      "h": 8
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "cap3",
+     "text": "Cargo moves from origin to destination",
+     "size": 30,
+     "layer": "hud",
+     "font": "sans",
+     "reveal": "fade",
+     "weight": "bold",
+     "color": "#0f172a",
+     "place": {
+      "x": 4,
+      "y": 4.5,
+      "w": 92,
+      "h": 8
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "cred",
+     "text": "Concept: Cornelius van Heerden. Figures are illustrative.",
+     "size": 16,
+     "layer": "hud",
+     "font": "sans",
+     "reveal": "fade",
+     "weight": "regular",
+     "color": "#475569",
+     "place": {
+      "x": 4,
+      "y": 94,
+      "w": 92,
+      "h": 6
+     }
+    }
+   ],
+   "tracks": [
+    {
+     "target": "sk",
+     "keys": [
+      {
+       "t": 0,
+       "p": 0,
+       "opacity": 0
+      },
+      {
+       "t": 0.8,
+       "opacity": 1,
+       "ease": "expo-out"
+      },
+      {
+       "t": 3.6,
+       "p": 0
+      },
+      {
+       "t": 6.6,
+       "p": 1,
+       "ease": "quart-in-out"
+      }
+     ]
+    },
+    {
+     "target": "d0",
+     "path": "M19.77,36.27 C34.7,36.27 34.7,36.27 49.64,36.27",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 8.6,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.0,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.2,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.21,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 11.8,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.81,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.4,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.8,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d1",
+     "path": "M19.77,41.23 C34.7,41.23 34.7,48.3 49.64,48.3",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 8.85,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.25,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.45,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.46,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.05,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.06,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.65,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.05,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d2",
+     "path": "M19.77,53.56 C34.7,53.56 34.7,42.71 49.64,42.71",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.1,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.5,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.7,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.71,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.3,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.31,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.9,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.3,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d3",
+     "path": "M19.77,58.18 C34.7,58.18 34.7,66.5 49.64,66.5",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.35,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.75,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.95,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.96,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.55,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.56,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 14.15,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.55,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d4",
+     "path": "M19.77,55.7 C34.7,55.7 34.7,60 49.64,60",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.6,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.0,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.2,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.21,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.8,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.81,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 14.4,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.8,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d5",
+     "path": "M19.77,64.43 C34.7,64.43 34.7,53.91 49.64,53.91",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.85,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.25,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.45,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.46,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.05,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.45,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d6",
+     "path": "M19.77,70.1 C34.7,70.1 34.7,68.57 49.64,68.57",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 8.6,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.0,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.2,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.21,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 11.8,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.81,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.4,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.8,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d7",
+     "path": "M19.77,46.98 C34.7,46.98 34.7,40.57 49.64,40.57",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 8.85,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.25,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.45,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.46,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.05,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.06,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.65,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.05,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d8",
+     "path": "M19.77,48.96 C34.7,48.96 34.7,50.94 49.64,50.94",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.1,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.5,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.7,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.71,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.3,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.31,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.9,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.3,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d9",
+     "path": "M19.77,75.11 C34.7,75.11 34.7,70.8 49.64,70.8",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.35,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.75,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.95,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.96,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.55,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.56,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 14.15,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.55,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d10",
+     "path": "M51.2,34.95 C66.14,34.95 66.14,36.97 81.08,36.97",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 10.1,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.5,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.7,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.71,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.3,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.7,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d11",
+     "path": "M51.2,38.42 C66.14,38.42 66.14,50.15 81.08,50.15",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 10.35,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.75,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.95,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.96,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.55,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.95,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d12",
+     "path": "M51.2,41.89 C66.14,41.89 66.14,59.7 81.08,59.7",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.1,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.5,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.7,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.71,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.3,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.31,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.9,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.3,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d13",
+     "path": "M51.2,48.8 C66.14,48.8 66.14,41.1 81.08,41.1",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.35,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 9.75,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 10.95,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 10.96,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.55,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.56,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 14.15,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.55,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d14",
+     "path": "M51.2,53.58 C66.14,53.58 66.14,64 81.08,64",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.6,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.0,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.2,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.21,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 12.8,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 12.81,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 14.4,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 14.8,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d15",
+     "path": "M51.2,66.83 C66.14,66.83 66.14,53.46 81.08,53.46",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 9.85,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.25,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.45,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.46,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.05,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.45,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d16",
+     "path": "M51.2,70.38 C66.14,70.38 66.14,68.37 81.08,68.37",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 10.1,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.5,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.7,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.71,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.3,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.7,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "d17",
+     "path": "M51.2,60 C66.14,60 66.14,44.57 81.08,44.57",
+     "trail": {
+      "n": 5,
+      "lag": 0.07
+     },
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "scale": 0
+      },
+      {
+       "t": 10.35,
+       "opacity": 0,
+       "scale": 0,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 10.75,
+       "opacity": 0.95,
+       "scale": 1,
+       "a": 0.08
+      },
+      {
+       "t": 11.95,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 11.96,
+       "a": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 13.55,
+       "a": 1,
+       "ease": "linear"
+      },
+      {
+       "t": 13.95,
+       "opacity": 0,
+       "scale": 0,
+       "a": 1
+      }
+     ]
+    },
+    {
+     "target": "cap1",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "p": 0
+      },
+      {
+       "t": 0.6,
+       "opacity": 0,
+       "p": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 1.1,
+       "opacity": 1,
+       "p": 1
+      },
+      {
+       "t": 3.0,
+       "opacity": 1
+      },
+      {
+       "t": 3.4,
+       "opacity": 0
+      }
+     ]
+    },
+    {
+     "target": "cap2",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "p": 0
+      },
+      {
+       "t": 3.8,
+       "opacity": 0,
+       "p": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 4.3,
+       "opacity": 1,
+       "p": 1
+      },
+      {
+       "t": 6.6,
+       "opacity": 1
+      },
+      {
+       "t": 7.0,
+       "opacity": 0
+      }
+     ]
+    },
+    {
+     "target": "cap3",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0,
+       "p": 0
+      },
+      {
+       "t": 8.2,
+       "opacity": 0,
+       "p": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 8.7,
+       "opacity": 1,
+       "p": 1
+      },
+      {
+       "t": 14.2,
+       "opacity": 1
+      },
+      {
+       "t": 14.6,
+       "opacity": 0
+      }
+     ]
+    },
+    {
+     "target": "cred",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0.55
+      }
+     ]
+    }
+   ],
+   "camera": {
+    "keys": [
+     {
+      "t": 0,
+      "x": 50,
+      "y": 50,
+      "zoom": 1.0,
+      "rx": 0,
+      "ry": 0
+     },
+     {
+      "t": 3.6,
+      "zoom": 1.06,
+      "ease": "standard"
+     },
+     {
+      "t": 6.8,
+      "zoom": 1.0,
+      "rx": 0,
+      "ry": 0,
+      "ease": "quart-in-out"
+     },
+     {
+      "t": 9.2,
+      "zoom": 0.92,
+      "rx": 52,
+      "ry": -14,
+      "ease": "quart-in-out"
+     },
+     {
+      "t": 12.4,
+      "zoom": 0.96,
+      "rx": 50,
+      "ry": 14,
+      "ease": "standard"
+     },
+     {
+      "t": 15.2,
+      "zoom": 1.0,
+      "rx": 0,
+      "ry": 0,
+      "ease": "quart-in-out"
+     }
+    ]
+   }
+  },
+  {
+   "type": "callout",
+   "kind": "info",
+   "title": "About this scene",
+   "text": "Concept: Cornelius van Heerden. This scene is a composition of existing atoms (choropleth_map, sankey_flow with keyed true, motion_transition, motion_shape particles on motion_path-style tracks, a camera track); no visual design or branding of the concept is copied. Figures are illustrative, not statistics. Particles are capped at 200 on screen (this film draws 108: 18 dots, each with a 5-copy trail), because they get heavy on low-end devices. Reduced motion and the poster frame show the settled state: the flat Sankey, with its text table. Free drag-orbit and depth-curved lit ribbons need WebGL and are out of scope."
+  }
+ ]
+}

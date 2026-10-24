@@ -5342,8 +5342,9 @@ def _sk_color(n):
     return n['color'] or _SK_PAL[n['layer'] % len(_SK_PAL)]
 
 
-def _sk_svg(m, title, sid):
+def _sk_svg(m, title, sid, keyed=False):
     g, lk, nd, tx = [], [], [], []
+    seen = {}
     for i, l in enumerate(m['links']):
         s, t = l['source'], l['target']
         a, c = s['x1'], t['x0']
@@ -5354,19 +5355,24 @@ def _sk_svg(m, title, sid):
         else:
             stroke = 'url(#' + sid + 'g' + str(i) + ')'
             g.append('<linearGradient id="' + sid + 'g' + str(i) + '" gradientUnits="userSpaceOnUse" x1="' + _sk_n(a) + '" y1="0" x2="' + _sk_n(c) + '" y2="0"><stop offset="0%" stop-color="' + _cv_esc(_sk_color(s)) + '"/><stop offset="100%" stop-color="' + _cv_esc(_sk_color(t)) + '"/></linearGradient>')
-        lk.append('<path class="sk-l" d="' + d + '" stroke="' + stroke + '" stroke-width="' + _sk_n(max(1, l['width'])) + '"><title>' + _cv_esc(s['label']) + ' → ' + _cv_esc(t['label']) + ': ' + _sk_fmt(l['value']) + '</title></path>')
+        ck = ''
+        if keyed:
+            k0 = s['id'] + '>' + t['id']
+            seen[k0] = seen.get(k0, 0) + 1
+            ck = ' data-cb="link" data-key="' + _cv_esc(k0 if seen[k0] == 1 else k0 + '#' + str(seen[k0])) + '"'
+        lk.append('<path class="sk-l"' + ck + ' d="' + d + '" stroke="' + stroke + '" stroke-width="' + _sk_n(max(1, l['width'])) + '"><title>' + _cv_esc(s['label']) + ' → ' + _cv_esc(t['label']) + ': ' + _sk_fmt(l['value']) + '</title></path>')
     for i, n in enumerate(m['nodes']):
         c = _sk_color(n)
         h = n['y1'] - n['y0']
         mid = n['y0'] + h / 2
         last, first = n['layer'] == m['ncols'] - 1, n['layer'] == 0
         g.append('<linearGradient id="' + sid + 'n' + str(i) + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + _cv_esc(c) + '"/><stop offset="100%" stop-color="' + _cv_esc(c) + '" stop-opacity="0.6"/></linearGradient>')
-        nd.append('<rect x="' + _sk_n(n['x0']) + '" y="' + _sk_n(n['y0']) + '" width="' + _sk_n(n['x1'] - n['x0']) + '" height="' + _sk_n(max(h, 1)) + '" rx="3" ry="3" fill="url(#' + sid + 'n' + str(i) + ')"><title>' + _cv_esc(n['label']) + ': ' + _sk_fmt(n['value']) + '</title></rect>')
+        nd.append('<rect' + (' data-cb="node" data-key="' + _cv_esc(n['id']) + '"' if keyed else '') + ' x="' + _sk_n(n['x0']) + '" y="' + _sk_n(n['y0']) + '" width="' + _sk_n(n['x1'] - n['x0']) + '" height="' + _sk_n(max(h, 1)) + '" rx="3" ry="3" fill="url(#' + sid + 'n' + str(i) + ')"><title>' + _cv_esc(n['label']) + ': ' + _sk_fmt(n['value']) + '</title></rect>')
         left = first and not last
         ax = _sk_n(n['x0'] - 8) if left else _sk_n(n['x1'] + 8)
         anc = 'end' if left else 'start'
         halo = '' if (first or last) else ' stroke="rgb(15,23,42)" stroke-width="3" stroke-linejoin="round" paint-order="stroke"'
-        tx.append('<text x="' + ax + '" y="' + _sk_n(mid + 4) + '" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _cv_esc(_sk_short(n['label'])) + '</text>'
+        tx.append('<text' + (' data-cb="label" data-key="' + _cv_esc(n['id']) + '"' if keyed else '') + ' x="' + ax + '" y="' + _sk_n(mid + 4) + '" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _cv_esc(_sk_short(n['label'])) + '</text>'
                   + '<text x="' + ax + '" y="' + _sk_n(mid + 15) + '" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _sk_fmt(n['value']) + '</text>')
     minw = int(math.floor(m['w'] * 0.8 + 0.5))
     return ('<svg role="img" aria-label="' + _cv_esc(title or 'Sankey flow chart') + '" viewBox="0 0 ' + str(m['w']) + ' ' + str(m['h']) + '" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;min-width:' + str(minw) + 'px;overflow:visible;">'
@@ -5384,7 +5390,7 @@ def _render_sankey_flow(b: dict) -> str:
     if m['links']:
         key = '\u0001'.join(n['id'] for n in m['nodes']) + '\u0002' + '\u0001'.join(l['source']['id'] + '\u0003' + l['target']['id'] + '\u0003' + _sk_fmt(l['value']) for l in m['links'])
         sid = 'sk' + _sk_hash(key)
-        body = ('<div style="width:100%;max-width:100%;overflow-x:auto;">' + _sk_svg(m, title, sid) + '</div>'
+        body = ('<div style="width:100%;max-width:100%;overflow-x:auto;">' + _sk_svg(m, title, sid, isinstance(b, dict) and b.get('keyed') is True) + '</div>'
                 + '<table style="' + _SK_SR + '"><thead><tr><th scope="col">Source</th><th scope="col">Target</th><th scope="col">Value</th></tr></thead><tbody>'
                 + ''.join('<tr><th scope="row">' + _cv_esc(l['source']['label']) + '</th><td>' + _cv_esc(l['target']['label']) + '</td><td>' + _sk_fmt(l['value']) + '</td></tr>' for l in m['links']) + '</tbody></table>')
     note = ''

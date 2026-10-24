@@ -1499,6 +1499,8 @@ blocks:
     links: 'list of dictionaries representing flows (e.g., [{''source'': ''revenue'',
       ''target'': ''marketing'', ''value'': 25000, ''color'': ''#38bdf8''}, ...])'
     title: string (optional, title of the chart, e.g., 'Financial Flow Allocation')
+    keyed: 'bool (optional, default false). True adds the build contract to the drawing so motion_build and motion_transition can move its parts: each node rectangle carries data-cb "node" and each node name data-cb "label", both with data-key = the node id, and each flow carries data-cb "link" with data-key = "sourceId>targetId" (a repeated pair gets "#2", "#3"). Use ids that another atom also keys (ISO 3166-1 alpha-3 codes against choropleth_map tiles) and a motion_transition joins the two element by element. Absent or false: the markup is unchanged, byte for byte.'
+  notes: 'The 3D Sankey cinema scene (payloads/sankey-cinema.json: map to Sankey, camera tilt on the film dial, particles along the flows) builds on a concept by Cornelius van Heerden. Only the idea is credited; the scene shares none of its visual design or branding.'
 - type: cohort_retention
   description: Renders a SaaS subscription or customer cohort retention triangular
     matrix with color-coded continuous gradients.

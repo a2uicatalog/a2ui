@@ -15670,8 +15670,8 @@ if (links.length) _skLayout(nodes, links, padL, 50, W - padR, 300, _SK_NODE_W, _
 return { nodes: nodes, links: links, dropped: dropped, ncols: ncols, w: W, h: H, padL: padL, padR: padR };
 }
 function _skShort(s) { return s.length > 22 ? s.slice(0, 21) + '…' : s; }
-function _skSvg(m, title, sid) {
-var g = [], lk = [], nd = [], tx = [];
+function _skSvg(m, title, sid, keyed) {
+var g = [], lk = [], nd = [], tx = [], seen = {};
 m.links.forEach(function(l, i) {
 var s = l.source, t = l.target, a = s.x1, c = t.x0, mx = (a + c) / 2, col = l.color;
 var d = 'M' + _skN(a) + ',' + _skN(l.y0) + 'C' + _skN(mx) + ',' + _skN(l.y0) + ',' + _skN(mx) + ',' + _skN(l.y1) + ',' + _skN(c) + ',' + _skN(l.y1);
@@ -15681,15 +15681,17 @@ else {
 stroke = 'url(#' + sid + 'g' + i + ')';
 g.push('<linearGradient id="' + sid + 'g' + i + '" gradientUnits="userSpaceOnUse" x1="' + _skN(a) + '" y1="0" x2="' + _skN(c) + '" y2="0"><stop offset="0%" stop-color="' + _esc(_skColor(s)) + '"/><stop offset="100%" stop-color="' + _esc(_skColor(t)) + '"/></linearGradient>');
 }
-lk.push('<path class="sk-l" d="' + d + '" stroke="' + stroke + '" stroke-width="' + _skN(Math.max(1, l.width)) + '"><title>' + _esc(s.label) + ' → ' + _esc(t.label) + ': ' + _skFmt(l.value) + '</title></path>');
+var ck = '';
+if (keyed) { var k0 = s.id + '>' + t.id; seen[k0] = (seen[k0] || 0) + 1; ck = ' data-cb="link" data-key="' + _esc(seen[k0] === 1 ? k0 : k0 + '#' + seen[k0]) + '"'; }
+lk.push('<path class="sk-l"' + ck + ' d="' + d + '" stroke="' + stroke + '" stroke-width="' + _skN(Math.max(1, l.width)) + '"><title>' + _esc(s.label) + ' → ' + _esc(t.label) + ': ' + _skFmt(l.value) + '</title></path>');
 });
 m.nodes.forEach(function(n, i) {
 var c = _skColor(n), h = n.y1 - n.y0, mid = n.y0 + h / 2, last = n.layer === m.ncols - 1, first = n.layer === 0;
 g.push('<linearGradient id="' + sid + 'n' + i + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + _esc(c) + '"/><stop offset="100%" stop-color="' + _esc(c) + '" stop-opacity="0.6"/></linearGradient>');
-nd.push('<rect x="' + _skN(n.x0) + '" y="' + _skN(n.y0) + '" width="' + _skN(n.x1 - n.x0) + '" height="' + _skN(Math.max(h, 1)) + '" rx="3" ry="3" fill="url(#' + sid + 'n' + i + ')"><title>' + _esc(n.label) + ': ' + _skFmt(n.value) + '</title></rect>');
+nd.push('<rect' + (keyed ? ' data-cb="node" data-key="' + _esc(n.id) + '"' : '') + ' x="' + _skN(n.x0) + '" y="' + _skN(n.y0) + '" width="' + _skN(n.x1 - n.x0) + '" height="' + _skN(Math.max(h, 1)) + '" rx="3" ry="3" fill="url(#' + sid + 'n' + i + ')"><title>' + _esc(n.label) + ': ' + _skFmt(n.value) + '</title></rect>');
 var left = first && !last ? true : false, ax = left ? _skN(n.x0 - 8) : _skN(n.x1 + 8), anc = left ? 'end' : 'start';
 var halo = (!first && !last) ? ' stroke="rgb(15,23,42)" stroke-width="3" stroke-linejoin="round" paint-order="stroke"' : '';
-tx.push('<text x="' + ax + '" y="' + _skN(mid + 4) + '" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _esc(_skShort(n.label)) + '</text>'
+tx.push('<text' + (keyed ? ' data-cb="label" data-key="' + _esc(n.id) + '"' : '') + ' x="' + ax + '" y="' + _skN(mid + 4) + '" fill="#f1f5f9" font-size="11" font-weight="700" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _esc(_skShort(n.label)) + '</text>'
 + '<text x="' + ax + '" y="' + _skN(mid + 15) + '" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="' + anc + '"' + halo + '>' + _skFmt(n.value) + '</text>');
 });
 var minw = Math.round(m.w * 0.8);
@@ -15706,7 +15708,7 @@ var body = '';
 if (m.links.length) {
 var key = m.nodes.map(function(n) { return n.id; }).join('\u0001') + '\u0002' + m.links.map(function(l) { return l.source.id + '\u0003' + l.target.id + '\u0003' + _skFmt(l.value); }).join('\u0001');
 var sid = 'sk' + _skHash(key);
-body = '<div style="width:100%;max-width:100%;overflow-x:auto;">' + _skSvg(m, title, sid) + '</div>'
+body = '<div style="width:100%;max-width:100%;overflow-x:auto;">' + _skSvg(m, title, sid, (b || {}).keyed === true) + '</div>'
 + '<table style="' + _SK_SR + '"><thead><tr><th scope="col">Source</th><th scope="col">Target</th><th scope="col">Value</th></tr></thead><tbody>'
 + m.links.map(function(l) { return '<tr><th scope="row">' + _esc(l.source.label) + '</th><td>' + _esc(l.target.label) + '</td><td>' + _skFmt(l.value) + '</td></tr>'; }).join('') + '</tbody></table>';
 }
