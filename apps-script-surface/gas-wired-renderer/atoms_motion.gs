@@ -790,6 +790,324 @@ function _moTrail(tr, idx, tid, keys, pth, box, bpm, dur, defEase, st) {
 }
 var _moTlDepth = 0;
 var _moTlBg = '#07111f'; // the last stage colour, so the page around a film matches it (light films stay light)
+// ── transcript (I92, 2026-10-24): twin of _mo_transcript in renderers/web_article.py ──
+// ── transcript (I92, 2026-10-24): every text and value a film shows ─────────
+var _MO_TR_STEP = 0.05, _MO_TR_MIN = 0.2, _MO_TR_SHOWN = 0.5;
+
+function _moTrGet(o, k) {
+  return (o !== null && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k)) ? o[k] : undefined;
+}
+
+function _moTrBez(a, b, t) {
+  var u = 1 - t;
+  return 3 * u * u * t * a + 3 * u * t * t * b + t * t * t;
+}
+
+function _moTrEz(e, u) {
+  if (u <= 0) return 0.0;
+  if (u >= 1) return 1.0;
+  if (!e) return u;
+  if (e === 1) return 0.0;
+  var lo = 0.0, hi = 1.0, t = u;
+  for (var i = 0; i < 28; i++) {
+    t = (lo + hi) / 2;
+    if (_moTrBez(e[0], e[2], t) < u) {
+      lo = t;
+    } else {
+      hi = t;
+    }
+  }
+  return _moTrBez(e[1], e[3], t);
+}
+
+function _moTrAt(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  if (t >= keys[keys.length - 1][0]) return keys[keys.length - 1][1];
+  for (var i = 1; i < keys.length; i++) {
+    if (t <= keys[i][0]) {
+      var a = keys[i - 1], b = keys[i];
+      var ez = b.length > 2 ? b[2] : null;
+      return a[1] + (b[1] - a[1]) * _moTrEz(ez, (t - a[0]) / (b[0] - a[0]));
+    }
+  }
+  return keys[keys.length - 1][1];
+}
+
+function _moTrPlain(s) {
+  var raw = (typeof s === 'string' ? s : '').replace(/\*/g, '');
+  return raw.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+}
+
+function _moTrPad2(n) {
+  var s = String(n);
+  return s.length < 2 ? '0' + s : s;
+}
+
+function _moTrClock(t) {
+  var k = Math.floor(Math.floor(t * 1000 + 0.5) / 100);
+  return String(Math.floor(k / 600)) + ':' + _moTrPad2(Math.floor(k / 10) % 60) + '.' + String(k % 10);
+}
+
+function _moTrItems(blk) {
+  var ty = _moTrGet(blk, 'type');
+  if (ty === 'motion_text') {
+    var tText = _moTrPlain(_moTrGet(blk, 'text'));
+    return tText ? [[tText, -1]] : [];
+  }
+  if (ty === 'demo_caption') {
+    var outCap = [];
+    var rawLines = _moTrGet(blk, 'lines');
+    var lines = Array.isArray(rawLines) ? rawLines.slice(0, 12) : [];
+    for (var li = 0; li < lines.length; li++) {
+      var l0 = lines[li];
+      var l = (l0 !== null && typeof l0 === 'object' && !Array.isArray(l0)) ? l0 : {text: l0};
+      var tCap = _moTrPlain(_moStr(_moTrGet(l, 'text'), 120));
+      if (tCap) {
+        var who = _moTrPlain(_moStr(_moTrGet(l, 'who'), 10)) || 'agent';
+        outCap.push([who + ': ' + tCap, li]);
+      }
+    }
+    return outCap;
+  }
+  if (ty === 'motion_counter') {
+    var vCnt = _moFmt(_moNum(_moTrGet(blk, 'to'), 100), _ffInt(_moTrGet(blk, 'decimals'), 0, 0, 3), _moAff(_moTrGet(blk, 'prefix'), 4), _moAff(_moTrGet(blk, 'suffix'), 8));
+    var labCnt = _moTrPlain(_moStr(_moTrGet(blk, 'label'), 40));
+    return [[(labCnt ? labCnt + ': ' : '') + vCnt, -1]];
+  }
+  if (ty === 'motion_pill') {
+    return [[_moTrPlain(_moStr(_moTrGet(blk, 'text'), 60) || 'Label'), -1]];
+  }
+  if (ty === 'motion_checklist') {
+    var ttl = _moTrPlain(_moStr(_moTrGet(blk, 'title'), 40));
+    var outChk = ttl ? [[ttl, -1]] : [];
+    var chkItems = _moTrGet(blk, 'items');
+    var chkList = Array.isArray(chkItems) ? chkItems.slice(0, 6) : [];
+    for (var ci = 0; ci < chkList.length; ci++) {
+      var it = chkList[ci];
+      var itStr = typeof it === 'string' ? it : ((it !== null && typeof it === 'object' && !Array.isArray(it)) ? _moTrGet(it, 'text') : '');
+      var tChk = _moTrPlain(_moStr(itStr, 40));
+      if (tChk) {
+        outChk.push([tChk, -1]);
+      }
+    }
+    var resChk = [];
+    for (var rci = 0; rci < outChk.length; rci++) {
+      if (outChk[rci][0]) resChk.push(outChk[rci]);
+    }
+    return resChk;
+  }
+  if (ty === 'demo_kpis') {
+    var outKpi = [];
+    var rawKpi = _moTrGet(blk, 'items');
+    var kpiList = Array.isArray(rawKpi) ? rawKpi.slice(0, 4) : [];
+    for (var ki = 0; ki < kpiList.length; ki++) {
+      var it0 = kpiList[ki];
+      var itKpi = (it0 !== null && typeof it0 === 'object' && !Array.isArray(it0)) ? it0 : {};
+      var vKpi = _moFmt(_moNum(_moTrGet(itKpi, 'value'), 0), _ffInt(_moTrGet(itKpi, 'decimals'), 0, 0, 3), _moStr(_moTrGet(itKpi, 'prefix'), 4), _moStr(_moTrGet(itKpi, 'suffix'), 6));
+      var dl = _moStr(_moTrGet(itKpi, 'delta'), 14);
+      outKpi.push([_moTrPlain(_moStr(_moTrGet(itKpi, 'label'), 24) + ': ' + vKpi + (dl ? ' (' + dl + ')' : '')), -1]);
+    }
+    return outKpi;
+  }
+  if (ty === 'demo_chart') {
+    var rawData = _moTrGet(blk, 'data');
+    var sliceData = Array.isArray(rawData) ? rawData.slice(0, 24) : [];
+    var rawPts = [];
+    for (var di = 0; di < sliceData.length; di++) {
+      rawPts.push(_moNum(sliceData[di], 0));
+    }
+    var rawLabs = _moTrGet(blk, 'labels');
+    var labs = Array.isArray(rawLabs) ? rawLabs : [];
+    var pts = [];
+    for (var pi = 0; pi < rawPts.length; pi++) {
+      var pv = rawPts[pi];
+      var lStr = pi < labs.length ? _moStr(labs[pi], 8) : '';
+      pts.push((lStr ? lStr + ' ' : '') + _moFmt(pv, pv !== Math.trunc(pv) ? 2 : 0, '', ''));
+    }
+    var head = _moStr(_moTrGet(blk, 'title'), 40) || 'Chart';
+    var co = _moStr(_moTrGet(blk, 'callout'), 28);
+    var sChart = head + (rawPts.length >= 2 ? ': ' + pts.join(', ') : '') + (co ? '. ' + co : '');
+    return [[_moTrPlain(sChart), -1]];
+  }
+  if (ty === 'demo_progress') {
+    var vPrg = _moFmt(_moNum(_moTrGet(blk, 'to'), 100), _ffInt(_moTrGet(blk, 'decimals'), 0, 0, 3), _moStr(_moTrGet(blk, 'prefix'), 4), _moStr(_moTrGet(blk, 'suffix'), 12));
+    var labPrg = _moStr(_moTrGet(blk, 'label'), 40);
+    return [[_moTrPlain((labPrg ? labPrg + ': ' : '') + vPrg), -1]];
+  }
+  if (ty === 'demo_toggle_grid') {
+    var outTog = [];
+    var rawCards = _moTrGet(blk, 'cards');
+    var cards = Array.isArray(rawCards) ? rawCards.slice(0, 9) : [];
+    for (var tgi = 0; tgi < cards.length; tgi++) {
+      var c0 = cards[tgi];
+      var c = (c0 !== null && typeof c0 === 'object' && !Array.isArray(c0)) ? c0 : {title: c0};
+      var sb = _moStr(_moTrGet(c, 'sub'), 30);
+      var tTog = _moTrPlain(_moStr(_moTrGet(c, 'title'), 22) + (sb ? ', ' + sb : ''));
+      if (tTog) {
+        outTog.push([tTog, -1]);
+      }
+    }
+    return outTog;
+  }
+  return [];
+}
+
+function _moTrWalk(blocks, chain, out) {
+  var list = Array.isArray(blocks) ? blocks.slice(0, 24) : [];
+  for (var i = 0; i < list.length; i++) {
+    var blk = list[i];
+    if (blk === null || typeof blk !== 'object' || Array.isArray(blk)) continue;
+    out.push([blk, chain]);
+    var bId = _moTrGet(blk, 'id');
+    var nextChain = chain.slice();
+    if (typeof bId === 'string' && bId) {
+      nextChain.push(bId);
+    }
+    _moTrWalk(_moTrGet(blk, 'blocks'), nextChain, out);
+  }
+}
+
+function _moTranscript(b, blocks, cfg, dur, th) {
+  var cj;
+  try {
+    var normalizedCfg = (typeof cfg === 'string' ? cfg : '').replace(/([{,])([A-Za-z_]\w*):/g, '$1"$2":');
+    cj = JSON.parse(normalizedCfg);
+  } catch (err) {
+    cj = {tg: []};
+  }
+  if (cj === null || typeof cj !== 'object' || Array.isArray(cj)) cj = {tg: []};
+  var tracks = {};
+  var rawTg = _moTrGet(cj, 'tg');
+  var tg = Array.isArray(rawTg) ? rawTg : [];
+  for (var tgi = 0; tgi < tg.length; tgi++) {
+    var g = tg[tgi];
+    if (g === null || typeof g !== 'object' || Array.isArray(g)) continue;
+    var gid = _moTrGet(g, 'i');
+    if (typeof gid !== 'string') continue;
+    if (!Object.prototype.hasOwnProperty.call(tracks, gid)) {
+      tracks[gid] = {};
+    }
+    var gp = _moTrGet(g, 'p');
+    if (gp !== null && typeof gp === 'object' && !Array.isArray(gp)) {
+      for (var pk in gp) {
+        if (Object.prototype.hasOwnProperty.call(gp, pk)) {
+          var val = gp[pk];
+          if (Array.isArray(val) ? val.length > 0 : !!val) {
+            tracks[gid][pk] = val;
+          }
+        }
+      }
+    }
+  }
+  var n = Math.floor(dur / _MO_TR_STEP) + 1;
+  var times = [];
+  for (var ti = 0; ti < n; ti++) {
+    times.push(ti * _MO_TR_STEP);
+  }
+  var scenes = {};
+  var rawScenes = _moTrGet(b, 'scenes');
+  var scList = Array.isArray(rawScenes) ? rawScenes.slice(0, 12) : [];
+  for (var sci = 0; sci < scList.length; sci++) {
+    var s = scList[sci];
+    if (s !== null && typeof s === 'object' && !Array.isArray(s)) {
+      var sLay = _moId(_moTrGet(s, 'layer'));
+      if (sLay) {
+        scenes[sLay] = 1;
+      }
+    }
+  }
+  var walked = [];
+  _moTrWalk(blocks, [], walked);
+  var rows = [];
+  for (var order = 0; order < walked.length; order++) {
+    var blkEntry = walked[order];
+    var blkObj = blkEntry[0];
+    var anc = blkEntry[1];
+    var items = _moTrItems(blkObj);
+    if (!items.length) continue;
+    var bid = _moTrGet(blkObj, 'id');
+    var bidStr = typeof bid === 'string' ? bid : '';
+    var mine = (bidStr && Object.prototype.hasOwnProperty.call(tracks, bidStr)) ? tracks[bidStr] : {};
+    var chain = anc.slice();
+    if (bidStr) chain.push(bidStr);
+    var scene = '';
+    for (var ai = 0; ai < anc.length; ai++) {
+      if (Object.prototype.hasOwnProperty.call(scenes, anc[ai])) {
+        scene = anc[ai];
+        break;
+      }
+    }
+    for (var k = 0; k < items.length; k++) {
+      var text = items[k][0];
+      var li = items[k][1];
+      var flags = [];
+      for (var fti = 0; fti < times.length; fti++) {
+        var tVal = times[fti];
+        var ok = true;
+        for (var ci = 0; ci < chain.length; ci++) {
+          var trkId = chain[ci];
+          var ko = Object.prototype.hasOwnProperty.call(tracks, trkId) ? _moTrGet(tracks[trkId], 'opacity') : undefined;
+          if (ko && _moTrAt(ko, tVal) < _MO_TR_SHOWN) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok && li >= 0) {
+          var st = _moTrGet(mine, 'step');
+          ok = st ? Math.abs(_moTrAt(st, tVal) - li) < 0.5 : (li === 0);
+        } else if (ok && li < 0) {
+          var p = _moTrGet(mine, 'p');
+          ok = (p === undefined) || (_moTrAt(p, tVal) >= _MO_TR_SHOWN);
+        }
+        flags.push(ok);
+      }
+      var start = null;
+      var spans = [];
+      var flagsPlus = flags.concat([false]);
+      for (var fi = 0; fi < flagsPlus.length; fi++) {
+        var on = flagsPlus[fi];
+        if (on && start === null) {
+          start = times[fi];
+        } else if (!on && start !== null) {
+          var endT = fi < n ? times[fi] : dur;
+          spans.push([start, endT < dur ? endT : dur]);
+          start = null;
+        }
+      }
+      for (var si = 0; si < spans.length; si++) {
+        var a = spans[si][0];
+        var z = spans[si][1];
+        if (z - a >= _MO_TR_MIN) {
+          rows.push([a, z, order, k, scene, text, rows.length]);
+        }
+      }
+    }
+  }
+  rows.sort(function(r1, r2) {
+    if (r1[0] !== r2[0]) return r1[0] < r2[0] ? -1 : 1;
+    if (r1[1] !== r2[1]) return r1[1] < r2[1] ? -1 : 1;
+    if (r1[2] !== r2[2]) return r1[2] < r2[2] ? -1 : 1;
+    if (r1[3] !== r2[3]) return r1[3] < r2[3] ? -1 : 1;
+    return r1[6] < r2[6] ? -1 : 1;
+  });
+  if (rows.length > 200) {
+    rows = rows.slice(0, 200);
+  }
+  var thLine = _moTrGet(th, 'line') || '';
+  var td = 'padding:4px 8px;border-bottom:1px solid ' + thLine + ';vertical-align:top;text-align:left;';
+  var body = '';
+  for (var ri = 0; ri < rows.length; ri++) {
+    var row = rows[ri];
+    var rowA = row[0], rowZ = row[1], rowSc = row[4], rowTx = row[5];
+    body += '<tr><td style="' + td + 'white-space:nowrap;">' + _moTrClock(rowA) + ' - ' + _moTrClock(rowZ) + '</td><td style="' + td + '">' + _esc(rowSc || '-') + '</td><td style="' + td + '">' + _esc(rowTx) + '</td></tr>';
+  }
+  var inner = rows.length ?
+    ('<table style="width:100%;border-collapse:collapse;margin-top:8px;"><caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Everything the film shows, in reading order</caption>' +
+     '<thead><tr><th scope="col" style="' + td + '">Time</th><th scope="col" style="' + td + '">Scene</th><th scope="col" style="' + td + '">Text</th></tr></thead><tbody>' + body + '</tbody></table>') :
+    '<p style="margin:8px 0 0;">This film shows no text.</p>';
+  return '<details class="mt-tr" style="margin-top:10px;font-size:0.85rem;color:var(--text,#334155);"><summary style="cursor:pointer;font-weight:600;">Transcript</summary>' + inner + '</details>';
+}
+
 function _moTimeline(b) {
   var uid = Math.random().toString(36).substr(2, 6), th = _ffTheme(b), acc = _ffHex(b.accent, '#38bdf8');
   var asp = _ffPick(b.aspect, _MO_ASPECT, '16:9'), W = asp[0], H = asp[1];
@@ -847,13 +1165,14 @@ function _moTimeline(b) {
       + '<span class="mt-tm" style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:var(--text,#334155);min-width:64px;text-align:right;">0:00</span></div>'
     : '';
   var note = st.dropped ? '<!-- a2ui: motion_timeline ignored ' + st.dropped + ' invalid or over-limit item(s) -->' : '';
+  var transcript = b.transcript === true ? _moTranscript(b, blocks, cfg, durN, th) : '';
   return '<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
     + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
     + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + W + '/' + H + ';overflow:hidden;border-radius:16px;background:' + stBg + ';border:1px solid ' + th.line + ';">'
     + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + stBg + ';' + glow + '--mt-ink:' + th.ink + ';--mt-mute:' + th.mute + ';--mt-acc:' + acc + ';overflow:hidden;">'
     + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
     + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none;">' + hud + '</div></div></div>'
-    + controls + note
+    + controls + note + transcript
     + '<script>' + _moTlJs(cfg).replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, function() { return cfg; }) + '<\/script></div>';
 }
 _RENDERERS['motion_timeline'] = function(b) {

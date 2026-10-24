@@ -29649,6 +29649,186 @@ def _mo_trail(tr, idx, tid, keys, pth, box, bpm, dur, def_ease, st):
     return html, tg
 
 
+# ── transcript (I92, 2026-10-24): every text and value a film shows, with the time it is on screen ──────────────────────
+# Cue timing is the film_to_vtt algorithm (scripts/film_vtt.py): sampled every 50 ms from the player's own keyframes. Twin: _moTranscript in atoms_motion.gs.
+_MO_TR_STEP, _MO_TR_MIN, _MO_TR_SHOWN = 0.05, 0.2, 0.5
+
+
+def _mo_tr_bez(a, b, t):
+    u = 1 - t
+    return 3 * u * u * t * a + 3 * u * t * t * b + t * t * t
+
+
+def _mo_tr_ez(e, u):
+    if u <= 0:
+        return 0.0
+    if u >= 1:
+        return 1.0
+    if not e:
+        return u
+    if e == 1:
+        return 0.0
+    lo, hi, t = 0.0, 1.0, u
+    for _ in range(28):
+        t = (lo + hi) / 2
+        if _mo_tr_bez(e[0], e[2], t) < u:
+            lo = t
+        else:
+            hi = t
+    return _mo_tr_bez(e[1], e[3], t)
+
+
+def _mo_tr_at(keys, t):
+    if t <= keys[0][0]:
+        return keys[0][1]
+    if t >= keys[-1][0]:
+        return keys[-1][1]
+    for i in range(1, len(keys)):
+        if t <= keys[i][0]:
+            a, b = keys[i - 1], keys[i]
+            return a[1] + (b[1] - a[1]) * _mo_tr_ez(b[2] if len(b) > 2 else None, (t - a[0]) / (b[0] - a[0]))
+    return keys[-1][1]
+
+
+def _mo_tr_plain(s):
+    return re.sub(r'\s+', ' ', (s if isinstance(s, str) else '').replace('*', '')).strip()
+
+
+def _mo_tr_items(blk):
+    """The texts one block shows, as [(text, caption line index or -1)]."""
+    ty = blk.get('type')
+    if ty == 'motion_text':
+        t = _mo_tr_plain(blk.get('text'))
+        return [(t, -1)] if t else []
+    if ty == 'demo_caption':
+        out = []
+        for li, l0 in enumerate(blk['lines'][:12] if isinstance(blk.get('lines'), list) else []):
+            l = l0 if isinstance(l0, dict) else {'text': l0}
+            t = _mo_tr_plain(_cv_str(l.get('text'), 120))
+            if t:
+                out.append(((_mo_tr_plain(_cv_str(l.get('who'), 10)) or 'agent') + ': ' + t, li))
+        return out
+    if ty == 'motion_counter':
+        v = _mo_fmt(_mo_num(blk.get('to'), 100), _ff_int(blk.get('decimals'), 0, 0, 3), _mo_aff(blk.get('prefix'), 4), _mo_aff(blk.get('suffix'), 8))
+        lab = _mo_tr_plain(_cv_str(blk.get('label'), 40))
+        return [((lab + ': ' if lab else '') + v, -1)]
+    if ty == 'motion_pill':
+        return [(_mo_tr_plain(_cv_str(blk.get('text'), 60) or 'Label'), -1)]
+    if ty == 'motion_checklist':
+        ttl = _mo_tr_plain(_cv_str(blk.get('title'), 40))
+        out = [(ttl, -1)] if ttl else []
+        for it in (blk.get('items') if isinstance(blk.get('items'), list) else [])[:6]:
+            t = _mo_tr_plain(_cv_str(it if isinstance(it, str) else (it.get('text') if isinstance(it, dict) else ''), 40))
+            if t:
+                out.append((t, -1))
+        return [o for o in out if o[0]]
+    if ty == 'demo_kpis':
+        out = []
+        for it0 in (blk.get('items') if isinstance(blk.get('items'), list) else [])[:4]:
+            it = it0 if isinstance(it0, dict) else {}
+            v = _mo_fmt(_mo_num(it.get('value'), 0), _ff_int(it.get('decimals'), 0, 0, 3), _cv_str(it.get('prefix'), 4), _cv_str(it.get('suffix'), 6))
+            dl = _cv_str(it.get('delta'), 14)
+            out.append((_mo_tr_plain(_cv_str(it.get('label'), 24) + ': ' + v + (' (' + dl + ')' if dl else '')), -1))
+        return out
+    if ty == 'demo_chart':
+        raw = [_mo_num(v, 0) for v in (blk.get('data')[:24] if isinstance(blk.get('data'), list) else [])]
+        labs = blk.get('labels') if isinstance(blk.get('labels'), list) else []
+        pts = [(_cv_str(labs[i], 8) + ' ' if i < len(labs) and _cv_str(labs[i], 8) else '') + _mo_fmt(v, 2 if v != math.trunc(v) else 0, '', '') for i, v in enumerate(raw)]
+        head = _cv_str(blk.get('title'), 40) or 'Chart'
+        co = _cv_str(blk.get('callout'), 28)
+        s = head + (': ' + ', '.join(pts) if len(raw) >= 2 else '') + ('. ' + co if co else '')
+        return [(_mo_tr_plain(s), -1)]
+    if ty == 'demo_progress':
+        v = _mo_fmt(_mo_num(blk.get('to'), 100), _ff_int(blk.get('decimals'), 0, 0, 3), _cv_str(blk.get('prefix'), 4), _cv_str(blk.get('suffix'), 12))
+        lab = _cv_str(blk.get('label'), 40)
+        return [(_mo_tr_plain((lab + ': ' if lab else '') + v), -1)]
+    if ty == 'demo_toggle_grid':
+        out = []
+        for c0 in (blk.get('cards')[:9] if isinstance(blk.get('cards'), list) else []):
+            c = c0 if isinstance(c0, dict) else {'title': c0}
+            sb = _cv_str(c.get('sub'), 30)
+            t = _mo_tr_plain(_cv_str(c.get('title'), 22) + (', ' + sb if sb else ''))
+            if t:
+                out.append((t, -1))
+        return out
+    return []
+
+
+def _mo_tr_walk(blocks, chain, out):
+    for blk in (blocks[:24] if isinstance(blocks, list) else []):
+        if not isinstance(blk, dict):
+            continue
+        out.append((blk, chain))
+        _mo_tr_walk(blk.get('blocks'), chain + ((blk['id'],) if isinstance(blk.get('id'), str) and blk.get('id') else ()), out)
+
+
+def _mo_tr_clock(t):
+    k = int(t * 1000 + 0.5) // 100
+    return str(k // 600) + ':' + str(k // 10 % 60).zfill(2) + '.' + str(k % 10)
+
+
+def _mo_transcript(b, blocks, cfg, dur, th):
+    try:
+        cj = _json.loads(re.sub(r'(?<=[{,])([A-Za-z_]\w*):', r'"\1":', cfg))
+    except ValueError:
+        cj = {'tg': []}
+    tracks = {}
+    for g in cj.get('tg', []):
+        tracks.setdefault(g['i'], {}).update({k: v for k, v in g['p'].items() if v})
+    n = int(dur / _MO_TR_STEP) + 1
+    times = [i * _MO_TR_STEP for i in range(n)]
+    scenes = {}
+    for s in (b.get('scenes') if isinstance(b.get('scenes'), list) else [])[:12]:
+        if isinstance(s, dict) and _mo_id(s.get('layer')):
+            scenes[_mo_id(s.get('layer'))] = 1
+    walked = []
+    _mo_tr_walk(blocks, (), walked)
+    rows = []
+    for order, (blk, anc) in enumerate(walked):
+        items = _mo_tr_items(blk)
+        if not items:
+            continue
+        bid = blk.get('id') if isinstance(blk.get('id'), str) else ''
+        mine = tracks.get(bid, {}) if bid else {}
+        chain = anc + ((bid,) if bid else ())
+        scene = next((a for a in anc if a in scenes), '')
+        for k, (text, li) in enumerate(items):
+            flags = []
+            for t in times:
+                ok = True
+                for i in chain:
+                    ko = tracks.get(i, {}).get('opacity')
+                    if ko and _mo_tr_at(ko, t) < _MO_TR_SHOWN:
+                        ok = False
+                        break
+                if ok and li >= 0:
+                    st = mine.get('step')
+                    ok = abs(_mo_tr_at(st, t) - li) < 0.5 if st else li == 0
+                elif ok and li < 0:
+                    p = mine.get('p')
+                    ok = p is None or _mo_tr_at(p, t) >= _MO_TR_SHOWN
+                flags.append(ok)
+            start = None
+            spans = []
+            for i, on in enumerate(flags + [False]):
+                if on and start is None:
+                    start = times[i]
+                elif not on and start is not None:
+                    spans.append((start, min(times[i] if i < n else dur, dur)))
+                    start = None
+            for a, z in spans:
+                if z - a >= _MO_TR_MIN:
+                    rows.append((a, z, order, k, scene, text))
+    rows.sort(key=lambda r: (r[0], r[1], r[2], r[3]))
+    rows = rows[:200]
+    td = 'padding:4px 8px;border-bottom:1px solid ' + th['line'] + ';vertical-align:top;text-align:left;'
+    body = ''.join('<tr><td style="' + td + 'white-space:nowrap;">' + _mo_tr_clock(a) + ' - ' + _mo_tr_clock(z) + '</td><td style="' + td + '">' + _cv_esc(sc or '-') + '</td><td style="' + td + '">' + _cv_esc(tx) + '</td></tr>'
+                   for a, z, _o, _k, sc, tx in rows)
+    inner = ('<table style="width:100%;border-collapse:collapse;margin-top:8px;"><caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Everything the film shows, in reading order</caption>'
+             '<thead><tr><th scope="col" style="' + td + '">Time</th><th scope="col" style="' + td + '">Scene</th><th scope="col" style="' + td + '">Text</th></tr></thead><tbody>' + body + '</tbody></table>') if rows else '<p style="margin:8px 0 0;">This film shows no text.</p>'
+    return ('<details class="mt-tr" style="margin-top:10px;font-size:0.85rem;color:var(--text,#334155);"><summary style="cursor:pointer;font-weight:600;">Transcript</summary>' + inner + '</details>')
+
+
 def _mo_timeline(b: dict) -> str:
     uid = _wa_uid(b)[:6]
     th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
@@ -29736,13 +29916,14 @@ def _mo_timeline(b: dict) -> str:
                     + '<input type="range" class="mt-rng" min="0" max="1000" value="0" aria-label="Timeline position" style="flex:1;min-width:0;accent-color:' + acc + ';">'
                     + '<span class="mt-tm" style="font-family:' + _CV_VOICES['mono'] + ';font-size:0.72rem;color:var(--text,#334155);min-width:64px;text-align:right;">0:00</span></div>')
     note = '<!-- a2ui: motion_timeline ignored ' + str(st['dropped']) + ' invalid or over-limit item(s) -->' if st['dropped'] else ''
+    transcript = _mo_transcript(b, blocks, cfg, dur_n, th) if b.get('transcript') is True else ''
     return ('<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _cv_esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
             + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
             + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + str(W) + '/' + str(H) + ';overflow:hidden;border-radius:16px;background:' + st_bg + ';border:1px solid ' + th['line'] + ';">'
             + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + '--mt-ink:' + th['ink'] + ';--mt-mute:' + th['mute'] + ';--mt-acc:' + acc + ';overflow:hidden;">'
             + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
             + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>'
-            + controls + note
+            + controls + note + transcript
             + '<script>' + _mo_tl_js(cfg).replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script></div>')
 
 

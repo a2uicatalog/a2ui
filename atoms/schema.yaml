@@ -10025,6 +10025,7 @@ blocks:
       it shows the poster frame.
     controls: bool (optional). Play/pause button, scrubber and clock. Default true.
     poster: number (optional). Seconds; the frame shown when not autoplaying. Default 60% of duration.
+    transcript: 'bool (optional). Default false (nothing is added). True adds, under the stage, a "Transcript" disclosure (a details element, works without script) holding a table of every text and value the film shows, in reading order: time on screen (from the same keyframes as the player, the cue timing of film_to_vtt), scene (the scene layer it sits in), and the text. Covers motion_text, demo_caption lines, motion_counter, motion_pill, motion_checklist, demo_kpis, demo_chart (title, labels and values), demo_progress and demo_toggle_grid, nested or not. Up to 200 rows.'
     theme: '"dark" | "light"  (optional, default "dark"). Stage background and control colours.'
     accent: '"#rrggbb" (optional). Glow and control accent. Default "#38bdf8".'
     background: '"#rrggbb" (optional). Stage background override.'
