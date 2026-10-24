@@ -9498,7 +9498,7 @@ def _render_typing_indicator(b: dict) -> str:
         f'.ti_dot_{uid}:nth-child(2){{animation:ti_bounce_{uid} 1.2s ease-in-out 0.2s infinite;}}'
         f'.ti_dot_{uid}:nth-child(3){{animation:ti_bounce_{uid} 1.2s ease-in-out 0.4s infinite;}}'
         f'</style>'
-        f'<div style="display:flex;align-items:flex-end;gap:8px;margin:1rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("name"), "typing_indicator")}" style="display:flex;align-items:flex-end;gap:8px;margin:1rem 0;">'
         f'<div style="width:32px;height:32px;border-radius:50%;background:{dot_col};'
         f'display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;'
         f'color:#fff;flex-shrink:0;">{_cv_esc(name[0].upper())}</div>'
@@ -20042,7 +20042,7 @@ def _render_stance(b: dict) -> str:
         + (f'<div style="margin-top:10px;font-size:0.9rem;line-height:1.5;font-style:italic;color:{th["mute"]};">I would change my mind if {_cv_esc(unless)}</div>' if unless else '')
         + ('<script>' + _CV_STANCE_JS.replace('%%UID%%', uid) + '</script>' if inter else '')
     )
-    return _cv_card(th, inner)
+    return _cv_card(th, inner).replace('<div', '<div data-cb="node" data-key="' + _ck(b.get("claim"), "stance") + '"', 1)
 
 
 def _render_receipt(b: dict) -> str:
@@ -20130,7 +20130,7 @@ def _render_changed_mind(b: dict) -> str:
         f'<div style="margin-top:8px;font-family:{font};font-weight:900;font-size:clamp(1.5rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;{("animation:cm-a-" + uid + " 0.6s cubic-bezier(0.2,0.8,0.2,1) 1.1s both;") if animate else ""}">{_cv_esc(after)}</div>'
         + (f'<div style="margin-top:18px;padding-left:12px;border-left:2px solid {accent};font-family:{_CV_VOICES["mono"]};font-size:0.78rem;line-height:1.5;color:{th["mute"]};">{_cv_esc(since)}</div>' if since else '')
     )
-    return css + _cv_card(th, inner)
+    return css + _cv_card(th, inner).replace('<div', '<div data-cb="node" data-key="' + _ck(b.get("since"), "changed_mind") + '"', 1)
 
 
 _RENDERERS["weighted_words"] = _render_weighted_words
@@ -20701,7 +20701,7 @@ def _render_readability_card(b: dict) -> str:
              + stat(words, 'words') + stat(len(sents), 'sentences') + stat(f'{mins} min', 'to read') + stat(asl, 'words / sentence')
              + stat(spw, 'syllables / word') + stat(longest_n, 'longest sentence') + '</div></div>'
              + (f'<div style="margin-top:20px;padding-top:16px;border-top:1px solid {th["line"]};font-family:{_CV_VOICES["serif"]};font-size:0.98rem;line-height:1.7;color:{th["ink"]};max-height:220px;overflow:auto;">{excerpt.strip()}</div>' if text else ''))
-    return _cv_card(th, inner)
+    return _cv_card(th, inner).replace('<div', '<div data-cb="node" data-key="' + _ck(b.get("title"), "readability_card") + '"', 1)
 
 
 def _render_drop_cap(b: dict) -> str:
@@ -25911,7 +25911,7 @@ def _layer_cell_html(cell: dict, stretch: bool = False, label: str = '') -> str:
     )
 
 
-def _render_stack_layer(b: dict) -> str:
+def _render_stack_layer(b: dict, _node: bool = True) -> str:
     """One band of a layer_stack. Renders standalone (no column headers) so it
     stays independently addressable by ComponentId."""
     status = _layer_status(b.get('status'))
@@ -25962,7 +25962,7 @@ def _render_stack_layer(b: dict) -> str:
             'padding-left:0.15rem;">' + chips + '</div>'
         )
 
-    return (
+    html = (
         f'<div style="background:{_layer_token("paper_raised")};border:1px solid {_layer_token("line")};'
         f'border-left:3px solid {_layer_token(strong)};border-radius:10px;'
         'padding:0.85rem 1rem;">'
@@ -25978,6 +25978,9 @@ def _render_stack_layer(b: dict) -> str:
         + examples_html
         + '</div>'
     )
+    # layer_stack passes _node=False: it already wraps each band in its own data-cb="bar"
+    return html.replace('<div', '<div data-cb="node" data-key="' + _ck(b.get('name'), 'stack_layer') + '"', 1) if _node else html
+
 
 _RENDERERS['stack_layer'] = _render_stack_layer
 
@@ -26045,8 +26048,8 @@ def _render_layer_stack(b: dict) -> str:
     bands = ''.join(
         f'<div data-cb="bar" data-key="{_esc(layer.get("id") or layer.get("name") or layer.get("title") or f"layer-{i + 1}")}" data-component-id="{_esc(layer.get("id") or f"layer-{i + 1}")}" '
         'style="scroll-margin-top:1.5rem;">'
-        + _RENDERERS.get(layer.get('component') or layer.get('type') or 'stack_layer',
-                         _render_stack_layer)(layer)
+        + (_render_stack_layer(layer, False) if (layer.get('component') or layer.get('type') or 'stack_layer') == 'stack_layer'
+           else _RENDERERS.get(layer.get('component') or layer.get('type'), _render_stack_layer)(layer))
         + '</div>'
         for i, layer in visual
     )
@@ -28162,7 +28165,7 @@ def _render_scene_stage(b: dict) -> str:
 def _render_clipart(b: dict) -> str:
     """Static surface: the clipart kit is embedded in the JS renderers only; show the caption text instead of nothing."""
     text = b.get("alt") or b.get("label") or b.get("asset") or "clipart"
-    return f'<figure class="a2ui-clipart" style="margin:0.5rem 0;display:inline-block;color:var(--muted,#5f6368);font-size:0.85rem;">[ {_esc(text)} ]</figure>'
+    return f'<figure class="a2ui-clipart" data-cb="node" data-key="{_ck(b.get("asset"), "clipart")}" style="margin:0.5rem 0;display:inline-block;color:var(--muted,#5f6368);font-size:0.85rem;">[ {_esc(text)} ]</figure>'
 
 
 _RENDERERS['scene_stage'] = _render_scene_stage

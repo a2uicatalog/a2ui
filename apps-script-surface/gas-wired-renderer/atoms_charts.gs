@@ -2286,7 +2286,7 @@ _RENDERERS['typing_indicator'] = function(b) {
     + '.ti-dot-' + uid + ':nth-child(3){animation-delay:0.4s;}'
     + '@keyframes ti-' + uid + '{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-7px);}}'
     + '</style>'
-    + '<div style="margin:1rem 0;display:flex;align-items:center;gap:10px;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.name, 'typing_indicator') + '" style="margin:1rem 0;display:flex;align-items:center;gap:10px;">'
     + '<div class="ti-wrap-' + uid + '"><div class="ti-dot-' + uid + '"></div><div class="ti-dot-' + uid + '"></div><div class="ti-dot-' + uid + '"></div></div>'
     + (label ? '<span style="font-size:0.85rem;color:var(--muted,#5f6368);">' + _esc(label) + '</span>' : '')
     + '</div>';

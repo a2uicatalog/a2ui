@@ -9208,7 +9208,7 @@
   "parity": false
  },
  "stance": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "stance",
@@ -9229,7 +9229,7 @@
   "parity": false
  },
  "changed_mind": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "changed_mind",
@@ -9249,7 +9249,7 @@
   "parity": false
  },
  "readability_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "readability_card",
@@ -10113,7 +10113,7 @@
   "parity": false
  },
  "typing_indicator": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "typing_indicator",
@@ -11980,7 +11980,7 @@
   "parity": false
  },
  "stack_layer": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "stack_layer",
@@ -12183,7 +12183,7 @@
   "parity": false
  },
  "clipart": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "clipart",

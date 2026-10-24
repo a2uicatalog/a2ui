@@ -565,7 +565,7 @@ _RENDERERS['typing_indicator'] = function(b) {
     return '<span class="' + uid + '-d" style="animation-delay:' + d + 's;' + (i > 0 ? 'margin-left:4px;' : '') + '"></span>';
   }).join('');
 
-  return css + '<div style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;background:' + bg + ';border-radius:18px 18px 18px 4px;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+  return css + '<div data-cb="node" data-key="' + _ckey(b.name, 'typing_indicator') + '" style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;background:' + bg + ';border-radius:18px 18px 18px 4px;margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + (label ? '<span style="font-size:0.82rem;color:' + color + ';">' + label + '</span>' : '')
     + '<span>' + dots + '</span></div>';
 };

@@ -1597,7 +1597,7 @@ function buildScene(specIn, atom) {
       var r = renderPropPreview(a, b.asset, b.variant, b.time || 'day');
       var sc = b.scale === undefined ? 1 : Math.max(0.2, Math.min(5, Number(b.scale) || 1));
       var vb = r.viewBox.split(/\s+/).map(Number), w = Math.round(vb[2] * sc), flip = b.flip ? ' transform="scale(-1 1)" transform-origin="center"' : '';
-      return '<figure class="a2ui-clipart" style="margin:0.5rem 0;display:inline-block;">' +
+      return '<figure class="a2ui-clipart" data-cb="node" data-key="' + esc(typeof b.asset === 'string' && b.asset ? b.asset : 'clipart') + '" style="margin:0.5rem 0;display:inline-block;">' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + r.viewBox + '" style="width:' + w + 'px;max-width:100%;height:auto;display:block" role="img" aria-label="' + esc(b.alt || e.name) + '"><g' + flip + '>' + r.markup + '</g></svg>' +
         (b.label ? '<figcaption style="font-size:0.8rem;color:var(--muted,#5f6368);text-align:center;">' + esc(b.label) + '</figcaption>' : '') + '</figure>';
     } catch (err) { return failure(err); }

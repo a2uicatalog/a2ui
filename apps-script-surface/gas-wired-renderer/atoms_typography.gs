@@ -447,7 +447,7 @@ _RENDERERS['stance'] = function(b) {
     + (because ? '<div style="margin-top:18px;font-size:0.98rem;line-height:1.55;color:' + th.ink + ';"><span style="color:' + th.mute + ';">because</span> ' + _esc(because) + '</div>' : '')
     + (unless ? '<div style="margin-top:10px;font-size:0.9rem;line-height:1.5;font-style:italic;color:' + th.mute + ';">I would change my mind if ' + _esc(unless) + '</div>' : '')
     + (inter ? '<script>' + _CV_STANCE_JS.replace(/%%UID%%/g, uid) + '<\/script>' : '');
-  return _cvCard(th, inner);
+  return _cvCard(th, inner).replace('<div', function() { return '<div data-cb="node" data-key="' + _ckey(b.claim, 'stance') + '"'; });
 };
 
 _RENDERERS['receipt'] = function(b) {
@@ -520,7 +520,7 @@ _RENDERERS['changed_mind'] = function(b) {
     + '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + accent + ';">Now I think</div>'
     + '<div style="margin-top:8px;font-family:' + font + ';font-weight:900;font-size:clamp(1.5rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;' + (animate ? 'animation:cm-a-' + uid + ' 0.6s cubic-bezier(0.2,0.8,0.2,1) 1.1s both;' : '') + '">' + _esc(after) + '</div>'
     + (since ? '<div style="margin-top:18px;padding-left:12px;border-left:2px solid ' + accent + ';font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;line-height:1.5;color:' + th.mute + ';">' + _esc(since) + '</div>' : '');
-  return css + _cvCard(th, inner);
+  return css + _cvCard(th, inner).replace('<div', function() { return '<div data-cb="node" data-key="' + _ckey(b.since, 'changed_mind') + '"'; });
 };
 
 
@@ -676,7 +676,7 @@ _RENDERERS['readability_card'] = function(b) {
     + '<div style="flex:1 1 260px;display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px 18px;padding-top:6px;">'
     + stat(words, 'words') + stat(sents.length, 'sentences') + stat(mins + ' min', 'to read') + stat(asl, 'words / sentence') + stat(spw, 'syllables / word') + stat(longestN, 'longest sentence') + '</div></div>'
     + (text ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid ' + th.line + ';font-family:' + _CV_VOICES.serif + ';font-size:0.98rem;line-height:1.7;color:' + th.ink + ';max-height:220px;overflow:auto;">' + excerpt.trim() + '</div>' : '');
-  return _cvCard(th, inner);
+  return _cvCard(th, inner).replace('<div', function() { return '<div data-cb="node" data-key="' + _ckey(b.title, 'readability_card') + '"'; });
 };
 
 _RENDERERS['drop_cap'] = function(b) {

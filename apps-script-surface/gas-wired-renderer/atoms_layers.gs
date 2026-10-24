@@ -159,7 +159,7 @@ _RENDERERS['stack_layer'] = function(b) {
     cellsHtml += _layerCellHtml(cells[c], stretch, (c < labels.length) ? labels[c] : '');
   }
 
-  return '<div style="background:' + _layerToken('paper_raised') + ';'
+  var html = '<div style="background:' + _layerToken('paper_raised') + ';'
     + 'border:1px solid ' + _layerToken('line') + ';'
     + 'border-left:3px solid ' + _layerToken(strong) + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);'
     + 'padding:0.85rem 1rem;">'
@@ -169,6 +169,8 @@ _RENDERERS['stack_layer'] = function(b) {
     + '</div>'
     + examplesHtml
     + '</div>';
+  // inside a layer_stack (it injects _columns, which is never authored) the band already sits in its own data-cb="bar"
+  return b._columns ? html : html.replace('<div', function() { return '<div data-cb="node" data-key="' + _ckey(b.name, 'stack_layer') + '"'; });
 };
 
 _RENDERERS['layer_stack'] = function(b) {
