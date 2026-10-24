@@ -27,6 +27,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import bundle_diet  # noqa: E402  lossless size reduction: indentation/comment stripping and the scene kit data packing
+
 RENDERER_DIR = ROOT / "apps-script-surface" / "gas-wired-renderer"
 OUT = ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html"
 # Same bundle, byte-for-byte, ALSO served from play.a2uicatalog.ai (a
@@ -702,7 +705,7 @@ def escape_script_close(js):
 
 
 def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View",
-                 viewport=False):
+                 viewport=False, diet=True):
     """Concatenate the renderer into a self-contained browser page.
 
     `boot_block` is the trailing <script> that decides HOW the page gets its
@@ -732,11 +735,16 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
     # atoms_choropleth_data.gs: GENERATED region outlines (scripts/emit_choropleth_gas_data.py from atoms/geo), read at render time by atoms_choropleth.gs.
     # atoms_tokens.gs: GENERATED palette design-token logic (gen_design_tokens.py); `palette` in atom.gs calls _tokenCss().
     NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_v1_icons.gs", "atoms_wired_expand.gs", "atoms_wired_render.gs", "atoms_scene_data.gs", "atoms_tokens.gs", "atoms_choropleth_data.gs", "atoms_geo_shared.gs"}
+    keep = bundle_diet.shipped_function_names(
+        [f.read_text() for f in renderer_files()] + [(RENDERER_DIR / n).read_text() for n in PARTIALS])
+    strip = (lambda t: bundle_diet.strip_js(t, keep)) if diet else (lambda t: t)
     for f in renderer_files():
         src = f.read_text()
         if f.name not in NON_RENDERER_GS:
             assert "_RENDERERS[" in src, f"{f.name}: no renderers — wrong include?"
-        core_parts.append(f"// ==== {f.name} ====\n{src}")
+        if diet and f.name == "atoms_scene_data.gs":
+            src = bundle_diet.pack_scene_data(src)
+        core_parts.append(f"// ==== {f.name} ====\n{strip(src)}")
     core_parts.append(class_c_overrides())
     core_parts.append(data_sources_js())
     core_parts.append(DATA_FEEDS_JS)
@@ -746,11 +754,11 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
     # branch, so it belongs in the shared core block rather than an isolated
     # module script. DOM-free (no window/document references), safe for the
     # Node-testable core block.
-    core_parts.append("// ==== vendor/qrcodegen/qrcodegen.js ====\n" + QRCODEGEN_PATH.read_text())
+    core_parts.append("// ==== vendor/qrcodegen/qrcodegen.js ====\n" + strip(QRCODEGEN_PATH.read_text()))
     core = escape_script_close("\n\n".join(core_parts))
 
     client = escape_script_close("\n\n".join(
-        f"// ==== {name} ====\n{partial_body(name)}" for name in PARTIALS
+        f"// ==== {name} ====\n{strip(partial_body(name))}" for name in PARTIALS
     ))
 
     for label, block in (("core", core), ("client", client), ("handshake", boot_block)):

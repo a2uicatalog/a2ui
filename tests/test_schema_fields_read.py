@@ -26,7 +26,11 @@ BASELINE = Path(__file__).resolve().parent / "schema_fields_unread_baseline.json
 
 def _renderer_sources():
     """Source text of each _RENDERERS entry, up to the next assignment."""
-    src = BUNDLE.read_text()
+    # The UNSTRIPPED build: this check is lexical, so comments and data must keep counting exactly as before the bundle diet.
+    import sys
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle
+    src = gen_mcp_apps_bundle.build_bundle(diet=False)
     starts = [(m.group(1) or m.group(2), m.start()) for m in
               re.finditer(r"_RENDERERS(?:\[['\"](\w+)['\"]\]|\.(\w+))\s*=", src)]
     out = {}
