@@ -410,6 +410,21 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
                     return t
         return None
 
+    def isolate(group):
+        """The atoms of group whose edits pass the fast gate, found by halving when a failure names none of them."""
+        apply([e for e in applied if e.get('atom') in group], files, scope)
+        f, _, _ = gate(group, locate, fast=True)
+        for fn, s0 in snapshot.items():
+            open(fn, 'w').write(s0)
+        if not f:
+            return list(group)
+        if not set(f) >= set(group):
+            return isolate([t for t in group if t not in f])
+        if len(group) == 1:
+            return []
+        h = len(group) // 2
+        return isolate(group[:h]) + isolate(group[h:])
+
     files[UNREAD] = 1   # restored with the renderers if the batch is put back
     snapshot = {f: open(f).read() for f in files}
     history, total, applied = [], {'prompt': 0, 'answer': 0, 'thinking': 0}, []
@@ -463,7 +478,10 @@ def run_batch(cfg_str, atom_list, rounds=3, keep_failing=False, log_dir=None):
                 break
             for f, s0 in snapshot.items():
                 open(f, 'w').write(s0)
-            keep = [t for t in keep if t not in f2]
+            if set(f2) >= set(keep) and len(keep) > 1:   # nothing pinned (a neighbour atom broke): bisect on the fast gate
+                keep = isolate(keep)
+            else:
+                keep = [t for t in keep if t not in f2]
             print('replay failed %s; replaying %s' % (f2, keep), flush=True)
         else:
             keep = []
