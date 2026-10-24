@@ -37878,6 +37878,162 @@ def _render_candlestick_chart(b: dict) -> str:
     return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'candlestick_chart') + _if_table(head, rows))
 
 
+# ── parallel_coords (Plotly parcoords) ── each dimension is a d3 scaleLinear (domain nice(min, max, 5), or the explicit [min, max]) on a vertical
+# axis; the axes sit at d3 scalePoint().padding(0.5); each row is d3.line().digits(2) through its value on every axis. Drawn in a 1000 x 260 viewBox
+# stretched to the box (preserveAspectRatio none, non-scaling strokes) so every label is real 12px HTML text. Twin of _pcLayout and
+# _RENDERERS['parallel_coords'] in atoms_infographic.gs.
+_PC_W, _PC_TOP, _PC_BOT = 1000, 16, 244
+_PC_H = 260
+
+
+def _pc_lerp(a, c, t):
+    return a * (1 - t) + c * t
+
+
+def _pc_layout(dims):
+    """dims: [{values: [numbers], min?, max?, reverse?}], every row complete -> {xs, domains, ticks, tickY, ys, paths} (d3 outputs, exact)."""
+    n = len(dims)
+    step = _PC_W / max(1, n - 1 + 0.5 * 2)
+    start = 0 + (_PC_W - 0 - step * (n - 1)) * 0.5
+    xs = [start + step * i for i in range(n)]
+    domains, ticks, tick_y, scales = [], [], [], []
+    for d in dims:
+        v = d['values']
+        mn, mx = d.get('min'), d.get('max')
+        if isinstance(mn, (int, float)) and isinstance(mx, (int, float)) and mn < mx:
+            d0, d1 = mn, mx
+        else:
+            d0, d1 = _hg_nice(min(v), max(v), 5)
+        r0, r1 = (_PC_TOP, _PC_BOT) if d.get('reverse') else (_PC_BOT, _PC_TOP)
+        bw = d1 - d0
+
+        def sc(x, d0=d0, bw=bw, r0=r0, r1=r1):
+            return _pc_lerp(r0, r1, (x - d0) / bw if bw else 0.5)
+        tk = _hg_ticks(d0, d1, 5)
+        domains.append([d0, d1])
+        ticks.append(tk)
+        tick_y.append([sc(t) for t in tk])
+        scales.append(sc)
+    rows = len(dims[0]['values'])
+    ys, paths = [], []
+    for r in range(rows):
+        ry = [scales[i](dims[i]['values'][r]) for i in range(n)]
+        ys.append(ry)
+        paths.append(''.join(('M' if i == 0 else 'L') + _if_numstr(_hg_round(xs[i] * 100) / 100) + ',' + _if_numstr(_hg_round(ry[i] * 100) / 100) for i in range(n)))
+    return {'xs': xs, 'domains': domains, 'ticks': ticks, 'tickY': tick_y, 'ys': ys, 'paths': paths}
+
+
+def _pc_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _pc_text(v):
+    """A label is text or a finite non-zero number; anything else (object, list, bool, null) is no label. Twin of _pcText."""
+    if isinstance(v, str):
+        return v if v != '' else None
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and v != 0:
+        return _if_str(v)
+    return None
+
+
+def _pc_plural(c, one, many):
+    return str(c) + ' ' + (one if c == 1 else many)
+
+
+def _render_parallel_coords(b: dict) -> str:
+    raw = _if_g(b, 'dimensions')
+    raw = raw if isinstance(raw, list) else []
+    dims, left_d = [], 0
+    for k, d in enumerate(raw[:8]):
+        vals = _if_g(d, 'values')
+        if not isinstance(d, dict) or not isinstance(vals, list):
+            left_d += 1
+            continue
+        mn, mx = _if_g(d, 'min'), _if_g(d, 'max')
+        full = _pc_text(_if_g(d, 'label'))
+        dims.append({'full': full, 'label': full[:24] if full is not None else 'Dimension ' + str(k + 1), 'raw': vals,
+                     'min': mn if _pc_num(mn) and _pc_num(mx) and mn < mx else None, 'max': mx if _pc_num(mn) and _pc_num(mx) and mn < mx else None,
+                     'reverse': _if_g(d, 'reverse') is True})
+    beyond_d = len(raw) - 8
+    longest = max([len(d['raw']) for d in dims] + [0])
+    nrows = min(200, longest)
+    keep = [i for i in range(nrows) if all(i < len(d['raw']) and _pc_num(d['raw'][i]) for d in dims)]
+    left_r, beyond_r = nrows - len(keep), longest - 200
+    notes = ((_hg_note(_pc_plural(left_d, 'dimension was', 'dimensions were') + ' not a usable dimension and ' + ('was' if left_d == 1 else 'were') + ' left out.') if left_d else '')
+             + (_hg_note(_pc_plural(beyond_d, 'dimension', 'dimensions') + ' beyond the first 8 ' + ('was' if beyond_d == 1 else 'were') + ' not drawn.') if beyond_d > 0 else '')
+             + (_hg_note(_pc_plural(left_r, 'row had', 'rows had') + ' a missing or non-numeric value and ' + ('was' if left_r == 1 else 'were') + ' left out.') if left_r else '')
+             + (_hg_note(_pc_plural(beyond_r, 'row', 'rows') + ' beyond the first 200 ' + ('was' if beyond_r == 1 else 'were') + ' not drawn.') if beyond_r > 0 else ''))
+    if len(dims) < 2 or not keep:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">Parallel coordinates need at least 2 dimensions with numbers, and at least 1 complete row.</div>' + notes + _hg_version_note(b, 'parallel_coords'))
+    n = len(dims)
+    clamped = 0
+    for d in dims:
+        d['real'] = [d['raw'][i] for i in keep]
+        d['values'] = []
+        for v in d['real']:
+            if d['min'] is not None and (v < d['min'] or v > d['max']):
+                clamped += 1
+                v = min(d['max'], max(d['min'], v))
+            d['values'].append(v)
+        d['lo'], d['hi'] = min(d['real']), max(d['real'])
+    L = _pc_layout(dims)
+    cb = _if_g(b, 'color_by')
+    cbi = None
+    if isinstance(cb, str) and cb != '':
+        cbi = next((k for k, d in enumerate(dims) if d['label'] == cb or d['full'] == cb), None)
+    elif isinstance(cb, (int, float)) and not isinstance(cb, bool) and cb == math.floor(cb) and 0 <= cb < n:
+        cbi = int(cb)
+    if cbi is None and _if_truthy(cb):
+        notes += _hg_note('color_by "' + _cv_esc(_if_str(cb)[:40]) + '" matches no dimension; the lines are drawn in one colour.')
+    if clamped:
+        notes += _hg_note(_pc_plural(clamped, 'value was', 'values were') + ' outside ' + ('its' if clamped == 1 else 'their') + ' axis range and ' + ('is' if clamped == 1 else 'are') + ' drawn on its edge.')
+    rl = _if_g(b, 'row_labels')
+    rl = rl if isinstance(rl, list) else []
+    names = [_pc_text(rl[i])[:30] if i < len(rl) and _pc_text(rl[i]) is not None else 'Row ' + str(i + 1) for i in keep]
+    f = lambda v: _bp_fmt(v, 6)
+    tl = [[_hg_num(t, _hg_decimals(tk)) for t in tk] for tk in L['ticks']]
+    lw = max(len(s) for ls in tl for s in ls) * 8 + 6
+    pitch, pad = max(92, lw + 8), max(0, lw - max(92, lw + 8) // 2)
+    ACC = 'var(--accent,#0369A1)'
+
+    def ramp(p):
+        return 'color-mix(in srgb,' + ACC + ' ' + str(p) + '%,var(--surface,#F8FAFC))'
+    if cbi is not None:
+        cd = dims[cbi]
+        span = cd['hi'] - cd['lo']
+        cols = [ramp(40 + _if_round(60 * ((v - cd['lo']) / span if span else 0.5))) for v in cd['real']]
+    heads = ''.join('<div class="pch" style="flex:1 1 0;min-width:0;box-sizing:border-box;padding:0 3px;text-align:center;font-size:0.75rem;line-height:1.15;font-weight:600;overflow-wrap:anywhere;">'
+                    + _cv_esc(d['label']) + ('<span style="display:block;font-weight:400;color:' + _IF_MUTED + ';">reversed</span>' if d['reverse'] else '') + '</div>' for d in dims)
+    axes = ''.join('<line class="pca" x1="' + _if_numstr(_hg_round(x * 100) / 100) + '" x2="' + _if_numstr(_hg_round(x * 100) / 100) + '" y1="' + str(_PC_TOP) + '" y2="' + str(_PC_BOT)
+                   + '" style="stroke:var(--muted,#475569);stroke-width:1.5;"/>' for x in L['xs'])
+    lines = ''.join('<path class="pcr" d="' + p + '"' + (' style="stroke:' + cols[r] + ';"' if cbi is not None else '') + '/>' for r, p in enumerate(L['paths']))
+    tickl = ''.join('<div class="pct" style="position:absolute;left:' + _tm_pct(x, _PC_W) + ';top:' + _tm_pct(y, _PC_H) + ';transform:translate(calc(-100% - 5px),-50%);font-size:0.75rem;line-height:1;white-space:nowrap;'
+                    'font-variant-numeric:tabular-nums;color:' + _IF_MUTED + ';text-shadow:0 0 3px var(--bg,#fff),0 0 3px var(--bg,#fff);">' + s + '</div>'
+                    for x, ty, ls in zip(L['xs'], L['tickY'], tl) for y, s in zip(ty, ls))
+    legend = ''
+    if cbi is not None:
+        legend = ('<div class="pcl" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:8px;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED + ';"><span>Line colour: ' + _cv_esc(cd['label']) + '</span>'
+                  '<span>' + f(cd['lo']) + '</span><span style="display:inline-block;width:96px;height:10px;border:1px solid var(--muted,#475569);background:linear-gradient(to right,' + ramp(40) + ',' + ramp(100) + ');"></span>'
+                  '<span>' + f(cd['hi']) + '</span></div>')
+    aria = ('Parallel coordinates of ' + _pc_plural(len(keep), 'row', 'rows') + ' across ' + str(n) + ' dimensions.'
+            + ''.join(' ' + d['label'] + ' from ' + f(d['lo']) + ' to ' + f(d['hi']) + (', drawn upside down' if d['reverse'] else '') + '.' for d in dims)
+            + (' Lines are coloured by ' + cd['label'] + ', light for low and dark for high.' if cbi is not None else ''))
+    chart = ('<div class="ifpc pcm' + str(n * pitch + pad - 1) + '" style="container-type:inline-size;max-width:100%;">'
+             '<style>.ifpc path,.ifpc line{vector-effect:non-scaling-stroke}@container (max-width:' + str(n * pitch + pad - 1) + 'px){.pcm' + str(n * pitch + pad - 1) + ' .pcs{display:block!important}}</style>'
+             '<div class="pcs" style="display:none;font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 4px;">Scroll sideways to see every axis.</div>'
+             '<div role="region" aria-label="Parallel coordinates chart" tabindex="0" style="overflow-x:auto;">'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;box-sizing:content-box;padding-left:' + str(pad) + 'px;min-width:' + str(n * pitch) + 'px;">'
+             '<div style="display:flex;">' + heads + '</div>'
+             '<div style="position:relative;height:' + str(_PC_H) + 'px;margin-top:4px;">'
+             '<svg viewBox="0 0 ' + str(_PC_W) + ' ' + str(_PC_H) + '" preserveAspectRatio="none" width="100%" height="' + str(_PC_H) + '" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;display:block;">'
+             + axes + '<g fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.75" style="stroke:' + ACC + ';' + _if_k(0, 1) + _IF_FADE + '">' + lines + '</g></svg>' + tickl + '</div>' + legend + '</div></div></div>')
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'parallel_coords')
+                    + _if_table(['Row'] + [d['label'] for d in dims], [[names[r]] + [f(d['real'][r]) for d in dims] for r in range(len(keep))]))
+
+
+_RENDERERS['parallel_coords'] = _render_parallel_coords
+
+
 _CB_ATOMS = ('treemap', 'venn_diagram', 'org_chart', 'histogram', 'box_plot', 'waterfall', 'sunburst', 'chord_diagram', 'circle_pack', 'arc_diagram', 'contour_plot', 'voronoi')
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
                          ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot), ('voronoi', _render_voronoi, ('candlestick_chart', _render_candlestick_chart))):

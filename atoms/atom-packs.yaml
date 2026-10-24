@@ -195,6 +195,7 @@ a2ui-charts-v1:
 - contour_plot
 - voronoi
 - candlestick_chart
+- parallel_coords
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing
