@@ -1431,6 +1431,9 @@
    "status": "exempt",
    "reason": "motion or demo atom: it moves things itself"
   },
+  "motion_map3d": {
+   "status": "sweep"
+  },
   "motion_mark": {
    "status": "exempt",
    "reason": "animated logo motion graphic primitive"

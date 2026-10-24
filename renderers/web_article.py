@@ -41925,6 +41925,242 @@ def _render_motion_shatter(b: dict) -> str:
 _RENDERERS['motion_shatter'] = _render_motion_shatter
 
 
+# ─── motion_map3d (I72, owner's reference video): a tilted 3D city map; camera descends, the route draws on station by station, a clock counts ───
+# Twin of the motion_map3d block in atoms_motion_candidates.gs. CSS 3D only (perspective + rotateX/rotateZ on a plane, boxes made of three faces), no WebGL,
+# no map tiles, no fetch. Every moving value is a pure function of var(--p, 1): the camera takes p 0 to 0.3, the route draws p 0.3 to 0.92 segment by segment
+# (stroke-dashoffset on pathLength 1), the stations go idle > active > their own state as the route reaches and leaves them, the clock counts over the same
+# window. p = 1 (no timeline, no script, reduced motion, print) is the settled picture. The scene is aria-hidden; a visually hidden text lists route, stations
+# and clock. The city is seeded (Park-Miller LCG, never a random call), with the cells under the route and the stations left clear. Only sqrt, + - * / and floor
+# are used, so both twins make the same bytes.
+_M3_P0, _M3_P1, _M3_U = 0.3, 0.92, 0.62
+_M3_ID = re.compile(r'[A-Za-z][A-Za-z0-9_]{0,23}')
+_M3_CLK = re.compile(r'[ ]*([0-9]{1,2}):([0-9]{2})[ ]*')
+_M3_STATES = ('idle', 'active', 'done')
+
+
+def _m3_n(v, dflt, lo, hi):
+    ok = isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+    return max(lo, min(hi, float(v) if ok else float(dflt)))
+
+
+def _m3_f(x, places=2):
+    return _ff_num(x, 0, -100000, 100000, places)
+
+
+def _m3_clock(v):
+    m = _M3_CLK.fullmatch(v) if isinstance(v, str) else None
+    if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
+        return None
+    return int(m.group(1)) * 60 + int(m.group(2))
+
+
+def _m3_hhmm(t):
+    t = t % 1440
+    return _cv_pad(t // 60) + ':' + _cv_pad(t % 60)
+
+
+def _m3_segdist(px, py, ax, ay, bx, by):
+    dx, dy = bx - ax, by - ay
+    ll = dx * dx + dy * dy
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / ll)) if ll > 0 else 0.0
+    ex, ey = ax + t * dx - px, ay + t * dy - py
+    return math.sqrt(ex * ex + ey * ey)
+
+
+def _render_motion_map3d(b: dict) -> str:
+    acc = _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)')
+    tilt = _m3_n(b.get('tilt'), 55, 0, 75)
+    cam = _m3_obj(b.get('camera'))
+    z0, z1 = _m3_n(cam.get('from'), 0.55, 0.3, 3), _m3_n(cam.get('to'), 1.0, 0.3, 3)
+    seed = _ff_int(b.get('seed'), 7, 0, 9999)
+    notes = []
+    # stations: unique ids, at most 24
+    sts, byid, bad = [], {}, 0
+    raw = b.get('stations') if isinstance(b.get('stations'), list) else []
+    for i, s in enumerate(raw[:24]):
+        s = _m3_obj(s)
+        sid = s.get('id') if isinstance(s.get('id'), str) and _M3_ID.fullmatch(s.get('id')) else 's' + str(i + 1)
+        if sid in byid:
+            bad += 1
+            continue
+        lab = _cv_str(s.get('label'), 24) or sid
+        st = {'id': sid, 'x': _m3_n(s.get('x'), 50, 0, 100), 'y': _m3_n(s.get('y'), 50, 0, 100), 'label': lab,
+              'state': s.get('state') if s.get('state') in _M3_STATES else 'idle', 'on': False}
+        byid[sid] = st
+        sts.append(st)
+    if len(raw) > 24:
+        bad += len(raw) - 24
+    if bad:
+        notes.append(str(bad) + (' station was' if bad == 1 else ' stations were') + ' left out (duplicate id or more than 24).')
+    # route: known ids only, no immediate repeats, at most 32
+    rraw = b.get('route') if isinstance(b.get('route'), list) else []
+    route, unk = [], 0
+    for rid in rraw[:32]:
+        if isinstance(rid, str) and rid in byid:
+            if not route or route[-1] != rid:
+                route.append(rid)
+        else:
+            unk += 1
+    if len(rraw) > 32:
+        unk += len(rraw) - 32
+    if unk:
+        notes.append(str(unk) + (' route entry was' if unk == 1 else ' route entries were') + ' not a known station and ' + ('was' if unk == 1 else 'were') + ' skipped.')
+    if not sts:
+        notes.append('No stations to show.')
+    # route geometry and timing
+    n = len(route) - 1 if len(route) > 1 else 0
+    segs = []
+    for i in range(n):
+        a, c = byid[route[i]], byid[route[i + 1]]
+        segs.append({'from': route[i], 'to': route[i + 1], 'ax': a['x'], 'ay': a['y'], 'bx': c['x'], 'by': c['y'],
+                     'len': math.sqrt((c['x'] - a['x']) * (c['x'] - a['x']) + (c['y'] - a['y']) * (c['y'] - a['y']))})
+    total = 0.0
+    for s in segs:
+        total += s['len']
+    W = _M3_P1 - _M3_P0
+    dw = min(0.04, W * 0.3 / max(1, n - 1)) if n else 0.04
+    draw = W - dw * max(0, n - 1)
+    cum = 0.0
+    seen = {}
+    for i, s in enumerate(segs):
+        share = (s['len'] / total) if total > 0 else 1.0 / n
+        s['s'] = _M3_P0 + dw * i + draw * cum
+        s['w'] = draw * share
+        cum += share
+        k = s['from'] + '-' + s['to']
+        seen[k] = seen.get(k, 0) + 1
+        s['key'] = k if seen[k] == 1 else k + '-' + str(seen[k])
+    for j, rid in enumerate(route):
+        st = byid[rid]
+        r = (_M3_P0 - dw) if j == 0 else segs[j - 1]['s'] + segs[j - 1]['w']
+        lv = segs[j]['s'] if j < n else r + 0.05
+        if not st['on']:
+            st['on'], st['r'] = True, r
+        st['l'] = lv
+    # the city
+    blocks = []
+    braw = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    if braw:
+        for e in braw:
+            if isinstance(e, dict):
+                blocks.append((_m3_n(e.get('x'), 0, 0, 100), _m3_n(e.get('y'), 0, 0, 100), _m3_n(e.get('w'), 8, 1, 100), _m3_n(e.get('h'), 8, 1, 100), _m3_n(e.get('height'), 6, 0, 40)))
+        if len(blocks) > 200:
+            notes.append('Showing the first 200 of ' + str(len(blocks)) + ' blocks.')
+            blocks = blocks[:200]
+    else:
+        rs = [(seed * 7919 + 104729) % 2147483646 + 1]
+
+        def rnd():
+            rs[0] = rs[0] * 16807 % 2147483647
+            return rs[0] / 2147483647
+        N = 7
+        c = 100 / N
+        for gy in range(N):
+            for gx in range(N):
+                r1, r2, r3, r4 = rnd(), rnd(), rnd(), rnd()
+                bw, bh = c - 3 - r2 * 4, c - 3 - r3 * 4
+                bx, by = gx * c + 1.5, gy * c + 1.5
+                cx, cy = bx + bw / 2, by + bh / 2
+                if r1 < 0.12:
+                    continue
+                dm = 1000.0
+                for s in segs:
+                    dm = min(dm, _m3_segdist(cx, cy, s['ax'], s['ay'], s['bx'], s['by']))
+                for s in sts:
+                    dm = min(dm, math.sqrt((s['x'] - cx) * (s['x'] - cx) + (s['y'] - cy) * (s['y'] - cy)) - 3)
+                if dm < 7:
+                    continue
+                d = math.sqrt((cx - 50) * (cx - 50) + (cy - 50) * (cy - 50)) / 70.7
+                blocks.append((bx, by, bw, bh, (3 + (1 - d) * 14 * r4 + r4 * 4) * max(0.2, min(1.0, (dm - 7) / 18))))
+    faces = ''
+    for (x, y, w, h, ht) in blocks:
+        faces += ('<div class="m3-b" style="left:' + _m3_f(x) + '%;top:' + _m3_f(y) + '%;width:' + _m3_f(w) + '%;height:' + _m3_f(h) + '%;--hh:' + _m3_f(ht * _M3_U) + 'cqw;">'
+                  '<i class="m3-t"></i><i class="m3-s"></i><i class="m3-e"></i></div>')
+    # route svg
+    paths = ''
+    for s in segs:
+        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-m3="seg" d="M' + _m3_f(s['ax'], 1) + ',' + _m3_f(s['ay'], 1) + ' L' + _m3_f(s['bx'], 1) + ',' + _m3_f(s['by'], 1)
+                  + '" pathLength="1" fill="none" stroke="' + acc + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - '
+                  + _m3_f(s['s'], 3) + ')/' + _m3_f(max(s['w'], 0.001), 3) + '),1));"></path>')
+    svg = ('<svg class="m3-route" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none">' + paths + '</svg>') if paths else ''
+    # stations
+    pins = ''
+    for st in sts:
+        reach = leave = None
+        if st['on']:
+            reach = 'clamp(0,calc((var(--p,1) - ' + _m3_f(st['r'], 3) + ')*40),1)'
+            leave = 'clamp(0,calc((var(--p,1) - ' + _m3_f(st['l'], 3) + ')*40),1)'
+        lay = ''
+        for name in _M3_STATES:
+            final = st['state'] == name
+            if reach is None:
+                if not final:
+                    continue
+                op = '1'
+            elif name == 'idle':
+                op = 'calc(1 - ' + reach + (' + ' + leave if final else '') + ')'
+            elif name == 'active':
+                op = 'calc(' + reach + '*(1 - ' + leave + ')' + (' + ' + leave if final else '') + ')'
+            elif final:
+                op = leave
+            else:
+                continue
+            lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';"></span>'
+        pins += ('<div class="m3-st" data-cb="node" data-key="' + _cv_esc(st['id']) + '" data-m3="station" data-state="' + st['state'] + '" style="left:' + _m3_f(st['x'], 1) + '%;top:' + _m3_f(st['y'], 1) + '%;">'
+                 '<div class="m3-bb">' + lay + '<span class="m3-lab" data-cb="label" data-key="' + _cv_esc(st['id']) + '">' + _cv_esc(st['label']) + '</span></div></div>')
+    # clock
+    ck = _m3_obj(b.get('clock'))
+    c0, c1 = _m3_clock(ck.get('from')), _m3_clock(ck.get('to'))
+    chip = ''
+    if c0 is not None and c1 is not None:
+        if c1 < c0:
+            c1 += 1440
+        chip = ('<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + str(c0) + ';--m1:' + str(c1) + ';"><span class="m3-cs">' + _m3_hhmm(c1) + '</span><span class="m3-cn"></span></div>')
+    # text alternative
+    alt = []
+    if route:
+        alt.append('Route: ' + ', then '.join(byid[r]['label'] for r in route) + '.')
+    if sts:
+        alt.append('Stations: ' + '; '.join(s['label'] + ' (' + s['state'] + ')' for s in sts) + '.')
+    if chip:
+        alt.append('Clock runs from ' + _m3_hhmm(c0) + ' to ' + _m3_hhmm(c1) + '.')
+    altx = '<div data-m3="alt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">' + _cv_esc(' '.join(alt) or 'City map.') + '</div>'
+    css = ('<style>@property --m3m{syntax:"<integer>";initial-value:0;inherits:false}@property --m3h{syntax:"<integer>";initial-value:0;inherits:false}@property --m3n{syntax:"<integer>";initial-value:0;inherits:false}'
+           '.m3-root{position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;aspect-ratio:16/9;overflow:hidden;container-type:inline-size;isolation:isolate;border-radius:12px;'
+           'background:color-mix(in srgb,var(--text,#0f172a) 6%,var(--surface,#f8fafc))}'
+           '.m3-stage{position:absolute;inset:0;perspective:90cqw;perspective-origin:50% 50%}'
+           '.m3-plane{position:absolute;left:19cqw;top:-3cqw;width:62cqw;height:62cqw;transform-style:preserve-3d;'
+           'background:color-mix(in srgb,var(--text,#0f172a) 11%,var(--surface,#f8fafc));box-shadow:0 0 0 0.3cqw var(--border,#cbd5e1)}'
+           '.m3-b{position:absolute;transform-style:preserve-3d}.m3-b i{position:absolute;display:block}'
+           '.m3-t{inset:0;transform:translateZ(var(--hh));background:color-mix(in srgb,var(--text,#0f172a) 4%,var(--surface,#ffffff))}'
+           '.m3-s{left:0;top:100%;width:100%;height:var(--hh);transform-origin:50% 0;transform:rotateX(90deg);background:color-mix(in srgb,var(--text,#0f172a) 26%,var(--surface,#ffffff))}'
+           '.m3-e{left:100%;top:0;width:var(--hh);height:100%;transform-origin:0 50%;transform:rotateY(-90deg);background:color-mix(in srgb,var(--text,#0f172a) 17%,var(--surface,#ffffff))}'
+           '.m3-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:translateZ(0.15cqw);pointer-events:none}'
+           '.m3-st{position:absolute;width:0;height:0;transform-style:preserve-3d}'
+           '.m3-bb{position:absolute;left:0;top:0;transform-style:preserve-3d;transform:rotateZ(calc(var(--rz)*var(--e)*-1deg)) rotateX(calc(var(--tilt)*var(--e)*-1deg)) scale(calc(1/var(--zm))) translateY(-1.5cqw)}'
+           '.m3-pin{position:absolute;left:-1.1cqw;top:-1.1cqw;width:2.2cqw;height:2.2cqw;box-sizing:border-box;border-radius:50%;border:0.45cqw solid var(--surface,#fff)}'
+           '.m3-idle{background:var(--muted,#64748b)}.m3-active{background:' + acc + ';box-shadow:0 0 0 0.5cqw color-mix(in srgb,' + acc + ' 35%,transparent)}.m3-done{background:var(--mt-ok,#22c55e)}'
+           '.m3-lab{position:absolute;left:1.6cqw;top:-1.1cqw;white-space:nowrap;font:600 max(10px,1.7cqw)/1.2 ui-sans-serif,system-ui,sans-serif;color:var(--text,#0f172a);'
+           'background:color-mix(in srgb,var(--surface,#ffffff) 88%,transparent);padding:0.15cqw 0.7cqw;border-radius:0.6cqw}'
+           '.m3-clk{position:absolute;left:2.4cqw;top:2.4cqw;z-index:2;font:700 max(13px,2.6cqw)/1 ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:var(--text,#0f172a);'
+           'background:var(--surface,#ffffff);border:1px solid var(--border,#cbd5e1);border-radius:999px;padding:0.8cqw 1.8cqw;box-shadow:0 2px 8px rgba(0,0,0,0.15)}'
+           '.m3-cn{display:none}'
+           '@supports (width:round(down,1px,1px)){.m3-cs{display:none}.m3-cn{display:inline;--m3m:calc(var(--m0) + (var(--m1) - var(--m0))*clamp(0,calc((var(--p,1) - 0.3)/0.62),1));'
+           '--m3h:mod(round(down,calc(var(--m3m)/60),1),24);--m3n:mod(var(--m3m),60);counter-reset:m3h var(--m3h) m3n var(--m3n)}'
+           '.m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}}'
+           '@media (prefers-reduced-motion:reduce),print{.m3-root{--p:1!important}}</style>')
+    root_vars = ('--tilt:' + _m3_f(tilt, 1) + ';--rz:22;--z0:' + _m3_f(z0, 2) + ';--z1:' + _m3_f(z1, 2) + ';'
+                 '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));')
+    plane = ('<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
+             + faces + svg + pins + '</div>')
+    note = _hg_note(' '.join(notes)) if notes else ''
+    return (css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + '</div>' + chip + '</div>'
+            + note + _hg_version_note(b, 'motion_map3d'))
+
+
+_RENDERERS['motion_map3d'] = _render_motion_map3d
+
+
 # ─── heatmap variants (additive; twin of the heatmap block at the end of atoms_infographic.gs) ───────────────────────────────────────
 # Plotly's named colour scales, copied from plotly.js src/components/colorscale/scales.js (tests/fixtures/plotly_scales.json holds the original).
 _HM_SCALES = {

@@ -4176,6 +4176,68 @@
   "gas_sha": "ce0f32d5e145950edc17062540fbaa62cfcb8dc229dfacea6c39196370dc93c6",
   "parity": false
  },
+ "motion_map3d": {
+  "status": "keyed",
+  "block": {
+   "type": "motion_map3d",
+   "id": "map",
+   "seed": 11,
+   "tilt": 58,
+   "stations": [
+    {
+     "id": "depot",
+     "x": 12,
+     "y": 78,
+     "label": "Depot",
+     "state": "done"
+    },
+    {
+     "id": "north",
+     "x": 38,
+     "y": 30,
+     "label": "North Hub",
+     "state": "done"
+    },
+    {
+     "id": "market",
+     "x": 70,
+     "y": 42,
+     "label": "Market",
+     "state": "done"
+    },
+    {
+     "id": "port",
+     "x": 86,
+     "y": 80,
+     "label": "Port",
+     "state": "active"
+    },
+    {
+     "id": "spare",
+     "x": 20,
+     "y": 15,
+     "label": "Spare",
+     "state": "idle"
+    }
+   ],
+   "route": [
+    "depot",
+    "north",
+    "market",
+    "port"
+   ],
+   "clock": {
+    "from": "08:00",
+    "to": "08:47"
+   }
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "stations[].id",
+  "py_sha": "d27f63ab0fc1269ed82cbf8ad6fddff2e414df648619ff789da1ef16eb809594",
+  "gas_sha": "d27f63ab0fc1269ed82cbf8ad6fddff2e414df648619ff789da1ef16eb809594",
+  "parity": true
+ },
  "multi_doc_ai_brief": {
   "status": "pending",
   "block": {

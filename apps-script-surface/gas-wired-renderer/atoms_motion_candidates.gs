@@ -1312,3 +1312,318 @@ _RENDERERS['motion_shatter'] = function(b) {
     '<div class="sh-body" data-sh="body" style="position:relative;' + (has ? '' : 'height:100%;') + '">' + face + '</div>' +
     '<div class="sh-shards" data-sh="shards" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;">' + shards + '</div>' + cracks + '</div>' + _hgVersionNote(b, 'motion_shatter');
 };
+
+// motion_map3d (I72): a tilted 3D city map, camera descent, route draw, station states, clock chip. Twin of _render_motion_map3d in web_article.py (read its header).
+var _M3_P0 = 0.3, _M3_P1 = 0.92, _M3_U = 0.62;
+var _M3_ID = /^[A-Za-z][A-Za-z0-9_]{0,23}$/;
+var _M3_CLK = /^ *([0-9]{1,2}):([0-9]{2}) *$/;
+var _M3_STATES = ['idle', 'active', 'done'];
+
+function _m3Obj(v) {
+  return (typeof v === 'object' && v !== null && !Array.isArray(v)) ? v : {};
+}
+
+function _m3N(v, dflt, lo, hi) {
+  var ok = typeof v === 'number' && isFinite(v);
+  return Math.max(lo, Math.min(hi, ok ? v : dflt));
+}
+
+function _m3F(x, places) {
+  if (places === undefined) places = 2;
+  return _ffNum(x, 0, -100000, 100000, places);
+}
+
+function _m3Clock(v) {
+  if (typeof v !== 'string') return null;
+  var m = _M3_CLK.exec(v);
+  if (!m) return null;
+  var h = parseInt(m[1], 10), min = parseInt(m[2], 10);
+  if (h > 23 || min > 59) return null;
+  return h * 60 + min;
+}
+
+function _m3Hhmm(t) {
+  t = t % 1440;
+  return _cvPad(Math.floor(t / 60)) + ':' + _cvPad(t % 60);
+}
+
+function _m3Segdist(px, py, ax, ay, bx, by) {
+  var dx = bx - ax, dy = by - ay;
+  var ll = dx * dx + dy * dy;
+  var t = ll > 0 ? Math.max(0.0, Math.min(1.0, ((px - ax) * dx + (py - ay) * dy) / ll)) : 0.0;
+  var ex = ax + t * dx - px, ey = ay + t * dy - py;
+  return Math.sqrt(ex * ex + ey * ey);
+}
+
+_RENDERERS['motion_map3d'] = function(b) {
+  var acc = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)');
+  var tilt = _m3N(b.tilt, 55, 0, 75);
+  var cam = _m3Obj(b.camera);
+  var z0 = _m3N(cam['from'], 0.55, 0.3, 3), z1 = _m3N(cam['to'], 1.0, 0.3, 3);
+  var seed = _ffInt(b.seed, 7, 0, 9999);
+  var notes = [];
+
+  var sts = [], byid = {}, bad = 0;
+  var raw = Array.isArray(b.stations) ? b.stations : [];
+  var rawSlice = raw.slice(0, 24);
+  var i, s, sid, lab, st;
+  for (i = 0; i < rawSlice.length; i++) {
+    s = _m3Obj(rawSlice[i]);
+    sid = (typeof s.id === 'string' && _M3_ID.test(s.id)) ? s.id : 's' + String(i + 1);
+    if (Object.prototype.hasOwnProperty.call(byid, sid)) {
+      bad++;
+      continue;
+    }
+    lab = _cvStr(s.label, 24) || sid;
+    st = {
+      id: sid,
+      x: _m3N(s.x, 50, 0, 100),
+      y: _m3N(s.y, 50, 0, 100),
+      label: lab,
+      state: (typeof s.state === 'string' && _M3_STATES.indexOf(s.state) !== -1) ? s.state : 'idle',
+      on: false
+    };
+    byid[sid] = st;
+    sts.push(st);
+  }
+  if (raw.length > 24) {
+    bad += raw.length - 24;
+  }
+  if (bad) {
+    notes.push(String(bad) + (bad === 1 ? ' station was' : ' stations were') + ' left out (duplicate id or more than 24).');
+  }
+
+  var rraw = Array.isArray(b.route) ? b.route : [];
+  var route = [], unk = 0;
+  var rrawSlice = rraw.slice(0, 32);
+  var rid;
+  for (i = 0; i < rrawSlice.length; i++) {
+    rid = rrawSlice[i];
+    if (typeof rid === 'string' && Object.prototype.hasOwnProperty.call(byid, rid)) {
+      if (!route.length || route[route.length - 1] !== rid) {
+        route.push(rid);
+      }
+    } else {
+      unk++;
+    }
+  }
+  if (rraw.length > 32) {
+    unk += rraw.length - 32;
+  }
+  if (unk) {
+    notes.push(String(unk) + (unk === 1 ? ' route entry was' : ' route entries were') + ' not a known station and ' + (unk === 1 ? 'was' : 'were') + ' skipped.');
+  }
+  if (!sts.length) {
+    notes.push('No stations to show.');
+  }
+
+  var n = route.length > 1 ? route.length - 1 : 0;
+  var segs = [];
+  var a, c;
+  for (i = 0; i < n; i++) {
+    a = byid[route[i]];
+    c = byid[route[i + 1]];
+    segs.push({
+      'from': route[i],
+      'to': route[i + 1],
+      ax: a.x,
+      ay: a.y,
+      bx: c.x,
+      by: c.y,
+      len: Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y))
+    });
+  }
+  var total = 0.0;
+  for (i = 0; i < segs.length; i++) {
+    total += segs[i].len;
+  }
+  var W = _M3_P1 - _M3_P0;
+  var dw = n ? Math.min(0.04, W * 0.3 / Math.max(1, n - 1)) : 0.04;
+  var draw = W - dw * Math.max(0, n - 1);
+  var cum = 0.0;
+  var seen = {}, k, share;
+  for (i = 0; i < segs.length; i++) {
+    s = segs[i];
+    share = total > 0 ? (s.len / total) : 1.0 / n;
+    s.s = _M3_P0 + dw * i + draw * cum;
+    s.w = draw * share;
+    cum += share;
+    k = s['from'] + '-' + s['to'];
+    seen[k] = (Object.prototype.hasOwnProperty.call(seen, k) ? seen[k] : 0) + 1;
+    s.key = seen[k] === 1 ? k : k + '-' + String(seen[k]);
+  }
+  var j, r, lv;
+  for (j = 0; j < route.length; j++) {
+    rid = route[j];
+    st = byid[rid];
+    r = j === 0 ? (_M3_P0 - dw) : segs[j - 1].s + segs[j - 1].w;
+    lv = j < n ? segs[j].s : r + 0.05;
+    if (!st.on) {
+      st.on = true;
+      st.r = r;
+    }
+    st.l = lv;
+  }
+
+  var blocks = [];
+  var braw = Array.isArray(b.blocks) ? b.blocks : [];
+  var e;
+  if (braw.length) {
+    for (i = 0; i < braw.length; i++) {
+      e = braw[i];
+      if (typeof e === 'object' && e !== null && !Array.isArray(e)) {
+        blocks.push([_m3N(e.x, 0, 0, 100), _m3N(e.y, 0, 0, 100), _m3N(e.w, 8, 1, 100), _m3N(e.h, 8, 1, 100), _m3N(e.height, 6, 0, 40)]);
+      }
+    }
+    if (blocks.length > 200) {
+      notes.push('Showing the first 200 of ' + String(blocks.length) + ' blocks.');
+      blocks = blocks.slice(0, 200);
+    }
+  } else {
+    var rs = [(seed * 7919 + 104729) % 2147483646 + 1];
+    function rnd() {
+      rs[0] = (rs[0] * 16807) % 2147483647;
+      return rs[0] / 2147483647;
+    }
+    var N = 7;
+    var csize = 100 / N;
+    var gy, gx, r1, r2, r3, r4, bw, bh, bx, by, cx, cy, dm, d, si;
+    for (gy = 0; gy < N; gy++) {
+      for (gx = 0; gx < N; gx++) {
+        r1 = rnd(); r2 = rnd(); r3 = rnd(); r4 = rnd();
+        bw = csize - 3 - r2 * 4;
+        bh = csize - 3 - r3 * 4;
+        bx = gx * csize + 1.5;
+        by = gy * csize + 1.5;
+        cx = bx + bw / 2;
+        cy = by + bh / 2;
+        if (r1 < 0.12) continue;
+        dm = 1000.0;
+        for (si = 0; si < segs.length; si++) {
+          dm = Math.min(dm, _m3Segdist(cx, cy, segs[si].ax, segs[si].ay, segs[si].bx, segs[si].by));
+        }
+        for (si = 0; si < sts.length; si++) {
+          dm = Math.min(dm, Math.sqrt((sts[si].x - cx) * (sts[si].x - cx) + (sts[si].y - cy) * (sts[si].y - cy)) - 3);
+        }
+        if (dm < 7) continue;
+        d = Math.sqrt((cx - 50) * (cx - 50) + (cy - 50) * (cy - 50)) / 70.7;
+        blocks.push([bx, by, bw, bh, (3 + (1 - d) * 14 * r4 + r4 * 4) * Math.max(0.2, Math.min(1.0, (dm - 7) / 18))]);
+      }
+    }
+  }
+
+  var faces = '';
+  var blk;
+  for (i = 0; i < blocks.length; i++) {
+    blk = blocks[i];
+    faces += '<div class="m3-b" style="left:' + _m3F(blk[0]) + '%;top:' + _m3F(blk[1]) + '%;width:' + _m3F(blk[2]) + '%;height:' + _m3F(blk[3]) + '%;--hh:' + _m3F(blk[4] * _M3_U) + 'cqw;">' +
+             '<i class="m3-t"></i><i class="m3-s"></i><i class="m3-e"></i></div>';
+  }
+
+  var paths = '';
+  for (i = 0; i < segs.length; i++) {
+    s = segs[i];
+    paths += '<path data-cb="link" data-key="' + _esc(s.key) + '" data-m3="seg" d="M' + _m3F(s.ax, 1) + ',' + _m3F(s.ay, 1) + ' L' + _m3F(s.bx, 1) + ',' + _m3F(s.by, 1) +
+             '" pathLength="1" fill="none" stroke="' + acc + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - ' +
+             _m3F(s.s, 3) + ')/' + _m3F(Math.max(s.w, 0.001), 3) + '),1));"></path>';
+  }
+  var svg = paths ? ('<svg class="m3-route" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none">' + paths + '</svg>') : '';
+
+  var pins = '';
+  var reach, leave, lay, name, final, op;
+  for (i = 0; i < sts.length; i++) {
+    st = sts[i];
+    reach = null;
+    leave = null;
+    if (st.on) {
+      reach = 'clamp(0,calc((var(--p,1) - ' + _m3F(st.r, 3) + ')*40),1)';
+      leave = 'clamp(0,calc((var(--p,1) - ' + _m3F(st.l, 3) + ')*40),1)';
+    }
+    lay = '';
+    for (j = 0; j < _M3_STATES.length; j++) {
+      name = _M3_STATES[j];
+      final = st.state === name;
+      if (reach === null) {
+        if (!final) continue;
+        op = '1';
+      } else if (name === 'idle') {
+        op = 'calc(1 - ' + reach + (final ? ' + ' + leave : '') + ')';
+      } else if (name === 'active') {
+        op = 'calc(' + reach + '*(1 - ' + leave + ')' + (final ? ' + ' + leave : '') + ')';
+      } else if (final) {
+        op = leave;
+      } else {
+        continue;
+      }
+      lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';"></span>';
+    }
+    pins += '<div class="m3-st" data-cb="node" data-key="' + _esc(st.id) + '" data-m3="station" data-state="' + st.state + '" style="left:' + _m3F(st.x, 1) + '%;top:' + _m3F(st.y, 1) + '%;">' +
+            '<div class="m3-bb">' + lay + '<span class="m3-lab" data-cb="label" data-key="' + _esc(st.id) + '">' + _esc(st.label) + '</span></div></div>';
+  }
+
+  var ck = _m3Obj(b.clock);
+  var c0 = _m3Clock(ck['from']), c1 = _m3Clock(ck['to']);
+  var chip = '';
+  if (c0 !== null && c1 !== null) {
+    if (c1 < c0) {
+      c1 += 1440;
+    }
+    chip = '<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + String(c0) + ';--m1:' + String(c1) + ';"><span class="m3-cs">' + _m3Hhmm(c1) + '</span><span class="m3-cn"></span></div>';
+  }
+
+  var alt = [];
+  if (route.length) {
+    var routeLabs = [];
+    for (i = 0; i < route.length; i++) {
+      routeLabs.push(byid[route[i]].label);
+    }
+    alt.push('Route: ' + routeLabs.join(', then ') + '.');
+  }
+  if (sts.length) {
+    var stDescs = [];
+    for (i = 0; i < sts.length; i++) {
+      stDescs.push(sts[i].label + ' (' + sts[i].state + ')');
+    }
+    alt.push('Stations: ' + stDescs.join('; ') + '.');
+  }
+  if (chip) {
+    alt.push('Clock runs from ' + _m3Hhmm(c0) + ' to ' + _m3Hhmm(c1) + '.');
+  }
+  var altx = '<div data-m3="alt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">' + _esc(alt.join(' ') || 'City map.') + '</div>';
+
+  var css = '<style>@property --m3m{syntax:"<integer>";initial-value:0;inherits:false}@property --m3h{syntax:"<integer>";initial-value:0;inherits:false}@property --m3n{syntax:"<integer>";initial-value:0;inherits:false}' +
+            '.m3-root{position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;aspect-ratio:16/9;overflow:hidden;container-type:inline-size;isolation:isolate;border-radius:12px;' +
+            'background:color-mix(in srgb,var(--text,#0f172a) 6%,var(--surface,#f8fafc))}' +
+            '.m3-stage{position:absolute;inset:0;perspective:90cqw;perspective-origin:50% 50%}' +
+            '.m3-plane{position:absolute;left:19cqw;top:-3cqw;width:62cqw;height:62cqw;transform-style:preserve-3d;' +
+            'background:color-mix(in srgb,var(--text,#0f172a) 11%,var(--surface,#f8fafc));box-shadow:0 0 0 0.3cqw var(--border,#cbd5e1)}' +
+            '.m3-b{position:absolute;transform-style:preserve-3d}.m3-b i{position:absolute;display:block}' +
+            '.m3-t{inset:0;transform:translateZ(var(--hh));background:color-mix(in srgb,var(--text,#0f172a) 4%,var(--surface,#ffffff))}' +
+            '.m3-s{left:0;top:100%;width:100%;height:var(--hh);transform-origin:50% 0;transform:rotateX(90deg);background:color-mix(in srgb,var(--text,#0f172a) 26%,var(--surface,#ffffff))}' +
+            '.m3-e{left:100%;top:0;width:var(--hh);height:100%;transform-origin:0 50%;transform:rotateY(-90deg);background:color-mix(in srgb,var(--text,#0f172a) 17%,var(--surface,#ffffff))}' +
+            '.m3-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:translateZ(0.15cqw);pointer-events:none}' +
+            '.m3-st{position:absolute;width:0;height:0;transform-style:preserve-3d}' +
+            '.m3-bb{position:absolute;left:0;top:0;transform-style:preserve-3d;transform:rotateZ(calc(var(--rz)*var(--e)*-1deg)) rotateX(calc(var(--tilt)*var(--e)*-1deg)) scale(calc(1/var(--zm))) translateY(-1.5cqw)}' +
+            '.m3-pin{position:absolute;left:-1.1cqw;top:-1.1cqw;width:2.2cqw;height:2.2cqw;box-sizing:border-box;border-radius:50%;border:0.45cqw solid var(--surface,#fff)}' +
+            '.m3-idle{background:var(--muted,#64748b)}.m3-active{background:' + acc + ';box-shadow:0 0 0 0.5cqw color-mix(in srgb,' + acc + ' 35%,transparent)}.m3-done{background:var(--mt-ok,#22c55e)}' +
+            '.m3-lab{position:absolute;left:1.6cqw;top:-1.1cqw;white-space:nowrap;font:600 max(10px,1.7cqw)/1.2 ui-sans-serif,system-ui,sans-serif;color:var(--text,#0f172a);' +
+            'background:color-mix(in srgb,var(--surface,#ffffff) 88%,transparent);padding:0.15cqw 0.7cqw;border-radius:0.6cqw}' +
+            '.m3-clk{position:absolute;left:2.4cqw;top:2.4cqw;z-index:2;font:700 max(13px,2.6cqw)/1 ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:var(--text,#0f172a);' +
+            'background:var(--surface,#ffffff);border:1px solid var(--border,#cbd5e1);border-radius:999px;padding:0.8cqw 1.8cqw;box-shadow:0 2px 8px rgba(0,0,0,0.15)}' +
+            '.m3-cn{display:none}' +
+            '@supports (width:round(down,1px,1px)){.m3-cs{display:none}.m3-cn{display:inline;--m3m:calc(var(--m0) + (var(--m1) - var(--m0))*clamp(0,calc((var(--p,1) - 0.3)/0.62),1));' +
+            '--m3h:mod(round(down,calc(var(--m3m)/60),1),24);--m3n:mod(var(--m3m),60);counter-reset:m3h var(--m3h) m3n var(--m3n)}' +
+            '.m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}}' +
+            '@media (prefers-reduced-motion:reduce),print{.m3-root{--p:1!important}}</style>';
+
+  var root_vars = '--tilt:' + _m3F(tilt, 1) + ';--rz:22;--z0:' + _m3F(z0, 2) + ';--z1:' + _m3F(z1, 2) + ';' +
+                  '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));';
+
+  var plane = '<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">' +
+              faces + svg + pins + '</div>';
+
+  var note = notes.length ? _hgNote(notes.join(' ')) : '';
+
+  return css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + '</div>' + chip + '</div>' +
+         note + _hgVersionNote(b, 'motion_map3d');
+};
