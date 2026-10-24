@@ -85,6 +85,16 @@
  "callout": [
   "kind"
  ],
+ "candlestick_chart": [
+  "close",
+  "dates",
+  "high",
+  "low",
+  "open",
+  "title",
+  "version",
+  "volume"
+ ],
  "canvas_plexus": [
   "repulse_radius"
  ],
@@ -97,16 +107,8 @@
   "title"
  ],
  "chartjs_bar": [
-  "gap",
-  "legend_position",
-  "mode",
-  "value_format",
-  "version",
-  "y_format",
-  "y_range",
-  "y_reverse",
-  "y_scale",
-  "y_ticks"
+  "datasets",
+  "labels"
  ],
  "chartjs_pie": [
   "colors",
@@ -605,7 +607,7 @@
   "total_expr"
  ],
  "org_chart": [
-  "title"
+  "version"
  ],
  "pagination": [
   "base_url",
@@ -617,6 +619,10 @@
   "badge",
   "body",
   "depth"
+ ],
+ "parallel_coords": [
+  "title",
+  "version"
  ],
  "particle_type": [
   "background",
@@ -666,6 +672,10 @@
  ],
  "quadrant": [
   "title"
+ ],
+ "quiver": [
+  "title",
+  "version"
  ],
  "quiz_question": [
   "style"
@@ -798,6 +808,10 @@
  "tasks_today": [
   "auth_token"
  ],
+ "ternary_plot": [
+  "title",
+  "version"
+ ],
  "toast_notification": [
   "position",
   "title",
@@ -878,8 +892,7 @@
   "title"
  ],
  "waterfall": [
-  "title",
-  "version"
+  "title"
  ],
  "word_flip": [
   "size",
