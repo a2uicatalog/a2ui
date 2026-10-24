@@ -22399,6 +22399,7 @@ blocks:
   stage: preview
   description: 'A 3D cylindrical kinetic typography drum in pure HTML and CSS: arranges 6 to 12 facets around a rotating 3D barrel in perspective space (axis: "x" for a vertical slot-wheel drum, "y" for a horizontal carousel). p expands the drum radius and unfolds the staves into a cylinder; the second dial (--s) spins the barrel so words curve around the front equator and recede into depth. Plain HTML and CSS 3D transforms, no script and no WebGL; standalone it renders the drum angled at rest.'
   compact_description: 3D cylindrical kinetic typography barrel that spins phrases around a perspective drum
+  notes: "Pure CSS 3D, no script. Place it inside a motion_timeline so p and --s are driven; at p = 1 the drum rests angled. Phrases are cropped to 24 characters and at most 6 are used. The frame and rig are both closed, so later timeline scenes do not nest inside it."
   surfaces:
     works_on:
     - web
@@ -22437,6 +22438,7 @@ blocks:
   stage: preview
   description: 'An Apple-style Liquid Glass capsule that glides over its child blocks: a calibrated two-layer optical magnification (effMag = 1 + (mag - 1) * 0.45 and apertures circle 48/84, pill 52/68, bar 32/100) while adding a curved glass bevel, chromatic R/B edge dispersion and a directional Fresnel specular rim that sweeps around the perimeter with --s. p morphs and scales the glass capsule open; the second dial (--s) glides the capsule across the stage and turns the specular rim light. Plain HTML and CSS, no script and no SVG filter ids; standalone it renders the liquid glass capsule resting in the centre.'
   compact_description: liquid glass capsule with calibrated optical magnification, bevel dispersion and sweeping Fresnel rim
+  notes: "Pure CSS, no script, no backdrop-filter, no WebGL. The child blocks are drawn twice (stage, and magnified inside an aria-hidden lens) so keep blocks light: at most 6 are rendered. Place it inside a motion_timeline so p and --s are driven; reduced motion follows the timeline."
   surfaces:
     works_on:
     - web

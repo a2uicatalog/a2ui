@@ -2351,6 +2351,8 @@ _RENDERERS['motion_kinetic_drum'] = function(b) {
     + '<div style="position:relative;width:100%;height:100%;transform-style:preserve-3d;'
     + 'opacity:clamp(0,calc(var(--p,1) * 1.8),1);transform:' + rigRot + ';">'
     + panels.join('') + '</div></div>';
+};
+
 // motion_liquid_glass: added 2026-10-14 on the uplift-handoff line, ported 2026-10-19. Pure CSS/HTML, no script; a calibrated
 // two-layer optical magnification (the children drawn twice: stage, and magnified in the lens). Twin of renderers/web_article.py _render_motion_liquid_glass.
 var _MO_LGLASS_SHAPE = {pill: 1, circle: 1, bar: 1};

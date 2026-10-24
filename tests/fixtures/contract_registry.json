@@ -1275,6 +1275,14 @@
    "status": "exempt",
    "reason": "motion wrapper orchestrating chart build progress"
   },
+  "motion_kinetic_drum": {
+   "status": "exempt",
+   "reason": "motion or demo atom: it moves things itself (a spinning type drum on the timeline dials; the staves are decorative facets, not data items)"
+  },
+  "motion_liquid_glass": {
+   "status": "exempt",
+   "reason": "motion wrapper: a glass lens gliding over its child blocks on the timeline dials; the children are rendered by their own atoms"
+  },
   "motion_capsule": {
    "status": "exempt",
    "reason": "motion or demo atom: it moves things itself"
