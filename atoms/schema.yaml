@@ -21444,6 +21444,7 @@ blocks:
     narrow container shows every other label. A bar a doji (open equal to close) keeps a body at least 2 px tall. With very many bars on
     a narrow screen the bodies are thin and the hollow cue is the legend and the table; use the table for exact values. Text is at
     least 12 px.
+  source: *ifg002
 - type: parallel_coords
   stage: preview
   description: 'Rows of numbers compared across 2 to 8 measures at once: each measure is a vertical axis with its own scale, and each row is one line
@@ -21476,6 +21477,7 @@ blocks:
   notes: Axis labels, tick labels and the legend are text at least 12px. With many axes in a narrow container the chart scrolls sideways inside its own box
     rather than squeezing the axes together. Numbers print with the decimals each value uses, at most 6. Lines use --accent (light to dark by value when
     coloured) and axes --muted. Rows keep the given order.
+  source: *ifg002
 - type: ternary_plot
   stage: preview
   description: >-
