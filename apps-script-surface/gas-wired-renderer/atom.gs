@@ -1681,7 +1681,7 @@ _RENDERERS['resources_list'] = function(b) {
 };
 
 _RENDERERS['sidebar_note'] = function(b) {
-  return '<div style="border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:12px 16px;background:#faf5ff;margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'sidebar_note') + '" style="border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:12px 16px;background:#faf5ff;margin:1.2rem 0;">' +
     '<div style="font-weight:700;font-size:0.8rem;color:#7c3aed;margin-bottom:4px;">' + _esc(b.title||'Note') + '</div>' +
     '<p style="margin:0;font-size:0.85rem;color:#4b5563;">' + _markdownToHtml(b.content||'') + '</p></div>';
 };
@@ -2516,7 +2516,7 @@ _RENDERERS['post_metadata_bar'] = function(b) {
   if (b.date) parts.push('<span style="color:var(--muted,#5f6368);">📅 ' + _esc(b.date) + '</span>');
   if (b.readTime) parts.push('<span style="color:var(--muted,#5f6368);">⏱️ ' + _esc(String(b.readTime)) + ' min read</span>');
   var inner = parts.join(' <span style="color:#e5e7eb;margin:0 8px;">|</span> ');
-  return '<div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:8px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #f1f1f1;border:1px solid var(--a2ui-border-soft,#f1f1f1);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);margin:1rem 0;flex-wrap:wrap;">' + inner + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.date, 'post_metadata_bar') + '" style="display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:8px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #f1f1f1;border:1px solid var(--a2ui-border-soft,#f1f1f1);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);margin:1rem 0;flex-wrap:wrap;">' + inner + '</div>';
 };
 
 _RENDERERS['author_bio_card'] = function(b) {
@@ -2601,7 +2601,7 @@ _RENDERERS['follow_button'] = function(b) {
 _RENDERERS['notification_badge'] = function(b) {
   var text = b.text || '';
   var color = b.color || '#e71414';
-  return '<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'notification_badge') + '" style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">' +
     '<svg aria-hidden="true" style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>' +
     '<span style="position:absolute;top:0;right:0;transform:translate(25%,-25%);background:' + color + ';color:#fff;font-size:0.7rem;font-weight:700;border-radius:9999px;padding:2px 6px;line-height:1;min-width:16px;text-align:center;box-shadow:0 0 0 2px #fff;">' + _esc(String(text)) + '</span></div>';
 };
@@ -2926,7 +2926,7 @@ _RENDERERS['audio_link'] = function(b) {
 _RENDERERS['pdf_preview'] = function(b) {
   var url = b.url || '';
   var title = b.title || 'PDF Document';
-  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;">' +
+  return '<a data-cb="node" data-key="' + _ckey(b.pdf_url || b.url, 'pdf_preview') + '" href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;">' +
     '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>' +
     '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">Click to open PDF</div></div></a>';
 };
@@ -4420,7 +4420,7 @@ _RENDERERS['page_header'] = function(b) {
     '.ph-sub-' + uid + '{font-size:15px;color:' + sc + ';line-height:1.5;margin-bottom:10px;}' +
     '.ph-tag-' + uid + '{display:inline-block;background:' + accent + ';color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;' + tagFont + '}' +
     '</style>' +
-    '<div class="ph-' + uid + '">' +
+    '<div data-cb="node" data-key="' + _ckey(b.title, 'page_header') + '" class="ph-' + uid + '">' +
     (b.icon ? '<span class="ph-icon-' + uid + '">' + _esc(b.icon) + '</span>' : '') +
     '<div class="ph-title-' + uid + '">' + _markdownToHtml(b.title || '') + '</div>' +
     (b.subtitle ? '<div class="ph-sub-' + uid + '">' + _markdownToHtml(b.subtitle) + '</div>' : '') +
@@ -4533,7 +4533,7 @@ _RENDERERS['person_card'] = function(b) {
     '.pc-bio-' + uid + '{font-size:13px;color:var(--text,#374151);line-height:1.5;margin-bottom:8px;}' +
     '.pc-tags-' + uid + '{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}' +
     '</style>' +
-    '<div class="pc-' + uid + '">' +
+    '<div data-cb="node" data-key="' + _ckey(b.name, 'person_card') + '" class="pc-' + uid + '">' +
     '<div class="pc-avatar-' + uid + '">' + (photo ? '<img src="' + _esc(photo) + '" style="width:56px;height:56px;object-fit:cover;" />' : _esc((b.name || '?').charAt(0).toUpperCase())) + '</div>' +
     '<div class="pc-body-' + uid + '">' +
     '<div class="pc-name-' + uid + '">' + _esc(b.name || '') + '</div>' +

@@ -2382,7 +2382,7 @@ _RENDERERS['shimmer_button'] = function(b) {
     + '.sb-' + uid + '::after{content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent);transform:skewX(-20deg);animation:sb-shine-' + uid + ' 2s infinite;}'
     + '@keyframes sb-shine-' + uid + '{0%{left:-100%;}100%{left:160%;}}'
     + '</style>'
-    + '<div style="margin:1rem 0;text-align:center;"><button class="sb-' + uid + '">' + _esc(label) + '</button></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.label || b.text || b.title, 'shimmer_button') + '" style="margin:1rem 0;text-align:center;"><button class="sb-' + uid + '">' + _esc(label) + '</button></div>';
 };
 
 _RENDERERS['glow_button'] = function(b) {

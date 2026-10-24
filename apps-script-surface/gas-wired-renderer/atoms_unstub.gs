@@ -27,7 +27,8 @@ _RENDERERS['metric_delta'] = function(b) {
     + '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);line-height:1.2;margin:4px 0;">' + current + '</div>'
     + (delta ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:' + dBg + ';color:' + dColor + ';font-size:0.8rem;font-weight:600;width:fit-content;">' + arrow + ' ' + delta + '</span>' : '')
     + period;
-  return _cardChrome(inner, 'card', 'display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;');
+  var res = _cardChrome(inner, 'card', 'display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;');
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'metric_delta') + '"' + res.substring(4);
 };
 
 // ─── action_required_card ─────────────────────────────────────────────────────

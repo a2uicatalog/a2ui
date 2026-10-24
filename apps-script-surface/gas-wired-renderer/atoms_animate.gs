@@ -453,7 +453,7 @@ _RENDERERS['shimmer_text'] = function(b) {
     + 'animation:' + uid + ' ' + speed + 's linear infinite;line-height:1.2;}'
     + '</style>';
 
-  return css + '<div id="' + uid + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + text + '</div>';
+  return css + '<div data-cb="node" data-key="' + _ckey(b.text, 'shimmer_text') + '" id="' + uid + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + text + '</div>';
 };
 
 // ─── number_flip ──────────────────────────────────────────────────────────────

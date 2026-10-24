@@ -8458,7 +8458,7 @@
   "parity": false
  },
  "metric_delta": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "metric_delta",
@@ -8573,7 +8573,7 @@
   "parity": false
  },
  "pdf_preview": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "pdf_preview",
@@ -9100,7 +9100,7 @@
   "parity": false
  },
  "sidebar_note": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sidebar_note",
@@ -9352,7 +9352,7 @@
   "parity": false
  },
  "post_metadata_bar": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "post_metadata_bar",
@@ -9368,7 +9368,7 @@
   "parity": false
  },
  "notification_badge": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "notification_badge",
@@ -9764,7 +9764,7 @@
   "parity": false
  },
  "page_header": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "page_header",
@@ -9793,7 +9793,7 @@
   "parity": false
  },
  "person_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "person_card",
@@ -9861,7 +9861,7 @@
   "parity": false
  },
  "particle_type": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "particle_type",
@@ -9915,7 +9915,7 @@
   "parity": false
  },
  "living_type": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "living_type",
@@ -9989,7 +9989,7 @@
   "parity": false
  },
  "shimmer_button": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "shimmer_button",
@@ -10407,7 +10407,7 @@
   "parity": false
  },
  "sheet_stats": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sheet_stats",
@@ -11629,7 +11629,7 @@
   "parity": false
  },
  "shimmer_text": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "shimmer_text",

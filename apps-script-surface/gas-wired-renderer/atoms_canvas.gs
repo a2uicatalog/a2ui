@@ -3191,7 +3191,8 @@ _RENDERERS['particle_type'] = function(b) {
   var cap = _ffPick(b.density, {low: '1200', normal: '2400', high: '4200'}, 'normal');
   var dot = _ffPick(b.dot, {fine: '1.1', normal: '1.5', bold: '2.1'}, 'normal');
   var cfg = _ffTypeCfgHead(t) + ',cap:' + cap + ',dot:' + dot + ',inter:' + t.inter + '}';
-  return _ffPanel(t.height, t.bg, _ffCanvas('pt-' + uid) + _ffSrText(t.lines) + _ffScript(_PARTICLE_TYPE_JS, uid, cfg));
+  var out = _ffPanel(t.height, t.bg, _ffCanvas('pt-' + uid) + _ffSrText(t.lines) + _ffScript(_PARTICLE_TYPE_JS, uid, cfg));
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'particle_type') + '"' + out.substring(4);
 };
 
 _RENDERERS['light_type'] = function(b) {
@@ -3212,7 +3213,8 @@ _RENDERERS['living_type'] = function(b) {
   var amp = _ffPick(b.motion, {subtle: '8', normal: '16', wild: '32'}, 'normal');
   var spd = _ffPick(b.speed,  {slow: '0.5', normal: '1', fast: '1.8'}, 'normal');
   var cfg = _ffTypeCfgHead(t) + ',amp:' + amp + ',spd:' + spd + ',inter:' + t.inter + '}';
-  return _ffPanel(t.height, t.bg, _ffCanvas('lv-' + uid) + _ffSrText(t.lines) + _ffScript(_LIVING_TYPE_JS, uid, cfg));
+  var out = _ffPanel(t.height, t.bg, _ffCanvas('lv-' + uid) + _ffSrText(t.lines) + _ffScript(_LIVING_TYPE_JS, uid, cfg));
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'living_type') + '"' + out.substring(4);
 };
 
 // The catalog's own orbit mark (header wordmark .logo-atom geometry: three

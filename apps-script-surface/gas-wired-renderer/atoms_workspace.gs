@@ -111,7 +111,7 @@ _RENDERERS['sheet_stats'] = function(b) {
     badges += '</div>';
   }
 
-  return '<div class="asw-native-card">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'sheet_stats') + '" class="asw-native-card">' +
          '<div class="asw-native-header"><span class="asw-native-header-icon">📊</span> ' + _esc(label) + (rangeStr ? '<span style="margin-left:8px;font-size:0.72rem;color:var(--muted);">' + _esc((sheetName || '') + '!' + rangeStr) + '</span>' : '') + '</div>' +
          badges +
          '</div>';

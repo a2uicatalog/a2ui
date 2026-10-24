@@ -448,7 +448,6 @@
   "colors",
   "font",
   "interactive",
-  "text",
   "weight"
  ],
  "llm_comparison_table": [
@@ -604,7 +603,6 @@
   "colors",
   "font",
   "interactive",
-  "text",
   "weight"
  ],
  "pattern_background": [
@@ -616,7 +614,6 @@
  ],
  "pdf_preview": [
   "alt_text",
-  "pdf_url",
   "thumbnail_url"
  ],
  "photo_upload": [

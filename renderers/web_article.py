@@ -2132,7 +2132,7 @@ def _render_page_header(b: dict) -> str:
     tag_font = ("font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;letter-spacing:0.08em;"
                 if b.get("condensed") else "")
     return (
-        f'<div style="padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:{_cv_esc(bg)};border-bottom:3px solid {_cv_esc(accent)};">'
+        f'<div data-cb="node" data-key="{_ck(b.get("title"), "page_header")}" style="padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:{_cv_esc(bg)};border-bottom:3px solid {_cv_esc(accent)};">'
         + (f'<span style="font-size:36px;margin-bottom:10px;display:block;">{_cv_esc(b["icon"])}</span>' if b.get("icon") else "")
         + f'<div style="font-size:28px;font-weight:800;color:{tc};line-height:1.2;margin-bottom:6px;{title_font}">{_md_inline(b.get("title",""))}</div>'
         + (f'<div style="font-size:15px;color:{sc};line-height:1.5;margin-bottom:10px;">{_md_inline(b["subtitle"])}</div>' if b.get("subtitle") else "")
@@ -2227,7 +2227,7 @@ def _render_person_card(b: dict) -> str:
     if b.get("linkedin"): links_html += f'<a href="{_cv_esc(b["linkedin"])}" style="color:{_cv_esc(accent)};font-size:12px;text-decoration:none;margin-left:10px;">in LinkedIn</a>'
     bio_html = f'<div style="font-size:13px;color:#374151;line-height:1.5;margin-bottom:8px;">{_md_inline(b["bio"])}</div>' if b.get("bio") else ""
     return (
-        f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+        f'<div data-cb="node" data-key="{_ck(b.get("name"), "person_card")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'<div style="flex:0 0 56px;height:56px;border-radius:50%;background:{_cv_esc(accent)};display:flex;align-items:center;justify-content:center;overflow:hidden;">{avatar}</div>'
         f'<div style="flex:1;min-width:0;">'
         f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;">{_cv_esc(name)}</div>'
@@ -6675,7 +6675,7 @@ def _render_shimmer_button(b: dict) -> str:
         f'animation:{sid}-sw {dur} linear infinite;'
         f'text-decoration:none;letter-spacing:0.01em;}}'
         f'</style>'
-        f'<div style="margin:1rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("label"), "shimmer_button")}" style="margin:1rem 0;">'
         f'<{tag}{href_attr} class="{sid}">{_cv_esc(label)}</{tag}>'
         f'{desc_html}'
         f'</div>'
@@ -10371,7 +10371,7 @@ def _render_shimmer_text(b: dict) -> str:
         f'background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
         f'background-clip:text;animation:st_{uid} 3s linear infinite;display:inline-block;}}'
         f'</style>'
-        f'<div style="margin:1rem 0;"><span class="st_{uid}">{text}</span></div>'
+        f'<div data-cb="node" data-key="{_ck(b.get("text"), "shimmer_text")}" style="margin:1rem 0;"><span class="st_{uid}">{text}</span></div>'
     )
 
 _RENDERERS["shimmer_text"] = _render_shimmer_text
@@ -11657,7 +11657,8 @@ def _render_metric_delta(b: dict) -> str:
     delta_html = f'<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:{bg};color:{col};font-size:.8rem;font-weight:600;">{arr} {_cv_esc(delta)}</span>' if delta else ""
     inner = (f'<div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;">{_cv_esc(label)}</div>'
              f'<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);margin:4px 0;">{_cv_esc(cur)}</div>{delta_html}')
-    return _card_chrome(inner, "card", "display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;")
+    res = _card_chrome(inner, "card", "display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;")
+    return f'<div data-cb="node" data-key="{_ck(b.get("label"), "metric_delta")}"' + res[4:]
 
 def _render_review_callout(b: dict) -> str:
     rating, max_r = round(b.get("rating",5)), b.get("max_rating",5)
@@ -13961,7 +13962,7 @@ def _render_pdf_preview(b: dict) -> str:
     url = b.get('url', '')
     title = b.get('title', 'Document Preview')
     height = b.get('height', '500px')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("pdf_url") or b.get("url"), "pdf_preview")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:8px 14px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
             f'font-size:0.82rem;font-weight:600;">📄 {_esc(title)}</div>'
             f'{"<iframe src="+chr(34)+_esc(url)+chr(34)+" style=width:100%;height:"+chr(34)+_esc(str(height))+chr(34)+";border:none;></iframe>" if url else "<div style=padding:24px;text-align:center;color:var(--muted,#5f6368);>No PDF URL provided</div>"}'
@@ -14334,7 +14335,7 @@ def _render_sidebar_note(b: dict) -> str:
     color = b.get('color', '#4f46e5')
     title_html = (f'<div style="font-weight:700;font-size:0.8rem;color:{_esc(color)};margin-bottom:4px;">'
                   f'{_esc(title)}</div>') if title else ''
-    return (f'<aside style="border-left:3px solid {_esc(color)};padding:10px 14px;margin:1rem 0;'
+    return (f'<aside data-cb="node" data-key="{_ck(b.get("title"), "sidebar_note")}" style="border-left:3px solid {_esc(color)};padding:10px 14px;margin:1rem 0;'
             f'background:{_esc(color)}08;font-size:0.88rem;color:#374151;border-radius:0 6px 6px 0;">'
             f'{title_html}{_md_inline(text)}</aside>')
 
@@ -17524,7 +17525,7 @@ def _render_post_metadata_bar(b):
         parts.append(f'<span style="color: var(--muted,#5f6368);">⏱️ {_cv_esc(read_time)} min read</span>')
         
     inner = ' <span style="color: #e5e7eb; margin: 0 8px;">|</span> '.join(parts)
-    return (f'<div class="post-metadata-bar" style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; '
+    return (f'<div data-cb="node" data-key="{_ck(b.get("date"), "post_metadata_bar")}" class="post-metadata-bar" style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; '
             f'padding: 8px 12px; background: #f9fafb; border: 1px solid #f3f4f6; border-radius: 6px; margin: 1rem 0;">'
             f'{inner}'
             f'</div>')
@@ -17533,7 +17534,7 @@ _RENDERERS["post_metadata_bar"] = _render_post_metadata_bar
 def _render_notification_badge(b):
     text = b.get("text", "")
     color = b.get("color", "#e71414")
-    return (f'<div style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("text"), "notification_badge")}" style="position:relative;display:inline-block;padding:8px;background:#f3f4f6;border-radius:8px;">'
             f'  <svg aria-hidden="true" style="width:24px;height:24px;color:#4b5563;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">'
             f'    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
             f'  </svg>'
@@ -19834,7 +19835,8 @@ def _render_particle_type(b: dict) -> str:
     cap = _ff_pick(b.get('density'), {'low': '1200', 'normal': '2400', 'high': '4200'}, 'normal')
     dot = _ff_pick(b.get('dot'), {'fine': '1.1', 'normal': '1.5', 'bold': '2.1'}, 'normal')
     cfg = _ff_type_cfg_head(t) + ',cap:' + cap + ',dot:' + dot + ',inter:' + t['inter'] + '}'
-    return _ff_panel(t['height'], t['bg'], _ff_canvas('pt-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_PARTICLE_TYPE_JS, uid, cfg))
+    out = _ff_panel(t['height'], t['bg'], _ff_canvas('pt-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_PARTICLE_TYPE_JS, uid, cfg))
+    return f'<div data-cb="node" data-key="{_ck(b.get("text"), "particle_type")}"' + out[4:]
 
 
 def _render_light_type(b: dict) -> str:
@@ -19856,7 +19858,8 @@ def _render_living_type(b: dict) -> str:
     amp = _ff_pick(b.get('motion'), {'subtle': '8', 'normal': '16', 'wild': '32'}, 'normal')
     spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '1', 'fast': '1.8'}, 'normal')
     cfg = _ff_type_cfg_head(t) + ',amp:' + amp + ',spd:' + spd + ',inter:' + t['inter'] + '}'
-    return _ff_panel(t['height'], t['bg'], _ff_canvas('lv-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_LIVING_TYPE_JS, uid, cfg))
+    out = _ff_panel(t['height'], t['bg'], _ff_canvas('lv-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_LIVING_TYPE_JS, uid, cfg))
+    return f'<div data-cb="node" data-key="{_ck(b.get("text"), "living_type")}"' + out[4:]
 
 
 _RENDERERS["flow_field"] = _render_flow_field
@@ -22427,7 +22430,7 @@ _RENDERERS["sheet_preview"] = _render_sheet_preview
 def _render_sheet_stats(b: dict) -> str:
     label = _esc(b.get('label', 'Sheet Stats'))
     accent = _esc(b.get('accent', '#4f46e5'))
-    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("label"), "sheet_stats")}" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.82rem;color:#374151;">📊 ' + label
             + ' — live stats require server-side auth.</div></div>')
 _RENDERERS["sheet_stats"] = _render_sheet_stats
