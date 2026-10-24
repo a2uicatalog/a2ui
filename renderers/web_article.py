@@ -185,7 +185,7 @@ def _render_intro(b: dict) -> str:
 
 def _render_body(b: dict) -> str:
     paragraphs = b.get("text", "").strip().split("\n\n")
-    return "\n".join(f"<p>{_md_inline(p.strip())}</p>" for p in paragraphs if p.strip())
+    return "\n".join(f'<p data-cb="node" data-key="{_ck(b.get("type"), "body")}">{_md_inline(p.strip())}</p>' for p in paragraphs if p.strip())
 
 
 def _render_heading(b: dict) -> str:
@@ -207,7 +207,7 @@ def _render_quote(b: dict) -> str:
 def _render_code(b: dict) -> str:
     lang = b.get("language", "")
     content = b.get("content", "").replace("<", "&lt;").replace(">", "&gt;")
-    return f'<pre><code class="language-{_cv_esc(lang)}">{content}</code></pre>'
+    return f'<pre data-cb="node" data-key="{_ck(b.get("language"), "code")}"><code class="language-{_cv_esc(lang)}">{content}</code></pre>'
 
 
 def _render_pipeline(b: dict) -> str:
@@ -1978,7 +1978,7 @@ def _render_highlight_box(b: dict) -> str:
               else f"{_cv_esc(accent)}12" if style == "solid" else "#fff")
     border = f"2px solid {_cv_esc(accent)}" if style == "outline" else f"1px solid {_cv_esc(accent)}30"
     return (
-        f'<div style="background:{bg};border:{border};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 28px;margin:1.5rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("title"), "highlight_box")}" style="background:{bg};border:{border};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 28px;margin:1.5rem 0;">'
         + (f'<span style="font-size:28px;margin-bottom:10px;display:block;">{_cv_esc(b["icon"])}</span>' if b.get("icon") else "")
         + (f'<div style="font-size:18px;font-weight:800;color:#111827;margin-bottom:8px;">{_md_inline(b["title"])}</div>' if b.get("title") else "")
         + f'<div style="font-size:14px;color:#374151;line-height:1.65;">{_md_inline(b.get("text",""))}</div>'
@@ -13471,7 +13471,7 @@ def _render_heading(b: dict) -> str:
     anchor = b.get('anchor', '')
     tag = f'h{min(max(int(level), 1), 6)}'
     id_attr = f' id="{_esc(anchor)}"' if anchor else ''
-    return f'<{tag}{id_attr}>{_md_inline(text)}</{tag}>'
+    return f'<{tag} data-cb="node" data-key="{_ck(b.get("text"), "heading")}"{id_attr}>{_md_inline(text)}</{tag}>'
 
 _RENDERERS['heading'] = _render_heading
 
@@ -17992,13 +17992,14 @@ _RENDERERS["feedback_prompt"] = _render_feedback_prompt
 
 def _render_intro(b: dict) -> str:
     parts = []
+    cb_attrs = f' data-cb="node" data-key="{_ck(b.get("series_label"), "intro")}"'
     if b.get("series_label") and b.get("series_url"):
         parts.append(
-            f'<p><em>In <a href="{_cv_esc(b["series_url"])}">{_cv_esc(b["series_label"])}</a>, '
+            f'<p{cb_attrs}><em>In <a href="{_cv_esc(b["series_url"])}">{_cv_esc(b["series_label"])}</a>, '
             f'{_md_inline(b.get("continuation", "I covered the background. This article picks up from there."))}</em></p>'
         )
     if b.get("note"):
-        parts.append(f'<p><em>{_md_inline(b["note"])}</em></p>')
+        parts.append(f'<p{cb_attrs if not parts else ""}><em>{_md_inline(b["note"])}</em></p>')
     return "\n".join(parts)
 _RENDERERS["intro"] = _render_intro
 
@@ -19846,7 +19847,7 @@ def _render_light_type(b: dict) -> str:
     glow = 'false' if b.get('glow') is False else 'true'
     cfg = (_ff_type_cfg_head(t) + ',cap:3000,per:' + per + ',spd:' + spd + ',trail:' + trail
            + ',sc:' + sc + ',glow:' + glow + ',inter:' + t['inter'] + '}')
-    return _ff_panel(t['height'], t['bg'], _ff_canvas('lt-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_LIGHT_TYPE_JS, uid, cfg))
+    return f'<div data-cb="node" data-key="{_ck(b.get("text"), "light_type")}"' + _ff_panel(t['height'], t['bg'], _ff_canvas('lt-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_LIGHT_TYPE_JS, uid, cfg))[4:]
 
 
 def _render_living_type(b: dict) -> str:
@@ -20981,7 +20982,7 @@ def _render_great_circle(b: dict) -> str:
     height = _ff_int(b.get('height'), 320, 240, 600)
     cfg = ('{a:[' + ','.join(a) + '],b:[' + ','.join(c) + '],al:' + _ff_js_str(f.get('label'), 24, 'A') + ',bl:' + _ff_js_str(t.get('label'), 24, 'B')
            + ',units:"' + units + '",bg:"' + th['bg'] + '",ink:"' + _ff_rgb(th['ink']) + '",acc:"' + _ff_rgb(acc) + '"}')
-    return _ff_panel(height, th['bg'], _ff_canvas('gc-' + uid) + _ff_script(_GREAT_CIRCLE_JS, uid, cfg))
+    return f'<div data-cb="node" data-key="{_ck(b.get("units"), "great_circle")}"' + _ff_panel(height, th['bg'], _ff_canvas('gc-' + uid) + _ff_script(_GREAT_CIRCLE_JS, uid, cfg))[4:]
 
 
 def _render_bezier_easing(b: dict) -> str:

@@ -8205,7 +8205,7 @@
   "parity": false
  },
  "intro": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "intro",
@@ -8222,7 +8222,7 @@
   "parity": false
  },
  "body": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "body",
@@ -8236,7 +8236,7 @@
   "parity": false
  },
  "heading": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "heading",
@@ -8279,7 +8279,7 @@
   "parity": false
  },
  "code": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "code",
@@ -9746,7 +9746,7 @@
   "parity": false
  },
  "highlight_box": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "highlight_box",
@@ -9887,7 +9887,7 @@
   "parity": false
  },
  "light_type": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "light_type",
@@ -9962,7 +9962,7 @@
   "parity": false
  },
  "great_circle": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "great_circle",

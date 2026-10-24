@@ -366,7 +366,7 @@ var _RENDERERS = {};
 // ── Category A: Static Content Renderers ──────────────────────────────────────
 
 _RENDERERS['body'] = function(b) {
-  return '<p class="asw-body">' + _markdownToHtml(b.text) + '</p>';
+  return '<p data-cb="node" data-key="' + _ckey(b.type, 'body') + '" class="asw-body">' + _markdownToHtml(b.text) + '</p>';
 };
 
 _RENDERERS['paragraph'] = function(b) {
@@ -379,7 +379,7 @@ _RENDERERS['text_block'] = function(b) {
 
 _RENDERERS['heading'] = function(b) {
   var level = b.level || 2;
-  return '<h' + level + ' class="asw-heading">' + _esc(b.text) + '</h' + level + '>';
+  return '<h' + level + ' data-cb="node" data-key="' + _ckey(b.text, 'heading') + '" class="asw-heading">' + _esc(b.text) + '</h' + level + '>';
 };
 
 _RENDERERS['presence_bar'] = function(b) {
@@ -457,7 +457,7 @@ _RENDERERS['code_block'] = function(b) {
 };
 
 _RENDERERS['code'] = function(b) {
-  return '<pre><code class="language-' + _esc(b.language || 'text') + '">' + _esc(b.content) + '</code></pre>';
+  return '<pre data-cb="node" data-key="' + _ckey(b.language, 'code') + '"><code class="language-' + _esc(b.language || 'text') + '">' + _esc(b.content) + '</code></pre>';
 };
 
 _RENDERERS['inline_code'] = function(b) {
@@ -1404,11 +1404,12 @@ function getPollTally(pollId) {
 
 _RENDERERS['intro'] = function(b) {
   var parts = [];
+  var cbAttrs = ' data-cb="node" data-key="' + _ckey(b.series_label, 'intro') + '"';
   if (b.series_label && b.series_url) {
-    parts.push('<p><em>In <a href="' + _safeUrl(b.series_url) + '">' + _esc(b.series_label) + '</a>, ' +
+    parts.push('<p' + cbAttrs + '><em>In <a href="' + _safeUrl(b.series_url) + '">' + _esc(b.series_label) + '</a>, ' +
                _markdownToHtml(b.continuation || 'I covered the background. This article picks up from there.') + '</em></p>');
   }
-  if (b.note) parts.push('<p><em>' + _markdownToHtml(b.note) + '</em></p>');
+  if (b.note) parts.push('<p' + (!parts.length ? cbAttrs : '') + '><em>' + _markdownToHtml(b.note) + '</em></p>');
   return parts.join('\n');
 };
 
@@ -4268,7 +4269,7 @@ _RENDERERS['highlight_box'] = function(b) {
     '.hb-title-' + uid + '{font-size:18px;font-weight:800;color:var(--text,#111827);margin-bottom:8px;}' +
     '.hb-text-' + uid + '{font-size:14px;color:var(--text,#374151);line-height:1.65;}' +
     '</style>' +
-    '<div class="hb-' + uid + '">' +
+    '<div data-cb="node" data-key="' + _ckey(b.title, 'highlight_box') + '" class="hb-' + uid + '">' +
     (b.icon ? '<span class="hb-icon-' + uid + '">' + _esc(b.icon) + '</span>' : '') +
     (b.title ? '<div class="hb-title-' + uid + '">' + _markdownToHtml(b.title) + '</div>' : '') +
     '<div class="hb-text-' + uid + '">' + _markdownToHtml(b.text || '') + '</div>' +

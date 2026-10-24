@@ -3203,7 +3203,7 @@ _RENDERERS['light_type'] = function(b) {
   var sc    = _ffPick(b.scale,   {fine: '0.012', normal: '0.006', broad: '0.003'}, 'normal');
   var glow  = b.glow === false ? 'false' : 'true';
   var cfg = _ffTypeCfgHead(t) + ',cap:3000,per:' + per + ',spd:' + spd + ',trail:' + trail + ',sc:' + sc + ',glow:' + glow + ',inter:' + t.inter + '}';
-  return _ffPanel(t.height, t.bg, _ffCanvas('lt-' + uid) + _ffSrText(t.lines) + _ffScript(_LIGHT_TYPE_JS, uid, cfg));
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'light_type') + '"' + _ffPanel(t.height, t.bg, _ffCanvas('lt-' + uid) + _ffSrText(t.lines) + _ffScript(_LIGHT_TYPE_JS, uid, cfg)).substring(4);
 };
 
 _RENDERERS['living_type'] = function(b) {
@@ -3741,7 +3741,7 @@ _RENDERERS['great_circle'] = function(b) {
   var a = [_ffNum(f.lat, 51.47, -90, 90, 4), _ffNum(f.lon, -0.4614, -180, 180, 4)], c = [_ffNum(t.lat, 40.6413, -90, 90, 4), _ffNum(t.lon, -73.7781, -180, 180, 4)];
   var units = _ffPick(b.units, {nm: 'nm', km: 'km', mi: 'mi'}, 'nm'), height = _ffInt(b.height, 320, 240, 600);
   var cfg = '{a:[' + a.join(',') + '],b:[' + c.join(',') + '],al:' + _ffJsStr(f.label, 24, 'A') + ',bl:' + _ffJsStr(t.label, 24, 'B') + ',units:"' + units + '",bg:"' + th.bg + '",ink:"' + _ffRgb(th.ink) + '",acc:"' + _ffRgb(acc) + '"}';
-  return _ffPanel(height, th.bg, _ffCanvas('gc-' + uid) + _ffScript(_GREAT_CIRCLE_JS, uid, cfg));
+  return '<div data-cb="node" data-key="' + _ckey(b.units, 'great_circle') + '"' + _ffPanel(height, th.bg, _ffCanvas('gc-' + uid) + _ffScript(_GREAT_CIRCLE_JS, uid, cfg)).substring(4);
 };
 
 var _BZ_PRESETS = {ease: [0.25, 0.1, 0.25, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1], overshoot: [0.34, 1.56, 0.64, 1], anticipate: [0.68, -0.55, 0.27, 1.55]};
