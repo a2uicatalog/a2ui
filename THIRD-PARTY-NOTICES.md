@@ -90,6 +90,20 @@ just looks plainer.
 
 ---
 
+## d3-scale, d3-time and d3-time-format (Mike Bostock)
+
+- **Project:** d3-scale 4.0.2 `scaleUtc` (`ticks()` and the default multi-scale `tickFormat()`), d3-time 3.1.0 — the UTC tick intervals and `utcTicks` interval choice, and d3-time-format 4.1.0 — the `utcFormat` specifiers `%L %S %M %I %p %a %d %b %B %Y` (US English)
+- **Website:** https://github.com/d3/d3-scale, https://github.com/d3/d3-time and https://github.com/d3/d3-time-format
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2023 Mike Bostock (d3-scale); Copyright 2010-2022 Mike Bostock (d3-time); Copyright 2010-2023 Mike Bostock (d3-time-format)
+- **Vendored as:** nothing is vendored; the date axis is ported by hand into `_cs_axis` in
+  `renderers/web_article.py` and its twin `_csAxis` in `apps-script-surface/gas-wired-renderer/atoms_infographic.gs`,
+  and checked against the real libraries' tick milliseconds and label text (exactly) by `tests/test_candlestick.py`
+  (golden vectors from `tests/fixtures/candlestick_d3_golden_gen.mjs`)
+- **Used by:** the `candlestick_chart` atom's date axis in both renderers. No script is shipped to the page.
+
+---
+
 ## d3-shape and d3-path (Mike Bostock)
 
 - **Project:** d3-shape 3.2.0 — `arc` (the circular and annular sector with `padAngle` and `padRadius`; corner rounding is not used), and the `stack` offsets `stackOffsetNone`, `stackOffsetExpand`, `stackOffsetSilhouette`, `stackOffsetWiggle` with `stackOrderInsideOut` and `stackOrderAppearance` (the `offset` field of `stacked_area`, in `_sa_stack` / `_saStack`), and its dependency d3-path 3.1.0 — `arc` (the SVG arc commands and the 3-digit number rounding)

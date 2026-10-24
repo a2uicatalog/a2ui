@@ -8,7 +8,8 @@ No markdown conversion. No Quill. No stripping surprises.
 
 from typing import List, Dict, Any
 import array as _cn_array, decimal, re, math, base64, urllib.request, urllib.error, json as _json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import bisect, calendar
 from pathlib import Path
 import markdown as _md_lib
 from markdown.treeprocessors import Treeprocessor as _MdTree
@@ -37615,9 +37616,271 @@ def _render_waterfall(b: dict) -> str:
                                 [[labels[k], 'Total' if st.get('kind') == 'total' else sg(st['value']) + us, f(e) + us] for k, (st, (_, e)) in enumerate(zip(steps, bars))]))
 
 
+# ── candlestick_chart (Plotly candlestick + ohlc) ── open/high/low/close bars on a time axis, optional volume panel. The date axis is
+# d3-scale scaleUtc().ticks(5) (d3-time utcTicks: intervals 1 s .. 1 y, chosen by bisecting the target step) labelled by the scale's
+# default multi-scale format (d3-time-format utcFormat), ported by hand for UTC only. The price axis is d3 nice()/ticks() (the histogram
+# helpers). Twin of _csAxis / _csParse / _RENDERERS['candlestick_chart'] in atoms_infographic.gs.
+_CS_EPOCH = datetime(1970, 1, 1)
+_CS_STEPS = [('s', 1, 1000), ('s', 5, 5000), ('s', 15, 15000), ('s', 30, 30000), ('m', 1, 60000), ('m', 5, 300000), ('m', 15, 900000), ('m', 30, 1800000),
+             ('h', 1, 3600000), ('h', 3, 10800000), ('h', 6, 21600000), ('h', 12, 43200000), ('d', 1, 86400000), ('d', 2, 172800000), ('w', 1, 604800000),
+             ('M', 1, 2592000000), ('M', 3, 7776000000), ('y', 1, 31536000000)]
+_CS_STEP_MS = [s[2] for s in _CS_STEPS]
+_CS_DAY = 86400000
+_CS_WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+_CS_MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+
+def _cs_dt(ms):
+    return _CS_EPOCH + timedelta(milliseconds=ms)
+
+
+def _cs_ms(d):
+    return (d - _CS_EPOCH) // timedelta(milliseconds=1)
+
+
+def _cs_floor(u, ms):
+    if u == 's':
+        return ms - ms % 1000
+    if u == 'm':
+        return ms - ms % 60000
+    if u == 'h':
+        return ms - ms % 3600000
+    n = ms // _CS_DAY
+    if u == 'd':
+        return n * _CS_DAY
+    if u == 'w':
+        return (n - (n + 4) % 7) * _CS_DAY
+    d = _cs_dt(ms)
+    return _cs_ms(datetime(d.year, d.month if u == 'M' else 1, 1))
+
+
+def _cs_offset(u, ms, k):
+    if u in 'smhdw':
+        return ms + k * {'s': 1000, 'm': 60000, 'h': 3600000, 'd': _CS_DAY, 'w': 7 * _CS_DAY}[u]
+    d = _cs_dt(ms)
+    m = d.year * 12 + d.month - 1 + (k if u == 'M' else 12 * k)
+    return _cs_ms(datetime(m // 12, m % 12 + 1, 1))
+
+
+def _cs_field(u, ms):
+    if u == 's':
+        return ms // 1000 % 60
+    if u == 'm':
+        return ms // 60000 % 60
+    if u == 'h':
+        return ms // 3600000 % 24
+    if u == 'd':
+        return ms // _CS_DAY
+    d = _cs_dt(ms)
+    return d.month - 1 if u == 'M' else d.year
+
+
+def _cs_tick_step(a, b, count):
+    inc = _hg_tick_increment(b, a, count) if b < a else _hg_tick_increment(a, b, count)
+    return (-1 if b < a else 1) * (1 / -inc if inc < 0 else inc)
+
+
+def _cs_range(u, k, start, stop):
+    """d3 interval.every(k).range(start, stop + 1): every k-th field value of unit u, the first at or after start, up to stop."""
+    out = []
+    t = _cs_floor(u, start)
+    while t <= stop:
+        if t >= start and (k == 1 or _cs_field(u, t) % k == 0):
+            out.append(t)
+        t = _cs_offset(u, t, 1)
+    return out
+
+
+def _cs_label(ms):
+    d = _cs_dt(ms)
+    if ms % 1000:
+        return '.%03d' % (ms % 1000)
+    if ms % 60000:
+        return ':%02d' % d.second
+    if ms % 3600000:
+        return '%02d:%02d' % (d.hour % 12 or 12, d.minute)
+    if ms % _CS_DAY:
+        return '%02d %s' % (d.hour % 12 or 12, 'AM' if d.hour < 12 else 'PM')
+    if d.day != 1:
+        return ('%s %02d' % (_CS_WD[(ms // _CS_DAY + 4) % 7], d.day)) if (ms // _CS_DAY + 4) % 7 else ('%s %02d' % (_CS_MON[d.month - 1][:3], d.day))
+    if d.month != 1:
+        return _CS_MON[d.month - 1]
+    return '%04d' % d.year
+
+
+def _cs_axis(start, stop, count):
+    """scaleUtc().domain([start, stop]).ticks(count) and its default tick labels: ([ms, ...], [label, ...])."""
+    target = abs(stop - start) / count
+    i = bisect.bisect_right(_CS_STEP_MS, target)
+    if i == len(_CS_STEPS):
+        k = math.floor(_cs_tick_step(start / 31536000000, stop / 31536000000, count))
+        t = _cs_range('y', k, start, stop) if k > 0 else []
+    elif i == 0:
+        k = math.floor(max(_cs_tick_step(start, stop, count), 1))
+        t = [x for x in range(math.ceil(start), stop + 1) if x % k == 0] if k > 1 else list(range(math.ceil(start), stop + 1))
+    else:
+        j = i - 1 if target / _CS_STEPS[i - 1][2] < _CS_STEPS[i][2] / target else i
+        t = _cs_range(_CS_STEPS[j][0], _CS_STEPS[j][1], start, stop)
+    return t, [_cs_label(x) for x in t]
+
+
+_CS_DATE = re.compile(r'^[ \t\r\n]*(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?Z?[ \t\r\n]*\Z', re.ASCII)
+
+
+def _cs_parse(s):
+    """An ISO date or date-time (read as UTC) to milliseconds since the epoch, or None. Years 1000 to 9000."""
+    if not isinstance(s, str):
+        return None
+    m = _CS_DATE.match(s)
+    if not m:
+        return None
+    y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    h, mi, sec = int(m.group(4) or 0), int(m.group(5) or 0), int(m.group(6) or 0)
+    ms = int((m.group(7) or '0').ljust(3, '0'))
+    if not (1000 <= y <= 9000 and 1 <= mo <= 12 and 1 <= d <= calendar.monthrange(y, mo)[1] and h < 24 and mi < 60 and sec < 60):
+        return None
+    return _cs_ms(datetime(y, mo, d, h, mi, sec)) + ms
+
+
+_CS_READ, _CS_CAP = 10000, 250
+
+
+def _cs_bars(b):
+    """The usable bars, in date order: [(ms, label, open, high, low, close, volume or None)], plus (left out, volumes missing, unread, has volume)."""
+    def col(k):
+        v = _if_g(b, k)
+        return v if isinstance(v, list) else []
+    dates, o, h, l, c, vol = col('dates'), col('open'), col('high'), col('low'), col('close'), col('volume')
+    bars, left_out, vmiss = [], 0, 0
+    for i in range(min(len(dates), _CS_READ)):
+        ms = _cs_parse(dates[i])
+        q = [x[i] if i < len(x) else None for x in (o, h, l, c)]
+        if ms is None or not all(_wf_num(x) for x in q) or q[2] > min(q[0], q[3]) or q[1] < max(q[0], q[3]):
+            left_out += 1
+            continue
+        v = vol[i] if i < len(vol) else None
+        if vol and not (_wf_num(v) and v >= 0):
+            vmiss += 1
+        bars.append((ms, dates[i].strip(' \t\r\n'), q[0], q[1], q[2], q[3], v if _wf_num(v) and v >= 0 else None))
+    bars.sort(key=lambda r: r[0])
+    return bars, left_out, vmiss, max(0, len(dates) - _CS_READ), bool(vol)
+
+
+def _cs_axis_html(ev, X0, span, lab):
+    """_hg_axis with one change for narrow containers: the labels kept are the UTC-midnight ones when any are shown (a date), else every other."""
+    maxlen = max(len(s) for s in lab)
+    stride = -(-len(ev) // max(2, min(8, 48 // maxlen)))
+    shown = [i for i in range(len(ev)) if i % stride == 0 and (span > 0 or i == 0)]
+    pool = [i for i in shown if ev[i] % _CS_DAY == 0] or shown
+    keep = set(pool[::2])
+    xs = ''
+    for i in shown:
+        xs += ('<div class="hgx' + (' hgc' if i in keep else '') + '" style="position:absolute;top:100%;left:' + (_tm_pct(ev[i] - X0, span) if span > 0 else '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>'
+               '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + lab[i] + '</div></div>')
+    return xs
+
+
+def _render_candlestick_chart(b: dict) -> str:
+    bars, left_out, vmiss, unread, hasvol = _cs_bars(b)
+    beyond = len(bars) - _CS_CAP
+    bars = bars[:_CS_CAP]
+    notes = ((_hg_note(str(left_out) + (' bar had' if left_out == 1 else ' bars had') + ' a missing date, a missing number or prices that do not fit together and ' + ('was' if left_out == 1 else 'were') + ' left out.') if left_out else '')
+             + (_hg_note(str(vmiss) + (' volume was' if vmiss == 1 else ' volumes were') + ' missing, negative or not a number and ' + ('was' if vmiss == 1 else 'were') + ' left out.') if vmiss else '')
+             + (_hg_note(str(beyond) + (' bar beyond the first 250 was' if beyond == 1 else ' bars beyond the first 250 were') + ' not drawn.') if beyond > 0 else '')
+             + (_hg_note(str(unread) + (' entry beyond the first 10000 was' if unread == 1 else ' entries beyond the first 10000 were') + ' not read.') if unread else ''))
+    if not bars:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A candlestick chart needs at least one bar with a date and open, high, low and close numbers.</div>' + notes + _hg_version_note(b, 'candlestick_chart'))
+    n = len(bars)
+    ohlc = _if_g(b, 'style') == 'ohlc'
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    yl = _if_str(_if_g(b, 'y_label'))[:40] if _if_truthy(_if_g(b, 'y_label')) else ''
+    cap = yl + (' (' + unit + ')' if unit else '') if yl else unit
+    dc = min(6, _hg_decimals([x for r in bars for x in r[2:6]]))
+
+    def f(v):
+        return _bp_fmt(v, dc)
+    ms = [r[0] for r in bars]
+    gaps = [y - x for x, y in zip(ms, ms[1:]) if y > x]
+    g = min(gaps) if gaps else _CS_DAY
+    T0, T1 = math.floor(ms[0] - g / 2), math.ceil(ms[-1] + g / 2)
+    tspan = T1 - T0
+    Y0, Y1 = _hg_nice(min(r[4] for r in bars), max(r[3] for r in bars), 5)
+    yspan = Y1 - Y0
+    yt = _hg_ticks(Y0, Y1, 5)
+    ytl = [_hg_num(t, _hg_decimals(yt)) for t in yt]
+    vols = [r[6] for r in bars if r[6] is not None]
+    show_vol = len(vols) > 0
+    V1 = _hg_nice(0, max(vols), 3)[1] if show_vol else 0
+    vlab = [_hg_num(0, 0), _hg_num(V1, _hg_decimals([V1]))] if show_vol else []
+    gut = 'calc(' + str(max(len(t) for t in ytl + vlab)) + 'ch + 14px)'
+
+    def yp(v):
+        return _tm_pct(Y1 - v, yspan) if yspan > 0 else '50%'
+
+    def ph(a, c):
+        return _tm_pct(c - a, yspan) if yspan > 0 else '0%'
+    w = 0.7 * g
+    stroke = '2px' if n <= 60 else '1px'
+    col_of = {True: 'var(--positive,#15803D)', False: 'var(--negative,#B91C1C)'}
+    ticks, tlab = _cs_axis(T0, T1, 5)
+    grid = ''.join('<div style="position:absolute;left:0;right:0;top:' + yp(t) + ';border-top:1px solid var(--border,#CBD5E1);"></div>' for t in yt)
+    ylab = ''.join('<div class="csyl" style="position:absolute;right:6px;top:' + yp(t) + ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:' + _IF_MUTED + ';">' + s + '</div>' for t, s in zip(yt, ytl))
+    candles, volume = '', ''
+    for k, (t, _, o, hi, lo, c, v) in enumerate(bars):
+        up = c >= o
+        cc = col_of[up]
+        kind = 'csu' if up else 'csd'
+        left, wid = _tm_pct(t - w / 2 - T0, tspan), _tm_pct(w, tspan)
+        geo = 'position:absolute;left:calc(50% - ' + ('1px' if (up or not ohlc) else '2px') + ');width:' + ('2px' if (up or not ohlc) else '4px') + ';top:' + yp(hi) + ';height:' + ph(lo, hi) + ';min-height:2px;background:' + cc + ';'
+        if ohlc:
+            sw = '2px' if up else '4px'
+            inner = ('<div class="cso ' + kind + '" style="' + geo + '"></div>'
+                     '<div style="position:absolute;right:50%;width:min(50%,14px);top:' + yp(o) + ';height:' + sw + ';margin-top:calc(0px - ' + sw + ' / 2);background:' + cc + ';"></div>'
+                     '<div style="position:absolute;left:50%;width:min(50%,14px);top:' + yp(c) + ';height:' + sw + ';margin-top:calc(0px - ' + sw + ' / 2);background:' + cc + ';"></div>')
+        else:
+            inner = ('<div class="csk" style="' + geo + '"></div>'
+                     '<div class="csb ' + kind + '" style="position:absolute;left:0;right:0;margin:0 auto;max-width:28px;top:' + yp(max(o, c)) + ';height:' + ph(min(o, c), max(o, c)) + ';min-height:2px;box-sizing:border-box;border:' + stroke + ' solid ' + cc
+                     + ';background:' + ('var(--surface,#FFFFFF)' if up else cc) + ';"></div>')
+        candles += '<div class="csc ' + kind + '" style="position:absolute;top:0;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;' + _if_k(k, n) + _IF_FADE + '">' + inner + '</div>'
+        if v is not None:
+            volume += ('<div class="csv ' + kind + '" style="position:absolute;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;height:' + (_tm_pct(v, V1) if V1 > 0 else '0%') + ';min-height:1px;box-sizing:border-box;border:1px solid ' + cc
+                       + ';background:' + ('var(--surface,#FFFFFF)' if up else cc) + ';' + _if_k(k, n) + _IF_FADE + '"></div>')
+    first, last = bars[0], bars[-1]
+    hi_i = max(range(n), key=lambda i: (bars[i][3], -i))
+    lo_i = min(range(n), key=lambda i: (bars[i][4], i))
+    ups = sum(1 for r in bars if r[5] >= r[2])
+    chg = last[5] - first[2]
+    pc = _if_round(chg / first[2] * 1000) / 10 if first[2] != 0 else None
+    aria = (('OHLC bar chart' if ohlc else 'Candlestick chart') + ' of ' + str(n) + (' bar' if n == 1 else ' bars') + ' from ' + first[1] + ' to ' + last[1] + (' in ' + unit if unit else '') + '. First open ' + f(first[2])
+            + ', last close ' + f(last[5]) + ', change ' + ('+' if chg > 0 else '') + f(chg) + (' (' + ('+' if pc > 0 else '') + _bp_fmt(pc, 1) + '%)' if pc is not None else '') + '. Highest high ' + f(bars[hi_i][3]) + ' on ' + bars[hi_i][1]
+            + ', lowest low ' + f(bars[lo_i][4]) + ' on ' + bars[lo_i][1] + '. ' + str(ups) + ' up, ' + str(n - ups) + ' down.')
+    sw_up = ('<span style="display:inline-block;width:2px;height:14px;background:var(--positive,#15803D);"></span>' if ohlc
+             else '<span style="display:inline-block;width:12px;height:12px;box-sizing:border-box;border:2px solid var(--positive,#15803D);background:var(--surface,#FFFFFF);"></span>')
+    sw_dn = ('<span style="display:inline-block;width:4px;height:14px;background:var(--negative,#B91C1C);"></span>' if ohlc
+             else '<span style="display:inline-block;width:12px;height:12px;box-sizing:border-box;border:2px solid var(--negative,#B91C1C);background:var(--negative,#B91C1C);"></span>')
+    legend = ('<div class="csl" style="display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 8px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">'
+              '<span style="display:inline-flex;align-items:center;gap:6px;">' + sw_up + 'Up: close at or above open (' + ('thin bar' if ohlc else 'hollow') + ')</span>'
+              '<span style="display:inline-flex;align-items:center;gap:6px;">' + sw_dn + 'Down: close below open (' + ('thick bar' if ohlc else 'filled') + ')</span></div>')
+    vpanel = ('<div style="display:flex;margin-top:10px;"><div style="flex:0 0 ' + gut + ';position:relative;">'
+              '<div class="csyl" style="position:absolute;right:6px;top:0;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + vlab[1] + '</div>'
+              '<div class="csyl" style="position:absolute;right:6px;bottom:0;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + vlab[0] + '</div></div>'
+              '<div class="csq" style="position:relative;flex:1 1 auto;min-width:0;height:64px;border-bottom:1px solid var(--muted,#475569);border-left:1px solid var(--muted,#475569);">'
+              '<div style="position:absolute;left:0;right:0;top:0;border-top:1px solid var(--border,#CBD5E1);"></div>' + volume + '</div></div>') if show_vol else ''
+    chart = ('<div class="ifcs" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifcs .hgx:not(.hgc){display:none}}</style>' + legend
+             + ('<div class="cscap" style="font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 0 6px;">' + _cv_esc(cap) + '</div>' if cap else '')
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;margin:0 0 34px 0;padding:8px 36px 0 0;">'
+             '<div style="display:flex;"><div style="flex:0 0 ' + gut + ';position:relative;">' + ylab + '</div>'
+             '<div class="csp" style="position:relative;flex:1 1 auto;min-width:0;height:260px;border-left:1px solid var(--muted,#475569);">' + grid + candles + '</div></div>' + vpanel
+             + '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _cs_axis_html(ticks, T0, tspan, tlab) + '</div></div></div>')
+    head = ['Date', 'Open', 'High', 'Low', 'Close', 'Direction'] + (['Volume'] if show_vol else [])
+    rows = [[r[1], f(r[2]) + us, f(r[3]) + us, f(r[4]) + us, f(r[5]) + us, 'Up' if r[5] >= r[2] else 'Down'] + ([_bp_fmt(r[6], 6) if r[6] is not None else 'none'] if show_vol else []) for r in bars]
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'candlestick_chart') + _if_table(head, rows))
+
+
 _CB_ATOMS = ('treemap', 'venn_diagram', 'org_chart', 'histogram', 'box_plot', 'waterfall', 'sunburst', 'chord_diagram', 'circle_pack', 'arc_diagram', 'contour_plot', 'voronoi')
 for _if_name, _if_fn in (('quadrant', _render_quadrant), ('bullet_graph', _render_bullet_graph), ('swimlane', _render_swimlane), ('gantt', _render_gantt), ('change_chart', _render_change_chart), ('cycle_diagram', _render_cycle_diagram),
-                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot), ('voronoi', _render_voronoi)):
+                         ('journey_map', _render_journey_map), ('maturity_ladder', _render_maturity_ladder), ('treemap', _render_treemap), ('venn_diagram', _render_venn_diagram), ('callout_anatomy', _render_callout_anatomy), ('org_chart', _render_org_chart), ('histogram', _render_histogram), ('box_plot', _render_box_plot), ('waterfall', _render_waterfall), ('sunburst', _render_sunburst), ('chord_diagram', _render_chord_diagram), ('circle_pack', _render_circle_pack), ('arc_diagram', _render_arc_diagram), ('contour_plot', _render_contour_plot), ('voronoi', _render_voronoi, ('candlestick_chart', _render_candlestick_chart))):
     _RENDERERS[_if_name] = _cb_wrap(_if_fn) if _if_name in _CB_ATOMS else _if_fn
 
 

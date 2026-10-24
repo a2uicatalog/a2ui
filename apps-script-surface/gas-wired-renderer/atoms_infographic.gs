@@ -3724,3 +3724,185 @@ function _hmExt(b) {
   var fn = _RENDERERS[n];
   _RENDERERS[n] = function(b) { return _cbPass(fn(b)); };
 });
+
+// ── candlestick_chart (Plotly candlestick + ohlc) ── open/high/low/close bars on a time axis, optional volume panel. The date axis is
+// d3-scale scaleUtc().ticks(5) (d3-time utcTicks: intervals 1 s .. 1 y, chosen by bisecting the target step) labelled by the scale's
+// default multi-scale format (d3-time-format utcFormat), ported by hand for UTC only. The price axis is d3 nice()/ticks() (the histogram
+// helpers). Twin of _cs_axis / _cs_parse / _render_candlestick_chart in renderers/web_article.py.
+var _CS_STEPS = [['s', 1, 1000], ['s', 5, 5000], ['s', 15, 15000], ['s', 30, 30000], ['m', 1, 60000], ['m', 5, 300000], ['m', 15, 900000], ['m', 30, 1800000],
+  ['h', 1, 3600000], ['h', 3, 10800000], ['h', 6, 21600000], ['h', 12, 43200000], ['d', 1, 86400000], ['d', 2, 172800000], ['w', 1, 604800000],
+  ['M', 1, 2592000000], ['M', 3, 7776000000], ['y', 1, 31536000000]];
+var _CS_DAY = 86400000, _CS_WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var _CS_MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function _csMod(a, m) { return ((a % m) + m) % m; }
+function _csFloor(u, ms) {
+  if (u === 's') return ms - _csMod(ms, 1000);
+  if (u === 'm') return ms - _csMod(ms, 60000);
+  if (u === 'h') return ms - _csMod(ms, 3600000);
+  var n = Math.floor(ms / _CS_DAY);
+  if (u === 'd') return n * _CS_DAY;
+  if (u === 'w') return (n - _csMod(n + 4, 7)) * _CS_DAY;
+  var d = new Date(ms);
+  return Date.UTC(d.getUTCFullYear(), u === 'M' ? d.getUTCMonth() : 0, 1);
+}
+function _csOffset(u, ms, k) {
+  var f = {s: 1000, m: 60000, h: 3600000, d: _CS_DAY, w: 7 * _CS_DAY};
+  if (f[u]) return ms + k * f[u];
+  var d = new Date(ms), m = d.getUTCFullYear() * 12 + d.getUTCMonth() + (u === 'M' ? k : 12 * k);
+  return Date.UTC(Math.floor(m / 12), _csMod(m, 12), 1);
+}
+function _csField(u, ms) {
+  if (u === 's') return _csMod(Math.floor(ms / 1000), 60);
+  if (u === 'm') return _csMod(Math.floor(ms / 60000), 60);
+  if (u === 'h') return _csMod(Math.floor(ms / 3600000), 24);
+  if (u === 'd') return Math.floor(ms / _CS_DAY);
+  var d = new Date(ms);
+  return u === 'M' ? d.getUTCMonth() : d.getUTCFullYear();
+}
+function _csTickStep(a, b, count) {
+  if (!(Math.abs(b - a) > 0)) return 0;   // d3 tickSpec gives no step for an empty span; tickStep turns that into 0
+  var inc = b < a ? _hgTickInc(b, a, count) : _hgTickInc(a, b, count);
+  return (b < a ? -1 : 1) * (inc < 0 ? 1 / -inc : inc);
+}
+function _csRange(u, k, start, stop) {
+  var out = [], t = _csFloor(u, start);
+  while (t <= stop) {
+    if (t >= start && (k === 1 || _csMod(_csField(u, t), k) === 0)) out.push(t);
+    t = _csOffset(u, t, 1);
+  }
+  return out;
+}
+function _csPad(v, n) { var s = String(v); while (s.length < n) s = '0' + s; return s; }
+function _csLabel(ms) {
+  var d = new Date(ms), wd = _csMod(Math.floor(ms / _CS_DAY) + 4, 7), h12 = d.getUTCHours() % 12 || 12;
+  if (_csMod(ms, 1000)) return '.' + _csPad(_csMod(ms, 1000), 3);
+  if (_csMod(ms, 60000)) return ':' + _csPad(d.getUTCSeconds(), 2);
+  if (_csMod(ms, 3600000)) return _csPad(h12, 2) + ':' + _csPad(d.getUTCMinutes(), 2);
+  if (_csMod(ms, _CS_DAY)) return _csPad(h12, 2) + ' ' + (d.getUTCHours() < 12 ? 'AM' : 'PM');
+  if (d.getUTCDate() !== 1) return (wd ? _CS_WD[wd] : _CS_MON[d.getUTCMonth()].slice(0, 3)) + ' ' + _csPad(d.getUTCDate(), 2);
+  if (d.getUTCMonth() !== 0) return _CS_MON[d.getUTCMonth()];
+  return _csPad(d.getUTCFullYear(), 4);
+}
+function _csAxis(start, stop, count) {
+  var target = Math.abs(stop - start) / count, i = 0, t, k;
+  while (i < _CS_STEPS.length && _CS_STEPS[i][2] <= target) i++;
+  if (i === _CS_STEPS.length) {
+    k = Math.floor(_csTickStep(start / 31536000000, stop / 31536000000, count));
+    t = k > 0 ? _csRange('y', k, start, stop) : [];
+  } else if (i === 0) {
+    k = Math.floor(Math.max(_csTickStep(start, stop, count), 1)); t = [];
+    for (var x = Math.ceil(start); x <= stop; x++) if (_csMod(x, k) === 0) t.push(x);
+  } else {
+    var j = target / _CS_STEPS[i - 1][2] < _CS_STEPS[i][2] / target ? i - 1 : i;
+    t = _csRange(_CS_STEPS[j][0], _CS_STEPS[j][1], start, stop);
+  }
+  return [t, t.map(_csLabel)];
+}
+function _csAxisHtml(ev, X0, span, lab) {
+  var maxlen = Math.max.apply(null, lab.map(function(s) { return s.length; })), stride = Math.ceil(ev.length / Math.max(2, Math.min(8, Math.floor(48 / maxlen)))), shown = [], i, xs = '';
+  for (i = 0; i < ev.length; i++) if (i % stride === 0 && (span > 0 || i === 0)) shown.push(i);
+  var mid = shown.filter(function(k) { return _csMod(ev[k], _CS_DAY) === 0; }), pool = mid.length ? mid : shown, keep = {};
+  pool.forEach(function(k, j) { if (j % 2 === 0) keep[k] = true; });
+  shown.forEach(function(k) {
+    xs += '<div class="hgx' + (keep[k] ? ' hgc' : '') + '" style="position:absolute;top:100%;left:' + (span > 0 ? _tmPct(ev[k] - X0, span) : '50%') + ';"><div style="position:absolute;left:0;top:0;width:1px;height:4px;background:var(--muted,#475569);"></div>' +
+      '<div style="position:absolute;left:0;top:10px;transform:translateX(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + lab[k] + '</div></div>';
+  });
+  return xs;
+}
+function _csParse(s) {
+  if (typeof s !== 'string') return null;
+  var m = /^[ \t\r\n]*(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?Z?[ \t\r\n]*$/.exec(s);
+  if (!m) return null;
+  var y = +m[1], mo = +m[2], d = +m[3], h = +(m[4] || 0), mi = +(m[5] || 0), sec = +(m[6] || 0), ms = +((m[7] || '0') + '00').slice(0, 3);
+  if (!(y >= 1000 && y <= 9000 && mo >= 1 && mo <= 12 && d >= 1 && d <= new Date(Date.UTC(y, mo, 0)).getUTCDate() && h < 24 && mi < 60 && sec < 60)) return null;
+  return Date.UTC(y, mo - 1, d, h, mi, sec, ms);
+}
+var _CS_READ = 10000, _CS_CAP = 250;
+function _csBars(b) {
+  var col = function(k) { return Array.isArray(b[k]) ? b[k] : []; };
+  var dates = col('dates'), o = col('open'), h = col('high'), l = col('low'), c = col('close'), vol = col('volume'), bars = [], leftOut = 0, vmiss = 0;
+  for (var i = 0; i < Math.min(dates.length, _CS_READ); i++) {
+    var ms = _csParse(dates[i]), q = [o, h, l, c].map(function(x) { return i < x.length ? x[i] : null; });
+    if (ms === null || !q.every(_wfNum) || q[2] > Math.min(q[0], q[3]) || q[1] < Math.max(q[0], q[3])) { leftOut++; continue; }
+    var v = i < vol.length ? vol[i] : null, vok = _wfNum(v) && v >= 0;
+    if (vol.length && !vok) vmiss++;
+    bars.push([ms, dates[i].replace(/^[ \t\r\n]+|[ \t\r\n]+$/g, ''), q[0], q[1], q[2], q[3], vok ? v : null, i]);
+  }
+  bars.sort(function(a, z) { return a[0] - z[0] || a[7] - z[7]; });
+  return [bars, leftOut, vmiss, Math.max(0, dates.length - _CS_READ), vol.length > 0];
+}
+_RENDERERS['candlestick_chart'] = function(b) {
+  var R = _csBars(b), bars = R[0], leftOut = R[1], vmiss = R[2], unread = R[3], beyond = bars.length - _CS_CAP;
+  bars = bars.slice(0, _CS_CAP);
+  var notes = (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' bar had' : ' bars had') + ' a missing date, a missing number or prices that do not fit together and ' + (leftOut === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (vmiss ? _hgNote(vmiss + (vmiss === 1 ? ' volume was' : ' volumes were') + ' missing, negative or not a number and ' + (vmiss === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' bar beyond the first 250 was' : ' bars beyond the first 250 were') + ' not drawn.') : '') +
+    (unread ? _hgNote(unread + (unread === 1 ? ' entry beyond the first 10000 was' : ' entries beyond the first 10000 were') + ' not read.') : '');
+  if (!bars.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A candlestick chart needs at least one bar with a date and open, high, low and close numbers.</div>' + notes + _hgVersionNote(b, 'candlestick_chart'));
+  var n = bars.length, ohlc = b.style === 'ohlc', unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '';
+  var yl = b.y_label ? String(b.y_label).slice(0, 40) : '', cap = yl ? yl + (unit ? ' (' + unit + ')' : '') : unit;
+  var allv = []; bars.forEach(function(r) { allv.push(r[2], r[3], r[4], r[5]); });
+  var dc = Math.min(6, _hgDecimals(allv)), f = function(v) { return _bpFmt(v, dc); };
+  var ms = bars.map(function(r) { return r[0]; }), g = Infinity;
+  for (var i = 1; i < n; i++) if (ms[i] > ms[i - 1]) g = Math.min(g, ms[i] - ms[i - 1]);
+  if (g === Infinity) g = _CS_DAY;
+  var T0 = Math.floor(ms[0] - g / 2), T1 = Math.ceil(ms[n - 1] + g / 2), tspan = T1 - T0;
+  var Yd = _hgNice(Math.min.apply(null, bars.map(function(r) { return r[4]; })), Math.max.apply(null, bars.map(function(r) { return r[3]; })), 5), Y0 = Yd[0], Y1 = Yd[1], yspan = Y1 - Y0;
+  var yt = _hgTicks(Y0, Y1, 5), ytd = _hgDecimals(yt), ytl = yt.map(function(t) { return _hgNum(t, ytd); });
+  var vols = bars.filter(function(r) { return r[6] !== null; }).map(function(r) { return r[6]; }), showVol = vols.length > 0;
+  var V1 = showVol ? _hgNice(0, Math.max.apply(null, vols), 3)[1] : 0, vlab = showVol ? [_hgNum(0, 0), _hgNum(V1, _hgDecimals([V1]))] : [];
+  var gut = 'calc(' + Math.max.apply(null, ytl.concat(vlab).map(function(t) { return t.length; })) + 'ch + 14px)';
+  var yp = function(v) { return yspan > 0 ? _tmPct(Y1 - v, yspan) : '50%'; }, ph = function(a, c) { return yspan > 0 ? _tmPct(c - a, yspan) : '0%'; };
+  var w = 0.7 * g, stroke = n <= 60 ? '2px' : '1px', POS = 'var(--positive,#15803D)', NEG = 'var(--negative,#B91C1C)';
+  var ax = _csAxis(T0, T1, 5), ticks = ax[0], tlab = ax[1];
+  var grid = yt.map(function(t) { return '<div style="position:absolute;left:0;right:0;top:' + yp(t) + ';border-top:1px solid var(--border,#CBD5E1);"></div>'; }).join('');
+  var ylab = yt.map(function(t, i) { return '<div class="csyl" style="position:absolute;right:6px;top:' + yp(t) + ';transform:translateY(-50%);font-size:0.75rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted,#475569);">' + ytl[i] + '</div>'; }).join('');
+  var candles = '', volume = '';
+  bars.forEach(function(r, k) {
+    var o = r[2], hi = r[3], lo = r[4], c = r[5], v = r[6], up = c >= o, cc = up ? POS : NEG, kind = up ? 'csu' : 'csd';
+    var left = _tmPct(r[0] - w / 2 - T0, tspan), wid = _tmPct(w, tspan), thin = up || !ohlc;
+    var geo = 'position:absolute;left:calc(50% - ' + (thin ? '1px' : '2px') + ');width:' + (thin ? '2px' : '4px') + ';top:' + yp(hi) + ';height:' + ph(lo, hi) + ';min-height:2px;background:' + cc + ';', inner;
+    if (ohlc) {
+      var sw = up ? '2px' : '4px';
+      inner = '<div class="cso ' + kind + '" style="' + geo + '"></div>' +
+        '<div style="position:absolute;right:50%;width:min(50%,14px);top:' + yp(o) + ';height:' + sw + ';margin-top:calc(0px - ' + sw + ' / 2);background:' + cc + ';"></div>' +
+        '<div style="position:absolute;left:50%;width:min(50%,14px);top:' + yp(c) + ';height:' + sw + ';margin-top:calc(0px - ' + sw + ' / 2);background:' + cc + ';"></div>';
+    } else {
+      inner = '<div class="csk" style="' + geo + '"></div>' +
+        '<div class="csb ' + kind + '" style="position:absolute;left:0;right:0;margin:0 auto;max-width:28px;top:' + yp(Math.max(o, c)) + ';height:' + ph(Math.min(o, c), Math.max(o, c)) + ';min-height:2px;box-sizing:border-box;border:' + stroke + ' solid ' + cc +
+        ';background:' + (up ? 'var(--surface,#FFFFFF)' : cc) + ';"></div>';
+    }
+    candles += '<div class="csc ' + kind + '" style="position:absolute;top:0;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;' + _ifK(k, n) + _IF_FADE + '">' + inner + '</div>';
+    if (v !== null) volume += '<div class="csv ' + kind + '" style="position:absolute;bottom:0;left:' + left + ';width:' + wid + ';min-width:1px;height:' + (V1 > 0 ? _tmPct(v, V1) : '0%') + ';min-height:1px;box-sizing:border-box;border:1px solid ' + cc +
+      ';background:' + (up ? 'var(--surface,#FFFFFF)' : cc) + ';' + _ifK(k, n) + _IF_FADE + '"></div>';
+  });
+  var first = bars[0], last = bars[n - 1], hiI = 0, loI = 0, ups = 0;
+  bars.forEach(function(r, i) { if (r[3] > bars[hiI][3]) hiI = i; if (r[4] < bars[loI][4]) loI = i; if (r[5] >= r[2]) ups++; });
+  var chg = last[5] - first[2], pc = first[2] !== 0 ? Math.round(chg / first[2] * 1000) / 10 : null;
+  var aria = (ohlc ? 'OHLC bar chart' : 'Candlestick chart') + ' of ' + n + (n === 1 ? ' bar' : ' bars') + ' from ' + first[1] + ' to ' + last[1] + (unit ? ' in ' + unit : '') + '. First open ' + f(first[2]) +
+    ', last close ' + f(last[5]) + ', change ' + (chg > 0 ? '+' : '') + f(chg) + (pc !== null ? ' (' + (pc > 0 ? '+' : '') + _bpFmt(pc, 1) + '%)' : '') + '. Highest high ' + f(bars[hiI][3]) + ' on ' + bars[hiI][1] +
+    ', lowest low ' + f(bars[loI][4]) + ' on ' + bars[loI][1] + '. ' + ups + ' up, ' + (n - ups) + ' down.';
+  var swUp = ohlc ? '<span style="display:inline-block;width:2px;height:14px;background:var(--positive,#15803D);"></span>'
+    : '<span style="display:inline-block;width:12px;height:12px;box-sizing:border-box;border:2px solid var(--positive,#15803D);background:var(--surface,#FFFFFF);"></span>';
+  var swDn = ohlc ? '<span style="display:inline-block;width:4px;height:14px;background:var(--negative,#B91C1C);"></span>'
+    : '<span style="display:inline-block;width:12px;height:12px;box-sizing:border-box;border:2px solid var(--negative,#B91C1C);background:var(--negative,#B91C1C);"></span>';
+  var legend = '<div class="csl" style="display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 8px;font-size:0.75rem;line-height:1.2;color:var(--text,#0F172A);">' +
+    '<span style="display:inline-flex;align-items:center;gap:6px;">' + swUp + 'Up: close at or above open (' + (ohlc ? 'thin bar' : 'hollow') + ')</span>' +
+    '<span style="display:inline-flex;align-items:center;gap:6px;">' + swDn + 'Down: close below open (' + (ohlc ? 'thick bar' : 'filled') + ')</span></div>';
+  var vpanel = showVol ? '<div style="display:flex;margin-top:10px;"><div style="flex:0 0 ' + gut + ';position:relative;">' +
+    '<div class="csyl" style="position:absolute;right:6px;top:0;font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + vlab[1] + '</div>' +
+    '<div class="csyl" style="position:absolute;right:6px;bottom:0;font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + vlab[0] + '</div></div>' +
+    '<div class="csq" style="position:relative;flex:1 1 auto;min-width:0;height:64px;border-bottom:1px solid var(--muted,#475569);border-left:1px solid var(--muted,#475569);">' +
+    '<div style="position:absolute;left:0;right:0;top:0;border-top:1px solid var(--border,#CBD5E1);"></div>' + volume + '</div></div>' : '';
+  var chart = '<div class="ifcs" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>@container (max-width:560px){.ifcs .hgx:not(.hgc){display:none}}</style>' + legend +
+    (cap ? '<div class="cscap" style="font-size:0.78rem;color:var(--muted,#475569);margin:0 0 6px;">' + _esc(cap) + '</div>' : '') +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;margin:0 0 34px 0;padding:8px 36px 0 0;">' +
+    '<div style="display:flex;"><div style="flex:0 0 ' + gut + ';position:relative;">' + ylab + '</div>' +
+    '<div class="csp" style="position:relative;flex:1 1 auto;min-width:0;height:260px;border-left:1px solid var(--muted,#475569);">' + grid + candles + '</div></div>' + vpanel +
+    '<div style="position:relative;margin-left:' + gut + ';height:0;border-top:1px solid var(--muted,#475569);">' + _csAxisHtml(ticks, T0, tspan, tlab) + '</div></div></div>';
+  var head = ['Date', 'Open', 'High', 'Low', 'Close', 'Direction'].concat(showVol ? ['Volume'] : []);
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'candlestick_chart') + _ifTable(head, bars.map(function(r) {
+    return [r[1], f(r[2]) + us, f(r[3]) + us, f(r[4]) + us, f(r[5]) + us, r[5] >= r[2] ? 'Up' : 'Down'].concat(showVol ? [r[6] !== null ? _bpFmt(r[6], 6) : 'none'] : []);
+  })));
+};
+
