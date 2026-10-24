@@ -2523,10 +2523,10 @@ def _render_comparison_grid(b: dict) -> str:
     table = ''
     if products or feats:
         th = 'padding:11px 16px;text-align:center;background:#7c3aed;color:#fff;font-size:13px;font-weight:700;'
-        head = '<th style="padding:11px 16px;text-align:left;background:#6d28d9;color:#fff;font-size:13px;font-weight:700;"></th>'
+        head = '<th style="padding:11px 16px;text-align:left;background:#6d28d9;color:#fff;font-size:13px;font-weight:700;">Feature</th>'
         for j in range(ncols):
             p = products[j] if j < len(products) else ''
-            head += ('<th data-cb="label" data-key="' + _c136_key(p, 'product ' + str(j + 1)) + '" style="' + th + '">' + _cv_esc(p) + '</th>') if p else '<th style="' + th + '"></th>'
+            head += ('<th data-cb="label" data-key="' + _c136_key(p, 'product ' + str(j + 1)) + '" style="' + th + '">' + _cv_esc(p) + '</th>') if p else '<th style="' + th + '">Product ' + str(j + 1) + '</th>'
         rows = ''
         for i, f in enumerate(feats):
             o = f if isinstance(f, dict) else {}

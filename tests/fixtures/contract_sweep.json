@@ -1432,8 +1432,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "features[].name",
-  "py_sha": "951c8c11bdf733bd87bb715e118fd4b8472de335dbddc8a75de47cf47c722431",
-  "gas_sha": "951c8c11bdf733bd87bb715e118fd4b8472de335dbddc8a75de47cf47c722431",
+  "py_sha": "2b52f6db377b4e230426d752888063bb2339498948b21941924a15ed87048474",
+  "gas_sha": "2b52f6db377b4e230426d752888063bb2339498948b21941924a15ed87048474",
   "parity": true
  },
  "concept_ladder": {

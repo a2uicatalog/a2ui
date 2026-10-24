@@ -4425,10 +4425,10 @@ _RENDERERS['comparison_grid'] = function(b) {
   var table = '';
   if (products.length || feats.length) {
     var th = 'padding:11px 16px;text-align:center;background:#7c3aed;color:#fff;font-size:13px;font-weight:700;';
-    var head = '<th style="padding:11px 16px;text-align:left;background:#6d28d9;color:#fff;font-size:13px;font-weight:700;"></th>';
+    var head = '<th style="padding:11px 16px;text-align:left;background:#6d28d9;color:#fff;font-size:13px;font-weight:700;">Feature</th>';
     for (var j = 0; j < ncols; j++) {
       var p = j < products.length ? products[j] : '';
-      head += p ? '<th data-cb="label" data-key="' + _c136Key(p, 'product ' + (j + 1)) + '" style="' + th + '">' + _esc(p) + '</th>' : '<th style="' + th + '"></th>';
+      head += p ? '<th data-cb="label" data-key="' + _c136Key(p, 'product ' + (j + 1)) + '" style="' + th + '">' + _esc(p) + '</th>' : '<th style="' + th + '">Product ' + (j + 1) + '</th>';
     }
     var rows = '';
     feats.forEach(function(f, i) {
