@@ -15048,6 +15048,7 @@ def _render_image_hotspots(b: dict) -> str:
         desc = hs.get('description', '')
         sid = f'{uid}_s{_cv_esc(i)}'
         k = _esc(str(hs.get('id') or label or hs.get('content') or hs.get('description') or ''))
+        strong = ('<strong data-cb="label" data-key="' + k + '">' + _esc(label) + '</strong><br>') if label else ''
         spots += (f'<div data-cb="node" data-key="{k}" style="position:absolute;left:{_cv_esc(x)}%;top:{_cv_esc(y)}%;transform:translate(-50%,-50%);z-index:2;">'
                   f'<button onclick="var el=document.getElementById(\'{sid}\');el.style.display=el.style.display===\'block\'?\'none\':\'block\'" '
                   f'style="width:24px;height:24px;border-radius:50%;background:#4f46e5;color:#fff;border:2px solid #fff;'
@@ -15055,7 +15056,7 @@ def _render_image_hotspots(b: dict) -> str:
                   f'<div id="{sid}" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;'
                   f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;'
                   f'min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;">'
-                  f'{(f"<strong data-cb=\"label\" data-key=\"{k}\">"+_esc(label)+"</strong><br>") if label else ""}{_esc(desc)}</div></div>')
+                  f'{strong}{_esc(desc)}</div></div>')
     img_style = 'width:100%;height:auto;display:block;border-radius:8px;' if image else ''
     return (f'<div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;">'
             f'{"<img src="+chr(34)+_esc(image)+chr(34)+" alt="+chr(34)+_esc(alt)+chr(34)+" style="+chr(34)+img_style+chr(34)+">" if image else ""}'
