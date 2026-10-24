@@ -3164,6 +3164,7 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
   body { margin: 0; background: #0b0d12; color: #eef1f7; font: 15px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; }
   main { max-width: 980px; margin: 0 auto; padding: 16px; }
   h1 { font-size: 1.1rem; margin: 4px 0 2px; } h1 span { color: #8d98ff; }
+  #cap { margin: 0 0 12px; } #cap button { font: inherit; background: #1a1f2b; color: #eef1f7; border: 1px solid #3b4358; border-radius: 999px; padding: 4px 14px; cursor: pointer; } #cap .hint { color: #97a0b2; font-size: .8rem; }
   #st { color: #97a0b2; min-height: 1.5em; margin: 0 0 12px; } #st.err { color: #ff6b81; }
   iframe { width: 100%; height: 80vh; border: 0; display: block; background: transparent; }
   footer { color: #97a0b2; font-size: .8rem; margin-top: 10px; } a { color: #8d98ff; }
@@ -3173,6 +3174,7 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
 <main>
   <h1>A2UI <span>film export</span></h1>
   <p id="st">Loading the film…</p>
+  <p id="cap" hidden><button id="capb" type="button">Captions (.vtt)</button> <span class="hint">Same words and timing as the film, for the MP4 you save.</span></p>
   <iframe id="view" src="/surfaces/mcp-apps/renderer-bundle.html" title="Film"></iframe>
   <footer>Encoded in this browser; nothing is uploaded. <a href="https://a2uicatalog.ai/">a2uicatalog.ai</a></footer>
 </main>
@@ -3196,7 +3198,31 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
     }));
   }
   function slug(t) { return String(t || 'film').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'film'; }
-  var title = 'film', busy = false;
+  var title = 'film', busy = false, vtt = '';
+  function save(blob, name) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); return name;
+  }
+  function loadVtt() {
+    return new Promise(function (res, rej) {
+      if (window.FilmVtt) return res(window.FilmVtt);
+      var s = document.createElement('script'); s.src = '/vendors/client-export/film_vtt.js';
+      s.onload = function () { res(window.FilmVtt); }; s.onerror = function () { rej(new Error('no captions module')); };
+      document.head.appendChild(s);
+    });
+  }
+  // Captions beside the MP4: built from the film's own text and the keyframes the player holds; hidden when there are no cues.
+  function offerCaptions(payload, w) {
+    loadVtt().then(function (FV) {
+      var C = FV.configFromScripts(w.document);
+      if (!C) return;
+      var v = FV.filmToVtt(payload, C);
+      if (v.indexOf('-->') < 0) return;
+      vtt = v;
+      document.getElementById('cap').hidden = false;
+      document.getElementById('capb').onclick = function () { say('Saved ' + save(new Blob([vtt], { type: 'text/vtt' }), slug(title) + '.vtt') + '.'); };
+    }).catch(function () {});
+  }
   // window.A2UIExport for the painted film: its MP4/GIF buttons call this. Capture runs on animation frames,
   // which stop while the tab is hidden, so the export waits until the visitor comes back (and says so).
   function run(root, kind, progress) {
@@ -3212,9 +3238,8 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
         : CE.exportVideo(f, { onProgress: onP }).then(function (r) { return r.blob; });
     }).then(function (blob) {
       var ext = blob.type.indexOf('gif') >= 0 ? 'gif' : (blob.type.indexOf('webm') >= 0 ? 'webm' : 'mp4');
-      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = slug(title) + '.' + ext;
-      document.body.appendChild(a); a.click(); a.remove();
-      say('Saved ' + a.download + '. Press MP4 or GIF under the film for another.');
+      var nm = save(blob, slug(title) + '.' + ext);
+      say('Saved ' + nm + '.' + (vtt && ext !== 'gif' ? ' The Captions (.vtt) button saves the matching subtitles.' : ' Press MP4 or GIF under the film for another.'));
     }, function (e) { say('Export failed: ' + (e && e.message || e), 1); throw e; })
       .finally(function () { busy = false; if (lock) lock.release().catch(function () {}); });
   }
@@ -3231,6 +3256,7 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
       w._A2UI_PAINT(payload);
       var root = w.document.querySelector('.mt-root');
       if (!root) { say('This link has no film to export.', 1); return; }
+      offerCaptions(payload, w);
       say(k ? 'Starting the ' + k.toUpperCase() + ' export…' : 'Press MP4 or GIF under the film.');
       if (k) setTimeout(function () { run(root, k).catch(function () {}); }, 600);
     }).catch(function (e) { say('Could not read the film in this link: ' + (e && e.message || e), 1); });
