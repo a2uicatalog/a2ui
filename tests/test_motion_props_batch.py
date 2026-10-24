@@ -155,3 +155,122 @@ def test_i96_settled_frame_and_composition_in_a_browser():
     assert "hue-rotate(360deg)" in over and "invert(1)" in over and "contrast(4)" in over, over
     ident = _probe(_fl([{"t": 0, "blur": 0, "hue": 0, "saturation": 1, "brightness": 1, "contrast": 1, "invert": 0}, {"t": 1, "blur": 0, "hue": 0, "saturation": 1, "brightness": 1, "contrast": 1, "invert": 0}]), 1, js)
     assert ident == "none", ident
+
+
+# ─── I100: trim on motion_path and motion_sketch ───────────────────────────────────────────────────────────
+SK = [{"d": "M 0 0 L 50 50"}, {"d": "M 10 10 L 80 80", "fill": "#00ff00"}]
+PATH = {"type": "motion_path"}
+SKETCH = {"type": "motion_sketch", "strokes": SK}
+TRIMS = [
+    {}, None, "x", [0, 1], True, 5, {"start": 0, "end": 1, "offset": 0}, {"start": "a", "end": None, "offset": []},
+    {"start": 0.2, "end": 0.8}, {"start": 0.1, "end": 0.9, "offset": 0.05}, {"start": 0.2, "end": 0.7, "offset": -0.3},
+    {"start": -5, "end": 5, "offset": 3}, {"start": 0.8, "end": 0.2}, {"start": 0.5, "end": 0.5}, {"offset": 0.5}, {"end": 0.4},
+    {"start": 0.3, "end": 0.6, "offset": 1.7}, {"start": 1e9, "end": 2},
+]
+TRIM_CASES = ([dict(PATH, trim=t) for t in TRIMS] + [dict(SKETCH, trim=t) for t in TRIMS]
+              + [dict(PATH, marker=False, nodes=[{"x": 100, "y": 100, "label": "A"}], trim={"start": 0.3, "end": 0.6}),
+                 dict(PATH, d="M 0 0 L 90 90", w=100, h=100, label="r", color="#112233", trim={"start": 0.1, "offset": 0.2}),
+                 dict(SKETCH, strokes=[{"d": "M 0 0 L 9 9", "color": "#ff0000", "width": 3, "fill": "#0000ff", "fill_opacity": 0.5}], trim={"end": 0.5}),
+                 dict(SKETCH, strokes=[], trim={"end": 0.5})])
+
+
+def test_i100_python_matches_gas_exactly(core_js):
+    got = _gas_batch(core_js, TRIM_CASES)
+    bad = [str(b)[:110] for b, g in zip(TRIM_CASES, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_i100_inert_trims_equal_the_no_trim_output():
+    for base in (PATH, SKETCH):
+        plain = _py(dict(base))
+        for t in ({}, None, "x", [0, 1], True, 5, {"start": 0, "end": 1, "offset": 0}, {"start": "a", "end": None, "offset": []}, {"offset": 0}):
+            assert _py(dict(base, trim=t)) == plain, (base["type"], t)
+        assert "1000" not in plain
+
+
+def test_i100_window_markup():
+    h = _py(dict(PATH, trim={"start": 0.25, "end": 0.75, "offset": 0.1}))
+    assert "stroke-dasharray:calc(calc((0.75 - 0.25)*clamp(0,var(--p,1),1))) 1;stroke-dashoffset:calc(-1*(0.35));" in h
+    assert "opacity:clamp(0,calc(calc((0.75 - 0.25)*clamp(0,var(--p,1),1))*1000),1)" in h
+    assert "calc(-1*(0.35 + calc((0.75 - 0.25)*clamp(0,var(--p,1),1)))*0.9999)" in h, "the marker rides the head of the window"
+    s = _py(dict(SKETCH, trim={"start": 0.5, "end": 1}))
+    assert s.count("stroke-dasharray:calc(calc((1 - 0.5)*var(--u))) 1") == 2 and s.count("fill:#00ff00") == 1
+
+
+def test_i100_empty_window_draws_no_bold_stroke_but_keeps_the_rest():
+    h = _py(dict(PATH, trim={"start": 0.8, "end": 0.2}, nodes=[{"x": 10, "y": 10, "label": "A"}]))
+    assert h.count("<path") == 1 and "opacity:0.16" in h and ">A</text>" in h and "stroke-dasharray" not in h
+    s = _py(dict(SKETCH, trim={"start": 0.8, "end": 0.2}))
+    assert s.count("<path") == 1 and "fill:#00ff00" in s and "stroke-dasharray" not in s
+
+
+def test_i100_hostile_values_never_reach_markup():
+    h = _py(dict(PATH, trim={"start": '"><script>alert(1)</script>', "end": "x;}</style>", "offset": "javascript:1"}))
+    assert "alert" not in h and "<script" not in h and "NaN" not in h and "undefined" not in h
+
+
+_TRIM_JS = ("var ps=document.querySelectorAll('path');var b=Array.prototype.filter.call(ps,function(e){return getComputedStyle(e).strokeDasharray!=='none';})[0];var c=getComputedStyle(b);"
+            "return {da:c.strokeDasharray,off:c.strokeDashoffset,n:ps.length};")
+
+
+def _drawn(block, p):
+    d = _probe(dict(block, trim=block["trim"]), 0, "document.querySelector('svg').parentNode.style.setProperty('--p','%s');" % p + _TRIM_JS)
+    return [float(x) for x in re.findall(r"-?[0-9.]+", d["da"])], float(re.search(r"-?[0-9.]+", d["off"]).group())
+
+
+@browser
+def test_i100_visible_window_is_where_it_should_be():
+    blk = dict(PATH, trim={"start": 0.25, "end": 0.75})
+    da, off = _drawn(blk, 1)
+    assert abs(da[0] - 0.5) < 0.01 and abs(off + 0.25) < 0.01, (da, off)
+    da, off = _drawn(blk, 0.5)
+    assert abs(da[0] - 0.25) < 0.01 and abs(off + 0.25) < 0.01, (da, off)
+    da, off = _drawn(dict(PATH, trim={"start": 0.1, "end": 0.4, "offset": 0.2}), 1)
+    assert abs(da[0] - 0.3) < 0.01 and abs(off + 0.3) < 0.01, (da, off)
+    da, off = _drawn(dict(SKETCH, trim={"start": 0.5, "end": 1}), 1)
+    assert abs(da[0] - 0.5) < 0.01 and abs(off + 0.5) < 0.01, (da, off)
+
+
+# ─── absent props: every existing motion payload renders byte for byte as before this batch (origin/main 935844645) ──────
+def _renderer_at(sha):
+    import importlib.util, subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    r = subprocess.run(["git", "-C", str(root), "show", sha + ":renderers/web_article.py"], capture_output=True, text=True)
+    if r.returncode:
+        pytest.skip(sha + " not available")
+    f = root / "renderers" / "_web_article_pre_mprops.py"
+    f.write_text(r.stdout)
+    try:
+        spec = importlib.util.spec_from_file_location("renderers._web_article_pre_mprops", f)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod
+        spec.loader.exec_module(mod)
+    finally:
+        f.unlink()
+    return mod
+
+
+def test_existing_motion_payloads_render_byte_for_byte_as_before_the_batch():
+    from test_motion_glitch import _existing_payloads
+    from renderers import web_article as wa
+    old = _renderer_at("935844645")
+    old._mo_install()
+    wa._mo_install()
+    pays = _existing_payloads() + [dict(PATH), dict(SKETCH), dict(PATH, marker=False, nodes=[{"x": 1, "y": 2, "label": "A"}]),
+                                   dict(SKETCH, strokes=[{"d": "M 0 0 L 9 9", "fill": "#ff0000"}])]
+    assert len(pays) > 150, len(pays)
+    kinds, bad = set(), []
+    for b in pays:
+        k = b.get("component") or b["type"]
+        if k not in old._RENDERERS or "glitch" in b or "blend" in b:
+            continue
+        try:
+            a = old._RENDERERS[k](dict(b))
+        except Exception:
+            continue
+        kinds.add(k)
+        if a != wa._RENDERERS[k](dict(b)):
+            bad.append(k)
+    assert not bad, bad[:10]
+    assert {"motion_path", "motion_sketch", "motion_timeline"} <= kinds, kinds

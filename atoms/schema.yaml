@@ -10944,6 +10944,7 @@ blocks:
     w: integer (optional). ViewBox width, 50-2000. Default 400.
     h: integer (optional). ViewBox height, 50-2000. Default 400.
     label: string (optional, max 60). Accessible name of the drawing. Default "Sketch".
+    trim: 'object (optional) {start, end, offset}, like After Effects trim paths. start and end are 0-1 of each stroke''s length (defaults 0 and 1) and bound the part that is drawn; offset -1 to 1 shifts the window along the stroke (a window pushed past the end wraps round to the start). The window draws on as p goes 0 to 1 (from start to end). end at or below start draws no stroke. Absent, empty or all defaults: the full stroke, unchanged.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -11015,6 +11016,7 @@ blocks:
     d: string (optional, max 700 characters of path commands, numbers and separators). Default a gentle S curve.
     nodes: 'array (max 8) of {x, y, at?, label?}. x, y in viewBox units; at 0-1 is the p at which the stop pops (default 0.5); label max 30.'
     marker: bool (optional). The travelling dot. Default true.
+    trim: 'object (optional) {start, end, offset}, like After Effects trim paths. start and end are 0-1 of the route length (defaults 0 and 1) and bound the part that is drawn; offset -1 to 1 shifts the window along the route (past the end it wraps round to the start). The window draws on as p goes 0 to 1 and the marker rides its head. end at or below start draws no route or marker, only the faint track and the stops. Absent, empty or all defaults: the full route, unchanged.'
     label: string (optional, max 60). Accessible name. Default "Route".
     color: '"#rrggbb" (optional). Default the stage accent.'
     label_color: '"#rrggbb" (optional). Stop centres, labels and the marker. Default the stage ink.'

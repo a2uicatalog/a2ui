@@ -30390,6 +30390,20 @@ def _render_motion_browser(b: dict) -> str:
 _MO_PATH_OK = re.compile(r'^[MmLlHhVvCcSsQqTtAaZz0-9eE.,+\- \t\n\r]{1,700}$')
 
 
+def _mo_trim(spec):
+    if not isinstance(spec, dict) or not spec:
+        return None
+    s_str = _ff_num(spec.get('start'), 0, 0, 1, 3)
+    e_str = _ff_num(spec.get('end'), 1, 0, 1, 3)
+    o_str = _ff_num(spec.get('offset'), 0, -1, 1, 3)
+    s_val, e_val, o_val = float(s_str), float(e_str), float(o_str)
+    if s_val == 0.0 and e_val == 1.0 and o_val == 0.0:
+        return None
+    has = e_val > s_val
+    so_str = _ff_num(s_val + o_val, 0, -2, 2, 3)
+    return {'s': s_str, 'e': e_str, 'o': o_str, 'so': so_str, 'has': has}
+
+
 def _render_motion_sketch(b: dict) -> str:
     st = []
     for s in (b.get('strokes') if isinstance(b.get('strokes'), list) else []):
@@ -30403,6 +30417,7 @@ def _render_motion_sketch(b: dict) -> str:
         st.append({'d': d, 'c': _mo_ink(s, 'color', 'var(--mt-ink,#f1f5f9)'), 'w': _ff_int(s.get('width'), 6, 1, 24), 'f': _mo_ink(s, 'fill', ''), 'fo': _ff_num(s.get('fill_opacity'), 0.2, 0, 1, 2)})
     vw, vh, n = _ff_int(b.get('w'), 400, 50, 2000), _ff_int(b.get('h'), 400, 50, 2000), len(st)
     label, body = _cv_str(b.get('label'), 60) or 'Sketch', ''
+    tr = _mo_trim(b.get('trim'))
     for i, s in enumerate(st):
         u = '--u:clamp(0,calc(var(--p,1)*' + str(n) + ' - ' + str(i) + '),1);'
         if s['f']:
@@ -30481,6 +30496,18 @@ def _render_motion_path(b: dict) -> str:
                   + '<circle cx="' + _mo_f(x) + '" cy="' + _mo_f(y) + '" r="' + _mo_f(r * 0.42) + '" style="fill:' + lc + ';transform-box:fill-box;transform-origin:center;transform:scale(var(--k));"/>'
                   + ('<text x="' + _mo_f(x + r + 10) + '" y="' + _mo_f(y) + '" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;font-weight:700;fill:' + lc + ';opacity:var(--k);">' + _cv_esc(t) + '</text>' if t else '') + '</g>')
         n += 1
+    tr = _mo_trim(b.get('trim'))
+    bold_stroke = ''
+    marker_stroke = ''
+    if tr is None:
+        bold_stroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>'
+        if b.get('marker') is not False:
+            marker_stroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ff_num(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*clamp(0,var(--p,1),1)*0.9999);"/>'
+    elif tr['has']:
+        l_expr = 'calc((' + tr['e'] + ' - ' + tr['s'] + ')*clamp(0,var(--p,1),1))'
+        bold_stroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(' + l_expr + '*1000),1);stroke-dasharray:calc(' + l_expr + ') 1;stroke-dashoffset:calc(-1*(' + tr['so'] + '));"/>'
+        if b.get('marker') is not False:
+            marker_stroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ff_num(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*(' + tr['so'] + ' + ' + l_expr + ')*0.9999);"/>'
     return ('<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label) + '">'
             + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;opacity:0.16;"/>'
             + bold_stroke

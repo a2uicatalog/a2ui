@@ -1359,6 +1359,20 @@ _RENDERERS['motion_browser'] = function(b) {
 // Strokes that DRAW themselves in turn as p goes 0..1: path data from a strict grammar (path commands, numbers and separators only,
 // so nothing but a path can reach the markup), each stroke optionally tinted. A film's "an agent sketches a robot".
 var _MO_PATH_OK = /^[MmLlHhVvCcSsQqTtAaZz0-9eE.,+\- \t\n\r]{1,700}$/;
+function _moTrim(spec) {
+  if (!spec || typeof spec !== 'object' || Array.isArray(spec)) return null;
+  var keys = Object.keys(spec);
+  if (keys.length === 0) return null;
+  var sStr = _ffNum(spec.start, 0, 0, 1, 3);
+  var eStr = _ffNum(spec.end, 1, 0, 1, 3);
+  var oStr = _ffNum(spec.offset, 0, -1, 1, 3);
+  var sVal = parseFloat(sStr), eVal = parseFloat(eStr), oVal = parseFloat(oStr);
+  if (sVal === 0 && eVal === 1 && oVal === 0) return null;
+  var has = eVal > sVal;
+  var soStr = _ffNum(sVal + oVal, 0, -2, 2, 3);
+  return {s: sStr, e: eStr, o: oStr, so: soStr, has: has};
+}
+
 _RENDERERS['motion_sketch'] = function(b) {
   var src = Array.isArray(b.strokes) ? b.strokes : [], st = [], i;
   for (i = 0; i < src.length && st.length < 24; i++) {
@@ -1369,6 +1383,7 @@ _RENDERERS['motion_sketch'] = function(b) {
     st.push({d: d, c: _moInk(s, 'color', 'var(--mt-ink,#f1f5f9)'), w: _ffInt(s.width, 6, 1, 24), f: _moInk(s, 'fill', ''), fo: _ffNum(s.fill_opacity, 0.2, 0, 1, 2)});
   }
   var vw = _ffInt(b.w, 400, 50, 2000), vh = _ffInt(b.h, 400, 50, 2000), n = st.length, label = _moStr(b.label, 60) || 'Sketch', body = '';
+  var tr = _moTrim(b.trim);
   for (i = 0; i < n; i++) {
     var u = '--u:clamp(0,calc(var(--p,1)*' + n + ' - ' + i + '),1);';
     if (st[i].f) body += '<path d="' + st[i].d + '" style="' + u + 'fill:' + st[i].f + ';stroke:none;opacity:calc(var(--u)*' + st[i].fo + ');"/>';
@@ -1430,6 +1445,21 @@ _RENDERERS['motion_path'] = function(b) {
       + '<circle cx="' + _moF(x) + '" cy="' + _moF(y) + '" r="' + _moF(r * 0.42) + '" style="fill:' + lc + ';transform-box:fill-box;transform-origin:center;transform:scale(var(--k));"/>'
       + (t ? '<text x="' + _moF(x + r + 10) + '" y="' + _moF(y) + '" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:' + fs + 'px;font-weight:700;fill:' + lc + ';opacity:var(--k);">' + _esc(t) + '</text>' : '') + '</g>';
     n++;
+  }
+  var tr = _moTrim(b.trim);
+  var boldStroke = '';
+  var markerStroke = '';
+  if (tr === null) {
+    boldStroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>';
+    if (b.marker !== false) {
+      markerStroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ffNum(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*clamp(0,var(--p,1),1)*0.9999);"/>';
+    }
+  } else if (tr.has) {
+    var lExpr = 'calc((' + tr.e + ' - ' + tr.s + ')*clamp(0,var(--p,1),1))';
+    boldStroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(' + lExpr + '*1000),1);stroke-dasharray:calc(' + lExpr + ') 1;stroke-dashoffset:calc(-1*(' + tr.so + '));"/>';
+    if (b.marker !== false) {
+      markerStroke = '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ffNum(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*(' + tr.so + ' + ' + lExpr + ')*0.9999);"/>';
+    }
   }
   return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label) + '">'
     + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;opacity:0.16;"/>'
