@@ -2457,6 +2457,25 @@
   },
   "polar_chart": {
    "status": "sweep"
+  },
+  "scatter_matrix": {
+   "status": "sweep"
+  },
+  "parallel_categories": {
+   "status": "sweep"
+  },
+  "scatter3d_static": {
+   "status": "sweep"
+  },
+  "surface_static": {
+   "status": "sweep"
+  },
+  "image_plot": {
+   "status": "sweep"
+  },
+  "histogram2d": {
+   "status": "todo",
+   "reason": "drawn through the heatmap atom, which is itself todo; key its cells together with the heatmap"
   }
  }
 }

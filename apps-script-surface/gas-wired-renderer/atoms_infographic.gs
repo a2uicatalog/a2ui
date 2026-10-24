@@ -4578,3 +4578,543 @@ _RENDERERS['polar_chart'] = function(b) {
   series.forEach(function(s) { s.r.forEach(function(v, j) { rows.push([s.label, categorical ? s.tlabel[j] : _bpFmt(s.tlabel[j], 6), ff(v) + us, s.ok[j] ? 'drawn' : 'outside the radial range, not drawn']); }); });
   return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'polar_chart') + _ifTable(['Series', categorical ? 'Category' : 'Angle (degrees)', 'Radius', 'Status'], rows));
 };
+
+// ── histogram2d (preview): d3.bin() twice, drawn through the heatmap atom ─────────────────────────────────────────────────────────
+// Twin of _h2_* in renderers/web_article.py. Bin edges are d3-array 3.2.4 bin() (ISC, Mike Bostock; see _hgBin), one run per axis; a cell counts the points
+// that fall in both bins. The drawing, colour bar and hidden table are the registered heatmap renderer's.
+var _H2_PTS = 20000, _H2_BINS = 40;
+function _h2Axis(vals, target) {
+  var edges = _hgBin(vals, target)[0], inner = edges.slice(1).map(function(e) { return e[0]; });
+  return [edges, vals.map(function(v) { var lo = 0, hi = inner.length; while (lo < hi) { var m = (lo + hi) >>> 1; if (v < inner[m]) hi = m; else lo = m + 1; } return lo; })];
+}
+function _h2AxisCapped(vals, target) {
+  var t = target;
+  while (true) {
+    var r = _h2Axis(vals, t);
+    if (r[0].length <= _H2_BINS) return r;
+    t = (t !== null ? t : Math.max(1, Math.ceil(Math.log(vals.length) / Math.LN2) + 1)) - 1;
+    if (t < 2) return r;
+  }
+}
+function _h2Counts(ex, ix, ey, iy) {
+  var counts = ey.map(function() { return ex.map(function() { return 0; }); });
+  for (var i = 0; i < ix.length; i++) counts[iy[i]][ix[i]]++;
+  return counts;
+}
+function _h2Bin(xs, ys, nx, ny) {
+  var ax = _h2Axis(xs, nx), ay = _h2Axis(ys, ny);
+  return [ax[0], ay[0], _h2Counts(ax[0], ax[1], ay[0], ay[1])];
+}
+function _h2Labels(edges) {
+  var all = []; edges.forEach(function(p) { all.push(p[0], p[1]); });
+  var d = _hgDecimals(all);
+  return edges.map(function(p) { return p[0] === p[1] ? _hgNum(p[0], d) : _hgNum(p[0], d) + '–' + _hgNum(p[1], d); });
+}
+function _h2Block(b) {
+  var rx = Array.isArray(b.x) ? b.x : [], ry = Array.isArray(b.y) ? b.y : [], total = Math.min(rx.length, ry.length), pts = [], i;
+  for (i = 0; i < total; i++) if (typeof rx[i] === 'number' && typeof ry[i] === 'number' && Math.abs(rx[i]) <= 1e12 && Math.abs(ry[i]) <= 1e12) pts.push([rx[i], ry[i]]);
+  var notes = '', skipped = total - pts.length;
+  if (skipped) notes += _hgNote(skipped + (skipped === 1 ? ' pair was' : ' pairs were') + ' not two usable numbers and ' + (skipped === 1 ? 'was' : 'were') + ' skipped.');
+  if (pts.length > _H2_PTS) { notes += _hgNote('Using the first ' + _hgNum(_H2_PTS, 0) + ' of ' + _hgNum(pts.length, 0) + ' points.'); pts = pts.slice(0, _H2_PTS); }
+  if (pts.length < 2) return [null, notes, pts.length];
+  var xs = pts.map(function(p) { return p[0]; }), ys = pts.map(function(p) { return p[1]; });
+  var ax = _h2AxisCapped(xs, _hgTarget(b.nbinsx)), ay = _h2AxisCapped(ys, _hgTarget(b.nbinsy)), ex = ax[0], ey = ay[0];
+  var counts = _h2Counts(ex, ax[1], ey, ay[1]), hb = {
+    type: 'heatmap', data: counts.slice().reverse(), labels_x: _h2Labels(ex), labels_y: _h2Labels(ey.slice().reverse()),
+    scale: b.scale ? b.scale : 'YlGnBu', value_format: ',.0f', show_values: b.show_values === undefined || b.show_values === null ? ex.length <= _HM_COMPACT : b.show_values !== false, show_colorbar: b.show_colorbar !== false
+  };
+  if (b.title) hb.title = b.title;
+  var peak = Math.max.apply(null, counts.map(function(r) { return Math.max.apply(null, r); }));
+  notes = _hgNote('Columns bin x' + (b.x_label ? ' (' + _ifS(b.x_label, 40) + ')' : '') + ', rows bin y' + (b.y_label ? ' (' + _ifS(b.y_label, 40) + ')' : '') +
+    ', highest y at the top. ' + _hgNum(pts.length, 0) + ' points in ' + ey.length + (ey.length === 1 ? ' row' : ' rows') + ' by ' + ex.length +
+    (ex.length === 1 ? ' column' : ' columns') + '; the busiest cell holds ' + _hgNum(peak, 0) + '.') + notes;
+  return [hb, notes, pts.length];
+}
+_RENDERERS['histogram2d'] = function(b) {
+  var r = _h2Block(b), ver = _hgVersionNote(b, 'histogram2d');
+  if (r[0] === null) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A histogram2d needs at least two points with a usable x and y.</div>' + r[1] + ver);
+  var hm = _RENDERERS['heatmap'](r[0]);   // already wrapped: put the notes inside its wrapper, not in a second one
+  return hm.slice(0, hm.length - 6) + r[1] + ver + '</div>';
+};
+
+// ── image_plot (preview): a pixel matrix or a safe image source, with axes ────────────────────────────────────────────────────────
+// Twin of _ip_* in renderers/web_article.py. Tick labels are HTML text (12px at any width); the pixels are one SVG of crisp rectangles (equal neighbours in a row
+// merged); a src is drawn only when it is an https URL or a base64 PNG/JPEG/GIF/WebP data: URI.
+var _IP_CAP = 64;
+var _IP_HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+var _IP_HTTPS = /^https:\/\/[A-Za-z0-9.-]+(:[0-9]{1,5})?(\/[A-Za-z0-9\-._~:\/?#\[\]@!$&()*+,;=%]*)?$/;
+var _IP_DATA = /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+\/]+={0,2}$/;
+function _ipNum(v) { return (typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12) ? v : null; }
+function _ipColor(c) {
+  if (typeof c === 'string') {
+    var m = _IP_HEX.exec(c);
+    if (!m) return null;
+    var h = m[1].toLowerCase();
+    return '#' + (h.length === 3 ? h.split('').map(function(ch) { return ch + ch; }).join('') : h);
+  }
+  if (Array.isArray(c) && c.length === 3) {
+    var n = c.map(_ipNum);
+    if (n.indexOf(null) >= 0) return null;
+    return '#' + n.map(function(v) { return ('0' + Math.min(255, Math.max(0, Math.round(v))).toString(16)).slice(-2); }).join('');
+  }
+  return null;
+}
+function _ipSrc(v) {
+  if (typeof v !== 'string') return null;
+  if (v.length <= 2000 && _IP_HTTPS.test(v)) return v;
+  if (v.length <= 300000 && _IP_DATA.test(v)) return v;
+  return null;
+}
+function _ipRange(v) {
+  if (Array.isArray(v) && v.length === 2) { var a = _ipNum(v[0]), b = _ipNum(v[1]); if (a !== null && b !== null && a !== b) return [a, b]; }
+  return null;
+}
+function _ipAxis(rng, vertical, room) {
+  var a = rng[0], b = rng[1], lo = Math.min(a, b), hi = Math.max(a, b), cnts = [5, 4, 3, 2], ticks, labs, w = 0, html = '', ci;
+  for (ci = 0; ci < cnts.length; ci++) {
+    ticks = _hgTicks(lo, hi, cnts[ci]).filter(function(t) { return t >= lo && t <= hi; });
+    var d = _hgDecimals(ticks);
+    labs = ticks.map(function(t) { return _hgNum(t, d); });
+    w = 0; labs.forEach(function(x) { w = Math.max(w, x.length); });
+    if (ticks.length * (vertical ? 30 : w * 7 + 16) <= room) break;
+  }
+  ticks.forEach(function(t, k) {
+    var pct = (t - a) / (b - a) * 100, pos;
+    if (vertical) pos = 'right:0;top:' + _ifFmt(pct) + '%;transform:translateY(-50%);';
+    else pos = 'left:' + _ifFmt(pct) + '%;transform:translateX(' + (pct < 6 ? '0' : pct > 94 ? '-100%' : '-50%') + ');';
+    html += '<span style="position:absolute;' + pos + 'font-size:12px;line-height:1;white-space:nowrap;">' + _ifS(labs[k], 20) + '</span>';
+  });
+  return [html, w];
+}
+function _ipRangeText(r) { var d = _hgDecimals(r); return _hgNum(r[0], d) + ' to ' + _hgNum(r[1], d); }
+_RENDERERS['image_plot'] = function(b) {
+  b = (b && typeof b === 'object' && !Array.isArray(b)) ? b : {};
+  var notes = '', rowsIn = Array.isArray(b.z) ? b.z : [], R = Math.min(_IP_CAP, rowsIn.length), C = 0, i, j, wide = 0;
+  rowsIn.forEach(function(r) { if (Array.isArray(r)) wide = Math.max(wide, r.length); });
+  C = Math.min(_IP_CAP, wide);
+  var grid = [], nvalid = 0;
+  for (i = 0; i < R; i++) { grid.push([]); for (j = 0; j < C; j++) { var c0 = (Array.isArray(rowsIn[i]) && j < rowsIn[i].length) ? _ipColor(rowsIn[i][j]) : null; grid[i].push(c0); if (c0) nvalid++; } }
+  var src = _ipSrc(b.src), asMatrix = R > 0 && C > 0 && nvalid > 0;
+  if (asMatrix && b.src) notes += _hgNote('Both z and src were given; z is drawn.');
+  if (!asMatrix && src === null) {
+    if (b.src && typeof b.src === 'string') return _ifWrap(_ifTitle(b) + _hgNote('The image source is not allowed (use an https URL or a base64 PNG, JPEG, GIF or WebP data: URI); nothing was drawn.') + _hgVersionNote(b, 'image_plot'));
+    return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">An image_plot needs a z matrix or a src.</div>' + _hgVersionNote(b, 'image_plot'));
+  }
+  if (asMatrix) {
+    if (rowsIn.length > R) notes += _hgNote('Showing the first ' + R + ' of ' + rowsIn.length + ' rows.');
+    if (wide > C) notes += _hgNote('Showing the first ' + C + ' of ' + wide + ' columns.');
+    var nb = R * C - nvalid;
+    if (nb) notes += _hgNote(nb + (nb === 1 ? ' cell is' : ' cells are') + ' not a colour and ' + (nb === 1 ? 'was' : 'were') + ' left blank.');
+  }
+  var xr = _ipRange(b.x_range), yr = _ipRange(b.y_range);
+  [['x_range', b.x_range, xr], ['y_range', b.y_range, yr]].forEach(function(t) {
+    if (t[1] && t[2] === null) notes += _hgNote(t[0] + ' must be two different numbers; ' + (asMatrix ? 'the cell numbers are used.' : 'no ticks are drawn.'));
+  });
+  if (asMatrix) { xr = xr || [0, C]; yr = yr || [0, R]; }
+  var wmin = asMatrix ? Math.min(250, Math.min(640, Math.max(40, C * 20))) : 250, hmin = asMatrix ? Math.max(36, wmin * R / C) : 100;
+  var xa = xr ? _ipAxis(xr, false, wmin) : ['', 0], ya = yr ? _ipAxis(yr, true, hmin) : ['', 0], xt = xa[0], yt = ya[0], yw = ya[1];
+  var aria, plot, maxw, table;
+  if (asMatrix) {
+    aria = 'Image, ' + R + (R === 1 ? ' row' : ' rows') + ' by ' + C + (C === 1 ? ' column' : ' columns') + ' of pixels, x from ' + _ipRangeText(xr) + ', y from ' + _ipRangeText(yr) + '.';
+    var rects = '';
+    for (i = 0; i < R; i++) {
+      j = 0;
+      while (j < C) {
+        var c = grid[i][j], k = j;
+        while (c && k + 1 < C && grid[i][k + 1] === c) k++;
+        if (c) rects += '<rect x="' + j + '" y="' + i + '" width="' + (k - j + 1) + '" height="1" fill="' + c + '"/>';
+        j = k + 1;
+      }
+    }
+    plot = '<svg viewBox="0 0 ' + C + ' ' + R + '" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true" focusable="false" style="display:block;width:100%;height:auto;aspect-ratio:' + C + '/' + R + ';min-height:36px;">' + rects + '</svg>';
+    maxw = String(Math.min(640, Math.max(40, C * 20)) + 56);
+    var head = ['Row']; for (j = 0; j < C; j++) head.push('Col ' + (j + 1));
+    var trs = grid.map(function(r, ri) { return ['Row ' + (ri + 1)].concat(r.map(function(cc) { return cc || 'blank'; })); });
+    table = _ifTable(head, trs);
+  } else {
+    aria = 'Picture, no text description given' + (xr && yr ? ', x from ' + _ipRangeText(xr) + ', y from ' + _ipRangeText(yr) : '') + '.';
+    plot = '<img src="' + _esc(src) + '" alt="" referrerpolicy="no-referrer" loading="lazy" decoding="async" style="display:block;width:100%;height:auto;">';
+    maxw = '640';
+    table = _ifTable(['Axis', 'From', 'To'], [xr ? ['x', _ifFmt(xr[0]), _ifFmt(xr[1])] : ['x', 'none', 'none'], yr ? ['y', _ifFmt(yr[0]), _ifFmt(yr[1])] : ['y', 'none', 'none']]);
+  }
+  if (b.alt && typeof b.alt === 'string') aria = b.alt;
+  var muted = 'font-size:12px;line-height:1.3;color:var(--muted,#475569);overflow-wrap:anywhere;';
+  var ycol = yt ? String(Math.min(8, Math.max(1.5, Math.round((yw * 0.65 + 0.4) * 10) / 10))) + 'em' : '0';
+  var gridHtml = '<div style="display:grid;grid-template-columns:' + ycol + ' minmax(0,1fr);column-gap:6px;width:100%;max-width:' + maxw + 'px;padding-top:6px;box-sizing:border-box;">' +
+    '<div style="position:relative;">' + yt + '</div>' +
+    '<div role="img" aria-label="' + _ifS(aria, 200) + '" style="min-width:0;' + (asMatrix ? '' : 'min-height:100px;') + 'border:1px solid var(--border,#CBD5E1);">' + plot + '</div>' +
+    '<div></div><div style="position:relative;height:' + (xt ? '1.6em' : '0') + ';margin-top:4px;">' + xt + '</div></div>';
+  var yl = b.y_label ? '<div style="' + muted + 'margin-bottom:2px;">' + _ifS(b.y_label, 40) + '</div>' : '';
+  var xl = b.x_label ? '<div style="' + muted + 'text-align:center;max-width:' + maxw + 'px;">' + _ifS(b.x_label, 40) + '</div>' : '';
+  return _ifWrap('<div data-cb="node" data-key="' + _ckey(b.title, 'image_plot') + '" class="ifip" style="max-width:100%;">' + _ifTitle(b) + yl + gridHtml + xl + notes + _hgVersionNote(b, 'image_plot') + table + '</div>');
+};
+
+
+// ── scatter_matrix and parallel_categories (Plotly splom / parcats, wave B) ── Twins of _render_scatter_matrix / _render_parallel_categories in renderers/web_article.py;
+// the comment there describes both layouts.
+var _WB_COL = ['#19294E', '#810998', '#0F6C4F', '#9A6120', '#B91C1C', '#0369A1', '#4D7C0F', '#BE185D'];
+function _wbDims(b) {
+  var lst = Array.isArray(b.dimensions) ? b.dimensions : [], dims = [], bad = 0;
+  lst.forEach(function(d) {
+    var v = d && typeof d === 'object' && !Array.isArray(d) ? d.values : undefined;
+    if (!Array.isArray(v)) { bad++; return; }
+    dims.push([d.label ? String(d.label).slice(0, 24) : 'Dimension ' + (dims.length + 1), v]);
+  });
+  return [dims.slice(0, 6), bad, Math.max(0, dims.length - 6)];
+}
+function _wbKeys(labs) { return labs.map(function(l, j) { return labs.indexOf(l) === labs.lastIndexOf(l) ? l : l + ' #' + (j + 1); }); }
+function _wbDimNotes(bad, beyond) {
+  return (bad ? _hgNote(bad + (bad === 1 ? ' entry was' : ' entries were') + ' not a dimension with a list of values and ' + (bad === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (beyond ? _hgNote(beyond + (beyond === 1 ? ' dimension beyond the first 6 was' : ' dimensions beyond the first 6 were') + ' not drawn.') : '');
+}
+function _smAxis(vals) {
+  var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), d = _hgNice(lo, hi, 4);
+  return [d[0], d[1], _hgTicks(d[0], d[1], 4)];
+}
+function _smExp(v) { return v === 0 ? '0' : v.toExponential(2); }
+_RENDERERS['scatter_matrix'] = function(b) {
+  var D = _wbDims(b), dims = D[0], notes = _wbDimNotes(D[1], D[2]);
+  var m = dims.reduce(function(t, d) { return Math.max(t, d[1].length); }, 0), rows = [], skipped = 0, beyondR = 0;
+  for (var r = 0; r < m; r++) {
+    if (rows.length === 200) { beyondR = m - r; break; }
+    var vals = dims.map(function(d) { return r < d[1].length ? d[1][r] : null; });
+    if (vals.every(_wfNum)) rows.push([r, vals]); else skipped++;
+  }
+  notes += (skipped ? _hgNote(skipped + (skipped === 1 ? ' row had' : ' rows had') + ' a value that was not a usable number and ' + (skipped === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (beyondR ? _hgNote(beyondR + (beyondR === 1 ? ' row beyond the first 200 was' : ' rows beyond the first 200 were') + ' not drawn.') : '');
+  var vn = _hgVersionNote(b, 'scatter_matrix');
+  if (dims.length < 2 || rows.length < 2) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A scatter plot matrix needs at least two dimensions with two complete rows.</div>' + notes + vn);
+  var N = dims.length, cols = dims.map(function(d, j) { return rows.map(function(row) { return row[1][j]; }); });
+  var ax = cols.map(_smAxis), dc = cols.map(function(c) { return Math.min(6, _hgDecimals(c)); });
+  var showUp = b.show_upper === true, labs = dims.map(function(d) { return d[0]; });
+  var tiny = cols.map(function(c) { var mx = Math.max.apply(null, c.map(Math.abs)); return mx > 0 && mx < 1e-5; });
+  var fm = function(j, v) { return tiny[j] ? _smExp(v) : _bpFmt(v, dc[j]); };
+  var rng = cols.map(function(c, j) { return fm(j, Math.min.apply(null, c)) + ' to ' + fm(j, Math.max.apply(null, c)); });
+  var erng = ax.map(function(a, j) { var q = _hgDecimals([a[0], a[1]]); return tiny[j] ? _smExp(a[0]) + ' to ' + _smExp(a[1]) : _hgNum(a[0], q) + ' to ' + _hgNum(a[1], q); });
+  var pos = function(j, v) { var sp = ax[j][1] - ax[j][0]; return sp > 0 ? 5 + 90 * (v - ax[j][0]) / sp : 50; };
+  var cell = 'position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;', out = '', idx = 0, lk = _wbKeys(labs);
+  for (var i = 0; i < N; i++) {
+    out += '<div class="sma" style="align-items:center;justify-content:flex-end;text-align:right;padding-right:4px;overflow-wrap:anywhere;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">' + _esc(erng[i]) + '</div>';
+    for (var j = 0; j < N; j++) {
+      var kk = _ifK(idx, N * N) + _IF_FADE; idx++;
+      if (i === j) {
+        out += '<div data-cb="tile" data-key="' + _esc(lk[i]) + '" class="smc smd" style="' + cell + 'border:1px solid var(--muted,#475569);background:var(--surface,#F8FAFC);display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;overflow:hidden;' +
+          kk + '"><span class="smn" style="font-size:0.75rem;font-weight:700;">' + (i + 1) + '</span>' +
+          '<span data-cb="label" data-key="' + _esc(lk[i]) + '" class="sml" style="font-size:0.75rem;font-weight:700;line-height:1.15;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _esc(labs[i]) + '</span></div>';
+      } else if (i > j || showUp) {
+        var dots = rows.map(function(row) {
+          return '<circle class="smp" cx="' + pos(j, row[1][j]).toFixed(1) + '" cy="' + (100 - pos(i, row[1][i])).toFixed(1) + '" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/>';
+        }).join('');
+        out += '<div data-cb="tile" data-key="' + _esc(lk[i] + '\u00d7' + lk[j]) + '" class="smc" style="' + cell + 'border:1px solid var(--border,#CBD5E1);' + kk + '"><svg class="smx" viewBox="0 0 100 100" aria-hidden="true" focusable="false" ' +
+          'style="position:absolute;inset:0;width:100%;height:100%;display:block;">' + dots + '</svg></div>';
+      } else out += '<div class="smc sme" style="' + cell + kk + '"></div>';
+    }
+  }
+  out += '<div class="sma"></div>' + erng.map(function(t) { return '<div class="sma" style="justify-content:center;text-align:center;overflow-wrap:anywhere;padding-top:2px;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">' + _esc(t) + '</div>'; }).join('');
+  var legend = '<ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:0.75rem;line-height:1.3;color:var(--muted,#475569);">' +
+    labs.map(function(l, j) { return '<li><b style="color:var(--text,#0F172A);">' + (j + 1) + '</b> ' + _esc(l) + ' (' + _esc(rng[j]) + ')</li>'; }).join('') + '</ul>';
+  var css = '.ifsm .sma{display:none}.ifsm .sml{display:none}.ifsm .smg' + N + '{display:grid;grid-template-columns:repeat(' + N + ',minmax(0,1fr));gap:2px}' +
+    '@container (min-width:600px){.ifsm .sma{display:flex}.ifsm .sml{display:-webkit-box}.ifsm .smn{display:none}.ifsm .smg' + N + '{grid-template-columns:52px repeat(' + N + ',minmax(0,1fr))}}';
+  var aria = 'Scatter plot matrix of ' + N + ' measures over ' + rows.length + (rows.length === 1 ? ' row: ' : ' rows: ') + labs.map(function(l, j) { return l + ' (' + rng[j] + ')'; }).join(', ') + '.';
+  var chart = '<div class="ifsm" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>' + css + '</style>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" class="smg' + N + '">' + out + '</div>' + legend + '</div>';
+  return _ifWrap(_ifTitle(b) + chart + notes + vn + _ifTable(['Row'].concat(labs), rows.map(function(row) {
+    return [String(row[0] + 1)].concat(row[1].map(function(v, j) { return fm(j, v); }));
+  })));
+};
+function _pcRank(col) {
+  var cnt = {}, first = {}, names = [];
+  col.forEach(function(c, k) { var key = 'k:' + c; if (!(key in cnt)) { cnt[key] = 0; first[key] = k; names.push(c); } cnt[key]++; });
+  var rk = names.map(function(c) { return [c, cnt['k:' + c]]; });
+  rk.sort(function(a, b) { return (b[1] - a[1]) || (first['k:' + a[0]] - first['k:' + b[0]]); });
+  return rk;
+}
+function _pcModel(cols) {
+  var cats = [], idx = [];
+  cols.forEach(function(col) {
+    var rk = _pcRank(col), keep = rk.slice(0, 8), pos = {};
+    cats.push(keep.concat(rk.length > 8 ? [['Other', rk.slice(8).reduce(function(t, x) { return t + x[1]; }, 0)]] : []));
+    keep.forEach(function(x, i) { pos['k:' + x[0]] = i; });
+    idx.push(col.map(function(c) { return ('k:' + c) in pos ? pos['k:' + c] : keep.length; }));
+  });
+  var joint = [];
+  for (var j = 0; j + 1 < cols.length; j++) {
+    var m = cats[j].map(function() { return cats[j + 1].map(function() { return 0; }); });
+    idx[j].forEach(function(a, i) { m[a][idx[j + 1][i]]++; });
+    joint.push(m);
+  }
+  return [cats, joint];
+}
+function _pcPct(jn, n) { var t = (jn / n * 100).toFixed(1); return t === '0.0' ? '<0.1' : t; }
+function _pcCat(v) {
+  if (typeof v === 'string' && v !== '') { var t = v.slice(0, 20); return (t === '(missing)' || t === 'Other') ? '"' + t + '"' : t; }
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v).slice(0, 20);
+  return '(missing)';
+}
+_RENDERERS['parallel_categories'] = function(b) {
+  var D = _wbDims(b), dims = D[0], notes = _wbDimNotes(D[1], D[2]);
+  var total = dims.reduce(function(t, d) { return Math.max(t, d[1].length); }, 0), n = Math.min(total, 5000);
+  if (total > n) notes += _hgNote((total - n) + (total - n === 1 ? ' record beyond the first 5000 was' : ' records beyond the first 5000 were') + ' not drawn.');
+  var vn = _hgVersionNote(b, 'parallel_categories');
+  if (dims.length < 2 || n < 1) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">Parallel categories needs at least two dimensions with values.</div>' + notes + vn);
+  var N = dims.length, labs = dims.map(function(d) { return d[0]; });
+  var cols = dims.map(function(d) { var c = []; for (var r = 0; r < n; r++) c.push(_pcCat(r < d[1].length ? d[1][r] : null)); return c; });
+  var M = _pcModel(cols), cats = M[0], joint = M[1];
+  cols.forEach(function(col, j) {
+    var merged = _pcRank(col).length - 8;
+    if (merged > 0) notes += _hgNote(_esc('In ' + labs[j] + ', ' + merged + (merged === 1 ? ' less common category was' : ' less common categories were') + ' grouped as Other.'));
+  });
+  var H = 360, FLOOR = 22, GAP = 10, top = [], hgt = [], lk = _wbKeys(labs);
+  for (var j = 0; j < N; j++) {
+    var k = cats[j].length, free = H - GAP * (k - 1) - FLOOR * k, ts = [], y = 0;
+    var hs = cats[j].map(function(c) { return FLOOR + free * c[1] / n; });
+    hs.forEach(function(h) { ts.push(y); y += h + GAP; });
+    top.push(ts); hgt.push(hs);
+  }
+  var colOf = function(j, a) { return a === 8 ? 'var(--muted,#475569)' : 'var(--series-' + (a + 1) + ',' + _WB_COL[a % 8] + ')'; };
+  var f = function(v) { return v.toFixed(1); }, paths = '', best = null;
+  for (j = 0; j < N - 1; j++) {
+    var x0 = 1000 * (j + 0.5) / N, x1 = 1000 * (j + 1.5) / N, xm = (x0 + x1) / 2, ya = top[j].slice();
+    var inc = cats[j].map(function() { return cats[j + 1].map(function() { return 0; }); }), off = top[j + 1].slice();
+    for (var b2 = 0; b2 < cats[j + 1].length; b2++) for (var a = 0; a < cats[j].length; a++) {
+      var jn = joint[j][a][b2];
+      if (jn) { inc[a][b2] = off[b2]; off[b2] += jn * hgt[j + 1][b2] / cats[j + 1][b2][1]; }
+    }
+    var g = '';
+    for (a = 0; a < cats[j].length; a++) for (b2 = 0; b2 < cats[j + 1].length; b2++) {
+      jn = joint[j][a][b2];
+      if (!jn) continue;
+      var ha = jn * hgt[j][a] / cats[j][a][1], hb = jn * hgt[j + 1][b2] / cats[j + 1][b2][1], y0 = ya[a], y1 = inc[a][b2];
+      ya[a] += ha;
+      var c = colOf(j, a);
+      g += '<path data-cb="ribbon" data-key="' + _esc(lk[j] + '/' + cats[j][a][0] + '\u2192' + lk[j + 1] + '/' + cats[j + 1][b2][0]) + '" class="pcr" d="M' + f(x0) + ' ' + f(y0) + ' C' + f(xm) + ' ' + f(y0) + ' ' + f(xm) + ' ' + f(y1) + ' ' + f(x1) + ' ' + f(y1) +
+        ' L' + f(x1) + ' ' + f(y1 + hb) + ' C' + f(xm) + ' ' + f(y1 + hb) + ' ' + f(xm) + ' ' + f(y0 + ha) + ' ' + f(x0) + ' ' + f(y0 + ha) +
+        ' Z" fill="' + c + '" fill-opacity="0.4" stroke="' + c + '" stroke-opacity="0.7" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+      if (best === null || jn > best[0]) best = [jn, j, a, b2];
+    }
+    paths += '<g data-cb="ribbon" data-key="' + _esc(lk[j]) + '" style="' + _ifK(j, N - 1) + 'opacity:var(--k,1);">' + g + '</g>';
+  }
+  var bars = '';
+  for (j = 0; j < N; j++) cats[j].forEach(function(cc, a) {
+    bars += '<div data-cb="bar" data-key="' + _esc(lk[j] + '/' + cc[0]) + '" class="pcb" title="' + _esc(labs[j] + ': ' + cc[0] + ', ' + cc[1] + (cc[1] === 1 ? ' record' : ' records')) + '" style="position:absolute;left:calc(' + (100 * (j + 0.5) / N).toFixed(3) + '% - 12px);top:' +
+      top[j][a].toFixed(1) + 'px;width:24px;height:' + hgt[j][a].toFixed(1) + 'px;box-sizing:border-box;border-radius:3px;background:' + colOf(j, a) +
+      ';color:' + (a === 8 ? 'var(--bg,#fff)' : '#fff') + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;line-height:1;' + _ifK(j, N) + _IF_FADE + '">' + (a + 1) + '</div>';
+  });
+  var heads = labs.map(function(l, q) { return '<div data-cb="label" data-key="' + _esc(lk[q]) + '" style="flex:1 1 0;min-width:0;text-align:center;font-size:0.75rem;font-weight:700;line-height:1.2;overflow-wrap:anywhere;padding:0 2px;"><span>' + 'ABCDEF'.charAt(q) +
+    '</span><span class="pcl"> ' + _esc(l) + '</span></div>'; }).join('');
+  var legend = '<ul style="list-style:none;margin:8px 0 0;padding:0;font-size:0.75rem;line-height:1.35;color:var(--muted,#475569);">' + labs.map(function(l, q) {
+    return '<li style="margin:2px 0;"><b style="color:var(--text,#0F172A);">' + 'ABCDEF'.charAt(q) + ' ' + _esc(l) + '</b>: ' + cats[q].map(function(cc, a) { return (a + 1) + ' ' + _esc(cc[0]) + ' (' + cc[1] + ')'; }).join('; ') + '</li>';
+  }).join('') + '</ul>';
+  var big = '';
+  if (best) big = ' Biggest flow: ' + labs[best[1]] + ' "' + cats[best[1]][best[2]][0] + '" to ' + labs[best[1] + 1] + ' "' + cats[best[1] + 1][best[3]][0] + '", ' + best[0] + (best[0] === 1 ? ' record' : ' records') +
+    ' (' + _pcPct(best[0], n) + '%).';
+  var aria = 'Parallel categories of ' + N + ' dimensions (' + labs.join(', ') + ') over ' + n + (n === 1 ? ' record.' : ' records.') + big;
+  var chart = '<div class="ifpc" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>.ifpc .pcl{display:none}@container (min-width:600px){.ifpc .pcl{display:inline}}</style>' +
+    '<div style="display:flex;margin-bottom:4px;">' + heads + '</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;height:' + H + 'px;">' +
+    '<svg viewBox="0 0 1000 ' + H + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;display:block;">' + paths + '</svg>' + bars + '</div>' +
+    legend + '</div>';
+  var rows = [];
+  for (j = 0; j < N - 1; j++) for (a = 0; a < cats[j].length; a++) for (b2 = 0; b2 < cats[j + 1].length; b2++) {
+    jn = joint[j][a][b2];
+    if (jn) rows.push([labs[j], cats[j][a][0], labs[j + 1], cats[j + 1][b2][0], String(jn), _pcPct(jn, n) + '%']);
+  }
+  var members = [];
+  for (j = 0; j < N; j++) _pcRank(cols[j]).slice(8).forEach(function(x) { members.push([labs[j], x[0], String(x[1])]); });
+  var other = '';
+  if (members.length) {
+    var shown = members.slice(0, 200);
+    if (members.length > 200) shown.push(['...', (members.length - 200) + ' more categories not listed', '']);
+    other = _ifTable(['Dimension', 'Category grouped as Other', 'Records'], shown);
+  }
+  return _ifWrap(_ifTitle(b) + chart + notes + vn + _ifTable(['From dimension', 'From category', 'To dimension', 'To category', 'Records', 'Share of records'], rows) + other);
+};
+
+
+// ── scatter3d_static and surface_static (Plotly scatter3d / surface, wave B package 3d, preview) ─────────────────────────────
+// A settled 3D view from one fixed camera: data scaled into a [-1, 1] cube, rotated to the camera (azimuth, elevation or a Plotly-style
+// camera.eye), projected orthographically (or with a simple perspective) and drawn as SVG far to near (painter's algorithm). No script, no
+// rotation. Labels are HTML on top of the SVG so they stay >= 12px at any width. Twin: _render_scatter3d_static in web_article.py.
+var _P3_W = 480, _P3_H = 340, _P3_MX = 104, _P3_MY = 46;
+var _P3_COL = ['var(--accent,#0369A1)', 'var(--series-2,#810998)', 'var(--series-3,#0F6C4F)', 'var(--series-4,#9A6120)'];
+var _P3_GLYPH = ['●', '■', '▲', '◆'];
+var _P3_EDGES = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+function _p3Ok(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 1e12; }
+function _p3f(v) { var s = v.toFixed(1); return /^-0\.0$/.test(s) ? '0.0' : s; }
+function _p3Round(x) { return Math.floor(x + 0.5); }
+function _p3Camera(b) {
+  var cam = _ifObj(b.camera), az = _ifNum(cam.azimuth, -360, 360, 45), el = _ifNum(cam.elevation, -80, 80, 30), eye = _ifObj(cam.eye);
+  var ex = eye.x, ey = eye.y, ez = eye.z;
+  if (_p3Ok(ex) && _p3Ok(ey) && _p3Ok(ez) && (ex !== 0 || ey !== 0 || ez !== 0)) {
+    az = Math.atan2(ey, ex) * 180 / Math.PI;
+    el = Math.max(-80, Math.min(80, Math.atan2(ez, Math.hypot(ex, ey)) * 180 / Math.PI));
+  }
+  var persp = _ifPick(cam.projection, ['orthographic', 'perspective'], 'orthographic') === 'perspective';
+  var a = az * Math.PI / 180, e = el * Math.PI / 180;
+  return [az, el, persp, [[-Math.sin(a), Math.cos(a), 0], [-Math.sin(e) * Math.cos(a), -Math.sin(e) * Math.sin(a), Math.cos(e)], [Math.cos(e) * Math.cos(a), Math.cos(e) * Math.sin(a), Math.sin(e)]]];
+}
+function _p3Proj(p, basis, persp) {
+  var r = basis[0], u = basis[1], v = basis[2];
+  var x = p[0] * r[0] + p[1] * r[1] + p[2] * r[2], y = p[0] * u[0] + p[1] * u[1] + p[2] * u[2], d = p[0] * v[0] + p[1] * v[1] + p[2] * v[2];
+  if (persp) { var k = 5 / (5 - d); x = x * k; y = y * k; }
+  return [x, y, d];
+}
+function _p3Scene(basis, persp) {
+  var corners = [], i;
+  for (i = 0; i < 8; i++) corners.push([i & 1 ? 1 : -1, i & 2 ? 1 : -1, i & 4 ? 1 : -1]);
+  var pr = corners.map(function(c) { return _p3Proj(c, basis, persp); });
+  var xs = pr.map(function(q) { return q[0]; }), ys = pr.map(function(q) { return q[1]; });
+  var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+  var s = Math.min((_P3_W - 2 * _P3_MX) / (x1 - x0), (_P3_H - 2 * _P3_MY) / (y1 - y0));
+  var ox = _P3_W / 2 - s * (x0 + x1) / 2, oy = _P3_H / 2 + s * (y0 + y1) / 2;
+  return [function(p) { var q = _p3Proj(p, basis, persp); return [ox + s * q[0], oy - s * q[1], q[2]]; }, corners];
+}
+function _p3Norm(v, lo, hi) { return hi > lo ? 2 * (v - lo) / (hi - lo) - 1 : 0; }
+function _p3Frame(screen, corners, labels, ranges) {
+  var sc = corners.map(function(c) { return screen(c); }), lines = '', flines = '', i;
+  var far = 0, fark = null;   // the hidden corner: only the three edges that meet there are behind the cube
+  for (i = 0; i < 8; i++) { var kk = _p3Round(sc[i][2] * 1e6); if (fark === null || kk < fark) { fark = kk; far = i; } }
+  _P3_EDGES.forEach(function(e) {
+    var back = e[0] === far || e[1] === far;
+    var ln = '<line x1="' + _p3f(sc[e[0]][0]) + '" y1="' + _p3f(sc[e[0]][1]) + '" x2="' + _p3f(sc[e[1]][0]) + '" y2="' + _p3f(sc[e[1]][1]) +
+      '" stroke="var(--muted,#475569)" stroke-width="1"' + (back ? ' stroke-dasharray="3 3" opacity="0.55"' : ' opacity="0.9"') + '/>';
+    if (back) lines += ln; else flines += ln;
+  });
+  var cx = 0, cy = 0;
+  sc.forEach(function(q) { cx += q[0]; cy += q[1]; });
+  cx /= 8; cy /= 8;
+  var front = 0, fk = null;
+  for (i = 0; i < 8; i++) { if (i & 4) continue; var k = _p3Round(sc[i][2] * 1e6); if (fk === null || k > fk) { fk = k; front = i; } }
+  var cap = function(px, py, text, rng, side) {
+    var left, top, tf, inner = '<div>' + _esc(rng) + '</div>';
+    if (side) { left = Math.max(2, Math.min(98, (px - 8) / _P3_W * 100)); top = Math.max(6, Math.min(94, py / _P3_H * 100)); tf = 'translate(-100%,-50%);text-align:right'; var parts = rng.split(' to '); inner = '<div>' + _esc(parts[0]) + '</div><div>' + _esc('to ' + parts[1]) + '</div>'; }
+    else {
+      var dx = px - cx, dy = py - cy, n = Math.hypot(dx, dy) || 1, lx = px + dx / n * 30, ly = py + dy / n * 22;
+      left = Math.max(18, Math.min(82, lx / _P3_W * 100)); top = Math.max(6, Math.min(94, ly / _P3_H * 100)); tf = 'translate(-50%,-50%);text-align:center';
+    }
+    return '<div style="position:absolute;left:' + _p3f(left) + '%;top:' + _p3f(top) + '%;transform:' + tf + ';font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);white-space:nowrap;">' +
+      '<div style="font-weight:700;">' + _esc(text) + '</div>' + inner + '</div>';
+  };
+  var caps = '', others = [front ^ 1, front ^ 2];
+  [0, 1].forEach(function(axis) {
+    var o = others[axis], mx = (sc[front][0] + sc[o][0]) / 2, my = (sc[front][1] + sc[o][1]) / 2, loFirst = corners[front][axis] < 0;
+    caps += cap(mx, my, labels[axis], loFirst ? ranges[axis][0] + ' to ' + ranges[axis][1] : ranges[axis][1] + ' to ' + ranges[axis][0]);
+  });
+  var vert = 0;
+  for (i = 1; i < 4; i++) if (Math.min(sc[i][0], sc[i | 4][0]) < Math.min(sc[vert][0], sc[vert | 4][0])) vert = i;
+  caps += cap(Math.min(sc[vert][0], sc[vert | 4][0]), (sc[vert][1] + sc[vert | 4][1]) / 2, labels[2], ranges[2][0] + ' to ' + ranges[2][1], true);
+  return [lines, caps, flines];
+}
+function _p3Label(b, key, name) { return b[key] ? String(b[key]).slice(0, 16) : name; }
+function _p3Wrap(b, aria, svg, caps, legend, notes, table) {
+  return _ifWrap(_ifTitle(b) + '<div style="max-width:640px;margin:0 auto;"><div role="img" aria-label="' + _esc(aria) + '" style="position:relative;width:100%;">' +
+    '<svg viewBox="0 0 ' + _P3_W + ' ' + _P3_H + '" width="100%" style="display:block;width:100%;height:auto;" focusable="false" aria-hidden="true">' + svg + '</svg>' +
+    caps + '</div>' + legend + '</div>' + notes + table);
+}
+function _p3Marker(shape, x, y, r, col, op, key) {
+  var st = ' fill="' + col + '" fill-opacity="' + op + '" stroke="var(--bg,#fff)" stroke-width="1"', pts;
+  if (shape === 0) return '<circle data-cb="node" data-key="' + key + '" cx="' + _p3f(x) + '" cy="' + _p3f(y) + '" r="' + _p3f(r) + '"' + st + '/>';
+  if (shape === 1) return '<rect data-cb="node" data-key="' + key + '" x="' + _p3f(x - r) + '" y="' + _p3f(y - r) + '" width="' + _p3f(2 * r) + '" height="' + _p3f(2 * r) + '"' + st + '/>';
+  if (shape === 2) pts = [[x, y - r * 1.2], [x + r * 1.1, y + r * 0.9], [x - r * 1.1, y + r * 0.9]];
+  else pts = [[x, y - r * 1.25], [x + r * 1.25, y], [x, y + r * 1.25], [x - r * 1.25, y]];
+  return '<polygon data-cb="node" data-key="' + key + '" points="' + pts.map(function(p) { return _p3f(p[0]) + ',' + _p3f(p[1]); }).join(' ') + '"' + st + '/>';
+}
+_RENDERERS['scatter3d_static'] = function(b) {
+  var raw = Array.isArray(b.points) ? b.points : [], pts = [], skipped = 0, names = [], beyondSeries = 0;
+  raw.slice(0, 500).forEach(function(p) {
+    if (!(p && typeof p === 'object' && !Array.isArray(p) && _p3Ok(p.x) && _p3Ok(p.y) && _p3Ok(p.z))) { skipped++; return; }
+    var sn = p.series ? String(p.series).slice(0, 16) : '';
+    if (names.indexOf(sn) < 0) { if (names.length >= 4) { beyondSeries++; return; } names.push(sn); }
+    pts.push([p.x, p.y, p.z, names.indexOf(sn), p.label ? String(p.label).slice(0, 30) : '']);
+  });
+  var over = raw.length - 500;
+  var notes = (skipped ? _hgNote(skipped + (skipped === 1 ? ' point was' : ' points were') + ' not a usable x, y, z number triple and ' + (skipped === 1 ? 'was' : 'were') + ' left out.') : '') +
+    (beyondSeries ? _hgNote(beyondSeries + (beyondSeries === 1 ? ' point' : ' points') + ' in a fifth or later series ' + (beyondSeries === 1 ? 'was' : 'were') + ' not drawn (4 series at most).') : '') +
+    (over > 0 ? _hgNote(over + (over === 1 ? ' point beyond the first 500 was' : ' points beyond the first 500 were') + ' not drawn.') : '');
+  if (!pts.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A 3D scatter needs at least one point with numbers x, y and z.</div>' + notes + _hgVersionNote(b, 'scatter3d_static'));
+  var cam = _p3Camera(b), az = cam[0], el = cam[1], persp = cam[2], sceneA = _p3Scene(cam[3], persp), screen = sceneA[0], corners = sceneA[1];
+  var lo = [0, 1, 2].map(function(k) { return Math.min.apply(null, pts.map(function(p) { return p[k]; })); });
+  var hi = [0, 1, 2].map(function(k) { return Math.max.apply(null, pts.map(function(p) { return p[k]; })); });
+  var rng = [0, 1, 2].map(function(k) { return [_bpFmt(lo[k], 3), _bpFmt(hi[k], 3)]; });
+  var labels = [_p3Label(b, 'x_label', 'x'), _p3Label(b, 'y_label', 'y'), _p3Label(b, 'z_label', 'z')];
+  var fr = _p3Frame(screen, corners, labels, rng), drop = b.drop_lines !== false;
+  var drawn = pts.map(function(p, i) {
+    var nx = _p3Norm(p[0], lo[0], hi[0]), ny = _p3Norm(p[1], lo[1], hi[1]);
+    return [screen([nx, ny, _p3Norm(p[2], lo[2], hi[2])]), drop ? screen([nx, ny, -1]) : null, p[3], i];
+  });
+  drawn.sort(function(a, c) { return (_p3Round(a[0][2] * 1e6) - _p3Round(c[0][2] * 1e6)) || (a[3] - c[3]); });
+  var bases = pts.map(function(p, k) { return p[4] || 'Point ' + (k + 1); });
+  var pkeys = bases.map(function(t, k) { return _esc(bases.indexOf(t) === bases.lastIndexOf(t) ? t : t + ' #' + (k + 1)); });
+  var body = '';
+  drawn.forEach(function(d) {
+    var q = d[0], base = d[1], s = d[2], t = Math.max(0, Math.min(1, (q[2] + 1.8) / 3.6));
+    if (base) body += '<line x1="' + _p3f(q[0]) + '" y1="' + _p3f(q[1]) + '" x2="' + _p3f(base[0]) + '" y2="' + _p3f(base[1]) + '" stroke="' + _P3_COL[s] + '" stroke-width="1" opacity="0.3"/>';
+    body += _p3Marker(s, q[0], q[1], 5 + 3 * t, _P3_COL[s], (0.55 + 0.45 * t).toFixed(2), pkeys[d[3]]);
+  });
+  var n = pts.length, named = [];
+  names.forEach(function(nm, k) { if (nm) named.push(k); });
+  var legend = named.length ? '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;font-size:0.75rem;margin-top:6px;">' +
+    named.map(function(k) { return '<span><span aria-hidden="true" style="color:' + _P3_COL[k] + ';">' + _P3_GLYPH[k] + '</span> ' + _esc(names[k]) + '</span>'; }).join('') + '</div>' : '';
+  var aria = '3D scatter of ' + n + (n === 1 ? ' point' : ' points') + (names.length > 1 ? ' in ' + names.length + ' series' : '') + '. ' +
+    labels[0] + ' from ' + rng[0][0] + ' to ' + rng[0][1] + ', ' + labels[1] + ' from ' + rng[1][0] + ' to ' + rng[1][1] + ', ' + labels[2] + ' from ' + rng[2][0] + ' to ' + rng[2][1] +
+    '. Fixed view from azimuth ' + _bpFmt(_p3Round(az), 0) + ' and elevation ' + _bpFmt(_p3Round(el), 0) + ' degrees' + (persp ? ', perspective' : '') + '.';
+  var table = _ifTable(['Point', labels[0], labels[1], labels[2], 'Series'],
+    pts.map(function(p, k) { return [p[4] || 'Point ' + (k + 1), _bpFmt(p[0], 3), _bpFmt(p[1], 3), _bpFmt(p[2], 3), names[p[3]] || '-']; }));
+  return _p3Wrap(b, aria, fr[0] + body + fr[2], fr[1], legend, notes + _hgVersionNote(b, 'scatter3d_static'), table);
+};
+_RENDERERS['surface_static'] = function(b) {
+  var zr = Array.isArray(b.z) ? b.z : [], rowsIn = zr.slice(0, 30).filter(function(r) { return Array.isArray(r); }), overRows = zr.length - 30;
+  var maxLen = rowsIn.reduce(function(m, r) { return Math.max(m, r.length); }, 0), ncol = Math.min(30, maxLen), overCols = maxLen - 30;
+  var grid = rowsIn.map(function(r) {
+    var o = [], j;
+    for (j = 0; j < ncol; j++) o.push(_p3Ok(r[j]) ? r[j] : null);
+    return o;
+  });
+  var nrow = grid.length, missing = 0, cells = nrow * ncol, flat = [];
+  grid.forEach(function(r) { r.forEach(function(v) { if (v === null) missing++; else flat.push(v); }); });
+  var notes = (overRows > 0 ? _hgNote(overRows + (overRows === 1 ? ' row beyond the first 30 was' : ' rows beyond the first 30 were') + ' not drawn.') : '') +
+    (overCols > 0 ? _hgNote(overCols + (overCols === 1 ? ' column beyond the first 30 was' : ' columns beyond the first 30 were') + ' not drawn.') : '');
+  if (nrow < 2 || ncol < 2 || missing === cells) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A surface needs a grid z of at least 2 rows by 2 columns of numbers.</div>' + notes + _hgVersionNote(b, 'surface_static'));
+  if (missing) notes += _hgNote(missing + (missing === 1 ? ' grid value was' : ' grid values were') + ' not a usable number and the faces touching ' + (missing === 1 ? 'it were' : 'them were') + ' left open.');
+  var axis = function(key, len) {
+    var v = b[key], a = Array.isArray(v) ? v.slice(0, len) : [], k, o = [];
+    if (a.length === len && a.every(_p3Ok)) return a;
+    for (k = 0; k < len; k++) o.push(k);
+    return o;
+  };
+  var xs = axis('x', ncol), ys = axis('y', nrow);
+  var zlo = Math.min.apply(null, flat), zhi = Math.max.apply(null, flat), xlo = Math.min.apply(null, xs), xhi = Math.max.apply(null, xs), ylo = Math.min.apply(null, ys), yhi = Math.max.apply(null, ys);
+  var cam = _p3Camera(b), az = cam[0], el = cam[1], persp = cam[2], sceneA = _p3Scene(cam[3], persp), screen = sceneA[0], corners = sceneA[1];
+  var rng = [[_bpFmt(xlo, 3), _bpFmt(xhi, 3)], [_bpFmt(ylo, 3), _bpFmt(yhi, 3)], [_bpFmt(zlo, 3), _bpFmt(zhi, 3)]];
+  var labels = [_p3Label(b, 'x_label', 'x'), _p3Label(b, 'y_label', 'y'), _p3Label(b, 'z_label', 'z')];
+  var fr = _p3Frame(screen, corners, labels, rng), i, j;
+  var P = grid.map(function(r, i2) { return r.map(function(v, j2) { return v === null ? null : screen([_p3Norm(xs[j2], xlo, xhi), _p3Norm(ys[i2], ylo, yhi), _p3Norm(v, zlo, zhi)]); }); });
+  var faces = [];
+  for (i = 0; i < nrow - 1; i++) for (j = 0; j < ncol - 1; j++) {
+    var q = [P[i][j], P[i][j + 1], P[i + 1][j + 1], P[i + 1][j]];
+    if (q.some(function(c) { return c === null; })) continue;
+    var h = (grid[i][j] + grid[i][j + 1] + grid[i + 1][j + 1] + grid[i + 1][j]) / 4;
+    faces.push([_p3Round((q[0][2] + q[1][2] + q[2][2] + q[3][2]) / 4 * 1e6), faces.length, q, h, i, j]);
+  }
+  faces.sort(function(a, c) { return (a[0] - c[0]) || (a[1] - c[1]); });
+  var body = '';
+  faces.forEach(function(f) {
+    var t = zhi > zlo ? (f[3] - zlo) / (zhi - zlo) : 0.5;
+    body += '<polygon data-cb="tile" data-key="r' + (f[4] + 1) + 'c' + (f[5] + 1) + '" points="' + f[2].map(function(c) { return _p3f(c[0]) + ',' + _p3f(c[1]); }).join(' ') + '" fill="var(--accent,#0369A1)" fill-opacity="' + (0.25 + 0.7 * t).toFixed(2) +
+      '" stroke="var(--bg,#fff)" stroke-width="0.6" stroke-linejoin="round"/>';
+  });
+  var hiAt = null, loAt = null;
+  for (i = 0; i < nrow; i++) for (j = 0; j < ncol; j++) {
+    var v = grid[i][j];
+    if (v === null) continue;
+    if (hiAt === null || v > hiAt[0]) hiAt = [v, i, j];
+    if (loAt === null || v < loAt[0]) loAt = [v, i, j];
+  }
+  var aria = '3D surface of ' + nrow + ' by ' + ncol + ' values. ' + labels[2] + ' from ' + rng[2][0] + ' (at ' + labels[0] + ' ' + _bpFmt(xs[loAt[2]], 3) + ', ' + labels[1] + ' ' + _bpFmt(ys[loAt[1]], 3) +
+    ') to ' + rng[2][1] + ' (at ' + labels[0] + ' ' + _bpFmt(xs[hiAt[2]], 3) + ', ' + labels[1] + ' ' + _bpFmt(ys[hiAt[1]], 3) + '). Fixed view from azimuth ' + _bpFmt(_p3Round(az), 0) +
+    ' and elevation ' + _bpFmt(_p3Round(el), 0) + ' degrees' + (persp ? ', perspective' : '') + '.';
+  var legend = '<div style="text-align:center;font-size:0.75rem;margin-top:6px;color:var(--muted,#475569);">Stronger colour is higher: ' + _esc(labels[2]) + ' ' + rng[2][0] + ' (faint) to ' + rng[2][1] + ' (solid).</div>';
+  var table = _ifTable([labels[1] + ' \\ ' + labels[0]].concat(xs.map(function(x) { return _bpFmt(x, 3); })),
+    grid.map(function(r, i2) { return [_bpFmt(ys[i2], 3)].concat(r.map(function(v) { return v === null ? '-' : _bpFmt(v, 3); })); }));
+  return _p3Wrap(b, aria, fr[0] + body + fr[2], fr[1], legend, notes + _hgVersionNote(b, 'surface_static'), table);
+};

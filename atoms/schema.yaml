@@ -21741,6 +21741,187 @@ blocks:
     its first point. A series of 0 to 100 skill scores without an axis choice is better served by skill_radar, which is a separate atom and is not
     changed here. Each series group carries data-cb ("node") and a data-key that is the series label (a repeated label gets ~2, ~3), and fades in through --k.
   source: *ifg002
+- type: histogram2d
+  stage: preview
+  description: 'Counts of x,y points in a grid of 2-D bins (the Plotly histogram2d trace), drawn as a heatmap: d3 bin() is run once on x and once on y, the cell
+    count is the number of points that fall in both bins, and the grid is handed to the heatmap atom, so it has the heatmap colour bar, the cell counts
+    printed inside the cells and a hidden data table. The highest y bin is the top row. Use nbinsx and nbinsy for the number of bins (the real count is the
+    nearest round step, as in d3), or leave them out for the Sturges default. At most 20,000 points are used and at most 40 bins per axis, each with a note.'
+  compact_description: 'histogram2d: x,y points counted into a 2-D bin grid, drawn as a heatmap'
+  routing_text: Two numeric columns whose joint spread you want to see as counts per cell (density of points, a correlation blob). Not for a grid you
+    already have (use heatmap), not for categories (use heatmap with labels), not for a few points (use scatter_trend), and not for sums or averages of
+    a third value (counts only).
+  intent_phrases:
+  - Show where the points are densest as a grid of counts.
+  - I need a 2D histogram of height against weight.
+  - Bin these x and y values into a heatmap of how many fall in each cell.
+  surfaces: *ifg001
+  fields:
+    x: array (required, numbers, at least 2 usable pairs with y; up to 20,000 used).
+    y: array (required, numbers, same length as x).
+    nbinsx: integer (optional, 3 to 40, the bin count asked of d3 for x; default Sturges).
+    nbinsy: integer (optional, 3 to 40, the bin count asked of d3 for y; default Sturges).
+    title: string (optional, max 80).
+    x_label: string (optional, max 40, named in the note under the grid).
+    y_label: string (optional, max 40, named in the note under the grid).
+    scale: string (optional, a heatmap colour scale name such as Blues, Viridis or YlOrRd; default YlGnBu, light for few points and dark for many).
+    show_values: boolean (optional, default true, prints each count in its cell).
+    show_colorbar: boolean (optional, default true).
+    version: integer (optional, default 1; a higher number draws as version 1 with a muted note).
+  notes: The drawing is the heatmap atom, so it needs the heatmap options (colour bar, cell values, hidden table). Pairs where either value is not a number
+    are skipped with a count. Bin edges are labelled low to high; the last bin includes its upper edge. If d3 returns more than 40 bins for an axis a coarser
+    bin count is used until 40 hold.
+  source: *ifg002
+- type: image_plot
+  stage: preview
+  description: 'A picture with axes (the Plotly image trace): either a small matrix of pixel colours (z, up to 64 by 64 cells, each a #rgb or #rrggbb
+    colour or an [r, g, b] triple of 0 to 255) drawn as crisp rectangles, or a source image (src, an https URL or a base64 PNG, JPEG, GIF or WebP data: URI).
+    Axis ticks come from x_range and y_range (default the cell numbers; y runs down the page like image rows). A hidden table lists every cell colour.
+    A source that is not https or a safe data: image is never put in the page: a note says so.'
+  compact_description: 'image_plot: a pixel matrix or a safe image URL drawn with labelled axes'
+  routing_text: A raster you want axes on (a small pixel grid, a rendered plot saved as an image, a satellite tile with coordinates). Not for a plain
+    picture with a caption (use image), not for numbers coloured by a scale (use heatmap), and not for more than 64 by 64 cells.
+  intent_phrases:
+  - Draw this 8 by 8 pixel matrix with axes.
+  - Show the image with an x and y axis in metres.
+  - Plot this grid of colours as an image.
+  surfaces: *ifg001
+  fields:
+    z: array (optional, up to 64 rows of up to 64 cells; each cell a #rgb or #rrggbb string or an [r, g, b] array of numbers 0 to 255. Cells that are not a colour are left blank, with a note).
+    src: string (optional, https URL or data:image/png, jpeg, gif or webp base64; used when z is not given).
+    x_range: array (optional, [left, right] numbers for the x axis; default [0, columns]).
+    y_range: array (optional, [top, bottom] numbers for the y axis; default [0, rows]).
+    x_label: string (optional, max 40).
+    y_label: string (optional, max 40).
+    title: string (optional, max 80).
+    alt: string (optional, max 200, the text alternative; default a generated description).
+    version: integer (optional, default 1; a higher number draws as version 1 with a muted note).
+  notes: z wins when both z and src are given, with a note. A src image is drawn as given with no scripting; it must load from a public https URL. The page that shows it sends no referrer, but the image host still sees the viewer''s address, so use a host you trust. The hidden table
+    of a src image lists the axis ranges only, because the pixels are not known to the page.
+  source: *ifg002
+- type: scatter_matrix
+  stage: preview
+  description: 'A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and
+    column, so each cell plots one dimension against another and a pattern between any two shows at a glance. Below the diagonal each cell is a
+    small scatter plot of every complete row (the upper half too with show_upper); the diagonal names the dimension; wide pages also show each
+    dimension''s range on the outer edges. Each axis comes from d3 nice() and ticks() on the server, so there is no script. A legend lists every
+    dimension with its range and a hidden table gives every value of every row. Static: no hover or brushing. Motion-ready: each cell fades in
+    through --k from --p (default 1).'
+  compact_description: 'scatter_matrix: every measure plotted against every other'
+  routing_text: Shows how several numeric measures relate to each other at once, such as sepal and petal sizes, or price, area and age of
+    homes, as a grid of small scatter plots. For two measures only use a scatter or trend chart; for many rows on one measure use a histogram;
+    for lines over categories use parallel_coords. It is not for category counts (use parallel_categories).
+  intent_phrases:
+  - Plot every measure against every other as a scatter plot matrix.
+  - Show how price, area and age relate to each other in a grid of scatter plots.
+  - Make a splom of these four numeric columns.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    dimensions: 'array (required, 2 to 6) of {label (string, max 24, default "Dimension n"), values (array of numbers)}. Row r is the r-th
+      value of every dimension. A row where any dimension has no finite number up to 1e12 in size is left out and counted in a note; an entry
+      that is not a dimension with a list of values is left out with a note; dimensions beyond the first 6 are noted and not drawn. At most 200
+      complete rows are read; later rows are noted and not drawn. With fewer than 2 dimensions or 2 complete rows a note replaces the chart.'
+    show_upper: boolean (optional, default false). Only true also draws the upper half (the same plots with the axes swapped).
+    version: integer (optional, default 1). The scatter_matrix contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: Rows keep the given order. Numbers print with the decimals the values use, at most 6. Below 600 px of width the diagonal shows the
+    dimension number (the legend gives the name) and the edge ranges are hidden, so nothing is clipped; the legend and the hidden table
+    carry every range and value. Every dimension has its own nice range, so a dimension with all equal values draws in the middle. A dimension whose numbers are all below 0.00001 is written in exponent form (1.00e-9), not as 0.
+  source: *ifg002
+- type: parallel_categories
+  stage: preview
+  description: 'Parallel categories (Plotly parcats): 2 to 6 categorical dimensions as columns of numbered bars, one bar per category, with a
+    ribbon between every pair of categories in neighbouring columns as wide as the number of records they share, so you can follow how records
+    flow from the categories of one dimension to those of the next. Categories rank by record count (ties by first appearance), past 8 the
+    rest are grouped as Other; ribbons take the colour of their category on the left, and the number on every bar is the rank, so colour is
+    never the only cue. A legend names every category with its count and a hidden table gives every flow with its record count and share.
+    Static: no dragging or reordering. Motion-ready: each column and its ribbons fade in through --k from --p (default 1).'
+  compact_description: 'parallel_categories: how records flow across categories'
+  routing_text: Shows how the same set of records falls into categories across several dimensions, such as plan, channel and outcome, as ribbons
+    between columns of category bars. Per-record colouring is not kept. For a flow with weights you already have use sankey_flow; for numeric
+    dimensions use parallel_coords; for a grid of numeric relations use scatter_matrix.
+  intent_phrases:
+  - Show how orders flow from plan to channel to outcome as parallel categories.
+  - Which combinations of colour, size and returned status are most common?
+  - Make a parallel categories diagram of these three columns.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    dimensions: 'array (required, 2 to 6) of {label (string, max 24, default "Dimension n"), values (array of one category per record)}. Record r
+      is the r-th value of every dimension. A value is a string, number or boolean (shown as text, max 20 characters); anything else, an empty
+      string, or a record a shorter dimension has no value for is the category "(missing)". An entry that is not a dimension with a list of
+      values is left out with a note; dimensions beyond the first 6 are noted and not drawn. At most 5000 records are read; later ones are noted
+      and not drawn. With fewer than 2 dimensions or no records a note replaces the chart.'
+    version: integer (optional, default 1). The parallel_categories contract the payload was written for. Only version 1 exists; a higher whole
+      number is drawn as version 1 with a note.
+  notes: Each column is 360 px tall; a bar is never shorter than 22 px so its number stays readable, so heights are proportional to the count only
+    above that floor, while ribbon widths at both ends keep each category's own scale. Categories with equal counts keep first-appearance order.
+    Dimension letters A to F head the columns (the label joins them from 600 px of width) and the legend names every category. A hidden table lists the categories grouped as Other by name and count (200 at most). A real value written Other or (missing) is shown in quotes, so it never merges with the placeholders. A share under 0.1% is written <0.1%.
+  source: *ifg002
+- type: scatter3d_static
+  stage: preview
+  description: 'Points in three numeric dimensions (x, y, z) drawn from one fixed camera, as a settled picture: the data is scaled into a cube whose
+    twelve edges are drawn (the far edges dashed), each point is projected orthographically (or with a mild perspective) and painted far to near, nearer
+    points slightly larger and more opaque, with a thin drop line to the floor as a depth cue. Series are told apart by marker shape and a legend glyph as well
+    as colour. The three axes are captioned with their label and range. There is no rotation and no script: the camera is the one you give, as azimuth and
+    elevation in degrees or a Plotly-style camera.eye. A hidden table lists every point with its x, y, z and series.'
+  compact_description: 'scatter3d_static: points in 3D from a fixed camera'
+  routing_text: Three numeric measures per point seen as a cloud in a box from one chosen viewpoint, such as clusters in a feature space or a trade-off
+    between three metrics. It does not rotate or zoom. For two measures use scatter_trend; when a viewer must orbit the data, say so and offer three scatter
+    panels (x against y, x against z, y against z) instead.
+  intent_phrases:
+  - Plot these samples in 3D by speed, load and heat.
+  - Show the three-measure scatter as a 3D point cloud.
+  - Draw a 3D scatter of my clusters.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    points: 'array (required, 1 to 500) of {x, y, z (finite numbers up to 1e12 in size), series (optional string, max 16), label (optional string, max 30, shown in
+      the hidden table)}. Entries that are not a point with three usable numbers are left out with a note; points beyond the first 500, and points in a fifth or
+      later series (4 series at most), are noted and not drawn.'
+    x_label: string (optional, max 16, default "x"). Names the x axis.
+    y_label: string (optional, max 16, default "y"). Names the y axis.
+    z_label: string (optional, max 16, default "z"). Names the vertical axis.
+    camera: '{azimuth (degrees, default 45), elevation (degrees from the floor, -80 to 80, default 30), eye ({x, y, z}, as in Plotly layout.scene.camera: when all three are numbers
+      they set azimuth and elevation and win), projection ("orthographic" or "perspective", default "orthographic")} (optional).'
+    drop_lines: boolean (optional, default true). false hides the thin drop lines from each point to the floor.
+    version: integer (optional, default 1). The scatter3d_static contract the payload was written for. Only version 1 exists; a higher whole number is drawn
+      as version 1 with a note.
+  notes: Settled and static by design, no orbit. Each axis is scaled independently to its own range into the cube, so shapes are comparable across axes only through
+    the printed ranges. Series colours are the accent then three fixed colours; shape is the primary cue.
+  source: *ifg002
+- type: surface_static
+  stage: preview
+  description: 'A grid of heights z drawn as a 3D surface from one fixed camera, as a settled picture: the grid is scaled into a cube, every cell becomes a
+    four-cornered face, the faces are projected orthographically (or with a mild perspective) and painted far to near so nearer ridges hide what is behind them, and
+    each face is shaded by its height, a stronger colour meaning higher, with the numbers in the legend. The cube edges and the three axis captions (label and range) are
+    drawn. There is no rotation and no script: the camera is the one you give, as azimuth and elevation or a Plotly-style camera.eye. A hidden table gives every grid value
+    with the x values across and the y values down.'
+  compact_description: 'surface_static: a grid of heights as a 3D surface'
+  routing_text: A function or measurement over two variables, where the height cue matters, such as a response surface, terrain or a cost landscape. It does not rotate or
+    zoom. When only the pattern matters use contour_plot or heatmap, which read exact values more easily; for points rather than a grid use scatter3d_static.
+  intent_phrases:
+  - Show this cost landscape as a 3D surface.
+  - Plot z over x and y as a surface from above and to the side.
+  - Draw the terrain grid as a 3D mesh.
+  surfaces: *ifg001
+  fields:
+    title: string (optional, max 80).
+    z: 'array (required) of rows, each an array of numbers: 2 to 30 rows by 2 to 30 columns. A value that is not a finite number up to 1e12 in size leaves the faces
+      touching it open, with a note; short rows are padded with open cells; rows and columns beyond 30 are noted and not drawn.'
+    x: array (optional) of one number per column, the x coordinate of each column. Without it, or if it is the wrong length or not numbers, the columns are numbered from 0.
+    y: array (optional) of one number per row, the y coordinate of each row. Without it, or if it is the wrong length or not numbers, the rows are numbered from 0.
+    x_label: string (optional, max 16, default "x"). Names the x axis.
+    y_label: string (optional, max 16, default "y"). Names the y axis.
+    z_label: string (optional, max 16, default "z"). Names the height.
+    camera: '{azimuth (degrees, default 45), elevation (degrees from the floor, -80 to 80, default 30), eye ({x, y, z}, as in Plotly layout.scene.camera: when all three are numbers
+      they set azimuth and elevation and win), projection ("orthographic" or "perspective", default "orthographic")} (optional).'
+    version: integer (optional, default 1). The surface_static contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1
+      with a note.
+  notes: Settled and static by design, no orbit. The height is scaled to the cube, so read values from the legend and the table, not from the picture. Faces are
+    shaded with --accent at an opacity that rises with height; the order of overlap, the cube and the legend carry the height cue as well, so colour is not the only one.
+  source: *ifg002
 # ── Motion candidates (2026-10-10, preview) ──
 - type: motion_lit
   stage: preview

@@ -39078,6 +39078,528 @@ def _render_polar_chart(b: dict) -> str:
 
 
 _RENDERERS['polar_chart'] = _render_polar_chart
+# ── scatter_matrix and parallel_categories (Plotly splom / parcats, wave B) ── Twins of the same-named renderers in atoms_infographic.gs.
+# scatter_matrix: every dimension is one shared axis (d3 nice(min, max, 4) and ticks, over the complete rows); the cell in row i, column j plots
+# dimension i against dimension j below the diagonal (above it too with show_upper); the diagonal names the dimension. parallel_categories: one column
+# of category bars per dimension (height by record count, never below a floor so its number stays readable) and one ribbon per pair of categories in
+# adjacent dimensions, as wide as their joint count; categories rank by count then first appearance, past 8 the rest are grouped as Other.
+_WB_COL = ['#19294E', '#810998', '#0F6C4F', '#9A6120', '#B91C1C', '#0369A1', '#4D7C0F', '#BE185D']
+
+
+def _wb_dims(b):
+    """-> ([(label, values)] up to 6, entries that were not a dimension, dimensions beyond the sixth)."""
+    lst = _if_g(b, 'dimensions')
+    lst = lst if isinstance(lst, list) else []
+    dims, bad = [], 0
+    for d in lst:
+        v = _if_g(d, 'values')
+        if not isinstance(v, list):
+            bad += 1
+            continue
+        lab = _if_g(d, 'label')
+        dims.append((_if_str(lab)[:24] if _if_truthy(lab) else 'Dimension ' + str(len(dims) + 1), v))
+    return dims[:6], bad, max(0, len(dims) - 6)
+
+
+def _wb_keys(labs):
+    """Build-contract keys for dimensions: the label, with its place added where two dimensions share a label (twin: _wbKeys)."""
+    return [l if labs.count(l) == 1 else l + ' #' + str(j + 1) for j, l in enumerate(labs)]
+
+
+def _wb_dim_notes(bad, beyond):
+    return ((_hg_note(str(bad) + (' entry was' if bad == 1 else ' entries were') + ' not a dimension with a list of values and ' + ('was' if bad == 1 else 'were') + ' left out.') if bad else '')
+            + (_hg_note(str(beyond) + (' dimension beyond the first 6 was' if beyond == 1 else ' dimensions beyond the first 6 were') + ' not drawn.') if beyond else ''))
+
+
+def _sm_axis(vals):
+    lo, hi = min(vals), max(vals)
+    x0, x1 = _hg_nice(lo, hi, 4)
+    return x0, x1, _hg_ticks(x0, x1, 4)
+
+
+def _sm_exp(v):
+    """JavaScript v.toExponential(2): used for a column whose numbers are all below 1e-5, which the fixed-decimals formatter would print as 0."""
+    if v == 0:
+        return '0'
+    d = decimal.Decimal(abs(v))
+    e = d.adjusted()
+    m = d.scaleb(-e).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_HALF_UP, context=_IF_DEC_CTX)
+    if m >= 10:
+        m = (m / 10).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_HALF_UP, context=_IF_DEC_CTX)
+        e += 1
+    return ('-' if v < 0 else '') + format(m, 'f') + 'e' + ('+' if e >= 0 else '-') + str(abs(e))
+
+
+def _render_scatter_matrix(b: dict) -> str:
+    dims, bad, beyond_d = _wb_dims(b)
+    notes = _wb_dim_notes(bad, beyond_d)
+    m = max([len(v) for _, v in dims] + [0])
+    rows, skipped, beyond_r = [], 0, 0
+    for r in range(m):
+        if len(rows) == 200:
+            beyond_r = m - r
+            break
+        vals = [v[r] if r < len(v) else None for _, v in dims]
+        if all(_wf_num(x) for x in vals):
+            rows.append((r, [float(x) for x in vals]))
+        else:
+            skipped += 1
+    notes += ((_hg_note(str(skipped) + (' row had' if skipped == 1 else ' rows had') + ' a value that was not a usable number and ' + ('was' if skipped == 1 else 'were') + ' left out.') if skipped else '')
+              + (_hg_note(str(beyond_r) + (' row beyond the first 200 was' if beyond_r == 1 else ' rows beyond the first 200 were') + ' not drawn.') if beyond_r else ''))
+    vn = _hg_version_note(b, 'scatter_matrix')
+    if len(dims) < 2 or len(rows) < 2:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A scatter plot matrix needs at least two dimensions with two complete rows.</div>' + notes + vn)
+    N = len(dims)
+    cols = [[row[1][j] for row in rows] for j in range(N)]
+    ax = [_sm_axis(c) for c in cols]
+    dc = [min(6, _hg_decimals(c)) for c in cols]
+    show_up = _if_g(b, 'show_upper') is True
+    labs = [d[0] for d in dims]
+    tiny = [0 < max(abs(v) for v in c) < 1e-5 for c in cols]
+    fm = lambda j, v: _sm_exp(v) if tiny[j] else _bp_fmt(v, dc[j])
+    rng = [fm(j, min(c)) + ' to ' + fm(j, max(c)) for j, c in enumerate(cols)]
+    erng = [(_sm_exp(a[0]) + ' to ' + _sm_exp(a[1])) if tiny[j] else _hg_num(a[0], _hg_decimals([a[0], a[1]])) + ' to ' + _hg_num(a[1], _hg_decimals([a[0], a[1]])) for j, a in enumerate(ax)]
+
+    def pos(j, v):
+        sp = ax[j][1] - ax[j][0]
+        return 5 + 90 * (v - ax[j][0]) / sp if sp > 0 else 50
+
+    cell = 'position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;'
+    lk = _wb_keys(labs)
+    out, idx = '', 0
+    for i in range(N):
+        out += '<div class="sma" style="align-items:center;justify-content:flex-end;text-align:right;padding-right:4px;overflow-wrap:anywhere;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED + ';">' + _cv_esc(erng[i]) + '</div>'
+        for j in range(N):
+            kk = _if_k(idx, N * N) + _IF_FADE
+            idx += 1
+            if i == j:
+                out += ('<div data-cb="tile" data-key="' + _cb_key(lk[i]) + '" class="smc smd" style="' + cell + 'border:1px solid var(--muted,#475569);background:var(--surface,#F8FAFC);display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;overflow:hidden;'
+                        + kk + '"><span class="smn" style="font-size:0.75rem;font-weight:700;">' + str(i + 1) + '</span>'
+                        '<span data-cb="label" data-key="' + _cb_key(lk[i]) + '" class="sml" style="font-size:0.75rem;font-weight:700;line-height:1.15;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">' + _cv_esc(labs[i]) + '</span></div>')
+            elif i > j or show_up:
+                dots = ''.join('<circle class="smp" cx="' + _if_fixed(pos(j, row[1][j]), 1) + '" cy="' + _if_fixed(100 - pos(i, row[1][i]), 1)
+                               + '" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/>' for row in rows)
+                out += ('<div data-cb="tile" data-key="' + _cb_key(lk[i] + '\u00d7' + lk[j]) + '" class="smc" style="' + cell + 'border:1px solid var(--border,#CBD5E1);' + kk + '"><svg class="smx" viewBox="0 0 100 100" aria-hidden="true" focusable="false" '
+                        'style="position:absolute;inset:0;width:100%;height:100%;display:block;">' + dots + '</svg></div>')
+            else:
+                out += '<div class="smc sme" style="' + cell + kk + '"></div>'
+    out += '<div class="sma"></div>' + ''.join('<div class="sma" style="justify-content:center;text-align:center;overflow-wrap:anywhere;padding-top:2px;font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED + ';">' + _cv_esc(erng[j]) + '</div>' for j in range(N))
+    legend = ('<ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:0.75rem;line-height:1.3;color:' + _IF_MUTED + ';">'
+              + ''.join('<li><b style="color:var(--text,#0F172A);">' + str(j + 1) + '</b> ' + _cv_esc(labs[j]) + ' (' + _cv_esc(rng[j]) + ')</li>' for j in range(N)) + '</ul>')
+    css = ('.ifsm .sma{display:none}.ifsm .sml{display:none}.ifsm .smg' + str(N) + '{display:grid;grid-template-columns:repeat(' + str(N) + ',minmax(0,1fr));gap:2px}'
+           '@container (min-width:600px){.ifsm .sma{display:flex}.ifsm .sml{display:-webkit-box}.ifsm .smn{display:none}.ifsm .smg' + str(N) + '{grid-template-columns:52px repeat(' + str(N) + ',minmax(0,1fr))}}')
+    aria = ('Scatter plot matrix of ' + str(N) + ' measures over ' + str(len(rows)) + (' row: ' if len(rows) == 1 else ' rows: ')
+            + ', '.join(labs[j] + ' (' + rng[j] + ')' for j in range(N)) + '.')
+    chart = ('<div class="ifsm" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>' + css + '</style>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" class="smg' + str(N) + '">' + out + '</div>' + legend + '</div>')
+    return _if_wrap(_if_title(b) + chart + notes + vn
+                    + _if_table(['Row'] + labs, [[str(r + 1)] + [fm(j, v) for j, v in enumerate(vals)] for r, vals in rows]))
+
+
+def _pc_rank(col):
+    """-> [(category, count)] by count descending, ties by first appearance."""
+    cnt, first = {}, {}
+    for k, c in enumerate(col):
+        if c not in cnt:
+            cnt[c], first[c] = 0, k
+        cnt[c] += 1
+    return sorted(cnt.items(), key=lambda kv: (-kv[1], first[kv[0]]))
+
+
+def _pc_model(cols):
+    """cols: lists of category strings, one per dimension, equally long -> (cats, joint): cats[j] = [(name, count)] with the rare tail
+    grouped as ('Other', count) last (past 8 categories); joint[j][a][b] = records in category a of dimension j and b of dimension j + 1."""
+    cats, idx = [], []
+    for col in cols:
+        rk = _pc_rank(col)
+        keep = rk[:8]
+        cats.append(keep + ([('Other', sum(c for _, c in rk[8:]))] if len(rk) > 8 else []))
+        pos = {name: i for i, (name, _) in enumerate(keep)}
+        idx.append([pos.get(c, len(keep)) for c in col])
+    joint = []
+    for j in range(len(cols) - 1):
+        m = [[0] * len(cats[j + 1]) for _ in cats[j]]
+        for a, c in zip(idx[j], idx[j + 1]):
+            m[a][c] += 1
+        joint.append(m)
+    return cats, joint
+
+
+def _pc_cat(v):
+    if isinstance(v, str) and v != '':
+        t = v[:20]
+        return '"' + t + '"' if t in ('(missing)', 'Other') else t   # a real value that reads like a placeholder is shown in quotes, so it never merges with the placeholder
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        return _if_str(v)[:20]
+    if isinstance(v, bool):
+        return _if_str(v)
+    return '(missing)'
+
+
+def _pc_pct(jn, n):
+    t = _if_fixed(jn / n * 100, 1)
+    return '<0.1' if t == '0.0' else t
+
+
+def _render_parallel_categories(b: dict) -> str:
+    dims, bad, beyond_d = _wb_dims(b)
+    notes = _wb_dim_notes(bad, beyond_d)
+    total = max([len(v) for _, v in dims] + [0])
+    n = min(total, 5000)
+    notes += _hg_note(str(total - n) + (' record beyond the first 5000 was' if total - n == 1 else ' records beyond the first 5000 were') + ' not drawn.') if total > n else ''
+    vn = _hg_version_note(b, 'parallel_categories')
+    if len(dims) < 2 or n < 1:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">Parallel categories needs at least two dimensions with values.</div>' + notes + vn)
+    N = len(dims)
+    labs = [d[0] for d in dims]
+    cols = [[_pc_cat(v[r] if r < len(v) else None) for r in range(n)] for _, v in dims]
+    cats, joint = _pc_model(cols)
+    for j in range(N):
+        merged = len(_pc_rank(cols[j])) - 8
+        if merged > 0:
+            notes += _hg_note(_cv_esc('In ' + labs[j] + ', ' + str(merged) + (' less common category was' if merged == 1 else ' less common categories were') + ' grouped as Other.'))
+    H, FLOOR, GAP = 360, 22, 10
+    lk = _wb_keys(labs)
+    top, hgt = [], []
+    for j in range(N):
+        k = len(cats[j])
+        free = H - GAP * (k - 1) - FLOOR * k
+        hs = [FLOOR + free * c / n for _, c in cats[j]]
+        ts, y = [], 0
+        for h in hs:
+            ts.append(y)
+            y += h + GAP
+        top.append(ts)
+        hgt.append(hs)
+
+    def col_of(j, a):
+        return 'var(--muted,#475569)' if a == 8 else 'var(--series-' + str(a + 1) + ',' + _WB_COL[a % 8] + ')'
+    paths, best = '', None
+    for j in range(N - 1):
+        x0, x1 = 1000 * (j + 0.5) / N, 1000 * (j + 1.5) / N
+        xm = (x0 + x1) / 2
+        ya = list(top[j])
+        yb = list(top[j + 1])
+        # outgoing slots stack in target order, incoming slots in source order
+        inc = [[0] * len(cats[j + 1]) for _ in cats[j]]
+        off = list(top[j + 1])
+        for b2 in range(len(cats[j + 1])):
+            for a in range(len(cats[j])):
+                jn = joint[j][a][b2]
+                if jn:
+                    inc[a][b2] = off[b2]
+                    off[b2] += jn * hgt[j + 1][b2] / cats[j + 1][b2][1]
+        g = ''
+        for a in range(len(cats[j])):
+            for b2 in range(len(cats[j + 1])):
+                jn = joint[j][a][b2]
+                if not jn:
+                    continue
+                ha = jn * hgt[j][a] / cats[j][a][1]
+                hb = jn * hgt[j + 1][b2] / cats[j + 1][b2][1]
+                y0, y1 = ya[a], inc[a][b2]
+                ya[a] += ha
+                c = col_of(j, a)
+                f = _if_fixed
+                g += ('<path data-cb="ribbon" data-key="' + _cb_key(lk[j] + '/' + cats[j][a][0] + '\u2192' + lk[j + 1] + '/' + cats[j + 1][b2][0]) + '" class="pcr" d="M' + f(x0, 1) + ' ' + f(y0, 1) + ' C' + f(xm, 1) + ' ' + f(y0, 1) + ' ' + f(xm, 1) + ' ' + f(y1, 1) + ' ' + f(x1, 1) + ' ' + f(y1, 1)
+                      + ' L' + f(x1, 1) + ' ' + f(y1 + hb, 1) + ' C' + f(xm, 1) + ' ' + f(y1 + hb, 1) + ' ' + f(xm, 1) + ' ' + f(y0 + ha, 1) + ' ' + f(x0, 1) + ' ' + f(y0 + ha, 1)
+                      + ' Z" fill="' + c + '" fill-opacity="0.4" stroke="' + c + '" stroke-opacity="0.7" stroke-width="1" vector-effect="non-scaling-stroke"/>')
+                if best is None or jn > best[0]:
+                    best = (jn, j, a, b2)
+        paths += '<g data-cb="ribbon" data-key="' + _cb_key(lk[j]) + '" style="' + _if_k(j, N - 1) + 'opacity:var(--k,1);">' + g + '</g>'
+    bars = ''
+    for j in range(N):
+        for a, (name, c) in enumerate(cats[j]):
+            bars += ('<div data-cb="bar" data-key="' + _cb_key(lk[j] + '/' + name) + '" class="pcb" title="' + _cv_esc(labs[j] + ': ' + name + ', ' + str(c) + (' record' if c == 1 else ' records')) + '" style="position:absolute;left:calc(' + _if_fixed(100 * (j + 0.5) / N, 3) + '% - 12px);top:'
+                     + _if_fixed(top[j][a], 1) + 'px;width:24px;height:' + _if_fixed(hgt[j][a], 1) + 'px;box-sizing:border-box;border-radius:3px;background:' + col_of(j, a)
+                     + ';color:' + ('var(--bg,#fff)' if a == 8 else '#fff') + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;line-height:1;' + _if_k(j, N) + _IF_FADE + '">' + str(a + 1) + '</div>')
+    heads = ''.join('<div data-cb="label" data-key="' + _cb_key(lk[j]) + '" style="flex:1 1 0;min-width:0;text-align:center;font-size:0.75rem;font-weight:700;line-height:1.2;overflow-wrap:anywhere;padding:0 2px;"><span>' + 'ABCDEF'[j]
+                    + '</span><span class="pcl"> ' + _cv_esc(labs[j]) + '</span></div>' for j in range(N))
+    legend = ('<ul style="list-style:none;margin:8px 0 0;padding:0;font-size:0.75rem;line-height:1.35;color:' + _IF_MUTED + ';">'
+              + ''.join('<li style="margin:2px 0;"><b style="color:var(--text,#0F172A);">' + 'ABCDEF'[j] + ' ' + _cv_esc(labs[j]) + '</b>: '
+                        + '; '.join(str(a + 1) + ' ' + _cv_esc(nm) + ' (' + str(c) + ')' for a, (nm, c) in enumerate(cats[j])) + '</li>' for j in range(N)) + '</ul>')
+    big = ''
+    if best:
+        jn, j, a, b2 = best
+        big = (' Biggest flow: ' + labs[j] + ' "' + cats[j][a][0] + '" to ' + labs[j + 1] + ' "' + cats[j + 1][b2][0] + '", ' + str(jn) + (' record' if jn == 1 else ' records')
+               + ' (' + _pc_pct(jn, n) + '%).')
+    aria = 'Parallel categories of ' + str(N) + ' dimensions (' + ', '.join(labs) + ') over ' + str(n) + (' record.' if n == 1 else ' records.') + big
+    chart = ('<div class="ifpc" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>.ifpc .pcl{display:none}@container (min-width:600px){.ifpc .pcl{display:inline}}</style>'
+             '<div style="display:flex;margin-bottom:4px;">' + heads + '</div>'
+             '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;height:' + str(H) + 'px;">'
+             '<svg viewBox="0 0 1000 ' + str(H) + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;display:block;">' + paths + '</svg>' + bars + '</div>'
+             + legend + '</div>')
+    rows = []
+    for j in range(N - 1):
+        for a in range(len(cats[j])):
+            for b2 in range(len(cats[j + 1])):
+                jn = joint[j][a][b2]
+                if jn:
+                    rows.append([labs[j], cats[j][a][0], labs[j + 1], cats[j + 1][b2][0], str(jn), _pc_pct(jn, n) + '%'])
+    members = []
+    for j in range(N):
+        for nm, c in _pc_rank(cols[j])[8:]:
+            members.append([labs[j], nm, str(c)])
+    other = ''
+    if members:
+        shown = members[:200]
+        if len(members) > 200:
+            shown.append(['...', str(len(members) - 200) + ' more categories not listed', ''])
+        other = _if_table(['Dimension', 'Category grouped as Other', 'Records'], shown)
+    return _if_wrap(_if_title(b) + chart + notes + vn + _if_table(['From dimension', 'From category', 'To dimension', 'To category', 'Records', 'Share of records'], rows) + other)
+
+
+_RENDERERS['scatter_matrix'] = _render_scatter_matrix
+_RENDERERS['parallel_categories'] = _render_parallel_categories
+
+
+# ─── scatter3d_static and surface_static (Plotly scatter3d / surface, wave B package 3d, preview) ──────────────────────────────
+# A settled 3D view from one fixed camera: the data is scaled into a [-1, 1] cube, rotated to the camera (azimuth, elevation, or a
+# Plotly-style camera.eye), projected orthographically (or with a simple perspective) and drawn as SVG, far to near (painter's
+# algorithm). No script, no rotation. Labels are HTML on top of the SVG so they stay >= 12px at any width. Twin: _p3* in atoms_infographic.gs.
+_P3_W, _P3_H, _P3_MX, _P3_MY = 480, 340, 104, 46
+_P3_COL = ['var(--accent,#0369A1)', 'var(--series-2,#810998)', 'var(--series-3,#0F6C4F)', 'var(--series-4,#9A6120)']
+_P3_EDGES = [(0, 1), (2, 3), (4, 5), (6, 7), (0, 2), (1, 3), (4, 6), (5, 7), (0, 4), (1, 5), (2, 6), (3, 7)]
+
+
+def _p3_ok(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _p3f(v):
+    return _if_fixed(v, 1)
+
+
+def _p3_camera(b):
+    cam = _if_obj(_if_g(b, 'camera'))
+    az, el = _if_n(_if_g(cam, 'azimuth'), -360, 360, 45), _if_n(_if_g(cam, 'elevation'), -80, 80, 30)
+    eye = _if_obj(_if_g(cam, 'eye'))
+    ex, ey, ez = _if_g(eye, 'x'), _if_g(eye, 'y'), _if_g(eye, 'z')
+    if _p3_ok(ex) and _p3_ok(ey) and _p3_ok(ez) and (ex != 0 or ey != 0 or ez != 0):
+        az = math.atan2(ey, ex) * 180 / math.pi
+        el = max(-80, min(80, math.atan2(ez, math.hypot(ex, ey)) * 180 / math.pi))
+    persp = _if_pick(_if_g(cam, 'projection'), ['orthographic', 'perspective'], 'orthographic') == 'perspective'
+    a, e = az * math.pi / 180, el * math.pi / 180
+    basis = ((-math.sin(a), math.cos(a), 0.0), (-math.sin(e) * math.cos(a), -math.sin(e) * math.sin(a), math.cos(e)),
+             (math.cos(e) * math.cos(a), math.cos(e) * math.sin(a), math.sin(e)))
+    return az, el, persp, basis
+
+
+def _p3_proj(p, basis, persp):
+    r, u, v = basis
+    x = p[0] * r[0] + p[1] * r[1] + p[2] * r[2]
+    y = p[0] * u[0] + p[1] * u[1] + p[2] * u[2]
+    d = p[0] * v[0] + p[1] * v[1] + p[2] * v[2]
+    if persp:
+        k = 5 / (5 - d)
+        x, y = x * k, y * k
+    return x, y, d
+
+
+def _p3_scene(basis, persp):
+    """The unit cube's corners in screen units: returns (screen(p) -> (sx, sy, depth), corners). Corner i has x=-1 if i&1==0, y=-1 if i&2==0, z=-1 if i&4==0."""
+    corners = [(1.0 if i & 1 else -1.0, 1.0 if i & 2 else -1.0, 1.0 if i & 4 else -1.0) for i in range(8)]
+    pr = [_p3_proj(c, basis, persp) for c in corners]
+    x0, x1, y0, y1 = min(q[0] for q in pr), max(q[0] for q in pr), min(q[1] for q in pr), max(q[1] for q in pr)
+    s = min((_P3_W - 2 * _P3_MX) / (x1 - x0), (_P3_H - 2 * _P3_MY) / (y1 - y0))
+    ox, oy = _P3_W / 2 - s * (x0 + x1) / 2, _P3_H / 2 + s * (y0 + y1) / 2
+
+    def screen(p):
+        q = _p3_proj(p, basis, persp)
+        return ox + s * q[0], oy - s * q[1], q[2]
+    return screen, corners
+
+
+def _p3_norm(v, lo, hi):
+    return 2 * (v - lo) / (hi - lo) - 1 if hi > lo else 0.0
+
+
+def _p3_frame(screen, corners, labels, ranges):
+    """The cube wireframe (back edges dashed) and the three axis captions (HTML), placed on the bottom face's front corner and the left vertical edge."""
+    sc = [screen(c) for c in corners]
+    far = min(range(8), key=lambda i: (_if_round(sc[i][2] * 1e6), i))   # the hidden corner: only the three edges that meet there are behind the cube
+    lines, flines = '', ''
+    for a, c in _P3_EDGES:
+        back = far in (a, c)
+        ln = ('<line x1="' + _p3f(sc[a][0]) + '" y1="' + _p3f(sc[a][1]) + '" x2="' + _p3f(sc[c][0]) + '" y2="' + _p3f(sc[c][1])
+                  + '" stroke="var(--muted,#475569)" stroke-width="1"' + (' stroke-dasharray="3 3" opacity="0.55"' if back else ' opacity="0.9"') + '/>')
+        if back:
+            lines += ln
+        else:
+            flines += ln
+    cx, cy = sum(q[0] for q in sc) / 8, sum(q[1] for q in sc) / 8
+    front = max((i for i in range(8) if not i & 4), key=lambda i: (_if_round(sc[i][2] * 1e6), -i))
+    caps = ''
+
+    def cap(px, py, text, rng, side=False):
+        if side:
+            left, top, tf = max(2.0, min(98.0, (px - 8) / _P3_W * 100)), max(6.0, min(94.0, py / _P3_H * 100)), 'translate(-100%,-50%);text-align:right'
+        else:
+            dx, dy = px - cx, py - cy
+            n = math.hypot(dx, dy) or 1
+            lx, ly = px + dx / n * 30, py + dy / n * 22
+            left, top, tf = max(18.0, min(82.0, lx / _P3_W * 100)), max(6.0, min(94.0, ly / _P3_H * 100)), 'translate(-50%,-50%);text-align:center'
+        inner = ''.join('<div>' + _cv_esc(t) + '</div>' for t in rng.split(' to ', 1)[:1] + ['to ' + rng.split(' to ', 1)[1]]) if side else '<div>' + _cv_esc(rng) + '</div>'
+        return ('<div style="position:absolute;left:' + _p3f(left) + '%;top:' + _p3f(top) + '%;transform:' + tf + ';font-size:0.75rem;line-height:1.15;color:'
+                + _IF_MUTED + ';white-space:nowrap;"><div style="font-weight:700;">' + _cv_esc(text) + '</div>' + inner + '</div>')
+    xo, yo = front ^ 1, front ^ 2
+    for (axis, other, name, rng) in ((0, xo, labels[0], ranges[0]), (1, yo, labels[1], ranges[1])):
+        mx, my = (sc[front][0] + sc[other][0]) / 2, (sc[front][1] + sc[other][1]) / 2
+        # range is written from the front corner's value to the far end's value
+        lo_first = corners[front][axis] < 0
+        caps += cap(mx, my, name, (rng[0] + ' to ' + rng[1]) if lo_first else (rng[1] + ' to ' + rng[0]))
+    vert = min((i for i in range(4)), key=lambda i: (min(sc[i][0], sc[i | 4][0]), i))
+    caps += cap(min(sc[vert][0], sc[vert | 4][0]), (sc[vert][1] + sc[vert | 4][1]) / 2, labels[2], ranges[2][0] + ' to ' + ranges[2][1], True)
+    return lines, flines, caps, sc
+
+
+def _p3_axis_info(b, key, name):
+    v = _if_g(b, key)
+    return _if_str(v)[:16] if _if_truthy(v) else name
+
+
+def _p3_wrap(b, aria, svg, caps, legend, notes, table):
+    return _if_wrap(_if_title(b) + '<div style="max-width:640px;margin:0 auto;"><div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;width:100%;">'
+                    '<svg viewBox="0 0 ' + str(_P3_W) + ' ' + str(_P3_H) + '" width="100%" style="display:block;width:100%;height:auto;" focusable="false" aria-hidden="true">' + svg + '</svg>'
+                    + caps + '</div>' + legend + '</div>' + notes + table)
+
+
+def _p3_marker(shape, x, y, r, col, op, key):
+    st = ' fill="' + col + '" fill-opacity="' + op + '" stroke="var(--bg,#fff)" stroke-width="1"'
+    if shape == 0:
+        return '<circle data-cb="node" data-key="' + key + '" cx="' + _p3f(x) + '" cy="' + _p3f(y) + '" r="' + _p3f(r) + '"' + st + '/>'
+    if shape == 1:
+        return '<rect data-cb="node" data-key="' + key + '" x="' + _p3f(x - r) + '" y="' + _p3f(y - r) + '" width="' + _p3f(2 * r) + '" height="' + _p3f(2 * r) + '"' + st + '/>'
+    if shape == 2:
+        pts = [(x, y - r * 1.2), (x + r * 1.1, y + r * 0.9), (x - r * 1.1, y + r * 0.9)]
+    else:
+        pts = [(x, y - r * 1.25), (x + r * 1.25, y), (x, y + r * 1.25), (x - r * 1.25, y)]
+    return '<polygon data-cb="node" data-key="' + key + '" points="' + ' '.join(_p3f(p[0]) + ',' + _p3f(p[1]) for p in pts) + '"' + st + '/>'
+
+
+_P3_GLYPH = ['●', '■', '▲', '◆']
+
+
+def _render_scatter3d_static(b: dict) -> str:
+    raw = _if_g(b, 'points')
+    raw = raw if isinstance(raw, list) else []
+    pts, skipped, names, beyond_series = [], 0, [], 0
+    for p in raw[:500]:
+        if not (isinstance(p, dict) and _p3_ok(_if_g(p, 'x')) and _p3_ok(_if_g(p, 'y')) and _p3_ok(_if_g(p, 'z'))):
+            skipped += 1
+            continue
+        sn = _if_str(_if_g(p, 'series'))[:16] if _if_truthy(_if_g(p, 'series')) else ''
+        if sn not in names:
+            if len(names) >= 4:
+                beyond_series += 1
+                continue
+            names.append(sn)
+        lab = _if_str(_if_g(p, 'label'))[:30] if _if_truthy(_if_g(p, 'label')) else ''
+        pts.append((float(p['x']), float(p['y']), float(p['z']), names.index(sn), lab))
+    over = len(raw) - 500
+    notes = ((_hg_note(str(skipped) + (' point was' if skipped == 1 else ' points were') + ' not a usable x, y, z number triple and ' + ('was' if skipped == 1 else 'were') + ' left out.') if skipped else '')
+             + (_hg_note(str(beyond_series) + (' point' if beyond_series == 1 else ' points') + ' in a fifth or later series ' + ('was' if beyond_series == 1 else 'were') + ' not drawn (4 series at most).') if beyond_series else '')
+             + (_hg_note(str(over) + (' point beyond the first 500 was' if over == 1 else ' points beyond the first 500 were') + ' not drawn.') if over > 0 else ''))
+    if not pts:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A 3D scatter needs at least one point with numbers x, y and z.</div>' + notes + _hg_version_note(b, 'scatter3d_static'))
+    az, el, persp, basis = _p3_camera(b)
+    screen, corners = _p3_scene(basis, persp)
+    lo = [min(p[k] for p in pts) for k in range(3)]
+    hi = [max(p[k] for p in pts) for k in range(3)]
+    rng = [(_bp_fmt(lo[k], 3), _bp_fmt(hi[k], 3)) for k in range(3)]
+    labels = [_p3_axis_info(b, 'x_label', 'x'), _p3_axis_info(b, 'y_label', 'y'), _p3_axis_info(b, 'z_label', 'z')]
+    frame, fframe, caps, _ = _p3_frame(screen, corners, labels, rng)
+    drop = _if_g(b, 'drop_lines') is not False
+    drawn = []
+    for i, p in enumerate(pts):
+        q = screen((_p3_norm(p[0], lo[0], hi[0]), _p3_norm(p[1], lo[1], hi[1]), _p3_norm(p[2], lo[2], hi[2])))
+        base = screen((_p3_norm(p[0], lo[0], hi[0]), _p3_norm(p[1], lo[1], hi[1]), -1.0)) if drop else None
+        drawn.append((q, base, p[3], i))
+    drawn.sort(key=lambda t: (_if_round(t[0][2] * 1e6), t[3]))
+    bases = [p[4] or 'Point ' + str(k + 1) for k, p in enumerate(pts)]
+    pkeys = [_cb_key(t if bases.count(t) == 1 else t + ' #' + str(k + 1)) for k, t in enumerate(bases)]   # the point's label, with its place added where two points share one (twin: pkeys)
+    body = ''
+    for q, base, s, pi in drawn:
+        t = (q[2] + 1.8) / 3.6
+        t = max(0.0, min(1.0, t))
+        if base:
+            body += '<line x1="' + _p3f(q[0]) + '" y1="' + _p3f(q[1]) + '" x2="' + _p3f(base[0]) + '" y2="' + _p3f(base[1]) + '" stroke="' + _P3_COL[s] + '" stroke-width="1" opacity="0.3"/>'
+        body += _p3_marker(s, q[0], q[1], 5 + 3 * t, _P3_COL[s], _if_fixed(0.55 + 0.45 * t, 2), pkeys[pi])
+    n = len(pts)
+    named = [k for k, nm in enumerate(names) if nm]
+    legend = ('<div style="display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;font-size:0.75rem;margin-top:6px;">'
+              + ''.join('<span><span aria-hidden="true" style="color:' + _P3_COL[k] + ';">' + _P3_GLYPH[k] + '</span> ' + _cv_esc(names[k]) + '</span>' for k in named) + '</div>') if named else ''
+    aria = ('3D scatter of ' + str(n) + (' point' if n == 1 else ' points') + (' in ' + str(len(names)) + ' series' if len(names) > 1 else '') + '. '
+            + labels[0] + ' from ' + rng[0][0] + ' to ' + rng[0][1] + ', ' + labels[1] + ' from ' + rng[1][0] + ' to ' + rng[1][1] + ', ' + labels[2] + ' from ' + rng[2][0] + ' to ' + rng[2][1]
+            + '. Fixed view from azimuth ' + _bp_fmt(_if_round(az), 0) + ' and elevation ' + _bp_fmt(_if_round(el), 0) + ' degrees' + (', perspective' if persp else '') + '.')
+    table = _if_table(['Point', labels[0], labels[1], labels[2], 'Series'],
+                      [[p[4] or 'Point ' + str(k + 1), _bp_fmt(p[0], 3), _bp_fmt(p[1], 3), _bp_fmt(p[2], 3), names[p[3]] or '-'] for k, p in enumerate(pts)])
+    return _p3_wrap(b, aria, frame + body + fframe, caps, legend, notes + _hg_version_note(b, 'scatter3d_static'), table)
+
+
+def _render_surface_static(b: dict) -> str:
+    zr = _if_g(b, 'z')
+    zr = zr if isinstance(zr, list) else []
+    rows_in = [r for r in zr[:30] if isinstance(r, list)]
+    over_rows = len(zr) - 30
+    ncol = min(30, max([len(r) for r in rows_in] + [0]))
+    over_cols = max([len(r) for r in rows_in] + [0]) - 30
+    grid = [[(float(v) if _p3_ok(v) else None) for v in (r + [None] * ncol)[:ncol]] for r in rows_in]
+    nrow = len(grid)
+    missing = sum(1 for r in grid for v in r if v is None)
+    cells = nrow * ncol
+    notes = ((_hg_note(str(over_rows) + (' row beyond the first 30 was' if over_rows == 1 else ' rows beyond the first 30 were') + ' not drawn.') if over_rows > 0 else '')
+             + (_hg_note(str(over_cols) + (' column beyond the first 30 was' if over_cols == 1 else ' columns beyond the first 30 were') + ' not drawn.') if over_cols > 0 else ''))
+    if nrow < 2 or ncol < 2 or missing == cells:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A surface needs a grid z of at least 2 rows by 2 columns of numbers.</div>' + notes + _hg_version_note(b, 'surface_static'))
+    if missing:
+        notes += _hg_note(str(missing) + (' grid value was' if missing == 1 else ' grid values were') + ' not a usable number and the faces touching ' + ('it were' if missing == 1 else 'them were') + ' left open.')
+
+    def axis(key, n):
+        v = _if_g(b, key)
+        a = v[:n] if isinstance(v, list) else []
+        if len(a) == n and all(_p3_ok(t) for t in a):
+            return [float(t) for t in a], True
+        return [float(k) for k in range(n)], False
+    xs, xgiven = axis('x', ncol)
+    ys, ygiven = axis('y', nrow)
+    flat = [v for r in grid for v in r if v is not None]
+    zlo, zhi = min(flat), max(flat)
+    xlo, xhi, ylo, yhi = min(xs), max(xs), min(ys), max(ys)
+    az, el, persp, basis = _p3_camera(b)
+    screen, corners = _p3_scene(basis, persp)
+    rng = [(_bp_fmt(xlo, 3), _bp_fmt(xhi, 3)), (_bp_fmt(ylo, 3), _bp_fmt(yhi, 3)), (_bp_fmt(zlo, 3), _bp_fmt(zhi, 3))]
+    labels = [_p3_axis_info(b, 'x_label', 'x'), _p3_axis_info(b, 'y_label', 'y'), _p3_axis_info(b, 'z_label', 'z')]
+    frame, fframe, caps, _ = _p3_frame(screen, corners, labels, rng)
+    P = [[screen((_p3_norm(xs[j], xlo, xhi), _p3_norm(ys[i], ylo, yhi), _p3_norm(grid[i][j], zlo, zhi)))
+          if grid[i][j] is not None else None for j in range(ncol)] for i in range(nrow)]
+    faces = []
+    for i in range(nrow - 1):
+        for j in range(ncol - 1):
+            q = [P[i][j], P[i][j + 1], P[i + 1][j + 1], P[i + 1][j]]
+            if any(c is None for c in q):
+                continue
+            h = (grid[i][j] + grid[i][j + 1] + grid[i + 1][j + 1] + grid[i + 1][j]) / 4
+            faces.append((_if_round(sum(c[2] for c in q) / 4 * 1e6), len(faces), q, h, i, j))
+    faces.sort(key=lambda t: (t[0], t[1]))
+    body = ''
+    for _, _, q, h, fi, fj in faces:
+        t = (h - zlo) / (zhi - zlo) if zhi > zlo else 0.5
+        body += ('<polygon data-cb="tile" data-key="r' + str(fi + 1) + 'c' + str(fj + 1) + '" points="' + ' '.join(_p3f(c[0]) + ',' + _p3f(c[1]) for c in q) + '" fill="var(--accent,#0369A1)" fill-opacity="' + _if_fixed(0.25 + 0.7 * t, 2)
+                 + '" stroke="var(--bg,#fff)" stroke-width="0.6" stroke-linejoin="round"/>')
+    hi_at = max(((grid[i][j], i, j) for i in range(nrow) for j in range(ncol) if grid[i][j] is not None), key=lambda t: (t[0], -t[1], -t[2]))
+    lo_at = min(((grid[i][j], i, j) for i in range(nrow) for j in range(ncol) if grid[i][j] is not None), key=lambda t: (t[0], t[1], t[2]))
+    aria = ('3D surface of ' + str(nrow) + ' by ' + str(ncol) + ' values. ' + labels[2] + ' from ' + rng[2][0] + ' (at ' + labels[0] + ' ' + _bp_fmt(xs[lo_at[2]], 3) + ', ' + labels[1] + ' ' + _bp_fmt(ys[lo_at[1]], 3)
+            + ') to ' + rng[2][1] + ' (at ' + labels[0] + ' ' + _bp_fmt(xs[hi_at[2]], 3) + ', ' + labels[1] + ' ' + _bp_fmt(ys[hi_at[1]], 3) + '). Fixed view from azimuth ' + _bp_fmt(_if_round(az), 0)
+            + ' and elevation ' + _bp_fmt(_if_round(el), 0) + ' degrees' + (', perspective' if persp else '') + '.')
+    legend = ('<div style="text-align:center;font-size:0.75rem;margin-top:6px;color:' + _IF_MUTED + ';">Stronger colour is higher: ' + _cv_esc(labels[2]) + ' ' + rng[2][0] + ' (faint) to ' + rng[2][1] + ' (solid).</div>')
+    head = [labels[1] + ' \\ ' + labels[0]] + [_bp_fmt(x, 3) for x in xs]
+    table = _if_table(head, [[_bp_fmt(ys[i], 3)] + [(_bp_fmt(v, 3) if v is not None else '-') for v in grid[i]] for i in range(nrow)])
+    return _p3_wrap(b, aria, frame + body + fframe, caps, legend, notes + _hg_version_note(b, 'surface_static'), table)
+
+
+_RENDERERS['scatter3d_static'] = _render_scatter3d_static
+_RENDERERS['surface_static'] = _render_surface_static
 
 
 # ─── Python twins of atoms that were GAS-only (2026-10-12; rule: GAS-only only if possible or relevant only on Apps Script). Each mirrors its atoms_*.gs
@@ -41584,6 +42106,247 @@ def _hm_wrap(prev):
 
 
 _RENDERERS['heatmap'] = _hm_wrap(_RENDERERS['heatmap'])
+# ─── histogram2d (preview): d3.bin() twice, drawn through the heatmap atom ───────────────────────────────────────────────────────────
+# Twin of _h2* in apps-script-surface/gas-wired-renderer/atoms_infographic.gs. The bin edges are d3-array 3.2.4 bin() (ISC, Mike Bostock; see _hg_bin),
+# one run per axis; a cell counts the points that fall in both bins. The drawing, colour bar and hidden table are the registered heatmap renderer's.
+_H2_PTS = 20000
+_H2_BINS = 40
+
+
+def _h2_axis(vals, target):
+    """d3 bin edges for one axis and the bin index of every value: ([(x0, x1), ...], [index, ...])."""
+    import bisect as _bisect
+    edges, _ = _hg_bin(vals, target)
+    inner = [e[0] for e in edges[1:]]
+    return edges, [_bisect.bisect_right(inner, v) for v in vals]
+
+
+def _h2_axis_capped(vals, target):
+    """Like _h2_axis, but asks for fewer bins until the heatmap's 40-column cap holds (d3 may return up to about twice the requested count)."""
+    t = target
+    while True:
+        edges, idx = _h2_axis(vals, t)
+        if len(edges) <= _H2_BINS:
+            return edges, idx
+        t = (t if t is not None else max(1, math.ceil(math.log(len(vals)) / math.log(2)) + 1)) - 1
+        if t < 2:
+            return edges, idx
+
+
+def _h2_counts(edges_x, ix, edges_y, iy):
+    counts = [[0] * len(edges_x) for _ in edges_y]
+    for a, c in zip(ix, iy):
+        counts[c][a] += 1
+    return counts
+
+
+def _h2_bin(xs, ys, nx, ny):
+    """d3.bin() on x and on y; returns (x edges, y edges, counts[y bin][x bin]), y ascending. xs, ys: equal-length finite floats, at least one."""
+    ex, ix = _h2_axis(xs, nx)
+    ey, iy = _h2_axis(ys, ny)
+    return ex, ey, _h2_counts(ex, ix, ey, iy)
+
+
+def _h2_labels(edges):
+    d = _hg_decimals([e for p in edges for e in p])
+    return [_hg_num(a, d) if a == b else _hg_num(a, d) + '\u2013' + _hg_num(b, d) for a, b in edges]
+
+
+def _h2_block(b):
+    """-> (heatmap block or None, notes html, usable point count)."""
+    rx, ry = _if_g(b, 'x'), _if_g(b, 'y')
+    rx, ry = rx if isinstance(rx, list) else [], ry if isinstance(ry, list) else []
+    total = min(len(rx), len(ry))
+    pts = [(float(u), float(v)) for u, v in zip(rx, ry)
+           if isinstance(u, (int, float)) and not isinstance(u, bool) and isinstance(v, (int, float)) and not isinstance(v, bool) and abs(u) <= 1e12 and abs(v) <= 1e12]
+    notes = ''
+    skipped = total - len(pts)
+    if skipped:
+        notes += _hg_note(str(skipped) + (' pair was' if skipped == 1 else ' pairs were') + ' not two usable numbers and ' + ('was' if skipped == 1 else 'were') + ' skipped.')
+    if len(pts) > _H2_PTS:
+        notes += _hg_note('Using the first ' + _hg_num(_H2_PTS, 0) + ' of ' + _hg_num(len(pts), 0) + ' points.')
+        pts = pts[:_H2_PTS]
+    if len(pts) < 2:
+        return None, notes, len(pts)
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    ex, ix = _h2_axis_capped(xs, _hg_target(_if_g(b, 'nbinsx')))
+    ey, iy = _h2_axis_capped(ys, _hg_target(_if_g(b, 'nbinsy')))
+    counts = _h2_counts(ex, ix, ey, iy)
+    sname = _if_g(b, 'scale')
+    hb = {'type': 'heatmap', 'data': counts[::-1], 'labels_x': _h2_labels(ex), 'labels_y': _h2_labels(ey[::-1]),
+          'scale': sname if _if_truthy(sname) else 'YlGnBu', 'value_format': ',.0f',
+          'show_values': (len(ex) <= _HM_COMPACT) if _if_g(b, 'show_values') in (None, _IF_UNDEF) else _if_g(b, 'show_values') is not False, 'show_colorbar': _if_g(b, 'show_colorbar') is not False}
+    if _if_truthy(_if_g(b, 'title')):
+        hb['title'] = _if_g(b, 'title')
+    xl, yl = _if_g(b, 'x_label'), _if_g(b, 'y_label')
+    peak = max(max(r) for r in counts)
+    notes = (_hg_note('Columns bin x' + (' (' + _if_s(xl, 40) + ')' if _if_truthy(xl) else '') + ', rows bin y' + (' (' + _if_s(yl, 40) + ')' if _if_truthy(yl) else '')
+                      + ', highest y at the top. ' + _hg_num(len(pts), 0) + ' points in ' + str(len(ey)) + (' row' if len(ey) == 1 else ' rows') + ' by ' + str(len(ex))
+                      + (' column' if len(ex) == 1 else ' columns') + '; the busiest cell holds ' + _hg_num(peak, 0) + '.') + notes)
+    return hb, notes, len(pts)
+
+
+def _render_histogram2d(b):
+    hb, notes, n = _h2_block(b if isinstance(b, dict) else {})
+    ver = _hg_version_note(b, 'histogram2d')
+    if hb is None:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A histogram2d needs at least two points with a usable x and y.</div>' + notes + ver)
+    hm = _RENDERERS['heatmap'](hb)   # already wrapped: put the notes inside its wrapper, not in a second one
+    return hm[:-6] + notes + ver + '</div>'
+
+
+_RENDERERS['histogram2d'] = _render_histogram2d
+
+
+# ─── image_plot (preview): a pixel matrix or a safe image source, with axes ─────────────────────────────────────────────────────────
+# Twin of _ip* in apps-script-surface/gas-wired-renderer/atoms_infographic.gs. Tick labels are HTML text (12px at any width); the pixels are one SVG of
+# crisp rectangles (equal neighbours in a row merged); a src is drawn only when it is an https URL or a base64 PNG/JPEG/GIF/WebP data: URI.
+_IP_CAP = 64
+_IP_HEX = re.compile(r'#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})')
+_IP_HTTPS = re.compile(r'https://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9\-._~:/?#\[\]@!$&()*+,;=%]*)?')
+_IP_DATA = re.compile(r'data:image/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/]+={0,2}')
+
+
+def _ip_num(v):
+    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) and abs(v) <= 1e12 else None
+
+
+def _ip_color(c):
+    if isinstance(c, str):
+        m = _IP_HEX.fullmatch(c)
+        if not m:
+            return None
+        h = m.group(1).lower()
+        return '#' + (''.join(ch * 2 for ch in h) if len(h) == 3 else h)
+    if isinstance(c, list) and len(c) == 3:
+        n = [_ip_num(v) for v in c]
+        if None in n:
+            return None
+        return '#' + ''.join('%02x' % int(min(255, max(0, _if_round(v)))) for v in n)
+    return None
+
+
+def _ip_src(v):
+    if not isinstance(v, str):
+        return None
+    if len(v) <= 2000 and _IP_HTTPS.fullmatch(v):
+        return v
+    if len(v) <= 300000 and _IP_DATA.fullmatch(v):
+        return v
+    return None
+
+
+def _ip_range(v):
+    if isinstance(v, list) and len(v) == 2:
+        a, b = _ip_num(v[0]), _ip_num(v[1])
+        if a is not None and b is not None and a != b:
+            return a, b
+    return None
+
+
+def _ip_axis(rng, vertical, room):
+    """Tick labels for one axis as absolutely positioned HTML text: (html, widest label in characters). The tick count is lowered from 5 until the labels fit in `room` px."""
+    a, b = rng
+    lo, hi = min(a, b), max(a, b)
+    for cnt in (5, 4, 3, 2):
+        ticks = [t for t in _hg_ticks(lo, hi, cnt) if lo <= t <= hi]
+        d = _hg_decimals(ticks)
+        labs = [_hg_num(t, d) for t in ticks]
+        w = max([len(x) for x in labs] + [0])
+        if len(ticks) * (30 if vertical else w * 7 + 16) <= room:
+            break
+    html = ''
+    for t, lab in zip(ticks, labs):
+        pct = (t - a) / (b - a) * 100
+        if vertical:
+            pos = 'right:0;top:' + _if_fmt(pct) + '%;transform:translateY(-50%);'
+        else:
+            pos = 'left:' + _if_fmt(pct) + '%;transform:translateX(' + ('0' if pct < 6 else '-100%' if pct > 94 else '-50%') + ');'
+        html += '<span style="position:absolute;' + pos + 'font-size:12px;line-height:1;white-space:nowrap;">' + _if_s(lab, 20) + '</span>'
+    return html, w
+
+
+def _ip_range_text(r):
+    d = _hg_decimals(list(r))
+    return _hg_num(r[0], d) + ' to ' + _hg_num(r[1], d)
+
+
+def _render_image_plot(b):
+    b = b if isinstance(b, dict) else {}
+    notes = ''
+    z, src_raw = _if_g(b, 'z'), _if_g(b, 'src')
+    rows_in = z if isinstance(z, list) else []
+    R = min(_IP_CAP, len(rows_in))
+    C = min(_IP_CAP, max([len(r) for r in rows_in if isinstance(r, list)] + [0]))
+    grid = [[_ip_color(rows_in[i][j]) if isinstance(rows_in[i], list) and j < len(rows_in[i]) else None for j in range(C)] for i in range(R)]
+    nvalid = sum(1 for r in grid for c in r if c)
+    src = _ip_src(src_raw)
+    as_matrix = R > 0 and C > 0 and nvalid > 0
+    if as_matrix and _if_truthy(src_raw):
+        notes += _hg_note('Both z and src were given; z is drawn.')
+    if not as_matrix and src is None:
+        if _if_truthy(src_raw) and isinstance(src_raw, str):
+            return _if_wrap(_if_title(b) + _hg_note('The image source is not allowed (use an https URL or a base64 PNG, JPEG, GIF or WebP data: URI); nothing was drawn.') + _hg_version_note(b, 'image_plot'))
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">An image_plot needs a z matrix or a src.</div>' + _hg_version_note(b, 'image_plot'))
+    if as_matrix:
+        if len(rows_in) > R:
+            notes += _hg_note('Showing the first ' + str(R) + ' of ' + str(len(rows_in)) + ' rows.')
+        wide = max([len(r) for r in rows_in if isinstance(r, list)] + [0])
+        if wide > C:
+            notes += _hg_note('Showing the first ' + str(C) + ' of ' + str(wide) + ' columns.')
+        nb = R * C - nvalid
+        if nb:
+            notes += _hg_note(str(nb) + (' cell is' if nb == 1 else ' cells are') + ' not a colour and ' + ('was' if nb == 1 else 'were') + ' left blank.')
+    xr_in, yr_in = _if_g(b, 'x_range'), _if_g(b, 'y_range')
+    xr, yr = _ip_range(xr_in), _ip_range(yr_in)
+    for nm, raw, got in (('x_range', xr_in, xr), ('y_range', yr_in, yr)):
+        if _if_truthy(raw) and got is None:
+            notes += _hg_note(nm + ' must be two different numbers; ' + ('the cell numbers are used.' if as_matrix else 'no ticks are drawn.'))
+    if as_matrix:
+        xr, yr = xr or (0.0, float(C)), yr or (0.0, float(R))
+    wmin = min(250, min(640, max(40, C * 20))) if as_matrix else 250
+    hmin = max(36, wmin * R / C) if as_matrix else 100
+    xt, xw = _ip_axis(xr, False, wmin) if xr else ('', 0)
+    yt, yw = _ip_axis(yr, True, hmin) if yr else ('', 0)
+    alt = _if_g(b, 'alt')
+    if as_matrix:
+        aria = 'Image, ' + str(R) + (' row' if R == 1 else ' rows') + ' by ' + str(C) + (' column' if C == 1 else ' columns') + ' of pixels, x from ' + _hg_num(xr[0], _hg_decimals(list(xr))) + ' to ' + _hg_num(xr[1], _hg_decimals(list(xr))) + ', y from ' + _hg_num(yr[0], _hg_decimals(list(yr))) + ' to ' + _hg_num(yr[1], _hg_decimals(list(yr))) + '.'
+        rects = ''
+        for i in range(R):
+            j = 0
+            while j < C:
+                c = grid[i][j]
+                k = j
+                while c and k + 1 < C and grid[i][k + 1] == c:
+                    k += 1
+                if c:
+                    rects += '<rect x="' + str(j) + '" y="' + str(i) + '" width="' + str(k - j + 1) + '" height="1" fill="' + c + '"/>'
+                j = k + 1
+        plot = ('<svg viewBox="0 0 ' + str(C) + ' ' + str(R) + '" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true" focusable="false" '
+                'style="display:block;width:100%;height:auto;aspect-ratio:' + str(C) + '/' + str(R) + ';min-height:36px;">' + rects + '</svg>')
+        maxw = str(min(640, max(40, C * 20)) + 56)
+        table = _if_table(['Row'] + ['Col ' + str(j + 1) for j in range(C)], [['Row ' + str(i + 1)] + [grid[i][j] or 'blank' for j in range(C)] for i in range(R)])
+    else:
+        aria = 'Picture, no text description given' + (', x from ' + _ip_range_text(xr) + ', y from ' + _ip_range_text(yr) if xr and yr else '') + '.'
+        plot = '<img src="' + _esc(src) + '" alt="" referrerpolicy="no-referrer" loading="lazy" decoding="async" style="display:block;width:100%;height:auto;">'
+        maxw = '640'
+        rr = [['x', _if_fmt(xr[0]), _if_fmt(xr[1])] if xr else ['x', 'none', 'none'], ['y', _if_fmt(yr[0]), _if_fmt(yr[1])] if yr else ['y', 'none', 'none']]
+        table = _if_table(['Axis', 'From', 'To'], rr)
+    if _if_truthy(alt) and isinstance(alt, str):
+        aria = alt
+    ylab, xlab = _if_g(b, 'y_label'), _if_g(b, 'x_label')
+    muted = 'font-size:12px;line-height:1.3;color:var(--muted,#475569);overflow-wrap:anywhere;'
+    ycol = _if_numstr(min(8, max(1.5, _if_round((yw * 0.65 + 0.4) * 10) / 10))) + 'em' if yt else '0'
+    grid_html = ('<div style="display:grid;grid-template-columns:' + ycol + ' minmax(0,1fr);column-gap:6px;width:100%;max-width:' + maxw + 'px;padding-top:6px;box-sizing:border-box;">'
+                 + '<div style="position:relative;">' + yt + '</div>'
+                 + '<div role="img" aria-label="' + _if_s(aria, 200) + '" style="min-width:0;' + ('' if as_matrix else 'min-height:100px;') + 'border:1px solid var(--border,#CBD5E1);">' + plot + '</div>'
+                 + '<div></div><div style="position:relative;height:' + ('1.6em' if xt else '0') + ';margin-top:4px;">' + xt + '</div></div>')
+    yl = ((('<div style="' + muted + 'margin-bottom:2px;">' + _if_s(ylab, 40) + '</div>') if _if_truthy(ylab) else ''))
+    xl = ((('<div style="' + muted + 'text-align:center;max-width:' + maxw + 'px;">' + _if_s(xlab, 40) + '</div>') if _if_truthy(xlab) else ''))
+    return _if_wrap('<div data-cb="node" data-key="' + _ck(_if_g(b, 'title'), 'image_plot') + '" class="ifip" style="max-width:100%;">' + _if_title(b) + yl + grid_html + xl + notes + _hg_version_note(b, 'image_plot') + table + '</div>')
+
+
+_RENDERERS['image_plot'] = _render_image_plot
 
 # --- shared scale/reading helpers choropleth_map needs (defined once in the chart-reading and d3 radial layers on the round-one branch; copied here because this base predates them; identical bodies, drop at the round-one merge) ---
 _CR_ACC = 'var(--a2ui-accent,#4f46e5)'

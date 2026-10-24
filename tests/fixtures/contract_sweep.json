@@ -12564,5 +12564,237 @@
   "py_sha": "31db101057a11c5937836aacc62e6c3fd2d0d776e2bd1824eda2f738e3c450cf",
   "gas_sha": "31db101057a11c5937836aacc62e6c3fd2d0d776e2bd1824eda2f738e3c450cf",
   "parity": true
+ },
+ "scatter_matrix": {
+  "status": "keyed",
+  "block": {
+   "type": "scatter_matrix",
+   "title": "Cars",
+   "dimensions": [
+    {
+     "label": "Weight",
+     "values": [
+      1.2,
+      1.5,
+      1.9,
+      2.4,
+      2.8,
+      3.1
+     ]
+    },
+    {
+     "label": "Power",
+     "values": [
+      60,
+      75,
+      90,
+      120,
+      150,
+      180
+     ]
+    },
+    {
+     "label": "Economy",
+     "values": [
+      9,
+      8,
+      7.5,
+      6.5,
+      5.5,
+      5
+     ]
+    }
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "dimensions[].label",
+  "py_sha": "2e8f52f295a133ff8faec367f534575a10d7915137f153a878ade67aa8522839",
+  "gas_sha": "2e8f52f295a133ff8faec367f534575a10d7915137f153a878ade67aa8522839",
+  "parity": true
+ },
+ "parallel_categories": {
+  "status": "keyed",
+  "block": {
+   "type": "parallel_categories",
+   "title": "Survey",
+   "dimensions": [
+    {
+     "label": "Region",
+     "values": [
+      "North",
+      "South",
+      "North",
+      "East",
+      "South",
+      "North",
+      "East",
+      "South"
+     ]
+    },
+    {
+     "label": "Plan",
+     "values": [
+      "Free",
+      "Pro",
+      "Pro",
+      "Free",
+      "Team",
+      "Free",
+      "Pro",
+      "Team"
+     ]
+    },
+    {
+     "label": "Renewed",
+     "values": [
+      "yes",
+      "yes",
+      "no",
+      "no",
+      "yes",
+      "no",
+      "yes",
+      "yes"
+     ]
+    }
+   ]
+  },
+  "kind": "bar",
+  "label_kind": "label",
+  "key": "dimensions[].label/category",
+  "py_sha": "d2a28fb6c21771a3224b7a557a505e3a00775461d97338dd883fce7e9408ed38",
+  "gas_sha": "d2a28fb6c21771a3224b7a557a505e3a00775461d97338dd883fce7e9408ed38",
+  "parity": true
+ },
+ "scatter3d_static": {
+  "status": "keyed",
+  "block": {
+   "type": "scatter3d_static",
+   "title": "Samples",
+   "x_label": "Speed",
+   "y_label": "Load",
+   "z_label": "Heat",
+   "points": [
+    {
+     "x": 1,
+     "y": 2,
+     "z": 3,
+     "series": "Alpha",
+     "label": "p1"
+    },
+    {
+     "x": 4,
+     "y": 1,
+     "z": 0,
+     "series": "Beta",
+     "label": "p2"
+    },
+    {
+     "x": 2.5,
+     "y": 5,
+     "z": 1.25,
+     "series": "Alpha",
+     "label": "p3"
+    },
+    {
+     "x": 0,
+     "y": 0,
+     "z": 0,
+     "series": "Gamma",
+     "label": "origin"
+    }
+   ]
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "points[].label",
+  "py_sha": "a1c2ec21e241df628c0bbc5e3d33062772efd18e36f2f784838c35e5a3418ca8",
+  "gas_sha": "a1c2ec21e241df628c0bbc5e3d33062772efd18e36f2f784838c35e5a3418ca8",
+  "parity": true
+ },
+ "surface_static": {
+  "status": "keyed",
+  "block": {
+   "type": "surface_static",
+   "title": "Terrain",
+   "x_label": "East",
+   "y_label": "North",
+   "z_label": "Height",
+   "x": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "y": [
+    0,
+    1,
+    2
+   ],
+   "z": [
+    [
+     1,
+     2,
+     3,
+     2
+    ],
+    [
+     2,
+     4,
+     5,
+     3
+    ],
+    [
+     1,
+     3,
+     4,
+     2
+    ]
+   ]
+  },
+  "kind": "tile",
+  "label_kind": "label",
+  "key": "row,column",
+  "py_sha": "5951ae13ad397bf804d94ebe2bca17b9fcaf5d00cf4edc43d7cafa58f27f3fb1",
+  "gas_sha": "5951ae13ad397bf804d94ebe2bca17b9fcaf5d00cf4edc43d7cafa58f27f3fb1",
+  "parity": true
+ },
+ "image_plot": {
+  "status": "keyed",
+  "class": "S",
+  "block": {
+   "type": "image_plot",
+   "title": "Tile",
+   "z": [
+    [
+     "#19294E",
+     "#810998",
+     "#0F6C4F"
+    ],
+    [
+     "#9A6120",
+     "#B91C1C",
+     "#0369A1"
+    ]
+   ],
+   "x_range": [
+    0,
+    30
+   ],
+   "y_range": [
+    0,
+    20
+   ],
+   "x_label": "x",
+   "y_label": "y",
+   "alt": "Three by two tiles"
+  },
+  "kind": "node",
+  "label_kind": "label",
+  "key": "title",
+  "py_sha": "2b1d2bc63c1eec172611800115cac04480f0efa4351e927bb03ec78d19e3fac8",
+  "gas_sha": "2b1d2bc63c1eec172611800115cac04480f0efa4351e927bb03ec78d19e3fac8",
+  "parity": true
  }
 }

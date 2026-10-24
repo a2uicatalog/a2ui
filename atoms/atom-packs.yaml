@@ -188,6 +188,8 @@ a2ui-charts-v1:
 - histogram
 - box_plot
 - waterfall
+- scatter3d_static
+- surface_static
 - sunburst
 - chord_diagram
 - circle_pack
@@ -201,6 +203,10 @@ a2ui-charts-v1:
 - choropleth_map
 - geo_map
 - polar_chart
+- histogram2d
+- image_plot
+- scatter_matrix
+- parallel_categories
 a2ui-display-v1:
 - contrast_audit
 - bezier_easing
