@@ -326,3 +326,10 @@ def test_routes_are_drawn_on_stop_by_stop_by_a_mask_under_p(core_js):
 def test_the_line_table_lists_every_stop():
     b = {"type": "geo_map", "lines": [{"label": "Trip", "path": [P(1, 2), P(3, 4), P(5, 6)]}]}
     assert "1, 2 to 3, 4 to 5, 6" in _py(b)
+
+
+def test_400_digit_integers_do_not_crash_the_page():
+    big = 10 ** 400
+    b = {"type": "geo_map", "region_set": "world-countries", "points": [P(big, 2, value=1), P(48, -big), P(10, 20, value=big), P(1, 1)]}
+    h = wa._RENDERERS["geo_map"](copy.deepcopy(b))
+    assert isinstance(h, str) and not re.search(r"NaN|Infinity|undefined", h)

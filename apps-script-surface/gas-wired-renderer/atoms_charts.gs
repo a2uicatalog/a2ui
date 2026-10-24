@@ -1264,20 +1264,6 @@ _RENDERERS['heatmap'] = function(b) {
   var title       = b.title || '';
   var colorScheme = b.color_scheme || 'purple';
 
-  // Schema shape (data = list of lists, labels_x / labels_y optional, as in the Python twin's _render_heatmap_grid): the
-  // grid is as wide as the widest row and as tall as the list, labels default to "1", "2", ...; a legacy payload (rows and
-  // cols given, or data that is not a list of lists) keeps the code below unchanged.
-  if (Array.isArray(data) && data.some(Array.isArray) && !(rowLabels.length && colLabels.length)) {
-    var gx = Array.isArray(b.labels_x) ? b.labels_x : [], gy = Array.isArray(b.labels_y) ? b.labels_y : [];
-    var nr = data.length, nc = 0;
-    data = data.map(function(r) { return Array.isArray(r) ? r : []; });
-    data.forEach(function(r) { if (r.length > nc) nc = r.length; });
-    if (!nc) return '<div class="a2ui-chart-empty">No heatmap data</div>';
-    rowLabels = []; colLabels = [];
-    for (var gi = 0; gi < nr; gi++) rowLabels.push(gi < gy.length ? gy[gi] : String(gi + 1));
-    for (var gj = 0; gj < nc; gj++) colLabels.push(gj < gx.length ? gx[gj] : String(gj + 1));
-  }
-
   if (!rowLabels.length || !colLabels.length) return '<div class="a2ui-chart-empty">No heatmap data</div>';
 
   // Color schemes: [lightR,lightG,lightB, darkR,darkG,darkB]
@@ -1291,7 +1277,7 @@ _RENDERERS['heatmap'] = function(b) {
 
   // Flatten to find min/max
   var allVals = [];
-  data.forEach(function(row){ (Array.isArray(row) ? row : []).forEach(function(v){ allVals.push(parseFloat(v)||0); }); });
+  data.forEach(function(row){ row.forEach(function(v){ allVals.push(parseFloat(v)||0); }); });
   var minV = Math.min.apply(null, allVals);
   var maxV = Math.max.apply(null, allVals);
   if (maxV === minV) maxV += 1;

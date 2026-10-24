@@ -4451,121 +4451,15 @@ def _get_color_from_scale(scale: list[str], weight: float) -> str:
     segment_percent = (weight - (segment * segment_w)) / segment_w
     return _interpolate_color(scale[segment], scale[segment+1], segment_percent)
 
-def _hmg_num(v) -> float:
-    """A cell value as a finite number; anything else counts as 0 (the Apps Script twin's parseFloat(v) || 0)."""
-    if isinstance(v, bool):
-        return 0.0
-    try:
-        x = float(v)
-    except (TypeError, ValueError):
-        return 0.0
-    return x if x == x and abs(x) != float("inf") else 0.0
-
-
 def _hmg_is_matrix(data) -> bool:
     """Schema shape: data is a list of rows, each row a list of numbers (legacy shape: a list of {row, col, value} dicts)."""
     return isinstance(data, list) and any(isinstance(r, list) for r in data)
 
 
-def _render_heatmap_grid(b: dict) -> str:
-    """Schema-shaped heatmap: data = [[...], [...]] with labels_x / labels_y (or cols / rows)."""
-    raw         = b.get("data", [])
-    labels_x    = b.get("labels_x") or b.get("cols") or []
-    labels_y    = b.get("labels_y") or b.get("rows") or []
-    color_scale = b.get("color_scale", ["#1e293b", "#10b981"])
-    unit        = b.get("unit", "")
-    labels_x    = labels_x if isinstance(labels_x, list) else []
-    labels_y    = labels_y if isinstance(labels_y, list) else []
-    if not isinstance(color_scale, list) or not color_scale:
-        color_scale = ["#1e293b", "#10b981"]
-
-    raw = [r if isinstance(r, list) else [] for r in raw]
-    num_rows = len(raw)
-    num_cols = max((len(r) for r in raw), default=0)
-    if not num_rows or not num_cols:
-        return ""
-    # ragged rows are padded with 0, as the Apps Script twin does
-    data = [[_hmg_num(r[j]) if j < len(r) else 0.0 for j in range(num_cols)] for r in raw]
-
-    flat_data = [val for row in data for val in row]
-    mn, mx = min(flat_data), max(flat_data)
-    rng = (mx - mn) or 1
-    
-    cell_size = 32
-    cell_gap = 6
-    
-    pad_l, pad_r, pad_t, pad_b = 80, 20, 30, 20
-    
-    grid_w = num_cols * cell_size + (num_cols - 1) * cell_gap
-    grid_h = num_rows * cell_size + (num_rows - 1) * cell_gap
-    
-    w = pad_l + grid_w + pad_r
-    h = pad_t + grid_h + pad_b
-    
-    y_labels = ""
-    for r_idx, lbl in enumerate(labels_y):
-        if r_idx < num_rows:
-            y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2 + 3
-            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>'
-            
-    x_labels = ""
-    for c_idx, lbl in enumerate(labels_x):
-        if c_idx < num_cols:
-            x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2
-            x_labels += f'<text x="{x}" y="{pad_t - 10}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="middle">{_cv_esc(lbl)}</text>'
-            
-    cells_html = []
-    heatmap_id = f"heat_{_wa_oid(b)}"
-    
-    for r_idx, row in enumerate(data):
-        for c_idx, val in enumerate(row):
-            weight = (val - mn) / rng if rng > 0 else 0.5
-            cell_color = _get_color_from_scale(color_scale, weight)
-            
-            x = pad_l + c_idx * (cell_size + cell_gap)
-            y = pad_t + r_idx * (cell_size + cell_gap)
-            
-            glow_attr = ""
-            if weight > 0.7:
-                glow_attr = f'filter="url(#{heatmap_id}_glow)"'
-                
-            cells_html.append(f"""
-            <rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{cell_color}" rx="4" ry="4" {glow_attr}>
-              <title>{val:,.1f}{_cv_esc(unit)}</title>
-            </rect>
-            """)
-            
-    svg_html = f"""
-    <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-      <defs>
-        <filter id="{heatmap_id}_glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {y_labels}
-      {x_labels}
-      {"".join(cells_html)}
-    </svg>
-    """
-    
-    return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-      <div style="width:100%;overflow-x:auto;">
-        <div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">
-          {svg_html}
-        </div>
-      </div>
-    </div>
-    """
-
 def _render_heatmap(b: dict) -> str:
-    """Route by shape: a list of lists is the schema heatmap, anything else the legacy {row, col, value} list."""
+    """Route by shape: a list of lists is the schema heatmap (the extended grid, _hm_ext), anything else the legacy {row, col, value} list."""
     if isinstance(b, dict) and _hmg_is_matrix(b.get("data")):
-        return _render_heatmap_grid(b)
+        return _hm_ext(_hm_matrix_prep(b))
     return _render_heatmap_items(b)
 
 
@@ -19765,7 +19659,10 @@ def _js_number(v):
     if isinstance(v, bool):
         return 1.0 if v else 0.0
     if isinstance(v, (int, float)):
-        return float(v)
+        try:
+            return float(v)
+        except OverflowError:
+            return float("nan")
     if isinstance(v, str):
         t = v.strip()
         if t == "":
@@ -42636,9 +42533,24 @@ def _hm_ext(b):
     return _if_wrap('<div class="ifhm" style="max-width:100%;">' + _if_title(b) + grid_html + bar + notes + _hg_version_note(b, 'heatmap') + table + '</div>')
 
 
+def _hm_matrix_prep(b):
+    """Schema-shaped payload (data = list of lists): the legacy color_scheme name (purple, blue, ...) becomes a named scale when no scale or
+    color_scale is given, so the grid reads the same fields as the Apps Script twin."""
+    if not isinstance(b, dict) or _if_truthy(_if_g(b, 'scale')) or _hm_hex_scale(_if_g(b, 'color_scale')):
+        return b
+    cs = _if_g(b, 'color_scheme')
+    if isinstance(cs, str):
+        for k in (cs.lower(), cs.lower() + 's'):
+            if k in _HM_NAMES:
+                return dict(b, scale=_HM_NAMES[k])
+    return b
+
+
 def _hm_wrap(prev):
     def go(b):
-        return _hm_ext(b) if isinstance(b, dict) and any(k in b for k in _HM_KEYS) else prev(b)
+        if isinstance(b, dict) and (any(k in b for k in _HM_KEYS) or _hmg_is_matrix(b.get('data'))):
+            return _hm_ext(_hm_matrix_prep(b))
+        return prev(b)
     return go
 
 
@@ -42943,7 +42855,10 @@ def _cr_num(v):
     """A finite number that is not a boolean and is at most 1e15 in size; None otherwise."""
     if isinstance(v, bool) or not isinstance(v, (int, float)):
         return None
-    v = float(v)
+    try:
+        v = float(v)
+    except OverflowError:
+        return None
     return v if v == v and abs(v) <= 1e15 else None
 
 def _d3_round(x):

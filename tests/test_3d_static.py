@@ -244,3 +244,14 @@ def test_exactly_the_three_edges_at_the_far_corner_are_dashed_and_the_other_nine
 def test_the_surface_legend_does_not_depend_on_the_theme():
     h = _py({"type": "surface_static", "z": _grid(3, 3, lambda i, j: i + j)})
     assert "Stronger colour is higher" in h and "Darker" not in h
+
+
+def test_400_digit_integers_in_camera_do_not_crash_the_page(core_js):
+    big = 10 ** 400
+    for t, k in (("scatter3d_static", "points"), ("surface_static", "z")):
+        base = {"type": t, k: PTS if k == "points" else [[1, 2], [3, 4]]}
+        for cam in ({"azimuth": big}, {"elevation": -big}):
+            b = dict(base, camera=cam)
+            h = _py(dict(b))
+            assert isinstance(h, str) and "Traceback" not in h
+            assert _gas_batch(core_js, [dict(b)])[0] == h, (t, cam)

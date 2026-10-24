@@ -55,10 +55,10 @@ def _all_gas(core_js, d):
 
 
 # Payloads whose data is a list of lists (the schema shape) used to draw nothing in Python (the second, dict-only
-# _render_heatmap shadowed the schema renderer) and, without rows and cols, nothing in Apps Script; they are routed to the
-# grid renderer now. Every other base payload (dict items, empty, rows + cols in Apps Script) is still byte for byte as at base.
+# _render_heatmap shadowed the schema renderer) and an unlabelled SVG in Apps Script; both twins route them to the extended
+# grid (_hm_ext / _hmExt) now. Every other base payload (dict items, empty) is still byte for byte as at base.
 SCHEMA_SHAPED_PY = {"schema_form", "schema_minimal", "rows_cols", "hostile", "all_equal"}
-SCHEMA_SHAPED_GAS = {"schema_form", "schema_minimal", "hostile"}
+SCHEMA_SHAPED_GAS = SCHEMA_SHAPED_PY
 
 
 @pytest.mark.parametrize("name", [n for n in BASE if n not in SCHEMA_SHAPED_PY])
@@ -74,37 +74,70 @@ def test_gas_payloads_without_the_new_fields_render_byte_for_byte_as_at_base(cor
 
 SCHEMA = {
     "grid": {"type": "heatmap", "data": [[1, 2], [3, 4]], "labels_x": ["a", "b"], "labels_y": ["c", "d"]},
-    "wide": {"type": "heatmap", "title": "Visits", "data": [[1, 2, 3], [4, 5, 6]], "labels_x": ["Mon", "Tue", "Wed"], "labels_y": ["AM", "PM"]},
+    "wide": {"type": "heatmap", "title": "Visits", "data": [[1, 2, 3], [4, 5, 6]], "labels_x": ["Mon", "Tue", "Wed"], "labels_y": ["AM", "PM"], "color_scale": ["#FFFFFF", "#FF0000"], "unit": "k"},
     "no_labels": {"type": "heatmap", "data": [[0, 10], [5, 5], [1, 2]]},
     "ragged": {"type": "heatmap", "data": [[1, "x", None], [2]], "labels_x": ["a", "b", "c"], "labels_y": ["r1", "r2"]},
     "one_row": {"type": "heatmap", "data": [[7, 8, 9, 10]]},
+    "rows_cols": {"type": "heatmap", "rows": ["r1", "r2"], "cols": ["c1", "c2", "c3"], "data": [[1, 2, 3], [3, 2, 1]], "color_scheme": "blue"},
+    "short_hex": {"type": "heatmap", "data": [[1, 2], [3, 4]], "color_scale": ["#fff", "#000"]},
+    "named_colours": {"type": "heatmap", "data": [[1, 2], [3, 4]], "color_scale": ["red", "blue"]},
+    "bad_colour_type": {"type": "heatmap", "data": [[1, 2], [3, 4]], "color_scale": [1, None]},
+    "huge_int": {"type": "heatmap", "data": [[10 ** 400, 2], [3, 4]]},
+    "infinity_string": {"type": "heatmap", "data": [["1e999", 2], [3, 4]]},
 }
-SCHEMA_CELLS = {"grid": 4, "wide": 6, "no_labels": 6, "ragged": 6, "one_row": 4}
+SCHEMA_CELLS = {"grid": 4, "wide": 6, "no_labels": 6, "ragged": 6, "one_row": 4, "rows_cols": 6, "short_hex": 4, "named_colours": 4, "bad_colour_type": 4, "huge_int": 4, "infinity_string": 4}
+GARBAGE = r"NaN|undefined|Infinity|\[object"
 
 
 def test_schema_shaped_payload_draws_rows_by_cols_cells_in_python():
     for n, b in SCHEMA.items():
         h = _py(dict(b))
-        assert h.count("<rect") == SCHEMA_CELLS[n], n
-        assert not re.search(r"NaN|undefined|Infinity|\[object", h), n
-    assert ">a</text>" in _py(dict(SCHEMA["grid"])) and ">d</text>" in _py(dict(SCHEMA["grid"]))
+        assert h.count('class="hmc') == SCHEMA_CELLS[n], n
+        assert not re.search(GARBAGE, h), n
+    h = _py(dict(SCHEMA["grid"]))
+    assert ">a</div>" in h and ">d</div>" in h and "<th scope=\"row\">d</th>" in h
+    h = _py(dict(SCHEMA["rows_cols"]))
+    assert ">c3</div>" in h and ">r2</div>" in h
+    assert "rgb(15,23,42)" not in h and "var(--muted" in h
 
 
 def test_schema_shaped_payload_draws_rows_by_cols_cells_in_gas(core_js):
     g = _all_gas(core_js, SCHEMA)
     for n, h in g.items():
-        assert h.count("<rect") == SCHEMA_CELLS[n], n
-        assert "No heatmap data" not in h and not re.search(r"NaN|undefined|Infinity|\[object", h), n
-    assert ">a<" in g["grid"] and ">d<" in g["grid"]
+        assert h.count('class="hmc') == SCHEMA_CELLS[n], n
+        assert "No heatmap data" not in h and not re.search(GARBAGE, h), n
 
 
-def test_python_and_gas_agree_on_the_cell_values_of_schema_shaped_payloads(core_js):
+def test_python_and_gas_are_byte_identical_for_schema_shaped_payloads(core_js):
     g = _all_gas(core_js, SCHEMA)
     for n, b in SCHEMA.items():
-        p = _py(dict(b))
-        pv = re.findall(r"<title>([-\d.,]+)", p)
-        gv = re.findall(r"<title>[^<]*: ([-\d.]+)</title>", g[n])
-        assert [float(x.replace(",", "")) for x in pv] == [float(x) for x in gv], n
+        assert _py(dict(b)) == g[n], n
+
+
+def test_color_scheme_names_a_scale_for_a_list_of_lists_only(core_js):
+    blue = dict(SCHEMA["rows_cols"])
+    assert _py(dict(blue)) == _py(dict(blue, scale="Blues"))
+    assert _py(dict(blue, color_scheme="nope")) == _py({k: v for k, v in blue.items() if k != "color_scheme"})
+
+
+def test_crash_payloads_never_raise_and_draw_a_grid_with_a_table():
+    for n in ("short_hex", "named_colours", "bad_colour_type", "huge_int", "infinity_string"):
+        h = _py(dict(SCHEMA[n]))
+        assert 'role="img"' in h and "<table" in h, n
+
+
+def test_gas_infinity_string_and_huge_numbers_become_no_data_not_nan(core_js):
+    g = _all_gas(core_js, SCHEMA)
+    for n in ("huge_int", "infinity_string"):
+        assert g[n].count("hmn") == 1 and not re.search(GARBAGE, g[n]), n
+
+
+def test_large_matrix_is_capped_with_a_note_in_both_twins(core_js):
+    b = {"type": "heatmap", "data": [[i + j for j in range(300)] for i in range(300)]}
+    p = _py(dict(b))
+    assert p.count('class="hmc"') == 1600 and "first 40 of 300 rows" in p and "first 40 of 300 columns" in p
+    assert len(p) < 400000
+    assert _gas_batch(core_js, [dict(b)])[0] == p
 
 
 def test_legacy_dict_items_are_routed_to_the_legacy_renderer():

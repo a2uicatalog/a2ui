@@ -401,6 +401,8 @@
  ],
  "heatmap": [
   "color_scale",
+  "labels_x",
+  "labels_y",
   "scale",
   "show_colorbar",
   "show_values",

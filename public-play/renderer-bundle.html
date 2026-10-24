@@ -17818,20 +17818,6 @@ _RENDERERS['heatmap'] = function(b) {
   var title       = b.title || '';
   var colorScheme = b.color_scheme || 'purple';
 
-  // Schema shape (data = list of lists, labels_x / labels_y optional, as in the Python twin's _render_heatmap_grid): the
-  // grid is as wide as the widest row and as tall as the list, labels default to "1", "2", ...; a legacy payload (rows and
-  // cols given, or data that is not a list of lists) keeps the code below unchanged.
-  if (Array.isArray(data) && data.some(Array.isArray) && !(rowLabels.length && colLabels.length)) {
-    var gx = Array.isArray(b.labels_x) ? b.labels_x : [], gy = Array.isArray(b.labels_y) ? b.labels_y : [];
-    var nr = data.length, nc = 0;
-    data = data.map(function(r) { return Array.isArray(r) ? r : []; });
-    data.forEach(function(r) { if (r.length > nc) nc = r.length; });
-    if (!nc) return '<div class="a2ui-chart-empty">No heatmap data</div>';
-    rowLabels = []; colLabels = [];
-    for (var gi = 0; gi < nr; gi++) rowLabels.push(gi < gy.length ? gy[gi] : String(gi + 1));
-    for (var gj = 0; gj < nc; gj++) colLabels.push(gj < gx.length ? gx[gj] : String(gj + 1));
-  }
-
   if (!rowLabels.length || !colLabels.length) return '<div class="a2ui-chart-empty">No heatmap data</div>';
 
   // Color schemes: [lightR,lightG,lightB, darkR,darkG,darkB]
@@ -17845,7 +17831,7 @@ _RENDERERS['heatmap'] = function(b) {
 
   // Flatten to find min/max
   var allVals = [];
-  data.forEach(function(row){ (Array.isArray(row) ? row : []).forEach(function(v){ allVals.push(parseFloat(v)||0); }); });
+  data.forEach(function(row){ row.forEach(function(v){ allVals.push(parseFloat(v)||0); }); });
   var minV = Math.min.apply(null, allVals);
   var maxV = Math.max.apply(null, allVals);
   if (maxV === minV) maxV += 1;
@@ -29048,10 +29034,22 @@ function _hmExt(b) {
   var table = _ifTable(['Row'].concat(cl), rl.map(function(r, ri) { return [r].concat(cl.map(function(_, ci) { return grid[ri][ci] === null ? 'no data' : f(grid[ri][ci]) + us; })); }));
   return _ifWrap('<div class="ifhm" style="max-width:100%;">' + _ifTitle(b) + gridHtml + bar + notes + _hgVersionNote(b, 'heatmap') + table + '</div>');
 }
+// Schema-shaped payload (data = list of lists): the legacy color_scheme name (purple, blue, ...) becomes a named scale when no scale or
+// color_scale is given, so the grid reads the same fields as the Python twin (_hm_matrix_prep).
+function _hmMatrixPrep(b) {
+  if (b.scale || _hmHexScale(b.color_scale) || typeof b.color_scheme !== 'string') return b;
+  var cs = b.color_scheme.toLowerCase(), name = null;
+  Object.keys(_HM_SCALES).forEach(function(k) { if (name === null && (k.toLowerCase() === cs || k.toLowerCase() === cs + 's')) name = k; });
+  if (name === null) return b;
+  var c = {};
+  Object.keys(b).forEach(function(k) { c[k] = b[k]; });
+  c.scale = name;
+  return c;
+}
 (function() {
   var prev = _RENDERERS['heatmap'];
   _RENDERERS['heatmap'] = function(b) {
-    return (b && typeof b === 'object' && _HM_KEYS.some(function(k) { return Object.prototype.hasOwnProperty.call(b, k); })) ? _hmExt(b) : prev(b);
+    return (b && typeof b === 'object' && (_HM_KEYS.some(function(k) { return Object.prototype.hasOwnProperty.call(b, k); }) || (Array.isArray(b.data) && b.data.some(Array.isArray)))) ? _hmExt(_hmMatrixPrep(b)) : prev(b);
   };
 })();
 

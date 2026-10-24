@@ -337,3 +337,12 @@ def test_delta_encoded_rings_decode_to_exactly_the_old_floats_in_both_twins(name
     assert _ring_sha([{"id": i, "name": n, "p": p} for i, n, p in wa._ch_regions(name)]) == OLD_RING_SHA[name]
     out = _node(core_js, "var R = _chRegions(%s); console.log(JSON.stringify(R.map(function(r){ return {id: r[0], name: r[1], p: r[2]}; })));" % json.dumps(name))
     assert _ring_sha(out) == OLD_RING_SHA[name]
+
+
+def test_400_digit_integers_do_not_crash_the_page():
+    big = 10 ** 400
+    for b in ({"type": "choropleth_map", "region_set": "world-countries", "values": [{"id": "FRA", "value": big}, {"id": "DEU", "value": 3}]},
+              {"type": "choropleth_map", "region_set": "world-countries", "steps": big, "values": [{"id": "FRA", "value": 1}, {"id": "DEU", "value": 3}]},
+              {"type": "geo_map", "region_set": "world-countries", "points": [{"lat": big, "lon": 2, "value": 1}, {"lat": 48, "lon": -big}, {"lat": 10, "lon": 20, "value": big}]}):
+        h = wa._RENDERERS[b["type"]](copy.deepcopy(b))
+        assert isinstance(h, str) and not re.search(r"NaN|Infinity|undefined", h)

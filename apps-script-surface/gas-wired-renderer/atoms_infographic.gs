@@ -4084,10 +4084,22 @@ function _hmExt(b) {
   var table = _ifTable(['Row'].concat(cl), rl.map(function(r, ri) { return [r].concat(cl.map(function(_, ci) { return grid[ri][ci] === null ? 'no data' : f(grid[ri][ci]) + us; })); }));
   return _ifWrap('<div class="ifhm" style="max-width:100%;">' + _ifTitle(b) + gridHtml + bar + notes + _hgVersionNote(b, 'heatmap') + table + '</div>');
 }
+// Schema-shaped payload (data = list of lists): the legacy color_scheme name (purple, blue, ...) becomes a named scale when no scale or
+// color_scale is given, so the grid reads the same fields as the Python twin (_hm_matrix_prep).
+function _hmMatrixPrep(b) {
+  if (b.scale || _hmHexScale(b.color_scale) || typeof b.color_scheme !== 'string') return b;
+  var cs = b.color_scheme.toLowerCase(), name = null;
+  Object.keys(_HM_SCALES).forEach(function(k) { if (name === null && (k.toLowerCase() === cs || k.toLowerCase() === cs + 's')) name = k; });
+  if (name === null) return b;
+  var c = {};
+  Object.keys(b).forEach(function(k) { c[k] = b[k]; });
+  c.scale = name;
+  return c;
+}
 (function() {
   var prev = _RENDERERS['heatmap'];
   _RENDERERS['heatmap'] = function(b) {
-    return (b && typeof b === 'object' && _HM_KEYS.some(function(k) { return Object.prototype.hasOwnProperty.call(b, k); })) ? _hmExt(b) : prev(b);
+    return (b && typeof b === 'object' && (_HM_KEYS.some(function(k) { return Object.prototype.hasOwnProperty.call(b, k); }) || (Array.isArray(b.data) && b.data.some(Array.isArray)))) ? _hmExt(_hmMatrixPrep(b)) : prev(b);
   };
 })();
 
