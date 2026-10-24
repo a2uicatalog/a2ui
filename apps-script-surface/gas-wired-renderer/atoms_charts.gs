@@ -2268,7 +2268,7 @@ _RENDERERS['sonar_pulse'] = function(b) {
     + '.sp-ring-' + uid + ':nth-child(3){animation-delay:1.3s;}'
     + '@keyframes sp-' + uid + '{0%{width:16px;height:16px;opacity:0.9;}100%{width:90px;height:90px;opacity:0;}}'
     + '</style>'
-    + '<div class="sp-wrap-' + uid + '">'
+    + '<div data-cb="node" data-key="' + _ckey(b.label, 'sonar_pulse') + '" class="sp-wrap-' + uid + '">'
     + '<div class="sp-dot-' + uid + '">'
     + '<div class="sp-ring-' + uid + '"></div><div class="sp-ring-' + uid + '"></div><div class="sp-ring-' + uid + '"></div>'
     + '</div>'
@@ -2594,7 +2594,7 @@ _RENDERERS['typewriter_text'] = function(b) {
   var text  = b.text || b.content || b.label || '';
   var speed = parseInt(b.speed || 38, 10);
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="border:1px solid #374151;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1rem 0;background:#1e1e2e;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.text, 'typewriter_text') + '" style="border:1px solid #374151;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1rem 0;background:#1e1e2e;">'
     + '<style>@keyframes blink-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}</style>'
     + '<pre id="tw-' + uid + '" data-text="' + _esc(text) + '" style="margin:0;font-family:\'Courier New\',monospace;font-size:0.875rem;color:#4365d6;white-space:pre-wrap;line-height:1.6;min-height:1.4em;"></pre>'
     + '<span id="twc-' + uid + '" style="display:inline-block;width:2px;height:1em;background:#a855f7;vertical-align:text-bottom;animation:blink-' + uid + ' 1s step-end infinite;margin-left:2px;"></span>'
@@ -3451,7 +3451,7 @@ _RENDERERS['split_reveal'] = function(b) {
     + '@keyframes sr-top-' + uid + '{from{transform:translateY(0);}to{transform:translateY(-100%);}}'
     + '@keyframes sr-bot-' + uid + '{from{transform:translateY(0);}to{transform:translateY(100%);}}'
     + '</style>'
-    + '<div style="position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.title, 'split_reveal') + '" style="position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;">'
     + '<div style="padding:32px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:16px;">'
     + (title ? '<div style="font-size:1.2rem;font-weight:700;color:#111827;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
     + (text  ? '<div style="color:#374151;line-height:1.7;">' + _markdownToHtml(text) + '</div>' : '')
@@ -3514,7 +3514,7 @@ _RENDERERS['stripe_background'] = function(b) {
     + '.strp-' + uid + '{background:repeating-linear-gradient(45deg,' + _esc(color1) + ',' + _esc(color1) + ' 10px,' + _esc(color2) + ' 10px,' + _esc(color2) + ' 20px);background-size:28px 28px;animation:strp-' + uid + ' ' + speed + 's linear infinite;}'
     + '@keyframes strp-' + uid + '{from{background-position:0 0;}to{background-position:56px 56px;}}'
     + '</style>'
-    + '<div class="strp-' + uid + '" style="border-radius:16px;overflow:hidden;padding:40px 32px;margin:1rem 0;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.title, 'stripe_background') + '" class="strp-' + uid + '" style="border-radius:16px;overflow:hidden;padding:40px 32px;margin:1rem 0;">'
     + '<div style="background:rgba(0,0,0,0.38);backdrop-filter:blur(2px);border-radius:12px;padding:24px;">'
     + (title ? '<div style="font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
     + (text  ? '<div style="color:rgba(255,255,255,0.92);line-height:1.7;">' + _markdownToHtml(text) + '</div>' : '')

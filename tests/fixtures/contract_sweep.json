@@ -8250,7 +8250,7 @@
   "parity": false
  },
  "subheading": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "subheading",
@@ -8377,7 +8377,7 @@
   "parity": false
  },
  "stat_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "stat_card",
@@ -8413,7 +8413,7 @@
   "parity": false
  },
  "sparkline": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sparkline",
@@ -8506,7 +8506,7 @@
   "parity": false
  },
  "trend_indicator": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "trend_indicator",
@@ -8712,7 +8712,7 @@
   "parity": false
  },
  "status_pill": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "status_pill",
@@ -8827,7 +8827,7 @@
   "parity": false
  },
  "star_rating_display": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "star_rating_display",
@@ -8843,7 +8843,7 @@
   "parity": false
  },
  "social_proof_banner": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "social_proof_banner",
@@ -9041,7 +9041,7 @@
   "parity": false
  },
  "summary_box": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "summary_box",
@@ -9841,7 +9841,7 @@
   "parity": false
  },
  "typewriter_text": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "typewriter_text",
@@ -10075,7 +10075,7 @@
   "parity": false
  },
  "sonar_pulse": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sonar_pulse",
@@ -10093,7 +10093,7 @@
   "parity": false
  },
  "typewriter": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "typewriter",
@@ -10393,7 +10393,7 @@
   "parity": false
  },
  "user_greeting": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "user_greeting",
@@ -10541,7 +10541,7 @@
   "parity": false
  },
  "split_stat": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "split_stat",
@@ -11153,7 +11153,7 @@
   "parity": false
  },
  "split_reveal": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "split_reveal",
@@ -11191,7 +11191,7 @@
   "parity": false
  },
  "stripe_background": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "stripe_background",
@@ -11274,7 +11274,7 @@
   "parity": false
  },
  "url_anatomy": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "url_anatomy",
@@ -11362,7 +11362,7 @@
   "parity": false
  },
  "speed_counter": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "speed_counter",
@@ -11498,7 +11498,7 @@
   "parity": false
  },
  "study_timer": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "study_timer",
@@ -11515,7 +11515,7 @@
   "parity": false
  },
  "spaced_repetition_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "spaced_repetition_card",
@@ -11763,7 +11763,7 @@
   "parity": false
  },
  "sla_timer_display": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sla_timer_display",

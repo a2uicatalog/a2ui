@@ -1027,7 +1027,7 @@ def _render_stat_card(b: dict) -> str:
     ) if delta else ""
 
     return (
-        f'<div style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);'
+        f'<div data-cb="node" data-key="{_ck(b.get("label"), "stat_card")}" style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);'
         f'border:1px solid {_cv_esc(accent)}44;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 32px;margin:1rem 0;'
         f'box-shadow:0 0 20px {_cv_esc(accent)}22,inset 0 0 20px {_cv_esc(accent)}08;min-width:200px;text-align:center;">'
         f'<div style="font-size:0.75rem;font-weight:700;color:{_cv_esc(accent)};letter-spacing:0.12em;'
@@ -6485,7 +6485,7 @@ def _render_typewriter_text(b: dict) -> str:
         f'@keyframes {tid}-type{{to{{width:{chars}ch}}}}'
         f'{cursor_css}'
         f'</style>'
-        f'<div style="margin:1rem 0;font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};'
+        f'<div data-cb="node" data-key="{_ck(b.get("text"), "typewriter_text")}" style="margin:1rem 0;font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};'
         f'color:{_cv_esc(color)};line-height:1.2;font-family:monospace;">'
         f'<span class="{tid}">{_cv_esc(text)}</span>'
         f'</div>'
@@ -9186,7 +9186,7 @@ def _render_sonar_pulse(atom: dict) -> str:
         )
     return (
         f'<style>{rings_css}</style>'
-        f'<div style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(atom.get("label"), "sonar_pulse")}" style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
         f'<div style="position:relative;width:{sz}px;height:{sz}px;">'
         f'{rings_html}'
         f'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
@@ -11210,7 +11210,7 @@ def _render_split_stat(b: dict) -> str:
     heading_html = f'<div style="font-size:1.15rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{heading}</div>' if heading else ""
     body_html    = f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.6;">{body}</div>' if body else ""
     return (
-        f'<div style="display:flex;align-items:center;gap:2rem;margin:1.5rem 0;'
+        f'<div data-cb="node" data-key="{_ck(b.get("heading"), "split_stat")}" style="display:flex;align-items:center;gap:2rem;margin:1.5rem 0;'
         f'border:1px solid #1e293b;border-radius:14px;padding:28px;background:#0f172a;">'
         f'<div style="text-align:center;flex-shrink:0;">'
         f'<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;'
@@ -11646,7 +11646,7 @@ def _render_trend_indicator(b: dict) -> str:
     cfg = {"up": ("↑","#0b7a55","#d1fae5"), "down": ("↓","#ef4444","#fee2e2"), "stable": ("→","#6b7280","#f3f4f6")}.get(d, ("→","#6b7280","#f3f4f6"))
     col = b.get("color", cfg[1])
     ctx_html = f'<span style="font-size:.75rem;color:var(--muted,#5f6368);margin-left:6px;">{_cv_esc(ctx)}</span>' if ctx else ""
-    return f'<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:{cfg[2]};font-size:.82rem;font-weight:600;color:{_cv_esc(col)};">{cfg[0]} {_cv_esc(label)}{ctx_html}</span>'
+    return f'<span data-cb="node" data-key="{_ck(b.get("label"), "trend_indicator")}" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:{cfg[2]};font-size:.82rem;font-weight:600;color:{_cv_esc(col)};">{cfg[0]} {_cv_esc(label)}{ctx_html}</span>'
 
 def _render_metric_delta(b: dict) -> str:
     label, cur = b.get("label",""), b.get("current_value") or b.get("value","")
@@ -11678,7 +11678,7 @@ def _svg_sparkline(b: dict) -> str:
     pts = " ".join(f'{(i/(len(data)-1))*w:.1f},{h-((v-mn)/r)*(h-4)-2:.1f}' for i,v in enumerate(data))
     fill_pts = " ".join(f'{(i/(len(data)-1))*w:.1f},{h-((v-mn)/r)*(h-4)-2:.1f}' for i,v in enumerate(data))
     area = f"0,{h} {fill_pts} {w},{h}"
-    return f'<svg role="img" aria-label="{_cv_esc(b.get("label") or b.get("title") or "Trend sparkline")}" width="{w}" height="{h}" style="display:inline-block;vertical-align:middle;"><polygon points="{area}" fill="{_cv_esc(color)}" fill-opacity="0.1"/><polyline points="{pts}" fill="none" stroke="{_cv_esc(color)}" stroke-width="{_cv_esc(lw)}" stroke-linejoin="round" stroke-linecap="round"/></svg>'
+    return f'<svg data-cb="node" data-key="{_ck(b.get("type"), "sparkline")}" role="img" aria-label="{_cv_esc(b.get("label") or b.get("title") or "Trend sparkline")}" width="{w}" height="{h}" style="display:inline-block;vertical-align:middle;"><polygon points="{area}" fill="{_cv_esc(color)}" fill-opacity="0.1"/><polyline points="{pts}" fill="none" stroke="{_cv_esc(color)}" stroke-width="{_cv_esc(lw)}" stroke-linejoin="round" stroke-linecap="round"/></svg>'
 
 
 def _render_sparkline(b: dict) -> str:
@@ -14391,7 +14391,7 @@ def _render_star_rating_display(b: dict) -> str:
             stars += '<span style="color:#f59e0b;font-size:1.1rem;">½</span>'
         else:
             stars += '<span style="color:#d1d5db;font-size:1.1rem;">★</span>'
-    return (f'<div style="display:flex;align-items:center;gap:8px;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("rating"), "star_rating_display")}" style="display:flex;align-items:center;gap:8px;">'
             f'<span>{stars}</span>'
             f'<span style="font-weight:700;color:#111827;">{rating:.1f}</span>'
             f'{"<span style=font-size:0.82rem;color:var(--muted,#5f6368);>("+_cv_esc(str(reviews))+" reviews)</span>" if reviews else ""}'
@@ -14427,7 +14427,7 @@ def _render_status_pill(b: dict) -> str:
         'default':  ('#4f46e5', '#ede9fe'),
     }
     fg, bg = col_map.get(status, col_map['default'])
-    return (f'<span style="display:inline-block;padding:2px 10px;border-radius:100px;'
+    return (f'<span data-cb="node" data-key="{_ck(b.get("label"), "status_pill")}" style="display:inline-block;padding:2px 10px;border-radius:100px;'
             f'background:{bg};color:{fg};font-size:0.75rem;font-weight:700;">'
             f'{_esc(text or status.title())}</span>')
 
@@ -14472,7 +14472,7 @@ def _render_subheading(b: dict) -> str:
         # for platforms that lack it.
         style += ("font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;"
                   "text-transform:uppercase;letter-spacing:0.05em;")
-    return f'<{tag} style="{style}">{_md_inline(text)}</{tag}>'
+    return f'<{tag} data-cb="node" data-key="{_ck(b.get("text"), "subheading")}" style="{style}">{_md_inline(text)}</{tag}>'
 
 _RENDERERS['subheading'] = _render_subheading
 
@@ -14483,7 +14483,7 @@ def _render_summary_box(b: dict) -> str:
     # (surface-parity debt; GAS already reads b.text). 2026-09-27.
     text = b.get('text', '')
     title = b.get('title', 'Summary')
-    return (f'<div style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;background:#faf5ff;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("type"), "summary_box")}" style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;background:#faf5ff;">'
             f'<div style="font-weight:700;color:#6d28d9;margin-bottom:8px;">✨ {_esc(title)}</div>'
             f'<p style="margin:0;color:#374151;font-size:0.88rem;line-height:1.6;">{_md_inline(text)}</p></div>')
 
@@ -15289,8 +15289,8 @@ def _render_social_proof_banner(b: dict) -> str:
              f'{"<span style=font-weight:700;>"+_esc(str(metric_value))+"</span>" if metric_value else ""}'
              f'<span style="color:#374151;">{_esc(metric_label)}</span></span>')
     if link_url:
-        return f'<a href="{_esc(link_url)}" style="text-decoration:none;display:block;margin:1rem 0;width:fit-content;">{inner}</a>'
-    return f'<div style="margin:1rem 0;width:fit-content;">{inner}</div>'
+        return f'<a data-cb="node" data-key="{_ck(b.get("metric_label"), "social_proof_banner")}" href="{_esc(link_url)}" style="text-decoration:none;display:block;margin:1rem 0;width:fit-content;">{inner}</a>'
+    return f'<div data-cb="node" data-key="{_ck(b.get("metric_label"), "social_proof_banner")}" style="margin:1rem 0;width:fit-content;">{inner}</div>'
 
 _RENDERERS['social_proof_banner'] = _render_social_proof_banner
 
@@ -16530,7 +16530,7 @@ def _render_typewriter(b: dict) -> str:
     loop = b.get('loop', True)
     cursor = b.get('cursor', '|')
     texts_json = _js_json([str(t) for t in texts] if isinstance(texts, list) else [str(texts)])
-    return (f'<span id="{uid}" style="font-family:monospace;"></span>'
+    return (f'<span data-cb="node" data-key="{_ck(b.get("text"), "typewriter")}" id="{uid}" style="font-family:monospace;"></span>'
             f'<span style="animation:a2ui-blink 1s step-end infinite;">{_esc(cursor)}</span>'
             f'<style>@keyframes a2ui-blink{{50%{{opacity:0;}}}}</style>'
             f'<script>(function(){{var el=document.getElementById("{uid}");'
@@ -19074,7 +19074,7 @@ def _render_spaced_repetition_card(b: dict) -> str:
     back = _esc(b.get('back', 'Answer or definition'))
     accent = b.get('accent', '#a78bfa')
     return (
-        f'<div style="font-family:system-ui,sans-serif;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("card_id"), "spaced_repetition_card")}" style="font-family:system-ui,sans-serif;">'
         f'<div onclick="document.getElementById(\'{uid}card\').style.transform=document.getElementById(\'{uid}card\').style.transform?\'\':\' rotateY(180deg)\'" '
         f'role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){{event.preventDefault();this.click()}}" '
            f'style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;">'
@@ -19101,7 +19101,7 @@ def _render_study_timer(b: dict) -> str:
     label = _esc(b.get('label', 'Study Timer'))
     uid = 'stmr' + _wa_uid(b)[:6]
     return (
-        f'<div style="font-family:system-ui,sans-serif;padding:24px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;'
+        f'<div data-cb="node" data-key="{_ck(b.get("label"), "study_timer")}" style="font-family:system-ui,sans-serif;padding:24px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;'
         f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
         f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:{_esc(accent)};'
         f'text-transform:uppercase;margin-bottom:8px;">{label}</div>'
@@ -21801,7 +21801,7 @@ _RENDERERS["status_timeline"] = _render_status_timeline
 
 def _render_user_greeting(b: dict) -> str:
     prefix = _esc(b.get('prefix', 'Welcome back'))
-    return ('<div style="margin:1rem 0;padding:16px 20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('prefix'), 'user_greeting') + '" style="margin:1rem 0;padding:16px 20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #c7d2fe;">'
             '<div style="font-size:1.1rem;font-weight:700;color:#4338ca;">'
             + prefix + ', <span id="a2ui-greeting-name">there</span>! 👋</div>'
@@ -22933,7 +22933,7 @@ def _render_stripe_background(b: dict) -> str:
           'from{background-position:0 0;}'
           'to{background-position:60px 60px;}}')
     return ('<style>' + kf + '</style>'
-            '<div style="margin:1rem 0;padding:32px 28px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+            '<div data-cb="node" data-key="' + _ck(b.get('title'), 'stripe_background') + '" style="margin:1rem 0;padding:32px 28px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:repeating-linear-gradient(45deg,' + c1 + ' 0px,' + c1 + ' 10px,'
             + c2 + ' 10px,' + c2 + ' 20px);'
             'animation:' + uid + 'mv 2s linear infinite;background-size:60px 60px;">'
@@ -23045,7 +23045,7 @@ def _render_split_reveal(b: dict) -> str:
     dly = f'{delay:.2f}s'
     kf = '@keyframes ' + uid + '{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0% 0 0);}}'
     return ('<style>' + kf + '</style>'
-            '<div style="margin:2rem 0;padding:4px 0;overflow:hidden;">'
+            '<div data-cb="node" data-key="' + _ck(b.get('title'), 'split_reveal') + '" style="margin:2rem 0;padding:4px 0;overflow:hidden;">'
             '<div style="font-size:clamp(1.8rem,5vw,3rem);font-weight:900;line-height:1.1;color:' + color + ';'
             'animation:' + uid + ' 0.8s cubic-bezier(0.77,0,0.18,1) ' + dly + ' both;">'
             + title + '</div>'
@@ -23329,7 +23329,7 @@ def _render_speed_counter(b: dict) -> str:
     accent = _esc(b.get('accent', '#4f46e5'))
     import hashlib
     uid = 'sc' + hashlib.md5(label.encode()).hexdigest()[:5]
-    return ('<div style="text-align:center;padding:28px 20px;">'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('label'), 'speed_counter') + '" style="text-align:center;padding:28px 20px;">'
             '<div id="' + uid + '" style="font-size:3.5rem;font-weight:900;color:' + accent + ';line-height:1;'
             'font-family:ui-monospace,monospace;">0</div>'
             + ('<div style="font-weight:700;font-size:0.875rem;color:#374151;margin-top:8px;">' + label + '</div>' if label else '')
@@ -25251,7 +25251,7 @@ def _render_url_anatomy(b: dict) -> str:
         legend += ('<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.72rem;">'
                    '<span style="width:8px;height:8px;border-radius:50%;background:' + color + ';display:inline-block;"></span>'
                    + _esc(label) + '</span>')
-    return ('<div style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('type'), 'url_anatomy') + '" style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-family:ui-monospace,monospace;font-size:0.85rem;word-break:break-all;'
             'background:#0d1117;color:#cdd6f4;padding:12px 16px;border-radius:8px;margin-bottom:10px;">'
             + url_html + '</div>'
@@ -37457,7 +37457,7 @@ def _render_sla_timer_display(b: dict) -> str:
     st_color = '#e71414' if state == 'breach' else ('#f97316' if state == 'warn' else '#15803d')
     st_label = 'BREACH' if state == 'breach' else ('WARN' if state == 'warn' else 'OK')
     pulse = 'animation:a2ui-pulse 1s infinite;' if state == 'breach' else ''
-    return ('<div style="background:#0f172a;border:1px solid ' + st_color + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('title'), 'sla_timer_display') + '" style="background:#0f172a;border:1px solid ' + st_color + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">'
             '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div>'
             '<span style="display:inline-block;background:#e71414;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _gx_esc(severity) + '</span>'
             '<span style="color:#94a3b8;font-size:0.85rem;font-weight:500;">' + _gx_esc(title) + '</span></div>'

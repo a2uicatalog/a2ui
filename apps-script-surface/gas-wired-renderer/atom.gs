@@ -397,7 +397,7 @@ _RENDERERS['subheading'] = function(b) {
   var style = b.condensed
     ? ' style="font-family:\'Arial Narrow\',\'Helvetica Neue Condensed\',sans-serif;text-transform:uppercase;letter-spacing:0.05em;"'
     : '';
-  return '<h' + level + ' class="asw-subheading"' + style + '>' + _esc(b.text) + '</h' + level + '>';
+  return '<h' + level + ' data-cb="node" data-key="' + _ckey(b.text, 'subheading') + '" class="asw-subheading"' + style + '>' + _esc(b.text) + '</h' + level + '>';
 };
 
 _RENDERERS['blockquote'] = function(b) {
@@ -1138,7 +1138,7 @@ _RENDERERS['user_greeting'] = function(b) {
   
   var initial = email.charAt(0).toUpperCase();
 
-  return '<div class="asw-user-greeting">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.prefix, 'user_greeting') + '" class="asw-user-greeting">' +
          '<div class="asw-user-avatar">' + initial + '</div>' +
          '<div>' + _esc(prefix) + ', <span class="asw-user-email">' + _esc(email) + '</span>!</div>' +
          '</div>';
@@ -1598,7 +1598,7 @@ _RENDERERS['key_takeaways'] = function(b) {
 };
 
 _RENDERERS['summary_box'] = function(b) {
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:1.2rem 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.type, 'summary_box') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#374151;margin-bottom:8px;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;">Summary</div>' +
     '<p style="margin:0;color:#4b5563;font-size:0.9rem;line-height:1.6;">' + _markdownToHtml(b.text||'') + '</p></div>';
 };
@@ -1973,7 +1973,7 @@ _RENDERERS['stat_card'] = function(b) {
   var deltaColor = isUp ? '#00ff88' : '#ff4444';
   var deltaArrow = isUp ? '▲' : '▼';
   var deltaHtml = delta ? '<span style="font-size:0.85rem;font-weight:700;color:' + deltaColor + ';margin-left:10px;">' + deltaArrow + ' ' + _esc(String(delta)) + '</span>' : '';
-  return '<div style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);border:1px solid ' + accent + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 32px;margin:1rem 0;box-shadow:0 0 20px ' + accent + '22,inset 0 0 20px ' + accent + '08;min-width:200px;text-align:center;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'stat_card') + '" style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);border:1px solid ' + accent + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 32px;margin:1rem 0;box-shadow:0 0 20px ' + accent + '22,inset 0 0 20px ' + accent + '08;min-width:200px;text-align:center;">' +
     '<div style="font-size:0.75rem;font-weight:700;color:' + accent + ';letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">' + _esc(label) + '</div>' +
     '<div style="font-size:2.8rem;font-weight:900;color:#ffffff;line-height:1;font-family:monospace;">' + _esc(String(value)) + deltaHtml + '</div></div>';
 };
@@ -2779,7 +2779,7 @@ _RENDERERS['star_rating_display'] = function(b) {
   if (half) stars += '<span style="color:#facc15;font-size:1.2rem;opacity:0.55;">★</span>';
   stars += '★'.repeat(empty).split('').map(function(){ return '<span style="color:#d1d5db;font-size:1.2rem;">★</span>'; }).join('');
   var countHtml = reviewCount !== null ? '<span style="font-size:0.82rem;color:#6b7280;margin-left:6px;">(' + reviewCount.toLocaleString() + ' reviews)</span>' : '';
-  return '<div style="margin:0.5rem 0;display:flex;align-items:center;gap:4px;">' + stars + '<span style="font-size:0.93rem;font-weight:600;color:#374151;margin-left:4px;">' + rating + '</span>' + countHtml + '</div>';
+  return '<div data-cb="node" data-key="' + _ckey(b.rating, 'star_rating_display') + '" style="margin:0.5rem 0;display:flex;align-items:center;gap:4px;">' + stars + '<span style="font-size:0.93rem;font-weight:600;color:#374151;margin-left:4px;">' + rating + '</span>' + countHtml + '</div>';
 };
 
 _RENDERERS['code_diff'] = function(b) {
@@ -3002,7 +3002,7 @@ _RENDERERS['status_pill'] = function(b) {
   var colors = {active:['#047b56','#d1fae5'],inactive:['#6b7280','#f3f4f6'],error:['#dc2626','#fee2e2'],pending:['#ca8a04','#fef9c3'],'in-progress':['#2563eb','#dbeafe']};
   var c = colors[status] || ['#6b7280','#f3f4f6'];
   var dot = b.dot !== false ? '<span style="width:7px;height:7px;border-radius:50%;background:' + c[0] + ';display:inline-block;margin-right:5px;"></span>' : '';
-  return '<span style="display:inline-flex;align-items:center;background:' + c[1] + ';color:' + c[0] + ';font-size:0.75rem;font-weight:600;padding:3px 10px;border-radius:100px;">' + dot + _esc(label) + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.label, 'status_pill') + '" style="display:inline-flex;align-items:center;background:' + c[1] + ';color:' + c[0] + ';font-size:0.75rem;font-weight:600;padding:3px 10px;border-radius:100px;">' + dot + _esc(label) + '</span>';
 };
 
 // ─── sheet_badge ──────────────────────────────────────────────────────────────

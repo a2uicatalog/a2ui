@@ -940,7 +940,7 @@ _RENDERERS['sla_timer_display'] = function(b) {
   var stateLabel = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
   var pulse      = state === 'breach' ? 'animation:a2ui-pulse 1s infinite;' : '';
 
-  return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'sla_timer_display') + '" style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">' +
       '<div>' +
         '<span style="display:inline-block;background:#e71414;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _esc(severity) + '</span>' +

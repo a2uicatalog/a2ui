@@ -107,7 +107,7 @@ _RENDERERS['split_stat'] = function(b) {
   var left  = flip ? textHtml : statHtml;
   var right = flip ? statHtml : textHtml;
 
-  return '<div style="display:flex;align-items:center;gap:24px;padding:28px 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.heading, 'split_stat') + '" style="display:flex;align-items:center;gap:24px;padding:28px 0;">' +
     left + right +
     '</div>';
 };

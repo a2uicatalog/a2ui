@@ -9,7 +9,7 @@ _RENDERERS['trend_indicator'] = function(b) {
   var map   = { up: ['↑', '#0b7a55', '#d1fae5'], down: ['↓', '#ef4444', '#fee2e2'], stable: ['→', '#6b7280', '#f3f4f6'] };
   var cfg   = map[dir] || map.stable;
   var col   = b.color || cfg[1];
-  return '<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:' + cfg[2] + ';font-size:0.82rem;font-weight:600;color:' + col + ';">'
+  return '<span data-cb="node" data-key="' + _ckey(b.label, 'trend_indicator') + '" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:' + cfg[2] + ';font-size:0.82rem;font-weight:600;color:' + col + ';">'
     + cfg[0] + ' ' + label + ctx + '</span>';
 };
 
@@ -308,11 +308,11 @@ _RENDERERS['social_proof_banner'] = function(b) {
   // (surface-parity debt). 2026-09-27.
   var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
   var body = iconHtml
-    + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
+    + '<div' + (b.link_url ? '' : ' data-cb="node" data-key="' + _ckey(b.metric_label, 'social_proof_banner') + '"') + ' style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
     + metric
     + (logos ? '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">' + logos + '</div>' : '')
     + quote + '</div>';
-  return b.link_url ? '<a href="' + _safeUrl(b.link_url) + '" target="_top" style="text-decoration:none;color:inherit;display:block;">' + body + '</a>' : body;
+  return b.link_url ? '<a data-cb="node" data-key="' + _ckey(b.metric_label, 'social_proof_banner') + '" href="' + _safeUrl(b.link_url) + '" target="_top" style="text-decoration:none;color:inherit;display:block;">' + body + '</a>' : body;
 };
 
 // ─── expert_endorsement ───────────────────────────────────────────────────────
@@ -534,7 +534,7 @@ _RENDERERS['sparkline'] = function(b) {
     return x.toFixed(1) + ',' + y.toFixed(1);
   });
   var area   = '0,' + h + ' ' + fill.join(' ') + ' ' + w + ',' + h;
-  return '<svg role="img" aria-label="Sparkline" width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;">'
+  return '<svg data-cb="node" data-key="' + _ckey(b.type, 'sparkline') + '" role="img" aria-label="Sparkline" width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;">'
     + '<polygon points="' + area + '" fill="' + color + '" fill-opacity="0.1"/>'
     + '<polyline points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="' + lw + '" stroke-linejoin="round" stroke-linecap="round"/>'
     + '</svg>';

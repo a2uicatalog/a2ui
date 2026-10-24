@@ -72,7 +72,7 @@ _RENDERERS['url_anatomy'] = function(b) {
     + '.ua-legend-' + uid + '{display:flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--muted);}'
     + '.ua-dot-' + uid + '{width:10px;height:10px;border-radius:2px;flex-shrink:0;}'
     + '</style>'
-    + '<div id="ua-' + uid + '">'
+    + '<div data-cb="node" data-key="' + _ckey(b.type, 'url_anatomy') + '" id="ua-' + uid + '">'
     + '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">How the URL works</div>'
     + '<div id="ua-url-' + uid + '">Loading current URL…</div>'
     + '<div class="ua-label-row-' + uid + '">'
@@ -627,7 +627,7 @@ _RENDERERS['speed_counter'] = function(b) {
   var label  = b.label  || 'Page loaded in';
   var sub    = b.sub    || '';
   var accent = b.accent || '#4f46e5';
-  return '<div style="text-align:center;padding:28px 20px;margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'speed_counter') + '" style="text-align:center;padding:28px 20px;margin:1rem 0;">'
     + '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">' + _esc(label) + '</div>'
     + '<div id="sc-' + uid + '" style="font-size:3.5rem;font-weight:900;color:' + accent + ';font-variant-numeric:tabular-nums;letter-spacing:-0.02em;line-height:1;">0.0s</div>'
     + (sub ? '<div style="font-size:0.82rem;color:var(--muted);margin-top:8px;">' + _esc(sub) + '</div>' : '')

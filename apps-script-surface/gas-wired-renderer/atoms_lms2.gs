@@ -437,7 +437,7 @@ _RENDERERS['study_timer'] = function(b) {
   var label  = b.label  || 'Study Timer';
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;' +
+    '<div data-cb="node" data-key="' + _ckey(b.label, 'study_timer') + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);">' +
     '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:16px;">⏱ ' + _esc(label) + '</div>' +
     // Mode label
@@ -542,7 +542,7 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
   var accent = b.accent  || '#a78bfa';
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
+    '<div data-cb="node" data-key="' + _ckey(b.card_id, 'spaced_repetition_card') + '" style="font-family:\'Inter\',system-ui,sans-serif;">' +
     // Card flip container
     '<div style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;" onclick="' + uid + 'flip()">' +
       '<div id="' + uid + 'card" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;">' +
