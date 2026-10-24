@@ -293,7 +293,8 @@ def gate(atoms, locate=None, fast=False):
 
 def apply(edits, files, scope=None):
     """Apply find/replace edits. A find must occur once; one that repeats is applied inside the atom's live definition
-    (scope(atom, file, text) -> spans) when it occurs once there. Returns (applied count, refusals, files touched)."""
+    (scope(atom, file, text) -> spans) when it occurs once there. In a file that holds the atom's code, a find outside it
+    is refused (a find unique to the file can sit in a neighbouring atom). Returns (applied count, refusals, files touched)."""
     refused, done, touched = [], 0, set()
     for e in edits:
         f = e.get('file', '')
@@ -311,6 +312,9 @@ def apply(edits, files, scope=None):
                 continue
         if c != 1 or not e.get('find'):
             refused.append('%s: find occurs %d times: %r' % (f, c, e.get('find', '')[:120])); continue
+        spans = scope(e.get('atom'), f, s) if scope else []
+        if spans and not any(a0 <= s.index(e['find']) < b0 for a0, b0 in spans):   # it would change another atom's code
+            refused.append('%s: find is outside %s\'s code: %r' % (f, e.get('atom'), e['find'][:120])); continue
         open(f, 'w').write(s.replace(e['find'], e['replace'], 1)); done += 1; touched.add(f)
     return done, refused, touched
 

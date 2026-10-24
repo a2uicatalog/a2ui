@@ -19,6 +19,17 @@ def test_a_find_that_occurs_once_is_applied(tmp_path, monkeypatch):
     assert (tmp_path / "r.py").read_text() == '<div data-cb="tile">x</div>\n<p>y</p>\n'
 
 
+def test_a_unique_find_in_another_atoms_code_is_refused(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "r.gs").write_text("A<div class=a>\nB<div class=b>\n")
+    scope = lambda atom, f, text: [(text.index("B"), len(text))] if atom == "beta" else []
+    e = {"atom": "beta", "file": "r.gs", "find": "<div class=a>", "replace": "<div data-cb=node class=a>"}
+    done, refused, _ = ck.apply([e], {"r.gs": 1}, scope)
+    assert done == 0 and "outside beta" in refused[0]
+    e = {"atom": "beta", "file": "r.gs", "find": "<div class=b>", "replace": "<div data-cb=node class=b>"}
+    assert ck.apply([e], {"r.gs": 1}, scope)[0] == 1
+
+
 def test_a_find_that_occurs_zero_or_two_times_is_refused(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     (tmp_path / "r.py").write_text("<p>a</p><p>b</p>")
