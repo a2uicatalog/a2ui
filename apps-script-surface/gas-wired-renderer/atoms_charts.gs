@@ -797,38 +797,59 @@ _RENDERERS['command_palette'] = function(b) {
 // 12. search_result_card — Google-style search result
 // ─────────────────────────────────────────────────────────
 _RENDERERS['search_result_card'] = function(b) {
-  var title      = b.title || '';
-  var url        = b.url   || '#';
-  var description= b.description || '';
-  var breadcrumb = b.breadcrumb || [];
-  var date       = b.date || '';
-  var faviconUrl = b.favicon_url || '';
+  var urlRaw = typeof b.url === 'string' ? b.url : '';
+  var safeUrl = _hrefIsSafe(urlRaw);
 
-  var html = '<div data-cb="node" data-key="' + _ckey(b.url, 'search_result_card') + '" class="a2ui-search-result">';
+  var faviconRaw = typeof b.favicon_url === 'string' ? b.favicon_url : '';
+  var safeFavicon = _hrefIsSafe(faviconRaw);
 
-  // URL / breadcrumb row
-  html += '<div class="a2ui-sr-url-row">';
-  if (faviconUrl) {
-    html += '<img src="' + _esc(faviconUrl) + '" class="a2ui-sr-favicon" width="16" height="16" onerror="this.style.display=\'none\'"/>';
+  var bcList = Array.isArray(b.breadcrumb) ? b.breadcrumb : [];
+  var bcStrings = [];
+  for (var i = 0; i < bcList.length; i++) {
+    if (typeof bcList[i] === 'string' && bcList[i]) {
+      bcStrings.push(_esc(bcList[i]));
+    }
   }
-  if (breadcrumb.length) {
-    html += '<span class="a2ui-sr-breadcrumb">' + breadcrumb.map(function(p){ return _esc(p); }).join(' › ') + '</span>';
-  } else {
-    html += '<span class="a2ui-sr-breadcrumb">' + _esc(url) + '</span>';
+
+  var metaContent = '';
+  if (safeFavicon) {
+    metaContent += '<img src="' + _esc(safeFavicon) + '" width="16" height="16" style="border-radius:3px;" onerror="this.style.display=\'none\'"/>';
   }
-  html += '</div>';
 
-  // Title
-  html += '<a class="a2ui-sr-title" href="' + _esc(url) + '" target="_blank" rel="noopener">' + _esc(title) + '</a>';
+  var bcText = '';
+  if (bcStrings.length > 0) {
+    bcText = bcStrings.join(' › ');
+  } else if (urlRaw) {
+    bcText = _esc(urlRaw);
+  }
 
-  // Meta (date)
-  if (date) html += '<span class="a2ui-sr-date">' + _esc(date) + ' — </span>';
+  if (bcText) {
+    metaContent += (metaContent ? ' ' : '') + '<span>' + bcText + '</span>';
+  }
 
-  // Description
-  if (description) html += '<p class="a2ui-sr-desc">' + _esc(description) + '</p>';
+  var metaRow = metaContent ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.7rem;color:var(--muted,#5f6368);margin-bottom:4px;">' + metaContent + '</div>' : '';
 
-  html += '</div>';
-  return html;
+  var titleText = _textLoose(b.title);
+  var titleHtml = '';
+  if (titleText) {
+    if (safeUrl) {
+      titleHtml = '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener noreferrer" style="font-weight:600;font-size:0.9rem;color:#7c3aed;text-decoration:none;display:inline-block;margin-bottom:4px;">' + _esc(titleText) + '</a>';
+    } else {
+      titleHtml = '<div style="font-weight:600;font-size:0.9rem;color:#7c3aed;margin-bottom:4px;">' + _esc(titleText) + '</div>';
+    }
+  }
+
+  var dateText = _textLoose(b.date);
+  var descText = _textLoose(b.description);
+  var descHtml = '';
+  if (dateText || descText) {
+    var datePrefix = dateText ? '<span>' + _esc(dateText) + ' — </span>' : '';
+    descHtml = '<div style="font-size:0.8rem;color:var(--muted,#5f6368);">' + datePrefix + _esc(descText) + '</div>';
+  }
+
+  return '<div data-cb="node" data-key="' + _ckey(b.url, 'search_result_card') + '" ' +
+    'style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
+    metaRow + titleHtml + descHtml + '</div>';
 };
 
 // ─────────────────────────────────────────────────────────
@@ -3509,29 +3530,52 @@ _RENDERERS['terminal_boot'] = function(b) {
 };
 
 _RENDERERS['stagger_list'] = function(b) {
-  var items = b.items || [];
-  var dir   = b.direction || 'up';
-  var gap   = parseFloat(b.stagger !== undefined ? b.stagger : 0.1);
-  var uid = Math.random().toString(36).substr(2, 6);
-  var startT = dir==='left'?'translateX(-22px)':dir==='right'?'translateX(22px)':dir==='down'?'translateY(-14px)':'translateY(16px)';
-  return '<style>@keyframes sl-' + uid + '{from{opacity:0;transform:' + startT + ';}to{opacity:1;transform:none;}}</style>'
-    + '<div style="margin:1rem 0;display:flex;flex-direction:column;gap:8px;">'
-    + items.map(function(item, i) {
-        var delay = (i * gap) + 's';
-        var base  = 'opacity:0;animation:sl-' + uid + ' 0.45s ease ' + delay + ' both;';
-        if (typeof item === 'string') {
-          return '<div style="' + base + 'padding:10px 14px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.9rem;color:#374151;">' + _markdownToHtml(item) + '</div>';
-        }
-        var icon = item.icon || '•';
-        var text = item.text || item.label || '';
-        var sub  = item.sub  || item.description || '';
-        return '<div style="' + base + 'padding:12px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;display:flex;gap:12px;align-items:flex-start;">'
-          + '<span style="font-size:1.2rem;flex-shrink:0;line-height:1.4;">' + _esc(icon) + '</span>'
-          + '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(text) + '</div>'
-          + (sub ? '<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(sub) + '</div>' : '')
-          + '</div></div>';
-      }).join('')
-    + '</div>';
+  var rawItems = Array.isArray(b.items) ? b.items : [];
+  var dir = _textLoose(b.direction);
+  var staggerNum = _numLoose(b.stagger);
+  if (staggerNum === null) {
+    staggerNum = 0.1;
+  }
+  if (staggerNum < 0) staggerNum = 0;
+  if (staggerNum > 2) staggerNum = 2;
+
+  var uid = _payloadUid(b);
+  var startT = dir === 'left' ? 'translateX(-22px)' :
+               dir === 'right' ? 'translateX(22px)' :
+               dir === 'down' ? 'translateY(-14px)' : 'translateY(16px)';
+
+  var css = '<style>' +
+    '.sl-' + uid + '{opacity:0;animation:sl-' + uid + ' 0.45s ease both;}' +
+    '@keyframes sl-' + uid + '{from{opacity:0;transform:' + startT + ';}to{opacity:1;transform:none;}}' +
+    '@media (prefers-reduced-motion:reduce){.sl-' + uid + '{opacity:1;animation:none;}}' +
+    '</style>';
+
+  var itemsHtml = '';
+  var count = 0;
+  for (var i = 0; i < rawItems.length && count < 100; i++) {
+    var it = rawItems[i];
+    if (it === null || it === undefined) continue;
+    var dlyVal = Math.floor(count * staggerNum * 100 + 0.5) / 100;
+    var delayStr = String(dlyVal) + 's';
+
+    if (typeof it === 'string') {
+      itemsHtml += '<div class="sl-' + uid + '" style="animation-delay:' + delayStr + ';padding:10px 14px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.9rem;color:#374151;">' + _md_inline(it) + '</div>';
+      count++;
+    } else if (typeof it === 'object' && !Array.isArray(it)) {
+      var icon = _textLoose(it.icon);
+      if (!icon) icon = '•';
+      var text = _textLoose(it.text != null ? it.text : it.label);
+      var sub = _textLoose(it.sub != null ? it.sub : it.description);
+      itemsHtml += '<div class="sl-' + uid + '" style="animation-delay:' + delayStr + ';padding:12px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;display:flex;gap:12px;align-items:flex-start;">' +
+        '<span style="font-size:1.2rem;flex-shrink:0;line-height:1.4;">' + _esc(icon) + '</span>' +
+        '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(text) + '</div>' +
+        (sub ? '<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(sub) + '</div>' : '') +
+        '</div></div>';
+      count++;
+    }
+  }
+
+  return css + '<div style="margin:1rem 0;display:flex;flex-direction:column;gap:8px;">' + itemsHtml + '</div>';
 };
 
 _RENDERERS['liquid_button'] = function(b) {

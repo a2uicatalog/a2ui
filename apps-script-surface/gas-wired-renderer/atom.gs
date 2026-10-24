@@ -1890,16 +1890,34 @@ _RENDERERS['summary_box'] = function(b) {
 };
 
 _RENDERERS['learning_objectives'] = function(b) {
-  var objs = b.objectives || [];
-  var lis = objs.map(function(o){
-    var txt = (typeof o === 'object') ? (o.text || '') : o;
-    var k = _esc(String((typeof o === 'object') ? (o.id || o.text || '') : o));
-    return '<li data-cb="item" data-key="' + k + '" style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:0.88rem;">' +
-      '<span style="color:#2563eb;flex-shrink:0;margin-top:1px;">→</span>' +
-      '<span style="color:#1e3a5f;">' + _esc(o) + '</span></li>';
-  }).join('');
-  return '<div style="border:1px solid #bfdbfe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:#1d4ed8;margin-bottom:10px;">🎯 What you\'ll learn</div>' +
+  var rawList = Array.isArray(b.objectives) ? b.objectives : (Array.isArray(b.items) ? b.items : []);
+  var title = _textLoose(b.title) || 'Learning Objectives';
+
+  var lis = '';
+  var count = 0;
+  for (var i = 0; i < rawList.length && count < 100; i++) {
+    var it = rawList[i];
+    if (it === null || it === undefined) continue;
+    var txt = '';
+    var rawKey = '';
+    if (typeof it === 'string') {
+      txt = it;
+      rawKey = it;
+    } else if (typeof it === 'object' && !Array.isArray(it)) {
+      txt = _textLoose(it.text);
+      var idStr = typeof it.id === 'string' && it.id ? it.id : '';
+      rawKey = idStr || txt;
+    } else {
+      continue;
+    }
+    var k = _ckey(rawKey, 'objective');
+    lis += '<li data-cb="item" data-key="' + k + '" style="padding:4px 0;font-size:0.88rem;color:#374151;">' +
+      '<span style="color:#10b981;margin-right:6px;">✓</span>' + _md_inline(txt) + '</li>';
+    count++;
+  }
+
+  return '<div style="border:1px solid #d1fae5;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;background:#f0fdf4;">' +
+    '<div style="font-weight:700;color:#065f46;margin-bottom:8px;">🎯 ' + _esc(title) + '</div>' +
     '<ul style="list-style:none;padding:0;margin:0;">' + lis + '</ul></div>';
 };
 
@@ -2055,10 +2073,47 @@ _RENDERERS['sidebar_note'] = function(b) {
 };
 
 _RENDERERS['difficulty_badge'] = function(b) {
-  var level = b.level || 'beginner';
-  var cfg = {beginner:['#11813b','#f0fdf4','Beginner','⚡'], intermediate:['#d97706','#fffbeb','Intermediate','🔧'], advanced:['#dc2626','#fef2f2','Advanced','🚀']};
-  var c = cfg[level] || cfg.beginner;
-  return '<span data-cb="node" data-key="' + _ckey(b.level, 'difficulty_badge') + '" style="display:inline-flex;align-items:center;gap:5px;border:1px solid ' + c[0] + '44;border-radius:100px;padding:3px 12px;font-size:0.75rem;font-weight:700;color:' + c[0] + ';background:' + c[1] + ';">' + c[3] + ' ' + c[2] + '</span>';
+  var rawLevel = typeof b.level === 'string' ? b.level.trim().toLowerCase() : '';
+  var level = rawLevel || 'intermediate';
+
+  var cols = {
+    beginner: ['#10b981', '#d1fae5'],
+    intermediate: ['#3b82f6', '#dbeafe'],
+    advanced: ['#f59e0b', '#fef3c7'],
+    expert: ['#ef4444', '#fee2e2']
+  };
+  var c = Object.prototype.hasOwnProperty.call(cols, level) ? cols[level] : cols['intermediate'];
+  var fg = c[0];
+  var bg = c[1];
+
+  var dotsMap = {beginner: 1, intermediate: 2, advanced: 3, expert: 4};
+  var nd = Object.prototype.hasOwnProperty.call(dotsMap, level) ? dotsMap[level] : 2;
+
+  var label = '';
+  if (typeof b.label === 'string' && b.label.trim()) {
+    label = b.label;
+  } else if (level === 'beginner') {
+    label = 'Beginner';
+  } else if (level === 'intermediate') {
+    label = 'Intermediate';
+  } else if (level === 'advanced') {
+    label = 'Advanced';
+  } else if (level === 'expert') {
+    label = 'Expert';
+  } else {
+    label = Array.from(level).slice(0, 24).join('');
+  }
+
+  var dotSpans = '';
+  for (var i = 0; i < nd; i++) {
+    dotSpans += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + fg + ';"></span>';
+  }
+
+  return '<span data-cb="node" data-key="' + _ckey(b.level, 'difficulty_badge') + '" ' +
+    'style="display:inline-flex;align-items:center;gap:6px;background:' + bg + ';color:' + fg + ';' +
+    'border:1.5px solid ' + fg + '44;border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:700;">' +
+    '<span aria-hidden="true" style="display:inline-flex;gap:3px;">' + dotSpans + '</span>' +
+    _esc(label) + '</span>';
 };
 
 _RENDERERS['caution_block'] = function(b) {
@@ -2359,21 +2414,45 @@ _RENDERERS['stat_card'] = function(b) {
 };
 
 _RENDERERS['progress_bar'] = function(b) {
-  var uid = Math.random().toString(36).substr(2,6);
-  var value = Math.min(100, Math.max(0, parseInt(b.value||0)));
-  var label = b.label || '';
-  var accent = b.accent || '#008087';
+  var valNum = _numLoose(b.value);
+  var maxNum = _numLoose(b.max);
+  var pct;
+  if (valNum === null) {
+    pct = 0;
+  } else if (maxNum !== null && maxNum > 0) {
+    pct = (valNum / maxNum) * 100;
+  } else {
+    pct = valNum;
+  }
+  var clamped = Math.min(100, Math.max(0, pct));
+  var roundedPct = Math.floor(clamped + 0.5);
+
+  var accent = (typeof b.accent === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.accent)) ? b.accent :
+               ((typeof b.color === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.color)) ? b.color : '#4f46e5');
+
   var showPct = b.show_percent !== false;
-  var caption = b.caption || '';
-  var pctHtml = showPct ? '<span style="font-size:0.8rem;font-weight:700;color:' + accent + ';">' + value + '%</span>' : '';
-  var captionHtml = caption ? '<p style="font-size:0.78rem;opacity:0.5;margin-top:4px;">' + _esc(caption) + '</p>' : '';
-  return '<style>@keyframes pb' + uid + '-glow{0%,100%{box-shadow:0 0 6px ' + accent + '88;}50%{box-shadow:0 0 16px ' + accent + ';}}</style>' +
-    '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_bar') + '" style="margin:1rem 0;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-    '<span style="font-size:0.85rem;font-weight:600;">' + _esc(label) + '</span>' + pctHtml + '</div>' +
-    '<div style="background:rgba(255,255,255,0.08);border-radius:100px;height:10px;overflow:hidden;">' +
-    '<div style="width:' + value + '%;height:100%;border-radius:100px;background:linear-gradient(90deg,' + accent + ',' + accent + '99);animation:pb' + uid + '-glow 2s ease-in-out infinite;"></div></div>' +
-    captionHtml + '</div>';
+  var labelText = _textLoose(b.label);
+
+  var labelHtml = '';
+  if (labelText || showPct) {
+    labelHtml = '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+      '<span style="font-size:0.82rem;color:#374151;">' + _esc(labelText) + '</span>' +
+      (showPct ? '<span style="font-size:0.82rem;font-weight:700;color:' + accent + ';">' + roundedPct + '%</span>' : '') +
+      '</div>';
+  }
+
+  var captionText = _textLoose(b.caption);
+  var captionHtml = captionText ? '<p style="font-size:0.78rem;color:var(--muted,#5f6368);margin:4px 0 0;">' + _esc(captionText) + '</p>' : '';
+
+  var ariaLabelAttr = labelText ? ' aria-label="' + _esc(labelText) + '"' : '';
+
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'progress_bar') + '" style="margin:0.75rem 0;">' +
+    labelHtml +
+    '<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + roundedPct + '"' + ariaLabelAttr + ' style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;">' +
+    '<div style="height:100%;width:' + roundedPct + '%;background:' + accent + ';border-radius:100px;transition:width 0.4s ease;"></div>' +
+    '</div>' +
+    captionHtml +
+    '</div>';
 };
 
 _RENDERERS['badge_group'] = function(b) {
@@ -3015,13 +3094,58 @@ _RENDERERS['share_quote'] = function(b) {
     '</blockquote>';
 };
 
+function _follow_cta_icon(k) {
+  var l = String(k || '').toLowerCase();
+  if (l === 'twitter' || l === 'x') return '🐦';
+  if (l === 'github') return '🐙';
+  if (l === 'linkedin') return '💼';
+  if (l === 'bluesky') return '🦋';
+  if (l === 'mastodon') return '🐘';
+  if (l === 'youtube') return '▶';
+  return '→';
+}
+
 _RENDERERS['follow_cta'] = function(b) {
-  var msg = b.message || 'Follow for more';
-  var links = b.platform_links || {};
-  var btns = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="padding:8px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;">' + _esc(k) + '</a>'; }).join('');
-  return '<div data-cb="node" data-key="' + _ckey(b.message, 'follow_cta') + '" style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:1.5rem 0;background:#f9fafb;">' +
-    '<span style="font-size:0.95rem;font-weight:600;color:#111827;">' + _esc(msg) + '</span>' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + btns + '</div></div>';
+  var msg = _textLoose(b.message);
+  if (!msg) msg = _textLoose(b.text);
+  if (!msg) msg = 'Follow for more';
+
+  var btns = [];
+  var links = b.platform_links;
+  if (links && typeof links === 'object' && !Array.isArray(links)) {
+    var keys = Object.keys(links);
+    for (var i = 0; i < keys.length && btns.length < 12; i++) {
+      var k = keys[i];
+      var rawVal = links[k];
+      if (typeof rawVal !== 'string') continue;
+      var safeUrl = _hrefIsSafe(rawVal);
+      if (!safeUrl) continue;
+      var icon = _follow_cta_icon(k);
+      btns.push('<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener noreferrer" ' +
+        'style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#1a73e8;' +
+        'color:#fff;border-radius:100px;text-decoration:none;font-size:0.83rem;font-weight:700;white-space:nowrap;">' +
+        icon + ' ' + _esc(k) + '</a>');
+    }
+  }
+
+  if (btns.length === 0) {
+    var oldUrl = typeof b.url === 'string' ? _hrefIsSafe(b.url) : '';
+    if (oldUrl) {
+      var oldLabel = _textLoose(b.label) || 'Follow';
+      var oldPlat = _textLoose(b.platform);
+      var oldIcon = _follow_cta_icon(oldPlat);
+      btns.push('<a href="' + _esc(oldUrl) + '" target="_blank" rel="noopener noreferrer" ' +
+        'style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#1a73e8;' +
+        'color:#fff;border-radius:100px;text-decoration:none;font-size:0.83rem;font-weight:700;white-space:nowrap;">' +
+        oldIcon + ' ' + _esc(oldLabel) + '</a>');
+    }
+  }
+
+  return '<div data-cb="node" data-key="' + _ckey(b.message, 'follow_cta') + '" ' +
+    'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;' +
+    'display:flex;align-items:center;justify-content:space-between;gap:12px;margin:1rem 0;flex-wrap:wrap;">' +
+    '<span style="font-size:0.88rem;color:#374151;">' + _md_inline(msg) + '</span>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + btns.join('') + '</div></div>';
 };
 
 _RENDERERS['follow_button'] = function(b) {
@@ -3225,18 +3349,58 @@ _RENDERERS['testimonial_card'] = function(b) {
     (authorTitle ? '<div style="font-size:0.78rem;color:var(--muted,#5f6368);">' + _esc(authorTitle) + '</div>' : '') + '</div></div></div>';
 };
 
+function _srd_format_commas(n) {
+  var s = String(n);
+  return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 _RENDERERS['star_rating_display'] = function(b) {
-  var rating = parseFloat(b.rating || b.value || 0);
-  var maxRating = parseInt(b.max_rating || 5);
-  var reviewCount = b.review_count || b.count || null;
+  var rawRating = _numLoose(b.rating != null ? b.rating : b.value);
+  var rating = rawRating !== null ? rawRating : 0;
+
+  var rawMax = _numLoose(b.max_rating != null ? b.max_rating : b.max);
+  var maxRating = rawMax !== null ? Math.floor(rawMax) : 5;
+  if (maxRating < 1) maxRating = 1;
+  if (maxRating > 10) maxRating = 10;
+
+  if (rating < 0) rating = 0;
+  if (rating > maxRating) rating = maxRating;
+
   var full = Math.floor(rating);
   var half = (rating - full) >= 0.5 ? 1 : 0;
   var empty = maxRating - full - half;
-  var stars = '★'.repeat(full).split('').map(function(){ return '<span style="color:#facc15;font-size:1.2rem;">★</span>'; }).join('');
-  if (half) stars += '<span style="color:#facc15;font-size:1.2rem;opacity:0.55;">★</span>';
-  stars += '★'.repeat(empty).split('').map(function(){ return '<span style="color:#d1d5db;font-size:1.2rem;">★</span>'; }).join('');
-  var countHtml = reviewCount !== null ? '<span style="font-size:0.82rem;color:#6b7280;margin-left:6px;">(' + reviewCount.toLocaleString() + ' reviews)</span>' : '';
-  return '<div data-cb="node" data-key="' + _ckey(b.rating, 'star_rating_display') + '" style="margin:0.5rem 0;display:flex;align-items:center;gap:4px;">' + stars + '<span style="font-size:0.93rem;font-weight:600;color:#374151;margin-left:4px;">' + rating + '</span>' + countHtml + '</div>';
+
+  var stars = '';
+  for (var i = 0; i < full; i++) {
+    stars += '<span style="color:#facc15;font-size:1.2rem;">★</span>';
+  }
+  if (half) {
+    stars += '<span style="color:#facc15;font-size:1.2rem;opacity:0.55;">★</span>';
+  }
+  for (var j = 0; j < empty; j++) {
+    stars += '<span style="color:#d1d5db;font-size:1.2rem;">★</span>';
+  }
+
+  var dispRatingNum = Math.floor(rating * 10 + 0.5) / 10;
+  var dispRating = dispRatingNum.toFixed(1);
+
+  var rawReviews = _numLoose(b.review_count != null ? b.review_count : (b.count != null ? b.count : b.reviews));
+  var reviewCount = (rawReviews !== null && rawReviews > 0) ? Math.floor(Math.min(rawReviews, 1e15)) : 0;
+
+  var countHtml = reviewCount > 0 ? '<span style="font-size:0.82rem;color:#6b7280;margin-left:6px;">(' + _srd_format_commas(reviewCount) + ' reviews)</span>' : '';
+
+  var labelText = _textLoose(b.label);
+  var labelHtml = labelText ? '<span style="font-size:0.84rem;color:var(--muted,#5f6368);margin-left:6px;">' + _esc(labelText) + '</span>' : '';
+
+  var ariaLabel = 'Rated ' + dispRating + ' out of ' + maxRating;
+  if (reviewCount > 0) {
+    ariaLabel += ' by ' + _srd_format_commas(reviewCount) + ' reviews';
+  }
+
+  return '<div data-cb="node" data-key="' + _ckey(b.rating, 'star_rating_display') + '" role="img" aria-label="' + _esc(ariaLabel) + '" style="margin:0.5rem 0;display:flex;align-items:center;gap:4px;">' +
+    '<span aria-hidden="true">' + stars + '</span>' +
+    '<span style="font-size:0.93rem;font-weight:600;color:#374151;margin-left:4px;">' + dispRating + '</span>' +
+    countHtml + labelHtml + '</div>';
 };
 
 _RENDERERS['code_diff'] = function(b) {
@@ -5253,26 +5417,76 @@ _RENDERERS['skill_bars'] = function(b) {
 };
 
 _RENDERERS['icon_stat_row'] = function(b) {
-  var uid   = Math.random().toString(36).substr(2, 6);
-  var stats = b.stats || b.items || [];
-  var cols  = Math.min(stats.length, b.cols || 4);
-  var items = stats.map(function(s) {
-    var color = s.accent || s.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
-    var k     = _esc(s.label || s.value || s.icon || '');
-    return '<div data-cb="tile" data-key="' + k + '" style="text-align:center;padding:20px 12px;">' +
-      (s.icon ? '<div style="font-size:32px;margin-bottom:8px;">' + _esc(s.icon) + '</div>' : '<div style="width:40px;height:40px;border-radius:50%;background:' + color + '18;margin:0 auto 8px;"></div>') +
+  var uid = _payloadUid(b);
+  var rawList = Array.isArray(b.stats) ? b.stats : (Array.isArray(b.items) ? b.items : []);
+  var statsList = [];
+  for (var i = 0; i < rawList.length && statsList.length < 24; i++) {
+    if (rawList[i] && typeof rawList[i] === 'object' && !Array.isArray(rawList[i])) {
+      statsList.push(rawList[i]);
+    }
+  }
+
+  var colsNum = _numLoose(b.cols);
+  if (colsNum === null) colsNum = 4;
+  colsNum = Math.floor(colsNum);
+  if (colsNum < 1) colsNum = 1;
+  if (colsNum > 8) colsNum = 8;
+  var finalCols = Math.max(1, Math.min(statsList.length, colsNum));
+
+  var defaultGlobalAccent = _textLoose(b.accent);
+  var hasGlobalHex = /^#[0-9a-fA-F]{3,8}$/.test(defaultGlobalAccent);
+
+  var itemsHtml = '';
+  for (var j = 0; j < statsList.length; j++) {
+    var s = statsList[j];
+    var statAcc = (typeof s.accent === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(s.accent)) ? s.accent :
+                  ((typeof s.color === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(s.color)) ? s.color : '');
+    var color = '';
+    var isHex = false;
+    if (statAcc) {
+      color = statAcc;
+      isHex = true;
+    } else if (hasGlobalHex) {
+      color = defaultGlobalAccent;
+      isHex = true;
+    } else {
+      color = 'var(--a2ui-accent,#4f46e5)';
+      isHex = false;
+    }
+
+    var label = _textLoose(s.label);
+    var value = _textLoose(s.value);
+    var icon = _textLoose(s.icon);
+    var prefix = _textLoose(s.prefix);
+    var suffix = _textLoose(s.suffix);
+    var sub = _textLoose(s.sub);
+
+    var rawKey = label || value || icon;
+    var k = _ckey(rawKey, 'stat');
+
+    var iconHtml = '';
+    if (icon) {
+      iconHtml = '<div style="font-size:32px;margin-bottom:8px;">' + _esc(icon) + '</div>';
+    } else {
+      var dotBg = isHex ? (color + '18') : 'rgba(79,70,229,0.1)';
+      iconHtml = '<div style="width:40px;height:40px;border-radius:50%;background:' + dotBg + ';margin:0 auto 8px;"></div>';
+    }
+
+    itemsHtml += '<div data-cb="tile" data-key="' + k + '" style="text-align:center;padding:20px 12px;">' +
+      iconHtml +
       '<div style="font-size:28px;font-weight:900;color:' + color + ';line-height:1;margin-bottom:4px;">' +
-      (s.prefix ? '<span style="font-size:16px;">' + _esc(s.prefix) + '</span>' : '') +
-      _esc(s.value || '') +
-      (s.suffix ? '<span style="font-size:16px;">' + _esc(s.suffix) + '</span>' : '') +
+      (prefix ? '<span style="font-size:16px;">' + _esc(prefix) + '</span>' : '') +
+      _esc(value) +
+      (suffix ? '<span style="font-size:16px;">' + _esc(suffix) + '</span>' : '') +
       '</div>' +
-      '<div data-cb="label" data-key="' + k + '" style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.04em;">' + _esc(s.label || '') + '</div>' +
-      (s.sub ? '<div style="font-size:11px;color:var(--muted,#9ca3af);margin-top:2px;">' + _esc(s.sub) + '</div>' : '') +
+      '<div data-cb="label" data-key="' + k + '" style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.04em;">' + _esc(label) + '</div>' +
+      (sub ? '<div style="font-size:11px;color:var(--muted,#9ca3af);margin-top:2px;">' + _esc(sub) + '</div>' : '') +
       '</div>';
-  }).join('');
+  }
+
   return '<style>@media(max-width:600px){.isr-' + uid + '{grid-template-columns:repeat(2,1fr)!important;}}</style>' +
-    '<div class="isr-' + uid + '" style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;background:var(--bg,#fff);margin:1.5rem 0;">' +
-    items + '</div>';
+    '<div class="isr-' + uid + '" style="display:grid;grid-template-columns:repeat(' + finalCols + ',1fr);border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;background:var(--bg,#fff);margin:1.5rem 0;">' +
+    itemsHtml + '</div>';
 };
 
 _RENDERERS['color_section'] = function(b) {

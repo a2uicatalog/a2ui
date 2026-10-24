@@ -34,6 +34,14 @@ EQUAL = [
     {"type": "further_reading", "title": "Reading", "links": [{"title": "DDIA", "url": "https://example.com/ddia", "annotation": "Distributed systems"}, {"title": "No link"}]},
     {"type": "parallax_card", "title": "Enterprise Cloud", "body": "Edge **compute**", "badge": "Pro", "accent": "#4f46e5", "background": "#0f172a", "depth": 12},
     {"type": "copy_prompt", "prompt": "Summarise the incident.", "label": "Triage prompt", "accent": "#4f46e5"},
+    {"type": "stagger_list", "direction": "left", "stagger": 0.15, "items": [{"icon": "\u26a1", "text": "Fast", "sub": "Sub line"}, "plain **md**"]},
+    {"type": "follow_cta", "message": "Follow **us**", "platform_links": {"github": "https://example.com/gh", "bluesky": "https://example.com/bs", "bad": "javascript:alert(1)"}},
+    {"type": "progress_bar", "value": 72, "label": "Migration", "accent": "#3b82f6", "show_percent": True, "caption": "7.2M of 10M"},
+    {"type": "difficulty_badge", "level": "advanced"},
+    {"type": "search_result_card", "title": "Redis replicas", "description": "Read replicas guide", "url": "https://example.com/docs/redis"},
+    {"type": "icon_stat_row", "cols": 3, "accent": "#0f766e", "stats": [{"icon": "\U0001F680", "value": 99.98, "label": "Uptime", "suffix": "%"}, {"value": 0, "label": "Breaches", "prefix": "~", "sub": "last 90d", "accent": "#b91c1c"}]},
+    {"type": "star_rating_display", "rating": 4.8, "max_rating": 5, "review_count": 1312},
+    {"type": "learning_objectives", "title": "You will learn", "objectives": ["Provision a VPC", {"text": "Deploy **ECS**", "id": "obj-2"}]},
 ]
 # atoms whose twins differ by design
 SAFE = [
@@ -57,6 +65,14 @@ MUST = {
     "parallax_card": ["Enterprise Cloud", "<strong>compute</strong>", "Pro", 'data-depth="12"', "d=12", "background:#0f172a"],
     "copy_prompt": ["Triage prompt", "Summarise the incident.", "#4f46e5", "navigator.clipboard"],
     "flip_card": ["<strong>side</strong>", "Back side"],
+    "stagger_list": ["Fast", "Sub line", "<strong>md</strong>", "translateX(-22px)", "animation-delay:0.15s", "prefers-reduced-motion"],
+    "follow_cta": ["Follow <strong>us</strong>", 'href="https://example.com/gh"', "\U0001F419 github", "\U0001F98B bluesky", "border-radius:100px"],
+    "progress_bar": ["Migration", "72%", "#3b82f6", 'aria-valuenow="72"', "7.2M of 10M", "width:72%"],
+    "difficulty_badge": ["Advanced", "#f59e0b", 'aria-hidden="true"'],
+    "search_result_card": ["Redis replicas", "Read replicas guide", 'href="https://example.com/docs/redis"', "https://example.com/docs/redis"],
+    "icon_stat_row": ["Uptime", "99.98", "%", "Breaches", "~", "last 90d", "#0f766e", "#b91c1c", "repeat(2,1fr)", "repeat(2,1fr)"],
+    "star_rating_display": ["4.8", "(1,312 reviews)", 'aria-label="Rated 4.8 out of 5 by 1,312 reviews"', "opacity:0.55"],
+    "learning_objectives": ["You will learn", "Provision a VPC", "<strong>ECS</strong>", 'data-key="obj-2"'],
     "gauge_sla": ["Uptime", "99.4%", "HEALTHY", "OPERATIONAL"],
     "workspace_logo_grid": ["Connectors", "Gmail", "Drive", "Nonesuch", "grayscale(1)", "repeat(3,1fr)", 'width="40"'],
     "annotation_highlight": ["Zero-trust", "mutual TLS", "#ef4444", "#996206"],
@@ -72,11 +88,20 @@ OLD = [
     {"type": "further_reading", "items": [{"label": "Old item", "url": "https://example.com/o"}]},
     {"type": "parallax_card", "title": "Old", "subtitle": "old subtitle"},
     {"type": "split_reveal", "title": "T", "content": "old content"},
+    {"type": "follow_cta", "text": "old text", "url": "https://example.com/f", "label": "Go", "platform": "github"},
+    {"type": "progress_bar", "value": 30, "max": 60, "label": "Old", "color": "#112233"},
+    {"type": "star_rating_display", "value": 3, "count": 12, "reviews": 5, "label": "lbl"},
+    {"type": "learning_objectives", "items": ["old objective"]},
+    {"type": "search_result_card", "title": "T", "url": "https://example.com/u", "breadcrumb": ["a", "b"], "date": "2026"},
+    {"type": "stagger_list", "items": [{"label": "L1", "description": "D1"}]},
+    {"type": "icon_stat_row", "items": [{"label": "X", "value": "7", "color": "#123456"}]},
 ]
 OLD_WORDS = {"pdf_preview": ["Old Doc", "https://example.com/old.pdf"], "json_tree_viewer": ["&quot;a&quot;: 1"],
              "framed_screenshot": ['alt="Old alt"', "https://example.com/o.png"], "markdown_block": ["<em>text</em>"], "footnote_group": ["[7]", "seven"],
              "deprecation_notice": ["new()", "legacy call", "Removed in: <code>4</code>"], "copy_prompt": ["old prompt text"], "further_reading": ["Old item", "https://example.com/o"],
-             "parallax_card": ["old subtitle"], "split_reveal": ["old content"]}
+             "parallax_card": ["old subtitle"], "split_reveal": ["old content"],
+             "follow_cta": ["old text", 'href="https://example.com/f"', "Go"], "progress_bar": ["Old", "50%", "#112233"], "star_rating_display": ["3.0", "(12 reviews)", "lbl"],
+             "learning_objectives": ["old objective"], "search_result_card": ["a › b", "2026"], "stagger_list": ["L1", "D1"], "icon_stat_row": ["X", "7", "#123456"]}
 WEIRD = [None, True, False, 0, -3, 2.5, 1e22, "", "  ", "7", "12ms", "javascript:alert(1)", "\x01javascript:alert(1)", ATTACK, "😀" * 30, [], [1, "a"], {},
          {"label": ATTACK, "name": "n", "term": ATTACK, "id": ATTACK}, "x" * 3000, 99999, [None], [{"term": None, "color": ATTACK}], "__proto__", "constructor"]
 
@@ -109,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")

@@ -2937,8 +2937,8 @@
   "kind": "tile",
   "label_kind": "label",
   "key": "stats[].label",
-  "py_sha": "491b079897fd176537821e7eaacf2c20ecdf36e340803dfcee4bc1e1c4ef28e6",
-  "gas_sha": "946f2d751e019205bad4af2ebac2bc0aeb2815510044c31eedd8bfbc1f46237d",
+  "py_sha": "29f496efad2d5f80c0921b21f318463af6a798d01fb8ff2ea623cec98c378c99",
+  "gas_sha": "2e02f8a2f141101049caa9e099177064718dbb33e2a5907b713ccda81a02f10e",
   "parity": false
  },
  "image_hotspots": {
@@ -3388,8 +3388,8 @@
   "label_kind": "label",
   "key": "objectives[]",
   "py_sha": "b1366edefedac2d0f05db5225d173abb719fb9e1911c9e328e8d2b3ae72320f7",
-  "gas_sha": "b399977c07e45fa2f846b9f7acd2edc6462082fdb8486e26321cded903e75fd0",
-  "parity": false
+  "gas_sha": "b1366edefedac2d0f05db5225d173abb719fb9e1911c9e328e8d2b3ae72320f7",
+  "parity": true
  },
  "learning_path_selector": {
   "status": "keyed",
@@ -6728,8 +6728,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].title",
-  "py_sha": "ba7474c255f417d126972f8f43a321ea27c35697662bff450c0e992a20718c04",
-  "gas_sha": "6a8ed9dd2ed7d511c0cec71b0e5a4cb47f0bae49ed4b5c58235f835d0d7cfdac",
+  "py_sha": "600c15d675a017899a4e85e950cf62c763da880fadcdbeabffa46c2294ab15c8",
+  "gas_sha": "96a63095dc457666b11e528791703149316b6467f5c295f06c0d035e2f2dc5fc",
   "parity": false
  },
  "standings_table": {
@@ -8700,9 +8700,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "4c2ec016cdec63b708fcbdadbc41b05232f5e0cef8cb8ea6ea926202de7f9cfe",
-  "gas_sha": "ffa1a7f1e898f0554da19f8d3df8abe0282f59aa6664f4e26749b1f4148d4dbc",
-  "parity": false
+  "py_sha": "f09a3336b361b6b0bedb12c682a6e3479b18cb896909896d8e95ca430435f09f",
+  "gas_sha": "f09a3336b361b6b0bedb12c682a6e3479b18cb896909896d8e95ca430435f09f",
+  "parity": true
  },
  "sparkline": {
   "status": "keyed",
@@ -9130,9 +9130,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "rating",
-  "py_sha": "4b7471b4f2c3f044e8d09873fab5762bb8a1a20c9e2da656eb5932e39cbc3a7c",
-  "gas_sha": "c8de2c035b96c5571b6f38fd3f6538a6d653d6dbe2476422d67782ae8fdcd5d8",
-  "parity": false
+  "py_sha": "b48dcbb58e2f66c0617477ab5ae802330bcbaa0afa037f25468a170e2d3a0394",
+  "gas_sha": "b48dcbb58e2f66c0617477ab5ae802330bcbaa0afa037f25468a170e2d3a0394",
+  "parity": true
  },
  "social_proof_banner": {
   "status": "keyed",
@@ -9416,9 +9416,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "level",
-  "py_sha": "090ce6ba28c11de45466c07de0e512bf945f6e8c70da39f3c944a40ab7db027c",
-  "gas_sha": "5b20ecd9d5110259724cfcc506b7caefe4f8332ec62516c199b55e6cd5672f81",
-  "parity": false
+  "py_sha": "f44afae87fe35c76e30e84716ba99276a2312dc8e8dc12a2a095fda533c90af7",
+  "gas_sha": "f44afae87fe35c76e30e84716ba99276a2312dc8e8dc12a2a095fda533c90af7",
+  "parity": true
  },
  "caution_block": {
   "status": "keyed",
@@ -9606,9 +9606,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "message",
-  "py_sha": "56944b4951912bbeb8648920d459705f41fe72eacb7a9e11368b82bed166dfa5",
-  "gas_sha": "8f00e95152b9317c2f27ec1e75783a5e11a200f29d9386400d0c9a0e0866733d",
-  "parity": false
+  "py_sha": "79c50c77349cd420722131659e444b73c9b83fc581567dd09e15a52f6fe28119",
+  "gas_sha": "79c50c77349cd420722131659e444b73c9b83fc581567dd09e15a52f6fe28119",
+  "parity": true
  },
  "metric_comparison_card": {
   "status": "keyed",
@@ -9639,9 +9639,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "url",
-  "py_sha": "d9a1aeb3c2fe3637cf9e6e40a8fa39ce27c4149cdce03bdf14cf9b1422e73504",
-  "gas_sha": "35371b250c8eb0637456bac97adb5d31966f61ac987e64d2a63a0e9eb800f89c",
-  "parity": false
+  "py_sha": "90d53167e77965d36ebb48c2cf89aaeb78e1f2a551e41223c237a0266f771038",
+  "gas_sha": "90d53167e77965d36ebb48c2cf89aaeb78e1f2a551e41223c237a0266f771038",
+  "parity": true
  },
  "post_metadata_bar": {
   "status": "keyed",
