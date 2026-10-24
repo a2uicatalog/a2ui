@@ -3734,7 +3734,8 @@ _RENDERERS['sun_path'] = function(b) {
   var tz = (b.tz === 'local' || b.tz === undefined || b.tz === null) ? 'null' : _ffNum(b.tz, 0, -12, 14, 2);
   var height = _ffInt(b.height, 300, 200, 600), live = b.live === false ? 'false' : 'true';
   var cfg = '{lat:' + lat + ',lon:' + lon + ',date:"' + date + '",tz:' + tz + ',label:' + _ffJsStr(b.label, 40, 'Sun') + ',bg:"' + th.bg + '",ink:"' + _ffRgb(th.ink) + '",acc:"' + _ffRgb(acc) + '",live:' + live + '}';
-  return _ffPanel(height, th.bg, _ffCanvas('sun-' + uid) + _ffScript(_SUN_PATH_JS, uid, cfg));
+  var html = _ffPanel(height, th.bg, _ffCanvas('sun-' + uid) + _ffScript(_SUN_PATH_JS, uid, cfg));
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'sun_path') + '"' + html.slice(4);
 };
 
 _RENDERERS['great_circle'] = function(b) {

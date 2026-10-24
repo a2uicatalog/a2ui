@@ -2002,7 +2002,7 @@ _RENDERERS['token_budget_meter'] = function(b) {
   var pct = Math.min(Math.round((used / total) * 100), 100);
   var color = pct < 70 ? '#15803d' : (pct < 90 ? '#f59e0b' : '#ef4444');
   var label = pct < 70 ? 'On track' : (pct < 90 ? 'Nearing limit' : 'Critical');
-  return '<div style="margin:0.75rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.model, 'token_budget_meter') + '" style="margin:0.75rem 0;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
     + '<span style="font-size:0.875rem;font-weight:600;color:#374151;">Token Budget</span>'
     + '<span style="font-size:0.82rem;color:var(--muted,#5f6368);">' + used.toLocaleString() + ' / ' + total.toLocaleString() + ' ' + _esc(unit) + '</span>'
@@ -2027,18 +2027,18 @@ _RENDERERS['text_callout'] = function(b) {
       neutral: {bg: '#f9fafb', border: '#e5e7eb', title: '#374151', body: '#4b5563'}
     };
     var p = pal[b.variant] || pal.neutral;
-    return '<div style="margin:0.5rem 0;padding:8px 12px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:' + p.bg + ';border:1px solid ' + p.border + ';">'
+    return '<div data-cb="node" data-key="' + _ckey(b.title, 'text_callout') + '" style="margin:0.5rem 0;padding:8px 12px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:' + p.bg + ';border:1px solid ' + p.border + ';">'
       + (b.title ? '<span style="font-weight:700;color:' + p.title + ';margin-right:6px;">' + _esc(b.title) + '</span>' : '')
       + '<span style="color:' + p.body + ';">' + _esc(b.description || '') + '</span></div>';
   }
   var text = b.text || '';
   var style = b.style || 'highlight';
   if (style === 'quote') {
-    return '<blockquote style="border-left:4px solid #7c3aed;padding:12px 16px;margin:1rem 0;color:#4b5563;font-style:italic;background:#fafafa;border-radius:0 8px 8px 0;">' + _esc(text) + '</blockquote>';
+    return '<blockquote data-cb="node" data-key="' + _ckey(b.title, 'text_callout') + '" style="border-left:4px solid #7c3aed;padding:12px 16px;margin:1rem 0;color:#4b5563;font-style:italic;background:#fafafa;border-radius:0 8px 8px 0;">' + _esc(text) + '</blockquote>';
   } else if (style === 'bold') {
-    return '<div style="font-weight:700;color:#7c3aed;font-size:1.05rem;margin:0.75rem 0;">' + _esc(text) + '</div>';
+    return '<div data-cb="node" data-key="' + _ckey(b.title, 'text_callout') + '" style="font-weight:700;color:#7c3aed;font-size:1.05rem;margin:0.75rem 0;">' + _esc(text) + '</div>';
   } else {
-    return '<mark style="background:#fef9c3;color:#111827;padding:2px 6px;border-radius:4px;">' + _esc(text) + '</mark>';
+    return '<mark data-cb="node" data-key="' + _ckey(b.title, 'text_callout') + '" style="background:#fef9c3;color:#111827;padding:2px 6px;border-radius:4px;">' + _esc(text) + '</mark>';
   }
 };
 
@@ -2440,7 +2440,7 @@ _RENDERERS['svg_path_draw'] = function(b) {
   var label = b.label || b.title || '';
   var color = b.color || '#4f46e5';
   var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="margin:1rem 0;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.label || b.title, 'svg_path_draw') + '" style="margin:1rem 0;">'
     + '<style>@keyframes draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:8px;">' + _esc(label) + '</div>' : '')
     + '<svg role="img" aria-label="Path drawing animation" viewBox="0 0 400 80" style="width:100%;height:80px;" xmlns="http://www.w3.org/2000/svg">'
@@ -3434,7 +3434,7 @@ _RENDERERS['text_reveal_mask'] = function(b) {
   var delay = parseFloat(b.delay !== undefined ? b.delay : 0.2);
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>@keyframes trm-' + uid + '{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0% 0 0);}}</style>'
-    + '<div style="margin:1rem 0;overflow:hidden;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'text_reveal_mask') + '" style="margin:1rem 0;overflow:hidden;">'
     + '<div style="font-size:' + _esc(size) + ';font-weight:800;color:' + _esc(color) + ';line-height:1.3;animation:trm-' + uid + ' 1s cubic-bezier(0.77,0,0.175,1) ' + delay + 's both;">' + _esc(text) + '</div>'
     + '</div>';
 };

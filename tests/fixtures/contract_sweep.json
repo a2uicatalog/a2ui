@@ -8809,7 +8809,7 @@
   "parity": false
  },
  "testimonial_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "testimonial_card",
@@ -8914,7 +8914,7 @@
   "parity": false
  },
  "terminal_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "terminal_block",
@@ -9158,7 +9158,7 @@
   "parity": false
  },
  "time_estimate": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "time_estimate",
@@ -9564,7 +9564,7 @@
   "parity": false
  },
  "text_callout": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "text_callout",
@@ -9606,7 +9606,7 @@
   "parity": false
  },
  "token_budget_meter": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "token_budget_meter",
@@ -9940,7 +9940,7 @@
   "parity": false
  },
  "sun_path": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "sun_path",
@@ -10205,7 +10205,7 @@
   "parity": false
  },
  "svg_path_draw": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "svg_path_draw",
@@ -10465,7 +10465,7 @@
   "parity": false
  },
  "tilt_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "tilt_card",
@@ -10617,7 +10617,7 @@
   "parity": false
  },
  "text_highlight": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "text_highlight",
@@ -10668,7 +10668,7 @@
   "parity": false
  },
  "text_block": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "text_block",
@@ -10697,7 +10697,7 @@
   "parity": false
  },
  "tag_chip": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "tag_chip",
@@ -11136,7 +11136,7 @@
   "parity": false
  },
  "text_reveal_mask": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "text_reveal_mask",
@@ -11242,7 +11242,7 @@
   "parity": false
  },
  "surface_unlocked": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "surface_unlocked",
@@ -11306,7 +11306,7 @@
   "parity": false
  },
  "take_away_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "take_away_card",
@@ -11832,7 +11832,7 @@
   "parity": false
  },
  "tool_tile": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "tool_tile",
@@ -12127,7 +12127,7 @@
   "parity": false
  },
  "tool_call_card": {
-  "status": "pending",
+  "status": "keyed",
   "class": "S",
   "block": {
    "type": "tool_call_card",

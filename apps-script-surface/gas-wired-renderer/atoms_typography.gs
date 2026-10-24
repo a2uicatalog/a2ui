@@ -248,7 +248,7 @@ _RENDERERS['text_highlight'] = function(b) {
     }
   }
 
-  return '<p style="font-size:' + _esc(size) + ';font-weight:' + weight + ';' +
+  return '<p data-cb="node" data-key="' + _ckey(b.text, 'text_highlight') + '" style="font-size:' + _esc(size) + ';font-weight:' + weight + ';' +
     'line-height:1.6;color:rgba(255,255,255,0.75);text-align:' + _esc(align) + ';margin:12px 0;">' +
     html + '</p>';
 };

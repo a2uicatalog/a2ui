@@ -14,7 +14,7 @@ _RENDERERS['surface_unlocked'] = function(b) {
     + '@keyframes su-glow-' + uid + '{0%,100%{box-shadow:0 0 0 0 ' + accent + '55;}60%{box-shadow:0 0 0 10px ' + accent + '00;}}'
     + '#su-' + uid + '{animation:su-in-' + uid + ' 0.5s cubic-bezier(0.34,1.56,0.64,1) both,su-glow-' + uid + ' 1.8s 0.5s ease-out 3;}'
     + '</style>'
-    + '<div id="su-' + uid + '" style="margin:1.5rem 0;padding:22px 26px;background:' + accent + '12;border:2px solid ' + accent + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);display:flex;align-items:center;gap:22px;">'
+    + '<div data-cb="node" data-key="' + _ckey(b.surface, 'surface_unlocked') + '" id="su-' + uid + '" style="margin:1.5rem 0;padding:22px 26px;background:' + accent + '12;border:2px solid ' + accent + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);display:flex;align-items:center;gap:22px;">'
     + '<div style="font-size:3rem;line-height:1;flex-shrink:0">' + icon + '</div>'
     + '<div>'
     + '<div style="font-size:0.6rem;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:' + accent + ';margin-bottom:5px">' + _esc(sub) + '</div>'
@@ -181,7 +181,7 @@ _RENDERERS['take_away_card'] = function(b) {
     ? 'linear-gradient(135deg,' + gradient[0] + ',' + gradient[1] + ')'
     : 'linear-gradient(135deg,' + accent + '0f,' + accent + '1a)';
   var border     = gradient ? 'none' : '2px solid ' + accent + '33';
-  return '<div style="background:' + bg + ';border:' + border + ';border-radius:16px;padding:36px 32px;margin:1.5rem 0;text-align:center;">'
+  return '<div data-cb="node" data-key="' + _ckey(b.headline, 'take_away_card') + '" style="background:' + bg + ';border:' + border + ';border-radius:16px;padding:36px 32px;margin:1.5rem 0;text-align:center;">'
     + '<div style="font-size:2rem;margin-bottom:16px;opacity:0.5;color:' + (gradient ? 'rgba(255,255,255,0.7)' : accent) + ';">❝</div>'
     + '<div style="font-size:' + _esc(size) + ';font-weight:800;color:' + textColor + ';line-height:1.25;letter-spacing:-0.02em;">' + _esc(headline) + '</div>'
     + (sub ? '<div style="font-size:0.82rem;font-weight:600;color:' + (gradient ? 'rgba(255,255,255,0.7)' : accent) + ';margin-top:16px;text-transform:uppercase;letter-spacing:0.1em;">' + _esc(sub) + '</div>' : '')

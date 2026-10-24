@@ -191,7 +191,7 @@ _RENDERERS['tilt_card'] = function(b) {
     ? '<div style="font-size:1rem;font-weight:700;margin-bottom:12px;color:var(--text);">' + _esc(title) + '</div>'
     : '';
 
-  return '<div id="' + uid + '" style="position:relative;border-radius:16px;padding:' + _esc(padding) + ';' +
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'tilt_card') + '" id="' + uid + '" style="position:relative;border-radius:16px;padding:' + _esc(padding) + ';' +
     'background:var(--surface2,#1e2235);border:1px solid var(--border,#334155);' +
     'transform-style:preserve-3d;transform:perspective(800px) rotateX(0deg) rotateY(0deg);' +
     'transition:transform 0.15s ease,box-shadow 0.15s ease;' +

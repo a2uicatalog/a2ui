@@ -374,7 +374,7 @@ _RENDERERS['paragraph'] = function(b) {
 };
 
 _RENDERERS['text_block'] = function(b) {
-  return '<p class="asw-text-block">' + _markdownToHtml(b.text) + '</p>';
+  return '<p data-cb="node" data-key="' + _ckey(b.text, 'text_block') + '" class="asw-text-block">' + _markdownToHtml(b.text) + '</p>';
 };
 
 _RENDERERS['heading'] = function(b) {
@@ -466,7 +466,7 @@ _RENDERERS['inline_code'] = function(b) {
 
 _RENDERERS['tag_chip'] = function(b) {
   var color = b.color || 'var(--accent)';
-  return '<span class="asw-badge" style="background:rgba(26,115,232,0.1);color:' + color + ';padding:4px 8px;border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.75rem;font-weight:600;margin-right:6px;">' + _esc(b.text) + '</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.text, 'tag_chip') + '" class="asw-badge" style="background:rgba(26,115,232,0.1);color:' + color + ';padding:4px 8px;border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.75rem;font-weight:600;margin-right:6px;">' + _esc(b.text) + '</span>';
 };
 
 _RENDERERS['badge'] = function(b) {
@@ -1718,7 +1718,7 @@ _RENDERERS['glossary_inline'] = function(b) {
 };
 
 _RENDERERS['time_estimate'] = function(b) {
-  return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--muted,#5f6368);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:3px 10px;border-radius:100px;">🕐 ' + _esc(String(b.minutes||5)) + ' min read</span>';
+  return '<span data-cb="node" data-key="' + _ckey(b.minutes, 'time_estimate') + '" style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--muted,#5f6368);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:3px 10px;border-radius:100px;">🕐 ' + _esc(String(b.minutes||5)) + ' min read</span>';
 };
 
 _RENDERERS['progress_checkpoint'] = function(b) {
@@ -2322,7 +2322,7 @@ _RENDERERS['terminal_block'] = function(b) {
   var output = (b.output || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var prompt = {zsh:'%',powershell:'PS>',cmd:'>'}[shell] || '$';
   var outHtml = output ? '<div style="color:#9ca3af;white-space:pre-wrap;margin-top:8px;">' + output + '</div>' : '';
-  return '<div style="background:#1e1e2e;border-radius:10px;overflow:hidden;margin:1.2rem 0;font-family:monospace;font-size:0.82rem;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.command, 'terminal_block') + '" style="background:#1e1e2e;border-radius:10px;overflow:hidden;margin:1.2rem 0;font-family:monospace;font-size:0.82rem;">' +
     '<div style="background:#2a2a3e;padding:8px 14px;display:flex;align-items:center;gap:6px;">' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
@@ -2760,7 +2760,7 @@ _RENDERERS['testimonial_card'] = function(b) {
   var starsHtml = rating ? '<div style="margin-bottom:12px;">' + '★'.repeat(rating).split('').map(function(){ return '<span style="color:#facc15;font-size:1rem;">★</span>'; }).join('') + '★'.repeat(5-rating).split('').map(function(){ return '<span style="color:#d1d5db;font-size:1rem;">★</span>'; }).join('') + '</div>' : '';
   var avatarHtml = avatarUrl ? '<img src="' + _esc(avatarUrl) + '" alt="' + _esc(authorName) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">' :
     (authorName ? '<div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">' + _esc(authorName[0]) + '</div>' : '');
-  return '<div style="margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.author_name, 'testimonial_card') + '" style="margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;">' +
     starsHtml +
     '<blockquote style="margin:0 0 16px;font-size:0.93rem;color:#374151;line-height:1.65;font-style:italic;">&ldquo;' + _esc(text) + '&rdquo;</blockquote>' +
     '<div style="display:flex;align-items:center;gap:10px;">' + avatarHtml +

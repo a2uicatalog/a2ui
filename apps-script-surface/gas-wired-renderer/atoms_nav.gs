@@ -273,7 +273,7 @@ _RENDERERS['tool_tile'] = function(b) {
       'border-radius:999px;">' + _esc(b.badge) + '</span>'
     : '';
   return (
-    '<button id="' + uid + '" style="position:relative;display:flex;flex-direction:column;' +
+    '<button data-cb="node" data-key="' + _ckey(b.label, 'tool_tile') + '" id="' + uid + '" style="position:relative;display:flex;flex-direction:column;' +
     'gap:14px;align-items:flex-start;text-align:left;width:100%;' +
     'background:' + gradient + ';border-radius:22px;padding:22px;' +
     'box-shadow:' + glowShadow + ',inset 0 1px 0 rgba(255,255,255,' + highlightA + ');' +
