@@ -131,6 +131,19 @@ just looks plainer.
 
 ---
 
+## d3-time, d3-time-format and d3-scale (Mike Bostock)
+
+- **Project:** d3-time 3.1.0 (UTC intervals and the `scaleUtc` tick intervals), d3-time-format 4.1.0 (`utcFormat`) and d3-scale 4.0.2 (`scaleUtc().ticks()` with its multi-scale tick format)
+- **Website:** https://github.com/d3/d3-time, https://github.com/d3/d3-time-format, https://github.com/d3/d3-scale
+- **License:** ISC License
+- **Copyright:** Copyright 2010-2021 Mike Bostock
+- **Vendored as:** nothing is vendored; a UTC subset is ported by hand (ISO 8601 parsing, the `%Y %y %m %d %e %H %I %p %M %S %L %b %B %a %A %j %%` formatters, the tick interval table and the multi-scale tick labels, the month shortened to `%b`)
+  into `_ps_utc_format`, `_ps_time_ticks` and `_ps_tick_label` in `renderers/web_article.py` and their twins `_psUtcFormat`, `_psTimeTicks` and `_psTickLabel` in
+  `apps-script-surface/gas-wired-renderer/atoms_unstub_series.gs` (the `series` field of `chartjs_line` and `scatter_trend`), and checked against the real libraries' output by
+  `tests/test_series_scatter.py` (golden vectors from `tests/fixtures/series_time_golden_gen.mjs`).
+
+---
+
 ## d3-geo (Mike Bostock)
 
 - **Project:** d3-geo 3.1.1 — `geoOrthographic`, `geoMercator` (with the projection `rotate`), `geoGraticule` and `geoInterpolate` (great-circle interpolation)

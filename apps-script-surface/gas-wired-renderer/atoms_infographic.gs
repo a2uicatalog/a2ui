@@ -354,7 +354,7 @@ function _tmTree(items) {
 }
 _RENDERERS['treemap'] = function(b) {
   // the optional 'version' field is read by _hgVersionNote at the end
-  var items = _ifArr(b.items, 12).map(function(i) { i = _ifObj(i); return { c: String(i.category === undefined ? '' : i.category).slice(0, 20), n: i.name, v: _ifNum(i.value, 0, 1e12, 0), p: _tmPath(i.path) }; }).filter(function(i) { return i.v > 0; });
+  var capN = _tmCap(b), items = _ifArr(b.items, capN).map(function(i) { i = _ifObj(i); return { c: String(i.category === undefined ? '' : i.category).slice(0, 20), n: i.name, v: _ifNum(i.value, 0, 1e12, 0), p: _tmPath(i.path) }; }).filter(function(i) { return i.v > 0; });
   var nested = items.some(function(i) { return i.p.length > 0; }), cats = [];
   if (!nested) { items.forEach(function(i) { if (cats.indexOf(i.c) < 0 && cats.length < 4) cats.push(i.c); }); items = items.filter(function(i) { return cats.indexOf(i.c) >= 0; }); }
   var tot = items.reduce(function(s, i) { return s + i.v; }, 0) || 1, cells = '', tags = '', boxes = '', gates = [], hid = [], aria = '', table, css = '', ws = [];
@@ -395,9 +395,14 @@ _RENDERERS['treemap'] = function(b) {
   ws.sort(function(a, c) { return a - c; });
   if (ws.length) css = '<style>' + ws.map(function(w) { return '@container (width<' + w + 'px){.tmw' + w + '{display:none}}'; }).join('') + '</style>';
   return _ifWrap(_ifTitle(b) + '<div' + aria + ' style="position:relative;height:300px;' + (css ? 'container-type:inline-size;' : '') + (css || hid.some(function(x) { return x; }) ? 'overflow:hidden;' : '') + '">' + css + boxes + cells + tags + '</div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:4px;">Area shows share of the total.' +
-    (nested ? ' Boxes inside boxes are groups.' : '') + '</div>' + _hgVersionNote(b, 'treemap') + table);
+    (nested ? ' Boxes inside boxes are groups.' : '') + '</div>' + _tmOver(b, capN) + _hgVersionNote(b, 'treemap') + table);
 };
 
+function _tmCap(b) { var m = b.max_items; return typeof m === 'number' && isFinite(m) && m === Math.floor(m) && m >= 12 && m <= 60 ? m : 12; }
+function _tmOver(b, capN) {
+  var k = Array.isArray(b.items) ? b.items.length - capN : 0;
+  return b.max_items === undefined || k <= 0 ? '' : _hgNote(k + (k === 1 ? ' item beyond the first ' : ' items beyond the first ') + capN + (k === 1 ? ' was' : ' were') + ' not drawn.');
+}
 // ── sunburst (I40) and its icicle layout (I54) ───────────────────────────────────────────────────────────────────────────────────────────────
 // d3-hierarchy 3.1.2 partition() on the same hierarchy().sum().sort(by value, descending) as the nested treemap (_tmBuild), and d3-shape 3.2.0 arc()
 // (the sector without rounded corners, with padAngle and padRadius) drawn through d3-path 3.1.0 arc() and its 3-digit number rounding (ISC, Mike Bostock);
@@ -3306,6 +3311,7 @@ function _hgRenderRidge(b) {
 }
 _RENDERERS['histogram'] = function(b) {
   if (b.layout === 'ridge') return _hgRenderRidge(b);
+  if (_hgOptsGiven(b)) return _hgRenderOpts(b);
   var raw = _ifArr(b.values, 2000), vals = _hgUsable(raw), skipped = raw.length - vals.length;
   var skipNote = _hgSkipNote(skipped);
   if (vals.length < 5) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A histogram needs at least 5 numbers; this list has ' + vals.length + '.</div>' + skipNote);
@@ -3340,6 +3346,116 @@ _RENDERERS['histogram'] = function(b) {
 };
 
 
+// ── histogram options (plotly wave B, d3-variants): explicit bins (bin_size / bin_start / bin_end), norm, cumulative, func + weights ──
+// Twin of _hg_fixed / _render_histogram_opts in renderers/web_article.py; edges are start + k * size, binned like d3.bin().domain().thresholds() (bisectRight).
+var _HG_OPT_KEYS = ['bin_size', 'bin_start', 'bin_end', 'norm', 'cumulative', 'func', 'weights'], _HG_MAX_BINS = 200, _HG_RATIO_CAP = 1e6;   // range / size is capped before rounding: only 200 bins are drawn
+var _HG_FUNCS = { count: 'Count', sum: 'Sum of weights', avg: 'Average weight', min: 'Smallest weight', max: 'Largest weight' };
+var _HG_NORMS = { 'percent': 'Percent', 'probability': 'Probability', 'density': 'Density', 'probability density': 'Probability density' };
+function _hgIn(v, d) { return typeof v === 'string' && Object.prototype.hasOwnProperty.call(d, v); }
+function _hgOptsGiven(b) {   // an option set to something other than its default (absent, null, '' / 'count' for norm, 'count' for func, false for cumulative)
+  return ['bin_size', 'bin_start', 'bin_end'].some(function(k) { return b[k] !== undefined && b[k] !== null; }) || (b.norm !== undefined && b.norm !== null && b.norm !== '' && b.norm !== 'count') ||
+    (b.func !== undefined && b.func !== null && b.func !== 'count') || b.cumulative === true || Array.isArray(b.weights);
+}
+function _ifUkey(k, used) { var base = k, n = 1; while (used[k] === true) { n++; k = base + ' (' + n + ')'; } used[k] = true; return _esc(k); }   // a contract data-key unique within one drawing (twin: _cb_ukey)
+function _hgFinite(v) { return typeof v === 'number' && Math.abs(v) <= 1e12; }
+function _hgFixed(vals, start, size, end) {
+  var full = Math.max(1, Math.ceil(Math.min((end - start) / size, _HG_RATIO_CAP))), nb = Math.min(_HG_MAX_BINS, full), t = [], k, edges = [], inner, top;
+  for (k = 0; k <= nb; k++) t.push(k === full ? end : start + k * size);
+  for (k = 0; k < nb; k++) edges.push([t[k], t[k + 1]]);
+  inner = t.slice(1, nb); top = t[nb];
+  return [edges, vals.map(function(x) {
+    if (!(start <= x && x <= top)) return -1;
+    var lo = 0, hi = inner.length, mid;
+    while (lo < hi) { mid = (lo + hi) >>> 1; if (inner[mid] <= x) lo = mid + 1; else hi = mid; }
+    return lo;
+  })];
+}
+function _hgYFmt(v) { var s = v.toFixed(3); if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); return (s === '-0' || s === '') ? '0' : s; }
+function _hgRenderOpts(b) {
+  var raw = _ifArr(b.values, 2000), wraw = b.weights, weighted = Array.isArray(wraw), func = _hgIn(b.func, _HG_FUNCS) ? b.func : 'count', ignored = [], pairs = [], skipped = 0, i, k;
+  [['norm', _HG_NORMS], ['func', _HG_FUNCS]].forEach(function(e) { if (b[e[0]] !== undefined && !_hgIn(b[e[0]], e[1]) && !(e[0] === 'norm' && (b.norm === '' || b.norm === 'count'))) ignored.push(e[0]); });
+  raw.forEach(function(v, j) { var w = weighted ? (j < wraw.length ? wraw[j] : 1) : 1; if (_hgFinite(v) && _hgFinite(w)) pairs.push([v, w]); else skipped++; });
+  var vals = pairs.map(function(p) { return p[0]; }), notes = _hgSkipNote(skipped);
+  if (vals.length < 5) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A histogram needs at least 5 numbers; this list has ' + vals.length + '.</div>' + notes);
+  if (func !== 'count' && !weighted) { notes += _hgNote('func ' + func + ' needs weights; counting values instead.'); func = 'count'; }
+  var size = _hgFinite(b.bin_size) && b.bin_size > 0 ? b.bin_size : null, start = _hgFinite(b.bin_start) ? b.bin_start : null, end = _hgFinite(b.bin_end) ? b.bin_end : null, edges, idx;
+  if (b.bin_size !== undefined && size === null) ignored.push('bin_size');
+  if (b.bin_start !== undefined && start === null) ignored.push('bin_start');
+  if (b.bin_end !== undefined && end === null) ignored.push('bin_end');
+  if (start !== null && end !== null && end <= start) { end = null; ignored.push('bin_end'); }
+  if (size === null && start === null && end === null) {
+    edges = _hgBin(vals, _hgTarget(b.bins))[0];
+    idx = vals.map(function(x) { var j = -1; for (var q = 0; q < edges.length; q++) if (edges[q][0] <= x && x < edges[q][1]) { j = q; break; } return j < 0 ? edges.length - 1 : j; });
+  } else {
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    if (size === null) { var span0 = (end !== null ? end : hi) - (start !== null ? start : lo); size = span0 > 0 ? span0 / Math.max(1, Math.ceil(Math.log(vals.length) / Math.log(2)) + 1) : 1; if (!(size > 0)) size = 1; }
+    if (start === null) { var qs = lo / size; start = (end === null || lo < end) ? (Math.abs(qs) <= 1e15 ? Math.floor(qs) * size : lo) : end - size; }
+    var many = false;
+    if (end === null) { var nbin = Math.floor(Math.min((hi - start) / size, _HG_RATIO_CAP)) + 1; end = start + nbin * size; many = nbin > _HG_MAX_BINS; }
+    if (many || (end - start) / size > _HG_MAX_BINS) notes += _hgNote('The bin size gives more than ' + _HG_MAX_BINS + ' bins; the first ' + _HG_MAX_BINS + ' are drawn.');
+    var fx = _hgFixed(vals, start, size, end); edges = fx[0]; idx = fx[1];
+  }
+  var m = edges.length, inside = idx.filter(function(q) { return q >= 0; }).length, cnt = [], ws = [];
+  if (inside < vals.length) notes += _hgNote((vals.length - inside) + (vals.length - inside === 1 ? ' value is' : ' values are') + ' outside the bins and not counted.');
+  if (!inside) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">No value falls inside the bins.</div>' + notes);
+  for (k = 0; k < m; k++) { cnt.push(0); ws.push([]); }
+  pairs.forEach(function(p, j) { if (idx[j] >= 0) { cnt[idx[j]]++; ws[idx[j]].push(p[1]); } });
+  var y = ws.map(function(a) {
+    if (!a.length) return (func === 'count' || func === 'sum') ? 0 : null;   // an empty bin counts 0 (and sums to 0); only avg / min / max have no value there
+    if (func === 'count') return a.length;
+    if (func === 'min') return Math.min.apply(null, a);
+    if (func === 'max') return Math.max.apply(null, a);
+    var t = 0, q; for (q = 0; q < a.length; q++) t += a[q];
+    return func === 'avg' ? t / a.length : t;
+  });
+  var norm = _hgIn(b.norm, _HG_NORMS) ? b.norm : '', cum = b.cumulative === true;
+  if (func !== 'count' && func !== 'sum') {
+    if (norm || cum) notes += _hgNote('norm and cumulative apply to count and sum only; the ' + _HG_FUNCS[func].toLowerCase() + ' per bin is drawn.');
+    norm = ''; cum = false;
+  }
+  if (norm) {
+    var tot = 0; y.forEach(function(v) { tot += v || 0; });
+    if (tot === 0) { notes += _hgNote('The bins add up to 0, so norm was not applied.'); norm = ''; }
+    else y = y.map(function(v, q) { var w = edges[q][1] - edges[q][0]; return v === null ? null : norm === 'percent' ? v * 100 / tot : norm === 'probability' ? v / tot : norm === 'density' ? v / w : v / (tot * w); });
+  }
+  if (cum) { var run = 0; y = y.map(function(v) { run += v || 0; return run; }); }
+  if (ignored.length) notes += _hgNote('Not understood and ignored: ' + _esc(ignored.join(', ')) + '.');
+  var X0 = edges[0][0], X1 = edges[m - 1][1], span = X1 - X0, got = y.filter(function(v) { return v !== null; });
+  var ylo = Math.min(0, Math.min.apply(null, got)), yhi = Math.max(0, Math.max.apply(null, got));
+  if (yhi === ylo) yhi = ylo + 1;
+  var nz = _hgNice(ylo, yhi, 4); ylo = nz[0]; yhi = nz[1];
+  var yt = _hgTicks(ylo, yhi, 4), ys = yhi - ylo;
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit, us = unit ? ' ' + unit : '';
+  var ev = edges.map(function(e) { return e[0]; }); ev.push(edges[m - 1][1]);
+  var d = _hgDecimals(ev), lab = ev.map(function(v) { return _hgNum(v, d); });
+  var ycap = norm ? _HG_NORMS[norm] : _HG_FUNCS[func];
+  ycap = (cum ? 'Cumulative ' + ycap.charAt(0).toLowerCase() + ycap.slice(1) : ycap) + ' per bin';
+  var top = -1; for (k = 0; k < m; k++) if (y[k] !== null && (top < 0 || y[k] > y[top])) top = k;
+  var aria = 'Histogram of ' + inside + ' values in ' + m + (m === 1 ? ' bin' : ' bins') + ' from ' + lab[0] + ' to ' + lab[lab.length - 1] + us + '. ' + ycap + '. Highest bin: ' + lab[top] + ' to ' + lab[top + 1] + us + ', ' + _hgYFmt(y[top]) + '.';
+  function yp(v) { return (v - ylo) / ys * 1000; }
+  var rects = '', z = yp(0), grid = '', kused = Object.create(null);
+  for (i = 0; i < m; i++) {
+    if (y[i] === null) continue;
+    var x = span > 0 ? (edges[i][0] - X0) / span * 1000 : 0, w = span > 0 ? (edges[i][1] - edges[i][0]) / span * 1000 : 1000, a = Math.min(yp(y[i]), z), c = Math.max(yp(y[i]), z);
+    rects += '<rect class="hgb' + (y[i] < 0 ? ' hgn' : '') + '" data-cb="bar" data-key="' + _ifUkey(lab[i] + ' to ' + lab[i + 1] + us, kused) + '" x="' + x.toFixed(2) + '" y="' + (1000 - c).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + (c - a).toFixed(2) + '" style="' + _ifK(i, m) +
+      'transform:scaleY(var(--k,1));"><title>' + _esc(lab[i] + ' to ' + lab[i + 1] + us + ': ' + _hgYFmt(y[i])) + '</title></rect>';
+  }
+  yt.forEach(function(t) {
+    var bt = (yp(t) / 10).toFixed(3) + '%';
+    grid += '<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + (t === 0 ? 'var(--muted,#475569)' : 'var(--border,#CBD5E1)') + ';"></div>' +
+      '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--muted,#475569);">' + _hgYFmt(t) + '</div>';
+  });
+  var css = '<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}.ifhg .hgn{transform-origin:50% 0}' +
+    '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>';
+  var chart = '<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css +
+    '<div style="font-size:0.75rem;color:var(--muted,#475569);margin:0 0 10px 0;">' + _esc(ycap) + '</div>' +
+    '<div role="img" aria-label="' + _esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid +
+    '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>' + _hgAxis(ev, X0, span, lab) + '</div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);margin:0 34px 0 46px;">' + _esc(cap) + '</div>' : '') + '</div>';
+  var plotted = norm || cum || func !== 'count';
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'histogram') + _ifTable(['Bin from', 'Bin to', 'Count'].concat(plotted ? [ycap] : []),
+    edges.map(function(e, q) { return [lab[q] + us, lab[q + 1] + us, String(cnt[q])].concat(plotted ? [y[q] !== null ? _hgYFmt(y[q]) : 'none'] : []); })));
+}
 // ── box_plot (proposal, I37) ── quartiles are d3-array quantileSorted (R-7); whiskers follow d3's box plot example (Tukey, 1.5 IQR);
 // the shared axis is d3 nice(min, max, 5) and its ticks. Twin of _bp_layout / _render_box_plot in renderers/web_article.py.
 function _bpQuantile(a, p) {
@@ -3418,6 +3534,7 @@ function _bpPoints(vals, cap) {
   return out;
 }
 _RENDERERS['box_plot'] = function(b) {
+  if (_bpOptsGiven(b)) return _bpRenderOpts(b);
   var lst = Array.isArray(b.groups) ? b.groups : [], used = [], skipped = 0, leftOut = 0;
   lst.slice(0, 12).forEach(function(g, k) {
     if (!(g && typeof g === 'object' && !Array.isArray(g))) { leftOut++; return; }
@@ -3611,6 +3728,129 @@ _RENDERERS['quiver'] = function(b) {
     _ifTable(['Arrow', xn, yn, 'Across', 'Up', 'Length'], used.map(function(a) { return [a[0], _qvF(a[1]), _qvF(a[2]), _qvF(a[3]) + us, _qvF(a[4]) + us, _qvF(a[5]) + us]; })));
 };
 
+
+// ── box_plot options (plotly wave B, d3-variants): quartile_method, show_mean, orientation, notches, stats, shape 'violin' ──
+// Twin of _bp_quartiles / _bp_kde / _render_box_plot_opts in renderers/web_article.py (see the comment there for the maths).
+var _BPO_KEYS = ['quartile_method', 'show_mean', 'orientation', 'notches', 'shape', 'bandwidth'], _BPO_GRID = 41;
+function _bpMedian(a) { var n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; }
+function _bpQuartiles(a, method) {
+  var n = a.length, h, odd;
+  if (method === 'exclusive' || method === 'inclusive') { h = Math.floor(n / 2); odd = method === 'inclusive' ? n % 2 : 0; return [_bpMedian(a.slice(0, h + odd)), _bpMedian(a), _bpMedian(a.slice(n - h - odd))]; }
+  return [_bpQuantile(a, 0.25), _bpQuantile(a, 0.5), _bpQuantile(a, 0.75)];
+}
+function _bpSd(a) { var cnt = 0, mean = 0, tot = 0, i, d; for (i = 0; i < a.length; i++) { cnt++; d = a[i] - mean; mean += d / cnt; tot += d * (a[i] - mean); } return cnt > 1 ? Math.sqrt(tot / (cnt - 1)) : 0; }  // d3.deviation (Welford)
+function _bpKde(a, q1, q3, bw) {
+  var n = a.length, out = [], j, i, x, t, u;
+  if (!(typeof bw === 'number' && isFinite(bw) && bw > 0 && bw <= 1e12)) { bw = 0.9 * Math.min(_bpSd(a), (q3 - q1) / 1.34) * Math.pow(n, -0.2); if (!(bw > 0)) bw = (a[n - 1] - a[0]) / 10 || 1; }
+  var flr = ((a[n - 1] - a[0]) || 1) * 1e-6, clamped = bw < flr;   // below this the kernel is a spike the 41-point grid cannot show (and 1 / bw overflows to NaN)
+  if (clamped) bw = flr;
+  for (j = 0; j < _BPO_GRID; j++) { x = a[0] + (a[n - 1] - a[0]) * j / (_BPO_GRID - 1); t = 0; for (i = 0; i < n; i++) { u = (x - a[i]) / bw; t += 0.3989422804014327 * Math.exp(-0.5 * u * u) / bw; } out.push([x, t / n]); }
+  return [out, bw, clamped];
+}
+function _bpOptStats(a, method) {
+  var qs = _bpQuartiles(a, method), q1 = qs[0], q3 = qs[2], r = 1.5 * (q3 - q1), inside = a.filter(function(x) { return q1 - r <= x && x <= q3 + r; }), t = 0, i;
+  for (i = 0; i < a.length; i++) t += a[i];
+  return { n: a.length, min: a[0], q1: q1, median: qs[1], q3: q3, max: a[a.length - 1], lo: inside[0], hi: inside[inside.length - 1], mean: t / a.length, outliers: a.filter(function(x) { return x < q1 - r || x > q3 + r; }), vals: a };
+}
+function _bpOptsGiven(b) {   // an option set to something other than its default, or a group with stats
+  var dflt = function(k, d) { return b[k] !== undefined && b[k] !== null && d.indexOf(b[k]) < 0; };
+  return dflt('quartile_method', ['linear']) || b.show_mean === true || b.notches === true || dflt('orientation', ['h', 'horizontal']) || dflt('shape', ['box']) || (Array.isArray(b.groups) && b.groups.some(function(g) { return g && typeof g === 'object' && g.stats && typeof g.stats === 'object' && !Array.isArray(g.stats); }));
+}
+function _bpRenderOpts(b) {
+  var method = _hgIn(b.quartile_method, { linear: 1, exclusive: 1, inclusive: 1 }) ? b.quartile_method : 'linear', vert = b.orientation === 'v' || b.orientation === 'vertical', violin = b.shape === 'violin', notch = b.notches === true, meanOn = b.show_mean === true;
+  var ignored = [];
+  if (b.quartile_method !== undefined && method !== b.quartile_method) ignored.push('quartile_method');
+  if (b.orientation !== undefined && ['h', 'horizontal', 'v', 'vertical'].indexOf(b.orientation) < 0) ignored.push('orientation');
+  if (b.shape !== undefined && b.shape !== 'box' && b.shape !== 'violin') ignored.push('shape');
+  var lst = Array.isArray(b.groups) ? b.groups : [], used = [], skipped = 0, leftOut = 0, nonotch = 0, k, i;
+  lst.slice(0, 12).forEach(function(g, kk) {
+    if (!g || typeof g !== 'object' || Array.isArray(g)) { leftOut++; return; }
+    var nm = g.label ? String(g.label).slice(0, 30) : 'Group ' + (kk + 1), st = g.stats;
+    if (st && typeof st === 'object' && !Array.isArray(st)) {
+      var q = [st.q1, st.median, st.q3];
+      if (!q.every(_hgFinite) || !(q[0] <= q[1] && q[1] <= q[2])) { leftOut++; return; }
+      var opt = function(key, d) { return _hgFinite(st[key]) ? st[key] : d; }, mn = opt('min', null), mx = opt('max', null), lo = opt('lo', mn !== null ? mn : q[0]), hi = opt('hi', mx !== null ? mx : q[2]);
+      used.push([nm, { n: _hgFinite(st.n) && st.n >= 1 && st.n === Math.floor(st.n) ? st.n : null, min: mn, q1: q[0], median: q[1], q3: q[2], max: mx, lo: Math.min(lo, q[0]), hi: Math.max(hi, q[2]), mean: opt('mean', null), outliers: [], vals: null }]);
+      return;
+    }
+    var raw = _ifArr(g.values, 2000), vals = _hgUsable(raw);
+    skipped += raw.length - vals.length;
+    if (vals.length < 5) { leftOut++; return; }
+    used.push([nm, _bpOptStats(vals.slice().sort(function(x, y) { return x - y; }), method)]);
+  });
+  var beyond = lst.length - 12;
+  var notes = _hgSkipNote(skipped) + (leftOut ? _hgNote(leftOut + (leftOut === 1 ? ' group had fewer than 5 usable numbers, no usable stats or was not a group and was' : ' groups had fewer than 5 usable numbers, no usable stats or were not a group and were') + ' left out.') : '') +
+    (beyond > 0 ? _hgNote(beyond + (beyond === 1 ? ' group beyond the first 12 was' : ' groups beyond the first 12 were') + ' not drawn.') : '');
+  if (b.show_points === true) notes += _hgNote('show_points is not drawn together with these options.');
+  if (!used.length) return _ifWrap(_ifTitle(b) + '<div style="' + _ifCard() + '">A box plot needs at least one group with 5 numbers or with q1, median and q3.</div>' + notes + _hgVersionNote(b, 'box_plot'));
+  var n = used.length, bwc = false, kdes = used.map(function(u) { if (!(violin && u[1].vals)) return null; var kd = _bpKde(u[1].vals, u[1].q1, u[1].q3, b.bandwidth); bwc = bwc || kd[2]; return kd[0]; });
+  if (bwc) notes += _hgNote('The bandwidth was too small to draw a smooth shape and was raised.');
+  if (violin && kdes.some(function(x) { return x === null; })) notes += _hgNote('A violin needs the values; groups given as stats are drawn as boxes.');
+  var allv = [];
+  used.forEach(function(u) { var s = u[1]; allv.push(s.lo, s.hi, s.q1, s.q3); s.outliers.forEach(function(o) { allv.push(o); }); if (s.min !== null) allv.push(s.min); if (s.max !== null) allv.push(s.max); if (meanOn && s.mean !== null) allv.push(s.mean); });
+  var nz = _hgNice(Math.min.apply(null, allv), Math.max.apply(null, allv), 5), X0 = nz[0], X1 = nz[1], ticks = _hgTicks(X0, X1, 5), span = X1 - X0, td = _hgDecimals(ticks), tlab = ticks.map(function(t) { return _hgNum(t, td); });
+  var unit = b.unit ? String(b.unit).slice(0, 12) : '', us = unit ? ' ' + unit : '', xl = b.x_label ? String(b.x_label).slice(0, 40) : '', cap = xl ? xl + (unit ? ' (' + unit + ')' : '') : unit;
+  var fv = []; used.forEach(function(u) { (u[1].vals || [u[1].q1, u[1].median, u[1].q3, u[1].lo, u[1].hi]).forEach(function(x) { fv.push(x); }); });
+  var fc = Math.min(_hgDecimals(fv) + 2, td + 3);
+  function f(v) { return _bpFmt(v, fc); }
+  function al(v) { return span > 0 ? (v - X0) / span * 1000 : 500; }
+  function pt(v, c) { return vert ? c.toFixed(2) + ',' + (1000 - al(v)).toFixed(2) : al(v).toFixed(2) + ',' + c.toFixed(2); }
+  function at(v, c) { return vert ? 'left:' + (c / 10).toFixed(3) + '%;top:' + (100 - al(v) / 10).toFixed(3) + '%;' : 'left:' + (al(v) / 10).toFixed(3) + '%;top:' + (c / 10).toFixed(3) + '%;'; }
+  function line(v0, c0, v1, c1) { var a = pt(v0, c0).split(','), c = pt(v1, c1).split(','); return '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + c[0] + '" y2="' + c[1] + '"/>'; }
+  var hw = 1000 / n * 0.25, shapes = '', dots = '', gused = Object.create(null);
+  used.forEach(function(u, kk) {
+    var nm = u[0], s = u[1], kd = kdes[kk], cc = (kk + 0.5) / n * 1000, h2 = kd ? hw * 0.32 : hw, pts = null, dm, side, m, half, nlo, nhi, outl;
+    s.notch = null;
+    shapes += '<g data-cb="node" data-key="' + _ifUkey(nm, gused) + '">';
+    if (kd) {
+      dm = Math.max.apply(null, kd.map(function(p) { return p[1]; }));
+      side = kd.map(function(p) { return [p[0], cc - p[1] / dm * hw * 1.7]; }).concat(kd.slice().reverse().map(function(p) { return [p[0], cc + p[1] / dm * hw * 1.7]; }));
+      shapes += '<polygon class="bpv" points="' + side.map(function(p) { return pt(p[0], p[1]); }).join(' ') + '"/>';
+    }
+    if (notch && s.n) {
+      half = 1.57 * (s.q3 - s.q1) / Math.sqrt(s.n); nlo = Math.max(s.q1, s.median - half); nhi = Math.min(s.q3, s.median + half); m = s.median;
+      if (s.median - half < s.q1 || s.median + half > s.q3) notes += _hgNote('The notch of ' + _esc(nm) + ' reaches past the quartiles and is cut at them.');
+      s.notch = [nlo, nhi];
+      pts = [[s.q1, cc - h2], [nlo, cc - h2], [m, cc - h2 * 0.5], [nhi, cc - h2], [s.q3, cc - h2], [s.q3, cc + h2], [nhi, cc + h2], [m, cc + h2 * 0.5], [nlo, cc + h2], [s.q1, cc + h2]];
+    } else if (notch) nonotch++;
+    if (!pts) pts = [[s.q1, cc - h2], [s.q3, cc - h2], [s.q3, cc + h2], [s.q1, cc + h2]];
+    var m1 = pt(s.median, cc - h2).split(','), m2 = pt(s.median, cc + h2).split(',');
+    shapes += line(s.lo, cc, s.q1, cc) + line(s.q3, cc, s.hi, cc) + line(s.lo, cc - h2 / 2, s.lo, cc + h2 / 2) + line(s.hi, cc - h2 / 2, s.hi, cc + h2 / 2) +
+      '<polygon class="bpq' + (kd ? ' bpt' : '') + '" points="' + pts.map(function(p) { return pt(p[0], p[1]); }).join(' ') + '"/>' + '<line class="bpm" x1="' + m1[0] + '" y1="' + m1[1] + '" x2="' + m2[0] + '" y2="' + m2[1] + '"/></g>';
+    var dist = s.outliers.filter(function(v, j, arr) { return arr.indexOf(v) === j; }).sort(function(p, q) { var da = -Math.abs(p - s.median), db = -Math.abs(q - s.median); return da !== db ? da - db : p - q; });
+    dist.slice(0, _BP_MAX_DOTS).forEach(function(o) { dots += '<div class="bpo" style="position:absolute;' + at(o, cc) + 'width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'; });
+    if (dist.length > _BP_MAX_DOTS) notes += _hgNote(_esc(nm) + ' has ' + dist.length + ' distinct outliers; the ' + _BP_MAX_DOTS + ' furthest from the median are drawn. The table counts them all.');
+    if (meanOn && s.mean !== null) dots += '<div class="bpa" style="position:absolute;' + at(s.mean, cc) + 'width:9px;height:9px;box-sizing:border-box;background:var(--text,#0F172A);border:1.5px solid var(--bg,#fff);transform:translate(-50%,-50%) rotate(45deg);"></div>';
+  });
+  if (nonotch) notes += _hgNote('Notches need the group size n; ' + nonotch + (nonotch === 1 ? ' group has' : ' groups have') + ' none and ' + (nonotch === 1 ? 'is' : 'are') + ' drawn without.');
+  if (ignored.length) notes += _hgNote('Not understood and ignored: ' + _esc(ignored.join(', ')) + '.');
+  var grid = ticks.map(function(t) { return '<div style="position:absolute;' + (vert ? 'left:0;right:0;bottom:' + (al(t) / 10).toFixed(3) + '%;border-top' : 'top:0;bottom:0;left:' + (al(t) / 10).toFixed(3) + '%;border-left') + ':1px solid var(--border,#CBD5E1);"></div>'; }).join('');
+  var labS = 'font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);', body;
+  var svg = '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" class="bps" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + shapes + '</svg>';
+  if (vert) {
+    var yax = ticks.map(function(t, j) { return '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + (al(t) / 10).toFixed(3) + '%;transform:translateY(50%);' + labS + 'white-space:nowrap;line-height:1;">' + tlab[j] + '</div>'; }).join('');
+    var names = '<div style="display:flex;margin-top:6px;">' + used.map(function(u, j) { return '<div style="flex:1 1 0;min-width:0;text-align:center;' + labS + 'overflow-wrap:anywhere;"><span class="bpf">' + _esc(u[0]) + '</span><span class="bpn">' + (j + 1) + '</span></div>'; }).join('') + '</div>';
+    var key = '<div class="bpk" style="' + labS + 'margin-top:6px;">' + _esc(used.map(function(u, j) { return (j + 1) + ' ' + u[0]; }).join('; ')) + '</div>';
+    body = '<div style="position:relative;margin:8px 0 0 46px;"><div style="position:relative;height:260px;">' + grid + svg + dots + yax + '</div>' + names + key + '</div>';
+  } else {
+    var nm2 = used.map(function(u, j) { return '<div style="position:absolute;right:0;top:' + ((j + 0.5) / n * 100).toFixed(3) + '%;transform:translateY(-50%);box-sizing:border-box;padding-right:8px;text-align:right;' + labS + 'overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;">' + _esc(u[0]) + '</div>'; }).join('');
+    var hpx = n * (violin ? 84 : 52);
+    body = '<div style="display:flex;"><div style="flex:0 0 ' + _HG_LABW + ';position:relative;height:' + hpx + 'px;">' + nm2 + '</div><div style="position:relative;flex:1 1 auto;min-width:0;height:' + hpx + 'px;margin-right:34px;">' + grid + svg + dots +
+      '<div style="position:absolute;left:0;right:0;top:100%;border-top:1px solid var(--muted,#475569);">' + _hgAxis(ticks, X0, span, tlab) + '</div></div></div>';
+  }
+  var css = '<style>.ifbp .bps *{vector-effect:non-scaling-stroke}.ifbp .bps line,.ifbp .bps polygon{stroke:var(--muted,#475569);stroke-width:1.5px;fill:none}.ifbp .bpq{fill:var(--surface,#F8FAFC);stroke:var(--accent,#0369A1)}' +
+    '.ifbp .bpt{fill:none}.ifbp .bpv{fill:var(--surface,#F8FAFC);stroke:var(--accent,#0369A1)}.ifbp .bps .bpm{stroke:var(--accent,#0369A1);stroke-width:3px}.ifbp .bpn,.ifbp .bpk{display:none}' +
+    '@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}.ifbp .bpf{display:none}.ifbp .bpn,.ifbp .bpk{display:inline}.ifbp .bpk{display:block}}</style>';
+  var no = function(c) { return c + (c === 1 ? ' outlier' : ' outliers'); };
+  var aria = 'Box plot of ' + n + (n === 1 ? ' group' : ' groups') + ' on a shared ' + (vert ? 'vertical' : 'horizontal') + ' axis from ' + _hgNum(X0, td) + ' to ' + _hgNum(X1, td) + us + '. ' +
+    used.map(function(u) { var s = u[1]; return u[0] + ': median ' + f(s.median) + us + ', middle half ' + f(s.q1) + ' to ' + f(s.q3) + us + ', whiskers ' + f(s.lo) + ' to ' + f(s.hi) + us + ', ' + no(s.outliers.length) + (meanOn && s.mean !== null ? ', mean ' + f(s.mean) + us : ''); }).join('; ') +
+    '.' + (violin ? ' Violin outlines show the estimated density.' : '') + (method !== 'linear' ? ' Quartiles by the ' + method + ' method.' : '');
+  var chart = '<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css + '<div role="img" aria-label="' + _esc(aria) + '" style="margin:0 0 34px 0;' + _IF_FADE + '">' + body + '</div>' +
+    (cap ? '<div style="text-align:center;font-size:0.78rem;color:var(--muted,#475569);">' + _esc(cap) + '</div>' : '') + '</div>';
+  var na = function(v) { return v !== null ? f(v) + us : 'n/a'; };
+  return _ifWrap(_ifTitle(b) + chart + notes + _hgVersionNote(b, 'box_plot') + _ifTable(['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'].concat(meanOn ? ['Mean'] : []).concat(notch ? ['Notch from', 'Notch to'] : []),
+    used.map(function(u) { var s = u[1]; return [u[0], s.n ? String(s.n) : 'n/a', na(s.min), f(s.q1) + us, f(s.median) + us, f(s.q3) + us, na(s.max), String(s.outliers.length)].concat(meanOn ? [na(s.mean)] : []).concat(notch ? [s.notch ? na(s.notch[0]) : 'n/a', s.notch ? na(s.notch[1]) : 'n/a'] : []); })));
+}
 // ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
 // running total (a total with its own value sets it); sums are left to right in doubles. The axis is d3 nice(min, max, 5) over 0
 // and every bar end, and its ticks. Twin of _wf_layout / _render_waterfall in renderers/web_article.py.

@@ -191,6 +191,6 @@ def test_a_chart_whose_labels_all_fit_at_320px_carries_no_gating_markup(core_js)
 def test_schema_describes_the_squarified_chart_and_the_new_fields():
     import yaml
     d = {a["type"]: a for a in yaml.safe_load((Path(__file__).parent.parent / "atoms/schema.yaml").read_text())["blocks"]}["treemap"]
-    assert set(d["fields"]) == {"title", "items", "version"}
+    assert set(d["fields"]) == {"title", "items", "version", "max_items"}
     assert "Columns" not in d["description"] and "squarif" in d["description"].lower()
     assert "path" in d["fields"]["items"] and "version" in d["fields"]["version"]

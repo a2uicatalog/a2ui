@@ -5761,6 +5761,13 @@ blocks:
   fields:
     labels: array of strings. X-axis labels.
     datasets: array of {label, data}. Chart datasets.
+    title: string (optional). Heading of the chart. With series it is drawn above the plot; the labels/datasets drawing in the web preview does not show it (the Apps Script renderer does).
+    series: "(optional, preview) array of up to 8 series {label, x, y, mode, color, dash, shape, size, symbol, fill, text}. x is numbers or ISO 8601 date strings (UTC; a missing x is the index 0, 1, 2...), y numbers. mode lines|markers|lines+markers|text or any + combination (default lines+markers up to 20 points, else lines). color a #hex or colour word, else the theme palette. dash solid|dash|dot|dashdot|longdash|longdashdot, symbol circle|square|diamond|triangle-up|cross|x (both cycle per series when unset, so series differ by more than colour). shape linear|spline|hv|vh|hvh|vhv. size a diameter number or an array per point (bubble). fill tozeroy|tonexty. text an array of point labels. Present and non-empty, this replaces the labels/datasets (or data_points) drawing; absent, nothing changes."
+    x_type: "(optional, with series) linear or date. Default: date when the first x is a date string, else linear."
+    x_label: "string (optional, with series). Axis title under the plot. scatter_trend also reads label_x."
+    y_label: "string (optional, with series). Axis title above the plot. scatter_trend also reads label_y."
+    max_points: "(optional, with series) integer 50 to 2000, default 2000. A series with more usable points is thinned to evenly spaced points (first and last kept) and a visible note says so; the hidden table lists the drawn points. This is the scattergl case: many points, a cap, never a silent drop."
+    version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a note."
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -6180,6 +6187,8 @@ blocks:
     title: string (optional, e.g., 'Acquisition Funnel')
     steps: 'list of dictionaries representing funnel stages: [{''stage'': ''Visits'',
       ''value'': 10000}, {''stage'': ''Signups'', ''value'': 4500}, ...]'
+    shape: 'string (optional, "area"): draws centred stacked bands whose area is proportional to each stage value (Plotly funnelarea) with a numbered legend and a hidden table; anything else keeps the tapered bars. Up to 12 stages.'
+    version: integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note (area shape only).
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -6211,6 +6220,10 @@ blocks:
     max_value: number representing maximum gauge scale (e.g., 100)
     unit: string (optional, e.g., '%')
     label: string (optional, e.g., 'SLA Met')
+    min: number (optional, default 0). Setting min or steps switches to the scale mode (Plotly indicator gauge) with bands, a threshold tick, a needle, a legend and a hidden table.
+    steps: 'list (optional) of {from, to, color} bands on the scale (up to 8); color is a hex or var(--token), default theme colours; each band is also listed in text.'
+    threshold: number (optional). Draws a tick and states whether the value is at or above it (scale mode only).
+    version: integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note (scale mode only).
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -6362,6 +6375,12 @@ blocks:
     data_points: 'list of [x, y] coordinates: [[1.2, 95], [2.5, 88], [3.1, 75]]'
     label_x: string (optional, e.g., 'Response Time (Hours)')
     label_y: string (optional, e.g., 'CSAT Score')
+    series: "(optional, preview) array of up to 8 series {label, x, y, mode, color, dash, shape, size, symbol, fill, text}. x is numbers or ISO 8601 date strings (UTC; a missing x is the index 0, 1, 2...), y numbers. mode lines|markers|lines+markers|text or any + combination (default lines+markers up to 20 points, else lines). color a #hex or colour word, else the theme palette. dash solid|dash|dot|dashdot|longdash|longdashdot, symbol circle|square|diamond|triangle-up|cross|x (both cycle per series when unset, so series differ by more than colour). shape linear|spline|hv|vh|hvh|vhv. size a diameter number or an array per point (bubble). fill tozeroy|tonexty. text an array of point labels. Present and non-empty, this replaces the labels/datasets (or data_points) drawing; absent, nothing changes."
+    x_type: "(optional, with series) linear or date. Default: date when the first x is a date string, else linear."
+    x_label: "string (optional, with series). Axis title under the plot. scatter_trend also reads label_x."
+    y_label: "string (optional, with series). Axis title above the plot. scatter_trend also reads label_y."
+    max_points: "(optional, with series) integer 50 to 2000, default 2000. A series with more usable points is thinned to evenly spaced points (first and last kept) and a visible note says so; the hidden table lists the drawn points. This is the scattergl case: many points, a cap, never a silent drop."
+    version: "integer (optional, default 1). A whole number above 1 draws as version 1 with a note."
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -20973,7 +20992,9 @@ blocks:
     items: array (required, 4 to 12) of {category (max 20), name (max 24), value (number above 0), path? (array of 1 to 3 strings, max 20
       each, the item's ancestor groups from the top down)}. Without any path at most four categories are drawn; items with a value of 0 or
       less are dropped. When any item has a usable path the chart nests by path and category is ignored for items that have one; an item
-      without a path goes into a group named by its category, or Other. The item cap stays 12.
+      without a path goes into a group named by its category, or Other. The item cap is 12 unless max_items is given.
+    max_items: integer (optional, 12 to 60, default 12). Lifts the item cap; items beyond it are not drawn and a note says how many.
+      Any other value keeps 12.
     version: integer (optional, default 1). The treemap contract the payload was written for. Only version 1 exists; a higher whole
       number is drawn as version 1 with a note.
   notes: Area is a weak channel for comparing values, so the table repeats the numbers. Cells fade in with p. Labels are placed by a
@@ -21091,6 +21112,17 @@ blocks:
       edges to 1, 2 or 5 times a power of ten, so the number drawn can differ a little from the number asked for.
     x_label: string (optional, max 40). Names the values on the x axis.
     unit: string (optional, max 12). Appended to the x label and to the edge values in the hidden table.
+    bin_size: number (optional, above 0). Explicit bins of this width instead of the Sturges rule; at most 200 bins are drawn, with a note. The last bin ends at bin_end, so it can be narrower than the rest. Draws one series (no overlay or stack as in Plotly).
+      Bins are start + k * size, include their lower edge and exclude the upper, except the last. Values outside the bins are not counted
+      and a note says how many. Not understood values are ignored with a note.
+    bin_start: number (optional). The first bin edge; default the smallest value rounded down to a multiple of the bin size.
+    bin_end: number (optional, above bin_start). The last bin edge; default one bin past the largest value.
+    norm: string (optional, "percent", "probability", "density" or "probability density"). Normalises count or sum. Percent and probability
+      of the total, density per unit of width, probability density per unit of width of the total. Default counts.
+    cumulative: boolean (optional, default false). Only true switches it on; draws the running total over the bins (count or sum only).
+    func: string (optional, "count", "sum", "avg", "min" or "max", default "count"). What a bin shows; all but count need `weights`
+      (without them it counts, with a note). An empty bin shows nothing for avg, min and max.
+    weights: array (optional, same order as values) of numbers, one per value; a value or weight that is not a finite number skips the pair.
     layout: string (optional, "bars" or "ridge", default "bars"). "ridge" draws one ridge per entry of `series` on shared bins, to compare
       distributions; `values` is then not read. Any other value draws bars.
     series: array (optional, read only when layout is "ridge", 1 to 8) of {label (string, max 30, default "Series n"), values (array, 5
@@ -21121,11 +21153,23 @@ blocks:
   surfaces: *ifg001
   fields:
     title: string (optional, max 80).
-    groups: array (required, 1 to 12) of {label (string, max 30, default "Group n"), values (array, 5 to 2000, of numbers)}. Entries that
+    groups: array (required, 1 to 12) of {label (string, max 30, default "Group n"), values (array, 5 to 2000, of numbers), stats? (object {q1, median, q3,
+      lo?, hi?, min?, max?, mean?, n?}, a precomputed summary drawn instead of values; q1 <= median <= q3)}. Entries that
       are not finite numbers or whose size is above 1e12 are skipped and counted in a note; a group with fewer than 5 usable numbers, or an
       entry that is not a group, is left out with a note. Groups beyond the first 12 are noted and not drawn.
     x_label: string (optional, max 40). Names the values on the axis.
     unit: string (optional, max 12). Appended to the axis caption and to every value in the label and hidden table.
+    quartile_method: string (optional, "linear", "exclusive" or "inclusive", default "linear" = R-7). Exclusive and inclusive take the
+      median of the lower and upper half (an odd sample's middle value left out, or kept in both). Any option below switches to a
+      static box plot without show_points dots; a note says so if show_points is also given.
+    show_mean: boolean (optional, default false). Only true marks each group's mean with a diamond and adds a Mean column to the table. The mean only; Plotly's boxmean "sd" (mean plus standard deviation) is not drawn.
+    orientation: string (optional, "h" or "v", default "h"). "v" draws vertical boxes on a vertical axis; in a narrow container the
+      group names are replaced by numbers with a key underneath.
+    notches: boolean (optional, default false). Only true draws the median notch, median +/- 1.57 * IQR / sqrt(n), cut at the quartiles. The notch interval is also listed in the table (Notch from, Notch to).
+      (with a note); needs n (the values, or stats.n).
+    shape: string (optional, "box" or "violin", default "box"). "violin" draws a Gaussian kernel density outline (every violin scaled
+      to the same width) with a narrow box inside; it needs values, not stats.
+    bandwidth: number (optional, above 0). The violin kernel bandwidth; default 0.9 * min(sd, IQR / 1.34) * n^-0.2. This is a Silverman-style rule, not the one Plotly uses, so a violin differs slightly from Plotly's. A bandwidth below 1e-6 of the data range is raised to that, with a note.
     show_points: boolean (optional, default false). Only true switches it on. Draws every usable number of each group as a small dot along
       its row, at exactly its place on the axis, stacked vertically only as far as needed so no two dots touch (a deterministic dodge
       beeswarm, no script), behind the box, whiskers and median. Rows are taller. At most 300 dots per chart, shared across the groups in

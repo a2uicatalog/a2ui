@@ -32745,6 +32745,16 @@ def _cb_key(v):
     return '' if (v is None or v is _IF_UNDEF) else _cv_esc(_if_str(v))
 
 
+def _cb_ukey(k, used):
+    """A contract data-key unique within one drawing: a repeat of a key gets ' (2)', ' (3)'... (twins: _psUkey, _cfUkey, _ifUkey)."""
+    base, n = k, 1
+    while k in used:
+        n += 1
+        k = base + ' (' + str(n) + ')'
+    used.add(k)
+    return _cb_key(k)
+
+
 def _cb_kj(parts):
     """A category-path key: JavaScript Array.join('/') (null and undefined become empty), attribute-escaped."""
     return _cv_esc('/'.join('' if (x is None or x is _IF_UNDEF) else _if_str(x) for x in parts))
@@ -33283,10 +33293,26 @@ def _tm_tree(items):
     return root, tops
 
 
+def _tm_cap(b):
+    """Optional `max_items`: a whole number from 12 to 60 lifts the 12-item cap; anything else keeps 12."""
+    m = _if_g(b, 'max_items')
+    return int(m) if isinstance(m, (int, float)) and not isinstance(m, bool) and m == m and abs(m) != _HG_INF and m == math.floor(m) and 12 <= m <= 60 else 12
+
+
+def _tm_over(b, cap_n):
+    """The note for items past the cap, only when `max_items` was given (a payload without it renders as before)."""
+    lst = _if_g(b, 'items')
+    if _if_g(b, 'max_items') is _IF_UNDEF or not isinstance(lst, list) or len(lst) <= cap_n:
+        return ''
+    k = len(lst) - cap_n
+    return _hg_note(str(k) + (' item beyond the first ' if k == 1 else ' items beyond the first ') + str(cap_n) + (' was' if k == 1 else ' were') + ' not drawn.')
+
+
 def _render_treemap(b: dict) -> str:
     # the optional 'version' field is read by _hg_version_note at the end
+    cap_n = _tm_cap(b)
     items = []
-    for i in _if_arr(_if_g(b, 'items'), 12):
+    for i in _if_arr(_if_g(b, 'items'), cap_n):
         i = _if_obj(i)
         items.append({'c': _if_cat(_if_g(i, 'category'), 20), 'n': _if_g(i, 'name'), 'v': _if_n(_if_g(i, 'value'), 0, 1e12, 0), 'p': _tm_path(_if_g(i, 'path'))})
     items = [i for i in items if i['v'] > 0]
@@ -33373,8 +33399,9 @@ def _render_treemap(b: dict) -> str:
         table = _if_table(['Item', 'Path', 'Value', 'Share'], [[i['n'], ' / '.join(i['chain']), _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items])
     else:
         table = _if_table(['Item', 'Category', 'Value', 'Share'], [[i['n'], i['c'], _if_fmt(i['v']), _if_fixed(i['v'] / tot * 100, 1) + '%'] for i in items])
+    over = _tm_over(b, cap_n)
     return _if_wrap(_if_title(b) + '<div' + aria + ' style="position:relative;height:300px;' + ('container-type:inline-size;' if css else '') + ('overflow:hidden;' if css or any(hid) else '') + '">' + css + boxes + cells + tags + '</div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:4px;">Area shows share of the total.'
-                    + (' Boxes inside boxes are groups.' if nested else '') + '</div>' + _hg_version_note(b, 'treemap') + table)
+                    + (' Boxes inside boxes are groups.' if nested else '') + '</div>' + over + _hg_version_note(b, 'treemap') + table)
 
 
 # ── sunburst (I40) and its icicle layout (I54) ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -37375,6 +37402,8 @@ def _render_histogram_ridge(b: dict) -> str:
 def _render_histogram(b: dict) -> str:
     if _if_g(b, 'layout') == 'ridge':
         return _render_histogram_ridge(b)
+    if _hg_opts_given(b):
+        return _render_histogram_opts(b)
     raw = _if_arr(_if_g(b, 'values'), 2000)
     vals = _hg_usable(raw)
     skipped = len(raw) - len(vals)
@@ -37424,6 +37453,213 @@ def _render_histogram(b: dict) -> str:
              + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 46px;">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
     return _if_wrap(_if_title(b) + chart + skip_note + _hg_version_note(b)
                     + _if_table(['Bin from', 'Bin to', 'Count'], [[lab[i] + (' ' + unit if unit else ''), lab[i + 1] + (' ' + unit if unit else ''), str(counts[i])] for i in range(m)]))
+
+
+# ── histogram options (plotly wave B, d3-variants): explicit bins (bin_size / bin_start / bin_end), norm, cumulative, func + weights ──
+# Edges are start + k * size (the last one is `end`); a value goes to d3.bin().domain([start, end]).thresholds(interior edges)'s bin (left-closed, the
+# last bin closed on the right; bisectRight). Twin of _hgFixed / _hgRenderOpts in atoms_infographic.gs.
+_HG_OPT_KEYS = ('bin_size', 'bin_start', 'bin_end', 'norm', 'cumulative', 'func', 'weights')
+_HG_MAX_BINS = 200
+_HG_RATIO_CAP = 1e6   # range / bin size is capped here before it is rounded: only the first 200 bins are drawn, so a larger ratio changes nothing but would overflow
+_HG_FUNCS = {'count': 'Count', 'sum': 'Sum of weights', 'avg': 'Average weight', 'min': 'Smallest weight', 'max': 'Largest weight'}
+_HG_NORMS = {'percent': 'Percent', 'probability': 'Probability', 'density': 'Density', 'probability density': 'Probability density'}
+
+
+def _hg_in(v, d):
+    return isinstance(v, str) and v in d
+
+
+def _hg_opts_given(b):
+    """True when a histogram option is set to something other than its default (absent, null, '' / 'count' for norm, 'count' for func, false for cumulative):
+    a field written at its default draws exactly what the field left out draws."""
+    g = lambda k: _if_g(b, k)
+    return (any(g(k) is not _IF_UNDEF and g(k) is not None for k in ('bin_size', 'bin_start', 'bin_end'))
+            or (g('norm') is not _IF_UNDEF and g('norm') is not None and g('norm') != '' and g('norm') != 'count')
+            or (g('func') is not _IF_UNDEF and g('func') is not None and g('func') != 'count')
+            or g('cumulative') is True or isinstance(g('weights'), list))
+
+
+def _hg_finite(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= 1e12
+
+
+def _hg_fixed(vals, start, size, end):
+    """([edges], [bin index or -1 per value]) for explicit bins; at most _HG_MAX_BINS bins (the rest of the range is dropped)."""
+    import bisect as _bisect
+    full = max(1, int(math.ceil(min((end - start) / size, _HG_RATIO_CAP))))   # a tiny size would make this infinite
+    nb = min(_HG_MAX_BINS, full)
+    t = [end if k == full else start + k * size for k in range(nb + 1)]
+    edges = [(t[k], t[k + 1]) for k in range(nb)]
+    top = t[nb]
+    inner = t[1:nb]
+    return edges, [(_bisect.bisect_right(inner, x, 0, nb - 1) if start <= x <= top else -1) for x in vals]
+
+
+def _hg_yfmt(v):
+    s = _if_fixed(v, 3)
+    if '.' in s:
+        s = s.rstrip('0').rstrip('.')
+    return '0' if s in ('-0', '') else s
+
+
+def _render_histogram_opts(b: dict) -> str:
+    raw = _if_arr(_if_g(b, 'values'), 2000)
+    wraw = _if_g(b, 'weights')
+    func = _if_g(b, 'func') if _hg_in(_if_g(b, 'func'), _HG_FUNCS) else 'count'
+    weighted = isinstance(wraw, list)
+    ignored = [k for k, d in (('norm', _HG_NORMS), ('func', _HG_FUNCS)) if _if_g(b, k) is not _IF_UNDEF and not _hg_in(_if_g(b, k), d) and not (k == 'norm' and _if_g(b, k) in ('', 'count'))]
+    pairs, skipped = [], 0
+    for i, v in enumerate(raw):
+        w = wraw[i] if weighted and i < len(wraw) else 1
+        if _hg_finite(v) and _hg_finite(w):
+            pairs.append((float(v), float(w)))
+        else:
+            skipped += 1
+    vals = [p[0] for p in pairs]
+    notes = _hg_skip_note(skipped)
+    if len(vals) < 5:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A histogram needs at least 5 numbers; this list has ' + str(len(vals)) + '.</div>' + notes)
+    if func != 'count' and not weighted:
+        notes += _hg_note('func ' + func + ' needs weights; counting values instead.')
+        func = 'count'
+    size, start, end = _if_g(b, 'bin_size'), _if_g(b, 'bin_start'), _if_g(b, 'bin_end')
+    size = float(size) if _hg_finite(size) and size > 0 else None
+    start = float(start) if _hg_finite(start) else None
+    end = float(end) if _hg_finite(end) else None
+    for k, v in (('bin_size', _if_g(b, 'bin_size')), ('bin_start', _if_g(b, 'bin_start')), ('bin_end', _if_g(b, 'bin_end'))):
+        if v is not _IF_UNDEF and ((k == 'bin_size' and size is None) or (k == 'bin_start' and start is None) or (k == 'bin_end' and end is None)):
+            ignored.append(k)
+    if start is not None and end is not None and end <= start:
+        end = None
+        ignored.append('bin_end')
+    if size is None and start is None and end is None:
+        edges, counts0 = _hg_bin(vals, _hg_target(_if_g(b, 'bins')))
+        idx = []
+        for x in vals:
+            j = next((k for k, e in enumerate(edges) if e[0] <= x < e[1]), len(edges) - 1)
+            idx.append(j)
+    else:
+        lo, hi = min(vals), max(vals)
+        if size is None:
+            span0 = (end if end is not None else hi) - (start if start is not None else lo)
+            size = span0 / max(1, math.ceil(math.log(len(vals)) / math.log(2)) + 1) if span0 > 0 else 1.0
+            if not size > 0:
+                size = 1.0
+        if start is None:
+            qs = lo / size
+            start = (math.floor(qs) * size if abs(qs) <= 1e15 else lo) if end is None or lo < end else end - size
+        many = False
+        if end is None:
+            nbin = math.floor(min((hi - start) / size, _HG_RATIO_CAP)) + 1
+            end = start + nbin * size
+            many = nbin > _HG_MAX_BINS      # (end - start) / size below can lose the count when size is under the spacing of floats at start
+        if many or (end - start) / size > _HG_MAX_BINS:
+            notes += _hg_note('The bin size gives more than ' + str(_HG_MAX_BINS) + ' bins; the first ' + str(_HG_MAX_BINS) + ' are drawn.')
+        edges, idx = _hg_fixed(vals, start, size, end)
+    m = len(edges)
+    inside = [k for k in idx if k >= 0]
+    if len(inside) < len(vals):
+        notes += _hg_note(str(len(vals) - len(inside)) + (' value is' if len(vals) - len(inside) == 1 else ' values are') + ' outside the bins and not counted.')
+    if not inside:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">No value falls inside the bins.</div>' + notes)
+    cnt = [0] * m
+    ws = [[] for _ in range(m)]
+    for (x, w), k in zip(pairs, idx):
+        if k >= 0:
+            cnt[k] += 1
+            ws[k].append(w)
+
+    def red(a):
+        if not a:
+            return 0.0 if func in ('count', 'sum') else None   # an empty bin counts 0 (and sums to 0); only avg / min / max have no value there
+        if func == 'count':
+            return float(len(a))
+        if func == 'min':
+            return min(a)
+        if func == 'max':
+            return max(a)
+        t = 0.0
+        for w in a:
+            t += w
+        return t / len(a) if func == 'avg' else t
+    y = [red(a) for a in ws]
+    norm = _if_g(b, 'norm') if _hg_in(_if_g(b, 'norm'), _HG_NORMS) else ''
+    cum = _if_g(b, 'cumulative') is True
+    if func not in ('count', 'sum'):
+        if norm or cum:
+            notes += _hg_note('norm and cumulative apply to count and sum only; the ' + _HG_FUNCS[func].lower() + ' per bin is drawn.')
+        norm, cum = '', False
+    if norm:
+        tot = 0.0
+        for v in y:
+            tot += v or 0.0
+        if tot == 0:
+            notes += _hg_note('The bins add up to 0, so norm was not applied.')
+            norm = ''
+        else:
+            y = [None if v is None else (v * 100 / tot if norm == 'percent' else v / tot if norm == 'probability' else v / (edges[k][1] - edges[k][0]) if norm == 'density'
+                                         else v / (tot * (edges[k][1] - edges[k][0]))) for k, v in enumerate(y)]
+    if cum:
+        run = 0.0
+        out = []
+        for v in y:
+            run += v or 0.0
+            out.append(run)
+        y = out
+    if ignored:
+        notes += _hg_note('Not understood and ignored: ' + _cv_esc(', '.join(ignored)) + '.')
+    X0, X1 = edges[0][0], edges[-1][1]
+    span = X1 - X0
+    got = [v for v in y if v is not None]
+    ylo, yhi = min(0.0, min(got)), max(0.0, max(got))
+    if yhi == ylo:
+        yhi = ylo + 1.0
+    ylo, yhi = _hg_nice(ylo, yhi, 4)
+    yt = _hg_ticks(ylo, yhi, 4)
+    ys = (yhi - ylo)
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    ev = [e[0] for e in edges] + [edges[-1][1]]
+    d = _hg_decimals(ev)
+    lab = [_hg_num(v, d) for v in ev]
+    ycap = _HG_NORMS[norm] if norm else _HG_FUNCS[func]
+    ycap = ('Cumulative ' + ycap[0].lower() + ycap[1:] if cum else ycap) + ' per bin'
+    top = max((k for k in range(m) if y[k] is not None), key=lambda k: (y[k], -k))
+    aria = ('Histogram of ' + str(len(inside)) + ' values in ' + str(m) + (' bin' if m == 1 else ' bins') + ' from ' + lab[0] + ' to ' + lab[-1] + (' ' + unit if unit else '')
+            + '. ' + ycap + '. Highest bin: ' + lab[top] + ' to ' + lab[top + 1] + (' ' + unit if unit else '') + ', ' + _hg_yfmt(y[top]) + '.')
+
+    def yp(v):
+        return (v - ylo) / ys * 1000
+    rects = ''
+    kused = set()
+    z = yp(0)
+    for i in range(m):
+        if y[i] is None:
+            continue
+        x = (edges[i][0] - X0) / span * 1000 if span > 0 else 0.0
+        w = (edges[i][1] - edges[i][0]) / span * 1000 if span > 0 else 1000.0
+        a, c = sorted((yp(y[i]), z))
+        rects += ('<rect class="hgb' + (' hgn' if y[i] < 0 else '') + '" data-cb="bar" data-key="' + _cb_ukey(lab[i] + ' to ' + lab[i + 1] + (' ' + unit if unit else ''), kused) + '" x="' + _if_fixed(x, 2) + '" y="' + _if_fixed(1000 - c, 2) + '" width="' + _if_fixed(w, 2) + '" height="' + _if_fixed(c - a, 2) + '" style="' + _if_k(i, m)
+                  + 'transform:scaleY(var(--k,1));"><title>' + _cv_esc(lab[i] + ' to ' + lab[i + 1] + (' ' + unit if unit else '') + ': ' + _hg_yfmt(y[i])) + '</title></rect>')
+    grid = ''
+    for t in yt:
+        bt = _if_fixed(yp(t) / 10, 3) + '%'
+        grid += ('<div style="position:absolute;left:0;right:0;bottom:' + bt + ';border-top:1px solid ' + ('var(--muted,#475569)' if t == 0 else 'var(--border,#CBD5E1)') + ';"></div>'
+                 '<div style="position:absolute;right:100%;margin-right:6px;bottom:' + bt + ';transform:translateY(50%);font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _hg_yfmt(t) + '</div>')
+    css = ('<style>.ifhg .hgb{fill:var(--accent,#0369A1);stroke:var(--bg,#fff);stroke-width:1px;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%}.ifhg .hgn{transform-origin:50% 0}'
+           '@container (max-width:560px){.ifhg .hgx:not(.hgc){display:none}}</style>')
+    chart = ('<div class="ifhg" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css
+             + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 10px 0;">' + _cv_esc(ycap) + '</div>'
+             + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="position:relative;height:220px;margin:0 34px 34px 46px;">' + grid
+             + '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible;">' + rects + '</svg>'
+             + _hg_axis(ev, X0, span, lab) + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 34px 0 46px;">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    us = ' ' + unit if unit else ''
+    plotted = norm or cum or func != 'count'
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b)
+                    + _if_table(['Bin from', 'Bin to', 'Count'] + ([ycap] if plotted else []),
+                                [[lab[i] + us, lab[i + 1] + us, str(cnt[i])] + ([_hg_yfmt(y[i]) if y[i] is not None else 'none'] if plotted else []) for i in range(m)]))
 
 
 # ── box_plot (proposal, I37) ── quartiles are d3-array quantileSorted (R-7); whiskers follow d3's box plot example (Tukey, 1.5 IQR);
@@ -37557,7 +37793,19 @@ def _bp_points(vals, cap):
     return [a[(i * (m - 1) + c // 2) // c] for i in range(cap)] if c > 0 else [a[m // 2]]
 
 
+def _bp_opts_given(b):
+    """True when a box_plot option is set to something other than its default (quartile_method 'linear', show_mean / notches false, orientation 'h' / 'horizontal',
+    shape 'box'; bandwidth only matters with shape 'violin'), or a group carries stats."""
+    g = lambda k: _if_g(b, k)
+    return ((g('quartile_method') is not _IF_UNDEF and g('quartile_method') is not None and g('quartile_method') != 'linear')
+            or g('show_mean') is True or g('notches') is True
+            or (g('orientation') is not _IF_UNDEF and g('orientation') is not None and g('orientation') not in ('h', 'horizontal'))
+            or (g('shape') is not _IF_UNDEF and g('shape') is not None and g('shape') != 'box')) or any(isinstance(g, dict) and isinstance(_if_g(g, 'stats'), dict) for g in (_if_g(b, 'groups') if isinstance(_if_g(b, 'groups'), list) else []))
+
+
 def _render_box_plot(b: dict) -> str:
+    if _bp_opts_given(b):
+        return _render_box_plot_opts(b)
     lst = _if_g(b, 'groups')
     lst = lst if isinstance(lst, list) else []
     used, skipped, left_out = [], 0, 0
@@ -37825,6 +38073,225 @@ def _render_quiver(b: dict) -> str:
              '<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';margin:0 12px 0 56px;">' + _cv_esc(xn) + ' (across)</div></div>')
     return _if_wrap(_if_title(b) + chart + cap + notes + ver
                     + _if_table(['Arrow', xn, yn, 'Across', 'Up', 'Length'], [[a[0], _qv_f(a[1]), _qv_f(a[2]), _qv_f(a[3]) + us, _qv_f(a[4]) + us, _qv_f(a[5]) + us] for a in used]))
+
+# ── box_plot options (plotly wave B, d3-variants): quartile_method, show_mean, orientation, notches, stats, shape 'violin' ──
+# Quartiles: linear = d3 quantileSorted (R-7, the default); exclusive / inclusive = the median of the lower / upper half (the middle value of an odd sample left
+# out / kept in both halves). Violin = Gaussian kernel density (mean of K((x - v) / h) / h, d3's kernel density example) on 41 points from min to max, bandwidth h
+# `bandwidth` or 0.9 * min(sd, IQR / 1.34) * n^-0.2, every violin scaled to the same half-width. Twin of _bpOptStats / _bpKde / _bpRenderOpts in atoms_infographic.gs.
+_BPO_KEYS = ('quartile_method', 'show_mean', 'orientation', 'notches', 'shape', 'bandwidth')
+_BPO_GRID = 41
+
+
+def _bp_median(a):
+    n = len(a)
+    return a[n // 2] if n % 2 else (a[n // 2 - 1] + a[n // 2]) / 2
+
+
+def _bp_quartiles(a, method):
+    n = len(a)
+    if method == 'exclusive' or method == 'inclusive':
+        h = n // 2
+        odd = n % 2 if method == 'inclusive' else 0
+        return _bp_median(a[:h + odd]), _bp_median(a), _bp_median(a[n - h - odd:])
+    return _bp_quantile(a, 0.25), _bp_quantile(a, 0.5), _bp_quantile(a, 0.75)
+
+
+def _bp_sd(a):
+    """d3.deviation: Welford's running mean and sum of squares, over n - 1."""
+    cnt, mean, tot = 0, 0.0, 0.0
+    for x in a:
+        cnt += 1
+        d = x - mean
+        mean += d / cnt
+        tot += d * (x - mean)
+    return math.sqrt(tot / (cnt - 1)) if cnt > 1 else 0.0
+
+
+def _bp_kde(a, q1, q3, bw):
+    """([x, density] on _BPO_GRID points from min to max, the bandwidth used, whether it was raised to the floor) for a sorted list."""
+    n = len(a)
+    if not (isinstance(bw, (int, float)) and not isinstance(bw, bool) and bw == bw and 0 < bw <= 1e12):
+        bw = 0.9 * min(_bp_sd(a), (q3 - q1) / 1.34) * math.pow(n, -0.2)
+        if not bw > 0:
+            bw = (a[-1] - a[0]) / 10 or 1.0
+    floor_ = ((a[-1] - a[0]) or 1.0) * 1e-6    # below this the kernel is a spike the 41-point grid cannot show (and 1 / bw overflows to NaN)
+    clamped = bw < floor_
+    if clamped:
+        bw = floor_
+    out = []
+    for j in range(_BPO_GRID):
+        x = a[0] + (a[-1] - a[0]) * j / (_BPO_GRID - 1)
+        t = 0.0
+        for v in a:
+            u = (x - v) / bw
+            t += 0.3989422804014327 * math.exp(-0.5 * u * u) / bw
+        out.append((x, t / n))
+    return out, bw, clamped
+
+
+def _bp_opt_stats(a, method):
+    q1, med, q3 = _bp_quartiles(a, method)
+    r = 1.5 * (q3 - q1)
+    inside = [x for x in a if q1 - r <= x <= q3 + r]
+    t = 0.0
+    for x in a:
+        t += x
+    return {'n': len(a), 'min': a[0], 'q1': q1, 'median': med, 'q3': q3, 'max': a[-1], 'lo': inside[0], 'hi': inside[-1], 'mean': t / len(a),
+            'outliers': [x for x in a if x < q1 - r or x > q3 + r], 'vals': a}
+
+
+def _render_box_plot_opts(b: dict) -> str:
+    method = _if_g(b, 'quartile_method') if _hg_in(_if_g(b, 'quartile_method'), {'linear': 1, 'exclusive': 1, 'inclusive': 1}) else 'linear'
+    vert = _if_g(b, 'orientation') in ('v', 'vertical')
+    violin = _if_g(b, 'shape') == 'violin'
+    notch = _if_g(b, 'notches') is True
+    mean_on = _if_g(b, 'show_mean') is True
+    ignored = [k for k in ('quartile_method', 'orientation', 'shape') if _if_g(b, k) is not _IF_UNDEF and not (
+        (k == 'quartile_method' and method == _if_g(b, k)) or (k == 'orientation' and _if_g(b, k) in ('h', 'horizontal', 'v', 'vertical')) or (k == 'shape' and _if_g(b, k) in ('box', 'violin')))]
+    lst = _if_g(b, 'groups')
+    lst = lst if isinstance(lst, list) else []
+    used, skipped, left_out, nonotch, flat = [], 0, 0, 0, 0
+    for k, g in enumerate(lst[:12]):
+        if not isinstance(g, dict):
+            left_out += 1
+            continue
+        nm = _if_str(_if_g(g, 'label'))[:30] if _if_truthy(_if_g(g, 'label')) else 'Group ' + str(k + 1)
+        st = _if_g(g, 'stats')
+        if isinstance(st, dict):
+            q = [_if_g(st, x) for x in ('q1', 'median', 'q3')]
+            if not all(_hg_finite(v) for v in q) or not q[0] <= q[1] <= q[2]:
+                left_out += 1
+                continue
+            opt = lambda key, d: float(_if_g(st, key)) if _hg_finite(_if_g(st, key)) else d
+            n_ = _if_g(st, 'n')
+            mn, mx = opt('min', None), opt('max', None)
+            lo, hi = opt('lo', mn if mn is not None else q[0]), opt('hi', mx if mx is not None else q[2])
+            used.append((nm, {'n': int(n_) if _hg_finite(n_) and n_ >= 1 and n_ == math.floor(n_) else None, 'min': mn, 'q1': float(q[0]), 'median': float(q[1]), 'q3': float(q[2]), 'max': mx,
+                              'lo': min(lo, q[0]), 'hi': max(hi, q[2]), 'mean': opt('mean', None), 'outliers': [], 'vals': None}))
+            continue
+        raw = _if_arr(_if_g(g, 'values'), 2000)
+        vals = _hg_usable(raw)
+        skipped += len(raw) - len(vals)
+        if len(vals) < 5:
+            left_out += 1
+            continue
+        used.append((nm, _bp_opt_stats(sorted(vals), method)))
+    beyond = len(lst) - 12
+    notes = (_hg_skip_note(skipped)
+             + (_hg_note(str(left_out) + (' group had fewer than 5 usable numbers, no usable stats or was not a group and was' if left_out == 1 else ' groups had fewer than 5 usable numbers, no usable stats or were not a group and were') + ' left out.') if left_out else '')
+             + (_hg_note(str(beyond) + (' group beyond the first 12 was' if beyond == 1 else ' groups beyond the first 12 were') + ' not drawn.') if beyond > 0 else ''))
+    if _if_g(b, 'show_points') is True:
+        notes += _hg_note('show_points is not drawn together with these options.')
+    if not used:
+        return _if_wrap(_if_title(b) + '<div style="' + _if_card() + '">A box plot needs at least one group with 5 numbers or with q1, median and q3.</div>' + notes + _hg_version_note(b, 'box_plot'))
+    n = len(used)
+    kdes, bwc = [], False
+    for nm, s in used:
+        if violin and s['vals'] is not None:
+            kd = _bp_kde(s['vals'], s['q1'], s['q3'], _if_g(b, 'bandwidth'))
+            kdes.append(kd[0])
+            bwc = bwc or kd[2]
+        else:
+            kdes.append(None)
+    if bwc:
+        notes += _hg_note('The bandwidth was too small to draw a smooth shape and was raised.')
+    if violin and any(k is None for k in kdes):
+        notes += _hg_note('A violin needs the values; groups given as stats are drawn as boxes.')
+    allv = []
+    for nm, s in used:
+        allv += [s['lo'], s['hi'], s['q1'], s['q3']] + s['outliers'] + [s[k] for k in ('min', 'max') if s[k] is not None]
+        if mean_on and s['mean'] is not None:
+            allv.append(s['mean'])
+    X0, X1 = _hg_nice(min(allv), max(allv), 5)
+    ticks = _hg_ticks(X0, X1, 5)
+    span = X1 - X0
+    td = _hg_decimals(ticks)
+    tlab = [_hg_num(t, td) for t in ticks]
+    unit = _if_str(_if_g(b, 'unit'))[:12] if _if_truthy(_if_g(b, 'unit')) else ''
+    us = ' ' + unit if unit else ''
+    xl = _if_str(_if_g(b, 'x_label'))[:40] if _if_truthy(_if_g(b, 'x_label')) else ''
+    cap = xl + (' (' + unit + ')' if unit else '') if xl else unit
+    fc = min(_hg_decimals([x for _, s in used for x in (s['vals'] or [s['q1'], s['median'], s['q3'], s['lo'], s['hi']])]) + 2, td + 3)
+
+    def f(v):
+        return _bp_fmt(v, fc)
+
+    def al(v):
+        return (v - X0) / span * 1000 if span > 0 else 500.0
+
+    def pt(v, c):
+        return (_if_fixed(c, 2) + ',' + _if_fixed(1000 - al(v), 2)) if vert else (_if_fixed(al(v), 2) + ',' + _if_fixed(c, 2))
+
+    def at(v, c):    # an HTML position (percent) of value v across-position c
+        return ('left:' + _if_fixed(c / 10, 3) + '%;top:' + _if_fixed(100 - al(v) / 10, 3) + '%;') if vert else ('left:' + _if_fixed(al(v) / 10, 3) + '%;top:' + _if_fixed(c / 10, 3) + '%;')
+
+    def line(v0, c0, v1, c1):
+        a, c = pt(v0, c0).split(','), pt(v1, c1).split(',')
+        return '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + c[0] + '" y2="' + c[1] + '"/>'
+    hw = 1000.0 / n * 0.25
+    shapes, dots = '', ''
+    gused = set()
+    for k, ((nm, s), kd) in enumerate(zip(used, kdes)):
+        cc = (k + 0.5) / n * 1000
+        h2 = hw * 0.32 if kd else hw
+        shapes += '<g data-cb="node" data-key="' + _cb_ukey(nm, gused) + '">'
+        if kd:
+            dm = max(d for _, d in kd)
+            side = [(x, cc - d / dm * hw * 1.7) for x, d in kd] + [(x, cc + d / dm * hw * 1.7) for x, d in reversed(kd)]
+            shapes += '<polygon class="bpv" points="' + ' '.join(pt(v, c) for v, c in side) + '"/>'
+        pts = None
+        s['notch'] = None
+        if notch and s['n']:
+            half = 1.57 * (s['q3'] - s['q1']) / math.sqrt(s['n'])
+            nlo, nhi = max(s['q1'], s['median'] - half), min(s['q3'], s['median'] + half)
+            if s['median'] - half < s['q1'] or s['median'] + half > s['q3']:
+                notes += _hg_note('The notch of ' + _cv_esc(nm) + ' reaches past the quartiles and is cut at them.')
+            m = s['median']
+            s['notch'] = (nlo, nhi)
+            pts = [(s['q1'], cc - h2), (nlo, cc - h2), (m, cc - h2 * 0.5), (nhi, cc - h2), (s['q3'], cc - h2), (s['q3'], cc + h2), (nhi, cc + h2), (m, cc + h2 * 0.5), (nlo, cc + h2), (s['q1'], cc + h2)]
+        elif notch:
+            nonotch += 1
+        if pts is None:
+            pts = [(s['q1'], cc - h2), (s['q3'], cc - h2), (s['q3'], cc + h2), (s['q1'], cc + h2)]
+        shapes += (line(s['lo'], cc, s['q1'], cc) + line(s['q3'], cc, s['hi'], cc) + line(s['lo'], cc - h2 / 2, s['lo'], cc + h2 / 2) + line(s['hi'], cc - h2 / 2, s['hi'], cc + h2 / 2)
+                   + '<polygon class="bpq' + (' bpt' if kd else '') + '" points="' + ' '.join(pt(v, c) for v, c in pts) + '"/>'
+                   + '<line class="bpm" x1="' + pt(s['median'], cc - h2).split(',')[0] + '" y1="' + pt(s['median'], cc - h2).split(',')[1] + '" x2="' + pt(s['median'], cc + h2).split(',')[0] + '" y2="' + pt(s['median'], cc + h2).split(',')[1] + '"/></g>')
+        for o in sorted(set(s['outliers']), key=lambda v: (-abs(v - s['median']), v))[:_BP_MAX_DOTS]:
+            dots += '<div class="bpo" style="position:absolute;' + at(o, cc) + 'width:7px;height:7px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--accent,#0369A1);background:var(--bg,#fff);transform:translate(-50%,-50%);"></div>'
+        if len(set(s['outliers'])) > _BP_MAX_DOTS:
+            notes += _hg_note(_cv_esc(nm) + ' has ' + str(len(set(s['outliers']))) + ' distinct outliers; the ' + str(_BP_MAX_DOTS) + ' furthest from the median are drawn. The table counts them all.')
+        if mean_on and s['mean'] is not None:
+            dots += '<div class="bpa" style="position:absolute;' + at(s['mean'], cc) + 'width:9px;height:9px;box-sizing:border-box;background:var(--text,#0F172A);border:1.5px solid var(--bg,#fff);transform:translate(-50%,-50%) rotate(45deg);"></div>'
+    if nonotch:
+        notes += _hg_note('Notches need the group size n; ' + str(nonotch) + (' group has' if nonotch == 1 else ' groups have') + ' none and ' + ('is' if nonotch == 1 else 'are') + ' drawn without.')
+    if ignored:
+        notes += _hg_note('Not understood and ignored: ' + _cv_esc(', '.join(ignored)) + '.')
+    grid = ''.join('<div style="position:absolute;' + ('left:0;right:0;bottom:' + _if_fixed(al(t) / 10, 3) + '%;border-top' if vert else 'top:0;bottom:0;left:' + _if_fixed(al(t) / 10, 3) + '%;border-left') + ':1px solid var(--border,#CBD5E1);"></div>' for t in ticks)
+    lab_s = 'font-size:0.75rem;line-height:1.15;color:' + _IF_MUTED + ';'
+    if vert:
+        yax = ''.join('<div style="position:absolute;right:100%;margin-right:6px;bottom:' + _if_fixed(al(t) / 10, 3) + '%;transform:translateY(50%);' + lab_s + 'white-space:nowrap;line-height:1;">' + tlab[i] + '</div>' for i, t in enumerate(ticks))
+        names = '<div style="display:flex;margin-top:6px;">' + ''.join('<div style="flex:1 1 0;min-width:0;text-align:center;' + lab_s + 'overflow-wrap:anywhere;"><span class="bpf">' + _cv_esc(nm) + '</span><span class="bpn">' + str(k + 1) + '</span></div>' for k, (nm, _) in enumerate(used)) + '</div>'
+        key = '<div class="bpk" style="' + lab_s + 'margin-top:6px;">' + _cv_esc('; '.join(str(k + 1) + ' ' + nm for k, (nm, _) in enumerate(used))) + '</div>'
+        body = '<div style="position:relative;margin:8px 0 0 46px;"><div style="position:relative;height:260px;">' + grid + '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" class="bps" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + shapes + '</svg>' + dots + yax + '</div>' + names + key + '</div>'
+    else:
+        names = ''.join('<div style="position:absolute;right:0;top:' + _if_fixed((k + 0.5) / n * 100, 3) + '%;transform:translateY(-50%);box-sizing:border-box;padding-right:8px;text-align:right;' + lab_s + 'overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;">' + _cv_esc(nm) + '</div>' for k, (nm, _) in enumerate(used))
+        body = ('<div style="display:flex;"><div style="flex:0 0 ' + _HG_LABW + ';position:relative;height:' + str(n * (84 if violin else 52)) + 'px;">' + names + '</div><div style="position:relative;flex:1 1 auto;min-width:0;height:' + str(n * (84 if violin else 52)) + 'px;margin-right:34px;">' + grid
+                + '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false" class="bps" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;">' + shapes + '</svg>' + dots
+                + '<div style="position:absolute;left:0;right:0;top:100%;border-top:1px solid var(--muted,#475569);">' + _hg_axis(ticks, X0, span, tlab) + '</div></div></div>')
+    css = ('<style>.ifbp .bps *{vector-effect:non-scaling-stroke}.ifbp .bps line,.ifbp .bps polygon{stroke:var(--muted,#475569);stroke-width:1.5px;fill:none}.ifbp .bpq{fill:var(--surface,#F8FAFC);stroke:var(--accent,#0369A1)}'
+           '.ifbp .bpt{fill:none}.ifbp .bpv{fill:var(--surface,#F8FAFC);stroke:var(--accent,#0369A1)}.ifbp .bps .bpm{stroke:var(--accent,#0369A1);stroke-width:3px}.ifbp .bpn,.ifbp .bpk{display:none}'
+           '@container (max-width:560px){.ifbp .hgx:not(.hgc){display:none}.ifbp .bpf{display:none}.ifbp .bpn,.ifbp .bpk{display:inline}.ifbp .bpk{display:block}}</style>')
+    no = lambda c: str(c) + (' outlier' if c == 1 else ' outliers')
+    aria = ('Box plot of ' + str(n) + (' group' if n == 1 else ' groups') + ' on a shared ' + ('vertical' if vert else 'horizontal') + ' axis from ' + _hg_num(X0, td) + ' to ' + _hg_num(X1, td) + us + '. '
+            + '; '.join(nm + ': median ' + f(s['median']) + us + ', middle half ' + f(s['q1']) + ' to ' + f(s['q3']) + us + ', whiskers ' + f(s['lo']) + ' to ' + f(s['hi']) + us + ', ' + no(len(s['outliers'])) + (', mean ' + f(s['mean']) + us if mean_on and s['mean'] is not None else '')
+                        for nm, s in used) + '.' + (' Violin outlines show the estimated density.' if violin else '') + (' Quartiles by the ' + method + ' method.' if method != 'linear' else ''))
+    chart = ('<div class="ifbp" style="container-type:inline-size;max-width:100%;overflow:hidden;">' + css + '<div role="img" aria-label="' + _cv_esc(aria) + '" style="margin:0 0 34px 0;' + _IF_FADE + '">' + body + '</div>'
+             + ('<div style="text-align:center;font-size:0.78rem;color:' + _IF_MUTED + ';">' + _cv_esc(cap) + '</div>' if cap else '') + '</div>')
+    na = lambda v: f(v) + us if v is not None else 'n/a'
+    head = ['Group', 'Count', 'Minimum', 'Lower quartile', 'Median', 'Upper quartile', 'Maximum', 'Outliers'] + (['Mean'] if mean_on else []) + (['Notch from', 'Notch to'] if notch else [])
+    return _if_wrap(_if_title(b) + chart + notes + _hg_version_note(b, 'box_plot')
+                    + _if_table(head, [[nm, str(s['n']) if s['n'] else 'n/a', na(s['min']), f(s['q1']) + us, f(s['median']) + us, f(s['q3']) + us, na(s['max']), str(len(s['outliers']))] + ([na(s['mean'])] if mean_on else [])
+                                                                                                                  + ([na(s['notch'][0]) if s['notch'] else 'n/a', na(s['notch'][1]) if s['notch'] else 'n/a'] if notch else []) for nm, s in used]))
 
 
 # ── waterfall (proposal, I38) ── a delta runs from the running total to the running total plus its value, a total from 0 to the
@@ -41743,6 +42210,695 @@ def _render_geo_map(b: dict) -> str:
 
 
 _RENDERERS['geo_map'] = _render_geo_map
+
+
+# ─── series[] for chartjs_line and scatter_trend (preview, optional field; absent = the old drawing, byte for byte) ──────────────────
+# Plotly scatter / scattergl: per-series x (numbers or dates), y, mode, colour, dash, line shape, marker size and symbol, fill.
+# Dates: a UTC subset of d3-time-format (parse ISO 8601, the %-specifiers below) and d3-scale scaleUtc().ticks() (d3-time 3.1.0 tick intervals),
+# checked against the real modules by tests/fixtures/series_time_golden.json. Twin: apps-script-surface/gas-wired-renderer/atoms_unstub_series.gs.
+_PS_W, _PS_H, _PS_M = 320, 200, 6
+_PS_MAX_SERIES, _PS_READ_CAP, _PS_TEXT_CAP = 8, 20000, 30
+_PS_MS_MAX, _PS_MS_MIN = 253402300799999, -62135596800000
+_PS_PAL = ['#2563EB', '#D97706', '#059669', '#DB2777', '#7C3AED', '#65A30D']
+_PS_SYMS = ['circle', 'square', 'diamond', 'triangle-up', 'cross', 'x']
+_PS_DASH_NAMES = ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot']
+_PS_DASH = {'solid': '', 'dash': '6 4', 'dot': '2 4', 'dashdot': '8 4 2 4', 'longdash': '12 5', 'longdashdot': '12 4 2 4'}
+_PS_SHAPES = ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv']
+_PS_MODES = ['lines', 'markers', 'text']
+_PS_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+_PS_MONL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+_PS_DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+_PS_DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+_PS_DATE_RE = re.compile(r'^([0-9]{4})(?:-([0-9]{2})(?:-([0-9]{2})(?:[T ]([0-9]{2}):([0-9]{2})(?::([0-9]{2})(?:\.([0-9]{1,3})[0-9]*)?)?)?)?)?(Z)?$')
+_PS_DIM = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+
+_PS_NUM_MAX = 1e15   # above the largest epoch-ms date (2.5e14); a larger number is refused, never converted (a Python int can exceed a float)
+_PS_WS = ' \t\n\v\f\r\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff'   # JavaScript's String.trim set
+
+
+def _ps_isnum(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= _PS_NUM_MAX
+
+
+def _ps_leap(y):
+    return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
+
+
+def _ps_days(y, m, d):
+    """Days since 1970-01-01 of a proleptic Gregorian civil date (m 1-12)."""
+    y -= 1 if m <= 2 else 0
+    era = y // 400
+    yoe = y - era * 400
+    doy = (153 * (m + (-3 if m > 2 else 9)) + 2) // 5 + d - 1
+    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy
+    return era * 146097 + doe - 719468
+
+
+def _ps_civil(ms):
+    """ms -> (Y, M, D, h, mi, s, ms, weekday 0=Sunday, day of year)."""
+    ms = int(ms)
+    r = ms % 86400000
+    z = (ms - r) // 86400000
+    h, r = r // 3600000, r % 3600000
+    mi, r = r // 60000, r % 60000
+    s, milli = r // 1000, r % 1000
+    wd = (z + 4) % 7
+    z += 719468
+    era = z // 146097
+    doe = z - era * 146097
+    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365
+    y = yoe + era * 400
+    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)
+    mp = (5 * doy + 2) // 153
+    d = doy - (153 * mp + 2) // 5 + 1
+    m = mp + 3 if mp < 10 else mp - 9
+    y += 1 if m <= 2 else 0
+    yd = _ps_days(y, m, d) - _ps_days(y, 1, 1) + 1
+    return (y, m, d, h, mi, s, milli, wd, yd)
+
+
+def _ps_ms(y, m, d, h, mi, s, milli):
+    return _ps_days(y, m, d) * 86400000 + h * 3600000 + mi * 60000 + s * 1000 + milli
+
+
+def _ps_parse_date(v):
+    """ISO 8601 date or date-time string (UTC) -> ms since the epoch, or None."""
+    if not isinstance(v, str) or len(v) > 40:
+        return None
+    m = _PS_DATE_RE.fullmatch(v.strip(_PS_WS))
+    if not m:
+        return None
+    y = int(m.group(1))
+    mo = int(m.group(2) or 1)
+    d = int(m.group(3) or 1)
+    h, mi, s = int(m.group(4) or 0), int(m.group(5) or 0), int(m.group(6) or 0)
+    milli = int((m.group(7) or '0').ljust(3, '0'))
+    if y < 1 or not 1 <= mo <= 12 or d < 1 or d > _PS_DIM[mo - 1] + (1 if mo == 2 and _ps_leap(y) else 0) or h > 23 or mi > 59 or s > 59:
+        return None
+    return _ps_ms(y, mo, d, h, mi, s, milli)
+
+
+def _ps_p2(n, w=2):
+    return str(n).rjust(w, '0')
+
+
+def _ps_utc_format(ms, spec):
+    y, m, d, h, mi, s, milli, wd, yd = _ps_civil(ms)
+    out = ''
+    i = 0
+    while i < len(spec):
+        c = spec[i]
+        if c == '%' and i + 1 < len(spec):
+            i += 1
+            k = spec[i]
+            out += {'Y': lambda: _ps_p2(y, 4), 'y': lambda: _ps_p2(y % 100), 'm': lambda: _ps_p2(m), 'd': lambda: _ps_p2(d),
+                    'e': lambda: str(d).rjust(2, ' '), 'H': lambda: _ps_p2(h), 'I': lambda: _ps_p2(h % 12 or 12), 'p': lambda: 'AM' if h < 12 else 'PM',
+                    'M': lambda: _ps_p2(mi), 'S': lambda: _ps_p2(s), 'L': lambda: _ps_p2(milli, 3), 'b': lambda: _PS_MON[m - 1],
+                    'B': lambda: _PS_MONL[m - 1], 'a': lambda: _PS_DAY[wd], 'A': lambda: _PS_DAYL[wd], 'j': lambda: _ps_p2(yd, 3),
+                    '%': lambda: '%'}.get(k, lambda: '%' + k)()
+        else:
+            out += c
+        i += 1
+    return out
+
+
+def _ps_ceil_unit(ms, unit):
+    """The first unit boundary at or after ms. unit: second minute hour day week month year."""
+    ms = int(ms)
+    size = {'second': 1000, 'minute': 60000, 'hour': 3600000, 'day': 86400000}.get(unit)
+    if size:
+        return -((-ms) // size) * size
+    return _ps_floor_unit(ms, unit) if _ps_floor_unit(ms, unit) == ms else _ps_next_unit(_ps_floor_unit(ms, unit), unit)
+
+
+def _ps_floor_unit(ms, unit):
+    ms = int(ms)
+    size = {'second': 1000, 'minute': 60000, 'hour': 3600000, 'day': 86400000}.get(unit)
+    if size:
+        return ms - ms % size
+    y, m, d, h, mi, s, milli, wd, yd = _ps_civil(ms)
+    day0 = _ps_days(y, m, d)
+    if unit == 'week':
+        return (day0 - wd) * 86400000
+    if unit == 'month':
+        return _ps_days(y, m, 1) * 86400000
+    return _ps_days(y, 1, 1) * 86400000
+
+
+def _ps_next_unit(ms, unit):
+    """ms is on a boundary of unit; the next boundary."""
+    size = {'second': 1000, 'minute': 60000, 'hour': 3600000, 'day': 86400000, 'week': 604800000}.get(unit)
+    if size:
+        return int(ms) + size
+    y, m = _ps_civil(ms)[:2]
+    if unit == 'month':
+        return _ps_days(y + (1 if m == 12 else 0), 1 if m == 12 else m + 1, 1) * 86400000
+    return _ps_days(y + 1, 1, 1) * 86400000
+
+
+_PS_TICK_IVL = [['second', 1, 1e3], ['second', 5, 5e3], ['second', 15, 15e3], ['second', 30, 30e3], ['minute', 1, 6e4], ['minute', 5, 3e5],
+                ['minute', 15, 9e5], ['minute', 30, 18e5], ['hour', 1, 36e5], ['hour', 3, 108e5], ['hour', 6, 216e5], ['hour', 12, 432e5],
+                ['day', 1, 864e5], ['day', 2, 1728e5], ['week', 1, 6048e5], ['month', 1, 2592e6], ['month', 3, 7776e6], ['year', 1, 31536e6]]
+
+
+def _ps_every_ok(ms, unit, k):
+    y, m, d, h, mi, s = _ps_civil(ms)[:6]
+    if k <= 1:
+        return True
+    # d3's utc ticker uses unixDay (no field): the day count since the epoch, not the day of the month
+    return {'second': s, 'minute': mi, 'hour': h, 'day': int(ms) // 86400000, 'month': m - 1}.get(unit, 0) % k == 0
+
+
+def _ps_time_ticks(start, stop, count):
+    """d3.scaleUtc().domain([start, stop]).ticks(count), as ms."""
+    start, stop = int(start), int(stop)
+    rev = stop < start
+    if rev:
+        start, stop = stop, start
+    target = abs(stop - start) / count
+    i = 0
+    while i < len(_PS_TICK_IVL) and _PS_TICK_IVL[i][2] <= target:
+        i += 1
+    out = []
+    lim = stop + 1
+    if i == len(_PS_TICK_IVL):
+        inc = _hg_tick_increment(start / 31536e6, stop / 31536e6, count)
+        k = int(math.floor(inc if inc > 0 else 1 / -inc))
+        if k >= 1:
+            y = _ps_civil(start)[0]
+            yy = (y // k) * k
+            t = _ps_days(yy, 1, 1) * 86400000
+            while t < start:
+                yy += k
+                t = _ps_days(yy, 1, 1) * 86400000
+            while t < lim and len(out) < 2000:
+                out.append(t)
+                yy += k
+                t = _ps_days(yy, 1, 1) * 86400000
+    elif i == 0:
+        # a zero-width domain: d3-array's tickIncrement is -Infinity there, so the step is 1 ms
+        inc = -_HG_INF if start == stop else _hg_tick_increment(start, stop, count)
+        k = max(inc if inc > 0 else 1 / -inc, 1)
+        k = int(math.floor(k))
+        t = -((-start) // k) * k
+        while t < lim and len(out) < 2000:
+            out.append(t)
+            t += k
+    else:
+        unit, k = (_PS_TICK_IVL[i - 1] if target / _PS_TICK_IVL[i - 1][2] < _PS_TICK_IVL[i][2] / target else _PS_TICK_IVL[i])[:2]
+        t = _ps_ceil_unit(start, unit)
+        while t < lim and len(out) < 2000:
+            if _ps_every_ok(t, unit, k):
+                out.append(t)
+            t = _ps_next_unit(t, unit)
+    return out[::-1] if rev else out
+
+
+def _ps_tick_label(ms):
+    """d3's multi-scale time tick format, with the month shortened to %b."""
+    ms = int(ms)
+    if _ps_floor_unit(ms, 'second') < ms:
+        return _ps_utc_format(ms, '.%L')
+    if _ps_floor_unit(ms, 'minute') < ms:
+        return _ps_utc_format(ms, ':%S')
+    if _ps_floor_unit(ms, 'hour') < ms:
+        return _ps_utc_format(ms, '%I:%M')
+    if _ps_floor_unit(ms, 'day') < ms:
+        return _ps_utc_format(ms, '%I %p')
+    if _ps_floor_unit(ms, 'month') < ms:
+        return _ps_utc_format(ms, '%a %d' if _ps_floor_unit(ms, 'week') < ms else '%b %d')
+    return _ps_utc_format(ms, '%b' if _ps_floor_unit(ms, 'year') < ms else '%Y')
+
+
+def _ps_c(v):
+    return _if_numstr(_if_round(v * 100) / 100)
+
+
+def _ps_numstr(v):
+    s = _if_fixed(v, 6)
+    if '.' in s:
+        s = s.rstrip('0').rstrip('.')
+    return '0' if s == '-0' else s
+
+
+def _ps_xstr(ms):
+    y, m, d, h, mi, s, milli, wd, yd = _ps_civil(ms)
+    return _ps_utc_format(ms, '%Y-%m-%d' if not (h or mi or s) else ('%Y-%m-%d %H:%M' if not s else '%Y-%m-%d %H:%M:%S'))
+
+
+def _ps_color(v, i):
+    return v if isinstance(v, str) and re.fullmatch(r'#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|[a-zA-Z]{3,20}', v) else _PS_PAL[i % len(_PS_PAL)]
+
+
+def _ps_expand(p, shape):
+    n = len(p)
+    if n < 2 or shape == 'linear':
+        return list(p)
+    out = [p[0]]
+    if shape == 'spline':
+        if n < 3:
+            return list(p)
+        for i in range(n - 1):
+            p0, p1, p2, p3 = p[max(i - 1, 0)], p[i], p[i + 1], p[min(i + 2, n - 1)]
+            for j in range(1, 9):
+                t = j / 8
+                t2, t3 = t * t, t * t * t
+                out.append((0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+                            0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)))
+        return out
+    for i in range(n - 1):
+        a, b = p[i], p[i + 1]
+        if shape == 'hv':
+            out.append((b[0], a[1]))
+        elif shape == 'vh':
+            out.append((a[0], b[1]))
+        elif shape == 'hvh':
+            xm = (a[0] + b[0]) / 2
+            out.append((xm, a[1]))
+            out.append((xm, b[1]))
+        else:
+            ym = (a[1] + b[1]) / 2
+            out.append((a[0], ym))
+            out.append((b[0], ym))
+        out.append(b)
+    return out
+
+
+def _ps_path(pts, close=False):
+    return ''.join(('M' if i == 0 else 'L') + _ps_c(x) + ' ' + _ps_c(y) for i, (x, y) in enumerate(pts)) + ('Z' if close else '')
+
+
+def _ps_marker(sym, cx, cy, r):
+    f = _ps_c
+    if sym == 'square':
+        return 'M' + f(cx - r) + ' ' + f(cy - r) + 'h' + f(2 * r) + 'v' + f(2 * r) + 'h' + f(-2 * r) + 'z'
+    if sym == 'diamond':
+        k = r * 1.3
+        return 'M' + f(cx) + ' ' + f(cy - k) + 'l' + f(k) + ' ' + f(k) + 'l' + f(-k) + ' ' + f(k) + 'l' + f(-k) + ' ' + f(-k) + 'z'
+    if sym == 'triangle-up':
+        return 'M' + f(cx) + ' ' + f(cy - r) + 'l' + f(r) + ' ' + f(2 * r) + 'h' + f(-2 * r) + 'z'
+    if sym == 'cross':
+        return 'M' + f(cx - r) + ' ' + f(cy) + 'h' + f(2 * r) + 'M' + f(cx) + ' ' + f(cy - r) + 'v' + f(2 * r)
+    if sym == 'x':
+        return 'M' + f(cx - r) + ' ' + f(cy - r) + 'l' + f(2 * r) + ' ' + f(2 * r) + 'M' + f(cx - r) + ' ' + f(cy + r) + 'l' + f(2 * r) + ' ' + f(-2 * r)
+    return 'M' + f(cx - r) + ' ' + f(cy) + 'a' + f(r) + ' ' + f(r) + ' 0 1 0 ' + f(2 * r) + ' 0a' + f(r) + ' ' + f(r) + ' 0 1 0 ' + f(-2 * r) + ' 0'
+
+
+def _ps_stroke_sym(sym):
+    return sym in ('cross', 'x')
+
+
+def _ps_legend_swatch(col, dash, sym, lines, markers):
+    inner = ''
+    if lines:
+        inner += '<path d="M1 7H29" fill="none" stroke="' + col + '" stroke-width="2"' + (' stroke-dasharray="' + _PS_DASH[dash] + '"' if _PS_DASH[dash] else '') + '/>'
+    if markers or not lines:
+        inner += '<path d="' + _ps_marker(sym, 15, 7, 4) + '" ' + ('fill="none" stroke="' + col + '" stroke-width="1.6"' if _ps_stroke_sym(sym) else 'fill="' + col + '"') + '/>'
+    return '<svg width="30" height="14" viewBox="0 0 30 14" aria-hidden="true" focusable="false" style="flex:none;">' + inner + '</svg>'
+
+
+def _ps_render(b, atom):
+    ser = b['series']
+    pre = _if_s(b.get('title'), 80) if _ps_isstr(b.get('title')) else ''
+    cap = 2000
+    mp = b.get('max_points')
+    if _ps_isnum(mp):
+        cap = int(_hg_round(min(2000, max(50, mp))))
+    xt = b.get('x_type') if b.get('x_type') in ('linear', 'date') else None
+    if xt is None:
+        xt = 'linear'
+        for s in ser:
+            xs = s.get('x') if isinstance(s, dict) else None
+            if isinstance(xs, list) and xs and isinstance(xs[0], str):
+                xt = 'date' if _ps_parse_date(xs[0]) is not None else 'linear'
+                break
+            if isinstance(xs, list) and xs:
+                break
+    notes = ''
+    skipped = 0
+    rows = []
+    items = []
+    anytext = False
+    beyond = max(0, len(ser) - _PS_MAX_SERIES)
+    for si, s in enumerate(ser[:_PS_MAX_SERIES]):
+        s = s if isinstance(s, dict) else {}
+        label = s.get('label') if _ps_isstr(s.get('label')) and s.get('label').strip(_PS_WS) else 'Series ' + str(si + 1)
+        xs, ys, tx = s.get('x'), s.get('y'), s.get('text')
+        ysl = ys if isinstance(ys, list) else []
+        n = min(len(ysl), _PS_READ_CAP)
+        if len(ysl) > _PS_READ_CAP:
+            notes += _hg_note('Only the first 20,000 points of ' + _if_s(label, 40) + ' were read.')
+        pts = []
+        for i in range(n):
+            yv = ysl[i]
+            xv = xs[i] if isinstance(xs, list) and i < len(xs) else (i if not isinstance(xs, list) else None)
+            if xt == 'date':
+                xm = _ps_parse_date(xv) if isinstance(xv, str) else (math.floor(xv) if _ps_isnum(xv) and _PS_MS_MIN <= xv <= _PS_MS_MAX else None)
+                xv = float(xm) if xm is not None else None
+            elif not _ps_isnum(xv):
+                xv = None
+            if xv is None or not _ps_isnum(yv):
+                skipped += 1
+                continue
+            pts.append((i, float(xv), float(yv)))
+        total = len(pts)
+        if total > cap:
+            pts = [pts[(k * (total - 1)) // (cap - 1)] for k in range(cap)]
+            notes += _hg_note(_if_s(label, 40) + ' has ' + _ps_thousands(total) + ' points; ' + _ps_thousands(cap) + ' evenly spaced points are drawn and listed in the table.')
+        mode = s.get('mode')
+        toks = mode.split('+') if isinstance(mode, str) else []
+        if not toks or any(t not in _PS_MODES for t in toks):
+            toks = ['lines', 'markers'] if total <= 20 else ['lines']
+        sym = s.get('symbol') if s.get('symbol') in _PS_SYMS else _PS_SYMS[si % len(_PS_SYMS)]
+        dash = s.get('dash') if s.get('dash') in _PS_DASH_NAMES else _PS_DASH_NAMES[si % len(_PS_DASH_NAMES)]
+        shape = s.get('shape') if s.get('shape') in _PS_SHAPES else 'linear'
+        fill = s.get('fill') if s.get('fill') in ('tozeroy', 'tonexty') else ''
+        sz = s.get('size')
+        items.append({'label': label, 'pts': pts, 'tx': tx if isinstance(tx, list) else None, 'lines': 'lines' in toks, 'markers': 'markers' in toks, 'text': 'text' in toks,
+                      'sym': sym, 'dash': dash, 'shape': shape, 'fill': fill, 'col': _ps_color(s.get('color'), si), 'sz': sz})
+        anytext = anytext or isinstance(tx, list)
+    if beyond:
+        notes += _hg_note(str(beyond) + (' series beyond the first 8 was' if beyond == 1 else ' series beyond the first 8 were') + ' not drawn.')
+    if skipped:
+        notes += _hg_note(str(skipped) + (' point was' if skipped == 1 else ' points were') + ' not a usable number' + (' or date' if xt == 'date' else '') + ' and ' + ('was' if skipped == 1 else 'were') + ' skipped.')
+    notes += _hg_version_note(b, atom)
+    allp = [p for it in items for p in it['pts']]
+    ttl = '' if not pre else '<div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">' + pre + '</div>'
+    if not allp:
+        return _if_wrap(ttl + _hg_note('There are no points to draw.') + notes)
+    xl, yl = _ps_axis_label(b, 'x'), _ps_axis_label(b, 'y')
+    xv = [p[1] for p in allp]
+    yv = [p[2] for p in allp]
+    seen = False
+    for it in items:   # tozeroy fills down to y = 0; tonexty fills to the previous drawn series, and to y = 0 only where there is none
+        if it['fill'] == 'tozeroy' or (it['fill'] == 'tonexty' and not seen and it['pts']):
+            yv = yv + [0.0]
+            break
+        seen = seen or bool(it['pts'])
+    x0, x1 = min(xv), max(xv)
+    if x0 == x1:
+        x0, x1 = (x0 - 43200000, x1 + 43200000) if xt == 'date' else (x0 - 1, x1 + 1)
+    y0, y1 = min(yv), max(yv)
+    if y0 == y1:
+        y0, y1 = y0 - 1, y1 + 1
+    y0, y1 = _hg_nice(y0, y1, 5)
+    yt = _hg_ticks(y0, y1, 5) or [y0, y1]
+    xt_ = _ps_time_ticks(x0, x1, 4) if xt == 'date' else (_hg_ticks(x0, x1, 4) or [x0, x1])
+    if not xt_:
+        xt_ = [x0, x1]
+    iw, ih = _PS_W - 2 * _PS_M, _PS_H - 2 * _PS_M
+    px = lambda v: _PS_M + (v - x0) / (x1 - x0) * iw
+    py = lambda v: _PS_M + (1 - (v - y0) / (y1 - y0)) * ih
+    pct = lambda v, d: _if_fixed(v / d * 100, 2) + '%'
+    dy = _hg_decimals(yt)
+    dx = _hg_decimals(xt_) if xt != 'date' else 0
+    yz = min(_PS_H - _PS_M, max(_PS_M, py(0)))
+    grid = ''
+    ylab = ''
+    for t in yt:
+        gy = py(t)
+        if _PS_M - 0.001 <= gy <= _PS_H - _PS_M + 0.001:
+            grid += '<line x1="' + str(_PS_M) + '" y1="' + _ps_c(gy) + '" x2="' + str(_PS_W - _PS_M) + '" y2="' + _ps_c(gy) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+            ylab += '<div style="position:absolute;right:100%;top:' + pct(gy, _PS_H) + ';transform:translateY(-50%);padding-right:6px;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _cv_esc(_hg_num(t, dy)) + '</div>'
+    xlab = ''
+    lused = set()
+    for t in xt_:
+        gx = px(t)
+        if _PS_M - 0.001 <= gx <= _PS_W - _PS_M + 0.001:
+            grid += '<line x1="' + _ps_c(gx) + '" y1="' + str(_PS_M) + '" x2="' + _ps_c(gx) + '" y2="' + str(_PS_H - _PS_M) + '" stroke="var(--border,#CBD5E1)" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+            tl = _ps_tick_label(t) if xt == 'date' else _hg_num(t, dx)
+            xlab += '<div data-cb="label" data-key="' + _cb_ukey(tl, lused) + '" style="position:absolute;top:100%;left:' + pct(gx, _PS_W) + ';transform:translateX(-50%);margin-top:8px;font-size:0.75rem;line-height:1;white-space:nowrap;color:' + _IF_MUTED + ';">' + _cv_esc(tl) + '</div>'
+    grid += ('<line x1="' + str(_PS_M) + '" y1="' + str(_PS_M) + '" x2="' + str(_PS_M) + '" y2="' + str(_PS_H - _PS_M) + '" stroke="var(--muted,#475569)" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+             '<line x1="' + str(_PS_M) + '" y1="' + str(_PS_H - _PS_M) + '" x2="' + str(_PS_W - _PS_M) + '" y2="' + str(_PS_H - _PS_M) + '" stroke="var(--muted,#475569)" stroke-width="1" vector-effect="non-scaling-stroke"/>')
+    fills = lines = marks = labels = ''
+    prev = None
+    legend = ''
+    sused = set()
+    for si, it in enumerate(items):
+        sk = _cb_ukey(it['label'], sused)
+        sp = [(px(p[1]), py(p[2])) for p in it['pts']]
+        ex = _ps_expand(sp, it['shape'])
+        col = it['col']
+        if it['fill'] and sp:
+            if it['fill'] == 'tonexty' and prev:
+                poly = ex + prev[::-1]
+            else:
+                poly = ex + [(ex[-1][0], yz), (ex[0][0], yz)]
+            fills += '<path d="' + _ps_path(poly, True) + '" fill="' + col + '" fill-opacity="0.15" stroke="none"/>'
+        if it['lines'] and len(ex) > 1:
+            da = _PS_DASH[it['dash']]
+            lines += '<path data-cb="branch" data-key="' + sk + '" d="' + _ps_path(ex) + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"' + (' stroke-dasharray="' + da + '"' if da else '') + ' vector-effect="non-scaling-stroke"/>'
+        if it['markers']:
+            fd = sd = ''
+            for k, p in enumerate(it['pts']):
+                z = it['sz'][p[0]] if isinstance(it['sz'], list) and p[0] < len(it['sz']) else it['sz']
+                r = min(40, max(2, z)) / 2 if _ps_isnum(z) else 3.5
+                if _ps_stroke_sym(it['sym']):
+                    sd += _ps_marker(it['sym'], sp[k][0], sp[k][1], r)
+                else:
+                    fd += _ps_marker(it['sym'], sp[k][0], sp[k][1], r)
+            mk = ' data-cb="node" data-key="' + (_cb_ukey(it['label'] + '/markers', sused) if it['lines'] and len(ex) > 1 else sk) + '"'
+            if fd:
+                marks += '<path' + mk + ' d="' + fd + '" fill="' + col + '" stroke="var(--bg,#fff)" stroke-width="0.8"/>'
+            if sd:
+                marks += '<path' + mk + ' d="' + sd + '" fill="none" stroke="' + col + '" stroke-width="1.6" vector-effect="non-scaling-stroke"/>'
+        if it['text']:
+            for k, p in enumerate(it['pts']):
+                if k >= _PS_TEXT_CAP:
+                    notes += _hg_note('Only the first ' + str(_PS_TEXT_CAP) + ' point labels of ' + _if_s(it['label'], 40) + ' are drawn; all values are in the table.')
+                    break
+                tv = it['tx'][p[0]] if it['tx'] is not None and p[0] < len(it['tx']) else None
+                tt = tv if _ps_isstr(tv) or _ps_isnum(tv) else _ps_numstr(p[2])
+                labels += '<div style="position:absolute;left:' + pct(sp[k][0], _PS_W) + ';top:' + pct(sp[k][1], _PS_H) + ';transform:translate(-50%,-135%);font-size:0.75rem;line-height:1;white-space:nowrap;color:var(--text,#0F172A);">' + _if_s(tt, 20) + '</div>'
+        prev = ex if sp else prev
+        legend += '<span style="display:inline-flex;align-items:center;gap:6px;">' + _ps_legend_swatch(col, it['dash'], it['sym'], it['lines'], it['markers']) + '<span>' + _if_s(it['label'], 40) + '</span></span>'
+        for p in it['pts']:
+            tv = it['tx'][p[0]] if it['tx'] is not None and p[0] < len(it['tx']) else ''
+            rows.append([it['label'], _ps_xstr(p[1]) if xt == 'date' else _ps_numstr(p[1]), _ps_numstr(p[2])] + ([tv if _ps_isstr(tv) or _ps_isnum(tv) else ''] if anytext else []))
+    gist = ('Scatter chart' if atom == 'scatter_trend' else 'Line chart') + (' ' + _if_s(b.get('title'), 60) if _ps_isstr(b.get('title')) and b.get('title') else '') + ': ' + '; '.join(
+        _if_s(it['label'], 30) + ' (' + str(len(it['pts'])) + ' points' + (', y from ' + _ps_numstr(min(p[2] for p in it['pts'])) + ' to ' + _ps_numstr(max(p[2] for p in it['pts'])) if it['pts'] else '') + ')' for it in items) + '. x runs from ' + (_ps_xstr(min(xv)) if xt == 'date' else _ps_numstr(min(xv))) + ' to ' + (_ps_xstr(max(xv)) if xt == 'date' else _ps_numstr(max(xv))) + '.'
+    mb = 30
+    plot = ('<div role="img" aria-label="' + gist + '" style="position:relative;aspect-ratio:' + str(_PS_W) + '/' + str(_PS_H) + ';margin:6px 18px ' + str(mb) + 'px 48px;">'
+            '<svg viewBox="0 0 ' + str(_PS_W) + ' ' + str(_PS_H) + '" width="100%" height="100%" aria-hidden="true" focusable="false" style="position:absolute;left:0;top:0;display:block;overflow:visible;" xmlns="http://www.w3.org/2000/svg">'
+            + grid + fills + lines + marks + '</svg>' + ylab + xlab + labels
+            + '</div>' + ('<div style="margin:0 18px 4px 48px;text-align:center;font-size:0.75rem;line-height:1.2;color:' + _IF_MUTED + ';">' + xl + '</div>' if xl else ''))
+    head = '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin:0 0 2px;">' + yl + '</div>' if yl else ''
+    leg = '<div style="display:flex;flex-wrap:wrap;gap:6px 16px;font-size:0.75rem;line-height:1.2;margin-top:2px;">' + legend + '</div>' if len(items) > 1 else ''
+    return _if_wrap(ttl + '<div class="ifps" style="' + _if_card() + '">' + head + plot + leg + '</div>' + _if_table(['Series', 'X', 'Y'] + (['Label'] if anytext else []), rows) + notes)
+
+
+def _ps_isstr(v):
+    return isinstance(v, str)
+
+
+def _ps_thousands(n):
+    return re.sub(r'\B(?=(\d{3})+(?!\d))', ',', str(n))
+
+
+def _ps_axis_label(b, ax):
+    v = b.get(ax + '_label')
+    v = b.get('label_' + ax) if not _ps_isstr(v) or not v else v
+    return _if_s(v, 60) if _ps_isstr(v) and v else ''
+
+
+def _ps_wrap(prev, atom):
+    def f(b):
+        if isinstance(b.get('series'), list) and b['series']:
+            return _ps_render(b, atom)
+        return prev(b)
+    return f
+
+
+_RENDERERS['chartjs_line'] = _ps_wrap(_RENDERERS['chartjs_line'], 'chartjs_line')
+_RENDERERS['scatter_trend'] = _ps_wrap(_RENDERERS['scatter_trend'], 'scatter_trend')
+
+
+# ─── conversion_funnel `shape: "area"` (Plotly funnelarea) and gauge_sla scale mode (Plotly indicator gauge), wave B ───
+# Both are additive: without `shape: "area"` / without `min` or `steps` the previous renderer runs untouched. Twin of the
+# wrappers at the end of atoms_unstub.gs. Labels live in HTML (not SVG text) so they are never scaled below 12px.
+_CF_COLOR = re.compile(r'#[0-9a-fA-F]{3,8}|var\(--[a-z-]+(?:,#[0-9a-fA-F]{3,8})?\)')
+
+
+_CF_MAX = 1e15   # a larger number is refused, never converted: a Python int past 1.8e308 raises OverflowError in float(), and >= 1e21 prints differently in the twins
+_CF_NUMSTR = re.compile(r'[ \t]*[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[ \t]*')
+
+
+def _cf_isnum(v):
+    """A real number in range (strict type: the mode switches use this)."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) <= _CF_MAX
+
+
+def _cf_n(v):
+    """The usable number in v, or None: a number in range, or a plain decimal string (like the legacy renderers' float()). Never raises."""
+    if isinstance(v, str):
+        if len(v) > 40 or not _CF_NUMSTR.fullmatch(v):
+            return None
+        v = float(v)
+    return v if _cf_isnum(v) else None
+
+
+def _cf_given(v):
+    """Present and not null (a field the caller wrote)."""
+    return not (v is None or v is _IF_UNDEF)
+
+
+def _cf_name(v):
+    return '' if (v is None or v is _IF_UNDEF) else _if_str(v)[:40]
+
+
+def _cf_pt(cx, cy, r, frac):
+    a = math.pi * (1 + frac)
+    return _if_fmt(cx + r * math.cos(a)) + ' ' + _if_fmt(cy + r * math.sin(a))
+
+
+def _cf_area(b):
+    raw = _if_g(b, 'steps')
+    rows, skipped = [], 0
+    for s in (raw[:500] if isinstance(raw, list) else []):
+        v = _cf_n(_if_g(s, 'value'))
+        if v is None or v < 0:
+            skipped += 1
+            continue
+        nm = _if_g(s, 'stage')
+        if not _if_truthy(nm):
+            nm = _if_g(s, 'label')
+        rows.append((_cf_name(nm) or 'Step %d' % (len(rows) + 1), v))
+    capped = len(rows) > 12
+    n_all = len(rows)
+    rows = rows[:12]
+    notes = ''
+    if skipped:
+        notes += _hg_note(str(skipped) + (' entry' if skipped == 1 else ' entries') + ' skipped: not a usable stage (it needs a number value of 0 or more).')
+    if capped:
+        notes += _hg_note('Showing the first 12 of ' + str(n_all) + ' stages.')
+    notes += _hg_version_note(b, 'conversion_funnel')
+    tot = 0.0
+    for r in rows:
+        tot += r[1]
+    if not rows or not tot > 0:
+        return _if_wrap('<div class="ifcf">' + _if_title(b) + _hg_note('Nothing to draw: the funnel has no stage with a value above zero.') + notes + '</div>')
+    H, W0 = 240, 400
+    polys, cum, prev_y = '', 0.0, 0
+    pused, lused = set(), set()
+    for k, (nm, v) in enumerate(rows):
+        cum += v
+        y2 = max(0.0, H * (1 - math.sqrt(max(0.0, 1 - cum / tot))))
+        if v > 0:
+            w1, w2 = W0 * (1 - prev_y / H), W0 * (1 - y2 / H)
+            pts = [(200 - w1 / 2, prev_y), (200 + w1 / 2, prev_y), (200 + w2 / 2, y2), (200 - w2 / 2, y2)]
+            polys += ('<polygon data-cb="bar" data-key="' + _cb_ukey(nm, pused) + '" class="cfb" points="' + ' '.join(_if_fmt(x) + ',' + _if_fmt(y) for x, y in pts)
+                      + '" fill="' + _IF_CAT[k % 4] + '" stroke="var(--bg,#fff)" stroke-width="2"></polygon>')
+        prev_y = y2
+    first = rows[0][1]
+    gist = 'Funnel area chart, area proportional to value: ' + ', '.join(nm + ' ' + _if_numstr(v) for nm, v in rows) + '.'
+    svg = ('<svg role="img" aria-label="' + _cv_esc(gist[:400]) + '" viewBox="0 0 400 240" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto;">' + polys + '</svg>')
+    sw = 'flex:none;width:12px;height:12px;border:1px solid var(--border,#64748B);border-radius:2px;align-self:center;'
+    legend = '<ol class="cfl" style="list-style:none;margin:10px 0 0;padding:0;font-size:0.9rem;">' + ''.join(
+        '<li data-cb="label" data-key="' + _cb_ukey(nm, lused) + '" style="display:flex;align-items:baseline;gap:8px;padding:2px 0;"><span aria-hidden="true" style="' + sw + 'background:' + _IF_CAT[k % 4] + ';"></span>'
+        '<span style="flex:1;min-width:0;overflow-wrap:anywhere;">' + str(k + 1) + '. ' + _cv_esc(nm) + '</span>'
+        '<span style="flex:none;font-weight:600;font-size:0.9rem;">' + _if_s(_if_numstr(v), 30) + (' · ' + _if_fmt(v / first * 100) + '%' if first > 0 else '') + '</span></li>'
+        for k, (nm, v) in enumerate(rows)) + '</ol>'
+    table = _if_table(['Stage', 'Value', 'Of first', 'Of total area'],
+                      [[nm, _if_numstr(v), (_if_fmt(v / first * 100) + '%') if first > 0 else 'n/a', _if_fmt(v / tot * 100) + '%'] for nm, v in rows])
+    return _if_wrap('<div class="ifcf">' + _if_title(b) + svg + legend + table + notes + '</div>')
+
+
+def _cf_gauge(b):
+    val, mn, mx, thr = _cf_n(_if_g(b, 'value')), _cf_n(_if_g(b, 'min')), _cf_n(_if_g(b, 'max_value')), _cf_n(_if_g(b, 'threshold'))
+    bad = [k for k, v in (('min', mn), ('max_value', mx), ('threshold', thr)) if v is None and _cf_given(_if_g(b, k))]
+    mn = mn if mn is not None else 0
+    mx = mx if mx is not None else 100
+    unit, label = _cf_name(_if_g(b, 'unit'))[:12], _if_s(_if_g(b, 'label'), 40)
+    notes = (_hg_note(', '.join(bad) + (' was' if len(bad) == 1 else ' were') + ' not a usable number (it needs a plain number below 1e15) and ' + ('was' if len(bad) == 1 else 'were') + ' ignored.') if bad else '') + _hg_version_note(b, 'gauge_sla')
+    ROOT = '<div class="ifgs" data-cb="node" data-key="' + _ck(_if_g(b, 'title'), 'gauge_sla') + '">'
+    if val is None:
+        return _if_wrap(ROOT + _if_title(b) + _hg_note('The value is not a number, so there is nothing to draw.') + notes + '</div>')
+    if not mx > mn:
+        return _if_wrap(ROOT + _if_title(b) + _hg_note('The maximum must be larger than the minimum, so there is nothing to draw.') + notes + '</div>')
+    span = mx - mn
+
+    def fr(x):
+        return min(1.0, max(0.0, (x - mn) / span))
+    raw = _if_g(b, 'steps')
+    bands, skipped = [], 0
+    for s in (raw[:500] if isinstance(raw, list) else []):
+        f, t, c = _cf_n(_if_g(s, 'from')), _cf_n(_if_g(s, 'to')), _if_g(s, 'color')
+        if f is None or t is None or not f < t:
+            skipped += 1
+            continue
+        f, t = max(mn, f), min(mx, t)
+        if not f < t:
+            skipped += 1
+            continue
+        bands.append((f, t, c if isinstance(c, str) and _CF_COLOR.fullmatch(c) else None))
+    capped = len(bands) > 8
+    n_all = len(bands)
+    bands = bands[:8]
+    if skipped:
+        notes += _hg_note(str(skipped) + ' step' + ('' if skipped == 1 else 's') + ' skipped: not a usable band (it needs a numeric from below its to).')
+    if capped:
+        notes += _hg_note('Showing the first 8 of ' + str(n_all) + ' bands.')
+    cx, cy, R = 150, 140, 100
+    arc = lambda a, z: 'M ' + _cf_pt(cx, cy, R, a) + ' A 100 100 0 0 1 ' + _cf_pt(cx, cy, R, z)
+    g = '<path d="' + arc(0, 1) + '" fill="none" stroke="var(--border,#CBD5E1)" stroke-width="14"></path>'
+    for k, (f, t, c) in enumerate(bands):
+        g += '<path data-cb="arc" data-key="Band ' + str(k + 1) + '" class="gsb" d="' + arc(fr(f), fr(t)) + '" fill="none" stroke="' + (c or _IF_CAT[k % 4]) + '" stroke-width="14"></path>'
+
+    def seg(frac, r1, r2, cls, w):
+        a = math.pi * (1 + frac)
+        return ('<line class="' + cls + '" x1="' + _if_fmt(cx + r1 * math.cos(a)) + '" y1="' + _if_fmt(cy + r1 * math.sin(a)) + '" x2="' + _if_fmt(cx + r2 * math.cos(a))
+                + '" y2="' + _if_fmt(cy + r2 * math.sin(a)) + '" stroke="var(--text,#0F172A)" stroke-width="' + str(w) + '" stroke-linecap="round"></line>')
+    if thr is not None:
+        g += seg(fr(thr), 88, 114, 'gst', 3)
+    g += seg(fr(val), 0, 82, 'gsn', 4) + '<circle cx="150" cy="140" r="7" fill="var(--text,#0F172A)"></circle>'
+    vs = _if_fmt(val)
+    gist = ('Gauge' + (': ' + _cf_name(_if_g(b, 'title'))[:60] if _if_truthy(_if_g(b, 'title')) else '') + ', value ' + vs + unit + ' on a scale from ' + _if_fmt(mn) + ' to ' + _if_fmt(mx)
+            + ((', threshold ' + _if_fmt(thr)) if thr is not None else '') + ((', ' + str(len(bands)) + ' bands') if bands else '') + '.')
+    svg = '<svg role="img" aria-label="' + _cv_esc(gist) + '" viewBox="0 0 300 160" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto;">' + g + '</svg>'
+    status = ''
+    if thr is not None:
+        status += 'At or above the threshold of ' + _if_fmt(thr) + '.' if val >= thr else 'Below the threshold of ' + _if_fmt(thr) + '.'
+    if val < mn or val > mx:
+        status += (' ' if status else '') + 'The value is off the scale; the needle stops at the end.'
+    sw = 'flex:none;width:12px;height:12px;border:1px solid var(--border,#64748B);border-radius:2px;align-self:center;'
+    items = ''.join('<li style="display:flex;gap:8px;padding:2px 0;"><span aria-hidden="true" style="' + sw + 'background:' + (c or _IF_CAT[k % 4]) + ';"></span><span>Band ' + str(k + 1) + ': '
+                    + _if_fmt(f) + ' to ' + _if_fmt(t) + '</span></li>' for k, (f, t, c) in enumerate(bands))
+    if thr is not None:
+        items += '<li style="display:flex;gap:8px;padding:2px 0;"><span aria-hidden="true" style="flex:none;font-weight:700;">|</span><span>Threshold: ' + _if_fmt(thr) + '</span></li>'
+    legend = '<ul class="gsl" style="list-style:none;margin:8px 0 0;padding:0;font-size:0.9rem;">' + items + '</ul>' if items else ''
+    rows = [['Band %d' % (k + 1), _if_fmt(f), _if_fmt(t)] for k, (f, t, c) in enumerate(bands)] + [['Scale', _if_fmt(mn), _if_fmt(mx)], ['Value', vs, vs]]
+    if thr is not None:
+        rows.append(['Threshold', _if_fmt(thr), _if_fmt(thr)])
+    return _if_wrap(ROOT + _if_title(b) + svg
+                    + '<div style="display:flex;justify-content:space-between;max-width:360px;margin:0 auto;font-size:0.9rem;color:' + _IF_MUTED + ';"><span>' + _if_fmt(mn) + '</span><span>' + _if_fmt(mx) + '</span></div>'
+                    + '<div style="text-align:center;font-weight:800;font-size:1.6rem;">' + vs + _cv_esc(unit) + '</div>'
+                    + ('<div style="text-align:center;font-size:0.9rem;color:' + _IF_MUTED + ';">' + label + '</div>' if label else '')
+                    + ('<div style="text-align:center;font-size:0.9rem;">' + status + '</div>' if status else '') + legend
+                    + _if_table(['Band', 'From', 'To'], rows) + notes + '</div>')
+
+
+_cf_prev_funnel, _cf_prev_gauge = _RENDERERS['conversion_funnel'], _RENDERERS['gauge_sla']
+
+
+def _cf_legacy(prev, b, atom):
+    """The previous renderer, unchanged; a number it cannot convert (a 400-digit integer, say) gives a note instead of failing the whole page."""
+    try:
+        return prev(b)
+    except (OverflowError, ValueError, ZeroDivisionError, TypeError):
+        return _if_wrap('<div class="if' + ('cf' if atom == 'conversion_funnel' else 'gs') + '">' + _if_title(b) + _hg_note('A value in this block is not a number the chart can draw (it needs a plain number below 1e15), so there is nothing to draw.') + '</div>')
+
+
+def _render_conversion_funnel_shaped(b):
+    return _cf_area(b) if _if_g(b, 'shape') == 'area' else _cf_legacy(_cf_prev_funnel, b, 'conversion_funnel')
+
+
+def _render_gauge_sla_scaled(b):
+    return _cf_gauge(b) if _cf_isnum(_if_g(b, 'min')) or isinstance(_if_g(b, 'steps'), list) else _cf_legacy(_cf_prev_gauge, b, 'gauge_sla')
+
+
+_RENDERERS['conversion_funnel'] = _render_conversion_funnel_shaped
+_RENDERERS['gauge_sla'] = _render_gauge_sla_scaled
 
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

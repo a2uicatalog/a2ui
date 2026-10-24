@@ -1043,3 +1043,125 @@ _RENDERERS['tree_view'] = function(b) {
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:12px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);font-family:var(--font,inherit);">'
     + title + nodes + '</div>';
 };
+
+// ─── conversion_funnel `shape: "area"` (Plotly funnelarea) and gauge_sla scale mode (Plotly indicator gauge), wave B ───
+// Additive: without `shape: "area"` / without `min` or `steps` the renderers above run untouched. Twin of _cf_area / _cf_gauge in
+// renderers/web_article.py. Labels live in HTML (not SVG text) so they are never scaled below 12px.
+var _CF_COLOR = /^(#[0-9a-fA-F]{3,8}|var\(--[a-z-]+(,#[0-9a-fA-F]{3,8})?\))$/;
+var _CF_MAX = 1e15;   // a larger number is refused (twin of _CF_MAX in web_article.py)
+var _CF_NUMSTR = /^[ \t]*[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[ \t]*$/;
+function _cfIsnum(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= _CF_MAX; }
+function _cfN(v) {   // the usable number in v, or null: a number in range, or a plain decimal string
+  if (typeof v === 'string') { if (v.length > 40 || !_CF_NUMSTR.test(v)) return null; v = Number(v); }
+  return _cfIsnum(v) ? v : null;
+}
+function _cfGiven(v) { return !(v === undefined || v === null); }
+function _cfUkey(k, used) { var base = k, n = 1; while (used[k] === true) { n++; k = base + ' (' + n + ')'; } used[k] = true; return _esc(k); }
+function _cfName(v) { return (v === undefined || v === null) ? '' : String(v).slice(0, 40); }
+function _cfPt(cx, cy, r, frac) { var a = Math.PI * (1 + frac); return _ifFmt(cx + r * Math.cos(a)) + ' ' + _ifFmt(cy + r * Math.sin(a)); }
+
+function _cfArea(b) {
+  var raw = _ifObj(b).steps, src = Array.isArray(raw) ? raw.slice(0, 500) : [], rows = [], skipped = 0, i, k;
+  for (i = 0; i < src.length; i++) {
+    var s = src[i], v = _cfN((s && typeof s === 'object') ? s.value : undefined);
+    if (v === null || v < 0) { skipped++; continue; }
+    var nm = (s && typeof s === 'object') ? (s.stage ? s.stage : s.label) : undefined;
+    rows.push([_cfName(nm) || ('Step ' + (rows.length + 1)), v]);
+  }
+  var capped = rows.length > 12, nAll = rows.length, notes = '';
+  rows = rows.slice(0, 12);
+  if (skipped) notes += _hgNote(skipped + (skipped === 1 ? ' entry' : ' entries') + ' skipped: not a usable stage (it needs a number value of 0 or more).');
+  if (capped) notes += _hgNote('Showing the first 12 of ' + nAll + ' stages.');
+  notes += _hgVersionNote(b, 'conversion_funnel');
+  var tot = 0;
+  for (i = 0; i < rows.length; i++) tot += rows[i][1];
+  if (!rows.length || !(tot > 0)) return _ifWrap('<div class="ifcf">' + _ifTitle(b) + _hgNote('Nothing to draw: the funnel has no stage with a value above zero.') + notes + '</div>');
+  var H = 240, W0 = 400, polys = '', cum = 0, prevY = 0, pused = Object.create(null), lused = Object.create(null);
+  for (k = 0; k < rows.length; k++) {
+    cum += rows[k][1];
+    var y2 = Math.max(0, H * (1 - Math.sqrt(Math.max(0, 1 - cum / tot))));
+    if (rows[k][1] > 0) {
+      var w1 = W0 * (1 - prevY / H), w2 = W0 * (1 - y2 / H);
+      var pts = [[200 - w1 / 2, prevY], [200 + w1 / 2, prevY], [200 + w2 / 2, y2], [200 - w2 / 2, y2]];
+      polys += '<polygon data-cb="bar" data-key="' + _cfUkey(rows[k][0], pused) + '" class="cfb" points="' + pts.map(function(p) { return _ifFmt(p[0]) + ',' + _ifFmt(p[1]); }).join(' ') + '" fill="' + _IF_CAT[k % 4] + '" stroke="var(--bg,#fff)" stroke-width="2"></polygon>';
+    }
+    prevY = y2;
+  }
+  var first = rows[0][1];
+  var gist = 'Funnel area chart, area proportional to value: ' + rows.map(function(r) { return r[0] + ' ' + String(r[1]); }).join(', ') + '.';
+  var svg = '<svg role="img" aria-label="' + _esc(gist.slice(0, 400)) + '" viewBox="0 0 400 240" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto;">' + polys + '</svg>';
+  var sw = 'flex:none;width:12px;height:12px;border:1px solid var(--border,#64748B);border-radius:2px;align-self:center;';
+  var legend = '<ol class="cfl" style="list-style:none;margin:10px 0 0;padding:0;font-size:0.9rem;">' + rows.map(function(r, j) {
+    return '<li data-cb="label" data-key="' + _cfUkey(r[0], lused) + '" style="display:flex;align-items:baseline;gap:8px;padding:2px 0;"><span aria-hidden="true" style="' + sw + 'background:' + _IF_CAT[j % 4] + ';"></span>' +
+      '<span style="flex:1;min-width:0;overflow-wrap:anywhere;">' + (j + 1) + '. ' + _esc(r[0]) + '</span>' +
+      '<span style="flex:none;font-weight:600;font-size:0.9rem;">' + _ifS(String(r[1]), 30) + (first > 0 ? ' · ' + _ifFmt(r[1] / first * 100) + '%' : '') + '</span></li>';
+  }).join('') + '</ol>';
+  var table = _ifTable(['Stage', 'Value', 'Of first', 'Of total area'], rows.map(function(r) {
+    return [r[0], String(r[1]), first > 0 ? _ifFmt(r[1] / first * 100) + '%' : 'n/a', _ifFmt(r[1] / tot * 100) + '%'];
+  }));
+  return _ifWrap('<div class="ifcf">' + _ifTitle(b) + svg + legend + table + notes + '</div>');
+}
+
+function _cfGauge(b) {
+  var val = _cfN(b.value), mn = _cfN(b.min), mx = _cfN(b.max_value), thr = _cfN(b.threshold), bad = [];
+  if (mn === null && _cfGiven(b.min)) bad.push('min');
+  if (mx === null && _cfGiven(b.max_value)) bad.push('max_value');
+  if (thr === null && _cfGiven(b.threshold)) bad.push('threshold');
+  if (mn === null) mn = 0;
+  if (mx === null) mx = 100;
+  var unit = _cfName(b.unit).slice(0, 12), label = _ifS(b.label, 40);
+  var notes = (bad.length ? _hgNote(bad.join(', ') + (bad.length === 1 ? ' was' : ' were') + ' not a usable number (it needs a plain number below 1e15) and ' + (bad.length === 1 ? 'was' : 'were') + ' ignored.') : '') + _hgVersionNote(b, 'gauge_sla');
+  var ROOT = '<div class="ifgs" data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '">';
+  if (val === null) return _ifWrap(ROOT + _ifTitle(b) + _hgNote('The value is not a number, so there is nothing to draw.') + notes + '</div>');
+  if (!(mx > mn)) return _ifWrap(ROOT + _ifTitle(b) + _hgNote('The maximum must be larger than the minimum, so there is nothing to draw.') + notes + '</div>');
+  var span = mx - mn;
+  function fr(x) { return Math.min(1, Math.max(0, (x - mn) / span)); }
+  var raw = b.steps, src = Array.isArray(raw) ? raw.slice(0, 500) : [], bands = [], skipped = 0, i;
+  for (i = 0; i < src.length; i++) {
+    var s = src[i], o = (s && typeof s === 'object') ? s : {}, f = _cfN(o.from), t = _cfN(o.to), c = o.color;
+    if (f === null || t === null || !(f < t)) { skipped++; continue; }
+    f = Math.max(mn, f); t = Math.min(mx, t);
+    if (!(f < t)) { skipped++; continue; }
+    bands.push([f, t, (typeof c === 'string' && _CF_COLOR.test(c)) ? c : null]);
+  }
+  var capped = bands.length > 8, nAll = bands.length;
+  bands = bands.slice(0, 8);
+  if (skipped) notes += _hgNote(skipped + ' step' + (skipped === 1 ? '' : 's') + ' skipped: not a usable band (it needs a numeric from below its to).');
+  if (capped) notes += _hgNote('Showing the first 8 of ' + nAll + ' bands.');
+  var cx = 150, cy = 140, R = 100;
+  function arc(a, z) { return 'M ' + _cfPt(cx, cy, R, a) + ' A 100 100 0 0 1 ' + _cfPt(cx, cy, R, z); }
+  var g = '<path d="' + arc(0, 1) + '" fill="none" stroke="var(--border,#CBD5E1)" stroke-width="14"></path>';
+  bands.forEach(function(q, k) { g += '<path data-cb="arc" data-key="Band ' + (k + 1) + '" class="gsb" d="' + arc(fr(q[0]), fr(q[1])) + '" fill="none" stroke="' + (q[2] || _IF_CAT[k % 4]) + '" stroke-width="14"></path>'; });
+  function seg(frac, r1, r2, cls, w) {
+    var a = Math.PI * (1 + frac);
+    return '<line class="' + cls + '" x1="' + _ifFmt(cx + r1 * Math.cos(a)) + '" y1="' + _ifFmt(cy + r1 * Math.sin(a)) + '" x2="' + _ifFmt(cx + r2 * Math.cos(a)) +
+      '" y2="' + _ifFmt(cy + r2 * Math.sin(a)) + '" stroke="var(--text,#0F172A)" stroke-width="' + w + '" stroke-linecap="round"></line>';
+  }
+  if (thr !== null) g += seg(fr(thr), 88, 114, 'gst', 3);
+  g += seg(fr(val), 0, 82, 'gsn', 4) + '<circle cx="150" cy="140" r="7" fill="var(--text,#0F172A)"></circle>';
+  var vs = _ifFmt(val);
+  var gist = 'Gauge' + (b.title ? ': ' + _cfName(b.title).slice(0, 60) : '') + ', value ' + vs + unit + ' on a scale from ' + _ifFmt(mn) + ' to ' + _ifFmt(mx) +
+    (thr !== null ? ', threshold ' + _ifFmt(thr) : '') + (bands.length ? ', ' + bands.length + ' bands' : '') + '.';
+  var svg = '<svg role="img" aria-label="' + _esc(gist) + '" viewBox="0 0 300 160" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto;">' + g + '</svg>';
+  var status = '';
+  if (thr !== null) status += val >= thr ? 'At or above the threshold of ' + _ifFmt(thr) + '.' : 'Below the threshold of ' + _ifFmt(thr) + '.';
+  if (val < mn || val > mx) status += (status ? ' ' : '') + 'The value is off the scale; the needle stops at the end.';
+  var sw = 'flex:none;width:12px;height:12px;border:1px solid var(--border,#64748B);border-radius:2px;align-self:center;';
+  var items = bands.map(function(q, k) {
+    return '<li style="display:flex;gap:8px;padding:2px 0;"><span aria-hidden="true" style="' + sw + 'background:' + (q[2] || _IF_CAT[k % 4]) + ';"></span><span>Band ' + (k + 1) + ': ' + _ifFmt(q[0]) + ' to ' + _ifFmt(q[1]) + '</span></li>';
+  }).join('');
+  if (thr !== null) items += '<li style="display:flex;gap:8px;padding:2px 0;"><span aria-hidden="true" style="flex:none;font-weight:700;">|</span><span>Threshold: ' + _ifFmt(thr) + '</span></li>';
+  var legend = items ? '<ul class="gsl" style="list-style:none;margin:8px 0 0;padding:0;font-size:0.9rem;">' + items + '</ul>' : '';
+  var rows = bands.map(function(q, k) { return ['Band ' + (k + 1), _ifFmt(q[0]), _ifFmt(q[1])]; }).concat([['Scale', _ifFmt(mn), _ifFmt(mx)], ['Value', vs, vs]]);
+  if (thr !== null) rows.push(['Threshold', _ifFmt(thr), _ifFmt(thr)]);
+  return _ifWrap(ROOT + _ifTitle(b) + svg +
+    '<div style="display:flex;justify-content:space-between;max-width:360px;margin:0 auto;font-size:0.9rem;color:var(--muted,#475569);"><span>' + _ifFmt(mn) + '</span><span>' + _ifFmt(mx) + '</span></div>' +
+    '<div style="text-align:center;font-weight:800;font-size:1.6rem;">' + vs + _esc(unit) + '</div>' +
+    (label ? '<div style="text-align:center;font-size:0.9rem;color:var(--muted,#475569);">' + label + '</div>' : '') +
+    (status ? '<div style="text-align:center;font-size:0.9rem;">' + status + '</div>' : '') + legend +
+    _ifTable(['Band', 'From', 'To'], rows) + notes + '</div>');
+}
+
+var _cfPrevFunnel = _RENDERERS['conversion_funnel'], _cfPrevGauge = _RENDERERS['gauge_sla'];
+_RENDERERS['conversion_funnel'] = function(b) { return (b && b.shape === 'area') ? _cfArea(b) : _cfPrevFunnel(b); };
+_RENDERERS['gauge_sla'] = function(b) { return (b && (_cfIsnum(b.min) || Array.isArray(b.steps))) ? _cfGauge(b) : _cfPrevGauge(b); };
