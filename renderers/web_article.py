@@ -33773,7 +33773,8 @@ _RENDERERS['motion_build'] = _render_motion_build
 # move without the wrapper changing size). The scale origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
 # first block loses its top margin (!important: atoms set it inline; B's collapses out of the wrapper, A's would not, and the titles
 # would not line up).
-# Text inside an element that is resized on its way (scale off 1 by more than 4%: class mtr-s) hides while it moves and fades in once
+# A B-only SVG shape inside a [data-mtr-follow] root (a framed geo_map) travels with the map: it takes the move of the largest matched curved shape of that root, so a new route never
+# hangs in its final place while its markers are still on the way. Text inside an element that is resized on its way (scale off 1 by more than 4%: class mtr-s) hides while it moves and fades in once
 # at rest (p >= 0.85) via relative colour -webkit-text-fill-color; an element that only travels keeps its text visible. Twin: atoms_motion_candidates.gs.
 _MTR_MATCH = {'path': 'path', 'exact': 'exact'}
 _MTR_CSS = ('.mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .mtr-a,.mo-tr .mtr-b{--p:1}.mo-tr .mtr-a{display:none}'
@@ -33806,8 +33807,12 @@ _MTR_JS = ('(function(){var w=document.currentScript&&document.currentScript.par
            "w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];"
            'for(var k in b)for(var i=0;i<b[k].length;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}'
            "w.classList.remove('mtr-measure');"
+           "var rf=null;for(var t=0;t<plan.length;t++){var q=plan[t];if(q[1]&&q[2]&&!q[3]&&q[2].w>0.5&&q[2].h>0.5&&q[0].closest('[data-mtr-follow]')&&(!rf||q[2].w*q[2].h>rf.a)){"
+           "var f=Math.min(q[1].w/q[2].w,q[1].h/q[2].h);rf={a:q[2].w*q[2].h,s:f,tx:q[1].x+q[1].w/2-f*(q[2].x+q[2].w/2),ty:q[1].y+q[1].h/2-f*(q[2].y+q[2].h/2)}}}"
            "for(var t=0;t<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n','mtr-s');"
-           "if(!s||!o){e.classList.add('mtr-n');continue}"
+           "if(!s||!o){if(!s&&o&&rf&&e.ownerSVGElement&&e.closest('[data-mtr-follow]')){var gm=e.getScreenCTM&&e.getScreenCTM(),gx=gm&&gm.a||1,gy=gm&&gm.d||1;"
+           "st.setProperty('--mtr-dx',(((rf.s-1)*o.x+rf.tx)/gx).toFixed(2)+'px');st.setProperty('--mtr-dy',(((rf.s-1)*o.y+rf.ty)/gy).toFixed(2)+'px');"
+           "st.setProperty('--mtr-sx',rf.s.toFixed(4));st.setProperty('--mtr-sy',rf.s.toFixed(4));e.classList.add('mtr-m')}e.classList.add('mtr-n');continue}"
            'var fx=1,fy=1,m=e.ownerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}'
            'var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-o.x,dy=s.y-o.y;'
            'if(!plan[t][3]){sx=sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}'
@@ -44613,6 +44618,14 @@ def _ch_frame(rset, proj, regs, fr=None):
     return fit, 960, h
 
 
+_CH_SEAS = 'border-radius:10px;'
+
+
+def _ch_sea(w, h):
+    """A framed map reads as a window: a sea tint (a mix of two theme tokens) behind the land, and rounded corners on the svg."""
+    return '<rect data-sea="1" width="' + str(w) + '" height="' + str(h) + '" style="fill:' + _cr_mix(_CR_ACC2, 9, _CR_SURF) + ';"/>'
+
+
 _CH_CATMAX = 6
 _CH_CATTOK = {'accent': _CR_ACC, 'accent2': _CR_ACC2, 'text': _CR_TEXT, 'muted': _CR_MUTED}
 # Pattern per category slot (0 = solid colour, no pattern), so colour is never the only cue: dots, horizontal, vertical, cross-hatch and backslash stripes. The
@@ -44747,7 +44760,8 @@ def _render_choropleth_categorical(b: dict, rset: str, proj: str) -> str:
     order = [regs[index[r]] for r in valued] + nodata
     n_tiles = len(order)
     n_all = n_tiles + len(cats)
-    pr, w, h = _ch_frame(rset, proj, regs, _ch_frame_read(b.get('frame'), proj, notes))
+    frm = _ch_frame_read(b.get('frame'), proj, notes)
+    pr, w, h = _ch_frame(rset, proj, regs, frm)
     uid = 'ch' + _cr_id('choropleth_map', rset, proj, 'categories', *cats, *cols, *[r + '=' + str(got[r]) for r in valued])
     paths = ''
     for i, (rid, nm, polys) in enumerate(order):
@@ -44764,8 +44778,8 @@ def _render_choropleth_categorical(b: dict, rset: str, proj: str) -> str:
     defs = '<defs>' + defs + '</defs>' if defs else ''
     title = _cr_s(b.get('title'), 80)
     label = (title or 'Choropleth map') + ': ' + str(len(got)) + ' of ' + str(len(regs)) + ' regions have a category, in ' + str(len(cats)) + (' category' if len(cats) == 1 else ' categories')
-    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;">'
-           + defs + paths + '</svg>')
+    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;' + (_CH_SEAS if frm is not None else '') + '">'
+           + (_ch_sea(w, h) if frm is not None else '') + defs + paths + '</svg>')
     lt = _cr_s(b.get('legend_title'), 60)
     lis = ''
     for j, c in enumerate(cats):
@@ -44865,7 +44879,8 @@ def _render_choropleth_map(b: dict) -> str:
     order = [regs[index[r]] for r in valued] + nodata
     n_tiles = len(order)
     n_all = n_tiles + steps
-    pr, w, h = _ch_frame(rset, proj, regs, _ch_frame_read(b.get('frame'), proj, notes))
+    frm = _ch_frame_read(b.get('frame'), proj, notes)
+    pr, w, h = _ch_frame(rset, proj, regs, frm)
     uid = 'ch' + _cr_id('choropleth_map', rset, proj, kind, str(steps), *[r + '=' + _cr_trim(got[r]) for r in valued])
     paths = ''
     for i, (rid, nm, polys) in enumerate(order):
@@ -44881,8 +44896,8 @@ def _render_choropleth_map(b: dict) -> str:
                 + ';"/><line x1="0" y1="0" x2="0" y2="6" style="stroke:' + _CR_MUTED + ';stroke-width:1.5;"/></pattern></defs>')
     title = _cr_s(b.get('title'), 80)
     label = (title or 'Choropleth map') + ': ' + str(len(got)) + ' of ' + str(len(regs)) + ' regions have a value, from ' + _cr_trim(lo) + us + ' to ' + _cr_trim(hi) + us
-    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;">'
-           + defs + paths + '</svg>')
+    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;' + (_CH_SEAS if frm is not None else '') + '">'
+           + (_ch_sea(w, h) if frm is not None else '') + defs + paths + '</svg>')
     lt = _cr_s(b.get('legend_title'), 60)
     lis = ''
     for j in range(steps):
@@ -45157,8 +45172,8 @@ def _render_geo_map(b: dict) -> str:
     label = ((title or 'Geo map') + ': ' + str(len(pts) - len(outside)) + ' of ' + str(len(pts)) + ' points drawn' + (', ' + str(len(lines)) + (' line' if len(lines) == 1 else ' lines') if lines else '')
              + (' in ' + str(len(named)) + (' group' if len(named) == 1 else ' groups') if named else '')
              + (', ' + str(len(got)) + (' region shaded' if len(got) == 1 else ' regions shaded') + ' in ' + str(len(cats)) + (' category' if len(cats) == 1 else ' categories') if got else ''))
-    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;">'
-           + defs_m + base + route_svg + mark_svg + '</svg>')
+    svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;' + (_CH_SEAS if fr is not None else '') + '">'
+           + (_ch_sea(w, h) if fr is not None else '') + defs_m + base + route_svg + mark_svg + '</svg>')
     lt = _cr_s(b.get('legend_title'), 60)
     sw = lambda shape, col: ('<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="-8 -8 16 16" style="flex:none;">' + {
         'circle': '<circle r="5.5"', 'square': '<rect x="-5" y="-5" width="10" height="10"', 'diamond': '<path d="M0 -7L7 0L0 7L-7 0Z"', 'triangle': '<path d="M0 -6.5L6 5L-6 5Z"'}[shape]
@@ -45189,7 +45204,7 @@ def _render_geo_map(b: dict) -> str:
         rtable = ('<table style="' + _CR_SR + '"><caption>' + (title or 'Geo map') + ', shaded regions</caption><thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>'
                   + ''.join('<tr><th scope="row">' + _cr_s(ridx[r][1], 80) + '</th><td>' + _cr_s(r, 12) + '</td><td>' + _cr_s(cats[got[r]], 40) + '</td></tr>' for r in sorted(got, key=lambda r: (got[r], list(ridx).index(r))))
                   + '</tbody></table>')
-    return ('<div role="group" aria-label="' + (title or 'Geo map') + '" data-cb-root style="--n:' + str(n_all) + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
+    return ('<div role="group" aria-label="' + (title or 'Geo map') + '" data-cb-root' + (' data-mtr-follow' if keyed else '') + ' style="--n:' + str(n_all) + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
             + _CR_CB_CSS + ('<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' if title else '') + svg + legend + nt + ptable + ltable + rtable + '</div>')
 
 

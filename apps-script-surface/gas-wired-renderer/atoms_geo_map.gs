@@ -200,7 +200,7 @@ _RENDERERS['geo_map'] = function(b) {
   var label = (title || 'Geo map') + ': ' + (pts.length - outside.length) + ' of ' + pts.length + ' points drawn' + (lines.length ? ', ' + lines.length + (lines.length === 1 ? ' line' : ' lines') : '')
     + (named.length ? ' in ' + named.length + (named.length === 1 ? ' group' : ' groups') : '')
     + (gotN ? ', ' + gotN + (gotN === 1 ? ' region shaded' : ' regions shaded') + ' in ' + cats.length + (cats.length === 1 ? ' category' : ' categories') : '');
-  var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;">' + defsM + base + routeSvg + markSvg + '</svg>';
+  var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h) : '') + defsM + base + routeSvg + markSvg + '</svg>';
   var lt = _crS(b.legend_title, 60), lis = '', noVal = false;
   var gnames = named.concat(named.length && hasUng ? ['Ungrouped'] : []);
   for (i = 0; i < gnames.length; i++) { st = _gmStyle(i); lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _gmSwatch(st[0], st[1]) + '<span>' + _crS(gnames[i], 40) + '</span></li>'; }
@@ -240,6 +240,6 @@ _RENDERERS['geo_map'] = function(b) {
     rtable = '<table style="' + _CR_SR + '"><caption>' + (title || 'Geo map') + ', shaded regions</caption><thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>'
       + gk.map(function(r) { return '<tr><th scope="row">' + _crS(regs[ridxm[r]][1], 80) + '</th><td>' + _crS(r, 12) + '</td><td>' + _crS(cats[got[r]], 40) + '</td></tr>'; }).join('') + '</tbody></table>';
   }
-  return '<div role="group" aria-label="' + (title || 'Geo map') + '" data-cb-root style="--n:' + nAll + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
+  return '<div role="group" aria-label="' + (title || 'Geo map') + '" data-cb-root' + (keyed ? ' data-mtr-follow' : '') + ' style="--n:' + nAll + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
     + _CR_CB_CSS + (title ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' : '') + svg + legend + nt + ptable + ltable + rtable + '</div>';
 };

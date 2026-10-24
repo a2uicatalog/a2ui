@@ -273,3 +273,23 @@ def test_motion_transition_between_two_frames_pans_every_keyed_region(width):
         assert _close(r, alone[k], 2.5), (k, r[:4], alone[k][:4])
     moved = [k for k in keys if any(abs(x - y) > 2 for x, y in zip(p0["b"][k][:4], p1["b"][k][:4]))]
     assert len(moved) > 100, len(moved)   # a pan and a zoom: the whole map moves between the two frames
+
+
+TRIP0 = {**TRIP1, "frame": {"lon_min": -15, "lon_max": 1, "lat_min": 35, "lat_max": 43.5}, "points": [_pt("Lisbon", LIS)], "lines": [],
+         "regions": [{"id": "PRT", "category": "visited"}, {"id": "ESP", "category": "planned"}, {"id": "FRA", "category": "planned"}]}
+
+
+@browser
+@pytest.mark.parametrize("width", [480, 1100])
+@pytest.mark.parametrize("pair,route,ends", [("0-1", "leg1", ("lisbon", "madrid")), ("1-2", "leg2", ("madrid", "paris"))])
+@pytest.mark.parametrize("p", [0.25, 0.5, 0.75])
+def test_a_route_never_extends_beyond_its_end_markers_mid_transition(pair, route, ends, p, width):
+    """A new route (B only) travels with the map: its geometry stays inside its two markers' box (+ stroke and a little curvature), at every p."""
+    from test_motion_transition import _page
+    a, b = {"0-1": (TRIP0, TRIP1), "1-2": (TRIP1, TRIP2)}[pair]
+    got = _page({"type": "motion_transition", "from": a, "to": b}, p, width)["b"]
+    r, m0, m1 = got[route], got[ends[0]], got[ends[1]]
+    x0, y0 = min(m0[0], m1[0]), min(m0[1], m1[1])
+    x1, y1 = max(m0[0] + m0[2], m1[0] + m1[2]), max(m0[1] + m0[3], m1[1] + m1[3])
+    tol = 4 + 0.012 * width
+    assert r[0] >= x0 - tol and r[1] >= y0 - tol and r[0] + r[2] <= x1 + tol and r[1] + r[3] <= y1 + tol, (r[:4], (x0, y0, x1, y1))

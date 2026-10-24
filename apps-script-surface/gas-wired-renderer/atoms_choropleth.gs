@@ -204,6 +204,8 @@ function _chColor(kind, scheme, j, steps, lo, hi) {
 function _chIsObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
 
 // ---- category mode (twin of _CH_CATMAX .. _ch_cat_swatch and _render_choropleth_categorical) ----
+var _CH_SEAS = 'border-radius:10px;';
+function _chSea(w, h) { return '<rect data-sea="1" width="' + w + '" height="' + h + '" style="fill:' + _crMix(_CR_ACC2, 9, _CR_SURF) + ';"/>'; }
 var _CH_CATMAX = 6;
 // only these four names are tokens; read at call time (the _CR_* tokens load later)
 function _chCatTok(name) {
@@ -293,7 +295,7 @@ function _chRenderCategorical(b, rset, proj, colors) {
   var nodata = regs.filter(function(r) { return got[r[0]] === undefined; });
   var order = valued.map(function(r) { return regs[index[r]]; }).concat(nodata);
   var nTiles = order.length, nAll = nTiles + cats.length;
-  var fr = _chFrame(rset, proj, regs, _chFrameRead(b.frame, proj, notes)), pr = fr[0], w = fr[1], h = fr[2];
+  var frm = _chFrameRead(b.frame, proj, notes), fr = _chFrame(rset, proj, regs, frm), pr = fr[0], w = fr[1], h = fr[2];
   var uid = 'ch' + _crId(['choropleth_map', rset, proj, 'categories'].concat(cats, cols, valued.map(function(r) { return r + '=' + got[r]; })));
   var paths = '', fill, tip, reg;
   order.forEach(function(r, n) {
@@ -311,7 +313,7 @@ function _chRenderCategorical(b, rset, proj, colors) {
   defs = defs ? '<defs>' + defs + '</defs>' : '';
   var title = _crS(b.title, 80);
   var label = (title || 'Choropleth map') + ': ' + valued.length + ' of ' + regs.length + ' regions have a category, in ' + cats.length + (cats.length === 1 ? ' category' : ' categories');
-  var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;">' + defs + paths + '</svg>';
+  var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h) : '') + defs + paths + '</svg>';
   var lt = _crS(b.legend_title, 60), lis = '';
   for (j = 0; j < cats.length; j++) {
     lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _chCatSwatch(uid, cols, j) + '<span' + _crCb('label', nTiles + j, nAll, '', 'class-' + (j + 1)) + '>' + _crS(cats[j], 40) + '</span></li>';
@@ -393,7 +395,7 @@ _RENDERERS['choropleth_map'] = function(b) {
   var nodata = regs.filter(function(r) { return got[r[0]] === undefined; });
   var order = valued.map(function(r) { return regs[index[r]]; }).concat(nodata);
   var nTiles = order.length, nAll = nTiles + steps;
-  var fr = _chFrame(rset, proj, regs, _chFrameRead(b.frame, proj, notes)), pr = fr[0], w = fr[1], h = fr[2];
+  var frm = _chFrameRead(b.frame, proj, notes), fr = _chFrame(rset, proj, regs, frm), pr = fr[0], w = fr[1], h = fr[2];
   var uid = 'ch' + _crId(['choropleth_map', rset, proj, kind, String(steps)].concat(valued.map(function(r) { return r + '=' + _crTrim(got[r]); })));
   var paths = '', fill, tip, reg;
   order.forEach(function(r, n) {
@@ -410,7 +412,7 @@ _RENDERERS['choropleth_map'] = function(b) {
   }
   var title = _crS(b.title, 80);
   var label = (title || 'Choropleth map') + ': ' + valued.length + ' of ' + regs.length + ' regions have a value, from ' + _crTrim(lo) + us + ' to ' + _crTrim(hi) + us;
-  var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;">'
+  var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h) : '')
     + defs + paths + '</svg>';
   var lt = _crS(b.legend_title, 60), lis = '';
   for (j = 0; j < steps; j++) {
