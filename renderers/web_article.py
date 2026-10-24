@@ -28658,6 +28658,11 @@ _MO_TIMELINE_JS = (
     '})();'
 )
 
+# I87: scroll drive. Spliced before the final "})();" of the timeline script only when drive is "scroll".
+_MO_SCROLL_JS = (
+    'var run=root.querySelector(".mt-run");if(run&&C.drv){var rq=0;function sp(){rq=0;var r=run.getBoundingClientRect(),d=r.height-window.innerHeight;seek(d>0?C.dur*Math.max(0,Math.min(1,-r.top/d)):0);}function sq(){if(!rq)rq=requestAnimationFrame(sp);}if(!RM){window.addEventListener("scroll",sq,{passive:true});window.addEventListener("resize",sq);if(rng)rng.addEventListener("input",function(){var r=run.getBoundingClientRect(),d=r.height-window.innerHeight;if(d>0)window.scrollTo(0,window.pageYOffset+r.top+parseFloat(rng.value)/1000*d);});if(!hm)sp();}}'
+)
+
 
 _MO_EASE = {
     'linear': [0, 0, 1, 1],
@@ -29838,7 +29843,8 @@ def _mo_timeline(b: dict) -> str:
     de = b.get('ease')
     def_ease = de if isinstance(de, str) and de != 'hold' and de in _MO_EASE else 'standard'
     loop = 'false' if b.get('loop') is False else 'true'
-    auto = 'false' if b.get('autoplay') is False else 'true'
+    is_scroll = b.get('drive') == 'scroll'
+    auto = 'false' if (is_scroll or b.get('autoplay') is False) else 'true'
     ctl = b.get('controls') is not False
     poster = _ff_num(b.get('poster'), dur_n * 0.6, 0, dur_n, 2)
     bg = _ff_hex(b.get('background'), '')
@@ -29901,7 +29907,8 @@ def _mo_timeline(b: dict) -> str:
         cj = _mo_track_js(cm, _MO_CAM, _MO_CAM_ORDER, dur_n, bpm, def_ease, st)
         if cj:
             cam_js = '{' + cj + '}'
-    cfg = '{W:' + str(W) + ',H:' + str(H) + ',dur:' + dur + ',poster:' + poster + ',loop:' + loop + ',auto:' + auto + ',tg:[' + ','.join(tg) + '],cam:' + cam_js + '}'
+    drv_cfg = ',drv:1' if is_scroll else ''
+    cfg = '{W:' + str(W) + ',H:' + str(H) + ',dur:' + dur + ',poster:' + poster + ',loop:' + loop + ',auto:' + auto + drv_cfg + ',tg:[' + ','.join(tg) + '],cam:' + cam_js + '}'
     if backdrop == 'glow':
         glow = 'background-image:radial-gradient(ellipse at 50% 0%,rgba(' + _ff_rgb(acc) + ',0.22) 0%,rgba(' + _ff_rgb(acc) + ',0) 62%);'
     elif backdrop == 'grid':
@@ -29911,22 +29918,31 @@ def _mo_timeline(b: dict) -> str:
     icon = ('<svg class="mt-ic-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5L12 7L3 12.5Z" fill="currentColor"/></svg><svg class="mt-ic-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="8.3" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/></svg>')
     controls = ''
     if ctl:
+        play_btn = '' if is_scroll else ('<button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid ' + th['line'] + ';background:' + th['soft'] + ';color:' + th['ink'] + ';display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;">' + icon + '</button>')
         controls = ('<div style="display:flex;align-items:center;gap:12px;padding:10px 4px 0;color:' + th['ink'] + ';">'
-                    + '<button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid ' + th['line'] + ';background:' + th['soft'] + ';color:' + th['ink'] + ';display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;">' + icon + '</button>'
+                    + play_btn
                     + '<input type="range" class="mt-rng" min="0" max="1000" value="0" aria-label="Timeline position" style="flex:1;min-width:0;accent-color:' + acc + ';">'
                     + '<span class="mt-tm" style="font-family:' + _CV_VOICES['mono'] + ';font-size:0.72rem;color:var(--text,#334155);min-width:64px;text-align:right;">0:00</span></div>')
     note = '<!-- a2ui: motion_timeline ignored ' + str(st['dropped']) + ' invalid or over-limit item(s) -->' if st['dropped'] else ''
     transcript = _mo_transcript(b, blocks, cfg, dur_n, th) if b.get('transcript') is True else ''
+    style_extra = '@media (prefers-reduced-motion:reduce){.mt-root .mt-run{height:auto!important}.mt-root .mt-pin{position:static!important;height:auto!important}}' if is_scroll else ''
+    vp_size = ('width:min(100%,' + _ff_num(100.0 * W / H, 100, 1, 1000, 2) + 'vh);margin:0 auto;aspect-ratio:') if is_scroll else 'width:100%;aspect-ratio:'
+    vp_html = ('<div class="mt-vp" style="position:relative;' + vp_size + str(W) + '/' + str(H) + ';overflow:hidden;border-radius:16px;background:' + st_bg + ';border:1px solid ' + th['line'] + ';">'
+               + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + '--mt-ink:' + th['ink'] + ';--mt-mute:' + th['mute'] + ';--mt-acc:' + acc + ';overflow:hidden;">'
+               + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
+               + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>')
+    if is_scroll:
+        L = _ff_num(b.get('scroll_length'), 300, 150, 1000, 0)
+        body = '<div class="mt-run" style="position:relative;height:' + L + 'vh;"><div class="mt-pin" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;">' + vp_html + controls + note + '</div></div>'
+    else:
+        body = vp_html + controls + note
+    script_src = _mo_tl_js(cfg).replace('%%UID%%', uid).replace('%%CFG%%', cfg)
+    if is_scroll:
+        script_src = script_src[:-5] + _MO_SCROLL_JS + script_src[-5:]
     return ('<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _cv_esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
-            + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
-            + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + str(W) + '/' + str(H) + ';overflow:hidden;border-radius:16px;background:' + st_bg + ';border:1px solid ' + th['line'] + ';">'
-            + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + '--mt-ink:' + th['ink'] + ';--mt-mute:' + th['mute'] + ';--mt-acc:' + acc + ';overflow:hidden;">'
-            + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
-            + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>'
-            + controls + note + transcript
-            + '<script>' + _mo_tl_js(cfg).replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script></div>')
-
-
+            + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}' + style_extra + '</style>'
+            + body + transcript
+            + '<script>' + script_src + '</script></div>')
 def _render_motion_timeline(b: dict) -> str:
     # A timeline inside a timeline would share ids and clocks: refuse, and say so.
     if _mo_tl_depth[0] > 0:

@@ -10023,6 +10023,14 @@ blocks:
     loop: bool (optional). Default true.
     autoplay: bool (optional). Plays when scrolled into view, pauses when it leaves. Default true. Off, or under prefers-reduced-motion,
       it shows the poster frame.
+    drive: '"time" | "scroll" (optional, default "time"). "scroll" turns the film into a scroll-driven piece: the stage is pinned (position:sticky)
+      inside a tall runway and the film clock is the page''s scroll progress through that runway (seeked on requestAnimationFrame from a
+      passive scroll listener), so scrolling plays the film and scrolling back rewinds it. No autoplay and no play/pause button: the
+      scrubber stays as a progress indicator and a keyboard control (moving it scrolls the page to that point), and the page''s own
+      keys scroll as usual. Under prefers-reduced-motion there is no runway: the poster frame is shown in the normal flow. The
+      export buttons are not offered. Absent or any other value: unchanged.'
+    scroll_length: 'number (optional). With drive "scroll": the runway height in percent of the viewport height, clamped 150-1000, default 300 (the film
+      plays over the runway minus one viewport of travel).'
     controls: bool (optional). Play/pause button, scrubber and clock. Default true.
     poster: number (optional). Seconds; the frame shown when not autoplaying. Default 60% of duration.
     transcript: 'bool (optional). Default false (nothing is added). True adds, under the stage, a "Transcript" disclosure (a details element, works without script) holding a table of every text and value the film shows, in reading order: time on screen (from the same keyframes as the player, the cue timing of film_to_vtt), scene (the scene layer it sits in), and the text. Covers motion_text, demo_caption lines, motion_counter, motion_pill, motion_checklist, demo_kpis, demo_chart (title, labels and values), demo_progress and demo_toggle_grid, nested or not. Up to 200 rows.'

@@ -647,6 +647,9 @@ function _moTlJs(cfg) {
   return _MO_TIMELINE_JS;
 }
 
+// I87: scroll drive. Spliced before the final "})();" of the timeline script only when drive is "scroll".
+var _MO_SCROLL_JS = 'var run=root.querySelector(".mt-run");if(run&&C.drv){var rq=0;function sp(){rq=0;var r=run.getBoundingClientRect(),d=r.height-window.innerHeight;seek(d>0?C.dur*Math.max(0,Math.min(1,-r.top/d)):0);}function sq(){if(!rq)rq=requestAnimationFrame(sp);}if(!RM){window.addEventListener("scroll",sq,{passive:true});window.addEventListener("resize",sq);if(rng)rng.addEventListener("input",function(){var r=run.getBoundingClientRect(),d=r.height-window.innerHeight;if(d>0)window.scrollTo(0,window.pageYOffset+r.top+parseFloat(rng.value)/1000*d);});if(!hm)sp();}}';
+
 // Keys -> per-property tracks. Every number goes through _ffNum so both renderers
 // spell it identically; anything that does not validate is counted, never silent.
 function _moTrackJs(keys, ranges, order, dur, bpm, defEase, st) {
@@ -1113,7 +1116,8 @@ function _moTimeline(b) {
   var asp = _ffPick(b.aspect, _MO_ASPECT, '16:9'), W = asp[0], H = asp[1];
   var dur = _ffNum(b.duration, 12, 2, 120, 2), durN = parseFloat(dur), bpm = _ffInt(b.bpm, 0, 0, 240);
   var defEase = (typeof b.ease === 'string' && b.ease !== 'hold' && Object.prototype.hasOwnProperty.call(_MO_EASE, b.ease)) ? b.ease : 'standard';
-  var loop = b.loop === false ? 'false' : 'true', auto = b.autoplay === false ? 'false' : 'true', ctl = b.controls !== false;
+  var isScroll = b.drive === 'scroll';
+  var loop = b.loop === false ? 'false' : 'true', auto = (isScroll || b.autoplay === false) ? 'false' : 'true', ctl = b.controls !== false;
   var poster = _ffNum(b.poster, durN * 0.6, 0, durN, 2);
   var bg = _ffHex(b.background, ''), backdrop = b.backdrop === 'flat' ? 'flat' : (b.backdrop === 'grid' ? 'grid' : 'glow');
   var stBg = bg || th.bg;
@@ -1154,26 +1158,36 @@ function _moTimeline(b) {
   world += mc.html; tg = tg.concat(mc.tg);
   var camJs = 'null', cm = b.camera && typeof b.camera === 'object' && Array.isArray(b.camera.keys) ? b.camera.keys.slice(0, 48) : null;
   if (cm) { var cj = _moTrackJs(cm, _MO_CAM, _MO_CAM_ORDER, durN, bpm, defEase, st); if (cj) camJs = '{' + cj + '}'; }
-  var cfg = '{W:' + W + ',H:' + H + ',dur:' + dur + ',poster:' + poster + ',loop:' + loop + ',auto:' + auto + ',tg:[' + tg.join(',') + '],cam:' + camJs + '}';
+  var drvCfg = isScroll ? ',drv:1' : '';
+  var cfg = '{W:' + W + ',H:' + H + ',dur:' + dur + ',poster:' + poster + ',loop:' + loop + ',auto:' + auto + drvCfg + ',tg:[' + tg.join(',') + '],cam:' + camJs + '}';
   var glow = backdrop === 'glow' ? 'background-image:radial-gradient(ellipse at 50% 0%,rgba(' + _ffRgb(acc) + ',0.22) 0%,rgba(' + _ffRgb(acc) + ',0) 62%);'
     : (backdrop === 'grid' ? 'background-image:linear-gradient(rgba(' + _ffRgb(th.ink) + ',0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(' + _ffRgb(th.ink) + ',0.06) 1px,transparent 1px);background-size:48px 48px;' : '');
   var icon = '<svg class="mt-ic-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5L12 7L3 12.5Z" fill="currentColor"/></svg><svg class="mt-ic-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="8.3" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/></svg>';
   var controls = ctl
     ? '<div style="display:flex;align-items:center;gap:12px;padding:10px 4px 0;color:' + th.ink + ';">'
-      + '<button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid ' + th.line + ';background:' + th.soft + ';color:' + th.ink + ';display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;">' + icon + '</button>'
+      + (isScroll ? '' : '<button type="button" class="mt-play" aria-label="Play or pause" style="width:32px;height:32px;border-radius:50%;border:1px solid ' + th.line + ';background:' + th.soft + ';color:' + th.ink + ';display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none;">' + icon + '</button>')
       + '<input type="range" class="mt-rng" min="0" max="1000" value="0" aria-label="Timeline position" style="flex:1;min-width:0;accent-color:' + acc + ';">'
       + '<span class="mt-tm" style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:var(--text,#334155);min-width:64px;text-align:right;">0:00</span></div>'
     : '';
   var note = st.dropped ? '<!-- a2ui: motion_timeline ignored ' + st.dropped + ' invalid or over-limit item(s) -->' : '';
   var transcript = b.transcript === true ? _moTranscript(b, blocks, cfg, durN, th) : '';
-  return '<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
-    + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}</style>'
-    + '<div class="mt-vp" style="position:relative;width:100%;aspect-ratio:' + W + '/' + H + ';overflow:hidden;border-radius:16px;background:' + stBg + ';border:1px solid ' + th.line + ';">'
+  var styleExtra = isScroll ? '@media (prefers-reduced-motion:reduce){.mt-root .mt-run{height:auto!important}.mt-root .mt-pin{position:static!important;height:auto!important}}' : '';
+  var vpSize = isScroll ? ('width:min(100%,' + _ffNum(100 * W / H, 100, 1, 1000, 2) + 'vh);margin:0 auto;aspect-ratio:') : 'width:100%;aspect-ratio:';
+  var vpHtml = '<div class="mt-vp" style="position:relative;' + vpSize + W + '/' + H + ';overflow:hidden;border-radius:16px;background:' + stBg + ';border:1px solid ' + th.line + ';">'
     + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + stBg + ';' + glow + '--mt-ink:' + th.ink + ';--mt-mute:' + th.mute + ';--mt-acc:' + acc + ';overflow:hidden;">'
     + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
-    + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none;">' + hud + '</div></div></div>'
-    + controls + note + transcript
-    + '<script>' + _moTlJs(cfg).replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, function() { return cfg; }) + '<\/script></div>';
+    + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none;">' + hud + '</div></div></div>';
+  var body = isScroll
+    ? '<div class="mt-run" style="position:relative;height:' + _ffNum(b.scroll_length, 300, 150, 1000, 0) + 'vh;"><div class="mt-pin" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;">' + vpHtml + controls + note + '</div></div>'
+    : vpHtml + controls + note;
+  var scriptSrc = _moTlJs(cfg).replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, function() { return cfg; });
+  if (isScroll) {
+    scriptSrc = scriptSrc.slice(0, -5) + _MO_SCROLL_JS + scriptSrc.slice(-5);
+  }
+  return '<div id="mt-' + uid + '" class="mt-root" data-pl="0" role="group" aria-label="' + _esc(title) + '" style="margin:1rem 0;font-family:' + _MO_SANS + ';">'
+    + '<style>.mt-root[data-pl="1"] .mt-ic-play{display:none}.mt-root[data-pl="0"] .mt-ic-pause{display:none}.mt-root button:focus-visible{outline:2px solid ' + acc + ';outline-offset:2px}' + styleExtra + '</style>'
+    + body + transcript
+    + '<script>' + scriptSrc + '<\/script></div>';
 }
 _RENDERERS['motion_timeline'] = function(b) {
   // A timeline inside a timeline would share ids and clocks: refuse, and say so.
