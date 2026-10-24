@@ -25,6 +25,7 @@ import bisect
 import json
 import re
 import sys
+from pathlib import Path
 
 FLASH_AREA_PX2 = 21824      # WCAG 2.3.1: a quarter of a 341 x 256 field
 FLASH_RATE_HZ = 3
@@ -175,6 +176,26 @@ def _clamp(x, lo=0.0, hi=1.0):
     return lo if x < lo else hi if x > hi else x
 
 
+def _spring_expand(pts):
+    """A key ease of {spring: ...} governs the segment arriving at it: replace that segment with the renderer's own 23 interior samples."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    try:
+        from renderers.web_article import _mo_spring_curve, _mo_spring_params
+    finally:
+        sys.path.pop(0)
+    out = []
+    for i, (tt, v, h, e) in enumerate(pts):
+        sp = _mo_spring_params(e)
+        if sp is not None and i and pts[i - 1][0] < tt:
+            t0, v0 = pts[i - 1][0], pts[i - 1][1]
+            d = tt - t0
+            for j, x in enumerate(_mo_spring_curve(d, sp), 1):
+                out.append((t0 + d * j / 24.0, v0 + (v - v0) * x, False, None))
+            h = False
+        out.append((tt, v, h, e))
+    return out
+
+
 def _curve(keys, bpm, *props):
     """f(t) for a dial from a track's keys (linear between keys, a hold key jumps on arrival), or None when no key carries the dial."""
     pts = []
@@ -182,11 +203,14 @@ def _curve(keys, bpm, *props):
         tt = _t(k, bpm)
         for pr in props:
             if tt is not None and isinstance(k.get(pr), (int, float)) and not isinstance(k.get(pr), bool):
-                pts.append((tt, float(k[pr]), k.get("ease") == "hold"))
+                pts.append((tt, float(k[pr]), k.get("ease") == "hold", k.get("ease")))
                 break
     if not pts:
         return None
     pts.sort(key=lambda x: x[0])
+    if any(isinstance(x[3], dict) for x in pts):
+        pts = _spring_expand(pts)
+    pts = [x[:3] for x in pts]
     xs = [x[0] for x in pts]
 
     def f(t):

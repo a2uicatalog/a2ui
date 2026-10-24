@@ -275,7 +275,7 @@ function _moBlurDir(spec, html) {
   var angle = _ffNum(o.angle, 0, -360, 360, 2);
   var isStatic = o.static === true;
   var uid = 'mo-' + Math.random().toString(36).substr(2, 6);
-  var lead = isStatic ? '' : '<style>@media (prefers-reduced-motion:reduce),print{.mo-bd{filter:none!important}}</style>';
+  var lead = '<style>@media (prefers-reduced-motion:reduce),print{.mo-bd{filter:none!important}}</style>';
   var filt;
   if (isStatic) {
     filt = '<feGaussianBlur in="SourceGraphic" stdDeviation="' + amount + ' 0"/>';
@@ -301,12 +301,13 @@ function _moBlurRadial(spec, html) {
   if (!o) return html;
   if (spec !== true && !Object.keys(o).length) return html; // an empty object is off, as in Python (falsy {})
   if (/<script/i.test(html)) return html;
+  if (/<(?:iframe|video|audio|object|embed|form|input|select|textarea|canvas)/i.test(html)) return html + '<!-- a2ui: blur_radial skipped (the block holds media or a form control) -->';
   var amount = _ffNum(o.amount, 0.12, 0, 1, 2);
   if (parseFloat(amount) === 0) return html;
   var cx = _ffNum(o.cx, 50, 0, 100, 2);
   var cy = _ffNum(o.cy, 50, 0, 100, 2);
   var isStatic = o.static === true;
-  var lead = isStatic ? '' : '<style>@media (prefers-reduced-motion:reduce),print{.mo-br-c{display:none!important}}</style>';
+  var lead = '<style>@media (prefers-reduced-motion:reduce),print{.mo-br-c{display:none!important}}</style>';
   var copyHtml = html.replace(/[ \t\n\r]id="[^"]*"/g, '');
   var steps = ['0.25', '0.5', '0.75', '1'];
   var copies = '';
@@ -323,7 +324,7 @@ function _moBlurRadial(spec, html) {
       copyHtml + '</div>';
   }
   return lead +
-    '<div class="mo-br" style="position:relative;"><div class="mo-br-b">' + html + '</div>' +
+    '<div class="mo-br" style="position:relative;overflow-x:clip;"><div class="mo-br-b">' + html + '</div>' +
     copies + '</div>';
 }
 
@@ -716,7 +717,7 @@ var _MO_SCROLL_JS = 'var run=root.querySelector(".mt-run");if(run&&C.drv){var rq
 
 // Keys -> per-property tracks. Every number goes through _ffNum so both renderers
 // spell it identically; anything that does not validate is counted, never silent.
-// Spring easing on a track key (I90): integrated here (semi-implicit Euler, dt 0.001 s) into 24 linear samples per segment, so the player needs no runtime.
+// Spring easing on a track key (I90), the ease of the key it arrives at: integrated here (semi-implicit Euler, dt 0.001 s) into 24 linear samples per segment, so the player needs no runtime.
 function _moSpringParams(ease) {
   if (!ease || typeof ease !== 'object' || Array.isArray(ease)) return null;
   var sp = ease.spring, k = 170.0, c = 26.0, m = 1.0;
@@ -728,12 +729,11 @@ function _moSpringParams(ease) {
   }
   return [k, c, m];
 }
-function _moSpringSamples(t0, v0, t1, v1, spParams, rg) {
-  var d = t1 - t0;
+function _moSpringCurve(d, spParams) {
   var steps = Math.min(20000, Math.max(1, Math.floor(d * 1000.0 + 0.5)));
   var k = spParams[0], c = spParams[1], m = spParams[2];
-  var dt = 0.001, x = 0.0, vx = 0.0, curStep = 0, samples = [];
-  for (var i = 0; i < 24; i++) {
+  var dt = 0.001, x = 0.0, vx = 0.0, curStep = 0, xs = [];
+  for (var i = 1; i < 24; i++) {
     var targetStep = Math.floor((i * steps) / 24);
     while (curStep < targetStep) {
       var a = (-k * (x - 1.0) - c * vx) / m;
@@ -741,11 +741,14 @@ function _moSpringSamples(t0, v0, t1, v1, spParams, rg) {
       x = x + vx * dt;
       curStep++;
     }
-    var sti = t0 + (d * i) / 24.0;
-    var svi = v0 + (v1 - v0) * x;
-    samples.push('[' + _ffNum(sti, 0, 0, 100000, 3) + ',' + _ffNum(svi, 0, rg[0], rg[1], 3) + ',0]');
+    xs.push(x);
   }
-  return samples;
+  return xs;
+}
+function _moSpringSamples(t0, v0, t1, v1, spParams, rg) {
+  var d = t1 - t0, xs = _moSpringCurve(d, spParams), out = [];
+  for (var i = 1; i < 24; i++) out.push('[' + _ffNum(t0 + (d * i) / 24.0, 0, 0, 100000, 3) + ',' + _ffNum(v0 + (v1 - v0) * xs[i - 1], 0, rg[0], rg[1], 3) + ',0]');
+  return out;
 }
 function _moTrackJs(keys, ranges, order, dur, bpm, defEase, st) {
   var list = [], i, p;
@@ -772,11 +775,12 @@ function _moTrackJs(keys, ranges, order, dur, bpm, defEase, st) {
     var pts = [];
     for (i = 0; i < propKeys.length; i++) {
       var pk = propKeys[i];
-      if (pk.sp && i + 1 < propKeys.length && propKeys[i + 1].t > pk.t) {
-        pts = pts.concat(_moSpringSamples(pk.t, pk.v, propKeys[i + 1].t, propKeys[i + 1].v, pk.sp, rg));
-      } else {
-        pts.push('[' + _ffNum(pk.t, 0, 0, 100000, 3) + ',' + _ffNum(pk.v, 0, rg[0], rg[1], 3) + ',' + _moEaseJs(pk.ease, defEase) + ']');
+      var easeJs = _moEaseJs(pk.ease, defEase);
+      if (pk.sp && i > 0 && propKeys[i - 1].t < pk.t) {
+        pts = pts.concat(_moSpringSamples(propKeys[i - 1].t, propKeys[i - 1].v, pk.t, pk.v, pk.sp, rg));
+        easeJs = '0';
       }
+      pts.push('[' + _ffNum(pk.t, 0, 0, 100000, 3) + ',' + _ffNum(pk.v, 0, rg[0], rg[1], 3) + ',' + easeJs + ']');
     }
     parts.push(prop + ':[' + pts.join(',') + ']');
   }

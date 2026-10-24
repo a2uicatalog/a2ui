@@ -29259,7 +29259,7 @@ def _mo_blur_dir(spec, html):
     angle = _ff_num(o.get('angle'), 0, -360, 360, 2)
     is_static = o.get('static') is True
     uid = 'mo-' + _wa_uid({'k': 'bd', 'a': angle, 'm': str(amount), 's': is_static, 'h': html})[:6]
-    lead = '' if is_static else '<style>@media (prefers-reduced-motion:reduce),print{.mo-bd{filter:none!important}}</style>'
+    lead = '<style>@media (prefers-reduced-motion:reduce),print{.mo-bd{filter:none!important}}</style>'
     if is_static:
         filt = '<feGaussianBlur in="SourceGraphic" stdDeviation="' + str(amount) + ' 0"/>'
     else:
@@ -29282,6 +29282,9 @@ def _mo_blur_dir(spec, html):
     )
 
 
+_MO_NO_COPY = re.compile(r'<(?:iframe|video|audio|object|embed|form|input|select|textarea|canvas)', re.I)
+
+
 def _mo_blur_radial(spec, html):
     """Twin of atoms_motion.gs _moBlurRadial."""
     if spec is True:
@@ -29292,13 +29295,15 @@ def _mo_blur_radial(spec, html):
         return html
     if re.search(r'<script', html, re.IGNORECASE):
         return html
+    if _MO_NO_COPY.search(html):  # copies would duplicate media, forms and radio groups (a copied name= joins the original's group)
+        return html + '<!-- a2ui: blur_radial skipped (the block holds media or a form control) -->'
     amount = _ff_num(o.get('amount'), 0.12, 0, 1, 2)
     if float(amount) == 0:
         return html
     cx = _ff_num(o.get('cx'), 50, 0, 100, 2)
     cy = _ff_num(o.get('cy'), 50, 0, 100, 2)
     is_static = o.get('static') is True
-    lead = '' if is_static else '<style>@media (prefers-reduced-motion:reduce),print{.mo-br-c{display:none!important}}</style>'
+    lead = '<style>@media (prefers-reduced-motion:reduce),print{.mo-br-c{display:none!important}}</style>'
     copy_html = re.sub(r'[ \t\n\r]id="[^"]*"', '', html)
     steps = [('0.25', '0.25'), ('0.5', '0.5'), ('0.75', '0.75'), ('1', '1')]
     copies = []
@@ -29317,7 +29322,7 @@ def _mo_blur_radial(spec, html):
         copies.append(c)
     return (
         lead +
-        '<div class="mo-br" style="position:relative;"><div class="mo-br-b">' + html + '</div>' +
+        '<div class="mo-br" style="position:relative;overflow-x:clip;"><div class="mo-br-b">' + html + '</div>' +
         ''.join(copies) + '</div>'
     )
 
@@ -29704,7 +29709,7 @@ def _render_demo_panel(b: dict) -> str:
             + out + '</div>')
 
 
-# Spring easing on a track key (I90): the spring is integrated here (semi-implicit Euler, dt 0.001 s) into 24 linear samples per segment,
+# Spring easing on a track key (I90): the spring (the ease of the key it arrives at) is integrated here (semi-implicit Euler, dt 0.001 s) into 24 linear steps,
 # so the player needs no runtime. Twin of atoms_motion.gs _moSpringParams / _moSpringSamples.
 def _mo_spring_params(ease):
     if not isinstance(ease, dict):
@@ -29724,25 +29729,33 @@ def _mo_spring_params(ease):
     return (k, c, m)
 
 
-def _mo_spring_samples(t0, v0, t1, v1, sp_params, rg):
-    d = t1 - t0
+def _mo_spring_curve(d, sp_params):
+    """x(i/24) for i = 1..23 of a spring from 0 toward 1 over d seconds (the key at i = 24 is the exact target)."""
     steps = min(20000, max(1, math.floor(d * 1000.0 + 0.5)))
     k, c, m = sp_params
     dt = 0.001
     x, vx = 0.0, 0.0
     cur_step = 0
-    samples = []
-    for i in range(24):
+    xs = []
+    for i in range(1, 24):
         target_step = (i * steps) // 24
         while cur_step < target_step:
             a = (-k * (x - 1.0) - c * vx) / m
             vx = vx + a * dt
             x = x + vx * dt
             cur_step += 1
-        sti = t0 + (d * i) / 24.0
-        svi = v0 + (v1 - v0) * x
-        samples.append('[' + _ff_num(sti, 0, 0, 100000, 3) + ',' + _ff_num(svi, 0, rg[0], rg[1], 3) + ',0]')
-    return samples
+        xs.append(x)
+    return xs
+
+
+def _mo_spring_samples(t0, v0, t1, v1, sp_params, rg):
+    """The 23 interior linear samples of the segment t0 -> t1 (the spring key at t1 closes it, exact)."""
+    d = t1 - t0
+    out = []
+    for i, x in enumerate(_mo_spring_curve(d, sp_params), 1):
+        out.append('[' + _ff_num(t0 + (d * i) / 24.0, 0, 0, 100000, 3) + ',' + _ff_num(v0 + (v1 - v0) * x, 0, rg[0], rg[1], 3) + ',0]')
+    return out
+
 
 def _mo_track_js(keys, ranges, order, dur, bpm, def_ease, st):
     lst = []
@@ -29777,11 +29790,13 @@ def _mo_track_js(keys, ranges, order, dur, bpm, def_ease, st):
         n = len(prop_keys)
         for idx in range(n):
             t, v, sp, authored_ease = prop_keys[idx]
-            if sp is not None and idx + 1 < n and prop_keys[idx + 1][0] > t:
-                t1, v1 = prop_keys[idx + 1][0], prop_keys[idx + 1][1]
-                pts.extend(_mo_spring_samples(t, v, t1, v1, sp, rg))
-            else:
-                pts.append('[' + _ff_num(t, 0, 0, 100000, 3) + ',' + _ff_num(v, 0, rg[0], rg[1], 3) + ',' + _mo_ease_js(authored_ease, def_ease) + ']')
+            ease_js = _mo_ease_js(authored_ease, def_ease)
+            if sp is not None and idx > 0 and prop_keys[idx - 1][0] < t:
+                # a key's ease governs the segment arriving at it: the spring replaces that one segment only
+                t0, v0 = prop_keys[idx - 1][0], prop_keys[idx - 1][1]
+                pts.extend(_mo_spring_samples(t0, v0, t, v, sp, rg))
+                ease_js = '0'
+            pts.append('[' + _ff_num(t, 0, 0, 100000, 3) + ',' + _ff_num(v, 0, rg[0], rg[1], 3) + ',' + ease_js + ']')
         parts.append(prop + ':[' + ','.join(pts) + ']')
     return ','.join(parts)
 
