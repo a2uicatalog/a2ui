@@ -89,7 +89,11 @@ def _gas_isolated(core_js, blocks):
             "var script = new vm.Script(fs.readFileSync(path.join(__dirname, 'core.js'), 'utf8'));"
             "var B = JSON.parse(fs.readFileSync(path.join(__dirname, 'blocks.json'), 'utf8'));"
             "console.log(JSON.stringify(B.map(function(b){ var s = 1; var M = Object.create(Math); M.random = function(){ s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };"
-            " var ctx = vm.createContext({console: console, Math: M, JSON: JSON, Date: Date}); try { script.runInContext(ctx); return ctx.renderAtoms([b], {}); }"
+            " var T = new Date(2026, 9, 23, 12).getTime();"  # the day the pre-sweep bytes were recorded (calendar_today prints it)
+            " function D() { var a = [].slice.call(arguments); if (!(this instanceof D)) return new Date(T).toString();"
+            " return a.length ? new (Function.prototype.bind.apply(Date, [null].concat(a)))() : new Date(T); }"
+            " D.prototype = Date.prototype; D.now = function(){ return T; }; D.UTC = Date.UTC; D.parse = Date.parse;"
+            " var ctx = vm.createContext({console: console, Math: M, JSON: JSON, Date: D}); try { script.runInContext(ctx); return ctx.renderAtoms([b], {}); }"
             " catch (e) { return 'GAS ERROR: ' + (e && e.stack || e); } })));")
         proc = subprocess.run(["node", str(Path(td) / "run.js")], capture_output=True, text=True, timeout=600)
         assert proc.returncode == 0, proc.stderr[-1500:]
