@@ -4768,20 +4768,20 @@ def _render_uptime_timeline(b: dict) -> str:
     aria = (label or 'Uptime') + ((' ' + pct_txt + '%') if pct_txt else '') + ((', ' + period) if period else '')
     svg = '<svg role="img" aria-label="' + _cv_esc(aria) + '" viewBox="0 0 ' + str(width) + ' ' + str(block_h + pad_t + 10) + '" width="100%" preserveAspectRatio="xMidYMid meet">'
     if label:
-        svg += '<text x="' + str(pad_l) + '" y="14" font-size="12" font-weight="600" fill="#334155">' + _cv_esc(label) + '</text>'
+        svg += '<text x="' + str(pad_l) + '" y="14" font-size="12" font-weight="600" style="fill:var(--a2ui-text,#171717)">' + _cv_esc(label) + '</text>'
     x = pad_l
     for i, d in enumerate(days):
         svg += ('<rect x="' + str(x) + '" y="' + str(pad_t) + '" width="' + str(block_w - gap) + '" height="' + str(block_h) + '" rx="1.5" fill="' + day_color(d) + '"><title>'
                 + _cv_esc(day_title(d, i)) + '</title></rect>')
         x += block_w
     if not days:
-        svg += '<rect x="' + str(pad_l) + '" y="' + str(pad_t) + '" width="' + str(svg_w) + '" height="' + str(block_h) + '" rx="3" fill="#e2e8f0"/>'
+        svg += '<rect x="' + str(pad_l) + '" y="' + str(pad_t) + '" width="' + str(svg_w) + '" height="' + str(block_h) + '" rx="3" style="fill:var(--a2ui-border,#eaeaea)"/>'
     bx = width - pad_r + 4
     if pct is not None:
         badge = '#22c55e' if pct >= 99 else ('#f59e0b' if pct >= 95 else '#ef4444')
         svg += '<text x="' + str(bx) + '" y="' + str(pad_t + block_h // 2 + 5) + '" font-size="12" font-weight="700" fill="' + badge + '">' + pct_txt + '%</text>'
     if period:
-        svg += '<text x="' + str(bx) + '" y="' + str(pad_t + block_h + 10) + '" font-size="9" fill="#94a3b8">' + _cv_esc(period) + '</text>'
+        svg += '<text x="' + str(bx) + '" y="' + str(pad_t + block_h + 10) + '" font-size="9" style="fill:var(--a2ui-muted,#666666)">' + _cv_esc(period) + '</text>'
     svg += '</svg>'
     return '<div class="a2ui-uptime-row">' + svg + '</div>'
 

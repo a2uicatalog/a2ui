@@ -571,11 +571,11 @@ def test_timelines_and_defaults_invent_nothing(core_js):
     for b, g in zip(blocks, gas):
         assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
     for html in (_py_fresh(blocks[0]), gas[0]):
-        assert "%" not in html.replace("100%", "") and "#e2e8f0" in html
+        assert "%" not in html.replace("100%", "") and "var(--a2ui-border,#eaeaea)" in html
     for html in (_py_fresh(blocks[1]), gas[1]):
         assert ">0.00%<" in html
     for html in (_py_fresh(blocks[2]), gas[2]):
-        assert 'width="480"' in html and "#e2e8f0" in html and html.count("<rect") == 1 and ">99.90%<" in html
+        assert 'width="480"' in html and "var(--a2ui-border,#eaeaea)" in html and html.count("<rect") == 1 and ">99.90%<" in html
     for html in (_py_fresh(blocks[3]), gas[3]):
         assert "Revealed on scroll" not in html and "fades in" not in html
     for html in (_py_fresh(blocks[4]), gas[4]):

@@ -15948,7 +15948,7 @@ var hundredths = pct === null ? null : Math.floor(pct * 100 + 0.5);
 var pctTxt = hundredths === null ? '' : Math.floor(hundredths / 100) + '.' + ('0' + (hundredths % 100)).slice(-2);
 var aria = (label || 'Uptime') + (pctTxt ? ' ' + pctTxt + '%' : '') + (period ? ', ' + period : '');
 var svg = '<svg role="img" aria-label="' + _esc(aria) + '" viewBox="0 0 ' + width + ' ' + (blockH + padT + 10) + '" width="100%" preserveAspectRatio="xMidYMid meet">';
-if (label) svg += '<text x="' + padL + '" y="14" font-size="12" font-weight="600" fill="#334155">' + _esc(label) + '</text>';
+if (label) svg += '<text x="' + padL + '" y="14" font-size="12" font-weight="600" style="fill:var(--a2ui-text,#171717)">' + _esc(label) + '</text>';
 var x = padL;
 for (var i = 0; i < days.length; i++) {
 svg += '<rect x="' + x + '" y="' + padT + '" width="' + (blockW - gap) + '" height="' + blockH + '" rx="1.5" fill="' + dayColor(days[i]) + '"><title>'
@@ -15956,14 +15956,14 @@ svg += '<rect x="' + x + '" y="' + padT + '" width="' + (blockW - gap) + '" heig
 x += blockW;
 }
 if (!days.length) {
-svg += '<rect x="' + padL + '" y="' + padT + '" width="' + svgW + '" height="' + blockH + '" rx="3" fill="#e2e8f0"/>';
+svg += '<rect x="' + padL + '" y="' + padT + '" width="' + svgW + '" height="' + blockH + '" rx="3" style="fill:var(--a2ui-border,#eaeaea)"/>';
 }
 var bx = width - padR + 4;
 if (pct !== null) {
 var badge = pct >= 99 ? '#22c55e' : (pct >= 95 ? '#f59e0b' : '#ef4444');
 svg += '<text x="' + bx + '" y="' + (padT + Math.floor(blockH / 2) + 5) + '" font-size="12" font-weight="700" fill="' + badge + '">' + pctTxt + '%</text>';
 }
-if (period) svg += '<text x="' + bx + '" y="' + (padT + blockH + 10) + '" font-size="9" fill="#94a3b8">' + _esc(period) + '</text>';
+if (period) svg += '<text x="' + bx + '" y="' + (padT + blockH + 10) + '" font-size="9" style="fill:var(--a2ui-muted,#666666)">' + _esc(period) + '</text>';
 svg += '</svg>';
 return '<div class="a2ui-uptime-row">' + svg + '</div>';
 };
