@@ -275,7 +275,7 @@ def test_capability_checklist_list_shape_and_matrix_without_capabilities(core_js
         assert _norm_uid(py) == _norm_uid(g)
         assert "<table" not in py and "<ul" in py
     for html in (_py_fresh(blocks[0]), gas[0]):
-        for w in ("Readiness", "Accordion", "Maps", "Chat", "beta", "plain", 'aria-label="partial"', 'aria-label="unavailable"'):
+        for w in ("Readiness", "Accordion", "Maps", "Chat", "beta", "plain", '>partial<', '>unavailable<'):
             assert w in html
 
 
