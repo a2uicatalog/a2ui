@@ -8222,6 +8222,7 @@ var pauseOnHover = b.pause_on_hover !== false;
 var bg = _safe_css(b.bg, 'var(--surface,#f9fafb)');
 var rounded = b.rounded !== false;
 var colorIcons = b.color_icons === true;
+var accent = _safe_css(b.accent, 'var(--muted,#d1d5db)');
 var borderRadius = rounded ? '10px' : '0';
 function renderEntry(item, isDup) {
 if (!item || typeof item !== 'object' || Array.isArray(item)) {
@@ -8251,7 +8252,7 @@ return '<a' + attr + ' href="' + rawUrl + '" target="_top" style="display:inline
 }
 return '<span' + attr + ' style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
 }
-var sepHtml = separator ? '<span style="color:var(--muted,#d1d5db);margin:0 4px;" aria-hidden="true">' + _esc(separator) + '</span>' : '';
+var sepHtml = separator ? '<span style="color:' + accent + ';margin:0 4px;" aria-hidden="true">' + _esc(separator) + '</span>' : '';
 var itemsHtml = '';
 var itemsDupHtml = '';
 for (var i = 0; i < items.length; i++) {
@@ -17656,6 +17657,7 @@ var totalRaw = _numLoose(b.total);
 var total = (totalRaw !== null && totalRaw > 0) ? Math.max(1, Math.min(Math.floor(totalRaw + 0.5), 1e14)) : 1;
 var label = _firstText(b.label, 'Context window');
 var model = _textLoose(b.model);
+var unitTxt = _textLoose(b.unit) ? ' ' + _textLoose(b.unit) : '';
 var warnAtRaw = _numLoose(b.warn_at);
 var warnAt = warnAtRaw !== null ? warnAtRaw : 70;
 var critAtRaw = _numLoose(b.critical_at);
@@ -17700,7 +17702,7 @@ _esc(label) + modelHtml + '</span>' +
 '<span style="font-size:2rem;font-weight:800;color:#ffffff;font-family:monospace;">' +
 '<span class="tbm_' + uid + '" aria-hidden="true"></span>' +
 '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + used + ' of ' + total + '</span>' +
-'<span style="color:#6b7280;"> / ' + fmt(total) + '</span>' +
+'<span style="color:#6b7280;"> / ' + fmt(total) + _esc(unitTxt) + '</span>' +
 '<span style="font-size:1rem;color:#9ca3af;margin-left:8px;">(' + pctInt + '%)</span>' +
 '</span>' +
 '</div>' +
@@ -17715,7 +17717,7 @@ return '<div data-cb="node" data-key="' + _esc(ckVal) + '" style="margin:0.75rem
 '<span style="font-size:0.8rem;font-weight:600;color:#374151;">' +
 _esc(label) + modelHtml + '</span>' +
 '<span style="font-size:0.78rem;font-weight:700;color:' + color + ';">' +
-fmt(used) + ' / ' + fmt(total) + ' (' + pctInt + '%)</span>' +
+fmt(used) + ' / ' + fmt(total) + _esc(unitTxt) + ' (' + pctInt + '%)</span>' +
 '</div>' +
 '<div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;">' +
 '<div style="width:' + _fixedStr(pctClamped, 1) + '%;height:100%;background:' + color + ';border-radius:4px;"></div>' +
