@@ -7759,9 +7759,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "uptime[].date",
-  "py_sha": "d3dc8c62177dd04846aba1ff613b3936473b78776027602161b5a53b369ae2ca",
-  "gas_sha": "b10dfce4959d360d0b27cf160b9de4bc6625b71b267593cfe83608568561e620",
-  "parity": false
+  "py_sha": "e4c73c6f93bbb62b0d175a4dd53b3750cd402e7817248eb735dc3ce7a98b6707",
+  "gas_sha": "e4c73c6f93bbb62b0d175a4dd53b3750cd402e7817248eb735dc3ce7a98b6707",
+  "parity": true
  },
  "variant_selector": {
   "status": "pending",
@@ -10316,8 +10316,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "cdd809322f0dce70157315e5b65c822a5226b222dce55e45d5580d88f2fa9bb5",
-  "gas_sha": "83a9f9be89eeb515309ec19b68f7c845ac6efb49c621b78e569c7cdd914199f7",
+  "py_sha": "a084f6748858f44c5835f46fdbf6b219c6b482430230225ba40550b937d79d4d",
+  "gas_sha": "3174f94af327f3900a7654f0280f3b7dd4fc97154287370063679d9624a2e97f",
   "parity": false
  },
  "encrypted_reveal": {
@@ -10380,8 +10380,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "0f0b15555c11eb86545e1bb3b06b1f36ded4ee8d78cc3d09befc1bc68e0f5a89",
-  "gas_sha": "94190b94e81b87381460572c19d1797fff4e59a906bd6d99b5d4b695f591bf9b",
+  "py_sha": "44543379cedf98e9ea1973860170fbdb08e25d302bc41ad9fc1370b9534d6ee5",
+  "gas_sha": "cb6b607c21e007b7b38616546ac5e530f894b74237bc35d61550a3a4ee66ed94",
   "parity": false
  },
  "typewriter": {
@@ -10473,8 +10473,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "title",
-  "py_sha": "1a891848bcca4c60399d774db2b37e26a0d6b721d4f894d71f40f44f2d78e7d8",
-  "gas_sha": "0f205c92bc17bfa106cec4c31c9007e1763d7f257b86fc679093ab4f681dd3a8",
+  "py_sha": "d49fc92d532e92463359cf14580fdab7bc050f67b7a7bfeca2450209a0021a39",
+  "gas_sha": "83587167ed8c7c1ead1ac331f47a77f76dafcee1b0e18c640e34b04d1b4099b6",
   "parity": false
  },
  "word_scramble": {
@@ -10565,9 +10565,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "type",
-  "py_sha": "1553ec241dfeb255162df1dde2f31cae395f96048dd7a134e51bb25fb805f646",
-  "gas_sha": "eb35dc724078208f1009b0b5e61d2dfe9f80960cae1d13e674f73bb72f8cedec",
-  "parity": false
+  "py_sha": "f6e2aa06a73120d844000f7e4d2b53c21ca235b141e9636299034e06c4d9c8e9",
+  "gas_sha": "f6e2aa06a73120d844000f7e4d2b53c21ca235b141e9636299034e06c4d9c8e9",
+  "parity": true
  },
  "xp_bar": {
   "status": "keyed",
@@ -11649,8 +11649,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "question",
-  "py_sha": "4081153dfa8c054ef08e886b6fe0e3d2110ec81415f756bdd96f03f9c46904ee",
-  "gas_sha": "d2cced6c115711d03712047b00abe4b3d6094310580715460d0951fcc9dea3cc",
+  "py_sha": "bf64d4e46389b180cc2856d8c0db6aded7545b3dc8cade53710ecf8f6bbd772e",
+  "gas_sha": "77e292107552f55f0b8348d4e6f025f21cae9f842c57cc82320ff202bd5b70c5",
   "parity": false
  },
  "speed_counter": {

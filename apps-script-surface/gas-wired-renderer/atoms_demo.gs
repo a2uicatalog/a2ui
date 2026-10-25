@@ -585,39 +585,43 @@ _RENDERERS['reaction_shower'] = function(b) {
 
 // raise_hand — single button Sheet counter
 _RENDERERS['raise_hand'] = function(b) {
-  var uid      = Math.random().toString(36).substr(2, 6);
-  var question = b.question || 'Raise your hand';
-  var label    = b.label || '✋ Raise hand';
-  var writeUrl = b.write_url || '';
-  var sheetUrl = b.sheet_url || '';
-  var poll     = parseInt(b.poll_interval || b.poll || 4000, 10);
-  var accent   = b.accent || '#4f46e5';
-
+  var uid = _payloadUid(b);
+  var question = _textLoose(b.question) || 'Raise your hand';
+  var label = _textLoose(b.label) || '✋ Raise hand';
+  var writeUrl = _safe_href(b.write_url, ['http', 'https']);
+  if (!/^https?:\/\//i.test(writeUrl)) writeUrl = '';
+  var sheetUrl = _safe_href(b.sheet_url, ['http', 'https']);
+  if (!/^https?:\/\//i.test(sheetUrl)) sheetUrl = '';
+  var pn = _numLoose(b.poll_interval);
+  if (pn === null) pn = _numLoose(b.poll);
+  var poll = pn === null ? 4000 : Math.max(1000, Math.min(600000, Math.floor(pn)));
+  var accent = _safe_css(b.accent, '#4f46e5');
   return '<div data-cb="node" data-key="' + _ckey(b.question, 'raise_hand') + '" style="text-align:center;padding:28px 20px;margin:1rem 0;">'
-    + '<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:20px;">' + _esc(question) + '</div>'
-    + '<button id="rh-btn-' + uid + '" style="font-size:1.5rem;padding:16px 32px;background:var(--surface);border:2px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text);display:inline-block;">' + _esc(label) + '</button>'
-    + '<div style="margin-top:16px;font-size:2rem;font-weight:900;color:' + accent + ';" id="rh-count-' + uid + '">0</div>'
-    + '<div style="font-size:0.78rem;color:var(--muted);">hands raised</div>'
+    + '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:20px;">' + _esc(question) + '</div>'
+    + '<button type="button" id="rh-btn-' + uid + '" style="font-size:1.5rem;padding:16px 32px;background:var(--surface,#ffffff);border:2px solid var(--border,#e5e7eb);border-radius:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text,#111827);display:inline-block;">' + _esc(label) + '</button>'
+    + '<div aria-live="polite" style="margin-top:16px;font-size:2rem;font-weight:900;color:' + accent + ';" id="rh-count-' + uid + '">0</div>'
+    + '<div style="font-size:0.78rem;color:var(--muted,#5f6368);">hands raised</div>'
     + '</div>'
     + '<script>(function(){'
     + 'var btn=document.getElementById("rh-btn-' + uid + '");'
     + 'var countEl=document.getElementById("rh-count-' + uid + '");'
+    + 'if(!btn||!countEl)return;'
     + 'var writeUrl=' + _jsJson(writeUrl) + ';'
     + 'var sheetUrl=' + _jsJson(sheetUrl) + ';'
     + 'var poll=' + poll + ';'
     + 'var raised=false;var count=0;'
     + 'btn.addEventListener("click",function(){'
-    + '  if(raised)return;raised=true;count++;'
-    + '  btn.style.borderColor="' + accent + '";btn.style.background="' + accent + '0d";'
-    + '  countEl.textContent=count;'
-    + '  if(writeUrl)fetch(writeUrl+"?hand=1",{method:"GET",mode:"no-cors"}).catch(function(){});'
+    + 'if(raised)return;raised=true;count++;'
+    + 'btn.style.borderColor="' + accent + '";btn.style.background="color-mix(in srgb, ' + accent + ' 6%, transparent)";'
+    + 'countEl.textContent=count;'
+    + 'if(writeUrl)fetch(writeUrl+(writeUrl.indexOf("?")<0?"?":"&")+"hand=1",{method:"GET",mode:"no-cors"}).catch(function(){});'
     + '});'
     + 'function fetchCount(){'
-    + '  fetch(sheetUrl).then(function(r){return r.text();}).then(function(t){'
-    + '    var lines=t.trim().split("\\n").slice(1);var total=0;'
-    + '    lines.forEach(function(l){var c=l.split(",");total+=parseInt(c[1]||"1",10)||1;});'
-    + '    count=total;countEl.textContent=total;'
-    + '  }).catch(function(){});'
+    + 'fetch(sheetUrl).then(function(r){return r.text();}).then(function(t){'
+    + 'var lines=t.trim().split("\\n").slice(1);var total=0;'
+    + 'lines.forEach(function(l){var c=l.split(",");total+=parseInt(c[1]||"1",10)||1;});'
+    + 'count=total;countEl.textContent=total;'
+    + '}).catch(function(){});'
     + '}'
     + 'if(sheetUrl){fetchCount();setInterval(fetchCount,poll);}'
     + '})();<\/script>';

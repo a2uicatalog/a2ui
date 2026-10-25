@@ -310,14 +310,6 @@
   "link_text",
   "link_url"
  ],
- "glow_button": [
-  "color_fired",
-  "color_ready",
-  "description",
-  "href",
-  "size",
-  "state"
- ],
  "gmail_inbox": [
   "auth_token",
   "items"
@@ -626,12 +618,6 @@
  "quiz_question": [
   "style"
  ],
- "reveal_on_scroll": [
-  "accent",
-  "background",
-  "body",
-  "duration"
- ],
  "roadmap_card": [
   "periods"
  ],
@@ -676,12 +662,6 @@
  "scroll_to_top": [
   "behavior"
  ],
- "scroll_trigger": [
-  "delay",
-  "direction",
-  "text",
-  "title"
- ],
  "sentiment_summary": [
   "emotional_journey",
   "themes"
@@ -698,12 +678,6 @@
   "embed_code",
   "platform",
   "post_url"
- ],
- "sonar_pulse": [
-  "active",
-  "body",
-  "size",
-  "variant"
  ],
  "sparkline": [
   "height",
@@ -767,9 +741,6 @@
  ],
  "typing_indicator": [
   "variant"
- ],
- "uptime_timeline": [
-  "uptime"
  ],
  "user_profile_card": [
   "name"

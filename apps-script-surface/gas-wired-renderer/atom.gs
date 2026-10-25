@@ -920,17 +920,18 @@ _RENDERERS['fill_in_blank'] = function(b) {
 };
 
 _RENDERERS['match_exercise'] = function(b) {
-  var pairs = b.pairs || [];
-  var atomId = b.id || 'match-' + Math.floor(Math.random() * 100000);
+  var pairs = Array.isArray(b.pairs) ? b.pairs.filter(function(p) { return p && typeof p === 'object' && !Array.isArray(p); }) : [];
+  if (!pairs.length) return '';
+  var atomId = _textLoose(b.id) || 'match-' + Math.floor(Math.random() * 100000);
   var uid = 'match' + Math.floor(Math.random() * 100000);
-  
+
   var lefts = [];
   var rights = [];
   var correctMap = {};
-  
+
   for (var i = 0; i < pairs.length; i++) {
-    lefts.push({ idx: i, text: pairs[i].term });
-    rights.push({ idx: i, text: pairs[i].definition });
+    lefts.push({ idx: i, text: _textLoose(pairs[i].term) });
+    rights.push({ idx: i, text: _textLoose(pairs[i].definition) });
   }
 
   // Shuffle right side if desired
@@ -948,13 +949,13 @@ _RENDERERS['match_exercise'] = function(b) {
   }
 
   var leftsHtml = '';
-  for (var l = 0; l < lefts.length; l++) {
-    leftsHtml += '<div data-cb="item" data-key="' + _esc(lefts[l].text || '') + '" class="asw-match-item" id="' + uid + '-l-' + l + '" data-side="left" data-idx="' + l + '">' + _esc(lefts[l].text) + '</div>';
+  for (var l2 = 0; l2 < lefts.length; l2++) {
+    leftsHtml += '<div data-cb="item" data-key="' + _esc(lefts[l2].text) + '" class="asw-match-item" id="' + uid + '-l-' + l2 + '" data-side="left" data-idx="' + l2 + '">' + _esc(lefts[l2].text) + '</div>';
   }
 
   var rightsHtml = '';
-  for (var r = 0; r < rights.length; r++) {
-    rightsHtml += '<div class="asw-match-item" id="' + uid + '-r-' + r + '" data-side="right" data-idx="' + r + '">' + _esc(rights[r].text) + '</div>';
+  for (var r2 = 0; r2 < rights.length; r2++) {
+    rightsHtml += '<div class="asw-match-item" id="' + uid + '-r-' + r2 + '" data-side="right" data-idx="' + r2 + '">' + _esc(rights[r2].text) + '</div>';
   }
 
   var initScript = '<script>(function(){ initMatchExercise(' + _jsJson(uid) + ',' + _jsJson(atomId) + ',' + _jsJson(correctMap) + '); })();</script>';
@@ -1010,32 +1011,33 @@ _RENDERERS['achievement_badge'] = function(b) {
 };
 
 _RENDERERS['score_summary'] = function(b) {
-  var correct = parseInt(b.correct, 10) || 0;
-  var total = parseInt(b.total, 10) || 1;
-  var pct = Math.min(100, Math.round((correct / total) * 100));
-  var passed = pct >= (b.pass_threshold || 60);
-  var classPct = passed ? '' : ' fail';
+  function count(v, d) { var n = _numLoose(v); return n === null ? d : Math.max(-1e12, Math.min(1e12, Math.floor(n))); }
+  var correct = Math.max(0, count(b.correct, 0));
+  var total = count(b.total, 1);
+  if (total <= 0) total = 1;
+  var tn = _numLoose(b.pass_threshold);
+  var threshold = tn === null ? 60 : tn;
+  var pct = Math.min(100, Math.floor(correct / total * 100 + 0.5));
+  var passed = pct >= threshold;
+  var color = passed ? '#047857' : '#b91c1c';
   var label = passed ? 'Passed' : 'Failed';
-  
-  var timeHtml = b.time_taken ? 
-    '<div class="asw-score-stat"><div class="asw-score-stat-val">' + _esc(b.time_taken) + '</div><div class="asw-score-stat-lbl">Time</div></div>' : '';
-  
-  var ctas = '';
-  if (b.retry_label || b.continue_label) {
-    var retry = b.retry_label ? '<button class="asw-btn asw-btn-ghost" onclick="if(typeof location !== \'undefined\')location.reload();">' + _esc(b.retry_label) + '</button>' : '';
-    var cont = b.continue_label ? '<a href="' + _safeUrl(b.continue_url || '#') + '" class="asw-btn asw-btn-primary" target="_top">' + _esc(b.continue_label) + '</a>' : '';
-    ctas = '<div class="asw-score-ctas">' + retry + cont + '</div>';
-  }
-
-  return '<div data-cb="node" data-key="' + _ckey(undefined, 'score_summary') + '" class="asw-score">' +
-         '<div class="asw-score-pct' + classPct + '">' + pct + '%</div>' +
-         '<div class="asw-score-label">' + label + '</div>' +
-         '<div class="asw-score-row">' +
-         '<div class="asw-score-stat"><div class="asw-score-stat-val">' + correct + '/' + total + '</div><div class="asw-score-stat-lbl">Score</div></div>' +
-         timeHtml +
-         '</div>' +
-         ctas +
-         '</div>';
+  var timeTaken = _textLoose(b.time_taken);
+  var retryLabel = _textLoose(b.retry_label);
+  var continueLabel = _textLoose(b.continue_label);
+  var timeHtml = timeTaken ? '<div style="text-align:center;margin-top:8px;font-size:0.8rem;color:#6b7280;">Time: ' + _esc(timeTaken) + '</div>' : '';
+  var retry = retryLabel ? '<button type="button" onclick="location.reload();" style="margin-right:8px;padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    + 'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:transparent;font-family:inherit;font-size:0.85rem;cursor:pointer;color:#374151;">'
+    + _esc(retryLabel) + '</button>' : '';
+  var cont = continueLabel ? '<a href="' + _esc(_safe_href(b.continue_url) || '#') + '" target="_top" style="padding:8px 18px;border-radius:8px;'
+    + 'background:#4f46e5;color:#fff;font-size:0.85rem;text-decoration:none;display:inline-block;">'
+    + _esc(continueLabel) + '</a>' : '';
+  var ctas = (retry || cont) ? '<div style="text-align:center;margin-top:14px;">' + retry + cont + '</div>' : '';
+  return '<div data-cb="node" data-key="score_summary" style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;'
+    + 'background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;text-align:center;">'
+    + '<div style="font-size:2.8rem;font-weight:800;color:' + color + ';">' + pct + '%</div>'
+    + '<div style="font-weight:700;color:' + color + ';margin-bottom:4px;">' + label + '</div>'
+    + '<div style="color:#6b7280;font-size:0.85rem;">' + correct + ' / ' + total + ' correct</div>'
+    + timeHtml + ctas + '</div>';
 };
 
 _RENDERERS['xp_bar'] = function(b) {

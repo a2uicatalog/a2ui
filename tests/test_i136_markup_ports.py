@@ -528,3 +528,87 @@ def test_lens_synthesis_survives_junk_points_and_evidence(core_js):
             assert "object Object" not in html and "Error" not in html
     for html in (_py_fresh(blocks[1]), gas[1]):
         assert "No synthesis points supplied." in html
+
+
+# ---- batch b6/2 ----
+EQUAL.extend([
+    {"type": "reveal_on_scroll", "title": "Launch notes", "body": "Ships **Friday**", "direction": "left", "duration": 1.2, "accent": "#0f766e", "background": "#f0fdfa"},
+    {"type": "glow_button", "label": "Deploy", "state": "ready", "href": "https://example.com/d", "color_ready": "#38bdf8", "size": "lg", "description": "One click"},
+    {"type": "rating_stars", "rating": 3.5, "max_rating": 5, "label": "Quality"},
+    {"type": "score_summary", "correct": 8, "total": 10, "time_taken": "2m 14s", "pass_threshold": 70, "retry_label": "Retry", "continue_label": "Next", "continue_url": "https://example.com/n"},
+    {"type": "sonar_pulse", "variant": "warning", "active": True, "label": "Syncing", "size": "lg", "body": "Replica lag"},
+    {"type": "raise_hand", "question": "Ready?", "label": "\u270b Yes", "write_url": "https://example.com/w", "sheet_url": "https://example.com/s.csv", "poll": 2000, "accent": "#0f766e"},
+    {"type": "uptime_timeline", "label": "API", "uptime": 99.125, "period": "30 days", "days": [1, 1, 0.6, 0, {"date": "2026-10-01", "status": 1}, {"status": "x"}, True]},
+])
+SAFE.append({"type": "match_exercise", "pairs": [{"term": "SLA", "definition": "Service level agreement"}, {"term": "RPO", "definition": "Recovery point objective"}, "junk", None]})
+MUST.update({
+    "reveal_on_scroll": ["Launch notes", "<strong>Friday</strong>", "translateX(32px)", "1.2s ease", "#0f766e", "#f0fdfa", "IntersectionObserver", "prefers-reduced-motion"],
+    "glow_button": ["Deploy", 'href="https://example.com/d"', 'rel="noopener"', "18px 36px", "One click", "#0c1e2e", "color-mix(in srgb,#38bdf8 27%,transparent)", "prefers-reduced-motion"],
+    "rating_stars": ["Quality", "Rating: 3.5 of 5", "3.5"],
+    "score_summary": ["80%", "Passed", "8 / 10 correct", "Time: 2m 14s", ">Retry<", 'href="https://example.com/n"', "#047857"],
+    "sonar_pulse": ["Syncing", "Replica lag", "#f59e0b", "width:130px", ">warning<", "prefers-reduced-motion"],
+    "raise_hand": ["Ready?", "\u270b Yes", "#0f766e", 'var writeUrl="https://example.com/w";', 'var sheetUrl="https://example.com/s.csv";', "var poll=2000;", "hands raised"],
+    "uptime_timeline": ["API", "99.13%", "30 days", "#22c55e", "#f59e0b", "#ef4444", "#94a3b8", "2026-10-01", "Day 1", 'width="7"', 'role="img"'],
+    "match_exercise": ["SLA", "Service level agreement", "RPO", "Recovery point objective"],
+})
+OLD.extend([
+    {"type": "reveal_on_scroll", "text": "old text", "delay": 0.4},
+    {"type": "glow_button", "text": "Old text", "color": "#123456"},
+    {"type": "score_summary", "correct": "3", "total": "4"},
+    {"type": "sonar_pulse", "title": "Old title", "color": "#123456"},
+    {"type": "raise_hand", "poll_interval": 9000, "sheet_url": "https://example.com/x"},
+    {"type": "uptime_timeline", "uptime_percent": 97.5, "days": [1, 1]},
+])
+OLD_WORDS.update({
+    "reveal_on_scroll": ["old text", "0.4s"], "glow_button": ["Old text", "#123456"], "score_summary": ["75%", "3 / 4 correct"], "sonar_pulse": ["Old title", "#123456"],
+    "raise_hand": ["var poll=9000;", 'var sheetUrl="https://example.com/x";'], "uptime_timeline": ["97.50%"],
+})
+
+
+def test_timelines_and_defaults_invent_nothing(core_js):
+    blocks = [{"type": "uptime_timeline"}, {"type": "uptime_timeline", "uptime": 0}, {"type": "uptime_timeline", "uptime": 99.9, "days": 30},
+              {"type": "reveal_on_scroll"}, {"type": "sonar_pulse"}, {"type": "glow_button", "label": "X", "state": "disabled", "href": "https://example.com"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "%" not in html.replace("100%", "") and "#e2e8f0" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert ">0.00%<" in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert 'width="480"' in html and "#e2e8f0" in html and html.count("<rect") == 1 and ">99.90%<" in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert "Revealed on scroll" not in html and "fades in" not in html
+    for html in (_py_fresh(blocks[4]), gas[4]):
+        assert ">Live<" not in html
+    for html in (_py_fresh(blocks[5]), gas[5]):
+        assert "<a " not in html and " disabled" in html and "not-allowed" in html
+
+
+def test_score_summary_rounds_half_up_clamps_and_links_safely(core_js):
+    blocks = [{"type": "score_summary", "correct": 5, "total": 8, "pass_threshold": 63}, {"type": "score_summary", "correct": 0, "total": 0}, {"type": "score_summary", "correct": 99, "total": 3},
+              {"type": "score_summary", "correct": 1, "total": 2, "continue_label": "Go", "continue_url": "javascript:alert(1)"}, {"type": "score_summary", "retry_label": "Again"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert ">63%<" in html and "Passed" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert ">0%<" in html and "0 / 1 correct" in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert ">100%<" in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert 'href="#"' in html and "javascript" not in html
+    for html in (_py_fresh(blocks[4]), gas[4]):
+        assert "<button" in html and "location.reload()" in html and "<a " not in html
+
+
+def test_raise_hand_only_posts_to_absolute_http_urls(core_js):
+    blocks = [{"type": "raise_hand", "write_url": "javascript:alert(1)", "sheet_url": "/relative.csv"}, {"type": "raise_hand", "write_url": "https://example.com/w?x=1", "poll": 1}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert 'var writeUrl="";' in html and 'var sheetUrl="";' in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert 'var writeUrl="https://example.com/w?x=1";' in html and "var poll=1000;" in html and 'indexOf("?")' in html

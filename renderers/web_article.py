@@ -4772,31 +4772,60 @@ def _render_status_dashboard(b: dict) -> str:
     return "".join(out)
 
 def _render_uptime_timeline(b: dict) -> str:
-    uptime = float(b.get("uptime", 99.9))
-    days   = b.get("days", 30)
-    import random, hashlib
-    seed = int(hashlib.md5(str(uptime).encode()).hexdigest()[:8], 16)
-    # A private Random, NOT random.seed(): the global call reseeded the
-    # process-wide RNG as a side effect, so any renderer drawing from the
-    # global stream afterwards produced output that depended on whether this
-    # atom happened to appear earlier on the page. Self-contained here, and it
-    # stops one atom silently determining another's.
-    rng = random.Random(seed)
-    outage_rate = (100 - uptime) / 100
-    blocks = []
-    for _ in range(days):
-        r = rng.random()
-        if r < outage_rate:
-            color = "#dc2626"
-        elif r < outage_rate * 3:
-            color = "#f59e0b"
+    label = _text_loose(b.get('label'))
+    pct = _num_loose(b.get('uptime'))
+    if pct is None:
+        pct = _num_loose(b.get('uptime_percent'))
+    if pct is not None:
+        pct = max(0, min(100, pct))
+    period = _text_loose(b.get('period'))
+    raw = b.get('days')
+    days = raw[-240:] if isinstance(raw, list) else []
+
+    def day_color(d):
+        s = d.get('status') if isinstance(d, dict) else d
+        if s is True:
+            v = 1
+        elif s is False:
+            v = 0
         else:
-            color = "#059669"
-        blocks.append(f'<div style="background:{color};height:20px;border-radius:var(--a2ui-radius-sm,6px);" title="{color}"></div>')
-    return (f'<div style="margin:1rem 0;padding:12px;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));border-radius:var(--a2ui-radius,12px);">'
-            f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(days)},1fr);gap:2px;">{"".join(blocks)}</div>'
-            f'<div style="font-size:0.7rem;color:var(--a2ui-muted,#666666);margin-top:6px;">{_cv_esc(days)}-day uptime: {uptime}%</div>'
-            f'</div>')
+            v = _num_loose(s)
+        if v is None:
+            return '#94a3b8'
+        if v >= 1:
+            return '#22c55e'
+        if v >= 0.5:
+            return '#f59e0b'
+        return '#ef4444'
+
+    def day_title(d, i):
+        t = _text_loose(d.get('date')) if isinstance(d, dict) else ''
+        return t or ('Day ' + str(i + 1))
+    block_w = max(2, min(8, 480 // len(days))) if days else 6
+    block_h, gap, pad_l, pad_r, pad_t, width = 24, 1, 10, 70, 20, 560
+    svg_w = width - pad_l - pad_r
+    hundredths = None if pct is None else int(math.floor(pct * 100 + 0.5))
+    pct_txt = '' if hundredths is None else str(hundredths // 100) + '.' + ('0' + str(hundredths % 100))[-2:]
+    aria = (label or 'Uptime') + ((' ' + pct_txt + '%') if pct_txt else '') + ((', ' + period) if period else '')
+    svg = '<svg role="img" aria-label="' + _cv_esc(aria) + '" viewBox="0 0 ' + str(width) + ' ' + str(block_h + pad_t + 10) + '" width="100%" preserveAspectRatio="xMidYMid meet">'
+    if label:
+        svg += '<text x="' + str(pad_l) + '" y="14" font-size="12" font-weight="600" fill="#334155">' + _cv_esc(label) + '</text>'
+    x = pad_l
+    for i, d in enumerate(days):
+        svg += ('<rect x="' + str(x) + '" y="' + str(pad_t) + '" width="' + str(block_w - gap) + '" height="' + str(block_h) + '" rx="1.5" fill="' + day_color(d) + '"><title>'
+                + _cv_esc(day_title(d, i)) + '</title></rect>')
+        x += block_w
+    if not days:
+        svg += '<rect x="' + str(pad_l) + '" y="' + str(pad_t) + '" width="' + str(svg_w) + '" height="' + str(block_h) + '" rx="3" fill="#e2e8f0"/>'
+    bx = width - pad_r + 4
+    if pct is not None:
+        badge = '#22c55e' if pct >= 99 else ('#f59e0b' if pct >= 95 else '#ef4444')
+        svg += '<text x="' + str(bx) + '" y="' + str(pad_t + block_h // 2 + 5) + '" font-size="12" font-weight="700" fill="' + badge + '">' + pct_txt + '%</text>'
+    if period:
+        svg += '<text x="' + str(bx) + '" y="' + str(pad_t + block_h + 10) + '" font-size="9" fill="#94a3b8">' + _cv_esc(period) + '</text>'
+    svg += '</svg>'
+    return '<div class="a2ui-uptime-row">' + svg + '</div>'
+
 
 def _render_command_palette(b: dict) -> str:
     """Twin of _RENDERERS['command_palette'] in atoms_charts.gs. This used to be a hardcoded
@@ -9829,52 +9858,36 @@ def _render_word_flip(atom: dict) -> str:
 
 
 def _render_sonar_pulse(atom: dict) -> str:
-    import hashlib
-    uid     = hashlib.md5(str(atom).encode()).hexdigest()[:6]
-    variant = atom.get("variant", "critical")
-    active  = atom.get("active", True)
-    label   = atom.get("label", "")
-    body    = atom.get("body", "")
-    size_map = {"sm": 60, "md": 90, "lg": 130}
-    sz      = size_map.get(str(atom.get("size", "md")), 90)
-    color_map = {
-        "critical": "#ef4444", "success": "#34d399",
-        "info":     "#38bdf8", "warning": "#f59e0b",
-    }
-    color = color_map.get(variant, "#ef4444")
+    uid = 'sp-' + _wa_uid(atom)
+    colors = {'critical': '#ef4444', 'success': '#34d399', 'info': '#38bdf8', 'warning': '#f59e0b'}
+    variant = atom.get('variant')
+    vkey = variant if isinstance(variant, str) and variant in colors else 'critical'
+    color = _safe_css(atom.get('color'), colors[vkey])
+    active = atom.get('active') is not False
+    label = _first_text(atom.get('label'), atom.get('title'), atom.get('text'))
+    body = _text_loose(atom.get('body'))
+    size = atom.get('size')
+    sz = {'sm': 60, 'md': 90, 'lg': 130}.get(size, 90) if isinstance(size, str) else 90
     dot_r = max(8, sz // 8)
-    label_html = (
-        f'<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
-        f'font-size:{dot_r - 1}px;font-weight:700;color:{color};z-index:2;'
-        f'white-space:nowrap;">{_cv_esc(label)}</span>'
-    ) if label else ""
-    body_html = (
-        f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:10px;text-align:center;">{_cv_esc(body)}</div>'
-    ) if body else ""
-    rings_css = ""
-    rings_html = ""
+    sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
+    label_html = ('<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:' + str(dot_r - 1) + 'px;font-weight:700;color:' + color
+                  + ';z-index:2;white-space:nowrap;">' + _cv_esc(label) + '</span>') if label else ''
+    body_html = ('<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:10px;text-align:center;">' + _cv_esc(body) + '</div>') if body else ''
+    rings_css = ''
+    rings_html = ''
     if active:
-        rings_css = (
-            f'@keyframes sp_{uid}{{0%{{transform:scale(0.8);opacity:0.55;}}'
-            f'100%{{transform:scale(2.6);opacity:0;}}}}'
-        )
-        rings_html = "".join(
-            f'<div style="position:absolute;inset:0;border-radius:50%;'
-            f'border:2px solid {color};opacity:0;'
-            f'animation:sp_{uid} 3s ease-out {i}s infinite;"></div>'
-            for i in range(3)
-        )
-    return (
-        f'<style>{rings_css}</style>'
-        f'<div data-cb="node" data-key="{_ck(atom.get("label"), "sonar_pulse")}" style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
-        f'<div style="position:relative;width:{sz}px;height:{sz}px;">'
-        f'{rings_html}'
-        f'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
-        f'width:{dot_r*2}px;height:{dot_r*2}px;border-radius:50%;background:{color};'
-        f'box-shadow:0 0 {dot_r*2}px {color}88;z-index:1;"></div>'
-        f'{label_html}'
-        f'</div>{body_html}</div>'
-    )
+        rings_css = ('@keyframes ' + uid + '{0%{transform:scale(0.8);opacity:0.55;}100%{transform:scale(2.6);opacity:0;}}'
+                     '@media (prefers-reduced-motion:reduce){.' + uid + '-r{animation:none!important;}}')
+        rings_html = ''.join('<div aria-hidden="true" class="' + uid + '-r" style="position:absolute;inset:0;border-radius:50%;border:2px solid ' + color + ';opacity:0;animation:' + uid + ' 3s ease-out ' + str(i) + 's infinite;"></div>' for i in range(3))
+    return ('<style>' + rings_css + '</style>'
+            '<div data-cb="node" data-key="' + _ck(atom.get('label'), 'sonar_pulse') + '" style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
+            '<div style="position:relative;width:' + str(sz) + 'px;height:' + str(sz) + 'px;">'
+            + rings_html +
+            '<div aria-hidden="true" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:' + str(dot_r * 2) + 'px;height:' + str(dot_r * 2) + 'px;border-radius:50%;background:' + color + ';'
+            'box-shadow:0 0 ' + str(dot_r * 2) + 'px color-mix(in srgb,' + color + ' 53%,transparent);z-index:1;"></div>'
+            '<span style="' + sr + '">' + vkey + '</span>'
+            + label_html
+            + '</div>' + body_html + '</div>')
 
 
 # ── Motion-primitive atoms (Magic UI-inspired, CSS-only) ──────────────────────
@@ -9911,53 +9924,48 @@ def _render_blur_fade_in(atom: dict) -> str:
 
 
 def _render_glow_button(atom: dict) -> str:
-    import hashlib
-    uid        = hashlib.md5(str(atom).encode()).hexdigest()[:6]
-    label      = atom.get("label", "Button")
-    state      = atom.get("state", "ready")
-    href       = atom.get("href", "")
-    color_r    = atom.get("color_ready", "#38bdf8")
-    color_f    = atom.get("color_fired", "#34d399")
-    desc       = atom.get("description", "")
-    size_map   = {"sm": ("12px 22px", "13px"), "md": ("14px 28px", "15px"), "lg": ("18px 36px", "17px")}
-    pad, fsize = size_map.get(atom.get("size", "md"), ("14px 28px", "15px"))
-    if state == "disabled":
-        bg, shadow, cursor, pulse = "#374151", "0 0 0 transparent", "not-allowed", ""
-        text_color = "#6b7280"
-    elif state == "fired":
-        bg        = "#0f2e1e"
-        shadow    = f"0 0 16px {_cv_esc(color_f)}, 0 0 32px {_cv_esc(color_f)}44"
-        cursor    = "default"
-        text_color = color_f
-        pulse      = (
-            f'@keyframes gb_pulse_{uid}{{0%,100%{{box-shadow:{shadow};}} '
-            f'50%{{box-shadow:0 0 8px {_cv_esc(color_f)}88;}}}}'
-            f'.gb_{uid}{{animation:gb_pulse_{uid} 1.8s ease-in-out infinite;}}'
-        )
-    else:  # ready
-        bg        = "#0c1e2e"
-        shadow    = f"0 0 14px {_cv_esc(color_r)}, 0 0 28px {_cv_esc(color_r)}44"
-        cursor    = "pointer"
-        text_color = color_r
-        pulse      = (
-            f'@keyframes gb_pulse_{uid}{{0%,100%{{box-shadow:{shadow};}} '
-            f'50%{{box-shadow:0 0 6px {_cv_esc(color_r)}66;}}}}'
-            f'.gb_{uid}{{animation:gb_pulse_{uid} 2.4s ease-in-out infinite;}}'
-        )
-    desc_html = f'<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:6px;text-align:center;">{_cv_esc(desc)}</div>' if desc else ""
-    tag = "a" if href else "button"
-    href_attr = f' href="{_cv_esc(href)}"' if href else ""
-    return (
-        f'<style>'
-        f'.gb_{uid}{{display:inline-block;background:{bg};color:{_cv_esc(text_color)};'
-        f'font-size:{fsize};font-weight:600;padding:{pad};border-radius:8px;'
-        f'border:1px solid {_cv_esc(text_color)}44;box-shadow:{shadow};cursor:{cursor};'
-        f'text-decoration:none;transition:box-shadow 0.2s;}}'
-        f'{pulse}</style>'
-        f'<div data-cb="node" data-key="{_ck(atom.get("label"), "glow_button")}" style="margin:1rem 0;display:inline-block;">'
-        f'<{tag} class="gb_{uid}"{href_attr}>{_cv_esc(label)}</{tag}>{desc_html}'
-        f'</div>'
-    )
+    uid = 'gb-' + _wa_uid(atom)
+    label = _first_text(atom.get('label'), atom.get('text'), atom.get('title')) or 'Button'
+    st = atom.get('state')
+    state = st if isinstance(st, str) and st in ('disabled', 'fired') else 'ready'
+    href = '' if state == 'disabled' else _safe_href(atom.get('href'))
+    color_r = _safe_css(atom.get('color_ready'), _safe_css(atom.get('color'), '#38bdf8'))
+    color_f = _safe_css(atom.get('color_fired'), '#34d399')
+    desc = _text_loose(atom.get('description'))
+    sz = atom.get('size')
+    pad, fsize = ({'sm': ('12px 22px', '13px'), 'md': ('14px 28px', '15px'), 'lg': ('18px 36px', '17px')}.get(sz, ('14px 28px', '15px'))
+                  if isinstance(sz, str) else ('14px 28px', '15px'))
+
+    def mix(c, p):
+        return 'color-mix(in srgb,' + c + ' ' + str(p) + '%,transparent)'
+    if state == 'disabled':
+        bg, shadow, cursor, text_color, pulse = '#374151', '0 0 0 transparent', 'not-allowed', '#6b7280', ''
+    elif state == 'fired':
+        bg, cursor, text_color = '#0f2e1e', 'default', color_f
+        shadow = '0 0 16px ' + color_f + ', 0 0 32px ' + mix(color_f, 27)
+        pulse = ('@keyframes ' + uid + '-pulse{0%,100%{box-shadow:' + shadow + ';}50%{box-shadow:0 0 8px ' + mix(color_f, 53) + ';}}'
+                 '.' + uid + '{animation:' + uid + '-pulse 1.8s ease-in-out infinite;}')
+    else:
+        bg, cursor, text_color = '#0c1e2e', 'pointer', color_r
+        shadow = '0 0 14px ' + color_r + ', 0 0 28px ' + mix(color_r, 27)
+        pulse = ('@keyframes ' + uid + '-pulse{0%,100%{box-shadow:' + shadow + ';}50%{box-shadow:0 0 6px ' + mix(color_r, 40) + ';}}'
+                 '.' + uid + '{animation:' + uid + '-pulse 2.4s ease-in-out infinite;}')
+    desc_html = ('<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:6px;text-align:center;">' + _cv_esc(desc) + '</div>') if desc else ''
+    if href:
+        open_tag = '<a href="' + _cv_esc(href) + '" target="_top" rel="noopener" class="' + uid + '">'
+        close_tag = '</a>'
+    elif state == 'disabled':
+        open_tag, close_tag = '<button type="button" disabled class="' + uid + '">', '</button>'
+    else:
+        open_tag, close_tag = '<button type="button" class="' + uid + '">', '</button>'
+    return ('<style>'
+            '.' + uid + '{display:inline-block;background:' + bg + ';color:' + text_color + ';font-size:' + fsize + ';font-weight:600;padding:' + pad + ';border-radius:8px;'
+            'border:1px solid ' + mix(text_color, 27) + ';box-shadow:' + shadow + ';cursor:' + cursor + ';text-decoration:none;transition:box-shadow 0.2s;}'
+            + pulse +
+            '@media (prefers-reduced-motion:reduce){.' + uid + '{animation:none;}}'
+            '</style>'
+            '<div data-cb="node" data-key="' + _ck(atom.get('label'), 'glow_button') + '" style="margin:1rem 0;display:inline-block;">'
+            + open_tag + _cv_esc(label) + close_tag + desc_html + '</div>')
 
 
 def _render_animated_beam(atom: dict) -> str:
@@ -10267,31 +10275,33 @@ def _render_gradient_text(b: dict) -> str:
 
 
 def _render_reveal_on_scroll(b: dict) -> str:
-    import hashlib
-    uid       = hashlib.md5(str(b).encode()).hexdigest()[:6]
-    title     = b.get("title", "Revealed on scroll")
-    body      = b.get("body", "This content fades in as you scroll it into view using the Intersection Observer API.")
-    direction = b.get("direction", "up")
-    dur       = float(b.get("duration", 0.7))
-    drift_map = {"up": "translateY(32px)", "down": "translateY(-32px)", "left": "translateX(32px)", "right": "translateX(-32px)"}
-    from_t    = drift_map.get(direction, "translateY(32px)")
-    bg        = b.get("background", "#f8fafc")
-    accent    = b.get("accent", "#4f46e5")
-    return (
-        f'<style>'
-        f'.ros_{uid}{{opacity:0;transform:{from_t};transition:opacity {dur}s ease,transform {dur}s ease;}}'
-        f'.ros_{uid}.visible{{opacity:1;transform:translate(0);}}'
-        f'</style>'
-        f'<div data-cb="node" data-key="{_ck(b.get("title"), "reveal_on_scroll")}" class="ros_{uid}" style="padding:24px 28px;background:{_cv_esc(bg)};border-left:3px solid {_cv_esc(accent)};'
-        f'border-radius:0 10px 10px 0;margin:1rem 0;">'
-        f'<div style="font-weight:700;color:#0f172a;margin-bottom:6px;">{_cv_esc(title)}</div>'
-        f'<div style="font-size:0.9rem;color:var(--muted,#5f6368);line-height:1.6;">{_cv_esc(body)}</div>'
-        f'</div>'
-        f'<script>(function(){{var el=document.currentScript.previousElementSibling;'
-        f'if(!el)return;'
-        f'var io=new IntersectionObserver(function(entries){{entries.forEach(function(e){{if(e.isIntersecting){{e.target.classList.add("visible");io.unobserve(e.target);}}}})}},{{"threshold":0.15}});'
-        f'io.observe(el);}})();</script>'
-    )
+    title = _text_loose(b.get('title'))
+    body = _first_text(b.get('body'), b.get('text'), b.get('content'))
+    direction = b.get('direction')
+    drift = {'up': 'translateY(32px)', 'down': 'translateY(-32px)', 'left': 'translateX(32px)', 'right': 'translateX(-32px)'}
+    from_t = drift.get(direction, 'translateY(32px)') if isinstance(direction, str) else 'translateY(32px)'
+    dn = _num_loose(b.get('duration'))
+    dur_h = 70 if dn is None else max(0, min(3000, int(math.floor(dn * 100 + 0.5))))
+    wn = _num_loose(b.get('delay'))
+    wait_h = 0 if wn is None else max(0, min(3000, int(math.floor(wn * 100 + 0.5))))
+    dur = format(dur_h / 100, 'g') + 's ease' + ((' ' + format(wait_h / 100, 'g') + 's') if wait_h > 0 else '')
+    bg = _safe_css(b.get('background'), '#f8fafc')
+    accent = _safe_css(b.get('accent'), '#4f46e5')
+    uid = 'ros-' + _wa_uid(b)
+    return ('<style>'
+            '.' + uid + '.ros-js{opacity:0;transform:' + from_t + ';transition:opacity ' + dur + ',transform ' + dur + ';}'
+            '.' + uid + '.ros-js.visible{opacity:1;transform:translate(0);}'
+            '@media (prefers-reduced-motion:reduce){.' + uid + '.ros-js{opacity:1;transform:none;transition:none;}}'
+            '</style>'
+            '<div data-cb="node" data-key="' + _ck(b.get('title'), 'reveal_on_scroll') + '" id="' + uid + '" class="' + uid + '" style="padding:24px 28px;background:' + bg + ';border-left:3px solid ' + accent + ';'
+            'border-radius:0 10px 10px 0;margin:1rem 0;">'
+            + ('<div style="font-weight:700;color:#0f172a;margin-bottom:6px;">' + _cv_esc(title) + '</div>' if title else '')
+            + ('<div style="font-size:0.9rem;color:var(--muted,#5f6368);line-height:1.6;">' + _md_inline(body) + '</div>' if body else '')
+            + '</div>'
+            '<script>(function(){var el=document.getElementById("' + uid + '");if(!el)return;el.classList.add("ros-js");'
+            'function show(){el.classList.add("visible");}'
+            'if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){show();io.disconnect();}},{threshold:0.15});io.observe(el);}else{show();}'
+            '})();</script>')
 
 
 def _render_word_scramble(b: dict) -> str:
@@ -10811,20 +10821,21 @@ def _render_hint_reveal(b: dict) -> str:
 
 def _render_match_exercise(b: dict) -> str:
     import hashlib, random as _random
-    uid   = "mx" + hashlib.md5(str(b).encode()).hexdigest()[:6]
-    pairs = b.get("pairs", [])
+    uid = "mx" + hashlib.md5(str(b).encode()).hexdigest()[:6]
+    raw = b.get("pairs")
+    pairs = [p for p in raw if isinstance(p, dict)] if isinstance(raw, list) else []
     if not pairs:
         return ""
-    terms = [p.get("term", "") for p in pairs]
-    defs  = [p.get("definition", "") for p in pairs]
-    if b.get("shuffle", True):
+    terms = [_text_loose(p.get("term")) for p in pairs]
+    defs = [_text_loose(p.get("definition")) for p in pairs]
+    if b.get("shuffle") is not False:
         defs = defs[:]
         # Seeded off the same content digest `uid` already derives from, so the
         # exercise shuffles identically on every render. Unseeded, this was the
         # last renderer that could rewrite its own markup with no input change.
         _random.Random(uid).shuffle(defs)
 
-    left_col  = "".join(
+    left_col = "".join(
         f'<div data-cb="item" data-key="{_cv_esc(t)}" style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'margin:4px 0;font-size:0.88rem;color:#1e293b;background:#f8fafc;">{_cv_esc(t)}</div>'
         for t in terms
@@ -20448,30 +20459,38 @@ _RENDERERS["xp_bar"] = _render_xp_bar
 
 
 def _render_score_summary(b: dict) -> str:
-    correct = int(b.get('correct', 0))
-    total = int(b.get('total', 1)) or 1
-    threshold = int(b.get('pass_threshold', 60))
-    pct = min(100, round(correct / total * 100))
+    def _count(v, d):
+        n = _num_loose(v)
+        return d if n is None else int(max(-10 ** 12, min(10 ** 12, math.floor(n))))
+    correct = max(0, _count(b.get('correct'), 0))
+    total = _count(b.get('total'), 1)
+    if total <= 0:
+        total = 1
+    tn = _num_loose(b.get('pass_threshold'))
+    threshold = 60 if tn is None else tn
+    pct = min(100, int(math.floor(correct / total * 100 + 0.5)))
     passed = pct >= threshold
     color = '#047857' if passed else '#b91c1c'
     label = 'Passed' if passed else 'Failed'
-    time_html = (f'<div style="text-align:center;margin-top:8px;font-size:0.8rem;color:#6b7280;">'
-                 f'Time: {_esc(b["time_taken"])}</div>') if b.get('time_taken') else ''
-    retry = (f'<a href="{_esc(b["retry_label"])}" style="margin-right:8px;padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
-             f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.85rem;text-decoration:none;color:#374151;">'
-             f'{_esc(b["retry_label"])}</a>') if b.get('retry_label') else ''
-    cont = (f'<a href="{_esc(b["continue_url"] or "#")}" style="padding:8px 18px;border-radius:8px;'
-            f'background:#4f46e5;color:#fff;font-size:0.85rem;text-decoration:none;">'
-            f'{_esc(b["continue_label"])}</a>') if b.get('continue_label') else ''
-    ctas = f'<div style="text-align:center;margin-top:14px;">{retry}{cont}</div>' if retry or cont else ''
-    return (
-        f'<div data-cb="node" data-key="{_ck(None, "score_summary")}" style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;'
-        f'background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;text-align:center;">'
-        f'<div style="font-size:2.8rem;font-weight:800;color:{color};">{pct}%</div>'
-        f'<div style="font-weight:700;color:{color};margin-bottom:4px;">{label}</div>'
-        f'<div style="color:#6b7280;font-size:0.85rem;">{correct} / {total} correct</div>'
-        f'{time_html}{ctas}</div>'
-    )
+    time_taken = _text_loose(b.get('time_taken'))
+    retry_label = _text_loose(b.get('retry_label'))
+    continue_label = _text_loose(b.get('continue_label'))
+    time_html = ('<div style="text-align:center;margin-top:8px;font-size:0.8rem;color:#6b7280;">Time: ' + _cv_esc(time_taken) + '</div>') if time_taken else ''
+    retry = ('<button type="button" onclick="location.reload();" style="margin-right:8px;padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+             'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:transparent;font-family:inherit;font-size:0.85rem;cursor:pointer;color:#374151;">'
+             + _cv_esc(retry_label) + '</button>') if retry_label else ''
+    cont = ('<a href="' + _cv_esc(_safe_href(b.get('continue_url')) or '#') + '" target="_top" style="padding:8px 18px;border-radius:8px;'
+            'background:#4f46e5;color:#fff;font-size:0.85rem;text-decoration:none;display:inline-block;">'
+            + _cv_esc(continue_label) + '</a>') if continue_label else ''
+    ctas = ('<div style="text-align:center;margin-top:14px;">' + retry + cont + '</div>') if (retry or cont) else ''
+    return ('<div data-cb="node" data-key="score_summary" style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;'
+            'background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;text-align:center;">'
+            '<div style="font-size:2.8rem;font-weight:800;color:' + color + ';">' + str(pct) + '%</div>'
+            '<div style="font-weight:700;color:' + color + ';margin-bottom:4px;">' + label + '</div>'
+            '<div style="color:#6b7280;font-size:0.85rem;">' + str(correct) + ' / ' + str(total) + ' correct</div>'
+            + time_html + ctas + '</div>')
+
+
 _RENDERERS["score_summary"] = _render_score_summary
 
 
@@ -25464,20 +25483,49 @@ _RENDERERS["live_vote"] = _render_live_vote
 
 
 def _render_raise_hand(b: dict) -> str:
-    question = _esc(b.get('question', 'Raise your hand'))
-    label = _esc(b.get('label', '✋ Raise Hand'))
-    accent = _esc(b.get('accent', '#4f46e5'))
-    import hashlib
-    uid = 'rh' + hashlib.md5(question.encode()).hexdigest()[:5]
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("question"), "raise_hand")}' '" style="margin:1.5rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-            '<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:12px;">'
-            + question + '</div>'
-            '<button id="' + uid + '" onclick="this.textContent=\'✅ Noted!\';this.disabled=true;'
-            'this.style.background=\'#d1fae5\';this.style.borderColor=\'#10b981\';this.style.color=\'#065f46\';" '
-            'style="padding:10px 24px;background:' + accent + ';color:#fff;border:none;border-radius:8px;'
-            'font-weight:600;cursor:pointer;">' + label + '</button>'
-            '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:10px;">'
-            'Live tallying requires write_url / sheet_url.</div></div>')
+    uid = _wa_uid(b)
+    question = _text_loose(b.get('question')) or 'Raise your hand'
+    label = _text_loose(b.get('label')) or '✋ Raise hand'
+    write_url = _safe_href(b.get('write_url'), ('http', 'https'))
+    write_url = write_url if re.match(r'https?://', write_url, re.I) else ''
+    sheet_url = _safe_href(b.get('sheet_url'), ('http', 'https'))
+    sheet_url = sheet_url if re.match(r'https?://', sheet_url, re.I) else ''
+    pn = _num_loose(b.get('poll_interval'))
+    if pn is None:
+        pn = _num_loose(b.get('poll'))
+    poll = 4000 if pn is None else max(1000, min(600000, int(math.floor(pn))))
+    accent = _safe_css(b.get('accent'), '#4f46e5')
+    return ('<div data-cb="node" data-key="' + _ck(b.get('question'), 'raise_hand') + '" style="text-align:center;padding:28px 20px;margin:1rem 0;">'
+            '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:20px;">' + _cv_esc(question) + '</div>'
+            '<button type="button" id="rh-btn-' + uid + '" style="font-size:1.5rem;padding:16px 32px;background:var(--surface,#ffffff);border:2px solid var(--border,#e5e7eb);border-radius:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text,#111827);display:inline-block;">' + _cv_esc(label) + '</button>'
+            '<div aria-live="polite" style="margin-top:16px;font-size:2rem;font-weight:900;color:' + accent + ';" id="rh-count-' + uid + '">0</div>'
+            '<div style="font-size:0.78rem;color:var(--muted,#5f6368);">hands raised</div>'
+            '</div>'
+            '<script>(function(){'
+            'var btn=document.getElementById("rh-btn-' + uid + '");'
+            'var countEl=document.getElementById("rh-count-' + uid + '");'
+            'if(!btn||!countEl)return;'
+            'var writeUrl=' + _js_json(write_url, ensure_ascii=False) + ';'
+            'var sheetUrl=' + _js_json(sheet_url, ensure_ascii=False) + ';'
+            'var poll=' + str(poll) + ';'
+            'var raised=false;var count=0;'
+            'btn.addEventListener("click",function(){'
+            'if(raised)return;raised=true;count++;'
+            'btn.style.borderColor="' + accent + '";btn.style.background="color-mix(in srgb, ' + accent + ' 6%, transparent)";'
+            'countEl.textContent=count;'
+            'if(writeUrl)fetch(writeUrl+(writeUrl.indexOf("?")<0?"?":"&")+"hand=1",{method:"GET",mode:"no-cors"}).catch(function(){});'
+            '});'
+            'function fetchCount(){'
+            'fetch(sheetUrl).then(function(r){return r.text();}).then(function(t){'
+            'var lines=t.trim().split("\\n").slice(1);var total=0;'
+            'lines.forEach(function(l){var c=l.split(",");total+=parseInt(c[1]||"1",10)||1;});'
+            'count=total;countEl.textContent=total;'
+            '}).catch(function(){});'
+            '}'
+            'if(sheetUrl){fetchCount();setInterval(fetchCount,poll);}'
+            '})();</script>')
+
+
 _RENDERERS["raise_hand"] = _render_raise_hand
 
 

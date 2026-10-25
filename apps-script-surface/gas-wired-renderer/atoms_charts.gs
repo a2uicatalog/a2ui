@@ -693,57 +693,51 @@ _RENDERERS['status_dashboard'] = function(b) {
 // 10. uptime_timeline — horizontal uptime bar
 // ─────────────────────────────────────────────────────────
 _RENDERERS['uptime_timeline'] = function(b) {
-  var label   = b.label || '';
-  var pct     = parseFloat(b.uptime_percent) || 100;
-  var period  = b.period || '';
-  var days    = b.days || [];
+  var label = _textLoose(b.label);
+  var pct = _numLoose(b.uptime);
+  if (pct === null) pct = _numLoose(b.uptime_percent);
+  if (pct !== null) pct = Math.max(0, Math.min(100, pct));
+  var period = _textLoose(b.period);
+  var days = Array.isArray(b.days) ? b.days.slice(-240) : [];
 
   function dayColor(d) {
-    var s = typeof d === 'object' ? (d.status !== undefined ? d.status : 1) : d;
-    var v = parseFloat(s);
-    if (v >= 1)   return '#22c55e';
+    var s = (d && typeof d === 'object' && !Array.isArray(d)) ? d.status : d;
+    var v = s === true ? 1 : (s === false ? 0 : _numLoose(s));
+    if (v === null) return '#94a3b8';
+    if (v >= 1) return '#22c55e';
     if (v >= 0.5) return '#f59e0b';
     return '#ef4444';
   }
   function dayTitle(d, i) {
-    if (typeof d === 'object' && d.date) return d.date;
-    return 'Day ' + (i+1);
+    var t = (d && typeof d === 'object' && !Array.isArray(d)) ? _textLoose(d.date) : '';
+    return t || ('Day ' + (i + 1));
   }
 
   var blockW = days.length > 0 ? Math.max(2, Math.min(8, Math.floor(480 / days.length))) : 6;
-  var blockH = 24;
-  var gap    = 1;
-  var padL   = 10, padR = 70, padT = 20;
-  var width  = 560;
-  var svgW   = width - padL - padR;
-
-  var html = '<div class="a2ui-uptime-row">';
-
-  var svg = '<svg viewBox="0 0 ' + width + ' ' + (blockH + padT + 10) + '" width="100%" preserveAspectRatio="xMidYMid meet">';
+  var blockH = 24, gap = 1, padL = 10, padR = 70, padT = 20, width = 560;
+  var svgW = width - padL - padR;
+  var hundredths = pct === null ? null : Math.floor(pct * 100 + 0.5);
+  var pctTxt = hundredths === null ? '' : Math.floor(hundredths / 100) + '.' + ('0' + (hundredths % 100)).slice(-2);
+  var aria = (label || 'Uptime') + (pctTxt ? ' ' + pctTxt + '%' : '') + (period ? ', ' + period : '');
+  var svg = '<svg role="img" aria-label="' + _esc(aria) + '" viewBox="0 0 ' + width + ' ' + (blockH + padT + 10) + '" width="100%" preserveAspectRatio="xMidYMid meet">';
   if (label) svg += '<text x="' + padL + '" y="14" font-size="12" font-weight="600" fill="#334155">' + _esc(label) + '</text>';
-
   var x = padL;
-  days.forEach(function(d, i) {
-    var color = dayColor(d);
-    var ttl   = _esc(dayTitle(d, i));
-    svg += '<rect x="' + x + '" y="' + padT + '" width="' + (blockW - gap) + '" height="' + blockH + '" rx="1.5" fill="' + color + '"><title>' + ttl + '</title></rect>';
+  for (var i = 0; i < days.length; i++) {
+    svg += '<rect x="' + x + '" y="' + padT + '" width="' + (blockW - gap) + '" height="' + blockH + '" rx="1.5" fill="' + dayColor(days[i]) + '"><title>'
+      + _esc(dayTitle(days[i], i)) + '</title></rect>';
     x += blockW;
-  });
-
-  // Fill remaining space gray if blocks don't fill width
-  if (days.length === 0) {
+  }
+  if (!days.length) {
     svg += '<rect x="' + padL + '" y="' + padT + '" width="' + svgW + '" height="' + blockH + '" rx="3" fill="#e2e8f0"/>';
   }
-
-  // Uptime badge
-  var badgeColor = pct >= 99 ? '#22c55e' : pct >= 95 ? '#f59e0b' : '#ef4444';
   var bx = width - padR + 4;
-  svg += '<text x="' + bx + '" y="' + (padT + blockH/2 + 5) + '" font-size="12" font-weight="700" fill="' + badgeColor + '">' + pct.toFixed(2) + '%</text>';
+  if (pct !== null) {
+    var badge = pct >= 99 ? '#22c55e' : (pct >= 95 ? '#f59e0b' : '#ef4444');
+    svg += '<text x="' + bx + '" y="' + (padT + Math.floor(blockH / 2) + 5) + '" font-size="12" font-weight="700" fill="' + badge + '">' + pctTxt + '%</text>';
+  }
   if (period) svg += '<text x="' + bx + '" y="' + (padT + blockH + 10) + '" font-size="9" fill="#94a3b8">' + _esc(period) + '</text>';
-
   svg += '</svg>';
-  html += svg + '</div>';
-  return html;
+  return '<div class="a2ui-uptime-row">' + svg + '</div>';
 };
 
 // ─────────────────────────────────────────────────────────
@@ -2544,24 +2538,39 @@ function _animFallback(atomName, label) {
 
 // ── CSS @keyframes only ──────────────────────────────────────────────────────
 
-_RENDERERS['sonar_pulse'] = function(b) {
-  var label = b.label || b.title || b.text || 'Live';
-  var color = b.color || '#15803d';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<style>'
-    + '.sp-wrap-' + uid + '{display:flex;flex-direction:column;align-items:center;padding:32px;margin:1rem 0;}'
-    + '.sp-dot-' + uid + '{position:relative;width:16px;height:16px;border-radius:50%;background:' + _esc(color) + ';}'
-    + '.sp-ring-' + uid + '{position:absolute;border-radius:50%;border:2px solid ' + _esc(color) + ';opacity:0;top:50%;left:50%;transform:translate(-50%,-50%);animation:sp-' + uid + ' 2s ease-out infinite;}'
-    + '.sp-ring-' + uid + ':nth-child(2){animation-delay:0.65s;}'
-    + '.sp-ring-' + uid + ':nth-child(3){animation-delay:1.3s;}'
-    + '@keyframes sp-' + uid + '{0%{width:16px;height:16px;opacity:0.9;}100%{width:90px;height:90px;opacity:0;}}'
-    + '</style>'
-    + '<div data-cb="node" data-key="' + _ckey(b.label, 'sonar_pulse') + '" class="sp-wrap-' + uid + '">'
-    + '<div class="sp-dot-' + uid + '">'
-    + '<div class="sp-ring-' + uid + '"></div><div class="sp-ring-' + uid + '"></div><div class="sp-ring-' + uid + '"></div>'
-    + '</div>'
-    + (label ? '<div style="margin-top:22px;font-size:0.85rem;font-weight:600;color:' + _esc(color) + ';">' + _esc(label) + '</div>' : '')
-    + '</div>';
+_RENDERERS['sonar_pulse'] = function(atom) {
+  var uid = 'sp-' + _payloadUid(atom);
+  var COLORS = {critical: '#ef4444', success: '#34d399', info: '#38bdf8', warning: '#f59e0b'};
+  var variant = atom.variant;
+  var vkey = (typeof variant === 'string' && COLORS.hasOwnProperty(variant)) ? variant : 'critical';
+  var color = _safe_css(atom.color, COLORS[vkey]);
+  var active = atom.active !== false;
+  var label = _firstText(atom.label, atom.title, atom.text);
+  var body = _textLoose(atom.body);
+  var SIZES = {sm: 60, md: 90, lg: 130};
+  var sz = (typeof atom.size === 'string' && SIZES.hasOwnProperty(atom.size)) ? SIZES[atom.size] : 90;
+  var dotR = Math.max(8, Math.floor(sz / 8));
+  var sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
+  var labelHtml = label ? '<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:' + (dotR - 1) + 'px;font-weight:700;color:' + color
+    + ';z-index:2;white-space:nowrap;">' + _esc(label) + '</span>' : '';
+  var bodyHtml = body ? '<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:10px;text-align:center;">' + _esc(body) + '</div>' : '';
+  var ringsCss = '', ringsHtml = '';
+  if (active) {
+    ringsCss = '@keyframes ' + uid + '{0%{transform:scale(0.8);opacity:0.55;}100%{transform:scale(2.6);opacity:0;}}'
+      + '@media (prefers-reduced-motion:reduce){.' + uid + '-r{animation:none!important;}}';
+    for (var i = 0; i < 3; i++) {
+      ringsHtml += '<div aria-hidden="true" class="' + uid + '-r" style="position:absolute;inset:0;border-radius:50%;border:2px solid ' + color + ';opacity:0;animation:' + uid + ' 3s ease-out ' + i + 's infinite;"></div>';
+    }
+  }
+  return '<style>' + ringsCss + '</style>'
+    + '<div data-cb="node" data-key="' + _ckey(atom.label, 'sonar_pulse') + '" style="display:flex;flex-direction:column;align-items:center;margin:1rem 0;">'
+    + '<div style="position:relative;width:' + sz + 'px;height:' + sz + 'px;">'
+    + ringsHtml
+    + '<div aria-hidden="true" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:' + (dotR * 2) + 'px;height:' + (dotR * 2) + 'px;border-radius:50%;background:' + color + ';'
+    + 'box-shadow:0 0 ' + (dotR * 2) + 'px color-mix(in srgb,' + color + ' 53%,transparent);z-index:1;"></div>'
+    + '<span style="' + sr + '">' + vkey + '</span>'
+    + labelHtml
+    + '</div>' + bodyHtml + '</div>';
 };
 
 _RENDERERS['typing_indicator'] = function(b) {
@@ -2737,12 +2746,45 @@ _RENDERERS['shimmer_button'] = function(b) {
     + descHtml + '</div>';
 };
 
-_RENDERERS['glow_button'] = function(b) {
-  var label = b.text || b.label || b.title || 'Action';
-  var color = b.color || '#7c3aed';
-  return '<div data-cb="node" data-key="' + _ckey(b.label, 'glow_button') + '" style="margin:1rem 0;text-align:center;">'
-    + '<button style="background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;border-radius:10px;cursor:pointer;box-shadow:0 0 16px ' + _esc(color) + '88,0 0 36px ' + _esc(color) + '44;letter-spacing:0.02em;">' + _esc(label) + '</button>'
-    + '</div>';
+_RENDERERS['glow_button'] = function(atom) {
+  var uid = 'gb-' + _payloadUid(atom);
+  var label = _firstText(atom.label, atom.text, atom.title) || 'Button';
+  var st = atom.state;
+  var state = (st === 'disabled' || st === 'fired') ? st : 'ready';
+  var href = state === 'disabled' ? '' : _safe_href(atom.href);
+  var colorR = _safe_css(atom.color_ready, _safe_css(atom.color, '#38bdf8'));
+  var colorF = _safe_css(atom.color_fired, '#34d399');
+  var desc = _textLoose(atom.description);
+  var SIZES = {sm: ['12px 22px', '13px'], md: ['14px 28px', '15px'], lg: ['18px 36px', '17px']};
+  var ps = (typeof atom.size === 'string' && SIZES.hasOwnProperty(atom.size)) ? SIZES[atom.size] : SIZES.md;
+  function mix(c, p) { return 'color-mix(in srgb,' + c + ' ' + p + '%,transparent)'; }
+  var bg, shadow, cursor, textColor, pulse;
+  if (state === 'disabled') {
+    bg = '#374151'; shadow = '0 0 0 transparent'; cursor = 'not-allowed'; textColor = '#6b7280'; pulse = '';
+  } else if (state === 'fired') {
+    bg = '#0f2e1e'; cursor = 'default'; textColor = colorF;
+    shadow = '0 0 16px ' + colorF + ', 0 0 32px ' + mix(colorF, 27);
+    pulse = '@keyframes ' + uid + '-pulse{0%,100%{box-shadow:' + shadow + ';}50%{box-shadow:0 0 8px ' + mix(colorF, 53) + ';}}'
+      + '.' + uid + '{animation:' + uid + '-pulse 1.8s ease-in-out infinite;}';
+  } else {
+    bg = '#0c1e2e'; cursor = 'pointer'; textColor = colorR;
+    shadow = '0 0 14px ' + colorR + ', 0 0 28px ' + mix(colorR, 27);
+    pulse = '@keyframes ' + uid + '-pulse{0%,100%{box-shadow:' + shadow + ';}50%{box-shadow:0 0 6px ' + mix(colorR, 40) + ';}}'
+      + '.' + uid + '{animation:' + uid + '-pulse 2.4s ease-in-out infinite;}';
+  }
+  var descHtml = desc ? '<div style="font-size:12px;color:var(--muted,#5f6368);margin-top:6px;text-align:center;">' + _esc(desc) + '</div>' : '';
+  var openTag, closeTag;
+  if (href) { openTag = '<a href="' + _esc(href) + '" target="_top" rel="noopener" class="' + uid + '">'; closeTag = '</a>'; }
+  else if (state === 'disabled') { openTag = '<button type="button" disabled class="' + uid + '">'; closeTag = '</button>'; }
+  else { openTag = '<button type="button" class="' + uid + '">'; closeTag = '</button>'; }
+  return '<style>'
+    + '.' + uid + '{display:inline-block;background:' + bg + ';color:' + textColor + ';font-size:' + ps[1] + ';font-weight:600;padding:' + ps[0] + ';border-radius:8px;'
+    + 'border:1px solid ' + mix(textColor, 27) + ';box-shadow:' + shadow + ';cursor:' + cursor + ';text-decoration:none;transition:box-shadow 0.2s;}'
+    + pulse
+    + '@media (prefers-reduced-motion:reduce){.' + uid + '{animation:none;}}'
+    + '</style>'
+    + '<div data-cb="node" data-key="' + _ckey(atom.label, 'glow_button') + '" style="margin:1rem 0;display:inline-block;">'
+    + openTag + _esc(label) + closeTag + descHtml + '</div>';
 };
 
 _RENDERERS['gradient_text'] = function(b) {
@@ -3154,6 +3196,35 @@ _RENDERERS['word_scramble'] = function(b) {
 };
 
 _RENDERERS['reveal_on_scroll'] = function(b) {
+  var title = _textLoose(b.title);
+  var body = _firstText(b.body, b.text, b.content);
+  var direction = b.direction;
+  var DRIFT = {up: 'translateY(32px)', down: 'translateY(-32px)', left: 'translateX(32px)', right: 'translateX(-32px)'};
+  var fromT = (typeof direction === 'string' && DRIFT.hasOwnProperty(direction)) ? DRIFT[direction] : 'translateY(32px)';
+  var dn = _numLoose(b.duration);
+  var durH = dn === null ? 70 : Math.max(0, Math.min(3000, Math.floor(dn * 100 + 0.5)));
+  var wn = _numLoose(b.delay);
+  var waitH = wn === null ? 0 : Math.max(0, Math.min(3000, Math.floor(wn * 100 + 0.5)));
+  var dur = (durH / 100) + 's ease' + (waitH > 0 ? ' ' + (waitH / 100) + 's' : '');
+  var bg = _safe_css(b.background, '#f8fafc');
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var uid = 'ros-' + _payloadUid(b);
+  return '<style>'
+    + '.' + uid + '.ros-js{opacity:0;transform:' + fromT + ';transition:opacity ' + dur + ',transform ' + dur + ';}'
+    + '.' + uid + '.ros-js.visible{opacity:1;transform:translate(0);}'
+    + '@media (prefers-reduced-motion:reduce){.' + uid + '.ros-js{opacity:1;transform:none;transition:none;}}'
+    + '</style>'
+    + '<div data-cb="node" data-key="' + _ckey(b.title, 'reveal_on_scroll') + '" id="' + uid + '" class="' + uid + '" style="padding:24px 28px;background:' + bg + ';border-left:3px solid ' + accent + ';'
+    + 'border-radius:0 10px 10px 0;margin:1rem 0;">'
+    + (title ? '<div style="font-weight:700;color:#0f172a;margin-bottom:6px;">' + _esc(title) + '</div>' : '')
+    + (body ? '<div style="font-size:0.9rem;color:var(--muted,#5f6368);line-height:1.6;">' + _markdownToHtml(body) + '</div>' : '')
+    + '</div>'
+    + '<script>(function(){var el=document.getElementById("' + uid + '");if(!el)return;el.classList.add("ros-js");'
+    + 'function show(){el.classList.add("visible");}'
+    + 'if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){show();io.disconnect();}},{threshold:0.15});io.observe(el);}else{show();}'
+    + '})();<\/script>';
+};
+_RENDERERS['scroll_trigger'] = function(b) {
   var text  = b.text || b.content || '';
   var title = b.title || '';
   var delay = parseFloat(b.delay || 0);
@@ -3170,7 +3241,6 @@ _RENDERERS['reveal_on_scroll'] = function(b) {
     + '})();<\/script>'
     + '</div>';
 };
-_RENDERERS['scroll_trigger'] = _RENDERERS['reveal_on_scroll'];
 
 _RENDERERS['magnetic_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Click me';
