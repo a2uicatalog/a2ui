@@ -419,65 +419,77 @@ _RENDERERS['onboarding_stepper'] = function(b) {
 // Structured enterprise case study: situation, data points, analysis questions,
 // and an optional reveal for the model answer. No state required.
 _RENDERERS['case_study_card'] = function(b) {
-  var uid       = 'csc' + Math.random().toString(36).substr(2, 6);
-  var title     = b.title     || 'Case Study';
-  var situation = b.situation || '';
-  var dataPoints = b.data_points || [];
-  var questions  = b.questions  || [];
-  var answer     = b.model_answer || '';
-  var accent     = b.accent    || '#0676a8';
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var uid = 'csc-' + _payloadUid(b);
+  var title = _firstText(b.title, 'Case Study');
+  var situation = _firstText(b.situation, '');
+  var dataPoints = Array.isArray(b.data_points) ? b.data_points : [];
+  var questions = Array.isArray(b.questions) ? b.questions : [];
+  var answer = _firstText(b.model_answer, '');
+  var accent = _safe_css(b.accent, '#0676a8');
 
   var dpHtml = '';
-  for (var i = 0; i < dataPoints.length; i++) {
+  for (var i = 0; i < Math.min(dataPoints.length, 200); i++) {
     var dp = dataPoints[i];
+    if (!dp || typeof dp !== 'object' || Array.isArray(dp)) continue;
+    var dpLabel = _firstText(dp.label, '');
+    var dpVal = _firstText(dp.value, '');
+    var dpNote = _firstText(dp.note, '');
+    var noteHtml = dpNote ? '<div style="font-size:0.62rem;color:#334155;margin-top:2px;">' + _esc(dpNote) + '</div>' : '';
     dpHtml +=
       '<div style="padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">' +
-        '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:3px;">' + _esc(dp.label || '') + '</div>' +
-        '<div style="font-size:0.88rem;font-weight:700;color:' + _esc(accent) + ';">' + _esc(dp.value || '') + '</div>' +
-        (dp.note ? '<div style="font-size:0.62rem;color:#334155;margin-top:2px;">' + _esc(dp.note) + '</div>' : '') +
+        '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:3px;">' + _esc(dpLabel) + '</div>' +
+        '<div style="font-size:0.88rem;font-weight:700;color:' + accent + ';">' + _esc(dpVal) + '</div>' +
+        noteHtml +
       '</div>';
   }
 
   var qHtml = '';
-  for (var i = 0; i < questions.length; i++) {
+  for (var j = 0; j < Math.min(questions.length, 200); j++) {
+    var q = questions[j];
+    var qStr = (q && typeof q === 'object' && !Array.isArray(q)) ? _firstText(q.question, '') : _textLoose(q);
     qHtml += '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
-      '<span style="color:' + _esc(accent) + ';font-weight:700;font-size:0.78rem;flex-shrink:0;">' + (i + 1) + '.</span>' +
-      '<div style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(questions[i]) + '</div>' +
+      '<span style="color:' + accent + ';font-weight:700;font-size:0.78rem;flex-shrink:0;">' + (j + 1) + '.</span>' +
+      '<div style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(qStr) + '</div>' +
     '</div>';
   }
 
+  var dpSection = dpHtml ?
+    '<div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Key Data</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">' + dpHtml + '</div>' +
+    '</div>' : '';
+
+  var qBorder = answer ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '';
+  var qSection = qHtml ?
+    '<div style="padding:16px 20px;' + qBorder + '">' +
+      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Analysis Questions</div>' +
+      qHtml +
+    '</div>' : '';
+
+  var answerSection = answer ?
+    '<div style="padding:16px 20px;">' +
+      '<button onclick="var r=document.getElementById(\'' + uid + 'ans\');var b=document.getElementById(\'' + uid + 'revbtn\');r.style.display=r.style.display===\'none\'?\'block\':\'none\';b.textContent=r.style.display===\'none\'?\'Show model answer \u25be\':\'Hide answer \u25b4\';" ' +
+        'id="' + uid + 'revbtn" style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);background:none;border:none;cursor:pointer;padding:0;">Show model answer \u25be</button>' +
+      '<div id="' + uid + 'ans" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;' +
+        'background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">' +
+        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.6;">' + _esc(answer) + '</div>' +
+      '</div>' +
+    '</div>' : '';
+
   return (
     '<div data-cb="node" data-key="' + _ckey(b.title, 'case_study_card') + '" style="font-family:\'Inter\',system-ui,sans-serif;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
-    // Header
-    '<div style="padding:4px 20px;background:' + _esc(accent) + '18;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:6px;margin-top:16px;">📋 Case Study</div>' +
+    '<div style="padding:4px 20px;background:' + accent + '18;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + accent + ';margin-bottom:6px;margin-top:16px;">📋 Case Study</div>' +
       '<div style="font-size:1rem;font-weight:800;color:#4573a1;margin-bottom:16px;">' + _esc(title) + '</div>' +
     '</div>' +
-    // Situation
     '<div style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:8px;">Situation</div>' +
       '<div style="font-size:0.82rem;color:#59779b;line-height:1.7;">' + _esc(situation) + '</div>' +
     '</div>' +
-    // Data points
-    (dpHtml ? '<div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
-      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Key Data</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">' + dpHtml + '</div>' +
-    '</div>' : '') +
-    // Questions
-    (qHtml ? '<div style="padding:16px 20px;' + (answer ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">' +
-      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Analysis Questions</div>' +
-      qHtml +
-    '</div>' : '') +
-    // Model answer reveal
-    (answer ?
-      '<div style="padding:16px 20px;">' +
-        '<button onclick="var r=document.getElementById(\'' + uid + 'ans\');var b=document.getElementById(\'' + uid + 'revbtn\');r.style.display=r.style.display===\'none\'?\'block\':\'none\';b.textContent=r.style.display===\'none\'?\'Show model answer ▾\':\'Hide answer ▴\';" ' +
-          'id="' + uid + 'revbtn" style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);background:none;border:none;cursor:pointer;padding:0;">Show model answer ▾</button>' +
-        '<div id="' + uid + 'ans" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;' +
-          'background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">' +
-          '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.6;">' + _esc(answer) + '</div>' +
-        '</div>' +
-      '</div>' : '') +
+    dpSection +
+    qSection +
+    answerSection +
     '</div>'
   );
 };
@@ -486,39 +498,45 @@ _RENDERERS['case_study_card'] = function(b) {
 // Pomodoro-style focus/break timer. Session-scoped — no persistence required.
 // Configurable focus duration, break duration, and accent colour.
 _RENDERERS['study_timer'] = function(b) {
-  var uid    = 'stmr' + Math.random().toString(36).substr(2, 6);
-  var focus  = parseInt(b.focus_mins  || 25);
-  var brk    = parseInt(b.break_mins  || 5);
-  var accent = b.accent || '#4f46e5';
-  var label  = b.label  || 'Study Timer';
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var uid = 'stmr-' + _payloadUid(b);
+  var focusNum = _numLoose(b.focus_mins);
+  var brkNum = _numLoose(b.break_mins);
+  var focus = (focusNum !== null && focusNum > 0) ? Math.floor(focusNum) : 25;
+  focus = Math.min(Math.max(focus, 1), 720);
+  var brk = (brkNum !== null && brkNum > 0) ? Math.floor(brkNum) : 5;
+  brk = Math.min(Math.max(brk, 1), 720);
+
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var label = _firstText(b.label, 'Study Timer');
+  var dispTime = (focus < 10 ? '0' + focus : focus) + ':00';
+
+  var focusSecs = focus * 60;
+  var brkSecs = brk * 60;
 
   return (
     '<div data-cb="node" data-key="' + _ckey(b.label, 'study_timer') + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);">' +
     '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:16px;">⏱ ' + _esc(label) + '</div>' +
-    // Mode label
-    '<div id="' + uid + 'mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">Focus</div>' +
-    // Timer display
-    '<div id="' + uid + 'disp" style="font-size:3.5rem;font-weight:900;color:#4878a8;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">' + (focus < 10 ? '0' + focus : focus) + ':00</div>' +
-    // Progress ring (SVG)
+    '<div id="' + uid + 'mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + accent + ';margin-bottom:8px;">Focus</div>' +
+    '<div id="' + uid + 'disp" style="font-size:3.5rem;font-weight:900;color:#4878a8;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">' + dispTime + '</div>' +
     '<div style="position:relative;display:inline-block;margin-bottom:20px;">' +
-      '<svg width="100" height="100" viewBox="0 0 100 100">' +
+      '<svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">' +
         '<circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>' +
-        '<circle id="' + uid + 'ring" cx="50" cy="50" r="44" fill="none" stroke="' + _esc(accent) + '" stroke-width="6" ' +
+        '<circle id="' + uid + 'ring" cx="50" cy="50" r="44" fill="none" stroke="' + accent + '" stroke-width="6" ' +
           'stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" ' +
           'transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.8s linear;"/>' +
       '</svg>' +
     '</div>' +
-    // Controls
     '<div style="display:flex;gap:10px;justify-content:center;">' +
       '<button id="' + uid + 'start" onclick="' + uid + 'toggle()" ' +
-        'style="padding:10px 28px;border-radius:99px;background:' + _esc(accent) + ';color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;min-width:100px;">Start</button>' +
+        'style="padding:10px 28px;border-radius:99px;background:' + accent + ';color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;min-width:100px;">Start</button>' +
       '<button onclick="' + uid + 'reset()" ' +
         'style="padding:10px 18px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;cursor:pointer;">Reset</button>' +
     '</div>' +
     '<div id="' + uid + 'sessions" style="font-size:0.62rem;color:#334155;margin-top:12px;">0 sessions completed</div>' +
     '<script>(function(){' +
-      'var focusSecs=' + (focus * 60) + ';var brkSecs=' + (brk * 60) + ';' +
+      'var focusSecs=' + focusSecs + ';var brkSecs=' + brkSecs + ';' +
       'var total=focusSecs;var left=focusSecs;var running=false;var timer=null;var isFocus=true;var sessions=0;' +
       'var CIRC=276.46;' +
       'function fmt(s){var m=Math.floor(s/60);var ss=s%60;return(m<10?"0":"")+m+":"+(ss<10?"0":"")+ss;}' +
@@ -527,7 +545,7 @@ _RENDERERS['study_timer'] = function(b) {
         'var pct=left/total;' +
         'document.getElementById("' + uid + 'ring").setAttribute("stroke-dashoffset",CIRC*(1-pct));' +
         'document.getElementById("' + uid + 'mode").textContent=isFocus?"Focus":"Break";' +
-        'document.getElementById("' + uid + 'mode").style.color=isFocus?"' + _esc(accent) + '":"#1c805c";' +
+        'document.getElementById("' + uid + 'mode").style.color=isFocus?"' + accent + '":"#1c805c";' +
       '}' +
       'function tick(){if(left<=0){if(isFocus)sessions++;isFocus=!isFocus;total=isFocus?focusSecs:brkSecs;left=total;document.getElementById("' + uid + 'sessions").textContent=sessions+" session"+(sessions===1?"":"s")+" completed";draw();return;}left--;draw();}' +
       'window["' + uid + 'toggle"]=function(){' +

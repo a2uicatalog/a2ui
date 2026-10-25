@@ -5519,93 +5519,97 @@ def _render_sankey_flow(b: dict) -> str:
             + head + body + note + '</div>')
 
 def _render_cohort_retention(b: dict) -> str:
-    cohorts     = b.get("cohorts", [])
-    periods     = b.get("periods", [])
-    color_scale = b.get("color_scale", ["#1e293b", "#10b981"])
-    title       = b.get("title", "")
-    
-    if not cohorts or not periods:
+    if not isinstance(b, dict):
         return ""
-        
-    num_periods = len(periods)
-    
-    headers = []
-    headers.append('<div style="font-weight:700;color:rgba(255,255,255,0.62);font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;">Cohort</div>')
-    headers.append('<div style="font-weight:700;color:#7d828d;font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:right;">Size</div>')
-    for p in periods:
-        headers.append(f'<div style="font-weight:700;color:#7d828d;font-size:0.75rem;font-family:monospace;text-transform:uppercase;padding:12px;letter-spacing:0.05em;text-align:center;">{_cv_esc(p)}</div>')
-        
-    rows_html = []
-    for row_idx, cohort in enumerate(cohorts):
-        name = cohort.get("cohort_name", f"Cohort {_cv_esc(row_idx)}")
-        size = cohort.get("original_size", "—")
-        if isinstance(size, (int, float)):
-            size_str = f"{size:,.0f}"
-        else:
-            size_str = str(size)
-            
-        rates = cohort.get("retention_rates", [])
-        
-        row_cells = []
-        row_cells.append(f'<div style="font-weight:700;color:#f1f5f9;font-size:0.85rem;padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;">{_cv_esc(name)}</div>')
-        row_cells.append(f'<div style="color:rgba(255,255,255,0.6);font-size:0.85rem;font-family:monospace;padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:right;display:flex;align-items:center;justify-content:flex-end;">{_cv_esc(size_str)}</div>')
-        
-        for p_idx in range(num_periods):
-            if p_idx < len(rates):
-                rate = float(rates[p_idx])
-                weight = rate / 100.0
-                cell_bg = _get_color_from_scale(color_scale, weight)
-                
-                text_color = "#f1f5f9"
-                if weight > 0.65:
-                    text_color = "#0f172a"
-                    
-                cell_style = (
-                    f"background:{cell_bg};"
-                    f"color:{text_color};"
-                    f"font-weight:700;"
-                    f"font-size:0.8rem;"
-                    f"font-family:monospace;"
-                    f"text-align:center;"
-                    f"margin:2px;"
-                    f"border-radius:4px;"
-                    f"display:flex;"
-                    f"align-items:center;"
-                    f"justify-content:center;"
-                    f"transition:transform 0.15s, box-shadow 0.15s;"
-                )
-                
-                row_cells.append(f"""
-                <div style="{cell_style}" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.3)';" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none';">
-                  {rate:.1f}%
-                </div>
-                """)
+    cohorts_raw = b.get("cohorts")
+    cohorts = cohorts_raw if isinstance(cohorts_raw, list) else []
+    periods_raw = b.get("periods")
+    periods = periods_raw if isinstance(periods_raw, list) else []
+    title = _first_text(b.get("title"), "")
+
+    if not cohorts:
+        return '<div class="a2ui-chart-empty">No cohort data</div>'
+
+    # Determine max cols if periods not explicitly given
+    col_names = []
+    if periods:
+        for p in periods[:200]:
+            col_names.append(_text_loose(p))
+    else:
+        max_len = 0
+        for c in cohorts[:200]:
+            if isinstance(c, dict):
+                r = c.get("retention_rates")
+                if not isinstance(r, list):
+                    r = c.get("data")
+                if isinstance(r, list) and len(r) > max_len:
+                    max_len = len(r)
+        max_len = min(max_len, 200)
+        for w in range(max_len):
+            col_names.append(f"Week {w}")
+
+    num_cols = len(col_names)
+    scale = []
+    sc_raw = b.get("color_scale")
+    for sc in (sc_raw[:8] if isinstance(sc_raw, list) else []):
+        if isinstance(sc, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", sc):
+            scale.append((int(sc[1:3], 16), int(sc[3:5], 16), int(sc[5:7], 16)))
+    if len(scale) < 2:
+        scale = [(237, 233, 254), (99, 102, 241)]
+    has_size = any(isinstance(c, dict) and _text_loose(c.get("original_size")) for c in cohorts[:200])
+
+    # Table headers
+    th_html = '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Cohort</th>'
+    if has_size:
+        th_html += '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:right;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Size</th>'
+    for cname in col_names:
+        th_html += f'<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:center;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(cname)}</th>'
+
+    rows_html = ""
+    for c in cohorts[:200]:
+        if not isinstance(c, dict):
+            continue
+        c_name = _first_text(c.get("cohort_name"), c.get("label"), "")
+        rates_raw = c.get("retention_rates")
+        if not isinstance(rates_raw, list):
+            rates_raw = c.get("data")
+        rates = rates_raw if isinstance(rates_raw, list) else []
+
+        cells = f'<td class="a2ui-cohort-label" style="padding:10px 12px;font-weight:600;color:#1e293b;border-bottom:1px solid #f1f5f9;white-space:nowrap;">{_cv_esc(c_name)}</td>'
+        if has_size:
+            sz = _num_loose(c.get("original_size"))
+            sz_txt = (f"{int(max(sz, 0.0) + 0.5):,}" if sz < 1e15 else "") if sz is not None else _text_loose(c.get("original_size"))
+            cells += f'<td class="a2ui-cohort-size" style="padding:10px 12px;text-align:right;font-family:monospace;color:#64748b;border-bottom:1px solid #f1f5f9;">{_cv_esc(sz_txt)}</td>'
+        for idx in range(num_cols):
+            val_num = None
+            if idx < len(rates):
+                val_num = _num_loose(rates[idx])
+            if val_num is None:
+                cells += '<td class="a2ui-cohort-cell" style="padding:8px;background:#f8fafc;border-bottom:1px solid #f1f5f9;"></td>'
             else:
-                row_cells.append('<div style="background:transparent;margin:2px;"></div>')
-                
-        rows_html.append("".join(row_cells))
-        
-    grid_cols_style = f"grid-template-columns: 140px 100px repeat({num_periods}, 1fr);"
-    
-    header_html = ""
-    if title:
-        header_html = f"""
-        <div style="margin-bottom:16px;">
-          <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{_cv_esc(title)}</div>
-        </div>
-        """
-        
-    return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;border-radius:var(--a2ui-radius,12px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-      {header_html}
-      <div style="width:100%;overflow-x:auto;">
-        <div style="min-width:{240 + num_periods * 80}px;max-width:100%;display:grid;{grid_cols_style};background:rgba(15,23,42,0.3);border-radius:8px;padding:8px;gap:2px;">
-          {"".join(headers)}
-          {"".join(rows_html)}
-        </div>
-      </div>
-    </div>
-    """
+                pct = max(0.0, min(100.0, float(val_num)))
+                alpha = pct / 100.0
+                pos = alpha * (len(scale) - 1)
+                lo = min(int(pos), len(scale) - 2)
+                fr = pos - lo
+                r, g, bv = [int(scale[lo][k] + (scale[lo + 1][k] - scale[lo][k]) * fr + 0.5) for k in range(3)]
+                bg = f"rgb({r},{g},{bv})"
+                fg = "#ffffff" if (0.299 * r + 0.587 * g + 0.114 * bv) / 255.0 < 0.64 else "#2e3b4d"
+                pct_str = _fixed_str(pct, 1)
+                cells += f'<td class="a2ui-cohort-cell" style="padding:8px;text-align:center;font-family:monospace;font-weight:700;font-size:0.8rem;background:{bg};color:{fg};border-bottom:1px solid #f1f5f9;">{pct_str}%</td>'
+        rows_html += f"<tr>{cells}</tr>"
+
+    title_html = f'<div class="a2ui-cohort-title" style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else ""
+
+    return (
+        f'<div class="a2ui-cohort-retention" style="margin:1.5rem 0;padding:16px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+        f'{title_html}'
+        f'<div style="overflow-x:auto;">'
+        f'<table class="a2ui-cohort-table" style="border-collapse:collapse;font-size:12px;width:100%;min-width:320px;">'
+        f'<thead><tr>{th_html}</tr></thead>'
+        f'<tbody>{rows_html}</tbody>'
+        f'</table></div></div>'
+    )
 
 
 def _render_task_list(b: dict) -> str:
@@ -21121,37 +21125,104 @@ _RENDERERS["quiz_result_summary"] = _render_quiz_result_summary
 
 import math
 
+import math
+
 def _render_skill_radar(b: dict) -> str:
-    title = _esc(b.get('title', 'Skill Profile'))
-    accent = b.get('accent', '#4f46e5')
-    skills = b.get('skills', [])
-    if not skills:
-        return f'<div style="font-family:system-ui,sans-serif;color:var(--muted,#5f6368);padding:12px;">{title}: no skills provided</div>'
-    n = len(skills)
-    SIZE, CX, CY, R = 220, 110, 110, 82
-    def pt(angle, radius):
-        import math
-        rad = (angle - 90) * math.pi / 180
-        return CX + radius * math.cos(rad), CY + radius * math.sin(rad)
-    # Grid circles
-    grid = ''.join(f'<circle cx="{CX}" cy="{CY}" r="{R * (i+1) // 5}" fill="none" stroke="#e5e7eb" stroke-width="1"/>' for i in range(5))
-    # Axes
-    axes = ''.join(f'<line x1="{CX}" y1="{CY}" x2="{pt(i*(360//n),R)[0]:.1f}" y2="{pt(i*(360//n),R)[1]:.1f}" stroke="#e5e7eb" stroke-width="1"/>' for i in range(n))
-    # Filled polygon
-    vals = [min(100, max(0, s.get('value', 0))) for s in skills]
-    pts = ' '.join(f'{pt(i*(360//n), R*v/100)[0]:.1f},{pt(i*(360//n), R*v/100)[1]:.1f}' for i, v in enumerate(vals))
-    poly = f'<polygon points="{pts}" fill="{_esc(accent)}" fill-opacity="0.2" stroke="{_esc(accent)}" stroke-width="2"/>'
-    # Labels
-    labels = ''.join(
-        f'<text x="{pt(i*(360//n), R+18)[0]:.1f}" y="{pt(i*(360//n), R+18)[1]:.1f}" '
-        f'text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#374151">{_esc(str(s.get("label","")))}</text>'
-        for i, s in enumerate(skills)
+    if not isinstance(b, dict):
+        return ""
+    title = _first_text(b.get("title"), "Skill Profile")
+    accent = _safe_css(b.get("accent"), "#4f46e5")
+    skills_raw = b.get("skills")
+    skills = [s for s in (skills_raw if isinstance(skills_raw, list) else [])[:200] if isinstance(s, dict)]
+    n = max(len(skills), 3)
+    SIZE = 220
+    CX = 110.0
+    CY = 110.0
+    R = 82.0
+    OUTER = R + 22.0
+
+    def pt(angle: float, radius: float):
+        rad = (angle - 90.0) * math.pi / 180.0
+        return (CX + radius * math.cos(rad), CY + radius * math.sin(rad))
+
+    def polygon(vals: list, r: float) -> str:
+        coords = []
+        for i in range(n):
+            v = vals[i] if i < len(vals) else 0.0
+            p = pt(i * (360.0 / n), r * max(0.0, min(100.0, v)) / 100.0)
+            coords.append(f"{p[0]:.2f},{p[1]:.2f}")
+        return " ".join(coords)
+
+    # Grid rings
+    grid = ""
+    for g in range(1, 5):
+        rpts = []
+        for k in range(n):
+            p = pt(k * (360.0 / n), R * g / 4.0)
+            rpts.append(f"{p[0]:.2f},{p[1]:.2f}")
+        grid += f'<polygon points="{" ".join(rpts)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>'
+
+    # Axes and labels
+    axes = ""
+    labels = ""
+    for i in range(n):
+        angle = i * (360.0 / n)
+        op = pt(angle, R)
+        axes += f'<line x1="{CX:.2f}" y1="{CY:.2f}" x2="{op[0]:.2f}" y2="{op[1]:.2f}" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>'
+        lp = pt(angle, OUTER)
+        anchor = "start" if lp[0] > CX + 5.0 else ("end" if lp[0] < CX - 5.0 else "middle")
+        label_text = _first_text(skills[i].get("label"), f"Skill {i + 1}") if i < len(skills) else f"Skill {i + 1}"
+        labels += f'<text x="{lp[0]:.2f}" y="{(lp[1] + 4.0):.2f}" text-anchor="{anchor}" fill="#64748b" font-size="9" font-family="Inter,sans-serif">{_cv_esc(label_text)}</text>'
+
+    has_before = any(isinstance(s, dict) and _num_loose(s.get("before")) is not None for s in skills)
+    before_vals = []
+    current_vals = []
+    for s in skills:
+        b_num = _num_loose(s.get("before"))
+        before_vals.append(b_num if b_num is not None else 0.0)
+        v_num = _num_loose(s.get("value"))
+        current_vals.append(v_num if v_num is not None else 0.0)
+
+    before_svg = ""
+    if has_before:
+        before_pts = polygon(before_vals, R)
+        before_svg = f'<polygon points="{before_pts}" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="4,3"/>'
+
+    current_pts = polygon(current_vals, R)
+    current_svg = f'<polygon points="{current_pts}" fill="{accent}1f" stroke="{accent}" stroke-width="2"/>'
+
+    # Dot markers
+    dots = ""
+    for i in range(n):
+        v = current_vals[i] if i < len(current_vals) else 0.0
+        v_clamped = max(0.0, min(100.0, v))
+        dp = pt(i * (360.0 / n), R * v_clamped / 100.0)
+        dots += f'<circle cx="{dp[0]:.2f}" cy="{dp[1]:.2f}" r="3" fill="{accent}" stroke="#0f172a" stroke-width="1.5"/>'
+
+    svg_h = SIZE + 28
+    svg = (
+        f'<svg role="img" aria-label="Skill radar chart" width="{SIZE}" height="{svg_h}" viewBox="0 0 {SIZE} {svg_h}" style="max-width:280px;">'
+        f'{grid}{axes}{before_svg}{current_svg}{dots}{labels}</svg>'
     )
+
+    legend = ""
+    if has_before:
+        legend = (
+            f'<div style="display:flex;gap:16px;justify-content:center;margin-top:6px;">'
+            f'<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:0;border-top:2px dashed rgba(255,255,255,0.3);"></div>Before</div>'
+            f'<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:2px;background:{accent};"></div>Now</div>'
+            f'</div>'
+        )
+
     return (
-        f'<div style="font-family:system-ui,sans-serif;text-align:center;">'
-        f'<div style="font-weight:700;margin-bottom:8px;">{title}</div>'
-        f'<svg role="img" aria-label="Skill radar chart" width="{SIZE}" height="{SIZE}" viewBox="0 0 {SIZE} {SIZE}">{grid}{axes}{poly}{labels}</svg></div>'
+        f'<div style="font-family:\'Inter\',system-ui,sans-serif;text-align:center;">'
+        f'<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">\U0001f3af {_cv_esc(title)}</div>'
+        f'<div style="display:flex;justify-content:center;">{svg}</div>'
+        f'{legend}'
+        f'</div>'
     )
+
+
 _RENDERERS["skill_radar"] = _render_skill_radar
 
 
@@ -21182,28 +21253,69 @@ _RENDERERS["spaced_repetition_card"] = _render_spaced_repetition_card
 
 
 def _render_study_timer(b: dict) -> str:
-    focus = int(b.get('focus_mins', 25))
-    brk = int(b.get('break_mins', 5))
-    accent = b.get('accent', '#4f46e5')
-    label = _esc(b.get('label', 'Study Timer'))
-    uid = 'stmr' + _wa_uid(b)[:6]
+    if not isinstance(b, dict):
+        return ""
+    uid = "stmr-" + _wa_uid(b)[:6]
+    focus_num = _num_loose(b.get("focus_mins"))
+    brk_num = _num_loose(b.get("break_mins"))
+    focus = int(focus_num) if (focus_num is not None and focus_num > 0) else 25
+    focus = min(max(focus, 1), 720)
+    brk = int(brk_num) if (brk_num is not None and brk_num > 0) else 5
+    brk = min(max(brk, 1), 720)
+
+    accent = _safe_css(b.get("accent"), "#4f46e5")
+    label = _first_text(b.get("label"), "Study Timer")
+    disp_time = f"{focus:02d}:00"
+
+    focus_secs = focus * 60
+    brk_secs = brk * 60
+
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("label"), "study_timer")}" style="font-family:system-ui,sans-serif;padding:24px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;'
-        f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
-        f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:{_esc(accent)};'
-        f'text-transform:uppercase;margin-bottom:8px;">{label}</div>'
-        f'<div id="{uid}disp" style="font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;'
-        f'color:{_esc(accent)};margin-bottom:16px;">{focus:02d}:00</div>'
-        f'<div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;">'
-        f'<div style="padding:6px 14px;background:#e0e7ff;border-radius:99px;font-size:0.78rem;font-weight:600;color:#4f46e5;">Focus {focus}m</div>'
-        f'<div style="padding:6px 14px;background:#f0fdf4;border-radius:99px;font-size:0.78rem;font-weight:600;color:#1c805c;">Break {brk}m</div></div>'
-        f'<button onclick="(function(){{var s={focus}*60,r,t=document.getElementById(\'{uid}disp\'),'
-        f'b=document.getElementById(\'{uid}btn\');if(r){{clearInterval(r);r=null;b.textContent=\'Start\';return;}}'
-        f'b.textContent=\'Stop\';r=setInterval(function(){{s--;var m=Math.floor(s/60),sec=s%60;'
-        f't.textContent=(m<10?\'0\':\'\')+m+\':\'+(sec<10?\'0\':\'\')+sec;if(s<=0){{clearInterval(r);r=null;b.textContent=\'Start\';}}}},1000)}})()" '
-        f'id="{uid}btn" style="padding:10px 28px;border-radius:10px;background:{_esc(accent)};color:#fff;'
-        f'border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">Start</button></div>'
+        f'<div data-cb="node" data-key="{_ck(b.get("label"), "study_timer")}" style="font-family:\'Inter\',system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;'
+        f'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);">'
+        f'<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:16px;">\u23f1 {_cv_esc(label)}</div>'
+        f'<div id="{uid}mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:{accent};margin-bottom:8px;">Focus</div>'
+        f'<div id="{uid}disp" style="font-size:3.5rem;font-weight:900;color:#4878a8;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">{disp_time}</div>'
+        f'<div style="position:relative;display:inline-block;margin-bottom:20px;">'
+        f'<svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">'
+        f'<circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>'
+        f'<circle id="{uid}ring" cx="50" cy="50" r="44" fill="none" stroke="{accent}" stroke-width="6" '
+        f'stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" '
+        f'transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.8s linear;"/>'
+        f'</svg>'
+        f'</div>'
+        f'<div style="display:flex;gap:10px;justify-content:center;">'
+        f'<button id="{uid}start" onclick="{uid}toggle()" '
+        f'style="padding:10px 28px;border-radius:99px;background:{accent};color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;min-width:100px;">Start</button>'
+        f'<button onclick="{uid}reset()" '
+        f'style="padding:10px 18px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;cursor:pointer;">Reset</button>'
+        f'</div>'
+        f'<div id="{uid}sessions" style="font-size:0.62rem;color:#334155;margin-top:12px;">0 sessions completed</div>'
+        f'<script>(function(){{'
+        f'var focusSecs={focus_secs};var brkSecs={brk_secs};'
+        f'var total=focusSecs;var left=focusSecs;var running=false;var timer=null;var isFocus=true;var sessions=0;'
+        f'var CIRC=276.46;'
+        f'function fmt(s){{var m=Math.floor(s/60);var ss=s%60;return(m<10?"0":"")+m+":"+(ss<10?"0":"")+ss;}}'
+        f'function draw(){{'
+        f'document.getElementById("{uid}disp").textContent=fmt(left);'
+        f'var pct=left/total;'
+        f'document.getElementById("{uid}ring").setAttribute("stroke-dashoffset",CIRC*(1-pct));'
+        f'document.getElementById("{uid}mode").textContent=isFocus?"Focus":"Break";'
+        f'document.getElementById("{uid}mode").style.color=isFocus?"{accent}":"#1c805c";'
+        f'}}'
+        f'function tick(){{if(left<=0){{if(isFocus)sessions++;isFocus=!isFocus;total=isFocus?focusSecs:brkSecs;left=total;document.getElementById("{uid}sessions").textContent=sessions+" session"+(sessions===1?"":"s")+" completed";draw();return;}}left--;draw();}}'
+        f'window["{uid}toggle"]=function(){{'
+        f'var btn=document.getElementById("{uid}start");'
+        f'if(running){{clearInterval(timer);running=false;btn.textContent="Resume";}}'
+        f'else{{timer=setInterval(tick,1000);running=true;btn.textContent="Pause";}}'
+        f'}};'
+        f'window["{uid}reset"]=function(){{clearInterval(timer);running=false;isFocus=true;total=focusSecs;left=focusSecs;draw();document.getElementById("{uid}start").textContent="Start";}};'
+        f'draw();'
+        f'}})();</script>'
+        f'</div>'
     )
+
+
 _RENDERERS["study_timer"] = _render_study_timer
 
 
@@ -23283,31 +23395,91 @@ _RENDERERS["badge_showcase"] = _render_badge_showcase
 
 
 def _render_case_study_card(b: dict) -> str:
-    title = _esc(b.get('title', 'Case Study'))
-    situation = _md.markdown(b.get('situation', '')) if b.get('situation') else ''
-    data_points = b.get('data_points', [])
-    questions = b.get('questions', [])
-    accent = b.get('accent', '#0676a8')
-    dp_html = ''.join(
-        f'<div style="padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);margin-bottom:6px;">'
-        f'<span style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);">{_esc(dp.get("label",""))}</span>'
-        f'<div style="font-weight:700;">{_esc(str(dp.get("value","")))}</div></div>'
-        for dp in data_points
-    )
-    q_html = ''.join(
-        f'<div style="padding:10px 0;border-top:1px solid #e5e7eb;font-size:0.88rem;">'
-        f'<span style="font-weight:600;">{_esc(q if isinstance(q, str) else q.get("question",""))}</span></div>'
-        for q in questions
-    )
+    if not isinstance(b, dict):
+        return ""
+    uid = "csc-" + _wa_uid(b)[:6]
+    title = _first_text(b.get("title"), "Case Study")
+    situation = _first_text(b.get("situation"), "")
+    data_points_raw = b.get("data_points")
+    data_points = data_points_raw if isinstance(data_points_raw, list) else []
+    questions_raw = b.get("questions")
+    questions = questions_raw if isinstance(questions_raw, list) else []
+    answer = _first_text(b.get("model_answer"), "")
+    accent = _safe_css(b.get("accent"), "#0676a8")
+
+    dp_html = ""
+    for dp in data_points[:200]:
+        if not isinstance(dp, dict):
+            continue
+        dp_label = _first_text(dp.get("label"), "")
+        dp_val = _first_text(dp.get("value"), "")
+        dp_note = _first_text(dp.get("note"), "")
+        note_html = f'<div style="font-size:0.62rem;color:#334155;margin-top:2px;">{_cv_esc(dp_note)}</div>' if dp_note else ""
+        dp_html += (
+            f'<div style="padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">'
+            f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:3px;">{_cv_esc(dp_label)}</div>'
+            f'<div style="font-size:0.88rem;font-weight:700;color:{accent};">{_cv_esc(dp_val)}</div>'
+            f'{note_html}'
+            f'</div>'
+        )
+
+    q_html = ""
+    for i, q in enumerate(questions[:200]):
+        q_str = _text_loose(q) if not isinstance(q, dict) else _first_text(q.get("question"), "")
+        q_html += (
+            f'<div style="display:flex;gap:8px;margin-bottom:8px;">'
+            f'<span style="color:{accent};font-weight:700;font-size:0.78rem;flex-shrink:0;">{i + 1}.</span>'
+            f'<div style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.5;">{_cv_esc(q_str)}</div>'
+            f'</div>'
+        )
+
+    dp_section = ""
+    if dp_html:
+        dp_section = (
+            f'<div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">'
+            f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Key Data</div>'
+            f'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">{dp_html}</div>'
+            f'</div>'
+        )
+
+    q_section = ""
+    if q_html:
+        q_border = "border-bottom:1px solid rgba(255,255,255,0.05);" if answer else ""
+        q_section = (
+            f'<div style="padding:16px 20px;{q_border}">'
+            f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Analysis Questions</div>'
+            f'{q_html}'
+            f'</div>'
+        )
+
+    answer_section = ""
+    if answer:
+        answer_section = (
+            f'<div style="padding:16px 20px;">'
+            f'<button onclick="var r=document.getElementById(\'{uid}ans\');var b=document.getElementById(\'{uid}revbtn\');r.style.display=r.style.display===\'none\'?\'block\':\'none\';b.textContent=r.style.display===\'none\'?\'Show model answer \u25be\':\'Hide answer \u25b4\';" '
+            f'id="{uid}revbtn" style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);background:none;border:none;cursor:pointer;padding:0;">Show model answer \u25be</button>'
+            f'<div id="{uid}ans" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">'
+            f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.6;">{_cv_esc(answer)}</div>'
+            f'</div></div>'
+        )
+
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("title"), "case_study_card")}" style="font-family:system-ui,sans-serif;padding:20px;border-radius:14px;'
-        f'border:1px solid {_esc(accent)}44;background:#f9fafb;">'
-        f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:{_esc(accent)};'
-        f'text-transform:uppercase;margin-bottom:6px;">Case Study</div>'
-        f'<div style="font-weight:700;font-size:1rem;margin-bottom:10px;">{title}</div>'
-        f'<div style="font-size:0.88rem;line-height:1.6;margin-bottom:12px;">{situation}</div>'
-        f'{dp_html}{q_html}</div>'
+        f'<div data-cb="node" data-key="{_ck(b.get("title"), "case_study_card")}" style="font-family:\'Inter\',system-ui,sans-serif;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">'
+        f'<div style="padding:4px 20px;background:{accent}18;border-bottom:1px solid rgba(255,255,255,0.06);">'
+        f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:{accent};margin-bottom:6px;margin-top:16px;">\U0001f4cb Case Study</div>'
+        f'<div style="font-size:1rem;font-weight:800;color:#4573a1;margin-bottom:16px;">{_cv_esc(title)}</div>'
+        f'</div>'
+        f'<div style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">'
+        f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:8px;">Situation</div>'
+        f'<div style="font-size:0.82rem;color:#59779b;line-height:1.7;">{_cv_esc(situation)}</div>'
+        f'</div>'
+        f'{dp_section}'
+        f'{q_section}'
+        f'{answer_section}'
+        f'</div>'
     )
+
+
 _RENDERERS["case_study_card"] = _render_case_study_card
 
 
@@ -23626,38 +23798,93 @@ _RENDERERS["course_progress_card"] = _render_course_progress_card
 
 
 def _render_scenario_branch(b: dict) -> str:
-    uid = 'sb' + _wa_uid(b)[:6]
-    _scene_src = b.get('scenario') or b.get('situation') or ''
-    scene = _md.markdown(_scene_src) if _scene_src else ''
-    context = _md.markdown(b.get('context', '')) if b.get('context') else ''
-    choices = b.get('choices', [])
-    accent = b.get('accent', '#9e6506')
-    btns = ''
-    results = ''
-    for i, c in enumerate(choices):
-        label = _esc(c.get('label', c.get('text', f'Option {i+1}')))
-        _outcome_src = c.get('outcome', c.get('result', ''))
-        outcome = _md.markdown(_outcome_src) if _outcome_src else ''
-        correct = bool(c.get('correct'))
-        col = '#34d399' if correct else '#f87171' if c.get('outcome') else '#6b7280'
-        btns += (f'<button id="{uid}c{_cv_esc(i)}" onclick="{uid}pick({_cv_esc(i)})" style="display:block;width:100%;'
-                 f'text-align:left;padding:12px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin-bottom:8px;'
-                 f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);cursor:pointer;font-size:0.88rem;">'
-                 f'{label}</button>')
-        results += (f'<div id="{uid}r{_cv_esc(i)}" style="display:none;padding:12px;border-radius:8px;'
-                    f'background:#f9fafb;border-left:3px solid {col};margin-top:6px;">{outcome}</div>')
-    context_html = f'<div style="font-size:0.85rem;color:var(--muted,#5f6368);margin-bottom:12px;">{context}</div>' if context else ''
-    js = (f'<script>function {uid}pick(i){{'
-          f'[{",".join(str(j) for j in range(len(choices)))}].forEach(function(j){{'
-          f'document.getElementById("{uid}r"+j).style.display=j===i?"block":"none";}});}}</script>')
+    if not isinstance(b, dict):
+        return ""
+    uid = "sb-" + _wa_uid(b)[:6]
+    scene = _first_text(b.get("scenario"), b.get("situation"), "")
+    context = _first_text(b.get("context"), "")
+    choices_raw = b.get("choices")
+    choices = choices_raw if isinstance(choices_raw, list) else []
+    accent = _safe_css(b.get("accent"), "#9e6506")
+
+    btns = ""
+    choice_items = []
+    n_choices = min(len(choices), 200)
+    for i in range(n_choices):
+        c = choices[i]
+        c_label = ""
+        c_consequence = ""
+        c_outcome = "neutral"
+        c_next_url = ""
+        if isinstance(c, dict):
+            c_label = _first_text(c.get("label"), c.get("text"), f"Option {i + 1}")
+            c_consequence = _first_text(c.get("consequence"), c.get("result"), "")
+            c_outcome = _first_text(c.get("outcome"), "neutral")
+            raw_url = c.get("next_url") or c.get("next")
+            c_next_url = _safe_href(raw_url, ["http", "https", "mailto"]) if raw_url else ""
+        else:
+            c_label = _text_loose(c)
+
+        letter = chr(65 + (i % 26))
+        btns += (
+            f'<button id="{uid}c{i}" onclick="{uid}pick({i})" '
+            f'data-consequence="{_cv_esc(c_consequence)}" data-outcome="{_cv_esc(c_outcome)}" data-next-url="{_cv_esc(c_next_url)}" '
+            f'style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;'
+            f'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);'
+            f'color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;"'
+            f' onmouseover="if(!this.disabled){{this.style.background=\'rgba(245,158,11,0.07)\';this.style.borderColor=\'rgba(245,158,11,0.22)\';}}"'
+            f' onmouseout="if(!this.disabled){{this.style.background=\'rgba(255,255,255,0.03)\';this.style.borderColor=\'rgba(255,255,255,0.09)\';}}">'
+            f'<span style="color:{accent};font-weight:700;font-size:0.68rem;margin-right:8px;">{letter}</span>'
+            f'{_cv_esc(c_label)}'
+            f'</button>'
+        )
+
+    context_html = f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">{_cv_esc(context)}</div>' if context else ""
+
     return (
-        f'<div style="font-family:system-ui,sans-serif;padding:20px;border-radius:14px;'
-        f'background:#fffbeb;border:1px solid {_esc(accent)}44;">'
-        f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:{_esc(accent)};'
-        f'text-transform:uppercase;margin-bottom:6px;">Scenario</div>'
-        f'<div style="font-size:0.9rem;line-height:1.6;margin-bottom:12px;">{scene}</div>'
-        f'{context_html}{btns}{results}</div>{js}'
+        f'<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);">'
+        f'<div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">'
+        f'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:{accent};margin-bottom:8px;">\U0001f3ad Scenario</div>'
+        f'{context_html}'
+        f'<div style="font-size:0.92rem;font-weight:600;color:#4674a3;line-height:1.5;">{_cv_esc(scene)}</div>'
+        f'</div>'
+        f'<div style="padding:20px 24px;">'
+        f'<div style="font-size:0.62rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">What do you do?</div>'
+        f'{btns}'
+        f'</div>'
+        f'<div id="{uid}res" style="display:none;"></div>'
+        f'<script>(function(){{'
+        f'var nChoices={n_choices};'
+        f'window["{uid}pick"]=function(idx){{'
+        f'for(var j=0;j<nChoices;j++){{var b=document.getElementById("{uid}c"+j);if(b){{b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}}}'
+        f'var activeBtn=document.getElementById("{uid}c"+idx);if(!activeBtn)return;'
+        f'var outcome=activeBtn.getAttribute("data-outcome")||"neutral";'
+        f'var consequence=activeBtn.getAttribute("data-consequence")||"";'
+        f'var nextUrl=activeBtn.getAttribute("data-next-url")||"";'
+        f'var col=outcome==="good"?"#34d399":outcome==="bad"?"#f87171":"#9e6506";'
+        f'var icon=outcome==="good"?"\u2705":outcome==="bad"?"\u274c":"\u26a0\ufe0f";'
+        f'var bg=outcome==="good"?"rgba(52,211,153,0.07)":outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";'
+        f'var _E=function(s){{return String(s==null?"":s).replace(/[&<>"\\\']/g,function(x){{return "&#"+x.charCodeAt(0)+";";}});}};'
+        f'var res=document.getElementById("{uid}res");'
+        f'if(res){{'
+        f'res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;'
+        f'var hdr=\'<div style="font-size:0.68rem;font-weight:700;color:\'+col+\';margin-bottom:8px;">\'+icon+\' Outcome</div>\';'
+        f'var body=\'<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">\'+_E(consequence)+\'</div>\';'
+        f'var nav=nextUrl'
+        f'?\'<a href="\'+_E(nextUrl)+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue \u2192</a>\''
+        f':\'<button onclick="{uid}rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">\u21a9 Try again</button>\';'
+        f'res.innerHTML=hdr+body+nav;'
+        f'}}'
+        f'}};'
+        f'window["{uid}rst"]=function(){{'
+        f'var res=document.getElementById("{uid}res");if(res)res.style.display="none";'
+        f'for(var j=0;j<nChoices;j++){{var b=document.getElementById("{uid}c"+j);if(b){{b.disabled=false;b.style.opacity="1";}}}}'
+        f'}};'
+        f'}})();</script>'
+        f'</div>'
     )
+
+
 _RENDERERS["scenario_branch"] = _render_scenario_branch
 # ── Batch 4a: Simple typography & layout ──────────────────────────────────────
 
@@ -23987,38 +24214,88 @@ _RENDERERS["counter_group"] = _render_counter_group
 
 
 def _render_status_timeline(b: dict) -> str:
-    events = b.get('events', [])
-    title = b.get('title', '')
-    title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);'
-                  'margin-bottom:14px;">' + _esc(title) + '</div>') if title else ''
-    status_map = {
-        'done':    ('#10b981', '✓'),
-        'active':  ('#4f46e5', '●'),
-        'pending': ('#9ca3af', '○'),
-        'error':   ('#ef4444', '✗'),
+    if not isinstance(b, dict):
+        return ""
+    events_raw = b.get("events")
+    if not isinstance(events_raw, list):
+        events_raw = b.get("items")
+    events = events_raw if isinstance(events_raw, list) else []
+    title = _first_text(b.get("title"), "")
+    uid = "st-" + _wa_uid(b)[:6]
+
+    dot_colors = {
+        "done": "#22c55e",
+        "active": "#3b82f6",
+        "pending": "#d1d5db",
+        "error": "#ef4444",
+        "warning": "#f59e0b",
     }
-    items = ''
-    for e in events:
-        status = e.get('status', 'pending')
-        color, icon = status_map.get(status, ('#9ca3af', '○'))
-        label = _esc(e.get('label', ''))
-        ts = _esc(e.get('timestamp', ''))
-        desc = _esc(e.get('description', ''))
-        ts_span = ('<span style="margin-left:8px;font-size:0.72rem;color:var(--muted,#5f6368);font-weight:400;">'
-                   + ts + '</span>') if ts else ''
-        desc_div = ('<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;">'
-                    + desc + '</div>') if desc else ''
-        items += ('<div style="display:flex;gap:12px;padding:8px 0;">'
-                  '<div style="display:flex;flex-direction:column;align-items:center;">'
-                  '<span style="width:24px;height:24px;border-radius:50%;background:' + color + ';'
-                  'color:#fff;font-size:0.75rem;font-weight:700;display:flex;align-items:center;'
-                  'justify-content:center;flex-shrink:0;">' + icon + '</span>'
-                  '<div style="width:2px;flex:1;background:#e5e7eb;margin:3px 0;"></div></div>'
-                  '<div style="flex:1;padding-bottom:12px;">'
-                  '<div style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">'
-                  + label + ts_span + '</div>' + desc_div + '</div></div>')
-    return ('<div style="margin:1.5rem 0;padding:16px 20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
-            'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">' + title_html + items + '</div>')
+    bg_colors = {
+        "done": "#f0fdf4",
+        "active": "#eff6ff",
+        "pending": "#f9fafb",
+        "error": "#fef2f2",
+        "warning": "#fffbeb",
+    }
+    bd_colors = {
+        "done": "#86efac",
+        "active": "#93c5fd",
+        "pending": "#e5e7eb",
+        "error": "#fecaca",
+        "warning": "#fde68a",
+    }
+
+    n_events = min(len(events), 200)
+    ev_html = ""
+    for i in range(n_events):
+        ev = events[i]
+        if not isinstance(ev, dict):
+            continue
+        status_raw = _first_text(ev.get("status"), "pending").lower()
+        dot = dot_colors.get(status_raw, dot_colors["pending"])
+        bg = bg_colors.get(status_raw, bg_colors["pending"])
+        bd = bd_colors.get(status_raw, bd_colors["pending"])
+        is_last = (i == n_events - 1)
+        delay = f"{(i * 0.14):.2f}s"
+        active_shadow = f"box-shadow:0 0 0 4px {dot}33;" if status_raw == "active" else ""
+
+        title_text = _first_text(ev.get("title"), ev.get("label"), "")
+        date_text = _first_text(ev.get("date"), ev.get("timestamp"), "")
+        desc_text = _first_text(ev.get("text"), ev.get("description"), "")
+
+        line_div = "" if is_last else '<div style="width:2px;flex:1;background:#e5e7eb;margin:4px 0;min-height:16px;"></div>'
+        mb = "0" if is_last else "10px"
+
+        title_part = f'<div style="font-size:0.9rem;font-weight:600;color:#111827;">{_cv_esc(title_text)}</div>' if title_text else ""
+        date_part = f'<div style="font-size:0.72rem;color:{dot};font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">{_cv_esc(date_text)}</div>' if date_text else ""
+        desc_part = f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.5;margin-top:5px;">{_cv_esc(desc_text)}</div>' if desc_text else ""
+
+        ev_html += (
+            f'<div style="display:flex;gap:16px;opacity:0;animation:{uid} 0.4s ease {delay} both;">'
+            f'<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:16px;">'
+            f'<div style="width:14px;height:14px;border-radius:50%;background:{dot};flex-shrink:0;margin-top:5px;{active_shadow}"></div>'
+            f'{line_div}</div>'
+            f'<div style="background:{bg};border:1px solid {bd};border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:{mb};">'
+            f'{title_part}{date_part}{desc_part}</div></div>'
+        )
+
+    title_html = f'<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:16px;">{_cv_esc(title)}</div>' if title else ""
+    kf_style = (
+        f'<style>'
+        f'@keyframes {uid}{{from{{opacity:0;transform:translateX(-14px);}}to{{opacity:1;transform:none;}}}}'
+        f'@media (prefers-reduced-motion:reduce){{'
+        f'div[style*="animation:{uid}"]{{animation:none !important;opacity:1 !important;transform:none !important;}}'
+        f'}}'
+        f'</style>'
+    )
+
+    return (
+        f'{kf_style}'
+        f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin:1rem 0;">'
+        f'{title_html}{ev_html}</div>'
+    )
+
+
 _RENDERERS["status_timeline"] = _render_status_timeline
 
 
@@ -25990,37 +26267,76 @@ _RENDERERS["word_cloud"] = _render_word_cloud
 
 import math
 
+import math
+
 def _render_orbit_diagram(b: dict) -> str:
-    center = _esc(b.get('center', ''))
-    nodes = b.get('nodes', [])
-    color = _esc(b.get('color', '#4f46e5'))
-    speed = float(b.get('speed', 1.0))
-    import hashlib
-    uid = 'od' + hashlib.md5(center.encode()).hexdigest()[:5]
-    n = len(nodes) or 1
-    kf = '@keyframes ' + uid + 'rot{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}'
-    node_html = ''
-    for i, nd in enumerate(nodes):
-        raw_key = nd if isinstance(nd, str) else nd.get('label', '')
-        key_attr = _esc(str(raw_key))
-        label = _esc(str(nd) if isinstance(nd, str) else nd.get('label', ''))
-        icon = _esc(nd.get('icon', '') if isinstance(nd, dict) else '')
-        angle = (360 / n) * i
-        dur = f'{(8 / speed):.1f}s'
-        dly = f'{-(8 / speed / n * i):.2f}s'
-        node_html += ('<div data-cb="node" data-key="' + key_attr + '" style="position:absolute;width:100%;height:100%;'
-                      'animation:' + uid + 'rot ' + dur + ' linear ' + dly + ' infinite;">'
-                      '<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);">'
-                      '<div data-cb="label" data-key="' + key_attr + '" style="background:' + color + ';color:#fff;padding:3px 10px;border-radius:99px;'
-                      'font-size:0.72rem;font-weight:700;white-space:nowrap;">'
-                      + (icon + ' ' if icon else '') + label + '</div></div></div>')
-    return ('<style>' + kf + '</style>'
-            '<div style="margin:1.5rem auto;width:200px;height:200px;position:relative;">'
-            '<div style="position:absolute;inset:30px;border-radius:50%;border:1px dashed ' + color + '55;"></div>'
-            '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
-            'z-index:2;"><div style="padding:8px 16px;border-radius:99px;background:' + color + ';'
-            'color:#fff;font-weight:700;font-size:0.82rem;white-space:nowrap;">' + center + '</div></div>'
-            + node_html + '</div>')
+    if not isinstance(b, dict):
+        return ""
+    center = _first_text(b.get("center"), "Core")
+    nodes_raw = b.get("nodes")
+    if not isinstance(nodes_raw, list):
+        nodes_raw = b.get("items")
+    nodes = nodes_raw if isinstance(nodes_raw, list) else []
+    color = _safe_css(b.get("color"), "#4f46e5")
+    speed_num = _num_loose(b.get("speed"))
+    speed = speed_num if (speed_num is not None and speed_num > 0) else 10.0
+    speed = min(max(speed, 0.1), 3600.0)
+
+    uid = "orb-" + _wa_uid(b)[:6]
+    n = max(len(nodes), 1)
+    radius = 95.0
+    size = 280
+    cx = size / 2.0
+    cy = size / 2.0
+
+    node_elems = ""
+    svg_lines = ""
+    for i in range(min(len(nodes), 200)):
+        nd = nodes[i]
+        label = ""
+        nc = color
+        if isinstance(nd, dict):
+            label = _first_text(nd.get("label"), nd.get("text"), "")
+            nc = _safe_css(nd.get("color"), color)
+        else:
+            label = _text_loose(nd)
+
+        angle = (i / n) * 2.0 * math.pi - math.pi / 2.0
+        x = int(cx + math.cos(angle) * radius + 0.5)
+        y = int(cy + math.sin(angle) * radius + 0.5)
+
+        svg_lines += f'<line x1="{int(cx)}" y1="{int(cy)}" x2="{x}" y2="{y}" stroke="{color}" stroke-width="1" opacity="0.18"/>'
+        node_elems += (
+            f'<div data-cb="node" data-key="{_cv_esc(label)}" style="position:absolute;left:{x}px;top:{y}px;'
+            f'transform:translate(-50%,-50%);background:{nc};color:#fff;font-size:0.7rem;font-weight:700;'
+            f'padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">'
+            f'{_cv_esc(label)}</div>'
+        )
+
+    anim_dur = f"{_fixed_str(speed / 4.0, 2)}s"
+    style_block = (
+        f'<style>'
+        f'@keyframes {uid}{{to{{stroke-dashoffset:-24;}}}}'
+        f'@media (prefers-reduced-motion:reduce){{'
+        f'circle[style*="{uid}"]{{animation:none !important;}}'
+        f'}}'
+        f'</style>'
+    )
+
+    return (
+        f'{style_block}'
+        f'<div style="display:flex;justify-content:center;margin:1rem 0;">'
+        f'<div style="position:relative;width:{size}px;height:{size}px;">'
+        f'<svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 {size} {size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Orbit diagram">'
+        f'{svg_lines}'
+        f'<circle cx="{int(cx)}" cy="{int(cy)}" r="{int(radius)}" fill="none" stroke="{color}" stroke-width="1.5" stroke-dasharray="5 7" opacity="0.4" style="animation:{uid} {anim_dur} linear infinite;"/>'
+        f'</svg>'
+        f'{node_elems}'
+        f'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:{color};color:#fff;font-weight:700;font-size:0.85rem;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 22px {color}55;z-index:5;">{_cv_esc(center)}</div>'
+        f'</div></div>'
+    )
+
+
 _RENDERERS["orbit_diagram"] = _render_orbit_diagram
 
 
@@ -27576,23 +27892,81 @@ _RENDERERS["renderer_stats"] = _render_renderer_stats
 
 
 def _render_surface_map(b: dict) -> str:
-    title = _esc(b.get('title', 'Surface Map'))
-    surfaces = b.get('surfaces', [])
-    accent = _esc(b.get('accent', '#4f46e5'))
-    surface_icons = {'web': '🌐', 'meet-stage': '📽️', 'google-apps-script-web': '⚙️',
-                     'googlechat': '💬', 'email': '📧', 'pdf': '📄'}
-    items = ''
-    for s in surfaces:
-        name = _esc(str(s) if isinstance(s, str) else s.get('name', ''))
-        raw_name = str(s) if isinstance(s, str) else s.get('name', '')
-        icon = surface_icons.get(raw_name, '●')
-        items += ('<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;'
-                  'border-radius:20px;border:1px solid ' + accent + '33;background:' + accent + '08;'
-                  'font-size:0.78rem;color:' + accent + ';margin:3px;">'
-                  + icon + ' ' + name + '</span>')
-    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-            + ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:10px;">' + title + '</div>' if title else '')
-            + '<div>' + items + '</div></div>')
+    if not isinstance(b, dict):
+        return ""
+    title = _first_text(b.get("title"), "One schema. Three surfaces.")
+    accent = _safe_css(b.get("accent"), "#4f46e5")
+    surfaces_raw = b.get("surfaces")
+
+    default_surfaces = [
+        {"name": "GAS Web App", "icon": "\u26a1", "desc": "Live web app \u00b7 GAS runtime \u00b7 URL = content", "color": "#4f46e5"},
+        {"name": "Meet Stage", "icon": "\U0001f4fa", "desc": "Full-screen \u00b7 Live demos \u00b7 Audience view", "color": "#7f4bf5"},
+        {"name": "Google Sites HTML", "icon": "\U0001f4c4", "desc": "Blog / docs \u00b7 SEO \u00b7 Static publish", "color": "#1268f4"},
+        {"name": "Google Chat", "icon": "\U0001f4ac", "desc": "Cards \u00b7 Bots \u00b7 Workspace native", "color": "#047d91"},
+    ]
+
+    gas_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>'
+    meet_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg>'
+    sites_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg>'
+    chat_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg>'
+
+    svg_map = {
+        "GAS Web App": gas_svg, "Google Apps Script": gas_svg,
+        "Meet Stage": meet_svg, "Google Meet": meet_svg,
+        "Google Sites HTML": sites_svg, "Google Sites": sites_svg, "Web Article": sites_svg,
+        "Google Chat": chat_svg,
+    }
+
+    surfaces = surfaces_raw if (isinstance(surfaces_raw, list) and len(surfaces_raw) > 0) else default_surfaces
+
+    cards_html = ""
+    n_surfaces = min(len(surfaces), 200)
+    for i in range(n_surfaces):
+        s = surfaces[i]
+        s_name = ""
+        s_icon = "●"
+        s_desc = ""
+        s_color = accent
+
+        if isinstance(s, dict):
+            s_name = _first_text(s.get("name"), "")
+            s_icon = _first_text(s.get("icon"), "●")
+            s_desc = _first_text(s.get("desc"), "")
+            s_color = _safe_css(s.get("color"), accent)
+        elif isinstance(s, str):
+            s_name = s
+            s_icon = "●"
+            s_desc = ""
+            s_color = accent
+
+        if s_name in svg_map:
+            icon_html = f'<div style="margin-bottom:6px;display:flex;justify-content:center;">{svg_map[s_name]}</div>'
+        else:
+            icon_html = f'<div style="font-size:1.6rem;margin-bottom:4px;">{_cv_esc(s_icon)}</div>'
+
+        mr = 'margin-right:8px;' if i < n_surfaces - 1 else ''
+        cards_html += (
+            f'<div style="flex:1;min-width:120px;padding:16px 14px;background:{s_color}0d;border:2px solid {s_color}33;border-radius:10px;text-align:center;{mr}">'
+            f'{icon_html}'
+            f'<div style="font-size:0.8rem;font-weight:700;color:{s_color};margin-bottom:4px;">{_cv_esc(s_name)}</div>'
+            f'<div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">{_cv_esc(s_desc)}</div>'
+            f'</div>'
+        )
+
+    return (
+        f'<div style="margin:1.5rem 0;">'
+        f'<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">{_cv_esc(title)}</div>'
+        f'<div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">'
+        f'<div style="padding:14px 20px;background:#0f172a;border-radius:10px;text-align:center;margin-right:8px;">'
+        f'<div style="font-size:0.65rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Schema</div>'
+        f'<div style="font-family:monospace;font-size:0.72rem;color:#94a3b8;">{{ blocks: [\u2026] }}</div>'
+        f'</div>'
+        f'<div style="font-size:1.2rem;color:{accent};margin-right:8px;" aria-hidden="true">\u2192</div>'
+        f'{cards_html}'
+        f'</div></div>'
+    )
+
+
 _RENDERERS["surface_map"] = _render_surface_map
 
 

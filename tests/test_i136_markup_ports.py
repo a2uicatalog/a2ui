@@ -134,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch|cbg-|choice_|pr-|tbmc_|tbmb_|tbm_|tbf_|tbct_|tok_|ti_|mqs_|mq_|nf_|punch-|donut-)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch|cbg-|choice_|pr-|tbmc_|tbmb_|tbm_|tbf_|tbct_|tok_|ti_|mqs_|mq_|nf_|punch-|donut-|orb-|stmr-|csc-|smap-|st-|orb_|sr_)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -903,3 +903,45 @@ OLD.extend([
     {"type": "donut_stat", "value": 5, "max_value": 5},
 ])
 OLD_WORDS.update({"metric_comparison_card": ["Traffic", "Last week", "This week", "12.5", "+25.0%"], "order_status_card": ["#77", "Shipped", "Thing"], "entity_list": ["Old entity", "d"], "mini_sparkline_set": ["Old spark", "3"], "donut_stat": [">5<", "%"]})
+
+
+# ---- batch b7/3 ----
+EQUAL.extend([
+    {"type": "cohort_retention", "title": "Retention", "periods": ["M0", "M1"], "color_scale": ["#1e293b", "#10b981"], "cohorts": [{"cohort_name": "Jan", "original_size": 2500, "retention_rates": [100.0, 93.4]}, {"label": "Old", "data": [80, 65]}]},
+    {"type": "status_timeline", "title": "Release", "events": [{"title": "Freeze", "date": "2026-07-01", "text": "Branch cut", "status": "done"}, {"label": "Ship", "timestamp": "Jul", "description": "GA", "status": "active"}, {"title": "Later"}]},
+    {"type": "skill_radar", "title": "Skills", "accent": "#0f766e", "skills": [{"label": "Go", "value": 80, "before": 40}, {"label": "SQL", "value": 55}, {"label": "Ops", "value": 70}]},
+    {"type": "case_study_card", "title": "Tail latency", "situation": "Hits dropped 14%.", "accent": "#4573a1", "data_points": [{"label": "P99", "value": "480ms", "target": "<200ms"}], "questions": ["Why?", "What next?"], "model_answer": "Shard the cache."},
+    {"type": "surface_map", "title": "Surfaces", "accent": "#6366f1", "surfaces": [{"name": "Web", "icon": "W", "desc": "Browser", "color": "#4f46e5"}, {"name": "Chat", "desc": "Cards"}]},
+    {"type": "orbit_diagram", "center": "Identity", "color": "#4f46e5", "speed": 8, "nodes": [{"label": "SSO", "color": "#06b6d4"}, "RBAC", {"label": "Audit"}]},
+    {"type": "study_timer", "label": "Deep work", "focus_mins": 25, "break_mins": 5, "accent": "#f97316"},
+    {"type": "scenario_branch", "scenario": "A zero-day is published.", "context": "Freeze period.", "accent": "#f59e0b", "choices": [{"label": "Patch now", "consequence": "Risky.", "outcome": "bad", "next_url": "https://example.com/a"}, {"text": "Wait", "result": "Safer.", "outcome": "good"}]},
+])
+MUST.update({
+    "cohort_retention": ["Retention", "M0", "M1", "Jan", "2,500", "100.0%", "93.4%", "Old", "80.0%", "Size"],
+    "status_timeline": ["Release", "Freeze", "2026-07-01", "Branch cut", "Ship", "GA", "Later", "prefers-reduced-motion"],
+    "skill_radar": ["Skills", "Go", "SQL", "Ops", "#0f766e", "<svg"],
+    "case_study_card": ["Tail latency", "Hits dropped 14%", "P99", "480ms", "Why?", "What next?", "Shard the cache."],
+    "surface_map": ["Surfaces", "Web", "Browser", "Chat", "Cards", "#6366f1"],
+    "orbit_diagram": ["Identity", "SSO", "RBAC", "Audit", "#06b6d4", "prefers-reduced-motion"],
+    "study_timer": ["Deep work", "25", "#f97316"],
+    "scenario_branch": ["A zero-day is published.", "Freeze period.", "Patch now", "Wait", "#f59e0b", "Risky.", "Safer."],
+})
+OLD.extend([
+    {"type": "status_timeline", "items": [{"label": "Old step", "timestamp": "T1", "description": "old text"}]},
+    {"type": "orbit_diagram", "items": [{"label": "Old node"}], "center": "Hub"},
+    {"type": "scenario_branch", "situation": "Old situation", "choices": [{"text": "Old choice", "result": "old result"}]},
+    {"type": "cohort_retention", "cohorts": [{"label": "Old cohort", "data": [50, 40]}]},
+])
+OLD_WORDS.update({"status_timeline": ["Old step", "T1", "old text"], "orbit_diagram": ["Old node", "Hub"], "scenario_branch": ["Old situation", "Old choice", "old result"], "cohort_retention": ["Old cohort", "50.0%", "40.0%"]})
+
+
+def test_b7_3_cohort_color_scale_and_fraction_free_sizes(core_js):
+    blocks = [{"type": "cohort_retention", "periods": ["a", "b"], "color_scale": ["#000000", "#ffffff"], "cohorts": [{"cohort_name": "x", "retention_rates": [0, 100]}]},
+              {"type": "cohort_retention", "periods": ["a"], "color_scale": ["nope", 5], "cohorts": [{"cohort_name": "x", "original_size": -5, "retention_rates": [50]}]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "rgb(0,0,0)" in html and "rgb(255,255,255)" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "rgb(168,168,248)" in html or "rgb(168,167,248)" in html or "rgb(168,168,247)" in html

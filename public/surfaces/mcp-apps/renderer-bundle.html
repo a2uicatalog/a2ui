@@ -1082,7 +1082,7 @@ return String(str)
 }
 var _METRIC_CSS = ".a2ui-metric-comparison{background: #fff;border: 1px solid #e2e8f0;border-radius: 12px;padding: 20px;display: inline-block;min-width: 260px;}.a2ui-metric-cmp-title{font-size: 13px;font-weight: 600;color: #64748b;margin-bottom: 14px;text-transform: uppercase;letter-spacing: 0.04em;}.a2ui-metric-cmp-body{display: flex;align-items: center;gap: 16px;}.a2ui-metric-cmp-col{flex: 1;text-align: center;}.a2ui-metric-cmp-lbl{font-size: 11px;color: #94a3b8;margin-bottom: 4px;}.a2ui-metric-cmp-val{font-size: 28px;font-weight: 700;color: #1e293b;line-height: 1.1;}.a2ui-metric-unit{font-size: 14px;font-weight: 400;color: #64748b;}.a2ui-metric-cmp-delta{font-size: 18px;font-weight: 700;padding: 6px 12px;border-radius: 8px;border: 1.5px solid;white-space: nowrap;}";
 var _SPARK_CSS = ".a2ui-sparkline-set{display: flex;flex-direction: column;gap: 10px;padding: 8px 0;}.a2ui-sparkline-row{display: flex;align-items: center;gap: 10px;}.a2ui-sparkline-label{font-size: 12px;color: #64748b;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}.a2ui-sparkline-val{font-size: 13px;font-weight: 600;min-width: 48px;}";
-var _ENTITY_CSS = ".a2ui-entity-list{width: 100%;}.a2ui-entity-list-title{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);margin-bottom: 12px;}.a2ui-entity-grid{display: flex;flex-direction: column;gap: 8px;}.a2ui-entity-card{display: flex;align-items: flex-start;gap: 12px;padding: 12px 14px;background: var(--a2ui-surface,#ffffff);border: 1px solid var(--a2ui-border,#eaeaea);border-radius: var(--a2ui-radius,12px);box-shadow: var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));transition: box-shadow 0.15s;color: inherit;}.a2ui-entity-card:hover{box-shadow: 0 2px 10px rgba(0,0,0,0.08);border-color: #c7d2fe;}.a2ui-entity-avatar{flex-shrink: 0;}.a2ui-entity-initials{width: 40px;height: 40px;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 700;color: #fff;}.a2ui-entity-info{flex: 1;display: flex;flex-direction: column;gap: 3px;}.a2ui-entity-name{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);}.a2ui-entity-type{font-size: 10px;font-weight: 600;padding: 1px 7px;border-radius: 999px;display: inline-block;text-transform: capitalize;letter-spacing: 0.02em;}.a2ui-entity-desc{font-size: 12px;color: var(--a2ui-muted,#666666);margin-top: 2px;line-height: 1.4;}.a2ui-entity-meta{font-size: 11px;color: var(--a2ui-faint,#8f8f8f);}";
+var _ENTITY_CSS = ".a2ui-entity-list{width: 100%;}.a2ui-entity-list-title{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);margin-bottom: 12px;}.a2ui-entity-grid{display: flex;flex-direction: column;gap: 8px;}.a2ui-entity-card{display: flex;align-items: flex-start;gap: 12px;padding: 12px 14px;background: var(--a2ui-surface,#ffffff);border: 1px solid var(--a2ui-border,#eaeaea);border-radius: var(--a2ui-radius,12px);box-shadow: var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));transition: box-shadow 0.15s;color: inherit;}.a2ui-entity-card:hover{box-shadow: 0 2px 10px rgba(0,0,0,0.08);border-color: #c7d2fe;}.a2ui-entity-avatar{flex-shrink: 0;}.a2ui-entity-initials{width: 40px;height: 40px;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 700;color: #fff;}.a2ui-entity-info{flex: 1;display: flex;flex-direction: column;gap: 3px;}.a2ui-entity-name{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);}.a2ui-entity-type{font-size: 10px;font-weight: 600;padding: 1px 7px;border-radius: 999px;display: inline-block;text-transform: capitalize;letter-spacing: 0.02em;}.a2ui-entity-desc{font-size: 12px;color: var(--a2ui-muted,#666666);margin-top: 2px;line-height: 1.4;}.a2ui-entity-meta{font-size: 11px;color: var(--a2ui-faint,#757575);}";
 function _fixedStr(x, d) {
 if (x < 0) return '-' + _fixedStr(-x, d);
 var n = Math.floor(Math.min(x, 1e12) * Math.pow(10, d) + 0.5);
@@ -16598,42 +16598,97 @@ return '<div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border
 + head + body + note + '</div>';
 };
 _RENDERERS['cohort_retention'] = function(b) {
-var cohorts = b.cohorts || [];
-var title   = b.title   || '';
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var cohorts = Array.isArray(b.cohorts) ? b.cohorts : [];
+var periods = Array.isArray(b.periods) ? b.periods : [];
+var title = _firstText(b.title, '');
 if (!cohorts.length) return '<div class="a2ui-chart-empty">No cohort data</div>';
-var maxCols = 0;
-cohorts.forEach(function(c){ if ((c.data||[]).length > maxCols) maxCols = c.data.length; });
-var html = '<div class="a2ui-cohort-retention">';
-if (title) html += '<div class="a2ui-cohort-title">' + _esc(title) + '</div>';
-html += '<div style="overflow-x:auto;"><table class="a2ui-cohort-table" style="border-collapse:collapse;font-size:12px;width:100%;">';
-html += '<thead><tr><th class="a2ui-cohort-th">Cohort</th>';
-for (var w = 0; w < maxCols; w++) {
-html += '<th class="a2ui-cohort-th">Week ' + w + '</th>';
+var colNames = [];
+if (periods.length) {
+for (var p = 0; p < Math.min(periods.length, 200); p++) {
+colNames.push(_textLoose(periods[p]));
 }
-html += '</tr></thead><tbody>';
-cohorts.forEach(function(cohort) {
-html += '<tr>';
-html += '<td class="a2ui-cohort-label">' + _esc(cohort.label || '') + '</td>';
-var data = cohort.data || [];
-for (var w = 0; w < maxCols; w++) {
-var val = data[w] !== undefined ? parseFloat(data[w]) : null;
-if (val === null) {
-html += '<td class="a2ui-cohort-cell" style="background:#f8fafc;"></td>';
 } else {
-var pct = Math.min(100, Math.max(0, val));
+var maxLen = 0;
+for (var i = 0; i < Math.min(cohorts.length, 200); i++) {
+var c = cohorts[i];
+if (c && typeof c === 'object' && !Array.isArray(c)) {
+var r = Array.isArray(c.retention_rates) ? c.retention_rates : c.data;
+if (Array.isArray(r) && r.length > maxLen) {
+maxLen = r.length;
+}
+}
+}
+maxLen = Math.min(maxLen, 200);
+for (var w = 0; w < maxLen; w++) {
+colNames.push('Week ' + w);
+}
+}
+var numCols = colNames.length;
+var scale = [];
+var scRaw = Array.isArray(b.color_scale) ? b.color_scale.slice(0, 8) : [];
+for (var si = 0; si < scRaw.length; si++) {
+if (typeof scRaw[si] === 'string' && /^#[0-9a-fA-F]{6}$/.test(scRaw[si])) {
+scale.push([parseInt(scRaw[si].slice(1, 3), 16), parseInt(scRaw[si].slice(3, 5), 16), parseInt(scRaw[si].slice(5, 7), 16)]);
+}
+}
+if (scale.length < 2) scale = [[237, 233, 254], [99, 102, 241]];
+var hasSize = false;
+for (var hs = 0; hs < Math.min(cohorts.length, 200); hs++) {
+if (cohorts[hs] && typeof cohorts[hs] === 'object' && !Array.isArray(cohorts[hs]) && _textLoose(cohorts[hs].original_size)) hasSize = true;
+}
+var thHtml = '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Cohort</th>';
+if (hasSize) {
+thHtml += '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:right;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Size</th>';
+}
+for (var j = 0; j < numCols; j++) {
+thHtml += '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:center;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(colNames[j]) + '</th>';
+}
+var rowsHtml = '';
+for (var rowIdx = 0; rowIdx < Math.min(cohorts.length, 200); rowIdx++) {
+var item = cohorts[rowIdx];
+if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+var cName = _firstText(item.cohort_name, item.label, '');
+var ratesArr = Array.isArray(item.retention_rates) ? item.retention_rates : item.data;
+var rates = Array.isArray(ratesArr) ? ratesArr : [];
+var cells = '<td class="a2ui-cohort-label" style="padding:10px 12px;font-weight:600;color:#1e293b;border-bottom:1px solid #f1f5f9;white-space:nowrap;">' + _esc(cName) + '</td>';
+if (hasSize) {
+var szN = _numLoose(item.original_size);
+var szTxt = szN !== null ? (szN < 1e15 ? Math.floor(Math.max(szN, 0) + 0.5).toLocaleString('en-US') : '') : _textLoose(item.original_size);
+cells += '<td class="a2ui-cohort-size" style="padding:10px 12px;text-align:right;font-family:monospace;color:#64748b;border-bottom:1px solid #f1f5f9;">' + _esc(szTxt) + '</td>';
+}
+for (var cIdx = 0; cIdx < numCols; cIdx++) {
+var valNum = null;
+if (cIdx < rates.length) {
+valNum = _numLoose(rates[cIdx]);
+}
+if (valNum === null) {
+cells += '<td class="a2ui-cohort-cell" style="padding:8px;background:#f8fafc;border-bottom:1px solid #f1f5f9;"></td>';
+} else {
+var pct = Math.max(0, Math.min(100, valNum));
 var alpha = pct / 100;
-var r = Math.round(237 - alpha * 138);
-var g = Math.round(233 - alpha * 131);
-var bv = Math.round(254 - alpha * 13);
+var pos = alpha * (scale.length - 1);
+var lo = Math.min(Math.floor(pos), scale.length - 2);
+var fr = pos - lo;
+var r = Math.floor(scale[lo][0] + (scale[lo + 1][0] - scale[lo][0]) * fr + 0.5);
+var g = Math.floor(scale[lo][1] + (scale[lo + 1][1] - scale[lo][1]) * fr + 0.5);
+var bv = Math.floor(scale[lo][2] + (scale[lo + 1][2] - scale[lo][2]) * fr + 0.5);
 var bg = 'rgb(' + r + ',' + g + ',' + bv + ')';
-var fg = pct > 60 ? '#fff' : '#2e3b4d';
-html += '<td class="a2ui-cohort-cell" style="background:' + bg + ';color:' + fg + ';">' + pct.toFixed(0) + '%</td>';
+var fg = (0.299 * r + 0.587 * g + 0.114 * bv) / 255 < 0.64 ? '#ffffff' : '#2e3b4d';
+var pctStr = _fixedStr(pct, 1);
+cells += '<td class="a2ui-cohort-cell" style="padding:8px;text-align:center;font-family:monospace;font-weight:700;font-size:0.8rem;background:' + bg + ';color:' + fg + ';border-bottom:1px solid #f1f5f9;">' + pctStr + '%</td>';
 }
 }
-html += '</tr>';
-});
-html += '</tbody></table></div></div>';
-return html;
+rowsHtml += '<tr>' + cells + '</tr>';
+}
+var titleHtml = title ? '<div class="a2ui-cohort-title" style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:12px;">' + _esc(title) + '</div>' : '';
+return '<div class="a2ui-cohort-retention" style="margin:1.5rem 0;padding:16px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">' +
+titleHtml +
+'<div style="overflow-x:auto;">' +
+'<table class="a2ui-cohort-table" style="border-collapse:collapse;font-size:12px;width:100%;min-width:320px;">' +
+'<thead><tr>' + thHtml + '</tr></thead>' +
+'<tbody>' + rowsHtml + '</tbody>' +
+'</table></div></div>';
 };
 _RENDERERS['heatmap'] = function(b) {
 var rowLabels   = b.rows  || [];
@@ -19641,35 +19696,55 @@ return '<style>'
 + '</div>';
 };
 _RENDERERS['status_timeline'] = function(b) {
-var events = b.events || b.items || [];
-var title  = b.title || '';
-var uid = Math.random().toString(36).substr(2, 6);
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var events = Array.isArray(b.events) ? b.events : (Array.isArray(b.items) ? b.items : []);
+var title  = _firstText(b.title, '');
+var uid = 'st-' + _payloadUid(b);
 var dotColors = { done:'#22c55e', active:'#3b82f6', pending:'#d1d5db', error:'#ef4444', warning:'#f59e0b' };
 var bgColors  = { done:'#f0fdf4', active:'#eff6ff', pending:'#f9fafb', error:'#fef2f2', warning:'#fffbeb' };
 var bdColors  = { done:'#86efac', active:'#93c5fd', pending:'#e5e7eb', error:'#fecaca', warning:'#fde68a' };
-var evHtml = events.map(function(ev, i) {
-var status = ev.status || 'pending';
-var dot = dotColors[status] || dotColors.pending;
-var bg  = bgColors[status]  || bgColors.pending;
-var bd  = bdColors[status]  || bdColors.pending;
-var isLast = i === events.length - 1;
-var delay  = (i * 0.14) + 's';
-return '<div style="display:flex;gap:16px;opacity:0;animation:st-' + uid + ' 0.4s ease ' + delay + ' both;">'
+var nEvents = Math.min(events.length, 200);
+var evHtml = '';
+for (var i = 0; i < nEvents; i++) {
+var ev = events[i];
+if (!ev || typeof ev !== 'object' || Array.isArray(ev)) continue;
+var statusRaw = _firstText(ev.status, 'pending').toLowerCase();
+var dot = dotColors.hasOwnProperty(statusRaw) ? dotColors[statusRaw] : dotColors.pending;
+var bg  = bgColors.hasOwnProperty(statusRaw) ? bgColors[statusRaw] : bgColors.pending;
+var bd  = bdColors.hasOwnProperty(statusRaw) ? bdColors[statusRaw] : bdColors.pending;
+var isLast = (i === nEvents - 1);
+var delay  = (i * 0.14).toFixed(2) + 's';
+var activeShadow = statusRaw === 'active' ? 'box-shadow:0 0 0 4px ' + dot + '33;' : '';
+var titleText = _firstText(ev.title, ev.label, '');
+var dateText  = _firstText(ev.date, ev.timestamp, '');
+var descText  = _firstText(ev.text, ev.description, '');
+var lineDiv = !isLast ? '<div style="width:2px;flex:1;background:#e5e7eb;margin:4px 0;min-height:16px;"></div>' : '';
+var mb = isLast ? '0' : '10px';
+var titlePart = titleText ? '<div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(titleText) + '</div>' : '';
+var datePart  = dateText ? '<div style="font-size:0.72rem;color:' + dot + ';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">' + _esc(dateText) + '</div>' : '';
+var descPart  = descText ? '<div style="font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.5;margin-top:5px;">' + _esc(descText) + '</div>' : '';
+evHtml += '<div style="display:flex;gap:16px;opacity:0;animation:' + uid + ' 0.4s ease ' + delay + ' both;">'
 + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:16px;">'
-+ '<div style="width:14px;height:14px;border-radius:50%;background:' + dot + ';flex-shrink:0;margin-top:5px;' + (status==='active'?'box-shadow:0 0 0 4px '+dot+'33;':'') + '"></div>'
-+ (!isLast ? '<div style="width:2px;flex:1;background:#e5e7eb;margin:4px 0;min-height:16px;"></div>' : '')
++ '<div style="width:14px;height:14px;border-radius:50%;background:' + dot + ';flex-shrink:0;margin-top:5px;' + activeShadow + '"></div>'
++ lineDiv
 + '</div>'
-+ '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:' + (isLast?'0':'10px') + ';">'
-+ (ev.title ? '<div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(ev.title) + '</div>' : '')
-+ (ev.date  ? '<div style="font-size:0.72rem;color:' + dot + ';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">' + _esc(ev.date) + '</div>' : '')
-+ (ev.text  ? '<div style="font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.5;margin-top:5px;">' + _esc(ev.text) + '</div>' : '')
++ '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:' + mb + ';">'
++ titlePart + datePart + descPart
 + '</div>'
 + '</div>';
-}).join('');
-return '<style>@keyframes st-' + uid + '{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}</style>'
+}
+var titleHtml = title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:16px;">' + _esc(title) + '</div>' : '';
+var kfStyle = '<style>'
++ '@keyframes ' + uid + '{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}'
++ '@media (prefers-reduced-motion:reduce){'
++ 'div[style*="animation:' + uid + '"]{animation:none !important;opacity:1 !important;transform:none !important;}'
++ '}'
++ '</style>';
+return kfStyle
 + '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin:1rem 0;">'
-+ (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:16px;">' + _esc(title) + '</div>' : '')
-+ evHtml + '</div>';
++ titleHtml
++ evHtml
++ '</div>';
 };
 _RENDERERS['counter_group'] = function(b) {
 var stats = b.stats || b.items || [];
@@ -19704,38 +19779,57 @@ return '<div id="cg-wrap-' + uid + '" style="border:1px solid #e5e7eb;border-rad
 + '})();<\/script>';
 };
 _RENDERERS['orbit_diagram'] = function(b) {
-var center = b.center || 'Core';
-var nodes  = b.nodes  || b.items || [];
-var color  = b.color  || '#4f46e5';
-var speed  = parseInt(b.speed || 10, 10);
-var uid = Math.random().toString(36).substr(2, 6);
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var center = _firstText(b.center, 'Core');
+var nodesRaw = Array.isArray(b.nodes) ? b.nodes : (Array.isArray(b.items) ? b.items : []);
+var nodes = [];
+for (var ni = 0; ni < Math.min(nodesRaw.length, 200); ni++) {
+nodes.push(nodesRaw[ni]);
+}
+var color = _safe_css(b.color, '#4f46e5');
+var speedNum = _numLoose(b.speed);
+var speed = (speedNum !== null && speedNum > 0) ? speedNum : 10;
+speed = Math.min(Math.max(speed, 0.1), 3600);
+var uid = 'orb-' + _payloadUid(b);
 var n = Math.max(nodes.length, 1);
 var radius = 95;
 var size = 280;
-var cx = size / 2, cy = size / 2;
-var nodeElems = nodes.map(function(node, i) {
+var cx = size / 2;
+var cy = size / 2;
+var nodeElems = '';
+var svgLines = '';
+for (var i = 0; i < nodes.length; i++) {
+var nd = nodes[i];
+var label = '';
+var nc = color;
+if (nd && typeof nd === 'object' && !Array.isArray(nd)) {
+label = _firstText(nd.label, nd.text, '');
+nc = _safe_css(nd.color, color);
+} else {
+label = _textLoose(nd);
+}
 var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-var x = Math.round(cx + Math.cos(angle) * radius);
-var y = Math.round(cy + Math.sin(angle) * radius);
-var rawKey = typeof node === 'string' ? node : (node.label || node.text || '');
-var keyAttr = _esc(String(rawKey));
-var label  = typeof node === 'string' ? node : (node.label || node.text || '');
-var nc     = typeof node === 'object' && node.color ? node.color : color;
-return '<div data-cb="node" data-key="' + keyAttr + '" style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + _esc(nc) + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
-}).join('');
-var svgLines = nodes.map(function(_, i) {
-var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-return '<line x1="' + cx + '" y1="' + cy + '" x2="' + Math.round(cx+Math.cos(angle)*radius) + '" y2="' + Math.round(cy+Math.sin(angle)*radius) + '" stroke="' + _esc(color) + '" stroke-width="1" opacity="0.18"/>';
-}).join('');
-return '<style>@keyframes orb-dash-' + uid + '{to{stroke-dashoffset:-24;}}</style>'
+var x = Math.floor(cx + Math.cos(angle) * radius + 0.5);
+var y = Math.floor(cy + Math.sin(angle) * radius + 0.5);
+svgLines += '<line x1="' + Math.floor(cx) + '" y1="' + Math.floor(cy) + '" x2="' + x + '" y2="' + y + '" stroke="' + color + '" stroke-width="1" opacity="0.18"/>';
+nodeElems += '<div data-cb="node" data-key="' + _esc(label) + '" style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + nc + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
+}
+var animDur = _fixedStr(speed / 4, 2) + 's';
+var styleBlock = '<style>'
++ '@keyframes ' + uid + '{to{stroke-dashoffset:-24;}}'
++ '@media (prefers-reduced-motion:reduce){'
++ 'circle[style*="' + uid + '"]{animation:none !important;}'
++ '}'
++ '</style>';
+return styleBlock
 + '<div style="display:flex;justify-content:center;margin:1rem 0;">'
 + '<div style="position:relative;width:' + size + 'px;height:' + size + 'px;">'
-+ '<svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">'
++ '<svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Orbit diagram">'
 + svgLines
-+ '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" stroke="' + _esc(color) + '" stroke-width="1.5" stroke-dasharray="5 7" opacity="0.4" style="animation:orb-dash-' + uid + ' ' + (speed/4) + 's linear infinite;"/>'
++ '<circle cx="' + Math.floor(cx) + '" cy="' + Math.floor(cy) + '" r="' + radius + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-dasharray="5 7" opacity="0.4" style="animation:' + uid + ' ' + animDur + ' linear infinite;"/>'
 + '</svg>'
 + nodeElems
-+ '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:0.85rem;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 22px ' + _esc(color) + '55;z-index:5;">' + _esc(center) + '</div>'
++ '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:' + color + ';color:#fff;font-weight:700;font-size:0.85rem;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 22px ' + color + '55;z-index:5;">' + _esc(center) + '</div>'
 + '</div></div>';
 };
 _RENDERERS['noise_card'] = function(b) {
@@ -21997,43 +22091,66 @@ return '<div data-cb="node" data-key="' + _ckey(b.question, 'raise_hand') + '" s
 + '})();<\/script>';
 };
 _RENDERERS['surface_map'] = function(b) {
-var accent  = b.accent  || '#4f46e5';
-var title   = b.title   || 'One schema. Three surfaces.';
-var surfaces = b.surfaces || [
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var title = _firstText(b.title, 'One schema. Three surfaces.');
+var accent = _safe_css(b.accent, '#4f46e5');
+var surfacesRaw = Array.isArray(b.surfaces) ? b.surfaces : [];
+var defaultSurfaces = [
 { name: 'GAS Web App',       icon: '⚡', desc: 'Live web app · GAS runtime · URL = content', color: '#4f46e5' },
 { name: 'Meet Stage',        icon: '📺', desc: 'Full-screen · Live demos · Audience view',   color: '#7f4bf5' },
 { name: 'Google Sites HTML', icon: '📄', desc: 'Blog / docs · SEO · Static publish',         color: '#1268f4' },
 { name: 'Google Chat',       icon: '💬', desc: 'Cards · Bots · Workspace native',            color: '#047d91' }
 ];
-var _gas  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>';
-var _meet = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg>';
-var _sites= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg>';
-var _chat = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg>';
+var _gas  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>';
+var _meet = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg>';
+var _sites= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg>';
+var _chat = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg>';
 var _SVG = {
 'GAS Web App': _gas, 'Google Apps Script': _gas,
 'Meet Stage':  _meet, 'Google Meet': _meet,
 'Google Sites HTML': _sites, 'Google Sites': _sites, 'Web Article': _sites,
 'Google Chat': _chat
 };
-var html = '<div style="margin:1.5rem 0;">'
-+ '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">' + _esc(title) + '</div>'
+var surfaces = surfacesRaw.length > 0 ? surfacesRaw : defaultSurfaces;
+var nSurfaces = Math.min(surfaces.length, 200);
+var cardsHtml = '';
+for (var i = 0; i < nSurfaces; i++) {
+var s = surfaces[i];
+var sName = '';
+var sIcon = '●';
+var sDesc = '';
+var sColor = accent;
+if (s && typeof s === 'object' && !Array.isArray(s)) {
+sName = _firstText(s.name, '');
+sIcon = _firstText(s.icon, '●');
+sDesc = _firstText(s.desc, '');
+sColor = _safe_css(s.color, accent);
+} else if (typeof s === 'string') {
+sName = s;
+sIcon = '●';
+sDesc = '';
+sColor = accent;
+}
+var iconHtml = _SVG.hasOwnProperty(sName)
+? '<div style="margin-bottom:6px;display:flex;justify-content:center;">' + _SVG[sName] + '</div>'
+: '<div style="font-size:1.6rem;margin-bottom:4px;">' + _esc(sIcon) + '</div>';
+var mr = i < nSurfaces - 1 ? 'margin-right:8px;' : '';
+cardsHtml += '<div style="flex:1;min-width:120px;padding:16px 14px;background:' + sColor + '0d;border:2px solid ' + sColor + '33;border-radius:10px;text-align:center;' + mr + '">'
++ iconHtml
++ '<div style="font-size:0.8rem;font-weight:700;color:' + sColor + ';margin-bottom:4px;">' + _esc(sName) + '</div>'
++ '<div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(sDesc) + '</div>'
++ '</div>';
+}
+return '<div style="margin:1.5rem 0;">'
++ '<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">' + _esc(title) + '</div>'
 + '<div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">'
 + '<div style="padding:14px 20px;background:#0f172a;border-radius:10px;text-align:center;margin-right:8px;">'
 + '<div style="font-size:0.65rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Schema</div>'
 + '<div style="font-family:monospace;font-size:0.72rem;color:#94a3b8;">{ blocks: […] }</div>'
 + '</div>'
-+ '<div style="font-size:1.2rem;color:var(--muted);margin-right:8px;">→</div>';
-surfaces.forEach(function(s, i) {
-var iconHtml = _SVG[s.name]
-? '<div style="margin-bottom:6px;display:flex;justify-content:center;">' + _SVG[s.name] + '</div>'
-: '<div style="font-size:1.6rem;margin-bottom:4px;">' + s.icon + '</div>';
-html += '<div style="flex:1;min-width:120px;padding:16px 14px;background:' + s.color + '0d;border:2px solid ' + s.color + '33;border-radius:10px;text-align:center;' + (i < surfaces.length - 1 ? 'margin-right:8px;' : '') + '">'
-+ iconHtml
-+ '<div style="font-size:0.8rem;font-weight:700;color:' + s.color + ';margin-bottom:4px;">' + _esc(s.name) + '</div>'
-+ '<div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">' + _esc(s.desc) + '</div>'
-+ '</div>';
-});
-return html + '</div></div>';
++ '<div style="font-size:1.2rem;color:' + accent + ';margin-right:8px;" aria-hidden="true">→</div>'
++ cardsHtml
++ '</div></div>';
 };
 _RENDERERS['speed_counter'] = function(b) {
 var uid    = Math.random().toString(36).substr(2, 6);
@@ -29883,33 +30000,48 @@ return '<div data-cb="node" data-key="' + quizIdEsc + '" data-quiz-id="' + quizI
 + '</div>';
 };
 _RENDERERS['scenario_branch'] = function(b) {
-var uid     = 'sb' + Math.random().toString(36).substr(2, 6);
-var scene   = b.scenario || b.situation || '';
-var context = b.context  || '';
-var choices = b.choices  || [];
-var accent  = b.accent   || '#9e6506';
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var uid = 'sb-' + _payloadUid(b);
+var scene = _firstText(b.scenario, b.situation, '');
+var context = _firstText(b.context, '');
+var choices = Array.isArray(b.choices) ? b.choices : [];
+var accent = _safe_css(b.accent, '#9e6506');
 var btns = '';
-for (var i = 0; i < choices.length; i++) {
+var nChoices = Math.min(choices.length, 200);
+for (var i = 0; i < nChoices; i++) {
 var c = choices[i];
+var cLabel = '';
+var cConsequence = '';
+var cOutcome = 'neutral';
+var cNextUrl = '';
+if (c && typeof c === 'object' && !Array.isArray(c)) {
+cLabel = _firstText(c.label, c.text, 'Option ' + (i + 1));
+cConsequence = _firstText(c.consequence, c.result, '');
+cOutcome = _firstText(c.outcome, 'neutral');
+var rawUrl = c.next_url || c.next;
+cNextUrl = rawUrl ? _safe_href(rawUrl, ['http', 'https', 'mailto']) : '';
+} else {
+cLabel = _textLoose(c);
+}
+var letter = String.fromCharCode(65 + (i % 26));
 btns +=
 '<button id="' + uid + 'c' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
+'data-consequence="' + _esc(cConsequence) + '" data-outcome="' + _esc(cOutcome) + '" data-next-url="' + _esc(cNextUrl) + '" ' +
 'style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;' +
 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);' +
 'color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;"' +
 ' onmouseover="if(!this.disabled){this.style.background=\'rgba(245,158,11,0.07)\';this.style.borderColor=\'rgba(245,158,11,0.22)\';}"' +
 ' onmouseout="if(!this.disabled){this.style.background=\'rgba(255,255,255,0.03)\';this.style.borderColor=\'rgba(255,255,255,0.09)\';}">' +
-'<span style="color:' + _esc(accent) + ';font-weight:700;font-size:0.68rem;margin-right:8px;">' + String.fromCharCode(65 + i) + '</span>' +
-_esc(c.label || '') +
+'<span style="color:' + accent + ';font-weight:700;font-size:0.68rem;margin-right:8px;">' + letter + '</span>' +
+_esc(cLabel) +
 '</button>';
 }
-var consJson = _jsJson(choices.map(function(c) {
-return { consequence: c.consequence || '', outcome: c.outcome || 'neutral', next_url: c.next_url || '' };
-}));
+var contextHtml = context ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '';
 return (
 '<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
 '<div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">' +
-'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">🎭 Scenario</div>' +
-(context ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '') +
+'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + accent + ';margin-bottom:8px;">🎭 Scenario</div>' +
+contextHtml +
 '<div style="font-size:0.92rem;font-weight:600;color:#4674a3;line-height:1.5;">' + _esc(scene) + '</div>' +
 '</div>' +
 '<div style="padding:20px 24px;">' +
@@ -29918,28 +30050,31 @@ btns +
 '</div>' +
 '<div id="' + uid + 'res" style="display:none;"></div>' +
 '<script>(function(){' +
-'var cons=' + consJson + ';' +
+'var nChoices=' + nChoices + ';' +
 'window["' + uid + 'pick"]=function(idx){' +
-'for(var j=0;j<cons.length;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}' +
-'var c=cons[idx];' +
-'var col=c.outcome==="good"?"#34d399":c.outcome==="bad"?"#f87171":"#9e6506";' +
-'var icon=c.outcome==="good"?"✅":c.outcome==="bad"?"❌":"⚠️";' +
-'var bg=c.outcome==="good"?"rgba(52,211,153,0.07)":c.outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";' +
-'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
+'for(var j=0;j<nChoices;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}' +
+'var activeBtn=document.getElementById("' + uid + 'c"+idx);if(!activeBtn)return;' +
+'var outcome=activeBtn.getAttribute("data-outcome")||"neutral";' +
+'var consequence=activeBtn.getAttribute("data-consequence")||"";' +
+'var nextUrl=activeBtn.getAttribute("data-next-url")||"";' +
+'var col=outcome==="good"?"#34d399":outcome==="bad"?"#f87171":"#9e6506";' +
+'var icon=outcome==="good"?"✅":outcome==="bad"?"❌":"⚠️";' +
+'var bg=outcome==="good"?"rgba(52,211,153,0.07)":outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";' +
+'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\\\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
 'var res=document.getElementById("' + uid + 'res");' +
 'if(res){' +
 'res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;' +
 'var hdr=\'<div style="font-size:0.68rem;font-weight:700;color:\'+col+\';margin-bottom:8px;">\'+icon+\' Outcome</div>\';' +
-'var body=\'<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">\'+_E(c.consequence)+\'</div>\';' +
-'var nav=c.next_url' +
-'?\'<a href="\'+(/^(https?:|\\/|\\?|#)/i.test(String(c.next_url))?_E(c.next_url):"#")+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
+'var body=\'<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">\'+_E(consequence)+\'</div>\';' +
+'var nav=nextUrl' +
+'?\'<a href="\'+_E(nextUrl)+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
 ':\'<button onclick="' + uid + 'rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">↩ Try again</button>\';' +
 'res.innerHTML=hdr+body+nav;' +
 '}' +
 '};' +
 'window["' + uid + 'rst"]=function(){' +
 'var res=document.getElementById("' + uid + 'res");if(res)res.style.display="none";' +
-'for(var j=0;j<cons.length;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=false;b.style.opacity="1";}}' +
+'for(var j=0;j<nChoices;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=false;b.style.opacity="1";}}' +
 '};' +
 '})();<\/script>' +
 '</div>'
@@ -30017,9 +30152,16 @@ return (
 );
 };
 _RENDERERS['skill_radar'] = function(b) {
-var title  = b.title  || 'Skill Profile';
-var accent = b.accent || '#4f46e5';
-var skills = b.skills || [];
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var title  = _firstText(b.title, 'Skill Profile');
+var accent = _safe_css(b.accent, '#4f46e5');
+var rawSkills = Array.isArray(b.skills) ? b.skills : [];
+var skills = [];
+for (var si = 0; si < Math.min(rawSkills.length, 200); si++) {
+if (rawSkills[si] && typeof rawSkills[si] === 'object' && !Array.isArray(rawSkills[si])) {
+skills.push(rawSkills[si]);
+}
+}
 var n      = Math.max(skills.length, 3);
 var SIZE   = 220;
 var CX     = SIZE / 2;
@@ -30031,36 +30173,54 @@ var rad = (angle - 90) * Math.PI / 180;
 return { x: CX + radius * Math.cos(rad), y: CY + radius * Math.sin(rad) };
 }
 function polygon(vals, r) {
-return vals.map(function(v, i) {
-var p = pt(i * (360 / n), r * Math.max(0, Math.min(100, v || 0)) / 100);
-return p.x.toFixed(2) + ',' + p.y.toFixed(2);
-}).join(' ');
+var pts = [];
+for (var i = 0; i < n; i++) {
+var v = i < vals.length ? vals[i] : 0;
+var p = pt(i * (360 / n), r * Math.max(0, Math.min(100, v)) / 100);
+pts.push(p.x.toFixed(2) + ',' + p.y.toFixed(2));
+}
+return pts.join(' ');
 }
 var grid = '';
 for (var g = 1; g <= 4; g++) {
 var rpts = [];
-for (var k = 0; k < n; k++) { var p = pt(k * (360/n), R * g / 4); rpts.push(p.x.toFixed(2)+','+p.y.toFixed(2)); }
+for (var k = 0; k < n; k++) {
+var gp = pt(k * (360 / n), R * g / 4);
+rpts.push(gp.x.toFixed(2) + ',' + gp.y.toFixed(2));
+}
 grid += '<polygon points="' + rpts.join(' ') + '" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
 }
 var axes = '', labels = '';
 for (var i = 0; i < n; i++) {
 var angle = i * (360 / n);
 var op = pt(angle, R);
-axes += '<line x1="' + CX + '" y1="' + CY + '" x2="' + op.x.toFixed(2) + '" y2="' + op.y.toFixed(2) + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>';
+axes += '<line x1="' + CX.toFixed(2) + '" y1="' + CY.toFixed(2) + '" x2="' + op.x.toFixed(2) + '" y2="' + op.y.toFixed(2) + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>';
 var lp = pt(angle, OUTER);
-var anchor = lp.x > CX + 5 ? 'start' : lp.x < CX - 5 ? 'end' : 'middle';
-labels += '<text x="' + lp.x.toFixed(2) + '" y="' + (lp.y + 4).toFixed(2) + '" text-anchor="' + anchor + '" fill="#64748b" font-size="9" font-family="Inter,sans-serif">' + _esc((skills[i] && skills[i].label) || ('Skill ' + (i + 1))) + '</text>';
+var anchor = lp.x > CX + 5 ? 'start' : (lp.x < CX - 5 ? 'end' : 'middle');
+var labelText = i < skills.length ? _firstText(skills[i].label, 'Skill ' + (i + 1)) : ('Skill ' + (i + 1));
+labels += '<text x="' + lp.x.toFixed(2) + '" y="' + (lp.y + 4).toFixed(2) + '" text-anchor="' + anchor + '" fill="#64748b" font-size="9" font-family="Inter,sans-serif">' + _esc(labelText) + '</text>';
 }
-var hasBefore = skills.some(function(s) { return s.before !== undefined; });
+var hasBefore = false;
+var beforeVals = [];
+var currentVals = [];
+for (var bi = 0; bi < skills.length; bi++) {
+var s = skills[bi];
+var bNum = _numLoose(s.before);
+if (bNum !== null) hasBefore = true;
+beforeVals.push(bNum !== null ? bNum : 0);
+var vNum = _numLoose(s.value);
+currentVals.push(vNum !== null ? vNum : 0);
+}
 var before = hasBefore ?
-'<polygon points="' + polygon(skills.map(function(s){return s.before||0;}), R) + '" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="4,3"/>' : '';
+'<polygon points="' + polygon(beforeVals, R) + '" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="4,3"/>' : '';
 var current =
-'<polygon points="' + polygon(skills.map(function(s){return s.value||0;}), R) + '" fill="' + _esc(accent) + '1f" stroke="' + _esc(accent) + '" stroke-width="2"/>';
+'<polygon points="' + polygon(currentVals, R) + '" fill="' + accent + '1f" stroke="' + accent + '" stroke-width="2"/>';
 var dots = '';
-for (var i = 0; i < n; i++) {
-var v = Math.max(0, Math.min(100, (skills[i] && skills[i].value) || 0));
-var dp = pt(i * (360/n), R * v / 100);
-dots += '<circle cx="' + dp.x.toFixed(2) + '" cy="' + dp.y.toFixed(2) + '" r="3" fill="' + _esc(accent) + '" stroke="#0f172a" stroke-width="1.5"/>';
+for (var di = 0; di < n; di++) {
+var val = di < currentVals.length ? currentVals[di] : 0;
+var vClamped = Math.max(0, Math.min(100, val));
+var dp = pt(di * (360 / n), R * vClamped / 100);
+dots += '<circle cx="' + dp.x.toFixed(2) + '" cy="' + dp.y.toFixed(2) + '" r="3" fill="' + accent + '" stroke="#0f172a" stroke-width="1.5"/>';
 }
 var svgH = SIZE + 28;
 var svg = '<svg role="img" aria-label="Skill radar chart" width="' + SIZE + '" height="' + svgH + '" viewBox="0 0 ' + SIZE + ' ' + svgH + '" style="max-width:280px;">' +
@@ -30068,7 +30228,7 @@ grid + axes + before + current + dots + labels + '</svg>';
 var legend = hasBefore ?
 '<div style="display:flex;gap:16px;justify-content:center;margin-top:6px;">' +
 '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:0;border-top:2px dashed rgba(255,255,255,0.3);"></div>Before</div>' +
-'<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:2px;background:' + _esc(accent) + ';"></div>Now</div>' +
+'<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:2px;background:' + accent + ';"></div>Now</div>' +
 '</div>' : '';
 return (
 '<div style="font-family:\'Inter\',system-ui,sans-serif;text-align:center;">' +
@@ -30657,89 +30817,111 @@ stepHtml +
 );
 };
 _RENDERERS['case_study_card'] = function(b) {
-var uid       = 'csc' + Math.random().toString(36).substr(2, 6);
-var title     = b.title     || 'Case Study';
-var situation = b.situation || '';
-var dataPoints = b.data_points || [];
-var questions  = b.questions  || [];
-var answer     = b.model_answer || '';
-var accent     = b.accent    || '#0676a8';
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var uid = 'csc-' + _payloadUid(b);
+var title = _firstText(b.title, 'Case Study');
+var situation = _firstText(b.situation, '');
+var dataPoints = Array.isArray(b.data_points) ? b.data_points : [];
+var questions = Array.isArray(b.questions) ? b.questions : [];
+var answer = _firstText(b.model_answer, '');
+var accent = _safe_css(b.accent, '#0676a8');
 var dpHtml = '';
-for (var i = 0; i < dataPoints.length; i++) {
+for (var i = 0; i < Math.min(dataPoints.length, 200); i++) {
 var dp = dataPoints[i];
+if (!dp || typeof dp !== 'object' || Array.isArray(dp)) continue;
+var dpLabel = _firstText(dp.label, '');
+var dpVal = _firstText(dp.value, '');
+var dpNote = _firstText(dp.note, '');
+var noteHtml = dpNote ? '<div style="font-size:0.62rem;color:#334155;margin-top:2px;">' + _esc(dpNote) + '</div>' : '';
 dpHtml +=
 '<div style="padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">' +
-'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:3px;">' + _esc(dp.label || '') + '</div>' +
-'<div style="font-size:0.88rem;font-weight:700;color:' + _esc(accent) + ';">' + _esc(dp.value || '') + '</div>' +
-(dp.note ? '<div style="font-size:0.62rem;color:#334155;margin-top:2px;">' + _esc(dp.note) + '</div>' : '') +
+'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:3px;">' + _esc(dpLabel) + '</div>' +
+'<div style="font-size:0.88rem;font-weight:700;color:' + accent + ';">' + _esc(dpVal) + '</div>' +
+noteHtml +
 '</div>';
 }
 var qHtml = '';
-for (var i = 0; i < questions.length; i++) {
+for (var j = 0; j < Math.min(questions.length, 200); j++) {
+var q = questions[j];
+var qStr = (q && typeof q === 'object' && !Array.isArray(q)) ? _firstText(q.question, '') : _textLoose(q);
 qHtml += '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
-'<span style="color:' + _esc(accent) + ';font-weight:700;font-size:0.78rem;flex-shrink:0;">' + (i + 1) + '.</span>' +
-'<div style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(questions[i]) + '</div>' +
+'<span style="color:' + accent + ';font-weight:700;font-size:0.78rem;flex-shrink:0;">' + (j + 1) + '.</span>' +
+'<div style="font-size:0.78rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(qStr) + '</div>' +
 '</div>';
 }
+var dpSection = dpHtml ?
+'<div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Key Data</div>' +
+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">' + dpHtml + '</div>' +
+'</div>' : '';
+var qBorder = answer ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '';
+var qSection = qHtml ?
+'<div style="padding:16px 20px;' + qBorder + '">' +
+'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Analysis Questions</div>' +
+qHtml +
+'</div>' : '';
+var answerSection = answer ?
+'<div style="padding:16px 20px;">' +
+'<button onclick="var r=document.getElementById(\'' + uid + 'ans\');var b=document.getElementById(\'' + uid + 'revbtn\');r.style.display=r.style.display===\'none\'?\'block\':\'none\';b.textContent=r.style.display===\'none\'?\'Show model answer \u25be\':\'Hide answer \u25b4\';" ' +
+'id="' + uid + 'revbtn" style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);background:none;border:none;cursor:pointer;padding:0;">Show model answer \u25be</button>' +
+'<div id="' + uid + 'ans" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;' +
+'background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">' +
+'<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.6;">' + _esc(answer) + '</div>' +
+'</div>' +
+'</div>' : '';
 return (
 '<div data-cb="node" data-key="' + _ckey(b.title, 'case_study_card') + '" style="font-family:\'Inter\',system-ui,sans-serif;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
-'<div style="padding:4px 20px;background:' + _esc(accent) + '18;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:6px;margin-top:16px;">📋 Case Study</div>' +
+'<div style="padding:4px 20px;background:' + accent + '18;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + accent + ';margin-bottom:6px;margin-top:16px;">📋 Case Study</div>' +
 '<div style="font-size:1rem;font-weight:800;color:#4573a1;margin-bottom:16px;">' + _esc(title) + '</div>' +
 '</div>' +
 '<div style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
 '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:8px;">Situation</div>' +
 '<div style="font-size:0.82rem;color:#59779b;line-height:1.7;">' + _esc(situation) + '</div>' +
 '</div>' +
-(dpHtml ? '<div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
-'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Key Data</div>' +
-'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">' + dpHtml + '</div>' +
-'</div>' : '') +
-(qHtml ? '<div style="padding:16px 20px;' + (answer ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">' +
-'<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:10px;">Analysis Questions</div>' +
-qHtml +
-'</div>' : '') +
-(answer ?
-'<div style="padding:16px 20px;">' +
-'<button onclick="var r=document.getElementById(\'' + uid + 'ans\');var b=document.getElementById(\'' + uid + 'revbtn\');r.style.display=r.style.display===\'none\'?\'block\':\'none\';b.textContent=r.style.display===\'none\'?\'Show model answer ▾\':\'Hide answer ▴\';" ' +
-'id="' + uid + 'revbtn" style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);background:none;border:none;cursor:pointer;padding:0;">Show model answer ▾</button>' +
-'<div id="' + uid + 'ans" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;' +
-'background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">' +
-'<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.6;">' + _esc(answer) + '</div>' +
-'</div>' +
-'</div>' : '') +
+dpSection +
+qSection +
+answerSection +
 '</div>'
 );
 };
 _RENDERERS['study_timer'] = function(b) {
-var uid    = 'stmr' + Math.random().toString(36).substr(2, 6);
-var focus  = parseInt(b.focus_mins  || 25);
-var brk    = parseInt(b.break_mins  || 5);
-var accent = b.accent || '#4f46e5';
-var label  = b.label  || 'Study Timer';
+if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+var uid = 'stmr-' + _payloadUid(b);
+var focusNum = _numLoose(b.focus_mins);
+var brkNum = _numLoose(b.break_mins);
+var focus = (focusNum !== null && focusNum > 0) ? Math.floor(focusNum) : 25;
+focus = Math.min(Math.max(focus, 1), 720);
+var brk = (brkNum !== null && brkNum > 0) ? Math.floor(brkNum) : 5;
+brk = Math.min(Math.max(brk, 1), 720);
+var accent = _safe_css(b.accent, '#4f46e5');
+var label = _firstText(b.label, 'Study Timer');
+var dispTime = (focus < 10 ? '0' + focus : focus) + ':00';
+var focusSecs = focus * 60;
+var brkSecs = brk * 60;
 return (
 '<div data-cb="node" data-key="' + _ckey(b.label, 'study_timer') + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;' +
 'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);">' +
 '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:16px;">⏱ ' + _esc(label) + '</div>' +
-'<div id="' + uid + 'mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">Focus</div>' +
-'<div id="' + uid + 'disp" style="font-size:3.5rem;font-weight:900;color:#4878a8;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">' + (focus < 10 ? '0' + focus : focus) + ':00</div>' +
+'<div id="' + uid + 'mode" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + accent + ';margin-bottom:8px;">Focus</div>' +
+'<div id="' + uid + 'disp" style="font-size:3.5rem;font-weight:900;color:#4878a8;letter-spacing:-0.02em;line-height:1;margin-bottom:20px;">' + dispTime + '</div>' +
 '<div style="position:relative;display:inline-block;margin-bottom:20px;">' +
-'<svg width="100" height="100" viewBox="0 0 100 100">' +
+'<svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">' +
 '<circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>' +
-'<circle id="' + uid + 'ring" cx="50" cy="50" r="44" fill="none" stroke="' + _esc(accent) + '" stroke-width="6" ' +
+'<circle id="' + uid + 'ring" cx="50" cy="50" r="44" fill="none" stroke="' + accent + '" stroke-width="6" ' +
 'stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" ' +
 'transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.8s linear;"/>' +
 '</svg>' +
 '</div>' +
 '<div style="display:flex;gap:10px;justify-content:center;">' +
 '<button id="' + uid + 'start" onclick="' + uid + 'toggle()" ' +
-'style="padding:10px 28px;border-radius:99px;background:' + _esc(accent) + ';color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;min-width:100px;">Start</button>' +
+'style="padding:10px 28px;border-radius:99px;background:' + accent + ';color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;min-width:100px;">Start</button>' +
 '<button onclick="' + uid + 'reset()" ' +
 'style="padding:10px 18px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;cursor:pointer;">Reset</button>' +
 '</div>' +
 '<div id="' + uid + 'sessions" style="font-size:0.62rem;color:#334155;margin-top:12px;">0 sessions completed</div>' +
 '<script>(function(){' +
-'var focusSecs=' + (focus * 60) + ';var brkSecs=' + (brk * 60) + ';' +
+'var focusSecs=' + focusSecs + ';var brkSecs=' + brkSecs + ';' +
 'var total=focusSecs;var left=focusSecs;var running=false;var timer=null;var isFocus=true;var sessions=0;' +
 'var CIRC=276.46;' +
 'function fmt(s){var m=Math.floor(s/60);var ss=s%60;return(m<10?"0":"")+m+":"+(ss<10?"0":"")+ss;}' +
@@ -30748,7 +30930,7 @@ return (
 'var pct=left/total;' +
 'document.getElementById("' + uid + 'ring").setAttribute("stroke-dashoffset",CIRC*(1-pct));' +
 'document.getElementById("' + uid + 'mode").textContent=isFocus?"Focus":"Break";' +
-'document.getElementById("' + uid + 'mode").style.color=isFocus?"' + _esc(accent) + '":"#1c805c";' +
+'document.getElementById("' + uid + 'mode").style.color=isFocus?"' + accent + '":"#1c805c";' +
 '}' +
 'function tick(){if(left<=0){if(isFocus)sessions++;isFocus=!isFocus;total=isFocus?focusSecs:brkSecs;left=total;document.getElementById("' + uid + 'sessions").textContent=sessions+" session"+(sessions===1?"":"s")+" completed";draw();return;}left--;draw();}' +
 'window["' + uid + 'toggle"]=function(){' +

@@ -131,10 +131,6 @@
   "right_code",
   "right_label"
  ],
- "cohort_retention": [
-  "color_scale",
-  "periods"
- ],
  "collapsible_panel": [
   "initial_state",
   "toggle_label"

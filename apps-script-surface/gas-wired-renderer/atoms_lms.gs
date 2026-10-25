@@ -300,36 +300,52 @@ _RENDERERS['quiz_result_summary'] = function(b) {
 // Narrative branching learning atom. Presents a real-world situation with 2-4 choices.
 // Each choice reveals a consequence with good/neutral/bad outcome styling.
 _RENDERERS['scenario_branch'] = function(b) {
-  var uid     = 'sb' + Math.random().toString(36).substr(2, 6);
-  var scene   = b.scenario || b.situation || '';
-  var context = b.context  || '';
-  var choices = b.choices  || [];
-  var accent  = b.accent   || '#9e6506';
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var uid = 'sb-' + _payloadUid(b);
+  var scene = _firstText(b.scenario, b.situation, '');
+  var context = _firstText(b.context, '');
+  var choices = Array.isArray(b.choices) ? b.choices : [];
+  var accent = _safe_css(b.accent, '#9e6506');
 
   var btns = '';
-  for (var i = 0; i < choices.length; i++) {
+  var nChoices = Math.min(choices.length, 200);
+  for (var i = 0; i < nChoices; i++) {
     var c = choices[i];
+    var cLabel = '';
+    var cConsequence = '';
+    var cOutcome = 'neutral';
+    var cNextUrl = '';
+    if (c && typeof c === 'object' && !Array.isArray(c)) {
+      cLabel = _firstText(c.label, c.text, 'Option ' + (i + 1));
+      cConsequence = _firstText(c.consequence, c.result, '');
+      cOutcome = _firstText(c.outcome, 'neutral');
+      var rawUrl = c.next_url || c.next;
+      cNextUrl = rawUrl ? _safe_href(rawUrl, ['http', 'https', 'mailto']) : '';
+    } else {
+      cLabel = _textLoose(c);
+    }
+
+    var letter = String.fromCharCode(65 + (i % 26));
     btns +=
       '<button id="' + uid + 'c' + i + '" onclick="' + uid + 'pick(' + i + ')" ' +
+        'data-consequence="' + _esc(cConsequence) + '" data-outcome="' + _esc(cOutcome) + '" data-next-url="' + _esc(cNextUrl) + '" ' +
         'style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;' +
           'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);' +
           'color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;"' +
         ' onmouseover="if(!this.disabled){this.style.background=\'rgba(245,158,11,0.07)\';this.style.borderColor=\'rgba(245,158,11,0.22)\';}"' +
         ' onmouseout="if(!this.disabled){this.style.background=\'rgba(255,255,255,0.03)\';this.style.borderColor=\'rgba(255,255,255,0.09)\';}">' +
-        '<span style="color:' + _esc(accent) + ';font-weight:700;font-size:0.68rem;margin-right:8px;">' + String.fromCharCode(65 + i) + '</span>' +
-        _esc(c.label || '') +
+        '<span style="color:' + accent + ';font-weight:700;font-size:0.68rem;margin-right:8px;">' + letter + '</span>' +
+        _esc(cLabel) +
       '</button>';
   }
 
-  var consJson = _jsJson(choices.map(function(c) {
-    return { consequence: c.consequence || '', outcome: c.outcome || 'neutral', next_url: c.next_url || '' };
-  }));
+  var contextHtml = context ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '';
 
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
     '<div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">🎭 Scenario</div>' +
-      (context ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '') +
+      '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + accent + ';margin-bottom:8px;">🎭 Scenario</div>' +
+      contextHtml +
       '<div style="font-size:0.92rem;font-weight:600;color:#4674a3;line-height:1.5;">' + _esc(scene) + '</div>' +
     '</div>' +
     '<div style="padding:20px 24px;">' +
@@ -338,29 +354,31 @@ _RENDERERS['scenario_branch'] = function(b) {
     '</div>' +
     '<div id="' + uid + 'res" style="display:none;"></div>' +
     '<script>(function(){' +
-      'var cons=' + consJson + ';' +
+      'var nChoices=' + nChoices + ';' +
       'window["' + uid + 'pick"]=function(idx){' +
-        'for(var j=0;j<cons.length;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}' +
-        'var c=cons[idx];' +
-        'var col=c.outcome==="good"?"#34d399":c.outcome==="bad"?"#f87171":"#9e6506";' +
-        'var icon=c.outcome==="good"?"✅":c.outcome==="bad"?"❌":"⚠️";' +
-        'var bg=c.outcome==="good"?"rgba(52,211,153,0.07)":c.outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";' +
-        'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
+        'for(var j=0;j<nChoices;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}' +
+        'var activeBtn=document.getElementById("' + uid + 'c"+idx);if(!activeBtn)return;' +
+        'var outcome=activeBtn.getAttribute("data-outcome")||"neutral";' +
+        'var consequence=activeBtn.getAttribute("data-consequence")||"";' +
+        'var nextUrl=activeBtn.getAttribute("data-next-url")||"";' +
+        'var col=outcome==="good"?"#34d399":outcome==="bad"?"#f87171":"#9e6506";' +
+        'var icon=outcome==="good"?"✅":outcome==="bad"?"❌":"⚠️";' +
+        'var bg=outcome==="good"?"rgba(52,211,153,0.07)":outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";' +
+        'var _E=function(s){return String(s==null?"":s).replace(/[&<>"\\\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};' +
         'var res=document.getElementById("' + uid + 'res");' +
         'if(res){' +
           'res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;' +
           'var hdr=\'<div style="font-size:0.68rem;font-weight:700;color:\'+col+\';margin-bottom:8px;">\'+icon+\' Outcome</div>\';' +
-          'var body=\'<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">\'+_E(c.consequence)+\'</div>\';' +
-          'var nav=c.next_url' +
-            '?\'<a href="\'+(/^(https?:|\\/|\\?|#)/i.test(String(c.next_url))?_E(c.next_url):"#")+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
+          'var body=\'<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">\'+_E(consequence)+\'</div>\';' +
+          'var nav=nextUrl' +
+            '?\'<a href="\'+_E(nextUrl)+\'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:\'+col+\';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>\'' +
             ':\'<button onclick="' + uid + 'rst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">↩ Try again</button>\';' +
           'res.innerHTML=hdr+body+nav;' +
         '}' +
       '};' +
-      // Reset function for "try again"
       'window["' + uid + 'rst"]=function(){' +
         'var res=document.getElementById("' + uid + 'res");if(res)res.style.display="none";' +
-        'for(var j=0;j<cons.length;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=false;b.style.opacity="1";}}' +
+        'for(var j=0;j<nChoices;j++){var b=document.getElementById("' + uid + 'c"+j);if(b){b.disabled=false;b.style.opacity="1";}}' +
       '};' +
     '})();<\/script>' +
     '</div>'
@@ -454,9 +472,16 @@ _RENDERERS['certification_card'] = function(b) {
 // SVG spider/radar chart of competency levels across skill dimensions.
 // Optional before values overlay as a dashed polygon for growth comparison.
 _RENDERERS['skill_radar'] = function(b) {
-  var title  = b.title  || 'Skill Profile';
-  var accent = b.accent || '#4f46e5';
-  var skills = b.skills || [];
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var title  = _firstText(b.title, 'Skill Profile');
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var rawSkills = Array.isArray(b.skills) ? b.skills : [];
+  var skills = [];
+  for (var si = 0; si < Math.min(rawSkills.length, 200); si++) {
+    if (rawSkills[si] && typeof rawSkills[si] === 'object' && !Array.isArray(rawSkills[si])) {
+      skills.push(rawSkills[si]);
+    }
+  }
   var n      = Math.max(skills.length, 3);
   var SIZE   = 220;
   var CX     = SIZE / 2;
@@ -470,17 +495,23 @@ _RENDERERS['skill_radar'] = function(b) {
   }
 
   function polygon(vals, r) {
-    return vals.map(function(v, i) {
-      var p = pt(i * (360 / n), r * Math.max(0, Math.min(100, v || 0)) / 100);
-      return p.x.toFixed(2) + ',' + p.y.toFixed(2);
-    }).join(' ');
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var v = i < vals.length ? vals[i] : 0;
+      var p = pt(i * (360 / n), r * Math.max(0, Math.min(100, v)) / 100);
+      pts.push(p.x.toFixed(2) + ',' + p.y.toFixed(2));
+    }
+    return pts.join(' ');
   }
 
   // Grid rings
   var grid = '';
   for (var g = 1; g <= 4; g++) {
     var rpts = [];
-    for (var k = 0; k < n; k++) { var p = pt(k * (360/n), R * g / 4); rpts.push(p.x.toFixed(2)+','+p.y.toFixed(2)); }
+    for (var k = 0; k < n; k++) {
+      var gp = pt(k * (360 / n), R * g / 4);
+      rpts.push(gp.x.toFixed(2) + ',' + gp.y.toFixed(2));
+    }
     grid += '<polygon points="' + rpts.join(' ') + '" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
   }
 
@@ -489,25 +520,38 @@ _RENDERERS['skill_radar'] = function(b) {
   for (var i = 0; i < n; i++) {
     var angle = i * (360 / n);
     var op = pt(angle, R);
-    axes += '<line x1="' + CX + '" y1="' + CY + '" x2="' + op.x.toFixed(2) + '" y2="' + op.y.toFixed(2) + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>';
+    axes += '<line x1="' + CX.toFixed(2) + '" y1="' + CY.toFixed(2) + '" x2="' + op.x.toFixed(2) + '" y2="' + op.y.toFixed(2) + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>';
     var lp = pt(angle, OUTER);
-    var anchor = lp.x > CX + 5 ? 'start' : lp.x < CX - 5 ? 'end' : 'middle';
-    labels += '<text x="' + lp.x.toFixed(2) + '" y="' + (lp.y + 4).toFixed(2) + '" text-anchor="' + anchor + '" fill="#64748b" font-size="9" font-family="Inter,sans-serif">' + _esc((skills[i] && skills[i].label) || ('Skill ' + (i + 1))) + '</text>';
+    var anchor = lp.x > CX + 5 ? 'start' : (lp.x < CX - 5 ? 'end' : 'middle');
+    var labelText = i < skills.length ? _firstText(skills[i].label, 'Skill ' + (i + 1)) : ('Skill ' + (i + 1));
+    labels += '<text x="' + lp.x.toFixed(2) + '" y="' + (lp.y + 4).toFixed(2) + '" text-anchor="' + anchor + '" fill="#64748b" font-size="9" font-family="Inter,sans-serif">' + _esc(labelText) + '</text>';
   }
 
-  var hasBefore = skills.some(function(s) { return s.before !== undefined; });
+  var hasBefore = false;
+  var beforeVals = [];
+  var currentVals = [];
+  for (var bi = 0; bi < skills.length; bi++) {
+    var s = skills[bi];
+    var bNum = _numLoose(s.before);
+    if (bNum !== null) hasBefore = true;
+    beforeVals.push(bNum !== null ? bNum : 0);
+    var vNum = _numLoose(s.value);
+    currentVals.push(vNum !== null ? vNum : 0);
+  }
+
   var before = hasBefore ?
-    '<polygon points="' + polygon(skills.map(function(s){return s.before||0;}), R) + '" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="4,3"/>' : '';
+    '<polygon points="' + polygon(beforeVals, R) + '" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="4,3"/>' : '';
 
   var current =
-    '<polygon points="' + polygon(skills.map(function(s){return s.value||0;}), R) + '" fill="' + _esc(accent) + '1f" stroke="' + _esc(accent) + '" stroke-width="2"/>';
+    '<polygon points="' + polygon(currentVals, R) + '" fill="' + accent + '1f" stroke="' + accent + '" stroke-width="2"/>';
 
-  // Dot markers on current polygon
+  // Dot markers
   var dots = '';
-  for (var i = 0; i < n; i++) {
-    var v = Math.max(0, Math.min(100, (skills[i] && skills[i].value) || 0));
-    var dp = pt(i * (360/n), R * v / 100);
-    dots += '<circle cx="' + dp.x.toFixed(2) + '" cy="' + dp.y.toFixed(2) + '" r="3" fill="' + _esc(accent) + '" stroke="#0f172a" stroke-width="1.5"/>';
+  for (var di = 0; di < n; di++) {
+    var val = di < currentVals.length ? currentVals[di] : 0;
+    var vClamped = Math.max(0, Math.min(100, val));
+    var dp = pt(di * (360 / n), R * vClamped / 100);
+    dots += '<circle cx="' + dp.x.toFixed(2) + '" cy="' + dp.y.toFixed(2) + '" r="3" fill="' + accent + '" stroke="#0f172a" stroke-width="1.5"/>';
   }
 
   var svgH = SIZE + 28;
@@ -517,7 +561,7 @@ _RENDERERS['skill_radar'] = function(b) {
   var legend = hasBefore ?
     '<div style="display:flex;gap:16px;justify-content:center;margin-top:6px;">' +
       '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:0;border-top:2px dashed rgba(255,255,255,0.3);"></div>Before</div>' +
-      '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:2px;background:' + _esc(accent) + ';"></div>Now</div>' +
+      '<div style="display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--muted,#5f6368);"><div style="width:18px;height:2px;background:' + accent + ';"></div>Now</div>' +
     '</div>' : '';
 
   return (

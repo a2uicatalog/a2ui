@@ -1375,50 +1375,104 @@ _RENDERERS['sankey_flow'] = function(b) {
 // 15. cohort_retention — retention grid
 // ─────────────────────────────────────────────────────────
 _RENDERERS['cohort_retention'] = function(b) {
-  var cohorts = b.cohorts || [];
-  var title   = b.title   || '';
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var cohorts = Array.isArray(b.cohorts) ? b.cohorts : [];
+  var periods = Array.isArray(b.periods) ? b.periods : [];
+  var title = _firstText(b.title, '');
 
   if (!cohorts.length) return '<div class="a2ui-chart-empty">No cohort data</div>';
 
-  var maxCols = 0;
-  cohorts.forEach(function(c){ if ((c.data||[]).length > maxCols) maxCols = c.data.length; });
-
-  var html = '<div class="a2ui-cohort-retention">';
-  if (title) html += '<div class="a2ui-cohort-title">' + _esc(title) + '</div>';
-  html += '<div style="overflow-x:auto;"><table class="a2ui-cohort-table" style="border-collapse:collapse;font-size:12px;width:100%;">';
-
-  // Header
-  html += '<thead><tr><th class="a2ui-cohort-th">Cohort</th>';
-  for (var w = 0; w < maxCols; w++) {
-    html += '<th class="a2ui-cohort-th">Week ' + w + '</th>';
-  }
-  html += '</tr></thead><tbody>';
-
-  cohorts.forEach(function(cohort) {
-    html += '<tr>';
-    html += '<td class="a2ui-cohort-label">' + _esc(cohort.label || '') + '</td>';
-    var data = cohort.data || [];
-    for (var w = 0; w < maxCols; w++) {
-      var val = data[w] !== undefined ? parseFloat(data[w]) : null;
-      if (val === null) {
-        html += '<td class="a2ui-cohort-cell" style="background:#f8fafc;"></td>';
-      } else {
-        var pct = Math.min(100, Math.max(0, val));
-        var alpha = pct / 100;
-        // purple: rgb(99,102,241) deep to light
-        var r = Math.round(237 - alpha * 138);
-        var g = Math.round(233 - alpha * 131);
-        var bv = Math.round(254 - alpha * 13);
-        var bg = 'rgb(' + r + ',' + g + ',' + bv + ')';
-        var fg = pct > 60 ? '#fff' : '#2e3b4d';
-        html += '<td class="a2ui-cohort-cell" style="background:' + bg + ';color:' + fg + ';">' + pct.toFixed(0) + '%</td>';
+  var colNames = [];
+  if (periods.length) {
+    for (var p = 0; p < Math.min(periods.length, 200); p++) {
+      colNames.push(_textLoose(periods[p]));
+    }
+  } else {
+    var maxLen = 0;
+    for (var i = 0; i < Math.min(cohorts.length, 200); i++) {
+      var c = cohorts[i];
+      if (c && typeof c === 'object' && !Array.isArray(c)) {
+        var r = Array.isArray(c.retention_rates) ? c.retention_rates : c.data;
+        if (Array.isArray(r) && r.length > maxLen) {
+          maxLen = r.length;
+        }
       }
     }
-    html += '</tr>';
-  });
+    maxLen = Math.min(maxLen, 200);
+    for (var w = 0; w < maxLen; w++) {
+      colNames.push('Week ' + w);
+    }
+  }
 
-  html += '</tbody></table></div></div>';
-  return html;
+  var numCols = colNames.length;
+  var scale = [];
+  var scRaw = Array.isArray(b.color_scale) ? b.color_scale.slice(0, 8) : [];
+  for (var si = 0; si < scRaw.length; si++) {
+    if (typeof scRaw[si] === 'string' && /^#[0-9a-fA-F]{6}$/.test(scRaw[si])) {
+      scale.push([parseInt(scRaw[si].slice(1, 3), 16), parseInt(scRaw[si].slice(3, 5), 16), parseInt(scRaw[si].slice(5, 7), 16)]);
+    }
+  }
+  if (scale.length < 2) scale = [[237, 233, 254], [99, 102, 241]];
+  var hasSize = false;
+  for (var hs = 0; hs < Math.min(cohorts.length, 200); hs++) {
+    if (cohorts[hs] && typeof cohorts[hs] === 'object' && !Array.isArray(cohorts[hs]) && _textLoose(cohorts[hs].original_size)) hasSize = true;
+  }
+  var thHtml = '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Cohort</th>';
+  if (hasSize) {
+    thHtml += '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:right;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Size</th>';
+  }
+  for (var j = 0; j < numCols; j++) {
+    thHtml += '<th class="a2ui-cohort-th" style="padding:10px 12px;text-align:center;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(colNames[j]) + '</th>';
+  }
+
+  var rowsHtml = '';
+  for (var rowIdx = 0; rowIdx < Math.min(cohorts.length, 200); rowIdx++) {
+    var item = cohorts[rowIdx];
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    var cName = _firstText(item.cohort_name, item.label, '');
+    var ratesArr = Array.isArray(item.retention_rates) ? item.retention_rates : item.data;
+    var rates = Array.isArray(ratesArr) ? ratesArr : [];
+
+    var cells = '<td class="a2ui-cohort-label" style="padding:10px 12px;font-weight:600;color:#1e293b;border-bottom:1px solid #f1f5f9;white-space:nowrap;">' + _esc(cName) + '</td>';
+    if (hasSize) {
+      var szN = _numLoose(item.original_size);
+      var szTxt = szN !== null ? (szN < 1e15 ? Math.floor(Math.max(szN, 0) + 0.5).toLocaleString('en-US') : '') : _textLoose(item.original_size);
+      cells += '<td class="a2ui-cohort-size" style="padding:10px 12px;text-align:right;font-family:monospace;color:#64748b;border-bottom:1px solid #f1f5f9;">' + _esc(szTxt) + '</td>';
+    }
+    for (var cIdx = 0; cIdx < numCols; cIdx++) {
+      var valNum = null;
+      if (cIdx < rates.length) {
+        valNum = _numLoose(rates[cIdx]);
+      }
+      if (valNum === null) {
+        cells += '<td class="a2ui-cohort-cell" style="padding:8px;background:#f8fafc;border-bottom:1px solid #f1f5f9;"></td>';
+      } else {
+        var pct = Math.max(0, Math.min(100, valNum));
+        var alpha = pct / 100;
+        var pos = alpha * (scale.length - 1);
+        var lo = Math.min(Math.floor(pos), scale.length - 2);
+        var fr = pos - lo;
+        var r = Math.floor(scale[lo][0] + (scale[lo + 1][0] - scale[lo][0]) * fr + 0.5);
+        var g = Math.floor(scale[lo][1] + (scale[lo + 1][1] - scale[lo][1]) * fr + 0.5);
+        var bv = Math.floor(scale[lo][2] + (scale[lo + 1][2] - scale[lo][2]) * fr + 0.5);
+        var bg = 'rgb(' + r + ',' + g + ',' + bv + ')';
+        var fg = (0.299 * r + 0.587 * g + 0.114 * bv) / 255 < 0.64 ? '#ffffff' : '#2e3b4d';
+        var pctStr = _fixedStr(pct, 1);
+        cells += '<td class="a2ui-cohort-cell" style="padding:8px;text-align:center;font-family:monospace;font-weight:700;font-size:0.8rem;background:' + bg + ';color:' + fg + ';border-bottom:1px solid #f1f5f9;">' + pctStr + '%</td>';
+      }
+    }
+    rowsHtml += '<tr>' + cells + '</tr>';
+  }
+
+  var titleHtml = title ? '<div class="a2ui-cohort-title" style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:12px;">' + _esc(title) + '</div>' : '';
+
+  return '<div class="a2ui-cohort-retention" style="margin:1.5rem 0;padding:16px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">' +
+    titleHtml +
+    '<div style="overflow-x:auto;">' +
+    '<table class="a2ui-cohort-table" style="border-collapse:collapse;font-size:12px;width:100%;min-width:320px;">' +
+    '<thead><tr>' + thHtml + '</tr></thead>' +
+    '<tbody>' + rowsHtml + '</tbody>' +
+    '</table></div></div>';
 };
 
 // ─────────────────────────────────────────────────────────
@@ -4800,35 +4854,62 @@ _RENDERERS['stripe_background'] = function(b) {
 };
 
 _RENDERERS['status_timeline'] = function(b) {
-  var events = b.events || b.items || [];
-  var title  = b.title || '';
-  var uid = Math.random().toString(36).substr(2, 6);
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var events = Array.isArray(b.events) ? b.events : (Array.isArray(b.items) ? b.items : []);
+  var title  = _firstText(b.title, '');
+  var uid = 'st-' + _payloadUid(b);
   var dotColors = { done:'#22c55e', active:'#3b82f6', pending:'#d1d5db', error:'#ef4444', warning:'#f59e0b' };
   var bgColors  = { done:'#f0fdf4', active:'#eff6ff', pending:'#f9fafb', error:'#fef2f2', warning:'#fffbeb' };
   var bdColors  = { done:'#86efac', active:'#93c5fd', pending:'#e5e7eb', error:'#fecaca', warning:'#fde68a' };
-  var evHtml = events.map(function(ev, i) {
-    var status = ev.status || 'pending';
-    var dot = dotColors[status] || dotColors.pending;
-    var bg  = bgColors[status]  || bgColors.pending;
-    var bd  = bdColors[status]  || bdColors.pending;
-    var isLast = i === events.length - 1;
-    var delay  = (i * 0.14) + 's';
-    return '<div style="display:flex;gap:16px;opacity:0;animation:st-' + uid + ' 0.4s ease ' + delay + ' both;">'
+
+  var nEvents = Math.min(events.length, 200);
+  var evHtml = '';
+  for (var i = 0; i < nEvents; i++) {
+    var ev = events[i];
+    if (!ev || typeof ev !== 'object' || Array.isArray(ev)) continue;
+    var statusRaw = _firstText(ev.status, 'pending').toLowerCase();
+    var dot = dotColors.hasOwnProperty(statusRaw) ? dotColors[statusRaw] : dotColors.pending;
+    var bg  = bgColors.hasOwnProperty(statusRaw) ? bgColors[statusRaw] : bgColors.pending;
+    var bd  = bdColors.hasOwnProperty(statusRaw) ? bdColors[statusRaw] : bdColors.pending;
+    var isLast = (i === nEvents - 1);
+    var delay  = (i * 0.14).toFixed(2) + 's';
+    var activeShadow = statusRaw === 'active' ? 'box-shadow:0 0 0 4px ' + dot + '33;' : '';
+
+    var titleText = _firstText(ev.title, ev.label, '');
+    var dateText  = _firstText(ev.date, ev.timestamp, '');
+    var descText  = _firstText(ev.text, ev.description, '');
+
+    var lineDiv = !isLast ? '<div style="width:2px;flex:1;background:#e5e7eb;margin:4px 0;min-height:16px;"></div>' : '';
+    var mb = isLast ? '0' : '10px';
+
+    var titlePart = titleText ? '<div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(titleText) + '</div>' : '';
+    var datePart  = dateText ? '<div style="font-size:0.72rem;color:' + dot + ';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">' + _esc(dateText) + '</div>' : '';
+    var descPart  = descText ? '<div style="font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.5;margin-top:5px;">' + _esc(descText) + '</div>' : '';
+
+    evHtml += '<div style="display:flex;gap:16px;opacity:0;animation:' + uid + ' 0.4s ease ' + delay + ' both;">'
       + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:16px;">'
-      + '<div style="width:14px;height:14px;border-radius:50%;background:' + dot + ';flex-shrink:0;margin-top:5px;' + (status==='active'?'box-shadow:0 0 0 4px '+dot+'33;':'') + '"></div>'
-      + (!isLast ? '<div style="width:2px;flex:1;background:#e5e7eb;margin:4px 0;min-height:16px;"></div>' : '')
+      + '<div style="width:14px;height:14px;border-radius:50%;background:' + dot + ';flex-shrink:0;margin-top:5px;' + activeShadow + '"></div>'
+      + lineDiv
       + '</div>'
-      + '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:' + (isLast?'0':'10px') + ';">'
-      + (ev.title ? '<div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(ev.title) + '</div>' : '')
-      + (ev.date  ? '<div style="font-size:0.72rem;color:' + dot + ';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">' + _esc(ev.date) + '</div>' : '')
-      + (ev.text  ? '<div style="font-size:0.82rem;color:var(--muted,#5f6368);line-height:1.5;margin-top:5px;">' + _esc(ev.text) + '</div>' : '')
+      + '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:' + mb + ';">'
+      + titlePart + datePart + descPart
       + '</div>'
       + '</div>';
-  }).join('');
-  return '<style>@keyframes st-' + uid + '{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}</style>'
+  }
+
+  var titleHtml = title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:16px;">' + _esc(title) + '</div>' : '';
+  var kfStyle = '<style>'
+    + '@keyframes ' + uid + '{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}'
+    + '@media (prefers-reduced-motion:reduce){'
+    + 'div[style*="animation:' + uid + '"]{animation:none !important;opacity:1 !important;transform:none !important;}'
+    + '}'
+    + '</style>';
+
+  return kfStyle
     + '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin:1rem 0;">'
-    + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:16px;">' + _esc(title) + '</div>' : '')
-    + evHtml + '</div>';
+    + titleHtml
+    + evHtml
+    + '</div>';
 };
 
 _RENDERERS['counter_group'] = function(b) {
@@ -4865,38 +4946,63 @@ _RENDERERS['counter_group'] = function(b) {
 };
 
 _RENDERERS['orbit_diagram'] = function(b) {
-  var center = b.center || 'Core';
-  var nodes  = b.nodes  || b.items || [];
-  var color  = b.color  || '#4f46e5';
-  var speed  = parseInt(b.speed || 10, 10);
-  var uid = Math.random().toString(36).substr(2, 6);
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var center = _firstText(b.center, 'Core');
+  var nodesRaw = Array.isArray(b.nodes) ? b.nodes : (Array.isArray(b.items) ? b.items : []);
+  var nodes = [];
+  for (var ni = 0; ni < Math.min(nodesRaw.length, 200); ni++) {
+    nodes.push(nodesRaw[ni]);
+  }
+  var color = _safe_css(b.color, '#4f46e5');
+  var speedNum = _numLoose(b.speed);
+  var speed = (speedNum !== null && speedNum > 0) ? speedNum : 10;
+  speed = Math.min(Math.max(speed, 0.1), 3600);
+
+  var uid = 'orb-' + _payloadUid(b);
   var n = Math.max(nodes.length, 1);
   var radius = 95;
   var size = 280;
-  var cx = size / 2, cy = size / 2;
-  var nodeElems = nodes.map(function(node, i) {
+  var cx = size / 2;
+  var cy = size / 2;
+
+  var nodeElems = '';
+  var svgLines = '';
+  for (var i = 0; i < nodes.length; i++) {
+    var nd = nodes[i];
+    var label = '';
+    var nc = color;
+    if (nd && typeof nd === 'object' && !Array.isArray(nd)) {
+      label = _firstText(nd.label, nd.text, '');
+      nc = _safe_css(nd.color, color);
+    } else {
+      label = _textLoose(nd);
+    }
+
     var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-    var x = Math.round(cx + Math.cos(angle) * radius);
-    var y = Math.round(cy + Math.sin(angle) * radius);
-    var rawKey = typeof node === 'string' ? node : (node.label || node.text || '');
-    var keyAttr = _esc(String(rawKey));
-    var label  = typeof node === 'string' ? node : (node.label || node.text || '');
-    var nc     = typeof node === 'object' && node.color ? node.color : color;
-    return '<div data-cb="node" data-key="' + keyAttr + '" style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + _esc(nc) + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
-  }).join('');
-  var svgLines = nodes.map(function(_, i) {
-    var angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-    return '<line x1="' + cx + '" y1="' + cy + '" x2="' + Math.round(cx+Math.cos(angle)*radius) + '" y2="' + Math.round(cy+Math.sin(angle)*radius) + '" stroke="' + _esc(color) + '" stroke-width="1" opacity="0.18"/>';
-  }).join('');
-  return '<style>@keyframes orb-dash-' + uid + '{to{stroke-dashoffset:-24;}}</style>'
+    var x = Math.floor(cx + Math.cos(angle) * radius + 0.5);
+    var y = Math.floor(cy + Math.sin(angle) * radius + 0.5);
+
+    svgLines += '<line x1="' + Math.floor(cx) + '" y1="' + Math.floor(cy) + '" x2="' + x + '" y2="' + y + '" stroke="' + color + '" stroke-width="1" opacity="0.18"/>';
+    nodeElems += '<div data-cb="node" data-key="' + _esc(label) + '" style="position:absolute;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);background:' + nc + ';color:#fff;font-size:0.7rem;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:3;">' + _esc(label) + '</div>';
+  }
+
+  var animDur = _fixedStr(speed / 4, 2) + 's';
+  var styleBlock = '<style>'
+    + '@keyframes ' + uid + '{to{stroke-dashoffset:-24;}}'
+    + '@media (prefers-reduced-motion:reduce){'
+    + 'circle[style*="' + uid + '"]{animation:none !important;}'
+    + '}'
+    + '</style>';
+
+  return styleBlock
     + '<div style="display:flex;justify-content:center;margin:1rem 0;">'
     + '<div style="position:relative;width:' + size + 'px;height:' + size + 'px;">'
-    + '<svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">'
+    + '<svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Orbit diagram">'
     + svgLines
-    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" stroke="' + _esc(color) + '" stroke-width="1.5" stroke-dasharray="5 7" opacity="0.4" style="animation:orb-dash-' + uid + ' ' + (speed/4) + 's linear infinite;"/>'
+    + '<circle cx="' + Math.floor(cx) + '" cy="' + Math.floor(cy) + '" r="' + radius + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-dasharray="5 7" opacity="0.4" style="animation:' + uid + ' ' + animDur + ' linear infinite;"/>'
     + '</svg>'
     + nodeElems
-    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:' + _esc(color) + ';color:#fff;font-weight:700;font-size:0.85rem;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 22px ' + _esc(color) + '55;z-index:5;">' + _esc(center) + '</div>'
+    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:' + color + ';color:#fff;font-weight:700;font-size:0.85rem;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 22px ' + color + '55;z-index:5;">' + _esc(center) + '</div>'
     + '</div></div>';
 };
 

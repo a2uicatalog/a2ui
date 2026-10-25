@@ -645,22 +645,22 @@ _RENDERERS['raise_hand'] = function(b) {
 
 // surface_map — visual diagram of the A2UI surfaces
 _RENDERERS['surface_map'] = function(b) {
-  var accent  = b.accent  || '#4f46e5';
-  var title   = b.title   || 'One schema. Three surfaces.';
-  var surfaces = b.surfaces || [
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var title = _firstText(b.title, 'One schema. Three surfaces.');
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var surfacesRaw = Array.isArray(b.surfaces) ? b.surfaces : [];
+
+  var defaultSurfaces = [
     { name: 'GAS Web App',       icon: '⚡', desc: 'Live web app · GAS runtime · URL = content', color: '#4f46e5' },
     { name: 'Meet Stage',        icon: '📺', desc: 'Full-screen · Live demos · Audience view',   color: '#7f4bf5' },
     { name: 'Google Sites HTML', icon: '📄', desc: 'Blog / docs · SEO · Static publish',         color: '#1268f4' },
     { name: 'Google Chat',       icon: '💬', desc: 'Cards · Bots · Workspace native',            color: '#047d91' }
   ];
 
-  // Google Workspace product SVGs — colors from official gstatic icons
-  // Apps Script: 4-color (blue/red/yellow/green), Meet: yellow #FBBC04,
-  // Sites: purple #4758B5, Chat: green #34A853
-  var _gas  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>';
-  var _meet = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg>';
-  var _sites= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg>';
-  var _chat = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg>';
+  var _gas  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>';
+  var _meet = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg>';
+  var _sites= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg>';
+  var _chat = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg>';
   var _SVG = {
     'GAS Web App': _gas, 'Google Apps Script': _gas,
     'Meet Stage':  _meet, 'Google Meet': _meet,
@@ -668,27 +668,51 @@ _RENDERERS['surface_map'] = function(b) {
     'Google Chat': _chat
   };
 
-  var html = '<div style="margin:1.5rem 0;">'
-    + '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">' + _esc(title) + '</div>'
+  var surfaces = surfacesRaw.length > 0 ? surfacesRaw : defaultSurfaces;
+  var nSurfaces = Math.min(surfaces.length, 200);
+
+  var cardsHtml = '';
+  for (var i = 0; i < nSurfaces; i++) {
+    var s = surfaces[i];
+    var sName = '';
+    var sIcon = '●';
+    var sDesc = '';
+    var sColor = accent;
+
+    if (s && typeof s === 'object' && !Array.isArray(s)) {
+      sName = _firstText(s.name, '');
+      sIcon = _firstText(s.icon, '●');
+      sDesc = _firstText(s.desc, '');
+      sColor = _safe_css(s.color, accent);
+    } else if (typeof s === 'string') {
+      sName = s;
+      sIcon = '●';
+      sDesc = '';
+      sColor = accent;
+    }
+
+    var iconHtml = _SVG.hasOwnProperty(sName)
+      ? '<div style="margin-bottom:6px;display:flex;justify-content:center;">' + _SVG[sName] + '</div>'
+      : '<div style="font-size:1.6rem;margin-bottom:4px;">' + _esc(sIcon) + '</div>';
+
+    var mr = i < nSurfaces - 1 ? 'margin-right:8px;' : '';
+    cardsHtml += '<div style="flex:1;min-width:120px;padding:16px 14px;background:' + sColor + '0d;border:2px solid ' + sColor + '33;border-radius:10px;text-align:center;' + mr + '">'
+      + iconHtml
+      + '<div style="font-size:0.8rem;font-weight:700;color:' + sColor + ';margin-bottom:4px;">' + _esc(sName) + '</div>'
+      + '<div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">' + _esc(sDesc) + '</div>'
+      + '</div>';
+  }
+
+  return '<div style="margin:1.5rem 0;">'
+    + '<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">' + _esc(title) + '</div>'
     + '<div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">'
     + '<div style="padding:14px 20px;background:#0f172a;border-radius:10px;text-align:center;margin-right:8px;">'
     + '<div style="font-size:0.65rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Schema</div>'
     + '<div style="font-family:monospace;font-size:0.72rem;color:#94a3b8;">{ blocks: […] }</div>'
     + '</div>'
-    + '<div style="font-size:1.2rem;color:var(--muted);margin-right:8px;">→</div>';
-
-  surfaces.forEach(function(s, i) {
-    var iconHtml = _SVG[s.name]
-      ? '<div style="margin-bottom:6px;display:flex;justify-content:center;">' + _SVG[s.name] + '</div>'
-      : '<div style="font-size:1.6rem;margin-bottom:4px;">' + s.icon + '</div>';
-    html += '<div style="flex:1;min-width:120px;padding:16px 14px;background:' + s.color + '0d;border:2px solid ' + s.color + '33;border-radius:10px;text-align:center;' + (i < surfaces.length - 1 ? 'margin-right:8px;' : '') + '">'
-      + iconHtml
-      + '<div style="font-size:0.8rem;font-weight:700;color:' + s.color + ';margin-bottom:4px;">' + _esc(s.name) + '</div>'
-      + '<div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">' + _esc(s.desc) + '</div>'
-      + '</div>';
-  });
-
-  return html + '</div></div>';
+    + '<div style="font-size:1.2rem;color:' + accent + ';margin-right:8px;" aria-hidden="true">→</div>'
+    + cardsHtml
+    + '</div></div>';
 };
 
 // speed_counter — stopwatch that freezes when the page finishes loading
