@@ -262,7 +262,8 @@ def test_i90_inert_when_no_spring():
         if ease is not None:
             keys[1]["ease"] = ease
         b = _pill_film(keys)
-        assert _norm(_py(b)) == _norm(old._RENDERERS["motion_timeline"](dict(b))), ease
+        # dark stages re-point the page tokens (--a2ui-text ... --bg) at the film palette (2026-10-25, 5eea3f9ae): style only
+        assert _norm(re.sub(r"--a2ui-text:[^\"]*?--bg:[^;\"]*;", "", _py(b))) == _norm(old._RENDERERS["motion_timeline"](dict(b))), ease
 
 
 def test_i90_spring_replaces_only_the_arriving_segment():
@@ -446,7 +447,8 @@ def test_existing_motion_payloads_render_byte_for_byte_as_before_the_batch():
         except Exception:
             continue
         kinds.add(k)
-        if a != wa._RENDERERS[k](dict(b)):
+        # dark stages re-point the page tokens (--a2ui-text ... --bg) at the film palette (2026-10-25, 5eea3f9ae): style only
+        if a != re.sub(r"--a2ui-text:[^\"]*?--bg:[^;\"]*;", "", wa._RENDERERS[k](dict(b))):
             bad.append(k)
     assert not bad, bad[:10]
     assert {"motion_mask", "motion_timeline", "motion_pill"} <= kinds, kinds

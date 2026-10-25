@@ -165,7 +165,11 @@ def test_existing_payloads_render_byte_for_byte_as_before():
         except Exception:
             continue
         kinds.add(k)
-        if a != wa._RENDERERS[k](dict(b)):
+        n = wa._RENDERERS[k](dict(b))
+        if k == "motion_timeline":
+            # dark stages now re-point the page tokens (--a2ui-text ... --bg) at the film's dark palette (2026-10-25, 5eea3f9ae): style only
+            n = re.sub(r"--a2ui-text:[^\"]*?--bg:[^;\"]*;", "", n)
+        if a != n:
             bad.append((k, str(b)[:80]))
     assert not bad, bad[:10]
     assert {"motion_mask", "motion_morph"} <= kinds, kinds
