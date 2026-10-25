@@ -7765,55 +7765,85 @@ def _render_inline_alert(b: dict) -> str:
 
 
 def _render_source_citation(b: dict) -> str:
-    """Numbered RAG source cards. Original a2ui-catalogue atom."""
-    heading  = b.get("heading", "Sources")
-    sources  = b.get("sources", [])
+    # Inline-numbered RAG source reference card list with metadata, excerpt quotes, and notes.
+    raw_heading = b.get('heading')
+    heading_text = _first_text(raw_heading) if raw_heading is not None else 'Sources'
+
+    raw_sources = b.get('sources')
+    if isinstance(raw_sources, list):
+        sources = raw_sources[:100]
+    elif _first_text(b.get('title')):
+        authors_val = b.get('authors') if isinstance(b.get('authors'), list) else b.get('author')
+        author_str = ', '.join(_text_loose(a) for a in authors_val if _text_loose(a)) if isinstance(authors_val, list) else _first_text(b.get('author'))
+        sources = [{
+            'number': 1,
+            'title': _first_text(b.get('title')),
+            'url': _first_text(b.get('url')),
+            'author': author_str,
+            'date': _first_text(b.get('year'), b.get('date')),
+            'publisher': _first_text(b.get('publisher')),
+            'note': _first_text(b.get('note'))
+        }]
+    else:
+        sources = []
 
     heading_html = (
-        f'<div style="font-size:0.78rem;font-weight:700;color:#374151;'
-        f'letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">'
-        f'{_cv_esc(heading)}</div>'
-    ) if heading else ""
+        f'<div style="font-size:0.78rem;font-weight:700;color:#374151;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">'
+        f'{_cv_esc(heading_text)}</div>'
+    ) if heading_text else ''
 
-    cards = ""
-    for s in sources:
-        num     = s.get("number", "")
-        title   = s.get("title", "")
-        url     = s.get("url", "")
-        excerpt = s.get("excerpt", "")
-        author  = s.get("author", "")
-        date    = s.get("date", "")
-        meta    = " · ".join(filter(None, [author, date]))
+    cards = []
+    for idx, s in enumerate(sources):
+        if isinstance(s, dict):
+            num = _first_text(s.get('number')) or str(idx + 1)
+            title = _first_text(s.get('title'))
+            url = _first_text(s.get('url'))
+            excerpt = _first_text(s.get('excerpt'))
+            authors_val = s.get('authors') if isinstance(s.get('authors'), list) else s.get('author')
+            if isinstance(authors_val, list):
+                author = ', '.join(_text_loose(a) for a in authors_val if _text_loose(a))
+            else:
+                author = _first_text(s.get('author'))
+            date = _first_text(s.get('date'), s.get('year'))
+            publisher = _first_text(s.get('publisher'))
+            note = _first_text(s.get('note'))
+        elif (isinstance(s, str) or (isinstance(s, (int, float)) and not isinstance(s, bool))):
+            num = str(idx + 1)
+            title = _text_loose(s)
+            url = ''
+            excerpt = ''
+            author = ''
+            date = ''
+            publisher = ''
+            note = ''
+        else:
+            continue
 
-        title_el = (
-            f'<a href="{_cv_esc(url)}" style="font-size:0.82rem;font-weight:600;color:#1a73e8;'
-            f'text-decoration:none;" target="_blank">{_cv_esc(title)}</a>'
-        ) if url else (
-            f'<span style="font-size:0.82rem;font-weight:600;color:#111827;">{_cv_esc(title)}</span>'
-        )
-        excerpt_el = (
-            f'<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:3px;'
-            f'font-style:italic;border-left:2px solid #e5e7eb;padding-left:8px;">'
-            f'"{_cv_esc(excerpt)}"</div>'
-        ) if excerpt else ""
-        meta_el = (
-            f'<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;">{_cv_esc(meta)}</div>'
-        ) if meta else ""
+        meta_parts = [p for p in (author, date) if p]
+        meta = ' · '.join(meta_parts)
+        safe_url = _safe_href(url, schemes=('https', 'mailto'))
 
-        cards += (
-            f'<div style="display:flex;gap:10px;padding:8px 10px;'
-            f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
-            f'<span style="font-size:0.72rem;font-weight:700;color:#fff;'
-            f'background:#6b7280;border-radius:3px;padding:1px 5px;'
-            f'flex-shrink:0;align-self:flex-start;margin-top:1px;">[{_cv_esc(num)}]</span>'
-            f'<div style="flex:1;min-width:0;">{title_el}{excerpt_el}{meta_el}</div>'
-            f'</div>'
+        if safe_url:
+            title_el = f'<a href="{_cv_esc(safe_url)}" target="_blank" rel="noopener" style="font-size:0.82rem;font-weight:600;color:#1a73e8;text-decoration:none;">{_cv_esc(title)}</a>'
+        else:
+            title_el = f'<span style="font-size:0.82rem;font-weight:600;color:#111827;">{_cv_esc(title)}</span>'
+
+        excerpt_el = f'<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:3px;font-style:italic;border-left:2px solid #e5e7eb;padding-left:8px;">"{_cv_esc(excerpt)}"</div>' if excerpt else ''
+        meta_el = f'<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;">{_cv_esc(meta)}</div>' if meta else ''
+        publisher_el = f'<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;font-style:italic;">{_cv_esc(publisher)}</div>' if publisher else ''
+        note_el = f'<div style="font-size:0.75rem;color:#4b5563;margin-top:4px;background:#f3f4f6;padding:4px 8px;border-radius:4px;">{_cv_esc(note)}</div>' if note else ''
+
+        cards.append(
+            f'<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+            f'<span aria-label="Source {_cv_esc(num)}" style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;">[{_cv_esc(num)}]</span>'
+            f'<div style="flex:1;min-width:0;">{title_el}{excerpt_el}{meta_el}{publisher_el}{note_el}</div>'
+            f'</li>'
         )
 
     return (
         f'<div style="margin:1rem 0;">'
         f'{heading_html}'
-        f'<div style="display:flex;flex-direction:column;gap:6px;">{cards}</div>'
+        f'<ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">{"".join(cards)}</ol>'
         f'</div>'
     )
 
@@ -13355,24 +13385,54 @@ _RENDERERS['checklist_interactive'] = _render_checklist_interactive
 
 
 def _render_chip_group(b: dict) -> str:
-    uid = _wa_uid(b)
-    chips = b.get('chips', [])
-    accent = b.get('accent', '#4f46e5')
-    multi = b.get('multiple', False)
-    input_type = 'checkbox' if multi else 'radio'
-    html_parts = [f'<style>[id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-                  f'[id="{uid}"] input:focus-visible+label{{outline:2px solid #4f46e5;outline-offset:2px;}}'
-                  f'[id="{uid}"] input:checked+label{{background:{_cv_esc(accent)};color:#fff;border-color:{_cv_esc(accent)};}}</style>'
-                  f'<div id="{uid}" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;">']
-    for i, chip in enumerate(chips):
-        text = chip if isinstance(chip, str) else chip.get('label', str(chip))
-        val = chip if isinstance(chip, str) else chip.get('value', text)
-        cid = f'{uid}_{_cv_esc(i)}'
-        html_parts.append(f'<input data-cb="item" data-key="{_esc(str(text))}" type="{input_type}" id="{cid}" name="{uid}" value="{_esc(str(val))}">'
-                          f'<label data-cb="label" data-key="{_esc(str(text))}" for="{cid}" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;'
-                          f'font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">{_esc(str(text))}</label>')
-    html_parts.append('</div>')
-    return ''.join(html_parts)
+    # Static filter/tag chips matching GAS look; supports safe links and wrap/scroll layouts.
+    label_txt = _first_text(b.get('label'))
+    scroll = _first_text(b.get('layout')) == 'scroll'
+    same_tab = b.get('same_tab') is True
+    target = '_top' if same_tab else '_blank'
+
+    raw_chips = b.get('chips') if isinstance(b.get('chips'), list) else []
+    chips_html = []
+    for c in raw_chips[:100]:
+        if isinstance(c, dict):
+            c_label = _first_text(c.get('label'), c.get('text'))
+            c_color = _first_text(c.get('color'))
+            c_url = _first_text(c.get('url'))
+            c_active = c.get('active') is True
+        elif (isinstance(c, str) or (isinstance(c, (int, float)) and not isinstance(c, bool))):
+            c_label = _text_loose(c)
+            c_color = ''
+            c_url = ''
+            c_active = False
+        else:
+            continue
+
+        safe_color = _safe_css(c_color, '')
+        if c_active:
+            bg = safe_color if safe_color else '#4f46e5'
+            tc = '#fff'
+        else:
+            if safe_color.startswith('#') and len(safe_color) == 7:
+                bg = safe_color + '18'
+            else:
+                bg = '#f3f4f6'
+            tc = safe_color if safe_color else '#374151'
+
+        safe_link = _safe_href(c_url, schemes=('https', 'mailto'))
+        escaped_label = _cv_esc(c_label)
+        ck_val = _ck(c_label, '')
+        style = f'display:inline-flex;align-items:center;background:{bg};color:{tc};border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:{"pointer" if safe_link else "default"};'
+
+        if safe_link:
+            curr_attr = ' aria-current="true"' if c_active else ''
+            chips_html.append(f'<a href="{_cv_esc(safe_link)}" target="{target}" rel="noopener" data-cb="item" data-key="{ck_val}"{curr_attr} style="{style}">{escaped_label}</a>')
+        else:
+            chips_html.append(f'<span data-cb="item" data-key="{ck_val}" style="{style}">{escaped_label}</span>')
+
+    wrap = 'display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none;' if scroll else 'display:flex;flex-wrap:wrap;gap:8px;'
+    heading_html = f'<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">{_cv_esc(label_txt)}</div>' if label_txt else ''
+    aria_attr = f' role="group" aria-label="{_cv_esc(label_txt)}"' if label_txt else ''
+    return f'{heading_html}<div{aria_attr} style="{wrap}margin:0.75rem 0;">{"".join(chips_html)}</div>'
 
 _RENDERERS['chip_group'] = _render_chip_group
 
@@ -15264,24 +15324,53 @@ _RENDERERS['repo_links'] = _render_repo_links
 
 
 def _render_resources_list(b: dict) -> str:
-    items = b.get('items', [])
-    title = b.get('title', 'Resources')
-    rows = ''
+    # Inventory list of downloadable assets or reference files with size and type tags.
+    raw_items = b.get('items') if isinstance(b.get('items'), list) else []
+    items = raw_items[:100]
+    heading_title = _first_text(b.get('title')) or 'Resources'
+
+    rows = []
     for item in items:
-        url = item.get('url', '#') if isinstance(item, dict) else '#'
-        label = (item.get('title') or item.get('label', '')) if isinstance(item, dict) else str(item)
-        icon = item.get('icon', '📎') if isinstance(item, dict) else '📎'
-        tag = item.get('type', '') if isinstance(item, dict) else ''
-        tag_html = (f'<span style="font-size:0.68rem;background:#e8f0fe;color:#1558b4;'
-                    f'border-radius:3px;padding:1px 6px;">{_esc(tag)}</span>' if tag else '')
-        rows += (f'<li style="display:flex;align-items:center;justify-content:space-between;'
-                 f'padding:7px 0;border-bottom:1px solid #f3f4f6;">'
-                 f'<a href="{_esc(url)}" target="_blank" rel="noopener" style="color:#7c3aed;'
-                 f'text-decoration:none;font-size:0.88rem;">{_cv_esc(icon)} {_esc(label)}</a>'
-                 f'{tag_html}</li>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;">'
-            f'<div style="font-weight:700;margin-bottom:8px;">📚 {_esc(title)}</div>'
-            f'<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></div>')
+        if isinstance(item, dict):
+            title = _first_text(item.get('title'), item.get('label'), item.get('name'))
+            url = _first_text(item.get('url'))
+            size = _first_text(item.get('size'))
+            type_val = _first_text(item.get('type'))
+            icon = _first_text(item.get('icon'))
+        elif (isinstance(item, str) or (isinstance(item, (int, float)) and not isinstance(item, bool))):
+            title = _text_loose(item)
+            url = ''
+            size = ''
+            type_val = ''
+            icon = ''
+        else:
+            continue
+
+        safe_url = _safe_href(url, schemes=('https', 'mailto'))
+        size_html = f'<span style="font-size:0.75rem;color:var(--muted,#6b7280);">{_cv_esc(size)}</span>' if size else ''
+        type_html = f'<span style="font-size:0.72rem;background:var(--surface2,#e8f0fe);padding:2px 6px;border-radius:4px;color:var(--muted,#1558b4);">{_cv_esc(type_val.upper())}</span>' if type_val else ''
+        icon_html = f'<span aria-hidden="true">{_cv_esc(icon)} </span>' if icon else ''
+
+        meta_group = f'<div style="display:flex;align-items:center;gap:8px;">{size_html}{type_html}</div>' if (size_html or type_html) else ''
+        content = (
+            f'<span style="font-size:0.88rem;color:var(--accent,#7c3aed);font-weight:500;">{icon_html}{_cv_esc(title)}</span>'
+            f'{meta_group}'
+        )
+
+        inner_style = 'display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border,#f3f4f6);text-decoration:none;'
+        if safe_url:
+            inner = f'<a href="{_cv_esc(safe_url)}" target="_blank" rel="noopener" style="{inner_style}">{content}</a>'
+        else:
+            inner = f'<div style="{inner_style}">{content}</div>'
+
+        rows.append(f'<li>{inner}</li>')
+
+    return (
+        f'<div style="border:1px solid var(--border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">'
+        f'<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📎 {_cv_esc(heading_title)}</div>'
+        f'<ul style="list-style:none;padding:0;margin:0;">{"".join(rows)}</ul>'
+        f'</div>'
+    )
 
 _RENDERERS['resources_list'] = _render_resources_list
 
@@ -15557,21 +15646,51 @@ _RENDERERS['summary_box'] = _render_summary_box
 
 
 def _render_tab_bar(b: dict) -> str:
-    uid = _wa_uid(b)
-    tabs = b.get('tabs', [])
-    accent = b.get('accent', '#4f46e5')
-    css = (f'<style>[id="{uid}"] input{{position:absolute;opacity:0;width:1px;height:1px;margin:0;}}'
-           + ''.join(f'[id="{uid}"] #t{uid}_{i}:checked~div label:nth-child({i+1}){{border-bottom-color:{_cv_esc(accent)};color:{_cv_esc(accent)};font-weight:700;}}'
-                     for i in range(len(tabs)))
-           + '</style>')
-    labels = ''.join(f'<label for="t{uid}_{_cv_esc(i)}" style="padding:9px 16px;cursor:pointer;font-size:0.84rem;'
-                     f'color:var(--muted,#5f6368);border-bottom:2px solid transparent;margin-bottom:-2px;">'
-                     f'{_esc(t.get("label", t) if isinstance(t, dict) else str(t))}</label>'
-                     for i, t in enumerate(tabs))
-    inputs = ''.join(f'<input type="radio" id="t{uid}_{i}" name="{uid}" {"checked" if i==0 else ""}>'
-                     for i in range(len(tabs)))
-    return (f'<div id="{uid}" style="margin:1rem 0;">{css}{inputs}'
-            f'<div style="border-bottom:2px solid #e5e7eb;display:flex;flex-wrap:wrap;">{labels}</div></div>')
+    # Accessible tab bar with safe URL support and single-source active styling.
+    raw_tabs = b.get('tabs') if isinstance(b.get('tabs'), list) else []
+    tabs = raw_tabs[:50]
+    accent = _safe_css(_first_text(b.get('accent')), '#1a73e8')
+
+    active_num = _num_loose(b.get('active_tab'))
+    default_active_idx = int(active_num) if active_num is not None and 0 <= int(active_num) < len(tabs) else 0
+
+    has_explicit_active = False
+    for t in tabs:
+        if isinstance(t, dict) and (t.get('is_active') is True or t.get('active') is True):
+            has_explicit_active = True
+            break
+
+    tab_items = []
+    for i, t in enumerate(tabs):
+        if isinstance(t, dict):
+            label = _first_text(t.get('label'), t.get('text'), t.get('name'))
+            url = _first_text(t.get('url'))
+            icon = _first_text(t.get('icon'))
+            is_active = (t.get('is_active') is True or t.get('active') is True) if has_explicit_active else (i == default_active_idx)
+        elif (isinstance(t, str) or (isinstance(t, (int, float)) and not isinstance(t, bool))):
+            label = _text_loose(t)
+            url = ''
+            icon = ''
+            is_active = False if has_explicit_active else (i == default_active_idx)
+        else:
+            continue
+
+        safe_link = _safe_href(url, schemes=('https', 'mailto'))
+        fw = '600' if is_active else '400'
+        tc = accent if is_active else '#5f6368'
+        bc = accent if is_active else 'transparent'
+        style = f'padding:8px 16px;font-size:0.85rem;font-weight:{fw};color:{tc};border-bottom:2px solid {bc};cursor:pointer;white-space:nowrap;text-decoration:none;'
+
+        icon_attr = f' data-icon="{_cv_esc(icon)}"' if icon else ''
+        curr_attr = ' aria-current="page"' if is_active else ''
+        escaped_label = _cv_esc(label)
+
+        if safe_link:
+            tab_items.append(f'<a href="{_cv_esc(safe_link)}" style="{style}"{icon_attr}{curr_attr}>{escaped_label}</a>')
+        else:
+            tab_items.append(f'<span style="{style}"{icon_attr}{curr_attr}>{escaped_label}</span>')
+
+    return f'<nav aria-label="Tabs" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">{"".join(tab_items)}</nav>'
 
 _RENDERERS['tab_bar'] = _render_tab_bar
 
@@ -15690,28 +15809,52 @@ _RENDERERS['time_estimate'] = _render_time_estimate
 
 
 def _render_timeline(b: dict) -> str:
-    events = b.get('events', [])
-    accent = b.get('accent', '#4f46e5')
-    direction = b.get('direction', 'vertical')
-    items = ''
-    for event in events:
-        date = event.get('date') or event.get('time', '')
-        title = event.get('title') or event.get('label', '')
-        text = event.get('text') or event.get('description', '')
-        icon = event.get('icon', '●')
-        items += (f'<div style="position:relative;padding-left:40px;margin-bottom:20px;">'
-                  f'<div style="position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;'
-                  f'background:{_esc(accent)};color:#fff;display:flex;align-items:center;justify-content:center;'
-                  f'font-size:0.7rem;">{_cv_esc(icon)}</div>'
-                  f'<div style="position:absolute;left:12px;top:26px;width:2px;'
-                  f'background:{_esc(accent)}44;height:calc(100% + 8px);"></div>'
-                  f'{"<div style=font-size:0.75rem;color:var(--a2ui-faint,#757575);margin-bottom:2px;>"+_esc(date)+"</div>" if date else ""}'
-                  f'<div style="font-weight:700;color:var(--a2ui-text,#171717);font-size:0.9rem;">{_esc(title)}</div>'
-                  f'{"<div style=font-size:0.85rem;color:var(--a2ui-muted,#666666);margin-top:4px;>"+_md_inline(text)+"</div>" if text else ""}'
-                  f'</div>')
-    title_html = (f'<div style="font-weight:700;font-size:1.05rem;margin-bottom:16px;">{_esc(b["title"])}</div>'
-                  if b.get('title') else '')
-    return f'<div style="margin:1.5rem 0;">{title_html}{items}</div>'
+    # Vertical milestone timeline rendered as an ordered list with connector line and dots.
+    raw_events = b.get('events') if isinstance(b.get('events'), list) else []
+    events = raw_events[:100]
+    accent = _safe_css(_first_text(b.get('accent')), '#176ee1')
+    title_text = _first_text(b.get('title'))
+    title_html = f'<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">{_cv_esc(title_text)}</p>' if title_text else ''
+
+    total = len(events)
+    items = []
+    for i, ev in enumerate(events):
+        if isinstance(ev, dict):
+            date = _first_text(ev.get('date'), ev.get('time'))
+            label = _first_text(ev.get('label'), ev.get('title'), ev.get('name'))
+            text = _first_text(ev.get('text'), ev.get('description'), ev.get('body'))
+            tag = _first_text(ev.get('tag'))
+        elif (isinstance(ev, str) or (isinstance(ev, (int, float)) and not isinstance(ev, bool))):
+            date = ''
+            label = _text_loose(ev)
+            text = ''
+            tag = ''
+        else:
+            continue
+
+        is_last = (i == total - 1)
+        tag_html = f'<span style="background:color-mix(in srgb, {accent} 10%, transparent);color:{accent};font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;">{_cv_esc(tag)}</span>' if tag else ''
+        connector = '' if is_last else '<div style="width:2px;background:#e0e0e0;flex:1;min-height:24px;margin-top:4px;"></div>'
+
+        items.append(
+            f'<li style="display:flex;gap:0;position:relative;">'
+            f'<div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;">'
+            f'<div style="width:14px;height:14px;border-radius:50%;background:{accent};border:3px solid #fff;box-shadow:0 0 0 2px {accent};flex:0 0 14px;margin-top:3px;z-index:1;"></div>'
+            f'{connector}</div>'
+            f'<div style="padding-bottom:28px;padding-left:12px;flex:1;min-width:0;">'
+            f'<div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;">'
+            f'<span style="font-size:0.78rem;font-weight:600;color:{accent};font-family:monospace;">{_cv_esc(date)}</span>{tag_html}</div>'
+            f'<p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;">{_cv_esc(label)}</p>'
+            f'<p style="color:var(--a2ui-muted,#666666);font-size:0.88rem;line-height:1.6;margin:0;">{_md_inline(text)}</p>'
+            f'</div></li>'
+        )
+
+    return (
+        f'<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);'
+        f'border-radius:var(--a2ui-radius,12px);border:1px solid var(--a2ui-border,#eaeaea);'
+        f'box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));">'
+        f'{title_html}<ol style="list-style:none;margin:0;padding:0;">{"".join(items)}</ol></div>'
+    )
 
 _RENDERERS['timeline'] = _render_timeline
 
@@ -15770,24 +15913,54 @@ _RENDERERS['version_badge'] = _render_version_badge
 
 
 def _render_video_card(b: dict) -> str:
-    url = b.get('url') or b.get('video_url', '')
-    thumbnail = b.get('thumbnail') or b.get('thumbnail_url', '')
-    title = b.get('title', '')
-    duration = b.get('duration', '')
-    if thumbnail:
-        img_html = (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
-                    f'style="display:block;position:relative;border-radius:8px 8px 0 0;overflow:hidden;">'
-                    f'<img src="{_esc(thumbnail)}" alt="{_esc(title)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">'
-                    f'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">'
-                    f'<div style="width:48px;height:48px;background:rgba(0,0,0,0.7);border-radius:50%;'
-                    f'display:flex;align-items:center;justify-content:center;font-size:1.2rem;">▶</div></div>'
-                    f'{"<div style=position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);color:#fff;font-size:0.72rem;padding:2px 6px;border-radius:3px;>"+_esc(duration)+"</div>" if duration else ""}'
-                    f'</a>')
+    # Video preview card with thumbnail/placeholder, duration badge, and title/description.
+    video_raw = _first_text(b.get('video_url'), b.get('url'), b.get('link'))
+    safe_video_url = _safe_href(video_raw, schemes=('https', 'http'))
+    thumb_raw = _first_text(b.get('thumbnail_url'), b.get('thumbnail'))
+    safe_thumb = _safe_href(thumb_raw, schemes=('https', 'http'))
+    title = _first_text(b.get('title'))
+    desc = _first_text(b.get('description'))
+    alt = _first_text(b.get('alt_text')) or title
+    duration = _first_text(b.get('duration'))
+
+    ck_val = _ck(b.get('video_url'), 'video_card')
+
+    media_inner = (
+        f'<img src="{_cv_esc(safe_thumb)}" alt="{_cv_esc(alt)}" style="width:100%;height:180px;object-fit:cover;display:block;">'
+        if safe_thumb else
+        '<div style="width:100%;height:180px;background:#1e293b;"></div>'
+    )
+    play_overlay = (
+        '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">'
+        '<div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;">'
+        '<span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div>'
+    )
+    duration_html = (
+        f'<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);color:#fff;font-size:0.72rem;padding:2px 6px;border-radius:3px;">'
+        f'{_cv_esc(duration)}</div>'
+        if duration else ''
+    )
+
+    if safe_video_url:
+        media_html = (
+            f'<a href="{_cv_esc(safe_video_url)}" target="_blank" rel="noopener" aria-label="Play video: {_cv_esc(title)}" style="display:block;position:relative;">'
+            f'{media_inner}{play_overlay}{duration_html}</a>'
+        )
     else:
-        img_html = ''
-    title_html = (f'<div style="padding:10px 12px;font-weight:600;font-size:0.88rem;">{_esc(title)}</div>' if title else '')
-    return (f'<div data-cb="node" data-key="{_ck(b.get("video_url"), "video_card")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;'
-            f'max-width:360px;">{img_html}{title_html}</div>')
+        media_html = (
+            f'<div style="display:block;position:relative;">'
+            f'{media_inner}{play_overlay}{duration_html}</div>'
+        )
+
+    title_html = f'<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">{_cv_esc(title)}</div>' if title else ''
+    desc_html = f'<div style="font-size:0.82rem;color:#6b7280;">{_cv_esc(desc)}</div>' if desc else ''
+    text_section = f'<div style="padding:12px 14px;">{title_html}{desc_html}</div>' if (title_html or desc_html) else ''
+
+    return (
+        f'<div data-cb="node" data-key="{ck_val}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
+        f'{media_html}{text_section}</div>'
+    )
 
 _RENDERERS['video_card'] = _render_video_card
 
@@ -16291,24 +16464,37 @@ _RENDERERS['live_aggregator'] = _render_live_aggregator
 
 
 def _render_media_mention_card(b: dict) -> str:
-    # Schema's fields are publication_name/publication_logo_url/headline/article_url/date;
-    # this read publication/quote/url/logo/logo_url, none of which exist, so the payload's
-    # actual content never appeared (surface-parity debt; GAS already reads the correct
-    # names). 2026-09-27.
-    publication = b.get('publication_name') or b.get('publication', '')
-    quote = b.get('headline') or b.get('quote') or b.get('text', '')
-    url = b.get('article_url') or b.get('url', '#')
-    logo = b.get('publication_logo_url') or b.get('logo', '')
-    date = b.get('date', '')
-    logo_html = (f'<img src="{_esc(logo)}" alt="{_esc(publication)}" style="max-height:28px;object-fit:contain;">'
-                 if logo else
-                 f'<span style="font-weight:800;font-size:0.9rem;color:#374151;">{_esc(publication)}</span>')
-    return (f'<div data-cb="node" data-key="{_ck(b.get("publication_name"), "media_mention_card")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
-            f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-            f'<a href="{_esc(url)}" target="_blank" rel="noopener" style="text-decoration:none;">{logo_html}</a>'
-            f'{"<span style=font-size:0.78rem;color:var(--muted,#5f6368);>"+_esc(date)+"</span>" if date else ""}</div>'
-            f'<p style="font-style:italic;font-size:0.9rem;color:#374151;margin:0;line-height:1.6;">'
-            f'"{_esc(quote)}"</p></div>')
+    # Media publication coverage card featuring publication logo, headline, date, and excerpt.
+    publication = _first_text(b.get('publication_name'), b.get('publication'), b.get('source'))
+    safe_logo = _safe_href(_first_text(b.get('publication_logo_url'), b.get('logo')), schemes=('https', 'http'))
+    headline = _first_text(b.get('headline'), b.get('quote'), b.get('text'))
+    safe_url = _safe_href(_first_text(b.get('article_url'), b.get('url')), schemes=('https', 'mailto'))
+    date = _first_text(b.get('date'))
+    excerpt = _first_text(b.get('excerpt'))
+
+    ck_val = _ck(b.get('publication_name'), 'media_mention_card')
+
+    logo_html = (
+        f'<img src="{_cv_esc(safe_logo)}" alt="{_cv_esc(publication)}" style="height:24px;object-fit:contain;opacity:0.6;">'
+        if safe_logo else
+        f'<span style="font-size:0.78rem;font-weight:700;color:var(--muted,#6b7280);">{_cv_esc(publication)}</span>'
+    )
+    date_html = f'<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">{_cv_esc(date)}</span>' if date else ''
+
+    headline_style = 'font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;'
+    if safe_url:
+        headline_html = f'<a href="{_cv_esc(safe_url)}" target="_blank" rel="noopener" style="{headline_style}text-decoration:none;">{_cv_esc(headline)}</a>'
+    else:
+        headline_html = f'<div style="{headline_style}">{_cv_esc(headline)}</div>'
+
+    excerpt_html = f'<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:6px;line-height:1.5;">{_cv_esc(excerpt)}</div>' if excerpt else ''
+
+    return (
+        f'<div data-cb="node" data-key="{ck_val}" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+        f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+        f'{logo_html}{date_html}</div>'
+        f'{headline_html}{excerpt_html}</div>'
+    )
 
 _RENDERERS['media_mention_card'] = _render_media_mention_card
 
@@ -16461,25 +16647,58 @@ _RENDERERS['scatter_trend'] = _render_scatter_trend
 
 
 def _render_social_proof_banner(b: dict) -> str:
-    # Schema's fields are metric_value/metric_label/icon_url/link_url; this read
-    # text/count/number/avatars/icon, none of which exist, so the payload's actual content
-    # never appeared (surface-parity debt). Ported to the real fields. 2026-09-27.
-    metric_value = b.get('metric_value') or b.get('count') or b.get('number', '')
-    metric_label = b.get('metric_label') or b.get('text', '')
-    icon_url = b.get('icon_url', '')
-    link_url = b.get('link_url', '')
-    icon_html = (f'<img src="{_esc(icon_url)}" alt="" style="width:20px;height:20px;object-fit:contain;">'
-                 if icon_url else '<span style="font-size:1rem;">👥</span>')
-    inner = (f'<span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;'
-             f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;'
-             f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);'
-             f'font-size:0.84rem;width:fit-content;">'
-             f'{icon_html}'
-             f'{"<span style=font-weight:700;>"+_esc(str(metric_value))+"</span>" if metric_value else ""}'
-             f'<span style="color:#374151;">{_esc(metric_label)}</span></span>')
-    if link_url:
-        return f'<a data-cb="node" data-key="{_ck(b.get("metric_label"), "social_proof_banner")}" href="{_esc(link_url)}" style="text-decoration:none;display:block;margin:1rem 0;width:fit-content;">{inner}</a>'
-    return f'<div data-cb="node" data-key="{_ck(b.get("metric_label"), "social_proof_banner")}" style="margin:1rem 0;width:fit-content;">{inner}</div>'
+    # Centered social proof card featuring key metrics, logo ribbon, quote, and optional link.
+    metric_val = _first_text(b.get('metric_value'), b.get('count'), b.get('number'))
+    metric_lbl = _first_text(b.get('metric_label'), b.get('text'))
+    safe_icon = _safe_href(_first_text(b.get('icon_url')), schemes=('https', 'http'))
+    safe_link = _safe_href(_first_text(b.get('link_url')), schemes=('https', 'mailto'))
+    testimonial = _first_text(b.get('testimonial'))
+
+    raw_logos = b.get('logos') if isinstance(b.get('logos'), list) else []
+    logos_html = []
+    for l in raw_logos[:20]:
+        if isinstance(l, dict):
+            l_name = _first_text(l.get('name'), l.get('title'))
+            l_url = _safe_href(_first_text(l.get('url')), schemes=('https', 'http'))
+        elif (isinstance(l, str) or (isinstance(l, (int, float)) and not isinstance(l, bool))):
+            l_name = _text_loose(l)
+            l_url = ''
+        else:
+            continue
+
+        if l_url:
+            logos_html.append(f'<img src="{_cv_esc(l_url)}" alt="{_cv_esc(l_name)}" style="height:32px;object-fit:contain;opacity:0.6;filter:grayscale(1);">')
+        elif l_name:
+            logos_html.append(f'<span style="font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);padding:4px 12px;">{_cv_esc(l_name)}</span>')
+
+    logos_bar = f'<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">{"".join(logos_html)}</div>' if logos_html else ''
+    metric_html = (
+        (f'<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#4f46e5);">{_cv_esc(metric_val)}</div>' if metric_val else '')
+        + (f'<div style="font-size:0.82rem;color:var(--muted,#6b7280);">{_cv_esc(metric_lbl)}</div>' if metric_lbl else '')
+    )
+    quote_html = f'<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"{_cv_esc(testimonial)}"</blockquote>' if testimonial else ''
+    icon_html = f'<img src="{_cv_esc(safe_icon)}" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' if safe_icon else ''
+
+    ck_val = _ck(b.get('metric_label'), 'social_proof_banner')
+    card_body = (
+        f'{icon_html}'
+        f'{metric_html}'
+        f'{logos_bar}'
+        f'{quote_html}'
+    )
+
+    card_style = 'margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;'
+    if safe_link:
+        return (
+            f'<a data-cb="node" data-key="{ck_val}" href="{_cv_esc(safe_link)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">'
+            f'<div style="{card_style}">{card_body}</div>'
+            f'</a>'
+        )
+    return (
+        f'<div data-cb="node" data-key="{ck_val}" style="{card_style}">'
+        f'{card_body}'
+        f'</div>'
+    )
 
 _RENDERERS['social_proof_banner'] = _render_social_proof_banner
 
@@ -25122,7 +25341,7 @@ def _g3d_alt_html(b: dict) -> str:
     for i, d in enumerate(dots):
         d = d if isinstance(d, dict) else {}
         label = d.get('label')
-        label = str(label).strip() if isinstance(label, (str, int, float)) and not isinstance(label, bool) and str(label).strip() else f'Pin {i + 1}'
+        label = str(label).strip() if (isinstance(label, str) or (isinstance(label, (int, float)) and not isinstance(label, bool))) and not isinstance(label, bool) and str(label).strip() else f'Pin {i + 1}'
         items.append('<li>' + _esc(label) + ': ' + _esc(_g3d_coord(d.get('lat'))) + ', ' + _esc(_g3d_coord(d.get('lon'))) + '</li>')
     for i, a in enumerate(arcs):
         a = a if isinstance(a, dict) else {}
@@ -25156,7 +25375,7 @@ def _g3d_data(b: dict):
             continue
         item = {'lat': la, 'lon': lo}
         lab = d.get('label')
-        if isinstance(lab, (str, int, float)) and not isinstance(lab, bool) and str(lab).strip():
+        if (isinstance(lab, str) or (isinstance(lab, (int, float)) and not isinstance(lab, bool))) and not isinstance(lab, bool) and str(lab).strip():
             item['label'] = str(lab).strip()
         if isinstance(d.get('color'), str) and d['color'].strip():
             item['color'] = d['color'].strip()
@@ -26138,23 +26357,23 @@ def _geo_radar_data(b: dict):
         if la is None or lo is None:
             continue
         nid = n.get('id')
-        nid = _geo_jsstr(nid) if isinstance(nid, (str, int, float)) and not isinstance(nid, bool) and _geo_jsstr(nid) != '' else str(i)
+        nid = _geo_jsstr(nid) if (isinstance(nid, str) or (isinstance(nid, (int, float)) and not isinstance(nid, bool))) and not isinstance(nid, bool) and _geo_jsstr(nid) != '' else str(i)
         name = ''
         for key in ('name', 'label'):
             v = n.get(key)
-            if isinstance(v, (str, int, float)) and not isinstance(v, bool) and _geo_jsstr(v).strip():
+            if (isinstance(v, str) or (isinstance(v, (int, float)) and not isinstance(v, bool))) and not isinstance(v, bool) and _geo_jsstr(v).strip():
                 name = _geo_jsstr(v).strip()
                 break
         item = {'id': nid, 'name': name or nid, 'lat': la, 'lon': lo}
         v = n.get('value')
-        if isinstance(v, (str, int, float)) and not isinstance(v, bool) and _geo_jsstr(v) != '':
+        if (isinstance(v, str) or (isinstance(v, (int, float)) and not isinstance(v, bool))) and not isinstance(v, bool) and _geo_jsstr(v) != '':
             item['value'] = _geo_jsstr(v)
         nodes.append(item)
     for l in (b.get('links') if isinstance(b.get('links'), list) else []):
         if not isinstance(l, dict):
             continue
         fr, to = l.get('from', l.get('source')), l.get('to', l.get('target'))
-        if all(isinstance(v, (str, int, float)) and not isinstance(v, bool) for v in (fr, to)):
+        if all((isinstance(v, str) or (isinstance(v, (int, float)) and not isinstance(v, bool))) and not isinstance(v, bool) for v in (fr, to)):
             links.append({'from': _geo_jsstr(fr), 'to': _geo_jsstr(to)})
     return nodes, links
 
@@ -29976,7 +30195,7 @@ def _safe_css(v, dflt):
     """A CSS value from a payload field that has no standard guarded name: kept if it passes the guard's CSS check, else the default."""
     if isinstance(v, (int, float)) and not isinstance(v, bool):
         return str(v)
-    return v if isinstance(v, str) and _gd_css(v) else dflt
+    return v if isinstance(v, str) and v.strip(' \t\n\r\f\v') and _gd_css(v) else dflt
 
 
 def _safe_ident(v, dflt=''):

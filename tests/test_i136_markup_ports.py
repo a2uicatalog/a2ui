@@ -252,7 +252,7 @@ EQUAL.extend([
     {"type": "env_var_list", "variables": [{"key": "NODE_ENV", "description": "Runtime target", "required": True, "default": "production"}, {"name": "MAX", "requirement_status": "optional", "value": 16}, "PLAIN"]},
     {"type": "faq_accordion", "title": "FAQ", "items": [{"question": "What is the SLA?", "answer": "**99.95%** monthly, see [terms](https://example.com/t)"}, {"label": "Old label", "content": "old content"}]},
     {"type": "keyboard_shortcut", "keys": ["Ctrl", "Shift", "P"], "action": "Open Command Palette", "platform": "Windows"},
-    {"type": "table_of_contents", "headings": [{"level": 1, "text": "Intro", "anchor": "#intro"}, {"level": 2, "title": "Setup guide", "anchor": "setup guide", "children": [{"text": "Child", "level": 3}]}, "Plain"]},
+    {"type": "table_of_contents", "title": "Guide", "headings": [{"level": 1, "text": "Intro", "anchor": "#intro"}, {"level": 2, "title": "Setup guide", "anchor": "setup guide", "children": [{"text": "Child", "level": 3}]}, "Plain"]},
 ])
 MUST.update({
     "avatar_group": ["Elena Rostova", 'src="https://example.com/a.png"', "MC", "PP", "+8", "Responders"],
@@ -262,7 +262,7 @@ MUST.update({
     "env_var_list": ["NODE_ENV", "Runtime target", "production", "required", "optional", "MAX", "16", "PLAIN"],
     "faq_accordion": ["FAQ", "What is the SLA?", "<strong>99.95%</strong>", 'href="https://example.com/t"', "Old label", "old content"],
     "keyboard_shortcut": ["Ctrl", "Shift", "Open Command Palette", "(Windows)"],
-    "table_of_contents": ["Table of Contents", "Intro", 'href="#intro"', 'href="#setup-guide"', "Setup guide", "Child", "Plain"],
+    "table_of_contents": ["Guide", "Intro", 'href="#intro"', 'href="#setup-guide"', "Setup guide", "Child", "Plain"],
 })
 
 
@@ -277,3 +277,41 @@ def test_capability_checklist_list_shape_and_matrix_without_capabilities(core_js
     for html in (_py_fresh(blocks[0]), gas[0]):
         for w in ("Readiness", "Accordion", "Maps", "Chat", "beta", "plain", 'aria-label="partial"', 'aria-label="unavailable"'):
             assert w in html
+
+
+# ---- batch b5/2 ----
+EQUAL.extend([
+    {"type": "chip_group", "label": "Filter", "layout": "scroll", "same_tab": True, "chips": [{"label": "All", "active": True}, {"label": "Auth", "url": "https://example.com/auth", "color": "#6366f1"}, {"label": "Billing", "color": "#abc"}, "plain"]},
+    {"type": "tab_bar", "tabs": [{"label": "Overview", "url": "https://example.com/o", "is_active": True, "icon": "home"}, {"label": "Incidents", "url": "https://example.com/i", "icon": "alert"}, {"text": "No link"}, "Str"]},
+    {"type": "timeline", "title": "Launch", "accent": "#6366f1", "events": [{"date": "2026-07-01", "label": "Freeze", "text": "Core **API** stable", "tag": "Release"}, {"time": "Jul", "title": "Audit", "description": "Pen test"}, {"date": 2026, "label": "Beta", "body": "old body"}, "Plain"]},
+    {"type": "resources_list", "title": "Downloads", "items": [{"title": "Helm Chart", "size": "42 KB", "type": "tar.gz", "url": "https://example.com/helm"}, {"label": "No url", "type": "pdf", "icon": "\U0001F4C4"}, "Str"]},
+    {"type": "video_card", "video_url": "https://example.com/v.mp4", "thumbnail_url": "https://example.com/a.png", "title": "Scaling", "description": "Failover patterns.", "alt_text": "Speaker slide", "duration": "8:45"},
+    {"type": "social_proof_banner", "metric_value": "500M+", "metric_label": "events daily", "icon_url": "https://example.com/a.png", "link_url": "https://example.com/m", "testimonial": "Great", "logos": [{"name": "Acme", "url": "https://example.com/l.png"}, {"name": "Beta"}]},
+    {"type": "media_mention_card", "publication_name": "TechDispatch", "publication_logo_url": "https://example.com/a.png", "headline": "How NextGen Streamlines", "article_url": "https://example.com/p", "date": "2024-05-18", "excerpt": "Short"},
+    {"type": "source_citation", "heading": "Sources", "sources": [{"number": 1, "title": "Paper", "url": "https://example.com/p", "excerpt": "quote", "author": "Ann", "date": "2024", "publisher": "ACM", "note": "see s3"}, {"title": "No number", "author": ["A", "B"]}, "Str"]},
+])
+MUST.update({
+    "chip_group": ["Filter", "All", "Auth", 'href="https://example.com/auth"', 'target="_top"', "Billing", "plain", "overflow-x:auto", "#6366f118"],
+    "tab_bar": ["Overview", 'href="https://example.com/o"', 'aria-current="page"', "Incidents", "No link", "Str", 'data-icon="home"'],
+    "timeline": ["Launch", "2026-07-01", "Freeze", "<strong>API</strong>", "Release", "Pen test", "Audit", "old body", "Plain", "<ol"],
+    "resources_list": ["Downloads", "Helm Chart", "42 KB", "TAR.GZ", 'href="https://example.com/helm"', "No url", "PDF", "Str"],
+    "video_card": ["Scaling", "Failover patterns.", 'alt="Speaker slide"', 'src="https://example.com/a.png"', 'href="https://example.com/v.mp4"'],
+    "social_proof_banner": ["500M+", "events daily", 'src="https://example.com/a.png"', 'href="https://example.com/m"', "Great", "Acme", "Beta"],
+    "media_mention_card": ["TechDispatch", 'src="https://example.com/a.png"', "How NextGen Streamlines", 'href="https://example.com/p"', "2024-05-18", "Short"],
+    "source_citation": ["Sources", "[1]", "Paper", 'href="https://example.com/p"', "quote", "Ann", "2024", "ACM", "see s3", "No number", "[2]", "A, B", "Str", "[3]"],
+})
+OLD.extend([
+    {"type": "chip_group", "chips": [{"text": "Old chip"}]},
+    {"type": "tab_bar", "tabs": [{"text": "Old tab", "url": "#", "active": True}, {"name": "Second"}], "active_tab": 1},
+    {"type": "timeline", "events": [{"date": "2024", "title": "A2UI v1", "body": "First atoms defined."}]},
+    {"type": "resources_list", "items": [{"label": "Old res", "url": "https://example.com/r", "size": "1 MB"}]},
+    {"type": "video_card", "url": "https://example.com/old.mp4", "thumbnail": "https://example.com/t.png", "title": "Old video"},
+    {"type": "social_proof_banner", "text": "Old banner text", "count": 1500},
+    {"type": "media_mention_card", "source": "Wired", "quote": "Old quote", "url": "https://example.com/q"},
+    {"type": "source_citation", "title": "Single", "url": "https://example.com/s", "authors": ["X", "Y"], "year": 2020, "publisher": "Pub", "note": "n1"},
+])
+OLD_WORDS.update({
+    "chip_group": ["Old chip"], "tab_bar": ["Old tab", "Second"], "timeline": ["A2UI v1", "First atoms defined."], "resources_list": ["Old res", "1 MB", 'href="https://example.com/r"'],
+    "video_card": ["Old video", 'href="https://example.com/old.mp4"', 'src="https://example.com/t.png"'], "social_proof_banner": ["Old banner text", "1500"],
+    "media_mention_card": ["Wired", "Old quote", 'href="https://example.com/q"'], "source_citation": ["Single", 'href="https://example.com/s"', "X, Y", "2020", "Pub", "n1"],
+})

@@ -727,10 +727,6 @@
   "size",
   "variant"
  ],
- "source_citation": [
-  "heading",
-  "sources"
- ],
  "sparkline": [
   "height",
   "width"
@@ -821,9 +817,6 @@
   "set_c_exclusive",
   "title",
   "version"
- ],
- "video_card": [
-  "alt_text"
  ],
  "video_pair": [
   "caption"

@@ -485,22 +485,49 @@ _RENDERERS['call_mood_board'] = function(b) {
 
 // ─── social_proof_banner ──────────────────────────────────────────────────────
 _RENDERERS['social_proof_banner'] = function(b) {
-  var metric = b.metric_value ? '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#4f46e5);">' + _esc(b.metric_value) + '</div><div style="font-size:0.82rem;color:var(--muted,#6b7280);">' + _esc(b.metric_label || '') + '</div>' : '';
-  var logos  = (b.logos || []).map(function(l) {
-    return l.url
-      ? '<img src="' + _esc(l.url) + '" alt="' + _esc(l.name || '') + '" style="height:32px;object-fit:contain;opacity:0.6;filter:grayscale(1);">'
-      : '<span style="font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);padding:4px 12px;">' + _esc(l.name || '') + '</span>';
-  }).join('');
-  var quote  = b.testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(b.testimonial) + '"</blockquote>' : '';
-  // Schema also declares `icon_url` and `link_url`; neither was ever used at all
-  // (surface-parity debt). 2026-09-27.
-  var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
-  var body = iconHtml
-    + '<div' + (b.link_url ? '' : ' data-cb="node" data-key="' + _ckey(b.metric_label, 'social_proof_banner') + '"') + ' style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
-    + metric
-    + (logos ? '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">' + logos + '</div>' : '')
-    + quote + '</div>';
-  return b.link_url ? '<a data-cb="node" data-key="' + _ckey(b.metric_label, 'social_proof_banner') + '" href="' + _safeUrl(b.link_url) + '" target="_top" style="text-decoration:none;color:inherit;display:block;">' + body + '</a>' : body;
+  var metricVal = _firstText(b.metric_value, b.count, b.number);
+  var metricLbl = _firstText(b.metric_label, b.text);
+  var safeIcon = _safe_href(_firstText(b.icon_url), ['https', 'http']);
+  var safeLink = _safe_href(_firstText(b.link_url), ['https', 'mailto']);
+  var testimonial = _firstText(b.testimonial);
+
+  var rawLogos = Array.isArray(b.logos) ? b.logos : [];
+  var logosHtml = [];
+  var limit = Math.min(rawLogos.length, 20);
+  for (var i = 0; i < limit; i++) {
+    var l = rawLogos[i];
+    var lName = '', lUrl = '';
+    if (l !== null && typeof l === 'object' && !Array.isArray(l)) {
+      lName = _firstText(l.name, l.title);
+      lUrl = _safe_href(_firstText(l.url), ['https', 'http']);
+    } else if (typeof l === 'string' || typeof l === 'number') {
+      lName = _textLoose(l);
+    } else {
+      continue;
+    }
+
+    if (lUrl) {
+      logosHtml.push('<img src="' + _esc(lUrl) + '" alt="' + _esc(lName) + '" style="height:32px;object-fit:contain;opacity:0.6;filter:grayscale(1);">');
+    } else if (lName) {
+      logosHtml.push('<span style="font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);padding:4px 12px;">' + _esc(lName) + '</span>');
+    }
+  }
+
+  var logosBar = logosHtml.length ? '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">' + logosHtml.join('') + '</div>' : '';
+  var metricHtml = (metricVal ? '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#4f46e5);">' + _esc(metricVal) + '</div>' : '') +
+    (metricLbl ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);">' + _esc(metricLbl) + '</div>' : '');
+  var quoteHtml = testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(testimonial) + '"</blockquote>' : '';
+  var iconHtml = safeIcon ? '<img src="' + _esc(safeIcon) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
+
+  var ckVal = _ckey(b.metric_label, 'social_proof_banner');
+  var cardBody = iconHtml + metricHtml + logosBar + quoteHtml;
+  var cardStyle = 'margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;';
+
+  if (safeLink) {
+    return '<a data-cb="node" data-key="' + ckVal + '" href="' + _esc(safeLink) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">' +
+      '<div style="' + cardStyle + '">' + cardBody + '</div></a>';
+  }
+  return '<div data-cb="node" data-key="' + ckVal + '" style="' + cardStyle + '">' + cardBody + '</div>';
 };
 
 // ─── expert_endorsement ───────────────────────────────────────────────────────
@@ -520,20 +547,31 @@ _RENDERERS['expert_endorsement'] = function(b) {
 
 // ─── media_mention_card ───────────────────────────────────────────────────────
 _RENDERERS['media_mention_card'] = function(b) {
-  var logo = b.publication_logo_url
-    ? '<img src="' + _esc(b.publication_logo_url) + '" alt="' + _esc(b.publication_name||'') + '" style="height:24px;object-fit:contain;opacity:0.6;">'
-    : '<span style="font-size:0.78rem;font-weight:700;color:var(--muted,#6b7280);">' + _esc(b.publication_name || '') + '</span>';
-  var headline = b.article_url
-    ? '<a href="' + _safeUrl(b.article_url) + '" target="_top" style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);text-decoration:none;line-height:1.4;">' + _esc(b.headline || '') + '</a>'
-    : '<div style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;">' + _esc(b.headline || '') + '</div>';
-  return '<div data-cb="node" data-key="' + _ckey(b.publication_name, 'media_mention_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-    + logo
-    + (b.date ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.date) + '</span>' : '')
-    + '</div>'
-    + headline
-    + (b.excerpt ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:6px;line-height:1.5;">' + _esc(b.excerpt) + '</div>' : '')
-    + '</div>';
+  var publication = _firstText(b.publication_name, b.publication, b.source);
+  var safeLogo = _safe_href(_firstText(b.publication_logo_url, b.logo), ['https', 'http']);
+  var headline = _firstText(b.headline, b.quote, b.text);
+  var safeUrl = _safe_href(_firstText(b.article_url, b.url), ['https', 'mailto']);
+  var date = _firstText(b.date);
+  var excerpt = _firstText(b.excerpt);
+
+  var ckVal = _ckey(b.publication_name, 'media_mention_card');
+
+  var logoHtml = safeLogo
+    ? '<img src="' + _esc(safeLogo) + '" alt="' + _esc(publication) + '" style="height:24px;object-fit:contain;opacity:0.6;">'
+    : '<span style="font-size:0.78rem;font-weight:700;color:var(--muted,#6b7280);">' + _esc(publication) + '</span>';
+  var dateHtml = date ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(date) + '</span>' : '';
+
+  var headlineStyle = 'font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;';
+  var headlineHtml = safeUrl
+    ? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" style="' + headlineStyle + 'text-decoration:none;">' + _esc(headline) + '</a>'
+    : '<div style="' + headlineStyle + '">' + _esc(headline) + '</div>';
+
+  var excerptHtml = excerpt ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:6px;line-height:1.5;">' + _esc(excerpt) + '</div>' : '';
+
+  return '<div data-cb="node" data-key="' + ckVal + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+    logoHtml + dateHtml + '</div>' +
+    headlineHtml + excerptHtml + '</div>';
 };
 
 // ─── media_stream_card ────────────────────────────────────────────────────────

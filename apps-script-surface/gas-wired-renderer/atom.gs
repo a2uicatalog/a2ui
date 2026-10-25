@@ -110,7 +110,7 @@ var _SAFE_CSS_FN = {rgb:1,rgba:1,hsl:1,hsla:1,hwb:1,lab:1,lch:1,oklab:1,oklch:1,
   'linear-gradient':1,'radial-gradient':1,'conic-gradient':1,'repeating-linear-gradient':1,'repeating-radial-gradient':1,'repeating-conic-gradient':1,'cubic-bezier':1,steps:1};
 function _safe_css(v, dflt) {
   if (typeof v === 'number') return String(v);
-  if (typeof v !== 'string' || v.length > 300 || /["'<>;{}\\`:@&=!\u0000-\u001f\u007f\u2028\u2029]|\/\*|\*\//.test(v)) return dflt;
+  if (typeof v !== 'string' || /^[ \t\n\r\f\v]*$/.test(v) || v.length > 300 || /["'<>;{}\\`:@&=!\u0000-\u001f\u007f\u2028\u2029]|\/\*|\*\//.test(v)) return dflt;
   var re = /([a-zA-Z_-][a-zA-Z0-9_-]*)[ \t\n\r\f\v]*\(/g, m;
   while ((m = re.exec(v)) !== null) { if (!_SAFE_CSS_FN.hasOwnProperty(m[1].toLowerCase())) return dflt; }
   return v;
@@ -1835,18 +1835,34 @@ _RENDERERS['key_value'] = function(b) {
 };
 
 _RENDERERS['timeline'] = function(b) {
-  var events = b.events || [];
-  var accent = b.accent || '#176ee1';
-  var titleHtml = b.title ? '<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">' + _esc(b.title) + '</p>' : '';
-  var items = events.map(function(ev, i){
-    var isLast = i === events.length - 1;
-    var date = ev.date || '';
-    var label = ev.label || '';
-    var text = ev.text || '';
-    var tag = ev.tag || '';
-    var tagHtml = tag ? '<span style="background:' + accent + '18;color:' + accent + ';font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;">' + _esc(tag) + '</span>' : '';
+  var rawEvents = Array.isArray(b.events) ? b.events : [];
+  var events = rawEvents.slice(0, 100);
+  var accent = _safe_css(_firstText(b.accent), '#176ee1');
+  var titleText = _firstText(b.title);
+  var titleHtml = titleText ? '<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">' + _esc(titleText) + '</p>' : '';
+
+  var total = events.length;
+  var items = [];
+  for (var i = 0; i < total; i++) {
+    var ev = events[i];
+    var date = '', label = '', text = '', tag = '';
+    if (ev !== null && typeof ev === 'object' && !Array.isArray(ev)) {
+      date = _firstText(ev.date, ev.time);
+      label = _firstText(ev.label, ev.title, ev.name);
+      text = _firstText(ev.text, ev.description, ev.body);
+      tag = _firstText(ev.tag);
+    } else if (typeof ev === 'string' || typeof ev === 'number') {
+      label = _textLoose(ev);
+    } else {
+      continue;
+    }
+
+    var isLast = (i === total - 1);
+    var tagHtml = tag ? '<span style="background:color-mix(in srgb, ' + accent + ' 10%, transparent);color:' + accent + ';font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;">' + _esc(tag) + '</span>' : '';
     var connector = isLast ? '' : '<div style="width:2px;background:#e0e0e0;flex:1;min-height:24px;margin-top:4px;"></div>';
-    return '<div style="display:flex;gap:0;position:relative;">' +
+
+    items.push(
+      '<li style="display:flex;gap:0;position:relative;">' +
       '<div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;">' +
       '<div style="width:14px;height:14px;border-radius:50%;background:' + accent + ';border:3px solid #fff;box-shadow:0 0 0 2px ' + accent + ';flex:0 0 14px;margin-top:3px;z-index:1;"></div>' +
       connector + '</div>' +
@@ -1854,10 +1870,13 @@ _RENDERERS['timeline'] = function(b) {
       '<div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;">' +
       '<span style="font-size:0.78rem;font-weight:600;color:' + accent + ';font-family:monospace;">' + _esc(date) + '</span>' + tagHtml + '</div>' +
       '<p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;">' + _esc(label) + '</p>' +
-      '<p style="color:var(--a2ui-muted,#666666);font-size:0.88rem;line-height:1.6;margin:0;">' + _markdownToHtml(text) + '</p>' +
-      '</div></div>';
-  }).join('');
-  return '<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);border-radius:var(--a2ui-radius,12px);border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));">' + titleHtml + items + '</div>';
+      '<p style="color:var(--a2ui-muted,#666666);font-size:0.88rem;line-height:1.6;margin:0;">' + _md_inline(text) + '</p>' +
+      '</div></li>'
+    );
+  }
+
+  return '<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);border-radius:var(--a2ui-radius,12px);border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));">' +
+    titleHtml + '<ol style="list-style:none;margin:0;padding:0;">' + items.join('') + '</ol></div>';
 };
 
 _RENDERERS['annotated_code'] = function(b) {
@@ -2075,16 +2094,45 @@ _RENDERERS['further_reading'] = function(b) {
 // Switched to the shared CSS custom properties so it follows whichever theme
 // class the page shell applies, the same pattern the AtomPage.html nav bar uses.
 _RENDERERS['resources_list'] = function(b) {
-  var items = b.items || [];
-  var rows = items.map(function(item){
-    var size = item.size ? '<span style="font-size:0.75rem;color:var(--muted);">' + _esc(item.size) + '</span>' : '';
-    var type = item.type ? '<span style="font-size:0.72rem;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--muted);">' + _esc(item.type.toUpperCase()) + '</span>' : '';
-    return '<a href="' + _esc(item.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);text-decoration:none;">' +
-      '<span style="font-size:0.88rem;color:var(--accent);font-weight:500;">' + _esc(item.title||item.label||item.name||'') + '</span>' +
-      '<div style="display:flex;align-items:center;gap:8px;">' + size + type + '</div></a>';
-  }).join('');
-  return '<div style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:var(--text);margin-bottom:4px;">📎 Resources</div>' + rows + '</div>';
+  var rawItems = Array.isArray(b.items) ? b.items : [];
+  var items = rawItems.slice(0, 100);
+  var headingTitle = _firstText(b.title) || 'Resources';
+
+  var rows = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var title = '', url = '', size = '', typeVal = '', icon = '';
+    if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
+      title = _firstText(item.title, item.label, item.name);
+      url = _firstText(item.url);
+      size = _firstText(item.size);
+      typeVal = _firstText(item.type);
+      icon = _firstText(item.icon);
+    } else if (typeof item === 'string' || typeof item === 'number') {
+      title = _textLoose(item);
+    } else {
+      continue;
+    }
+
+    var safeUrl = _safe_href(url, ['https', 'mailto']);
+    var sizeHtml = size ? '<span style="font-size:0.75rem;color:var(--muted,#6b7280);">' + _esc(size) + '</span>' : '';
+    var typeHtml = typeVal ? '<span style="font-size:0.72rem;background:var(--surface2,#e8f0fe);padding:2px 6px;border-radius:4px;color:var(--muted,#1558b4);">' + _esc(typeVal.toUpperCase()) + '</span>' : '';
+    var iconHtml = icon ? '<span aria-hidden="true">' + _esc(icon) + ' </span>' : '';
+
+    var metaGroup = (sizeHtml || typeHtml) ? '<div style="display:flex;align-items:center;gap:8px;">' + sizeHtml + typeHtml + '</div>' : '';
+    var content = '<span style="font-size:0.88rem;color:var(--accent,#7c3aed);font-weight:500;">' + iconHtml + _esc(title) + '</span>' + metaGroup;
+
+    var innerStyle = 'display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border,#f3f4f6);text-decoration:none;';
+    var inner = safeUrl
+      ? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" style="' + innerStyle + '">' + content + '</a>'
+      : '<div style="' + innerStyle + '">' + content + '</div>';
+
+    rows.push('<li>' + inner + '</li>');
+  }
+
+  return '<div style="border:1px solid var(--border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
+    '<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📎 ' + _esc(headingTitle) + '</div>' +
+    '<ul style="list-style:none;padding:0;margin:0;">' + rows.join('') + '</ul></div>';
 };
 
 _RENDERERS['sidebar_note'] = function(b) {
@@ -3079,14 +3127,56 @@ _RENDERERS['pagination'] = function(b) {
 };
 
 _RENDERERS['tab_bar'] = function(b) {
-  var tabs = b.tabs || [];
-  var active = b.active_tab || 0;
-  var tabsHtml = tabs.map(function(t, i){
-    var isActive = i === active;
-    var text = typeof t === 'string' ? t : (t.label || t.text || '');
-    return '<div style="padding:8px 16px;font-size:0.85rem;font-weight:' + (isActive?'600':'400') + ';color:' + (isActive?'#1a73e8':'#5f6368') + ';border-bottom:2px solid ' + (isActive?'#1a73e8':'transparent') + ';cursor:pointer;white-space:nowrap;">' + _esc(text) + '</div>';
-  }).join('');
-  return '<div style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabsHtml + '</div>';
+  var rawTabs = Array.isArray(b.tabs) ? b.tabs : [];
+  var tabs = rawTabs.slice(0, 50);
+  var accent = _safe_css(_firstText(b.accent), '#1a73e8');
+
+  var activeNum = _numLoose(b.active_tab);
+  var defaultActiveIdx = (activeNum !== null && activeNum >= 0 && activeNum < tabs.length) ? Math.floor(activeNum) : 0;
+
+  var hasExplicitActive = false;
+  for (var k = 0; k < tabs.length; k++) {
+    var t0 = tabs[k];
+    if (t0 !== null && typeof t0 === 'object' && !Array.isArray(t0) && (t0.is_active === true || t0.active === true)) {
+      hasExplicitActive = true;
+      break;
+    }
+  }
+
+  var tabItems = [];
+  for (var i = 0; i < tabs.length; i++) {
+    var t = tabs[i];
+    var label = '', url = '', icon = '', isActive = false;
+    if (t !== null && typeof t === 'object' && !Array.isArray(t)) {
+      label = _firstText(t.label, t.text, t.name);
+      url = _firstText(t.url);
+      icon = _firstText(t.icon);
+      isActive = hasExplicitActive ? (t.is_active === true || t.active === true) : (i === defaultActiveIdx);
+    } else if (typeof t === 'string' || typeof t === 'number') {
+      label = _textLoose(t);
+      isActive = hasExplicitActive ? false : (i === defaultActiveIdx);
+    } else {
+      continue;
+    }
+
+    var safeLink = _safe_href(url, ['https', 'mailto']);
+    var fw = isActive ? '600' : '400';
+    var tc = isActive ? accent : '#5f6368';
+    var bc = isActive ? accent : 'transparent';
+    var style = 'padding:8px 16px;font-size:0.85rem;font-weight:' + fw + ';color:' + tc + ';border-bottom:2px solid ' + bc + ';cursor:pointer;white-space:nowrap;text-decoration:none;';
+
+    var iconAttr = icon ? ' data-icon="' + _esc(icon) + '"' : '';
+    var currAttr = isActive ? ' aria-current="page"' : '';
+    var escapedLabel = _esc(label);
+
+    if (safeLink) {
+      tabItems.push('<a href="' + _esc(safeLink) + '" style="' + style + '"' + iconAttr + currAttr + '>' + escapedLabel + '</a>');
+    } else {
+      tabItems.push('<span style="' + style + '"' + iconAttr + currAttr + '>' + escapedLabel + '</span>');
+    }
+  }
+
+  return '<nav aria-label="Tabs" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabItems.join('') + '</nav>';
 };
 
 _RENDERERS['anchor_list'] = function(b) {
@@ -3722,17 +3812,36 @@ _RENDERERS['video_thumbnail'] = function(b) {
 };
 
 _RENDERERS['video_card'] = function(b) {
-  var url = b.url || b.thumbnail_url || '';
-  var title = b.title || '';
-  var description = b.description || '';
-  var link = b.video_url || b.link || '#';
-  return '<div data-cb="node" data-key="' + _ckey(b.video_url, 'video_card') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
-    '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;">' +
-    (url ? '<img src="' + _esc(url) + '" alt="' + _esc(title) + '" style="width:100%;height:180px;object-fit:cover;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;"></div>') +
-    '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div></a>' +
-    '<div style="padding:12px 14px;">' +
-    (title ? '<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(title) + '</div>' : '') +
-    (description ? '<div style="font-size:0.82rem;color:#6b7280;">' + _esc(description) + '</div>' : '') + '</div></div>';
+  var videoRaw = _firstText(b.video_url, b.url, b.link);
+  var safeVideoUrl = _safe_href(videoRaw, ['https', 'http']);
+  var thumbRaw = _firstText(b.thumbnail_url, b.thumbnail);
+  var safeThumb = _safe_href(thumbRaw, ['https', 'http']);
+  var title = _firstText(b.title);
+  var desc = _firstText(b.description);
+  var alt = _firstText(b.alt_text) || title;
+  var duration = _firstText(b.duration);
+
+  var ckVal = _ckey(b.video_url, 'video_card');
+
+  var mediaInner = safeThumb
+    ? '<img src="' + _esc(safeThumb) + '" alt="' + _esc(alt) + '" style="width:100%;height:180px;object-fit:cover;display:block;">'
+    : '<div style="width:100%;height:180px;background:#1e293b;"></div>';
+
+  var playOverlay = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div>';
+  var durationHtml = duration
+    ? '<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);color:#fff;font-size:0.72rem;padding:2px 6px;border-radius:3px;">' + _esc(duration) + '</div>'
+    : '';
+
+  var mediaHtml = safeVideoUrl
+    ? '<a href="' + _esc(safeVideoUrl) + '" target="_blank" rel="noopener" aria-label="Play video: ' + _esc(title) + '" style="display:block;position:relative;">' + mediaInner + playOverlay + durationHtml + '</a>'
+    : '<div style="display:block;position:relative;">' + mediaInner + playOverlay + durationHtml + '</div>';
+
+  var titleHtml = title ? '<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(title) + '</div>' : '';
+  var descHtml = desc ? '<div style="font-size:0.82rem;color:#6b7280;">' + _esc(desc) + '</div>' : '';
+  var textSection = (titleHtml || descHtml) ? '<div style="padding:12px 14px;">' + titleHtml + descHtml + '</div>' : '';
+
+  return '<div data-cb="node" data-key="' + ckVal + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
+    mediaHtml + textSection + '</div>';
 };
 
 _RENDERERS['audio_player'] = function(b) {
@@ -5377,22 +5486,59 @@ _RENDERERS['section_break'] = function(b) {
 // pages on a phone ends with four tabs. Found in maison 2026-08-14, where the
 // whole nav is one chip_group. Opt-in so nothing already shipped moves.
 _RENDERERS['chip_group'] = function(b) {
-  var uid    = Math.random().toString(36).substr(2, 6);
-  var scroll = b.layout === 'scroll';
-  var chips  = b.chips || [];
-  var target = b.same_tab ? '_top' : '_blank';
-  var chipsHtml = chips.map(function(c) {
-    var bg     = c.active ? (c.color || '#4f46e5') : (c.color ? c.color + '18' : '#f3f4f6');
-    var tc     = c.active ? '#fff' : (c.color || '#374151');
-    var tag    = c.url ? 'a href="' + _esc(c.url) + '" target="' + target + '" rel="noopener"' : 'span';
-    var endTag = c.url ? 'a' : 'span';
-    return '<' + tag + ' data-cb="item" data-key="' + _esc(c.label || '') + '" style="display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (c.url ? 'pointer' : 'default') + ';">' + _esc(c.label || '') + '</' + endTag + '>';
-  }).join('');
-  var wrap = scroll
-    ? 'display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none;'
-    : 'display:flex;flex-wrap:wrap;gap:8px;';
-  return (b.label ? '<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(b.label) + '</div>' : '') +
-    '<div style="' + wrap + 'margin:0.75rem 0;">' + chipsHtml + '</div>';
+  var labelTxt = _firstText(b.label);
+  var scroll = _firstText(b.layout) === 'scroll';
+  var sameTab = b.same_tab === true;
+  var target = sameTab ? '_top' : '_blank';
+
+  var rawChips = Array.isArray(b.chips) ? b.chips : [];
+  var chipsHtml = [];
+  var limit = Math.min(rawChips.length, 100);
+  for (var i = 0; i < limit; i++) {
+    var c = rawChips[i];
+    var cLabel = '', cColor = '', cUrl = '', cActive = false;
+    if (c !== null && typeof c === 'object' && !Array.isArray(c)) {
+      cLabel = _firstText(c.label, c.text);
+      cColor = _firstText(c.color);
+      cUrl = _firstText(c.url);
+      cActive = c.active === true;
+    } else if (typeof c === 'string' || typeof c === 'number') {
+      cLabel = _textLoose(c);
+    } else {
+      continue;
+    }
+
+    var safeColor = _safe_css(cColor, '');
+    var bg = '#f3f4f6', tc = '#374151';
+    if (cActive) {
+      bg = safeColor ? safeColor : '#4f46e5';
+      tc = '#fff';
+    } else {
+      if (safeColor.charAt(0) === '#' && safeColor.length === 7) {
+        bg = safeColor + '18';
+      } else {
+        bg = '#f3f4f6';
+      }
+      tc = safeColor ? safeColor : '#374151';
+    }
+
+    var safeLink = _safe_href(cUrl, ['https', 'mailto']);
+    var escapedLabel = _esc(cLabel);
+    var ckVal = _ckey(cLabel, '');
+    var style = 'display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (safeLink ? 'pointer' : 'default') + ';';
+
+    if (safeLink) {
+      var currAttr = cActive ? ' aria-current="true"' : '';
+      chipsHtml.push('<a href="' + _esc(safeLink) + '" target="' + target + '" rel="noopener" data-cb="item" data-key="' + ckVal + '"' + currAttr + ' style="' + style + '">' + escapedLabel + '</a>');
+    } else {
+      chipsHtml.push('<span data-cb="item" data-key="' + ckVal + '" style="' + style + '">' + escapedLabel + '</span>');
+    }
+  }
+
+  var wrap = scroll ? 'display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none;' : 'display:flex;flex-wrap:wrap;gap:8px;';
+  var headingHtml = labelTxt ? '<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(labelTxt) + '</div>' : '';
+  var ariaAttr = labelTxt ? ' role="group" aria-label="' + _esc(labelTxt) + '"' : '';
+  return headingHtml + '<div' + ariaAttr + ' style="' + wrap + 'margin:0.75rem 0;">' + chipsHtml.join('') + '</div>';
 };
 
 // ── Layout ────────────────────────────────────────────────────────────────────

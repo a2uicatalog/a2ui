@@ -1084,7 +1084,7 @@ var _SAFE_CSS_FN = {rgb:1,rgba:1,hsl:1,hsla:1,hwb:1,lab:1,lch:1,oklab:1,oklch:1,
 'linear-gradient':1,'radial-gradient':1,'conic-gradient':1,'repeating-linear-gradient':1,'repeating-radial-gradient':1,'repeating-conic-gradient':1,'cubic-bezier':1,steps:1};
 function _safe_css(v, dflt) {
 if (typeof v === 'number') return String(v);
-if (typeof v !== 'string' || v.length > 300 || /["'<>;{}\\`:@&=!\u0000-\u001f\u007f\u2028\u2029]|\/\*|\*\//.test(v)) return dflt;
+if (typeof v !== 'string' || /^[ \t\n\r\f\v]*$/.test(v) || v.length > 300 || /["'<>;{}\\`:@&=!\u0000-\u001f\u007f\u2028\u2029]|\/\*|\*\//.test(v)) return dflt;
 var re = /([a-zA-Z_-][a-zA-Z0-9_-]*)[ \t\n\r\f\v]*\(/g, m;
 while ((m = re.exec(v)) !== null) { if (!_SAFE_CSS_FN.hasOwnProperty(m[1].toLowerCase())) return dflt; }
 return v;
@@ -2487,18 +2487,31 @@ return title_html +
 '</table></div>';
 };
 _RENDERERS['timeline'] = function(b) {
-var events = b.events || [];
-var accent = b.accent || '#176ee1';
-var titleHtml = b.title ? '<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">' + _esc(b.title) + '</p>' : '';
-var items = events.map(function(ev, i){
-var isLast = i === events.length - 1;
-var date = ev.date || '';
-var label = ev.label || '';
-var text = ev.text || '';
-var tag = ev.tag || '';
-var tagHtml = tag ? '<span style="background:' + accent + '18;color:' + accent + ';font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;">' + _esc(tag) + '</span>' : '';
+var rawEvents = Array.isArray(b.events) ? b.events : [];
+var events = rawEvents.slice(0, 100);
+var accent = _safe_css(_firstText(b.accent), '#176ee1');
+var titleText = _firstText(b.title);
+var titleHtml = titleText ? '<p style="font-weight:700;font-size:1.05rem;margin-bottom:20px;">' + _esc(titleText) + '</p>' : '';
+var total = events.length;
+var items = [];
+for (var i = 0; i < total; i++) {
+var ev = events[i];
+var date = '', label = '', text = '', tag = '';
+if (ev !== null && typeof ev === 'object' && !Array.isArray(ev)) {
+date = _firstText(ev.date, ev.time);
+label = _firstText(ev.label, ev.title, ev.name);
+text = _firstText(ev.text, ev.description, ev.body);
+tag = _firstText(ev.tag);
+} else if (typeof ev === 'string' || typeof ev === 'number') {
+label = _textLoose(ev);
+} else {
+continue;
+}
+var isLast = (i === total - 1);
+var tagHtml = tag ? '<span style="background:color-mix(in srgb, ' + accent + ' 10%, transparent);color:' + accent + ';font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;">' + _esc(tag) + '</span>' : '';
 var connector = isLast ? '' : '<div style="width:2px;background:#e0e0e0;flex:1;min-height:24px;margin-top:4px;"></div>';
-return '<div style="display:flex;gap:0;position:relative;">' +
+items.push(
+'<li style="display:flex;gap:0;position:relative;">' +
 '<div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;">' +
 '<div style="width:14px;height:14px;border-radius:50%;background:' + accent + ';border:3px solid #fff;box-shadow:0 0 0 2px ' + accent + ';flex:0 0 14px;margin-top:3px;z-index:1;"></div>' +
 connector + '</div>' +
@@ -2506,10 +2519,12 @@ connector + '</div>' +
 '<div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;">' +
 '<span style="font-size:0.78rem;font-weight:600;color:' + accent + ';font-family:monospace;">' + _esc(date) + '</span>' + tagHtml + '</div>' +
 '<p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;">' + _esc(label) + '</p>' +
-'<p style="color:var(--a2ui-muted,#666666);font-size:0.88rem;line-height:1.6;margin:0;">' + _markdownToHtml(text) + '</p>' +
-'</div></div>';
-}).join('');
-return '<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);border-radius:var(--a2ui-radius,12px);border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));">' + titleHtml + items + '</div>';
+'<p style="color:var(--a2ui-muted,#666666);font-size:0.88rem;line-height:1.6;margin:0;">' + _md_inline(text) + '</p>' +
+'</div></li>'
+);
+}
+return '<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);border-radius:var(--a2ui-radius,12px);border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));">' +
+titleHtml + '<ol style="list-style:none;margin:0;padding:0;">' + items.join('') + '</ol></div>';
 };
 _RENDERERS['annotated_code'] = function(b) {
 var lang = b.language || '';
@@ -2704,16 +2719,39 @@ return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,
 '<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 ' + _esc(headerTitle) + '</div>' + items + '</div>';
 };
 _RENDERERS['resources_list'] = function(b) {
-var items = b.items || [];
-var rows = items.map(function(item){
-var size = item.size ? '<span style="font-size:0.75rem;color:var(--muted);">' + _esc(item.size) + '</span>' : '';
-var type = item.type ? '<span style="font-size:0.72rem;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--muted);">' + _esc(item.type.toUpperCase()) + '</span>' : '';
-return '<a href="' + _esc(item.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);text-decoration:none;">' +
-'<span style="font-size:0.88rem;color:var(--accent);font-weight:500;">' + _esc(item.title||item.label||item.name||'') + '</span>' +
-'<div style="display:flex;align-items:center;gap:8px;">' + size + type + '</div></a>';
-}).join('');
-return '<div style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
-'<div style="font-weight:700;color:var(--text);margin-bottom:4px;">📎 Resources</div>' + rows + '</div>';
+var rawItems = Array.isArray(b.items) ? b.items : [];
+var items = rawItems.slice(0, 100);
+var headingTitle = _firstText(b.title) || 'Resources';
+var rows = [];
+for (var i = 0; i < items.length; i++) {
+var item = items[i];
+var title = '', url = '', size = '', typeVal = '', icon = '';
+if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
+title = _firstText(item.title, item.label, item.name);
+url = _firstText(item.url);
+size = _firstText(item.size);
+typeVal = _firstText(item.type);
+icon = _firstText(item.icon);
+} else if (typeof item === 'string' || typeof item === 'number') {
+title = _textLoose(item);
+} else {
+continue;
+}
+var safeUrl = _safe_href(url, ['https', 'mailto']);
+var sizeHtml = size ? '<span style="font-size:0.75rem;color:var(--muted,#6b7280);">' + _esc(size) + '</span>' : '';
+var typeHtml = typeVal ? '<span style="font-size:0.72rem;background:var(--surface2,#e8f0fe);padding:2px 6px;border-radius:4px;color:var(--muted,#1558b4);">' + _esc(typeVal.toUpperCase()) + '</span>' : '';
+var iconHtml = icon ? '<span aria-hidden="true">' + _esc(icon) + ' </span>' : '';
+var metaGroup = (sizeHtml || typeHtml) ? '<div style="display:flex;align-items:center;gap:8px;">' + sizeHtml + typeHtml + '</div>' : '';
+var content = '<span style="font-size:0.88rem;color:var(--accent,#7c3aed);font-weight:500;">' + iconHtml + _esc(title) + '</span>' + metaGroup;
+var innerStyle = 'display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border,#f3f4f6);text-decoration:none;';
+var inner = safeUrl
+? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" style="' + innerStyle + '">' + content + '</a>'
+: '<div style="' + innerStyle + '">' + content + '</div>';
+rows.push('<li>' + inner + '</li>');
+}
+return '<div style="border:1px solid var(--border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
+'<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📎 ' + _esc(headingTitle) + '</div>' +
+'<ul style="list-style:none;padding:0;margin:0;">' + rows.join('') + '</ul></div>';
 };
 _RENDERERS['sidebar_note'] = function(b) {
 return '<div data-cb="node" data-key="' + _ckey(b.title, 'sidebar_note') + '" style="border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:12px 16px;background:#faf5ff;margin:1.2rem 0;">' +
@@ -3599,14 +3637,49 @@ var info = '<span style="font-size:0.82rem;color:var(--muted,#5f6368);">Page ' +
 return '<div style="display:flex;align-items:center;gap:8px;margin:1rem 0;flex-wrap:wrap;">' + prev + info + next + '</div>';
 };
 _RENDERERS['tab_bar'] = function(b) {
-var tabs = b.tabs || [];
-var active = b.active_tab || 0;
-var tabsHtml = tabs.map(function(t, i){
-var isActive = i === active;
-var text = typeof t === 'string' ? t : (t.label || t.text || '');
-return '<div style="padding:8px 16px;font-size:0.85rem;font-weight:' + (isActive?'600':'400') + ';color:' + (isActive?'#1a73e8':'#5f6368') + ';border-bottom:2px solid ' + (isActive?'#1a73e8':'transparent') + ';cursor:pointer;white-space:nowrap;">' + _esc(text) + '</div>';
-}).join('');
-return '<div style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabsHtml + '</div>';
+var rawTabs = Array.isArray(b.tabs) ? b.tabs : [];
+var tabs = rawTabs.slice(0, 50);
+var accent = _safe_css(_firstText(b.accent), '#1a73e8');
+var activeNum = _numLoose(b.active_tab);
+var defaultActiveIdx = (activeNum !== null && activeNum >= 0 && activeNum < tabs.length) ? Math.floor(activeNum) : 0;
+var hasExplicitActive = false;
+for (var k = 0; k < tabs.length; k++) {
+var t0 = tabs[k];
+if (t0 !== null && typeof t0 === 'object' && !Array.isArray(t0) && (t0.is_active === true || t0.active === true)) {
+hasExplicitActive = true;
+break;
+}
+}
+var tabItems = [];
+for (var i = 0; i < tabs.length; i++) {
+var t = tabs[i];
+var label = '', url = '', icon = '', isActive = false;
+if (t !== null && typeof t === 'object' && !Array.isArray(t)) {
+label = _firstText(t.label, t.text, t.name);
+url = _firstText(t.url);
+icon = _firstText(t.icon);
+isActive = hasExplicitActive ? (t.is_active === true || t.active === true) : (i === defaultActiveIdx);
+} else if (typeof t === 'string' || typeof t === 'number') {
+label = _textLoose(t);
+isActive = hasExplicitActive ? false : (i === defaultActiveIdx);
+} else {
+continue;
+}
+var safeLink = _safe_href(url, ['https', 'mailto']);
+var fw = isActive ? '600' : '400';
+var tc = isActive ? accent : '#5f6368';
+var bc = isActive ? accent : 'transparent';
+var style = 'padding:8px 16px;font-size:0.85rem;font-weight:' + fw + ';color:' + tc + ';border-bottom:2px solid ' + bc + ';cursor:pointer;white-space:nowrap;text-decoration:none;';
+var iconAttr = icon ? ' data-icon="' + _esc(icon) + '"' : '';
+var currAttr = isActive ? ' aria-current="page"' : '';
+var escapedLabel = _esc(label);
+if (safeLink) {
+tabItems.push('<a href="' + _esc(safeLink) + '" style="' + style + '"' + iconAttr + currAttr + '>' + escapedLabel + '</a>');
+} else {
+tabItems.push('<span style="' + style + '"' + iconAttr + currAttr + '>' + escapedLabel + '</span>');
+}
+}
+return '<nav aria-label="Tabs" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabItems.join('') + '</nav>';
 };
 _RENDERERS['anchor_list'] = function(b) {
 var items = b.items || b.links || [];
@@ -4161,17 +4234,30 @@ return '<a data-cb="node" data-key="' + _ckey(b.video_url, 'video_thumbnail') + 
 (title ? '<div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:#fff;font-size:0.85rem;font-weight:600;">' + _esc(title) + '</div>' : '') + '</a>';
 };
 _RENDERERS['video_card'] = function(b) {
-var url = b.url || b.thumbnail_url || '';
-var title = b.title || '';
-var description = b.description || '';
-var link = b.video_url || b.link || '#';
-return '<div data-cb="node" data-key="' + _ckey(b.video_url, 'video_card') + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
-'<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;">' +
-(url ? '<img src="' + _esc(url) + '" alt="' + _esc(title) + '" style="width:100%;height:180px;object-fit:cover;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;"></div>') +
-'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div></a>' +
-'<div style="padding:12px 14px;">' +
-(title ? '<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(title) + '</div>' : '') +
-(description ? '<div style="font-size:0.82rem;color:#6b7280;">' + _esc(description) + '</div>' : '') + '</div></div>';
+var videoRaw = _firstText(b.video_url, b.url, b.link);
+var safeVideoUrl = _safe_href(videoRaw, ['https', 'http']);
+var thumbRaw = _firstText(b.thumbnail_url, b.thumbnail);
+var safeThumb = _safe_href(thumbRaw, ['https', 'http']);
+var title = _firstText(b.title);
+var desc = _firstText(b.description);
+var alt = _firstText(b.alt_text) || title;
+var duration = _firstText(b.duration);
+var ckVal = _ckey(b.video_url, 'video_card');
+var mediaInner = safeThumb
+? '<img src="' + _esc(safeThumb) + '" alt="' + _esc(alt) + '" style="width:100%;height:180px;object-fit:cover;display:block;">'
+: '<div style="width:100%;height:180px;background:#1e293b;"></div>';
+var playOverlay = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div>';
+var durationHtml = duration
+? '<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);color:#fff;font-size:0.72rem;padding:2px 6px;border-radius:3px;">' + _esc(duration) + '</div>'
+: '';
+var mediaHtml = safeVideoUrl
+? '<a href="' + _esc(safeVideoUrl) + '" target="_blank" rel="noopener" aria-label="Play video: ' + _esc(title) + '" style="display:block;position:relative;">' + mediaInner + playOverlay + durationHtml + '</a>'
+: '<div style="display:block;position:relative;">' + mediaInner + playOverlay + durationHtml + '</div>';
+var titleHtml = title ? '<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(title) + '</div>' : '';
+var descHtml = desc ? '<div style="font-size:0.82rem;color:#6b7280;">' + _esc(desc) + '</div>' : '';
+var textSection = (titleHtml || descHtml) ? '<div style="padding:12px 14px;">' + titleHtml + descHtml + '</div>' : '';
+return '<div data-cb="node" data-key="' + ckVal + '" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
+mediaHtml + textSection + '</div>';
 };
 _RENDERERS['audio_player'] = function(b) {
 var url = b.url || b.src_url || '';
@@ -5611,22 +5697,54 @@ return '<div style="display:flex;align-items:center;gap:12px;margin:2rem 0;">' +
 '</div>';
 };
 _RENDERERS['chip_group'] = function(b) {
-var uid    = Math.random().toString(36).substr(2, 6);
-var scroll = b.layout === 'scroll';
-var chips  = b.chips || [];
-var target = b.same_tab ? '_top' : '_blank';
-var chipsHtml = chips.map(function(c) {
-var bg     = c.active ? (c.color || '#4f46e5') : (c.color ? c.color + '18' : '#f3f4f6');
-var tc     = c.active ? '#fff' : (c.color || '#374151');
-var tag    = c.url ? 'a href="' + _esc(c.url) + '" target="' + target + '" rel="noopener"' : 'span';
-var endTag = c.url ? 'a' : 'span';
-return '<' + tag + ' data-cb="item" data-key="' + _esc(c.label || '') + '" style="display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (c.url ? 'pointer' : 'default') + ';">' + _esc(c.label || '') + '</' + endTag + '>';
-}).join('');
-var wrap = scroll
-? 'display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none;'
-: 'display:flex;flex-wrap:wrap;gap:8px;';
-return (b.label ? '<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(b.label) + '</div>' : '') +
-'<div style="' + wrap + 'margin:0.75rem 0;">' + chipsHtml + '</div>';
+var labelTxt = _firstText(b.label);
+var scroll = _firstText(b.layout) === 'scroll';
+var sameTab = b.same_tab === true;
+var target = sameTab ? '_top' : '_blank';
+var rawChips = Array.isArray(b.chips) ? b.chips : [];
+var chipsHtml = [];
+var limit = Math.min(rawChips.length, 100);
+for (var i = 0; i < limit; i++) {
+var c = rawChips[i];
+var cLabel = '', cColor = '', cUrl = '', cActive = false;
+if (c !== null && typeof c === 'object' && !Array.isArray(c)) {
+cLabel = _firstText(c.label, c.text);
+cColor = _firstText(c.color);
+cUrl = _firstText(c.url);
+cActive = c.active === true;
+} else if (typeof c === 'string' || typeof c === 'number') {
+cLabel = _textLoose(c);
+} else {
+continue;
+}
+var safeColor = _safe_css(cColor, '');
+var bg = '#f3f4f6', tc = '#374151';
+if (cActive) {
+bg = safeColor ? safeColor : '#4f46e5';
+tc = '#fff';
+} else {
+if (safeColor.charAt(0) === '#' && safeColor.length === 7) {
+bg = safeColor + '18';
+} else {
+bg = '#f3f4f6';
+}
+tc = safeColor ? safeColor : '#374151';
+}
+var safeLink = _safe_href(cUrl, ['https', 'mailto']);
+var escapedLabel = _esc(cLabel);
+var ckVal = _ckey(cLabel, '');
+var style = 'display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (safeLink ? 'pointer' : 'default') + ';';
+if (safeLink) {
+var currAttr = cActive ? ' aria-current="true"' : '';
+chipsHtml.push('<a href="' + _esc(safeLink) + '" target="' + target + '" rel="noopener" data-cb="item" data-key="' + ckVal + '"' + currAttr + ' style="' + style + '">' + escapedLabel + '</a>');
+} else {
+chipsHtml.push('<span data-cb="item" data-key="' + ckVal + '" style="' + style + '">' + escapedLabel + '</span>');
+}
+}
+var wrap = scroll ? 'display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none;' : 'display:flex;flex-wrap:wrap;gap:8px;';
+var headingHtml = labelTxt ? '<div style="font-size:12px;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(labelTxt) + '</div>' : '';
+var ariaAttr = labelTxt ? ' role="group" aria-label="' + _esc(labelTxt) + '"' : '';
+return headingHtml + '<div' + ariaAttr + ' style="' + wrap + 'margin:0.75rem 0;">' + chipsHtml.join('') + '</div>';
 };
 _RENDERERS['columns'] = function(b) {
 var uid  = Math.random().toString(36).substr(2, 6);
@@ -16894,27 +17012,88 @@ return '<div data-cb="node" data-key="' + _ckey(b.variant, 'inline_alert') + '" 
 + 'font-size:0.83rem;font-weight:500;">' + _esc(icon) + ' <span>' + _markdownToHtml(text) + detail_html + '</span>' + dismiss_btn + '</div>';
 };
 _RENDERERS['source_citation'] = function(b) {
-var authorsHtml = '';
-if (b.authors && b.authors.length) {
-var escapedAuthors = [];
-for (var i = 0; i < b.authors.length; i++) {
-escapedAuthors.push(_esc(b.authors[i]));
+var headingText = (b.heading !== undefined && b.heading !== null) ? _firstText(b.heading) : 'Sources';
+var sources = [];
+if (Array.isArray(b.sources)) {
+sources = b.sources.slice(0, 100);
+} else if (_firstText(b.title)) {
+var authorStr = '';
+var authorsVal = Array.isArray(b.authors) ? b.authors : b.author;
+if (Array.isArray(authorsVal)) {
+var escapedArr = [];
+for (var k = 0; k < authorsVal.length; k++) {
+var strA = _textLoose(authorsVal[k]);
+if (strA) { escapedArr.push(strA); }
 }
-authorsHtml = '<span style="font-size:0.82rem;color:#374151;">' + escapedAuthors.join(', ') + '</span>';
-if (b.year) { authorsHtml += '<span style="font-size:0.82rem;color:var(--muted,#5f6368);"> (' + _esc(b.year) + ')</span>'; }
+authorStr = escapedArr.join(', ');
+} else {
+authorStr = _firstText(b.author);
 }
-var titleHtml = b.url
-? '<a href="' + _esc(b.url) + '" style="font-weight:600;color:#1d4ed8;text-decoration:none;font-size:0.9rem;">' + _esc(b.title || '') + '</a>'
-: '<span style="font-weight:600;color:#111827;font-size:0.9rem;">' + _esc(b.title || '') + '</span>';
-return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px;margin:0.75rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);display:flex;gap:12px;">'
-+ '<div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">①</div>'
-+ '<div>'
-+ titleHtml
-+ (authorsHtml ? '<div style="margin-top:3px;">' + authorsHtml + '</div>' : '')
-+ (b.publisher ? '<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;font-style:italic;">' + _esc(b.publisher) + '</div>' : '')
-+ (b.note ? '<div style="font-size:0.8rem;color:#4b5563;margin-top:5px;background:#f3f4f6;padding:5px 8px;border-radius:6px;">' + _esc(b.note) + '</div>' : '')
-+ '</div>'
-+ '</div>';
+sources = [{
+number: 1,
+title: _firstText(b.title),
+url: _firstText(b.url),
+author: authorStr,
+date: _firstText(b.year, b.date),
+publisher: _firstText(b.publisher),
+note: _firstText(b.note)
+}];
+}
+var headingHtml = headingText
+? '<div style="font-size:0.78rem;font-weight:700;color:#374151;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">' + _esc(headingText) + '</div>'
+: '';
+var cards = [];
+for (var i = 0; i < sources.length; i++) {
+var s = sources[i];
+var num = '', title = '', url = '', excerpt = '', author = '', date = '', publisher = '', note = '';
+if (s !== null && typeof s === 'object' && !Array.isArray(s)) {
+num = _firstText(s.number) || String(i + 1);
+title = _firstText(s.title);
+url = _firstText(s.url);
+excerpt = _firstText(s.excerpt);
+var authorsVal = Array.isArray(s.authors) ? s.authors : s.author;
+if (Array.isArray(authorsVal)) {
+var auths = [];
+for (var a = 0; a < authorsVal.length; a++) {
+var authStr = _textLoose(authorsVal[a]);
+if (authStr) { auths.push(authStr); }
+}
+author = auths.join(', ');
+} else {
+author = _firstText(s.author);
+}
+date = _firstText(s.date, s.year);
+publisher = _firstText(s.publisher);
+note = _firstText(s.note);
+} else if (typeof s === 'string' || typeof s === 'number') {
+num = String(i + 1);
+title = _textLoose(s);
+} else {
+continue;
+}
+var metaArr = [];
+if (author) { metaArr.push(author); }
+if (date) { metaArr.push(date); }
+var meta = metaArr.join(' · ');
+var safeUrl = _safe_href(url, ['https', 'mailto']);
+var titleEl = safeUrl
+? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" style="font-size:0.82rem;font-weight:600;color:#1a73e8;text-decoration:none;">' + _esc(title) + '</a>'
+: '<span style="font-size:0.82rem;font-weight:600;color:#111827;">' + _esc(title) + '</span>';
+var excerptEl = excerpt ? '<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:3px;font-style:italic;border-left:2px solid #e5e7eb;padding-left:8px;">"' + _esc(excerpt) + '"</div>' : '';
+var metaEl = meta ? '<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(meta) + '</div>' : '';
+var publisherEl = publisher ? '<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;font-style:italic;">' + _esc(publisher) + '</div>' : '';
+var noteEl = note ? '<div style="font-size:0.75rem;color:#4b5563;margin-top:4px;background:#f3f4f6;padding:4px 8px;border-radius:4px;">' + _esc(note) + '</div>' : '';
+cards.push(
+'<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
+'<span aria-label="Source ' + _esc(num) + '" style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;">[' + _esc(num) + ']</span>' +
+'<div style="flex:1;min-width:0;">' + titleEl + excerptEl + metaEl + publisherEl + noteEl + '</div>' +
+'</li>'
+);
+}
+return '<div style="margin:1rem 0;">' +
+headingHtml +
+'<ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">' + cards.join('') + '</ol>' +
+'</div>';
 };
 _RENDERERS['llm_comparison_table'] = function(b) {
 var models = b.models || [];
@@ -37636,20 +37815,44 @@ return '<div data-cb="node" data-key="' + _ckey(b.title, 'call_mood_board') + '"
 + '</div>';
 };
 _RENDERERS['social_proof_banner'] = function(b) {
-var metric = b.metric_value ? '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#4f46e5);">' + _esc(b.metric_value) + '</div><div style="font-size:0.82rem;color:var(--muted,#6b7280);">' + _esc(b.metric_label || '') + '</div>' : '';
-var logos  = (b.logos || []).map(function(l) {
-return l.url
-? '<img src="' + _esc(l.url) + '" alt="' + _esc(l.name || '') + '" style="height:32px;object-fit:contain;opacity:0.6;filter:grayscale(1);">'
-: '<span style="font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);padding:4px 12px;">' + _esc(l.name || '') + '</span>';
-}).join('');
-var quote  = b.testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(b.testimonial) + '"</blockquote>' : '';
-var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
-var body = iconHtml
-+ '<div' + (b.link_url ? '' : ' data-cb="node" data-key="' + _ckey(b.metric_label, 'social_proof_banner') + '"') + ' style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
-+ metric
-+ (logos ? '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">' + logos + '</div>' : '')
-+ quote + '</div>';
-return b.link_url ? '<a data-cb="node" data-key="' + _ckey(b.metric_label, 'social_proof_banner') + '" href="' + _safeUrl(b.link_url) + '" target="_top" style="text-decoration:none;color:inherit;display:block;">' + body + '</a>' : body;
+var metricVal = _firstText(b.metric_value, b.count, b.number);
+var metricLbl = _firstText(b.metric_label, b.text);
+var safeIcon = _safe_href(_firstText(b.icon_url), ['https', 'http']);
+var safeLink = _safe_href(_firstText(b.link_url), ['https', 'mailto']);
+var testimonial = _firstText(b.testimonial);
+var rawLogos = Array.isArray(b.logos) ? b.logos : [];
+var logosHtml = [];
+var limit = Math.min(rawLogos.length, 20);
+for (var i = 0; i < limit; i++) {
+var l = rawLogos[i];
+var lName = '', lUrl = '';
+if (l !== null && typeof l === 'object' && !Array.isArray(l)) {
+lName = _firstText(l.name, l.title);
+lUrl = _safe_href(_firstText(l.url), ['https', 'http']);
+} else if (typeof l === 'string' || typeof l === 'number') {
+lName = _textLoose(l);
+} else {
+continue;
+}
+if (lUrl) {
+logosHtml.push('<img src="' + _esc(lUrl) + '" alt="' + _esc(lName) + '" style="height:32px;object-fit:contain;opacity:0.6;filter:grayscale(1);">');
+} else if (lName) {
+logosHtml.push('<span style="font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);padding:4px 12px;">' + _esc(lName) + '</span>');
+}
+}
+var logosBar = logosHtml.length ? '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">' + logosHtml.join('') + '</div>' : '';
+var metricHtml = (metricVal ? '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-accent,#4f46e5);">' + _esc(metricVal) + '</div>' : '') +
+(metricLbl ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);">' + _esc(metricLbl) + '</div>' : '');
+var quoteHtml = testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(testimonial) + '"</blockquote>' : '';
+var iconHtml = safeIcon ? '<img src="' + _esc(safeIcon) + '" alt="" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
+var ckVal = _ckey(b.metric_label, 'social_proof_banner');
+var cardBody = iconHtml + metricHtml + logosBar + quoteHtml;
+var cardStyle = 'margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;';
+if (safeLink) {
+return '<a data-cb="node" data-key="' + ckVal + '" href="' + _esc(safeLink) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">' +
+'<div style="' + cardStyle + '">' + cardBody + '</div></a>';
+}
+return '<div data-cb="node" data-key="' + ckVal + '" style="' + cardStyle + '">' + cardBody + '</div>';
 };
 _RENDERERS['expert_endorsement'] = function(b) {
 var initials = (b.expert_name || '?').split(' ').map(function(w){return w[0];}).join('').substr(0,2).toUpperCase();
@@ -37665,20 +37868,26 @@ return '<div data-cb="node" data-key="' + _ckey(b.expert_name, 'expert_endorseme
 + '</div></div></div>';
 };
 _RENDERERS['media_mention_card'] = function(b) {
-var logo = b.publication_logo_url
-? '<img src="' + _esc(b.publication_logo_url) + '" alt="' + _esc(b.publication_name||'') + '" style="height:24px;object-fit:contain;opacity:0.6;">'
-: '<span style="font-size:0.78rem;font-weight:700;color:var(--muted,#6b7280);">' + _esc(b.publication_name || '') + '</span>';
-var headline = b.article_url
-? '<a href="' + _safeUrl(b.article_url) + '" target="_top" style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);text-decoration:none;line-height:1.4;">' + _esc(b.headline || '') + '</a>'
-: '<div style="font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;">' + _esc(b.headline || '') + '</div>';
-return '<div data-cb="node" data-key="' + _ckey(b.publication_name, 'media_mention_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-+ '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-+ logo
-+ (b.date ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.date) + '</span>' : '')
-+ '</div>'
-+ headline
-+ (b.excerpt ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:6px;line-height:1.5;">' + _esc(b.excerpt) + '</div>' : '')
-+ '</div>';
+var publication = _firstText(b.publication_name, b.publication, b.source);
+var safeLogo = _safe_href(_firstText(b.publication_logo_url, b.logo), ['https', 'http']);
+var headline = _firstText(b.headline, b.quote, b.text);
+var safeUrl = _safe_href(_firstText(b.article_url, b.url), ['https', 'mailto']);
+var date = _firstText(b.date);
+var excerpt = _firstText(b.excerpt);
+var ckVal = _ckey(b.publication_name, 'media_mention_card');
+var logoHtml = safeLogo
+? '<img src="' + _esc(safeLogo) + '" alt="' + _esc(publication) + '" style="height:24px;object-fit:contain;opacity:0.6;">'
+: '<span style="font-size:0.78rem;font-weight:700;color:var(--muted,#6b7280);">' + _esc(publication) + '</span>';
+var dateHtml = date ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(date) + '</span>' : '';
+var headlineStyle = 'font-size:0.9rem;font-weight:600;color:var(--text,#111827);line-height:1.4;';
+var headlineHtml = safeUrl
+? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" style="' + headlineStyle + 'text-decoration:none;">' + _esc(headline) + '</a>'
+: '<div style="' + headlineStyle + '">' + _esc(headline) + '</div>';
+var excerptHtml = excerpt ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:6px;line-height:1.5;">' + _esc(excerpt) + '</div>' : '';
+return '<div data-cb="node" data-key="' + ckVal + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">' +
+'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+logoHtml + dateHtml + '</div>' +
+headlineHtml + excerptHtml + '</div>';
 };
 _RENDERERS['media_stream_card'] = function(b) {
 var url    = b.url || '';

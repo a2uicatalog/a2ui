@@ -2000,27 +2000,96 @@ _RENDERERS['inline_alert'] = function(b) {
 };
 
 _RENDERERS['source_citation'] = function(b) {
-  var authorsHtml = '';
-  if (b.authors && b.authors.length) {
-    var escapedAuthors = [];
-    for (var i = 0; i < b.authors.length; i++) {
-      escapedAuthors.push(_esc(b.authors[i]));
+  var headingText = (b.heading !== undefined && b.heading !== null) ? _firstText(b.heading) : 'Sources';
+
+  var sources = [];
+  if (Array.isArray(b.sources)) {
+    sources = b.sources.slice(0, 100);
+  } else if (_firstText(b.title)) {
+    var authorStr = '';
+    var authorsVal = Array.isArray(b.authors) ? b.authors : b.author;
+    if (Array.isArray(authorsVal)) {
+      var escapedArr = [];
+      for (var k = 0; k < authorsVal.length; k++) {
+        var strA = _textLoose(authorsVal[k]);
+        if (strA) { escapedArr.push(strA); }
+      }
+      authorStr = escapedArr.join(', ');
+    } else {
+      authorStr = _firstText(b.author);
     }
-    authorsHtml = '<span style="font-size:0.82rem;color:#374151;">' + escapedAuthors.join(', ') + '</span>';
-    if (b.year) { authorsHtml += '<span style="font-size:0.82rem;color:var(--muted,#5f6368);"> (' + _esc(b.year) + ')</span>'; }
+    sources = [{
+      number: 1,
+      title: _firstText(b.title),
+      url: _firstText(b.url),
+      author: authorStr,
+      date: _firstText(b.year, b.date),
+      publisher: _firstText(b.publisher),
+      note: _firstText(b.note)
+    }];
   }
-  var titleHtml = b.url
-    ? '<a href="' + _esc(b.url) + '" style="font-weight:600;color:#1d4ed8;text-decoration:none;font-size:0.9rem;">' + _esc(b.title || '') + '</a>'
-    : '<span style="font-weight:600;color:#111827;font-size:0.9rem;">' + _esc(b.title || '') + '</span>';
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px;margin:0.75rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);display:flex;gap:12px;">'
-    + '<div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">①</div>'
-    + '<div>'
-    + titleHtml
-    + (authorsHtml ? '<div style="margin-top:3px;">' + authorsHtml + '</div>' : '')
-    + (b.publisher ? '<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:2px;font-style:italic;">' + _esc(b.publisher) + '</div>' : '')
-    + (b.note ? '<div style="font-size:0.8rem;color:#4b5563;margin-top:5px;background:#f3f4f6;padding:5px 8px;border-radius:6px;">' + _esc(b.note) + '</div>' : '')
-    + '</div>'
-    + '</div>';
+
+  var headingHtml = headingText
+    ? '<div style="font-size:0.78rem;font-weight:700;color:#374151;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">' + _esc(headingText) + '</div>'
+    : '';
+
+  var cards = [];
+  for (var i = 0; i < sources.length; i++) {
+    var s = sources[i];
+    var num = '', title = '', url = '', excerpt = '', author = '', date = '', publisher = '', note = '';
+    if (s !== null && typeof s === 'object' && !Array.isArray(s)) {
+      num = _firstText(s.number) || String(i + 1);
+      title = _firstText(s.title);
+      url = _firstText(s.url);
+      excerpt = _firstText(s.excerpt);
+      var authorsVal = Array.isArray(s.authors) ? s.authors : s.author;
+      if (Array.isArray(authorsVal)) {
+        var auths = [];
+        for (var a = 0; a < authorsVal.length; a++) {
+          var authStr = _textLoose(authorsVal[a]);
+          if (authStr) { auths.push(authStr); }
+        }
+        author = auths.join(', ');
+      } else {
+        author = _firstText(s.author);
+      }
+      date = _firstText(s.date, s.year);
+      publisher = _firstText(s.publisher);
+      note = _firstText(s.note);
+    } else if (typeof s === 'string' || typeof s === 'number') {
+      num = String(i + 1);
+      title = _textLoose(s);
+    } else {
+      continue;
+    }
+
+    var metaArr = [];
+    if (author) { metaArr.push(author); }
+    if (date) { metaArr.push(date); }
+    var meta = metaArr.join(' · ');
+    var safeUrl = _safe_href(url, ['https', 'mailto']);
+
+    var titleEl = safeUrl
+      ? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" style="font-size:0.82rem;font-weight:600;color:#1a73e8;text-decoration:none;">' + _esc(title) + '</a>'
+      : '<span style="font-size:0.82rem;font-weight:600;color:#111827;">' + _esc(title) + '</span>';
+
+    var excerptEl = excerpt ? '<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:3px;font-style:italic;border-left:2px solid #e5e7eb;padding-left:8px;">"' + _esc(excerpt) + '"</div>' : '';
+    var metaEl = meta ? '<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(meta) + '</div>' : '';
+    var publisherEl = publisher ? '<div style="font-size:0.7rem;color:var(--muted,#5f6368);margin-top:2px;font-style:italic;">' + _esc(publisher) + '</div>' : '';
+    var noteEl = note ? '<div style="font-size:0.75rem;color:#4b5563;margin-top:4px;background:#f3f4f6;padding:4px 8px;border-radius:4px;">' + _esc(note) + '</div>' : '';
+
+    cards.push(
+      '<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
+      '<span aria-label="Source ' + _esc(num) + '" style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;">[' + _esc(num) + ']</span>' +
+      '<div style="flex:1;min-width:0;">' + titleEl + excerptEl + metaEl + publisherEl + noteEl + '</div>' +
+      '</li>'
+    );
+  }
+
+  return '<div style="margin:1rem 0;">' +
+    headingHtml +
+    '<ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">' + cards.join('') + '</ol>' +
+    '</div>';
 };
 
 _RENDERERS['llm_comparison_table'] = function(b) {

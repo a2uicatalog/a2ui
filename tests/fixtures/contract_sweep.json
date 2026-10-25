@@ -1175,9 +1175,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "chips[].label",
-  "py_sha": "86358ea560bad205c0018a230ac47fbdf27554b4b3d5a0ff6167671af091f219",
-  "gas_sha": "f56b1bcde5be2d821e32f207c0f02c9b58b1ba9e85e5996f386cd7ba9cb307a6",
-  "parity": false
+  "py_sha": "aae3ea755a0247b29d1bfa4495cd759ffe062535b8cee5a94db6561e04d2b5bb",
+  "gas_sha": "aae3ea755a0247b29d1bfa4495cd759ffe062535b8cee5a94db6561e04d2b5bb",
+  "parity": true
  },
  "choicebox_group": {
   "status": "pending",
@@ -5729,9 +5729,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].url",
-  "py_sha": "ef0e8e0fc29752be42ae39b03b845cf53d4c57cbfb472c6922254607fa21bf1d",
-  "gas_sha": "67cbb63b3580492739eed269947d481a4c51e1bc669beb3755e7316c8f01a2f5",
-  "parity": false
+  "py_sha": "4eed5ee1c9a46a3f930c4b91f422e4c50b0041f13ed40bd2450155e593cc0f50",
+  "gas_sha": "4eed5ee1c9a46a3f930c4b91f422e4c50b0041f13ed40bd2450155e593cc0f50",
+  "parity": true
  },
  "risk_flag": {
   "status": "pending",
@@ -6580,9 +6580,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "sources[].id",
-  "py_sha": "731267dc142adabeb453e5df8efc99dbd9c72045923c846044a7f577fbce3722",
-  "gas_sha": "ca07ad3efb0d067482c0eec5d2d147b04e5c08570b8d56fbda1bb6a58fa6b19b",
-  "parity": false
+  "py_sha": "7d7c856ca3f79186aaa802b0b41625e4f2c691d5855ceb106bf1fef7cc312bbc",
+  "gas_sha": "7d7c856ca3f79186aaa802b0b41625e4f2c691d5855ceb106bf1fef7cc312bbc",
+  "parity": true
  },
  "spring_nodes": {
   "status": "pending",
@@ -7157,9 +7157,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "tabs[].id",
-  "py_sha": "407395eca6e7d3fb0d8571fd1b285a7d9da26367ee2871a9ce378fae001084f9",
-  "gas_sha": "98e34afc0bf64a45a856a4f5ac9a78f4983824467fe84c6f2bffa407bf76d0ae",
-  "parity": false
+  "py_sha": "22d2ef2a3b951c894fae818ae8fcdda6167d0f0629b88f5655488ef577ba4286",
+  "gas_sha": "22d2ef2a3b951c894fae818ae8fcdda6167d0f0629b88f5655488ef577ba4286",
+  "parity": true
  },
  "tabbed_code": {
   "status": "pending",
@@ -7590,9 +7590,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "events[].id",
-  "py_sha": "1b5f883eb55a05fdee2112a5a22636b3c462d47a94668afa6a16e0c9412d41a2",
-  "gas_sha": "6d3f6370118cb79fc4fce50341dbcc72ea046e2ff619f00d9bab5c0e120e7a97",
-  "parity": false
+  "py_sha": "b285d799969389872f9b35bb1d806659a329417652e2601d83b39fceb34b90d5",
+  "gas_sha": "b285d799969389872f9b35bb1d806659a329417652e2601d83b39fceb34b90d5",
+  "parity": true
  },
  "tonal_scale": {
   "status": "pending",
@@ -8928,9 +8928,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "video_url",
-  "py_sha": "79dafabb9dcb184ab57a9510a8b406564e42cef46b9d8a90d83bdcddffe9c9de",
-  "gas_sha": "21e69f87c937320e2752a86c3f5c9203eed31a8496a361566bc69cd0beed2cb8",
-  "parity": false
+  "py_sha": "c44fbd81230a55d2b280764d63d11af17a78b19398a2b2d2708e46997947ec86",
+  "gas_sha": "c44fbd81230a55d2b280764d63d11af17a78b19398a2b2d2708e46997947ec86",
+  "parity": true
  },
  "code_diff": {
   "status": "keyed",
@@ -9147,9 +9147,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "metric_label",
-  "py_sha": "1ddb33794febedd2026c4479dea25968980f05bbb3e801c27ae0bf74c2cdb467",
-  "gas_sha": "53185d2795f05a1b8c0bb7f96176c3ac781ac276ea9ebc7dfd5e51acff527f2e",
-  "parity": false
+  "py_sha": "4e4fce07cfc8b3cec269843537583246d18e1b26fa113bfcaeba3199fc13f78a",
+  "gas_sha": "4e4fce07cfc8b3cec269843537583246d18e1b26fa113bfcaeba3199fc13f78a",
+  "parity": true
  },
  "media_mention_card": {
   "status": "keyed",
@@ -9165,9 +9165,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "publication_name",
-  "py_sha": "d50cbc7b541c66ed3d687856501a3bfe32554678eeb04192e06a1cfd37a65f3b",
-  "gas_sha": "a31b781e5bba6af1515efe3e763d7b28601afd6c29f704c4ad160d6e681bfe62",
-  "parity": false
+  "py_sha": "bccf2862cbc8dd5fcc540932a52cff429ba05e6c5c2f5a58ae7635cb01cb2930",
+  "gas_sha": "bccf2862cbc8dd5fcc540932a52cff429ba05e6c5c2f5a58ae7635cb01cb2930",
+  "parity": true
  },
  "expert_endorsement": {
   "status": "keyed",
