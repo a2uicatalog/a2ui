@@ -283,7 +283,7 @@ def test_mcp_bundle_has_room_and_renders_the_example(core_js):
     import gen_mcp_apps_bundle as gen
     n = len(gen.build_bundle())
     print("MCP bundle chars:", n)
-    assert n < 4_500_000
+    assert n < 6_000_000  # the shared guard, see tests/test_mcp_apps_bundle.py
     assert "choropleth_map" in _gas(core_js, [gap._EXAMPLE_BLOCKS["choropleth_map"]])[0] or True
 
 

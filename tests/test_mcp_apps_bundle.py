@@ -423,7 +423,13 @@ def test_bundle_size_guard(bundle):
     # radar/globe. Measured 3,790,999 (origin/main) -> 4,008,035 characters before regeneration; per-stage table in
     # a2ui-private pm/evidence/2026-10-21-bundle-size.txt. The choropleth branch (+~135 KB geometry) is not in it.
     # Same OPEN QUESTION as above: still our own guard, not a measured host limit.
-    assert len(bundle) < 4_500_000, f"bundle ballooned to {len(bundle)} bytes"
+    # Ceiling raised 4.5 -> 6.0 M characters on 2026-10-25 (owner, via the Distribution PM: "you can push the eventual limit up").
+    # Measured what binds (notes: /mnt/hdd2/work/bundle-ceiling.md): nothing documented below ~25 MiB. Cloudflare static assets
+    # allow 25 MiB per file; Apps Script uses the .gs files, not this bundle; the MCP Apps spec and host docs state no ui://
+    # resource size cap. The largest size shown working in a real host is ~3.8 MB (Schemaestro's resources/read to Claude and
+    # ChatGPT), so 6 M is a tripwire with headroom, NOT a measured host limit. Sizes after the 2026-10-24 bundle diet: ~3.4 M
+    # characters, ~1.05 MB brotli/gzip on play.a2uicatalog.ai; the /mcp resources/read path is sent uncompressed.
+    assert len(bundle) < 6_000_000, f"bundle ballooned to {len(bundle)} characters"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
 
 
