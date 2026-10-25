@@ -477,6 +477,32 @@ def test_camera_follow_turns_at_every_nth_arrival_and_closes_in_on_the_last():
     # 4 segments, follow 2: re-angle on arriving at stations 2 and 4 (the last), each a short move just before the arrival
     assert rz.count("clamp(") == 3   # the descent, the turn arriving at station 2, the turn arriving at the last station
     assert "-50*clamp" in rz and "5*clamp" in rz   # 22 -> -28, then -28 -> -23 at the last destination
-    assert zm.count("clamp(") == 2   # descent zoom, then the close-in at the last destination
+    assert zm.count("clamp(") == 3   # descent zoom, a little closer at station 2, closest at the last destination
     assert _py(dict(LONG, camera=dict(LONG["camera"], follow=0))) == _py(LONG)
     assert _py(dict(LONG, camera={"follow": 2, "keys": [{"at": 0.5, "turn": 10}]})) == _py(dict(LONG, camera={"keys": [{"at": 0.5, "turn": 10}]}))
+
+
+TRACK_CASES = [
+    dict(LONG, camera={"follow": 2}), dict(LONG, camera={"follow": 1, "track": 1}), dict(LONG, camera={"follow": 2, "track": 0}),
+    dict(LONG, camera={"track": 0.4}), dict(LONG, camera={"track": 9}), dict(LONG, camera={"track": -1}), dict(LONG, camera={"track": "x"}), dict(LONG, camera={"track": True}),
+    dict(LONG, camera={"track": HOSTILE}), dict(LONG, camera={"keys": [{"at": 0.5, "turn": 10}], "track": 0.5}), dict(LONG, camera={"keys": [{"at": 0.5}], "follow": 2}),
+    dict(FULL, legs=[{"route": ["depot", "north", "market"]}, {"route": ["port", "spare"]}, {"route": ["depot", "north", "market"], "back": True}], camera={"follow": 2}),
+    dict(FULL, route=["depot"], camera={"track": 1}), dict(FULL, route=["depot", "port"], stations=[dict(ST[0], x=50, y=50), dict(ST[3], x=50, y=50)], camera={"track": 1}),
+]
+
+
+def test_track_python_matches_gas_exactly(core_js):
+    got = _gas_batch(core_js, TRACK_CASES)
+    bad = [str(b)[:110] for b, g in zip(TRACK_CASES, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_track_pans_both_planes_after_the_head_of_the_route():
+    h = _py(dict(LONG, camera={"follow": 2}))   # follow tracks at 0.6 by default
+    assert h.count("translate(var(--px),var(--py))") == 2   # the city plane and the label plane move together
+    px = re.search(r"--px:calc\(\(50 - \(([^;]+)\)\)\*0\.6\*1%\);", h).group(1)
+    assert px.startswith("12 + 26*clamp(0,calc((var(--p,1) - 0.3)/")   # starts on the first station (Depot, x 12), then rides the first segment
+    assert px.count("clamp(") == 4   # one term per segment; one leg, so no jumps
+    jumps = _py(dict(FULL, legs=[{"route": ["depot", "north"]}, {"route": ["port", "spare"]}], camera={"track": 1}))
+    assert re.search(r"--px:calc\(\(50 - \(([^;]+)\)\)", jumps).group(1).count("clamp(") == 3   # two segments plus the jump to the second leg
+    assert "translate(" not in _py(dict(LONG, camera={"follow": 2, "track": 0})) and "translate(" not in _py(LONG)

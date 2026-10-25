@@ -45786,13 +45786,14 @@ def _render_motion_map3d(b: dict) -> str:
                  '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));')
     # camera.follow (v2): with no keys, re-angle the camera as the route arrives at every Nth station and at the last one
     fol = _ff_int(cam.get('follow'), 0, 0, 6) if cam.get('follow') is not None else 0
+    user_keys = bool(ckeys)
     if not ckeys and fol and segs:
         ckeys = [(0.0, 0.0, 0.0, z0), (_MAP3D_P0, 22.0, tilt, z1)]
         stops = [i for i in range(len(segs)) if (i + 1) % fol == 0 or i == len(segs) - 1]
         for j, i in enumerate(stops):
             arr = segs[i]['s'] + segs[i]['w']
             last = i == len(segs) - 1
-            pose = (22.0 - 45.0, max(0.0, tilt - 10), min(3.0, z1 * 1.3)) if last else (_MAP3D_TURNS[j % 6], tilt if j % 2 else max(0.0, tilt - 12), z1)
+            pose = (22.0 - 45.0, max(0.0, tilt - 10), min(3.0, z1 * 1.45)) if last else (_MAP3D_TURNS[j % 6], tilt if j % 2 else max(0.0, tilt - 12), min(3.0, z1 * 1.2))
             t0 = max(ckeys[-1][0] + 0.001, arr - 0.06)
             if t0 < arr:
                 ckeys.append((t0,) + ckeys[-1][1:])
@@ -45803,6 +45804,22 @@ def _render_motion_map3d(b: dict) -> str:
         notes.append(str(kbad) + (' camera key was' if kbad == 1 else ' camera keys were') + ' left out (at must be a number from 0 to 1, each later than the one before; at most 8).')
     plane = ('<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
              + faces + svg + '</div>')
+    # camera.track (v2): pan both planes so the head of the route (where it is drawing now) stays near the centre; track 0-1 is how firmly
+    # (default 0.6 with follow, else 0). The head is a piecewise calc() of var(--p,1) over the segment windows, jumping across the gap when a new leg starts.
+    trk = _map3d_n(cam.get('track'), 0.6 if (fol and not user_keys) else 0.0, 0, 1)
+    if trk > 0 and segs:
+        hx, hy = _map3d_f(segs[0]['ax'], 1), _map3d_f(segs[0]['ay'], 1)
+        for i, sg in enumerate(segs):
+            if i and (sg['ax'] != segs[i - 1]['bx'] or sg['ay'] != segs[i - 1]['by']):
+                jq = '*clamp(0,calc((var(--p,1) - ' + _map3d_f(sg['s'] - dw, 3) + ')/' + _map3d_f(dw, 3) + '),1)'
+                hx += ' + ' + _map3d_f(sg['ax'] - segs[i - 1]['bx'], 1) + jq
+                hy += ' + ' + _map3d_f(sg['ay'] - segs[i - 1]['by'], 1) + jq
+            q = '*clamp(0,calc((var(--p,1) - ' + _map3d_f(sg['s'], 3) + ')/' + _map3d_f(max(sg['w'], 0.001), 3) + '),1)'
+            hx += ' + ' + _map3d_f(sg['bx'] - sg['ax'], 1) + q
+            hy += ' + ' + _map3d_f(sg['by'] - sg['ay'], 1) + q
+        root_vars += ('--px:calc((50 - (' + hx + '))*' + _map3d_f(trk, 2) + '*1%);--py:calc((50 - (' + hy + '))*' + _map3d_f(trk, 2) + '*1%);')
+        plane = plane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">', 1)
+        over_plane = over_plane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">', 1)
     note = _hg_note(' '.join(notes)) if notes else ''
     return (css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + over_plane + '</div>' + chip + '</div>'
             + note + _map3d_version_note(b))

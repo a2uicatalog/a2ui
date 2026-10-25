@@ -1931,6 +1931,7 @@ _RENDERERS['motion_map3d'] = function(b) {
                   '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));';
   // camera.follow (v2): see the Python twin
   var fol = (cam.follow !== undefined && cam.follow !== null) ? _ffInt(cam.follow, 0, 0, 6) : 0;
+  var userKeys = ckeys.length > 0;
   if (!ckeys.length && fol && segs.length) {
     ckeys = [[0, 0, 0, z0], [_M3_P0, 22, tilt, z1]];
     var stops = [], fi, fj;
@@ -1938,7 +1939,7 @@ _RENDERERS['motion_map3d'] = function(b) {
     for (fj = 0; fj < stops.length; fj++) {
       fi = stops[fj];
       var arr = segs[fi].s + segs[fi].w, flast = fi === segs.length - 1, prev = ckeys[ckeys.length - 1];
-      var pose = flast ? [22 - 45, Math.max(0, tilt - 10), Math.min(3, z1 * 1.3)] : [_M3_TURNS[fj % 6], fj % 2 ? tilt : Math.max(0, tilt - 12), z1];
+      var pose = flast ? [22 - 45, Math.max(0, tilt - 10), Math.min(3, z1 * 1.45)] : [_M3_TURNS[fj % 6], fj % 2 ? tilt : Math.max(0, tilt - 12), Math.min(3, z1 * 1.2)];
       var ft0 = Math.max(prev[0] + 0.001, arr - 0.06);
       if (ft0 < arr) { ckeys.push([ft0, prev[1], prev[2], prev[3]]); ckeys.push([arr, pose[0], pose[1], pose[2]]); }
     }
@@ -1948,6 +1949,25 @@ _RENDERERS['motion_map3d'] = function(b) {
 
   var plane = '<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">' +
               faces + svg + '</div>';
+  // camera.track (v2): pan so the head of the route stays near the centre (see the Python twin)
+  var trk = _m3N(cam.track, (fol && !userKeys) ? 0.6 : 0, 0, 1);
+  if (trk > 0 && segs.length) {
+    var hx = _m3F(segs[0].ax, 1), hy = _m3F(segs[0].ay, 1), ti, sg, jq, q;
+    for (ti = 0; ti < segs.length; ti++) {
+      sg = segs[ti];
+      if (ti && (sg.ax !== segs[ti - 1].bx || sg.ay !== segs[ti - 1].by)) {
+        jq = '*clamp(0,calc((var(--p,1) - ' + _m3F(sg.s - dw, 3) + ')/' + _m3F(dw, 3) + '),1)';
+        hx += ' + ' + _m3F(sg.ax - segs[ti - 1].bx, 1) + jq;
+        hy += ' + ' + _m3F(sg.ay - segs[ti - 1].by, 1) + jq;
+      }
+      q = '*clamp(0,calc((var(--p,1) - ' + _m3F(sg.s, 3) + ')/' + _m3F(Math.max(sg.w, 0.001), 3) + '),1)';
+      hx += ' + ' + _m3F(sg.bx - sg.ax, 1) + q;
+      hy += ' + ' + _m3F(sg.by - sg.ay, 1) + q;
+    }
+    root_vars += '--px:calc((50 - (' + hx + '))*' + _m3F(trk, 2) + '*1%);--py:calc((50 - (' + hy + '))*' + _m3F(trk, 2) + '*1%);';
+    plane = plane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">');
+    overPlane = overPlane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">');
+  }
 
   var note = notes.length ? _hgNote(notes.join(' ')) : '';
 
