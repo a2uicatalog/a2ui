@@ -930,8 +930,8 @@ _RENDERERS['match_exercise'] = function(b) {
   var correctMap = {};
 
   for (var i = 0; i < pairs.length; i++) {
-    lefts.push({ idx: i, text: _textLoose(pairs[i].term) });
-    rights.push({ idx: i, text: _textLoose(pairs[i].definition) });
+    lefts.push({ idx: i, text: _firstText(pairs[i].term, pairs[i].left, pairs[i].key) });
+    rights.push({ idx: i, text: _firstText(pairs[i].definition, pairs[i].right, pairs[i].value) });
   }
 
   // Shuffle right side if desired

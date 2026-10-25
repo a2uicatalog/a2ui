@@ -2272,7 +2272,7 @@ _RENDERERS['tag_block'] = function(b) {
 };
 
 _RENDERERS['variant_selector'] = function(b) {
-  var name = _textLoose(b.name) || 'variant';
+  var name = _textLoose(b.name) || ('variant-' + _payloadUid(b));
   var label = _textLoose(b.label);
   var raw = (Array.isArray(b.items) && b.items.length) ? b.items : b.variants;
   var items = Array.isArray(raw) ? raw.slice(0, 100).filter(function(v) { return (v && typeof v === 'object' && !Array.isArray(v)) || _textLoose(v); }) : [];
@@ -2722,7 +2722,7 @@ _RENDERERS['depth_stack'] = function(b) {
   var count = n === null ? Math.min(50, cards.length) : Math.max(1, Math.min(50, Math.floor(n)));
   var items = cards.slice(0, count);
   var stackHtml = '';
-  for (var i = 0; i < items.length; i++) {
+  for (var i = items.length - 1; i >= 0; i--) {
     var card = items[i];
     var offset = i * 8;
     var scale = Math.max(40, 100 - i * 4);
@@ -2739,13 +2739,14 @@ _RENDERERS['depth_stack'] = function(b) {
       + 'right:' + offset + 'px;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
       + 'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:0 4px 12px rgba(0,0,0,0.08);'
       + 'transform:scale(' + (scale / 100) + ');opacity:' + (opacity / 100) + ';'
-      + 'transform-origin:top center;">'
+      + 'transform-origin:top center;z-index:' + (items.length - i) + ';">'
       + (title ? '<div data-cb="label" data-key="' + k + '" style="font-weight:700;color:#111827;">' + _esc(title) + '</div>' : '')
-      + (text ? '<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + _esc(text) + '</div>' : '')
+      + (text ? '<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + _markdownToHtml(text) + '</div>' : '')
       + '</div>' + stackHtml;
   }
   var height = 80 + items.length * 40;
-  return '<div style="position:relative;height:' + height + 'px;margin:2rem 0;">' + stackHtml + '</div>';
+  var hint = cards.length > items.length ? '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:-1.4rem;margin-bottom:1rem;">' + cards.length + ' items</div>' : '';
+  return '<div style="position:relative;height:' + height + 'px;margin:2rem 0;">' + stackHtml + '</div>' + hint;
 };
 
 _RENDERERS['shimmer_button'] = function(b) {
@@ -3076,20 +3077,24 @@ _RENDERERS['typewriter_text'] = function(b) {
   var delay = b.delay;
   if (!(typeof delay === 'string' && /^[0-9]{1,4}(\.[0-9]{1,3})?(s|ms)$/.test(delay))) delay = '0s';
   var tid = 'tw-' + _payloadUid(b);
-  var chars = Math.max(1, Math.min(2000, Array.from(text).length));
+  var cps = Array.from(text);
+  var chars = Math.max(1, cps.length);
+  var typing = chars <= 30 && text.indexOf('\n') === -1 && text.indexOf('\r') === -1 && cps.every(function(c) { return c.codePointAt(0) < 0x2E80; });
   var PER = {slow: 12, normal: 7, fast: 4};
   var per = (typeof speed === 'string' && PER.hasOwnProperty(speed)) ? PER[speed] : 7;
   var sn = _numLoose(speed);
   if (sn !== null) per = sn >= 90 ? 12 : (sn <= 25 ? 4 : 7);
   var tenths = Math.floor((chars * per + 5) / 10);
   var dur = Math.floor(tenths / 10) + '.' + (tenths % 10) + 's';
-  var cursorCss = cursor ? '.' + tid + '::after{content:"|";animation:' + tid + '-blink 0.75s step-end infinite;color:' + color + ';margin-left:2px;}'
+  var cursorCss = (cursor && typing) ? '.' + tid + '::after{content:"|";animation:' + tid + '-blink 0.75s step-end infinite;color:' + color + ';margin-left:2px;}'
     + '@keyframes ' + tid + '-blink{0%,100%{opacity:1}50%{opacity:0}}' : '';
+  var rule = typing
+    ? '.' + tid + '{display:inline-block;overflow:hidden;white-space:nowrap;width:0;animation:' + tid + '-type ' + dur + ' steps(' + chars + ',end) forwards;animation-delay:' + delay + ';}'
+      + '@keyframes ' + tid + '-type{to{width:' + chars + 'ch}}'
+    : '.' + tid + '{display:block;white-space:pre-wrap;overflow-wrap:anywhere;}';
   return '<style>'
-    + '.' + tid + '{display:inline-block;overflow:hidden;white-space:nowrap;width:0;animation:' + tid + '-type ' + dur + ' steps(' + chars + ',end) forwards;animation-delay:' + delay + ';}'
-    + '@keyframes ' + tid + '-type{to{width:' + chars + 'ch}}'
-    + cursorCss
-    + '@media (prefers-reduced-motion:reduce){.' + tid + '{animation:none;width:auto;}.' + tid + '::after{animation:none;}}'
+    + rule + cursorCss
+    + '@media (prefers-reduced-motion:reduce){.' + tid + '{animation:none;width:auto;white-space:pre-wrap;overflow:visible;}.' + tid + '::after{animation:none;}}'
     + '</style>'
     + '<div data-cb="node" data-key="' + _ckey(b.text, 'typewriter_text') + '" style="margin:1rem 0;font-size:' + size + ';font-weight:' + weight + ';'
     + 'color:' + color + ';line-height:1.2;font-family:monospace;">'
@@ -3663,7 +3668,7 @@ _RENDERERS['step_reveal_sequence'] = function(b) {
   css += '@media (prefers-reduced-motion:reduce){.' + uid + '-panel{animation:none;}}';
   css += '</style>';
   var parts = steps.map(function(s) {
-    if (s && typeof s === 'object' && !Array.isArray(s)) return [_firstText(s.title), _firstText(s.text, s.content)];
+    if (s && typeof s === 'object' && !Array.isArray(s)) return [_firstText(s.title), _firstText(s.text, s.content, s.body)];
     return [_textLoose(s), ''];
   });
   var inputs = '', nav = '', panels = '';
@@ -3848,7 +3853,7 @@ _RENDERERS['tooltip_glossary'] = function(b) {
     if (!(term || definition)) continue;
     rows += '<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
       + '<span class="tg-term" tabindex="0" style="flex-shrink:0;min-width:100px;">' + _esc(term)
-      + (definition ? '<span class="tg-tip" role="tooltip">' + _esc(definition) + '</span>' : '') + '</span>'
+      + (definition ? '<span class="tg-tip" aria-hidden="true">' + _esc(definition) + '</span>' : '') + '</span>'
       + '<span style="color:#6b7280;font-size:0.875rem;">' + _markdownToHtml(definition) + '</span>'
       + '</div>';
   }

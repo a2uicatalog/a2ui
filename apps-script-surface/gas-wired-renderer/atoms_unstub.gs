@@ -419,30 +419,38 @@ _RENDERERS['review_callout'] = function(b) {
 // ─── rating_comparison ────────────────────────────────────────────────────────
 _RENDERERS['rating_comparison'] = function(b) {
   var title = _textLoose(b.title);
-  var items = Array.isArray(b.items) ? b.items.slice(0, 100).filter(function(i) { return i && typeof i === 'object' && !Array.isArray(i); }) : [];
-  var defaultMax = _numLoose(b.max);
+  var raw = (Array.isArray(b.items) && b.items.length) ? b.items : b.ratings;
+  var items = Array.isArray(raw) ? raw.slice(0, 100).filter(function(i) { return i && typeof i === 'object' && !Array.isArray(i); }) : [];
+  var blockMax = _numLoose(b.max);
   var sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
   var rows = '';
   for (var k = 0; k < items.length; k++) {
     var item = items[k];
     var label = _firstText(item.label, item.name);
-    var rating = _numLoose(item.rating);
-    if (rating === null) rating = _numLoose(item.value);
-    if (rating === null) rating = 0;
+    var rating = null, keys = ['rating', 'score', 'value'];
+    for (var q = 0; q < keys.length; q++) { rating = _numLoose(item[keys[q]]); if (rating !== null) break; }
     var m = _numLoose(item.max);
-    if (m === null) m = defaultMax;
-    var mx = m === null ? 5 : Math.max(1, Math.min(50, Math.floor(m)));
-    rating = Math.max(0, Math.min(mx, rating));
-    var filled = Math.floor(rating + 0.5);
-    var stars = '';
-    for (var i = 1; i <= mx; i++) {
-      stars += '<span aria-hidden="true" style="color:' + (i <= filled ? '#fbbf24' : '#e5e7eb') + ';font-size:0.85rem;">★</span>';
+    if (m === null) m = blockMax;
+    if (m !== null && m <= 0) m = null;
+    var shown = rating === null ? 0 : rating;
+    var scale = m === null ? 5 : m;
+    var reviews = _firstText(item.reviews_count, item.reviews, item.count);
+    var visual = '';
+    if (scale > 10) {
+      var pct = Math.floor(Math.max(0, Math.min(1, shown / scale)) * 100 + 0.5);
+      visual = '<span aria-hidden="true" style="flex:1;min-width:80px;height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;">'
+        + '<span style="display:block;height:100%;width:' + pct + '%;background:#fbbf24;border-radius:100px;"></span></span>';
+    } else {
+      var n = Math.max(1, Math.floor(scale));
+      var filled = Math.floor(Math.max(0, Math.min(n, shown)) + 0.5);
+      for (var i = 1; i <= n; i++) visual += '<span aria-hidden="true" style="color:' + (i <= filled ? '#fbbf24' : '#e5e7eb') + ';font-size:0.85rem;">\u2605</span>';
     }
+    var tail = m !== null ? '<span style="' + sr + '"> out of ' + _textLoose(m) + '</span>' : '';
+    var rev = reviews ? ' \u00b7 ' + _esc(reviews) + ' reviews' : '';
     rows += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
       + '<span style="min-width:120px;color:var(--text,#374151);">' + _esc(label) + '</span>'
-      + stars
-      + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + _textLoose(rating)
-      + '<span style="' + sr + '"> out of ' + mx + '</span>)</span></div>';
+      + visual
+      + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + _textLoose(shown) + tail + ')' + rev + '</span></div>';
   }
   var titleHtml = title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(title) + '</div>' : '';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'

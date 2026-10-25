@@ -7070,7 +7070,8 @@ def _render_typewriter_text(b: dict) -> str:
     if not (isinstance(delay, str) and re.fullmatch(r'[0-9]{1,4}(\.[0-9]{1,3})?(s|ms)', delay)):
         delay = '0s'
     tid = 'tw-' + _wa_uid(b)
-    chars = max(1, min(2000, len(text)))
+    chars = max(1, len(text))
+    typing = chars <= 30 and '\n' not in text and '\r' not in text and all(ord(c) < 0x2E80 for c in text)
     per = {'slow': 12, 'normal': 7, 'fast': 4}.get(speed, 7) if isinstance(speed, str) else 7
     sn = _num_loose(speed)
     if sn is not None:
@@ -7078,12 +7079,15 @@ def _render_typewriter_text(b: dict) -> str:
     tenths = (chars * per + 5) // 10
     dur = str(tenths // 10) + '.' + str(tenths % 10) + 's'
     cursor_css = ('.' + tid + '::after{content:"|";animation:' + tid + '-blink 0.75s step-end infinite;color:' + color + ';margin-left:2px;}'
-                  '@keyframes ' + tid + '-blink{0%,100%{opacity:1}50%{opacity:0}}') if cursor else ''
+                  '@keyframes ' + tid + '-blink{0%,100%{opacity:1}50%{opacity:0}}') if (cursor and typing) else ''
+    if typing:
+        rule = ('.' + tid + '{display:inline-block;overflow:hidden;white-space:nowrap;width:0;animation:' + tid + '-type ' + dur + ' steps(' + str(chars) + ',end) forwards;animation-delay:' + delay + ';}'
+                '@keyframes ' + tid + '-type{to{width:' + str(chars) + 'ch}}')
+    else:
+        rule = '.' + tid + '{display:block;white-space:pre-wrap;overflow-wrap:anywhere;}'
     return ('<style>'
-            '.' + tid + '{display:inline-block;overflow:hidden;white-space:nowrap;width:0;animation:' + tid + '-type ' + dur + ' steps(' + str(chars) + ',end) forwards;animation-delay:' + delay + ';}'
-            '@keyframes ' + tid + '-type{to{width:' + str(chars) + 'ch}}'
-            + cursor_css +
-            '@media (prefers-reduced-motion:reduce){.' + tid + '{animation:none;width:auto;}.' + tid + '::after{animation:none;}}'
+            + rule + cursor_css +
+            '@media (prefers-reduced-motion:reduce){.' + tid + '{animation:none;width:auto;white-space:pre-wrap;overflow:visible;}.' + tid + '::after{animation:none;}}'
             '</style>'
             '<div data-cb="node" data-key="' + _ck(b.get('text'), 'typewriter_text') + '" style="margin:1rem 0;font-size:' + size + ';font-weight:' + weight + ';'
             'color:' + color + ';line-height:1.2;font-family:monospace;">'
@@ -8186,7 +8190,7 @@ def _render_tag_block(b: dict) -> str:
 
 def _render_variant_selector(b: dict) -> str:
     """CSS-only radio card group for variant picking. Source: OpenUI/Thesys MIT."""
-    name = _text_loose(b.get('name')) or 'variant'
+    name = _text_loose(b.get('name')) or ('variant-' + _wa_uid(b))
     label = _text_loose(b.get('label'))
     raw = b.get('items') if isinstance(b.get('items'), list) and b.get('items') else b.get('variants')
     items = [v for v in raw[:100] if isinstance(v, dict) or _text_loose(v)] if isinstance(raw, list) else []
@@ -10778,8 +10782,8 @@ def _render_match_exercise(b: dict) -> str:
     pairs = [p for p in raw if isinstance(p, dict)] if isinstance(raw, list) else []
     if not pairs:
         return ""
-    terms = [_text_loose(p.get("term")) for p in pairs]
-    defs = [_text_loose(p.get("definition")) for p in pairs]
+    terms = [_first_text(p.get("term"), p.get("left"), p.get("key")) for p in pairs]
+    defs = [_first_text(p.get("definition"), p.get("right"), p.get("value")) for p in pairs]
     if b.get("shuffle") is not False:
         defs = defs[:]
         # Seeded off the same content digest `uid` already derives from, so the
@@ -16742,29 +16746,41 @@ _RENDERERS['product_thumbnail'] = _render_product_thumbnail
 
 def _render_rating_comparison(b: dict) -> str:
     title = _text_loose(b.get('title'))
-    raw = b.get('items')
+    raw = b.get('items') if isinstance(b.get('items'), list) and b.get('items') else b.get('ratings')
     items = [i for i in raw[:100] if isinstance(i, dict)] if isinstance(raw, list) else []
-    default_max = _num_loose(b.get('max'))
+    block_max = _num_loose(b.get('max'))
     sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
     rows = ''
     for item in items:
         label = _first_text(item.get('label'), item.get('name'))
-        rating = _num_loose(item.get('rating'))
-        if rating is None:
-            rating = _num_loose(item.get('value'))
-        rating = 0 if rating is None else rating
+        rating = None
+        for k in ('rating', 'score', 'value'):
+            rating = _num_loose(item.get(k))
+            if rating is not None:
+                break
         m = _num_loose(item.get('max'))
         if m is None:
-            m = default_max
-        mx = 5 if m is None else max(1, min(50, int(math.floor(m))))
-        rating = max(0, min(mx, rating))
-        filled = int(math.floor(rating + 0.5))
-        stars = ''.join('<span aria-hidden="true" style="color:' + ('#fbbf24' if i <= filled else '#e5e7eb') + ';font-size:0.85rem;">★</span>' for i in range(1, mx + 1))
+            m = block_max
+        if m is not None and m <= 0:
+            m = None
+        shown = 0 if rating is None else rating
+        scale = 5 if m is None else m
+        reviews = _first_text(item.get('reviews_count'), item.get('reviews'), item.get('count'))
+        if scale > 10:
+            pct = int(math.floor(max(0, min(1, shown / scale)) * 100 + 0.5))
+            visual = ('<span aria-hidden="true" style="flex:1;min-width:80px;height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;">'
+                      '<span style="display:block;height:100%;width:' + str(pct) + '%;background:#fbbf24;border-radius:100px;"></span></span>')
+        else:
+            n = max(1, int(math.floor(scale)))
+            filled = int(math.floor(max(0, min(n, shown)) + 0.5))
+            visual = ''.join('<span aria-hidden="true" style="color:' + ('#fbbf24' if i <= filled else '#e5e7eb') + ';font-size:0.85rem;">\u2605</span>' for i in range(1, n + 1))
+        tail = (('<span style="' + sr + '"> out of ' + _text_loose(m) + '</span>') if m is not None else '')
+        rev = (' \u00b7 ' + _cv_esc(reviews) + ' reviews') if reviews else ''
         rows += ('<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
                  '<span style="min-width:120px;color:var(--text,#374151);">' + _cv_esc(label) + '</span>'
-                 + stars
-                 + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + _text_loose(rating)
-                 + '<span style="' + sr + '"> out of ' + str(mx) + '</span>)</span></div>')
+                 + visual
+                 + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + _text_loose(shown)
+                 + tail + ')' + rev + '</span></div>')
     title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _cv_esc(title) + '</div>') if title else ''
     return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
             + title_html + rows + '</div>')
@@ -24856,7 +24872,8 @@ def _render_depth_stack(b: dict) -> str:
     count = min(50, len(cards)) if n is None else max(1, min(50, int(n // 1)))
     items = cards[:count]
     stack_html = ''
-    for i, card in enumerate(items):
+    for i in range(len(items) - 1, -1, -1):
+        card = items[i]
         offset = i * 8
         scale = max(40, 100 - i * 4)
         opacity = max(10, 100 - i * 15)
@@ -24871,13 +24888,14 @@ def _render_depth_stack(b: dict) -> str:
                       'right:' + str(offset) + 'px;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
                       'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:0 4px 12px rgba(0,0,0,0.08);'
                       'transform:scale(' + format(scale / 100, 'g') + ');opacity:' + format(opacity / 100, 'g') + ';'
-                      'transform-origin:top center;">'
+                      'transform-origin:top center;z-index:' + str(len(items) - i) + ';">'
                       + ('<div data-cb="label" data-key="' + k + '" style="font-weight:700;color:#111827;">' + _cv_esc(title) + '</div>' if title else '')
-                      + ('<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + _cv_esc(text) + '</div>' if text else '')
+                      + ('<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + _md_inline(text) + '</div>' if text else '')
                       + '</div>') + stack_html
     height = 80 + len(items) * 40
+    hint = ('<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:-1.4rem;margin-bottom:1rem;">' + str(len(cards)) + ' items</div>') if len(cards) > len(items) else ''
     return ('<div style="position:relative;height:' + str(height) + 'px;margin:2rem 0;">'
-            + stack_html + '</div>')
+            + stack_html + '</div>' + hint)
 
 
 _RENDERERS["depth_stack"] = _render_depth_stack
@@ -25381,7 +25399,7 @@ def _render_step_reveal_sequence(b: dict) -> str:
     parts = []
     for s in steps:
         if isinstance(s, dict):
-            parts.append((_first_text(s.get('title')), _first_text(s.get('text'), s.get('content'))))
+            parts.append((_first_text(s.get('title')), _first_text(s.get('text'), s.get('content'), s.get('body'))))
         else:
             parts.append((_text_loose(s), ''))
     inputs = ''.join('<input type="radio" id="' + uid + '-' + str(i) + '" name="' + uid + '"' + (' checked' if i == 0 else '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' for i in range(len(steps)))
@@ -25466,47 +25484,16 @@ _RENDERERS["live_vote"] = _render_live_vote
 
 
 def _render_raise_hand(b: dict) -> str:
-    uid = _wa_uid(b)
+    # Static view: the schema marks the live tally (write_url beacon, sheet_url polling) as Apps Script only, so no script and no network call here.
     question = _text_loose(b.get('question')) or 'Raise your hand'
-    label = _text_loose(b.get('label')) or '✋ Raise hand'
-    write_url = _safe_href(b.get('write_url'), ('http', 'https'))
-    write_url = write_url if re.match(r'https?://', write_url, re.I) else ''
-    sheet_url = _safe_href(b.get('sheet_url'), ('http', 'https'))
-    sheet_url = sheet_url if re.match(r'https?://', sheet_url, re.I) else ''
-    pn = _num_loose(b.get('poll_interval'))
-    if pn is None:
-        pn = _num_loose(b.get('poll'))
-    poll = 4000 if pn is None else max(1000, min(600000, int(math.floor(pn))))
+    label = _text_loose(b.get('label')) or '\u270b Raise hand'
     accent = _safe_css(b.get('accent'), '#4f46e5')
     return ('<div data-cb="node" data-key="' + _ck(b.get('question'), 'raise_hand') + '" style="text-align:center;padding:28px 20px;margin:1rem 0;">'
             '<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:20px;">' + _cv_esc(question) + '</div>'
-            '<button type="button" id="rh-btn-' + uid + '" style="font-size:1.5rem;padding:16px 32px;background:var(--surface,#ffffff);border:2px solid var(--border,#e5e7eb);border-radius:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text,#111827);display:inline-block;">' + _cv_esc(label) + '</button>'
-            '<div aria-live="polite" style="margin-top:16px;font-size:2rem;font-weight:900;color:' + accent + ';" id="rh-count-' + uid + '">0</div>'
-            '<div style="font-size:0.78rem;color:var(--muted,#5f6368);">hands raised</div>'
-            '</div>'
-            '<script>(function(){'
-            'var btn=document.getElementById("rh-btn-' + uid + '");'
-            'var countEl=document.getElementById("rh-count-' + uid + '");'
-            'if(!btn||!countEl)return;'
-            'var writeUrl=' + _js_json(write_url, ensure_ascii=False) + ';'
-            'var sheetUrl=' + _js_json(sheet_url, ensure_ascii=False) + ';'
-            'var poll=' + str(poll) + ';'
-            'var raised=false;var count=0;'
-            'btn.addEventListener("click",function(){'
-            'if(raised)return;raised=true;count++;'
-            'btn.style.borderColor="' + accent + '";btn.style.background="color-mix(in srgb, ' + accent + ' 6%, transparent)";'
-            'countEl.textContent=count;'
-            'if(writeUrl)fetch(writeUrl+(writeUrl.indexOf("?")<0?"?":"&")+"hand=1",{method:"GET",mode:"no-cors"}).catch(function(){});'
-            '});'
-            'function fetchCount(){'
-            'fetch(sheetUrl).then(function(r){return r.text();}).then(function(t){'
-            'var lines=t.trim().split("\\n").slice(1);var total=0;'
-            'lines.forEach(function(l){var c=l.split(",");total+=parseInt(c[1]||"1",10)||1;});'
-            'count=total;countEl.textContent=total;'
-            '}).catch(function(){});'
-            '}'
-            'if(sheetUrl){fetchCount();setInterval(fetchCount,poll);}'
-            '})();</script>')
+            '<button type="button" style="font-size:1.5rem;padding:16px 32px;background:var(--surface,#ffffff);border:2px solid ' + accent + ';border-radius:14px;cursor:pointer;font-family:inherit;color:var(--text,#111827);display:inline-block;" '
+            'onclick="this.disabled=true;this.style.opacity=0.6">' + _cv_esc(label) + '</button>'
+            '<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:14px;">Live hand counting runs on Apps Script surfaces.</div>'
+            '</div>')
 
 
 _RENDERERS["raise_hand"] = _render_raise_hand
@@ -28104,7 +28091,7 @@ def _render_tooltip_glossary(b: dict) -> str:
             continue
         rows += ('<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
                  '<span class="tg-term" tabindex="0" style="flex-shrink:0;min-width:100px;">' + _cv_esc(term)
-                 + ('<span class="tg-tip" role="tooltip">' + _cv_esc(definition) + '</span>' if definition else '') + '</span>'
+                 + ('<span class="tg-tip" aria-hidden="true">' + _cv_esc(definition) + '</span>' if definition else '') + '</span>'
                  '<span style="color:#6b7280;font-size:0.875rem;">' + _md_inline(definition) + '</span>'
                  '</div>')
     return ('<style>.tg-term{position:relative;cursor:help;color:#4f46e5;font-weight:600;border-bottom:1px dashed #4f46e5;}'

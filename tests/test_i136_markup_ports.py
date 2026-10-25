@@ -134,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -443,13 +443,13 @@ EQUAL.extend([
     {"type": "lens_synthesis", "source_excerpt": "Alpha beta gamma.", "points": [{"point": "First", "evidence": "beta"}, {"point": "Second", "evidence": "nope"}, {"point": "Third"}, None, "x"]},
 ])
 MUST.update({
-    "depth_stack": ["Alpha", "First **card**", "Beta", "Second", "Plain", "data-cb=\"tile\"", "height:200px"],
+    "depth_stack": ["Alpha", "First <strong>card</strong>", "Beta", "Second", "Plain", "data-cb=\"tile\"", "height:200px"],
     "glitch_text": ["SYSTEM FAULT", 'data-t="SYSTEM FAULT"', "font-size:3rem", "prefers-reduced-motion"],
     "prompt_template": ["Triage", "&lt;b&gt;", "{topic}", "{{old}}", "#0f766e", "Copy", "prompt template"],
     "noise_card": ["Q3 plan", "<strong>fast</strong>", "#111827", "#f9fafb", "feTurbulence", "opacity:0.8"],
     "shimmer_button": ["Start now", 'href="https://example.com/go"', 'rel="noopener"', "No card needed", "16px 40px", "0.9s", "rgba(56,189,248,0.5)", "prefers-reduced-motion"],
-    "typewriter_text": ["Hello, world", "font-size:32px", "color:#111111", "steps(12,end)", "animation-delay:0.5s", "1.4s", "prefers-reduced-motion"],
-    "tooltip_glossary": ["An <strong>intro</strong> line", "SLA", 'role="tooltip"', "Service <strong>level</strong> agreement", "RPO", "Recovery point", "Bare", 'tabindex="0"'],
+    "typewriter_text": ["Hello, world", "font-size:32px", "color:#111111", "steps(12,end)", "animation-delay:0.5s", "1.4s", "white-space:pre-wrap", "prefers-reduced-motion"],
+    "tooltip_glossary": ["An <strong>intro</strong> line", "SLA", 'aria-hidden="true"', "Service <strong>level</strong> agreement", "RPO", "Recovery point", "Bare", 'tabindex="0"'],
     "lens_synthesis": ["First", "Second", "Third", "UNVERIFIED", "no supporting quote"],
 })
 OLD.extend([
@@ -475,7 +475,7 @@ def test_depth_stack_puts_the_first_card_in_front_and_invents_nothing(core_js):
     for b, g in zip(blocks, gas):
         assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
     for html in (_py_fresh(blocks[0]), gas[0]):
-        assert html.index("Back") < html.index("Front") and "top:0px;left:0px" in html
+        assert html.index("Front") < html.index("Back") and "top:0px;left:0px" in html and "z-index:2" in html
     for html in (_py_fresh(blocks[1]), gas[1]):
         assert "No cards supplied." in html and "tile" not in html
     for html in (_py_fresh(blocks[2]), gas[2]):
@@ -513,7 +513,7 @@ def test_shimmer_button_drops_an_unsafe_href_and_typewriter_validates_delay_and_
     for html in (_py_fresh(blocks[2]), gas[2]):
         assert "animation-delay:0s" in html and "-blink 0.75s" not in html and "steps(3,end)" in html and "0.2s steps" in html
     for html in (_py_fresh(blocks[3]), gas[3]):
-        assert "steps(2000,end)" in html and "80.0s" in html
+        assert "steps(" not in html and "white-space:pre-wrap" in html and html.count("x") >= 3000
     for html in (_py_fresh(blocks[4]), gas[4]):
         assert "steps(1,end)" in html
 
@@ -537,9 +537,9 @@ EQUAL.extend([
     {"type": "rating_stars", "rating": 3.5, "max_rating": 5, "label": "Quality"},
     {"type": "score_summary", "correct": 8, "total": 10, "time_taken": "2m 14s", "pass_threshold": 70, "retry_label": "Retry", "continue_label": "Next", "continue_url": "https://example.com/n"},
     {"type": "sonar_pulse", "variant": "warning", "active": True, "label": "Syncing", "size": "lg", "body": "Replica lag"},
-    {"type": "raise_hand", "question": "Ready?", "label": "\u270b Yes", "write_url": "https://example.com/w", "sheet_url": "https://example.com/s.csv", "poll": 2000, "accent": "#0f766e"},
     {"type": "uptime_timeline", "label": "API", "uptime": 99.125, "period": "30 days", "days": [1, 1, 0.6, 0, {"date": "2026-10-01", "status": 1}, {"status": "x"}, True]},
 ])
+SAFE.append({"type": "raise_hand", "question": "Ready?", "label": "\u270b Yes", "write_url": "https://example.com/w", "sheet_url": "https://example.com/s.csv", "poll": 2000, "accent": "#0f766e"})
 SAFE.append({"type": "match_exercise", "pairs": [{"term": "SLA", "definition": "Service level agreement"}, {"term": "RPO", "definition": "Recovery point objective"}, "junk", None]})
 MUST.update({
     "reveal_on_scroll": ["Launch notes", "<strong>Friday</strong>", "translateX(32px)", "1.2s ease", "#0f766e", "#f0fdfa", "IntersectionObserver", "prefers-reduced-motion"],
@@ -547,7 +547,7 @@ MUST.update({
     "rating_stars": ["Quality", "Rating: 3.5 of 5", "3.5"],
     "score_summary": ["80%", "Passed", "8 / 10 correct", "Time: 2m 14s", ">Retry<", 'href="https://example.com/n"', "#047857"],
     "sonar_pulse": ["Syncing", "Replica lag", "#f59e0b", "width:130px", ">warning<", "prefers-reduced-motion"],
-    "raise_hand": ["Ready?", "\u270b Yes", "#0f766e", 'var writeUrl="https://example.com/w";', 'var sheetUrl="https://example.com/s.csv";', "var poll=2000;", "hands raised"],
+    "raise_hand": ["Ready?", "\u270b Yes", "#0f766e"],
     "uptime_timeline": ["API", "99.13%", "30 days", "#22c55e", "#f59e0b", "#ef4444", "#94a3b8", "2026-10-01", "Day 1", 'width="7"', 'role="img"'],
     "match_exercise": ["SLA", "Service level agreement", "RPO", "Recovery point objective"],
 })
@@ -556,12 +556,11 @@ OLD.extend([
     {"type": "glow_button", "text": "Old text", "color": "#123456"},
     {"type": "score_summary", "correct": "3", "total": "4"},
     {"type": "sonar_pulse", "title": "Old title", "color": "#123456"},
-    {"type": "raise_hand", "poll_interval": 9000, "sheet_url": "https://example.com/x"},
     {"type": "uptime_timeline", "uptime_percent": 97.5, "days": [1, 1]},
 ])
 OLD_WORDS.update({
     "reveal_on_scroll": ["old text", "0.4s"], "glow_button": ["Old text", "#123456"], "score_summary": ["75%", "3 / 4 correct"], "sonar_pulse": ["Old title", "#123456"],
-    "raise_hand": ["var poll=9000;", 'var sheetUrl="https://example.com/x";'], "uptime_timeline": ["97.50%"],
+    "uptime_timeline": ["97.50%"],
 })
 
 
@@ -603,15 +602,14 @@ def test_score_summary_rounds_half_up_clamps_and_links_safely(core_js):
         assert "<button" in html and "location.reload()" in html and "<a " not in html
 
 
-def test_raise_hand_only_posts_to_absolute_http_urls(core_js):
+def test_raise_hand_live_script_only_in_gas_and_only_to_absolute_http_urls(core_js):
     blocks = [{"type": "raise_hand", "write_url": "javascript:alert(1)", "sheet_url": "/relative.csv"}, {"type": "raise_hand", "write_url": "https://example.com/w?x=1", "poll": 1}]
     gas = _gas_isolated(core_js, blocks)
-    for b, g in zip(blocks, gas):
-        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
-    for html in (_py_fresh(blocks[0]), gas[0]):
-        assert 'var writeUrl="";' in html and 'var sheetUrl="";' in html
-    for html in (_py_fresh(blocks[1]), gas[1]):
-        assert 'var writeUrl="https://example.com/w?x=1";' in html and "var poll=1000;" in html and 'indexOf("?")' in html
+    for b in blocks:
+        py = _py_fresh(b)
+        assert "<script" not in py and "fetch(" not in py and "example.com" not in py and "setInterval" not in py
+    assert 'var writeUrl="";' in gas[0] and 'var sheetUrl="";' in gas[0]
+    assert 'var writeUrl="https://example.com/w?x=1";' in gas[1] and "var poll=1000;" in gas[1] and 'indexOf("?")' in gas[1]
 
 
 # ---- batch b6/3 ----
@@ -628,7 +626,7 @@ EQUAL.extend([
 MUST.update({
     "rubric_card": ["Essay rubric", "Thesis", "Vague", "Clear", "\u2014", "Evidence", "Low", "High", "#1b7c59", "#0f766e", 'scope="row"', 'scope="col"'],
     "roadmap_card": ["2027", "Q1", "Ship v2", "done: ", "in progress: ", "Plain", "planned: ", "deferred: ", "Odd", "#065f46"],
-    "rating_comparison": ["Reviews", "Alpha", "(4.5", "Beta", "(2", "out of 4", "Gamma", "(5", "#fbbf24"],
+    "rating_comparison": ["Reviews", "Alpha", "(4.5", "Beta", "(2", "out of 4", "Gamma", "(9", "#fbbf24"],
     "step_reveal_sequence": ["Plan", "Do <strong>it</strong>", "old content", "Plain", "1. Plan", "3. Plain", 'role="radiogroup"', "prefers-reduced-motion", "focus-visible"],
     "terminal_boot": ["boot", "loading kernel", "mount ok", "\u2717 disk", "token created", "setTimeout(next,500)", "prefers-reduced-motion"],
     "variant_selector": ["Pick a plan", 'name="plan"', 'value="pro" checked', "Free", "Hobby", "#ff0000", " disabled", "Plain", 'role="radiogroup"'],
@@ -686,7 +684,7 @@ def test_step_reveal_and_variant_selector_radios(core_js):
     for html in (_py_fresh(blocks[1]), gas[1]):
         assert html.count('type="radio"') == 2 and html.count(" checked") == 1
     for html in (_py_fresh(blocks[2]), gas[2]):
-        assert html.count('type="radio"') == 2 and html.count(" checked>") == 1 and 'name="variant"' in html
+        assert html.count('type="radio"') == 2 and html.count(" checked>") == 1 and 'name="variant-' in html
 
 
 def test_stepper_states_come_from_active_index_and_legacy_flags(core_js):
@@ -725,3 +723,57 @@ def test_roadmap_status_names_and_legacy_card(core_js):
     assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
     for html in (_py_fresh(b), g):
         assert "in progress: " in html and "planned: " in html and html.count("planned: ") == 1
+
+
+def test_typewriter_long_multiline_and_cjk_text_is_shown_whole(core_js):
+    blocks = [{"type": "typewriter_text", "text": "A long sentence that certainly does not fit on one line of a narrow column, with more words."},
+              {"type": "typewriter_text", "text": "Line one\nLine two\nLine three"}, {"type": "typewriter_text", "text": "こんにちは世界"}, {"type": "typewriter_text", "text": "Short"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for k in (0, 1, 2):
+        for html in (_py_fresh(blocks[k]), gas[k]):
+            css = html.split("</style>")[0]
+            assert "steps(" not in css and "width:0" not in css and "display:block;white-space:pre-wrap" in css
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "Line one\nLine two\nLine three" in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert "steps(5,end)" in html
+
+
+def test_rating_comparison_shows_numbers_as_given_and_reads_aliases(core_js):
+    blocks = [{"type": "rating_comparison", "items": [{"label": "Survey", "value": 72, "max": 100}]}, {"type": "rating_comparison", "items": [{"label": "N", "rating": 9}]},
+              {"type": "rating_comparison", "items": [{"name": "Auth0", "score": 4.6, "reviews_count": 820}]}, {"type": "rating_comparison", "ratings": [{"label": "Load", "rating": 4.9}]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "(72" in html and "out of 100" in html and "width:72%" in html and "★" not in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "(9)" in html and "out of" not in html and html.count("★") == 5
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "(4.6)" in html and "820 reviews" in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert "(4.9)" in html and "Load" in html
+
+
+def test_aliases_for_match_pairs_and_step_body_and_stack_markdown(core_js):
+    blocks = [{"type": "match_exercise", "pairs": [{"key": "K1", "value": "V1"}, {"left": "L2", "right": "R2"}]}, {"type": "step_reveal_sequence", "steps": [{"title": "T", "body": "Body **b**"}]},
+              {"type": "depth_stack", "cards": [{"title": "A", "text": "x **y**"}, {"title": "B"}, {"title": "C"}], "count": 2}]
+    gas = _gas_isolated(core_js, blocks)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert all(w in html for w in ("K1", "V1", "L2", "R2"))
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "Body <strong>b</strong>" in html
+    for b, g in zip(blocks[1:], gas[1:]):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "x <strong>y</strong>" in html and "3 items" in html
+
+
+def test_unnamed_variant_selectors_get_their_own_radio_group(core_js):
+    a, b = {"type": "variant_selector", "items": [{"value": "a"}]}, {"type": "variant_selector", "items": [{"value": "b"}]}
+    names = [re.search(r'name="([^"]+)"', h).group(1) for h in (_py_fresh(a), _py_fresh(b))]
+    assert names[0] != names[1]
+    g = _gas_isolated(core_js, [a, b])
+    assert re.search(r'name="([^"]+)"', g[0]).group(1) != re.search(r'name="([^"]+)"', g[1]).group(1)
