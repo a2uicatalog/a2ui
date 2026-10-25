@@ -44481,10 +44481,10 @@ def _ch_regions(rset):
     return [(r['id'], r['name'], r['p']) for r in _ch_load(rset)['regions']]
 
 
-def _ch_equal_earth(k, tx, ty):
-    """d3.geoEqualEarth().scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y]."""
+def _ch_equal_earth(k, tx, ty, nowrap=False):
+    """d3.geoEqualEarth().scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y]. nowrap leaves a longitude beyond +-180 where it is (a map drawn across the seam)."""
     def f(lo, la):
-        q = _geo_ident(lo * _GEO_D2R, la * _GEO_D2R)
+        q = (lo * _GEO_D2R, la * _GEO_D2R) if nowrap else _geo_ident(lo * _GEO_D2R, la * _GEO_D2R)
         t = _gm.asin(_CH_EA_M * _gm.sin(q[1]))
         t2 = t * t
         t6 = t2 * t2 * t2
@@ -44561,6 +44561,67 @@ def _ch_path(polys, pr):
     return d
 
 
+def _ch_merc_nowrap(lo, la):
+    """d3.geoMercator() at k=1, no translate, with no wrap of a longitude beyond +-180 (a map drawn across the seam)."""
+    p = max(-_GEO_MAXLAT, min(_GEO_MAXLAT, la * _GEO_D2R))
+    return [0 + lo * _GEO_D2R, 0 - _gm.log(_gm.tan((_GEO_PI / 2 + p) / 2))]
+
+
+def _ch_w180(x):
+    """x wrapped into -180..180 the way d3 wraps a longitude (180 stays 180)."""
+    return x - _geo_round(x / 360) * 360 if abs(x) > 180 else x
+
+
+def _ch_lam0(fr):
+    """Central meridian of a travel frame: the frame's centre when it crosses the antimeridian (lon_min above lon_max) or reaches +-180, else 0 (nothing rotates)."""
+    if fr is None:
+        return 0
+    if fr[0] > fr[1]:
+        return (fr[0] + fr[1] + 360) / 2
+    if fr[0] <= -180 or fr[1] >= 180:
+        return (fr[0] + fr[1]) / 2
+    return 0
+
+
+def _ch_in_lon(fr, x):
+    return (fr[0] <= x <= fr[1]) if fr[0] <= fr[1] else (x >= fr[0] or x <= fr[1])
+
+
+def _ch_path_f(polys, pr, rid, fr, lam0, w, h):
+    """The outline path of one region: _ch_path for an unframed map; in a frame the rings are also drawn a world to the west and east (so land past +-180 shows when the canvas
+    reaches there), and under a rotated central meridian each ring is unwrapped first so a ring crossing the new seam stays one piece instead of streaking across the canvas."""
+    if fr is None:
+        return _ch_path(polys, lambda lo_, la_: pr(rid, lo_, la_))
+    d = ''
+    for poly in polys:
+        for ring in poly:
+            n2 = len(ring) // 2
+            if lam0:
+                lons = []
+                prev = None
+                for i in range(n2):
+                    r = _ch_w180(ring[2 * i] - lam0) if prev is None else prev + _ch_w180(ring[2 * i] - lam0 - prev)
+                    lons.append(r + lam0)
+                    prev = r
+            else:
+                lons = [ring[2 * i] for i in range(n2)]
+            for sh in (0, 360, -360):
+                pts, lx, ly, n = '', None, None, 0
+                bx0 = by0 = float('inf')
+                bx1 = by1 = float('-inf')
+                for i in range(n2):
+                    p = pr(rid, lons[i] + sh, ring[2 * i + 1])
+                    x, y = _ch_r1(p[0]), _ch_r1(p[1])
+                    bx0, bx1, by0, by1 = min(bx0, x), max(bx1, x), min(by0, y), max(by1, y)
+                    if x != lx or y != ly:
+                        pts += (' ' if n else '') + _geo_jsnum(x) + ' ' + _geo_jsnum(y)
+                        n += 1
+                        lx, ly = x, y
+                if n >= 3 and ((sh == 0 and not lam0) or (bx1 >= 0 and bx0 <= w and by1 >= 0 and by0 <= h)):
+                    d += 'M' + pts + 'Z'
+    return d
+
+
 _CH_FRAME_KEYS = ('lon_min', 'lon_max', 'lat_min', 'lat_max')
 
 
@@ -44577,10 +44638,14 @@ def _ch_frame_read(f, proj, notes):
         notes.append('frame must be {lon_min, lon_max, lat_min, lat_max}, four finite numbers; the whole map is drawn.')
         return None
     lo0, lo1, la0, la1 = max(-180.0, min(180.0, v[0])), max(-180.0, min(180.0, v[1])), max(-85.0, min(85.0, v[2])), max(-85.0, min(85.0, v[3]))
-    if not (lo0 < lo1 and la0 < la1):
-        notes.append('frame needs lon_min below lon_max and lat_min below lat_max (after clamping to -180..180 and -85..85); the whole map is drawn.')
+    if lo0 == lo1 or lo0 - lo1 == 360 or not la0 < la1:
+        notes.append('frame needs lat_min below lat_max and lon_min different from lon_max (after clamping to -180..180 and -85..85; lon_min above lon_max crosses the antimeridian); the whole map is drawn.')
         return None
-    if lo1 - lo0 < 1:
+    if lo0 > lo1:   # crosses the antimeridian: lon_min .. 180, -180 .. lon_max
+        if lo1 + 360 - lo0 < 1:
+            c = (lo0 + lo1 + 360) / 2
+            lo0, lo1 = _ch_w180(c - 0.5), _ch_w180(c + 0.5)
+    elif lo1 - lo0 < 1:
         c = (lo0 + lo1) / 2
         lo0, lo1 = max(-180.0, c - 0.5), min(180.0, c + 0.5)
     if la1 - la0 < 1:
@@ -44596,9 +44661,11 @@ def _ch_frame(rset, proj, regs, fr=None):
     if proj == 'albers-usa':
         lo48, ak, hi = (p[0] for p in _ch_albers_parts(1070, 480, 250))
         return (lambda rid, lo, la: ak(lo, la) if rid == 'AK' else hi(lo, la) if rid == 'HI' else lo48(lo, la)), 960, 500
-    u = _ch_equal_earth(1, 0, 0) if proj == 'equal-earth' else _geo_merc([0, 0], 1, 0, 0)
     if fr is not None:
+        u = _ch_equal_earth(1, 0, 0, True) if proj == 'equal-earth' else _ch_merc_nowrap
+        lam0 = _ch_lam0(fr)
         lo0, lo1, la0, la1 = fr
+        lo0, lo1 = lo0 - lam0, (lo1 + 360 if lo0 > lo1 else lo1) - lam0   # the frame in the rotated longitude (centred on lam0)
         x0 = y0 = float('inf')
         x1 = y1 = float('-inf')
         for t in range(33):
@@ -44611,9 +44678,10 @@ def _ch_frame(rset, proj, regs, fr=None):
         tx, ty = 480 - k * (x0 + x1) / 2, 270 - k * (y0 + y1) / 2
 
         def fitf(rid, lo, la):
-            q = u(lo, la)
+            q = u(lo - lam0, la)
             return [tx + k * q[0], ty + k * q[1]]
         return fitf, 960, 540
+    u = _ch_equal_earth(1, 0, 0) if proj == 'equal-earth' else _geo_merc([0, 0], 1, 0, 0)
     w0, w1, a0, a1 = _CH_WIN[rset]
     x0 = y0 = float('inf')
     x1 = y1 = float('-inf')
@@ -44646,7 +44714,7 @@ def _ch_sea(w, h, rset, fr):
     """A framed map reads as a window: a sea tint (a mix of two theme tokens) behind the land, and rounded corners on the svg. No tint when the frame reaches past the region set's
     window (Europe's North Africa and Asia Minor are not in the set, so a tint would paint them as sea)."""
     w0, w1, a0, a1 = _CH_WIN[rset]
-    if fr[0] < w0 or fr[1] > w1 or fr[2] < a0 or fr[3] > a1:
+    if fr[0] < w0 or fr[1] > w1 or fr[2] < a0 or fr[3] > a1 or (fr[0] > fr[1] and (w0 > -180 or w1 < 180)):
         return ''
     return '<rect data-sea="1" width="' + str(w) + '" height="' + str(h) + '" style="fill:' + _cr_mix(_CR_ACC2, 16, _CR_SURF) + ';"/>'
 
@@ -44657,7 +44725,7 @@ def _ch_frame_note(regs, fr, notes):
         for poly in polys:
             for ring in poly:
                 for i in range(0, len(ring), 2):
-                    if fr[0] <= ring[i] <= fr[1] and fr[2] <= ring[i + 1] <= fr[3]:
+                    if _ch_in_lon(fr, ring[i]) and fr[2] <= ring[i + 1] <= fr[3]:
                         return
     notes.append('frame contains no region of this set, so no outline is drawn inside it.')
 
@@ -44812,7 +44880,7 @@ def _render_choropleth_categorical(b: dict, rset: str, proj: str) -> str:
         else:
             fill, tip = 'url(#' + uid + ')', _cr_s(nm, 80) + ': no category'
         paths += ('<path' + _cr_cb('tile', i, n_all, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _cr_s(rid, 12)) + ' d="'
-                  + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_)) + '"><title>' + tip + '</title></path>')
+                  + _ch_path_f(polys, pr, rid, frm, _ch_lam0(frm), w, h) + '"><title>' + tip + '</title></path>')
     defs = _ch_cat_defs(uid, cols)
     if nodata:
         defs += ('<pattern id="' + uid + '" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" style="fill:' + _CR_SURF
@@ -44933,7 +45001,7 @@ def _render_choropleth_map(b: dict) -> str:
         else:
             fill, tip = 'url(#' + uid + ')', _cr_s(nm, 80) + ': no data'
         paths += ('<path' + _cr_cb('tile', i, n_all, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _cr_s(rid, 12)) + ' d="'
-                  + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_)) + '"><title>' + tip + '</title></path>')
+                  + _ch_path_f(polys, pr, rid, frm, _ch_lam0(frm), w, h) + '"><title>' + tip + '</title></path>')
     defs = ''
     if nodata:
         defs = ('<defs><pattern id="' + uid + '" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" style="fill:' + _CR_SURF
@@ -45115,6 +45183,7 @@ def _render_geo_map(b: dict) -> str:
     if fr is not None:
         _ch_frame_note(regs, fr, notes)
     pr, w, h = _ch_frame(rset, proj, regs, fr)
+    lam0 = _ch_lam0(fr)
     usa = _ch_albers_usa(1070, 480, 250) if proj == 'albers-usa' else None
     shade = b.get('regions')
     shade = shade[:250] if isinstance(shade, list) else []
@@ -45143,21 +45212,28 @@ def _render_geo_map(b: dict) -> str:
     def at(lat, lon):
         if usa:
             return usa(lon, lat)
-        p = pr('', lon, lat)
-        return p if 0 <= p[0] <= w and 0 <= p[1] <= h else None
+        if fr is None:
+            p = pr('', lon, lat)
+            return p if 0 <= p[0] <= w and 0 <= p[1] <= h else None
+        lon = lam0 + _ch_w180(lon - lam0) if lam0 else lon
+        for sh in (0, 360, -360):   # the world drawn to the west and east of the frame's own (see _ch_path_f)
+            p = pr('', lon + sh, lat)
+            if 0 <= p[0] <= w and 0 <= p[1] <= h:
+                return p
+        return None
     base = ''
     for rid, nm, polys in regs:
         fill = _ch_cat_fill(pid, cols, got[rid]) if rid in got else _cr_mix(_CR_MUTED, 12, _CR_SURF)
         kk = (' data-cb="tile" data-key="' + _cr_s(rid, 12) + '"') if keyed else ''
         tt = ('<title>' + _cr_s(nm, 80) + ': ' + _cv_esc(cats[got[rid]]) + '</title>') if rid in got else ''
-        base += ('<path data-base="1"' + kk + ' style="fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:' + ('0.9' if fr is not None else '0.4') + ';fill-rule:evenodd;" d="' + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_))
+        base += ('<path data-base="1"' + kk + ' style="fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:' + ('0.9' if fr is not None else '0.4') + ';fill-rule:evenodd;" d="' + _ch_path_f(polys, pr, rid, fr, lam0, w, h)
                  + '"' + ('>' + tt + '</path>' if tt else '/>'))
     n_all = len(lines) + len(pts)
     i, cut = 0, 0
     route_svg, masks = '', ''
     ds_all = []
     for li, (lab, cs, _kb) in enumerate(lines):
-        d, seg, prev, pq = '', [], None, None
+        d, seg, prev, pq, lu = '', [], None, None, None
         legs = []
         last = None
         for k in range(len(cs) - 1):
@@ -45166,10 +45242,12 @@ def _render_geo_map(b: dict) -> str:
             ld, lseg = '', ([last] if (k > 0 and prev is not None and last is not None) else [])
             for s_ in range(0 if k == 0 else 1, n + 1):
                 q = f(s_ / n) if n > 1 else ([cs[k][1], cs[k][0]] if s_ == 0 else [cs[k + 1][1], cs[k + 1][0]])
-                p = at(q[1], q[0]) if usa else pr('', q[0], q[1])
+                if lam0:   # a rotated frame: the route's longitude is unwrapped, so it runs on across +-180 as one piece
+                    lu = lam0 + _ch_w180(q[0] - lam0) if lu is None else lu + _ch_w180(q[0] - pq)
+                p = at(q[1], q[0]) if usa else pr('', lu if lam0 else q[0], q[1])
                 if p is None:
                     cut += 1
-                if p is None or (prev is not None and ((abs(q[0] - pq) > 180) if fr is not None else (abs(p[0] - prev[0]) > w / 2))):
+                if p is None or (prev is not None and not lam0 and ((abs(q[0] - pq) > 180) if fr is not None else (abs(p[0] - prev[0]) > w / 2))):
                     if len(seg) >= 2:
                         d += 'M' + ' '.join(seg)
                     seg = []

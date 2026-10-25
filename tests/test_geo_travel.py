@@ -63,7 +63,7 @@ GOOD = [TRIP1, TRIP2, CAT, FRAMED_CH,
         {**tg.WORLD, "regions": [{"id": "FRA", "category": "A"}, {"id": "USA", "category": "B"}, {"id": "ZZZ", "category": "C"}, {"id": "FRA", "category": "B"}, "x", {"id": "JPN"}]},
         {**tg.US, "frame": IBERIA, "regions": [{"id": "TX", "category": "visited"}]},
         {**tg.EU, "frame": {"lon_min": "a", "lon_max": 2, "lat_min": 1, "lat_max": 2}, "regions": {"id": "FRA"}},
-        {**tg.EU, "frame": {"lon_min": 5, "lon_max": 4, "lat_min": 1, "lat_max": 2}, "regions": [{"id": "FRA", "category": "x"}], "categories": "x"},
+        {**tg.EU, "frame": {"lon_min": 5, "lon_max": 5, "lat_min": 1, "lat_max": 2}, "regions": [{"id": "FRA", "category": "x"}], "categories": "x"},
         {**tg.EU, "frame": [1, 2, 3, 4], "regions": [{"id": "FRA", "category": ATTACK}], "category_colors": {ATTACK: "accent"}},
         {**tg.EU, "regions": [{"id": "FRA", "category": "x"}], "categories": [1, 2]},
         {**tg.EU, "frame": {"lon_min": -15, "lon_max": 15, "lat_min": 30, "lat_max": 45}},
@@ -135,7 +135,7 @@ def test_antimeridian_legs_still_break_in_a_frame():
     assert d.count("M") >= 2
 
 
-@pytest.mark.parametrize("fr,word", [("x", "four finite numbers"), ({"lon_min": 1}, "four finite numbers"), ({"lon_min": 5, "lon_max": 4, "lat_min": 1, "lat_max": 2}, "lon_min below"),
+@pytest.mark.parametrize("fr,word", [("x", "four finite numbers"), ({"lon_min": 1}, "four finite numbers"), ({"lon_min": 5, "lon_max": 5, "lat_min": 1, "lat_max": 2}, "lon_min different"),
                                      ({"lon_min": "1", "lon_max": 2, "lat_min": 1, "lat_max": 2}, "four finite numbers"), ({"lon_min": float("nan"), "lon_max": 2, "lat_min": 1, "lat_max": 2}, "four finite")])
 def test_a_bad_frame_draws_the_whole_map_with_a_note(fr, word):
     h = _pyk({**FRAMED_CH, "frame": fr})
@@ -148,7 +148,7 @@ def test_frame_is_clamped_and_a_tiny_span_widened():
     assert wa._ch_frame_read({"lon_min": -999, "lon_max": 999, "lat_min": -999, "lat_max": 999}, "mercator", []) == (-180.0, 180.0, -85.0, 85.0)
     lo0, lo1, la0, la1 = wa._ch_frame_read({"lon_min": 10, "lon_max": 10.2, "lat_min": 45, "lat_max": 45.1}, "mercator", [])
     assert lo1 - lo0 == pytest.approx(1) and la1 - la0 == pytest.approx(1)
-    assert wa._ch_frame_read({"lon_min": 5, "lon_max": 4, "lat_min": 1, "lat_max": 2}, "mercator", []) is None
+    assert wa._ch_frame_read({"lon_min": 5, "lon_max": 5, "lat_min": 1, "lat_max": 2}, "mercator", []) is None
 
 
 def test_frame_is_ignored_with_a_note_on_albers_usa():

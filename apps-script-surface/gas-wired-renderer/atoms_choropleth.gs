@@ -64,10 +64,11 @@ function _chRegions(rset) {
 }
 
 // d3.geoEqualEarth().scale(k).translate([tx, ty]) -> f(lon, lat) = [x, y].
-function _chEqualEarth(k, tx, ty) {
+// nowrap leaves a longitude beyond +-180 where it is (a map drawn across the seam); twin of _ch_equal_earth
+function _chEqualEarth(k, tx, ty, nowrap) {
   return function(lo, la) {
     var l = lo * _CH_D2R;
-    if (Math.abs(l) > Math.PI) l -= Math.round(l / _CH_TAU) * _CH_TAU;
+    if (!nowrap && Math.abs(l) > Math.PI) l -= Math.round(l / _CH_TAU) * _CH_TAU;
     var t = Math.asin(_CH_EA_M * Math.sin(la * _CH_D2R)), t2 = t * t, t6 = t2 * t2 * t2;
     var a1 = _CH_EA[0], a2 = _CH_EA[1], a3 = _CH_EA[2], a4 = _CH_EA[3];
     var x = l * Math.cos(t) / (_CH_EA_M * (a1 + 3 * a2 * t2 + t6 * (7 * a3 + 9 * a4 * t2)));
@@ -131,6 +132,47 @@ function _chPath(polys, pr) {
   return d;
 }
 
+// d3.geoMercator() at k=1, no translate, no wrap of a longitude beyond +-180; twin of _ch_merc_nowrap
+function _chMercNowrap(lo, la) {
+  var p = Math.max(-85.0511287798066 * _CH_D2R, Math.min(85.0511287798066 * _CH_D2R, la * _CH_D2R));
+  return [0 + lo * _CH_D2R, 0 - Math.log(Math.tan((Math.PI / 2 + p) / 2))];
+}
+// x wrapped into -180..180 the way d3 wraps a longitude (180 stays 180); twin of _ch_w180
+function _chW180(x) { return Math.abs(x) > 180 ? x - Math.round(x / 360) * 360 : x; }
+// central meridian of a travel frame: its centre when it crosses the antimeridian or reaches +-180, else 0; twin of _ch_lam0
+function _chLam0(fr) {
+  if (!fr) return 0;
+  if (fr[0] > fr[1]) return (fr[0] + fr[1] + 360) / 2;
+  if (fr[0] <= -180 || fr[1] >= 180) return (fr[0] + fr[1]) / 2;
+  return 0;
+}
+function _chInLon(fr, x) { return fr[0] <= fr[1] ? (fr[0] <= x && x <= fr[1]) : (x >= fr[0] || x <= fr[1]); }
+// the outline path of one region (twin of _ch_path_f): framed rings are also drawn a world west and east, and unwrapped first under a rotated central meridian
+function _chPathF(polys, pr, rid, fr, lam0, w, h) {
+  var d = '', a, b, ring, n2, lons, prev, r, i, si, sh, pts, lx, ly, n, bx0, bx1, by0, by1, p, x, y, shifts = [0, 360, -360];
+  if (!fr) return _chPath(polys, function(lo_, la_) { return pr(rid, lo_, la_); });
+  for (a = 0; a < polys.length; a++) {
+    for (b = 0; b < polys[a].length; b++) {
+      ring = polys[a][b]; n2 = ring.length / 2; lons = []; prev = null;
+      for (i = 0; i < n2; i++) {
+        if (lam0) { r = prev === null ? _chW180(ring[2 * i] - lam0) : prev + _chW180(ring[2 * i] - lam0 - prev); lons.push(r + lam0); prev = r; }
+        else lons.push(ring[2 * i]);
+      }
+      for (si = 0; si < 3; si++) {
+        sh = shifts[si]; pts = ''; lx = null; ly = null; n = 0; bx0 = Infinity; by0 = Infinity; bx1 = -Infinity; by1 = -Infinity;
+        for (i = 0; i < n2; i++) {
+          p = pr(rid, lons[i] + sh, ring[2 * i + 1]);
+          x = _chR1(p[0]); y = _chR1(p[1]);
+          bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); by0 = Math.min(by0, y); by1 = Math.max(by1, y);
+          if (x !== lx || y !== ly) { pts += (n ? ' ' : '') + x + ' ' + y; n++; lx = x; ly = y; }
+        }
+        if (n >= 3 && ((sh === 0 && !lam0) || (bx1 >= 0 && bx0 <= w && by1 >= 0 && by0 <= h))) d += 'M' + pts + 'Z';
+      }
+    }
+  }
+  return d;
+}
+
 // [project(regionId, lon, lat), width, height]: albers-usa is d3's default frame; the others are fitted to the set's window.
 // the optional travel frame as [lon0, lon1, lat0, lat1] or null (with a note when it was given but is not usable); twin of _ch_frame_read
 var _CH_FRAME_KEYS = ['lon_min', 'lon_max', 'lat_min', 'lat_max'];
@@ -141,8 +183,9 @@ function _chFrameRead(f, proj, notes) {
   for (i = 0; i < 4; i++) v.push(_chIsObj(f) ? _crNum(f[_CH_FRAME_KEYS[i]]) : null);
   if (v[0] === null || v[1] === null || v[2] === null || v[3] === null) { notes.push('frame must be {lon_min, lon_max, lat_min, lat_max}, four finite numbers; the whole map is drawn.'); return null; }
   lo0 = Math.max(-180, Math.min(180, v[0])); lo1 = Math.max(-180, Math.min(180, v[1])); la0 = Math.max(-85, Math.min(85, v[2])); la1 = Math.max(-85, Math.min(85, v[3]));
-  if (!(lo0 < lo1 && la0 < la1)) { notes.push('frame needs lon_min below lon_max and lat_min below lat_max (after clamping to -180..180 and -85..85); the whole map is drawn.'); return null; }
-  if (lo1 - lo0 < 1) { c = (lo0 + lo1) / 2; lo0 = Math.max(-180, c - 0.5); lo1 = Math.min(180, c + 0.5); }
+  if (lo0 === lo1 || lo0 - lo1 === 360 || !(la0 < la1)) { notes.push('frame needs lat_min below lat_max and lon_min different from lon_max (after clamping to -180..180 and -85..85; lon_min above lon_max crosses the antimeridian); the whole map is drawn.'); return null; }
+  if (lo0 > lo1) { if (lo1 + 360 - lo0 < 1) { c = (lo0 + lo1 + 360) / 2; lo0 = _chW180(c - 0.5); lo1 = _chW180(c + 0.5); } }
+  else if (lo1 - lo0 < 1) { c = (lo0 + lo1) / 2; lo0 = Math.max(-180, c - 0.5); lo1 = Math.min(180, c + 0.5); }
   if (la1 - la0 < 1) { c = (la0 + la1) / 2; la0 = Math.max(-85, c - 0.5); la1 = Math.min(85, c + 0.5); }
   return [lo0, lo1, la0, la1];
 }
@@ -152,20 +195,23 @@ function _chFrame(rset, proj, regs, fr) {
     var ps = _chAlbersParts(1070, 480, 250), lo48 = ps[0][0], ak = ps[1][0], hi = ps[2][0];
     return [function(rid, lo, la) { return rid === 'AK' ? ak(lo, la) : rid === 'HI' ? hi(lo, la) : lo48(lo, la); }, 960, 500];
   }
-  var u = proj === 'equal-earth' ? _chEqualEarth(1, 0, 0) : _geoLib().merc([0, 0], 1, 0, 0);
+  var u;
   if (fr) {
+    u = proj === 'equal-earth' ? _chEqualEarth(1, 0, 0, true) : _chMercNowrap;
+    var lam0 = _chLam0(fr), flo0 = fr[0] - lam0, flo1 = (fr[0] > fr[1] ? fr[1] + 360 : fr[1]) - lam0;
     var fx0 = Infinity, fy0 = Infinity, fx1 = -Infinity, fy1 = -Infinity, t, fa, fc, fq, fj, fe;
     for (t = 0; t < 33; t++) {
-      fa = fr[0] + (fr[1] - fr[0]) * t / 32; fc = fr[2] + (fr[3] - fr[2]) * t / 32;
-      fe = [[fa, fr[2]], [fa, fr[3]], [fr[0], fc], [fr[1], fc]];
+      fa = flo0 + (flo1 - flo0) * t / 32; fc = fr[2] + (fr[3] - fr[2]) * t / 32;
+      fe = [[fa, fr[2]], [fa, fr[3]], [flo0, fc], [flo1, fc]];
       for (fj = 0; fj < 4; fj++) {
         fq = u(fe[fj][0], fe[fj][1]);
         fx0 = Math.min(fx0, fq[0]); fx1 = Math.max(fx1, fq[0]); fy0 = Math.min(fy0, fq[1]); fy1 = Math.max(fy1, fq[1]);
       }
     }
     var fpad = 4, fk = Math.min((960 - 2 * fpad) / (fx1 - fx0), (540 - 2 * fpad) / (fy1 - fy0)), ftx = 480 - fk * (fx0 + fx1) / 2, fty = 270 - fk * (fy0 + fy1) / 2;
-    return [function(rid, lo, la) { var q = u(lo, la); return [ftx + fk * q[0], fty + fk * q[1]]; }, 960, 540];
+    return [function(rid, lo, la) { var q = u(lo - lam0, la); return [ftx + fk * q[0], fty + fk * q[1]]; }, 960, 540];
   }
+  u = proj === 'equal-earth' ? _chEqualEarth(1, 0, 0) : _geoLib().merc([0, 0], 1, 0, 0);
   var w = _CH_WIN[rset], x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, a, b, c, ring, p, i;
   for (a = 0; a < regs.length; a++) {
     for (b = 0; b < regs[a][2].length; b++) {
@@ -212,7 +258,7 @@ var _CH_SEAS = 'border-radius:10px;';
 // a framed map reads as a window (twin of _ch_sea); no tint when the frame reaches past the region set's window
 function _chSea(w, h, rset, fr) {
   var win = _CH_WIN[rset];
-  if (fr[0] < win[0] || fr[1] > win[1] || fr[2] < win[2] || fr[3] > win[3]) return '';
+  if (fr[0] < win[0] || fr[1] > win[1] || fr[2] < win[2] || fr[3] > win[3] || (fr[0] > fr[1] && (win[0] > -180 || win[1] < 180))) return '';
   return '<rect data-sea="1" width="' + w + '" height="' + h + '" style="fill:' + _crMix(_CR_ACC2, 16, _CR_SURF) + ';"/>';
 }
 // a note when no outline of the set has a vertex inside the frame (twin of _ch_frame_note)
@@ -220,7 +266,7 @@ function _chFrameNote(regs, fr, notes) {
   var a, b, c, ring, i;
   for (a = 0; a < regs.length; a++) for (b = 0; b < regs[a][2].length; b++) for (c = 0; c < regs[a][2][b].length; c++) {
     ring = regs[a][2][b][c];
-    for (i = 0; i < ring.length; i += 2) if (fr[0] <= ring[i] && ring[i] <= fr[1] && fr[2] <= ring[i + 1] && ring[i + 1] <= fr[3]) return;
+    for (i = 0; i < ring.length; i += 2) if (_chInLon(fr, ring[i]) && fr[2] <= ring[i + 1] && ring[i + 1] <= fr[3]) return;
   }
   notes.push('frame contains no region of this set, so no outline is drawn inside it.');
 }
@@ -321,7 +367,7 @@ function _chRenderCategorical(b, rset, proj, colors) {
     if (got[r[0]] !== undefined) { fill = _chCatFill(uid, cols, got[r[0]]); tip = _crS(r[1], 80) + ': ' + _esc(cats[got[r[0]]]); }
     else { fill = 'url(#' + uid + ')'; tip = _crS(r[1], 80) + ': no category'; }
     paths += '<path' + _crCb('tile', n, nAll, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _crS(r[0], 12)) + ' d="'
-      + _chPath(reg[2], function(lo_, la_) { return pr(reg[0], lo_, la_); }) + '"><title>' + tip + '</title></path>';
+      + _chPathF(reg[2], pr, reg[0], frm, _chLam0(frm), w, h) + '"><title>' + tip + '</title></path>';
   });
   var defs = _chCatDefs(uid, cols);
   if (nodata.length) {
@@ -421,7 +467,7 @@ _RENDERERS['choropleth_map'] = function(b) {
     if (got[r[0]] !== undefined) { fill = fills[klass(got[r[0]])]; tip = _crS(r[1], 80) + ': ' + _crTrim(got[r[0]]) + us; }
     else { fill = 'url(#' + uid + ')'; tip = _crS(r[1], 80) + ': no data'; }
     paths += '<path' + _crCb('tile', n, nAll, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _crS(r[0], 12)) + ' d="'
-      + _chPath(reg[2], function(lo_, la_) { return pr(reg[0], lo_, la_); }) + '"><title>' + tip + '</title></path>';
+      + _chPathF(reg[2], pr, reg[0], frm, _chLam0(frm), w, h) + '"><title>' + tip + '</title></path>';
   });
   var defs = '';
   if (nodata.length) {

@@ -109,7 +109,7 @@ _RENDERERS['geo_map'] = function(b) {
   for (i = 0; i < pts.length; i++) if (pts[i][3] !== null) vals.push(pts[i][3]);
   lo = vals.length ? Math.min.apply(null, vals) : 0; hi = vals.length ? Math.max.apply(null, vals) : 0;
   var unitRaw = typeof b.unit === 'string' ? b.unit : '', unit = _crS(unitRaw, 12), us = unit ? ((unitRaw.slice(0, 12) === '%' ? '' : ' ') + unit) : '';
-  var regs = _chRegions(rset), frm = _chFrameRead(b.frame, proj, notes), fr = (frm ? _chFrameNote(regs, frm, notes) : 0, _chFrame(rset, proj, regs, frm)), pr = fr[0], w = fr[1], h = fr[2], usa = proj === 'albers-usa' ? _chAlbersUsa(1070, 480, 250) : null;
+  var regs = _chRegions(rset), frm = _chFrameRead(b.frame, proj, notes), fr = (frm ? _chFrameNote(regs, frm, notes) : 0, _chFrame(rset, proj, regs, frm)), pr = fr[0], w = fr[1], h = fr[2], lam0 = _chLam0(frm), usa = proj === 'albers-usa' ? _chAlbersUsa(1070, 480, 250) : null;
   var shade = Array.isArray(b.regions) ? b.regions.slice(0, 250) : [], cats = null, cols = null, got = Object.create(null), rd, ridxm = Object.create(null), gotN = 0;
   for (i = 0; i < regs.length; i++) ridxm[regs[i][0]] = i;
   if (shade.length) {
@@ -137,31 +137,37 @@ _RENDERERS['geo_map'] = function(b) {
   }
   function at(lat, lon) {
     if (usa) return usa(lon, lat);
-    var p = pr('', lon, lat);
-    return (p[0] >= 0 && p[0] <= w && p[1] >= 0 && p[1] <= h) ? p : null;
+    var p, sh, shs = [0, 360, -360], si;
+    if (!frm) { p = pr('', lon, lat); return (p[0] >= 0 && p[0] <= w && p[1] >= 0 && p[1] <= h) ? p : null; }
+    if (lam0) lon = lam0 + _chW180(lon - lam0);
+    for (si = 0; si < 3; si++) {   // the world drawn to the west and east of the frame's own (see _chPathF)
+      sh = shs[si]; p = pr('', lon + sh, lat);
+      if (p[0] >= 0 && p[0] <= w && p[1] >= 0 && p[1] <= h) return p;
+    }
+    return null;
   }
   var base = '', ri;
-  function mk(rid) { return function(lo_, la_) { return pr(rid, lo_, la_); }; }
   var rfill, rkey, rtip, rid;
   for (ri = 0; ri < regs.length; ri++) {
     rid = regs[ri][0];
     rfill = got[rid] !== undefined ? _chCatFill(pid, cols, got[rid]) : _crMix(_CR_MUTED, 12, _CR_SURF);
     rkey = keyed ? ' data-cb="tile" data-key="' + _crS(rid, 12) + '"' : '';
     rtip = got[rid] !== undefined ? '<title>' + _crS(regs[ri][1], 80) + ': ' + _esc(cats[got[rid]]) + '</title>' : '';
-    base += '<path data-base="1"' + rkey + ' style="fill:' + rfill + ';stroke:' + _CR_MUTED + ';stroke-width:' + (frm ? '0.9' : '0.4') + ';fill-rule:evenodd;" d="' + _chPath(regs[ri][2], mk(rid)) + '"' + (rtip ? '>' + rtip + '</path>' : '/>');
+    base += '<path data-base="1"' + rkey + ' style="fill:' + rfill + ';stroke:' + _CR_MUTED + ';stroke-width:' + (frm ? '0.9' : '0.4') + ';fill-rule:evenodd;" d="' + _chPathF(regs[ri][2], pr, rid, frm, lam0, w, h) + '"' + (rtip ? '>' + rtip + '</path>' : '/>');
   }
-  var pq, cut = 0, nAll = lines.length + pts.length, idx = 0, routeSvg = '', masks = '', dsAll = [], li, d, seg, prev, f, dist, n, s, q, p, dash, col, tip, legs, last, ld, lseg, j;
+  var pq, cut = 0, nAll = lines.length + pts.length, idx = 0, routeSvg = '', masks = '', dsAll = [], li, d, seg, prev, f, dist, n, s, q, p, lu, dash, col, tip, legs, last, ld, lseg, j;
   for (li = 0; li < lines.length; li++) {
-    cs = lines[li][1]; d = ''; seg = []; prev = null; pq = null; legs = []; last = null;
+    cs = lines[li][1]; d = ''; seg = []; prev = null; pq = null; legs = []; last = null; lu = null;
     for (k = 0; k < cs.length - 1; k++) {
       f = _gmInterp([cs[k][1], cs[k][0]], [cs[k + 1][1], cs[k + 1][0]]); dist = f[1];
       n = (dist < 1e-9 || Math.sin(dist) < 1e-9) ? 1 : Math.max(1, Math.min(64, Math.ceil(dist / 0.0349)));
       ld = ''; lseg = (k > 0 && prev !== null && last !== null) ? [last] : [];
       for (s = (k === 0 ? 0 : 1); s <= n; s++) {
         q = n > 1 ? f[0](s / n) : (s === 0 ? [cs[k][1], cs[k][0]] : [cs[k + 1][1], cs[k + 1][0]]);
-        p = usa ? at(q[1], q[0]) : pr('', q[0], q[1]);
+        if (lam0) lu = lu === null ? lam0 + _chW180(q[0] - lam0) : lu + _chW180(q[0] - pq);   // a rotated frame: the route's longitude is unwrapped, so it runs on across +-180 as one piece
+        p = usa ? at(q[1], q[0]) : pr('', lam0 ? lu : q[0], q[1]);
         if (p === null) cut++;
-        if (p === null || (prev !== null && (frm ? Math.abs(q[0] - pq) > 180 : Math.abs(p[0] - prev[0]) > w / 2))) {
+        if (p === null || (prev !== null && !lam0 && (frm ? Math.abs(q[0] - pq) > 180 : Math.abs(p[0] - prev[0]) > w / 2))) {
           if (seg.length >= 2) d += 'M' + seg.join(' ');
           seg = [];
           if (lseg.length >= 2) ld += 'M' + lseg.join(' ');

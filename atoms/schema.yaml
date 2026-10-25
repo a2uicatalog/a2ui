@@ -21648,8 +21648,11 @@ blocks:
       neighbouring shades get hard to tell apart. A number outside 3 to 9 is moved to the nearest and named in a note.
     frame: >-
       object (optional) {lon_min, lon_max, lat_min, lat_max}, four finite numbers in degrees: frame the map on a zone (for example a trip) instead of the whole
-      region_set. Longitude is clamped to -180..180 and latitude to -85..85, lon_min must be below lon_max and lat_min below lat_max after that, and a span under
-      1 degree is widened to 1. A frame that contains no outline of the set is named in a note. A framed map has a sea tint (a mix of theme tokens; left out when the frame reaches past the region set's window, where the set has no land) and rounded corners. The frame is fitted into a fixed 960 x 540 canvas and centred, so two states of one film with different frames have the same box
+      region_set. Longitude is clamped to -180..180 and latitude to -85..85, lat_min must be below lat_max after that, and a span under
+      1 degree is widened to 1. lon_min above lon_max is a frame across the antimeridian (160 to -150 is a Pacific trip: Fiji, Samoa, Hawaii): the map is drawn with its central
+      meridian at the frame's centre, so outlines, points and routes run on across 180 as one piece; a frame that reaches -180 or 180 is centred the same way, so the land past the
+      seam is drawn. lon_min equal to lon_max is not a frame. A motion_transition between two frames on either side of the seam pans and zooms each keyed region's box (a region drawn in
+      two pieces across the seam travels as one box). A frame that contains no outline of the set is named in a note. A framed map has a sea tint (a mix of theme tokens; left out when the frame reaches past the region set's window, where the set has no land) and rounded corners. The frame is fitted into a fixed 960 x 540 canvas and centred, so two states of one film with different frames have the same box
       and a motion_transition between them pans and zooms: regions keep their data-key. Outlines outside the frame are drawn and cropped by the viewBox, not
       dropped. Not used with albers-usa (a fixed composite). A frame that cannot be used is named in a note and the whole map is drawn. Absent: unchanged.
     categories: >-
@@ -21716,7 +21719,7 @@ blocks:
     legend_title: string (optional, max 60). A heading for the legend (what the marker size measures).
     frame: >-
       object (optional) {lon_min, lon_max, lat_min, lat_max}: frame the map on a zone (a trip) instead of the whole region_set; the same rules as the frame of
-      choropleth_map (clamped to -180..180 and -85..85, a span under 1 degree widened, a fixed 960 x 540 canvas, not used with albers-usa, a bad frame is
+      choropleth_map (clamped to -180..180 and -85..85, lon_min above lon_max crosses the antimeridian, a span under 1 degree widened, a fixed 960 x 540 canvas, not used with albers-usa, a bad frame is
       named in a note and the whole map drawn). With a frame every outline carries data-cb "tile" and its region code as data-key, so a motion_transition between
       two frames moves the whole map as a pan and zoom; points and routes keep their keys and travel with it. Outlines outside the frame are cropped, not dropped;
       a point outside it is not drawn and is noted. Absent: unchanged.
