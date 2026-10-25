@@ -18868,6 +18868,8 @@ var _CH_EA = [1.340264, -0.081106, 0.000893, 0.003796];
 var _CH_EA_M = Math.sqrt(3) / 2;
 var _CH_D2R = Math.PI / 180, _CH_TAU = Math.PI * 2, _CH_EPS = 1e-6;
 var _CH_WIN = { 'world-countries': [-180, 180, -58, 84], 'europe-countries': [-25, 45, 34, 72], 'us-states': [-180, -60, 15, 74] };
+function _chWs(v) { return v.replace(/^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$/g, ''); }
+function _chCut(v, n) { return Array.from(v).slice(0, n).join(''); }
 function _chRound(x) { var f = Math.floor(x); return x - f >= 0.5 ? f + 1 : f; }
 function _chNice(x) {
 if (x === 0) return 0;
@@ -19030,7 +19032,19 @@ return p === 0 ? _CR_SURF : _crMix(c < m ? _CR_ACC2 : _CR_ACC, p, _CR_SURF);
 }
 function _chIsObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
 var _CH_SEAS = 'border-radius:10px;';
-function _chSea(w, h) { return '<rect data-sea="1" width="' + w + '" height="' + h + '" style="fill:' + _crMix(_CR_ACC2, 9, _CR_SURF) + ';"/>'; }
+function _chSea(w, h, rset, fr) {
+var win = _CH_WIN[rset];
+if (fr[0] < win[0] || fr[1] > win[1] || fr[2] < win[2] || fr[3] > win[3]) return '';
+return '<rect data-sea="1" width="' + w + '" height="' + h + '" style="fill:' + _crMix(_CR_ACC2, 16, _CR_SURF) + ';"/>';
+}
+function _chFrameNote(regs, fr, notes) {
+var a, b, c, ring, i;
+for (a = 0; a < regs.length; a++) for (b = 0; b < regs[a][2].length; b++) for (c = 0; c < regs[a][2][b].length; c++) {
+ring = regs[a][2][b][c];
+for (i = 0; i < ring.length; i += 2) if (fr[0] <= ring[i] && ring[i] <= fr[1] && fr[2] <= ring[i + 1] && ring[i + 1] <= fr[3]) return;
+}
+notes.push('frame contains no region of this set, so no outline is drawn inside it.');
+}
 var _CH_CATMAX = 6;
 function _chCatTok(name) {
 if (name === 'accent') return _CR_ACC;
@@ -19040,8 +19054,8 @@ if (name === 'muted') return _CR_MUTED;
 return undefined;
 }
 function _chCatPats() {
-return ['', '<circle cx="4" cy="4" r="1.5"/>', '<line x1="0" y1="4" x2="8" y2="4"/>', '<line x1="4" y1="0" x2="4" y2="8"/>',
-'<line x1="0" y1="4" x2="8" y2="4"/><line x1="4" y1="0" x2="4" y2="8"/>', '<line x1="4" y1="0" x2="4" y2="8" transform="rotate(-45 4 4)"/>'];
+return ['<circle cx="4" cy="4" r="1.5"/>', '<line x1="0" y1="4" x2="8" y2="4"/>', '<line x1="4" y1="0" x2="4" y2="8"/>',
+'<line x1="0" y1="4" x2="8" y2="4"/><line x1="4" y1="0" x2="4" y2="8"/>', '<line x1="4" y1="0" x2="4" y2="8" transform="rotate(-45 4 4)"/>', '<circle cx="4" cy="4" r="2.8"/>'];
 }
 function _chCatDefault(j) {
 return [_CR_ACC, _CR_ACC2, _crMix(_CR_ACC, 45, _CR_SURF), _crMix(_CR_ACC2, 45, _CR_SURF), _crMix(_CR_TEXT, 45, _CR_SURF), _crMix(_CR_MUTED, 40, _CR_SURF)][j];
@@ -19050,9 +19064,9 @@ function _chCatRead(cats, cc, entries, field, index, notes, derive) {
 var msg = 'categories must be a list of 1 to ' + _CH_CATMAX + ' category names.', i, j, c, e, t, rid, cc, cols = [], badc = 0, k;
 if (cats !== undefined && cats !== null) {
 if (!Array.isArray(cats) || cats.length < 1) return [null, null, null, msg, null, null];
-for (i = 0; i < cats.length; i++) if (typeof cats[i] !== 'string' || cats[i].trim() === '') return [null, null, null, msg, null, null];
+for (i = 0; i < cats.length; i++) if (typeof cats[i] !== 'string' || _chWs(cats[i]) === '') return [null, null, null, msg, null, null];
 var c2 = [];
-for (i = 0; i < cats.length; i++) c2.push(typeof cats[i] === 'string' ? cats[i].trim().slice(0, 40) : '');
+for (i = 0; i < cats.length; i++) c2.push(typeof cats[i] === 'string' ? _chCut(_chWs(cats[i]), 40) : '');
 cats = [];
 for (i = 0; i < c2.length; i++) if (cats.indexOf(c2[i]) < 0) cats.push(c2[i]);
 if (cats.length > _CH_CATMAX) { notes.push('Only the first ' + _CH_CATMAX + ' categories were used.'); cats = cats.slice(0, _CH_CATMAX); }
@@ -19060,7 +19074,7 @@ if (cats.length > _CH_CATMAX) { notes.push('Only the first ' + _CH_CATMAX + ' ca
 cats = [];
 for (i = 0; i < entries.length; i++) {
 e = entries[i]; c = _chIsObj(e) ? e[field] : undefined;
-if (typeof c === 'string' && c.trim() !== '' && cats.indexOf(c.trim().slice(0, 40)) < 0 && cats.length < _CH_CATMAX) cats.push(c.trim().slice(0, 40));
+if (typeof c === 'string' && _chWs(c) !== '' && cats.indexOf(_chCut(_chWs(c), 40)) < 0 && cats.length < _CH_CATMAX) cats.push(_chCut(_chWs(c), 40));
 }
 } else {
 return [null, null, null, msg, null, null];
@@ -19075,8 +19089,8 @@ if (badc) notes.push(badc + (badc === 1 ? ' category colour is' : ' category col
 var got = Object.create(null), unknown = [], dup = [], skipped = 0, nocat = 0;
 for (i = 0; i < entries.length; i++) {
 e = entries[i]; c = _chIsObj(e) ? e[field] : undefined; rid = _chIsObj(e) ? e.id : undefined;
-if (typeof c !== 'string' || c.trim() === '' || typeof rid !== 'string' || rid.trim() === '') { skipped++; continue; }
-rid = rid.trim().toUpperCase(); c = c.trim().slice(0, 40);
+if (typeof c !== 'string' || _chWs(c) === '' || typeof rid !== 'string' || _chWs(rid) === '') { skipped++; continue; }
+rid = _chWs(rid).toUpperCase(); c = _chCut(_chWs(c), 40);
 if (index[rid] === undefined) unknown.push(rid);
 else if (got[rid] !== undefined) dup.push(rid);
 else { k = cats.indexOf(c); if (k < 0) nocat++; else got[rid] = k; }
@@ -19088,12 +19102,12 @@ return [cats, cols, got, null, unknown, dup];
 function _chCatDefs(pid, cols) {
 var d = '', j, pats = _chCatPats();
 for (j = 0; j < cols.length; j++) {
-if (pats[j]) d += '<pattern id="' + pid + 'c' + j + '" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:' + cols[j] + ';"/><g style="fill:' + _CR_TEXT
+d += '<pattern id="' + pid + 'c' + j + '" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:' + cols[j] + ';"/><g style="fill:' + _CR_TEXT
 + ';stroke:' + _CR_TEXT + ';stroke-width:1.4;stroke-opacity:0.65;fill-opacity:0.65;">' + pats[j] + '</g></pattern>';
 }
 return d;
 }
-function _chCatFill(pid, cols, j) { return !_chCatPats()[j] ? cols[j] : 'url(#' + pid + 'c' + j + ')'; }
+function _chCatFill(pid, cols, j) { return 'url(#' + pid + 'c' + j + ')'; }
 function _chCatSwatch(pid, cols, j) {
 return '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" style="flex:none;"><rect width="16" height="16" rx="3" style="fill:' + _chCatFill(pid, cols, j)
 + ';stroke:' + _CR_MUTED + ';"/></svg>';
@@ -19117,12 +19131,12 @@ valued.sort(function(a, c) { return (got[a] - got[c]) || (index[a] - index[c]); 
 var nodata = regs.filter(function(r) { return got[r[0]] === undefined; });
 var order = valued.map(function(r) { return regs[index[r]]; }).concat(nodata);
 var nTiles = order.length, nAll = nTiles + cats.length;
-var frm = _chFrameRead(b.frame, proj, notes), fr = _chFrame(rset, proj, regs, frm), pr = fr[0], w = fr[1], h = fr[2];
-var uid = 'ch' + _crId(['choropleth_map', rset, proj, 'categories'].concat(cats, cols, valued.map(function(r) { return r + '=' + got[r]; })));
+var frm = _chFrameRead(b.frame, proj, notes), fr = (frm ? _chFrameNote(regs, frm, notes) : 0, _chFrame(rset, proj, regs, frm)), pr = fr[0], w = fr[1], h = fr[2];
+var uid = 'ch' + _crId(['choropleth_map', rset, proj, 'categories'].concat(cats, cols, valued.map(function(r) { return r + '=' + got[r]; }), frm ? frm.map(_crTrim) : []));
 var paths = '', fill, tip, reg;
 order.forEach(function(r, n) {
 reg = r;
-if (got[r[0]] !== undefined) { fill = _chCatFill(uid, cols, got[r[0]]); tip = _crS(r[1], 80) + ': ' + _crS(cats[got[r[0]]], 40); }
+if (got[r[0]] !== undefined) { fill = _chCatFill(uid, cols, got[r[0]]); tip = _crS(r[1], 80) + ': ' + _esc(cats[got[r[0]]]); }
 else { fill = 'url(#' + uid + ')'; tip = _crS(r[1], 80) + ': no category'; }
 paths += '<path' + _crCb('tile', n, nAll, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _crS(r[0], 12)) + ' d="'
 + _chPath(reg[2], function(lo_, la_) { return pr(reg[0], lo_, la_); }) + '"><title>' + tip + '</title></path>';
@@ -19135,10 +19149,10 @@ defs += '<pattern id="' + uid + '" width="6" height="6" patternUnits="userSpaceO
 defs = defs ? '<defs>' + defs + '</defs>' : '';
 var title = _crS(b.title, 80);
 var label = (title || 'Choropleth map') + ': ' + valued.length + ' of ' + regs.length + ' regions have a category, in ' + cats.length + (cats.length === 1 ? ' category' : ' categories');
-var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h) : '') + defs + paths + '</svg>';
+var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h, rset, frm) : '') + defs + paths + '</svg>';
 var lt = _crS(b.legend_title, 60), lis = '';
 for (j = 0; j < cats.length; j++) {
-lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _chCatSwatch(uid, cols, j) + '<span' + _crCb('label', nTiles + j, nAll, '', 'class-' + (j + 1)) + '>' + _crS(cats[j], 40) + '</span></li>';
+lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _chCatSwatch(uid, cols, j) + '<span' + _crCb('label', nTiles + j, nAll, '', 'class-' + (j + 1)) + '>' + _esc(cats[j]) + '</span></li>';
 }
 if (nodata.length) {
 lis += '<li style="display:inline-flex;align-items:center;gap:6px;"><span aria-hidden="true" style="display:inline-block;flex:none;width:14px;height:14px;border-radius:3px;border:' + _CR_BORDER
@@ -19152,7 +19166,7 @@ if (nodata.length) {
 nd = '<details style="margin-top:6px;"><summary>' + nodata.length + (nodata.length === 1 ? ' region has' : ' regions have') + ' no category (hatched)</summary><p style="margin:4px 0 0;">'
 + nodata.map(function(r) { return _crS(r[1], 80); }).join(', ') + '</p></details>';
 }
-var rows = valued.map(function(r) { return '<tr><th scope="row">' + _crS(regs[index[r]][1], 80) + '</th><td>' + r + '</td><td>' + _crS(cats[got[r]], 40) + '</td></tr>'; }).join('');
+var rows = valued.map(function(r) { return '<tr><th scope="row">' + _crS(regs[index[r]][1], 80) + '</th><td>' + r + '</td><td>' + _esc(cats[got[r]]) + '</td></tr>'; }).join('');
 var table = '<table style="' + _CR_SR + '"><caption>' + (title || 'Choropleth map') + ', regions with a category, in category order</caption>'
 + '<thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>' + rows + '</tbody></table>';
 return '<div role="group" aria-label="' + (title || 'Choropleth map') + '" data-cb-root style="--n:' + nAll + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
@@ -19216,8 +19230,8 @@ valued.sort(function(a, c) { return (got[c] - got[a]) || (index[a] - index[c]); 
 var nodata = regs.filter(function(r) { return got[r[0]] === undefined; });
 var order = valued.map(function(r) { return regs[index[r]]; }).concat(nodata);
 var nTiles = order.length, nAll = nTiles + steps;
-var frm = _chFrameRead(b.frame, proj, notes), fr = _chFrame(rset, proj, regs, frm), pr = fr[0], w = fr[1], h = fr[2];
-var uid = 'ch' + _crId(['choropleth_map', rset, proj, kind, String(steps)].concat(valued.map(function(r) { return r + '=' + _crTrim(got[r]); })));
+var frm = _chFrameRead(b.frame, proj, notes), fr = (frm ? _chFrameNote(regs, frm, notes) : 0, _chFrame(rset, proj, regs, frm)), pr = fr[0], w = fr[1], h = fr[2];
+var uid = 'ch' + _crId(['choropleth_map', rset, proj, kind, String(steps)].concat(valued.map(function(r) { return r + '=' + _crTrim(got[r]); }), frm ? frm.map(_crTrim) : []));
 var paths = '', fill, tip, reg;
 order.forEach(function(r, n) {
 reg = r;
@@ -19233,7 +19247,7 @@ defs = '<defs><pattern id="' + uid + '" width="6" height="6" patternUnits="userS
 }
 var title = _crS(b.title, 80);
 var label = (title || 'Choropleth map') + ': ' + valued.length + ' of ' + regs.length + ' regions have a value, from ' + _crTrim(lo) + us + ' to ' + _crTrim(hi) + us;
-var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h) : '')
+var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h, rset, frm) : '')
 + defs + paths + '</svg>';
 var lt = _crS(b.legend_title, 60), lis = '';
 for (j = 0; j < steps; j++) {
@@ -22365,7 +22379,7 @@ var vals = [], lo, hi;
 for (i = 0; i < pts.length; i++) if (pts[i][3] !== null) vals.push(pts[i][3]);
 lo = vals.length ? Math.min.apply(null, vals) : 0; hi = vals.length ? Math.max.apply(null, vals) : 0;
 var unitRaw = typeof b.unit === 'string' ? b.unit : '', unit = _crS(unitRaw, 12), us = unit ? ((unitRaw.slice(0, 12) === '%' ? '' : ' ') + unit) : '';
-var regs = _chRegions(rset), frm = _chFrameRead(b.frame, proj, notes), fr = _chFrame(rset, proj, regs, frm), pr = fr[0], w = fr[1], h = fr[2], usa = proj === 'albers-usa' ? _chAlbersUsa(1070, 480, 250) : null;
+var regs = _chRegions(rset), frm = _chFrameRead(b.frame, proj, notes), fr = (frm ? _chFrameNote(regs, frm, notes) : 0, _chFrame(rset, proj, regs, frm)), pr = fr[0], w = fr[1], h = fr[2], usa = proj === 'albers-usa' ? _chAlbersUsa(1070, 480, 250) : null;
 var shade = Array.isArray(b.regions) ? b.regions.slice(0, 250) : [], cats = null, cols = null, got = Object.create(null), rd, ridxm = Object.create(null), gotN = 0;
 for (i = 0; i < regs.length; i++) ridxm[regs[i][0]] = i;
 if (shade.length) {
@@ -22382,7 +22396,15 @@ cols = rd[1].map(function(c) { return _crMix(c, 38, _CR_SURF); });   // a tint, 
 }
 }
 var keyed = !!frm || gotN > 0;
-var pid = gotN ? 'gc' + _crId(['geo_map', 'regions'].concat(cats, cols)) : '';
+var pid = '';
+if (gotN) {
+var gks = Object.keys(got);
+gks.sort(function(a, c) { return ridxm[a] - ridxm[c]; });
+var pparts = ['geo_map', 'regions'].concat(cats, cols, frm ? frm.map(_crTrim) : [], gks.map(function(r) { return r + '=' + got[r]; }), pkeys, lkeys);
+for (i = 0; i < pts.length; i++) pparts.push(_crTrim(pts[i][0]), _crTrim(pts[i][1]));
+for (i = 0; i < lines.length; i++) for (k = 0; k < lines[i][1].length; k++) pparts.push(_crTrim(lines[i][1][k][0]), _crTrim(lines[i][1][k][1]));
+pid = 'gc' + _crId(pparts);
+}
 function at(lat, lon) {
 if (usa) return usa(lon, lat);
 var p = pr('', lon, lat);
@@ -22395,8 +22417,8 @@ for (ri = 0; ri < regs.length; ri++) {
 rid = regs[ri][0];
 rfill = got[rid] !== undefined ? _chCatFill(pid, cols, got[rid]) : _crMix(_CR_MUTED, 12, _CR_SURF);
 rkey = keyed ? ' data-cb="tile" data-key="' + _crS(rid, 12) + '"' : '';
-rtip = got[rid] !== undefined ? '<title>' + _crS(regs[ri][1], 80) + ': ' + _crS(cats[got[rid]], 40) + '</title>' : '';
-base += '<path data-base="1"' + rkey + ' style="fill:' + rfill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;" d="' + _chPath(regs[ri][2], mk(rid)) + '"' + (rtip ? '>' + rtip + '</path>' : '/>');
+rtip = got[rid] !== undefined ? '<title>' + _crS(regs[ri][1], 80) + ': ' + _esc(cats[got[rid]]) + '</title>' : '';
+base += '<path data-base="1"' + rkey + ' style="fill:' + rfill + ';stroke:' + _CR_MUTED + ';stroke-width:' + (frm ? '0.9' : '0.4') + ';fill-rule:evenodd;" d="' + _chPath(regs[ri][2], mk(rid)) + '"' + (rtip ? '>' + rtip + '</path>' : '/>');
 }
 var pq, cut = 0, nAll = lines.length + pts.length, idx = 0, routeSvg = '', masks = '', dsAll = [], li, d, seg, prev, f, dist, n, s, q, p, dash, col, tip, legs, last, ld, lseg, j;
 for (li = 0; li < lines.length; li++) {
@@ -22455,11 +22477,11 @@ var title = _crS(b.title, 80);
 var label = (title || 'Geo map') + ': ' + (pts.length - outside.length) + ' of ' + pts.length + ' points drawn' + (lines.length ? ', ' + lines.length + (lines.length === 1 ? ' line' : ' lines') : '')
 + (named.length ? ' in ' + named.length + (named.length === 1 ? ' group' : ' groups') : '')
 + (gotN ? ', ' + gotN + (gotN === 1 ? ' region shaded' : ' regions shaded') + ' in ' + cats.length + (cats.length === 1 ? ' category' : ' categories') : '');
-var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h) : '') + defsM + base + routeSvg + markSvg + '</svg>';
+var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + w + 'px;height:auto;' + (frm ? _CH_SEAS : '') + '">' + (frm ? _chSea(w, h, rset, frm) : '') + defsM + base + routeSvg + markSvg + '</svg>';
 var lt = _crS(b.legend_title, 60), lis = '', noVal = false;
 var gnames = named.concat(named.length && hasUng ? ['Ungrouped'] : []);
 for (i = 0; i < gnames.length; i++) { st = _gmStyle(i); lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _gmSwatch(st[0], st[1]) + '<span>' + _crS(gnames[i], 40) + '</span></li>'; }
-for (i = 0; gotN && i < cats.length; i++) lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _chCatSwatch(pid, cols, i) + '<span>' + _crS(cats[i], 40) + '</span></li>';
+for (i = 0; gotN && i < cats.length; i++) lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _chCatSwatch(pid, cols, i) + '<span>' + _esc(cats[i]) + '</span></li>';
 for (li = 0; li < lines.length; li++) {
 dash = _GM_DASH[li % 3];
 lis += '<li style="display:inline-flex;align-items:center;gap:6px;"><svg aria-hidden="true" focusable="false" width="28" height="16" viewBox="0 0 28 16" style="flex:none;"><line x1="1" y1="8" x2="27" y2="8" style="stroke:'
@@ -22493,7 +22515,7 @@ if (gotN) {
 var gk = Object.keys(got);
 gk.sort(function(a, c) { return (got[a] - got[c]) || (ridxm[a] - ridxm[c]); });
 rtable = '<table style="' + _CR_SR + '"><caption>' + (title || 'Geo map') + ', shaded regions</caption><thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>'
-+ gk.map(function(r) { return '<tr><th scope="row">' + _crS(regs[ridxm[r]][1], 80) + '</th><td>' + _crS(r, 12) + '</td><td>' + _crS(cats[got[r]], 40) + '</td></tr>'; }).join('') + '</tbody></table>';
++ gk.map(function(r) { return '<tr><th scope="row">' + _crS(regs[ridxm[r]][1], 80) + '</th><td>' + _crS(r, 12) + '</td><td>' + _esc(cats[got[r]]) + '</td></tr>'; }).join('') + '</tbody></table>';
 }
 return '<div role="group" aria-label="' + (title || 'Geo map') + '" data-cb-root' + (keyed ? ' data-mtr-follow' : '') + ' style="--n:' + nAll + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
 + _CR_CB_CSS + (title ? '<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' : '') + svg + legend + nt + ptable + ltable + rtable + '</div>';
@@ -32905,19 +32927,20 @@ var _MTR_JS = "(function(){var w=document.currentScript&&document.currentScript.
 + ";j++)if(a[r[j]])l=l.concat(a[r[j]]);if(l.length)return l;if(a[k])return a[k];if(exact)return null;p=k+'/';for(var q in a)if(q.indexOf(p)===0)l=l.conca"
 + "t(a[q]);if(l.length)return l;var s=k.split('/');for(var j=s.length-1;j>0;j--){var u=s.slice(0,j).join('/');if(a[u])return a[u]}return null}function ru"
 + "n(){if(!A||!B||!A.getClientRects().length)return;w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];for(var k in b)for(var i=0;i<b[k].le"
-+ "ngth;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}w.classList.remove('mtr-measure');var rf=null;f"
-+ "or(var t=0;t<plan.length;t++){var q=plan[t];if(q[1]&&q[2]&&!q[3]&&q[2].w>0.5&&q[2].h>0.5&&q[0].closest('[data-mtr-follow]')&&(!rf||q[2].w*q[2].h>rf.a)"
-+ "){var f=Math.min(q[1].w/q[2].w,q[1].h/q[2].h);rf={a:q[2].w*q[2].h,s:f,tx:q[1].x+q[1].w/2-f*(q[2].x+q[2].w/2),ty:q[1].y+q[1].h/2-f*(q[2].y+q[2].h/2)}}}"
-+ "for(var t=0;t<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n','mtr-s');if(!s||!o){if(!s&&o&&"
-+ "rf&&e.ownerSVGElement&&e.closest('[data-mtr-follow]')){var gm=e.getScreenCTM&&e.getScreenCTM(),gx=gm&&gm.a||1,gy=gm&&gm.d||1;st.setProperty('--mtr-dx'"
-+ ",(((rf.s-1)*o.x+rf.tx)/gx).toFixed(2)+'px');st.setProperty('--mtr-dy',(((rf.s-1)*o.y+rf.ty)/gy).toFixed(2)+'px');st.setProperty('--mtr-sx',rf.s.toFixe"
-+ "d(4));st.setProperty('--mtr-sy',rf.s.toFixed(4));e.classList.add('mtr-m')}e.classList.add('mtr-n');continue}var fx=1,fy=1,m=e.ownerSVGElement&&e.getSc"
-+ "reenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-o.x,dy=s.y-o.y;if(!plan[t][3]){sx=sy=Math.max"
-+ "(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}st.setProperty('--mtr-dx',(dx/fx).toFixed(2)+'px');st.setProperty('--mtr-dy"
-+ "',(dy/fy).toFixed(2)+'px');st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed(4));e.classList.add('mtr-m');e.classList.togg"
-+ "le('mtr-s',Math.abs(sx-1)>0.04||Math.abs(sy-1)>0.04)}}run();window.addEventListener('load',run);if(document.fonts&&document.fonts.ready)document.fonts"
-+ ".ready.then(run);if(window.ResizeObserver){var ro=new ResizeObserver(function(){run()});[w,A,B].concat([].slice.call(w.querySelectorAll('[data-cb-root"
-+ "]'))).forEach(function(e){if(e)ro.observe(e)})}})();";
++ "ngth;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}w.classList.remove('mtr-measure');var rn=(w._mt"
++ "rN=(w._mtrN||0)+1);for(var t=0;t<plan.length;t++){var q=plan[t],r=q[1]&&q[2]&&!q[3]&&q[2].w>0.5&&q[2].h>0.5&&q[0].closest('[data-mtr-follow]');if(r){i"
++ "f(r._mtrN!==rn){r._mtrN=rn;r._mtrF=null}var sc=(q[0].hasAttribute('data-base')?1e9:0)+q[2].w*q[2].h;if(!r._mtrF||sc>r._mtrF.a){var f=Math.min(q[1].w/q"
++ "[2].w,q[1].h/q[2].h);r._mtrF={a:sc,s:f,tx:q[1].x+q[1].w/2-f*(q[2].x+q[2].w/2),ty:q[1].y+q[1].h/2-f*(q[2].y+q[2].h/2)}}}}for(var t=0;t<plan.length;t++)"
++ "{var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n','mtr-s');if(!s||!o){var rt=!s&&o&&e.ownerSVGElement&&e.close"
++ "st('[data-mtr-follow]'),rf=rt&&rt._mtrN===rn?rt._mtrF:null;if(rf){var gm=e.getScreenCTM&&e.getScreenCTM(),gx=gm&&gm.a||1,gy=gm&&gm.d||1;st.setProperty"
++ "('--mtr-dx',(((rf.s-1)*o.x+rf.tx)/gx).toFixed(2)+'px');st.setProperty('--mtr-dy',(((rf.s-1)*o.y+rf.ty)/gy).toFixed(2)+'px');st.setProperty('--mtr-sx',"
++ "rf.s.toFixed(4));st.setProperty('--mtr-sy',rf.s.toFixed(4));e.classList.add('mtr-m')}e.classList.add('mtr-n');continue}var fx=1,fy=1,m=e.ownerSVGEleme"
++ "nt&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}var sx=o.w>0.5?s.w/o.w:1,sy=o.h>0.5?s.h/o.h:1,dx=s.x-o.x,dy=s.y-o.y;if(!plan[t][3]){sx="
++ "sy=Math.max(0.05,Math.min(sx,sy));dx=s.x+s.w/2-o.x-o.w*sx/2;dy=s.y+s.h/2-o.y-o.h*sy/2}st.setProperty('--mtr-dx',(dx/fx).toFixed(2)+'px');st.setPropert"
++ "y('--mtr-dy',(dy/fy).toFixed(2)+'px');st.setProperty('--mtr-sx',sx.toFixed(4));st.setProperty('--mtr-sy',sy.toFixed(4));e.classList.add('mtr-m');e.cla"
++ "ssList.toggle('mtr-s',Math.abs(sx-1)>0.04||Math.abs(sy-1)>0.04)}}run();window.addEventListener('load',run);if(document.fonts&&document.fonts.ready)doc"
++ "ument.fonts.ready.then(run);if(window.ResizeObserver){var ro=new ResizeObserver(function(){run()});[w,A,B].concat([].slice.call(w.querySelectorAll('[d"
++ "ata-cb-root]'))).forEach(function(e){if(e)ro.observe(e)})}})();";
 function _mtrMap(v) {
 if (!v || typeof v !== 'object' || Array.isArray(v)) return {};
 var out = {}, keys = Object.keys(v).slice(0, 200), i, k, x;
