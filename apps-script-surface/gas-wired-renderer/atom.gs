@@ -104,6 +104,14 @@ function _esc(str) {
     .replace(/'/g, '&#39;');
 }
 
+// Twin of Python _fixed_str: a finite number >= 0 with d decimals, rounded half up on the scaled value (JS toFixed and Python's format differ on ties).
+function _fixedStr(x, d) {
+  var n = Math.floor(Math.min(x, 1e12) * Math.pow(10, d) + 0.5);
+  var s = String(n);
+  while (s.length < d + 1) s = '0' + s;
+  return d ? s.slice(0, -d) + '.' + s.slice(-d) : s;
+}
+
 // A CSS value from a payload field that has no standard guarded name: kept if it passes the same check as the Python
 // twin's _safe_css (renderers/web_article.py), else the default. Numbers become their string.
 var _SAFE_CSS_FN = {rgb:1,rgba:1,hsl:1,hsla:1,hwb:1,lab:1,lch:1,oklab:1,oklch:1,color:1,'color-mix':1,'var':1,calc:1,min:1,max:1,clamp:1,
@@ -4671,50 +4679,86 @@ _RENDERERS['follow_up_chips'] = function(b) {
 };
 
 _RENDERERS['choicebox_group'] = function(b) {
-  var uid = Math.random().toString(36).substr(2, 6);
-  var question = b.question || '';
-  var name = b.name || ('choice_' + uid);
-  var options = b.options || [];
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var uid = _payloadUid(b);
+  var prefix = 'cbg-' + uid;
+  var label = _firstText(b.label, b.question);
+  var name = _firstText(b.name, 'choice_' + uid);
+  var multiple = b.multiple === true;
+  var accent = _safe_css(b.accent, '#1a73e8');
+  var submitLabel = _textLoose(b.submit_label);
 
-  var optionsHtml = '';
-  for (var i = 0; i < options.length; i++) {
-    var opt = options[i];
-    var val = opt.value || String(i);
-    var lbl = opt.label || '';
-    var desc = opt.description || '';
-    var icon = opt.icon || '';
-    var cid = 'cbox-' + uid + '-' + i;
+  var rawItems = Array.isArray(b.items) ? b.items : (Array.isArray(b.options) ? b.options : []);
+  var items = rawItems.slice(0, 200);
 
-    optionsHtml +=
-      '<div class="cbg-item-wrap-' + uid + '">' +
-      '<input type="radio" id="' + cid + '" name="' + _esc(name) + '" value="' + _esc(val) + '" class="cbg-input-' + uid + '">' +
-      '<label for="' + cid + '" class="cbg-card-' + uid + '">' +
-      (icon ? '<span class="cbg-icon-' + uid + '">' + _esc(icon) + '</span>' : '') +
-      '<span class="cbg-text-' + uid + '">' +
-      '<span class="cbg-label-' + uid + '">' + _esc(lbl) + '</span>' +
-      (desc ? '<span class="cbg-desc-' + uid + '">' + _esc(desc) + '</span>' : '') +
+  var inputType = multiple ? 'checkbox' : 'radio';
+  var cardsHtml = '';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var val = '';
+    var lbl = '';
+    var desc = '';
+    var icon = '';
+    var disabled = false;
+
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      val = _textLoose(item) || String(i);
+      lbl = _textLoose(item);
+    } else {
+      val = _firstText(item.value, String(i));
+      lbl = _firstText(item.title, item.label);
+      desc = _firstText(item.description, item.desc);
+      icon = _textLoose(item.icon);
+      disabled = item.disabled === true;
+    }
+
+    var cid = prefix + '-' + i;
+    var disAttr = disabled ? ' disabled' : '';
+    var opacity = disabled ? 'opacity:0.45;' : '';
+    var cursor = disabled ? 'default' : 'pointer';
+    var iconHtml = icon ? '<span class="' + prefix + '-icon">' + _esc(icon) + '</span>' : '';
+    var descHtml = desc ? '<span class="' + prefix + '-desc">' + _esc(desc) + '</span>' : '';
+
+    cardsHtml +=
+      '<div class="' + prefix + '-item-wrap">' +
+      '<input type="' + inputType + '" id="' + cid + '" name="' + _esc(name) + '" value="' + _esc(val) + '" class="' + prefix + '-input"' + disAttr + '>' +
+      '<label for="' + cid + '" class="' + prefix + '-card" style="cursor:' + cursor + ';' + opacity + '">' +
+      iconHtml +
+      '<span class="' + prefix + '-text">' +
+      '<span class="' + prefix + '-label">' + _esc(lbl) + '</span>' +
+      descHtml +
       '</span>' +
       '</label>' +
       '</div>';
   }
 
+  var submitHtml = submitLabel ?
+    '<button type="submit" style="margin-top:12px;padding:9px 22px;border-radius:6px;border:none;' +
+    'background:' + accent + ';color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">' +
+    _esc(submitLabel) + '</button>' : '';
+
+  var labelHtml = label ? '<div class="' + prefix + '-question">' + _esc(label) + '</div>' : '';
+  var groupLabel = label ? ' aria-label="' + _esc(label) + '"' : '';
+
   return '<style>' +
-    '.cbg-wrap-' + uid + '{margin:1rem 0;}' +
-    '.cbg-question-' + uid + '{font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;}' +
-    '.cbg-grid-' + uid + '{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}' +
-    '.cbg-input-' + uid + '{position:absolute;opacity:0;width:0;height:0;}' +
-    '.cbg-card-' + uid + '{display:flex;align-items:flex-start;gap:12px;padding:16px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer;transition:border-color 0.15s,background 0.15s;}' +
-    '.cbg-card-' + uid + ':hover{border-color:#c4b5fd;background:#faf5ff;}' +
-    '.cbg-input-' + uid + ':checked + .cbg-card-' + uid + '{border-color:#7c3aed;background:#faf5ff;}' +
-    '.cbg-input-' + uid + ':focus-visible + .cbg-card-' + uid + '{outline:2px solid #4f46e5;outline-offset:2px;}' +
-    '.cbg-icon-' + uid + '{font-size:22px;flex-shrink:0;line-height:1.3;}' +
-    '.cbg-text-' + uid + '{display:flex;flex-direction:column;gap:3px;}' +
-    '.cbg-label-' + uid + '{font-size:15px;font-weight:600;color:#111827;}' +
-    '.cbg-desc-' + uid + '{font-size:13px;color:var(--muted,#5f6368);}' +
+    '.' + prefix + '-wrap{margin:1rem 0;}' +
+    '.' + prefix + '-question{font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;}' +
+    '.' + prefix + '-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}' +
+    '.' + prefix + '-input{position:absolute;opacity:0;width:0;height:0;}' +
+    '.' + prefix + '-card{display:flex;align-items:flex-start;gap:12px;padding:16px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;transition:border-color 0.15s,background 0.15s;box-sizing:border-box;}' +
+    '.' + prefix + '-card:hover{border-color:#9aa0a6;}' +
+    '.' + prefix + '-input:checked + .' + prefix + '-card{border-color:' + accent + ';background:#f3f7fe;background:color-mix(in srgb,' + accent + ' 7%,#fff);}' +
+    '.' + prefix + '-input:focus-visible + .' + prefix + '-card{outline:2px solid #4f46e5;outline-offset:2px;}' +
+    '.' + prefix + '-icon{font-size:22px;flex-shrink:0;line-height:1.3;}' +
+    '.' + prefix + '-text{display:flex;flex-direction:column;gap:3px;}' +
+    '.' + prefix + '-label{font-size:15px;font-weight:600;color:#111827;}' +
+    '.' + prefix + '-desc{font-size:13px;color:var(--muted,#5f6368);}' +
+    '@media (prefers-reduced-motion:reduce){.' + prefix + '-card{transition:none;}}' +
     '</style>' +
-    '<div class="cbg-wrap-' + uid + '">' +
-    (question ? '<div class="cbg-question-' + uid + '">' + _esc(question) + '</div>' : '') +
-    '<div class="cbg-grid-' + uid + '">' + optionsHtml + '</div>' +
+    '<div class="' + prefix + '-wrap" role="group"' + groupLabel + '>' +
+    labelHtml +
+    '<div class="' + prefix + '-grid">' + cardsHtml + '</div>' +
+    submitHtml +
     '</div>';
 };
 

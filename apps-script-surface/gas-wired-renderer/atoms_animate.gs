@@ -110,65 +110,84 @@ _RENDERERS['skeleton'] = function(b) {
 // ─── marquee ──────────────────────────────────────────────────────────────────
 // Infinite horizontal scroll ticker. items: [{text?, icon?, label?, url?, image_url?}]
 _RENDERERS['marquee'] = function(b) {
-  var uid   = 'mq' + Math.random().toString(36).substr(2, 5);
-  var items = b.items || [];
-  var speed = b.speed  || 30; // seconds for one full cycle
-  var gap   = b.gap    || 48; // px gap between items
-  var dir   = b.direction === 'right' ? 'reverse' : 'normal';
-  var sep   = b.separator || '';
-  var accent = b.accent || 'var(--a2ui-accent,#4f46e5)';
-  var bg    = b.bg || 'var(--surface,#f9fafb)';
-  var pause = b.pause_on_hover !== false;
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var uid = _payloadUid(b);
+  var prefix = 'mq_' + uid;
 
-  function renderItem(item) {
-    var k = typeof item === 'string' ? item : (item.text || item.label || item.image_url || item.icon || '');
-    if (typeof item === 'string') return '<span data-cb="tile" data-key="' + _esc(k) + '" style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
-    var inner = '';
-    if (item.image_url) {
-      var imgStyle = 'height:32px;object-fit:contain;' + (b.color_icons ? '' : 'opacity:0.7;filter:grayscale(1);');
-      inner += '<img src="' + _esc(item.image_url) + '" alt="' + _esc(item.label||'') + '" style="' + imgStyle + '">';
+  var rawItems = Array.isArray(b.items) ? b.items : [];
+  var items = rawItems.slice(0, 200);
+
+  var title = _firstText(b.title, b.label);
+  var speedRaw = _numLoose(b.speed);
+  var speed = (speedRaw !== null && speedRaw > 0) ? Math.min(Math.max(speedRaw, 1), 3600) : 30;
+  var gapRaw = _numLoose(b.gap);
+  var gap = (gapRaw !== null && gapRaw >= 0) ? Math.min(Math.floor(gapRaw + 0.5), 400) : 48;
+  var direction = _textLoose(b.direction).toLowerCase();
+  var animDir = direction === 'right' ? 'reverse' : 'normal';
+  var separator = _textLoose(b.separator);
+  var pauseOnHover = b.pause_on_hover !== false;
+  var bg = _safe_css(b.bg, 'var(--surface,#f9fafb)');
+  var rounded = b.rounded !== false;
+  var colorIcons = b.color_icons === true;
+  var borderRadius = rounded ? '10px' : '0';
+
+  function renderEntry(item, isDup) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      var k = _textLoose(item);
+      var attr = !isDup ? (' data-cb="tile" data-key="' + _esc(k) + '"') : '';
+      return '<span' + attr + ' style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(k) + '</span>';
     }
-    if (item.icon)      inner += '<span style="font-size:1.1rem;">' + _esc(item.icon) + '</span>';
-    if (item.text || item.label) inner += '<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(item.text || item.label) + '</span>';
-    return item.url
-      ? '<a data-cb="tile" data-key="' + _esc(k) + '" href="' + _safeUrl(item.url) + '" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">' + inner + '</a>'
-      : '<span data-cb="tile" data-key="' + _esc(k) + '" style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
+
+    var k = _firstText(item.text, item.label, item.image_url, item.url, item.icon);
+    var attr = !isDup ? (' data-cb="tile" data-key="' + _esc(k) + '"') : '';
+
+    var imgUrl = _safe_href(item.image_url, ['http', 'https', 'data']);
+    var rawUrl = _safe_href(item.url, ['http', 'https', 'mailto']);
+    var icon = _textLoose(item.icon);
+    var text = _firstText(item.text, item.label);
+
+    var inner = '';
+    if (imgUrl) {
+      var imgStyle = 'height:32px;object-fit:contain;' + (colorIcons ? '' : 'opacity:0.7;filter:grayscale(1);');
+      inner += '<img src="' + imgUrl + '" alt="' + _esc(text) + '" style="' + imgStyle + '">';
+    }
+    if (icon) {
+      inner += '<span style="font-size:1.1rem;">' + _esc(icon) + '</span>';
+    }
+    if (text) {
+      inner += '<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(text) + '</span>';
+    }
+
+    if (rawUrl) {
+      return '<a' + attr + ' href="' + rawUrl + '" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">' + inner + '</a>';
+    }
+    return '<span' + attr + ' style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
   }
 
-  function renderItemDup(item) {
-    if (typeof item === 'string') return '<span style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
-    var inner = '';
-    if (item.image_url) {
-      var imgStyle = 'height:32px;object-fit:contain;' + (b.color_icons ? '' : 'opacity:0.7;filter:grayscale(1);');
-      inner += '<img src="' + _esc(item.image_url) + '" alt="' + _esc(item.label||'') + '" style="' + imgStyle + '">';
-    }
-    if (item.icon)      inner += '<span style="font-size:1.1rem;">' + _esc(item.icon) + '</span>';
-    if (item.text || item.label) inner += '<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(item.text || item.label) + '</span>';
-    return item.url
-      ? '<a href="' + _safeUrl(item.url) + '" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">' + inner + '</a>'
-      : '<span style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
+  var sepHtml = separator ? '<span style="color:var(--muted,#d1d5db);margin:0 4px;" aria-hidden="true">' + _esc(separator) + '</span>' : '';
+  var itemsHtml = '';
+  var itemsDupHtml = '';
+  for (var i = 0; i < items.length; i++) {
+    itemsHtml += '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderEntry(items[i], false) + sepHtml + '</span>';
+    itemsDupHtml += '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderEntry(items[i], true) + sepHtml + '</span>';
   }
 
-  var sepHtml = sep ? '<span style="color:var(--muted,#d1d5db);margin:0 4px;">' + _esc(sep) + '</span>' : '';
-  var itemHtml = items.map(function(item) {
-    return '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderItem(item) + sepHtml + '</span>';
-  }).join('');
-  var itemHtmlDup = items.map(function(item) {
-    return '<span style="padding:0 ' + gap + 'px;display:inline-flex;align-items:center;">' + renderItemDup(item) + sepHtml + '</span>';
-  }).join('');
-  // Duplicate for seamless loop
-  var track = itemHtml + itemHtmlDup;
+  var pauseCss = pauseOnHover ? ('#' + prefix + ':hover #' + prefix + '-track{animation-play-state:paused;}') : '';
+  var speedStr = _textLoose(speed);
 
-  var css = '<style>'
-    + '@keyframes ' + uid + '{from{transform:translateX(0)}to{transform:translateX(-50%)}}'
-    + '#' + uid + '-track{display:inline-flex;animation:' + uid + ' ' + speed + 's linear infinite ' + dir + ';white-space:nowrap;}'
-    + (pause ? '#' + uid + ':hover #' + uid + '-track{animation-play-state:paused;}' : '')
-    + '</style>';
+  var titleHtml = title ?
+    ('<div style="font-size:0.75rem;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.06em;padding:8px 16px 0;">' + _esc(title) + '</div>') : '';
 
-  var title = b.title ? '<div style="font-size:0.75rem;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.06em;padding:8px 16px 0;">' + _esc(b.title) + '</div>' : '';
-  return css + title
-    + '<div id="' + uid + '" style="overflow:hidden;background:' + bg + ';border-radius:' + (b.rounded !== false ? '10px' : '0') + ';border:1px solid var(--border,#e5e7eb);padding:12px 0;">'
-    + '<div id="' + uid + '-track">' + track + '</div></div>';
+  return '<style>' +
+    '@keyframes ' + prefix + '{from{transform:translateX(0);}to{transform:translateX(-50%);}}' +
+    '#' + prefix + '-track{display:inline-flex;animation:' + prefix + ' ' + speedStr + 's linear infinite ' + animDir + ';white-space:nowrap;}' +
+    pauseCss +
+    '@media (prefers-reduced-motion:reduce){#' + prefix + '-track{animation:none;}}' +
+    '</style>' +
+    titleHtml +
+    '<div id="' + prefix + '" style="overflow:hidden;background:' + bg + ';border-radius:' + borderRadius + ';border:1px solid var(--border,#e5e7eb);padding:12px 0;margin:1rem 0;">' +
+    '<div id="' + prefix + '-track">' + itemsHtml + '<span aria-hidden="true" style="display:inline-flex;">' + itemsDupHtml + '</span></div>' +
+    '</div>';
 };
 
 // ─── pulse_dot ────────────────────────────────────────────────────────────────
@@ -459,33 +478,66 @@ _RENDERERS['shimmer_text'] = function(b) {
 // ─── number_flip ──────────────────────────────────────────────────────────────
 // Slot-machine style number reveal. Counts from 0 to value with a flip effect.
 _RENDERERS['number_flip'] = function(b) {
-  var uid   = 'nf' + Math.random().toString(36).substr(2, 5);
-  var value = String(b.value || 0);
-  var pre   = _esc(b.prefix || '');
-  var suf   = _esc(b.suffix || '');
-  var label = b.label ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);margin-top:4px;">' + _esc(b.label) + '</div>' : '';
-  var size  = b.size || '3rem';
-  var color = b.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
-  var dur   = b.duration || 1200;
-  var align = b.align || 'center';
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return '';
+  var uid = _payloadUid(b);
+  var prefixId = 'nf_' + uid;
 
-  var css = '<style>'
-    + '@keyframes ' + uid + '-flip{0%{transform:rotateX(90deg);opacity:0}60%{transform:rotateX(-8deg)}100%{transform:rotateX(0);opacity:1}}'
-    + '.' + uid + '-d{display:inline-flex;flex-direction:column;align-items:center;perspective:200px;}'
-    + '.' + uid + '-v{animation:' + uid + '-flip 0.35s cubic-bezier(0.4,0,0.2,1) both;display:inline-block;transform-origin:50% 50%;}'
-    + '</style>';
+  var valStr = _textLoose(b.value);
+  if (!valStr) valStr = '0';
+  var chars = Array.from(valStr).slice(0, 40);
+  valStr = chars.join('');
 
-  // Build digit spans
-  var digits = value.split('').map(function(ch, i) {
-    return '<span class="' + uid + '-d"><span class="' + uid + '-v" style="animation-delay:' + (i * 80 + 200) + 'ms;">' + _esc(ch) + '</span></span>';
-  }).join('');
+  var pre = _textLoose(b.prefix);
+  var suf = _textLoose(b.suffix);
+  var label = _textLoose(b.label);
+  var size = _safe_css(b.size, '3rem');
+  var color = _safe_css(_firstText(b.color, b.accent), 'var(--a2ui-accent,#4f46e5)');
+  var align = _textLoose(b.align).toLowerCase();
+  var alignStyle = align === 'left' ? 'left' : 'center';
 
-  return css + '<div data-cb="node" data-key="' + _ckey(b.label, 'number_flip') + '" style="text-align:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
-    + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + color + ';line-height:1;font-family:inherit;">'
-    + (pre ? '<span>' + pre + '</span>' : '')
-    + digits
-    + (suf ? '<span>' + suf + '</span>' : '')
-    + '</div>' + label + '</div>';
+  var durRaw = _numLoose(b.duration);
+  var durMs = (durRaw !== null && durRaw > 0) ? Math.min(Math.floor(durRaw + 0.5), 600000) : 1200;
+  var baseStep = durMs / (Math.max(chars.length, 1) + 2);
+
+  var keyframes = '';
+  var digitsHtml = '';
+  for (var i = 0; i < chars.length; i++) {
+    var ch = chars[i];
+    var dDelay = Math.floor(i * baseStep);
+    if (ch >= '0' && ch <= '9') {
+      var target = parseInt(ch, 10);
+      var pct = target * 100;
+      var kf = prefixId + '_' + i;
+      keyframes += '@keyframes ' + kf + '{from{transform:translateY(0);}to{transform:translateY(-' + pct + '%);}} ';
+      var slots = '';
+      for (var d = 0; d < 10; d++) {
+        slots += '<span style="display:block;height:1em;line-height:1em;">' + d + '</span>';
+      }
+      digitsHtml +=
+        '<span style="display:inline-flex;overflow:hidden;height:1em;vertical-align:middle;">' +
+        '<span class="' + prefixId + '-roll" style="display:block;transform:translateY(-' + pct + '%);animation:' + kf + ' 0.65s cubic-bezier(.4,0,.2,1) ' + dDelay + 'ms both;">' +
+        slots + '</span></span>';
+    } else {
+      digitsHtml += '<span style="display:inline-block;vertical-align:middle;">' + _esc(ch) + '</span>';
+    }
+  }
+
+  var preHtml = pre ? ('<span>' + _esc(pre) + '</span>') : '';
+  var sufHtml = suf ? ('<span>' + _esc(suf) + '</span>') : '';
+  var labelHtml = label ? ('<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:6px;">' + _esc(label) + '</div>') : '';
+  var ckVal = _firstText(b.label, 'number_flip');
+
+  return '<style>' +
+    keyframes +
+    '@media (prefers-reduced-motion:reduce){.' + prefixId + '-roll{animation:none!important;}}' +
+    '</style>' +
+    '<div data-cb="node" data-key="' + _esc(ckVal) + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;text-align:' + alignStyle + ';">' +
+    '<div style="font-size:' + size + ';font-weight:700;color:' + color + ';line-height:1;font-variant-numeric:tabular-nums;">' +
+    '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + _esc(pre + valStr + suf) + '</span>' +
+    '<span aria-hidden="true">' + preHtml + digitsHtml + sufHtml + '</span>' +
+    '</div>' +
+    labelHtml +
+    '</div>';
 };
 
 // ─── spotlight_card ───────────────────────────────────────────────────────────

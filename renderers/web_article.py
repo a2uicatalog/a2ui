@@ -6813,76 +6813,87 @@ def _render_follow_up_chips(b: dict) -> str:
 
 
 def _render_choicebox_group(b: dict) -> str:
-    """Card-style option selector. Each card wraps a hidden input — entire card is clickable.
+    if not isinstance(b, dict):
+        return ""
+    uid = _wa_uid(b)
+    prefix = f"cbg-{uid}"
+    label = _first_text(b.get("label"), b.get("question"))
+    name = _first_text(b.get("name"), f"choice_{uid}")
+    multiple = b.get("multiple") is True
+    accent = _safe_css(b.get("accent"), "#1a73e8")
+    submit_label = _text_loose(b.get("submit_label"))
 
-    CSS :has(input:checked) highlights the selected card.
-    Inspired by Vercel Geist Choicebox pattern.
-    """
-    import hashlib
-    gid      = "cbg_" + hashlib.md5(b.get("name", "cb").encode()).hexdigest()[:6]
-    label    = b.get("label", "")
-    name     = b.get("name", "choice")
-    multiple = b.get("multiple", False)
-    accent   = b.get("accent", "#1a73e8")
-    items    = b.get("items", [])
-    submit_label = b.get("submit_label", "")
+    raw_items = b.get("items")
+    if not isinstance(raw_items, list):
+        raw_items = b.get("options")
+    if not isinstance(raw_items, list):
+        raw_items = []
+    items = raw_items[:200]
 
-    bg_sel     = _hex_to_rgba(accent, 0.06)
-    border_sel = _hex_to_rgba(accent, 0.70)
     input_type = "checkbox" if multiple else "radio"
+    cards_html = ""
+    for i, item in enumerate(items):
+        if not isinstance(item, dict):
+            val = _text_loose(item) or str(i)
+            lbl = _text_loose(item)
+            desc = ""
+            icon = ""
+            disabled = False
+        else:
+            val = _first_text(item.get("value"), str(i))
+            lbl = _first_text(item.get("title"), item.get("label"))
+            desc = _first_text(item.get("description"), item.get("desc"))
+            icon = _text_loose(item.get("icon"))
+            disabled = item.get("disabled") is True
 
-    label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:10px;">{_cv_esc(label)}</div>'
-    ) if label else ""
+        cid = f"{prefix}-{i}"
+        dis_attr = " disabled" if disabled else ""
+        opacity = "opacity:0.45;" if disabled else ""
+        cursor = "default" if disabled else "pointer"
+        icon_html = f'<span class="{prefix}-icon">{_cv_esc(icon)}</span>' if icon else ""
+        desc_html = f'<span class="{prefix}-desc">{_cv_esc(desc)}</span>' if desc else ""
 
-    cards = ""
-    for item in items:
-        val      = item.get("value", "")
-        title    = item.get("title", "")
-        desc     = item.get("description", "")
-        icon     = item.get("icon", "")
-        disabled = item.get("disabled", False)
-        iid      = f"{gid}_{hashlib.md5(val.encode()).hexdigest()[:4]}"
-        icon_html = (
-            f'<span style="font-size:1.6rem;line-height:1;margin-bottom:4px;">{_cv_esc(icon)}</span>'
-        ) if icon else ""
-        desc_html = (
-            f'<span style="font-size:0.78rem;color:#5f6368;margin-top:2px;">{_cv_esc(desc)}</span>'
-        ) if desc else ""
-        opacity  = "opacity:0.45;" if disabled else ""
-        cursor   = "default" if disabled else "pointer"
-        dis_attr = "disabled" if disabled else ""
-        cards += (
-            f'<label for="{iid}" class="{gid}-card" '
-            f'style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;'
-            f'border:1.5px solid #dadce0;border-radius:10px;cursor:{cursor};'
-            f'background:#fff;{opacity}">'
-            f'<input type="{input_type}" id="{iid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}" aria-label="{_cv_esc(title or val or "Option")}" {dis_attr} '
-            f'style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">'
+        cards_html += (
+            f'<div class="{prefix}-item-wrap">'
+            f'<input type="{input_type}" id="{cid}" name="{_cv_esc(name)}" value="{_cv_esc(val)}" class="{prefix}-input"{dis_attr}>'
+            f'<label for="{cid}" class="{prefix}-card" style="cursor:{cursor};{opacity}">'
             f'{icon_html}'
-            f'<span style="font-size:0.9rem;font-weight:600;color:#3c4043;">{_cv_esc(title)}</span>'
+            f'<span class="{prefix}-text">'
+            f'<span class="{prefix}-label">{_cv_esc(lbl)}</span>'
             f'{desc_html}'
+            f'</span>'
             f'</label>'
+            f'</div>'
         )
 
     submit_html = (
-        f'<button type="submit" style="margin-top:12px;padding:9px 22px;border-radius:6px;'
-        f'border:none;background:{_cv_esc(accent)};color:#fff;font-size:0.88rem;font-weight:600;'
-        f'cursor:pointer;">{_cv_esc(submit_label)}</button>'
+        f'<button type="submit" style="margin-top:12px;padding:9px 22px;border-radius:6px;border:none;'
+        f'background:{accent};color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">'
+        f'{_cv_esc(submit_label)}</button>'
     ) if submit_label else ""
 
+    label_html = f'<div class="{prefix}-question">{_cv_esc(label)}</div>' if label else ""
+    group_label = f' aria-label="{_cv_esc(label)}"' if label else ""
+
     return (
-        f'<div style="margin:1rem 0;">'
         f'<style>'
-        f'.{gid}-card{{transition:border-color 0.15s,background 0.15s;}}'
-        f'.{gid}-card:has(input:checked){{border-color:{border_sel}!important;background:{bg_sel}!important;}}'
-        f'.{gid}-card:has(input:focus-visible){{outline:2px solid #4f46e5;outline-offset:2px;}}'
-        f'.{gid}-card:not(:has(input[disabled])):hover{{border-color:rgba(0,0,0,0.28)!important;}}'
+        f'.{prefix}-wrap{{margin:1rem 0;}}'
+        f'.{prefix}-question{{font-size:16px;font-weight:700;color:#111827;margin-bottom:12px;}}'
+        f'.{prefix}-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}}'
+        f'.{prefix}-input{{position:absolute;opacity:0;width:0;height:0;}}'
+        f'.{prefix}-card{{display:flex;align-items:flex-start;gap:12px;padding:16px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;transition:border-color 0.15s,background 0.15s;box-sizing:border-box;}}'
+        f'.{prefix}-card:hover{{border-color:#9aa0a6;}}'
+        f'.{prefix}-input:checked + .{prefix}-card{{border-color:{accent};background:#f3f7fe;background:color-mix(in srgb,{accent} 7%,#fff);}}'
+        f'.{prefix}-input:focus-visible + .{prefix}-card{{outline:2px solid #4f46e5;outline-offset:2px;}}'
+        f'.{prefix}-icon{{font-size:22px;flex-shrink:0;line-height:1.3;}}'
+        f'.{prefix}-text{{display:flex;flex-direction:column;gap:3px;}}'
+        f'.{prefix}-label{{font-size:15px;font-weight:600;color:#111827;}}'
+        f'.{prefix}-desc{{font-size:13px;color:var(--muted,#5f6368);}}'
+        f'@media (prefers-reduced-motion:reduce){{.{prefix}-card{{transition:none;}}}}'
         f'</style>'
+        f'<div class="{prefix}-wrap" role="group"{group_label}>'
         f'{label_html}'
-        f'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">'
-        f'{cards}'
-        f'</div>'
+        f'<div class="{prefix}-grid">{cards_html}</div>'
         f'{submit_html}'
         f'</div>'
     )
@@ -6976,65 +6987,69 @@ def _render_feedback_prompt(b: dict) -> str:
 # ── Aceternity UI-inspired atoms ──────────────────────────────────────────────
 
 def _render_marquee_strip(b: dict) -> str:
-    import hashlib
-    mid      = "mq_" + hashlib.md5(str(b.get("items", "")).encode()).hexdigest()[:6]
-    items    = b.get("items", [])
-    speed    = b.get("speed", "normal")
-    direction = b.get("direction", "left")
-    pause    = b.get("pause_on_hover", True)
-    label    = b.get("label", "")
-    gap      = b.get("gap", "40px")
+    if not isinstance(b, dict):
+        return ""
+    uid = _wa_uid(b)
+    prefix = f"mqs_{uid}"
 
-    durations = {"slow": "40s", "normal": "25s", "fast": "12s"}
-    dur = durations.get(speed, "25s")
-    anim_dir = "normal" if direction == "left" else "reverse"
-    pause_css = f".{mid}-track:hover{{animation-play-state:paused!important;}}" if pause else ""
+    raw_items = b.get("items")
+    if not isinstance(raw_items, list):
+        raw_items = b.get("tags")
+    if not isinstance(raw_items, list):
+        raw_items = b.get("words")
+    if not isinstance(raw_items, list):
+        raw_items = []
+    items = raw_items[:200]
 
-    def _item_html(item):
+    speed_raw = b.get("speed")
+    speed_num = _num_loose(speed_raw)
+    if speed_num is not None and speed_num > 0:
+        dur = _text_loose(min(max(speed_num, 1.0), 3600.0)) + "s"
+    else:
+        durations = {"slow": "40s", "normal": "25s", "fast": "12s"}
+        dur = durations.get(_text_loose(speed_raw).strip().lower(), "25s")
+
+    direction = _text_loose(b.get("direction")).lower()
+    anim_dir = "reverse" if direction == "right" else "normal"
+    pause_on_hover = b.get("pause_on_hover", True) is not False
+    label = _first_text(b.get("label"), b.get("title"))
+    gap_raw = b.get("gap")
+    gap = (_text_loose(gap_raw) + "px") if isinstance(gap_raw, (int, float)) and _text_loose(gap_raw) else _safe_css(gap_raw, "40px")
+    bg = _safe_css(_first_text(b.get("background"), b.get("bg")), "")
+    color = _safe_css(b.get("color"), "")
+    separator = _text_loose(b.get("separator"))
+
+    def _render_item(item, is_dup=False):
+        sep_span = f'<span style="opacity:0.3;margin-left:8px;" aria-hidden="true">{_cv_esc(separator)}</span>' if separator else ""
         if isinstance(item, dict):
-            img = item.get("image_url", "")
-            # A common alternate item shape uses `label` instead of `text`; only checking
-            # `text` rendered nothing for those items (surface-parity debt). 2026-09-27.
-            text = item.get("text") or item.get("label", "")
-            k = text or img
+            img = _safe_href(item.get("image_url"), schemes=("http", "https", "data"))
+            text = _first_text(item.get("text"), item.get("label"))
+            icon = _text_loose(item.get("icon"))
+            k = text or img or icon
+            attr = f' data-cb="tile" data-key="{_cv_esc(k)}"' if not is_dup else ""
             img_html = (
-                f'<img src="{_cv_esc(img)}" alt="{_cv_esc(text)}" '
+                f'<img src="{img}" alt="{_cv_esc(text)}" '
                 f'style="height:28px;object-fit:contain;vertical-align:middle;opacity:0.75;">'
             ) if img else ""
+            icon_html = f'<span style="margin-right:4px;">{_cv_esc(icon)}</span>' if icon else ""
             return (
-                f'<span data-cb="tile" data-key="{_cv_esc(k)}" style="display:inline-flex;align-items:center;gap:8px;'
-                f'white-space:nowrap;font-size:0.9rem;color:#5f6368;font-weight:500;">'
-                f'{img_html}{_cv_esc(text)}</span>'
+                f'<span{attr} style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;font-size:0.9rem;font-weight:500;">'
+                f'{img_html}{icon_html}{_cv_esc(text)}{sep_span}</span>'
             )
+        t = _text_loose(item)
+        attr = f' data-cb="tile" data-key="{_cv_esc(t)}"' if not is_dup else ""
         return (
-            f'<span data-cb="tile" data-key="{_cv_esc(item)}" style="display:inline-block;white-space:nowrap;'
-            f'font-size:0.9rem;color:#5f6368;font-weight:500;">{_cv_esc(item)}</span>'
+            f'<span{attr} style="display:inline-block;white-space:nowrap;font-size:0.9rem;font-weight:500;">'
+            f'{_cv_esc(t)}{sep_span}</span>'
         )
 
-    def _item_html_dup(item):
-        if isinstance(item, dict):
-            img = item.get("image_url", "")
-            text = item.get("text") or item.get("label", "")
-            img_html = (
-                f'<img src="{_cv_esc(img)}" alt="{_cv_esc(text)}" '
-                f'style="height:28px;object-fit:contain;vertical-align:middle;opacity:0.75;">'
-            ) if img else ""
-            return (
-                f'<span style="display:inline-flex;align-items:center;gap:8px;'
-                f'white-space:nowrap;font-size:0.9rem;color:#5f6368;font-weight:500;">'
-                f'{img_html}{_cv_esc(text)}</span>'
-            )
-        return (
-            f'<span style="display:inline-block;white-space:nowrap;'
-            f'font-size:0.9rem;color:#5f6368;font-weight:500;">{_cv_esc(item)}</span>'
-        )
-    items_content = "".join(_item_html(it) for it in items)
-    items_content_dup = "".join(_item_html_dup(it) for it in items)
-    # duplicate the full set for a seamless loop
+    items_content = "".join(_render_item(it, False) for it in items)
+    items_content_dup = "".join(_render_item(it, True) for it in items)
+
     track_content = (
-        f'<span style="display:inline-flex;align-items:center;gap:{_cv_esc(gap)};padding-right:{_cv_esc(gap)};">'
+        f'<span style="display:inline-flex;align-items:center;gap:{gap};padding-right:{gap};">'
         f'{items_content}</span>'
-        f'<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:{_cv_esc(gap)};padding-right:{_cv_esc(gap)};">'
+        f'<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:{gap};padding-right:{gap};">'
         f'{items_content_dup}</span>'
     )
 
@@ -7044,17 +7059,22 @@ def _render_marquee_strip(b: dict) -> str:
         f'{_cv_esc(label)}</div>'
     ) if label else ""
 
+    pause_css = f".{prefix}-track:hover{{animation-play-state:paused!important;}}" if pause_on_hover else ""
+
+    container_bg = f"background:{bg};border-radius:12px;" if bg else "border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;"
+    container_color = f"color:{color};" if color else "color:#5f6368;"
+
     return (
         f'<style>'
-        f'@keyframes {mid}-scroll{{from{{transform:translateX(0)}}to{{transform:translateX(-50%)}}}}'
-        f'.{mid}-track{{display:flex;animation:{mid}-scroll {dur} linear infinite;'
+        f'@keyframes {prefix}-scroll{{from{{transform:translateX(0);}}to{{transform:translateX(-50%);}}}}'
+        f'.{prefix}-track{{display:flex;animation:{prefix}-scroll {dur} linear infinite;'
         f'animation-direction:{anim_dir};will-change:transform;}}'
         f'{pause_css}'
+        f'@media (prefers-reduced-motion:reduce){{.{prefix}-track{{animation:none;}}}}'
         f'</style>'
-        f'<div style="margin:1rem 0;overflow:hidden;padding:12px 0;'
-        f'border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;">'
+        f'<div style="margin:1rem 0;overflow:hidden;padding:12px 0;{container_bg}{container_color}">'
         f'{label_html}'
-        f'<div class="{mid}-track">{track_content}</div>'
+        f'<div class="{prefix}-track">{track_content}</div>'
         f'</div>'
     )
 
@@ -7976,53 +7996,69 @@ def _render_confidence_bar(b: dict) -> str:
 
 
 def _render_token_budget_meter(b: dict) -> str:
-    """Context-window usage meter. Original a2ui-catalogue atom."""
-    import hashlib
-    used      = int(b.get("used", 0))
-    total     = int(b.get("total", 1)) or 1
-    label     = b.get("label", "Context window")
-    model     = b.get("model", "")
-    warn_at   = float(b.get("warn_at", 70))
-    crit_at   = float(b.get("critical_at", 90))
-    animate   = b.get("animate", False)
-    duration  = float(b.get("duration", 2.0))
+    if not isinstance(b, dict):
+        return ""
+    used_raw = _num_loose(b.get("used"))
+    used = min(int(used_raw + 0.5), 10 ** 14) if used_raw is not None and used_raw >= 0 else 0
+    total_raw = _num_loose(b.get("total"))
+    total = max(1, min(int(total_raw + 0.5), 10 ** 14)) if total_raw is not None and total_raw > 0 else 1
 
-    pct = used / total * 100
+    label = _first_text(b.get("label"), "Context window")
+    model = _text_loose(b.get("model"))
+    warn_at_raw = _num_loose(b.get("warn_at"))
+    warn_at = warn_at_raw if warn_at_raw is not None else 70.0
+    crit_at_raw = _num_loose(b.get("critical_at"))
+    crit_at = crit_at_raw if crit_at_raw is not None else 90.0
+    animate = b.get("animate") is True
+    dur_raw = _num_loose(b.get("duration"))
+    duration = min(max(dur_raw, 0.05), 3600.0) if dur_raw is not None and dur_raw > 0 else 2.0
+
+    pct = (used / total) * 100.0
+    pct_int = int(pct + 0.5)
+    pct_clamped = min(pct, 100.0)
+
     color = (
         "#ef4444" if pct >= crit_at else
         "#f59e0b" if pct >= warn_at else
         "#15803d"
     )
 
-    def _fmt(n):
-        return f"{n/1000:.1f}k" if n >= 1000 else str(n)
+    def _fmt(n: int) -> str:
+        if n >= 1000:
+            t = (n * 10 + 500) // 1000
+            return f"{t // 10}.{t % 10}k"
+        return str(n)
 
-    model_html = (
-        f'<span style="font-size:0.72rem;color:#9ca3af;margin-left:6px;">{_cv_esc(model)}</span>'
-    ) if model else ""
+    ck_val = _first_text(b.get("model"), "token_budget_meter")
+    model_html = f'<span style="font-size:0.72rem;color:#9ca3af;margin-left:6px;">{_cv_esc(model)}</span>' if model else ""
 
     if animate:
-        uid = hashlib.md5(str(b).encode()).hexdigest()[:6]
+        uid = _wa_uid(b)
+        dur_str = _text_loose(duration)
         return (
             f'<style>'
             f'@property --tok_{uid}{{syntax:"<integer>";initial-value:0;inherits:false;}}'
-            f'.tbm_{uid}{{--tok_{uid}:0;counter-reset:t{uid} var(--tok_{uid});'
-            f'animation:tbmc_{uid} {duration}s ease-in-out forwards;}}'
-            f'.tbm_{uid}::before{{content:counter(t{uid});}}'
-            f'.tbf_{uid}{{width:0%;animation:tbmb_{uid} {duration}s ease-in-out forwards;}}'
-            f'@keyframes tbmc_{uid}{{from{{--tok_{uid}:0}}to{{--tok_{uid}:{used}}}}}'
-            f'@keyframes tbmb_{uid}{{from{{width:0%}}to{{width:{min(pct,100):.2f}%}}}}'
+            f'.tbm_{uid}{{--tok_{uid}:0;counter-reset:tbct_{uid} var(--tok_{uid});'
+            f'animation:tbmc_{uid} {dur_str}s ease-in-out forwards;}}'
+            f'.tbm_{uid}::before{{content:counter(tbct_{uid});}}'
+            f'.tbf_{uid}{{width:0%;animation:tbmb_{uid} {dur_str}s ease-in-out forwards;}}'
+            f'@keyframes tbmc_{uid}{{from{{--tok_{uid}:0;}}to{{--tok_{uid}:{used};}}}}'
+            f'@keyframes tbmb_{uid}{{from{{width:0%;}}to{{width:{_fixed_str(pct_clamped, 2)}%;}}}}'
+            f'@media (prefers-reduced-motion:reduce){{'
+            f'.tbm_{uid}{{animation:none;--tok_{uid}:{used};}}'
+            f'.tbf_{uid}{{animation:none;width:{_fixed_str(pct_clamped, 2)}%;}}'
+            f'}}'
             f'</style>'
-            f'<div data-cb="node" data-key="{_ck(b.get("model"), "token_budget_meter")}" style="margin:0.75rem 0;padding:10px 14px;border:1px solid #374151;'
+            f'<div data-cb="node" data-key="{_cv_esc(ck_val)}" style="margin:0.75rem 0;padding:10px 14px;border:1px solid #374151;'
             f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#111827;">'
-            f'<div style="display:flex;align-items:baseline;justify-content:space-between;'
-            f'margin-bottom:6px;">'
+            f'<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">'
             f'<span style="font-size:1rem;font-weight:700;color:#ffffff;">'
             f'{_cv_esc(label)}{model_html}</span>'
             f'<span style="font-size:2rem;font-weight:800;color:#ffffff;font-family:monospace;">'
-            f'<span class="tbm_{uid}"></span>'
+            f'<span class="tbm_{uid}" aria-hidden="true"></span>'
+            f'<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">{used} of {total}</span>'
             f'<span style="color:#6b7280;"> / {_fmt(total)}</span>'
-            f'<span style="font-size:1rem;color:#9ca3af;margin-left:8px;">({round(pct)}%)</span>'
+            f'<span style="font-size:1rem;color:#9ca3af;margin-left:8px;">({pct_int}%)</span>'
             f'</span>'
             f'</div>'
             f'<div style="background:#374151;border-radius:4px;height:10px;overflow:hidden;">'
@@ -8032,18 +8068,16 @@ def _render_token_budget_meter(b: dict) -> str:
         )
 
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("model"), "token_budget_meter")}" style="margin:0.75rem 0;padding:10px 14px;border:1px solid #e5e7eb;'
+        f'<div data-cb="node" data-key="{_cv_esc(ck_val)}" style="margin:0.75rem 0;padding:10px 14px;border:1px solid #e5e7eb;'
         f'border-radius:8px;background:#fafafa;">'
-        f'<div style="display:flex;align-items:baseline;justify-content:space-between;'
-        f'margin-bottom:6px;">'
+        f'<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">'
         f'<span style="font-size:0.8rem;font-weight:600;color:#374151;">'
         f'{_cv_esc(label)}{model_html}</span>'
         f'<span style="font-size:0.78rem;font-weight:700;color:{color};">'
-        f'{_fmt(used)} / {_fmt(total)} ({round(pct)}%)</span>'
+        f'{_fmt(used)} / {_fmt(total)} ({pct_int}%)</span>'
         f'</div>'
         f'<div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;">'
-        f'<div style="width:{min(pct,100):.1f}%;height:100%;background:{color};'
-        f'border-radius:4px;"></div>'
+        f'<div style="width:{_fixed_str(pct_clamped, 1)}%;height:100%;background:{color};border-radius:4px;"></div>'
         f'</div>'
         f'</div>'
     )
@@ -9128,54 +9162,95 @@ def _render_jira_ticket(b: dict) -> str:
 
 
 def _render_sprint_board(b: dict) -> str:
-    sprint_name = b.get("sprint_name", "")
-    columns     = b.get("columns", [])
+    if not isinstance(b, dict):
+        return ""
+    sprint_name = _first_text(b.get("sprint_name"), b.get("title"))
+    raw_columns = b.get("columns")
+    if not isinstance(raw_columns, list):
+        raw_columns = []
+    columns = raw_columns[:200]
 
-    TYPE_ICONS = {
+    type_icons = {
         "bug": "🐛", "story": "📖", "task": "✓", "epic": "⚡", "subtask": "↗",
     }
-    PRIORITY_COLORS = {
+    priority_colors = {
         "highest": "#e34935", "high": "#ff7a00", "medium": "#f79e1b",
         "low": "#0065ff", "lowest": "#6b778c",
     }
 
-    def render_ticket(t):
-        icon    = TYPE_ICONS.get(t.get("type", "task"), "✓")
-        p_color = PRIORITY_COLORS.get(t.get("priority", "medium"), "#f79e1b")
-        return (
-            f'<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;border-radius:3px;padding:10px;margin-bottom:6px;">'
-            f'<div style="display:flex;align-items:flex-start;gap:6px;">'
-            f'<span style="font-size:11px;flex-shrink:0;margin-top:1px;">{icon}</span>'
-            f'<div style="flex:1;min-width:0;">'
-            f'<div style="font-size:12px;font-weight:500;color:#172b4d;line-height:1.3;margin-bottom:4px;">{_cv_esc(t.get("summary",""))}</div>'
-            f'<div style="display:flex;align-items:center;gap:6px;">'
-            f'<span style="font-size:10px;color:#0052cc;font-weight:600;">{_cv_esc(t.get("key",""))}</span>'
-            f'<span style="width:7px;height:7px;border-radius:50%;background:{p_color};flex-shrink:0;"></span>'
-            f'</div></div></div></div>'
-        )
-
     cols_html = ""
     for col in columns:
-        # A common alternate column shape sends `title`/`cards` instead of the schema's
-        # `name`/`items`; only checking the schema names dropped both entirely for that
-        # shape (surface-parity debt). 2026-09-27.
-        items = col.get("items") or col.get("cards", [])
-        name = col.get("name") or col.get("title", "")
+        if not isinstance(col, dict):
+            continue
+        cname = _first_text(col.get("name"), col.get("title"))
+        raw_items = col.get("items")
+        if not isinstance(raw_items, list):
+            raw_items = col.get("cards")
+        if not isinstance(raw_items, list):
+            raw_items = []
+        items = raw_items[:200]
+
+        cards_html = ""
+        for t in items:
+            if not isinstance(t, dict):
+                continue
+            ttype = _text_loose(t.get("type")).lower()
+            icon = type_icons.get(ttype, "✓")
+            tpriority = _text_loose(t.get("priority")).lower()
+            p_color = priority_colors.get(tpriority, "#d1d5db")
+            summary = _first_text(t.get("summary"), t.get("title"))
+            key = _first_text(t.get("key"), t.get("id"))
+
+            assignee = _text_loose(t.get("assignee"))
+            assignee_html = (
+                f'<div style="width:20px;height:20px;border-radius:50%;background:#7c3aed;color:#fff;'
+                f'font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                f'{_cv_esc(assignee[:1].upper())}</div>'
+            ) if assignee else ""
+
+            labels_html = ""
+            raw_labels = t.get("labels")
+            if isinstance(raw_labels, list) and raw_labels:
+                lbls = "".join(
+                    f'<span style="background:#ede9fe;color:#5b21b6;font-size:0.65rem;padding:1px 5px;border-radius:999px;">{_cv_esc(_text_loose(lbl))}</span>'
+                    for lbl in raw_labels[:20] if _text_loose(lbl)
+                )
+                if lbls:
+                    labels_html = f'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">{lbls}</div>'
+
+            cards_html += (
+                f'<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #dfe1e6;'
+                f'border-radius:3px;padding:10px;margin-bottom:6px;">'
+                f'<div style="display:flex;align-items:flex-start;gap:6px;">'
+                f'<span style="font-size:11px;flex-shrink:0;margin-top:1px;" aria-hidden="true">{icon}</span>'
+                f'<div style="flex:1;min-width:0;">'
+                f'<div style="font-size:12px;font-weight:500;color:#172b4d;line-height:1.3;margin-bottom:4px;">{_cv_esc(summary)}</div>'
+                f'<div style="display:flex;align-items:center;gap:6px;">'
+                f'<span style="font-size:10px;color:#0052cc;font-weight:600;">{_cv_esc(key)}</span>'
+                f'<span style="width:7px;height:7px;border-radius:50%;background:{p_color};flex-shrink:0;" aria-hidden="true"></span>'
+                f'</div>'
+                f'{labels_html}'
+                f'</div>'
+                f'{assignee_html}'
+                f'</div>'
+                f'</div>'
+            )
+
         cols_html += (
             f'<div style="background:#f4f5f7;border-radius:3px;padding:10px;flex:1;min-width:160px;">'
             f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-            f'<span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">{_esc(name)}</span>'
+            f'<span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">{_cv_esc(cname)}</span>'
             f'<span style="background:#dfe1e6;color:#172b4d;font-size:11px;font-weight:600;padding:1px 6px;border-radius:20px;">{len(items)}</span>'
             f'</div>'
-            + "".join(render_ticket(t) for t in items)
-            + '</div>'
+            f'{cards_html}'
+            f'</div>'
         )
 
-    name_html = f'<div style="font-size:14px;font-weight:700;color:#172b4d;margin-bottom:12px;">{_cv_esc(sprint_name)}</div>' if sprint_name else ''
+    name_html = f'<div style="font-size:14px;font-weight:700;color:#172b4d;margin-bottom:12px;">{_cv_esc(sprint_name)}</div>' if sprint_name else ""
     return (
-        f'<div style="font-family:-apple-system,sans-serif;">'
+        f'<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;margin:1rem 0;">'
         f'{name_html}'
-        f'<div style="display:flex;gap:10px;overflow-x:auto;">{cols_html}</div>'
+        f'<div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;">{cols_html}</div>'
         f'</div>'
     )
 
@@ -10127,33 +10202,45 @@ def _render_number_odometer(b: dict) -> str:
 
 
 def _render_typing_indicator(b: dict) -> str:
-    import hashlib
-    uid     = hashlib.md5(str(b).encode()).hexdigest()[:6]
-    name    = b.get("name", "Agent")
-    variant = b.get("variant", "dark")
-    bg      = "#1e293b" if variant == "dark" else "#f1f5f9"
-    dot_col = "#617592" if variant == "dark" else "#64748b"
-    text_col= "#617592" if variant == "dark" else "#64748b"
+    if not isinstance(b, dict):
+        return ""
+    uid = _wa_uid(b)
+    name = _first_text(b.get("name"), b.get("label"), b.get("text"), "Agent")
+    variant = _text_loose(b.get("variant")).lower()
+    is_light = variant == "light"
+
+    bg_default = "#f1f5f9" if is_light else "#1e293b"
+    bg = _safe_css(b.get("bg"), bg_default)
+    dot_default = "#64748b" if is_light else "#617592"
+    dot_col = _safe_css(_first_text(b.get("color"), b.get("accent")), dot_default)
+    text_col = "#64748b" if is_light else "#617592"
+
+    initial = name[:1].upper() if name else "A"
+    prefix = f"ti_{uid}"
+    ck_val = _first_text(b.get("name"), "typing_indicator")
+
     return (
         f'<style>'
-        f'@keyframes ti_bounce_{uid}{{0%,80%,100%{{transform:translateY(0)}}40%{{transform:translateY(-6px)}}}}'
-        f'.ti_dot_{uid}{{width:8px;height:8px;border-radius:50%;background:{dot_col};display:inline-block;margin:0 2px;}}'
-        f'.ti_dot_{uid}:nth-child(1){{animation:ti_bounce_{uid} 1.2s ease-in-out 0s infinite;}}'
-        f'.ti_dot_{uid}:nth-child(2){{animation:ti_bounce_{uid} 1.2s ease-in-out 0.2s infinite;}}'
-        f'.ti_dot_{uid}:nth-child(3){{animation:ti_bounce_{uid} 1.2s ease-in-out 0.4s infinite;}}'
+        f'@keyframes {prefix}_bounce{{0%,80%,100%{{transform:translateY(0);}}40%{{transform:translateY(-6px);}}}}'
+        f'.{prefix}_dot{{width:8px;height:8px;border-radius:50%;background:{dot_col};display:inline-block;margin:0 2px;}}'
+        f'.{prefix}_dot:nth-child(1){{animation:{prefix}_bounce 1.2s ease-in-out 0s infinite;}}'
+        f'.{prefix}_dot:nth-child(2){{animation:{prefix}_bounce 1.2s ease-in-out 0.2s infinite;}}'
+        f'.{prefix}_dot:nth-child(3){{animation:{prefix}_bounce 1.2s ease-in-out 0.4s infinite;}}'
+        f'@media (prefers-reduced-motion:reduce){{.{prefix}_dot{{animation:none!important;}}}}'
         f'</style>'
-        f'<div data-cb="node" data-key="{_ck(b.get("name"), "typing_indicator")}" style="display:flex;align-items:flex-end;gap:8px;margin:1rem 0;">'
-        f'<div style="width:32px;height:32px;border-radius:50%;background:{dot_col};'
-        f'display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;'
-        f'color:#fff;flex-shrink:0;">{_cv_esc(name[0].upper())}</div>'
+        f'<div data-cb="node" data-key="{_cv_esc(ck_val)}" role="status" style="display:flex;align-items:flex-end;gap:8px;margin:1rem 0;">'
+        f'<div style="width:32px;height:32px;border-radius:50%;background:{dot_col};display:flex;align-items:center;justify-content:center;'
+        f'font-size:13px;font-weight:700;color:#fff;flex-shrink:0;" aria-hidden="true">{_cv_esc(initial)}</div>'
         f'<div style="display:flex;flex-direction:column;gap:3px;">'
         f'<span style="font-size:11px;color:{text_col};font-weight:500;">{_cv_esc(name)}</span>'
-        f'<div style="background:{bg};border-radius:18px 18px 18px 4px;padding:12px 16px;'
-        f'display:inline-flex;align-items:center;gap:2px;">'
-        f'<span class="ti_dot_{uid}"></span>'
-        f'<span class="ti_dot_{uid}"></span>'
-        f'<span class="ti_dot_{uid}"></span>'
-        f'</div></div></div>'
+        f'<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">is typing</span>'
+        f'<div style="background:{bg};border-radius:18px 18px 18px 4px;padding:12px 16px;display:inline-flex;align-items:center;gap:2px;">'
+        f'<span class="{prefix}_dot" aria-hidden="true"></span>'
+        f'<span class="{prefix}_dot" aria-hidden="true"></span>'
+        f'<span class="{prefix}_dot" aria-hidden="true"></span>'
+        f'</div>'
+        f'</div>'
+        f'</div>'
     )
 
 
@@ -11025,41 +11112,65 @@ _RENDERERS["shimmer_text"] = _render_shimmer_text
 
 
 def _render_number_flip(b: dict) -> str:
-    import hashlib, html as _html
-    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
-    value  = str(b.get("value", "0"))
-    # A caller can legitimately send a numeric prefix/suffix (e.g. a multiplier); html.escape
-    # requires a str and threw on anything else, crashing the WHOLE render (surface-parity
-    # debt: lost `label` too, not just prefix/suffix -- GAS's String()-based _esc tolerates
-    # this fine). 2026-09-27.
-    prefix = _html.escape(str(b.get("prefix", "")))
-    suffix = _html.escape(str(b.get("suffix", "")))
-    label  = b.get("label", "")
-    size   = b.get("size", "3rem")
+    if not isinstance(b, dict):
+        return ""
+    uid = _wa_uid(b)
+    prefix_id = f"nf_{uid}"
+
+    val_str = _text_loose(b.get("value"))
+    if not val_str:
+        val_str = "0"
+    val_str = val_str[:40]
+
+    pre = _text_loose(b.get("prefix"))
+    suf = _text_loose(b.get("suffix"))
+    label = _text_loose(b.get("label"))
+    size = _safe_css(b.get("size"), "3rem")
+    color = _safe_css(_first_text(b.get("color"), b.get("accent")), "var(--a2ui-accent,#4f46e5)")
+    align = _text_loose(b.get("align")).lower()
+    align_style = "left" if align == "left" else "center"
+
+    dur_raw = _num_loose(b.get("duration"))
+    dur_ms = min(int(dur_raw + 0.5), 600000) if dur_raw is not None and dur_raw > 0 else 1200
+    base_step = dur_ms / (max(len(val_str), 1) + 2)
+
     keyframes = ""
     digits_html = ""
-    for i, ch in enumerate(value):
-        d_delay = i * 80
-        if ch.isdigit():
+    for i, ch in enumerate(val_str):
+        d_delay = int(i * base_step)
+        if "0" <= ch <= "9":
             target = int(ch)
             pct = target * 100
-            kf = f"nf{uid}{_cv_esc(i)}"
+            kf = f"{prefix_id}_{i}"
             keyframes += f'@keyframes {kf}{{from{{transform:translateY(0);}}to{{transform:translateY(-{pct}%);}}}} '
             slots = "".join(f'<span style="display:block;height:1em;line-height:1em;">{d}</span>' for d in range(10))
             digits_html += (
                 f'<span style="display:inline-flex;overflow:hidden;height:1em;vertical-align:middle;">'
-                f'<span style="display:block;animation:{kf} 0.65s cubic-bezier(.4,0,.2,1) {d_delay}ms both;">'
+                f'<span class="{prefix_id}-roll" style="display:block;transform:translateY(-{pct}%);animation:{kf} 0.65s cubic-bezier(.4,0,.2,1) {d_delay}ms both;">'
                 f'{slots}</span></span>'
             )
         else:
-            digits_html += f'<span style="display:inline-block;vertical-align:middle;">{_html.escape(ch)}</span>'
-    label_html = f'<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:6px;">{_html.escape(label)}</div>' if label else ""
+            digits_html += f'<span style="display:inline-block;vertical-align:middle;">{_cv_esc(ch)}</span>'
+
+    pre_html = f'<span>{_cv_esc(pre)}</span>' if pre else ""
+    suf_html = f'<span>{_cv_esc(suf)}</span>' if suf else ""
+    label_html = f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:6px;">{_cv_esc(label)}</div>' if label else ""
+    ck_val = _first_text(b.get("label"), "number_flip")
+
     return (
-        f'<style>{keyframes}</style>'
-        f'<div data-cb="node" data-key="{_ck(b.get("label"), "number_flip")}" style="margin:1rem 0;text-align:center;">'
-        f'<div style="font-size:{_cv_esc(size)};font-weight:700;color:var(--text,#f1f5f9);line-height:1;font-variant-numeric:tabular-nums;">'
-        f'{prefix}{digits_html}{suffix}</div>{label_html}</div>'
+        f'<style>'
+        f'{keyframes}'
+        f'@media (prefers-reduced-motion:reduce){{.{prefix_id}-roll{{animation:none!important;}}}}'
+        f'</style>'
+        f'<div data-cb="node" data-key="{_cv_esc(ck_val)}" style="margin:var(--a2ui-block-gap,1.25rem) 0;text-align:{align_style};">'
+        f'<div style="font-size:{size};font-weight:700;color:{color};line-height:1;font-variant-numeric:tabular-nums;">'
+        f'<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">{_cv_esc(pre + val_str + suf)}</span>'
+        f'<span aria-hidden="true">{pre_html}{digits_html}{suf_html}</span>'
+        f'</div>'
+        f'{label_html}'
+        f'</div>'
     )
+
 
 _RENDERERS["number_flip"] = _render_number_flip
 
@@ -11455,56 +11566,88 @@ _RENDERERS["skeleton"] = _render_skeleton
 
 
 def _render_marquee(b: dict) -> str:
-    import hashlib, html as _html
-    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
-    items = b.get("items") or []
-    title = b.get("title", "")
-    speed = b.get("speed", 30)
-    gap   = int(b.get("gap", 48))
-    direction = b.get("direction", "normal")
-    title_html = f'<div style="font-size:0.75rem;font-weight:600;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">{_html.escape(title)}</div>' if title else ""
-    def _item_html(item):
-        k = item if isinstance(item, str) else (item.get("text") or item.get("label") or item.get("image_url", item.get("url", "")) or item.get("icon", ""))
-        ek = _html.escape(str(k))
-        if isinstance(item, str):
-            return f'<span data-cb="tile" data-key="{ek}" style="white-space:nowrap;color:#e2e8f0;font-size:0.9rem;">{_html.escape(item)}</span>'
-        url = item.get("image_url", item.get("url", ""))
-        text = item.get("text", item.get("label", ""))
-        icon = item.get("icon", "")
-        if url and not text and not icon:
-            return f'<img data-cb="tile" data-key="{ek}" src="{_html.escape(url)}" style="height:28px;object-fit:contain;opacity:0.8;"/>'
-        icon_h = f'<span style="margin-right:5px;">{_cv_esc(icon)}</span>' if icon else ""
-        text_h = f'<span style="color:#e2e8f0;font-size:0.85rem;">{_html.escape(text)}</span>' if text else ""
-        return f'<span data-cb="tile" data-key="{ek}" style="display:inline-flex;align-items:center;white-space:nowrap;gap:4px;">{icon_h}{text_h}</span>'
-    def _item_html_dup(item):
-        if isinstance(item, str):
-            return f'<span style="white-space:nowrap;color:#e2e8f0;font-size:0.9rem;">{_html.escape(item)}</span>'
-        url = item.get("image_url", item.get("url", ""))
-        text = item.get("text", item.get("label", ""))
-        icon = item.get("icon", "")
-        if url and not text and not icon:
-            return f'<img src="{_html.escape(url)}" style="height:28px;object-fit:contain;opacity:0.8;"/>'
-        icon_h = f'<span style="margin-right:5px;">{_cv_esc(icon)}</span>' if icon else ""
-        text_h = f'<span style="color:#e2e8f0;font-size:0.85rem;">{_html.escape(text)}</span>' if text else ""
-        return f'<span style="display:inline-flex;align-items:center;white-space:nowrap;gap:4px;">{icon_h}{text_h}</span>'
-    strip = f'<span style="display:inline-flex;align-items:center;gap:{gap}px;">'
-    strip += "".join(_item_html(i) for i in items)
-    strip += '</span>'
+    if not isinstance(b, dict):
+        return ""
+    uid = _wa_uid(b)
+    prefix = f"mq_{uid}"
+
+    raw_items = b.get("items")
+    if not isinstance(raw_items, list):
+        raw_items = []
+    items = raw_items[:200]
+
+    title = _first_text(b.get("title"), b.get("label"))
+    speed_raw = _num_loose(b.get("speed"))
+    speed = min(max(speed_raw, 1.0), 3600.0) if speed_raw is not None and speed_raw > 0 else 30
+    gap_raw = _num_loose(b.get("gap"))
+    gap = min(int(gap_raw + 0.5), 400) if gap_raw is not None and gap_raw >= 0 else 48
+    direction = _text_loose(b.get("direction")).lower()
     anim_dir = "reverse" if direction == "right" else "normal"
+    separator = _text_loose(b.get("separator"))
+    pause_on_hover = b.get("pause_on_hover", True) is not False
+    bg = _safe_css(b.get("bg"), "var(--surface,#f9fafb)")
+    rounded = b.get("rounded", True) is not False
+    color_icons = b.get("color_icons") is True
+    border_radius = "10px" if rounded else "0"
+
+    def _render_entry(item, is_dup=False):
+        if not isinstance(item, dict):
+            k = _text_loose(item)
+            attr = f' data-cb="tile" data-key="{_cv_esc(k)}"' if not is_dup else ""
+            return f'<span{attr} style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">{_cv_esc(k)}</span>'
+
+        k = _first_text(item.get("text"), item.get("label"), item.get("image_url"), item.get("url"), item.get("icon"))
+        attr = f' data-cb="tile" data-key="{_cv_esc(k)}"' if not is_dup else ""
+
+        img_url = _safe_href(item.get("image_url"), schemes=("http", "https", "data"))
+        raw_url = _safe_href(item.get("url"), schemes=("http", "https", "mailto"))
+        icon = _text_loose(item.get("icon"))
+        text = _first_text(item.get("text"), item.get("label"))
+
+        inner = ""
+        if img_url:
+            img_style = "height:32px;object-fit:contain;" + ("" if color_icons else "opacity:0.7;filter:grayscale(1);")
+            inner += f'<img src="{img_url}" alt="{_cv_esc(text)}" style="{img_style}">'
+        if icon:
+            inner += f'<span style="font-size:1.1rem;">{_cv_esc(icon)}</span>'
+        if text:
+            inner += f'<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">{_cv_esc(text)}</span>'
+
+        if raw_url:
+            return f'<a{attr} href="{raw_url}" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">{inner}</a>'
+        return f'<span{attr} style="display:inline-flex;align-items:center;gap:6px;">{inner}</span>'
+
+    sep_html = f'<span style="color:var(--muted,#d1d5db);margin:0 4px;" aria-hidden="true">{_cv_esc(separator)}</span>' if separator else ""
+    items_html = "".join(
+        f'<span style="padding:0 {gap}px;display:inline-flex;align-items:center;">{_render_entry(it, False)}{sep_html}</span>'
+        for it in items
+    )
+    items_dup_html = "".join(
+        f'<span style="padding:0 {gap}px;display:inline-flex;align-items:center;">{_render_entry(it, True)}{sep_html}</span>'
+        for it in items
+    )
+
+    pause_css = f'#{prefix}:hover #{prefix}-track{{animation-play-state:paused;}}' if pause_on_hover else ""
+    speed_str = _text_loose(speed)
+
+    title_html = (
+        f'<div style="font-size:0.75rem;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.06em;padding:8px 16px 0;">'
+        f'{_cv_esc(title)}</div>'
+    ) if title else ""
+
     return (
         f'<style>'
-        f'@keyframes mq_{uid}{{from{{transform:translateX(0);}}to{{transform:translateX(-50%);}}}}'
+        f'@keyframes {prefix}{{from{{transform:translateX(0);}}to{{transform:translateX(-50%);}}}}'
+        f'#{prefix}-track{{display:inline-flex;animation:{prefix} {speed_str}s linear infinite {anim_dir};white-space:nowrap;}}'
+        f'{pause_css}'
+        f'@media (prefers-reduced-motion:reduce){{#{prefix}-track{{animation:none;}}}}'
         f'</style>'
-        f'<div style="margin:1rem 0;">{title_html}'
-        f'<div style="overflow:hidden;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 0;'
-        f'background:#0f172a;">'
-        f'<div style="display:flex;width:max-content;animation:mq_{uid} {_cv_esc(speed)}s linear infinite;animation-direction:{anim_dir};">'
-        f'<div style="display:inline-flex;align-items:center;gap:{gap}px;padding:0 {gap}px;">'
-        + "".join(_item_html(i) for i in items)
-        + f'</div><div style="display:inline-flex;align-items:center;gap:{gap}px;padding:0 {gap}px;">'
-        + "".join(_item_html_dup(i) for i in items)
-        + f'</div></div></div></div>'
+        f'{title_html}'
+        f'<div id="{prefix}" style="overflow:hidden;background:{bg};border-radius:{border_radius};border:1px solid var(--border,#e5e7eb);padding:12px 0;margin:1rem 0;">'
+        f'<div id="{prefix}-track">{items_html}<span aria-hidden="true" style="display:inline-flex;">{items_dup_html}</span></div>'
+        f'</div>'
     )
+
 
 _RENDERERS["marquee"] = _render_marquee
 
@@ -25270,29 +25413,57 @@ _RENDERERS["live_edit"] = _render_live_edit
 
 
 def _render_progress_reveal(b: dict) -> str:
-    value = int(b.get('value', 0))
-    label = _esc(b.get('label', ''))
-    color = _esc(b.get('color', '#4f46e5'))
-    suffix = _esc(b.get('suffix', '%'))
-    height = int(b.get('height', 10))
-    import hashlib
-    uid = 'pr' + hashlib.md5(label.encode()).hexdigest()[:5]
-    return (f'<div data-cb="node" data-key="{_ck(b.get("label"), "progress_reveal")}" style="margin:1rem 0;">'
-            + ('<div style="display:flex;justify-content:space-between;font-size:0.82rem;'
-               'color:#374151;margin-bottom:6px;">'
-               '<span>' + label + '</span>'
-               '<span style="font-weight:700;">' + str(value) + suffix + '</span></div>' if label else '')
-            + '<div style="background:#f3f4f6;border-radius:99px;height:' + str(height) + 'px;overflow:hidden;">'
-            '<div id="' + uid + '" style="width:0%;height:100%;border-radius:99px;background:' + color + ';'
-            'transition:width 0.8s cubic-bezier(0.22,1,0.36,1);"></div></div></div>'
-            '<script>(function(){'
-            'var el=document.getElementById("' + uid + '");'
-            'if(!el)return;'
-            'var obs=new IntersectionObserver(function(entries){'
-            'if(entries[0].isIntersecting){el.style.width="' + str(min(100, value)) + '%";obs.disconnect();}'
-            '},{threshold:0.3});'
-            'obs.observe(el.parentNode.parentNode);'
-            '})();</script>')
+    if not isinstance(b, dict):
+        return ""
+    val_raw = _num_loose(b.get("value"))
+    if val_raw is None:
+        val_raw = _num_loose(b.get("percent"))
+    value = val_raw if val_raw is not None else 0.0
+    label = _first_text(b.get("label"), b.get("title"))
+    color = _safe_css(b.get("color"), "#4f46e5")
+    suffix_raw = b.get("suffix")
+    suffix = _text_loose(suffix_raw) if suffix_raw is not None else "%"
+    height_raw = _num_loose(b.get("height"))
+    height = min(int(height_raw + 0.5), 400) if height_raw is not None and height_raw > 0 else 10
+    uid = _wa_uid(b)
+    prefix = f"pr-{uid}"
+    ck_val = _first_text(b.get("label"), "progress_reveal")
+    target_val = _text_loose(max(-1e15, min(value, 1e15)))
+    label_html = (
+        f'<span style="font-size:0.875rem;font-weight:600;color:#374151;">{_cv_esc(label)}</span>'
+        if label else '<span></span>'
+    )
+    return (
+        f'<div data-cb="node" data-key="{_cv_esc(ck_val)}" id="{prefix}-wrap" data-target="{_cv_esc(target_val)}" data-suffix="{_cv_esc(suffix)}" style="margin:1rem 0;">'
+        f'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">'
+        f'{label_html}'
+        f'<span id="{prefix}-val" aria-hidden="true" style="font-size:0.875rem;font-weight:700;color:{color};">0{_cv_esc(suffix)}</span>'
+        f'<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">{_cv_esc(target_val + suffix)}</span>'
+        f'</div>'
+        f'<div style="height:{height}px;background:#f3f4f6;border-radius:999px;overflow:hidden;">'
+        f'<div id="{prefix}-bar" style="height:100%;width:0%;background:{color};border-radius:999px;transition:width 1.3s cubic-bezier(0.34,1.1,0.64,1);"></div>'
+        f'</div>'
+        f'<script>(function(){{'
+        f'var wrap=document.getElementById("{prefix}-wrap");'
+        f'var bar=document.getElementById("{prefix}-bar");'
+        f'var val=document.getElementById("{prefix}-val");'
+        f'if(!wrap||!bar||!val)return;'
+        f'var target=Number(wrap.getAttribute("data-target"))||0;var suf=wrap.getAttribute("data-suffix")||"";var done=false;'
+        f'var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+        f'function run(){{if(done)return;done=true;'
+        f'bar.style.width=Math.max(0,Math.min(target,100))+"%";'
+        f'if(calm){{bar.style.transition="none";val.textContent=Math.round(target)+suf;return;}}'
+        f'var t0=null,dur=1300;'
+        f'function step(ts){{if(!t0)t0=ts;var p=Math.min((ts-t0)/dur,1);val.textContent=Math.round(target*p)+suf;if(p<1)requestAnimationFrame(step);}}'
+        f'requestAnimationFrame(step);}}'
+        f'if("IntersectionObserver" in window){{'
+        f'new IntersectionObserver(function(es,ob){{if(es[0].isIntersecting){{run();ob.disconnect();}}}},{{threshold:0.3}}).observe(wrap);'
+        f'}}else{{run();}}'
+        f'}})();</script>'
+        f'</div>'
+    )
+
+
 _RENDERERS["progress_reveal"] = _render_progress_reveal
 
 
@@ -30511,6 +30682,13 @@ def _first_text(*vals):
         if t:
             return t
     return ''
+
+
+def _fixed_str(x, d):
+    """A finite number >= 0 with d decimals, rounded half up on the scaled value (not half to even), so both twins print the same digits. Twin: _fixedStr in atom.gs."""
+    n = int(min(x, 1e12) * 10 ** d + 0.5)
+    s = str(n).rjust(d + 1, '0')
+    return s[:-d] + '.' + s[-d:] if d else s
 
 
 def _safe_css(v, dflt):

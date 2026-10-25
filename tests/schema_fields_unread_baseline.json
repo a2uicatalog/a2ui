@@ -108,12 +108,6 @@
   "show_legend",
   "variant"
  ],
- "choicebox_group": [
-  "accent",
-  "items",
-  "multiple",
-  "submit_label"
- ],
  "chord_diagram": [
   "title"
  ],
@@ -436,11 +430,6 @@
   "appearance",
   "items"
  ],
- "marquee_strip": [
-  "direction",
-  "gap",
-  "pause_on_hover"
- ],
  "maturity_ladder": [
   "title"
  ],
@@ -680,9 +669,6 @@
   "height",
   "width"
  ],
- "sprint_board": [
-  "sprint_name"
- ],
  "status_pill": [
   "color",
   "icon"
@@ -716,13 +702,6 @@
   "title",
   "variant"
  ],
- "token_budget_meter": [
-  "animate",
-  "critical_at",
-  "duration",
-  "label",
-  "warn_at"
- ],
  "tonal_scale": [
   "theme"
  ],
@@ -735,9 +714,6 @@
   "cursor",
   "size",
   "weight"
- ],
- "typing_indicator": [
-  "variant"
  ],
  "user_profile_card": [
   "name"

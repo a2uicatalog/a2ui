@@ -1213,8 +1213,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].id",
-  "py_sha": "3a6b94d5280d1633f486d59b78137f9fb9a7d47887215aaba8036b9e7c6e5cf9",
-  "gas_sha": "ac69becc19538f8418d15f1b22af63121194b7d059efb5bf249f1c9e6c7ab949",
+  "py_sha": "3a9dea19b84e31a2890d6cb36a01ca109636e4047eec729e902eb977a33bce26",
+  "gas_sha": "91823bedd62c2bb951e8726e5ba4a1a1ac70ca7e9cfd0d632ff2c84db3c5d9a4",
   "parity": false
  },
  "cohort_progress_board": {
@@ -3807,8 +3807,8 @@
   "kind": "tile",
   "label_kind": "label",
   "key": "items[]",
-  "py_sha": "f155ff93e17d2a5b919d5fce56a6866f8f6b6d0595f5b532d68c78839919fd95",
-  "gas_sha": "da568bfb0fc96a07538f38d4cb141c0adcc10a1d981a3986f951fd3b84ff889a",
+  "py_sha": "6211ed6c2f7a9f6ee083830d53a03d58826b0236880f34ddb0affc0c93c7196e",
+  "gas_sha": "02c61bf3897449c62deb231b10b8bad0384cdaeb669a65c1a9eaca564ed5354f",
   "parity": false
  },
  "marquee_strip": {
@@ -3826,8 +3826,8 @@
   "kind": "tile",
   "label_kind": "label",
   "key": "items[].text",
-  "py_sha": "2edfac520f458db62adf8222461e8c7d998ae49b4c5d57cf2a18c78135f1e39e",
-  "gas_sha": "6f0ee6e9d8605448d88f598c19fec326faea22d1ebb27e968b8ec6f642ff68fa",
+  "py_sha": "0948a864c58a14fdd846d76f533be4b79dc1d705e6b45160723ba624a3ab3b95",
+  "gas_sha": "69961cd3ab11ddb83469ef0668a9163d74b8c1ff7ebc983be112e2a36c8d0c84",
   "parity": false
  },
  "match_exercise": {
@@ -6692,9 +6692,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "columns[].name",
-  "py_sha": "83600d2b6aac8f537195167e6dbd110a10be556464ab336f282079d2ec71cf20",
-  "gas_sha": "2f718ab68547cb798af546745f4fe50ecd5a42249671322ba74cac5d6c9ff393",
-  "parity": false
+  "py_sha": "b4a8e1110fd030ef6f55e249b5c8fae0aef635c9980ae809216739a7b5b659b1",
+  "gas_sha": "b4a8e1110fd030ef6f55e249b5c8fae0aef635c9980ae809216739a7b5b659b1",
+  "parity": true
  },
  "stagger_list": {
   "status": "pending",
@@ -9915,8 +9915,8 @@
   "label_kind": "label",
   "key": "model",
   "py_sha": "5c1d13d33f53e15eff276e70a81008997c3026cdb646de807ad6494ecb857cc9",
-  "gas_sha": "637ea9e405f0fdb68bc6270c2c657c505092bfb34eaef41a3551fc5891a0586c",
-  "parity": false
+  "gas_sha": "5c1d13d33f53e15eff276e70a81008997c3026cdb646de807ad6494ecb857cc9",
+  "parity": true
  },
  "product_thumbnail": {
   "status": "keyed",
@@ -10415,8 +10415,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "name",
-  "py_sha": "81fa91d24e0876a4e42c436265dd35a3c0321548ca3895d4177b40c0717b866a",
-  "gas_sha": "2943333f11c9c2b997351afcbee5b15be29b991bd76fca3a6e8ac873a637a740",
+  "py_sha": "adda0b11edcbad5b0c491afffa6e74703039658ab8aff360684a33896d75d6fe",
+  "gas_sha": "d3ddaf5461147b9b3e4cf41dccce2619628d4c72698440386ce1d569a885b538",
   "parity": false
  },
  "countdown_timer": {
@@ -11405,8 +11405,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "7bae1f2eb0ad5930adf245e598c262394dd3bd7445a901927ad81354417edb1b",
-  "gas_sha": "6332ae31b47b033c87381e07f7c53781828e9e36966a0045d5ef737ef16a444b",
+  "py_sha": "456eae8428518f330d31ed3ba40880384a2ffbbfab05b7e68d1439c7d7149b30",
+  "gas_sha": "4bb4c2412f75fcf2d67353a97dd07f6492772f65019b1b9a6c3e391ea77b9eb5",
   "parity": false
  },
  "kinetic_headline": {
@@ -11958,8 +11958,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "0164da203d902e44ea91c6f1191053b593eed54470ff2f9e632fc32772957114",
-  "gas_sha": "5df36ebdf23559628f4ed2e5d59ab28fbb9e473176b15c1dc3f658f1d06fd2d5",
+  "py_sha": "89e5304adc8311816be03d3828344b4a21c9a788e6bd492b8253f43628a9eb81",
+  "gas_sha": "6c71bf66a063ce721f17ad3a81b4d97553d201020769b4a1fe68d309a9372bbe",
   "parity": false
  },
  "countdown_ring": {

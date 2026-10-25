@@ -495,7 +495,7 @@ def test_choicebox_group_radio(renderer):
     assert "Free" in html and "Pro" in html
     assert "Up to 3 projects" in html
     assert 'type="radio"' in html
-    assert ":has(input:checked)" in html
+    assert "input:checked" in html
 
 
 def test_choicebox_group_multiple(renderer):
@@ -531,7 +531,7 @@ def test_choicebox_group_accent(renderer):
     html = r(renderer, {"component": "choicebox_group", "name": "color",
                         "accent": "#8b5cf6",
                         "items": [{"value": "a", "title": "Option A"}]})
-    assert "rgba(139,92,246" in html
+    assert "border-color:#8b5cf6" in html
 
 
 def test_choicebox_group_works_on_meet_stage(atoms):

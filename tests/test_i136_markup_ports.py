@@ -134,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch|cbg-|choice_|pr-|tbmc_|tbmb_|tbm_|tbf_|tbct_|tok_|ti_|mqs_|mq_|nf_)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -777,3 +777,98 @@ def test_unnamed_variant_selectors_get_their_own_radio_group(core_js):
     assert names[0] != names[1]
     g = _gas_isolated(core_js, [a, b])
     assert re.search(r'name="([^"]+)"', g[0]).group(1) != re.search(r'name="([^"]+)"', g[1]).group(1)
+
+
+# ---- batch b7/1 ----
+EQUAL.extend([
+    {"type": "choicebox_group", "label": "Plan", "name": "plan", "accent": "#0f766e", "submit_label": "Continue", "items": [{"value": "free", "title": "Free", "description": "For hobbies", "icon": "\U0001F331"}, {"value": "pro", "title": "Pro", "disabled": True}, "Plain"]},
+    {"type": "sprint_board", "sprint_name": "Sprint 42", "columns": [{"name": "To Do", "items": [{"key": "A-1", "summary": "Fix login", "type": "bug", "priority": "high"}, {"key": "A-2", "summary": "No priority"}]}, {"title": "Done", "cards": [{"id": "A-3", "title": "Old shape", "assignee": "zoe", "labels": ["ui", 5]}]}, "junk"]},
+    {"type": "token_budget_meter", "used": 150000, "total": 200000, "model": "claude-sonnet-4-6", "label": "Context", "warn_at": 60, "critical_at": 95},
+    {"type": "typing_indicator", "name": "Claude", "variant": "light"},
+    {"type": "marquee", "title": "Trusted by", "speed": 20, "gap": 32, "direction": "right", "separator": "\u2022", "pause_on_hover": False, "bg": "#0f172a", "rounded": False, "items": [{"text": "Acme", "url": "https://example.com/a", "icon": "\u2605"}, {"label": "Logo", "image_url": "https://example.com/l.png"}, "Plain"]},
+    {"type": "marquee_strip", "label": "Stack", "speed": "fast", "direction": "right", "gap": "24px", "separator": "/", "items": ["Go", {"text": "Rust", "image_url": "https://example.com/r.png", "icon": "R"}, {"label": "Old label"}]},
+    {"type": "number_flip", "value": "1,204.5", "prefix": "$", "suffix": "k", "label": "Revenue", "size": "4rem", "color": "#22c55e", "duration": 900, "align": "left"},
+    {"type": "progress_reveal", "value": 85, "label": "Migration", "color": "#0f766e", "suffix": " pts", "height": 14},
+])
+MUST.update({
+    "choicebox_group": ["Plan", "Free", "For hobbies", "Pro", "Plain", "Continue", 'name="plan"', 'type="radio"', "#0f766e", " disabled", 'role="group"'],
+    "sprint_board": ["Sprint 42", "To Do", "A-1", "Fix login", "No priority", "Done", "A-3", "Old shape", ">Z<", "ui", "#ff7a00", "#d1d5db"],
+    "token_budget_meter": ["Context", "claude-sonnet-4-6", "150.0k / 200.0k (75%)", "#f59e0b"],
+    "typing_indicator": ["Claude", "is typing", "#f1f5f9", 'role="status"', "prefers-reduced-motion"],
+    "marquee": ["Trusted by", "Acme", 'href="https://example.com/a"', 'src="https://example.com/l.png"', "Logo", "Plain", "\u2022", "reverse", "20s", "padding:0 32px", "#0f172a", "border-radius:0"],
+    "marquee_strip": ["Stack", "Go", "Rust", 'src="https://example.com/r.png"', "Old label", "12s", "reverse", "gap:24px", ">/<"],
+    "number_flip": ["$", "1,204.5", "k", "Revenue", "font-size:4rem", "#22c55e", "text-align:left", "prefers-reduced-motion", 'aria-hidden="true"'],
+    "progress_reveal": ["Migration", "85 pts", "#0f766e", "height:14px", 'data-target="85"', "IntersectionObserver"],
+})
+OLD.extend([
+    {"type": "choicebox_group", "question": "Pick", "options": [{"value": "a", "label": "Option A", "desc": "Because"}]},
+    {"type": "sprint_board", "columns": [{"title": "Old", "items": [{"id": "X-9", "title": "Old ticket", "priority": "low"}]}]},
+    {"type": "token_budget_meter", "used": 10, "total": 100},
+    {"type": "typing_indicator", "label": "Claude is thinking", "color": "#6366f1", "bg": "#ede9fe"},
+    {"type": "marquee", "items": [{"label": "Old marquee"}], "accent": "#123456"},
+    {"type": "marquee_strip", "tags": ["old-a", "old-b"], "words": ["ignored"], "speed": 30, "bg": "#101010", "color": "#eeeeee"},
+    {"type": "number_flip", "value": 42, "accent": "#654321"},
+    {"type": "progress_reveal", "percent": 40, "title": "Old title"},
+])
+OLD_WORDS.update({
+    "choicebox_group": ["Pick", "Option A", "Because", 'value="a"'], "sprint_board": ["Old", "X-9", "Old ticket", "#0065ff"],
+    "token_budget_meter": ["Context window", "10 / 100 (10%)"], "typing_indicator": ["Claude is thinking", "#6366f1", "#ede9fe"],
+    "marquee": ["Old marquee"], "marquee_strip": ["old-a", "old-b", "30s", "#101010", "#eeeeee"], "number_flip": ["#654321"], "progress_reveal": ["Old title", "40%", 'data-target="40"'],
+})
+
+
+def test_b7_1_inherited_names_and_odd_values_do_not_leak_prototype_members(core_js):
+    blocks = [{"type": "sprint_board", "columns": [{"name": "c", "items": [{"key": "k", "summary": "s", "type": "constructor", "priority": "__proto__"}]}]},
+              {"type": "sprint_board", "columns": [{"name": "c", "items": [{"key": "k", "assignee": "\U0001F600smile"}]}]},
+              {"type": "typing_indicator", "name": "\U0001F600 bot"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        assert _norm_uid(py) == _norm_uid(g)
+        for html in (py, g):
+            assert "function" not in html and "object Object" not in html
+    for html in (_py_fresh(blocks[1]), gas[1], _py_fresh(blocks[2]), gas[2]):
+        assert "\U0001F600" in html
+
+
+def test_b7_1_number_formats_agree_on_rounding_ties(core_js):
+    blocks = [{"type": "token_budget_meter", "used": 1250, "total": 2500},      # 1.25k rounds up in both twins
+              {"type": "token_budget_meter", "used": 1, "total": 8},            # 12.5 %
+              {"type": "token_budget_meter", "used": 3, "total": 8, "animate": True, "duration": 0.125},
+              {"type": "token_budget_meter", "used": 5, "total": 0.0001},
+              {"type": "token_budget_meter", "used": 1e30, "total": 1e30},
+              {"type": "marquee", "speed": 0.125, "items": ["a"]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        assert _norm_uid(py) == _norm_uid(g), b
+        assert "Infinity" not in py and "NaN" not in py and "e+" not in py
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "1.3k / 2.5k" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "width:12.5%" in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "@property" in html and "prefers-reduced-motion" in html and "0.125s" in html and "3 of 8" in html
+
+
+def test_b7_1_number_flip_keeps_its_value_without_motion_and_for_screen_readers(core_js):
+    b = {"type": "number_flip", "value": "9\u00b2a7", "prefix": "~"}
+    for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
+        assert "translateY(-900%)" in html and "translateY(-700%)" in html     # the end position is the resting style, not only the keyframe
+        assert ">~9\u00b2a7<" in html and "\u00b2" in html                       # full text for screen readers; a superscript is no digit column
+        assert html.count("-roll") >= 3
+    long = {"type": "number_flip", "value": "1" * 500}
+    for html in (_py_fresh(long), _gas_isolated(core_js, [long])[0]):
+        assert html.count("@keyframes") <= 40
+
+
+def test_b7_1_progress_reveal_and_choicebox_script_free_of_payload(core_js):
+    b = {"type": "progress_reveal", "value": 50, "suffix": "</script><b>x", "label": "L"}
+    c = {"type": "choicebox_group", "items": [{"value": "v", "title": "t", "disabled": []}], "multiple": [], "accent": "red;}</style><script>alert(1)</script>"}
+    for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
+        scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
+        assert len(scripts) == 1 and "<b>" not in scripts[0]
+        assert 'data-suffix="&lt;/script&gt;&lt;b&gt;x"' in html
+    for html in (_py_fresh(c), _gas_isolated(core_js, [c])[0]):
+        assert "<script" not in html and 'type="radio"' in html and " disabled" not in html
+        assert "#1a73e8" in html
