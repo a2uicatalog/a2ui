@@ -21649,13 +21649,13 @@ blocks:
     frame: >-
       object (optional) {lon_min, lon_max, lat_min, lat_max}, four finite numbers in degrees: frame the map on a zone (for example a trip) instead of the whole
       region_set. Longitude is clamped to -180..180 and latitude to -85..85, lon_min must be below lon_max and lat_min below lat_max after that, and a span under
-      1 degree is widened to 1. The frame is fitted into a fixed 960 x 540 canvas and centred, so two states of one film with different frames have the same box
+      1 degree is widened to 1. A frame that contains no outline of the set is named in a note. A framed map has a sea tint (a mix of theme tokens; left out when the frame reaches past the region set's window, where the set has no land) and rounded corners. The frame is fitted into a fixed 960 x 540 canvas and centred, so two states of one film with different frames have the same box
       and a motion_transition between them pans and zooms: regions keep their data-key. Outlines outside the frame are drawn and cropped by the viewBox, not
       dropped. Not used with albers-usa (a fixed composite). A frame that cannot be used is named in a note and the whole map is drawn. Absent: unchanged.
     categories: >-
       array (optional, 1 to 6 names, text up to 40) of category names: switches the map to category mode. Each value is then a category name instead of a number
-      ({id, value: "visited"}); the scale, steps and unit are not used. Each category gets a colour AND a pattern (solid, dots, horizontal, vertical or cross-hatch,
-      backslash stripes, in list order), so colour is never the only cue; regions with no category are hatched on the surface colour (forward slash) and listed
+      ({id, value: "visited"}); the scale, steps and unit are not used. Each category gets a colour AND a pattern (dots, horizontal stripes, vertical stripes, cross-hatch,
+      backslash stripes, large dots, in list order), so colour is never the only cue; regions with no category are hatched on the surface colour (forward slash) and listed
       in a details element. The legend lists the categories (data-key class-1 to class-n) and the hidden table lists region, code and category. An entry that
       names a category not in the list is skipped and counted in a note.
     category_colors: >-

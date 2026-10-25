@@ -11,6 +11,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -65,6 +66,8 @@ GOOD = [TRIP1, TRIP2, CAT, FRAMED_CH,
         {**tg.EU, "frame": {"lon_min": 5, "lon_max": 4, "lat_min": 1, "lat_max": 2}, "regions": [{"id": "FRA", "category": "x"}], "categories": "x"},
         {**tg.EU, "frame": [1, 2, 3, 4], "regions": [{"id": "FRA", "category": ATTACK}], "category_colors": {ATTACK: "accent"}},
         {**tg.EU, "regions": [{"id": "FRA", "category": "x"}], "categories": [1, 2]},
+        {**tg.EU, "frame": {"lon_min": -15, "lon_max": 15, "lat_min": 30, "lat_max": 45}},
+        {**TRIP1, "frame": {"lon_min": 10, "lon_max": 11, "lat_min": -50, "lat_max": -49}},
         {"type": "geo_map", "frame": {"lon_min": -180, "lon_max": 180, "lat_min": -85, "lat_max": 85}, "lines": [{"path": [{"lat": 0, "lon": 170}, {"lat": 0, "lon": -170}]}]}]
 BAD = [{**CAT, "categories": []}, {**CAT, "categories": "visited"}, {**CAT, "categories": [""]}, {**CAT, "categories": [1]}, {**CAT, "values": [{"id": "PRT", "value": "zzz"}]},
        {**CAT, "values": [{"id": "PRT", "value": 5}]}, {**CAT, "values": []}, {**CAT, "values": "x"}]
@@ -168,8 +171,8 @@ def test_categorical_choropleth_legend_table_and_patterns():
     t = re.search(r"<table.*?</table>", h, re.S).group(0)
     assert "<th scope=\"col\">Category</th>" in t and re.findall(r"<td>([^<]*)</td>", t) == ["ESP", "visited", "PRT", "visited", "FRA", "planned", "ITA", "not yet"]
     pats = re.findall(r'<pattern id="(ch\w+c\d)"', h)
-    assert len(pats) == 2   # slot 0 is a plain colour, slots 1 and 2 carry a pattern: colour is never the only cue
-    assert len(set(re.findall(r"url\(#(ch\w+c\d)\)", h))) == 2
+    assert len(pats) == 3   # every category slot carries a pattern: colour is never the only cue
+    assert len(set(re.findall(r"url\(#(ch\w+c\d)\)", h))) == 3
     assert "no category (hatched)" in h and "<details" in h
     assert 'aria-label="Visited: 4 of ' in h and "in 3 categories" in h
 
@@ -205,7 +208,8 @@ def test_numeric_choropleth_is_untouched_by_the_category_mode_when_categories_is
 # ── geo_map region shading ──
 def test_shaded_regions_are_keyed_listed_and_tinted():
     h = _pyk(TRIP1)
-    assert 'data-key="PRT" style="fill:color-mix(in srgb,var(--a2ui-accent,#4f46e5) 38%,var(--a2ui-surface,#ffffff))' in h   # slot 0 solid tint
+    assert re.search(r'data-key="PRT" style="fill:url\(#gc\w+c0\)', h)   # slot 0 has a pattern too
+    assert "color-mix(in srgb,var(--a2ui-accent,#4f46e5) 38%,var(--a2ui-surface,#ffffff))" in h   # on a tint, so markers and routes stay readable
     assert re.search(r'data-key="FRA" style="fill:url\(#gc\w+c1\)', h)
     assert [re.sub("<[^>]+>", "", x) for x in re.findall(r"<li [^>]*>.*?</li>", h)][:3] == ["visited", "planned", "not yet"]
     t = h[h.index("shaded regions</caption>"):]
@@ -293,3 +297,74 @@ def test_a_route_never_extends_beyond_its_end_markers_mid_transition(pair, route
     x1, y1 = max(m0[0] + m0[2], m1[0] + m1[2]), max(m0[1] + m0[3], m1[1] + m1[3])
     tol = 4 + 0.012 * width
     assert r[0] >= x0 - tol and r[1] >= y0 - tol and r[0] + r[2] <= x1 + tol and r[1] + r[3] <= y1 + tol, (r[:4], (x0, y0, x1, y1))
+
+
+def _gas_json(core_js, blocks):
+    """Like _gas, but the payload goes through JSON.parse (as a real request does): an object literal with a "__proto__" key would set a prototype instead of an own key."""
+    return _node(core_js, "_a11yFix = function(h) { return h; }; var B = JSON.parse(" + json.dumps(json.dumps(blocks)) + "); console.log(JSON.stringify(B.map(function(b){ return renderAtoms([b], {}); })));")
+
+
+EMOJI = "\U0001F600" * 41
+HOSTILE = [{**CAT, "categories": [EMOJI, "__proto__", " \u00a0pad\u2003 ", "\x1ctrim\x1c", "a\ufeffb"], "category_colors": {"__proto__": "accent2", EMOJI[:40 * 1]: "muted", "constructor": "text"},
+            "values": [{"id": "PRT", "value": EMOJI}, {"id": "ESP", "value": "__proto__"}, {"id": "FRA", "value": " \u00a0pad\u2003 "}, {"id": "ITA", "value": "\x1ctrim\x1c"}, {"id": "DEU", "value": "a\ufeffb"}]},
+           {**TRIP1, "categories": ["__proto__", "constructor"], "category_colors": {"__proto__": "accent", "constructor": "bogus"},
+            "regions": [{"id": "PRT", "category": "__proto__"}, {"id": "ESP", "category": "constructor"}, {"id": "__proto__", "category": "constructor"}, {"id": " fra\x0b", "category": "\ufefftoString"}]},
+           {**TRIP1, "regions": [{"id": "PRT", "category": EMOJI}, {"id": "ESP", "category": "\u00e9" * 3}], "frame": {"lon_min": 10, "lon_max": 11, "lat_min": -50, "lat_max": -49}}]
+
+
+def test_hostile_category_text_python_and_gas_agree(core_js):
+    out = _gas_json(core_js, HOSTILE)
+    for b, g in zip(HOSTILE, out):
+        assert _py(b) == g, json.dumps(b)[:120]
+    h = _py(HOSTILE[0])
+    assert EMOJI[:40] in h and EMOJI not in h   # cut by code points, never through a surrogate pair
+    assert "<td>pad</td>" not in h and ">\u00a0pad" in h   # only the six ASCII spaces are stripped, in both twins
+
+
+# ── ids, sea, empty frames ──
+def test_two_maps_with_the_same_categories_get_different_pattern_ids():
+    ids = []
+    for b in (TRIP0, TRIP1, TRIP2):
+        ids.append(set(re.findall(r'<pattern id="(\w+)c0"', _py(b))))
+    assert all(len(i) == 1 for i in ids) and len({next(iter(i)) for i in ids}) == 3
+    a = {**CAT, "frame": IBERIA}
+    assert set(re.findall(r'<pattern id="(\w+)c0"', _py(a))) != set(re.findall(r'<pattern id="(\w+)c0"', _py(CAT)))
+    n = {**FRAMED_CH}
+    assert re.search(r'<pattern id="(\w+)"', _py(n)).group(1) != re.search(r'<pattern id="(\w+)"', _py({**n, "frame": {**IBERIA, "lon_max": 5}})).group(1)
+
+
+@browser
+def test_a_hidden_first_map_does_not_blank_the_patterns_of_the_visible_one():
+    """Same categories in a hidden first map (a tab, a carousel slide) and a visible second one: the visible map's patterned regions must still paint."""
+    import subprocess, tempfile
+    from test_motion_build import CHROMIUM
+    from PIL import Image
+    first, second = _pyk(TRIP0), _pyk(TRIP1)
+    if os.environ.get("I143_FORCE_COLLISION"):   # proves the test would catch the old shared ids
+        first = first.replace(re.search(r'<pattern id="(\w+)c0"', first).group(1), re.search(r'<pattern id="(\w+)c0"', second).group(1))
+    page = "<!doctype html><meta charset=utf-8><body style='margin:0;background:#fff'><div style='display:none'>" + first + "</div>" + second
+    with tempfile.TemporaryDirectory() as td:
+        f, shot = Path(td) / "p.html", Path(td) / "s.png"
+        f.write_text(page)
+        subprocess.run([CHROMIUM, "--headless=new", "--password-store=basic", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage", "--window-size=1000,800", "--use-angle=swiftshader",
+                        "--user-data-dir=" + td + "/prof", f"--screenshot={shot}", f"file://{f}"], capture_output=True, timeout=90)
+        im = Image.open(shot).convert("RGB")
+    def mean(x0, y0):
+        px = [im.getpixel((x, y)) for x in range(x0, x0 + 24) for y in range(y0, y0 + 24)]
+        return [sum(c[i] for c in px) / len(px) for i in range(3)]
+    sea, spain = mean(40, 300), mean(560, 180)   # open Atlantic, and the middle of Spain (visited, a pattern over a tint)
+    assert max(abs(a - b) for a, b in zip(sea, spain)) > 12, (sea, spain)   # an unpainted region shows the sea tint through
+
+
+def test_no_sea_tint_when_the_frame_reaches_past_the_set_window():
+    inside = _py({"type": "geo_map", "region_set": "europe-countries", "projection": "mercator", "frame": {"lon_min": -15, "lon_max": 1, "lat_min": 35, "lat_max": 43.5}, "points": [_pt("Lisbon", LIS)]})
+    past = _py({"type": "geo_map", "region_set": "europe-countries", "projection": "mercator", "frame": {"lon_min": -15, "lon_max": 15, "lat_min": 30, "lat_max": 45}, "points": [_pt("Lisbon", LIS)]})
+    assert 'data-sea="1"' in inside and 'data-sea="1"' not in past and "border-radius:10px" in past
+    assert "stroke-width:0.9" in inside
+
+
+def test_a_frame_with_no_region_in_it_is_noted_in_both_atoms():
+    f = {"lon_min": 10, "lon_max": 11, "lat_min": -50, "lat_max": -49}
+    for b in ({**TRIP1, "frame": f, "region_set": "europe-countries"}, {**FRAMED_CH, "frame": f}, {**CAT, "frame": f}):
+        assert any("frame contains no region" in n for n in _notes(_pyk(b)))
+    assert not any("frame contains no region" in n for n in _notes(_pyk(TRIP1)))

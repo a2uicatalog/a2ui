@@ -33773,7 +33773,7 @@ _RENDERERS['motion_build'] = _render_motion_build
 # move without the wrapper changing size). The scale origin is the border box's corner for HTML (fill-box would be the content box: padding shifted every tile), the fill box for SVG. A's
 # first block loses its top margin (!important: atoms set it inline; B's collapses out of the wrapper, A's would not, and the titles
 # would not line up).
-# A B-only SVG shape inside a [data-mtr-follow] root (a framed geo_map) travels with the map: it takes the move of the largest matched curved shape of that root, so a new route never
+# A B-only SVG shape inside a [data-mtr-follow] root (a framed geo_map) travels with the map: it takes the move of the largest matched outline (a data-base path, else the largest curved shape) of its own root, so a new route never
 # hangs in its final place while its markers are still on the way. Text inside an element that is resized on its way (scale off 1 by more than 4%: class mtr-s) hides while it moves and fades in once
 # at rest (p >= 0.85) via relative colour -webkit-text-fill-color; an element that only travels keeps its text visible. Twin: atoms_motion_candidates.gs.
 _MTR_MATCH = {'path': 'path', 'exact': 'exact'}
@@ -33807,10 +33807,11 @@ _MTR_JS = ('(function(){var w=document.currentScript&&document.currentScript.par
            "w.classList.add('mtr-measure');var a=keyed(A),b=keyed(B),plan=[];"
            'for(var k in b)for(var i=0;i<b[k].length;i++){var e=b[k][i],l=src(a,k);plan.push([e,l&&box(l),box([e]),rectish(e)&&!!l&&l.every(rectish)])}'
            "w.classList.remove('mtr-measure');"
-           "var rf=null;for(var t=0;t<plan.length;t++){var q=plan[t];if(q[1]&&q[2]&&!q[3]&&q[2].w>0.5&&q[2].h>0.5&&q[0].closest('[data-mtr-follow]')&&(!rf||q[2].w*q[2].h>rf.a)){"
-           "var f=Math.min(q[1].w/q[2].w,q[1].h/q[2].h);rf={a:q[2].w*q[2].h,s:f,tx:q[1].x+q[1].w/2-f*(q[2].x+q[2].w/2),ty:q[1].y+q[1].h/2-f*(q[2].y+q[2].h/2)}}}"
+           "var rn=(w._mtrN=(w._mtrN||0)+1);for(var t=0;t<plan.length;t++){var q=plan[t],r=q[1]&&q[2]&&!q[3]&&q[2].w>0.5&&q[2].h>0.5&&q[0].closest('[data-mtr-follow]');"
+           "if(r){if(r._mtrN!==rn){r._mtrN=rn;r._mtrF=null}var sc=(q[0].hasAttribute('data-base')?1e9:0)+q[2].w*q[2].h;if(!r._mtrF||sc>r._mtrF.a){"
+           "var f=Math.min(q[1].w/q[2].w,q[1].h/q[2].h);r._mtrF={a:sc,s:f,tx:q[1].x+q[1].w/2-f*(q[2].x+q[2].w/2),ty:q[1].y+q[1].h/2-f*(q[2].y+q[2].h/2)}}}}"
            "for(var t=0;t<plan.length;t++){var e=plan[t][0],s=plan[t][1],o=plan[t][2],st=e.style;e.classList.remove('mtr-m','mtr-n','mtr-s');"
-           "if(!s||!o){if(!s&&o&&rf&&e.ownerSVGElement&&e.closest('[data-mtr-follow]')){var gm=e.getScreenCTM&&e.getScreenCTM(),gx=gm&&gm.a||1,gy=gm&&gm.d||1;"
+           "if(!s||!o){var rt=!s&&o&&e.ownerSVGElement&&e.closest('[data-mtr-follow]'),rf=rt&&rt._mtrN===rn?rt._mtrF:null;if(rf){var gm=e.getScreenCTM&&e.getScreenCTM(),gx=gm&&gm.a||1,gy=gm&&gm.d||1;"
            "st.setProperty('--mtr-dx',(((rf.s-1)*o.x+rf.tx)/gx).toFixed(2)+'px');st.setProperty('--mtr-dy',(((rf.s-1)*o.y+rf.ty)/gy).toFixed(2)+'px');"
            "st.setProperty('--mtr-sx',rf.s.toFixed(4));st.setProperty('--mtr-sy',rf.s.toFixed(4));e.classList.add('mtr-m')}e.classList.add('mtr-n');continue}"
            'var fx=1,fy=1,m=e.ownerSVGElement&&e.getScreenCTM&&e.getScreenCTM();if(m){fx=m.a||1;fy=m.d||1}'
@@ -44621,17 +44622,37 @@ def _ch_frame(rset, proj, regs, fr=None):
 _CH_SEAS = 'border-radius:10px;'
 
 
-def _ch_sea(w, h):
-    """A framed map reads as a window: a sea tint (a mix of two theme tokens) behind the land, and rounded corners on the svg."""
-    return '<rect data-sea="1" width="' + str(w) + '" height="' + str(h) + '" style="fill:' + _cr_mix(_CR_ACC2, 9, _CR_SURF) + ';"/>'
+def _ch_sea(w, h, rset, fr):
+    """A framed map reads as a window: a sea tint (a mix of two theme tokens) behind the land, and rounded corners on the svg. No tint when the frame reaches past the region set's
+    window (Europe's North Africa and Asia Minor are not in the set, so a tint would paint them as sea)."""
+    w0, w1, a0, a1 = _CH_WIN[rset]
+    if fr[0] < w0 or fr[1] > w1 or fr[2] < a0 or fr[3] > a1:
+        return ''
+    return '<rect data-sea="1" width="' + str(w) + '" height="' + str(h) + '" style="fill:' + _cr_mix(_CR_ACC2, 16, _CR_SURF) + ';"/>'
+
+
+def _ch_frame_note(regs, fr, notes):
+    """A note when no outline of the set has a vertex inside the frame."""
+    for _id, _nm, polys in regs:
+        for poly in polys:
+            for ring in poly:
+                for i in range(0, len(ring), 2):
+                    if fr[0] <= ring[i] <= fr[1] and fr[2] <= ring[i + 1] <= fr[3]:
+                        return
+    notes.append('frame contains no region of this set, so no outline is drawn inside it.')
 
 
 _CH_CATMAX = 6
 _CH_CATTOK = {'accent': _CR_ACC, 'accent2': _CR_ACC2, 'text': _CR_TEXT, 'muted': _CR_MUTED}
-# Pattern per category slot (0 = solid colour, no pattern), so colour is never the only cue: dots, horizontal, vertical, cross-hatch and backslash stripes. The
+# Pattern per category slot, so colour is never the only cue: dots, horizontal, vertical, cross-hatch, backslash stripes and large dots. The
 # "no data" hatch of choropleth_map is the forward slash on the surface colour, so it cannot be mistaken for a category.
-_CH_PATS = ('', '<circle cx="4" cy="4" r="1.5"/>', '<line x1="0" y1="4" x2="8" y2="4"/>', '<line x1="4" y1="0" x2="4" y2="8"/>',
-            '<line x1="0" y1="4" x2="8" y2="4"/><line x1="4" y1="0" x2="4" y2="8"/>', '<line x1="4" y1="0" x2="4" y2="8" transform="rotate(-45 4 4)"/>')
+_CH_PATS = ('<circle cx="4" cy="4" r="1.5"/>', '<line x1="0" y1="4" x2="8" y2="4"/>', '<line x1="4" y1="0" x2="4" y2="8"/>',
+            '<line x1="0" y1="4" x2="8" y2="4"/><line x1="4" y1="0" x2="4" y2="8"/>', '<line x1="4" y1="0" x2="4" y2="8" transform="rotate(-45 4 4)"/>', '<circle cx="4" cy="4" r="2.8"/>')
+
+
+def _ch_ws(v):
+    """Strip the same six ASCII whitespace characters in both twins (str.strip and String.trim differ on exotic spaces)."""
+    return v.strip(' \t\n\r\f\v')
 
 
 def _ch_cat_default(j):
@@ -44642,10 +44663,10 @@ def _ch_cat_read(cats, cc, entries, field, index, notes, derive):
     """(cats, colours, got {region id: category index}, error, unknown ids, repeated ids). cats are the category names (text, max 40, up to 6); b['categories'] fixes their order, else (derive)
     they are the first-seen names of the entries. colours: b['category_colors'] maps a name to a theme token name (accent, accent2, text or muted), else the default palette
     by slot. An entry (id, field) with an id not in the map, a repeated id, or a category that is not in categories is skipped and counted in a note."""
-    if cats is not None and (not isinstance(cats, list) or any(not isinstance(c, str) or c.strip() == '' for c in cats) or len(cats) < 1):
+    if cats is not None and (not isinstance(cats, list) or any(not isinstance(c, str) or _ch_ws(c) == '' for c in cats) or len(cats) < 1):
         return None, None, None, 'categories must be a list of 1 to ' + str(_CH_CATMAX) + ' category names.', None, None
     if cats is not None:
-        cats = [c.strip()[:40] for c in cats]
+        cats = [_ch_ws(c)[:40] for c in cats]
         cats = [c for k, c in enumerate(cats) if c not in cats[:k]]
         if len(cats) > _CH_CATMAX:
             notes.append('Only the first ' + str(_CH_CATMAX) + ' categories were used.')
@@ -44654,8 +44675,8 @@ def _ch_cat_read(cats, cc, entries, field, index, notes, derive):
         cats = []
         for e in entries:
             c = e.get(field) if isinstance(e, dict) else None
-            if isinstance(c, str) and c.strip() != '' and c.strip()[:40] not in cats and len(cats) < _CH_CATMAX:
-                cats.append(c.strip()[:40])
+            if isinstance(c, str) and _ch_ws(c) != '' and _ch_ws(c)[:40] not in cats and len(cats) < _CH_CATMAX:
+                cats.append(_ch_ws(c)[:40])
     else:
         return None, None, None, 'categories must be a list of 1 to ' + str(_CH_CATMAX) + ' category names.', None, None
     cc = cc if isinstance(cc, dict) else {}
@@ -44671,11 +44692,11 @@ def _ch_cat_read(cats, cc, entries, field, index, notes, derive):
     for e in entries:
         c = e.get(field) if isinstance(e, dict) else None
         rid = e.get('id') if isinstance(e, dict) else None
-        if not isinstance(c, str) or c.strip() == '' or not isinstance(rid, str) or rid.strip() == '':
+        if not isinstance(c, str) or _ch_ws(c) == '' or not isinstance(rid, str) or _ch_ws(rid) == '':
             skipped += 1
             continue
-        rid = rid.strip().upper()
-        c = c.strip()[:40]
+        rid = _ch_ws(rid).upper()
+        c = _ch_ws(c)[:40]
         if rid not in index:
             unknown.append(rid)
         elif rid in got:
@@ -44692,17 +44713,16 @@ def _ch_cat_read(cats, cc, entries, field, index, notes, derive):
 
 
 def _ch_cat_defs(pid, cols):
-    """The <pattern> elements of the used category slots (slot 0 is a plain colour)."""
+    """The <pattern> elements of the used category slots (every slot has a pattern)."""
     d = ''
     for j, c in enumerate(cols):
-        if _CH_PATS[j]:
-            d += ('<pattern id="' + pid + 'c' + str(j) + '" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:' + c + ';"/><g style="fill:' + _CR_TEXT
-                  + ';stroke:' + _CR_TEXT + ';stroke-width:1.4;stroke-opacity:0.65;fill-opacity:0.65;">' + _CH_PATS[j] + '</g></pattern>')
+        d += ('<pattern id="' + pid + 'c' + str(j) + '" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:' + c + ';"/><g style="fill:' + _CR_TEXT
+              + ';stroke:' + _CR_TEXT + ';stroke-width:1.4;stroke-opacity:0.65;fill-opacity:0.65;">' + _CH_PATS[j] + '</g></pattern>')
     return d
 
 
 def _ch_cat_fill(pid, cols, j):
-    return cols[j] if not _CH_PATS[j] else 'url(#' + pid + 'c' + str(j) + ')'
+    return 'url(#' + pid + 'c' + str(j) + ')'
 
 
 def _ch_cat_swatch(pid, cols, j):
@@ -44761,12 +44781,14 @@ def _render_choropleth_categorical(b: dict, rset: str, proj: str) -> str:
     n_tiles = len(order)
     n_all = n_tiles + len(cats)
     frm = _ch_frame_read(b.get('frame'), proj, notes)
+    if frm is not None:
+        _ch_frame_note(regs, frm, notes)
     pr, w, h = _ch_frame(rset, proj, regs, frm)
-    uid = 'ch' + _cr_id('choropleth_map', rset, proj, 'categories', *cats, *cols, *[r + '=' + str(got[r]) for r in valued])
+    uid = 'ch' + _cr_id('choropleth_map', rset, proj, 'categories', *cats, *cols, *[r + '=' + str(got[r]) for r in valued], *([_cr_trim(x) for x in frm] if frm else []))
     paths = ''
     for i, (rid, nm, polys) in enumerate(order):
         if rid in got:
-            fill, tip = _ch_cat_fill(uid, cols, got[rid]), _cr_s(nm, 80) + ': ' + _cr_s(cats[got[rid]], 40)
+            fill, tip = _ch_cat_fill(uid, cols, got[rid]), _cr_s(nm, 80) + ': ' + _cv_esc(cats[got[rid]])
         else:
             fill, tip = 'url(#' + uid + ')', _cr_s(nm, 80) + ': no category'
         paths += ('<path' + _cr_cb('tile', i, n_all, 'fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;', _cr_s(rid, 12)) + ' d="'
@@ -44779,12 +44801,12 @@ def _render_choropleth_categorical(b: dict, rset: str, proj: str) -> str:
     title = _cr_s(b.get('title'), 80)
     label = (title or 'Choropleth map') + ': ' + str(len(got)) + ' of ' + str(len(regs)) + ' regions have a category, in ' + str(len(cats)) + (' category' if len(cats) == 1 else ' categories')
     svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;' + (_CH_SEAS if frm is not None else '') + '">'
-           + (_ch_sea(w, h) if frm is not None else '') + defs + paths + '</svg>')
+           + (_ch_sea(w, h, rset, frm) if frm is not None else '') + defs + paths + '</svg>')
     lt = _cr_s(b.get('legend_title'), 60)
     lis = ''
     for j, c in enumerate(cats):
         lis += ('<li style="display:inline-flex;align-items:center;gap:6px;">' + _ch_cat_swatch(uid, cols, j) + '<span' + _cr_cb('label', n_tiles + j, n_all, '', 'class-' + str(j + 1)) + '>'
-                + _cr_s(c, 40) + '</span></li>')
+                + _cv_esc(c) + '</span></li>')
     if nodata:
         lis += ('<li style="display:inline-flex;align-items:center;gap:6px;"><span aria-hidden="true" style="display:inline-block;flex:none;width:14px;height:14px;border-radius:3px;border:' + _CR_BORDER
                 + ';background:repeating-linear-gradient(45deg,' + _CR_MUTED + ' 0 1.5px,' + _CR_SURF + ' 1.5px 5px);"></span><span>No category</span></li>')
@@ -44795,7 +44817,7 @@ def _render_choropleth_categorical(b: dict, rset: str, proj: str) -> str:
     if nodata:
         nd = ('<details style="margin-top:6px;"><summary>' + str(len(nodata)) + (' region has' if len(nodata) == 1 else ' regions have') + ' no category (hatched)</summary><p style="margin:4px 0 0;">'
               + ', '.join(_cr_s(r[1], 80) for r in nodata) + '</p></details>')
-    rows = ''.join('<tr><th scope="row">' + _cr_s(regs[index[r]][1], 80) + '</th><td>' + r + '</td><td>' + _cr_s(cats[got[r]], 40) + '</td></tr>' for r in valued)
+    rows = ''.join('<tr><th scope="row">' + _cr_s(regs[index[r]][1], 80) + '</th><td>' + r + '</td><td>' + _cv_esc(cats[got[r]]) + '</td></tr>' for r in valued)
     table = ('<table style="' + _CR_SR + '"><caption>' + (title or 'Choropleth map') + ', regions with a category, in category order</caption>'
              '<thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>' + rows + '</tbody></table>')
     return ('<div role="group" aria-label="' + (title or 'Choropleth map') + '" data-cb-root style="--n:' + str(n_all) + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
@@ -44880,8 +44902,10 @@ def _render_choropleth_map(b: dict) -> str:
     n_tiles = len(order)
     n_all = n_tiles + steps
     frm = _ch_frame_read(b.get('frame'), proj, notes)
+    if frm is not None:
+        _ch_frame_note(regs, frm, notes)
     pr, w, h = _ch_frame(rset, proj, regs, frm)
-    uid = 'ch' + _cr_id('choropleth_map', rset, proj, kind, str(steps), *[r + '=' + _cr_trim(got[r]) for r in valued])
+    uid = 'ch' + _cr_id('choropleth_map', rset, proj, kind, str(steps), *[r + '=' + _cr_trim(got[r]) for r in valued], *([_cr_trim(x) for x in frm] if frm else []))
     paths = ''
     for i, (rid, nm, polys) in enumerate(order):
         if rid in got:
@@ -44897,7 +44921,7 @@ def _render_choropleth_map(b: dict) -> str:
     title = _cr_s(b.get('title'), 80)
     label = (title or 'Choropleth map') + ': ' + str(len(got)) + ' of ' + str(len(regs)) + ' regions have a value, from ' + _cr_trim(lo) + us + ' to ' + _cr_trim(hi) + us
     svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;' + (_CH_SEAS if frm is not None else '') + '">'
-           + (_ch_sea(w, h) if frm is not None else '') + defs + paths + '</svg>')
+           + (_ch_sea(w, h, rset, frm) if frm is not None else '') + defs + paths + '</svg>')
     lt = _cr_s(b.get('legend_title'), 60)
     lis = ''
     for j in range(steps):
@@ -45068,6 +45092,8 @@ def _render_geo_map(b: dict) -> str:
     us = (('' if unit_raw[:12] == '%' else ' ') + unit) if unit else ''
     regs = _ch_regions(rset)
     fr = _ch_frame_read(b.get('frame'), proj, notes)
+    if fr is not None:
+        _ch_frame_note(regs, fr, notes)
     pr, w, h = _ch_frame(rset, proj, regs, fr)
     usa = _ch_albers_usa(1070, 480, 250) if proj == 'albers-usa' else None
     shade = b.get('regions')
@@ -45089,8 +45115,10 @@ def _render_geo_map(b: dict) -> str:
                 cats = cols = None
             else:
                 cols = [_cr_mix(c, 38, _CR_SURF) for c in cols]   # a tint, so the strong marker and route colours (the same tokens) stay readable on a shaded region
+    index_ = {r[0]: i for i, r in enumerate(regs)}
     keyed = fr is not None or bool(got)
-    pid = 'gc' + _cr_id('geo_map', 'regions', *(cats or []), *(cols or [])) if got else ''
+    pid = ('gc' + _cr_id('geo_map', 'regions', *cats, *cols, *([_cr_trim(x) for x in fr] if fr else []), *[r + '=' + str(got[r]) for r in sorted(got, key=lambda r: index_[r])], *pkeys, *lkeys,
+                         *[_cr_trim(x) for q in pts for x in q[:2]], *[_cr_trim(x) for q in lines for c in q[1] for x in c])) if got else ''
 
     def at(lat, lon):
         if usa:
@@ -45101,8 +45129,8 @@ def _render_geo_map(b: dict) -> str:
     for rid, nm, polys in regs:
         fill = _ch_cat_fill(pid, cols, got[rid]) if rid in got else _cr_mix(_CR_MUTED, 12, _CR_SURF)
         kk = (' data-cb="tile" data-key="' + _cr_s(rid, 12) + '"') if keyed else ''
-        tt = ('<title>' + _cr_s(nm, 80) + ': ' + _cr_s(cats[got[rid]], 40) + '</title>') if rid in got else ''
-        base += ('<path data-base="1"' + kk + ' style="fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:0.4;fill-rule:evenodd;" d="' + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_))
+        tt = ('<title>' + _cr_s(nm, 80) + ': ' + _cv_esc(cats[got[rid]]) + '</title>') if rid in got else ''
+        base += ('<path data-base="1"' + kk + ' style="fill:' + fill + ';stroke:' + _CR_MUTED + ';stroke-width:' + ('0.9' if fr is not None else '0.4') + ';fill-rule:evenodd;" d="' + _ch_path(polys, lambda lo_, la_, rid=rid: pr(rid, lo_, la_))
                  + '"' + ('>' + tt + '</path>' if tt else '/>'))
     n_all = len(lines) + len(pts)
     i, cut = 0, 0
@@ -45173,7 +45201,7 @@ def _render_geo_map(b: dict) -> str:
              + (' in ' + str(len(named)) + (' group' if len(named) == 1 else ' groups') if named else '')
              + (', ' + str(len(got)) + (' region shaded' if len(got) == 1 else ' regions shaded') + ' in ' + str(len(cats)) + (' category' if len(cats) == 1 else ' categories') if got else ''))
     svg = ('<svg viewBox="0 0 ' + str(w) + ' ' + str(h) + '" width="100%" role="img" aria-label="' + label + '" focusable="false" style="display:block;max-width:' + str(w) + 'px;height:auto;' + (_CH_SEAS if fr is not None else '') + '">'
-           + (_ch_sea(w, h) if fr is not None else '') + defs_m + base + route_svg + mark_svg + '</svg>')
+           + (_ch_sea(w, h, rset, fr) if fr is not None else '') + defs_m + base + route_svg + mark_svg + '</svg>')
     lt = _cr_s(b.get('legend_title'), 60)
     sw = lambda shape, col: ('<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="-8 -8 16 16" style="flex:none;">' + {
         'circle': '<circle r="5.5"', 'square': '<rect x="-5" y="-5" width="10" height="10"', 'diamond': '<path d="M0 -7L7 0L0 7L-7 0Z"', 'triangle': '<path d="M0 -6.5L6 5L-6 5Z"'}[shape]
@@ -45182,7 +45210,7 @@ def _render_geo_map(b: dict) -> str:
     for gi, g in enumerate(named + (['Ungrouped'] if named and has_ung else [])):
         lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + sw(*_gm_style(gi)) + '<span>' + _cr_s(g, 40) + '</span></li>'
     for j, c in enumerate(cats or []):
-        lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _ch_cat_swatch(pid, cols, j) + '<span>' + _cr_s(c, 40) + '</span></li>'
+        lis += '<li style="display:inline-flex;align-items:center;gap:6px;">' + _ch_cat_swatch(pid, cols, j) + '<span>' + _cv_esc(c) + '</span></li>'
     for li, (lab, cs, _kb) in enumerate(lines):
         dash = _GM_DASH[li % 3]
         lis += ('<li style="display:inline-flex;align-items:center;gap:6px;"><svg aria-hidden="true" focusable="false" width="28" height="16" viewBox="0 0 28 16" style="flex:none;"><line x1="1" y1="8" x2="27" y2="8" style="stroke:'
@@ -45202,7 +45230,7 @@ def _render_geo_map(b: dict) -> str:
     if got:
         ridx = {r[0]: r for r in regs}
         rtable = ('<table style="' + _CR_SR + '"><caption>' + (title or 'Geo map') + ', shaded regions</caption><thead><tr><th scope="col">Region</th><th scope="col">Code</th><th scope="col">Category</th></tr></thead><tbody>'
-                  + ''.join('<tr><th scope="row">' + _cr_s(ridx[r][1], 80) + '</th><td>' + _cr_s(r, 12) + '</td><td>' + _cr_s(cats[got[r]], 40) + '</td></tr>' for r in sorted(got, key=lambda r: (got[r], list(ridx).index(r))))
+                  + ''.join('<tr><th scope="row">' + _cr_s(ridx[r][1], 80) + '</th><td>' + _cr_s(r, 12) + '</td><td>' + _cv_esc(cats[got[r]]) + '</td></tr>' for r in sorted(got, key=lambda r: (got[r], list(ridx).index(r))))
                   + '</tbody></table>')
     return ('<div role="group" aria-label="' + (title or 'Geo map') + '" data-cb-root' + (' data-mtr-follow' if keyed else '') + ' style="--n:' + str(n_all) + ';margin:var(--a2ui-block-gap,1.25rem) 0;color:' + _CR_TEXT + ';font-size:0.85rem;">'
             + _CR_CB_CSS + ('<div style="font-weight:700;font-size:1.05rem;margin:0 0 8px;">' + title + '</div>' if title else '') + svg + legend + nt + ptable + ltable + rtable + '</div>')
