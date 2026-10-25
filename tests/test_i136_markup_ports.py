@@ -134,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|isr-|sl-|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -315,3 +315,56 @@ OLD_WORDS.update({
     "video_card": ["Old video", 'href="https://example.com/old.mp4"', 'src="https://example.com/t.png"'], "social_proof_banner": ["Old banner text", "1500"],
     "media_mention_card": ["Wired", "Old quote", 'href="https://example.com/q"'], "source_citation": ["Single", 'href="https://example.com/s"', "X, Y", "2020", "Pub", "n1"],
 })
+
+
+# ---- batch b5/3 ----
+EQUAL.extend([
+    {"type": "github_repo_card", "repo": "acme/stream-engine", "label": "Stream Engine", "description": "Telemetry daemon.", "stars": 0, "forks": 12, "language": "Python", "visibility": "public", "topics": ["iot", "mqtt"], "license": "MIT"},
+    {"type": "product_thumbnail", "title": "Smart Hub", "vendor": "Nordic IoT", "sku": "GW-901", "price": "$129.00", "compare_at_price": "$149.00", "status": "draft", "image_url": "https://example.com/a.png", "badge": "NEW", "url": "https://example.com/p", "tags": ["Hardware", "Zigbee", 7]},
+    {"type": "confidence_bar", "label": "Intent", "value": 94.2, "color": "#22c55e", "items": [{"label": "Upgrade", "value": 94}, {"label": "Support", "value": "6"}, {"name": "Churn", "value": 45}]},
+    {"type": "split_stat", "value": "99.99", "prefix": "~", "suffix": "%", "heading": "Service Uptime", "body": "SLA held **all** year.", "colour": "#10b981", "flip": True},
+    {"type": "count_up_stat", "value": 14200, "label": "Active Deployments", "prefix": "$", "suffix": "+", "colour": "#22d3ee", "duration": 1800, "size": "4rem"},
+    {"type": "leaderboard_card", "title": "Top", "limit": 3, "items": [{"name": "Aria", "score": 985}, {"name": "Kai", "score": 940, "unit": "pts"}, {"email": "n@x.org", "score": "n/a"}, {"name": "Cut", "score": 1}]},
+    {"type": "next_step_strip", "accent": "#0284c7", "steps": [{"number": 1, "label": "Provision VPC", "detail": "Create subnets", "url": "https://example.com/n"}, {"label": "Certs", "action": "Rotate TLS"}, "Plain step"]},
+    {"type": "take_away_card", "headline": "Premature abstraction is debt.", "sub": "Handbook **2026**", "accent": "#ec4899", "size": "1.5rem", "gradient": ["#1e1b4b", "#312e81"], "text_color": "#fff"},
+])
+MUST.update({
+    "github_repo_card": ["acme/stream-engine", 'href="https://github.com/acme/stream-engine"', "Stream Engine", "Telemetry daemon.", "⭐ 0", "\U0001F374 12", "Python", "public", "iot", "MIT"],
+    "product_thumbnail": ["Smart Hub", "Nordic IoT", "GW-901", "$129.00", "$149.00", "draft", "NEW", 'src="https://example.com/a.png"', 'href="https://example.com/p"', "Hardware", "Zigbee", ">7<"],
+    "confidence_bar": ["Intent", "94%", "Upgrade", "Support", "6%", "Churn", "45%", 'aria-valuenow="94"', "#22c55e"],
+    "split_stat": ["~", "99.99", "%", "Service Uptime", "<strong>all</strong>", "#10b981"],
+    "count_up_stat": ["14200", "Active Deployments", "$", "+", "#22d3ee", "font-size:4rem", "1800", "requestAnimationFrame"],
+    "leaderboard_card": ["Top", "Aria", "985", "Kai", "940pts", "n@x.org", "n/a", "\U0001F947", "<ol"],
+    "next_step_strip": ["Provision VPC", "Create subnets", 'href="https://example.com/n"', "Certs", "Rotate TLS", "Plain step", "#0284c7"],
+    "take_away_card": ["Premature abstraction is debt.", "Handbook <strong>2026</strong>", "linear-gradient(135deg,#1e1b4b,#312e81)"],
+})
+OLD.extend([
+    {"type": "github_repo_card", "owner": "acme", "repo": "engine", "stars": 5},
+    {"type": "product_thumbnail", "name": "Old name", "thumbnail": "https://example.com/t.png", "price": 9, "badge": "SALE"},
+    {"type": "confidence_bar", "label": "Old bar", "value": "50"},
+    {"type": "split_stat", "value": 7, "color": "#123456", "heading": "Old split"},
+    {"type": "count_up_stat", "value": "5", "color": "#654321", "label": "Old count"},
+    {"type": "leaderboard_card", "rows": [{"name": "Old row", "score": 3}]},
+    {"type": "next_step_strip", "steps": [{"title": "Old title step", "label": "Old label", "detail": "d"}]},
+    {"type": "take_away_card", "text": "Old text", "source": "Old source"},
+])
+OLD_WORDS.update({
+    "github_repo_card": ["acme/engine", "⭐ 5"], "product_thumbnail": ["Old name", 'src="https://example.com/t.png"', "9", "SALE"], "confidence_bar": ["Old bar", "50%"],
+    "split_stat": ["7", "Old split", "#123456"], "count_up_stat": ["Old count", "#654321"], "leaderboard_card": ["Old row", "3"], "next_step_strip": ["Old label", "d"],
+    "take_away_card": ["Old text", "Old source"],
+})
+
+
+def test_take_away_card_aliases_and_a_malformed_gradient(core_js):
+    blocks = [{"type": "take_away_card", "quote": "Alias quote", "author": "Alias author", "accent": "#4f46e5"},
+              {"type": "take_away_card", "headline": "H", "gradient": "linear-gradient(red,blue)"},
+              {"type": "take_away_card", "headline": "H", "gradient": ["#111"]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        assert _norm_uid(py) == _norm_uid(g)
+        assert "object Object" not in py and "['" not in py
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "Alias quote" in html and "Alias author" in html
+    for html in (_py_fresh(blocks[1]), gas[1], _py_fresh(blocks[2]), gas[2]):
+        assert "linear-gradient(135deg,color-mix" in html

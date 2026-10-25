@@ -172,40 +172,89 @@ _RENDERERS['schema_qr'] = function(b) {
 
 // take_away_card — bold single-insight card, designed to be screenshot-able
 _RENDERERS['take_away_card'] = function(b) {
-  var headline   = b.headline || b.text || b.quote || b.insight || '';
-  var sub        = b.sub || b.author || b.source || '';
-  var accent     = b.accent || '#4f46e5';
-  var size       = b.size || '1.9rem';
-  var gradient   = b.gradient ? b.gradient : null;
-  var textColor  = b.text_color || (gradient ? '#fff' : 'var(--text)');
-  var bg         = gradient
-    ? 'linear-gradient(135deg,' + gradient[0] + ',' + gradient[1] + ')'
-    : 'linear-gradient(135deg,' + accent + '0f,' + accent + '1a)';
-  var border     = gradient ? 'none' : '2px solid ' + accent + '33';
+  var headline = _firstText(b.headline, b.text, b.quote, b.insight);
+  var subRaw = _firstText(b.sub, b.author, b.source);
+  var sub = subRaw ? _md_inline(subRaw) : '';
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var size = _safe_css(b.size, '1.9rem');
+
+  var gradRaw = b.gradient;
+  var hasGradient = Array.isArray(gradRaw) && gradRaw.length >= 2 && typeof gradRaw[0] === 'string' && typeof gradRaw[1] === 'string';
+
+  var rawTextCol = _firstText(b.text_color);
+  var bg = '';
+  var border = '';
+  var textColor = '';
+  var subColor = '';
+
+  if (hasGradient) {
+    var g0 = _safe_css(gradRaw[0], accent);
+    var g1 = _safe_css(gradRaw[1], accent);
+    bg = 'linear-gradient(135deg,' + g0 + ',' + g1 + ')';
+    border = 'none';
+    textColor = _safe_css(rawTextCol, '#fff');
+    subColor = 'rgba(255,255,255,0.7)';
+  } else {
+    bg = 'linear-gradient(135deg,color-mix(in srgb, ' + accent + ' 6%, transparent),color-mix(in srgb, ' + accent + ' 10%, transparent))';
+    border = '2px solid color-mix(in srgb, ' + accent + ' 20%, transparent)';
+    textColor = rawTextCol ? _safe_css(rawTextCol, 'var(--text)') : 'var(--text)';
+    subColor = accent;
+  }
+
+  var subHtml = sub ? '<div style="font-size:0.82rem;font-weight:600;color:' + subColor + ';margin-top:16px;text-transform:uppercase;letter-spacing:0.1em;">' + sub + '</div>' : '';
+
   return '<div data-cb="node" data-key="' + _ckey(b.headline, 'take_away_card') + '" style="background:' + bg + ';border:' + border + ';border-radius:16px;padding:36px 32px;margin:1.5rem 0;text-align:center;">'
-    + '<div style="font-size:2rem;margin-bottom:16px;opacity:0.5;color:' + (gradient ? 'rgba(255,255,255,0.7)' : accent) + ';">❝</div>'
-    + '<div style="font-size:' + _esc(size) + ';font-weight:800;color:' + textColor + ';line-height:1.25;letter-spacing:-0.02em;">' + _esc(headline) + '</div>'
-    + (sub ? '<div style="font-size:0.82rem;font-weight:600;color:' + (gradient ? 'rgba(255,255,255,0.7)' : accent) + ';margin-top:16px;text-transform:uppercase;letter-spacing:0.1em;">' + _esc(sub) + '</div>' : '')
-    + '</div>';
+    + '<div aria-hidden="true" style="font-size:2rem;margin-bottom:16px;opacity:0.5;color:' + subColor + ';">❝</div>'
+    + '<div style="font-size:' + size + ';font-weight:800;color:' + textColor + ';line-height:1.25;letter-spacing:-0.02em;">' + _esc(headline) + '</div>'
+    + subHtml + '</div>';
 };
 
 // next_step_strip — horizontal step guide with optional links
 _RENDERERS['next_step_strip'] = function(b) {
-  var steps  = b.steps || [];
-  var accent = b.accent || '#4f46e5';
-  var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
-  steps.forEach(function(s, i) {
-    var isLast = i === steps.length - 1;
-    var rawKey = typeof s === 'string' ? s : (s.title || s.label || '');
-    var keyAttr = _esc(String(rawKey));
-    html += '<div data-cb="item" data-key="' + keyAttr + '" style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
-      + '<div style="font-size:1.4rem;font-weight:900;color:' + accent + ';margin-bottom:6px;">' + _esc(String(s.number || (i + 1))) + '</div>'
-      + '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;">' + _esc(s.label || '') + '</div>'
-      + '<div style="font-size:0.8rem;color:var(--muted);">' + _esc(s.detail || s.action || '') + '</div>'
-      + (s.url ? '<a href="' + _esc(s.url) + '" target="_top" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:' + accent + ';text-decoration:none;">Open →</a>' : '')
-      + '</div>';
-  });
-  return html + '</div>';
+  var rawSteps = Array.isArray(b.steps) ? b.steps : [];
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var itemsHtml = [];
+  var limit = Math.min(rawSteps.length, 12);
+  for (var i = 0; i < limit; i++) {
+    var s = rawSteps[i];
+    var numVal = '';
+    var label = '';
+    var detail = '';
+    var url = '';
+    var rawKey = '';
+
+    if (s !== null && typeof s === 'object' && !Array.isArray(s)) {
+      numVal = _firstText(s.number, String(i + 1));
+      label = _firstText(s.label, s.title);
+      detail = _firstText(s.detail, s.action);
+      url = _firstText(s.url);
+      rawKey = _firstText(s.title, s.label);
+    } else {
+      var sStr = _textLoose(s);
+      numVal = String(i + 1);
+      label = sStr;
+      detail = '';
+      url = '';
+      rawKey = sStr;
+    }
+
+    var keyAttr = _esc(rawKey);
+    var safeUrl = url ? _safe_href(url, ['https', 'mailto']) : '';
+    var ariaOpen = label ? ('Open: ' + label) : 'Open';
+    var linkHtml = safeUrl ? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" aria-label="' + _esc(ariaOpen) + '" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:' + accent + ';text-decoration:none;">Open →</a>' : '';
+
+    itemsHtml.push(
+      '<li data-cb="item" data-key="' + keyAttr + '" style="flex:1 1 150px;padding:20px 18px;background:var(--surface,#fff);border-right:1px solid var(--border,#e5e7eb);">'
+      + '<div style="font-size:1.4rem;font-weight:900;color:' + accent + ';margin-bottom:6px;">' + _esc(numVal) + '</div>'
+      + '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.9rem;font-weight:700;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</div>'
+      + '<div style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc(detail) + '</div>'
+      + linkHtml + '</li>'
+    );
+  }
+
+  return '<ol style="list-style:none;margin:1.5rem 0;padding:0;display:flex;flex-wrap:wrap;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    + 'overflow:hidden;border:1px solid var(--border,#e5e7eb);">'
+    + itemsHtml.join('') + '</ol>';
 };
 
 // copy_prompt — displays a copyable text block (for sharing Gemini prompts)

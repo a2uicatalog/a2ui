@@ -7916,34 +7916,61 @@ def _render_llm_comparison_table(b: dict) -> str:
 
 
 def _render_confidence_bar(b: dict) -> str:
-    """Colour-coded probability bar. Original a2ui-catalogue atom."""
-    def _bar(label, value, color_override):
-        pct    = max(0, min(100, float(value)))
-        color  = color_override or (
-            "#22c55e" if pct >= 70 else "#f59e0b" if pct >= 40 else "#ef4444"
-        )
+    # 0-100 percentage probability bar(s) with accessible ARIA progressbar and colour bands
+    import math
+
+    color_override = _safe_css(b.get('color'), '')
+
+    def _render_single(lbl: str, val_raw) -> str:
+        num = _num_loose(val_raw)
+        val = 0.0 if num is None else num
+        pct = max(0.0, min(100.0, val))
+        rounded = math.floor(pct + 0.5)
+
+        if color_override:
+            bar_color = color_override
+            text_color = color_override
+        elif rounded >= 70:
+            bar_color = '#22c55e'
+            text_color = '#15803d'
+        elif rounded >= 40:
+            bar_color = '#f59e0b'
+            text_color = '#b45309'
+        else:
+            bar_color = '#ef4444'
+            text_color = '#dc2626'
+
+        aria_label = f"{lbl}: {rounded}%" if lbl else f"{rounded}%"
         return (
             f'<div style="margin-bottom:8px;">'
-            f'<div style="display:flex;justify-content:space-between;'
-            f'font-size:0.78rem;color:#374151;margin-bottom:3px;">'
-            f'<span>{_cv_esc(label)}</span>'
-            f'<span style="font-weight:700;color:{ {"#22c55e":"#15803d","#f59e0b":"#b45309","#ef4444":"#dc2626"}.get(color,color) };">{round(pct)}%</span>'
+            f'<div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;">'
+            f'<span>{_cv_esc(lbl)}</span>'
+            f'<span style="font-weight:700;color:{text_color};">{rounded}%</span>'
             f'</div>'
-            f'<div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">'
-            f'<div style="width:{pct}%;height:100%;background:{_cv_esc(color)};'
-            f'border-radius:4px;transition:width .4s;"></div>'
-            f'</div>'
-            f'</div>'
+            f'<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{rounded}" aria-label="{_cv_esc(aria_label)}" style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">'
+            f'<div style="width:{rounded}%;height:100%;background:{bar_color};border-radius:4px;transition:width .4s;"></div>'
+            f'</div></div>'
         )
 
-    items  = b.get("items")
-    color  = b.get("color", "")
-    if items:
-        bars = "".join(_bar(i.get("label",""), i.get("value", 0), color) for i in items)
-    else:
-        bars = _bar(b.get("label","Confidence"), b.get("value", 0), color)
+    raw_items = b.get('items') if isinstance(b.get('items'), list) else []
+    block_label = _first_text(b.get('label'))
 
-    return f'<div data-cb="node" data-key="{_ck(b.get("label"), "confidence_bar")}" style="margin:0.75rem 0;">{bars}</div>'
+    if raw_items:
+        head_html = f'<div style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:8px;">{_cv_esc(block_label)}</div>' if block_label else ''
+        bars = []
+        for item in raw_items[:20]:
+            if isinstance(item, dict):
+                i_lbl = _first_text(item.get('label'), item.get('name'))
+                i_val = item.get('value', 0)
+                bars.append(_render_single(i_lbl, i_val))
+            else:
+                bars.append(_render_single('', item))
+        content = head_html + ''.join(bars)
+    else:
+        label_val = block_label if block_label else 'Confidence'
+        content = _render_single(label_val, b.get('value', 0))
+
+    return f'<div data-cb="node" data-key="{_ck(b.get("label"), "confidence_bar")}" style="margin:0.75rem 0;">{content}</div>'
 
 
 def _render_token_budget_meter(b: dict) -> str:
@@ -11758,29 +11785,55 @@ _RENDERERS["word_reveal"] = _render_word_reveal
 
 
 def _render_count_up_stat(b: dict) -> str:
-    import hashlib, html as _html
-    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
-    value  = int(b.get("value", 0))
-    label  = b.get("label", "")
-    prefix = b.get("prefix", "")
-    suffix = b.get("suffix", "")
-    color  = b.get("colour", b.get("color", "var(--a2ui-accent,#4f46e5)"))
-    label_html = f'<div style="font-size:0.85rem;color:var(--muted,#5f6368);margin-top:4px;">{_html.escape(label)}</div>' if label else ""
-    return (
-        f'<div data-cb="node" data-key="{_ck(b.get("label"), "count_up_stat")}" style="margin:1rem 0;text-align:center;">'
-        f'<div style="font-size:clamp(2.5rem,6vw,4rem);font-weight:800;color:{_cv_esc(color)};'
-        f'font-variant-numeric:tabular-nums;">'
-        f'{_html.escape(prefix)}<span id="cu_{uid}">0</span>{_html.escape(suffix)}'
-        f'</div>{label_html}</div>'
+    # Animated numeric count-up stat with progressive enhancement fallback
+    import math
+
+    val_num = _num_loose(b.get('value'))
+    target = math.floor(val_num) if val_num is not None else 0
+    target = max(-1000000000000000, min(1000000000000000, target))
+
+    label = _text_loose(b.get('label'))
+    prefix = _text_loose(b.get('prefix'))
+    suffix = _text_loose(b.get('suffix'))
+    raw_col = _first_text(b.get('colour'), b.get('color'))
+    colour = _safe_css(raw_col, '#4f46e5')
+    size = _safe_css(b.get('size'), '4rem')
+
+    dur_num = _num_loose(b.get('duration'))
+    duration = 1800 if dur_num is None else max(0, min(60000, math.floor(dur_num)))
+
+    uid_seed = _wa_uid(b) if '_wa_uid' in globals() else _first_text(b.get('label'), str(target), 'stat')
+    uid = 'cu-' + str(uid_seed)
+
+    prefix_html = f'<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">{_cv_esc(prefix)}</span>' if prefix else ''
+    suffix_html = f'<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">{_cv_esc(suffix)}</span>' if suffix else ''
+    label_html = f'<div style="margin-top:12px;font-size:0.78rem;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.12em;">{_cv_esc(label)}</div>' if label else ''
+
+    script = (
         f'<script>(function(){{'
-        f'var el=document.getElementById("cu_{uid}");'
-        f'var end={value};var dur=1400;var start=performance.now();'
+        f'var el=document.getElementById("{uid}");'
+        f'if(!el)return;'
+        f'var target={target},dur={duration};'
+        f'if(dur<=0||(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){{el.textContent=target.toLocaleString();return;}}'
+        f'el.textContent="0";var start=null;'
         f'function ease(t){{return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}}'
-        f'(function frame(now){{'
-        f'var t=Math.min((now-start)/dur,1);'
-        f'el.textContent=Math.round(ease(t)*end);'
-        f'if(t<1)requestAnimationFrame(frame);}})( start);'
+        f'requestAnimationFrame(function tick(ts){{'
+        f'if(!start)start=ts;'
+        f'var prog=Math.min(1,(ts-start)/dur);'
+        f'el.textContent=Math.round(ease(prog)*target).toLocaleString();'
+        f'if(prog<1)requestAnimationFrame(tick);'
+        f'}});'
         f'}})();</script>'
+    )
+
+    return (
+        f'<div data-cb="node" data-key="{_ck(b.get("label"), "count_up_stat")}" style="text-align:center;padding:32px 16px;">'
+        f'<div style="font-size:{size};font-weight:900;line-height:1;color:{colour};'
+        f'text-shadow:0 0 20px {colour},0 0 60px color-mix(in srgb, {colour} 33%, transparent);">'
+        f'{prefix_html}<span id="{uid}">{target}</span>{suffix_html}</div>'
+        f'<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;'
+        f'background:{colour};box-shadow:0 0 16px {colour};"></div>'
+        f'{label_html}</div>{script}'
     )
 
 _RENDERERS["count_up_stat"] = _render_count_up_stat
@@ -11846,24 +11899,46 @@ _RENDERERS["display_quote"] = _render_display_quote
 
 
 def _render_split_stat(b: dict) -> str:
-    import html as _html
-    value   = _html.escape(str(b.get("value", "")))
-    prefix  = _html.escape(b.get("prefix", ""))
-    suffix  = _html.escape(b.get("suffix", ""))
-    heading = _html.escape(b.get("heading", ""))
-    body    = _html.escape(b.get("body", ""))
-    color   = b.get("color", b.get("colour", "var(--a2ui-accent,#4f46e5)"))
-    heading_html = f'<div style="font-size:1.15rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{heading}</div>' if heading else ""
-    body_html    = f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.6;">{body}</div>' if body else ""
-    return (
-        f'<div data-cb="node" data-key="{_ck(b.get("heading"), "split_stat")}" style="display:flex;align-items:center;gap:2rem;margin:1.5rem 0;'
-        f'border:1px solid #1e293b;border-radius:14px;padding:28px;background:#0f172a;">'
-        f'<div style="text-align:center;flex-shrink:0;">'
-        f'<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;'
-        f'color:{_cv_esc(color)};text-shadow:0 0 40px {_cv_esc(color)}66;">'
-        f'{prefix}{value}{suffix}</div></div>'
-        f'<div style="flex:1;">{heading_html}{body_html}</div>'
+    # Keynote-style glowing stat card with flip orientation support
+    val_loose = _text_loose(b.get('value'))
+    value = val_loose if val_loose else '—'
+    prefix = _text_loose(b.get('prefix'))
+    suffix = _text_loose(b.get('suffix'))
+    heading = _text_loose(b.get('heading'))
+    body = _text_loose(b.get('body'))
+    raw_col = _first_text(b.get('colour'), b.get('color'))
+    colour = _safe_css(raw_col, '#4f46e5')
+    flip = b.get('flip') is True
+
+    prefix_html = f'<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">{_cv_esc(prefix)}</span>' if prefix else ''
+    suffix_html = f'<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">{_cv_esc(suffix)}</span>' if suffix else ''
+
+    stat_col = (
+        f'<div style="flex:0 0 auto;text-align:center;padding:0 24px;">'
+        f'<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;color:#fff;'
+        f'text-shadow:0 0 20px {colour},0 0 60px color-mix(in srgb, {colour} 33%, transparent);">'
+        f'{prefix_html}{_cv_esc(value)}{suffix_html}</div>'
+        f'<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;'
+        f'background:{colour};box-shadow:0 0 16px {colour};"></div>'
         f'</div>'
+    )
+
+    border_side = 'border-right:1px solid rgba(255,255,255,0.08);' if flip else 'border-left:1px solid rgba(255,255,255,0.08);'
+    heading_html = f'<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:8px;">{_cv_esc(heading)}</div>' if heading else ''
+    body_html = f'<div style="font-size:0.88rem;color:#94a3b8;line-height:1.65;">{_md_inline(body)}</div>' if body else ''
+
+    text_col = (
+        f'<div style="flex:1;min-width:0;padding:0 8px;{border_side}">'
+        f'{heading_html}{body_html}</div>'
+    )
+
+    left = text_col if flip else stat_col
+    right = stat_col if flip else text_col
+
+    return (
+        f'<div data-cb="node" data-key="{_ck(b.get("heading"), "split_stat")}" style="display:flex;align-items:center;gap:24px;padding:28px;'
+        f'margin:1.5rem 0;border:1px solid #1e293b;border-radius:14px;background:#0f172a;">'
+        f'{left}{right}</div>'
     )
 
 _RENDERERS["split_stat"] = _render_split_stat
@@ -16343,23 +16418,78 @@ _RENDERERS['gauge_sla'] = _render_gauge_sla
 
 
 def _render_github_repo_card(b: dict) -> str:
-    repo = b.get('repo') or b.get('name', '')
-    owner = b.get('owner', '')
-    description = b.get('description', '')
-    stars = b.get('stars', '')
-    lang = b.get('language', '')
-    url = b.get('url') or (f'https://github.com/{_cv_esc(owner)}/{_cv_esc(repo)}' if owner and repo else '#')
-    return (f'<div data-cb="node" data-key="{_ck(b.get("repo"), "github_repo_card")}" style="border:1px solid #d0d7de;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 18px;'
-            f'max-width:340px;margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-            f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
-            f'<span style="font-size:1.1rem;">🐙</span>'
-            f'<a href="{_esc(url)}" target="_blank" rel="noopener" style="color:#0969da;font-weight:700;'
-            f'text-decoration:none;font-size:0.9rem;">{_esc(owner)}/{_esc(repo)}</a></div>'
-            f'{"<p style=font-size:0.84rem;color:var(--muted,#5f6368);margin:0 0 10px;>"+_esc(description)+"</p>" if description else ""}'
-            f'<div style="display:flex;gap:14px;font-size:0.78rem;color:var(--muted,#5f6368);">'
-            f'{"<span>⭐ "+_cv_esc(str(stars))+"</span>" if stars else ""}'
-            f'{"<span>🔵 "+_esc(lang)+"</span>" if lang else ""}'
-            f'</div></div>')
+    # GitHub repo card: unified GAS card layout with language dot, topics, stats, and safe repo URL
+    import re
+    repo_raw = _first_text(b.get('repo'), b.get('name'))
+    owner_raw = _first_text(b.get('owner'))
+    if '/' in repo_raw:
+        repo_path = repo_raw
+    elif owner_raw and repo_raw:
+        repo_path = f"{owner_raw}/{repo_raw}"
+    else:
+        repo_path = repo_raw
+
+    url_val = _first_text(b.get('url'))
+    if url_val:
+        safe_url = _safe_href(url_val, schemes=('https', 'mailto'))
+    elif repo_path and re.match(r'^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$', repo_path):
+        safe_url = f"https://github.com/{repo_path}"
+    else:
+        safe_url = ''
+
+    if safe_url:
+        link_html = f'<a href="{_cv_esc(safe_url)}" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">{_cv_esc(repo_path)}</a>'
+    else:
+        link_html = f'<span style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);">{_cv_esc(repo_path)}</span>'
+
+    vis_text = _first_text(b.get('visibility'))
+    vis_html = f'<span style="font-size:0.7rem;padding:1px 6px;border:1px solid var(--border,#e5e7eb);border-radius:4px;color:var(--muted,#6b7280);">{_cv_esc(vis_text)}</span>' if vis_text else ''
+
+    label_text = _first_text(b.get('label'))
+    label_html = f'<div style="font-size:0.85rem;font-weight:700;color:var(--text,#111827);margin-bottom:6px;">{_cv_esc(label_text)}</div>' if label_text and label_text != repo_path else ''
+
+    desc_text = _first_text(b.get('description'))
+    desc_html = f'<div style="font-size:0.82rem;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:10px;">{_cv_esc(desc_text)}</div>' if desc_text else ''
+
+    topics_raw = b.get('topics') if isinstance(b.get('topics'), list) else []
+    topic_spans = []
+    for t in topics_raw[:20]:
+        t_str = _text_loose(t)
+        if t_str:
+            topic_spans.append(f'<span style="padding:2px 8px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:0.72rem;">{_cv_esc(t_str)}</span>')
+    topics_html = f'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">{"".join(topic_spans)}</div>' if topic_spans else ''
+
+    stars_str = _text_loose(b.get('stars'))
+    stars_html = f'<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">⭐ {_cv_esc(stars_str)}</span>' if stars_str else ''
+
+    forks_str = _text_loose(b.get('forks'))
+    forks_html = f'<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 {_cv_esc(forks_str)}</span>' if forks_str else ''
+
+    lang_colors = {
+        'JavaScript': '#f1e05a', 'TypeScript': '#3178c6', 'Python': '#3572A5',
+        'Go': '#00ADD8', 'Rust': '#dea584', 'Java': '#b07219',
+        'CSS': '#563d7c', 'HTML': '#e34c26'
+    }
+    lang_str = _first_text(b.get('language'))
+    if lang_str:
+        dot_color = lang_colors.get(lang_str, '#6b7280')
+        lang_html = f'<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:{dot_color};display:inline-block;"></span>{_cv_esc(lang_str)}</span>'
+    else:
+        lang_html = ''
+
+    stats_row = f'<div style="display:flex;gap:14px;">{stars_html}{forks_html}{lang_html}</div>' if (stars_html or forks_html or lang_html) else ''
+
+    lic_text = _first_text(b.get('license'))
+    lic_html = f'<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:6px;">⚖️ {_cv_esc(lic_text)}</div>' if lic_text else ''
+
+    return (
+        f'<div data-cb="node" data-key="{_ck(b.get("repo"), "github_repo_card")}" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+        f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+        f'<span style="font-size:1rem;">📦</span>'
+        f'{link_html}{vis_html}</div>'
+        f'{label_html}{desc_html}{topics_html}{stats_row}{lic_html}'
+        f'</div>'
+    )
 
 _RENDERERS['github_repo_card'] = _render_github_repo_card
 
@@ -16571,23 +16701,77 @@ _RENDERERS['prerequisite_checklist'] = _render_prerequisite_checklist
 
 
 def _render_product_thumbnail(b: dict) -> str:
-    image = b.get('image') or b.get('thumbnail', '')
-    name = b.get('name') or b.get('title', '')
-    price = b.get('price', '')
-    badge = b.get('badge', '')
-    url = b.get('url', '#')
-    badge_html = (f'<div style="position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;'
-                  f'font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);">{_esc(badge)}</div>'
-                  if badge else '')
-    return (f'<a data-cb="node" data-key="{_ck(b.get("sku"), "product_thumbnail")}" href="{_esc(url)}" style="display:block;text-decoration:none;border:1px solid #e5e7eb;'
-            f'border-radius:10px;overflow:hidden;max-width:180px;margin:1rem 0;">'
-            f'<div style="position:relative;">'
-            f'{"<img src="+chr(34)+_esc(image)+chr(34)+" alt="+chr(34)+_esc(name)+chr(34)+" style=width:100%;aspect-ratio:1;object-fit:cover;>" if image else "<div style=background:#f3f4f6;aspect-ratio:1;></div>"}'
-            f'{badge_html}</div>'
-            f'<div style="padding:8px 10px;">'
-            f'<div style="font-size:0.84rem;font-weight:600;color:#111827;">{_esc(name)}</div>'
-            f'{"<div style=font-size:0.88rem;font-weight:800;color:#7c3aed;margin-top:2px;>"+_esc(str(price))+"</div>" if price else ""}'
-            f'</div></a>')
+    # Product thumbnail card with status badges, price comparison, image placeholder, and tags
+    raw_img = _first_text(b.get('image_url'), b.get('image'), b.get('thumbnail'))
+    safe_img = _safe_href(raw_img, schemes=('https', 'http')) if raw_img else ''
+
+    badge_text = _first_text(b.get('badge'))
+    badge_html = f'<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#4f46e5);color:#fff;font-size:0.72rem;font-weight:700;">{_cv_esc(badge_text)}</div>' if badge_text else ''
+
+    title_text = _first_text(b.get('title'), b.get('name'))
+    img_html = ''
+    if safe_img:
+        img_html = f'<div style="position:relative;"><img src="{_cv_esc(safe_img)}" alt="{_cv_esc(title_text)}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">{badge_html}</div>'
+    elif badge_html:
+        img_html = f'<div style="position:relative;"><div style="background:#f3f4f6;aspect-ratio:1;border-radius:8px;"></div>{badge_html}</div>'
+
+    vendor_text = _first_text(b.get('vendor'))
+    vendor_html = f'<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">{_cv_esc(vendor_text)}</div>' if vendor_text else ''
+
+    title_html = f'<div style="font-size:0.875rem;font-weight:600;color:var(--text,#111827);margin:2px 0;">{_cv_esc(title_text)}</div>'
+
+    sku_text = _first_text(b.get('sku'))
+    sku_html = f'<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">SKU: {_cv_esc(sku_text)}</div>' if sku_text else ''
+
+    price_str = _text_loose(b.get('price'))
+    price_span = f'<span style="font-weight:700;color:var(--text,#111827);">{_cv_esc(price_str)}</span>'
+
+    compare_str = _text_loose(b.get('compare_at_price'))
+    compare_html = f'<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">{_cv_esc(compare_str)}</span>' if compare_str else ''
+
+    status_raw = _first_text(b.get('status'))
+    if status_raw:
+        st_norm = status_raw.lower()
+        if st_norm in ('active', 'in_stock'):
+            bg_col, txt_col = '#d1fae5', '#10b981'
+        elif st_norm == 'draft':
+            bg_col, txt_col = '#fef3c7', '#b45309'
+        elif st_norm == 'archived':
+            bg_col, txt_col = '#f3f4f6', '#4b5563'
+        else:
+            bg_col, txt_col = '#fee2e2', '#ef4444'
+        status_label = status_raw.replace('_', ' ')
+        status_html = f'<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:{bg_col};color:{txt_col};margin-left:6px;">{_cv_esc(status_label)}</span>'
+    else:
+        status_html = ''
+
+    price_row = f'<div style="margin-top:6px;">{price_span}{compare_html}{status_html}</div>'
+
+    tags_raw = b.get('tags') if isinstance(b.get('tags'), list) else []
+    tag_lis = []
+    for t in tags_raw[:12]:
+        t_str = _text_loose(t)
+        if t_str:
+            tag_lis.append(f'<li style="padding:1px 6px;border-radius:4px;background:#f3f4f6;color:#4b5563;font-size:0.7rem;">{_cv_esc(t_str)}</li>')
+    tags_html = f'<ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px;">{"".join(tag_lis)}</ul>' if tag_lis else ''
+
+    raw_url = _first_text(b.get('url'))
+    safe_card_url = _safe_href(raw_url, schemes=('https', 'mailto')) if raw_url else ''
+
+    key_attr = _ck(b.get('sku'), 'product_thumbnail')
+    if safe_card_url:
+        tag_open = f'<a data-cb="node" data-key="{key_attr}" href="{_cv_esc(safe_card_url)}" style="display:block;text-decoration:none;color:inherit;margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);max-width:200px;">'
+        tag_close = '</a>'
+    else:
+        tag_open = f'<div data-cb="node" data-key="{key_attr}" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">'
+        tag_close = '</div>'
+
+    return (
+        f'{tag_open}{img_html}'
+        f'<div style="padding:10px 12px;">'
+        f'{vendor_html}{title_html}{sku_html}{price_row}{tags_html}'
+        f'</div>{tag_close}'
+    )
 
 _RENDERERS['product_thumbnail'] = _render_product_thumbnail
 
@@ -22808,25 +22992,86 @@ _RENDERERS["cohort_progress_board"] = _render_cohort_progress_board
 
 
 def _render_leaderboard_card(b: dict) -> str:
-    title = _esc(b.get('title', 'Leaderboard'))
-    rows = b.get('rows', b.get('items', []))
-    limit = min(int(b.get('limit', 10)), 20)
-    medals = {0: '🥇', 1: '🥈', 2: '🥉'}
-    rows_html = ''
-    for i, row in enumerate(rows[:limit]):
-        name = _esc(str(row.get('name', row.get('email', '?'))))
-        score = row.get('score', '—')
-        medal = medals.get(i, f'{i+1}')
-        row_key = _esc(str(row.get('id') or row.get('name') or row.get('email', '?')))
-        rows_html += (f'<div data-cb="item" data-key="{row_key}" style="display:flex;align-items:center;justify-content:space-between;'
-                      f'padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:{"#fffbeb" if i==0 else "#f9fafb"};'
-                      f'margin-bottom:4px;font-size:0.85rem;">'
-                      f'<span data-cb="label" data-key="{row_key}">{medal} {name}</span>'
-                      f'<span style="font-weight:700;">{_esc(str(score))}</span></div>')
+    # Ranked learner leaderboard with medals, relative score progress bars, and course/demo fallbacks
+    import math
+    title_text = _first_text(b.get('title'), 'Leaderboard')
+
+    limit_val = _num_loose(b.get('limit'))
+    limit = max(1, min(20, math.floor(limit_val))) if limit_val is not None else 10
+
+    raw_items = b.get('items') if isinstance(b.get('items'), list) else (b.get('rows') if isinstance(b.get('rows'), list) else None)
+    if raw_items is not None and len(raw_items) > 0:
+        rows = raw_items
+    else:
+        rows = [
+            {'name': 'alice', 'score': 94, 'unit': '%'},
+            {'name': 'bob', 'score': 87, 'unit': '%'},
+            {'name': 'carol', 'score': 81, 'unit': '%'},
+            {'name': 'dave', 'score': 76, 'unit': '%'},
+            {'name': 'eva', 'score': 72, 'unit': '%'}
+        ]
+
+    sliced_rows = rows[:limit]
+    top_score = None
+    if sliced_rows and isinstance(sliced_rows[0], dict):
+        s_top = _num_loose(sliced_rows[0].get('score'))
+        if s_top is not None and s_top > 0:
+            top_score = s_top
+
+    medals = ['🥇', '🥈', '🥉']
+    items_html = []
+    for i, r in enumerate(sliced_rows):
+        if not isinstance(r, dict):
+            r = {'name': _text_loose(r)}
+
+        is_top = i < 3
+        rank_icon = medals[i] if is_top else str(i + 1)
+        col = '#8c7103' if i == 0 else ('#617592' if i == 1 else ('#bb5604' if i == 2 else '#475569'))
+        rank_col = col if is_top else '#334151'
+        rank_size = '1rem' if is_top else '0.72rem'
+
+        name = _first_text(r.get('name'), r.get('email'))
+        if not name:
+            name = '?'
+
+        row_key = _first_text(r.get('id'), r.get('name'), r.get('email'))
+        if not row_key:
+            row_key = str(i)
+
+        raw_score = r.get('score')
+        num_score = _num_loose(raw_score)
+        if top_score is not None and num_score is not None and top_score > 0:
+            bar_w = max(0, min(100, math.floor((num_score / top_score) * 100 + 0.5)))
+        else:
+            bar_w = 0
+
+        score_text = _text_loose(raw_score)
+        if not score_text:
+            score_text = '—'
+        unit_str = _text_loose(r.get('unit'))
+        if unit_str:
+            score_text += unit_str
+
+        bg_row = '#fffbeb' if i == 0 else '#f9fafb'
+
+        items_html.append(
+            f'<li data-cb="item" data-key="{_cv_esc(row_key)}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:{bg_row};margin-bottom:4px;font-size:0.85rem;">'
+            f'<div style="width:24px;text-align:center;font-size:{rank_size};color:{rank_col};font-weight:700;flex-shrink:0;">{rank_icon}</div>'
+            f'<div style="flex:1;min-width:0;">'
+            f'<div data-cb="label" data-key="{_cv_esc(row_key)}" style="font-size:0.78rem;font-weight:600;color:#374151;">{_cv_esc(name)}</div>'
+            f'<div style="height:4px;border-radius:2px;background:#e5e7eb;margin-top:5px;overflow:hidden;">'
+            f'<div style="height:100%;width:{bar_w}%;border-radius:2px;background:{col};transition:width 0.6s;"></div>'
+            f'</div></div>'
+            f'<div style="font-size:0.82rem;font-weight:800;color:{col};flex-shrink:0;">{_cv_esc(score_text)}</div>'
+            f'</li>'
+        )
+
     return (
-        f'<div style="font-family:system-ui,sans-serif;">'
-        f'<div style="font-weight:700;margin-bottom:10px;">{title}</div>'
-        f'{rows_html}</div>'
+        f'<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+        f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
+        f'<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 {_cv_esc(title_text)}</div>'
+        f'<ol style="list-style:none;margin:0;padding:0;">{"".join(items_html)}</ol>'
+        f'</div>'
     )
 _RENDERERS["leaderboard_card"] = _render_leaderboard_card
 
@@ -23172,26 +23417,43 @@ _RENDERERS["cta_button"] = _render_cta_button
 
 
 def _render_next_step_strip(b: dict) -> str:
-    steps = b.get('steps', [])
-    accent = _esc(b.get('accent', '#4f46e5'))
-    items = ''
-    for i, s in enumerate(steps):
-        if isinstance(s, str):
-            label, url = _esc(s), ''
+    # Responsive horizontal numbered next-step strip with links
+    raw_steps = b.get('steps') if isinstance(b.get('steps'), list) else []
+    accent = _safe_css(b.get('accent'), '#4f46e5')
+    items_html = []
+    for i, s in enumerate(raw_steps[:12]):
+        if isinstance(s, dict):
+            num_val = _first_text(s.get('number'), str(i + 1))
+            label = _first_text(s.get('label'), s.get('title'))
+            detail = _first_text(s.get('detail'), s.get('action'))
+            url = _first_text(s.get('url'))
+            raw_key = _first_text(s.get('title'), s.get('label'))
         else:
-            label, url = _esc(s.get('label', '')), s.get('url', '')
-        inner = ('<a href="' + _esc(url) + '" style="text-decoration:none;color:inherit;">'
-                 + label + '</a>') if url else label
-        raw_key = s if isinstance(s, str) else s.get('title', s.get('label', ''))
-        key_attr = _esc(str(raw_key))
-        items += ('<div data-cb="item" data-key="' + key_attr + '" style="display:flex;align-items:center;gap:10px;padding:10px 14px;'
-                  'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
-                  '<span style="width:24px;height:24px;border-radius:50%;background:' + accent + ';'
-                  'color:#fff;font-size:0.75rem;font-weight:700;display:flex;align-items:center;'
-                  'justify-content:center;flex-shrink:0;">' + str(i + 1) + '</span>'
-                  '<span data-cb="label" data-key="' + key_attr + '" style="font-size:0.875rem;font-weight:600;color:var(--text,#374151);">'
-                  + inner + '</span></div>')
-    return '<div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:8px;">' + items + '</div>'
+            s_str = _text_loose(s)
+            num_val = str(i + 1)
+            label = s_str
+            detail = ''
+            url = ''
+            raw_key = s_str
+
+        key_attr = _cv_esc(raw_key)
+        safe_url = _safe_href(url, schemes=('https', 'mailto')) if url else ''
+        aria_open = f'Open: {label}' if label else 'Open'
+        link_html = f'<a href="{_cv_esc(safe_url)}" target="_blank" rel="noopener" aria-label="{_cv_esc(aria_open)}" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:{accent};text-decoration:none;">Open →</a>' if safe_url else ''
+
+        items_html.append(
+            f'<li data-cb="item" data-key="{key_attr}" style="flex:1 1 150px;padding:20px 18px;background:var(--surface,#fff);border-right:1px solid var(--border,#e5e7eb);">'
+            f'<div style="font-size:1.4rem;font-weight:900;color:{accent};margin-bottom:6px;">{_cv_esc(num_val)}</div>'
+            f'<div data-cb="label" data-key="{key_attr}" style="font-size:0.9rem;font-weight:700;color:var(--text,#374151);margin-bottom:4px;">{_cv_esc(label)}</div>'
+            f'<div style="font-size:0.8rem;color:var(--muted,#5f6368);">{_cv_esc(detail)}</div>'
+            f'{link_html}</li>'
+        )
+
+    return (
+        f'<ol style="list-style:none;margin:1.5rem 0;padding:0;display:flex;flex-wrap:wrap;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+        f'overflow:hidden;border:1px solid var(--border,#e5e7eb);">'
+        f'{"".join(items_html)}</ol>'
+    )
 _RENDERERS["next_step_strip"] = _render_next_step_strip
 
 
@@ -23300,21 +23562,38 @@ _RENDERERS["focus_lens"] = _render_focus_lens
 
 
 def _render_take_away_card(b: dict) -> str:
-    headline = _esc(b.get('headline', ''))
-    sub = _md_inline(b.get('sub', ''))
-    accent = _esc(b.get('accent', '#4f46e5'))
-    size = _esc(b.get('size', '1.4rem'))
-    gradient = b.get('gradient', '')
-    if gradient:
-        h_style = ('background:' + _cv_esc(gradient) + ';-webkit-background-clip:text;'
-                   '-webkit-text-fill-color:transparent;background-clip:text;')
+    # Single-insight pull quote card with optional 2-stop gradient styling
+    headline = _first_text(b.get('headline'), b.get('text'), b.get('quote'), b.get('insight'))
+    sub_raw = _first_text(b.get('sub'), b.get('author'), b.get('source'))
+    sub = _md_inline(sub_raw) if sub_raw else ''
+    accent = _safe_css(b.get('accent'), '#4f46e5')
+    size = _safe_css(b.get('size'), '1.9rem')
+
+    grad_raw = b.get('gradient')
+    has_gradient = isinstance(grad_raw, list) and len(grad_raw) >= 2 and isinstance(grad_raw[0], str) and isinstance(grad_raw[1], str)
+
+    raw_text_col = _first_text(b.get('text_color'))
+    if has_gradient:
+        g0 = _safe_css(grad_raw[0], accent)
+        g1 = _safe_css(grad_raw[1], accent)
+        bg = f'linear-gradient(135deg,{g0},{g1})'
+        border = 'none'
+        text_color = _safe_css(raw_text_col, '#fff')
+        sub_color = 'rgba(255,255,255,0.7)'
     else:
-        h_style = 'color:' + accent + ';'
-    sub_div = ('<div style="font-size:0.9rem;line-height:1.6;color:var(--muted,#5f6368);">' + sub + '</div>') if sub else ''
-    return ('<div data-cb="node" data-key="' + _ck(b.get('headline'), 'take_away_card') + '" style="margin:2rem 0;padding:28px 32px;border-radius:16px;background:linear-gradient('
-            '135deg,' + accent + '0d,' + accent + '1a);border:1px solid ' + accent + '33;text-align:center;">'
-            '<div style="font-size:' + size + ';font-weight:800;line-height:1.2;margin-bottom:10px;'
-            + h_style + '">' + headline + '</div>' + sub_div + '</div>')
+        bg = f'linear-gradient(135deg,color-mix(in srgb, {accent} 6%, transparent),color-mix(in srgb, {accent} 10%, transparent))'
+        border = f'2px solid color-mix(in srgb, {accent} 20%, transparent)'
+        text_color = _safe_css(raw_text_col, 'var(--text)') if raw_text_col else 'var(--text)'
+        sub_color = accent
+
+    sub_html = f'<div style="font-size:0.82rem;font-weight:600;color:{sub_color};margin-top:16px;text-transform:uppercase;letter-spacing:0.1em;">{sub}</div>' if sub else ''
+
+    return (
+        f'<div data-cb="node" data-key="{_ck(b.get("headline"), "take_away_card")}" style="background:{bg};border:{border};border-radius:16px;padding:36px 32px;margin:1.5rem 0;text-align:center;">'
+        f'<div aria-hidden="true" style="font-size:2rem;margin-bottom:16px;opacity:0.5;color:{sub_color};">❝</div>'
+        f'<div style="font-size:{size};font-weight:800;color:{text_color};line-height:1.25;letter-spacing:-0.02em;">{_cv_esc(headline)}</div>'
+        f'{sub_html}</div>'
+    )
 _RENDERERS["take_away_card"] = _render_take_away_card
 
 

@@ -17121,19 +17121,60 @@ return '<div style="margin:1rem 0;overflow-x:auto;">'
 + '</table></div>';
 };
 _RENDERERS['confidence_bar'] = function(b) {
-var value = Math.min(Math.max(parseFloat(b.value) || 0, 0), 1);
-var pct = Math.round(value * 100);
-var color = b.color || '#7c3aed';
-var uid = Math.random().toString(36).substr(2, 6);
-return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">'
-+ '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
-+ '<span style="font-size:0.875rem;font-weight:500;color:#374151;">' + _esc(b.label || '') + '</span>'
-+ '<span style="font-size:0.875rem;font-weight:700;color:' + color + ';">' + pct + '%</span>'
+var colorOverride = _safe_css(b.color, '');
+function renderSingle(lbl, valRaw) {
+var num = _numLoose(valRaw);
+var val = num === null ? 0 : num;
+var pct = Math.max(0, Math.min(100, val));
+var rounded = Math.floor(pct + 0.5);
+var barColor = '';
+var textColor = '';
+if (colorOverride) {
+barColor = colorOverride;
+textColor = colorOverride;
+} else if (rounded >= 70) {
+barColor = '#22c55e';
+textColor = '#15803d';
+} else if (rounded >= 40) {
+barColor = '#f59e0b';
+textColor = '#b45309';
+} else {
+barColor = '#ef4444';
+textColor = '#dc2626';
+}
+var ariaLabel = lbl ? (lbl + ': ' + rounded + '%') : (rounded + '%');
+return '<div style="margin-bottom:8px;">'
++ '<div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;">'
++ '<span>' + _esc(lbl) + '</span>'
++ '<span style="font-weight:700;color:' + textColor + ';">' + rounded + '%</span>'
 + '</div>'
-+ '<div style="background:#f3f4f6;border-radius:999px;height:8px;overflow:hidden;">'
-+ '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:999px;transition:width 0.6s ease;"></div>'
-+ '</div>'
-+ '</div>';
++ '<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + rounded + '" aria-label="' + _esc(ariaLabel) + '" style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">'
++ '<div style="width:' + rounded + '%;height:100%;background:' + barColor + ';border-radius:4px;transition:width .4s;"></div>'
++ '</div></div>';
+}
+var rawItems = Array.isArray(b.items) ? b.items : [];
+var blockLabel = _firstText(b.label);
+var content = '';
+if (rawItems.length > 0) {
+var headHtml = blockLabel ? '<div style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _esc(blockLabel) + '</div>' : '';
+var bars = [];
+var limit = Math.min(rawItems.length, 20);
+for (var i = 0; i < limit; i++) {
+var item = rawItems[i];
+if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
+var iLbl = _firstText(item.label, item.name);
+var iVal = item.value !== undefined ? item.value : 0;
+bars.push(renderSingle(iLbl, iVal));
+} else {
+bars.push(renderSingle('', item));
+}
+}
+content = headHtml + bars.join('');
+} else {
+var labelVal = blockLabel ? blockLabel : 'Confidence';
+content = renderSingle(labelVal, b.value !== undefined ? b.value : 0);
+}
+return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">' + content + '</div>';
 };
 _RENDERERS['token_budget_meter'] = function(b) {
 var used = parseInt(b.used) || 0;
@@ -20727,38 +20768,78 @@ return '<div data-cb="node" data-key="' + _ckey(b.url, 'schema_qr') + '" style="
 + scriptHtml;
 };
 _RENDERERS['take_away_card'] = function(b) {
-var headline   = b.headline || b.text || b.quote || b.insight || '';
-var sub        = b.sub || b.author || b.source || '';
-var accent     = b.accent || '#4f46e5';
-var size       = b.size || '1.9rem';
-var gradient   = b.gradient ? b.gradient : null;
-var textColor  = b.text_color || (gradient ? '#fff' : 'var(--text)');
-var bg         = gradient
-? 'linear-gradient(135deg,' + gradient[0] + ',' + gradient[1] + ')'
-: 'linear-gradient(135deg,' + accent + '0f,' + accent + '1a)';
-var border     = gradient ? 'none' : '2px solid ' + accent + '33';
+var headline = _firstText(b.headline, b.text, b.quote, b.insight);
+var subRaw = _firstText(b.sub, b.author, b.source);
+var sub = subRaw ? _md_inline(subRaw) : '';
+var accent = _safe_css(b.accent, '#4f46e5');
+var size = _safe_css(b.size, '1.9rem');
+var gradRaw = b.gradient;
+var hasGradient = Array.isArray(gradRaw) && gradRaw.length >= 2 && typeof gradRaw[0] === 'string' && typeof gradRaw[1] === 'string';
+var rawTextCol = _firstText(b.text_color);
+var bg = '';
+var border = '';
+var textColor = '';
+var subColor = '';
+if (hasGradient) {
+var g0 = _safe_css(gradRaw[0], accent);
+var g1 = _safe_css(gradRaw[1], accent);
+bg = 'linear-gradient(135deg,' + g0 + ',' + g1 + ')';
+border = 'none';
+textColor = _safe_css(rawTextCol, '#fff');
+subColor = 'rgba(255,255,255,0.7)';
+} else {
+bg = 'linear-gradient(135deg,color-mix(in srgb, ' + accent + ' 6%, transparent),color-mix(in srgb, ' + accent + ' 10%, transparent))';
+border = '2px solid color-mix(in srgb, ' + accent + ' 20%, transparent)';
+textColor = rawTextCol ? _safe_css(rawTextCol, 'var(--text)') : 'var(--text)';
+subColor = accent;
+}
+var subHtml = sub ? '<div style="font-size:0.82rem;font-weight:600;color:' + subColor + ';margin-top:16px;text-transform:uppercase;letter-spacing:0.1em;">' + sub + '</div>' : '';
 return '<div data-cb="node" data-key="' + _ckey(b.headline, 'take_away_card') + '" style="background:' + bg + ';border:' + border + ';border-radius:16px;padding:36px 32px;margin:1.5rem 0;text-align:center;">'
-+ '<div style="font-size:2rem;margin-bottom:16px;opacity:0.5;color:' + (gradient ? 'rgba(255,255,255,0.7)' : accent) + ';">❝</div>'
-+ '<div style="font-size:' + _esc(size) + ';font-weight:800;color:' + textColor + ';line-height:1.25;letter-spacing:-0.02em;">' + _esc(headline) + '</div>'
-+ (sub ? '<div style="font-size:0.82rem;font-weight:600;color:' + (gradient ? 'rgba(255,255,255,0.7)' : accent) + ';margin-top:16px;text-transform:uppercase;letter-spacing:0.1em;">' + _esc(sub) + '</div>' : '')
-+ '</div>';
++ '<div aria-hidden="true" style="font-size:2rem;margin-bottom:16px;opacity:0.5;color:' + subColor + ';">❝</div>'
++ '<div style="font-size:' + size + ';font-weight:800;color:' + textColor + ';line-height:1.25;letter-spacing:-0.02em;">' + _esc(headline) + '</div>'
++ subHtml + '</div>';
 };
 _RENDERERS['next_step_strip'] = function(b) {
-var steps  = b.steps || [];
-var accent = b.accent || '#4f46e5';
-var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
-steps.forEach(function(s, i) {
-var isLast = i === steps.length - 1;
-var rawKey = typeof s === 'string' ? s : (s.title || s.label || '');
-var keyAttr = _esc(String(rawKey));
-html += '<div data-cb="item" data-key="' + keyAttr + '" style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
-+ '<div style="font-size:1.4rem;font-weight:900;color:' + accent + ';margin-bottom:6px;">' + _esc(String(s.number || (i + 1))) + '</div>'
-+ '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;">' + _esc(s.label || '') + '</div>'
-+ '<div style="font-size:0.8rem;color:var(--muted);">' + _esc(s.detail || s.action || '') + '</div>'
-+ (s.url ? '<a href="' + _esc(s.url) + '" target="_top" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:' + accent + ';text-decoration:none;">Open →</a>' : '')
-+ '</div>';
-});
-return html + '</div>';
+var rawSteps = Array.isArray(b.steps) ? b.steps : [];
+var accent = _safe_css(b.accent, '#4f46e5');
+var itemsHtml = [];
+var limit = Math.min(rawSteps.length, 12);
+for (var i = 0; i < limit; i++) {
+var s = rawSteps[i];
+var numVal = '';
+var label = '';
+var detail = '';
+var url = '';
+var rawKey = '';
+if (s !== null && typeof s === 'object' && !Array.isArray(s)) {
+numVal = _firstText(s.number, String(i + 1));
+label = _firstText(s.label, s.title);
+detail = _firstText(s.detail, s.action);
+url = _firstText(s.url);
+rawKey = _firstText(s.title, s.label);
+} else {
+var sStr = _textLoose(s);
+numVal = String(i + 1);
+label = sStr;
+detail = '';
+url = '';
+rawKey = sStr;
+}
+var keyAttr = _esc(rawKey);
+var safeUrl = url ? _safe_href(url, ['https', 'mailto']) : '';
+var ariaOpen = label ? ('Open: ' + label) : 'Open';
+var linkHtml = safeUrl ? '<a href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" aria-label="' + _esc(ariaOpen) + '" style="display:inline-block;margin-top:10px;font-size:0.78rem;font-weight:600;color:' + accent + ';text-decoration:none;">Open →</a>' : '';
+itemsHtml.push(
+'<li data-cb="item" data-key="' + keyAttr + '" style="flex:1 1 150px;padding:20px 18px;background:var(--surface,#fff);border-right:1px solid var(--border,#e5e7eb);">'
++ '<div style="font-size:1.4rem;font-weight:900;color:' + accent + ';margin-bottom:6px;">' + _esc(numVal) + '</div>'
++ '<div data-cb="label" data-key="' + keyAttr + '" style="font-size:0.9rem;font-weight:700;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</div>'
++ '<div style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc(detail) + '</div>'
++ linkHtml + '</li>'
+);
+}
+return '<ol style="list-style:none;margin:1.5rem 0;padding:0;display:flex;flex-wrap:wrap;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
++ 'overflow:hidden;border:1px solid var(--border,#e5e7eb);">'
++ itemsHtml.join('') + '</ol>';
 };
 _RENDERERS['copy_prompt'] = function(b) {
 var uid = _payloadUid(b);
@@ -29947,18 +30028,19 @@ return '<button onclick="' + uid + 'rate(' + n + ')" ' +
 );
 };
 _RENDERERS['leaderboard_card'] = function(b) {
-var courseId = b.course_id || 'default';
-var title    = b.title     || 'Leaderboard';
-var scoreKey = b.score_key || 'quiz1';
-var limit    = Math.min(parseInt(b.limit || 10), 20);
-var rows     = [];
+var courseId = _firstText(b.course_id, 'default');
+var titleText = _firstText(b.title, 'Leaderboard');
+var limitVal = _numLoose(b.limit);
+var limit = limitVal !== null ? Math.max(1, Math.min(20, Math.floor(limitVal))) : 10;
+var rows = [];
 if (typeof SpreadsheetApp !== 'undefined') {
 try {
+var scoreKey = _firstText(b.score_key, 'quiz1');
 var cohort = a2uiCohortRead(courseId) || [];
 rows = cohort
 .map(function(r) {
 var score = r.progress && r.progress['score:' + scoreKey];
-return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null };
+return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null, unit: '%' };
 })
 .filter(function(r) { return r.score !== null; })
 .sort(function(a, b) { return b.score - a.score; })
@@ -29966,35 +30048,80 @@ return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(s
 } catch(e) {}
 }
 if (!rows.length) {
-rows = b.items || [
-{name:'alice', score:94}, {name:'bob', score:87}, {name:'carol', score:81},
-{name:'dave', score:76}, {name:'eva', score:72}
+if (Array.isArray(b.items) && b.items.length > 0) {
+rows = b.items;
+} else if (Array.isArray(b.rows) && b.rows.length > 0) {
+rows = b.rows;
+} else {
+rows = [
+{name: 'alice', score: 94, unit: '%'},
+{name: 'bob', score: 87, unit: '%'},
+{name: 'carol', score: 81, unit: '%'},
+{name: 'dave', score: 76, unit: '%'},
+{name: 'eva', score: 72, unit: '%'}
 ];
 }
-var MEDALS = ['🥇','🥈','🥉'];
-var items = rows.map(function(r, i) {
+}
+var slicedRows = rows.slice(0, limit);
+var topScore = null;
+if (slicedRows.length > 0 && slicedRows[0] !== null && typeof slicedRows[0] === 'object') {
+var sTop = _numLoose(slicedRows[0].score);
+if (sTop !== null && sTop > 0) {
+topScore = sTop;
+}
+}
+var medals = ['🥇', '🥈', '🥉'];
+var itemsHtml = [];
+for (var i = 0; i < slicedRows.length; i++) {
+var r = slicedRows[i];
+if (r === null || typeof r !== 'object' || Array.isArray(r)) {
+r = {name: _textLoose(r)};
+}
 var isTop = i < 3;
-var barW  = rows[0] && rows[0].score > 0 ? Math.round((r.score / rows[0].score) * 100) : 0;
-var col   = i === 0 ? '#8c7103' : i === 1 ? '#617592' : i === 2 ? '#bb5604' : '#475569';
-var rowKey = _esc(r.id || r.name || String(i));
-return '<div data-cb="item" data-key="' + rowKey + '" style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
-'<div style="width:24px;text-align:center;font-size:' + (isTop ? '1rem' : '0.72rem') + ';color:' + (isTop ? col : '#334155') + ';font-weight:700;flex-shrink:0;">' + (isTop ? MEDALS[i] : (i + 1)) + '</div>' +
-'<div style="flex:1;min-width:0;">' +
-'<div data-cb="label" data-key="' + rowKey + '" style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
-'<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:5px;">' +
-'<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>' +
-'</div>' +
-'</div>' +
-'<div style="font-size:0.82rem;font-weight:800;color:' + col + ';flex-shrink:0;">' + r.score + '%</div>' +
-'</div>';
-}).join('');
-return (
-'<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
-'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">' +
-'<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
-items +
-'</div>'
+var rankIcon = isTop ? medals[i] : String(i + 1);
+var col = i === 0 ? '#8c7103' : (i === 1 ? '#617592' : (i === 2 ? '#bb5604' : '#475569'));
+var rankCol = isTop ? col : '#334151';
+var rankSize = isTop ? '1rem' : '0.72rem';
+var name = _firstText(r.name, r.email);
+if (!name) {
+name = '?';
+}
+var rowKey = _firstText(r.id, r.name, r.email);
+if (!rowKey) {
+rowKey = String(i);
+}
+var rawScore = r.score;
+var numScore = _numLoose(rawScore);
+var barW = 0;
+if (topScore !== null && numScore !== null && topScore > 0) {
+barW = Math.max(0, Math.min(100, Math.floor((numScore / topScore) * 100 + 0.5)));
+}
+var scoreText = _textLoose(rawScore);
+if (!scoreText) {
+scoreText = '—';
+}
+var unitStr = _textLoose(r.unit);
+if (unitStr) {
+scoreText += unitStr;
+}
+var bgRow = i === 0 ? '#fffbeb' : '#f9fafb';
+itemsHtml.push(
+'<li data-cb="item" data-key="' + _esc(rowKey) + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + bgRow + ';margin-bottom:4px;font-size:0.85rem;">'
++ '<div style="width:24px;text-align:center;font-size:' + rankSize + ';color:' + rankCol + ';font-weight:700;flex-shrink:0;">' + rankIcon + '</div>'
++ '<div style="flex:1;min-width:0;">'
++ '<div data-cb="label" data-key="' + _esc(rowKey) + '" style="font-size:0.78rem;font-weight:600;color:#374151;">' + _esc(name) + '</div>'
++ '<div style="height:4px;border-radius:2px;background:#e5e7eb;margin-top:5px;overflow:hidden;">'
++ '<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>'
++ '</div></div>'
++ '<div style="font-size:0.82rem;font-weight:800;color:' + col + ';flex-shrink:0;">' + _esc(scoreText) + '</div>'
++ '</li>'
 );
+}
+return '<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
++ 'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
++ '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(titleText) + '</div>'
++ '<ol style="list-style:none;margin:0;padding:0;">' + itemsHtml.join('') + '</ol>'
++ '</div>';
 };
 
 
@@ -36843,34 +36970,37 @@ _esc(text) + '</p>' +
 '</div>';
 };
 _RENDERERS['split_stat'] = function(b) {
-var value   = String(b.value !== undefined ? b.value : '—');
-var prefix  = b.prefix  || '';
-var suffix  = b.suffix  || '';
-var heading = b.heading || '';
-var body    = b.body    || '';
-var colour  = b.colour  || '#4f46e5';
-var flip    = b.flip    || false;
-var statHtml =
+var valLoose = _textLoose(b.value);
+var value = valLoose ? valLoose : '—';
+var prefix = _textLoose(b.prefix);
+var suffix = _textLoose(b.suffix);
+var heading = _textLoose(b.heading);
+var body = _textLoose(b.body);
+var rawCol = _firstText(b.colour, b.color);
+var colour = _safe_css(rawCol, '#4f46e5');
+var flip = b.flip === true;
+var prefixHtml = prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '';
+var suffixHtml = suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '';
+var statCol =
 '<div style="flex:0 0 auto;text-align:center;padding:0 24px;">' +
 '<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;color:#fff;' +
-'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '55;">' +
-(prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
-_esc(value) +
-(suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '') +
+'text-shadow:0 0 20px ' + colour + ',0 0 60px color-mix(in srgb, ' + colour + ' 33%, transparent);">' +
+prefixHtml + _esc(value) + suffixHtml +
 '</div>' +
 '<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;' +
 'background:' + colour + ';box-shadow:0 0 16px ' + colour + ';"></div>' +
 '</div>';
-var textHtml =
-'<div style="flex:1;min-width:0;padding:0 8px;' +
-'border-left:1px solid rgba(255,255,255,0.08);' +
-(flip ? 'border-left:none;border-right:1px solid rgba(255,255,255,0.08);' : '') + '">' +
-(heading ? '<div style="font-size:1.1rem;font-weight:800;color:rgba(255,255,255,0.92);margin-bottom:8px;">' + _esc(heading) + '</div>' : '') +
-(body    ? '<div style="font-size:0.88rem;color:rgba(255,255,255,0.5);line-height:1.65;">' + _esc(body) + '</div>' : '') +
+var borderSide = flip ? 'border-right:1px solid rgba(255,255,255,0.08);' : 'border-left:1px solid rgba(255,255,255,0.08);';
+var headingHtml = heading ? '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:8px;">' + _esc(heading) + '</div>' : '';
+var bodyHtml = body ? '<div style="font-size:0.88rem;color:#94a3b8;line-height:1.65;">' + _md_inline(body) + '</div>' : '';
+var textCol =
+'<div style="flex:1;min-width:0;padding:0 8px;' + borderSide + '">' +
+headingHtml + bodyHtml +
 '</div>';
-var left  = flip ? textHtml : statHtml;
-var right = flip ? statHtml : textHtml;
-return '<div data-cb="node" data-key="' + _ckey(b.heading, 'split_stat') + '" style="display:flex;align-items:center;gap:24px;padding:28px 0;">' +
+var left = flip ? textCol : statCol;
+var right = flip ? statCol : textCol;
+return '<div data-cb="node" data-key="' + _ckey(b.heading, 'split_stat') + '" style="display:flex;align-items:center;gap:24px;padding:28px;' +
+'margin:1.5rem 0;border:1px solid #1e293b;border-radius:14px;background:#0f172a;">' +
 left + right +
 '</div>';
 };
@@ -36912,38 +37042,43 @@ return '<div data-cb="node" data-key="' + _ckey(b.text, 'section_label') + '" st
 '</div>';
 };
 _RENDERERS['count_up_stat'] = function(b) {
-var target   = parseInt(b.value)   || 0;
-var label    = b.label    || '';
-var prefix   = b.prefix   || '';
-var suffix   = b.suffix   || '';
-var colour   = b.colour   || '#4f46e5';
-var duration = b.duration || 1800;
-var size     = b.size     || '4rem';
-var uid      = 'cu' + Math.random().toString(36).substr(2, 5);
-return '<div data-cb="node" data-key="' + _ckey(b.label, 'count_up_stat') + '" style="text-align:center;padding:32px 16px;">' +
-'<div style="font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;' +
-'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '55;">' +
-(prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
-'<span id="' + uid + '">0</span>' +
-(suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '') +
-'</div>' +
-'<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;' +
-'background:' + colour + ';box-shadow:0 0 16px ' + colour + ';"></div>' +
-(label ? '<div style="margin-top:12px;font-size:0.78rem;color:rgba(255,255,255,0.4);' +
-'text-transform:uppercase;letter-spacing:0.12em;">' + _esc(label) + '</div>' : '') +
-'</div>' +
-'<script>(function(){' +
-'var el=document.getElementById("' + uid + '");' +
-'if(!el)return;' +
-'var target=' + target + ',dur=' + duration + ',start=null;' +
-'function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}' +
-'requestAnimationFrame(function tick(ts){' +
-'if(!start)start=ts;' +
-'var prog=Math.min(1,(ts-start)/dur);' +
-'el.textContent=Math.round(ease(prog)*target).toLocaleString();' +
-'if(prog<1)requestAnimationFrame(tick);' +
-'});' +
-'})();<\/script>';
+var valNum = _numLoose(b.value);
+var target = valNum !== null ? Math.floor(valNum) : 0;
+target = Math.max(-1000000000000000, Math.min(1000000000000000, target));
+var label = _textLoose(b.label);
+var prefix = _textLoose(b.prefix);
+var suffix = _textLoose(b.suffix);
+var rawCol = _firstText(b.colour, b.color);
+var colour = _safe_css(rawCol, '#4f46e5');
+var size = _safe_css(b.size, '4rem');
+var durNum = _numLoose(b.duration);
+var duration = durNum === null ? 1800 : Math.max(0, Math.min(60000, Math.floor(durNum)));
+var uidSeed = typeof _payloadUid === 'function' ? _payloadUid(b) : (typeof _wa_uid === 'function' ? _wa_uid(b) : _firstText(b.label, String(target), 'stat'));
+var uid = 'cu-' + uidSeed;
+var prefixHtml = prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '';
+var suffixHtml = suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '';
+var labelHtml = label ? '<div style="margin-top:12px;font-size:0.78rem;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.12em;">' + _esc(label) + '</div>' : '';
+var script = '<script>(function(){'
++ 'var el=document.getElementById("' + uid + '");'
++ 'if(!el)return;'
++ 'var target=' + target + ',dur=' + duration + ';'
++ 'if(dur<=0||(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){el.textContent=target.toLocaleString();return;}'
++ 'el.textContent="0";var start=null;'
++ 'function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}'
++ 'requestAnimationFrame(function tick(ts){'
++ 'if(!start)start=ts;'
++ 'var prog=Math.min(1,(ts-start)/dur);'
++ 'el.textContent=Math.round(ease(prog)*target).toLocaleString();'
++ 'if(prog<1)requestAnimationFrame(tick);'
++ '});'
++ '})();<\/script>';
+return '<div data-cb="node" data-key="' + _ckey(b.label, 'count_up_stat') + '" style="text-align:center;padding:32px 16px;">'
++ '<div style="font-size:' + size + ';font-weight:900;line-height:1;color:' + colour + ';'
++ 'text-shadow:0 0 20px ' + colour + ',0 0 60px color-mix(in srgb, ' + colour + ' 33%, transparent);">'
++ prefixHtml + '<span id="' + uid + '">' + target + '</span>' + suffixHtml + '</div>'
++ '<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;'
++ 'background:' + colour + ';box-shadow:0 0 16px ' + colour + ';"></div>'
++ labelHtml + '</div>' + script;
 };
 _RENDERERS['text_highlight'] = function(b) {
 var text   = b.text   || 'Build **anything** with just **JSON**.';
@@ -37926,18 +38061,72 @@ return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
 + '</div></div>';
 };
 _RENDERERS['product_thumbnail'] = function(b) {
-var badge = b.badge ? '<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#4f46e5);color:#fff;font-size:0.72rem;font-weight:700;">' + _esc(b.badge) + '</div>' : '';
-var img   = b.image_url ? '<div style="position:relative;"><img src="' + _esc(b.image_url) + '" alt="' + _esc(b.title||'') + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">' + badge + '</div>' : '';
-var compare = b.compare_at_price ? '<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">' + _esc(b.compare_at_price) + '</span>' : '';
-var status = b.status ? '<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:' + (b.status === 'in_stock' ? '#d1fae5' : '#fee2e2') + ';color:' + (b.status === 'in_stock' ? '#10b981' : '#ef4444') + ';margin-left:6px;">' + _esc(b.status.replace(/_/g,' ')) + '</span>' : '';
-return '<div data-cb="node" data-key="' + _ckey(b.sku, 'product_thumbnail') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">'
-+ img
+var rawImg = _firstText(b.image_url, b.image, b.thumbnail);
+var safeImg = rawImg ? _safe_href(rawImg, ['https', 'http']) : '';
+var badgeText = _firstText(b.badge);
+var badgeHtml = badgeText ? '<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#4f46e5);color:#fff;font-size:0.72rem;font-weight:700;">' + _esc(badgeText) + '</div>' : '';
+var titleText = _firstText(b.title, b.name);
+var imgHtml = '';
+if (safeImg) {
+imgHtml = '<div style="position:relative;"><img src="' + _esc(safeImg) + '" alt="' + _esc(titleText) + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">' + badgeHtml + '</div>';
+} else if (badgeHtml) {
+imgHtml = '<div style="position:relative;"><div style="background:#f3f4f6;aspect-ratio:1;border-radius:8px;"></div>' + badgeHtml + '</div>';
+}
+var vendorText = _firstText(b.vendor);
+var vendorHtml = vendorText ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(vendorText) + '</div>' : '';
+var titleHtml = '<div style="font-size:0.875rem;font-weight:600;color:var(--text,#111827);margin:2px 0;">' + _esc(titleText) + '</div>';
+var skuText = _firstText(b.sku);
+var skuHtml = skuText ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">SKU: ' + _esc(skuText) + '</div>' : '';
+var priceStr = _textLoose(b.price);
+var priceSpan = '<span style="font-weight:700;color:var(--text,#111827);">' + _esc(priceStr) + '</span>';
+var compareStr = _textLoose(b.compare_at_price);
+var compareHtml = compareStr ? '<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">' + _esc(compareStr) + '</span>' : '';
+var statusRaw = _firstText(b.status);
+var statusHtml = '';
+if (statusRaw) {
+var stNorm = statusRaw.toLowerCase();
+var bgCol = '#fee2e2';
+var txtCol = '#ef4444';
+if (stNorm === 'active' || stNorm === 'in_stock') {
+bgCol = '#d1fae5';
+txtCol = '#10b981';
+} else if (stNorm === 'draft') {
+bgCol = '#fef3c7';
+txtCol = '#b45309';
+} else if (stNorm === 'archived') {
+bgCol = '#f3f4f6';
+txtCol = '#4b5563';
+}
+var statusLabel = statusRaw.replace(/_/g, ' ');
+statusHtml = '<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:' + bgCol + ';color:' + txtCol + ';margin-left:6px;">' + _esc(statusLabel) + '</span>';
+}
+var priceRow = '<div style="margin-top:6px;">' + priceSpan + compareHtml + statusHtml + '</div>';
+var tagsRaw = Array.isArray(b.tags) ? b.tags : [];
+var tagLis = [];
+var tagsLimit = Math.min(tagsRaw.length, 12);
+for (var i = 0; i < tagsLimit; i++) {
+var tStr = _textLoose(tagsRaw[i]);
+if (tStr) {
+tagLis.push('<li style="padding:1px 6px;border-radius:4px;background:#f3f4f6;color:#4b5563;font-size:0.7rem;">' + _esc(tStr) + '</li>');
+}
+}
+var tagsHtml = tagLis.length ? '<ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px;">' + tagLis.join('') + '</ul>' : '';
+var rawUrl = _firstText(b.url);
+var safeCardUrl = rawUrl ? _safe_href(rawUrl, ['https', 'mailto']) : '';
+var keyAttr = _ckey(b.sku, 'product_thumbnail');
+var tagOpen = '';
+var tagClose = '';
+if (safeCardUrl) {
+tagOpen = '<a data-cb="node" data-key="' + keyAttr + '" href="' + _esc(safeCardUrl) + '" style="display:block;text-decoration:none;color:inherit;margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);max-width:200px;">';
+tagClose = '</a>';
+} else {
+tagOpen = '<div data-cb="node" data-key="' + keyAttr + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">';
+tagClose = '</div>';
+}
+return tagOpen + imgHtml
 + '<div style="padding:10px 12px;">'
-+ (b.vendor ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.vendor) + '</div>' : '')
-+ '<div style="font-size:0.875rem;font-weight:600;color:var(--text,#111827);margin:2px 0;">' + _esc(b.title || '') + '</div>'
-+ (b.sku ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">SKU: ' + _esc(b.sku) + '</div>' : '')
-+ '<div style="margin-top:6px;"><span style="font-weight:700;color:var(--text,#111827);">' + _esc(b.price || '') + '</span>' + compare + status + '</div>'
-+ '</div></div>';
++ vendorHtml + titleHtml + skuHtml + priceRow + tagsHtml
++ '</div>' + tagClose;
 };
 _RENDERERS['customer_logo_grid'] = function(b) {
 var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--muted,#6b7280);text-align:center;margin-bottom:16px;">' + _esc(b.title) + '</div>' : '';
@@ -37960,23 +38149,68 @@ return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
 + '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;">' + logos + '</div></div>';
 };
 _RENDERERS['github_repo_card'] = function(b) {
-var repo = b.repo || b.label || '';
-var langColors = { JavaScript:'#f1e05a', TypeScript:'#3178c6', Python:'#3572A5', Go:'#00ADD8', Rust:'#dea584', Java:'#b07219', CSS:'#563d7c', HTML:'#e34c26' };
-var langColor  = langColors[b.language] || '#6b7280';
-var starsHtml  = b.stars !== undefined ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">⭐ ' + _esc(String(b.stars)) + '</span>' : '';
-var forksHtml  = b.forks !== undefined ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 ' + _esc(String(b.forks)) + '</span>' : '';
-var langHtml   = b.language ? '<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:' + langColor + ';display:inline-block;"></span>' + _esc(b.language) + '</span>' : '';
-var repoUrl    = b.url || (repo ? 'https://github.com/' + repo : '#');
+var repoRaw = _firstText(b.repo, b.name);
+var ownerRaw = _firstText(b.owner);
+var repoPath = '';
+if (repoRaw.indexOf('/') !== -1) {
+repoPath = repoRaw;
+} else if (ownerRaw && repoRaw) {
+repoPath = ownerRaw + '/' + repoRaw;
+} else {
+repoPath = repoRaw;
+}
+var urlVal = _firstText(b.url);
+var safeUrl = '';
+if (urlVal) {
+safeUrl = _safe_href(urlVal, ['https', 'mailto']);
+} else if (repoPath && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repoPath)) {
+safeUrl = 'https://github.com/' + repoPath;
+}
+var linkHtml = '';
+if (safeUrl) {
+linkHtml = '<a href="' + _esc(safeUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repoPath) + '</a>';
+} else {
+linkHtml = '<span style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);">' + _esc(repoPath) + '</span>';
+}
+var visText = _firstText(b.visibility);
+var visHtml = visText ? '<span style="font-size:0.7rem;padding:1px 6px;border:1px solid var(--border,#e5e7eb);border-radius:4px;color:var(--muted,#6b7280);">' + _esc(visText) + '</span>' : '';
+var labelText = _firstText(b.label);
+var labelHtml = (labelText && labelText !== repoPath) ? '<div style="font-size:0.85rem;font-weight:700;color:var(--text,#111827);margin-bottom:6px;">' + _esc(labelText) + '</div>' : '';
+var descText = _firstText(b.description);
+var descHtml = descText ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:10px;">' + _esc(descText) + '</div>' : '';
+var topicsRaw = Array.isArray(b.topics) ? b.topics : [];
+var topicSpans = [];
+var topicsLimit = Math.min(topicsRaw.length, 20);
+for (var i = 0; i < topicsLimit; i++) {
+var tStr = _textLoose(topicsRaw[i]);
+if (tStr) {
+topicSpans.push('<span style="padding:2px 8px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:0.72rem;">' + _esc(tStr) + '</span>');
+}
+}
+var topicsHtml = topicSpans.length ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">' + topicSpans.join('') + '</div>' : '';
+var starsStr = _textLoose(b.stars);
+var starsHtml = starsStr ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">⭐ ' + _esc(starsStr) + '</span>' : '';
+var forksStr = _textLoose(b.forks);
+var forksHtml = forksStr ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 ' + _esc(forksStr) + '</span>' : '';
+var langColors = {
+'JavaScript': '#f1e05a', 'TypeScript': '#3178c6', 'Python': '#3572A5',
+'Go': '#00ADD8', 'Rust': '#dea584', 'Java': '#b07219',
+'CSS': '#563d7c', 'HTML': '#e34c26'
+};
+var langStr = _firstText(b.language);
+var langHtml = '';
+if (langStr) {
+var dotColor = Object.prototype.hasOwnProperty.call(langColors, langStr) ? langColors[langStr] : '#6b7280';
+langHtml = '<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:' + dotColor + ';display:inline-block;"></span>' + _esc(langStr) + '</span>';
+}
+var statsRow = (starsHtml || forksHtml || langHtml) ? '<div style="display:flex;gap:14px;">' + starsHtml + forksHtml + langHtml + '</div>' : '';
+var licText = _firstText(b.license);
+var licHtml = licText ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:6px;">⚖️ ' + _esc(licText) + '</div>' : '';
 return '<div data-cb="node" data-key="' + _ckey(b.repo, 'github_repo_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
 + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
 + '<span style="font-size:1rem;">📦</span>'
-+ '<a href="' + _safeUrl(repoUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repo) + '</a>'
-+ (b.visibility ? '<span style="font-size:0.7rem;padding:1px 6px;border:1px solid var(--border,#e5e7eb);border-radius:4px;color:var(--muted,#6b7280);">' + _esc(b.visibility) + '</span>' : '')
-+ '</div>'
-+ (b.description ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:10px;">' + _esc(b.description) + '</div>' : '')
-+ (b.topics ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">' + b.topics.map(function(t){ return '<span style="padding:2px 8px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:0.72rem;">' + _esc(t) + '</span>'; }).join('') + '</div>' : '')
-+ '<div style="display:flex;gap:14px;">' + starsHtml + forksHtml + langHtml + '</div>'
-+ (b.license ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:6px;">⚖️ ' + _esc(b.license) + '</div>' : '')
++ linkHtml + visHtml + '</div>'
++ labelHtml + descHtml + topicsHtml + statsRow + licHtml
 + '</div>';
 };
 _RENDERERS['gauge_sla'] = function(b) {

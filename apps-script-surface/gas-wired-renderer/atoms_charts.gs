@@ -2119,19 +2119,66 @@ _RENDERERS['llm_comparison_table'] = function(b) {
 };
 
 _RENDERERS['confidence_bar'] = function(b) {
-  var value = Math.min(Math.max(parseFloat(b.value) || 0, 0), 1);
-  var pct = Math.round(value * 100);
-  var color = b.color || '#7c3aed';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
-    + '<span style="font-size:0.875rem;font-weight:500;color:#374151;">' + _esc(b.label || '') + '</span>'
-    + '<span style="font-size:0.875rem;font-weight:700;color:' + color + ';">' + pct + '%</span>'
-    + '</div>'
-    + '<div style="background:#f3f4f6;border-radius:999px;height:8px;overflow:hidden;">'
-    + '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:999px;transition:width 0.6s ease;"></div>'
-    + '</div>'
-    + '</div>';
+  var colorOverride = _safe_css(b.color, '');
+
+  function renderSingle(lbl, valRaw) {
+    var num = _numLoose(valRaw);
+    var val = num === null ? 0 : num;
+    var pct = Math.max(0, Math.min(100, val));
+    var rounded = Math.floor(pct + 0.5);
+
+    var barColor = '';
+    var textColor = '';
+    if (colorOverride) {
+      barColor = colorOverride;
+      textColor = colorOverride;
+    } else if (rounded >= 70) {
+      barColor = '#22c55e';
+      textColor = '#15803d';
+    } else if (rounded >= 40) {
+      barColor = '#f59e0b';
+      textColor = '#b45309';
+    } else {
+      barColor = '#ef4444';
+      textColor = '#dc2626';
+    }
+
+    var ariaLabel = lbl ? (lbl + ': ' + rounded + '%') : (rounded + '%');
+    return '<div style="margin-bottom:8px;">'
+      + '<div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;">'
+      + '<span>' + _esc(lbl) + '</span>'
+      + '<span style="font-weight:700;color:' + textColor + ';">' + rounded + '%</span>'
+      + '</div>'
+      + '<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + rounded + '" aria-label="' + _esc(ariaLabel) + '" style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">'
+      + '<div style="width:' + rounded + '%;height:100%;background:' + barColor + ';border-radius:4px;transition:width .4s;"></div>'
+      + '</div></div>';
+  }
+
+  var rawItems = Array.isArray(b.items) ? b.items : [];
+  var blockLabel = _firstText(b.label);
+
+  var content = '';
+  if (rawItems.length > 0) {
+    var headHtml = blockLabel ? '<div style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _esc(blockLabel) + '</div>' : '';
+    var bars = [];
+    var limit = Math.min(rawItems.length, 20);
+    for (var i = 0; i < limit; i++) {
+      var item = rawItems[i];
+      if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
+        var iLbl = _firstText(item.label, item.name);
+        var iVal = item.value !== undefined ? item.value : 0;
+        bars.push(renderSingle(iLbl, iVal));
+      } else {
+        bars.push(renderSingle('', item));
+      }
+    }
+    content = headHtml + bars.join('');
+  } else {
+    var labelVal = blockLabel ? blockLabel : 'Confidence';
+    content = renderSingle(labelVal, b.value !== undefined ? b.value : 0);
+  }
+
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">' + content + '</div>';
 };
 
 _RENDERERS['token_budget_meter'] = function(b) {

@@ -3369,9 +3369,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].id",
-  "py_sha": "c643646e26b1b98cfc87ada392e7e95bea06e79543120456370fdec36bd470a5",
-  "gas_sha": "382062e9b5721ea908312988a35e4bb946ec71c9236dcbc4b376cffb1a719292",
-  "parity": false
+  "py_sha": "ca0e7a5ba8164f9ee9b39adce1e561059cfee68540f11a0fbc58d651bf352528",
+  "gas_sha": "ca0e7a5ba8164f9ee9b39adce1e561059cfee68540f11a0fbc58d651bf352528",
+  "parity": true
  },
  "learning_objectives": {
   "status": "keyed",
@@ -3636,9 +3636,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "points[].text",
-  "py_sha": "87f347168187e17ed2809e200d95473805c262aa4ee619e15b77f0afb1535dc5",
-  "gas_sha": "517772cb9c8475573510d5d9e1d760a23b6c35eb7dbeba4ee115a80875feeda9",
-  "parity": false
+  "py_sha": "bbe326a972cc88db88668762224de40a067d283d001407ae841fc297c1c7499c",
+  "gas_sha": "bbe326a972cc88db88668762224de40a067d283d001407ae841fc297c1c7499c",
+  "parity": true
  },
  "lens_themes": {
   "status": "keyed",
@@ -4454,9 +4454,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "steps[].title",
-  "py_sha": "3abb4fc9b96be1b97a8c4780fa5672c2cfee0fd59ccf3a066b7ffd3c81e244eb",
-  "gas_sha": "dc59e49e8789a591fcfd82e9003333d0337a2edaec63f29fab5a00b11dc6840c",
-  "parity": false
+  "py_sha": "20d5ac095560ccca41940b23abd9ff28bdde509b2631be133e8968cc356e90eb",
+  "gas_sha": "20d5ac095560ccca41940b23abd9ff28bdde509b2631be133e8968cc356e90eb",
+  "parity": true
  },
  "notification_stack": {
   "status": "keyed",
@@ -8629,9 +8629,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "repo",
-  "py_sha": "d1bd0a7007e3187f0b717d77e5a96aae7cd642421c26479a323a689531f42d4c",
-  "gas_sha": "fd875839dac04d133fbff71f3c475c8d3cf51fcb0202bbe7594dae1918a5aabc",
-  "parity": false
+  "py_sha": "625ea401f62369ac60cd58595d10f0c33700f05024d72b07ff3c67beaff9b6b9",
+  "gas_sha": "625ea401f62369ac60cd58595d10f0c33700f05024d72b07ff3c67beaff9b6b9",
+  "parity": true
  },
  "closing": {
   "status": "keyed",
@@ -9893,9 +9893,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "ff16fd847f4400ef294339dc9064f5ff0041653425eec0cd6bdffa4f5d90cd0b",
-  "gas_sha": "7b9a86783658a77d575e4bddfcc7407b68f20827ef434fedd7ae51d58e28743d",
-  "parity": false
+  "py_sha": "69495f592a3ede525acc8e7a2b014bc3259740da79902cd4b9e6450c36d92d7d",
+  "gas_sha": "69495f592a3ede525acc8e7a2b014bc3259740da79902cd4b9e6450c36d92d7d",
+  "parity": true
  },
  "token_budget_meter": {
   "status": "keyed",
@@ -9938,9 +9938,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "sku",
-  "py_sha": "bd9b3cc7f8f2a5a56c23d2f30fd9730e8da7cc8ddf68f82815044fdd233d614d",
-  "gas_sha": "7efb6525471d06c8af43e6d9ce0486ac4253441fc042b332234b557a4a42f33b",
-  "parity": false
+  "py_sha": "80f1109df7cfed4a74301fe516cc2dccc3ff3f521289f2a9c0b82fb80235780b",
+  "gas_sha": "80f1109df7cfed4a74301fe516cc2dccc3ff3f521289f2a9c0b82fb80235780b",
+  "parity": true
  },
  "order_status_card": {
   "status": "keyed",
@@ -10848,9 +10848,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "heading",
-  "py_sha": "4cafefd853e5966df8605c7b82aa650d0dfbf6bb7811c38ae849958c520dd04f",
-  "gas_sha": "86b5fb194ea1f930250247bb5dbe3f95381871a8868ba95e8fa27b60675f3376",
-  "parity": false
+  "py_sha": "8ffa82ea9ac668f30b1646559c2fa8ecace74271fac710359eb3dc4c4b2569c3",
+  "gas_sha": "8ffa82ea9ac668f30b1646559c2fa8ecace74271fac710359eb3dc4c4b2569c3",
+  "parity": true
  },
  "word_reveal": {
   "status": "keyed",
@@ -10904,8 +10904,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "5042f2a29b9c352794e213d4511f8451946a72a773c500013221d8728db9ca6e",
-  "gas_sha": "d8aa9743119818a02907f1b9d3f5575cf0a92f25bfcdedf3674bade7386699af",
+  "py_sha": "d638ca3774c3286c459cbf2beb0c8940fc58973ad9959fc297bd8cfd45779a8b",
+  "gas_sha": "9fcb0170b8fe735f7f38e536fc56ddc908ba88e69565b19ea762fde9e47dd19e",
   "parity": false
  },
  "text_highlight": {
@@ -11614,9 +11614,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "headline",
-  "py_sha": "0d63fd62135ef2709ba405bce668cdfe918380d8d4e317b1afbfa764054fe6d1",
-  "gas_sha": "1e3b2cc4600cf259f8b89bb006457e40019999d466bb4d613c13fff1bcc459ae",
-  "parity": false
+  "py_sha": "9ff5c21db4e523ab1872b931a3083b82ca9e596d073b01d50f60dfdf2a05fe58",
+  "gas_sha": "9ff5c21db4e523ab1872b931a3083b82ca9e596d073b01d50f60dfdf2a05fe58",
+  "parity": true
  },
  "copy_prompt": {
   "status": "keyed",

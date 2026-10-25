@@ -666,55 +666,111 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
 // Ranked list of learners by score. GAS reads from the course progress Sheet;
 // web renders from static items[] array. Top 3 rows get medal indicators.
 _RENDERERS['leaderboard_card'] = function(b) {
-  var courseId = b.course_id || 'default';
-  var title    = b.title     || 'Leaderboard';
-  var scoreKey = b.score_key || 'quiz1';
-  var limit    = Math.min(parseInt(b.limit || 10), 20);
-  var rows     = [];
+  var courseId = _firstText(b.course_id, 'default');
+  var titleText = _firstText(b.title, 'Leaderboard');
 
+  var limitVal = _numLoose(b.limit);
+  var limit = limitVal !== null ? Math.max(1, Math.min(20, Math.floor(limitVal))) : 10;
+
+  var rows = [];
   if (typeof SpreadsheetApp !== 'undefined') {
     try {
+      var scoreKey = _firstText(b.score_key, 'quiz1');
       var cohort = a2uiCohortRead(courseId) || [];
       rows = cohort
         .map(function(r) {
           var score = r.progress && r.progress['score:' + scoreKey];
-          return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null };
+          return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null, unit: '%' };
         })
         .filter(function(r) { return r.score !== null; })
         .sort(function(a, b) { return b.score - a.score; })
         .slice(0, limit);
     } catch(e) {}
   }
+
   if (!rows.length) {
-    rows = b.items || [
-      {name:'alice', score:94}, {name:'bob', score:87}, {name:'carol', score:81},
-      {name:'dave', score:76}, {name:'eva', score:72}
-    ];
+    if (Array.isArray(b.items) && b.items.length > 0) {
+      rows = b.items;
+    } else if (Array.isArray(b.rows) && b.rows.length > 0) {
+      rows = b.rows;
+    } else {
+      rows = [
+        {name: 'alice', score: 94, unit: '%'},
+        {name: 'bob', score: 87, unit: '%'},
+        {name: 'carol', score: 81, unit: '%'},
+        {name: 'dave', score: 76, unit: '%'},
+        {name: 'eva', score: 72, unit: '%'}
+      ];
+    }
   }
 
-  var MEDALS = ['🥇','🥈','🥉'];
-  var items = rows.map(function(r, i) {
-    var isTop = i < 3;
-    var barW  = rows[0] && rows[0].score > 0 ? Math.round((r.score / rows[0].score) * 100) : 0;
-    var col   = i === 0 ? '#8c7103' : i === 1 ? '#617592' : i === 2 ? '#bb5604' : '#475569';
-    var rowKey = _esc(r.id || r.name || String(i));
-    return '<div data-cb="item" data-key="' + rowKey + '" style="display:flex;align-items:center;gap:10px;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.04);' : '') + '">' +
-      '<div style="width:24px;text-align:center;font-size:' + (isTop ? '1rem' : '0.72rem') + ';color:' + (isTop ? col : '#334155') + ';font-weight:700;flex-shrink:0;">' + (isTop ? MEDALS[i] : (i + 1)) + '</div>' +
-      '<div style="flex:1;min-width:0;">' +
-        '<div data-cb="label" data-key="' + rowKey + '" style="font-size:0.78rem;font-weight:600;color:#5577a4;">' + _esc(r.name) + '</div>' +
-        '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:5px;">' +
-          '<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>' +
-        '</div>' +
-      '</div>' +
-      '<div style="font-size:0.82rem;font-weight:800;color:' + col + ';flex-shrink:0;">' + r.score + '%</div>' +
-    '</div>';
-  }).join('');
+  var slicedRows = rows.slice(0, limit);
+  var topScore = null;
+  if (slicedRows.length > 0 && slicedRows[0] !== null && typeof slicedRows[0] === 'object') {
+    var sTop = _numLoose(slicedRows[0].score);
+    if (sTop !== null && sTop > 0) {
+      topScore = sTop;
+    }
+  }
 
-  return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
-      'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
-    items +
-    '</div>'
-  );
+  var medals = ['🥇', '🥈', '🥉'];
+  var itemsHtml = [];
+  for (var i = 0; i < slicedRows.length; i++) {
+    var r = slicedRows[i];
+    if (r === null || typeof r !== 'object' || Array.isArray(r)) {
+      r = {name: _textLoose(r)};
+    }
+
+    var isTop = i < 3;
+    var rankIcon = isTop ? medals[i] : String(i + 1);
+    var col = i === 0 ? '#8c7103' : (i === 1 ? '#617592' : (i === 2 ? '#bb5604' : '#475569'));
+    var rankCol = isTop ? col : '#334151';
+    var rankSize = isTop ? '1rem' : '0.72rem';
+
+    var name = _firstText(r.name, r.email);
+    if (!name) {
+      name = '?';
+    }
+
+    var rowKey = _firstText(r.id, r.name, r.email);
+    if (!rowKey) {
+      rowKey = String(i);
+    }
+
+    var rawScore = r.score;
+    var numScore = _numLoose(rawScore);
+    var barW = 0;
+    if (topScore !== null && numScore !== null && topScore > 0) {
+      barW = Math.max(0, Math.min(100, Math.floor((numScore / topScore) * 100 + 0.5)));
+    }
+
+    var scoreText = _textLoose(rawScore);
+    if (!scoreText) {
+      scoreText = '—';
+    }
+    var unitStr = _textLoose(r.unit);
+    if (unitStr) {
+      scoreText += unitStr;
+    }
+
+    var bgRow = i === 0 ? '#fffbeb' : '#f9fafb';
+
+    itemsHtml.push(
+      '<li data-cb="item" data-key="' + _esc(rowKey) + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + bgRow + ';margin-bottom:4px;font-size:0.85rem;">'
+      + '<div style="width:24px;text-align:center;font-size:' + rankSize + ';color:' + rankCol + ';font-weight:700;flex-shrink:0;">' + rankIcon + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div data-cb="label" data-key="' + _esc(rowKey) + '" style="font-size:0.78rem;font-weight:600;color:#374151;">' + _esc(name) + '</div>'
+      + '<div style="height:4px;border-radius:2px;background:#e5e7eb;margin-top:5px;overflow:hidden;">'
+      + '<div style="height:100%;width:' + barW + '%;border-radius:2px;background:' + col + ';transition:width 0.6s;"></div>'
+      + '</div></div>'
+      + '<div style="font-size:0.82rem;font-weight:800;color:' + col + ';flex-shrink:0;">' + _esc(scoreText) + '</div>'
+      + '</li>'
+    );
+  }
+
+  return '<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    + 'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
+    + '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(titleText) + '</div>'
+    + '<ol style="list-style:none;margin:0;padding:0;">' + itemsHtml.join('') + '</ol>'
+    + '</div>';
 };

@@ -652,18 +652,85 @@ _RENDERERS['media_stream_card'] = function(b) {
 
 // ─── product_thumbnail ────────────────────────────────────────────────────────
 _RENDERERS['product_thumbnail'] = function(b) {
-  var badge = b.badge ? '<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#4f46e5);color:#fff;font-size:0.72rem;font-weight:700;">' + _esc(b.badge) + '</div>' : '';
-  var img   = b.image_url ? '<div style="position:relative;"><img src="' + _esc(b.image_url) + '" alt="' + _esc(b.title||'') + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">' + badge + '</div>' : '';
-  var compare = b.compare_at_price ? '<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">' + _esc(b.compare_at_price) + '</span>' : '';
-  var status = b.status ? '<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:' + (b.status === 'in_stock' ? '#d1fae5' : '#fee2e2') + ';color:' + (b.status === 'in_stock' ? '#10b981' : '#ef4444') + ';margin-left:6px;">' + _esc(b.status.replace(/_/g,' ')) + '</span>' : '';
-  return '<div data-cb="node" data-key="' + _ckey(b.sku, 'product_thumbnail') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">'
-    + img
+  var rawImg = _firstText(b.image_url, b.image, b.thumbnail);
+  var safeImg = rawImg ? _safe_href(rawImg, ['https', 'http']) : '';
+
+  var badgeText = _firstText(b.badge);
+  var badgeHtml = badgeText ? '<div style="position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;background:var(--a2ui-accent,#4f46e5);color:#fff;font-size:0.72rem;font-weight:700;">' + _esc(badgeText) + '</div>' : '';
+
+  var titleText = _firstText(b.title, b.name);
+  var imgHtml = '';
+  if (safeImg) {
+    imgHtml = '<div style="position:relative;"><img src="' + _esc(safeImg) + '" alt="' + _esc(titleText) + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">' + badgeHtml + '</div>';
+  } else if (badgeHtml) {
+    imgHtml = '<div style="position:relative;"><div style="background:#f3f4f6;aspect-ratio:1;border-radius:8px;"></div>' + badgeHtml + '</div>';
+  }
+
+  var vendorText = _firstText(b.vendor);
+  var vendorHtml = vendorText ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(vendorText) + '</div>' : '';
+
+  var titleHtml = '<div style="font-size:0.875rem;font-weight:600;color:var(--text,#111827);margin:2px 0;">' + _esc(titleText) + '</div>';
+
+  var skuText = _firstText(b.sku);
+  var skuHtml = skuText ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">SKU: ' + _esc(skuText) + '</div>' : '';
+
+  var priceStr = _textLoose(b.price);
+  var priceSpan = '<span style="font-weight:700;color:var(--text,#111827);">' + _esc(priceStr) + '</span>';
+
+  var compareStr = _textLoose(b.compare_at_price);
+  var compareHtml = compareStr ? '<span style="text-decoration:line-through;color:var(--muted,#9ca3af);font-size:0.82rem;margin-left:6px;">' + _esc(compareStr) + '</span>' : '';
+
+  var statusRaw = _firstText(b.status);
+  var statusHtml = '';
+  if (statusRaw) {
+    var stNorm = statusRaw.toLowerCase();
+    var bgCol = '#fee2e2';
+    var txtCol = '#ef4444';
+    if (stNorm === 'active' || stNorm === 'in_stock') {
+      bgCol = '#d1fae5';
+      txtCol = '#10b981';
+    } else if (stNorm === 'draft') {
+      bgCol = '#fef3c7';
+      txtCol = '#b45309';
+    } else if (stNorm === 'archived') {
+      bgCol = '#f3f4f6';
+      txtCol = '#4b5563';
+    }
+    var statusLabel = statusRaw.replace(/_/g, ' ');
+    statusHtml = '<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:' + bgCol + ';color:' + txtCol + ';margin-left:6px;">' + _esc(statusLabel) + '</span>';
+  }
+
+  var priceRow = '<div style="margin-top:6px;">' + priceSpan + compareHtml + statusHtml + '</div>';
+
+  var tagsRaw = Array.isArray(b.tags) ? b.tags : [];
+  var tagLis = [];
+  var tagsLimit = Math.min(tagsRaw.length, 12);
+  for (var i = 0; i < tagsLimit; i++) {
+    var tStr = _textLoose(tagsRaw[i]);
+    if (tStr) {
+      tagLis.push('<li style="padding:1px 6px;border-radius:4px;background:#f3f4f6;color:#4b5563;font-size:0.7rem;">' + _esc(tStr) + '</li>');
+    }
+  }
+  var tagsHtml = tagLis.length ? '<ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px;">' + tagLis.join('') + '</ul>' : '';
+
+  var rawUrl = _firstText(b.url);
+  var safeCardUrl = rawUrl ? _safe_href(rawUrl, ['https', 'mailto']) : '';
+
+  var keyAttr = _ckey(b.sku, 'product_thumbnail');
+  var tagOpen = '';
+  var tagClose = '';
+  if (safeCardUrl) {
+    tagOpen = '<a data-cb="node" data-key="' + keyAttr + '" href="' + _esc(safeCardUrl) + '" style="display:block;text-decoration:none;color:inherit;margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);max-width:200px;">';
+    tagClose = '</a>';
+  } else {
+    tagOpen = '<div data-cb="node" data-key="' + keyAttr + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;background:var(--bg,#fff);display:inline-block;max-width:200px;">';
+    tagClose = '</div>';
+  }
+
+  return tagOpen + imgHtml
     + '<div style="padding:10px 12px;">'
-    + (b.vendor ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(b.vendor) + '</div>' : '')
-    + '<div style="font-size:0.875rem;font-weight:600;color:var(--text,#111827);margin:2px 0;">' + _esc(b.title || '') + '</div>'
-    + (b.sku ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);">SKU: ' + _esc(b.sku) + '</div>' : '')
-    + '<div style="margin-top:6px;"><span style="font-weight:700;color:var(--text,#111827);">' + _esc(b.price || '') + '</span>' + compare + status + '</div>'
-    + '</div></div>';
+    + vendorHtml + titleHtml + skuHtml + priceRow + tagsHtml
+    + '</div>' + tagClose;
 };
 
 // ─── customer_logo_grid ───────────────────────────────────────────────────────
@@ -695,23 +762,80 @@ _RENDERERS['customer_logo_grid'] = function(b) {
 
 // ─── github_repo_card ─────────────────────────────────────────────────────────
 _RENDERERS['github_repo_card'] = function(b) {
-  var repo = b.repo || b.label || '';
-  var langColors = { JavaScript:'#f1e05a', TypeScript:'#3178c6', Python:'#3572A5', Go:'#00ADD8', Rust:'#dea584', Java:'#b07219', CSS:'#563d7c', HTML:'#e34c26' };
-  var langColor  = langColors[b.language] || '#6b7280';
-  var starsHtml  = b.stars !== undefined ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">⭐ ' + _esc(String(b.stars)) + '</span>' : '';
-  var forksHtml  = b.forks !== undefined ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 ' + _esc(String(b.forks)) + '</span>' : '';
-  var langHtml   = b.language ? '<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:' + langColor + ';display:inline-block;"></span>' + _esc(b.language) + '</span>' : '';
-  var repoUrl    = b.url || (repo ? 'https://github.com/' + repo : '#');
+  var repoRaw = _firstText(b.repo, b.name);
+  var ownerRaw = _firstText(b.owner);
+  var repoPath = '';
+  if (repoRaw.indexOf('/') !== -1) {
+    repoPath = repoRaw;
+  } else if (ownerRaw && repoRaw) {
+    repoPath = ownerRaw + '/' + repoRaw;
+  } else {
+    repoPath = repoRaw;
+  }
+
+  var urlVal = _firstText(b.url);
+  var safeUrl = '';
+  if (urlVal) {
+    safeUrl = _safe_href(urlVal, ['https', 'mailto']);
+  } else if (repoPath && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repoPath)) {
+    safeUrl = 'https://github.com/' + repoPath;
+  }
+
+  var linkHtml = '';
+  if (safeUrl) {
+    linkHtml = '<a href="' + _esc(safeUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repoPath) + '</a>';
+  } else {
+    linkHtml = '<span style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);">' + _esc(repoPath) + '</span>';
+  }
+
+  var visText = _firstText(b.visibility);
+  var visHtml = visText ? '<span style="font-size:0.7rem;padding:1px 6px;border:1px solid var(--border,#e5e7eb);border-radius:4px;color:var(--muted,#6b7280);">' + _esc(visText) + '</span>' : '';
+
+  var labelText = _firstText(b.label);
+  var labelHtml = (labelText && labelText !== repoPath) ? '<div style="font-size:0.85rem;font-weight:700;color:var(--text,#111827);margin-bottom:6px;">' + _esc(labelText) + '</div>' : '';
+
+  var descText = _firstText(b.description);
+  var descHtml = descText ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:10px;">' + _esc(descText) + '</div>' : '';
+
+  var topicsRaw = Array.isArray(b.topics) ? b.topics : [];
+  var topicSpans = [];
+  var topicsLimit = Math.min(topicsRaw.length, 20);
+  for (var i = 0; i < topicsLimit; i++) {
+    var tStr = _textLoose(topicsRaw[i]);
+    if (tStr) {
+      topicSpans.push('<span style="padding:2px 8px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:0.72rem;">' + _esc(tStr) + '</span>');
+    }
+  }
+  var topicsHtml = topicSpans.length ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">' + topicSpans.join('') + '</div>' : '';
+
+  var starsStr = _textLoose(b.stars);
+  var starsHtml = starsStr ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">⭐ ' + _esc(starsStr) + '</span>' : '';
+
+  var forksStr = _textLoose(b.forks);
+  var forksHtml = forksStr ? '<span style="display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--muted,#6b7280);">🍴 ' + _esc(forksStr) + '</span>' : '';
+
+  var langColors = {
+    'JavaScript': '#f1e05a', 'TypeScript': '#3178c6', 'Python': '#3572A5',
+    'Go': '#00ADD8', 'Rust': '#dea584', 'Java': '#b07219',
+    'CSS': '#563d7c', 'HTML': '#e34c26'
+  };
+  var langStr = _firstText(b.language);
+  var langHtml = '';
+  if (langStr) {
+    var dotColor = Object.prototype.hasOwnProperty.call(langColors, langStr) ? langColors[langStr] : '#6b7280';
+    langHtml = '<span style="display:flex;align-items:center;gap:4px;font-size:0.78rem;color:var(--muted,#6b7280);"><span style="width:10px;height:10px;border-radius:50%;background:' + dotColor + ';display:inline-block;"></span>' + _esc(langStr) + '</span>';
+  }
+
+  var statsRow = (starsHtml || forksHtml || langHtml) ? '<div style="display:flex;gap:14px;">' + starsHtml + forksHtml + langHtml + '</div>' : '';
+
+  var licText = _firstText(b.license);
+  var licHtml = licText ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:6px;">⚖️ ' + _esc(licText) + '</div>' : '';
+
   return '<div data-cb="node" data-key="' + _ckey(b.repo, 'github_repo_card') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
     + '<span style="font-size:1rem;">📦</span>'
-    + '<a href="' + _safeUrl(repoUrl) + '" target="_top" style="font-weight:700;font-size:0.9rem;color:var(--a2ui-accent,#4f46e5);text-decoration:none;">' + _esc(repo) + '</a>'
-    + (b.visibility ? '<span style="font-size:0.7rem;padding:1px 6px;border:1px solid var(--border,#e5e7eb);border-radius:4px;color:var(--muted,#6b7280);">' + _esc(b.visibility) + '</span>' : '')
-    + '</div>'
-    + (b.description ? '<div style="font-size:0.82rem;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:10px;">' + _esc(b.description) + '</div>' : '')
-    + (b.topics ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">' + b.topics.map(function(t){ return '<span style="padding:2px 8px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:0.72rem;">' + _esc(t) + '</span>'; }).join('') + '</div>' : '')
-    + '<div style="display:flex;gap:14px;">' + starsHtml + forksHtml + langHtml + '</div>'
-    + (b.license ? '<div style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-top:6px;">⚖️ ' + _esc(b.license) + '</div>' : '')
+    + linkHtml + visHtml + '</div>'
+    + labelHtml + descHtml + topicsHtml + statsRow + licHtml
     + '</div>';
 };
 

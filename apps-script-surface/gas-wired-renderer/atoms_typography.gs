@@ -76,38 +76,43 @@ _RENDERERS['display_quote'] = function(b) {
 //   colour      — stat glow colour (default #4f46e5)
 //   flip        — put stat on right (default false)
 _RENDERERS['split_stat'] = function(b) {
-  var value   = String(b.value !== undefined ? b.value : '—');
-  var prefix  = b.prefix  || '';
-  var suffix  = b.suffix  || '';
-  var heading = b.heading || '';
-  var body    = b.body    || '';
-  var colour  = b.colour  || '#4f46e5';
-  var flip    = b.flip    || false;
+  var valLoose = _textLoose(b.value);
+  var value = valLoose ? valLoose : '—';
+  var prefix = _textLoose(b.prefix);
+  var suffix = _textLoose(b.suffix);
+  var heading = _textLoose(b.heading);
+  var body = _textLoose(b.body);
+  var rawCol = _firstText(b.colour, b.color);
+  var colour = _safe_css(rawCol, '#4f46e5');
+  var flip = b.flip === true;
 
-  var statHtml =
+  var prefixHtml = prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '';
+  var suffixHtml = suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '';
+
+  var statCol =
     '<div style="flex:0 0 auto;text-align:center;padding:0 24px;">' +
     '<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;color:#fff;' +
-      'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '55;">' +
-    (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
-    _esc(value) +
-    (suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '') +
+      'text-shadow:0 0 20px ' + colour + ',0 0 60px color-mix(in srgb, ' + colour + ' 33%, transparent);">' +
+    prefixHtml + _esc(value) + suffixHtml +
     '</div>' +
     '<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;' +
       'background:' + colour + ';box-shadow:0 0 16px ' + colour + ';"></div>' +
     '</div>';
 
-  var textHtml =
-    '<div style="flex:1;min-width:0;padding:0 8px;' +
-      'border-left:1px solid rgba(255,255,255,0.08);' +
-      (flip ? 'border-left:none;border-right:1px solid rgba(255,255,255,0.08);' : '') + '">' +
-    (heading ? '<div style="font-size:1.1rem;font-weight:800;color:rgba(255,255,255,0.92);margin-bottom:8px;">' + _esc(heading) + '</div>' : '') +
-    (body    ? '<div style="font-size:0.88rem;color:rgba(255,255,255,0.5);line-height:1.65;">' + _esc(body) + '</div>' : '') +
+  var borderSide = flip ? 'border-right:1px solid rgba(255,255,255,0.08);' : 'border-left:1px solid rgba(255,255,255,0.08);';
+  var headingHtml = heading ? '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:8px;">' + _esc(heading) + '</div>' : '';
+  var bodyHtml = body ? '<div style="font-size:0.88rem;color:#94a3b8;line-height:1.65;">' + _md_inline(body) + '</div>' : '';
+
+  var textCol =
+    '<div style="flex:1;min-width:0;padding:0 8px;' + borderSide + '">' +
+    headingHtml + bodyHtml +
     '</div>';
 
-  var left  = flip ? textHtml : statHtml;
-  var right = flip ? statHtml : textHtml;
+  var left = flip ? textCol : statCol;
+  var right = flip ? statCol : textCol;
 
-  return '<div data-cb="node" data-key="' + _ckey(b.heading, 'split_stat') + '" style="display:flex;align-items:center;gap:24px;padding:28px 0;">' +
+  return '<div data-cb="node" data-key="' + _ckey(b.heading, 'split_stat') + '" style="display:flex;align-items:center;gap:24px;padding:28px;' +
+    'margin:1.5rem 0;border:1px solid #1e293b;border-radius:14px;background:#0f172a;">' +
     left + right +
     '</div>';
 };
@@ -183,39 +188,49 @@ _RENDERERS['section_label'] = function(b) {
 //   duration — count-up duration ms (default 1800)
 //   size     — font-size (default 4rem)
 _RENDERERS['count_up_stat'] = function(b) {
-  var target   = parseInt(b.value)   || 0;
-  var label    = b.label    || '';
-  var prefix   = b.prefix   || '';
-  var suffix   = b.suffix   || '';
-  var colour   = b.colour   || '#4f46e5';
-  var duration = b.duration || 1800;
-  var size     = b.size     || '4rem';
-  var uid      = 'cu' + Math.random().toString(36).substr(2, 5);
+  var valNum = _numLoose(b.value);
+  var target = valNum !== null ? Math.floor(valNum) : 0;
+  target = Math.max(-1000000000000000, Math.min(1000000000000000, target));
 
-  return '<div data-cb="node" data-key="' + _ckey(b.label, 'count_up_stat') + '" style="text-align:center;padding:32px 16px;">' +
-    '<div style="font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;' +
-      'text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '55;">' +
-    (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
-    '<span id="' + uid + '">0</span>' +
-    (suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '') +
-    '</div>' +
-    '<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;' +
-      'background:' + colour + ';box-shadow:0 0 16px ' + colour + ';"></div>' +
-    (label ? '<div style="margin-top:12px;font-size:0.78rem;color:rgba(255,255,255,0.4);' +
-      'text-transform:uppercase;letter-spacing:0.12em;">' + _esc(label) + '</div>' : '') +
-    '</div>' +
-    '<script>(function(){' +
-      'var el=document.getElementById("' + uid + '");' +
-      'if(!el)return;' +
-      'var target=' + target + ',dur=' + duration + ',start=null;' +
-      'function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}' +
-      'requestAnimationFrame(function tick(ts){' +
-        'if(!start)start=ts;' +
-        'var prog=Math.min(1,(ts-start)/dur);' +
-        'el.textContent=Math.round(ease(prog)*target).toLocaleString();' +
-        'if(prog<1)requestAnimationFrame(tick);' +
-      '});' +
-    '})();<\/script>';
+  var label = _textLoose(b.label);
+  var prefix = _textLoose(b.prefix);
+  var suffix = _textLoose(b.suffix);
+  var rawCol = _firstText(b.colour, b.color);
+  var colour = _safe_css(rawCol, '#4f46e5');
+  var size = _safe_css(b.size, '4rem');
+
+  var durNum = _numLoose(b.duration);
+  var duration = durNum === null ? 1800 : Math.max(0, Math.min(60000, Math.floor(durNum)));
+
+  var uidSeed = typeof _payloadUid === 'function' ? _payloadUid(b) : (typeof _wa_uid === 'function' ? _wa_uid(b) : _firstText(b.label, String(target), 'stat'));
+  var uid = 'cu-' + uidSeed;
+
+  var prefixHtml = prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '';
+  var suffixHtml = suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:2px;">' + _esc(suffix) + '</span>' : '';
+  var labelHtml = label ? '<div style="margin-top:12px;font-size:0.78rem;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.12em;">' + _esc(label) + '</div>' : '';
+
+  var script = '<script>(function(){'
+    + 'var el=document.getElementById("' + uid + '");'
+    + 'if(!el)return;'
+    + 'var target=' + target + ',dur=' + duration + ';'
+    + 'if(dur<=0||(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){el.textContent=target.toLocaleString();return;}'
+    + 'el.textContent="0";var start=null;'
+    + 'function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}'
+    + 'requestAnimationFrame(function tick(ts){'
+    + 'if(!start)start=ts;'
+    + 'var prog=Math.min(1,(ts-start)/dur);'
+    + 'el.textContent=Math.round(ease(prog)*target).toLocaleString();'
+    + 'if(prog<1)requestAnimationFrame(tick);'
+    + '});'
+    + '})();<\/script>';
+
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'count_up_stat') + '" style="text-align:center;padding:32px 16px;">'
+    + '<div style="font-size:' + size + ';font-weight:900;line-height:1;color:' + colour + ';'
+    + 'text-shadow:0 0 20px ' + colour + ',0 0 60px color-mix(in srgb, ' + colour + ' 33%, transparent);">'
+    + prefixHtml + '<span id="' + uid + '">' + target + '</span>' + suffixHtml + '</div>'
+    + '<div style="width:60px;height:3px;margin:10px auto 0;border-radius:99px;'
+    + 'background:' + colour + ';box-shadow:0 0 16px ' + colour + ';"></div>'
+    + labelHtml + '</div>' + script;
 };
 
 // ── text_highlight ────────────────────────────────────────────────────────────

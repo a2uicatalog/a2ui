@@ -151,9 +151,6 @@
  "concept_ladder": [
   "source"
  ],
- "confidence_bar": [
-  "items"
- ],
  "contour_plot": [
   "title"
  ],
@@ -615,9 +612,6 @@
   "frequency",
   "is_highlighted",
   "plan_name"
- ],
- "product_thumbnail": [
-  "tags"
  ],
  "progress_circle": [
   "size"
