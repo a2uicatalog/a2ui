@@ -434,3 +434,49 @@ def test_v2_back_leg_drives_in_its_own_lane():
     out = re.search(r'data-leg="0" data-m3="seg" d="([^"]+)"', h).group(1)
     back = re.search(r'data-leg="1" data-m3="seg" d="([^"]+)"', h).group(1)
     assert out == "M12,78 L38,30" and back != "M38,30 L12,78" and back.startswith("M3")
+
+
+# ─── camera keys and follow (I145, owner: "multiple angle rotation ... at every couple of destinations and the last destination") ───
+LONG = dict(FULL, stations=ST, route=["depot", "north", "market", "port", "spare"])
+CAM_CASES = [
+    dict(FULL, camera={"keys": [{"at": 0, "turn": 0, "tilt": 0, "zoom": 0.6}, {"at": 0.3, "turn": 22, "tilt": 55, "zoom": 1}, {"at": 0.6, "turn": -40}, {"at": 1, "turn": 90, "zoom": 1.4}]}),
+    dict(FULL, camera={"keys": [{"at": 0.5, "turn": 45}]}),
+    dict(FULL, camera={"keys": [{"at": 0.5}, {"at": 0.4}, {"at": 0.5}, {"at": "x"}, {"at": None}, {"at": True}, {"at": 2}, {"at": -1}, {"at": 0.9, "turn": 999, "tilt": -5, "zoom": 9}]}),
+    dict(FULL, camera={"keys": [{"at": i / 10, "turn": i * 20} for i in range(11)]}),
+    dict(FULL, camera={"keys": "x"}), dict(FULL, camera={"keys": [HOSTILE, {"at": 0.2, "turn": HOSTILE}]}), dict(FULL, camera={"keys": []}),
+    dict(FULL, camera={"follow": 1}), dict(FULL, camera={"follow": 2}), dict(LONG, camera={"follow": 2}), dict(LONG, camera={"follow": 3, "from": 0.4, "to": 1.6}),
+    dict(LONG, camera={"follow": 6}), dict(LONG, camera={"follow": 0}), dict(LONG, camera={"follow": 99}), dict(LONG, camera={"follow": -2}), dict(LONG, camera={"follow": "2"}),
+    dict(LONG, camera={"follow": True}), dict(LONG, camera={"follow": 2.7}), dict(LONG, camera={"follow": HOSTILE}), dict(LONG, camera={"follow": None}),
+    dict(LONG, tilt=0, camera={"follow": 1}), dict(dict(FULL, route=["depot"]), camera={"follow": 2}),
+    dict(LONG, camera={"follow": 2, "keys": [{"at": 0.5, "turn": 10}]}),
+    dict(FULL, legs=[{"route": ["depot", "north", "market"]}, {"route": ["depot", "north", "market"], "back": True}], camera={"follow": 2}),
+]
+
+
+def test_camera_python_matches_gas_exactly(core_js):
+    got = _gas_batch(core_js, CAM_CASES)
+    bad = [str(b)[:110] for b, g in zip(CAM_CASES, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_camera_keys_drive_turn_tilt_and_zoom_from_p_and_drop_bad_keys():
+    h = _py(CAM_CASES[0])
+    root = re.search(r'data-m3="root" style="([^"]+)"', h).group(1)
+    assert root.startswith("--tilt:calc(0 + 55*clamp(0,calc((var(--p,1) - 0)/0.3),1))") and ";--e:1;" in root and "--rz:calc(0 + 22*" in root
+    assert "--c:" not in root   # the default descent is replaced, not mixed in
+    bad = _py(CAM_CASES[2])
+    assert "8 camera keys were left out" in bad and "--rz:calc(22);" in bad   # 7 bad entries + 1 past the cap of 8; the one good key holds still
+    assert "--rz:calc(180);--e:1;--zm:calc(3);" in _py(dict(FULL, camera={"keys": [{"at": 0, "turn": 999, "zoom": 9}]}))   # clamped
+    assert "--c:clamp" in _py(FULL)   # no keys: the default descent, as before
+
+
+def test_camera_follow_turns_at_every_nth_arrival_and_closes_in_on_the_last():
+    h = _py(dict(LONG, camera={"follow": 2}))
+    rz = re.search(r'--rz:calc\(([^;]+)\);', h).group(1)
+    zm = re.search(r'--zm:calc\(([^;]+)\);', h).group(1)
+    # 4 segments, follow 2: re-angle on arriving at stations 2 and 4 (the last), each a short move just before the arrival
+    assert rz.count("clamp(") == 3   # the descent, the turn arriving at station 2, the turn arriving at the last station
+    assert "-50*clamp" in rz and "5*clamp" in rz   # 22 -> -28, then -28 -> -23 at the last destination
+    assert zm.count("clamp(") == 2   # descent zoom, then the close-in at the last destination
+    assert _py(dict(LONG, camera=dict(LONG["camera"], follow=0))) == _py(LONG)
+    assert _py(dict(LONG, camera={"follow": 2, "keys": [{"at": 0.5, "turn": 10}]})) == _py(dict(LONG, camera={"keys": [{"at": 0.5, "turn": 10}]}))

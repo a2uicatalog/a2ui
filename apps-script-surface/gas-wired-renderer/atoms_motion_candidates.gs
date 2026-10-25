@@ -1362,11 +1362,31 @@ function _m3Segdist(px, py, ax, ay, bx, by) {
 }
 
 
+var _M3_TURNS = [-28, 52, -10, 38, -34, 64];  // camera.follow angles (twin of _MAP3D_TURNS)
+// piecewise-linear calc() of column j of the camera keys over var(--p,1) (twin of _map3d_keyed)
+function _m3Keyed(keys, j, places) {
+  var out = 'calc(' + _m3F(keys[0][j], places), i, d;
+  for (i = 0; i < keys.length - 1; i++) {
+    d = keys[i + 1][j] - keys[i][j];
+    if (d !== 0) out += ' + ' + _m3F(d, places) + '*clamp(0,calc((var(--p,1) - ' + _m3F(keys[i][0], 3) + ')/' + _m3F(keys[i + 1][0] - keys[i][0], 3) + '),1)';
+  }
+  return out + ')';
+}
+
 _RENDERERS['motion_map3d'] = function(b) {
   var acc = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)');
   var tilt = _m3N(b.tilt, 55, 0, 75);
   var cam = _m3Obj(b.camera);
   var z0 = _m3N(cam['from'], 0.55, 0.3, 3), z1 = _m3N(cam['to'], 1.0, 0.3, 3);
+  // camera.keys (v2): poses the camera passes through over the whole film (see the Python twin)
+  var ckeys = [], kbad = 0, kraw = Array.isArray(cam.keys) ? cam.keys : [], ki;
+  for (ki = 0; ki < kraw.length && ki < 8; ki++) {
+    var kk = _m3Obj(kraw[ki]), kat = kk.at;
+    if (!(typeof kat === 'number' && isFinite(kat) && kat >= 0 && kat <= 1) || (ckeys.length && kat <= ckeys[ckeys.length - 1][0])) { kbad++; continue; }
+    var pv = ckeys.length ? ckeys[ckeys.length - 1] : [0, 22, tilt, z1];
+    ckeys.push([kat, _m3N(kk.turn, pv[1], -180, 180), _m3N(kk.tilt, pv[2], 0, 75), _m3N(kk.zoom, pv[3], 0.3, 3)]);
+  }
+  kbad += Math.max(0, kraw.length - 8);
   var seed = _ffInt(b.seed, 7, 0, 9999);
   var notes = [];
 
@@ -1909,6 +1929,22 @@ _RENDERERS['motion_map3d'] = function(b) {
 
   var root_vars = '--tilt:' + _m3F(tilt, 1) + ';--rz:22;--z0:' + _m3F(z0, 2) + ';--z1:' + _m3F(z1, 2) + ';' +
                   '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));';
+  // camera.follow (v2): see the Python twin
+  var fol = (cam.follow !== undefined && cam.follow !== null) ? _ffInt(cam.follow, 0, 0, 6) : 0;
+  if (!ckeys.length && fol && segs.length) {
+    ckeys = [[0, 0, 0, z0], [_M3_P0, 22, tilt, z1]];
+    var stops = [], fi, fj;
+    for (fi = 0; fi < segs.length; fi++) if ((fi + 1) % fol === 0 || fi === segs.length - 1) stops.push(fi);
+    for (fj = 0; fj < stops.length; fj++) {
+      fi = stops[fj];
+      var arr = segs[fi].s + segs[fi].w, flast = fi === segs.length - 1, prev = ckeys[ckeys.length - 1];
+      var pose = flast ? [22 - 45, Math.max(0, tilt - 10), Math.min(3, z1 * 1.3)] : [_M3_TURNS[fj % 6], fj % 2 ? tilt : Math.max(0, tilt - 12), z1];
+      var ft0 = Math.max(prev[0] + 0.001, arr - 0.06);
+      if (ft0 < arr) { ckeys.push([ft0, prev[1], prev[2], prev[3]]); ckeys.push([arr, pose[0], pose[1], pose[2]]); }
+    }
+  }
+  if (ckeys.length) root_vars = '--tilt:' + _m3Keyed(ckeys, 2, 1) + ';--rz:' + _m3Keyed(ckeys, 1, 1) + ';--e:1;--zm:' + _m3Keyed(ckeys, 3, 2) + ';';
+  if (kbad) notes.push(kbad + (kbad === 1 ? ' camera key was' : ' camera keys were') + ' left out (at must be a number from 0 to 1, each later than the one before; at most 8).');
 
   var plane = '<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">' +
               faces + svg + '</div>';

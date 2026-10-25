@@ -45288,6 +45288,7 @@ _MAP3D_P0, _MAP3D_P1, _MAP3D_U = 0.3, 0.92, 0.62
 _MAP3D_ID = re.compile(r'[A-Za-z][A-Za-z0-9_]{0,23}')
 _MAP3D_CLK = re.compile(r'[ ]*([0-9]{1,2}):([0-9]{2})[ ]*')
 _MAP3D_STATES = ('idle', 'active', 'done', 'warn', 'error')
+_MAP3D_TURNS = (-28.0, 52.0, -10.0, 38.0, -34.0, 64.0)   # camera.follow angles, in turn order
 
 
 def _map3d_version_note(b):
@@ -45318,6 +45319,16 @@ def _map3d_hhmm(t):
     return _cv_pad(t // 60) + ':' + _cv_pad(t % 60)
 
 
+def _map3d_keyed(keys, j, places):
+    """Piecewise-linear calc() of column j of the camera keys over var(--p,1): held before the first key and after the last."""
+    out = 'calc(' + _map3d_f(keys[0][j], places)
+    for i in range(len(keys) - 1):
+        d = keys[i + 1][j] - keys[i][j]
+        if d != 0:
+            out += ' + ' + _map3d_f(d, places) + '*clamp(0,calc((var(--p,1) - ' + _map3d_f(keys[i][0], 3) + ')/' + _map3d_f(keys[i + 1][0] - keys[i][0], 3) + '),1)'
+    return out + ')'
+
+
 def _map3d_segdist(px, py, ax, ay, bx, by):
     dx, dy = bx - ax, by - ay
     ll = dx * dx + dy * dy
@@ -45331,6 +45342,18 @@ def _render_motion_map3d(b: dict) -> str:
     tilt = _map3d_n(b.get('tilt'), 55, 0, 75)
     cam = _m3_obj(b.get('camera'))
     z0, z1 = _map3d_n(cam.get('from'), 0.55, 0.3, 3), _map3d_n(cam.get('to'), 1.0, 0.3, 3)
+    # camera.keys (v2): poses {at, turn, tilt, zoom} the camera passes through over the whole film, replacing the default descent
+    ckeys, kbad = [], 0
+    kraw = cam.get('keys') if isinstance(cam.get('keys'), list) else []
+    for k in kraw[:8]:
+        k = _m3_obj(k)
+        at = k.get('at')
+        if not (isinstance(at, (int, float)) and not isinstance(at, bool) and math.isfinite(at) and 0 <= at <= 1) or (ckeys and at <= ckeys[-1][0]):
+            kbad += 1
+            continue
+        pv = ckeys[-1] if ckeys else (0.0, 22.0, tilt, z1)
+        ckeys.append((float(at), _map3d_n(k.get('turn'), pv[1], -180, 180), _map3d_n(k.get('tilt'), pv[2], 0, 75), _map3d_n(k.get('zoom'), pv[3], 0.3, 3)))
+    kbad += max(0, len(kraw) - 8)
     seed = _ff_int(b.get('seed'), 7, 0, 9999)
     notes = []
     # stations: unique ids, at most 24
@@ -45761,6 +45784,23 @@ def _render_motion_map3d(b: dict) -> str:
            '@media (prefers-reduced-motion:reduce),print{.m3-root{--p:1!important}}</style>')
     root_vars = ('--tilt:' + _map3d_f(tilt, 1) + ';--rz:22;--z0:' + _map3d_f(z0, 2) + ';--z1:' + _map3d_f(z1, 2) + ';'
                  '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));')
+    # camera.follow (v2): with no keys, re-angle the camera as the route arrives at every Nth station and at the last one
+    fol = _ff_int(cam.get('follow'), 0, 0, 6) if cam.get('follow') is not None else 0
+    if not ckeys and fol and segs:
+        ckeys = [(0.0, 0.0, 0.0, z0), (_MAP3D_P0, 22.0, tilt, z1)]
+        stops = [i for i in range(len(segs)) if (i + 1) % fol == 0 or i == len(segs) - 1]
+        for j, i in enumerate(stops):
+            arr = segs[i]['s'] + segs[i]['w']
+            last = i == len(segs) - 1
+            pose = (22.0 - 45.0, max(0.0, tilt - 10), min(3.0, z1 * 1.3)) if last else (_MAP3D_TURNS[j % 6], tilt if j % 2 else max(0.0, tilt - 12), z1)
+            t0 = max(ckeys[-1][0] + 0.001, arr - 0.06)
+            if t0 < arr:
+                ckeys.append((t0,) + ckeys[-1][1:])
+                ckeys.append((arr,) + pose)
+    if ckeys:
+        root_vars = ('--tilt:' + _map3d_keyed(ckeys, 2, 1) + ';--rz:' + _map3d_keyed(ckeys, 1, 1) + ';--e:1;--zm:' + _map3d_keyed(ckeys, 3, 2) + ';')
+    if kbad:
+        notes.append(str(kbad) + (' camera key was' if kbad == 1 else ' camera keys were') + ' left out (at must be a number from 0 to 1, each later than the one before; at most 8).')
     plane = ('<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
              + faces + svg + '</div>')
     note = _hg_note(' '.join(notes)) if notes else ''
